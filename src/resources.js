@@ -1,10 +1,10 @@
 import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, support_on } from './vars.js';
-import { vBind, clearElement, modRes, flib, calc_mastery, calcPillar, eventActive, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect, hoovedRename } from './functions.js';
+import { vBind, clearElement, modRes, flib, calc_mastery, calcPillar, eventActive, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect, hoovedRename, messageQueue } from './functions.js';
 import { traits, fathomCheck } from './races.js';
 import { workerScale } from './jobs.js';
 import { hellSupression } from './portal.js';
 import { syndicate } from './truepath.js';
-import { govActive } from './governor.js';
+import { govActive, defineGovernor } from './governor.js';
 import { govEffect } from './civics.js';
 import { highPopAdjust, production, teamster } from './prod.js';
 import { loc } from './locale.js';
@@ -565,6 +565,9 @@ export function initResourceTabs(tab){
 
 export function drawResourceTab(tab){
     if (tab === 'market'){
+        if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 0)){
+            return;
+        }
         initResourceTabs('market');
         if (tmp_vars.hasOwnProperty('resource')){
             Object.keys(tmp_vars.resource).forEach(function(name){
@@ -580,6 +583,9 @@ export function drawResourceTab(tab){
         tradeSummery();
     }
     else if (tab === 'storage'){
+        if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 1)){
+            return;
+        }
         initResourceTabs('storage');
         if (tmp_vars.hasOwnProperty('resource')){
             Object.keys(tmp_vars.resource).forEach(function(name){
@@ -595,6 +601,9 @@ export function drawResourceTab(tab){
         tradeSummery();
     }
     else if (tab === 'ejector'){
+        if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 2)){
+            return;
+        }
         initResourceTabs('ejector');
         if (tmp_vars.hasOwnProperty('resource')){
             Object.keys(tmp_vars.resource).forEach(function(name){
@@ -606,6 +615,9 @@ export function drawResourceTab(tab){
         }
     }
     else if (tab === 'supply'){
+        if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 3)){
+            return;
+        }
         initResourceTabs('supply');
         if (tmp_vars.hasOwnProperty('resource')){
             Object.keys(tmp_vars.resource).forEach(function(name){
@@ -617,6 +629,9 @@ export function drawResourceTab(tab){
         }
     }
     else if (tab === 'alchemy'){
+        if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 4)){
+            return;
+        }
         initResourceTabs('alchemy');
         if (tmp_vars.hasOwnProperty('resource')){
             Object.keys(tmp_vars.resource).forEach(function(name){
@@ -1280,7 +1295,7 @@ export function marketItem(mount,market_item,name,color,full){
         return;
     }
 
-    if (global.race['artifical'] && name === 'Food'){
+    if ((global.race['artifical'] || global.race['fasting']) && name === 'Food'){
         return;
     }
 
@@ -2457,6 +2472,53 @@ function drawModal(name){
             });
         });
     });
+}
+
+function unlockStorage(){
+    // If this is the first resource subtab to unlock, then mark it as the visible subtab
+    if (!global.settings.showResources) {
+        global.settings.marketTabs = 1;
+    }
+
+    // Enable display for resource tab and storage subtab
+    global.settings.showResources = true;
+    global.settings.showStorage = true;
+
+    // Possibly draw or redraw the storage subtab
+    drawResourceTab('storage');
+
+    // Redraw the governor, who has actions to build and manage storage
+    defineGovernor();
+}
+
+// Crates are always initially unlocked by the Freight Yard building.
+// Other buildings that provide crates do not need to call this function.
+export function unlockCrates(){
+    if (!global.resource.Crates.display){
+        // Message about unlocking crates for the first time
+        messageQueue(loc('city_storage_yard_msg'),'info',false,['progress']);
+
+        // Enable display for crates
+        global.resource.Crates.display = true;
+
+        // Unlock the storage tab
+        unlockStorage();
+    }
+}
+
+// Containers are optional to clear the game, so every building that provides Containers might be the very first one.
+// All buildings that provide containers, not just the Container Port, should call this function.
+export function unlockContainers(){
+    if (!global.resource.Containers.display){
+        // Message about unlocking containers for the first time
+        messageQueue(loc('city_warehouse_msg'),'info',false,['progress']);
+
+        // Enable display for containers
+        global.resource.Containers.display = true;
+
+        // Unlock the storage tab
+        unlockStorage();
+    }
 }
 
 export function crateValue(){

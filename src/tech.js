@@ -4,7 +4,7 @@ import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, message
 import { unlockAchieve, alevel, universeAffix, unlockFeat } from './achieve.js';
 import { payCosts, housingLabel, wardenLabel, updateQueueNames, drawTech, fanaticism, checkAffordable, actions } from './actions.js';
 import { races, checkAltPurgatory, renderPsychicPowers } from './races.js';
-import { defineResources, drawResourceTab, resource_values, atomic_mass } from './resources.js';
+import { drawResourceTab, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
 import { buildGarrison, checkControlling, govTitle } from './civics.js';
 import { renderSpace, planetName, int_fuel_adjust } from './space.js';
@@ -48,8 +48,8 @@ const techs = {
             return global.race['soul_eater'] && !global.race['evil'] ? false : true;
         },
         cost: {
-            Food(){ return global.race['evil'] && !global.race['smoldering'] ? 0 : 10; },
-            Lumber(){ return global.race['evil'] && !global.race['smoldering'] ? 10 : 0; }
+            Food(){ return global.race['evil'] && !global.race['smoldering'] || global.race['fasting'] ? 0 : 10; },
+            Lumber(){ return global.race['evil'] && !global.race['smoldering'] || global.race['fasting'] ? 10 : 0; }
         },
         action(){
             if (payCosts($(this)[0])){
@@ -1361,6 +1361,28 @@ const techs = {
         effect: loc('tech_master_craftsman_effect'),
         action(){
             if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    banquet:{
+        id: 'tech-banquet',
+        title: loc('tech_banquet'),
+        desc: loc('tech_banquet'),
+        category: 'special',
+        era: 'discovery',
+        reqs: { high_tech: 2 },
+        grant: ['banquet',1],
+        not_trait:['fasting'],
+        condition(){ return global.stats.achieve['endless_hunger'] && global.stats.achieve['endless_hunger'].l >= 1 ? true : false; },
+        cost: {
+            Knowledge(){ return 18500; }
+        },
+        effect: loc('tech_banquet_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.city['banquet'] = { count: 0, on: 0, strength:0 };
                 return true;
             }
             return false;
@@ -2874,7 +2896,8 @@ const techs = {
         },
         post(){
             calcRQueueMax();
-            if (global.settings.tabLoad){
+            // Research queue is always visible on the research tab, so sub-tab check is intentionally excluded
+            if (global.settings.tabLoad || global.settings.civTabs === 3){
                 $(`#resQueue`).removeAttr('style');
             }
         }
@@ -3097,6 +3120,7 @@ const techs = {
         },
         post(){
             vBind({el: '#foreign'},'update');
+            defineGovernor();
         }
     },
     espionage: {
@@ -3123,6 +3147,7 @@ const techs = {
         },
         post(){
             vBind({el: '#foreign'},'update');
+            defineGovernor();
         }
     },
     spy_training: {
@@ -3244,6 +3269,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            defineGovernor();
         }
     },
     large_trades: {
@@ -4487,6 +4515,11 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            if (global.race['terrifying']){
+                defineGovernor();
+            }
         }
     },
     electricity: {
@@ -6872,6 +6905,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            defineGovernor();
         }
     },
     ceremonial_dagger: {
@@ -6975,6 +7011,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            defineGovernor();
         }
     },
     signing_bonus: {
@@ -10946,11 +10985,7 @@ const techs = {
             return false;
         },
         post(){
-            clearElement($('#resources'));
-            defineResources();
-            if (global.settings.tabLoad){
-                drawResourceTab('alchemy');
-            }
+            drawResourceTab('alchemy');
         }
     },
     transmutation: {
@@ -10975,10 +11010,6 @@ const techs = {
                 return true;
             }
             return false;
-        },
-        post(){
-            clearElement($('#resources'));
-            defineResources();
         }
     },
     secret_society: {
@@ -13434,6 +13465,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            defineGovernor();
         }
     },
     clone_degradation: {

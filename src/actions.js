@@ -3,7 +3,7 @@ import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
 import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck } from './races.js';
-import { defineResources, galacticTrade, spatialReasoning, resource_values, initResourceTabs, drawResourceTab, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus } from './resources.js';
+import { defineResources, unlockCrates, unlockContainers, galacticTrade, spatialReasoning, resource_values, initResourceTabs, drawResourceTab, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources, gridDefs } from './industry.js';
 import { govEffect, defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating } from './civics.js';
@@ -1096,6 +1096,9 @@ export const actions = {
             desc(){
                 let gain = $(this)[0].val(false);
                 let hallowed = getHalloween();
+                if(global.race['fasting']){
+                    return loc('city_food_fasting');
+                }
                 if (hallowed.active){
                     return global.tech['conjuring'] ? loc('city_trick_conjure_desc',[gain]) : loc('city_trick_desc',[gain]);
                 }
@@ -1112,7 +1115,7 @@ export const actions = {
             },
             action(){
                 if (!global.settings.pause){
-                    if(global['resource']['Food'].amount < global['resource']['Food'].max){
+                    if(global['resource']['Food'].amount < global['resource']['Food'].max && !global.race['fasting']){
                         modRes('Food',$(this)[0].val(true),true);
                     }
                     global.stats.cfood++;
@@ -1406,7 +1409,7 @@ export const actions = {
                             global['resource'][global.race.species].amount--;
                             global.civic[global.civic.d_job].workers--;
                             global.stats.sac++;
-                            global['resource'].Food.amount += Math.rand(250,1000);
+                            modRes('Food', Math.rand(250,1000), true);
                             let low = 300;
                             let high = 600;
                             if (global.tech['sacrifice']){
@@ -1785,7 +1788,13 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0])){
                     global.city['farm'].count++;
-                    global.civic.farmer.display = true;
+                    if(global.race['fasting']){
+                        global.civic.farmer.display = false;
+                        global.civic.farmer.assigned = 0;
+                    }
+                    else{
+                        global.civic.farmer.display = true;
+                    }
                     if (global.tech['farm']){
                         global['resource'][global.race.species].display = true;
                         global['resource'][global.race.species].max += $(this)[0].citizens();
@@ -2228,15 +2237,7 @@ export const actions = {
             },
             action(){
                 if (payCosts($(this)[0])){
-                    if (global.resource.Crates.display === false){
-                        messageQueue(loc('city_storage_yard_msg'),'info',false,['progress']);
-                    }
                     global.city['storage_yard'].count++;
-                    global.settings.showResources = true;
-                    global.settings.showStorage = true;
-                    if (!global.settings.showMarket) {
-                        global.settings.marketTabs = 1;
-                    }
                     let cap = global.tech.container >= 3 ? 20 : 10;
                     if (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 1){
                         cap += 10;
@@ -2248,14 +2249,10 @@ export const actions = {
                         cap *= 2;
                     }
                     global.resource.Crates.max += cap;
+                    // A freight yard is always required, so this is the only struct that can unlock crates
+                    // Any scenario where a freight yard is unnecessary will begin with crates unlocked
                     if (!global.resource.Crates.display){
-                        global.resource.Crates.display = true;
-                        clearElement($('#resources'));
-                        defineResources();
-                        if (global.settings.tabLoad){
-                            drawResourceTab('storage');
-                            defineGovernor();
-                        }
+                        unlockCrates();
                     }
                     return true;
                 }
@@ -2289,12 +2286,7 @@ export const actions = {
             },
             action(){
                 if (payCosts($(this)[0])){
-                    if (global.resource.Containers.display === false){
-                        messageQueue(loc('city_warehouse_msg'),'info',false,['progress']);
-                    }
                     global.city['warehouse'].count++;
-                    global.settings.showResources = true;
-                    global.settings.showStorage = true;
                     let cap = global.tech['steel_container'] >= 2 ? 20 : 10;
                     if (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 2){
                         cap += 10;
@@ -2307,12 +2299,7 @@ export const actions = {
                     }
                     global.resource.Containers.max += cap;
                     if (!global.resource.Containers.display){
-                        global.resource.Containers.display = true;
-                        clearElement($('#resources'));
-                        defineResources();
-                        if (global.settings.tabLoad){
-                            drawResourceTab('storage');
-                        }
+                        unlockContainers();
                     }
                     return true;
                 }
@@ -3039,20 +3026,17 @@ export const actions = {
             },
             action(){
                 if (payCosts($(this)[0])){
-                    if (global.resource.Containers.display === false){
-                        messageQueue(loc('city_warehouse_msg'),'info',false,['progress']);
-                        global.resource.Containers.display = true;
-                        clearElement($('#resources'));
-                        defineResources();
-                    }
                     global.city['wharf'].count++;
                     global.city.market.mtrade += 2;
-                    let vol = global.tech['world_control'] ? 15 : 10
+                    let vol = global.tech['world_control'] ? 15 : 10;
                     if (global.tech['particles'] && global.tech['particles'] >= 2){
                         vol *= 2;
                     }
                     global.resource.Crates.max += vol;
                     global.resource.Containers.max += vol;
+                    if (!global.resource.Containers.display){
+                        unlockContainers();
+                    }
                     return true;
                 }
                 return false;
@@ -3305,6 +3289,145 @@ export const actions = {
                 }
                 return false;
             }
+        },
+        banquet: {
+            id: 'city-banquet',
+            title: loc('city_banquet'),
+            desc: loc(`city_banquet_desc`),
+            category: 'commercial',
+            reqs: { banquet:1 },
+            queue_complete(){ return global.stats.achieve['endless_hunger'] ? global.stats.achieve['endless_hunger'].l - global.city['banquet'].count : 0},
+            no_multi: true,
+            condition(){
+                return global.stats.achieve['endless_hunger'] && global.stats.achieve['endless_hunger'].l >= 1 ? true : false;
+            },
+            cost: {
+                Money(){
+                    return !global.stats.achieve['endless_hunger'] || global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
+                        0
+                    :global.city['banquet'].count === 0 ?
+                        45000
+                    : global.city['banquet'].count === 1 ?
+                        180000
+                    : global.city['banquet'].count === 2 ?
+                        2400000
+                    : global.city['banquet'].count === 3 ?
+                        30000000
+                    :
+                        140000000
+                },
+                Food(){
+                    return (!global.stats.achieve['endless_hunger'] || global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
+                        0
+                    :global.city['banquet'].count === 0 ?
+                        40000
+                    : global.city['banquet'].count === 1 ?
+                        124000
+                    : global.city['banquet'].count === 2 ?
+                        300000
+                    : global.city['banquet'].count === 3 ?
+                        720000
+                    :
+                        1200000) / (global.race['artifical'] ? 4 : 1)
+                },
+                Brick(){ 
+                    return !global.stats.achieve['endless_hunger'] || global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
+                        0
+                    :global.city['banquet'].count === 0 ?
+                        1600
+                    : global.city['banquet'].count === 1 ?
+                        18000
+                    :global.city['banquet'].count === 2 ?
+                        75000
+                    :
+                        0
+                },
+                Wrought_Iron(){
+                    return !global.stats.achieve['endless_hunger'] || global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
+                        0
+                    : global.city['banquet'].count === 1 ?
+                        26000
+                    :global.city['banquet'].count === 2 ?
+                        88000
+                    : global.city['banquet'].count === 3 ?
+                        144000
+                    : global.city['banquet'].count === 4 ?
+                        240000
+                    :
+                        0
+                },
+                Iridium(){
+                    return !global.stats.achieve['endless_hunger'] || global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
+                        0
+                    : global.city['banquet'].count === 2 ?
+                        50000
+                    : global.city['banquet'].count === 3 ?
+                        270000
+                    : global.city['banquet'].count === 4 ?
+                        700000
+                    :
+                        0
+                },
+                Aerogel(){
+                    return !global.stats.achieve['endless_hunger'] || global.race['truepath'] || global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
+                        0
+                    : global.city['banquet'].count === 3 ?
+                        40000
+                    : global.city['banquet'].count === 4 ?
+                        150000
+                    :
+                        0
+                },
+                Quantium(){
+                    return !global.stats.achieve['endless_hunger'] || !global.race['truepath'] || global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
+                        0
+                    : global.city['banquet'].count === 3 ?
+                        40000
+                    : global.city['banquet'].count === 4 ?
+                        150000
+                    :
+                        0
+                },
+                Bolognium(){
+                    return !global.stats.achieve['endless_hunger'] && global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
+                        0
+                    : global.city['banquet'].count === 4 ?
+                        150000
+                    :
+                        0
+                }
+            },
+            effect(){
+                let desc = `<div>Strength: <span class="has-text-caution">${global.city['banquet'].strength}</span></div>`;
+                desc += `<div>${loc(`city_banquet_effect1`, [sizeApproximation(((global.city['banquet'].count >= 5 ? 1.02 : 1.022)**(global.city['banquet'].strength) - 1) * 100)])}</div>`;
+                if(global.city['banquet'].count >= 1){
+                    desc += `<div>${loc(`city_banquet_effect2`, [(global.city['banquet'].strength**0.75).toFixed(2)])}</div>`;
+                }
+                if(global.city['banquet'].count >= 2){
+                    desc += `<div>${loc(`city_banquet_effect3`, [(global.city['banquet'].strength**0.65).toFixed(2)])}</div>`;
+                }
+                if(global.city['banquet'].count >= 3){
+                    desc += `<div>${loc(`city_banquet_effect4`, [(global.city['banquet'].strength**0.65).toFixed(2)])}</div>`;
+                }
+                if(global.city['banquet'].count >= 4){
+                    desc += `<div>${loc(`city_banquet_effect5`, [(global.city['banquet'].strength**0.75).toFixed(2)])}</div>`;
+                }
+                return desc;
+            },
+            powered(){ return 0; },
+            action(){
+                if (global.city['banquet'].count < global.stats.achieve['endless_hunger'].l && payCosts($(this)[0])){
+                    global.city['banquet'].count++;
+                    if(global.city['banquet'].count === 1){
+                        global.city['banquet'].on = 1;
+                    }
+                    //drawTech();
+                    drawCity();
+                    return true;
+                }
+                return false;
+            },
+            flair: loc('city_banquet_flair')
         },
         university: {
             id: 'city-university',
@@ -4049,6 +4172,9 @@ export function setChallengeScreen(){
     if (global.stats.achieve['retired'] || global['sim']){
         global.evolution['lone_survivor'] = { count: 0 };
     }
+    if(global.stats.achieve['corrupted'] || global['sim']){
+        global.evolution['fasting'] = { count:0 };
+    }
     challengeGeneHeader();
     if (global.race['truepath'] || global.race['lone_survivor']){
         addAction('evolution','nerfed');
@@ -4115,6 +4241,9 @@ export function setChallengeScreen(){
     }
     if (global.stats.achieve['retired'] || global['sim']){
         addAction('evolution','lone_survivor');
+    }
+    if(global.stats.achieve['corrupted'] || global['sim']){
+        addAction('evolution','fasting');
     }
     if (global['sim']){
         exitSimulation();
@@ -4527,7 +4656,7 @@ Object.keys(challengeList).forEach(challenge => actions.evolution[challenge] = {
                     delete global.race['nerfed'];
                     delete global.race['badgenes'];
                 }
-                ['junker','cataclysm','banana','truepath','lone_survivor'].forEach(function(s){
+                ['junker','cataclysm','banana','truepath','lone_survivor','fasting'].forEach(function(s){
                     delete global.race[s];
                     $(`#evolution-${s}`).removeClass('hl');
                 });
@@ -4564,6 +4693,7 @@ const advancedChallengeList = {
     'banana': {t: 's', e: 'banana' },
     'truepath': {t: 's', e: 'pathfinder' },
     'lone_survivor': {t: 's', e: 'adam_eve' },
+    'fasting': {t: 's', e: 'endless_hunger' },
 };
 Object.keys(advancedChallengeList).forEach(challenge => actions.evolution[challenge] = {
     id: `evolution-${challenge}`,
@@ -4849,7 +4979,7 @@ function setScenario(scenario){
         });
     }
     else {
-        ['junker','cataclysm','banana','truepath','lone_survivor'].forEach(function(s){
+        ['junker','cataclysm','banana','truepath','lone_survivor','fasting'].forEach(function(s){
             delete global.race[s];
             $(`#evolution-${s}`).removeClass('hl');
         });
@@ -5468,13 +5598,18 @@ export function setAction(c_action,action,type,old,prediction){
                 return `off: ${global[action][type].count - global[action][type].on}`;
             },
             power_on(){
-                let keyMult = keyMultiplier();
-                for (let i=0; i<keyMult; i++){
-                    if (global[action][type].on < global[action][type].count){
-                        global[action][type].on++;
-                    }
-                    else {
-                        break;
+                if(type === "banquet"){
+                    global[action][type].on = 1;
+                }
+                else{
+                    let keyMult = keyMultiplier();
+                    for (let i=0; i<keyMult; i++){
+                        if (global[action][type].on < global[action][type].count){
+                            global[action][type].on++;
+                        }
+                        else {
+                            break;
+                        }
                     }
                 }
                 if (c_action['postPower']){
@@ -5527,6 +5662,9 @@ export function setAction(c_action,action,type,old,prediction){
                         return egg;
                     }
                 }
+                else if(id === 'city-banquet'){
+                    return (p ? 0 : 1);
+                }
                 return value;
             },
             p_on(p,id){
@@ -5546,6 +5684,9 @@ export function setAction(c_action,action,type,old,prediction){
                     if (p === num && trick.length > 0){
                         return trick;
                     }
+                }
+                else if(id === 'city-banquet'){
+                    return (p ? 1 : 0);
                 }
                 return p;
             },
@@ -7402,6 +7543,7 @@ function sentience(){
             global.settings.msgFilters.research_queue.unlocked = true;
             global.settings.msgFilters.research_queue.vis = true;
         }
+        // No need to check for civTab setting because it was set to another tab above
         if (global.settings.tabLoad){
             $(`#resQueue`).removeAttr('style');
         }
@@ -7644,6 +7786,9 @@ function sentience(){
         }
     }
 
+    if(global.race['fasting']){
+        global.resource.Food.amount = 0;
+    }
     if (global.race['cataclysm']){
         cataclysm();
     }
@@ -8124,6 +8269,7 @@ function cataclysm(){
         global.civic.scientist.display = true;
         global.civic.colonist.display = true;
         global.civic.space_miner.display = true;
+        global.civic.craftsman.display = true;
 
         if (!global.race['flier']){
             global.tech['cement'] = 5;
