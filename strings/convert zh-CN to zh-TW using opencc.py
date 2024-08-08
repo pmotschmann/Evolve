@@ -2,9 +2,17 @@
 from opencc import OpenCC
 
 
-with open('strings.zh-CN.json', 'r', encoding='utf-8') as f:
-    zh_CN  = f.read()
-# convert zh_CN to zh_TW
-zh_TW = OpenCC('s2tw').convert(zh_CN)
-with open('strings.zh-TW_autotranslated.json', 'w', encoding='utf-8') as f:
-    f.write(zh_TW)
+def main(input_file: str, output_file: str) -> None:
+    with open(input_file, "r", encoding="utf-8") as f:
+        zh_CN: str = f.read()
+
+    # convert zh_CN to zh_TW
+    opencc: OpenCC = OpenCC("s2tw")
+    zh_TW: str = opencc.convert(zh_CN)
+
+    with open(output_file, "w", encoding="utf-8") as f:
+        f.write(zh_TW)
+
+
+if __name__ == "__main__":
+    main("strings.zh-CN.json", "strings.zh-TW_autotranslated.json")
