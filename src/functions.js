@@ -1143,13 +1143,11 @@ export function timeFormat(time){
 export function powerModifier(energy){
     if (global.race.universe === 'antimatter'){
         energy *= darkEffect('antimatter');
-        energy = +energy.toFixed(2);
     }
     if (astrologySign() === 'leo'){
         energy *= 1 + (astroVal('leo')[0] / 100);
-        energy = +energy.toFixed(2);
     }
-    return energy;
+    return energy.fixed(2);
 }
 
 export function powerCostMod(energy){
