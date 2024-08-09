@@ -567,11 +567,11 @@ export function checkAchievements(){
     }
 
     if (global.tech['piracy'] && global.tech['chthonian'] && global.tech['chthonian'] >= 2 && global.galaxy){
-        let chtonian = piracy('gxy_chthonian');
-        if (piracy('gxy_stargate') === 1 && piracy('gxy_gateway') === 1 && piracy('gxy_gorddon') === 1 && piracy('gxy_alien1') === 1 && piracy('gxy_alien2') === 1 && chtonian === 1){
+        let chthonian = piracy('gxy_chthonian');
+        if (piracy('gxy_stargate') === 1 && piracy('gxy_gateway') === 1 && piracy('gxy_gorddon') === 1 && piracy('gxy_alien1') === 1 && piracy('gxy_alien2') === 1 && chthonian === 1){
             unlockAchieve('neutralized');
         }
-        if(global.race['fasting'] && chtonian === 1){
+        if(global.race['fasting'] && chthonian === 1){
             let affix = universeAffix();
             global.stats.endless_hunger.b2[affix] = true;
             if (affix !== 'm' && affix !== 'l'){
