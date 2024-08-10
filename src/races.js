@@ -4728,7 +4728,7 @@ export function racialTrait(workers,type){
     if (global.race['living_tool'] && type === 'miner'){
         modifier *= 1 + traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science * 0.12 : 0);
     }
-    if(global.city.banquet && global.city.banquet.on && global.city.banquet.count >= 3 && (type === 'army' || type === 'hellArmy')){
+    if(global.city.banquet && global.city.banquet.on && global.city.banquet.level >= 3 && (type === 'army' || type === 'hellArmy')){
         modifier *= 1 + (global.city.banquet.strength ** 0.65) / 100;
     }
     if (global.race['high_pop']){
