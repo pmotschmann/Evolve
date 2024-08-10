@@ -1382,7 +1382,7 @@ const techs = {
         effect: loc('tech_banquet_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['banquet'] = { count: 0, level:0, on: 0, strength:0 };
+                global.city['banquet'] = { count: 0, on: 0, strength:0 };
                 return true;
             }
             return false;

@@ -1197,13 +1197,6 @@ if (convertVersion(global['version']) < 103014){
     }
 }
 
-if (convertVersion(global['version']) < 103015){
-    if (global.city['banquet']){
-        global.city['banquet'].level = global.city['banquet'].count;
-        global.city['banquet'].count = Math.min(global.city['banquet'].count, 1);
-    }
-}
-
 global['version'] = '1.3.13';
 global['revision'] = 'b';
 delete global['beta'];
