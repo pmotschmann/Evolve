@@ -4998,26 +4998,20 @@ function fastLoop(){
         // Vitreloy
         if (global.galaxy['vitreloy_plant'] && p_on['vitreloy_plant'] > 0){
 
-            let consume_money = p_on['vitreloy_plant'] * 50000;
-            let consume_bolognium = p_on['vitreloy_plant'] * 2.5;
-            let consume_stanene = p_on['vitreloy_plant'] * 100;
-
+            let consume_money = 50000;
+            let consume_bolognium = 2.5;
+            let consume_stanene = 100;
             let vitreloy_production = p_on['vitreloy_plant'];
 
-            while (consume_money * time_multiplier > global.resource.Money.amount && consume_money > 0){
-                consume_money -= 350;
-                vitreloy_production--;
-            }
-            while (consume_bolognium * time_multiplier > global.resource.Bolognium.amount && consume_bolognium > 0){
-                consume_bolognium -= 25;
-                vitreloy_production--;
-            }
-            while (consume_stanene * time_multiplier > global.resource.Stanene.amount && consume_stanene > 0){
-                consume_stanene -= 15;
-                vitreloy_production--;
-            }
+            vitreloy_production = Math.min(vitreloy_production, Math.floor(global.resource.Money.amount / (consume_money * time_multiplier)));
+            vitreloy_production = Math.min(vitreloy_production, Math.floor(global.resource.Bolognium.amount / (consume_bolognium * time_multiplier)));
+            vitreloy_production = Math.min(vitreloy_production, Math.floor(global.resource.Stanene.amount / (consume_stanene * time_multiplier)));
+            vitreloy_production = Math.max(vitreloy_production, 0);
 
             if (vitreloy_production > 0){
+                consume_money *= vitreloy_production;
+                consume_bolognium *= vitreloy_production;
+                consume_stanene *= vitreloy_production;
                 vitreloy_production *= production('vitreloy_plant') * production('psychic_boost','Vitreloy');
 
                 breakdown.p.consume.Money[loc('galaxy_vitreloy_plant_bd')] = -(consume_money);
