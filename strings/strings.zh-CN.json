@@ -1353,7 +1353,7 @@
   "city_s_alter_mine": "矿工产量 +%0% [%1]",
   "city_s_alter_harvest": "%2产量 +%0% [%1]",
   "city_banquet": "餐馆",
-  "city_banquet_desc": "制作美味的食物，提供加成；当食物耗尽之后，加成重置。",
+  "city_banquet_desc": "制作美食，提供加成；当食物耗尽之后，加成重置。",
   "city_banquet_flair": "Only the best will suffice.",
   "city_banquet_effect1": "食物消耗 +%0%",
   "city_banquet_effect2": "人口增长速率 +%0%",
