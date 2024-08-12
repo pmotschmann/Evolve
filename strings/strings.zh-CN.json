@@ -1080,6 +1080,7 @@
   "city_trick_desc": "从邻居手里收集 %0 糖果",
   "city_trick_conjure": "制造糖果",
   "city_trick_conjure_desc": "用魔法制造 %0 糖果",
+  "city_food_fasting": "您必须想办法在没有任何食物的情况下生存下去。",
   "city_lumber": "收集木材",
   "city_lumber_desc": "从森林里收集 %0 木材",
   "city_lumber_conjure": "制造木材",
