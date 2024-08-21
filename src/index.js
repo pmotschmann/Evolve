@@ -284,12 +284,13 @@ function tabLabel(lbl){
 }
 
 function updateQueueStyle(){
+    const buildingQueue = $('#buildQueue');
     ['standardqueuestyle', 'listqueuestyle', 'bulletlistqueuestyle', 'numberedlistqueuestyle']
-        .map(qstyle => {
+        .forEach(qstyle => {
             if (global.settings.queuestyle === qstyle) {
-                $('html').addClass(qstyle);
+                buildingQueue.addClass(qstyle);
             } else {
-                $('html').removeClass(qstyle);
+                buildingQueue.removeClass(qstyle);
             }
         });
 }
@@ -889,7 +890,7 @@ export function index(){
             <div class="power"><span id="powerStatus" class="has-text-warning" v-show="city.powered"><span>MW</span> <span id="powerMeter" class="meter">{{ city.power | replicate | approx }}</span></span></div>
         </div>
         <div id="sideQueue">
-            <div id="buildQueue" class="bldQueue has-text-info" v-show="display"></div>
+            <div id="buildQueue" class="bldQueue standardqueuestyle has-text-info" v-show="display"></div>
             <div id="msgQueue" class="msgQueue vscroll has-text-info" aria-live="polite">
                 <div id="msgQueueHeader">
                     <h2 class="has-text-success">${loc('message_log')}</h2>
