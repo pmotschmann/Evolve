@@ -6,7 +6,7 @@ await esbuild
         entryPoints: ["./src/main.js"],
         bundle: true,
         minify: true,
-        outfile: "evolve/main.js",
+        outfile: "dist/evolve/main.js",
     })
     .catch(() => process.exit(1))
 ;
