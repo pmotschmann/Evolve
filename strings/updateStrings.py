@@ -2,80 +2,85 @@ import json
 from os import path
 from shutil import copyfile
 from sys import argv
-from typing import Any, Dict
 
 
 def main() -> None:
-    print()
+    """
+    Updates the locale-specific strings JSON file based on the default strings JSON file.
 
+    This script compares the default strings in 'strings.json' with the locale-specific strings
+    in 'strings.<locale>.json'. It marks new or changed strings with 'TRANS:' or 'CHANGE:' tags
+    respectively, and writes the updated strings back to the locale-specific file. It also creates
+    a backup of the default strings as 'last-strings.json'.
+
+    Usage:
+        python updateString.py <locale>
+
+    Args:
+        None
+
+    Returns:
+        None
+    """
     if len(argv) < 2:
-        print("inform locale key (python updateString.py <locale>)")
+        print("Please provide the locale key. Usage: python updateString.py <locale>")
         return
 
-    locale: str = argv[1]
+    locale = argv[1]
 
-    if not path.isfile(f"strings.{locale}.json"):
+    if not path.exists(f"strings.{locale}.json"):
         print(
-            f"'strings.{locale}.json' not found.\nCreate that file with a line write '{{ }}' if need."
+            f"File 'strings.{locale}.json' not found. Please create this file with '{{}}' as its content if it doesn't exist."
         )
         return
 
     try:
-        with open("strings.json", encoding="utf-8") as default_file:
-            default_strings: Dict[str, Any] = json.load(default_file)
-    except json.JSONDecodeError:
-        print("the 'strings.json' file is a malformed json file.")
+        with open("strings.json", encoding="utf-8") as default_file, open(
+            f"strings.{locale}.json", "r+", encoding="utf-8"
+        ) as loc_file:
+            default_strings = json.load(default_file)
+            locale_strings = json.load(loc_file)
+    except json.JSONDecodeError as e:
+        print(f"JSON decode error: {e}")
         return
 
-    try:
-        with open(f"strings.{locale}.json", "r+", encoding="utf-8") as loc_file:
-            locale_strings: Dict[str, Any] = json.load(loc_file)
-    except json.JSONDecodeError:
-        print(f"the 'strings.{locale}.json' file is a malformed json file.")
-        return
-
-    last_strings: Dict[str, Any] | None = None
-    if path.isfile("last-strings.json"):
+    last_strings = None
+    if path.exists("last-strings.json"):
         try:
             with open("last-strings.json", encoding="utf-8") as last_file:
                 last_strings = json.load(last_file)
         except json.JSONDecodeError:
-            print("the last-strings.json was a malformed json file.")
+            print("The file 'last-strings.json' contains malformed JSON.")
 
-    writing: Dict[str, Any] = {}
+    writing = {}
+    trans_count = 0
+    change_count = 0
 
-    trans_count: int = 0
-    change_count: int = 0
-
-    for key in default_strings:
+    for key, value in default_strings.items():
         if key in locale_strings:
-            if locale_strings[key][:6] == "TRANS:":
-                writing[key] = "TRANS:" + default_strings[key]
+            if locale_strings[key].startswith("TRANS:"):
+                writing[key] = "TRANS:" + value
                 trans_count += 1
-            elif (
-                last_strings is not None
-                and key in last_strings
-                and default_strings[key] != last_strings[key]
-            ):
+            elif last_strings and key in last_strings and value != last_strings[key]:
                 writing[key] = (
-                    f"CHANGE:{locale_strings[key]}~FROM:{last_strings[key]}~TO:{default_strings[key]}"
+                    f"CHANGE:{locale_strings[key]}~FROM:{last_strings[key]}~TO:{value}"
                 )
                 change_count += 1
             else:
                 writing[key] = locale_strings[key]
             del locale_strings[key]
         else:
-            writing[key] = "TRANS:" + default_strings[key]
+            writing[key] = "TRANS:" + value
             trans_count += 1
 
     print(f"{change_count} values are marked with tag 'CHANGE:'")
     print(f"{trans_count} values are marked with tag 'TRANS:'")
-    if len(locale_strings) > 0:
+    if locale_strings:
         print(f"{len(locale_strings)} keys were deleted:")
         for key in locale_strings:
             print(key)
     else:
-        print("0 keys were deleted.")
+        print("No keys were deleted.")
 
     with open(f"strings.{locale}.json", "w", encoding="utf-8") as loc_file:
         json.dump(writing, loc_file, ensure_ascii=False, indent=2)
