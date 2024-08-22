@@ -70,7 +70,7 @@ def main() -> None:
     print(f"{change_count} values are marked with tag 'CHANGE:'")
     print(f"{trans_count} values are marked with tag 'TRANS:'")
     if locale_strings:
-        print(f"{len(locale_strings)} keys were deleted:")
+        print(f"{len(locale_strings)} keys {"was" if len(locale_strings) == 1 else "were"} deleted:")
         for key in locale_strings:
             print(key)
     else:
