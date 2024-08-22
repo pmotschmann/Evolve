@@ -15,12 +15,6 @@ def main() -> None:
 
     Usage:
         python updateString.py <locale>
-
-    Args:
-        None
-
-    Returns:
-        None
     """
     if len(argv) < 2:
         print("Please provide the locale key. Usage: python updateString.py <locale>")
