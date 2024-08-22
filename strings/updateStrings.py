@@ -67,10 +67,10 @@ def main() -> None:
             updated_strings[key] = "TRANS:" + value
             trans_count += 1
 
-    print(f"{change_count} values are marked with tag 'CHANGE:'")
-    print(f"{trans_count} values are marked with tag 'TRANS:'")
+    print(f"{change_count} {"value is" if change_count == 1 else "values are"} marked with tag 'CHANGE:'")
+    print(f"{trans_count} {"value is" if trans_count == 1 else "values are"} marked with tag 'TRANS:'")
     if locale_strings:
-        print(f"{len(locale_strings)} keys {"was" if len(locale_strings) == 1 else "were"} deleted:")
+        print(f"{len(locale_strings)} {"key was" if len(locale_strings) == 1 else "keys were"} deleted:")
         for key in locale_strings:
             print(key)
     else:
