@@ -31,9 +31,9 @@ def main() -> None:
     try:
         with open("strings.json", encoding="utf-8") as default_file, open(
             f"strings.{locale}.json", "r+", encoding="utf-8"
-        ) as loc_file:
+        ) as locale_file:
             default_strings = json.load(default_file)
-            locale_strings = json.load(loc_file)
+            locale_strings = json.load(locale_file)
     except json.JSONDecodeError as e:
         print(f"JSON decode error: {e}")
         return
@@ -46,25 +46,25 @@ def main() -> None:
         except json.JSONDecodeError:
             print("The file 'last-strings.json' contains malformed JSON.")
 
-    writing = {}
+    updated_strings = {}
     trans_count = 0
     change_count = 0
 
     for key, value in default_strings.items():
         if key in locale_strings:
             if locale_strings[key].startswith("TRANS:"):
-                writing[key] = "TRANS:" + value
+                updated_strings[key] = "TRANS:" + value
                 trans_count += 1
             elif last_strings and key in last_strings and value != last_strings[key]:
-                writing[key] = (
+                updated_strings[key] = (
                     f"CHANGE:{locale_strings[key]}~FROM:{last_strings[key]}~TO:{value}"
                 )
                 change_count += 1
             else:
-                writing[key] = locale_strings[key]
+                updated_strings[key] = locale_strings[key]
             del locale_strings[key]
         else:
-            writing[key] = "TRANS:" + value
+            updated_strings[key] = "TRANS:" + value
             trans_count += 1
 
     print(f"{change_count} values are marked with tag 'CHANGE:'")
@@ -76,8 +76,8 @@ def main() -> None:
     else:
         print("No keys were deleted.")
 
-    with open(f"strings.{locale}.json", "w", encoding="utf-8") as loc_file:
-        json.dump(writing, loc_file, ensure_ascii=False, indent=2)
+    with open(f"strings.{locale}.json", "w", encoding="utf-8") as locale_file:
+        json.dump(updated_strings, locale_file, ensure_ascii=False, indent=2)
 
     copyfile("strings.json", "last-strings.json")
 
