@@ -5,16 +5,6 @@ from sys import argv
 
 
 def main() -> None:
-    """
-    Checks localization strings for consistency with the default strings.
-
-    This script performs various checks on localized JSON string files to ensure they match the default strings.
-    The checks include the presence of specific tags (e.g., TRANS:, CHANGE:), consistency in the number of tokens (e.g., %1, %2), matching leading spaces, consistency in the number of periods, and matching numerical values.
-
-    Usage:
-        python updateString.py <locale>
-    """
-
     check_tags = True
     check_tokens = True
     check_leading_spaces = True
