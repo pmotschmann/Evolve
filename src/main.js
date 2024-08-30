@@ -3412,6 +3412,9 @@ function fastLoop(){
                     ravenous = (global.resource.Food.amount / traits.ravenous.vars()[1]);
                 }
                 breakdown.p.consume.Food[flib('name')] = -(consume + ravenous);
+                if(global.city.banquet && global.city.banquet.on){
+                    consume = Math.max(consume, 100); //minimum consumption for banquet hall
+                }
                 if(consume * banquet + ravenous >= global.resource.Food.amount){
                     if(global.city.banquet && banquet > 1){
                         global.city.banquet.strength = 0;
