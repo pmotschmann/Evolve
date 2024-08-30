@@ -4083,13 +4083,13 @@ function fastLoop(){
 
                 let delta = workDone * demand;
                 if (global.race['gravity_well']){ delta = teamster(delta); }
-                FactoryMoney = delta;
+                delta *= global_multiplier * hunger;
 
                 if (global.race['discharge'] && global.race['discharge'] > 0){
                     delta *= 0.5;
                 }
 
-                delta *= global_multiplier * hunger;
+                FactoryMoney = delta;
                 modRes('Money', delta * time_multiplier);
             }
 
@@ -6933,8 +6933,7 @@ function fastLoop(){
         breakdown.p['Iridium'][loc('hunger')] = ((hunger - 1) * 100) + '%';
 
         // Income
-        let rawCash = FactoryMoney ? FactoryMoney * global_multiplier : 0;
-        if (FactoryMoney && global.race['discharge'] && global.race['discharge'] > 0){rawCash *= 0.5;}
+        let rawCash = FactoryMoney || 0;
         if (global.tech['currency'] >= 1){
             let income_base = global.resource[global.race.species].amount + global.civic.garrison.workers - global.civic.unemployed.workers;
             if (global.race['high_pop']){
