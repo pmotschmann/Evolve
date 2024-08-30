@@ -4319,6 +4319,51 @@ const techs = {
             return false;
         }
     },
+    devilish_dish: {
+        id: 'tech-devilish_dish',
+        title: loc('tech_devilish_dish'),
+        desc: loc('tech_devilish_dish'),
+        category: 'fasting',
+        era: 'dimensional',
+        reqs: { science: 21},
+        trait: ['fasting'],
+        grant: ['dish',1],
+        cost: {
+            Knowledge(){ return 6600000; }
+        },
+        effect(){return loc('tech_devilish_dish_effect');},
+        action(){
+            if (payCosts($(this)[0])){
+                global.portal['dish_soul_infuser'] = {count:0, on:0};
+                global.portal['dish_life_infuser'] = {count:0, on:0};
+                global.portal['devilish_dish'] = {done:0};
+                return true;
+            }
+            return false;
+        }
+    },
+    final_ingredient: {
+        id: 'tech-final_ingredient',
+        title: loc('tech_final_ingredient'),
+        desc: loc('tech_final_ingredient'),
+        category: 'fasting',
+        era: 'dimensional',
+        reqs: { dish: 2},
+        grant: ['dish',3],
+        cost: {
+            Bolognium(){ return 20000000; },
+            Demonic_Essence(){ return 1; }
+        },
+        effect(){
+            return `<div>${loc('tech_final_ingredient_effect')}</div><div class="has-text-special">${loc('tech_demonic_infusion_effect2',[calcPrestige('descend').artifact])}</div>`;
+        },
+        action(){
+            if (payCosts($(this)[0])){
+                descension();
+            }
+            return false;
+        }
+    },
     bioscience: {
         id: 'tech-bioscience',
         title: loc('tech_bioscience'),
@@ -5042,7 +5087,7 @@ const techs = {
         era: 'dimensional',
         reqs: { hell_spire: 10, b_stone: 2, waygate: 3 },
         grant: ['waygate',4],
-        not_trait: ['witch_hunter'],
+        not_trait: ['witch_hunter','fasting'],
         cost: {
             Species(){ return popCost(1000); },
             Knowledge(){ return 55000000; },

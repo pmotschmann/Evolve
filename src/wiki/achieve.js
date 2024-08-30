@@ -287,7 +287,7 @@ function achieveDesc(achievement,showFlair,universe){
         checklist = checklist + `<div class="has-text-${global.stats.endless_hunger.b2[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger2`)}</div>`;
         checklist = checklist + `<div class="has-text-${global.stats.endless_hunger.b3[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger3`,[80])}</div>`;
         checklist = checklist + `<div class="has-text-${global.stats.endless_hunger.b4[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger4`,[1200])}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.endless_hunger.b5[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger5`,[50])}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.endless_hunger.b5[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger5`)}</div>`;
         checklist = checklist + `</div>`;
         popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`));
     }

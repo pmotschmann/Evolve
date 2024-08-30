@@ -632,6 +632,13 @@ export function descension(){
     else {
         unlockAchieve(`corrupted`);
     }
+    if(global.race['fasting']){
+        let affix = universeAffix();
+        global.stats['endless_hunger'].b5[affix] = true;
+        if (affix !== 'm' && affix !== 'l'){
+            global.stats['endless_hunger'].b5.l = true;
+        }
+    }
     if (races[global.race.species].type === 'angelic'){
         unlockFeat('twisted');
     }
