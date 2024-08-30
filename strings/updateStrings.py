@@ -5,17 +5,6 @@ from sys import argv
 
 
 def main() -> None:
-    """
-    Updates the locale-specific strings JSON file based on the default strings JSON file.
-
-    This script compares the default strings in 'strings.json' with the locale-specific strings
-    in 'strings.<locale>.json'. It marks new or changed strings with 'TRANS:' or 'CHANGE:' tags
-    respectively, and writes the updated strings back to the locale-specific file. It also creates
-    a backup of the default strings as 'last-strings.json'.
-
-    Usage:
-        python updateString.py <locale>
-    """
     if len(argv) < 2:
         print("Please provide the locale key. Usage: python updateString.py <locale>")
         return
