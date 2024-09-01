@@ -3918,20 +3918,6 @@ function fastLoop(){
                 scientist_base *= 1 - (govEffect.theocracy()[2] / 100);
             }
 
-            let lib_multiplier = 0.05;
-            let muckVal = govActive('muckraker',2);
-            if (muckVal){
-                lib_multiplier -= (muckVal / 100);
-            }
-            if (global.race['autoignition']){
-                lib_multiplier -= (traits.autoignition.vars()[0] / 100);
-                if (lib_multiplier < 0){
-                    lib_multiplier = 0;
-                }
-            }
-            let library_mult = global.city['library'] ? 1 + (global.city.library.count * lib_multiplier) : 1;
-            let astro_mult = astroSign === 'gemini' ? 1 + (astroVal('gemini')[0] / 100) : 1;
-
             let gene_consume = 0;
             if (global.arpa['sequence'] && global.arpa.sequence.on && global.arpa.sequence.time > 0){
                 let gene_cost = 50 + (global.race.mutation * 10);
@@ -3954,30 +3940,47 @@ function fastLoop(){
             }
 
             let womling = global.tauceti.hasOwnProperty('womling_lab') ? global.tauceti.womling_lab.scientist * (global.tech['womling_gene'] ? 10 : 8) : 0;
-            let lab_mult = global.tech['isolation'] ? 1 + (support_on['infectious_disease_lab'] || 0) * 0.75 : 1;
 
             let delta = professors_base + scientist_base + womling;
             delta *= hunger * global_multiplier;
             delta += sundial_base * global_multiplier;
-            delta *= library_mult * lab_mult;
 
             breakdown.p['Knowledge'][loc('job_professor')] = professors_base + 'v';
             breakdown.p['Knowledge'][loc('job_scientist')] = scientist_base + 'v';
             breakdown.p['Knowledge'][loc('tau_red_womlings')] = womling + 'v';
             breakdown.p['Knowledge'][loc('hunger')] = ((hunger - 1) * 100) + '%';
             breakdown.p['Knowledge'][global.race['unfathomable'] ? loc('tech_moondial') : loc('tech_sundial')] = sundial_base + 'v';
+
             if (global.race['inspired']){
                 breakdown.p['Knowledge'][loc('event_inspiration_bd')] = '100%';
                 delta *= 2;
             }
             if (global.city['library']){
+                let lib_multiplier = 0.05;
+                let muckVal = govActive('muckraker',2);
+                if (muckVal){
+                    lib_multiplier -= (muckVal / 100);
+                }
+                if (global.race['autoignition']){
+                    lib_multiplier -= (traits.autoignition.vars()[0] / 100);
+                    if (lib_multiplier < 0){
+                        lib_multiplier = 0;
+                    }
+                }
+
+                let library_mult = 1 + (global.city.library.count * lib_multiplier);
                 breakdown.p['Knowledge'][loc('city_library')] = ((library_mult - 1) * 100) + '%';
+                delta *= library_mult;
             }
             if (astroSign === 'gemini'){
+                let astro_mult = 1 + (astroVal('gemini')[0] / 100);
                 breakdown.p['Knowledge'][loc(`sign_${astroSign}`)] = ((astro_mult - 1) * 100) + '%';
+                delta *= astro_mult;
             }
             if (global.tech['isolation'] && support_on['infectious_disease_lab']){
+                let lab_mult = 1 + support_on['infectious_disease_lab'] * 0.75;
                 breakdown.p['Knowledge'][actions.tauceti.tau_home.infectious_disease_lab.title()] = ((lab_mult - 1) * 100) + '%';
+                delta *= lab_mult;
             }
             if (global.civic.govern.type === 'technocracy'){
                 breakdown.p['Knowledge'][loc('govern_technocracy')] = govEffect.technocracy()[2] + '%';
