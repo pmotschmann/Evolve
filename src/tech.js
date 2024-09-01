@@ -5052,7 +5052,8 @@ const techs = {
             return `<div>${loc('tech_demonic_infusion_effect')}</div><div class="has-text-special">${loc('tech_demonic_infusion_effect2',[calcPrestige('descend').artifact])}</div>`;
         },
         action(){
-            if (payCosts($(this)[0])){
+            // Check affordability without paying the 1000 pop and Demonic Essence to avoid breaking the backup save
+            if (checkAffordable($(this)[0])){
                 descension();
             }
             return false;
