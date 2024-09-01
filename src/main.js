@@ -3707,7 +3707,7 @@ function fastLoop(){
                 Elerium: 0
             };
             global.space.shipyard.ships.forEach(function(ship){
-                if (ship.location !== 'spc_dwarf'){
+                if (ship.location !== 'spc_dwarf' || ship.transit !== 0){
                     let fuel = shipFuelUse(ship);
                     if (fuel.res && fuel.burn > 0){
                         if (fuel.burn * time_multiplier < global.resource[fuel.res].amount + (global.resource[fuel.res].diff > 0 ? global.resource[fuel.res].diff * time_multiplier : 0)){
