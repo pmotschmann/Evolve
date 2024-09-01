@@ -3303,7 +3303,7 @@ export const actions = {
             },
             cost: {
                 Money(offset){
-                    const count = offset || (global.city['banquet'] ? global.city['banquet'].count : 0);
+                    const count = offset + (global.city['banquet'] ? global.city['banquet'].count : 0);
                     //const max = global.stats.achieve['endless_hunger'] ? global.stats.achieve['endless_hunger'].l : 0;
                     switch (count){
                         case 0:
@@ -3314,12 +3314,14 @@ export const actions = {
                             return 2400000;
                         case 3:
                             return 30000000;
-                        default:
+                        case 4:
                             return 140000000;
+                        default:
+                            return 0;
                     }
                 },
                 Food(offset){
-                    const count = offset || (global.city['banquet'] ? global.city['banquet'].count : 0);
+                    const count = offset + (global.city['banquet'] ? global.city['banquet'].count : 0);
                     return (() => {
                         switch (count){
                             case 0:
@@ -3330,24 +3332,28 @@ export const actions = {
                                 return 300000;
                             case 3:
                                 return 720000;
-                            default:
+                            case 4:
                                 return 1200000;
+                            default:
+                                return 0;
                         }
                     })() * (global.race['artifical'] ? 0.25 : 1);
                 },
                 Brick(offset){ 
-                    const count = offset || (global.city['banquet'] ? global.city['banquet'].count : 0);
+                    const count = offset + (global.city['banquet'] ? global.city['banquet'].count : 0);
                     switch (count){
                         case 0:
                             return 1600;
                         case 1:
                             return 18000;
-                        default:
+                        case 2:
                             return 75000;
+                        default:
+                            return 0;
                     }
                 },
                 Wrought_Iron(offset){
-                    const count = offset || (global.city['banquet'] ? global.city['banquet'].count : 0);
+                    const count = offset + (global.city['banquet'] ? global.city['banquet'].count : 0);
                     switch (count){
                         case 0:
                             return 0;
@@ -3357,80 +3363,66 @@ export const actions = {
                             return 88000;
                         case 3:
                             return 144000;
-                        default:
+                        case 4:
                             return 240000;
+                        default:
+                            return 0;
                     }
                 },
                 Iridium(offset){
-                    const count = offset || (global.city['banquet'] ? global.city['banquet'].count : 0);
+                    const count = offset + (global.city['banquet'] ? global.city['banquet'].count : 0);
                     switch (count){
-                        case 0:
-                            return 0;
-                        case 1:
-                            return 0;
                         case 2:
                             return 50000;
                         case 3:
                             return 270000;
-                        default:
+                        case 4:
                             return 700000;
+                        default:
+                            return 0;
                     }
                 },
                 Aerogel(offset, wiki){
-                    const count = offset || (global.city['banquet'] ? global.city['banquet'].count : 0);
-                    if((wiki && wiki.truepath) || (!wiki && global.race['truepath'])){
+                    const count = offset + (global.city['banquet'] ? global.city['banquet'].count : 0);
+                    if((wiki && wiki.truepath) || global.race['truepath']){
                         return 0;
                     }
                     switch (count){
-                        case 0:
-                            return 0;
-                        case 1:
-                            return 0;
-                        case 2:
-                            return 0;
                         case 3:
                             return 40000;
-                        default:
+                        case 4:
                             return 150000;
+                        default:
+                            return 0;
                     }
                 },
                 Quantium(offset, wiki){
-                    const count = offset || (global.city['banquet'] ? global.city['banquet'].count : 0);
-                    if((wiki && !wiki.truepath) || (!wiki && !global.race['truepath'])){
+                    const count = offset + (global.city['banquet'] ? global.city['banquet'].count : 0);
+                    if((wiki && !wiki.truepath) || !global.race['truepath']){
                         return 0;
                     }
                     switch (count){
-                        case 0:
-                            return 0;
-                        case 1:
-                            return 0;
-                        case 2:
-                            return 0;
                         case 3:
                             return 40000;
-                        default:
+                        case 4:
                             return 150000;
+                        default:
+                            return 0;
                     }
                 },
                 Bolognium(offset){
                     const count = offset || (global.city['banquet'] ? global.city['banquet'].count : 0);
                     switch (count){
-                        case 0:
-                            return 0;
-                        case 1:
-                            return 0;
-                        case 2:
-                            return 0;
-                        case 3:
-                            return 0;
-                        default:
+                        case 4:
                             return 150000;
+                        default:
+                            return 0;
                     }
                 }
             },
             effect(wiki){
                 let strength = global.city['banquet'] ? global.city['banquet'].strength : 0;
-                let count = wiki || (global.city['banquet'] ? global.city['banquet'].count : 0);
+                let count = wiki + (global.city['banquet'] ? global.city['banquet'].count : 0);
                 let desc = `<div>Strength: <span class="has-text-caution">${strength}</span></div>`;
                 desc += `<div>${loc(`city_banquet_effect1`, [sizeApproximation(((count >= 5 ? 1.02 : 1.022)**(strength) - 1) * 100)])}</div>`;
                 if(count >= 1){
