@@ -752,6 +752,9 @@ export function luxGoodPrice(demand){
     if (global.tech['isolation']){
         demand *= 1 + ((support_on['colony'] || 0) * 0.5);
     }
+    if(global.stats.achieve['endless_hunger'] && global.stats.achieve['endless_hunger'].l >= 4 && global.city.banquet && global.city.banquet.count >= 4 && global.city.banquet.strength){
+        demand *= 1 + (global.city.banquet.strength ** 0.75) / 100;
+    }
     demand *= production('psychic_cash');
     return demand;
 }
@@ -1401,7 +1404,7 @@ function loadReplicator(parent,bind){
                 }
             });
 
-            content.append(`<div><b-dropdown :triggers="['hover']" aria-role="list" :scrollable="true" :max-height="200" class="dropList">
+            content.append(`<div><b-dropdown :triggers="['hover', 'click']" aria-role="list" :scrollable="true" :max-height="200" class="dropList">
                 <button class="button is-info" slot="trigger">
                     <span>{{ res | resName }}</span>
                 </button>${values}

@@ -1,7 +1,43 @@
 import {} from './../vars.js';
 import { clearElement } from './../functions.js';
 
-const changeList = [
+export const changeList = [
+    {
+        version: `1.3.13`,
+        revision: `b`,
+        date: `8/6/2024`,
+        changes: [
+            `Fixed issue with starting Cataclysm Scenerio.`,
+            `Fixed some issues with Fasting Scenario.`,
+            `Fixed an issue with Replicator scheduler and supplies.`
+        ]
+    },
+    {
+        version: `1.3.13`,
+        revision: `a`,
+        date: `8/6/2024`,
+        changes: [
+            `Fix a bug that prevented crafting in Cataclysm and Lone Survivor modes.`
+        ]
+    },
+    {
+        version: `1.3.13`,
+        date: `8/6/2024`,
+        changes: [
+            `New Scenario by CondoSlime: Fasting.`,
+            `More queue config options.`,
+            `Wiki Search feature by sm3232`,
+            `Language Updates.`,
+            `Random bug fixes.`
+        ]
+    },
+    {
+        version: `1.3.12`,
+        date: `3/30/2024`,
+        changes: [
+            `Fixed Easter Event.`
+        ]
+    },
     {
         version: `1.3.11`,
         date: `2/19/2024`,
@@ -3262,7 +3298,7 @@ export function changeLog(){
         content.append(change);
 
         let revision = changeList[i].hasOwnProperty('revision') ? changeList[i].revision : '';
-        change.append(`<div class="type"><h2 class="has-text-warning">v${changeList[i].version}${revision}</h2><span class="has-text-caution">${changeList[i].date}</span></div>`);
+        change.append(`<div class="type"><h2 class="has-text-warning" id="${changeList[i].version.replaceAll('.','_')}">v${changeList[i].version}${revision}</h2><span class="has-text-caution">${changeList[i].date}</span></div>`);
 
         for (let j=0; j<changeList[i].changes.length; j++){
             change.append(`<div class="desc">${changeList[i].changes[j]}</div>`);

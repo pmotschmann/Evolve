@@ -679,6 +679,7 @@ if (convertVersion(global['version']) < 100023){
             delete global.tech['axe']; delete global.tech['reclaimer']; delete global.tech['saw'];
             global.civic.lumberjack.display = false;
             global.civic.lumberjack.workers = 0;
+            global.civic.lumberjack.assigned = 0;
             if (global.civic.d_job === 'lumberjack') { global.civic.d_job = 'unemployed'; }
             if (global.race['casting']){
                 global.race.casting.total -= global.race.casting.lumberjack;
@@ -1188,8 +1189,17 @@ if (convertVersion(global['version']) < 103011){
     }
 }
 
+if (convertVersion(global['version']) < 103014){
+    if (global.race['cataclysm'] && !global.race['start_cataclysm']){
+        global.civic.craftsman.display = true;
+    }
+    if (global.race['lone_survivor'] && ((global.tauceti['tau_factory'] && global.tauceti.tau_factory.count > 0) || (global.tauceti['womling_station'] && global.tauceti.womling_station.count > 0))){
+        global.civic.craftsman.display = true;
+    }
+}
+
 global['version'] = '1.4.0';
-delete global['revision'];
+//global['revision'] = 'a';
 global['beta'] = 1;
 
 if (!global.hasOwnProperty('prestige')){
@@ -1496,6 +1506,15 @@ export function setupStats(){
             b5: { l: false, h: false, a: false, e: false, m: false, mg: false }
         };
     }
+    if (!global.stats.hasOwnProperty('endless_hunger')){
+        global.stats['endless_hunger'] = {
+            b1: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
+            b2: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
+            b3: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
+            b4: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
+            b5: { l: false, h: false, a: false, e: false, m: false, mg: false }
+        };
+    }
 }
 
 setupStats();
@@ -1688,6 +1707,10 @@ else if (global.race !== undefined && global.race.species === 'wendigo'){
 
 if (!global.settings['queuestyle']){
     global.settings['queuestyle'] = 'standardqueuestyle';
+}
+
+if (!global.settings['q_resize']){
+    global.settings.q_resize = 'auto';
 }
 
 $('html').addClass(global.settings.theme);
