@@ -1205,6 +1205,7 @@ export function index(){
         {i: 'ghost',        f: 'halloween',         r: 1 },
         {i: 'candy',        f: 'trickortreat',      r: 1 },
         {i: 'turkey',       f: 'thanksgiving',      r: 1 },
+        {i: 'meat',         f: 'immortal',          r: 1 },
         {i: 'present',      f: 'xmas',              r: 1 }
     ];
 
