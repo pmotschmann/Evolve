@@ -6118,7 +6118,7 @@
   "space_eris_scan": "The Syndicate activity is organized mostly around a dig site on %0. They seem to be excavating some kind of alien outpost.",
   "space_scanned": "Scanned",
   "space_drone_control": "%0 Control Relay",
-  "space_drone_control_effect": "+0 Max War Machines",
+  "space_drone_control_effect": "+%0 Max War Machines",
   "space_shock_trooper_title": "Android Trooper",
   "space_tank_title": "Tank",
   "space_digsite_title": "Digsite",
