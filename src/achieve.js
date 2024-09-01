@@ -1718,7 +1718,7 @@ export const perkList = {
             loc(`wiki_perks_achievement_note_task_num`,[2,`<span class="has-text-${global.stats.endless_hunger.b2.l ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger2`)}</span>`]),
             loc(`wiki_perks_achievement_note_task_num`,[3,`<span class="has-text-${global.stats.endless_hunger.b3.l ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger3`,[80])}</span>`]),
             loc(`wiki_perks_achievement_note_task_num`,[4,`<span class="has-text-${global.stats.endless_hunger.b4.l ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger4`,[1200])}</span>`]),
-            loc(`wiki_perks_achievement_note_task_num`,[5,`<span class="has-text-${global.stats.endless_hunger.b5.l ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger5`,[50])}</span>`])
+            loc(`wiki_perks_achievement_note_task_num`,[5,`<span class="has-text-${global.stats.endless_hunger.b5.l ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger5`)}</span>`])
         ]
     },
     gladiator: {

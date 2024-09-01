@@ -9926,12 +9926,6 @@ function midLoop(){
                 if (!global.stats.spire[affix].hasOwnProperty(global.portal.spire.boss) || rank > global.stats.spire[affix][global.portal.spire.boss]){
                     global.stats.spire[affix][global.portal.spire.boss] = rank;
                 }
-                if (global.race['fasting'] && global.portal.spire.count > 50){
-                    global.stats['endless_hunger'].b5[affix] = true;
-                    if (affix !== 'm' && affix !== 'l'){
-                        global.stats['endless_hunger'].b5.l = true;
-                    }
-                }
 
                 genSpireFloor();
                 renderFortress();
