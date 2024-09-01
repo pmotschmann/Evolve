@@ -1766,7 +1766,7 @@ const fortressModules = {
             reqs: { dish: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 750000000, spireCreep(1.3), 'portal'); },
-                Bolognium(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 800000, spireCreep(1.3), 'portal'); },
+                Bolognium(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 5800000, spireCreep(1.3), 'portal'); },
                 Orichalcum(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 8000000, spireCreep(1.3), 'portal'); },
                 Supply(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 300000, spireCreep(1.3), 'portal'); },
             },
@@ -1791,7 +1791,7 @@ const fortressModules = {
             cost: {
                 Money(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 620000000, spireCreep(1.3), 'portal'); },
                 Bolognium(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 10500000, spireCreep(1.3), 'portal'); },
-                Scarletite(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 200000, spireCreep(1.3), 'portal'); },
+                Scarletite(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 350000, spireCreep(1.3), 'portal'); },
                 Supply(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 200000, spireCreep(1.3), 'portal'); },
             },
             powered(){ return 0; },
@@ -1815,7 +1815,7 @@ const fortressModules = {
             queue_complete(){ return 0; },
             cost: {},
             effect(){
-                const progress = global.portal['devilish_dish'].done * 100;
+                const progress = (global.portal['devilish_dish'] ? global.portal['devilish_dish'].done : 0) * 100;
                 return `<div>${loc(`portal_devilish_dish_desc`,[progress.toFixed(1)])}</div><div>${loc(`portal_devilish_dish_flavor${progress >= 100 ? 11 : Math.ceil(progress/10)}`)}</div>`;
             },
             action(){

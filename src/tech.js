@@ -4329,7 +4329,7 @@ const techs = {
         trait: ['fasting'],
         grant: ['dish',1],
         cost: {
-            Knowledge(){ return 6600000; }
+            Knowledge(){ return 66000000; }
         },
         effect(){return loc('tech_devilish_dish_effect');},
         action(){
