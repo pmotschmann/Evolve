@@ -4571,6 +4571,7 @@ const raceList = [
     'seraph','unicorn',
     'synth','nano',
     'ghast','shoggoth',
+    'dwarf','raccoon','lichen','wyvern','beholder','djinn','pengiun','bombardier','nephilim',
     'custom'
 ];
 raceList.forEach(race => actions.evolution[race] = {

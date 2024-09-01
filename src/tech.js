@@ -14060,6 +14060,46 @@ const techs = {
             return false;
         }
     },
+    railway_to_hell: {
+        id: 'tech-railway_to_hell',
+        title: loc('tech_railway_to_hell'),
+        desc: loc('tech_railway_to_hell'),
+        category: 'hell_dimension',
+        era: 'existential',
+        reqs: { asphodel: 4, hell_lake: 6 },
+        grant: ['hell_lake',7],
+        cost: {
+            Knowledge(){ return 71250000; },
+            Asphodel_Powder(){ return 15000; },
+        },
+        effect(){ return loc('tech_railway_to_hell_effect',[global.resource.Asphodel_Powder.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    purification: {
+        id: 'tech-purification',
+        title: loc('tech_purification'),
+        desc: loc('tech_purification'),
+        category: 'hell_dimension',
+        era: 'existential',
+        reqs: { asphodel: 4, hell_spire: 10 },
+        grant: ['hell_spire',11],
+        cost: {
+            Knowledge(){ return 71250000; },
+            Asphodel_Powder(){ return 15000; },
+        },
+        effect(){ return loc('tech_purification_effect',[global.resource.Asphodel_Powder.name,loc('portal_purifier_title'),2,loc('eden_asphodel_harvester_title')]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
 };
 
 function uniteEffect(){

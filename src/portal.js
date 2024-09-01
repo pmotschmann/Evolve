@@ -1366,7 +1366,13 @@ const fortressModules = {
                 Supply(offset){ return global.portal['purifier'] && global.portal.purifier.count === 0 ? 100 : spaceCostMultiplier('purifier', offset, 4200, spireCreep(1.2), 'portal'); },
             },
             powered(){ return powerCostMod(125); },
-            support(){ return global.tech['b_stone'] && global.tech.b_stone >= 3 ? 1.25 : 1; },
+            support(){
+                let base = global.tech['b_stone'] && global.tech.b_stone >= 3 ? 1.25 : 1;
+                if (global.tech['hell_spire'] && global.tech.hell_spire >= 11 && global.eden['asphodel_harvester'] && support_on['asphodel_harvester']){
+                    base *= 1 + (support_on['asphodel_harvester'] / 50);
+                }
+                return base;
+            },
             effect(){
                 return `<div>${loc('portal_purifier_effect',[$(this)[0].support()])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },

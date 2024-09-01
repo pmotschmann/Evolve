@@ -91,7 +91,13 @@ const edenicModules = {
             },
             effect(){
                 let powder = +(production('asphodel_harvester','powder')).toFixed(3);
-                return `<div class="has-text-caution">${loc('space_used_support',[loc('eden_asphodel_name')])}</div><div>${loc('produce',[powder, global.resource.Asphodel_Powder.name])}</div>`;
+                let desc = `<div class="has-text-caution">${loc('space_used_support',[loc('eden_asphodel_name')])}</div><div>${loc('produce',[powder, global.resource.Asphodel_Powder.name])}</div>`;
+
+                if (global.tech['hell_spire'] && global.tech.hell_spire >= 11){
+                    desc += `<div>${loc('eden_asphodel_harvester_upgrade',[2])}</div>`;
+                }
+
+                return desc;
             },
             s_type: 'asphodel',
             support(){ return -1; },

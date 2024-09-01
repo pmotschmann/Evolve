@@ -167,7 +167,8 @@ export const genus_traits = {
         tormented: 1,
         darkness: 1,
         unfathomable: 1
-    }
+    },
+    hybrid: {}
 };
 
 export const traits = {
@@ -4336,6 +4337,186 @@ export const races = {
         },
         fanaticism: 'living_tool',
         basic(){ return false; }
+    },
+    dwarf: {
+        name: loc('race_dwarf'),
+        desc: loc('race_dwarf_desc'),
+        type: 'hybrid',
+        hybrid: ['humanoid','small'],
+        home: loc('race_dwarf_home'),
+        entity: loc('race_dwarf_entity'),
+        traits: {
+
+        },
+        solar: {
+            red: loc('race_dwarf_solar_red'),
+            hell: loc('race_dwarf_solar_hell'),
+            gas: loc('race_dwarf_solar_gas'),
+            gas_moon: loc('race_dwarf_solar_gas_moon'),
+            dwarf: loc('race_dwarf_solar_dwarf'),
+        },
+        fanaticism: '',
+        basic(){ return true; }
+    },
+    raccoon: {
+        name: loc('race_raccoon'),
+        desc: loc('race_raccoon_desc'),
+        type: 'hybrid',
+        hybrid: ['carnivore','herbivore'],
+        home: loc('race_raccoon_home'),
+        entity: loc('race_raccoon_entity'),
+        traits: {
+
+        },
+        solar: {
+            red: loc('race_raccoon_solar_red'),
+            hell: loc('race_raccoon_solar_hell'),
+            gas: loc('race_raccoon_solar_gas'),
+            gas_moon: loc('race_raccoon_solar_gas_moon'),
+            dwarf: loc('race_raccoon_solar_dwarf'),
+        },
+        fanaticism: '',
+        basic(){ return true; }
+    },
+    lichen: {
+        name: loc('race_lichen'),
+        desc: loc('race_lichen_desc'),
+        type: 'hybrid',
+        hybrid: ['plant','fungi'],
+        home: loc('race_lichen_home'),
+        entity: loc('race_lichen_entity'),
+        traits: {
+
+        },
+        solar: {
+            red: loc('race_lichen_solar_red'),
+            hell: loc('race_lichen_solar_hell'),
+            gas: loc('race_lichen_solar_gas'),
+            gas_moon: loc('race_lichen_solar_gas_moon'),
+            dwarf: loc('race_lichen_solar_dwarf'),
+        },
+        fanaticism: '',
+        basic(){ return true; }
+    },
+    wyvern: {
+        name: loc('race_wyvern'),
+        desc: loc('race_wyvern_desc'),
+        type: 'hybrid',
+        hybrid: ['avian','reptilian'],
+        home: loc('race_wyvern_home'),
+        entity: loc('race_wyvern_entity'),
+        traits: {
+
+        },
+        solar: {
+            red: loc('race_wyvern_solar_red'),
+            hell: loc('race_wyvern_solar_hell'),
+            gas: loc('race_wyvern_solar_gas'),
+            gas_moon: loc('race_wyvern_solar_gas_moon'),
+            dwarf: loc('race_wyvern_solar_dwarf'),
+        },
+        fanaticism: '',
+        basic(){ return true; }
+    },
+    beholder: {
+        name: loc('race_beholder'),
+        desc: loc('race_beholder_desc'),
+        type: 'hybrid',
+        hybrid: ['eldritch','giant'],
+        home: loc('race_beholder_home'),
+        entity: loc('race_beholder_entity'),
+        traits: {
+
+        },
+        solar: {
+            red: loc('race_beholder_solar_red'),
+            hell: loc('race_beholder_solar_hell'),
+            gas: loc('race_beholder_solar_gas'),
+            gas_moon: loc('race_beholder_solar_gas_moon'),
+            dwarf: loc('race_beholder_solar_dwarf'),
+        },
+        fanaticism: '',
+        basic(){ return true; }
+    },
+    djinn: {
+        name: loc('race_djinn'),
+        desc: loc('race_djinn_desc'),
+        type: 'hybrid',
+        hybrid: ['sand','fey'],
+        home: loc('race_djinn_home'),
+        entity: loc('race_djinn_entity'),
+        traits: {
+
+        },
+        solar: {
+            red: loc('race_djinn_solar_red'),
+            hell: loc('race_djinn_solar_hell'),
+            gas: loc('race_djinn_solar_gas'),
+            gas_moon: loc('race_djinn_solar_gas_moon'),
+            dwarf: loc('race_djinn_solar_dwarf'),
+        },
+        fanaticism: '',
+        basic(){ return ['forest','swamp','taiga','desert','ashland'].includes(global.city.biome) ? true : false; }
+    },
+    pengiun: {
+        name: loc('race_pengiun'),
+        desc: loc('race_pengiun_desc'),
+        type: 'hybrid',
+        hybrid: ['aquatic','polar'],
+        home: loc('race_pengiun_home'),
+        entity: loc('race_pengiun_entity'),
+        traits: {
+
+        },
+        solar: {
+            red: loc('race_pengiun_solar_red'),
+            hell: loc('race_pengiun_solar_hell'),
+            gas: loc('race_pengiun_solar_gas'),
+            gas_moon: loc('race_pengiun_solar_gas_moon'),
+            dwarf: loc('race_pengiun_solar_dwarf'),
+        },
+        fanaticism: '',
+        basic(){ return ['oceanic','swamp','tundra','taiga'].includes(global.city.biome) ? true : false; }
+    },
+    bombardier: {
+        name: loc('race_bombardier'),
+        desc: loc('race_bombardier_desc'),
+        type: 'hybrid',
+        hybrid: ['insectoid','heat'],
+        home: loc('race_bombardier_home'),
+        entity: loc('race_bombardier_entity'),
+        traits: {
+
+        },
+        solar: {
+            red: loc('race_bombardier_solar_red'),
+            hell: loc('race_bombardier_solar_hell'),
+            gas: loc('race_bombardier_solar_gas'),
+            gas_moon: loc('race_bombardier_solar_gas_moon'),
+            dwarf: loc('race_bombardier_solar_dwarf'),
+        },
+        fanaticism: '',
+        basic(){ return true }
+    },
+    nephilim: {
+        name: loc('race_nephilim'),
+        desc: loc('race_nephilim_desc'),
+        type: 'hybrid',
+        hybrid: ['demonic','angelic'],
+        home: loc('race_nephilim_home'),
+        entity: loc('race_nephilim_entity'),
+        traits: {
+
+        },
+        solar: {
+            red: loc('race_nephilim_solar_red'),
+            hell: loc('race_nephilim_solar_hell'),
+            gas: loc('race_nephilim_solar_gas'),
+            gas_moon: loc('race_nephilim_solar_gas_moon'),
+            dwarf: loc('race_nephilim_solar_dwarf'),
+        },
+        fanaticism: '',
+        basic(){ return ['eden','hellscape'].includes(global.city.biome) ? true : false; }
     },
     junker: {
         name: altRace('junker') ? loc('race_ghoul') : loc('race_junker'),

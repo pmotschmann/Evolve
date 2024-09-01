@@ -178,14 +178,19 @@ export const arpaProjects = {
             }
             let routes = global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 2 ? 1 : 0;
             let profit = global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 1 ? 3 : 2;
+            let desc = '';
             if (global.race['cataclysm'] || global.race['orbit_decayed']){
                 routes += global.space['gps'] ? Math.floor(global.space.gps.count / 3) : 0;
-                return loc('arpa_projects_railway_cataclysm1',[routes,profit,3,1]);
+                desc = loc('arpa_projects_railway_cataclysm1',[routes,profit,3,1]);
             }
             else {
                 routes += global.city['storage_yard'] ? Math.floor(global.city.storage_yard.count / 6) : 0;
-                return loc('arpa_projects_railway_effect1',[routes,profit,6,1]);
+                desc = loc('arpa_projects_railway_effect1',[routes,profit,6,1]);
             }
+            if (global.tech['hell_lake'] && global.tech.hell_lake >= 7){
+                desc += ` ${loc('arpa_projects_railway_highway',[1,global.resource.Asphodel_Powder.name,loc('eden_asphodel_harvester_title'),1])}`;
+            }
+            return desc;
         },
         cost: {
             Money(offset,wiki){ return costMultiplier('railway', offset, 2500000, 1.08, wiki); },

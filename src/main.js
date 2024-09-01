@@ -3112,6 +3112,9 @@ function fastLoop(){
                     supply += Number(shipped * supplyValue[res].in * time_multiplier * bireme);
                 }
             });
+            if (global.tech['hell_lake'] && global.tech.hell_lake >= 7 && global.tech['railway']){
+                supply *= 1 + (global.tech.railway / 100);
+            }
             if (global.portal['mechbay']){
                 for (let i = 0; i < global.portal.mechbay.active; i++) {
                     let mech = global.portal.mechbay.mechs[i];
