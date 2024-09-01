@@ -3302,115 +3302,148 @@ export const actions = {
                 return global.stats.achieve['endless_hunger'] && global.stats.achieve['endless_hunger'].l >= 1 ? true : false;
             },
             cost: {
-                Money(){
-                    return !global.stats.achieve['endless_hunger'] || global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
-                        0
-                    :global.city['banquet'].count === 0 ?
-                        45000
-                    : global.city['banquet'].count === 1 ?
-                        180000
-                    : global.city['banquet'].count === 2 ?
-                        2400000
-                    : global.city['banquet'].count === 3 ?
-                        30000000
-                    :
-                        140000000
+                Money(offset){
+                    const count = offset || (global.city['banquet'] ? global.city['banquet'].count : 0);
+                    //const max = global.stats.achieve['endless_hunger'] ? global.stats.achieve['endless_hunger'].l : 0;
+                    switch (count){
+                        case 0:
+                            return 45000;
+                        case 1:
+                            return 180000;
+                        case 2:
+                            return 2400000;
+                        case 3:
+                            return 30000000;
+                        default:
+                            return 140000000;
+                    }
                 },
-                Food(){
-                    return (!global.stats.achieve['endless_hunger'] || global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
-                        0
-                    :global.city['banquet'].count === 0 ?
-                        40000
-                    : global.city['banquet'].count === 1 ?
-                        124000
-                    : global.city['banquet'].count === 2 ?
-                        300000
-                    : global.city['banquet'].count === 3 ?
-                        720000
-                    :
-                        1200000) / (global.race['artifical'] ? 4 : 1)
+                Food(offset){
+                    const count = offset || (global.city['banquet'] ? global.city['banquet'].count : 0);
+                    return (() => {
+                        switch (count){
+                            case 0:
+                                return 40000;
+                            case 1:
+                                return 124000;
+                            case 2:
+                                return 300000;
+                            case 3:
+                                return 720000;
+                            default:
+                                return 1200000;
+                        }
+                    })() * (global.race['artifical'] ? 0.25 : 1);
                 },
-                Brick(){ 
-                    return !global.stats.achieve['endless_hunger'] || global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
-                        0
-                    :global.city['banquet'].count === 0 ?
-                        1600
-                    : global.city['banquet'].count === 1 ?
-                        18000
-                    :global.city['banquet'].count === 2 ?
-                        75000
-                    :
-                        0
+                Brick(offset){ 
+                    const count = offset || (global.city['banquet'] ? global.city['banquet'].count : 0);
+                    switch (count){
+                        case 0:
+                            return 1600;
+                        case 1:
+                            return 18000;
+                        default:
+                            return 75000;
+                    }
                 },
-                Wrought_Iron(){
-                    return !global.stats.achieve['endless_hunger'] || global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
-                        0
-                    : global.city['banquet'].count === 1 ?
-                        26000
-                    :global.city['banquet'].count === 2 ?
-                        88000
-                    : global.city['banquet'].count === 3 ?
-                        144000
-                    : global.city['banquet'].count === 4 ?
-                        240000
-                    :
-                        0
+                Wrought_Iron(offset){
+                    const count = offset || (global.city['banquet'] ? global.city['banquet'].count : 0);
+                    switch (count){
+                        case 0:
+                            return 0;
+                        case 1:
+                            return 26000;
+                        case 2:
+                            return 88000;
+                        case 3:
+                            return 144000;
+                        default:
+                            return 240000;
+                    }
                 },
-                Iridium(){
-                    return !global.stats.achieve['endless_hunger'] || global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
-                        0
-                    : global.city['banquet'].count === 2 ?
-                        50000
-                    : global.city['banquet'].count === 3 ?
-                        270000
-                    : global.city['banquet'].count === 4 ?
-                        700000
-                    :
-                        0
+                Iridium(offset){
+                    const count = offset || (global.city['banquet'] ? global.city['banquet'].count : 0);
+                    switch (count){
+                        case 0:
+                            return 0;
+                        case 1:
+                            return 0;
+                        case 2:
+                            return 50000;
+                        case 3:
+                            return 270000;
+                        default:
+                            return 700000;
+                    }
                 },
-                Aerogel(){
-                    return !global.stats.achieve['endless_hunger'] || global.race['truepath'] || global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
-                        0
-                    : global.city['banquet'].count === 3 ?
-                        40000
-                    : global.city['banquet'].count === 4 ?
-                        150000
-                    :
-                        0
+                Aerogel(offset, wiki){
+                    const count = offset || (global.city['banquet'] ? global.city['banquet'].count : 0);
+                    if((wiki && wiki.truepath) || (!wiki && global.race['truepath'])){
+                        return 0;
+                    }
+                    switch (count){
+                        case 0:
+                            return 0;
+                        case 1:
+                            return 0;
+                        case 2:
+                            return 0;
+                        case 3:
+                            return 40000;
+                        default:
+                            return 150000;
+                    }
                 },
-                Quantium(){
-                    return !global.stats.achieve['endless_hunger'] || !global.race['truepath'] || global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
-                        0
-                    : global.city['banquet'].count === 3 ?
-                        40000
-                    : global.city['banquet'].count === 4 ?
-                        150000
-                    :
-                        0
+                Quantium(offset, wiki){
+                    const count = offset || (global.city['banquet'] ? global.city['banquet'].count : 0);
+                    if((wiki && !wiki.truepath) || (!wiki && !global.race['truepath'])){
+                        return 0;
+                    }
+                    switch (count){
+                        case 0:
+                            return 0;
+                        case 1:
+                            return 0;
+                        case 2:
+                            return 0;
+                        case 3:
+                            return 40000;
+                        default:
+                            return 150000;
+                    }
                 },
-                Bolognium(){
-                    return !global.stats.achieve['endless_hunger'] && global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
-                        0
-                    : global.city['banquet'].count === 4 ?
-                        150000
-                    :
-                        0
+                Bolognium(offset){
+                    const count = offset || (global.city['banquet'] ? global.city['banquet'].count : 0);
+                    switch (count){
+                        case 0:
+                            return 0;
+                        case 1:
+                            return 0;
+                        case 2:
+                            return 0;
+                        case 3:
+                            return 0;
+                        default:
+                            return 150000;
+                    }
                 }
             },
-            effect(){
-                let desc = `<div>Strength: <span class="has-text-caution">${global.city['banquet'].strength}</span></div>`;
-                desc += `<div>${loc(`city_banquet_effect1`, [sizeApproximation(((global.city['banquet'].count >= 5 ? 1.02 : 1.022)**(global.city['banquet'].strength) - 1) * 100)])}</div>`;
-                if(global.city['banquet'].count >= 1){
-                    desc += `<div>${loc(`city_banquet_effect2`, [(global.city['banquet'].strength**0.75).toFixed(2)])}</div>`;
+            effect(wiki){
+                let strength = global.city['banquet'] ? global.city['banquet'].strength : 0;
+                let count = wiki || (global.city['banquet'] ? global.city['banquet'].count : 0);
+                let desc = `<div>Strength: <span class="has-text-caution">${strength}</span></div>`;
+                desc += `<div>${loc(`city_banquet_effect1`, [sizeApproximation(((count >= 5 ? 1.02 : 1.022)**(strength) - 1) * 100)])}</div>`;
+                if(count >= 1){
+                    desc += `<div>${loc(`city_banquet_effect2`, [(strength**0.75).toFixed(2)])}</div>`;
                 }
-                if(global.city['banquet'].count >= 2){
-                    desc += `<div>${loc(`city_banquet_effect3`, [(global.city['banquet'].strength**0.65).toFixed(2)])}</div>`;
+                if(count >= 2){
+                    desc += `<div>${loc(`city_banquet_effect3`, [(strength**0.65).toFixed(2)])}</div>`;
                 }
-                if(global.city['banquet'].count >= 3){
-                    desc += `<div>${loc(`city_banquet_effect4`, [(global.city['banquet'].strength**0.65).toFixed(2)])}</div>`;
+                if(count >= 3){
+                    desc += `<div>${loc(`city_banquet_effect4`, [(strength**0.65).toFixed(2)])}</div>`;
                 }
-                if(global.city['banquet'].count >= 4){
-                    desc += `<div>${loc(`city_banquet_effect5`, [(global.city['banquet'].strength**0.75).toFixed(2)])}</div>`;
+                if(count >= 4){
+                    desc += `<div>${loc(`city_banquet_effect5`, [(strength**0.75).toFixed(2)])}</div>`;
                 }
                 return desc;
             },
