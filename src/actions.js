@@ -2064,7 +2064,7 @@ export const actions = {
                     effect += `<div>${loc('city_boot_camp_art_effect',[repair * 5])}</div>`;
                 }
                 if (global.race['artifical'] && global.race.hasOwnProperty('vax')){
-                    desc = desc + `<div>${loc('tau_home_disease_lab_vax',[+global.race.vax.toFixed(2)])}</div>`;
+                    effect += `<div>${loc('tau_home_disease_lab_vax',[+global.race.vax.toFixed(2)])}</div>`;
                 }
                 return effect;
             },
