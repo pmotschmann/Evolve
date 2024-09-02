@@ -111,7 +111,7 @@ const outerTruth = {
                 return `${support}<div class="has-text-caution">${loc('space_electrolysis_use',[$(this)[0].support_fuel().a,global.resource.Water.name,$(this)[0].powered()])}</div>`;
             },
             support(){
-                return global.tech['titan_ai_core'] && global.tech.titan_ai_core >= 2 && p_on['ai_core2'] ? 3 : 2;
+                return global.tech['titan_ai_core'] && global.tech.titan_ai_core >= 2 && (wiki ? global.space.ai_core2.on : p_on['ai_core2']) ? 3 : 2;
             },
             support_fuel(){ return { r: 'Water', a: 35 }; },
             powered(){ return powerCostMod(8); },
@@ -450,13 +450,13 @@ const outerTruth = {
                 Orichalcum(offset){ return spaceCostMultiplier('decoder', offset, 330000, 1.275); },
                 Quantium(offset){ return spaceCostMultiplier('decoder', offset, 180000, 1.275); },
             },
-            effect(){
+            effect(wiki){
                 let cipher = $(this)[0].support_fuel().a;
                 let know = 2500;
                 if (global.race['high_pop']){
                     know = highPopAdjust(know);
                 }
-                if (p_on['ai_core2']){
+                if (wiki ? global.space.ai_core2.on : p_on['ai_core2']){
                     know *= 1.25;
                 }
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[planetName().titan])}</div>`;
