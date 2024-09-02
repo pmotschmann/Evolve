@@ -1206,6 +1206,7 @@ export function index(){
         {i: 'ghost',        f: 'halloween',         r: 1 },
         {i: 'candy',        f: 'trickortreat',      r: 1 },
         {i: 'turkey',       f: 'thanksgiving',      r: 1 },
+        {i: 'meat',         f: 'immortal',          r: 1 },
         {i: 'present',      f: 'xmas',              r: 1 }
     ];
 
@@ -1380,7 +1381,7 @@ export function index(){
         </div>
         <div class="stringPack setting">
             <button id="stringPack" class="button" @click="importStringFile">{{ 'load_string_pack' | label }}</button>
-            <input type="file" class="fileImport" id="stringPackFile" accept=".txt">
+            <input type="file" class="fileImport" id="stringPackFile" accept="text/plain, application/json">
             <button class="button right" @click="clearStringFile">{{ 'clear_string_pack' | label }}</button>
         </div>
         <div class="stringPack setting">

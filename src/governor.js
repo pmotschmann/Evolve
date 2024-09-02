@@ -1355,7 +1355,7 @@ export const gov_tasks = {
                 }
                 let resSorted = Object.keys(tc.s).sort(function(a,b){return tc.s[b]-tc.s[a]});
                 for (let i=0; i<resSorted.length; i++){
-                    if (global.resource[resSorted[i]] && global.resource[resSorted[i]].display && atomic_mass[resSorted[i]]){
+                    if (global.resource[resSorted[i]] && global.resource[resSorted[i]].display && atomic_mass[resSorted[i]] && !(resSorted[i] === 'Food' && global.race['fasting'])){
                         global.race.replicator.res = resSorted[i];
                         rBal = true;
                         break;
