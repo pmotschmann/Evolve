@@ -1199,7 +1199,7 @@ if (convertVersion(global['version']) < 103014){
 }
 
 global['version'] = '1.4.0';
-//global['revision'] = 'a';
+//global['revision'];
 global['beta'] = 1;
 
 if (!global.hasOwnProperty('prestige')){
