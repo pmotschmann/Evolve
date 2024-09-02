@@ -1827,6 +1827,7 @@ function war_campaign(gov){
         let occCost = jobScale(global.civic.govern.type === 'federation' ? 15 : 20);
         if (gov <= 2 && global.civic.garrison.tactic === 4 && global.civic.garrison.workers >= occCost){
             let drawTechs = !global.tech['gov_fed'] && !checkControlling();
+            global.civic.garrison.max -= occCost;
             global.civic.garrison.workers -= occCost;
             global.civic.foreign[`gov${gov}`].occ = true;
             global.civic.foreign[`gov${gov}`].sab = 0;

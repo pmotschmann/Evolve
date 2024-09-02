@@ -1,6 +1,7 @@
 import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, support_on } from './vars.js';
 import { vBind, clearElement, modRes, flib, calc_mastery, calcPillar, eventActive, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect, hoovedRename, messageQueue } from './functions.js';
 import { traits, fathomCheck } from './races.js';
+import { workerScale } from './jobs.js';
 import { hellSupression } from './portal.js';
 import { syndicate } from './truepath.js';
 import { govActive, defineGovernor } from './governor.js';
@@ -2991,24 +2992,33 @@ export const spatialReasoning = (function(){
     }
 })();
 
-export function faithBonus(){
+function faithTempleCount(){
+    let num_temples = 0;
+    let noEarth = global.race['cataclysm'] || global.race['orbit_decayed'] ? true : false;
+    if (noEarth && global.space['ziggurat']){
+        num_temples = global.space.ziggurat.count;
+    }
+    else if (global.city['temple']){
+        num_temples = global.city.temple.count;
+    }
+    return num_temples;
+}
+
+export function faithBonus(num_temples = -1){
     if (global.race['no_plasmid'] || global.race.universe === 'antimatter'){
-        let noEarth = global.race['cataclysm'] || global.race['orbit_decayed'] ? true : false;
-        if ((noEarth && global.space['ziggurat'] && global.space.ziggurat.count) || (global.city['temple'] && global.city['temple'].count)){
+        if (num_temples == -1){
+            num_temples = faithTempleCount();
+        }
+
+        if (num_temples > 0){
             let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.016 : 0.01;
             if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
-                let indoc = global.civic.professor.workers * (global.race.universe === 'antimatter' ? 0.0002 : 0.0004);
-                if (global.race['high_pop']){
-                    indoc = highPopAdjust(indoc);
-                }
+                let indoc = workerScale(global.civic.professor.workers,'professor') * highPopAdjust(global.race.universe === 'antimatter' ? 0.0002 : 0.0004);
                 temple_bonus += indoc;
             }
             if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
                 let priest_bonus = global.genes['ancients'] >= 5 ? 0.00015 : (global.genes['ancients'] >= 3 ? 0.000125 : 0.0001);
-                if (global.race['high_pop']){
-                    priest_bonus = highPopAdjust(priest_bonus);
-                }
-                temple_bonus += priest_bonus * global.civic.priest.workers;
+                temple_bonus += highPopAdjust(priest_bonus) * workerScale(global.civic.priest.workers,'priest');
             }
             if (global.race.universe === 'antimatter'){
                 temple_bonus /= (global.race['nerfed'] ? 3 : 2);
@@ -3024,12 +3034,52 @@ export function faithBonus(){
                 temple_bonus *= 1 + (traits.spiritual.vars(1)[0] / 100 * fathom);
             }
             if (global.civic.govern.type === 'theocracy'){
-                temple_bonus *= 1.12;
+                temple_bonus *= 1 + (govEffect.theocracy()[0] / 100);
             }
             if (global.race['ooze']){
                 temple_bonus *= 1 - (traits.ooze.vars()[1] / 100);
             }
-            return (noEarth ? global.space.ziggurat.count : global.city.temple.count) * temple_bonus;
+
+            return num_temples * temple_bonus;
+        }
+    }
+    return 0;
+}
+
+export function templePlasmidBonus(num_temples = -1){
+    if (!global.race['no_plasmid'] && global.race.universe !== 'antimatter'){
+        if (num_temples == -1){
+            num_temples = faithTempleCount();
+        }
+
+        if (num_temples > 0){
+            let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.08 : 0.05;
+            if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
+                let indoc = workerScale(global.civic.professor.workers,'professor') * highPopAdjust(0.002);
+                temple_bonus += indoc;
+            }
+            if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
+                let priest_bonus = global.genes['ancients'] >= 5 ? 0.0015 : (global.genes['ancients'] >= 3 ? 0.00125 : 0.001);
+                temple_bonus += highPopAdjust(priest_bonus) * workerScale(global.civic.priest.workers,'priest');
+            }
+            if (global.race['spiritual']){
+                temple_bonus *= 1 + (traits.spiritual.vars()[0] / 100);
+            }
+            let fathom = fathomCheck('seraph');
+            if (fathom > 0){
+                temple_bonus *= 1 + (traits.spiritual.vars(1)[0] / 100 * fathom);
+            }
+            if (global.civic.govern.type === 'theocracy'){
+                temple_bonus *= 1 + (govEffect.theocracy()[0] / 100);
+            }
+            if (global.race['ooze']){
+                temple_bonus *= 1 - (traits.ooze.vars()[1] / 100);
+            }
+            if (global.race['orbit_decayed'] && global.race['truepath']){
+                temple_bonus *= 0.1;
+            }
+
+            return num_temples * temple_bonus;
         }
     }
     return 0;
@@ -3087,48 +3137,8 @@ export const plasmidBonus = (function (){
                     standard *= 2;
                 }
 
-                let shrines = 0;
-                if (global.race['orbit_decayed'] && global.space['ziggurat']){
-                    shrines = global.space.ziggurat.count;
-                }
-                else if (global.city['temple']){
-                    shrines = global.city.temple.count;
-                }
-
-                if (shrines > 0 && !global.race['no_plasmid'] && global.race.universe !== 'antimatter'){
-                    let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.08 : 0.05;
-                    if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
-                        let indoc = global.civic.professor.workers * 0.002;
-                        if (global.race['high_pop']){
-                            indoc = highPopAdjust(indoc);
-                        }
-                        temple_bonus += indoc;
-                    }
-                    if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
-                        let priest_bonus = global.genes['ancients'] >= 5 ? 0.0015 : (global.genes['ancients'] >= 3 ? 0.00125 : 0.001);
-                        if (global.race['high_pop']){
-                            priest_bonus = highPopAdjust(priest_bonus);
-                        }
-                        temple_bonus += priest_bonus * global.civic.priest.workers;
-                    }
-                    if (global.race['spiritual']){
-                        temple_bonus *= 1 + (traits.spiritual.vars()[0] / 100);
-                    }
-                    let fathom = fathomCheck('seraph');
-                    if (fathom > 0){
-                        temple_bonus *= 1 + (traits.spiritual.vars(1)[0] / 100 * fathom);
-                    }
-                    if (global.civic.govern.type === 'theocracy'){
-                        temple_bonus *= 1.12;
-                    }
-                    if (global.race['ooze']){
-                        temple_bonus *= 1 - (traits.ooze.vars()[1] / 100);
-                    }
-                    if (global.race['orbit_decayed'] && global.race['truepath']){
-                        temple_bonus *= 0.1;
-                    }
-                    standard *= 1 + (shrines * temple_bonus);
-                }
+                let temple_bonus = templePlasmidBonus();
+                standard *= 1 + temple_bonus;
             }
 
             if (global.race.universe === 'antimatter' || (global.genes['bleed'] && global.genes['bleed'] >= 2)){
