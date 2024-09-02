@@ -161,7 +161,7 @@ const techs = {
         era: 'civilized',
         reqs: { transport: 1 },
         condition(){
-            return global.tech['farm'] || global.tech['s_lodge'] || (global.tech['hunting'] && global.tech.hunting >= 2) || (global.race['soul_eater'] && !global.race.species === 'wendigo' && global.tech.housing >= 1 && global.tech.currency >= 1) ? true : false;
+            return global.tech['farm'] || global.tech['s_lodge'] || (global.tech['hunting'] && global.tech.hunting >= 2) || (global.race['soul_eater'] && global.race.species !== 'wendigo' && global.tech.housing >= 1 && global.tech.currency >= 1) ? true : false;
         },
         grant: ['transport',2],
         trait: ['gravity_well'],
@@ -1373,8 +1373,8 @@ const techs = {
         category: 'special',
         era: 'discovery',
         reqs: { high_tech: 2 },
+        not_trait: ['fasting','cataclysm','lone_survivor'],
         grant: ['banquet',1],
-        not_trait:['fasting'],
         condition(){ return global.stats.achieve['endless_hunger'] && global.stats.achieve['endless_hunger'].l >= 1 ? true : false; },
         cost: {
             Knowledge(){ return 18500; }
@@ -5097,7 +5097,8 @@ const techs = {
             return `<div>${loc('tech_demonic_infusion_effect')}</div><div class="has-text-special">${loc('tech_demonic_infusion_effect2',[calcPrestige('descend').artifact])}</div>`;
         },
         action(){
-            if (payCosts($(this)[0])){
+            // Check affordability without paying the 1000 pop and Demonic Essence to avoid breaking the backup save
+            if (checkAffordable($(this)[0])){
                 descension();
             }
             return false;

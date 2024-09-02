@@ -613,13 +613,6 @@ const fortressModules = {
                         global.resource.Codex.display = true;
                         global.resource.Codex.amount = 1;
                         messageQueue(loc('portal_vault_result'),'info',false,['progress','hell']);
-                        if (global.race['fasting']){
-                            let affix = universeAffix();
-                            global.stats['endless_hunger'].b3[affix] = true;
-                            if (affix !== 'm' && affix !== 'l'){
-                                global.stats['endless_hunger'].b3.l = true;
-                            }
-                        }
                     }
                     return true;
                 }
@@ -1044,6 +1037,9 @@ const fortressModules = {
                     return true;
                 }
                 return false;
+            },
+            post(){
+                vBind({el: `#srprtl_gate`},'update');
             },
             postPower(){
                 vBind({el: `#srprtl_gate`},'update');

@@ -654,8 +654,15 @@ export function descension(){
     if (global.race['ooze'] && global.race.species === 'sludge'){
         unlockFeat('slime_lord');
     }
-    if(global.race['fasting'] && global.stats.starved <= 0){
-        unlockFeat('immortal');
+    if(global.race['fasting']){
+        let affix = universeAffix();
+        global.stats['endless_hunger'].b5[affix] = true;
+        if (affix !== 'm' && affix !== 'l'){
+            global.stats['endless_hunger'].b5.l = true;
+        }
+        if(global.stats.starved <= 0){
+            unlockFeat('immortal');
+        }
     }
 
     let gains = calcPrestige('descend');
