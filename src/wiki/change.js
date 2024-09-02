@@ -4,6 +4,14 @@ import { clearElement } from './../functions.js';
 export const changeList = [
     {
         version: `1.3.14`,
+        revision: `a`,
+        date: `9/2/2024`,
+        changes: [
+            `Fixed incorrect scientist label.`
+        ]
+    },
+    {
+        version: `1.3.14`,
         date: `9/2/2024`,
         changes: [
             `Fixed various bugs with Fasting scenario.`,
