@@ -3316,8 +3316,6 @@ export const actions = {
                             return 30000000;
                         case 4:
                             return 140000000;
-                        case 5:
-                            return 2140000000;
                         default:
                             return 0;
                     }
