@@ -2312,8 +2312,10 @@ function fastLoop(){
                 if (global.galaxy[gateway_structs[i]]){
                     let operating = global.galaxy[gateway_structs[i]].on;
                     let id = actions.galaxy.gxy_gateway[gateway_structs[i]].id;
-                    if (used_support + operating > global.galaxy.starbase.s_max){
-                        operating -= (used_support + operating) - global.galaxy.starbase.s_max;
+                    let operating_cost = -(actions.galaxy.gxy_gateway[gateway_structs[i]].support());
+                    let max_operating = Math.floor((global.galaxy.starbase.s_max - used_support) / operating_cost);
+                    if (operating > max_operating){
+                        operating = max_operating;
                         $(`#${id} .on`).addClass('warn');
                         $(`#${id} .on`).prop('title',`ON ${operating}/${global.galaxy[gateway_structs[i]].on}`);
                     }
@@ -2321,7 +2323,7 @@ function fastLoop(){
                         $(`#${id} .on`).removeClass('warn');
                         $(`#${id} .on`).prop('title',`ON`);
                     }
-                    used_support += operating * -(actions.galaxy.gxy_gateway[gateway_structs[i]].support());
+                    used_support += operating * operating_cost;
                     gal_on[gateway_structs[i]] = operating;
                 }
                 else {
