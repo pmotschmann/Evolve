@@ -1,103 +1,87 @@
 import json
-from os import path
+import sys
+import os.path as path
 import re
-from sys import argv
 
+print()
 
-def main() -> None:
-    check_tags = True
-    check_tokens = True
-    check_leading_spaces = True
-    check_periods = True
-    check_numbers = True
+check_tags = True
+check_tokens = True
+check_leading_space = True
+check_periods = True
+check_numbers = True
 
-    if len(argv) < 2:
-        print("Please provide the locale key. Usage: python updateString.py <locale>")
-        return
+def led_spaces(str):
+    return len(str) - len(str.lstrip(' '))
 
-    locale = argv[1]
+if len(sys.argv) < 2:
+    print("inform locale key (example 'python checkString.py pt-BR')")
+else:
+    locale = sys.argv[1]
 
-    if not path.exists(f"strings.{locale}.json"):
-        print(
-            f"File 'strings.{locale}.json' not found. Please create this file with '{{}}' as its content if it doesn't exist."
-        )
-        return
+    if not path.isfile('strings.{}.json'.format(locale)):
+        print("'strings.{}.json' not found. Create it before calling this script.".format(locale))
+        exit()
 
-    with open("strings.json", encoding="utf-8") as default_file, open(
-        f"strings.{locale}.json", encoding="utf-8"
-    ) as localized_file:
-        default_strings = json.load(default_file)
+    with open('strings.json', encoding='utf-8') as default_file, \
+        open('strings.{}.json'.format(locale), encoding='utf-8') as loc_file:
+        defstr = json.load(default_file)
+        
+        json_regex = re.compile(r'"(?P<key>.+)"\s*:\s"(?P<value>.*)"\s*$')
+        period_count = re.compile(r'(\.(\D|$))|。')
+        tokens_regex = re.compile(r'%\d+(?!\d)')
+        numbers_regex = re.compile(r'\d+')
 
-        json_pattern = re.compile(r'"(?P<key>.+)"\s*:\s"(?P<value>.*)"\s*$')
-        period_pattern = re.compile(r"(\.(\D|$))|。")
-        token_pattern = re.compile(r"%\d+(?!\d)")
-        number_pattern = re.compile(r"\d+")
-
-        for line_number, line in enumerate(localized_file):
+        for (nl, line) in enumerate(loc_file):
             line = line.strip()
-            if line in {"{", "}", ""}:
+            if line == '{' or line == '}' or len(line) == 0:
                 continue
 
-            if line.endswith(","):
+            if line[-1] == ',':
                 line = line[:-1]
+            
+            line = re.search(json_regex, line)
 
-            match = re.search(json_pattern, line)
-
-            if match is None:
-                print(f"Failed to parse line {line_number + 1}")
+            if line == None:
+                print('failed parse line {}'.format(nl+1))
                 continue
+            line = line.groupdict()
 
-            line_dict = match.groupdict()
-
-            if line_dict["key"] not in default_strings:
-                print(
-                    f"Key '{line_dict['key']}' not found in strings.json, from line {line_number}"
-                )
+            if not line['key'] in defstr:
+                print("key '{}' is not found in string.json, from line {}".format(line['key'], nl))
                 continue
+            else:
+                defline = defstr[line['key']]
 
-            default_line = default_strings[line_dict["key"]]
-
-            if check_tags and line_dict["value"].startswith(("TRANS:", "CHANGE:")):
-                print(
-                    f"Key '{line_dict['key']}' is marked with tag '{line_dict['value'].split(':')[0]}:', from line {line_number}"
-                )
-
+            if check_tags:
+                if line['value'][0:6] == "TRANS:":
+                    print("key '{}' is marked with tag 'TRANS:', from line {}".format(line['key'], nl))
+                if line['value'][0:7] == "CHANGE:":
+                    print("key '{}' is marked with tag 'CHANGE:', from line {}".format(line['key'], nl))
+            
             if check_tokens:
-                default_token_count = len(token_pattern.findall(default_line))
-                localized_token_count = len(token_pattern.findall(line_dict["value"]))
-                if default_token_count != localized_token_count:
-                    print(
-                        f"Number of tokens differ (default: {default_token_count} != localized: {localized_token_count}), in key '{line_dict['key']}', line {line_number + 1}"
-                    )
+                tcdef = len(tokens_regex.findall(defline))
+                tcloc = len(tokens_regex.findall(line['value']))
+                if tcdef != tcloc:
+                    print("Number of tokens (like %0) number differ (def: {} != loc: {}), in key '{}', line {}" \
+                        .format(tcdef, tcloc, line['key'], nl+1))
 
-            if check_leading_spaces:
-
-                def _leading_spaces(s: str) -> int:
-                    return len(s) - len(s.lstrip(" "))
-
-                default_leading_spaces = _leading_spaces(default_line)
-                localized_leading_spaces = _leading_spaces(line_dict["value"])
-                if default_leading_spaces != localized_leading_spaces:
-                    print(
-                        f"Leading spaces differ (default: {default_leading_spaces} != localized: {localized_leading_spaces}), in key '{line_dict['key']}', line {line_number + 1}"
-                    )
-
-            if check_periods:
-                default_period_count = len(period_pattern.findall(default_line))
-                localized_period_count = len(period_pattern.findall(line_dict["value"]))
-                if default_period_count != localized_period_count:
-                    print(
-                        f"Number of periods differ (default: {default_period_count} != localized: {localized_period_count}), in key '{line_dict['key']}', line {line_number + 1}"
-                    )
-
+            if check_leading_space:
+                leddef = led_spaces(defline)
+                ledloc = led_spaces(line['value'])
+                if leddef != ledloc:
+                    print("leading spaces differ (def: {} != loc: {}), in key '{}', line {}".format(leddef, ledloc, line['key'], nl+1))
+            
+            if check_periods:            
+                pcdef = len(period_count.findall(defline))
+                pcloc = len(period_count.findall(line['value']))
+                if pcdef != pcloc:
+                    print("periods number differ (def: {} != loc: {}), in key '{}', line {}" \
+                        .format(pcdef, pcloc, line['key'], nl+1))
+            
             if check_numbers:
-                default_numbers = sorted(number_pattern.findall(default_line))
-                localized_numbers = sorted(number_pattern.findall(line_dict["value"]))
-                if default_numbers != localized_numbers:
-                    print(
-                        f"Numbers differ (default: {default_numbers} != localized: {localized_numbers}), in key '{line_dict['key']}', line {line_number + 1}"
-                    )
-
-
-if __name__ == "__main__":
-    main()
+                pcdef = numbers_regex.findall(defline)
+                pcloc = numbers_regex.findall(line['value'])
+                if sorted(pcdef) != sorted(pcloc):
+                    print("Numbers differ (def: {} != loc: {}), in key '{}', line {}" \
+                        .format(pcdef, pcloc, line['key'], nl+1))
