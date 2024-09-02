@@ -3492,7 +3492,7 @@ const interstellarProjects = {
                         r_mass += 0.225 * global.tech['roid_eject'] * (1 + (global.tech['roid_eject'] / 12));
                     }
                     let gWell = 1 + (global.stats.achieve['escape_velocity'] && global.stats.achieve.escape_velocity['h'] ? global.stats.achieve.escape_velocity['h'] * 0.02 : 0);
-                    let output = powerModifier((20 + ((r_mass - 8) * waves) + ((global.interstellar['stellar_engine'] ? global.interstellar.stellar_engine.exotic : 0) * waves * 10)).toFixed(2)) * gWell;
+                    let output = powerModifier(20 + ((r_mass - 8) * waves) + ((global.interstellar['stellar_engine'] ? global.interstellar.stellar_engine.exotic : 0) * waves * 10) * gWell);
                     if (global.tech['blackhole'] >= 5){
                         let exotic = +(global.interstellar.stellar_engine.exotic).toFixed(10);
                         let blackhole = global.interstellar.stellar_engine.exotic > 0 ? loc('interstellar_stellar_engine_effect3',[r_mass,exotic]) : loc('interstellar_stellar_engine_effect2',[r_mass]);
@@ -5478,7 +5478,7 @@ function xeno_race(){
     if (!global.custom.hasOwnProperty('race0')){
         skip.push('custom');
     }
-    
+
     let list = Object.keys(races).filter(function(r){ return !['demonic','eldritch'].includes(races[r].type) && !skip.includes(r) });
     let key1 = randomKey(list);
     global.galaxy['alien1'] = {
