@@ -3058,17 +3058,18 @@ export const actions = {
             },
             effect(wiki){
                 let xeno = global.tech['monument'] && global.tech.monument >= 3 && isStargateOn(wiki) ? 3 : 1;
-                let amp = (global.civic.govern.type === 'corpocracy' ? 2 : 1) * xeno;
-                let cas = (global.civic.govern.type === 'corpocracy' ? 10 : 5) * xeno;
-                let mon = (global.civic.govern.type === 'corpocracy' ? 4 : 2) * xeno;
+                let is_corp = global.civic?.govern?.type === 'corpocracy';
+                let amp = (is_corp ? 2 : 1) * xeno;
+                let cas = (is_corp ? 10 : 5) * xeno;
+                let mon = (is_corp ? 4 : 2) * xeno;
                 let post = '';
                 if (global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 4){
-                    post = `<div>${loc(`city_tourist_center_effect5`,[(global.civic.govern.type === 'corpocracy' ? 6 : 3) * xeno])}</div>`;
+                    post = `<div>${loc(`city_tourist_center_effect5`,[(is_corp ? 6 : 3) * xeno])}</div>`;
                 }
                 let pious = '';
                 let piousVal = govActive('pious',1);
                 if (piousVal){
-                    pious = `<div>${loc(`city_tourist_center_effect6`,[(global.civic.govern.type === 'corpocracy' ? (piousVal * 2) : piousVal) * xeno])}</div>`;
+                    pious = `<div>${loc(`city_tourist_center_effect6`,[(is_corp ? (piousVal * 2) : piousVal) * xeno])}</div>`;
                 }
                 return `<div class="has-text-caution">${loc('city_tourist_center_effect1',[global.resource.Food.name])}</div><div>${loc('city_tourist_center_effect2',[amp,actions.city.amphitheatre.title()])}</div><div>${loc('city_tourist_center_effect3',[cas])}</div><div>${loc('city_tourist_center_effect4',[mon])}</div>${post}${pious}`;
             },
@@ -4926,10 +4927,10 @@ export function casinoEffect(){
     if (global.tech['stock_exchange'] && global.tech['gambling'] >= 4){
         cash *= 1 + (global.tech['stock_exchange'] * 0.01);
     }
-    if (global.civic.govern.type === 'corpocracy'){
+    if (global.civic?.govern?.type === 'corpocracy'){
         cash *= 3;
     }
-    if (global.civic.govern.type === 'socialist'){
+    if (global.civic?.govern?.type === 'socialist'){
         cash *= 0.8;
     }
     if (global.race['inflation']){
