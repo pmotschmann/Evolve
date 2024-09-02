@@ -10,6 +10,7 @@ export const changeList = [
             `Difficulty tweaks to Fasting scenario.`,
             `Added feat Icon for Fasting.`,
             `Ships in route to the Dwarf planet now check their fuel consumption.`,
+            `Manual crafting is no longer affected by High Population trait.`,
             `Misc bug fixes.`
         ]
     },
