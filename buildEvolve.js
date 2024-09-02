@@ -1,3 +1,5 @@
+const { watch } = require("less");
+
 require("esbuild")
   .build({
     logLevel: "info",

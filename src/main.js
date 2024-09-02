@@ -407,8 +407,8 @@ popover('powerStatus',function(obj){
         let drain = +(global.city.power_total - global.city.power).toFixed(2);
         Object.keys(power_generated).forEach(function (k){
             if (power_generated[k]){
-                let gen = +(power_generated[k]).toFixed(2);
-                obj.popper.append(`<p class="modal_bd"><span>${k}</span> <span class="has-text-success">+${gen}</span></p>`);
+                let gen = +power_generated[k];
+                obj.popper.append(`<p class="modal_bd"><span>${k}</span> <span class="has-text-success">+${gen.toFixed(2)}</span></p>`);
             }
         });
         obj.popper.append(`<p class="modal_bd"><span>${loc('power_consumed')}</span> <span class="has-text-danger"> -${drain}</span></p>`);

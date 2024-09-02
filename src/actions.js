@@ -3303,7 +3303,7 @@ export const actions = {
             },
             cost: {
                 Money(offset){
-                    const count = offset + (global.city['banquet'] ? global.city['banquet'].count : 0);
+                    const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
                     //const max = global.stats.achieve['endless_hunger'] ? global.stats.achieve['endless_hunger'].l : 0;
                     switch (count){
                         case 0:
@@ -3316,12 +3316,14 @@ export const actions = {
                             return 30000000;
                         case 4:
                             return 140000000;
+                        case 5:
+                            return 2140000000;
                         default:
                             return 0;
                     }
                 },
                 Food(offset){
-                    const count = offset + (global.city['banquet'] ? global.city['banquet'].count : 0);
+                    const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
                     return (() => {
                         switch (count){
                             case 0:
@@ -3340,7 +3342,7 @@ export const actions = {
                     })() * (global.race['artifical'] ? 0.25 : 1);
                 },
                 Brick(offset){ 
-                    const count = offset + (global.city['banquet'] ? global.city['banquet'].count : 0);
+                    const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
                     switch (count){
                         case 0:
                             return 1600;
@@ -3353,7 +3355,7 @@ export const actions = {
                     }
                 },
                 Wrought_Iron(offset){
-                    const count = offset + (global.city['banquet'] ? global.city['banquet'].count : 0);
+                    const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
                     switch (count){
                         case 0:
                             return 0;
@@ -3370,7 +3372,7 @@ export const actions = {
                     }
                 },
                 Iridium(offset){
-                    const count = offset + (global.city['banquet'] ? global.city['banquet'].count : 0);
+                    const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
                     switch (count){
                         case 2:
                             return 50000;
@@ -3383,7 +3385,7 @@ export const actions = {
                     }
                 },
                 Aerogel(offset, wiki){
-                    const count = offset + (global.city['banquet'] ? global.city['banquet'].count : 0);
+                    const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
                     if((wiki && wiki.truepath) || global.race['truepath']){
                         return 0;
                     }
@@ -3397,7 +3399,7 @@ export const actions = {
                     }
                 },
                 Quantium(offset, wiki){
-                    const count = offset + (global.city['banquet'] ? global.city['banquet'].count : 0);
+                    const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
                     if((wiki && !wiki.truepath) || !global.race['truepath']){
                         return 0;
                     }
@@ -3411,7 +3413,7 @@ export const actions = {
                     }
                 },
                 Bolognium(offset){
-                    const count = offset || (global.city['banquet'] ? global.city['banquet'].count : 0);
+                    const count = (offset ? offset : 0) || (global.city['banquet'] ? global.city['banquet'].count : 0);
                     switch (count){
                         case 4:
                             return 150000;
@@ -3422,7 +3424,7 @@ export const actions = {
             },
             effect(wiki){
                 let strength = global.city['banquet'] ? global.city['banquet'].strength : 0;
-                let count = wiki + (global.city['banquet'] ? global.city['banquet'].count : 0);
+                let count = (wiki ? wiki : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
                 let desc = `<div>Strength: <span class="has-text-caution">${strength}</span></div>`;
                 desc += `<div>${loc(`city_banquet_effect1`, [sizeApproximation(((count >= 5 ? 1.02 : 1.022)**(strength) - 1) * 100)])}</div>`;
                 if(count >= 1){

@@ -1147,7 +1147,7 @@ export function powerModifier(energy){
     if (astrologySign() === 'leo'){
         energy *= 1 + (astroVal('leo')[0] / 100);
     }
-    return energy.fixed(2);
+    return energy.toFixed(2);
 }
 
 export function powerCostMod(energy){
