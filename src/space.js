@@ -495,13 +495,13 @@ const spaceProjects = {
                 Alloy(offset){ return spaceCostMultiplier('red_tower', offset, 8000, 1.28); },
             },
             effect(){
-                return `<div>${loc('space_red_spaceport_effect1',[planetName().red, global.race['cataclysm'] ? 2 : 1])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('space_red_spaceport_effect1',[planetName().red, global.race['cataclysm'] || global.race['fasting'] ? 2 : 1])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             powered(){ return powerCostMod(2); },
             powerBalancer(){
                 return [{ s: global.space.spaceport.s_max - global.space.spaceport.support }];
             },
-            support(){ return global.race['cataclysm'] ? 2 : 1; },
+            support(){ return global.race['cataclysm'] || global.race['fasting'] ? 2 : 1; },
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('red_tower');
@@ -2954,7 +2954,7 @@ const interstellarProjects = {
             powered(){ return 0; },
             effect(){
                 let helium = +int_fuel_adjust(6).toFixed(2);
-                let troops = jobScale(3);
+                let troops = jobScale(global.race['fasting'] ? 4 : 3);
                 return `<div>${loc('plus_max_soldiers',[troops])}</div><div class="has-text-caution">${loc('space_belt_station_effect3',[helium])}</div>`;
             },
             action(){
@@ -3650,9 +3650,7 @@ const interstellarProjects = {
                         if (global.interstellar.stargate.count >= 200){
                             global.tech['stargate'] = 4;
                             global.interstellar['s_gate'] = { count: 1, on: 0 };
-                            if (global.city.power >= interstellarProjects.int_blackhole.s_gate.powered()){
-                                global.interstellar['s_gate'].on++;
-                            }
+                            powerOnNewStruct($(interstellarProjects.int_blackhole.s_gate)[0]);
                             deepSpace();
                             clearPopper();
                         }

@@ -93,7 +93,8 @@ const calcInfo = {
     max: { // Structures that can have a max to the number of them that you can get. Things with a max of 1 that are included here as opposed to in the exclude section are things that linger around after being purchased, usually having a changing text after being bought.
         prehistoric: {},
         planetary: {
-            s_alter: 1
+            s_alter: 1,
+            banquet:5
         },
         space: {
             star_dock: 1,

@@ -285,12 +285,13 @@ function tabLabel(lbl){
 }
 
 function updateQueueStyle(){
+    const buildingQueue = $('#buildQueue');
     ['standardqueuestyle', 'listqueuestyle', 'bulletlistqueuestyle', 'numberedlistqueuestyle']
-        .map(qstyle => {
+        .forEach(qstyle => {
             if (global.settings.queuestyle === qstyle) {
-                $('html').addClass(qstyle);
+                buildingQueue.addClass(qstyle);
             } else {
-                $('html').removeClass(qstyle);
+                buildingQueue.removeClass(qstyle);
             }
         });
 }
@@ -901,7 +902,7 @@ export function index(){
             <div class="power"><span id="powerStatus" class="has-text-warning" v-show="city.powered"><span>MW</span> <span id="powerMeter" class="meter">{{ city.power | replicate | approx }}</span></span></div>
         </div>
         <div id="sideQueue">
-            <div id="buildQueue" class="bldQueue has-text-info" v-show="display"></div>
+            <div id="buildQueue" class="bldQueue standardqueuestyle has-text-info" v-show="display"></div>
             <div id="msgQueue" class="msgQueue vscroll has-text-info" aria-live="polite">
                 <div id="msgQueueHeader">
                     <h2 class="has-text-success">${loc('message_log')}</h2>
@@ -1217,6 +1218,7 @@ export function index(){
         {i: 'ghost',        f: 'halloween',         r: 1 },
         {i: 'candy',        f: 'trickortreat',      r: 1 },
         {i: 'turkey',       f: 'thanksgiving',      r: 1 },
+        {i: 'meat',         f: 'immortal',          r: 1 },
         {i: 'present',      f: 'xmas',              r: 1 }
     ];
 
@@ -1391,7 +1393,7 @@ export function index(){
         </div>
         <div class="stringPack setting">
             <button id="stringPack" class="button" @click="importStringFile">{{ 'load_string_pack' | label }}</button>
-            <input type="file" class="fileImport" id="stringPackFile" accept=".txt">
+            <input type="file" class="fileImport" id="stringPackFile" accept="text/plain, application/json">
             <button class="button right" @click="clearStringFile">{{ 'clear_string_pack' | label }}</button>
         </div>
         <div class="stringPack setting">

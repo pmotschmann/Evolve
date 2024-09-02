@@ -1115,29 +1115,40 @@ export function timeFormat(time){
     }
     else {
         time = +(time.toFixed(0));
-        if (time > 60){
-            let secs = time % 60;
-            let mins = (time - secs) / 60;
-            if (mins >= 60){
-                let r = mins % 60;
-                let hours = (mins - r) / 60;
-                if (hours > 24){
-                    r = hours % 24;
-                    let days = (hours - r) / 24;
-                    formatted = `${days}d ${r}h`;
-                }
-                else {
-                    r = ('0' + r).slice(-2);
-                    formatted = `${hours}h ${r}m`;
-                }
-            }
-            else {
-                secs = ('0' + secs).slice(-2);
-                formatted = `${mins}m ${secs}s`;
-            }
+        const secs_per_min = 60;
+
+        if (time < secs_per_min){
+            formatted = `${time}s`;
         }
         else {
-            formatted = `${time}s`;
+            const mins_per_hour = 60;
+            const secs_per_hour = secs_per_min*mins_per_hour;
+            const secs = time % secs_per_min;
+            const mins = Math.floor(time / secs_per_min) % mins_per_hour;
+
+            if (time < secs_per_hour){
+                if (secs > 0){ formatted = `${mins}m ${secs}s`; }
+                else { formatted = `${mins}m`; }
+            }
+            else {
+                const hours_per_day = 24;
+                const secs_per_day = secs_per_hour*hours_per_day;
+                const hours = Math.floor(time / secs_per_hour) % hours_per_day;
+
+                if (time < secs_per_day){
+                    if (mins > 0){ formatted = `${hours}h ${mins}m`; }
+                    else if (secs > 0){ formatted = `${hours}h ${secs}s`; }
+                    else { formatted = `${hours}h`; }
+                }
+                else {
+                    const days = Math.floor(time / secs_per_day);
+
+                    if (hours > 0){ formatted = `${days}d ${hours}h`; }
+                    else if (mins > 0){ formatted = `${days}d ${mins}m`; }
+                    else if (secs > 0){ formatted = `${days}d ${secs}s`; }
+                    else { formatted = `${days}d`; }
+                }
+            }
         }
     }
     return formatted;
@@ -2033,6 +2044,9 @@ export function svgIcons(icon){
             return `<g transform="translate(0 -1036.4)">
             <path style="stroke-linejoin:round;stroke:#ffbf00;stroke-width:.25;" d="m3.4724 8.5186 3.0305-7.0711h6.9448l-5.0192 5.0823h4.1353l-8.1128 9.0914 2.0834-7.1342z" transform="translate(0 1036.4)"/>
           </g>`;
+        case 'meat':
+            return `<path d="M0.26,147.54c0.03,9.81,8.69,19.93,16.89,24.05c5.21,2.61,8.18,9.46,12.72,13.81c5.23,5.01,10.4,11.42,16.8,13.59 c17.18,5.81,35.19-14.63,32.08-29.95c-1.06-5.24-0.61-12.9,2.51-16.31c3.18-3.47,10.44-3.48,16.02-4.26 c12.61-1.76,25.38-2.53,37.9-4.76c6.75-1.2,14.1-3.23,19.48-7.22c11.88-8.81,24.21-17.81,33.6-29.08 c14.98-17.96,15.19-45.27,3.06-65.42c-4.04-6.72-7.15-14.9-12.95-19.46c-11.04-8.66-23.71-15.23-35.79-22.5  c-0.41-0.25-2.4,1.08-2.71,2c-0.62,1.82-0.58,3.86-0.82,5.81c-0.56,4.48-1.93,7.93-4.65,12.19c-6.13,9.62-14.8,8.16-22.83,10.88 c-4.74,1.61-8.27,6.55-12.73,9.39c-4.74,3.01-9.7,6.25-15.01,7.52c-2.92,0.7-7.29-1.75-10.06-3.98c-8.91-7.2-11.87-0.5-13.71,6.14  c-3.48,12.54-6.44,25.26-8.8,38.06c-1.1,5.97-0.3,12.29-0.37,18.45c-0.12,10.04-5.06,15.03-15.05,14.97  c-4.4-0.03-8.83-0.87-13.17-0.52C14.13,121.63-2.27,136.46,0.26,147.54z"/>`;
+               
     }
 }
 
@@ -2108,6 +2122,8 @@ export function svgViewBox(icon){
             return `0 0 552 495`;
         case 'lightning':
             return `0 0 16 16`;
+        case 'meat':
+            return `0 0 200 200`;
     }
 }
 
@@ -2164,6 +2180,8 @@ export function getBaseIcon(name,type){
                 return 'turkey';
             case 'xmas':
                 return 'present';
+            case 'immortal':
+                return 'meat';
             default:
                 return 'star';
         }

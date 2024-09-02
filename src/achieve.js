@@ -567,11 +567,11 @@ export function checkAchievements(){
     }
 
     if (global.tech['piracy'] && global.tech['chthonian'] && global.tech['chthonian'] >= 2 && global.galaxy){
-        let chtonian = piracy('gxy_chthonian');
-        if (piracy('gxy_stargate') === 1 && piracy('gxy_gateway') === 1 && piracy('gxy_gorddon') === 1 && piracy('gxy_alien1') === 1 && piracy('gxy_alien2') === 1 && chtonian === 1){
+        let chthonian = piracy('gxy_chthonian');
+        if (piracy('gxy_stargate') === 1 && piracy('gxy_gateway') === 1 && piracy('gxy_gorddon') === 1 && piracy('gxy_alien1') === 1 && piracy('gxy_alien2') === 1 && chthonian === 1){
             unlockAchieve('neutralized');
         }
-        if(global.race['fasting'] && chtonian === 1){
+        if(global.race['fasting'] && chthonian === 1){
             let affix = universeAffix();
             global.stats.endless_hunger.b2[affix] = true;
             if (affix !== 'm' && affix !== 'l'){
@@ -1718,7 +1718,7 @@ export const perkList = {
             loc(`wiki_perks_achievement_note_task_num`,[2,`<span class="has-text-${global.stats.endless_hunger.b2.l ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger2`)}</span>`]),
             loc(`wiki_perks_achievement_note_task_num`,[3,`<span class="has-text-${global.stats.endless_hunger.b3.l ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger3`,[80])}</span>`]),
             loc(`wiki_perks_achievement_note_task_num`,[4,`<span class="has-text-${global.stats.endless_hunger.b4.l ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger4`,[1200])}</span>`]),
-            loc(`wiki_perks_achievement_note_task_num`,[5,`<span class="has-text-${global.stats.endless_hunger.b5.l ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger5`,[50])}</span>`])
+            loc(`wiki_perks_achievement_note_task_num`,[5,`<span class="has-text-${global.stats.endless_hunger.b5.l ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger5`)}</span>`])
         ]
     },
     gladiator: {

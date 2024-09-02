@@ -4882,6 +4882,9 @@ export function racialTrait(workers,type){
         if (global.race['dark_dweller'] && global.city.calendar.weather === 2){
             modifier *= 1 - traits.dark_dweller.vars()[0] / 100;
         }
+        if(global.city.banquet && global.city.banquet.on && global.city.banquet.count >= 3){
+            modifier *= 1 + (global.city.banquet.strength ** 0.65) / 100;
+        }
     }
     if (global.race.universe === 'magic'){
         if (type === 'science'){
@@ -4908,9 +4911,6 @@ export function racialTrait(workers,type){
     }
     if (global.race['living_tool'] && type === 'miner'){
         modifier *= 1 + traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science * 0.12 : 0);
-    }
-    if(global.city.banquet && global.city.banquet.on && global.city.banquet.count >= 3 && (type === 'army' || type === 'hellArmy')){
-        modifier *= 1 + (global.city.banquet.strength ** 0.65) / 100;
     }
     if (global.race['high_pop']){
         modifier = highPopAdjust(modifier);

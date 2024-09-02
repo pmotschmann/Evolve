@@ -1455,7 +1455,7 @@ function loadReplicator(parent,bind){
                     }
                 },
                 avail(r){
-                    return global.resource[r].display;
+                    return global.resource[r].display && !(global.race['fasting'] && r === 'Food');
                 },
                 aria(){
                     return global.race.replicator.pow + 'MW';

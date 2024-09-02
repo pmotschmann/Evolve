@@ -523,9 +523,7 @@ const outerTruth = {
                         if (global.space.ai_core.count >= 100){
                             global.tech['titan_ai_core'] = 1;
                             global.space['ai_core2'] = { count: 1, on: 0 };
-                            if (global.city.power >= outerTruth.spc_titan.ai_core2.powered()){
-                                global.space.ai_core2.on++;
-                            }
+                            powerOnNewStruct($(outerTruth.spc_titan.ai_core2)[0]);
                             renderSpace();
                             drawTech();
                         }
@@ -1563,8 +1561,7 @@ const tauCetiModules = {
                     global.tauceti.mining_pit.count++;
                     global.civic.pit_miner.display = true;
                     global.resource.Materials.display = true;
-                    if (global.city.powered && global.city.power >= tauCetiModules.tau_home.orbital_station.powered()){
-                        global.tauceti.orbital_station.on++;
+                    if (powerOnNewStruct($(tauCetiModules.tau_home.orbital_station)[0])){
                         global.tauceti.colony.on++;
                         global.tauceti.mining_pit.on++;
 
@@ -2976,8 +2973,7 @@ const tauCetiModules = {
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.ore_refinery.count++;
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.tauceti.ore_refinery.on++;
+                    if (powerOnNewStruct($(this)[0])){
                         global.city.smelter.cap += global.tech['isolation'] ? 12 : 2;
                         global.city.smelter.Steel += global.tech['isolation'] ? 12 : 2;
                         if (global.race['evil']) {
