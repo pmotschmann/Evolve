@@ -1764,11 +1764,11 @@ const fortressModules = {
                 Money(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 750000000, spireCreep(1.3), 'portal'); },
                 Bolognium(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 5800000, spireCreep(1.3), 'portal'); },
                 Orichalcum(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 8000000, spireCreep(1.3), 'portal'); },
-                Supply(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 300000, spireCreep(1.3), 'portal'); },
+                Supply(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 150000, spireCreep(1.2), 'portal'); },
             },
             powered(){ return 0; },
             effect(){
-                return `<div>${loc('portal_dish_soul_infuser_effect1')}</div><div class="has-text-danger">${loc('portal_dish_soul_infuser_effect2', [2])}</div>`;
+                return `<div>${loc('portal_dish_soul_infuser_effect1')}</div><div class="has-text-danger">${loc('portal_dish_soul_infuser_effect2', [3 + (global.race['malnutrition'] ? 1 : 0) + (global.race['angry'] ? -1 : 0)])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -1777,7 +1777,8 @@ const fortressModules = {
                     return true;
                 }
                 return false;
-            }
+            },
+            flair: loc('portal_dish_soul_infuser_flair')
         },
         dish_life_infuser: {
             id: 'portal-dish_life_infuser',
@@ -1785,14 +1786,14 @@ const fortressModules = {
             desc: loc('portal_dish_life_infuser_desc'),
             reqs: { dish: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 620000000, spireCreep(1.3), 'portal'); },
-                Bolognium(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 10500000, spireCreep(1.3), 'portal'); },
-                Scarletite(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 350000, spireCreep(1.3), 'portal'); },
-                Supply(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 200000, spireCreep(1.3), 'portal'); },
+                Money(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 280000000, spireCreep(1.2), 'portal'); },
+                Bolognium(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 2000000, spireCreep(1.2), 'portal'); },
+                Scarletite(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 250000, spireCreep(1.2), 'portal'); },
+                Supply(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 70000, spireCreep(1.15), 'portal'); },
             },
             powered(){ return 0; },
             effect(){
-                return `<div>${loc('portal_dish_life_infuser_effect1', [5])}</div><div class="has-text-danger">${loc('portal_dish_life_infuser_effect2', [5])}</div>`;
+                return `<div>${loc('portal_dish_life_infuser_effect1', [7])}</div><div class="has-text-danger">${loc('portal_dish_life_infuser_effect2', [5])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){

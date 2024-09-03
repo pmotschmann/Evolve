@@ -4329,7 +4329,7 @@ const techs = {
         trait: ['fasting'],
         grant: ['dish',1],
         cost: {
-            Knowledge(){ return 66000000; }
+            Knowledge(){ return 63000000; }
         },
         effect(){return loc('tech_devilish_dish_effect');},
         action(){
@@ -4351,14 +4351,17 @@ const techs = {
         reqs: { dish: 2},
         grant: ['dish',3],
         cost: {
-            Bolognium(){ return 20000000; },
+            Bolognium(){ return 50000000; },
             Demonic_Essence(){ return 1; }
         },
         effect(){
-            return `<div>${loc('tech_final_ingredient_effect')}</div><div class="has-text-special">${loc('tech_demonic_infusion_effect2',[calcPrestige('descend').artifact])}</div>`;
+            return `${loc('tech_final_ingredient_effect')}
+            ${global.race['witch_hunter'] ? `<div class="has-text-warning">${loc('dish_witch_hunter_interaction', [loc('tech_outerplane_summon'), loc('portal_devilish_dish_title')])}</div>` : ""}
+            <div class="has-text-special">${loc('tech_demonic_infusion_effect2',[calcPrestige('descend').artifact])}</div>`;
         },
         action(){
-            if (payCosts($(this)[0])){
+            // Check affordability without paying the Demonic Essence to avoid breaking the backup save
+            if (checkAffordable($(this)[0])){
                 descension();
             }
             return false;

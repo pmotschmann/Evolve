@@ -632,7 +632,8 @@ export function descension(){
     else {
         unlockAchieve(`corrupted`);
     }
-    if(global.race['fasting']){
+    if((global.race['fasting'] && !global.race['witch_hunter']) || (global.tech['dish'] >= 2 && global.race['witch_hunter'])){
+        //award on demonic dish reset or outerplane summon with demonic dish tech unlocked
         let affix = universeAffix();
         global.stats['endless_hunger'].b5[affix] = true;
         if (affix !== 'm' && affix !== 'l'){
@@ -653,16 +654,6 @@ export function descension(){
     }
     if (global.race['ooze'] && global.race.species === 'sludge'){
         unlockFeat('slime_lord');
-    }
-    if(global.race['fasting']){
-        let affix = universeAffix();
-        global.stats['endless_hunger'].b5[affix] = true;
-        if (affix !== 'm' && affix !== 'l'){
-            global.stats['endless_hunger'].b5.l = true;
-        }
-        if(global.stats.starved <= 0){
-            unlockFeat('immortal');
-        }
     }
 
     let gains = calcPrestige('descend');
