@@ -7399,6 +7399,31 @@ const techs = {
             vBind({el: `#c_garrison`},'update');
         }
     },
+    ethereal_weapons: {
+        id: 'tech-ethereal_weapons',
+        title: loc('tech_ethereal_weapons'),
+        desc: loc('tech_ethereal_weapons'),
+        category: 'military',
+        era: 'existential',
+        reqs: { military: 11, asphodel: 5 },
+        grant: ['military',12],
+        cost: {
+            Knowledge(){ return 72500000; },
+            Asphodel_Powder(){ return 17500; },
+            Soul_Gem(){ return 100; },
+        },
+        effect: loc('tech_ethereal_weapons_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        },
+        post(){
+            vBind({el: `#garrison`},'update');
+            vBind({el: `#c_garrison`},'update');
+        }
+    },
     space_marines: {
         id: 'tech-space_marines',
         title: loc('tech_space_marines'),
@@ -14096,6 +14121,46 @@ const techs = {
         effect(){ return loc('tech_purification_effect',[global.resource.Asphodel_Powder.name,loc('portal_purifier_title'),2,loc('eden_asphodel_harvester_title')]); },
         action(){
             if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    asphodel_mech: {
+        id: 'tech-asphodel_mech',
+        title: loc('tech_asphodel_mech'),
+        desc: loc('tech_asphodel_mech'),
+        category: 'edenic',
+        era: 'existential',
+        reqs: { asphodel: 5, military: 12 },
+        grant: ['asphodel',6],
+        cost: {
+            Knowledge(){ return 72300000; },
+        },
+        effect(){ return loc('tech_asphodel_mech_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.eden['mech_station'] = { count: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    asphodel_storage: {
+        id: 'tech-asphodel_storage',
+        title: loc('tech_asphodel_storage'),
+        desc: loc('tech_asphodel_storage'),
+        category: 'edenic',
+        era: 'existential',
+        reqs: { asphodel: 6, },
+        grant: ['asphodel',7],
+        cost: {
+            Knowledge(){ return 73000000; },
+        },
+        effect(){ return loc('tech_asphodel_storage_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.eden['warehouse'] = { count: 0 };
                 return true;
             }
             return false;

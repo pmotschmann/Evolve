@@ -10000,7 +10000,7 @@ function midLoop(){
                 ,'info',false,['progress','hell']);
 
                 global.portal.spire.count++;
-                if (global.portal.spire.count > 10){
+                if (global.portal.spire.count > 10 && global.tech['hell_spire'] && global.tech.hell_spire < 10){
                     global.tech['hell_spire'] = 10;
                     drawTech();
                 }
@@ -10019,6 +10019,12 @@ function midLoop(){
                 genSpireFloor();
                 renderFortress();
             }
+        }
+
+        if (global.tech['asphodel'] && global.tech.asphodel === 4 && Math.rand(0,25) === 0){
+            global.tech['asphodel'] = 5;
+            drawTech();
+            messageQueue(loc('eden_asphodel_hostile'),'info',false,['progress']);
         }
 
         if (global.race['cannibalize'] && global.city['s_alter']){
