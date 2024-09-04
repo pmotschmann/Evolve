@@ -809,7 +809,7 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
     }
     
     let infopops = false;
-    if (rate !== 0 || (max === -1 && rate === 0 && global.race['no_craft']) || name === 'Scarletite' || name === 'Quantium'){
+    if (rate !== 0 || (max === -1 && rate === 0 && global.race['no_craft']) || name === 'Scarletite' || name === 'Quantium' || (global.race['fasting'] && name === global.race.species)){
         res_container.append($(`<span id="inc${name}" class="diff" :aria-label="resRate('${name}')">{{ diff | diffSize }} /s</span>`));
     }
     else if (max === -1 && !global.race['no_craft'] && name !== 'Scarletite' && name !== 'Quantium'){
@@ -966,7 +966,7 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
         });
     }
 
-    if (name !== global.race.species && name !== 'Crates' && name !== 'Containers' && max !== -1){
+    if ((name !== global.race.species || global.race['fasting']) && name !== 'Crates' && name !== 'Containers' && max !== -1){
         breakdownPopover(`inc${name}`,name,'p');
     }
     else if (max === -1){
@@ -2075,11 +2075,14 @@ export function craftingPopover(id,res,type,extra){
 function breakdownPopover(id,name,type){
     popover(`${id}`,function(){
         let bd = $(`<div class="resBreakdown"><div class="has-text-info">{{ res.name | namespace }}</div></div>`);
+        if(type === 'p' && name === global.race.species){
+            bd = $(`<div class="resBreakdown"><div class="has-text-info">Starvation risk</div></div>`);
+        }
         let table = $(`<div class="parent"></div>`);
         bd.append(table);
         let prevCol = false;
         
-        if (breakdown[type][name]){
+        if (breakdown[type][name] && !(global.race.species === name && type === 'p')){
             let col1 = $(`<div></div>`);
             table.append(col1);
             let types = [name];
@@ -2120,7 +2123,7 @@ function breakdownPopover(id,name,type){
             }
         }
 
-        if (type === 'p'){
+        if (type === 'p' && name !== global.race.species){
             let dir = global['resource'][name].diff > 0 ? 'success' : 'danger';
             bd.append(`<div class="modal_bd sum"><span>{{ res.diff | direction }}</span><span class="has-text-${dir}">{{ res.amount | counter }}</span></div>`);
         }

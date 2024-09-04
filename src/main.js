@@ -1040,6 +1040,10 @@ function fastLoop(){
         breakdown.p['consume'][res] = {};
         breakdown.p[res] = {};
     });
+    if(global.race['fasting']){
+        breakdown.p['consume'][global.race.species] = {};
+        breakdown.p[global.race.species] = {};
+    }
 
     var time_multiplier = 0.25;
 
@@ -3495,21 +3499,42 @@ function fastLoop(){
                     fed = false;
                     if(global.resource[global.race.species].amount > 0){
                         let threshold = 1.25;
+                        let digestion = 0;
+                        let humpback = 0;
+                        let meditators = 0;
+                        let atrophy = 0;
+                        let infusion = 1;
                         if (global.race['slow_digestion']){
-                            threshold += traits.slow_digestion.vars()[0];
+                            digestion += traits.slow_digestion.vars()[0];
                         }
                         let fathom = fathomCheck('slitheryn');
                         if (fathom > 0){
-                            threshold += traits.slow_digestion.vars(1)[0] * fathom;
+                            digestion += traits.slow_digestion.vars(1)[0] * fathom;
                         }
                         if (global.race['humpback']){
-                            threshold += traits.humpback.vars()[0];
+                            humpback = traits.humpback.vars()[0];
                         }
                         if(global.race['fasting']){
-                            threshold += highPopAdjust(global.civic.meditator.workers) * 0.03;
+                            meditators = highPopAdjust(global.civic.meditator.workers) * 0.03;
                         }
                         if (global.race['atrophy']){
-                            threshold -= traits.atrophy.vars()[0];
+                            atrophy = traits.atrophy.vars()[0];
+                        }
+                        if(global.portal && global.portal['dish_life_infuser'] && global.portal['dish_life_infuser'].on){
+                            infusion = 0.95 ** global.portal['dish_life_infuser'].on;
+                        }
+                        threshold += digestion + humpback + meditators;
+                        threshold -= atrophy;
+                        threshold *= infusion
+                        if(global.race['fasting']){
+                            let base = global.resource[global.race.species].amount/100;
+                            breakdown.p.consume[global.race.species][global.resource[global.race.species].name] = -(base).toFixed(2);
+                            breakdown.p.consume[global.race.species][loc('genelab_traits')] = (1 - food_consume_mod) * (base).toFixed(2);
+                            breakdown.p.consume[global.race.species][loc('Threshold')] = (threshold).toFixed(2);
+                            global.resource[global.race.species].delta = Math.min(-((base * food_consume_mod - threshold) * time_multiplier), 0);
+                            /*for(const x in breakdown.p.consume[global.race.species]){
+                                breakdown.p.consume[global.race.species][x] = (breakdown.p.consume[global.race.species][x] / time_multiplier).toFixed(2);
+                            }*/
                         }
                         // threshold can be thought of as the inverse of nutrition ratio per unit of food.
                         // So if the generated food doesn't have enough nutrition for the consuming population, they starve.
@@ -3758,6 +3783,10 @@ function fastLoop(){
         if (global.race['malnutrition'] && fed === false){
             hunger += traits.malnutrition.vars()[0] / 100;
         }
+        if(global.portal && global.portal['dish_soul_infuser'] && global.portal['dish_soul_infuser'].on){
+            hunger -= (0.03 + (global.race['malnutrition'] ? 0.01 : 0) + (global.race['angry'] ? -0.01 : 0)) * global.portal['dish_soul_infuser'].on;
+        }
+        hunger = Math.max(hunger, 0);
 
         // Furs
         if (global.resource.Furs.display){
@@ -5098,6 +5127,11 @@ function fastLoop(){
 
             let delta = (shock_base + tank_base) * global_multiplier * synd;
             modRes('Cipher', delta * time_multiplier);
+        }
+        
+        if(global.tech['dish'] && global.tech['dish'] === 1 && global.portal['devilish_dish'].done >= 1){
+            global.tech['dish'] = 2;
+            drawTech();
         }
 
         if (global.tech['isolation'] && global.tauceti['alien_outpost'] && p_on['alien_outpost']){
@@ -7389,6 +7423,9 @@ function fastLoop(){
             diffCalc(res,webWorker.mt);
         }
     });
+    if(global.race['fasting']){
+        diffCalc(global.race.species,webWorker.mt);
+    }
 
     if (global.settings.expose){
         if (!window['evolve']){
@@ -11428,6 +11465,23 @@ function longLoop(){
         }
         else if (global.tech['tau_gas'] && global.tech.tau_gas >= 4 && !global.tech['plague'] && global.race['lone_survivor']){
             global.tech['plague'] = 5;
+        }
+
+        if(global.tech['dish'] >= 1 && global.portal['dish_soul_infuser'].on && global.portal['spire'] && global.portal['spire'].count){
+            let progress = 0.00002 * global.portal['dish_soul_infuser'].on;
+            let hunger = 0.5;
+            if (global.race['angry']){
+                hunger -= traits.angry.vars()[0] / 100;
+            }
+            if (global.race['malnutrition']){
+                hunger += traits.malnutrition.vars()[0] / 100;
+            }
+            let working = Math.min(global.portal['dish_life_infuser'].on, Math.floor(hunger / 0.02));
+            progress *= 1 + (0.07 * working);
+            progress *= 1.06 ** global.portal['spire'].count;
+            global.portal['devilish_dish'].done += progress;
+            global.portal['devilish_dish'].done = Math.min(global.portal['devilish_dish'].done, 1);
+            global.portal['devilish_dish'].count = Math.floor(global.portal['devilish_dish'].done * 100);
         }
 
         if (global.civic.govern['protest'] && global.civic.govern.protest > 0){
