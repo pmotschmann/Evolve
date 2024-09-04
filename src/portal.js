@@ -333,7 +333,7 @@ const fortressModules = {
                     }
                     desc = desc + `<div>${loc('portal_soul_forge_effect2',[global.portal['soul_forge'] ? global.portal.soul_forge.kills.toLocaleString() : 0,Math.round(cap).toLocaleString()])}</div>`;
                 }
-                let soldiers = soulForgeSoldiers();
+                let soldiers = soulForgeSoldiers(wiki);
                 return `${desc}<div><span class="has-text-caution">${loc('portal_soul_forge_soldiers',[soldiers])}</span>, <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span></div>`;
             },
             action(){
@@ -676,8 +676,8 @@ const fortressModules = {
                 Horseshoe(){ return global.race['hooved'] ? 13 : 0; }
             },
             powered(){ return powerCostMod(25); },
-            effect(){
-                let sup = hellSupression('ruins');
+            effect(wiki){
+                let sup = hellSupression('ruins', 0, wiki);
                 let vault = spatialReasoning(bank_vault() * 8 * sup.supress);
                 vault = +(vault).toFixed(0);
                 let containers = Math.round(quantum_level) * 10;
@@ -731,8 +731,8 @@ const fortressModules = {
             },
             powered(){ return powerCostMod(12); },
             special: true,
-            effect(){
-                let sup = hellSupression('ruins');
+            effect(wiki){
+                let sup = hellSupression('ruins', 0, wiki);
                 let craft = +(75 * sup.supress).toFixed(1);
                 let reactor = global.tech['inferno_power'] ? `<div>${loc('portal_hell_forge_effect2',[10,loc(`portal_inferno_power_title`)])}</div>` : ``;
                 return `<div>${loc('portal_hell_forge_effect',[jobScale(1)])}</div>${reactor}<div>${loc('interstellar_stellar_forge_effect3',[3])}</div><div>${loc('interstellar_stellar_forge_effect',[craft])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
@@ -769,10 +769,11 @@ const fortressModules = {
                 Stanene(offset){ return spaceCostMultiplier('inferno_power', offset, 12000000, 1.18, 'portal'); },
                 Bolognium(offset){ return spaceCostMultiplier('inferno_power', offset, 8000000, 1.18, 'portal'); },
             },
-            powered(){
+            powered(wiki){
                 let power = 20;
-                if (p_on.hasOwnProperty('hell_forge')){
-                    power += p_on['hell_forge'] * 10; 
+                let infernal_forges_on = wiki ? global.portal.hell_forge.on : p_on['hell_forge'];
+                if (infernal_forges_on){
+                    power += infernal_forges_on * 10; 
                 }
                 return powerModifier(-(power));
             },
@@ -781,9 +782,9 @@ const fortressModules = {
                 Coal: 100,
                 Oil: 80
             },
-            effect(){
+            effect(wiki){
                 let fuel = $(this)[0].fuel;
-                return `<div>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered())])}</div><div class="has-text-caution">${loc('portal_inferno_power_effect',[fuel.Infernite,global.resource.Infernite.name,fuel.Coal,global.resource.Coal.name,fuel.Oil,global.resource.Oil.name])}</div>`;
+                return `<div>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered(wiki))])}</div><div class="has-text-caution">${loc('portal_inferno_power_effect',[fuel.Infernite,global.resource.Infernite.name,fuel.Coal,global.resource.Coal.name,fuel.Oil,global.resource.Oil.name])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -910,13 +911,13 @@ const fortressModules = {
             queue_size: 25,
             queue_complete(){ return towerSize() - global.portal.west_tower.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('west_tower') ? global.portal.west_tower.count : 0)) < towerSize() ? towerPrice(10000000) : 0; },
-                Stone(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('west_tower') ? global.portal.west_tower.count : 0)) < towerSize() ? towerPrice(100000) : 0; },
-                Uranium(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('west_tower') ? global.portal.west_tower.count : 0)) < towerSize() ? towerPrice(1000) : 0; },
-                Adamantite(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('west_tower') ? global.portal.west_tower.count : 0)) < towerSize() ? towerPrice(18000) : 0; },
-                Vitreloy(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('west_tower') ? global.portal.west_tower.count : 0)) < towerSize() ? towerPrice(25000) : 0; },
-                Soul_Gem(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('west_tower') ? global.portal.west_tower.count : 0)) < towerSize() ? 1 : 0; },
-                Scarletite(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('west_tower') ? global.portal.west_tower.count : 0)) < towerSize() ? towerPrice(5000) : 0; },
+                Money(offset,wiki){ return ((offset || 0) + (global.portal.hasOwnProperty('west_tower') ? global.portal.west_tower.count : 0)) < towerSize() ? towerPrice(10000000,wiki) : 0; },
+                Stone(offset,wiki){ return ((offset || 0) + (global.portal.hasOwnProperty('west_tower') ? global.portal.west_tower.count : 0)) < towerSize() ? towerPrice(100000,wiki) : 0; },
+                Uranium(offset,wiki){ return ((offset || 0) + (global.portal.hasOwnProperty('west_tower') ? global.portal.west_tower.count : 0)) < towerSize() ? towerPrice(1000,wiki) : 0; },
+                Adamantite(offset,wiki){ return ((offset || 0) + (global.portal.hasOwnProperty('west_tower') ? global.portal.west_tower.count : 0)) < towerSize() ? towerPrice(18000,wiki) : 0; },
+                Vitreloy(offset,wiki){ return ((offset || 0) + (global.portal.hasOwnProperty('west_tower') ? global.portal.west_tower.count : 0)) < towerSize() ? towerPrice(25000,wiki) : 0; },
+                Soul_Gem(offset,wiki){ return ((offset || 0) + (global.portal.hasOwnProperty('west_tower') ? global.portal.west_tower.count : 0)) < towerSize() ? 1 : 0; },
+                Scarletite(offset,wiki){ return ((offset || 0) + (global.portal.hasOwnProperty('west_tower') ? global.portal.west_tower.count : 0)) < towerSize() ? towerPrice(5000,wiki) : 0; },
             },
             effect(wiki){
                 let size = towerSize();
@@ -965,13 +966,13 @@ const fortressModules = {
             queue_size: 25,
             queue_complete(){ return towerSize() - global.portal.east_tower.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('east_tower') ? global.portal.east_tower.count : 0)) < towerSize() ? towerPrice(10000000) : 0; },
-                Stone(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('east_tower') ? global.portal.east_tower.count : 0)) < towerSize() ? towerPrice(100000) : 0; },
-                Uranium(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('east_tower') ? global.portal.east_tower.count : 0)) < towerSize() ? towerPrice(1000) : 0; },
-                Adamantite(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('east_tower') ? global.portal.east_tower.count : 0)) < towerSize() ? towerPrice(18000) : 0; },
-                Vitreloy(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('east_tower') ? global.portal.east_tower.count : 0)) < towerSize() ? towerPrice(25000) : 0; },
-                Soul_Gem(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('east_tower') ? global.portal.east_tower.count : 0)) < towerSize() ? 1 : 0; },
-                Scarletite(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('east_tower') ? global.portal.east_tower.count : 0)) < towerSize() ? towerPrice(5000) : 0; },
+                Money(offset,wiki){ return ((offset || 0) + (global.portal.hasOwnProperty('east_tower') ? global.portal.east_tower.count : 0)) < towerSize() ? towerPrice(10000000,wiki) : 0; },
+                Stone(offset,wiki){ return ((offset || 0) + (global.portal.hasOwnProperty('east_tower') ? global.portal.east_tower.count : 0)) < towerSize() ? towerPrice(100000,wiki) : 0; },
+                Uranium(offset,wiki){ return ((offset || 0) + (global.portal.hasOwnProperty('east_tower') ? global.portal.east_tower.count : 0)) < towerSize() ? towerPrice(1000,wiki) : 0; },
+                Adamantite(offset,wiki){ return ((offset || 0) + (global.portal.hasOwnProperty('east_tower') ? global.portal.east_tower.count : 0)) < towerSize() ? towerPrice(18000,wiki) : 0; },
+                Vitreloy(offset,wiki){ return ((offset || 0) + (global.portal.hasOwnProperty('east_tower') ? global.portal.east_tower.count : 0)) < towerSize() ? towerPrice(25000,wiki) : 0; },
+                Soul_Gem(offset,wiki){ return ((offset || 0) + (global.portal.hasOwnProperty('east_tower') ? global.portal.east_tower.count : 0)) < towerSize() ? 1 : 0; },
+                Scarletite(offset,wiki){ return ((offset || 0) + (global.portal.hasOwnProperty('east_tower') ? global.portal.east_tower.count : 0)) < towerSize() ? towerPrice(5000,wiki) : 0; },
             },
             effect(wiki){
                 let size = towerSize();
@@ -1111,8 +1112,9 @@ const fortressModules = {
                 return `<div>${loc('portal_harbour_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { hell_lake: 3 },
-            powered(){
-                let factor = p_on['cooling_tower'] || 0;
+            powered(wiki){
+                let num_cooling_tower = wiki ? global.portal.cooling_tower.on : p_on['cooling_tower'];
+                let factor = num_cooling_tower || 0;
                 return +(powerCostMod(500 * (0.92 ** factor))).toFixed(2);
             },
             support(){ return 1; },
@@ -1164,7 +1166,7 @@ const fortressModules = {
                         return 0;
                 }
             },
-            effect(){
+            effect(wiki){
                 let storage = '<div class="aTable">';
                 for (const res of $(this)[0].res()){
                     if (global.resource[res].display){
@@ -1173,7 +1175,7 @@ const fortressModules = {
                     }
                 };
                 storage = storage + '</div>';
-                return `<div>${loc('portal_harbour_effect',[1])}</div>${storage}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('portal_harbour_effect',[1])}</div>${storage}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered(wiki)])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -1848,15 +1850,17 @@ export const towerSize = (function(){
     }
 })();
 
-function towerPrice(cost){
-    let sup = hellSupression('gate');
+function towerPrice(cost, wiki){
+    wiki = wiki || {}
+    let sup = hellSupression('gate', 0, wiki.isWiki);
     return Math.round(cost / (sup.supress > 0.01 ? sup.supress : 0.01));
 }
 
-export function soulForgeSoldiers(){
+export function soulForgeSoldiers(wiki){
     let soldiers = Math.round(650 / armyRating(1,'hellArmy'));
-    if (p_on['gun_emplacement']){
-        soldiers -= p_on['gun_emplacement'] * (global.tech.hell_gun >= 2 ? 2 : 1);
+    let num_gun_emplacement = wiki ? global.portal.gun_emplacement.on : p_on['gun_emplacement'];
+    if (num_gun_emplacement){
+        soldiers -= num_gun_emplacement * (global.tech.hell_gun >= 2 ? 2 : 1);
         if (soldiers < 0){
             soldiers = 0;
         }
@@ -2890,12 +2894,13 @@ function soulCapacitor(souls){
     }
 }
 
-export function hellSupression(area, val){
+export function hellSupression(area, val, wiki){
     switch (area){
         case 'ruins':
             {
-                let army = val || jobScale(p_on['guard_post']);
-                let arc = (p_on['arcology'] || 0) * 75;
+                let guard_posts_on = wiki ? global.portal.guard_post.on : p_on['guard_post'];
+                let army = val || jobScale(guard_posts_on);
+                let arc = (wiki ? global.portal.arcology.on : p_on['arcology']) * 75;
                 let aRating = armyRating(army,'hellArmy',0);
                 if (global.race['holy']){
                     aRating *= 1 + (traits.holy.vars()[1] / 100);
@@ -2912,8 +2917,8 @@ export function hellSupression(area, val){
             }
         case 'gate':
             {
-                let gSup = hellSupression('ruins',val);
-                let turret = (p_on['gate_turret'] || 0) * 100;
+                let gSup = hellSupression('ruins',val,wiki);
+                let turret = (wiki ? global.portal.gate_turret.on : p_on['gate_turret']) * 100;
                 if (global.race['holy']){
                     turret *= 1 + (traits.holy.vars()[1] / 100);
                 }
