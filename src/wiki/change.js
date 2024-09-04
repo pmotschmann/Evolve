@@ -3,6 +3,15 @@ import { clearElement } from './../functions.js';
 
 export const changeList = [
     {
+        version: `1.3.15`,
+        date: `9/4/2024`,
+        changes: [
+            `Fasting scenario Demonic Infusion goal updated with new tastier experience.`,
+            `Starvation risk toolips added for Fasting scenario.`,
+            `Mastery listed under stats tab now displays unmodified value.`,
+        ]
+    },
+    {
         version: `1.3.14`,
         revision: `a`,
         date: `9/2/2024`,
