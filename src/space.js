@@ -7068,5 +7068,15 @@ function terraformScore(planet,wiki){
 }
 
 export function isStargateOn(wiki){
-    return Boolean(wiki ? global.interstellar?.s_gate?.on : p_on['s_gate']);
+    if (wiki){
+        if (global.interstellar?.s_gate?.count){
+            return Boolean(global.interstellar.s_gate.on);
+        }
+        else {
+            return true; // If no stargate built yet, then act like it is on to show more information
+        }
+    }
+    else {
+        return Boolean(p_on['s_gate']);
+    }
 }
