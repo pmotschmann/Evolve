@@ -565,13 +565,14 @@ export function challengesPage(content){
                 }
             });
             addAchievements(fasting,false,['endless_hunger']);
+            addAchievements(fasting,true,['immortal']);
             addRequirements(fasting,[
                 {
                     text: `wiki_challenges_reqs_reset`,
                     subreqs: [
                         {
                             text: loc(`wiki_resets_infusion`),
-                            color: global.stats.achieve['descension'] ? true : false,
+                            color: global.stats.achieve['corrupted'] ? true : false,
                             link: 'wiki.html#resets-prestige-infusion'
                         }
                     ]

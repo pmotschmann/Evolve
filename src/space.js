@@ -2,14 +2,14 @@ import { save, global, seededRandom, webWorker, keyMultiplier, sizeApproximation
 import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, calcGenomeScore, randomKey, getTraitDesc, deepClone } from './functions.js';
 import { unlockAchieve, unlockFeat, universeAffix } from './achieve.js';
 import { races, traits, genus_traits, genusVars, planetTraits, biomes } from './races.js';
-import { spatialReasoning, unlockContainers } from './resources.js';
+import { spatialReasoning, unlockContainers, drawResourceTab } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
 import { defineIndustry } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
 import { actions, payCosts, powerOnNewStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, casinoEffect, wardenLabel, buildTemplate } from './actions.js';
 import { outerTruthTech, syndicate } from './truepath.js';
 import { production, highPopAdjust } from './prod.js';
-import { govActive } from './governor.js';
+import { defineGovernor, govActive } from './governor.js';
 import { ascend, terraform } from './resets.js';
 import { loadTab } from './index.js';
 import { loc } from './locale.js';
@@ -476,13 +476,6 @@ const spaceProjects = {
                         global.race.orbit_decay = global.stats.days + 1000;
                         messageQueue(loc('evo_challenge_orbit_decayed_accelerated',[global.race.orbit_decay - global.stats.days]),'info',false,['progress']);
                     }
-                    if (global.race['fasting']){
-                        let affix = universeAffix();
-                        global.stats['endless_hunger'].b1[affix] = true;
-                        if (affix !== 'm' && affix !== 'l'){
-                            global.stats['endless_hunger'].b1.l = true;
-                        }
-                    }
                     return true;
                 }
                 return false;
@@ -502,13 +495,13 @@ const spaceProjects = {
                 Alloy(offset){ return spaceCostMultiplier('red_tower', offset, 8000, 1.28); },
             },
             effect(){
-                return `<div>${loc('space_red_spaceport_effect1',[planetName().red, global.race['cataclysm'] ? 2 : 1])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('space_red_spaceport_effect1',[planetName().red, global.race['cataclysm'] || global.race['fasting'] ? 2 : 1])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             powered(){ return powerCostMod(2); },
             powerBalancer(){
                 return [{ s: global.space.spaceport.s_max - global.space.spaceport.support }];
             },
-            support(){ return global.race['cataclysm'] ? 2 : 1; },
+            support(){ return global.race['cataclysm'] || global.race['fasting'] ? 2 : 1; },
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('red_tower');
@@ -2961,7 +2954,7 @@ const interstellarProjects = {
             powered(){ return 0; },
             effect(){
                 let helium = +int_fuel_adjust(6).toFixed(2);
-                let troops = jobScale(3);
+                let troops = jobScale(global.race['fasting'] ? 4 : 3);
                 return `<div>${loc('plus_max_soldiers',[troops])}</div><div class="has-text-caution">${loc('space_belt_station_effect3',[helium])}</div>`;
             },
             action(){
@@ -3657,9 +3650,7 @@ const interstellarProjects = {
                         if (global.interstellar.stargate.count >= 200){
                             global.tech['stargate'] = 4;
                             global.interstellar['s_gate'] = { count: 1, on: 0 };
-                            if (global.city.power >= interstellarProjects.int_blackhole.s_gate.powered()){
-                                global.interstellar['s_gate'].on++;
-                            }
+                            powerOnNewStruct($(interstellarProjects.int_blackhole.s_gate)[0]);
                             deepSpace();
                             clearPopper();
                         }

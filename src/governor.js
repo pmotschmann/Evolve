@@ -1355,7 +1355,7 @@ export const gov_tasks = {
                 }
                 let resSorted = Object.keys(tc.s).sort(function(a,b){return tc.s[b]-tc.s[a]});
                 for (let i=0; i<resSorted.length; i++){
-                    if (global.resource[resSorted[i]].display && atomic_mass[resSorted[i]]){
+                    if (global.resource[resSorted[i]] && global.resource[resSorted[i]].display && atomic_mass[resSorted[i]] && !(resSorted[i] === 'Food' && global.race['fasting'])){
                         global.race.replicator.res = resSorted[i];
                         rBal = true;
                         break;
@@ -1368,9 +1368,9 @@ export const gov_tasks = {
 
             if (!rBal){
                 let resSorted = Object.keys(atomic_mass).sort(function(a,b){return global.resource[a].diff-global.resource[b].diff});
-                resSorted = resSorted.filter(item => global.resource[item].display);
+                resSorted = resSorted.filter(item => global.resource[item] && global.resource[item].display);
 
-                if (global.race.governor.config.replicate.res.neg && global.resource[resSorted[0]].diff < 0 && ((global.resource[resSorted[0]].amount <= global.resource[resSorted[0]].max * 0.95) || global.resource[resSorted[0]].max === -1)){
+                if (global.race.governor.config.replicate.res.neg && resSorted[0] && global.resource[resSorted[0]].diff < 0 && ((global.resource[resSorted[0]].amount <= global.resource[resSorted[0]].max * 0.95) || global.resource[resSorted[0]].max === -1)){
                     global.race.replicator.res = resSorted[0];
                 }
                 else if (global.resource[global.race.replicator.res].max !== -1 && global.race.governor.config.replicate.res.cap && global.resource[global.race.replicator.res].amount >= global.resource[global.race.replicator.res].max){
