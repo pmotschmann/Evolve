@@ -1306,6 +1306,71 @@ const fortressModules = {
                 return false;
             }
         },
+        dish_soul_steeper: {
+            id: 'portal-dish_soul_steeper',
+            title: loc('portal_dish_soul_steeper_title'),
+            desc: loc('portal_dish_soul_steeper_desc'),
+            reqs: { dish: 1 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('dish_soul_steeper', offset, 750000000, spireCreep(1.3), 'portal'); },
+                Bolognium(offset){ return spaceCostMultiplier('dish_soul_steeper', offset, 5800000, spireCreep(1.3), 'portal'); },
+                Orichalcum(offset){ return spaceCostMultiplier('dish_soul_steeper', offset, 8000000, spireCreep(1.3), 'portal'); },
+                Supply(offset){ return spaceCostMultiplier('dish_soul_steeper', offset, 150000, spireCreep(1.2), 'portal'); },
+            },
+            powered(){ return 0; },
+            effect(){
+                return `<div>${loc('portal_dish_soul_steeper_effect1')}</div><div class="has-text-danger">${loc('portal_dish_soul_steeper_effect2', [3 + (global.race['malnutrition'] ? 1 : 0) + (global.race['angry'] ? -1 : 0)])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.portal['dish_soul_steeper'].count++;
+                    global.portal['dish_soul_steeper'].on++;
+                    return true;
+                }
+                return false;
+            },
+            flair: loc('portal_dish_soul_steeper_flair')
+        },
+        dish_life_infuser: {
+            id: 'portal-dish_life_infuser',
+            title: loc('portal_dish_life_infuser_title'),
+            desc: loc('portal_dish_life_infuser_desc'),
+            reqs: { dish: 1 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 280000000, spireCreep(1.2), 'portal'); },
+                Bolognium(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 2000000, spireCreep(1.2), 'portal'); },
+                Scarletite(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 250000, spireCreep(1.2), 'portal'); },
+                Supply(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 70000, spireCreep(1.15), 'portal'); },
+            },
+            powered(){ return 0; },
+            effect(){
+                return `<div>${loc('portal_dish_life_infuser_effect1', [7])}</div><div class="has-text-danger">${loc('portal_dish_life_infuser_effect2', [5])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.portal['dish_life_infuser'].count++;
+                    global.portal['dish_life_infuser'].on++;
+                    return true;
+                }
+                return false;
+            },
+            flair: loc('portal_dish_life_infuser_flair')
+        },
+        devilish_dish: {
+            id: 'portal-devilish_dish',
+            title: loc('portal_devilish_dish_title'),
+            desc: loc('portal_devilish_dish_title'),
+            reqs: { dish: 1 },
+            queue_complete(){ return 0; },
+            cost: {},
+            effect(){
+                const progress = (global.portal['devilish_dish'] ? global.portal['devilish_dish'].done : 0) * 100;
+                return `<div>${loc(`portal_devilish_dish_desc`,[progress.toFixed(1)])}</div><div>${loc(`portal_devilish_dish_flavor${progress >= 100 ? 11 : Math.ceil(progress/10)}`)}</div>`;
+            },
+            action(){
+                return false;
+            }
+        },
     },
     prtl_spire: {
         info: {
@@ -1757,71 +1822,7 @@ const fortressModules = {
                 }
                 return false;
             }
-        },
-        dish_soul_infuser: {
-            id: 'portal-dish_soul_infuser',
-            title: loc('portal_dish_soul_infuser_title'),
-            desc: loc('portal_dish_soul_infuser_desc'),
-            reqs: { dish: 1 },
-            cost: {
-                Money(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 750000000, spireCreep(1.3), 'portal'); },
-                Bolognium(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 5800000, spireCreep(1.3), 'portal'); },
-                Orichalcum(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 8000000, spireCreep(1.3), 'portal'); },
-                Supply(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 150000, spireCreep(1.2), 'portal'); },
-            },
-            powered(){ return 0; },
-            effect(){
-                return `<div>${loc('portal_dish_soul_infuser_effect1')}</div><div class="has-text-danger">${loc('portal_dish_soul_infuser_effect2', [3 + (global.race['malnutrition'] ? 1 : 0) + (global.race['angry'] ? -1 : 0)])}</div>`;
-            },
-            action(){
-                if (payCosts($(this)[0])){
-                    global.portal['dish_soul_infuser'].count++;
-                    global.portal['dish_soul_infuser'].on++;
-                    return true;
-                }
-                return false;
-            },
-            flair: loc('portal_dish_soul_infuser_flair')
-        },
-        dish_life_infuser: {
-            id: 'portal-dish_life_infuser',
-            title: loc('portal_dish_life_infuser_title'),
-            desc: loc('portal_dish_life_infuser_desc'),
-            reqs: { dish: 1 },
-            cost: {
-                Money(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 280000000, spireCreep(1.2), 'portal'); },
-                Bolognium(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 2000000, spireCreep(1.2), 'portal'); },
-                Scarletite(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 250000, spireCreep(1.2), 'portal'); },
-                Supply(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 70000, spireCreep(1.15), 'portal'); },
-            },
-            powered(){ return 0; },
-            effect(){
-                return `<div>${loc('portal_dish_life_infuser_effect1', [7])}</div><div class="has-text-danger">${loc('portal_dish_life_infuser_effect2', [5])}</div>`;
-            },
-            action(){
-                if (payCosts($(this)[0])){
-                    global.portal['dish_life_infuser'].count++;
-                    global.portal['dish_life_infuser'].on++;
-                    return true;
-                }
-                return false;
-            }
-        },
-        devilish_dish: {
-            id: 'portal-devilish_dish',
-            title: loc('portal_devilish_dish_title'),
-            desc: loc('portal_devilish_dish_title'),
-            reqs: { dish: 1 },
-            queue_complete(){ return 0; },
-            cost: {},
-            effect(){
-                const progress = (global.portal['devilish_dish'] ? global.portal['devilish_dish'].done : 0) * 100;
-                return `<div>${loc(`portal_devilish_dish_desc`,[progress.toFixed(1)])}</div><div>${loc(`portal_devilish_dish_flavor${progress >= 100 ? 11 : Math.ceil(progress/10)}`)}</div>`;
-            },
-            action(){
-                return false;
-            }
-        },
+        }
     }
 };
 
