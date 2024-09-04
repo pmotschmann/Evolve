@@ -1286,7 +1286,7 @@ export const calc_mastery = (function(){
     }
 })();
 
-export function masteryType(universe,detailed){
+export function masteryType(universe,detailed,unmodified){
     if (global.genes['challenge'] && global.genes.challenge >= 2){
         universe = universe || global.race.universe;
         let ua_level = universeLevel(universe);
@@ -1296,31 +1296,36 @@ export function masteryType(universe,detailed){
             m_rate += 0.05;
             u_rate -= 0.05;
         }
-        if (global.race['weak_mastery'] && universe === 'antimatter'){
-            m_rate /= 10;
-            u_rate /= 10;
-        }
-        if (global.race['nerfed']){
-            m_rate /= universe === 'antimatter' ? 5 : 2;
-            u_rate /= universe === 'antimatter' ? 5 : 2;
-        }
-        if (global.race['ooze']){
-            m_rate *= 1 - (traits.ooze.vars()[2] / 100);
-            u_rate *= 1 - (traits.ooze.vars()[2] / 100);
-        }
+
         let perk_rank = global.stats.feat['grandmaster'] && global.stats.achieve['corrupted'] && global.stats.achieve.corrupted.l > 0 ? Math.min(global.stats.achieve.corrupted.l,global.stats.feat['grandmaster']) : 0;
         if (perk_rank > 0){
             m_rate *= 1 + (perk_rank / 100);
             u_rate *= 1 + (perk_rank / 100);
         }
+
+        if (! unmodified) {
+            if (global.race['weak_mastery'] && universe === 'antimatter'){
+                m_rate /= 10;
+                u_rate /= 10;
+            }
+            if (global.race['nerfed']){
+                m_rate /= universe === 'antimatter' ? 5 : 2;
+                u_rate /= universe === 'antimatter' ? 5 : 2;
+            }
+            if (global.race['ooze']){
+                m_rate *= 1 - (traits.ooze.vars()[2] / 100);
+                u_rate *= 1 - (traits.ooze.vars()[2] / 100);
+            }
+            if (global.genes.challenge >= 5 && global.race.hasOwnProperty('mastery')){
+                m_rate *= 1 + (traits.mastery.vars()[0] * global.race.mastery / 100);
+                u_rate *= 1 + (traits.mastery.vars()[0] * global.race.mastery / 100);
+            }
+        }
+
         let m_mastery = ua_level.aLvl * m_rate;
         let u_mastery = 0;
         if (universe !== 'standard'){
             u_mastery = ua_level.uLvl * u_rate;
-        }
-        if (global.genes.challenge >= 5 && global.race.hasOwnProperty('mastery')){
-            m_mastery *= 1 + (traits.mastery.vars()[0] * global.race.mastery / 100);
-            u_mastery *= 1 + (traits.mastery.vars()[0] * global.race.mastery / 100);
         }
         return detailed ? { g: m_mastery, u: u_mastery, m: m_mastery + u_mastery } : m_mastery + u_mastery;
     }

@@ -992,7 +992,7 @@ export const perkList = {
         desc(){
             let desc = '';
             Object.keys(universe_types).forEach(function(universe){
-                let mastery = masteryType(universe,true);
+                let mastery = masteryType(universe,true,true);
                 if (universe === 'standard'){
                     desc += `<span class="row"><span class="has-text-caution">${universe_types[universe].name}</span>: <span>${loc('perks_mastery_general',[`<span class="has-text-advanced">${+(mastery.g).toFixed(2)}%</span>`])}</span></span>`;
                 }
