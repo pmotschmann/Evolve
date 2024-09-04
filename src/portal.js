@@ -327,8 +327,9 @@ const fortressModules = {
                 let count = (wiki || 0) + (global.portal.hasOwnProperty('soul_forge') ? global.portal.soul_forge.count : 0);
                 if (count >= 1){
                     let cap = global.tech.hell_pit >= 6 ? 750000 : 1000000;
-                    if (global.tech.hell_pit >= 7 && p_on['soul_attractor'] > 0){
-                        cap *= 0.97 ** p_on['soul_attractor'];
+                    let num_s_attractor_on = (wiki ? global.portal.soul_attractor.on : p_on['soul_attractor']);
+                    if (global.tech.hell_pit >= 7 && num_s_attractor_on > 0){
+                        cap *= 0.97 ** num_s_attractor_on;
                     }
                     desc = desc + `<div>${loc('portal_soul_forge_effect2',[global.portal['soul_forge'] ? global.portal.soul_forge.kills.toLocaleString() : 0,Math.round(cap).toLocaleString()])}</div>`;
                 }
@@ -1268,9 +1269,10 @@ const fortressModules = {
                 Soul_Gem(offset){ return spaceCostMultiplier('transport', offset, 5, 1.22, 'portal'); },
                 Scarletite(offset){ return spaceCostMultiplier('transport', offset, 250000, 1.22, 'portal'); },
             },
-            effect(){
+            effect(wiki){
                 let rating = global.blood['spire'] && global.blood.spire >= 2 ? 0.8 : 0.85;
-                let bireme = +((rating ** (gal_on['bireme'] || 0)) * 100).toFixed(1);
+                let num_on = wiki ? global.portal.bireme.on : gal_on['bireme'];
+                let bireme = +((rating ** num_on) * 100).toFixed(1);
                 return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div><div>${loc('portal_transport_effect',[5])}</div><div class="has-text-danger">${loc('portal_transport_effect2',[bireme])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ()])}</div>`;
             },
             special: true,
@@ -1387,10 +1389,11 @@ const fortressModules = {
             powered(){ return 0; },
             s_type: 'spire',
             support(){ return -1; },
-            effect(){
+            effect(wiki){
                 let port_value = 10000;
-                if (spire_on['base_camp']){
-                    port_value *= 1 + (spire_on['base_camp'] * 0.4);
+                let num_base_camps_on = wiki ? global.portal.base_camp.on : spire_on['base_camp'];
+                if (num_base_camps_on > 0){
+                    port_value *= 1 + (num_base_camps_on * 0.4);
                 }
                 return `<div class="has-text-caution">${loc('portal_port_effect1',[$(this)[0].support()])}</div><div>${loc('portal_port_effect2',[Math.round(port_value)])}</div>`;
             },

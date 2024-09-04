@@ -1100,16 +1100,18 @@ const spaceProjects = {
                 Mythril(offset){ return spaceCostMultiplier('exotic_lab', offset, 1000, 1.28); },
                 Elerium(offset){ return spaceCostMultiplier('exotic_lab', offset, 20, 1.28) - 4; }
             },
-            effect(){
+            effect(wiki){
                 let sci = 500;
-                if (global.tech['science'] >= 13 && global.interstellar['laboratory'] && int_on['laboratory']){
-                    sci += int_on['laboratory'] * 25;
+                if (global.tech['science'] >= 13 && global.interstellar['laboratory']){
+                    let num_lab_on = wiki ? global.interstellar.laboratory.on : int_on['laboratory'];
+                    sci += num_lab_on * 25;
                 }
                 if (global.tech['ancient_study'] && global.tech['ancient_study'] >= 2){
                     sci += global.space.ziggurat.count * 15;
                 }
-                if (global.tech.mass >= 2 && p_on['mass_driver']){
-                    sci += highPopAdjust(p_on['mass_driver'] * global.civic.scientist.workers);
+                let num_mass_driver_on = wiki ? global.city.mass_driver.on : p_on['mass_driver'];
+                if (global.tech.mass >= 2 && num_mass_driver_on > 0){
+                    sci += highPopAdjust(num_mass_driver_on * global.civic.scientist.workers);
                 }
                 if (global.tech['science'] >= 21){
                     sci *= 1.45;
@@ -1123,7 +1125,7 @@ const spaceProjects = {
                 let lab = '';
                 if (global.race['cataclysm'] || global.race['orbit_decayed']){
                     scientist = `<div>${loc('city_wardenclyffe_effect1',[jobScale(1), global.civic.scientist.name])}</div>`;
-                    sci *= 1 + (support_on['observatory'] * 0.25);
+                    sci *= 1 + (wiki ? global.space.observatory.on : support_on['observatory']) * 0.25;
                     if (global.tech.science >= 15){
                         lab = `<div>${loc('city_wardenclyffe_effect4',[2])}</div>`;
                     }
@@ -1159,10 +1161,11 @@ const spaceProjects = {
                 Aluminium(offset){ return spaceCostMultiplier('ziggurat', offset, 70000, 1.28); },
                 Mythril(offset){ return spaceCostMultiplier('ziggurat', offset, 250, 1.28); }
             },
-            effect(){
+            effect(wiki){
                 let bonus = global.tech['ancient_study'] ? 0.6 : 0.4;
-                if (global.tech['ancient_deify'] && global.tech['ancient_deify'] >= 2 && support_on['exotic_lab']){
-                    bonus += 0.01 * support_on['exotic_lab'];
+                let num_exo_labs_on = wiki ? global.space.exotic_lab.on : support_on['exotic_lab'];
+                if (global.tech['ancient_deify'] && global.tech['ancient_deify'] >= 2 && num_exo_labs_on){
+                    bonus += 0.01 * num_exo_labs_on;
                 }
                 if (global.civic.govern.type === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
                     let faith = 0.002;
@@ -2159,10 +2162,13 @@ const spaceProjects = {
             },
             queue_complete(){ return 0; },
             cost: {},
-            effect(){
+            effect(wiki){
                 let boost = 25;
-                if (global.interstellar['far_reach'] && p_on['far_reach'] > 0){
-                    boost += p_on['far_reach'] * 1;
+                if (global.interstellar['far_reach']){
+                    let num_farpoint_on = wiki ? global.interstellar.far_reach.on : p_on['far_reach'];
+                    if (num_farpoint_on > 0){
+                        boost *= num_farpoint_on * 1; // 1% per Farpoint
+                    }
                 }
                 if (global.tech.science >= 19){
                     boost += 15;
@@ -2461,10 +2467,11 @@ const interstellarProjects = {
                 Aluminium(offset){ return spaceCostMultiplier('processing', offset, 60000, 1.28, 'interstellar'); },
                 Iridium(offset){ return spaceCostMultiplier('processing', offset, 5000, 1.28, 'interstellar'); }
             },
-            effect(){
+            effect(wiki){
                 let bonus = 12;
-                if (global.tech['ai_core'] && global.tech['ai_core'] >= 2 && p_on['citadel'] > 0){
-                    bonus += p_on['citadel'] * 2;
+                let num_citadels_on = wiki ? global.interstellar.citadel.on : p_on['citadel'];
+                if (global.tech['ai_core'] && global.tech['ai_core'] >= 2 && num_citadels_on > 0){
+                    bonus += num_citadels_on * 2;
                 }
                 return `<div class="has-text-caution">${loc('space_used_support',[loc('interstellar_alpha_name')])}</div><div>${loc('interstellar_processing_effect',[bonus])}</div>`;
             },
@@ -2520,13 +2527,16 @@ const interstellarProjects = {
                 Alloy(offset){ return spaceCostMultiplier('laboratory', offset, 95000, 1.28, 'interstellar'); },
                 Mythril(offset){ return spaceCostMultiplier('laboratory', offset, 8500, 1.28, 'interstellar'); }
             },
-            effect(){
+            effect(wiki){
                 let know = 10000;
                 if (global.tech.science >= 15){
-                    know *= 1 + ((global.race['cataclysm'] || global.race['orbit_decayed'] ? support_on['exotic_lab'] : global.city.wardenclyffe.count) * 0.02);
+                    let num_exo_labs_on = wiki ? global.space.exotic_lab.on : support_on['exotic_lab'];
+                    know *= 1 + ((global.race['cataclysm'] || global.race['orbit_decayed'] ? num_exo_labs_on : global.city.wardenclyffe.count) * 0.02);
                 }
-                if ((global.race['cataclysm'] || global.race['orbit_decayed']) && p_on['s_gate'] && gal_on['scavenger']){
-                    know *= 1 + (gal_on['scavenger'] * +(piracy('gxy_alien2') * 0.75).toFixed(1));
+                let sg_on = isStargateOn(wiki);
+                let num_tech_scavs_on = sg_on ? (wiki ? global.galaxy.scavenger.on : gal_on['scavenger']) : 0;
+                if ((global.race['cataclysm'] || global.race['orbit_decayed']) && num_tech_scavs_on > 0){
+                    know *= 1 + (num_tech_scavs_on * +(piracy('gxy_alien2',false,false,wiki) * 0.75).toFixed(1));
                 }
                 if (global.tech['science'] >= 21){
                     know *= 1.45;
@@ -2575,8 +2585,8 @@ const interstellarProjects = {
                 Adamantite(offset){ return spaceCostMultiplier('exchange', offset, 55000, 1.28, 'interstellar'); },
                 Graphene(offset){ return spaceCostMultiplier('exchange', offset, 78000, 1.28, 'interstellar'); }
             },
-            effect(){
-                let banks = global.race['cataclysm'] || global.race['orbit_decayed'] ? p_on['spaceport'] : (global.city['bank'] ? global.city.bank.count : 0);
+            effect(wiki){
+                let banks = global.race['cataclysm'] || global.race['orbit_decayed'] ? (wiki ? global.space.spaceport.on : p_on['spaceport']) : (global.city['bank'] ? global.city.bank.count : 0);
                 let b_vault = global.race['cataclysm'] || global.race['orbit_decayed']  ? (bank_vault() * 4) : bank_vault();
                 let vault = spatialReasoning(global.city['bank'] ? b_vault * banks / 18 : 0);
                 if (global.race['inflation']){
@@ -2584,10 +2594,12 @@ const interstellarProjects = {
                 }
                 if (global.tech.banking >= 13){
                     if (global.galaxy['freighter']){
-                        vault *= 1 + (gal_on['freighter'] * 0.03);
+                        let num_freighter_on = wiki ? global.galaxy.freighter.on : gal_on['freighter'];
+                        vault *= 1 + (num_freighter_on * 0.03);
                     }
                     if (global.galaxy['super_freighter']){
-                        vault *= 1 + (gal_on['super_freighter'] * 0.08);
+                        let num_super_freighter_on = wiki ? global.galaxy.super_freighter.on : gal_on['super_freighter'];
+                        vault *= 1 + (num_super_freighter_on * 0.08);
                     }
                 }
                 vault = +(vault).toFixed(0);
@@ -4434,12 +4446,14 @@ const galaxyProjects = {
                 Alloy(offset){ return spaceCostMultiplier('telemetry_beacon', offset, 425000, 1.25, 'galaxy'); },
                 Iridium(offset){ return spaceCostMultiplier('telemetry_beacon', offset, 177000, 1.25, 'galaxy'); },
             },
-            effect(){
+            effect(wiki){
                 let base = global.tech['telemetry'] ? 1200 : 800;
                 if (global.tech.science >= 17){
-                    base += gal_on['scout_ship'] * 25;
+                    let num_scout_ship_on = wiki ? global.galaxy.scout_ship.on : gal_on['scout_ship'];
+                    base += num_scout_ship_on * 25;
                 }
-                let know = p_on['telemetry_beacon'] ? base * p_on['telemetry_beacon'] : 0;
+                let num_telemetry_on = wiki ? global.galaxy.telemetry_beacon.on : p_on['telemetry_beacon'];
+                let know = num_telemetry_on ? base * num_telemetry_on : 0;
                 let gateway = '';
                 if (global.tech['gateway'] && global.tech['gateway'] >= 2){
                     gateway = `<div>${loc('galaxy_gateway_support',[$(this)[0].support()])}</div>`;
@@ -5134,8 +5148,8 @@ const galaxyProjects = {
                 Neutronium(offset){ return spaceCostMultiplier('scavenger', offset, 75000, 1.25, 'galaxy'); },
                 Elerium(offset){ return spaceCostMultiplier('scavenger', offset, 750, 1.25, 'galaxy'); }
             },
-            effect(){
-                let pirate = piracy('gxy_alien2');
+            effect(wiki){
+                let pirate = piracy('gxy_alien2',false,false,wiki);
                 let know = Math.round(pirate * 25000);
                 let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
                 let boost = global.race['cataclysm'] ? `<div>${loc('galaxy_scavenger_effect2_cata',[+(pirate * 100 * 0.75).toFixed(1)])}</div>` : `<div>${loc('galaxy_scavenger_effect2',[+(pirate * 100 / 4).toFixed(1)])}</div>`;
@@ -5338,7 +5352,6 @@ const galaxyProjects = {
             },
             effect(){
                 let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
-                let pirate = piracy('gxy_chthonian');
                 let deuterium = 0.65;
                 let vitreloy = 0.05;
                 let polymer = 2.3;
@@ -5387,7 +5400,7 @@ export function convertSpaceSector(part){
     return space;
 }
 
-export function piracy(region,rating,raw){
+export function piracy(region,rating,raw,wiki){
     if (global.tech['piracy'] && !global.race['truepath']){
         let armada = 0;
         let ships = ['dreadnought','cruiser_ship','frigate_ship','corvette_ship','scout_ship'];
@@ -5426,27 +5439,33 @@ export function piracy(region,rating,raw){
                 break;
         }
 
-        if (region === 'gxy_stargate' && p_on['defense_platform']){
-            armada += p_on['defense_platform'] * 20;
+        let num_def_plat_on = wiki ? global.galaxy.defense_platform.on : p_on['defense_platform'];
+        if (region === 'gxy_stargate' && num_def_plat_on){
+            armada += num_def_plat_on * 20;
         }
 
-        if (region === 'gxy_gateway' && p_on['starbase']){
-            armada += p_on['starbase'] * 25;
+        let num_starbase_on = wiki ? global.galaxy.starbase.on : p_on['starbase'];
+        if (region === 'gxy_gateway' && num_starbase_on){
+            armada += num_starbase_on * 25;
         }
 
-        if (region === 'gxy_alien2' && p_on['foothold']){
-            armada += p_on['foothold'] * 50;
-            if (gal_on['armed_miner']){
-                armada += gal_on['armed_miner'] * galaxyProjects.gxy_alien2.armed_miner.ship.rating();
+        let num_foothold_on = wiki ? global.galaxy.foothold.on : p_on['foothold'];
+        if (region === 'gxy_alien2' && num_foothold_on){
+            armada += num_foothold_on * 50;
+            let num_armed_miner_on = wiki ? global.galaxy.armed_miner.on : gal_on['armed_miner'];
+            if (num_armed_miner_on){
+                armada += num_armed_miner_on * galaxyProjects.gxy_alien2.armed_miner.ship.rating();
             }
         }
 
         if (region === 'gxy_chthonian'){
-            if (gal_on['minelayer']){
-                armada += gal_on['minelayer'] * galaxyProjects.gxy_chthonian.minelayer.ship.rating();
+            let num_minelayer_on = wiki ? global.galaxy.minelayer.on : gal_on['minelayer'];
+            if (num_minelayer_on){
+                armada += num_minelayer_on * galaxyProjects.gxy_chthonian.minelayer.ship.rating();
             }
-            if (gal_on['raider']){
-                armada += gal_on['raider'] * galaxyProjects.gxy_chthonian.raider.ship.rating();
+            let num_raider_on = wiki ? global.galaxy.raider.on : gal_on['raider'];
+            if (num_raider_on){
+                armada += num_raider_on * galaxyProjects.gxy_chthonian.raider.ship.rating();
             }
         }
 
@@ -5456,7 +5475,7 @@ export function piracy(region,rating,raw){
 
         if (region !== 'gxy_stargate'){
             let patrol = armada > pirate ? pirate : armada;
-            return ((1 - (pirate - patrol) / pirate) * pillage + (1 - pillage)) * (rating ? 1 : piracy('gxy_stargate'));
+            return ((1 - (pirate - patrol) / pirate) * pillage + (1 - pillage)) * (rating ? 1 : piracy('gxy_stargate',false,false,wiki));
         }
         else {
             let patrol = armada > pirate ? pirate : armada;
@@ -7040,4 +7059,8 @@ function terraformScore(planet,wiki){
         pts -= (ts - 3) ** 2;
     }
     return pts;
+}
+
+export function isStargateOn(wiki){
+    return Boolean(wiki ? global.interstellar?.s_gate?.on : p_on['s_gate']);
 }
