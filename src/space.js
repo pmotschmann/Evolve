@@ -13,7 +13,6 @@ import { defineGovernor, govActive } from './governor.js';
 import { ascend, terraform } from './resets.js';
 import { loadTab } from './index.js';
 import { loc } from './locale.js';
-import { isStargateOn } from './space.js';
 
 const spaceProjects = {
     spc_home: {
