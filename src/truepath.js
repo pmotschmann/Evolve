@@ -2105,9 +2105,9 @@ const tauCetiModules = {
                         return 0;
                 }
             },
-            effect(){
+            effect(wiki){
                 let storage = '<div class="aTable">';
-                let multiplier = tpStorageMultiplier('repository',false,false);
+                let multiplier = tpStorageMultiplier('repository',false,wiki);
                 let containers = 250;
                 for (const res of $(this)[0].res()){
                     if (global.resource[res].display){
