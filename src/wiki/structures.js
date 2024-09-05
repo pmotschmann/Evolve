@@ -229,9 +229,8 @@ function addCalcInputs(parent,key,section,region,path){
         if (action.hasOwnProperty('effect') && typeof action.effect !== 'string'){
             let effect = $(`.effect`, `#${key}`);
             clearElement(effect);
-            let insert = inputs.owned - inputs.real_owned;
+            let insert = { isWiki: true, count: inputs.owned - inputs.real_owned };
             if (effectInputs[key]){
-                insert = { count: insert };
                 effectInputs[key].forEach(function(inp){
                     switch (inp){
                         case 'truepath':
@@ -244,9 +243,15 @@ function addCalcInputs(parent,key,section,region,path){
         }
     };
     updateEffect();
-    
+
     let cost = action.cost;
-    
+
+    if (cost){
+        Object.keys(adjustCosts(action)).forEach(function (res){
+            resources[res] = {};
+        });
+    }
+
     //Functions to update costs and cost creeps
     let updateCosts = function(){
         let vis = false;
