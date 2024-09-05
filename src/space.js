@@ -2470,7 +2470,7 @@ const interstellarProjects = {
             },
             effect(wiki){
                 let bonus = 12;
-                let num_citadels_on = wiki ? 0 : p_on['citadel'];
+                let num_citadels_on = wiki ? (global.interstellar?.citadel?.on ?? 0) : p_on['citadel'];
                 if (global.tech['ai_core'] && global.tech['ai_core'] >= 2 && num_citadels_on > 0){
                     bonus += num_citadels_on * 2;
                 }
@@ -3336,7 +3336,7 @@ const interstellarProjects = {
                 return `${desc}<div class="has-text-caution">${loc('interstellar_citadel_power',[$(this)[0].powered(wiki),powerCostMod(2.5)])}</div>`;
             },
             powered(wiki){
-                let num_powered = wiki ? (global.interstellar?.citadel?.on ?? 0) : p_on['citadel'];
+                let num_powered = wiki ? 0 : p_on['citadel'];
                 if (num_powered > 1){
                     return powerCostMod(30 + ((num_powered - 1) * 2.5));
                 }
