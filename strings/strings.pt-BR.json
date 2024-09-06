@@ -584,7 +584,7 @@
   "manual_crafting_hover_craft": "Construído:",
   "manual_crafting_hover_use": "Usado:",
   "rejuvenated": "Rejuvenescido",
-  "event_dna": "Algumas moléculas de DNA se replicaram. Você ganhou %0 de DNA."
+  "event_dna": "Algumas moléculas de DNA se replicaram. Você ganhou %0 de DNA.",
   "event_rna": "Um meteoro impactou o planeta, trazendo novo material genético consigo. Ganhou %0 RNA.",
   "event_inspiration": "Seus cientistas se inspiraram. A geração de conhecimento dobrou temporariamente.",
   "event_inspiration_bd": "Inspirado",
