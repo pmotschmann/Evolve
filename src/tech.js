@@ -4334,7 +4334,7 @@ const techs = {
         effect(){return loc('tech_devilish_dish_effect');},
         action(){
             if (payCosts($(this)[0])){
-                global.portal['dish_soul_infuser'] = {count:0, on:0};
+                global.portal['dish_soul_steeper'] = {count:0, on:0};
                 global.portal['dish_life_infuser'] = {count:0, on:0};
                 global.portal['devilish_dish'] = {done:0};
                 return true;

@@ -3783,8 +3783,8 @@ function fastLoop(){
         if (global.race['malnutrition'] && fed === false){
             hunger += traits.malnutrition.vars()[0] / 100;
         }
-        if(global.portal && global.portal['dish_soul_infuser'] && global.portal['dish_soul_infuser'].on){
-            hunger -= (0.03 + (global.race['malnutrition'] ? 0.01 : 0) + (global.race['angry'] ? -0.01 : 0)) * global.portal['dish_soul_infuser'].on;
+        if(global.portal && global.portal['dish_soul_steeper'] && global.portal['dish_soul_steeper'].on){
+            hunger -= (0.03 + (global.race['malnutrition'] ? 0.01 : 0) + (global.race['angry'] ? -0.01 : 0)) * global.portal['dish_soul_steeper'].on;
         }
         hunger = Math.max(hunger, 0);
 
@@ -11467,8 +11467,8 @@ function longLoop(){
             global.tech['plague'] = 5;
         }
 
-        if(global.tech['dish'] >= 1 && global.portal['dish_soul_infuser'].on && global.portal['spire'] && global.portal['spire'].count){
-            let progress = 0.00002 * global.portal['dish_soul_infuser'].on;
+        if(global.tech['dish'] >= 1 && global.portal['dish_soul_steeper'].on && global.portal['spire'] && global.portal['spire'].count){
+            let progress = 0.00002 * global.portal['dish_soul_steeper'].on;
             let hunger = 0.5;
             if (global.race['angry']){
                 hunger -= traits.angry.vars()[0] / 100;
