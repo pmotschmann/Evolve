@@ -3511,10 +3511,10 @@ const interstellarProjects = {
                     if (global.tech['blackhole'] >= 5){
                         let exotic = +(global.interstellar.stellar_engine.exotic).toFixed(10);
                         let blackhole = global.interstellar.stellar_engine.exotic > 0 ? loc('interstellar_stellar_engine_effect3',[r_mass,exotic]) : loc('interstellar_stellar_engine_effect2',[r_mass]);
-                        return `<div>${loc('interstellar_stellar_engine_complete',[output])}</div><div>${blackhole}</div>`;
+                        return `<div>${loc('interstellar_stellar_engine_complete',[+output.toFixed(2)])}</div><div>${blackhole}</div>`;
                     }
                     else {
-                        return loc('interstellar_stellar_engine_complete',[output]);
+                        return loc('interstellar_stellar_engine_complete',[+output.toFixed(2)]);
                     }
                 }
             },
