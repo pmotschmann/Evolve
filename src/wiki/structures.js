@@ -167,22 +167,6 @@ const calcInfo = {
     }
 };
 
-//Properties of inputs to use when adding.
-const inputTypes = {
-    mass_driver: {
-        type: "field",
-        min: 0,
-        import(){ return global.city['mass_driver'] ? global.city['mass_driver'].on : 0; }
-    }
-};
-
-//Additional inputs to pass for unique cases or things affected by other things.
-const calcInputs = {
-    fuelAdj: {
-        inputs: ['mass_driver']
-    }
-};
-
 //Additional information to pass to an action's effect() function;
 const effectInputs ={
     terraformer: ['truepath']
@@ -195,6 +179,7 @@ function addCalcInputs(parent,key,section,region,path){
         costVis: false,
         creepVis: false,
         extra: {
+            isWiki: true,
             truepath: path === 'truepath'
         }
     };
@@ -239,19 +224,13 @@ function addCalcInputs(parent,key,section,region,path){
         inputs.real_owned = calcInfo.count[section][key];
     }
     
-    //Add any additional inputs (Fully implement later)
-    let addInput = function(new_input){
-        inputs.extra[new_input] = inputTypes[new_input].import();
-    }
-    
     //Function to update function-based effects with # of building owned.
     let updateEffect = function(){
         if (action.hasOwnProperty('effect') && typeof action.effect !== 'string'){
             let effect = $(`.effect`, `#${key}`);
             clearElement(effect);
-            let insert = inputs.owned - inputs.real_owned;
+            let insert = { isWiki: true, count: inputs.owned - inputs.real_owned };
             if (effectInputs[key]){
-                insert = { count: insert };
                 effectInputs[key].forEach(function(inp){
                     switch (inp){
                         case 'truepath':
@@ -264,19 +243,15 @@ function addCalcInputs(parent,key,section,region,path){
         }
     };
     updateEffect();
-    
+
     let cost = action.cost;
+
     if (cost){
         Object.keys(adjustCosts(action)).forEach(function (res){
             resources[res] = {};
-            if (section === 'space' && (res === 'Oil' || res === 'Helium_3')){
-                calcInputs.fuelAdj.inputs.forEach(function (input){
-                    addInput(input);
-                });
-            }
         });
     }
-    
+
     //Functions to update costs and cost creeps
     let updateCosts = function(){
         let vis = false;

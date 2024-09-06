@@ -1,5 +1,5 @@
-import { global, p_on, support_on, sizeApproximation, quantum_level } from './vars.js';
-import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect, adjustCosts } from './functions.js';
+import { global, p_on, support_on, sizeApproximation } from './vars.js';
+import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect, adjustCosts, get_qlevel } from './functions.js';
 import { races, traits } from './races.js';
 import { spatialReasoning, unlockContainers } from './resources.js';
 import { armyRating, garrisonSize } from './civics.js';
@@ -106,11 +106,11 @@ const outerTruth = {
                 Steel(offset){ return spaceCostMultiplier('electrolysis', offset, 220000, 1.25); },
                 Polymer(offset){ return spaceCostMultiplier('electrolysis', offset, 380000, 1.25); }
             },
-            effect(){
-                let support = `<div>+${loc(`galaxy_alien2_support`,[$(this)[0].support(),planetName().titan])}</div>`;
+            effect(wiki){
+                let support = `<div>+${loc(`galaxy_alien2_support`,[$(this)[0].support(wiki),planetName().titan])}</div>`;
                 return `${support}<div class="has-text-caution">${loc('space_electrolysis_use',[$(this)[0].support_fuel().a,global.resource.Water.name,$(this)[0].powered()])}</div>`;
             },
-            support(){
+            support(wiki){
                 return global.tech['titan_ai_core'] && global.tech.titan_ai_core >= 2 && (wiki ? global.space.ai_core2.on : p_on['ai_core2']) ? 3 : 2;
             },
             support_fuel(){ return { r: 'Water', a: 35 }; },
@@ -305,10 +305,10 @@ const outerTruth = {
                         return 0;
                 }
             },
-            effect(){
+            effect(wiki){
                 let storage = '<div class="aTable">';
-                let multiplier = tpStorageMultiplier('storehouse',false);
-                let h_multiplier = tpStorageMultiplier('storehouse',true);
+                let multiplier = tpStorageMultiplier('storehouse',false,wiki);
+                let h_multiplier = tpStorageMultiplier('storehouse',true,wiki);
                 for (const res of $(this)[0].res()){
                     if (global.resource[res].display){
                         let heavy = $(this)[0].heavy(res);
@@ -456,7 +456,7 @@ const outerTruth = {
                 if (global.race['high_pop']){
                     know = highPopAdjust(know);
                 }
-                if (wiki ? global.space.ai_core2.on : p_on['ai_core2']){
+                if (wiki ? (global.space?.ai_core2?.on ?? 0) : p_on['ai_core2']){
                     know *= 1.25;
                 }
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[planetName().titan])}</div>`;
@@ -506,7 +506,7 @@ const outerTruth = {
             },
             effect(wiki){
                 let effectText = `<div>${loc('space_ai_core_effect')}</div>`;
-                let count = ((wiki || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0));
+                let count = ((wiki?.count ?? 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0));
                 if (count < 100){
                     let remain = 100 - count;
                     effectText += `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
@@ -551,16 +551,16 @@ const outerTruth = {
                 return powerCostMod(100);
             },
             p_fuel(){ return { r: 'Water', a: 1000 }; },
-            effect(){
+            effect(wiki){
                 let value = 25;
-                let desc = `<div class="has-text-warning">${loc('interstellar_citadel_stat',[+(quantum_level).toFixed(1)])}</div>`;
+                let desc = `<div class="has-text-warning">${loc('interstellar_citadel_stat',[+(get_qlevel(wiki)).toFixed(1)])}</div>`;
                 desc += `<div>${loc('interstellar_citadel_effect',[value])}</div><div>${loc('space_ai_core_effect2',[value])}</div>`;
                 if (global.tech['titan_ai_core'] && global.tech.titan_ai_core >= 2){
                     desc += `<div>${loc('space_ai_core_effect3',[50])}</div>`;
                 }
                 desc += `<div class="has-text-caution">${loc('space_electrolysis_use',[$(this)[0].p_fuel().a,global.resource[$(this)[0].p_fuel().r].name,$(this)[0].powered()])}</div>`;
                 if (global.tech['titan_ai_core'] && global.tech.titan_ai_core >= 3){
-                    let drift = +calcAIDrift().toFixed(1);
+                    let drift = +calcAIDrift(wiki).toFixed(1);
                     desc += `<div class="has-text-advanced">${loc('space_ai_core_effect4',[drift])}</div>`;
                 }
                 return desc;
@@ -1332,7 +1332,7 @@ const tauCetiModules = {
             },
             effect(wiki){
                 let effectText = '';
-                let count = (wiki || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0);
+                let count = (wiki?.count ?? 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0);
                 if (count < 1000){
                     let remain = 1000 - count;
                     effectText += `<div>${loc('tau_star_ringworld_effect')}</div>`;
@@ -1969,7 +1969,7 @@ const tauCetiModules = {
                 Materials(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('jump_gate') ? global.tauceti.jump_gate.count : 0)) < 100 ? 12500 : 0; },
             },
             effect(wiki){
-                let count = (wiki || 0) + (global.tauceti.hasOwnProperty('jump_gate') ? global.tauceti.jump_gate.count : 0);
+                let count = (wiki?.count ?? 0) + (global.tauceti.hasOwnProperty('jump_gate') ? global.tauceti.jump_gate.count : 0);
                 if (count < 100){
                     let remain = 100 - count;
                     return `<div>${loc('tau_jump_gate_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
@@ -2105,9 +2105,9 @@ const tauCetiModules = {
                         return 0;
                 }
             },
-            effect(){
+            effect(wiki){
                 let storage = '<div class="aTable">';
-                let multiplier = tpStorageMultiplier('repository');
+                let multiplier = tpStorageMultiplier('repository',false,wiki);
                 let containers = 250;
                 for (const res of $(this)[0].res()){
                     if (global.resource[res].display){
@@ -3285,7 +3285,7 @@ const tauCetiModules = {
             },
             effect(wiki){
                 let effectText = '';
-                let count = (wiki || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0);
+                let count = (wiki?.count ?? 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0);
                 if (count < 100){
                     effectText += `<div class="has-text-special">${loc('tau_gas2_alien_station_repaired',[count])}</div>`;
                     return effectText;
@@ -3372,7 +3372,7 @@ const tauCetiModules = {
             },
             effect(wiki){
                 let effectText = '';
-                let count = (wiki || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0);
+                let count = (wiki?.count ?? 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0);
                 if (count < 1000){
                     effectText += `<div class="has-text-special">${loc('tau_gas2_matrioshka_brain_seg',[1000 - count])}</div>`;
                 }
@@ -3417,7 +3417,7 @@ const tauCetiModules = {
             },
             effect(wiki){
                 let effectText = '';
-                let count = (wiki || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0);
+                let count = (wiki?.count ?? 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0);
                 if (count < 10){
                     effectText += `<div class="has-text-special">${loc('tau_gas2_ignition_device_seg',[10 - count])}</div>`;
                 }
@@ -4926,7 +4926,7 @@ function transferWindow(p1,p2){
     return Math.ceil(Math.sqrt(((p2.x - p1.x) ** 2) + ((p2.y - p1.y) ** 2)) * 225);
 }
 
-export function tpStorageMultiplier(type,heavy){
+export function tpStorageMultiplier(type,heavy,wiki){
     let multiplier = 1;
     if (global.race['pack_rat']){
         multiplier *= 1 + (traits.pack_rat.vars()[1] / 100);
@@ -4940,8 +4940,9 @@ export function tpStorageMultiplier(type,heavy){
     switch (type){
         case 'storehouse':
         {
-            if (p_on['titan_spaceport']){
-                multiplier *= 1 + (p_on['titan_spaceport'] * 0.25);
+            let titan_spaceport_on = wiki ? (global.space?.titan_spaceport?.on ?? 0) : p_on['titan_spaceport'];
+            if (titan_spaceport_on){
+                multiplier *= 1 + (titan_spaceport_on * 0.25);
             }
             if (heavy && global.tech['shelving']){
                 multiplier *= 2;
@@ -5599,16 +5600,20 @@ export function loneSurvivor(){
     }
 }
 
-export function calcAIDrift(){
+export function calcAIDrift(wiki){
     let drift = 0;
-    if (p_on['ai_colonist'] && support_on['decoder']){
-        drift += p_on['ai_colonist'] * support_on['decoder'] * 0.35;
+    let ai_colonist_on = wiki ? global.space.ai_colonist.on : p_on['ai_colonist'];
+    let decoder_on = wiki ? global.space.decoder.on : p_on['decoder'];
+    let shock_trooper_on = wiki ? global.space.shock_trooper.on : p_on['shock_trooper'];
+    let tank_on = wiki ? global.space.tank.on : p_on['tank'];
+    if (ai_colonist_on && decoder_on){
+        drift += ai_colonist_on * decoder_on * 0.35;
     }
-    if (support_on['shock_trooper']){
-        drift += support_on['shock_trooper'] * 2;
+    if (shock_trooper_on){
+        drift += shock_trooper_on * 2;
     }
-    if (support_on['tank']){
-        drift += support_on['tank'] * 2;
+    if (tank_on){
+        drift += tank_on * 2;
     }
     if (drift > 100){
         drift = 100;

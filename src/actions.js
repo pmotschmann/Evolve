@@ -1,6 +1,6 @@
-import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, int_on, gal_on, spire_on, quantum_level, tmp_vars, setupStats } from './vars.js';
+import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, int_on, gal_on, spire_on, tmp_vars, setupStats } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename } from './functions.js';
+import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
 import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck } from './races.js';
 import { defineResources, unlockCrates, unlockContainers, galacticTrade, spatialReasoning, resource_values, initResourceTabs, drawResourceTab, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus } from './resources.js';
@@ -2178,9 +2178,9 @@ export const actions = {
                         return 0;
                 }
             },
-            effect(){
+            effect(wiki){
                 let storage = '<div class="aTable">';
-                let multiplier = storageMultipler();
+                let multiplier = storageMultipler(wiki);
                 for (const res of $(this)[0].res()){
                     if (global.resource[res].display){
                         let val = sizeApproximation(+(spatialReasoning($(this)[0].val(res)) * multiplier).toFixed(0),1);
@@ -3384,7 +3384,7 @@ export const actions = {
                 },
                 Aerogel(offset, wiki){
                     const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
-                    if((wiki && wiki.truepath) || global.race['truepath']){
+                    if(wiki ? wiki.truepath : global.race['truepath']){
                         return 0;
                     }
                     switch (count){
@@ -3398,7 +3398,7 @@ export const actions = {
                 },
                 Quantium(offset, wiki){
                     const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
-                    if((wiki && !wiki.truepath) || !global.race['truepath']){
+                    if(wiki ? !wiki.truepath : !global.race['truepath']){
                         return 0;
                     }
                     switch (count){
@@ -3422,7 +3422,7 @@ export const actions = {
             },
             effect(wiki){
                 let strength = global.city['banquet'] ? global.city['banquet'].strength : 0;
-                let count = (wiki ? wiki : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
+                let count = (wiki?.count ?? 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
                 let desc = `<div>Strength: <span class="has-text-caution">${strength}</span></div>`;
                 desc += `<div>${loc(`city_banquet_effect1`, [sizeApproximation(((count >= 5 ? 1.02 : 1.022)**(strength) - 1) * 100)])}</div>`;
                 if(count >= 1){
@@ -3501,7 +3501,7 @@ export const actions = {
                     multiplier *= 1 + (traits.curious.vars(3)[0] * fathom);
                 }
                 let sg_on = isStargateOn(wiki);
-                let num_tech_scavs_on = sg_on ? (wiki ? global.galaxy.scavenger.on : gal_on['scavenger']) : 0;
+                let num_tech_scavs_on = sg_on ? (wiki ? (global.galaxy?.scavenger?.on ?? 0) : gal_on['scavenger']) : 0;
                 if (num_tech_scavs_on > 0){
                     let pirate_alien2 = piracy('gxy_alien2', false, false, wiki);
                     let uni = num_tech_scavs_on * pirate_alien2 / 4;
@@ -4057,7 +4057,7 @@ export const actions = {
                 Nano_Tube(offset){ return ((offset || 0) + (global.starDock.hasOwnProperty('seeder') ? global.starDock.seeder.count : 0)) < 100 ? 12000 : 0; },
             },
             effect(wiki){
-                let count = (wiki || 0) + (global.starDock['seeder'] ? global.starDock.seeder.count : 0);
+                let count = (wiki?.count ?? 0) + (global.starDock['seeder'] ? global.starDock.seeder.count : 0);
                 let remain = count < 100 ? loc('star_dock_seeder_status1',[100 - count]) : loc('star_dock_seeder_status2');
                 return `<div>${global.race['cataclysm'] ? loc('star_dock_exodus_effect') : loc('star_dock_seeder_effect')}</div><div class="has-text-special">${remain}</div>`;
             },
@@ -4598,34 +4598,41 @@ const raceList = [
     'ghast','shoggoth',
     'custom'
 ];
-raceList.forEach(race => actions.evolution[race] = {
-    id: `evolution-${race}`,
-    title(){ return races[race].name; },
-    desc(){ return `${loc("evo_evolve")} ${races[race].name}`; },
-    reqs: { evo: 7 },
-    grant: ['evo',8],
-    condition(){ return (global.race.seeded || (global.stats.achieve['mass_extinction'] && global.stats.achieve['mass_extinction'].l >= 1) || (global.stats.achieve[`extinct_${race}`] && global.stats.achieve[`extinct_${race}`].l >= 1))
-      && global.tech[`evo_${races[race].type}`] >= 2 && global.evolution.final === 100 && !global.race['evoFinalMenu']; },
-    cost: {
-        RNA(){ return 320; },
-        DNA(){ return 320; }
-    },
-    race: true,
-    effect(){ return `${typeof races[race].desc === 'string' ? races[race].desc : races[race].desc()} ${loc(`evo_complete`)}`; },
-    action(){
-        if (payCosts($(this)[0])){
-            if (['synth','custom'].includes(race)){
-                return evoExtraState(race);
-            }
-            else {
-                global.race.species = race;
-                sentience();
-            };
+raceList.forEach(function(race){
+    if (race !== 'custom' || global.custom.hasOwnProperty('race0')) {
+        actions.evolution[race] = {
+            id: `evolution-${race}`,
+            title(){ return races[race].name; },
+            desc(){ return `${loc("evo_evolve")} ${races[race].name}`; },
+            reqs: { evo: 7 },
+            grant: ['evo',8],
+            condition(){ return (global.race.seeded || (global.stats.achieve['mass_extinction'] && global.stats.achieve['mass_extinction'].l >= 1) || (global.stats.achieve[`extinct_${race}`] && global.stats.achieve[`extinct_${race}`].l >= 1))
+              && global.tech[`evo_${races[race].type}`] >= 2 && global.evolution.final === 100 && !global.race['evoFinalMenu']; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            race: true,
+            effect(){
+                let raceDesc = typeof races[race].desc === 'string' ? races[race].desc : races[race].desc();
+                return `${raceDesc} ${loc(`evo_complete`)}`;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    if (['synth','custom'].includes(race)){
+                        return evoExtraState(race);
+                    }
+                    else {
+                        global.race.species = race;
+                        sentience();
+                    };
+                }
+                return false;
+            },
+            queue_complete(){ return global.tech['evo'] && global.tech.evo === 7 ? 1 : 0; },
+            emblem(){ return format_emblem(`extinct_${race}`); }
         }
-        return false;
-    },
-    queue_complete(){ return global.tech['evo'] && global.tech.evo === 7 ? 1 : 0; },
-    emblem(){ return format_emblem(`extinct_${race}`); }
+    }
 });
 
 if (Object.keys(global.stats.synth).length > 1){
@@ -5072,7 +5079,7 @@ export function BHStorageMulti(val){
     return Math.round(val);
 }
 
-export function storageMultipler(){
+export function storageMultipler(wiki){
     let multiplier = (global.tech['storage'] - 1) * 1.25 + 1;
     if (global.tech['storage'] >= 3){
         multiplier *= global.tech['storage'] >= 4 ? 3 : 1.5;
@@ -5104,7 +5111,7 @@ export function storageMultipler(){
         multiplier *= 1 + (global.blood['hoarder'] / 100);
     }
     if (global.tech['storage'] >= 7 && global.interstellar['cargo_yard']){
-        multiplier *= 1 + ((global.interstellar['cargo_yard'].count * quantum_level) / 100);
+        multiplier *= 1 + ((global.interstellar['cargo_yard'].count * get_qlevel(wiki)) / 100);
     }
     return multiplier;
 }
@@ -6284,7 +6291,7 @@ export function powerOnNewStruct(c_action,extra){
 // Return the powered/supported/enabled quantity of a struct.
 // When called from the wiki, assume that "enough" support is available, because this information is not in the save.
 // For structs that cannot be enabled, powered, or supported, always return 0.
-export function getStructNumActive(c_action,wiki){
+export function getStructNumActive(c_action,isWiki){
     let parts = c_action.id.split('-');
     if (!global.hasOwnProperty(parts[0]) || !global[parts[0]].hasOwnProperty(parts[1])){
         return 0;
@@ -6300,7 +6307,7 @@ export function getStructNumActive(c_action,wiki){
     if (c_action.hasOwnProperty('powered') && c_action.powered() > 0) {
         if (global.city.hasOwnProperty('powered')){
             // The p_on struct is empty in the wiki view
-            if (!wiki){
+            if (!isWiki){
                 num_on = p_on[parts[1]];
             }
         }
@@ -6311,12 +6318,12 @@ export function getStructNumActive(c_action,wiki){
 
     // Support: production is positive, consumption is negative
     if (c_action.hasOwnProperty('s_type') && c_action.hasOwnProperty('support') && c_action.support() < 0){
-        if (wiki) {
+        if (isWiki) {
             // The support_on and similarly-named structs are empty in the wiki view
             // This means that the wiki can be wrong, but we can at least check "max" support
             let grids = gridDefs();
             let s_r = grids[c_action.s_type].r;
-            if (s_r === 'galaxy' && !isStargateOn(wiki)){
+            if (s_r === 'galaxy' && !isStargateOn(isWiki)){
                 num_on = 0;
             }
             else {
@@ -6337,7 +6344,7 @@ export function getStructNumActive(c_action,wiki){
             }
             if (gal_on.hasOwnProperty(parts[1])){
                 found_support = true;
-                num_on = isStargateOn(wiki) ? Math.min(num_on, gal_on[parts[1]]) : 0;
+                num_on = isStargateOn(isWiki) ? Math.min(num_on, gal_on[parts[1]]) : 0;
             }
             if (spire_on.hasOwnProperty(parts[1])){
                 found_support = true;
