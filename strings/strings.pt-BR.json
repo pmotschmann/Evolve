@@ -1066,7 +1066,7 @@
   "city_gather": "Coletar %0",
   "city_conjour": "Invocar %0",
   "city_food": "Coletar Comida",
-  "city_food_desc": "Colher e preservar %0 comida",
+  "city_food_desc": "Coletar e armazenar %0 de comida"
   "city_food_conjure": "Invocar Comida na Cidade",
   "city_food_conjure_desc": "Crie %0 comidas com magia",
   "city_trick": "Doces ou travessuras!",
