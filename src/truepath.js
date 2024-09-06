@@ -1565,7 +1565,7 @@ const tauCetiModules = {
                         global.tauceti.colony.on++;
                         global.tauceti.mining_pit.on++;
 
-                        let hiredMax = jobScale(4);
+                        let hiredMax = $(tauCetiModules.tau_home.mining_pit)[0].workers();
                         global.civic.pit_miner.max += hiredMax;
 
                         let hired = Math.min(hiredMax, global.civic[global.civic.d_job].workers);
@@ -1843,7 +1843,7 @@ const tauCetiModules = {
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].home])}</div>`;
-                desc = desc + `<div>${loc('plus_max_resource',[jobScale(global.tech['isolation'] ? 6 : 8),loc('job_pit_miner')])}</div>`;
+                desc = desc + `<div>${loc('plus_max_resource',[$(this)[0].workers(),loc('job_pit_miner')])}</div>`;
                 if (!tauEnabled()){
                     desc = desc + `<div>${loc('plus_max_resource',[1000000,loc('resource_Materials_name')])}</div>`;
                     desc = desc + `<div>${loc('tau_home_mining_pit_effect',[global.resource.Materials.name])}</div>`;
@@ -1881,10 +1881,18 @@ const tauCetiModules = {
             s_type: 'tau_home',
             support(){ return -1; },
             powered(){ return 0; },
+            workers(){ return jobScale(global.tech['isolation'] ? 6 : 8); },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.mining_pit.count++;
-                    powerOnNewStruct($(this)[0]);
+                    if (powerOnNewStruct($(this)[0])){
+                        let hiredMax = $(this)[0].workers();
+                        global.civic.pit_miner.max += hiredMax;
+
+                        let hired = Math.min(hiredMax, global.civic[global.civic.d_job].workers);
+                        global.civic[global.civic.d_job].workers -= hired;
+                        global.civic.pit_miner.workers += hired;
+                    }
                     return true;
                 }
                 return false;
@@ -2160,7 +2168,7 @@ const tauCetiModules = {
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].home])}</div>`;
-                desc = desc + `<div>${loc('tau_home_tau_factory_effect',[global.tech['isolation'] ? 5 : 3])}</div>`;
+                desc = desc + `<div>${loc('tau_home_tau_factory_effect',[$(this)[0].manufacturing()])}</div>`;
                 if (global.tech['isolation']){
                     if (!global.race['flier']){
                         desc = desc + `<div>${loc('city_cement_plant_effect1',[jobScale(2)])}</div>`;
@@ -2175,11 +2183,15 @@ const tauCetiModules = {
             s_type: 'tau_home',
             support(){ return -1; },
             powered(){ return powerCostMod(global.tech['isolation'] ? 2 : 5); },
+            manufacturing() { return global.tech['isolation'] ? 5 : 3; },
             action(){
                 if (payCosts($(this)[0])){
                     global.civic.craftsman.display = true; // Needed in Lone Survivor
                     global.tauceti.tau_factory.count++;
-                    powerOnNewStruct($(this)[0]);
+                    if (powerOnNewStruct($(this)[0])){
+                        global.city.factory.Alloy += $(this)[0].manufacturing();
+                        defineIndustry();
+                    }
                     return true;
                 }
                 return false;
@@ -2958,6 +2970,7 @@ const tauCetiModules = {
                 Sheet_Metal(offset){ return spaceCostMultiplier('ore_refinery', offset, wom_recycle(118000), 1.28, 'tauceti'); },
             },
             powered(){ return powerCostMod(global.tech['isolation'] ? 2 : 8); },
+            smelting(){ return global.tech['isolation'] ? 12 : 4; },
             effect(){
                 let ore = global.tauceti.hasOwnProperty('ore_refinery') ? global.tauceti.ore_refinery.fill : 0;
                 let max = global.tauceti.hasOwnProperty('ore_refinery') ? global.tauceti.ore_refinery.max : 0;
@@ -2965,7 +2978,7 @@ const tauCetiModules = {
                 let desc = `<div>${loc('tau_gas_ore_refinery_effect',[+ore.toFixed(2)])}</div>`;
                 desc = desc + `<div>${loc('tau_gas_ore_refinery_effect2',[max])}</div>`;
                 desc = desc + `<div>${loc('tau_gas_ore_refinery_effect3',[refine])}</div>`;
-                desc = desc + `<div>${loc('interstellar_stellar_forge_effect3',[global.tech['isolation'] ? 12 : 4])}</div>`;
+                desc = desc + `<div>${loc('interstellar_stellar_forge_effect3',[$(this)[0].smelting()])}</div>`;
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
             },
@@ -2974,13 +2987,14 @@ const tauCetiModules = {
                 if (payCosts($(this)[0])){
                     global.tauceti.ore_refinery.count++;
                     if (powerOnNewStruct($(this)[0])){
-                        global.city.smelter.cap += global.tech['isolation'] ? 12 : 2;
-                        global.city.smelter.Steel += global.tech['isolation'] ? 12 : 2;
+                        let num_smelters = $(this)[0].smelting();
+                        global.city.smelter.cap += num_smelters;
+                        global.city.smelter.Steel += num_smelters;
                         if (global.race['evil']) {
-                            global.city['smelter'].Wood += global.tech['isolation'] ? 12 : 2;
+                            global.city['smelter'].Wood += num_smelters;
                         }
                         else {
-                            global.city.smelter.Oil += global.tech['isolation'] ? 12 : 2;
+                            global.city.smelter.Oil += num_smelters;
                         }
                     }
                     return true;
