@@ -80,7 +80,7 @@
   "theme_redgreen": "Daltonismo Vermelho-verde",
   "theme_gruvboxLight": "GruvBox (Claro)",
   "theme_gruvboxDark": "GruvBox (Escuro)",
-  "theme_orangeSoda": "Refrigerante de Laranja",
+  "theme_orangeSoda": "Soda Laranja",
   "theme_dracula": "Drácula",
   "units": "Notação Numérica",
   "metric": "Métrica",
@@ -1066,7 +1066,7 @@
   "city_gather": "Coletar %0",
   "city_conjour": "Invocar %0",
   "city_food": "Coletar Comida",
-  "city_food_desc": "Coletar e armazenar %0 de comida"
+  "city_food_desc": "Coletar e armazenar %0 de comida",
   "city_food_conjure": "Invocar Comida na Cidade",
   "city_food_conjure_desc": "Crie %0 comidas com magia",
   "city_trick": "Doces ou travessuras!",
@@ -1354,7 +1354,7 @@
   "city_wardenclyffe_desc": "Instalação avançada de ciência",
   "city_wardenclyffe_effect1": "+%0 Máximo de %1",
   "city_wardenclyffe_effect2": "Se alimentado, consome %0 MW, mas aumenta o conhecimento máximo em %1.",
-  "city_wardenclyffe_effect3": "Se alimentado, consome %0 MW, mas aumenta o conhecimento máximo em %1 e a moral em %2%."
+  "city_wardenclyffe_effect3": "Se alimentado, consome %0 MW, mas aumenta o conhecimento máximo em %1 e a moral em %2%.",
   "city_wardenclyffe_effect4": "+%0% Conhecimento do Laboratório",
   "city_wardenclyffe_flair1": "Eu não me incomodo que tenham roubado minha idéia...",
   "city_wardenclyffe_flair2": "Eu me incomodo por eles não terem tido nenhuma eles mesmos.",
@@ -10162,5 +10162,7 @@
   "wiki_achievements_missing": "Faltando",
   "wiki_achievements_obtained": "Obtido",
   "wiki_achievements_incomplete": "Incompleto",
-  "wiki_achievements_completed": "Concluído"
+  "wiki_achievements_completed": "Concluído",
+  "wiki_search_placeholder": "Nenhum resultado encontrado.",
+  "wiki_search_regex_support": "Suporte a RegEx"
 }
