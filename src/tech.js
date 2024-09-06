@@ -14140,7 +14140,7 @@ const techs = {
         effect(){ return loc('tech_asphodel_mech_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.eden['mech_station'] = { count: 0 };
+                global.eden['mech_station'] = { count: 0, mode: 3, mechs: 0, effect: 0 };
                 return true;
             }
             return false;

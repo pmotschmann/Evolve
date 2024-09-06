@@ -5073,7 +5073,7 @@ export function BHStorageMulti(val){
     return Math.round(val);
 }
 
-export function storageMultipler(){
+export function storageMultipler(scale = 1){
     let multiplier = (global.tech['storage'] - 1) * 1.25 + 1;
     if (global.tech['storage'] >= 3){
         multiplier *= global.tech['storage'] >= 4 ? 3 : 1.5;
@@ -5107,7 +5107,7 @@ export function storageMultipler(){
     if (global.tech['storage'] >= 7 && global.interstellar['cargo_yard']){
         multiplier *= 1 + ((global.interstellar['cargo_yard'].count * quantum_level) / 100);
     }
-    return multiplier;
+    return multiplier * scale;
 }
 
 export function checkCityRequirements(action){
@@ -7005,6 +7005,9 @@ function drawModal(c_action,type){
             break;
         case 'alien_outpost':
             loadIndustry('replicator',body);
+            break;
+        case 'mech_station':
+            loadIndustry('mech_station',body);
             break;
     }
 }

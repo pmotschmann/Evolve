@@ -10,6 +10,7 @@ import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEff
 import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay } from './portal.js';
+import { asphodelResist, mechStationEffect } from './edenic.js';
 import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled } from './truepath.js';
 import { arpa, buildArpa } from './arpa.js';
 import { events, eventList } from './events.js';
@@ -6685,8 +6686,20 @@ function fastLoop(){
             let powder_base = support_on['asphodel_harvester'] * production('asphodel_harvester','powder');
             powder_base *= production('psychic_boost','Asphodel_Powder');
             let delta = powder_base * hunger * global_multiplier;
-
+            
             breakdown.p['Asphodel_Powder'][loc('eden_asphodel_harvester_title')] = powder_base + 'v';
+
+            if (global.tech.asphodel >= 5){
+                let penalty = asphodelResist();
+                delta *= penalty;
+                if (penalty <= 1){
+                    breakdown.p['Asphodel_Powder'][`ᄂ${loc('eden_asphodel_hostility')}+0`] = -((1 - penalty) * 100) + '%';
+                }
+                else {
+                    breakdown.p['Asphodel_Powder'][`ᄂ${loc('eden_mech_station_overkill')}+0`] = ((penalty - 1) * 100) + '%';
+                }
+            }
+
             modRes('Asphodel_Powder', delta * time_multiplier);
         }
 
@@ -8198,6 +8211,18 @@ function midLoop(){
             for (const res of actions.interstellar.int_alpha.warehouse.res()){
                 if (global.resource[res].display){
                     let gain = global.interstellar.warehouse.count * spatialReasoning(actions.interstellar.int_alpha.warehouse.val(res) * multiplier);
+                    caps[res] += gain;
+                    breakdown.c[res][label] = gain+'v';
+                }
+            };
+        }
+
+        if (global.eden['warehouse']){
+            var multiplier = storageMultipler(0.1);
+            let label = loc('eden_asphodel_name');
+            for (const res of actions.eden.eden_asphodel.warehouse.res()){
+                if (global.resource[res].display){
+                    let gain = global.eden.warehouse.count * spatialReasoning(actions.eden.eden_asphodel.warehouse.val(res) * multiplier);
                     caps[res] += gain;
                     breakdown.c[res][label] = gain+'v';
                 }
@@ -9950,13 +9975,19 @@ function midLoop(){
             }
 
             let progress = 0;
+            let mechSkips = global.eden['mech_station'] ? global.eden.mech_station.mechs : 0;
             for (let i = 0; i < global.portal.mechbay.active; i++) {
                 let mech = global.portal.mechbay.mechs[i];
-                if (global.portal.hasOwnProperty('waygate') && global.tech.hasOwnProperty('waygate') && global.portal.waygate.on === 1 && global.tech.waygate >= 2 && global.portal.waygate.progress < 100){
-                    progress += mechRating(mech,true);
+                if (mechSkips > 0 && mech.size !== 'collector'){
+                    mechSkips--;
                 }
                 else {
-                    progress += mechRating(mech,false);
+                    if (global.portal.hasOwnProperty('waygate') && global.tech.hasOwnProperty('waygate') && global.portal.waygate.on === 1 && global.tech.waygate >= 2 && global.portal.waygate.progress < 100){
+                        progress += mechRating(mech,true);
+                    }
+                    else {
+                        progress += mechRating(mech,false);
+                    }
                 }
             }
 
@@ -11675,6 +11706,10 @@ function longLoop(){
         }
         if(global.stats.achieve['endless_hunger'] && global.city.banquet && global.city.banquet.on){
             global.city.banquet.strength++;
+        }
+
+        if (global.eden['mech_station']){
+            mechStationEffect()
         }
     }
 

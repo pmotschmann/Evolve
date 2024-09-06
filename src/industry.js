@@ -45,6 +45,9 @@ export function loadIndustry(industry,parent,bind){
         case 'replicator':
             loadReplicator(parent,bind);
             break;
+        case 'mech_station':
+            loadMechStation(parent,bind);
+            break;
     }
 }
 
@@ -1280,6 +1283,50 @@ function loadQuarry(parent,bind){
                         global.city.rock_quarry.asbestos = 100;
                     }
                 }
+            }
+        }
+    });
+}
+
+function loadMechStation(parent,bind){
+    let mech = $(`<div class="factory"><span>${loc(`eden_mech_station_control`)}</span></div>`);
+    parent.append(mech);
+    let mechPatrol = $(`<span class="current">{{ mode | patrolMode }}</span>`);
+    let mechDown = $(`<span class="sub" @click="lower()" role="button" aria-label="Decrease Patrol Aggression">&laquo;</span>`);
+    let mechUp = $(`<span class="add" @click="higher()" role="button" aria-label="Increase Patrol Aggression">&raquo;</span>`);
+    mech.append(mechDown);
+    mech.append(mechPatrol);
+    mech.append(mechUp);
+
+    let stats = $(`<div class="flexAround"></div>`);
+    stats.append($(`<span v-html="$options.filters.patrol(mechs)"></span>`));
+    stats.append($(`<span v-html="$options.filters.effect(effect)"></span>`));
+    parent.append(stats);
+
+    vBind({
+        el: bind ? bind : '#specialModal',
+        data: global.eden['mech_station'],
+        methods: {
+            lower: function(){
+                if (global.eden.mech_station.mode > 0){
+                    global.eden.mech_station.mode--;
+                }
+            },
+            higher: function(){
+                if (global.eden.mech_station.mode < 5){
+                    global.eden.mech_station.mode++
+                }
+            },
+        },
+        filters: {
+            patrolMode(v){
+                return loc(`eden_mech_station_patrol${v}`);
+            },
+            patrol(v){
+                return loc(`eden_mech_station_mechs`,[v]);
+            },
+            effect(v){
+                return loc(`eden_mech_station_effective`,[v]);
             }
         }
     });

@@ -1,8 +1,9 @@
-import { global, seededRandom, keyMultiplier, p_on, quantum_level, sizeApproximation } from './vars.js';
-import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier } from './functions.js';
+import { global, p_on, sizeApproximation } from './vars.js';
+import { vBind, clearElement, popover, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier } from './functions.js';
 import { spatialReasoning } from './resources.js';
-import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc } from './actions.js';
+import { payCosts, powerOnNewStruct, setAction, storageMultipler } from './actions.js';
 import { checkRequirements, incrementStruct} from './space.js';
+import { mechRating } from './portal.js';
 import { jobScale } from './jobs.js';
 import { production } from './prod.js';
 import { loc } from './locale.js';
@@ -13,10 +14,10 @@ const edenicModules = {
             name: loc('eden_asphodel_name'),
             desc(){ 
                 if (global.tech['asphodel'] && global.tech.asphodel >= 5){
-                    return `${loc('eden_asphodel_desc')} ${loc('eden_asohodel_desc_hostile')}`;
+                    return `${loc('eden_asphodel_desc')} ${loc('eden_asphodel_desc_hostile')}`;
                 }
                 else {
-                    return `${loc('eden_asphodel_desc')} ${loc('eden_asohodel_desc_peaceful')}`;
+                    return `${loc('eden_asphodel_desc')} ${loc('eden_asphodel_desc_peaceful')}`;
                 }
             },
             support: 'encampment'
@@ -71,9 +72,9 @@ const edenicModules = {
             },
             support(){ return 10; },
             powered(){ return powerCostMod(616); },
-            powerBalancer(){
+            /*powerBalancer(){
                 return [{ s: global.eden.encampment.s_max - global.eden.encampment.support }];
-            },
+            },*/
             refresh: true,
             action(){
                 if (payCosts($(this)[0])){
@@ -123,29 +124,32 @@ const edenicModules = {
                 }
             },
             reqs: { asphodel: 6 },
-            condition(){
-                return global.eden.hasOwnProperty('mech_station') && global.eden.mech_station.count < 10 ? true : false;
-            },
             queue_size: 1,
             queue_complete(){ return 10 - global.eden.mech_station.count; },
             cost: {
                 Money(offset){
                     if (offset){
-                        return offset + (global.eden.hasOwnProperty('mech_station') ? global.eden.mech_station.count : 0) < 10 ? 2500000000 : 0;
+                        return offset + (global.eden.hasOwnProperty('mech_station') ? global.eden.mech_station.count : 0) < 10 ? 6750000000 : 0;
                     }
-                    return !global.eden.hasOwnProperty('mech_station') || (global.eden.mech_station.count < 10) ? 2500000000 : 0;
+                    return !global.eden.hasOwnProperty('mech_station') || (global.eden.mech_station.count < 10) ? 6750000000 : 0;
                 },
                 Graphene(offset){
                     if (offset){
-                        return offset + (global.eden.hasOwnProperty('mech_station') ? global.eden.mech_station.count : 0) < 10 ? 25000000 : 0;
+                        return offset + (global.eden.hasOwnProperty('mech_station') ? global.eden.mech_station.count : 0) < 10 ? 82500000 : 0;
                     }
-                    return !global.eden.hasOwnProperty('mech_station') || (global.eden.mech_station.count < 10) ? 25000000 : 0;
+                    return !global.eden.hasOwnProperty('mech_station') || (global.eden.mech_station.count < 10) ? 82500000 : 0;
                 },
                 Infernite(offset){
                     if (offset){
-                        return offset + (global.eden.hasOwnProperty('mech_station') ? global.eden.mech_station.count : 0) < 10 ? 5000000 : 0;
+                        return offset + (global.eden.hasOwnProperty('mech_station') ? global.eden.mech_station.count : 0) < 10 ? 7500000 : 0;
                     }
-                    return !global.eden.hasOwnProperty('mech_station') || (global.eden.mech_station.count < 10) ? 5000000 : 0;
+                    return !global.eden.hasOwnProperty('mech_station') || (global.eden.mech_station.count < 10) ? 7500000 : 0;
+                },
+                Vitreloy(offset){
+                    if (offset){
+                        return offset + (global.eden.hasOwnProperty('mech_station') ? global.eden.mech_station.count : 0) < 10 ? 66600000 : 0;
+                    }
+                    return !global.eden.hasOwnProperty('mech_station') || (global.eden.mech_station.count < 10) ? 66600000 : 0;
                 },
                 Asphodel_Powder(offset){
                     if (offset){
@@ -157,7 +161,10 @@ const edenicModules = {
             effect(wiki){
                 let count = (wiki || 0) + (global.eden.hasOwnProperty('mech_station') ? global.eden.mech_station.count : 0);
                 if (count >= 10){
-                    return `<div>${loc('eden_mech_station_effect')}</div>`;
+                    let desc = `<div>${loc('eden_mech_station_effect')}</div>`;
+                    desc += `<div>${loc('eden_mech_station_mechs',[global.eden.mech_station.mechs])}</div>`;
+                    desc += `<div>${loc('eden_mech_station_effective',[global.eden.mech_station.effect])}</div>`;
+                    return desc;
                 }
                 else {
                     let size = 10;
@@ -165,9 +172,13 @@ const edenicModules = {
                     return `<div>${loc('eden_mech_station_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
             },
+            special(){ return global.eden.hasOwnProperty('mech_station') && global.eden.mech_station.count === 10 ? true : false; },
             action(){
                 if (global.eden.mech_station.count < 10 && payCosts($(this)[0])){
                     incrementStruct('mech_station','eden');
+                    if (global.eden.mech_station.count === 10){
+                        renderEdenic();
+                    }
                     return true;
                 }
                 return false;
@@ -265,6 +276,115 @@ const edenicModules = {
                 return false;
             },
         },
+        warehouse: {
+            id: 'eden-warehouse',
+            title(){
+                return global.tech['storage'] <= 2 ? loc('city_shed_title1') : (global.tech['storage'] >= 4 ? loc('city_shed_title3') : loc('city_shed_title2'));
+            },
+            desc(){
+                let storage = global.tech['storage'] >= 3 ? (global.tech['storage'] >= 4 ? loc('city_shed_desc_size3') : loc('city_shed_desc_size2')) : loc('city_shed_desc_size1');
+                return loc('city_shed_desc',[storage]);
+            },
+            reqs: { asphodel: 7 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('warehouse', offset, 300000000, 1.28, 'eden'); },
+                Steel(offset){ return spaceCostMultiplier('warehouse', offset, 15000000, 1.28, 'eden'); },
+                Alloy(offset){ return spaceCostMultiplier('warehouse', offset, 18000000, 1.28, 'eden'); },
+                Cement(offset){ return spaceCostMultiplier('warehouse', offset, 27500000, 1.28, 'eden'); }
+            },
+            res(){
+                let r_list = [
+                    'Lumber','Stone','Chrysotile','Furs','Copper','Iron','Aluminium','Cement','Coal',
+                    'Nano_Tube','Neutronium','Adamantite','Infernite','Alloy','Polymer','Iridium',
+                    'Graphene','Stanene','Bolognium','Orichalcum','Asphodel_Powder'
+                ];
+                if (global.tech['storage'] >= 3 && global.resource.Steel.display){
+                    r_list.push('Steel');
+                }
+                if (global.tech['storage'] >= 4 && global.resource.Titanium.display){
+                    r_list.push('Titanium');
+                }
+                return r_list;
+            },
+            val(res){
+                switch (res){
+                    case 'Lumber':
+                        return 7500;
+                    case 'Stone':
+                        return 7500;
+                    case 'Chrysotile':
+                        return 7500;
+                    case 'Furs':
+                        return 4250;
+                    case 'Copper':
+                        return 3800;
+                    case 'Iron':
+                        return 3500;
+                    case 'Aluminium':
+                        return 3200;
+                    case 'Cement':
+                        return 2800;
+                    case 'Coal':
+                        return 1200;
+                    case 'Steel':
+                        return 600;
+                    case 'Titanium':
+                        return 400;
+                    case 'Nano_Tube':
+                        return 300;
+                    case 'Neutronium':
+                        return 80;
+                    case 'Adamantite':
+                        return 180;
+                    case 'Infernite':
+                        return 35;
+                    case 'Alloy':
+                        return 500;
+                    case 'Polymer':
+                        return 500;
+                    case 'Iridium':
+                        return 450;
+                    case 'Graphene':
+                        return 350;
+                    case 'Stanene':
+                        return 350;
+                    case 'Bolognium':
+                        return 90;
+                    case 'Orichalcum':
+                        return 45;
+                    case 'Asphodel_Powder':
+                        return 0.2;
+                    default:
+                        return 0;
+                }
+            },
+            wide: true,
+            effect(){
+                let storage = '<div class="aTable">';
+                let multiplier = storageMultipler(0.1);
+                for (const res of $(this)[0].res()){
+                    if (global.resource[res].display){
+                        let val = sizeApproximation(+(spatialReasoning($(this)[0].val(res)) * multiplier).toFixed(0),1);
+                        storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
+                    }
+                };
+                storage = storage + '</div>';
+                return storage;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('warehouse','eden');
+                    let multiplier = storageMultipler(0.1);
+                    for (const res of $(this)[0].res()){
+                        if (global.resource[res].display){
+                            global.resource[res].max += (spatialReasoning($(this)[0].val(res) * multiplier));
+                        }
+                    };
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     eden_elysium: {
         info: {
@@ -354,4 +474,64 @@ export function renderEdenic(){
             });
         }
     });
+}
+
+export function asphodelResist(){
+    if (global.tech['asphodel'] && global.tech.asphodel >= 5){
+        let resist = 0.34;
+        if (global.eden['mech_station'] && global.eden.mech_station.count >= 10){
+            resist = 0.34 + (global.eden.mech_station.effect * 0.0066);
+        }
+        return resist;
+    }
+    return 1;
+}
+
+export function mechStationEffect(){
+    if (global.eden.mech_station.mode === 0){
+        global.eden.mech_station.effect = 0;
+        global.eden.mech_station.mechs = 0;
+        return;
+    }
+
+    let hostility = 0;
+    hostility += global.eden.asphodel_harvester.on * 4;
+    hostility += global.civic.ghost_trapper.workers;
+    let rawHostility = hostility;
+    let targetHostility = 0;
+
+    if (global.eden.mech_station.mode === 1){
+        targetHostility = Math.ceil(hostility * 0.66);
+    }
+    else if (global.eden.mech_station.mode === 2){
+        targetHostility = Math.ceil(hostility * 0.33);
+    }
+    else if (global.eden.mech_station.mode === 4){
+        hostility *= 1.25;
+        rawHostility *= 1.25;
+    }
+    else if (global.eden.mech_station.mode === 5){
+        hostility *= 1.5;
+        rawHostility *= 1.5;
+    }
+
+    let mechs = 0;
+    for (let i = 0; i < global.portal.mechbay.active; i++) {
+        let mech = global.portal.mechbay.mechs[i];
+        if (mech.size !== 'collector' && hostility > targetHostility){
+            hostility -= mechRating(mech,true) * 12500;
+            mechs++;
+        }
+    }
+
+    if (hostility < 0){ hostility = 0 }
+    global.eden.mech_station.mechs = mechs;
+    global.eden.mech_station.effect = 100 - Math.floor(hostility / rawHostility * 100);
+    
+    if (global.eden.mech_station.effect === 100 && global.eden.mech_station.mode === 4){
+        global.eden.mech_station.effect = 110;
+    }
+    else if (global.eden.mech_station.effect === 100 && global.eden.mech_station.mode === 5){
+        global.eden.mech_station.effect = 120;
+    }
 }

@@ -5,6 +5,7 @@ import { racialTrait, servantTrait, races, traits, biomes, planetTraits, fathomC
 import { armyRating } from './civics.js';
 import { craftingRatio, craftCost, craftingPopover } from './resources.js';
 import { planetName } from './space.js';
+import { asphodelResist } from './edenic.js';
 
 export const job_desc = {
     unemployed: function(servant){
@@ -320,8 +321,9 @@ export const job_desc = {
     },
     ghost_trapper(){
         let attact = global.blood['attract'] ? global.blood.attract * 5 : 0;
-        let min = 150 + attact;
-        let max = 250 + attact;
+        let resist = asphodelResist();
+        let min = Math.floor((150 + attact) * resist);
+        let max = Math.floor((250 + attact) * resist);
         return loc('job_ghost_trapper_desc',[loc('portal_soul_forge_title'),global.resource.Soul_Gem.name,min,max]);
     },
     pit_miner(){

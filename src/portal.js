@@ -7,6 +7,7 @@ import { loadFoundry, jobScale, limitCraftsmen } from './jobs.js';
 import { armyRating, govCivics, garrisonSize, mercCost } from './civics.js';
 import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc } from './actions.js';
 import { checkRequirements, incrementStruct, astrialProjection, ascendLab } from './space.js';
+import { asphodelResist } from './edenic.js';
 import { production } from './prod.js';
 import { govActive, defineGovernor } from './governor.js';
 import { descension } from './resets.js';
@@ -2746,6 +2747,7 @@ export function bloodwar(){
         if (forgeOperating && global.tech['asphodel'] && global.tech.asphodel >= 2 && support_on['ectoplasm_processor']){
             let attract = global.blood['attract'] ? global.blood.attract * 5 : 0;
             let souls = global.civic.ghost_trapper.workers * Math.rand(150 + attract, 250 + attract);
+            souls = Math.floor(souls * asphodelResist());
             global.portal.soul_forge.kills += souls;
             day_report.ghost_trappers = souls;
             soulCapacitor(souls);
