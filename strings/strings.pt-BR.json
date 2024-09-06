@@ -1353,8 +1353,8 @@
   "city_wizard_tower_title": "Torre do Mago",
   "city_wardenclyffe_desc": "Instalação avançada de ciência",
   "city_wardenclyffe_effect1": "+%0 Máximo de %1",
-  "city_wardenclyffe_effect2": "Se alimentado consome %0MW mas aumenta o conhecimento máximo em %1",
-  "city_wardenclyffe_effect3": "Se alimentado consome %0MW mas aumenta o conhecimento máximo em %1 e a moral %2%",
+  "city_wardenclyffe_effect2": "Se alimentado, consome %0 MW, mas aumenta o conhecimento máximo em %1.",
+  "city_wardenclyffe_effect3": "Se alimentado, consome %0 MW, mas aumenta o conhecimento máximo em %1 e a moral em %2%."
   "city_wardenclyffe_effect4": "+%0% Conhecimento do Laboratório",
   "city_wardenclyffe_flair1": "Eu não me incomodo que tenham roubado minha idéia...",
   "city_wardenclyffe_flair2": "Eu me incomodo por eles não terem tido nenhuma eles mesmos.",
