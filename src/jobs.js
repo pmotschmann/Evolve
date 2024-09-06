@@ -170,6 +170,13 @@ export const job_desc = {
         }
         return desc;
     },
+    meditator: function(servant){
+        let desc = loc('job_meditator_desc');
+        if (global.civic.d_job === 'meditator' && !servant){
+            desc = desc + ' ' + loc('job_default',[loc('job_meditator')]);
+        }
+        return desc;
+    },
     torturer: function(){
         return loc('job_torturer_desc');
     },
@@ -333,6 +340,7 @@ export function defineJobs(define){
     loadJob('crystal_miner',define,0.1,5);
     loadJob('scavenger',define,0.12,5);
     loadJob('teamster',define,1,global.tech['teamster'] ? 6 : 4);
+    loadJob('meditator',define,1,5);
     loadJob('torturer',define,1,3,'advanced');
     loadJob('miner',define,1,4,'advanced');
     loadJob('coal_miner',define,0.2,4,'advanced');
@@ -601,7 +609,7 @@ function loadJob(job, define, impact, stress, color){
 
 export function loadServants(){
     clearElement($('#servants'));
-    if (global.race['servants']){
+    if (global.race['servants'] && Object.keys(global.race.servants.jobs).length > 0){
         var servants = $(`<div id="servantList" class="job"><div class="foundry job_label"><h3 class="serveHeader has-text-warning">${loc('civics_servants')}</h3><span :class="level()">{{ s.used }} / {{ s.max }}</span></div></div>`);
         $('#servants').append(servants);
 

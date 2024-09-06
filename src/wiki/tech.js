@@ -1348,7 +1348,7 @@ const extraInformation = {
         loc(`wiki_tech_shore_leave`)
     ],
     xeno_gift: [
-        loc(`wiki_tech_xeno_gift`,[global.galaxy['alien1'] ? loc(`race_${global.galaxy.alien1.id}`) : loc(`galaxy_alien1_proxy`)]),
+        loc(`wiki_tech_xeno_gift`,[global.galaxy['alien1'] ? races[global.galaxy.alien1.id].name : loc(`galaxy_alien1_proxy`)]),
         loc(`wiki_tech_building_unlock`,[loc(`galaxy_consulate`)])
     ],
     industrial_partnership: [
@@ -1374,7 +1374,7 @@ const extraInformation = {
     ],
     cruiser_ship: [
         loc(`wiki_tech_building_unlock`,[loc(`galaxy_cruiser_ship`)]),
-        loc(`wiki_tech_destination_unlock`,[loc(`galaxy_alien2_mission`,[global.galaxy['alien2'] ? loc(`race_${global.galaxy.alien2.id}`) : loc(`galaxy_alien2_proxy`)]),loc(`galaxy_alien`,[global.galaxy['alien2'] ? loc(`race_${global.galaxy.alien2.id}`) : loc(`galaxy_alien2_proxy`)])])
+        loc(`wiki_tech_destination_unlock`,[loc(`galaxy_alien2_mission`,[global.galaxy['alien2'] ? races[global.galaxy.alien2.id].name : loc(`galaxy_alien2_proxy`)]),loc(`galaxy_alien`,[global.galaxy['alien2'] ? races[global.galaxy.alien2.id].name : loc(`galaxy_alien2_proxy`)])])
     ],
     dreadnought: [
         loc(`wiki_tech_building_unlock`,[loc(`galaxy_dreadnought`)])

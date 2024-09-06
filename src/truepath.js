@@ -1,7 +1,7 @@
 import { global, p_on, support_on, sizeApproximation, quantum_level } from './vars.js';
 import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect, adjustCosts } from './functions.js';
 import { races, traits } from './races.js';
-import { spatialReasoning } from './resources.js';
+import { spatialReasoning, unlockContainers } from './resources.js';
 import { armyRating, garrisonSize } from './civics.js';
 import { jobScale, job_desc, loadFoundry, limitCraftsmen } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
@@ -481,7 +481,7 @@ const outerTruth = {
             title: loc('space_ai_core'),
             desc(wiki){
                 if (!global.space.hasOwnProperty('ai_core') || global.space.ai_core.count < 100 || wiki){
-                    return `<div>${loc('space_ai_core')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>` + (global.space.hasOwnProperty('ai_core') && global.space.ai_core.count >= 100 ? `<div class="has-text-special">${loc('requires_power')}</div>` : ``);
+                    return `<div>${loc('space_ai_core')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>` + (global.space.hasOwnProperty('ai_core') && global.space.ai_core.count >= 100 ? `<div class="has-text-special">${loc('requires_power')}</div>` : ``);
                 }
                 else {
                     return `<div>${loc('space_ai_core')}</div>`;
@@ -523,9 +523,7 @@ const outerTruth = {
                         if (global.space.ai_core.count >= 100){
                             global.tech['titan_ai_core'] = 1;
                             global.space['ai_core2'] = { count: 1, on: 0 };
-                            if (global.city.power >= outerTruth.spc_titan.ai_core2.powered()){
-                                global.space.ai_core2.on++;
-                            }
+                            powerOnNewStruct($(outerTruth.spc_titan.ai_core2)[0]);
                             renderSpace();
                             drawTech();
                         }
@@ -790,6 +788,9 @@ const outerTruth = {
                     global.space.munitions_depot.count++;
                     global.resource.Crates.max += 25;
                     global.resource.Containers.max += 25;
+                    if (!global.resource.Containers.display){
+                        unlockContainers();
+                    }
                     return true;
                 }
                 return false;
@@ -1309,7 +1310,7 @@ const tauCetiModules = {
             title: loc('tau_star_ringworld'),
             desc(wiki){
                 if (!global.tauceti.hasOwnProperty('ringworld') || global.tauceti.ringworld.count < 1000 || wiki){
-                    return `<div>${loc('tau_star_ringworld')}</div><div class="has-text-special">${loc('requires_segmemts',[1000])}</div>`;
+                    return `<div>${loc('tau_star_ringworld')}</div><div class="has-text-special">${loc('requires_segments',[1000])}</div>`;
                 }
                 else {
                     return `<div>${loc('tau_star_ringworld')}</div>`;
@@ -1560,8 +1561,7 @@ const tauCetiModules = {
                     global.tauceti.mining_pit.count++;
                     global.civic.pit_miner.display = true;
                     global.resource.Materials.display = true;
-                    if (global.city.powered && global.city.power >= tauCetiModules.tau_home.orbital_station.powered()){
-                        global.tauceti.orbital_station.on++;
+                    if (powerOnNewStruct($(tauCetiModules.tau_home.orbital_station)[0])){
                         global.tauceti.colony.on++;
                         global.tauceti.mining_pit.on++;
 
@@ -1672,6 +1672,9 @@ const tauCetiModules = {
                 if (payCosts($(this)[0])){
                     global.tauceti.colony.count++;
                     powerOnNewStruct($(this)[0]);
+                    if (!global.resource.Containers.display){
+                        unlockContainers();
+                    }
                     return true;
                 }
                 return false;
@@ -1814,7 +1817,7 @@ const tauCetiModules = {
                 return desc;
             },
             support(){ return 1; },
-            powered(){ return powerModifier(global.tech['isolation'] ? 1 : 4); },
+            powered(){ return powerCostMod(global.tech['isolation'] ? 1 : 4); },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.tau_farm.count++;
@@ -1950,7 +1953,7 @@ const tauCetiModules = {
             title: loc('tau_jump_gate'),
             desc(wiki){
                 if (!global.tauceti.hasOwnProperty('jump_gate') || global.tauceti.jump_gate.count < 100 || wiki){
-                    return `<div>${loc('tau_jump_gate')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>`;
+                    return `<div>${loc('tau_jump_gate')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
                 }
                 else {
                     return `<div>${loc('tau_jump_gate')}</div>`;
@@ -2121,6 +2124,14 @@ const tauCetiModules = {
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.repository.count++;
+
+                    let containers = 250;
+                    global.resource.Crates.max += containers;
+                    global.resource.Containers.max += containers;
+                    if (!global.resource.Containers.display){
+                        unlockContainers();
+                    }
+
                     let multiplier = tpStorageMultiplier('repository');
                     for (const res of $(this)[0].res()){
                         if (global.resource[res].display){
@@ -2166,6 +2177,7 @@ const tauCetiModules = {
             powered(){ return powerCostMod(global.tech['isolation'] ? 2 : 5); },
             action(){
                 if (payCosts($(this)[0])){
+                    global.civic.craftsman.display = true; // Needed in Lone Survivor
                     global.tauceti.tau_factory.count++;
                     powerOnNewStruct($(this)[0]);
                     return true;
@@ -2961,8 +2973,7 @@ const tauCetiModules = {
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.ore_refinery.count++;
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.tauceti.ore_refinery.on++;
+                    if (powerOnNewStruct($(this)[0])){
                         global.city.smelter.cap += global.tech['isolation'] ? 12 : 2;
                         global.city.smelter.Steel += global.tech['isolation'] ? 12 : 2;
                         if (global.race['evil']) {
@@ -3054,6 +3065,7 @@ const tauCetiModules = {
             },
             action(){
                 if (payCosts($(this)[0])){
+                    global.civic.craftsman.display = true; // Unlikely but possible to unlock this way in Lone Survivor
                     global.tauceti.womling_station.count++;
                     powerOnNewStruct($(this)[0]);
                     return true;
@@ -3337,7 +3349,7 @@ const tauCetiModules = {
             title: loc('tech_matrioshka_brain'),
             desc(wiki){
                 if (!global.tauceti.hasOwnProperty('matrioshka_brain') || global.tauceti.matrioshka_brain.count < 1000 || wiki){
-                    return `<div>${loc('tech_matrioshka_brain')}</div><div class="has-text-special">${loc('requires_segmemts',[1000])}</div>`;
+                    return `<div>${loc('tech_matrioshka_brain')}</div><div class="has-text-special">${loc('requires_segments',[1000])}</div>`;
                 }
                 else {
                     return `<div>${loc('tech_matrioshka_brain')}</div>`;
@@ -3384,7 +3396,7 @@ const tauCetiModules = {
             title: loc('tech_ignition_device'),
             desc(wiki){
                 if (!global.tauceti.hasOwnProperty('ignition_device') || global.tauceti.ignition_device.count < 10 || wiki){
-                    return `<div>${loc('tech_ignition_device')}</div><div class="has-text-special">${loc('requires_segmemts',[10])}</div>`;
+                    return `<div>${loc('tech_ignition_device')}</div><div class="has-text-special">${loc('requires_segments',[10])}</div>`;
                 }
                 else {
                     return `<div>${loc('tech_ignition_device')}</div>`;
@@ -3686,7 +3698,7 @@ export function drawShipYard(){
                 values += `<b-dropdown-item aria-role="listitem" v-on:click="setVal('${k}','${v}')" class="${k} a${idx}" data-val="${v}" v-show="avail('${k}','${idx}','${v}')">${loc(`outer_shipyard_${k}_${v}`)}</b-dropdown-item>`;
             });
 
-            options.append(`<b-dropdown :triggers="['hover']" aria-role="list">
+            options.append(`<b-dropdown :triggers="['hover', 'click']" aria-role="list">
                 <button class="button is-info" slot="trigger">
                     <span>${loc(`outer_shipyard_${k}`)}: {{ b.${k} | lbl('${k}') }}</span>
                 </button>${values}
@@ -4372,6 +4384,58 @@ function dragShipList(){
     });
 }
 
+const shipyardRanks = {
+    // Lower number -> higher in the auto-sorted list
+    location: {
+        spc_dwarf: 1,
+        spc_moon: 2,
+        spc_red: 3,
+        spc_belt: 4,
+        spc_gas: 5,
+        spc_gas_moon: 6,
+        spc_titan: 7,
+        spc_enceladus: 8,
+        spc_triton: 9,
+        spc_kuiper: 10,
+        spc_eris: 11,
+        tauceti: 12,
+    },
+    class: {
+        corvette: 1,
+        frigate: 2,
+        destroyer: 3,
+        cruiser: 4,
+        battlecruiser: 5,
+        dreadnought: 6,
+        explorer: 7,
+    },
+    engine: {
+        ion: 1,
+        tie: 3,
+        pulse: 2,
+        photon: 4,
+        vacuum: 5,
+        emdrive: 6,
+    },
+    power: {
+        solar: 1,
+        diesel: 2,
+        fission: 3,
+        fusion: 4,
+        elerium: 5,
+    }
+};
+
+function shipyardShipCompare(a,b){
+    return (
+        (shipyardRanks.location[a.location] ?? 0) - (shipyardRanks.location[b.location] ?? 0)
+        || a.transit - b.transit
+        || (shipyardRanks.class[a.class] ?? 0) - (shipyardRanks.class[b.class] ?? 0)
+        || (shipyardRanks.engine[a.engine] ?? 0) - (shipyardRanks.engine[b.engine] ?? 0)
+        || (shipyardRanks.power[a.power] ?? 0) - (shipyardRanks.power[b.power] ?? 0)
+    );
+}
+
 function drawShips(){
     clearShipDrag();
     clearElement($('#shipList'));
@@ -4383,8 +4447,7 @@ function drawShips(){
     let list = $('#shipList');
 
     if (global.space.shipyard.sort){
-        let rerank = {spc_dwarf: 'a'};
-        global.space.shipyard.ships = global.space.shipyard.ships.sort((a, b) => (rerank[a.location] ? rerank[a.location] : a.location).localeCompare((rerank[b.location] ? rerank[b.location] : b.location)));
+        global.space.shipyard.ships = global.space.shipyard.ships.sort(shipyardShipCompare);
     }
 
     const spaceRegions = spaceTech();
@@ -4417,7 +4480,7 @@ function drawShips(){
 
         let location = ship.location === 'tauceti' ? loc('tech_era_tauceti') : typeof spaceRegions[ship.location].info.name === 'string' ? spaceRegions[ship.location].info.name : spaceRegions[ship.location].info.name();
 
-        let dispatch = `<b-dropdown id="ship${i}loc" :triggers="['hover']" aria-role="list" scrollable position="is-bottom-left">
+        let dispatch = `<b-dropdown id="ship${i}loc" :triggers="['hover', 'click']" aria-role="list" scrollable position="is-bottom-left">
             <button class="button is-info" slot="trigger">
                 <span>${location}</span>
             </button>${values}
