@@ -809,7 +809,7 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
     }
     
     let infopops = false;
-    if (rate !== 0 || (max === -1 && rate === 0 && global.race['no_craft']) || name === 'Scarletite' || name === 'Quantium' || (global.race['fasting'] && name === global.race.species)){
+    if (rate !== 0 || (max === -1 && rate === 0 && global.race['no_craft']) || name === 'Scarletite' || name === 'Quantium'){
         res_container.append($(`<span id="inc${name}" class="diff" :aria-label="resRate('${name}')">{{ diff | diffSize }} /s</span>`));
     }
     else if (max === -1 && !global.race['no_craft'] && name !== 'Scarletite' && name !== 'Quantium'){
@@ -822,6 +822,9 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
         }
         craft.append($(`<span id="inc${name}A"><a @click="craft('${name}','A')" aria-label="craft max ${name}">+<span class="craft" data-val="${'A'}">A</span></a></span>`));
         infopops = true;
+    }
+    else if(global.race['fasting'] && name === global.race.species){
+        res_container.append($(`<span id="inc${name}" class="diff" :aria-label="resRate('${name}')">{{ diff | diffSize }}</span>`));
     }
     else {
         res_container.append($(`<span></span>`));
@@ -2076,7 +2079,7 @@ function breakdownPopover(id,name,type){
     popover(`${id}`,function(){
         let bd = $(`<div class="resBreakdown"><div class="has-text-info">{{ res.name | namespace }}</div></div>`);
         if(type === 'p' && name === global.race.species){
-            bd = $(`<div class="resBreakdown"><div class="has-text-info">Starvation risk</div></div>`);
+            bd = $(`<div class="resBreakdown"><div class="has-text-info">${loc('starvation_resist')}</div></div>`);
         }
         let table = $(`<div class="parent"></div>`);
         bd.append(table);
