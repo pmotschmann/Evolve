@@ -1,4 +1,4 @@
-import { global, save, webWorker } from './vars.js';
+import { global, save, webWorker, p_on } from './vars.js';
 import { loc } from './locale.js';
 import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper, popCost } from './functions.js';
 import { unlockAchieve, alevel, universeAffix, unlockFeat } from './achieve.js';
@@ -1499,6 +1499,12 @@ const techs = {
         effect: loc('tech_stellar_smelting_effect'),
         action(){
             if (payCosts($(this)[0])){
+                let num_forge_on = p_on['stellar_forge'];
+                let num_new_smelters = num_forge_on * 2;
+                global.city.smelter.cap += num_new_smelters;
+                global.city.smelter.Star += num_new_smelters;
+                global.city.smelter.StarCap += num_new_smelters;
+                global.city.smelter.Iron += num_new_smelters;
                 return true;
             }
             return false;
@@ -4334,9 +4340,9 @@ const techs = {
         effect(){return loc('tech_devilish_dish_effect');},
         action(){
             if (payCosts($(this)[0])){
-                global.portal['dish_soul_infuser'] = {count:0, on:0};
+                global.portal['dish_soul_steeper'] = {count:0, on:0};
                 global.portal['dish_life_infuser'] = {count:0, on:0};
-                global.portal['devilish_dish'] = {done:0};
+                global.portal['devilish_dish'] = {count:0, done:0};
                 return true;
             }
             return false;

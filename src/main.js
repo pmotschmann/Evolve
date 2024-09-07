@@ -1,7 +1,7 @@
 import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat, checkAdept } from './achieve.js';
-import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone, addATime, exceededATimeThreshold, loopTimers } from './functions.js';
+import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone, addATime, exceededATimeThreshold, loopTimers, calcQuantumLevel } from './functions.js';
 import { races, traits, racialTrait, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobScale, workerScale, limitCraftsmen, loadServants} from './jobs.js';
@@ -408,7 +408,7 @@ popover('powerStatus',function(obj){
         Object.keys(power_generated).forEach(function (k){
             if (power_generated[k]){
                 let gen = +power_generated[k];
-                obj.popper.append(`<p class="modal_bd"><span>${k}</span> <span class="has-text-success">+${gen.toFixed(2)}</span></p>`);
+                obj.popper.append(`<p class="modal_bd"><span>${k}</span> <span class="has-text-success">+${+gen.toFixed(2)}</span></p>`);
             }
         });
         obj.popper.append(`<p class="modal_bd"><span>${loc('power_consumed')}</span> <span class="has-text-danger"> -${drain}</span></p>`);
@@ -711,7 +711,7 @@ else {
     setWeather();
 }
 
-q_check(true);
+set_qlevel(calcQuantumLevel(true));
 
 $('#lbl_city').html('Village');
 
@@ -3783,8 +3783,8 @@ function fastLoop(){
         if (global.race['malnutrition'] && fed === false){
             hunger += traits.malnutrition.vars()[0] / 100;
         }
-        if(global.portal && global.portal['dish_soul_infuser'] && global.portal['dish_soul_infuser'].on){
-            hunger -= (0.03 + (global.race['malnutrition'] ? 0.01 : 0) + (global.race['angry'] ? -0.01 : 0)) * global.portal['dish_soul_infuser'].on;
+        if(global.portal && global.portal['dish_soul_steeper'] && global.portal['dish_soul_steeper'].on){
+            hunger -= (0.03 + (global.race['malnutrition'] ? 0.01 : 0) + (global.race['angry'] ? -0.01 : 0)) * global.portal['dish_soul_steeper'].on;
         }
         hunger = Math.max(hunger, 0);
 
@@ -9873,7 +9873,7 @@ function midLoop(){
             global.resource.Horseshoe.display = false;
         }
 
-        q_check(false);
+        set_qlevel(calcQuantumLevel(false));
 
         let belt_mining = support_on['iron_ship'] + support_on['iridium_ship'];
         if (belt_mining > 0 && global.tech['asteroid'] && global.tech['asteroid'] === 3){
@@ -11466,9 +11466,8 @@ function longLoop(){
         else if (global.tech['tau_gas'] && global.tech.tau_gas >= 4 && !global.tech['plague'] && global.race['lone_survivor']){
             global.tech['plague'] = 5;
         }
-
-        if(global.tech['dish'] >= 1 && global.portal['dish_soul_infuser'].on && global.portal['spire'] && global.portal['spire'].count){
-            let progress = 0.00002 * global.portal['dish_soul_infuser'].on;
+        if(global.tech['dish'] >= 1 && global.portal['dish_soul_steeper'].on && global.portal['spire'] && global.portal['spire'].count){
+            let progress = 0.00002 * global.portal['dish_soul_steeper'].on;
             let hunger = 0.5;
             if (global.race['angry']){
                 hunger -= traits.angry.vars()[0] / 100;
@@ -11717,45 +11716,6 @@ function buildGene(){
         global.resource.Knowledge.amount -= 200000;
         let gene = global.genes['synthesis'] ? sythMap[global.genes['synthesis']] : 1;
         global.resource.Genes.amount += gene;
-    }
-}
-
-function q_check(load){
-    if (global.tech['high_tech'] && global.tech['high_tech'] >= 11){
-        let k_base = global.resource.Knowledge.max;
-        let k_inc = 250000;
-        let qbits = 0;
-        while (k_base > k_inc){
-            k_base -= k_inc;
-            k_inc *= 1.1;
-            qbits++;
-        }
-        qbits += +(k_base / k_inc).toFixed(2);
-        if (global.interstellar['citadel']){
-            let citadel = load ? global.interstellar.citadel.on : p_on['citadel']
-            if (global.tech['high_tech'] && global.tech['high_tech'] >= 15 && citadel > 0){
-                qbits *= 1 + (citadel * 0.05);
-            }
-        }
-        if (global.space['ai_core2']){
-            let core = load ? global.space.ai_core2.on : p_on['ai_core2']
-            if (global.tech['titan_ai_core'] && core > 0){
-                qbits *= 1.25;
-            }
-        }
-        if (global.stats.achieve['obsolete'] && global.stats.achieve[`obsolete`].l >= 5 && global.prestige.AICore.count > 0){
-            qbits *= 2 - (0.99 ** global.prestige.AICore.count);
-        }
-        if (global.race['linked']){
-            let factor = traits.linked.vars()[0] / 100 * global.resource[global.race.species].amount;
-            if (factor > traits.linked.vars()[1] / 100){
-                factor -= traits.linked.vars()[1] / 100;
-                factor = factor / (factor + 200 - traits.linked.vars()[1]);
-                factor += traits.linked.vars()[1] / 100;
-            }
-            qbits *= 1 + factor;
-        }
-        set_qlevel(+(qbits).toFixed(3));
     }
 }
 

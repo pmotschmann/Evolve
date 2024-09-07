@@ -22,7 +22,7 @@ export function governPage(content){
         Object.keys(gmen).forEach(function (gov){
             let desc = '';
             Object.keys(gmen[gov].traits).forEach(function (t){
-                desc += (gov_traits[t].hasOwnProperty('effect') ? gov_traits[t].effect() : '') + ' ';
+                desc += (gov_traits[t].hasOwnProperty('effect') ? gov_traits[t].effect({isWiki: true}) : '') + ' ';
             });
 
             infoBoxBuilder(govern,{ name: gov, template: 'government', label: loc(`governor_${gov}`), paragraphs: 2, break: [2], h_level: 3,
