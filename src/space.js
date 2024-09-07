@@ -2168,7 +2168,7 @@ const spaceProjects = {
                 if (global.interstellar['far_reach']){
                     let num_farpoint_on = wiki ? global.interstellar.far_reach.on : p_on['far_reach'];
                     if (num_farpoint_on > 0){
-                        boost *= num_farpoint_on * 1; // 1% per Farpoint
+                        boost += num_farpoint_on; // 1% per Farpoint
                     }
                 }
                 if (global.tech.science >= 19){
