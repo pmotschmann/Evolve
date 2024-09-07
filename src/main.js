@@ -3531,7 +3531,7 @@ function fastLoop(){
                             breakdown.p.consume[global.race.species][global.resource[global.race.species].name] = -(base).toFixed(2);
                             breakdown.p.consume[global.race.species][loc('genelab_traits')] = (1 - food_consume_mod) * (base).toFixed(2);
                             breakdown.p.consume[global.race.species][loc('Threshold')] = (threshold).toFixed(2);
-                            global.resource[global.race.species].delta = Math.min(-((base * food_consume_mod - threshold) * time_multiplier), 0);
+                            global.resource[global.race.species].delta = -(base * food_consume_mod - threshold) * time_multiplier;
                             /*for(const x in breakdown.p.consume[global.race.species]){
                                 breakdown.p.consume[global.race.species][x] = (breakdown.p.consume[global.race.species][x] / time_multiplier).toFixed(2);
                             }*/
@@ -11795,6 +11795,20 @@ function diffCalc(res,period){
             }
         }
         else if (global.resource[res].diff >= 0 && (el.hasClass('has-text-danger') || el.hasClass('has-text-warning'))){
+            el.removeClass('has-text-danger');
+            el.removeClass('has-text-warning');
+        }
+    }
+    else if(res === global.race.species && global.race['fasting']){
+        if(global.resource[res].diff >= 0 && global.resource[res].diff < 0.75){
+            el.addClass('has-text-warning');
+            el.removeClass('has-text-danger');
+        }
+        else if(global.resource[res].diff < 0){
+            el.removeClass('has-text-warning');
+            el.addClass('has-text-danger');
+        }
+        else if(global.resource[res].diff >= 0.75){
             el.removeClass('has-text-danger');
             el.removeClass('has-text-warning');
         }
