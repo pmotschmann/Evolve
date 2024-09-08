@@ -70,7 +70,7 @@ const edenicModules = {
 
                 return desc;
             },
-            support(){ return 10; },
+            support(){ return 8; },
             powered(){ return powerCostMod(616); },
             /*powerBalancer(){
                 return [{ s: global.eden.encampment.s_max - global.eden.encampment.support }];
@@ -309,51 +309,51 @@ const edenicModules = {
             val(res){
                 switch (res){
                     case 'Lumber':
-                        return 7500;
+                        return 3750
                     case 'Stone':
-                        return 7500;
+                        return 3750;
                     case 'Chrysotile':
-                        return 7500;
+                        return 3750;
                     case 'Furs':
-                        return 4250;
+                        return 2125;
                     case 'Copper':
-                        return 3800;
+                        return 1900;
                     case 'Iron':
-                        return 3500;
+                        return 1750;
                     case 'Aluminium':
-                        return 3200;
+                        return 1600;
                     case 'Cement':
-                        return 2800;
+                        return 1400;
                     case 'Coal':
-                        return 1200;
-                    case 'Steel':
                         return 600;
-                    case 'Titanium':
-                        return 400;
-                    case 'Nano_Tube':
+                    case 'Steel':
                         return 300;
+                    case 'Titanium':
+                        return 200;
+                    case 'Nano_Tube':
+                        return 150;
                     case 'Neutronium':
-                        return 80;
+                        return 40;
                     case 'Adamantite':
-                        return 180;
-                    case 'Infernite':
-                        return 35;
-                    case 'Alloy':
-                        return 500;
-                    case 'Polymer':
-                        return 500;
-                    case 'Iridium':
-                        return 450;
-                    case 'Graphene':
-                        return 350;
-                    case 'Stanene':
-                        return 350;
-                    case 'Bolognium':
                         return 90;
-                    case 'Orichalcum':
+                    case 'Infernite':
+                        return 18;
+                    case 'Alloy':
+                        return 250;
+                    case 'Polymer':
+                        return 250;
+                    case 'Iridium':
+                        return 225;
+                    case 'Graphene':
+                        return 175;
+                    case 'Stanene':
+                        return 175;
+                    case 'Bolognium':
                         return 45;
+                    case 'Orichalcum':
+                        return 22;
                     case 'Asphodel_Powder':
-                        return 0.2;
+                        return global.eden['stabilizer'] ? 0.1 + (global.eden.stabilizer.count * 0.015) : 0.1;
                     default:
                         return 0;
                 }
@@ -361,10 +361,10 @@ const edenicModules = {
             wide: true,
             effect(){
                 let storage = '<div class="aTable">';
-                let multiplier = storageMultipler(0.1);
+                let multiplier = storageMultipler(0.2);
                 for (const res of $(this)[0].res()){
                     if (global.resource[res].display){
-                        let val = sizeApproximation(+(spatialReasoning($(this)[0].val(res)) * multiplier).toFixed(0),1);
+                        let val = sizeApproximation(+(spatialReasoning(+($(this)[0].val(res) * multiplier)).toFixed(0)));
                         storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
@@ -374,7 +374,7 @@ const edenicModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('warehouse','eden');
-                    let multiplier = storageMultipler(0.1);
+                    let multiplier = storageMultipler(0.2);
                     for (const res of $(this)[0].res()){
                         if (global.resource[res].display){
                             global.resource[res].max += (spatialReasoning($(this)[0].val(res) * multiplier));
@@ -382,6 +382,130 @@ const edenicModules = {
                     };
                     return true;
                 }
+                return false;
+            }
+        },
+        stabilizer: {
+            id: 'eden-stabilizer',
+            title: loc('eden_stabilizer_title'),
+            desc: `<div>${loc('eden_stabilizer_title')}</div>`,
+            reqs: { asphodel: 8 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('stabilizer', offset, 800000000, 1.25, 'eden'); },
+                Neutronium(offset){ return spaceCostMultiplier('stabilizer', offset, 7500000, 1.25, 'eden'); },
+                Vitreloy(offset){ return spaceCostMultiplier('stabilizer', offset, 29000000, 1.25, 'eden'); },
+                Elerium(offset){ return spaceCostMultiplier('stabilizer', offset, 7500, 1.25, 'eden'); },
+                Asphodel_Powder(offset){ return spaceCostMultiplier('stabilizer', offset, 4250, 1.25, 'eden'); },
+            },
+            effect(){
+                let desc = `<div class="has-text-caution">${loc('eden_stabilizer_requirement',[loc('city_shed_title3')])}</div>`;
+                desc += `<div>${loc('eden_stabilizer_effect1',[global.resource.Asphodel_Powder.name, 8])}</div>`;
+                desc += `<div>${loc('eden_stabilizer_effect2',[global.resource.Asphodel_Powder.name, loc('city_shed_title3'), 15])}</div>`;
+                desc += `<div class="has-text-special">${loc('eden_stabilizer_limit',[global.eden.warehouse.count])}</div>`;
+                return desc;
+            },
+            action(){
+                if (global.eden.stabilizer.count < global.eden.warehouse.count && payCosts($(this)[0])){
+                    incrementStruct('stabilizer','eden');
+                    return true;
+                }
+                return false;
+            },
+        },
+        rune_gate: {
+            id: 'eden-rune_gate',
+            title: loc('eden_rune_gate_title'),
+            desc(wiki){
+                if (!global.eden.hasOwnProperty('rune_gate') || global.eden.rune_gate.count < 100 || wiki){
+                    return `<div>${loc('eden_rune_gate_title')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
+                }
+                else {
+                    return `<div>${loc('eden_rune_gate_title')}</div>`;
+                }
+            },
+            wiki: false,
+            reqs: { elysium: 1 },
+            condition(){
+                return global.eden.rune_gate.count < 100 ? true : false;
+            },
+            queue_size: 10,
+            queue_complete(){ return 100 - global.eden.rune_gate.count; },
+            cost: {
+                Money(offset){
+                    if (offset){
+                        return offset + (global.eden.hasOwnProperty('rune_gate') ? global.eden.rune_gate.count : 0) < 100 ? 1000000000 : 0;
+                    }
+                    return !global.eden.hasOwnProperty('rune_gate') || (global.eden.rune_gate.count < 100) ? 1000000000 : 0;
+                },
+                Copper(offset){
+                    if (offset){
+                        return offset + (global.eden.hasOwnProperty('rune_gate') ? global.eden.rune_gate.count : 0) < 100 ? 420000000 : 0;
+                    }
+                    return !global.eden.hasOwnProperty('rune_gate') || (global.eden.rune_gate.count < 100) ? 420000000 : 0;
+                },
+                Nano_Tube(offset){
+                    if (offset){
+                        return offset + (global.eden.hasOwnProperty('rune_gate') ? global.eden.rune_gate.count : 0) < 100 ? 35000000 : 0;
+                    }
+                    return !global.eden.hasOwnProperty('rune_gate') || (global.eden.rune_gate.count < 100) ? 35000000 : 0;
+                },
+                Bolognium(offset){
+                    if (offset){
+                        return offset + (global.eden.hasOwnProperty('rune_gate') ? global.eden.rune_gate.count : 0) < 100 ? 7500000 : 0;
+                    }
+                    return !global.eden.hasOwnProperty('rune_gate') || (global.eden.rune_gate.count < 100) ? 7500000 : 0;
+                },
+                Asphodel_Powder(offset){
+                    if (offset){
+                        return offset + (global.eden.hasOwnProperty('rune_gate') ? global.eden.rune_gate.count : 0) < 100 ? 25000 : 0;
+                    }
+                    return !global.eden.hasOwnProperty('rune_gate') || (global.eden.rune_gate.count < 100) ? 25000 : 0;
+                },
+            },
+            effect(wiki){
+                let count = (wiki || 0) + (global.eden.hasOwnProperty('rune_gate') ? global.eden.rune_gate.count : 0);
+                if (count >= 100){
+                    let desc = `<div>${loc('eden_rune_gate_effect')}</div>`;
+                    return desc;
+                }
+                else {
+                    let size = 100;
+                    let remain = size - count;
+                    return `<div>${loc('eden_rune_gate_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                }
+            },
+            action(){
+                if (global.eden.rune_gate.count < 100 && payCosts($(this)[0])){
+                    incrementStruct('rune_gate','eden');
+                    if (global.eden.rune_gate.count === 100){
+                        global.eden['rune_gate_open'] = { count: 1, on: 0 };
+                        global.settings.eden.elysium = true;
+                        renderEdenic();
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        rune_gate_open: {
+            id: 'space-rune_gate_complete',
+            title: loc('eden_rune_gate_title'),
+            desc(){
+                return `<div>${loc('eden_rune_gate_title')}</div><div class="has-text-special">${loc('requires_power_support',[loc('eden_asphodel_name')])}</div>`;
+            },
+            reqs: { elysium: 1 },
+            condition(){
+                return global.eden.rune_gate.count === 100 ? true : false;
+            },
+            queue_complete(){ return 0; },
+            cost: {},
+            effect(){
+                return `<div class="has-text-caution">${loc('space_used_support',[loc('eden_asphodel_name')])}</div>`;
+            },
+            s_type: 'asphodel',
+            support(){ return -12; },
+            powered(){ return 0; },
+            action(){
                 return false;
             }
         },

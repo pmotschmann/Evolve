@@ -14157,10 +14157,51 @@ const techs = {
         cost: {
             Knowledge(){ return 73000000; },
         },
-        effect(){ return loc('tech_asphodel_storage_effect'); },
+        effect(){ return loc('tech_asphodel_storage_effect',[global.resource.Asphodel_Powder.name]); },
         action(){
             if (payCosts($(this)[0])){
                 global.eden['warehouse'] = { count: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    asphodel_stabilizer: {
+        id: 'tech-asphodel_stabilizer',
+        title: loc('tech_asphodel_stabilizer'),
+        desc: loc('tech_asphodel_stabilizer'),
+        category: 'edenic',
+        era: 'existential',
+        reqs: { asphodel: 7, },
+        grant: ['asphodel',8],
+        cost: {
+            Knowledge(){ return 74000000; },
+        },
+        effect(){ return loc('tech_asphodel_stabilizer_effect',[global.resource.Asphodel_Powder.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.eden['stabilizer'] = { count: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    outer_plane_study: {
+        id: 'tech-outer_plane_study',
+        title: loc('tech_outer_plane_study'),
+        desc: loc('tech_outer_plane_study'),
+        category: 'edenic',
+        era: 'existential',
+        reqs: { asphodel: 3, science: 22 },
+        grant: ['elysium',1],
+        cost: {
+            Knowledge(){ return 75000000; },
+        },
+        effect(){ return loc('tech_outer_plane_study_effect',[global.resource.Asphodel_Powder.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.eden['rune_gate'] = { count: 0 };
+                global.eden['rune_gate_open'] = { count: 0, on: 0 };
                 return true;
             }
             return false;

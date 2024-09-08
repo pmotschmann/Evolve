@@ -1513,7 +1513,7 @@ function loadReplicator(parent,bind){
                     return global.resource[r].name;
                 },
                 result(r){
-                    return loc(`tau_replicator`,[replicator(r,global.race.replicator.pow).toFixed(3),global.resource[r].name]);
+                    return loc(`tau_replicator`,[replicator(r,global.race.replicator.pow).toFixed(2),global.resource[r].name]);
                 }
             }
         });
@@ -1535,7 +1535,14 @@ export function replicator(res,pow){
     }
     else {
         let qLevel = quantum_level || 1;
-        return 12.5 * qLevel / atomic_mass[res] * (pow ** 0.75);
+        let mass = res === 'Infernite' || res === 'Elerium' ? atomic_mass[res] * 4 : atomic_mass[res];
+        if (pow > 5000){
+            pow = ((pow - 5000) ** 0.9) + 5000;
+        }
+        if (qLevel > 40){
+            qLevel = ((qLevel - 40) ** 0.75) + 40;
+        }
+        return 12.5 * qLevel / mass * (pow ** 0.75);
     }
 }
 

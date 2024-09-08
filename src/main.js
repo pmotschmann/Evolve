@@ -7361,6 +7361,9 @@ function fastLoop(){
         if (global.resource.Asphodel_Powder.display){
             if (global.resource.Asphodel_Powder.amount > 0){
                 let decay = +((global.resource.Asphodel_Powder.amount) * 0.0045).toFixed(3);
+                if (global.eden['stabilizer']){
+                    decay *= 0.92 ** global.eden.stabilizer.count;
+                }
                 modRes('Asphodel_Powder', -(decay * time_multiplier));
                 breakdown.p.consume.Asphodel_Powder[loc('evo_challenge_decay')] = -(decay);
             }
@@ -8218,7 +8221,7 @@ function midLoop(){
         }
 
         if (global.eden['warehouse']){
-            var multiplier = storageMultipler(0.1);
+            var multiplier = storageMultipler(0.2);
             let label = loc('eden_asphodel_name');
             for (const res of actions.eden.eden_asphodel.warehouse.res()){
                 if (global.resource[res].display){
