@@ -572,7 +572,7 @@ export function checkAchievements(){
         if (stargate === 1 && piracy('gxy_gateway') === 1 && piracy('gxy_gorddon') === 1 && piracy('gxy_alien1') === 1 && piracy('gxy_alien2') === 1 && chthonian === 1){
             unlockAchieve('neutralized');
         }
-        if(global.race['fasting'] && (chthonian + stargate) === 1){
+        if(global.race['fasting'] && (chthonian + stargate) === 2){
             let affix = universeAffix();
             global.stats.endless_hunger.b2[affix] = true;
             if (affix !== 'm' && affix !== 'l'){
