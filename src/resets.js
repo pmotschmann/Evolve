@@ -632,7 +632,7 @@ export function descension(){
     else {
         unlockAchieve(`corrupted`);
     }
-    if((global.race['fasting'] && !global.race['witch_hunter']) || (global.tech['dish'] >= 2 && global.race['witch_hunter'])){
+    if((global.race['fasting'] && !global.race['witch_hunter']) || (global.tech['dish_reset'] && global.race['witch_hunter'])){
         //award on demonic dish reset or outerplane summon with demonic dish tech unlocked
         let affix = universeAffix();
         global.stats['endless_hunger'].b5[affix] = true;
