@@ -4331,18 +4331,58 @@ const techs = {
         desc: loc('tech_devilish_dish'),
         category: 'fasting',
         era: 'dimensional',
-        reqs: { science: 21},
+        reqs: { hell_ruins: 4},
         trait: ['fasting'],
         grant: ['dish',1],
         cost: {
-            Knowledge(){ return 63000000; }
+            Knowledge(){ return 29000000; }
         },
         effect(){return loc('tech_devilish_dish_effect');},
         action(){
             if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    hell_oven: {
+        id: 'tech-hell_oven',
+        title: loc('tech_hell_oven'),
+        desc: loc('tech_hell_oven'),
+        category: 'fasting',
+        era: 'dimensional',
+        reqs: { hell_lake: 3, dish:1},
+        trait: ['fasting'],
+        grant: ['dish',2],
+        cost: {
+            Knowledge(){ return 32000000; }
+        },
+        effect(){return loc('tech_hell_oven_effect');},
+        action(){
+            if (payCosts($(this)[0])){
+                global.portal['oven'] = {count:0, done:0}
+                return true;
+            }
+            return false;
+        }
+    },
+    preparation_methods:{
+        id: 'tech-preparation_methods',
+        title: loc('tech_preparation_methods'),
+        desc: loc('tech_preparation_methods'),
+        category: 'fasting',
+        era: 'dimensional',
+        reqs: { science: 21, dish:4},
+        trait: ['fasting'],
+        grant: ['dish',5],
+        cost: {
+            Knowledge(){ return 62000000; }
+        },
+        effect(){return loc('tech_preparation_methods_effect');},
+        action(){
+            if (payCosts($(this)[0])){
                 global.portal['dish_soul_steeper'] = {count:0, on:0};
                 global.portal['dish_life_infuser'] = {count:0, on:0};
-                global.portal['devilish_dish'] = {count:0, done:0};
                 return true;
             }
             return false;
@@ -4354,8 +4394,8 @@ const techs = {
         desc: loc('tech_final_ingredient'),
         category: 'fasting',
         era: 'dimensional',
-        reqs: { dish: 2},
-        grant: ['dish',3],
+        reqs: { dish_reset: 1},
+        grant: ['dish_reset',2],
         cost: {
             Bolognium(){ return 50000000; },
             Demonic_Essence(){ return 1; }

@@ -1308,16 +1308,99 @@ const fortressModules = {
                 return false;
             }
         },
+        oven: {
+            id: 'portal-oven',
+            title: loc('portal_oven_title'),
+            desc(wiki){
+                if (!global.portal.hasOwnProperty('oven') || global.portal.oven.count < 100 || wiki){
+                    return `<div>${loc('portal_oven_title')}</div><div class="has-text-special">${loc('requires_segments', [100])}</div>` + (global.portal.hasOwnProperty('oven') && global.portal.oven.count >= 100 ? `<div class="has-text-special">${loc('requires_power')}</div>` : ``);
+                }
+            },
+            reqs: { dish:2 },
+            condition(){
+                return global.portal.oven.count < 100;
+            },
+            queue_size: 10,
+            queue_complete(){ return 100 - global.portal.oven.count; },
+            cost: {
+                Money(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('oven') ? global.portal.oven.count : 0)) < 100 ? 190000000 : 0; },
+                Steel(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('oven') ? global.portal.oven.count : 0)) < 100 ? 2000000 : 0; },
+                Infernite(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('oven') ? global.portal.oven.count : 0)) < 100 ? 600000 : 0; },
+                Bolognium(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('oven') ? global.portal.oven.count : 0)) < 100 ? 1000000 : 0; },
+                Scarletite(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('oven') ? global.portal.oven.count : 0)) < 100 ? 15000 : 0; }
+            },
+            effect(wiki){
+                let count = (wiki?.count ?? 0) + (global.portal.hasOwnProperty('oven') ? global.portal.oven.count : 0);
+                if (count < 100){
+                    let remain = 100 - count;
+                    return `<div>${loc('portal_oven_effect1')}</div><div class="has-text-special">${loc('requires_segments',[remain])}</div>`;
+                }
+                else {
+                    return fortressModules.prtl_lake.oven_complete.effect();
+                }
+            },
+            action(){
+                if (global.portal.oven.count < 100 && payCosts($(this)[0])){
+                    global.portal['oven'].count++;
+                    if (global.portal.oven.count >= 100){
+                        global.tech['dish'] = 3;
+                        global.portal['oven_complete'] = { count: 1, on: 0 };
+                        global.portal['devilish_dish'] = { count: 0, done: 0};
+                        renderFortress();
+                        clearPopper();
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        oven_complete: {
+            id: 'portal-oven_complete',
+            title: loc('portal_oven_title'),
+            desc(){
+                return `<div>${loc('portal_oven_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            wiki: false,
+            reqs: { dish: 3 },
+            condition(){
+                return global.portal.oven.count >= 100;
+            },
+            queue_complete(){ return 0; },
+            cost: {},
+            effect(wiki){
+                let fuel = $(this)[0].p_fuel();
+                return `<div>${loc(`portal_oven_desc`)}</div>${global.tech['dish'] === 4 ? `<div class="has-text-special">${loc('portal_oven_desc2')}</div>` : ``}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}, ${loc('spend', [fuel.a, fuel.r])}</div>`;
+            },
+            powered(){ return powerCostMod(3500); },
+            p_fuel(){ return { r: 'Infernite', a: 225 }},
+            action(){
+                return false;
+            }
+        },
+        devilish_dish: {
+            id: 'portal-devilish_dish',
+            title: loc('portal_devilish_dish_title'),
+            desc: loc('portal_devilish_dish_title'),
+            reqs: { dish: 3 },
+            queue_complete(){ return 0; },
+            cost: {},
+            effect(){
+                const progress = (global.portal['devilish_dish'] ? global.portal['devilish_dish'].done : 0);
+                return `<div>${loc(`portal_devilish_dish_desc`,[progress.toFixed(1)])}</div><div>${loc(`portal_devilish_dish_flavor${progress >= 100 ? 6 : Math.ceil(progress/20)}`)}</div>`;
+            },
+            action(){
+                return false;
+            }
+        },
         dish_soul_steeper: {
             id: 'portal-dish_soul_steeper',
             title: loc('portal_dish_soul_steeper_title'),
             desc: loc('portal_dish_soul_steeper_desc'),
-            reqs: { dish: 1 },
+            reqs: { dish: 5 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('dish_soul_steeper', offset, 750000000, spireCreep(1.3), 'portal'); },
-                Bolognium(offset){ return spaceCostMultiplier('dish_soul_steeper', offset, 5800000, spireCreep(1.3), 'portal'); },
-                Orichalcum(offset){ return spaceCostMultiplier('dish_soul_steeper', offset, 8000000, spireCreep(1.3), 'portal'); },
-                Supply(offset){ return spaceCostMultiplier('dish_soul_steeper', offset, 150000, spireCreep(1.2), 'portal'); },
+                Bolognium(offset){ return spaceCostMultiplier('dish_soul_steeper', offset, 12000000, spireCreep(1.3), 'portal'); },
+                Scarletite(offset){ return spaceCostMultiplier('dish_soul_steeper', offset, 300000, spireCreep(1.3), 'portal'); },
             },
             powered(){ return 0; },
             effect(){
@@ -1337,16 +1420,16 @@ const fortressModules = {
             id: 'portal-dish_life_infuser',
             title: loc('portal_dish_life_infuser_title'),
             desc: loc('portal_dish_life_infuser_desc'),
-            reqs: { dish: 1 },
+            reqs: { dish: 5 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 280000000, spireCreep(1.2), 'portal'); },
-                Bolognium(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 2000000, spireCreep(1.2), 'portal'); },
-                Scarletite(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 250000, spireCreep(1.2), 'portal'); },
-                Supply(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 70000, spireCreep(1.15), 'portal'); },
+                Bolognium(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 8000000, spireCreep(1.2), 'portal'); },
+                Orichalcum(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 8000000, spireCreep(1.2), 'portal'); },
+                Species(offset){ return popCost(10)}
             },
             powered(){ return 0; },
             effect(){
-                return `<div>${loc('portal_dish_life_infuser_effect1', [7])}</div><div class="has-text-danger">${loc('portal_dish_life_infuser_effect2', [5])}</div>`;
+                return `<div>${loc('portal_dish_life_infuser_effect1', [15])}</div><div class="has-text-danger">${loc('portal_dish_life_infuser_effect2', [5])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -1357,22 +1440,7 @@ const fortressModules = {
                 return false;
             },
             flair: loc('portal_dish_life_infuser_flair')
-        },
-        devilish_dish: {
-            id: 'portal-devilish_dish',
-            title: loc('portal_devilish_dish_title'),
-            desc: loc('portal_devilish_dish_title'),
-            reqs: { dish: 1 },
-            queue_complete(){ return 0; },
-            cost: {},
-            effect(){
-                const progress = (global.portal['devilish_dish'] ? global.portal['devilish_dish'].done : 0) * 100;
-                return `<div>${loc(`portal_devilish_dish_desc`,[progress.toFixed(1)])}</div><div>${loc(`portal_devilish_dish_flavor${progress >= 100 ? 11 : Math.ceil(progress/10)}`)}</div>`;
-            },
-            action(){
-                return false;
-            }
-        },
+        }
     },
     prtl_spire: {
         info: {

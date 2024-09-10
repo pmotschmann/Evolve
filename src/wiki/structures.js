@@ -74,7 +74,7 @@ const calcInfo = {
         starDock: ['prep_ship','launch_ship'],
         interstellar: ['alpha_mission','proxima_mission','nebula_mission','neutron_mission','blackhole_mission','jump_ship','wormhole_mission','sirius_mission','sirius_b','ascend'],
         intergalactic: ['gateway_mission','gorddon_mission','alien2_mission','chthonian_mission'],
-        hell: ['pit_mission','assault_forge','ruins_mission','gate_mission','lake_mission','spire_mission','bribe_sphinx','spire_survey','spire','devilish_dish'],
+        hell: ['pit_mission','assault_forge','ruins_mission','gate_mission','lake_mission','spire_mission','bribe_sphinx','spire_survey','spire','devilish_dish','oven_done'],
         tauceti: [
             'home_mission','dismantle','excavate','alien_outpost','red_mission','matrix','roid_mission','alien_station_survey',
             'contact','introduce','subjugate','gas_contest','gas_contest2','ignite_gas_giant','jeff','goe_facility'
@@ -127,7 +127,8 @@ const calcInfo = {
             east_tower: towerSize(),
             bridge: 10,
             sphinx: 2,
-            waygate: 10
+            waygate: 10,
+            oven:100
         },
         tauceti: {
             alien_outpost: 1,
