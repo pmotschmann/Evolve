@@ -14060,6 +14060,27 @@ const techs = {
         effect(){ return loc('tech_spirit_box_effect'); },
         action(){
             if (payCosts($(this)[0])){
+                global.resource.Omniscience.display = true;
+                return true;
+            }
+            return false;
+        }
+    },
+    spirit_researcher: {
+        id: 'tech-spirit_researcher',
+        title: loc('tech_spirit_researcher'),
+        desc: loc('tech_spirit_researcher'),
+        category: 'science',
+        era: 'existential',
+        reqs: { asphodel: 8, science: 22 },
+        grant: ['science',23],
+        cost: {
+            Knowledge(){ return 80000000; },
+            Omniscience(){ return 12500; },
+        },
+        effect(){ return loc('tech_spirit_researcher_effect',[global.civic.scientist.name]); },
+        action(){
+            if (payCosts($(this)[0])){
                 return true;
             }
             return false;
@@ -14075,6 +14096,7 @@ const techs = {
         grant: ['asphodel',4],
         cost: {
             Knowledge(){ return 70000000; },
+            Omniscience(){ return 1000; },
             Asphodel_Powder(){ return 12500; },
         },
         effect(){ return loc('tech_soul_engine_effect'); },
@@ -14096,6 +14118,7 @@ const techs = {
         grant: ['hell_lake',7],
         cost: {
             Knowledge(){ return 71250000; },
+            Omniscience(){ return 5000; },
             Asphodel_Powder(){ return 15000; },
         },
         effect(){ return loc('tech_railway_to_hell_effect',[global.resource.Asphodel_Powder.name]); },
@@ -14116,6 +14139,7 @@ const techs = {
         grant: ['hell_spire',11],
         cost: {
             Knowledge(){ return 71250000; },
+            Omniscience(){ return 5000; },
             Asphodel_Powder(){ return 15000; },
         },
         effect(){ return loc('tech_purification_effect',[global.resource.Asphodel_Powder.name,loc('portal_purifier_title'),2,loc('eden_asphodel_harvester_title')]); },
@@ -14136,6 +14160,7 @@ const techs = {
         grant: ['asphodel',6],
         cost: {
             Knowledge(){ return 72300000; },
+            Omniscience(){ return 6000; },
         },
         effect(){ return loc('tech_asphodel_mech_effect'); },
         action(){
@@ -14156,6 +14181,7 @@ const techs = {
         grant: ['asphodel',7],
         cost: {
             Knowledge(){ return 73000000; },
+            Omniscience(){ return 6500; },
         },
         effect(){ return loc('tech_asphodel_storage_effect',[global.resource.Asphodel_Powder.name]); },
         action(){
@@ -14176,6 +14202,7 @@ const techs = {
         grant: ['asphodel',8],
         cost: {
             Knowledge(){ return 74000000; },
+            Omniscience(){ return 10000; },
         },
         effect(){ return loc('tech_asphodel_stabilizer_effect',[global.resource.Asphodel_Powder.name]); },
         action(){
@@ -14196,6 +14223,7 @@ const techs = {
         grant: ['elysium',1],
         cost: {
             Knowledge(){ return 75000000; },
+            Omniscience(){ return 12500; },
         },
         effect(){ return loc('tech_outer_plane_study_effect',[global.resource.Asphodel_Powder.name]); },
         action(){

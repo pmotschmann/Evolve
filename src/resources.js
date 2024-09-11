@@ -667,6 +667,7 @@ export function defineResources(wiki){
     loadResource('Energy',wiki,0,0,false,false,'warning');
     loadResource('Sus',wiki,0,0,false,false,'warning');
     loadResource('Knowledge',wiki,100,1,false,false,'warning');
+    loadResource('Omniscience',wiki,100,1,false,false,'warning');
     loadResource('Zen',wiki,0,0,false,false,'warning');
     loadResource('Crates',wiki,0,0,false,false,'warning');
     loadResource('Containers',wiki,0,0,false,false,'warning');

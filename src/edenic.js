@@ -5,7 +5,7 @@ import { payCosts, powerOnNewStruct, setAction, storageMultipler } from './actio
 import { checkRequirements, incrementStruct} from './space.js';
 import { mechRating } from './portal.js';
 import { jobScale } from './jobs.js';
-import { production } from './prod.js';
+import { production, highPopAdjust } from './prod.js';
 import { loc } from './locale.js';
 
 const edenicModules = {
@@ -262,7 +262,12 @@ const edenicModules = {
                 if (global.tech['science'] && global.tech.science >= 22 && p_on['embassy'] && p_on['symposium']){
                     souls *= 1 + p_on['symposium'];
                 }
-                return `<div class="has-text-caution">${loc('space_used_support',[loc('eden_asphodel_name')])}</div><div>${loc('eden_research_station_effect',[souls, loc('job_ghost_trapper')])}</div>`;
+                let desc = `<div class="has-text-caution">${loc('space_used_support',[loc('eden_asphodel_name')])}</div>`;
+                desc += `<div>${loc('eden_research_station_effect',[highPopAdjust(souls), loc('job_ghost_trapper')])}</div>`;
+                if (global.tech['science'] && global.tech.science >= 22){
+                    desc += `<div>${loc('plus_max_resource',[777,global.resource.Omniscience.name])}</div>`;
+                }
+                return desc;
             },
             s_type: 'asphodel',
             support(){ return -1; },
@@ -436,6 +441,12 @@ const edenicModules = {
                         return offset + (global.eden.hasOwnProperty('rune_gate') ? global.eden.rune_gate.count : 0) < 100 ? 1000000000 : 0;
                     }
                     return !global.eden.hasOwnProperty('rune_gate') || (global.eden.rune_gate.count < 100) ? 1000000000 : 0;
+                },
+                Omniscience(offset){
+                    if (offset){
+                        return offset + (global.eden.hasOwnProperty('rune_gate') ? global.eden.rune_gate.count : 0) < 100 ? 10000 : 0;
+                    }
+                    return !global.eden.hasOwnProperty('rune_gate') || (global.eden.rune_gate.count < 100) ? 10000 : 0;
                 },
                 Copper(offset){
                     if (offset){

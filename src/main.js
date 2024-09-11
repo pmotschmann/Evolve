@@ -1044,7 +1044,7 @@ function fastLoop(){
     }
 
     let resList = [
-        'Money','Knowledge','Food','Lumber','Stone','Chrysotile','Crystal','Furs','Copper','Iron',
+        'Money','Knowledge','Omniscience','Food','Lumber','Stone','Chrysotile','Crystal','Furs','Copper','Iron',
         'Cement','Coal','Oil','Uranium','Aluminium','Steel','Titanium','Alloy','Polymer','Iridium',
         'Helium_3','Water','Deuterium','Neutronium','Adamantite','Infernite','Elerium','Nano_Tube',
         'Graphene','Stanene','Bolognium','Vitreloy','Orichalcum','Asphodel_Powder','Unobtainium','Quantium',
@@ -4080,6 +4080,39 @@ function fastLoop(){
                     }
                     drawTech();
                 }
+            }
+        }
+
+        // Omniscience
+        if (global.resource.Omniscience.display){
+            if (support_on['research_station']){
+                let ghost_base = workerScale(global.civic.ghost_trapper.workers,'ghost_trapper');
+                ghost_base *= racialTrait(ghost_base,'science');
+                ghost_base *= global.race['pompous'] ? (1 - traits.pompous.vars()[0] / 100) : 1;
+                ghost_base = highPopAdjust(ghost_base);
+
+                let ghost_gain = support_on['research_station'] * ghost_base * 0.0000325;
+                breakdown.p['Omniscience'][loc('eden_research_station_title')] = ghost_gain + 'v';
+
+                let delta = ghost_gain;
+                delta *= hunger * global_multiplier;
+
+                modRes('Omniscience', delta * time_multiplier);
+            }
+
+            if (global.tech['science'] && global.tech.science >= 22){
+                let scientist = workerScale(global.civic.scientist.workers,'scientist');
+                scientist *= racialTrait(scientist,'science');
+                scientist *= global.race['pompous'] ? (1 - traits.pompous.vars()[0] / 100) : 1;
+                scientist = highPopAdjust(scientist);
+
+                let sci_gain = scientist * 0.000707;
+                breakdown.p['Omniscience'][global.civic.scientist.name] = sci_gain + 'v';
+
+                let delta = sci_gain;
+                delta *= hunger * global_multiplier;
+
+                modRes('Omniscience', delta * time_multiplier);
             }
         }
 
@@ -7546,6 +7579,7 @@ function midLoop(){
             Energy: 100,
             Sus: 100,
             Knowledge: global.stats.achieve['extinct_junker'] && global.stats.achieve['extinct_junker'].l >= 1 ? 1000 : 100,
+            Omniscience: 0,
             Zen: 0,
             Food: 1000,
             Crates: 0,
@@ -7669,6 +7703,7 @@ function midLoop(){
         var bd_Mana = { [loc('base')]: caps['Mana']+'v' };
         var bd_Sus = { [loc('base')]: caps['Mana']+'v' };
         var bd_Knowledge = { [loc('base')]: caps['Knowledge']+'v' };
+        var bd_Omniscience = {};
         var bd_Zen = {};
         var bd_Crates = {};
         var bd_Containers = {};
@@ -7716,6 +7751,7 @@ function midLoop(){
             Mana: bd_Mana,
             Sus: bd_Sus,
             Knowledge: bd_Knowledge,
+            Omniscience: bd_Omniscience,
             Zen: bd_Zen,
             Crates: bd_Crates,
             Containers: bd_Containers,
@@ -8647,6 +8683,16 @@ function midLoop(){
             }
         }
 
+        //Omniscience
+        if (global.resource.Omniscience.display){
+            if (global.eden['research_station']){
+                let gain = (support_on['research_station'] || 0) * 777;
+                caps['Omniscience'] += gain;
+                bd_Omniscience[loc('eden_research_station_title')] = gain+'v';
+            }
+        }
+        
+
         if (global.tech['isolation'] && global.tauceti['alien_outpost'] && global.resource.Cipher.display){
             let cipher = 200000;
             caps['Cipher'] += cipher;
@@ -8847,7 +8893,7 @@ function midLoop(){
             if (global.race['high_pop']){
                 sci = highPopAdjust(sci);
             }
-            let gain = support_on['research_station'] * global.civic.ghost_trapper.workers * sci;
+            let gain = support_on['research_station'] * highPopAdjust(global.civic.ghost_trapper.workers) * sci;
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('eden_research_station_title')] = gain+'v';
         }
