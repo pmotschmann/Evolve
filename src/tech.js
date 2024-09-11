@@ -4340,6 +4340,9 @@ const techs = {
         effect(){return loc('tech_devilish_dish_effect');},
         action(){
             if (payCosts($(this)[0])){
+                if(global.tech['hell_lake'] >= 3){
+                    messageQueue(loc('tech_lake_analysis_fasting'),'info',false,['progress','hell']);
+                }
                 return true;
             }
             return false;
@@ -5389,6 +5392,9 @@ const techs = {
         effect(){ return loc('tech_lake_analysis_effect'); },
         action(){
             if (payCosts($(this)[0])){
+                if(global.race['fasting'] && global.tech['dish'] >= 1){
+                    messageQueue(loc('tech_lake_analysis_fasting'),'info',false,['progress','hell']);
+                }
                 return true;
             }
             return false;
