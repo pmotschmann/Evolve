@@ -2386,33 +2386,33 @@ function fastLoop(){
             global.portal.guard_post.support = global.portal.guard_post.on;
         }
 
-        // Harbour
-        if (global.portal['harbour']){
-            global.portal.harbour.s_max = p_on['harbour'] * actions.portal.prtl_lake.harbour.support();
+        // harbor
+        if (global.portal['harbor']){
+            global.portal.harbor.s_max = p_on['harbor'] * actions.portal.prtl_lake.harbor.support();
 
             let used_support = 0;
-            let harbour_structs = global.support.lake.map(x => x.split(':')[1]);
-            for (var i = 0; i < harbour_structs.length; i++){
-                if (global.portal[harbour_structs[i]]){
-                    let operating = global.portal[harbour_structs[i]].on;
-                    let id = actions.portal.prtl_lake[harbour_structs[i]].id;
-                    if (used_support + operating > global.portal.harbour.s_max){
-                        operating -= (used_support + operating) - global.portal.harbour.s_max;
+            let harbor_structs = global.support.lake.map(x => x.split(':')[1]);
+            for (var i = 0; i < harbor_structs.length; i++){
+                if (global.portal[harbor_structs[i]]){
+                    let operating = global.portal[harbor_structs[i]].on;
+                    let id = actions.portal.prtl_lake[harbor_structs[i]].id;
+                    if (used_support + operating > global.portal.harbor.s_max){
+                        operating -= (used_support + operating) - global.portal.harbor.s_max;
                         $(`#${id} .on`).addClass('warn');
-                        $(`#${id} .on`).prop('title',`ON ${operating}/${global.portal[harbour_structs[i]].on}`);
+                        $(`#${id} .on`).prop('title',`ON ${operating}/${global.portal[harbor_structs[i]].on}`);
                     }
                     else {
                         $(`#${id} .on`).removeClass('warn');
                         $(`#${id} .on`).prop('title',`ON`);
                     }
-                    used_support += operating * -(actions.portal.prtl_lake[harbour_structs[i]].support());
-                    gal_on[harbour_structs[i]] = operating;
+                    used_support += operating * -(actions.portal.prtl_lake[harbor_structs[i]].support());
+                    gal_on[harbor_structs[i]] = operating;
                 }
                 else {
-                    gal_on[harbour_structs[i]] = 0;
+                    gal_on[harbor_structs[i]] = 0;
                 }
             }
-            global.portal.harbour.support = used_support;
+            global.portal.harbor.support = used_support;
         }
 
         // Purifier
@@ -2669,7 +2669,7 @@ function fastLoop(){
                 area: 'portal',
                 region: 'prtl_lake',
                 ships: ['bireme','transport'],
-                req: 'harbour'
+                req: 'harbor'
             }
         ];
 
@@ -8290,11 +8290,11 @@ function midLoop(){
             };
         }
 
-        if (global.portal['harbour'] && p_on['harbour']){
-            let label = loc('portal_harbour_title');
-            for (const res of actions.portal.prtl_lake.harbour.res()){
+        if (global.portal['harbor'] && p_on['harbor']){
+            let label = loc('portal_harbor_title');
+            for (const res of actions.portal.prtl_lake.harbor.res()){
                 if (global.resource[res].display){
-                    let gain = p_on['harbour'] * spatialReasoning(actions.portal.prtl_lake.harbour.val(res));
+                    let gain = p_on['harbor'] * spatialReasoning(actions.portal.prtl_lake.harbor.val(res));
                     caps[res] += gain;
                     breakdown.c[res][label] = gain+'v';
                 }

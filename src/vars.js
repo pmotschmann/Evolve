@@ -1197,9 +1197,16 @@ if (convertVersion(global['version']) < 103014){
     }
 }
 
+if (convertVersion(global['version']) <= 103015){
+    if (global.portal.hasOwnProperty('harbour')){
+        global.portal['harbor'] = global.portal.harbour;
+        delete global.portal.harbour;
+    }
+}
+
 global['version'] = '1.3.15';
 delete global['revision'];
-global['beta'] = 5;
+global['beta'] = 6;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
