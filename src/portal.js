@@ -943,7 +943,7 @@ const fortressModules = {
                     if (global.tech['wtower'] && global.tech['etower'] && !global.tech['hell_lake']){
                         global.tech['hell_lake'] = 1;
                         global.settings.portal.lake = true;
-                        global.portal['harbour'] = { count: 0, on: 0, support: 0, s_max: 0 };
+                        global.portal['harbor'] = { count: 0, on: 0, support: 0, s_max: 0 };
                         messageQueue(loc('portal_gate_open'),'info',false,['progress','hell']);
                         renderFortress();
                     }
@@ -998,7 +998,7 @@ const fortressModules = {
                     if (global.tech['wtower'] && global.tech['etower'] && !global.tech['hell_lake']){
                         global.tech['hell_lake'] = 1;
                         global.settings.portal.lake = true;
-                        global.portal['harbour'] = { count: 0, on: 0, support: 0, s_max: 0 };
+                        global.portal['harbor'] = { count: 0, on: 0, support: 0, s_max: 0 };
                         messageQueue(loc('portal_gate_open'),'info',false,['progress','hell']);
                         renderFortress();
                     }
@@ -1082,7 +1082,7 @@ const fortressModules = {
         info: {
             name: loc('portal_lake_name'),
             desc: loc('portal_lake_desc'),
-            support: 'harbour',
+            support: 'harbor',
         },
         lake_mission: {
             id: 'portal-lake_mission',
@@ -1105,11 +1105,11 @@ const fortressModules = {
                 return false;
             }
         },
-        harbour: {
-            id: 'portal-harbour',
-            title: loc('portal_harbour_title'),
+        harbor: {
+            id: 'portal-harbor',
+            title: loc('portal_harbor_title'),
             desc(){
-                return `<div>${loc('portal_harbour_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+                return `<div>${loc('portal_harbor_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { hell_lake: 3 },
             powered(wiki){
@@ -1119,11 +1119,11 @@ const fortressModules = {
             },
             support(){ return 1; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('harbour', offset, 225000000, spireCreep(1.18), 'portal'); },
-                Cement(offset){ return spaceCostMultiplier('harbour', offset, 50000000, spireCreep(1.18), 'portal'); },
-                Iridium(offset){ return spaceCostMultiplier('harbour', offset, 7500000, spireCreep(1.18), 'portal'); },
-                Infernite(offset){ return spaceCostMultiplier('harbour', offset, 800000, spireCreep(1.18), 'portal'); },
-                Stanene(offset){ return spaceCostMultiplier('harbour', offset, 17500000, spireCreep(1.18), 'portal'); },
+                Money(offset){ return spaceCostMultiplier('harbor', offset, 225000000, spireCreep(1.18), 'portal'); },
+                Cement(offset){ return spaceCostMultiplier('harbor', offset, 50000000, spireCreep(1.18), 'portal'); },
+                Iridium(offset){ return spaceCostMultiplier('harbor', offset, 7500000, spireCreep(1.18), 'portal'); },
+                Infernite(offset){ return spaceCostMultiplier('harbor', offset, 800000, spireCreep(1.18), 'portal'); },
+                Stanene(offset){ return spaceCostMultiplier('harbor', offset, 17500000, spireCreep(1.18), 'portal'); },
             },
             wide: true,
             res(){
@@ -1175,11 +1175,11 @@ const fortressModules = {
                     }
                 };
                 storage = storage + '</div>';
-                return `<div>${loc('portal_harbour_effect',[1])}</div>${storage}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered(wiki)])}</div>`;
+                return `<div>${loc('portal_harbor_effect',[1])}</div>${storage}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered(wiki)])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){
-                    incrementStruct('harbour','portal');
+                    incrementStruct('harbor','portal');
                     if (powerOnNewStruct($(this)[0])){
                         for (const res of $(this)[0].res()){
                             if (global.resource[res].display){
