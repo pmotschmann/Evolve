@@ -1345,7 +1345,7 @@ const fortressModules = {
                     if (global.portal.oven.count >= 100){
                         global.tech['dish'] = 3;
                         global.portal['oven_complete'] = { count: 1, on: 0 };
-                        global.portal['devilish_dish'] = { count: 0, done: 0};
+                        global.portal['devilish_dish'] = { count: 0, done: 0, time: 0 };
                         renderFortress();
                         clearPopper();
                     }

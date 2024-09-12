@@ -9976,6 +9976,36 @@ function midLoop(){
                 renderFortress();
             }
         }
+        
+        if(global.race['fasting'] && global.portal['oven_complete']){
+            let progress = 0;
+            if(p_on['oven_complete']){
+                progress = 0.00025;
+                if(global.portal['dish_life_infuser'] && global.portal['dish_life_infuser'].on){
+                    let hunger = 0.5;
+                    if (global.race['angry']){
+                        hunger -= traits.angry.vars()[0] / 100;
+                    }
+                    if (global.race['malnutrition']){
+                        hunger += traits.malnutrition.vars()[0] / 100;
+                    }
+                    let working = Math.min(global.portal['dish_life_infuser'].on, Math.floor(hunger / 0.02));
+                    progress *= 1 + (0.15 * working);
+                }
+                if(global.portal['dish_soul_steeper'] && global.portal['dish_soul_steeper'].on && global.portal['spire']){
+                    progress *= 1 + (0.05 * global.portal['spire'].count * global.portal['dish_soul_steeper'].on);
+                }
+                global.portal['devilish_dish'].done += progress;
+                global.portal['devilish_dish'].done = Math.min(global.portal['devilish_dish'].done, 100);
+                global.portal['devilish_dish'].count = Math.floor(global.portal['devilish_dish'].done);
+                if(global.portal['devilish_dish'].done >= 0.05 && global.tech['dish'] === 3){
+                    messageQueue(loc('dish_progress'),'info',false,['progress']);
+                    global.tech['dish'] = 4;
+                    drawTech();
+                }
+            }
+            global.portal['devilish_dish'].time = progress === 0 ? timeFormat(-1) : timeFormat((100 - global.portal['devilish_dish'].done) / progress);
+        }
 
         if (global.race['cannibalize'] && global.city['s_alter']){
             if (global.city.s_alter.rage > 0){
@@ -11465,31 +11495,6 @@ function longLoop(){
         }
         else if (global.tech['tau_gas'] && global.tech.tau_gas >= 4 && !global.tech['plague'] && global.race['lone_survivor']){
             global.tech['plague'] = 5;
-        }
-        if(global.race['fasting'] && p_on['oven_complete']){
-            let progress = 0.001;
-            if(global.portal['dish_life_infuser'] && global.portal['dish_life_infuser'].on){
-                let hunger = 0.5;
-                if (global.race['angry']){
-                    hunger -= traits.angry.vars()[0] / 100;
-                }
-                if (global.race['malnutrition']){
-                    hunger += traits.malnutrition.vars()[0] / 100;
-                }
-                let working = Math.min(global.portal['dish_life_infuser'].on, Math.floor(hunger / 0.02));
-                progress *= 1 + (0.15 * working);
-            }
-            if(global.portal['dish_soul_steeper'] && global.portal['dish_soul_steeper'].on && global.portal['spire']){
-                progress *= 1 + (0.05 * global.portal['spire'].count * global.portal['dish_soul_steeper'].on);
-            }
-            global.portal['devilish_dish'].done += progress;
-            global.portal['devilish_dish'].done = Math.min(global.portal['devilish_dish'].done, 100);
-            global.portal['devilish_dish'].count = Math.floor(global.portal['devilish_dish'].done);
-            if(global.portal['devilish_dish'].done >= 0.05 && global.tech['dish'] === 3){
-                messageQueue(loc('dish_progress'),'info',false,['progress']);
-                global.tech['dish'] = 4;
-                drawTech();
-            }
         }
 
         if (global.civic.govern['protest'] && global.civic.govern.protest > 0){

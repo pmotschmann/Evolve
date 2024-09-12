@@ -4363,7 +4363,7 @@ const techs = {
         effect(){return loc('tech_hell_oven_effect');},
         action(){
             if (payCosts($(this)[0])){
-                global.portal['oven'] = {count:0, done:0}
+                global.portal['oven'] = {count:0}
                 return true;
             }
             return false;

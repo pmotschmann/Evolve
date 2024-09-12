@@ -6715,6 +6715,21 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
             });
         }
     }
+    if(c_action.id === "portal-devilish_dish"){
+        if (obj && obj['time']){
+            parent.append($(`<div id="popTimer" class="flair has-text-advanced">{{ time | timer }}</div>`));
+            vBind({
+                el: '#popTimer',
+                data: obj,
+                filters: {
+                    timer(t){
+                        let time = !c_action.hasOwnProperty('mscan') || (c_action.hasOwnProperty('mscan') && c_action.mscan() > 0) ? t : '???';
+                        return loc('action_done',[time]);
+                    }
+                }
+            });
+        }
+    }
 }
 
 export function removeAction(id){
