@@ -1,8 +1,8 @@
 import { save, global, seededRandom, webWorker, keyMultiplier, sizeApproximation, p_on, support_on, int_on, gal_on } from './vars.js';
-import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, calcGenomeScore, randomKey, getTraitDesc, deepClone, get_qlevel } from './functions.js';
+import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, calcGenomeScore, randomKey, getTraitDesc, deepClone, get_qlevel, timeFormat } from './functions.js';
 import { unlockAchieve, unlockFeat, universeAffix } from './achieve.js';
 import { races, traits, genus_traits, genusVars, planetTraits, biomes } from './races.js';
-import { spatialReasoning, unlockContainers, drawResourceTab } from './resources.js';
+import { spatialReasoning, unlockContainers, drawResourceTab, atomic_mass } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
 import { defineIndustry } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
@@ -3544,8 +3544,29 @@ const interstellarProjects = {
                 Elerium(offset){ return spaceCostMultiplier('mass_ejector', offset, 100, 1.25, 'interstellar'); },
                 Mythril(offset){ return spaceCostMultiplier('mass_ejector', offset, 10000, 1.25, 'interstellar'); },
             },
-            effect(){
-                return `<div><span>${loc('interstellar_mass_ejector_effect')}</span>, <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span></div>`;
+            effect(wiki){
+                let desc = `<div>${loc('interstellar_mass_ejector_effect')}</div>`;
+                if (global.race.universe !== 'magic' && (wiki || global.stats.blackhole)){
+                    let exoticEjectDone = global.interstellar?.stellar_engine?.exotic ?? 0;
+                    let exoticEjectNeeded = (0.025 - exoticEjectDone) * 1e10;
+                    let exoticEjectRate = (global.interstellar?.mass_ejector?.Elerium ?? 0) * atomic_mass['Elerium'];
+                    exoticEjectRate += (global.interstellar?.mass_ejector?.Infernite ?? 0) * atomic_mass['Infernite'];
+
+                    desc += `<div><span class="has-text-caution">${loc('wiki_calc_mass_time_to_explode')}:</span> `;
+                    if (exoticEjectNeeded <= 0){
+                        desc += `<span class="has-text-success">${loc('wiki_calc_mass_time_reached')}</span>`;
+                    }
+                    else if (exoticEjectRate <= 0){
+                        desc += `<span class="has-text-danger">${loc('time_never')}</span>`;
+                    }
+                    else {
+                        let timeReq = timeFormat(Math.round(exoticEjectNeeded / exoticEjectRate));
+                        desc += timeReq;
+                    }
+                    desc += '</div>';
+                }
+                desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
             },
             powered(){ return powerCostMod(3); },
             special: true,
