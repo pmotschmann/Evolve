@@ -85,6 +85,7 @@
   "units": "Number Notation",
   "metric": "Metric",
   "scientific": "Scientific",
+  "engineering": "Engineering",
   "sln": "Single Letter",
   "font": "Font Size",
   "standard": "Standard",

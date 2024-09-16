@@ -4749,13 +4749,6 @@ function drawHellAnalysis(){
         }
     });
     
-    let expandedLocaleNum = function(num,sigFigs){
-        num = num.toFixed(sigFigs);
-        let whole = Math.floor(num);
-        let decimals = (+(num - whole).toFixed(sigFigs)).toString().substring(1);
-        return whole.toLocaleString() + decimals;
-    };
-    
     let calcAverage = function(num,gameDays,units){
         if (num){
             if (units !== 'game_days' && global.portal.observe.settings.hyperSlow){
@@ -4783,7 +4776,7 @@ function drawHellAnalysis(){
                 default:
                     break;
             }
-            num = global.portal.observe.settings.expanded ? expandedLocaleNum(num,5) : sizeApproximation(num,5,true);
+            num = sizeApproximation(num, 5, global.portal.observe.settings.expanded);
         }
         return loc('hell_analysis_time_average',[num,loc(`hell_analysis_time_${units}_abbr`)])
     };
@@ -4856,13 +4849,15 @@ function drawHellAnalysis(){
             filters: {
                 generic(num, name, average){
                     if (!average){
-                        return loc('hell_analysis_number_display',[loc(`hell_analysis_${name}`),global.portal.observe.settings.expanded ? (+(num).toFixed(5)).toLocaleString() : sizeApproximation(num,5,true)]);
+                        let val = sizeApproximation(num, 5, global.portal.observe.settings.expanded);
+                        return loc('hell_analysis_number_display', [loc(`hell_analysis_${name}`), val]);
                     }
                     return loc('hell_analysis_number_display',[loc(`hell_analysis_${name}`),calcAverage(num,global.portal.observe.stats[type].days,global.portal.observe.settings.display)]);
                 },
                 genericSub(num, name, average){
                     if (!average){
-                        return 'ᄂ' + loc('hell_analysis_number_display',[loc(`hell_analysis_${name}`),global.portal.observe.settings.expanded ? (+(num).toFixed(5)).toLocaleString() : sizeApproximation(num,5,true)]);
+                        let val = sizeApproximation(num, 5, global.portal.observe.settings.expanded);
+                        return 'ᄂ' + loc('hell_analysis_number_display', [loc(`hell_analysis_${name}`), val]);
                     }
                     return 'ᄂ' + loc('hell_analysis_number_display',[loc(`hell_analysis_${name}`),calcAverage(num,global.portal.observe.stats[type].days,global.portal.observe.settings.display)]);
                 },
@@ -4872,7 +4867,8 @@ function drawHellAnalysis(){
                         num += group[type];
                     });
                     if (!average){
-                        return loc('hell_analysis_number_display',[loc(`hell_analysis_${name}`),global.portal.observe.settings.expanded ? (+(num).toFixed(5)).toLocaleString() : sizeApproximation(num,5,true)]);
+                        let val = sizeApproximation(num, 5, global.portal.observe.settings.expanded);
+                        return loc('hell_analysis_number_display', [loc(`hell_analysis_${name}`), val]);
                     }
                     return loc('hell_analysis_number_display',[loc(`hell_analysis_${name}`),calcAverage(num,global.portal.observe.stats[type].days,global.portal.observe.settings.display)]);
                 },
@@ -4901,7 +4897,8 @@ function drawHellAnalysis(){
                         default:
                             break;
                     }
-                    return loc('hell_analysis_time',[loc(`hell_analysis_time_${units}`),global.portal.observe.settings.expanded ? expandedLocaleNum(days,8) : sizeApproximation(days,5,true)]);
+                    let formattedTime = sizeApproximation(days, global.portal.observe.settings.expanded ? 8 : 5, global.portal.observe.settings.expanded);
+                    return loc('hell_analysis_time', [loc(`hell_analysis_time_${units}`), formattedTime]);
                 },
                 resetLabel(){
                     return loc('hell_analysis_period_reset');
