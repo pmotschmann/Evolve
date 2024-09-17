@@ -512,7 +512,7 @@ const outerTruth = {
                     effectText += `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
                 else {
-                    return outerTruth.spc_titan.ai_core2.effect();
+                    return outerTruth.spc_titan.ai_core2.effect(wiki);
                 }
                 return effectText;
             },
@@ -5617,9 +5617,9 @@ export function loneSurvivor(){
 export function calcAIDrift(wiki){
     let drift = 0;
     let ai_colonist_on = wiki ? global.space.ai_colonist.on : p_on['ai_colonist'];
-    let decoder_on = wiki ? global.space.decoder.on : p_on['decoder'];
-    let shock_trooper_on = wiki ? global.space.shock_trooper.on : p_on['shock_trooper'];
-    let tank_on = wiki ? global.space.tank.on : p_on['tank'];
+    let decoder_on = wiki ? global.space.decoder.on : support_on['decoder'];
+    let shock_trooper_on = wiki ? global.space.shock_trooper.on : support_on['shock_trooper'];
+    let tank_on = wiki ? global.space.tank.on : support_on['tank'];
     if (ai_colonist_on && decoder_on){
         drift += ai_colonist_on * decoder_on * 0.35;
     }
