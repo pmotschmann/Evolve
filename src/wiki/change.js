@@ -4,11 +4,12 @@ import { clearElement } from './../functions.js';
 export const changeList = [
     {
         version: `1.3.15`,
-        date: `9/4/2024`,
+        date: `9/19/2024`,
         changes: [
             `Fasting scenario Demonic Infusion goal updated with new tastier experience.`,
             `Starvation risk toolips added for Fasting scenario.`,
             `Mastery listed under stats tab now displays unmodified value.`,
+            `Dark Bomb will no longer appear as an option after the demon lord is defeated.`,
         ]
     },
     {
