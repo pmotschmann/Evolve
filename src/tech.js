@@ -1,4 +1,4 @@
-import { global, save, webWorker } from './vars.js';
+import { global, save, webWorker, p_on } from './vars.js';
 import { loc } from './locale.js';
 import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper, popCost } from './functions.js';
 import { unlockAchieve, alevel, universeAffix, unlockFeat } from './achieve.js';
@@ -1499,6 +1499,12 @@ const techs = {
         effect: loc('tech_stellar_smelting_effect'),
         action(){
             if (payCosts($(this)[0])){
+                let num_forge_on = p_on['stellar_forge'];
+                let num_new_smelters = num_forge_on * 2;
+                global.city.smelter.cap += num_new_smelters;
+                global.city.smelter.Star += num_new_smelters;
+                global.city.smelter.StarCap += num_new_smelters;
+                global.city.smelter.Iron += num_new_smelters;
                 return true;
             }
             return false;
@@ -4319,6 +4325,97 @@ const techs = {
             return false;
         }
     },
+    devilish_dish: {
+        id: 'tech-devilish_dish',
+        title: loc('tech_devilish_dish'),
+        desc: loc('tech_devilish_dish'),
+        category: 'fasting',
+        era: 'dimensional',
+        reqs: { hell_ruins: 4},
+        trait: ['fasting'],
+        grant: ['dish',1],
+        cost: {
+            Knowledge(){ return 29000000; }
+        },
+        effect(){return loc('tech_devilish_dish_effect');},
+        action(){
+            if (payCosts($(this)[0])){
+                if(global.tech['hell_lake'] >= 3){
+                    messageQueue(loc('tech_lake_analysis_fasting'),'info',false,['progress','hell']);
+                }
+                return true;
+            }
+            return false;
+        }
+    },
+    hell_oven: {
+        id: 'tech-hell_oven',
+        title: loc('tech_hell_oven'),
+        desc: loc('tech_hell_oven'),
+        category: 'fasting',
+        era: 'dimensional',
+        reqs: { hell_lake: 3, dish:1},
+        trait: ['fasting'],
+        grant: ['dish',2],
+        cost: {
+            Knowledge(){ return 32000000; }
+        },
+        effect(){return loc('tech_hell_oven_effect');},
+        action(){
+            if (payCosts($(this)[0])){
+                global.portal['oven'] = {count:0}
+                return true;
+            }
+            return false;
+        }
+    },
+    preparation_methods:{
+        id: 'tech-preparation_methods',
+        title: loc('tech_preparation_methods'),
+        desc: loc('tech_preparation_methods'),
+        category: 'fasting',
+        era: 'dimensional',
+        reqs: { science: 21, dish:4},
+        trait: ['fasting'],
+        grant: ['dish',5],
+        cost: {
+            Knowledge(){ return 62000000; }
+        },
+        effect(){return loc('tech_preparation_methods_effect');},
+        action(){
+            if (payCosts($(this)[0])){
+                global.portal['dish_soul_steeper'] = {count:0, on:0};
+                global.portal['dish_life_infuser'] = {count:0, on:0};
+                return true;
+            }
+            return false;
+        }
+    },
+    final_ingredient: {
+        id: 'tech-final_ingredient',
+        title: loc('tech_final_ingredient'),
+        desc: loc('tech_final_ingredient'),
+        category: 'fasting',
+        era: 'dimensional',
+        reqs: { dish_reset: 1},
+        grant: ['dish_reset',2],
+        cost: {
+            Bolognium(){ return 50000000; },
+            Demonic_Essence(){ return 1; }
+        },
+        effect(){
+            return `${loc('tech_final_ingredient_effect')}
+            ${global.race['witch_hunter'] ? `<div class="has-text-warning">${loc('dish_witch_hunter_interaction', [loc('tech_outerplane_summon'), loc('portal_devilish_dish_title')])}</div>` : ""}
+            <div class="has-text-special">${loc('tech_demonic_infusion_effect2',[calcPrestige('descend').artifact])}</div>`;
+        },
+        action(){
+            // Check affordability without paying the Demonic Essence to avoid breaking the backup save
+            if (checkAffordable($(this)[0])){
+                descension();
+            }
+            return false;
+        }
+    },
     bioscience: {
         id: 'tech-bioscience',
         title: loc('tech_bioscience'),
@@ -5045,7 +5142,7 @@ const techs = {
             return global.resource.Demonic_Essence.amount >= 1 ? true : false;
         },
         grant: ['waygate',4],
-        not_trait: ['witch_hunter'],
+        not_trait: ['witch_hunter','fasting'],
         cost: {
             Species(){ return popCost(1000); },
             Knowledge(){ return 55000000; },
@@ -5329,6 +5426,9 @@ const techs = {
         effect(){ return loc('tech_lake_analysis_effect'); },
         action(){
             if (payCosts($(this)[0])){
+                if(global.race['fasting'] && global.tech['dish'] >= 1){
+                    messageQueue(loc('tech_lake_analysis_fasting'),'info',false,['progress','hell']);
+                }
                 return true;
             }
             return false;
@@ -11314,7 +11414,7 @@ const techs = {
         reqs: { hell_spire: 10, b_stone: 2, waygate: 2, sphinx_bribe: 1 },
         condition(){
             let affix = universeAffix();
-            if (global.tech.hasOwnProperty('waygate') && global.tech.waygate === 2 && global.stats.spire.hasOwnProperty(affix) && global.stats.spire[affix].hasOwnProperty('dlstr') && global.stats.spire[affix].dlstr > 0){
+            if (global.portal.hasOwnProperty('waygate') && global.portal.waygate.progress < 100 && global.stats.spire.hasOwnProperty(affix) && global.stats.spire[affix].hasOwnProperty('dlstr') && global.stats.spire[affix].dlstr > 0){
                 return true;
             }
             return false;

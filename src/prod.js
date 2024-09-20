@@ -22,7 +22,7 @@ export function teamster(v){
     return v;
 }
 
-export function production(id,val){
+export function production(id,val,wiki){
     switch (id){
         case 'transmitter':
         {
@@ -230,7 +230,7 @@ export function production(id,val){
         }
         case 'infernite_mine':
         {
-            let sup = hellSupression('gate');
+            let sup = hellSupression('gate', 0, wiki);
             return 0.5 * sup.supress;
         }
         case 'water_freighter':

@@ -561,6 +561,16 @@ const extraInformation = {
     codex_infinium: [
         loc(`wiki_tech_codex_infinium`)
     ],
+    hell_oven:[
+        loc('wiki_tech_building_unlock', [loc('portal_oven_title')])
+    ],
+    preparation_methods:[
+        loc('wiki_tech_building_unlock', [loc('portal_dish_soul_steeper_title')]),
+        loc('wiki_tech_building_unlock', [loc('portal_dish_life_infuser_title')])
+    ],
+    final_ingredient:[
+        loc('wiki_tech_final_ingredient')
+    ],
     bioscience: [
         loc(`wiki_tech_building_unlock`,[loc(`city_biolab`)])
     ],

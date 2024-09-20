@@ -626,11 +626,19 @@ export function descension(){
 
     unlockAchieve(`squished`,true);
     unlockAchieve(`extinct_${global.race.species}`);
-    if (global.race['witch_hunter'] && global.race.universe === 'magic'){
+    if (global.race['witch_hunter'] && global.tech['forbidden'] >= 5 && global.race.universe === 'magic'){
         unlockAchieve(`nightmare`);
     }
     else {
         unlockAchieve(`corrupted`);
+    }
+    if(global.race['fasting'] && global.tech['dish_reset']){
+        //also award on outerplane summon with finalize dish tech unlocked
+        let affix = universeAffix();
+        global.stats['endless_hunger'].b5[affix] = true;
+        if (affix !== 'm' && affix !== 'l'){
+            global.stats['endless_hunger'].b5.l = true;
+        }
     }
     if (races[global.race.species].type === 'angelic'){
         unlockFeat('twisted');
@@ -646,16 +654,6 @@ export function descension(){
     }
     if (global.race['ooze'] && global.race.species === 'sludge'){
         unlockFeat('slime_lord');
-    }
-    if(global.race['fasting']){
-        let affix = universeAffix();
-        global.stats['endless_hunger'].b5[affix] = true;
-        if (affix !== 'm' && affix !== 'l'){
-            global.stats['endless_hunger'].b5.l = true;
-        }
-        if(global.stats.starved <= 0){
-            unlockFeat('immortal');
-        }
     }
 
     let gains = calcPrestige('descend');

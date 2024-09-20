@@ -231,6 +231,9 @@ export const job_desc = {
             interest *= traits.high_pop.vars()[1] / 100;
         }
         interest = +(interest).toFixed(0);
+        if(global.race['fasting']){
+            return loc('job_banker_desc_fasting');
+        }
         return loc('job_banker_desc',[interest]);
     },
     entertainer: function(){

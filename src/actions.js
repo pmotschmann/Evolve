@@ -1,13 +1,13 @@
-import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, gal_on, quantum_level, tmp_vars, setupStats } from './vars.js';
+import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, int_on, gal_on, spire_on, tmp_vars, setupStats } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename } from './functions.js';
+import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
 import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck } from './races.js';
 import { defineResources, unlockCrates, unlockContainers, galacticTrade, spatialReasoning, resource_values, initResourceTabs, drawResourceTab, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources, gridDefs } from './industry.js';
 import { govEffect, defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating } from './civics.js';
-import { spaceTech, interstellarTech, galaxyTech, universe_affixes, renderSpace, piracy, fuel_adjust } from './space.js';
+import { spaceTech, interstellarTech, galaxyTech, universe_affixes, renderSpace, piracy, fuel_adjust, isStargateOn } from './space.js';
 import { renderFortress, fortressTech } from './portal.js';
 import { edenicTech, renderEdenic } from './edenic.js';
 import { tauCetiTech, renderTauCeti, loneSurvivor } from './truepath.js';
@@ -2179,9 +2179,9 @@ export const actions = {
                         return 0;
                 }
             },
-            effect(){
+            effect(wiki){
                 let storage = '<div class="aTable">';
-                let multiplier = storageMultipler();
+                let multiplier = storageMultipler(wiki);
                 for (const res of $(this)[0].res()){
                     if (global.resource[res].display){
                         let val = sizeApproximation(+(spatialReasoning($(this)[0].val(res)) * multiplier).toFixed(0),1);
@@ -3057,8 +3057,8 @@ export const actions = {
                 Furs(offset){ return costMultiplier('tourist_center', offset, 7500, 1.36); },
                 Plywood(offset){ return costMultiplier('tourist_center', offset, 5000, 1.36); },
             },
-            effect(){
-                let xeno = global.tech['monument'] && global.tech.monument >= 3 && p_on['s_gate'] ? 3 : 1;
+            effect(wiki){
+                let xeno = global.tech['monument'] && global.tech.monument >= 3 && isStargateOn(wiki) ? 3 : 1;
                 let amp = (global.civic.govern.type === 'corpocracy' ? 2 : 1) * xeno;
                 let cas = (global.civic.govern.type === 'corpocracy' ? 10 : 5) * xeno;
                 let mon = (global.civic.govern.type === 'corpocracy' ? 4 : 2) * xeno;
@@ -3385,7 +3385,7 @@ export const actions = {
                 },
                 Aerogel(offset, wiki){
                     const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
-                    if((wiki && wiki.truepath) || global.race['truepath']){
+                    if(wiki ? wiki.truepath : global.race['truepath']){
                         return 0;
                     }
                     switch (count){
@@ -3399,7 +3399,7 @@ export const actions = {
                 },
                 Quantium(offset, wiki){
                     const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
-                    if((wiki && !wiki.truepath) || !global.race['truepath']){
+                    if(wiki ? !wiki.truepath : !global.race['truepath']){
                         return 0;
                     }
                     switch (count){
@@ -3423,7 +3423,7 @@ export const actions = {
             },
             effect(wiki){
                 let strength = global.city['banquet'] ? global.city['banquet'].strength : 0;
-                let count = (wiki ? wiki : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
+                let count = (wiki?.count ?? 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
                 let desc = `<div>Strength: <span class="has-text-caution">${strength}</span></div>`;
                 desc += `<div>${loc(`city_banquet_effect1`, [sizeApproximation(((count >= 5 ? 1.02 : 1.022)**(strength) - 1) * 100)])}</div>`;
                 if(count >= 1){
@@ -3472,11 +3472,11 @@ export const actions = {
                 Crystal(offset){ return global.race.universe === 'magic' ? costMultiplier('university', offset, 5, 1.36) : 0; },
                 Iron(offset){ return ((global.city['university'] ? global.city.university.count : 0) + (offset || 0)) >= 3 && global.city.ptrait.includes('unstable') ? costMultiplier('university', offset, 25, 1.36) : 0; }
             },
-            effect(){
-                let gain = +($(this)[0].knowVal()).toFixed(0);
+            effect(wiki){
+                let gain = +($(this)[0].knowVal(wiki)).toFixed(0);
                 return `<div>${loc('city_university_effect',[jobScale(1)])}</div><div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div>`;
             },
-            knowVal(){
+            knowVal(wiki){
                 let multiplier = 1;
                 let base = global.tech['science'] && global.tech['science'] >= 8 ? 700 : 500;
                 if (global.city.ptrait.includes('permafrost')){
@@ -3486,10 +3486,10 @@ export const actions = {
                     multiplier += global.city['library'].count * 0.02;
                 }
                 if (global.space['observatory'] && global.space.observatory.count > 0){
-                    multiplier += (support_on['observatory'] * 0.05);
+                    multiplier += (wiki ? global.space.observatory.on : support_on['observatory']) * 0.05;
                 }
                 if (global.portal['sensor_drone'] && global.tech['science'] >= 14){
-                    multiplier += (p_on['sensor_drone'] * 0.02);
+                    multiplier += (wiki ? global.portal.sensor_drone.on : p_on['sensor_drone']) * 0.02;
                 }
                 if (global.race['hard_of_hearing']){
                     multiplier *= 1 - (traits.hard_of_hearing.vars()[0] / 100);
@@ -3501,9 +3501,11 @@ export const actions = {
                 if (fathom > 0){
                     multiplier *= 1 + (traits.curious.vars(3)[0] * fathom);
                 }
-                if (p_on['s_gate'] && gal_on['scavenger']){
-                    let pirate_alien2 = piracy('gxy_alien2');
-                    let uni = gal_on['scavenger'] * pirate_alien2 / 4;
+                let sg_on = isStargateOn(wiki);
+                let num_tech_scavs_on = sg_on ? (wiki ? (global.galaxy?.scavenger?.on ?? 0) : gal_on['scavenger']) : 0;
+                if (num_tech_scavs_on > 0){
+                    let pirate_alien2 = piracy('gxy_alien2', false, false, wiki);
+                    let uni = num_tech_scavs_on * pirate_alien2 / 4;
                     multiplier *= 1 + uni;
                 }
                 let teachVal = govActive('teacher',0);
@@ -3753,10 +3755,10 @@ export const actions = {
                 Iron(offset){ return global.city.ptrait.includes('unstable') ? costMultiplier('biolab', offset, 160, 1.3) : 0; },
                 Alloy(offset){ return costMultiplier('biolab', offset, 350, 1.3); }
             },
-            effect(){
+            effect(wiki){
                 let gain = 3000;
                 if (global.portal['sensor_drone'] && global.tech['science'] >= 14){
-                    gain *= 1 + (p_on['sensor_drone'] * 0.02);
+                    gain *= 1 + (wiki ? global.portal.sensor_drone.on : p_on['sensor_drone']) * 0.02;
                 }
                 if (global.tech['science'] >= 20){
                     gain *= 3;
@@ -4056,7 +4058,7 @@ export const actions = {
                 Nano_Tube(offset){ return ((offset || 0) + (global.starDock.hasOwnProperty('seeder') ? global.starDock.seeder.count : 0)) < 100 ? 12000 : 0; },
             },
             effect(wiki){
-                let count = (wiki || 0) + (global.starDock['seeder'] ? global.starDock.seeder.count : 0);
+                let count = (wiki?.count ?? 0) + (global.starDock['seeder'] ? global.starDock.seeder.count : 0);
                 let remain = count < 100 ? loc('star_dock_seeder_status1',[100 - count]) : loc('star_dock_seeder_status2');
                 return `<div>${global.race['cataclysm'] ? loc('star_dock_exodus_effect') : loc('star_dock_seeder_effect')}</div><div class="has-text-special">${remain}</div>`;
             },
@@ -4599,34 +4601,41 @@ const raceList = [
     'dwarf','raccoon','lichen','wyvern','beholder','djinn','pengiun','bombardier','nephilim',
     'custom'
 ];
-raceList.forEach(race => actions.evolution[race] = {
-    id: `evolution-${race}`,
-    title(){ return races[race].name; },
-    desc(){ return `${loc("evo_evolve")} ${races[race].name}`; },
-    reqs: { evo: 7 },
-    grant: ['evo',8],
-    condition(){ return (global.race.seeded || (global.stats.achieve['mass_extinction'] && global.stats.achieve['mass_extinction'].l >= 1) || (global.stats.achieve[`extinct_${race}`] && global.stats.achieve[`extinct_${race}`].l >= 1))
-      && global.tech[`evo_${races[race].type}`] >= 2 && global.evolution.final === 100 && !global.race['evoFinalMenu']; },
-    cost: {
-        RNA(){ return 320; },
-        DNA(){ return 320; }
-    },
-    race: true,
-    effect(){ return `${typeof races[race].desc === 'string' ? races[race].desc : races[race].desc()} ${loc(`evo_complete`)}`; },
-    action(){
-        if (payCosts($(this)[0])){
-            if (['synth','custom'].includes(race)){
-                return evoExtraState(race);
-            }
-            else {
-                global.race.species = race;
-                sentience();
-            };
+raceList.forEach(function(race){
+    if (race !== 'custom' || global.custom.hasOwnProperty('race0')) {
+        actions.evolution[race] = {
+            id: `evolution-${race}`,
+            title(){ return races[race].name; },
+            desc(){ return `${loc("evo_evolve")} ${races[race].name}`; },
+            reqs: { evo: 7 },
+            grant: ['evo',8],
+            condition(){ return (global.race.seeded || (global.stats.achieve['mass_extinction'] && global.stats.achieve['mass_extinction'].l >= 1) || (global.stats.achieve[`extinct_${race}`] && global.stats.achieve[`extinct_${race}`].l >= 1))
+              && global.tech[`evo_${races[race].type}`] >= 2 && global.evolution.final === 100 && !global.race['evoFinalMenu']; },
+            cost: {
+                RNA(){ return 320; },
+                DNA(){ return 320; }
+            },
+            race: true,
+            effect(){
+                let raceDesc = typeof races[race].desc === 'string' ? races[race].desc : races[race].desc();
+                return `${raceDesc} ${loc(`evo_complete`)}`;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    if (['synth','custom'].includes(race)){
+                        return evoExtraState(race);
+                    }
+                    else {
+                        global.race.species = race;
+                        sentience();
+                    };
+                }
+                return false;
+            },
+            queue_complete(){ return global.tech['evo'] && global.tech.evo === 7 ? 1 : 0; },
+            emblem(){ return format_emblem(`extinct_${race}`); }
         }
-        return false;
-    },
-    queue_complete(){ return global.tech['evo'] && global.tech.evo === 7 ? 1 : 0; },
-    emblem(){ return format_emblem(`extinct_${race}`); }
+    }
 });
 
 if (Object.keys(global.stats.synth).length > 1){
@@ -5073,7 +5082,7 @@ export function BHStorageMulti(val){
     return Math.round(val);
 }
 
-export function storageMultipler(scale = 1){
+export function storageMultipler(scale = 1, wiki = false){
     let multiplier = (global.tech['storage'] - 1) * 1.25 + 1;
     if (global.tech['storage'] >= 3){
         multiplier *= global.tech['storage'] >= 4 ? 3 : 1.5;
@@ -5105,7 +5114,7 @@ export function storageMultipler(scale = 1){
         multiplier *= 1 + (global.blood['hoarder'] / 100);
     }
     if (global.tech['storage'] >= 7 && global.interstellar['cargo_yard']){
-        multiplier *= 1 + ((global.interstellar['cargo_yard'].count * quantum_level) / 100);
+        multiplier *= 1 + ((global.interstellar['cargo_yard'].count * get_qlevel(wiki)) / 100);
     }
     return multiplier * scale;
 }
@@ -6284,6 +6293,78 @@ export function powerOnNewStruct(c_action,extra){
     return false;
 }
 
+// Return the powered/supported/enabled quantity of a struct.
+// When called from the wiki, assume that "enough" support is available, because this information is not in the save.
+// For structs that cannot be enabled, powered, or supported, always return 0.
+export function getStructNumActive(c_action,isWiki){
+    let parts = c_action.id.split('-');
+    if (!global.hasOwnProperty(parts[0]) || !global[parts[0]].hasOwnProperty(parts[1])){
+        return 0;
+    }
+
+    // For all 3 struct types (switchable, powered, support), the "on" field is named in the same way
+    let num_on = global[parts[0]][parts[1]].on;
+    if (!num_on){ // This is also a null check
+        return 0;
+    }
+
+    // Electricity: production is negative, consumption is positive
+    if (c_action.hasOwnProperty('powered') && c_action.powered() > 0) {
+        if (global.city.hasOwnProperty('powered')){
+            // The p_on struct is empty in the wiki view
+            if (!isWiki){
+                num_on = p_on[parts[1]];
+            }
+        }
+        else {
+            num_on = 0;
+        }
+    }
+
+    // Support: production is positive, consumption is negative
+    if (c_action.hasOwnProperty('s_type') && c_action.hasOwnProperty('support') && c_action.support() < 0){
+        if (isWiki) {
+            // The support_on and similarly-named structs are empty in the wiki view
+            // This means that the wiki can be wrong, but we can at least check "max" support
+            let grids = gridDefs();
+            let s_r = grids[c_action.s_type].r;
+            if (s_r === 'galaxy' && !isStargateOn(isWiki)){
+                num_on = 0;
+            }
+            else {
+                let s_rs = grids[c_action.s_type].rs;
+                let max_s = Math.floor(global[s_r][s_rs].s_max / -c_action.support());
+                num_on = Math.min(num_on, max_s);
+            }
+        }
+        else {
+            let found_support = false;
+            if (support_on.hasOwnProperty(parts[1])){
+                found_support = true;
+                num_on = Math.min(num_on, support_on[parts[1]]);
+            }
+            if (int_on.hasOwnProperty(parts[1])){
+                found_support = true;
+                num_on = Math.min(num_on, int_on[parts[1]]);
+            }
+            if (gal_on.hasOwnProperty(parts[1])){
+                found_support = true;
+                num_on = isStargateOn(isWiki) ? Math.min(num_on, gal_on[parts[1]]) : 0;
+            }
+            if (spire_on.hasOwnProperty(parts[1])){
+                found_support = true;
+                num_on = Math.min(num_on, spire_on[parts[1]]);
+            }
+            // Error case, hope never to hit this.
+            if (!found_support){
+                num_on = 0;
+            }
+        }
+    }
+
+    return num_on;
+}
+
 export function planetGeology(geology){
     let geo_traits = ``;
     if (Object.keys(geology).length > 0){
@@ -6634,6 +6715,21 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
                     timer(t){
                         let time = !c_action.hasOwnProperty('mscan') || (c_action.hasOwnProperty('mscan') && c_action.mscan() > 0) ? t : '???';
                         return loc('floor_clearing',[time]);
+                    }
+                }
+            });
+        }
+    }
+    if(c_action.id === "portal-devilish_dish"){
+        if (obj && obj['time']){
+            parent.append($(`<div id="popTimer" class="flair has-text-advanced">{{ time | timer }}</div>`));
+            vBind({
+                el: '#popTimer',
+                data: obj,
+                filters: {
+                    timer(t){
+                        let time = !c_action.hasOwnProperty('mscan') || (c_action.hasOwnProperty('mscan') && c_action.mscan() > 0) ? t : '???';
+                        return loc('action_done',[time]);
                     }
                 }
             });

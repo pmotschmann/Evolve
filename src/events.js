@@ -80,12 +80,13 @@ export const events = {
         condition(){
             return global.city.ptrait.includes('flare') ? true : false;
         },
-        effect(){
+        effect(wiki){
             let at_risk = 0;
             let planet = races[global.race.species].home;
             if (global.race['cataclysm'] || global.race['orbit_decayed']){
                 if (global.space.hasOwnProperty('living_quarters')){
-                    at_risk += Math.round(support_on['living_quarters'] * actions.space.spc_red.living_quarters.citizens());
+                    let num_lq_on = wiki ? global.space.living_quarters.on : support_on['living_quarters'];
+                    at_risk += Math.round(num_lq_on * actions.space.spc_red.living_quarters.citizens());
                 }
                 planet = races[global.race.species].solar.red;
             }
@@ -97,7 +98,8 @@ export const events = {
                     at_risk += global.city.cottage.count * actions.city.cottage.citizens();
                 }
                 if (global.city.hasOwnProperty('apartment')){
-                    at_risk += p_on['apartment'] * actions.city.apartment.citizens();
+                    let num_apartment_on = wiki ? global.city.apartment.on : p_on['apartment'];
+                    at_risk += num_apartment_on * actions.city.apartment.citizens();
                 }
             }
             if (at_risk > global.resource[global.race.species].amount){

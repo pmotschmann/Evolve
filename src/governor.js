@@ -7,6 +7,7 @@ import { crateGovHook, atomic_mass } from './resources.js';
 import { checkHellRequirements, mechSize, mechCost } from './portal.js';
 import { loc } from './locale.js';
 import { jobScale } from './jobs.js';
+import { isStargateOn } from './space.js';
 
 export const gmen = {
     soldier: {
@@ -148,9 +149,9 @@ export const gov_traits = {
     },
     pious: {
         name: loc(`gov_trait_pious`),
-        effect(){
+        effect(wiki){
             let val = $(this)[0].vars()[1];
-            let xeno = global.tech['monument'] && global.tech.monument >= 3 && p_on['s_gate'] ? 3 : 1;
+            let xeno = global.tech['monument'] && global.tech.monument >= 3 && isStargateOn(wiki) ? 3 : 1;
             val = (global.civic.govern.type === 'corpocracy' ? (val * 2) : val) * xeno;
             return loc(`gov_trait_pious_effect`,[$(this)[0].vars()[0],val]);
         },
