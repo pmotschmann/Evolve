@@ -1887,6 +1887,7 @@ const fortressModules = {
                         global.tech.waygate = 2;
                         global.portal.waygate.count = 1;
                         renderFortress();
+                        drawTech();
                     }
                     return true;
                 }
