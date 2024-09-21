@@ -207,7 +207,7 @@ export const job_desc = {
         }
         unit_price = +workerScale(unit_price,'cement_worker').toFixed(2);
         let worker_impact = +workerScale(global.civic.cement_worker.impact,'cement_worker').toFixed(2);
-        let impact = global.tech['cement'] >= 4 ? 1.2 : 1;
+        let impact = global.tech['cement'] >= 4 ? (global.tech.cement >= 7 ? 1.45 : 1.2) : 1;
         let cement_multiplier = racialTrait(global.civic.cement_worker.workers,'factory');
         let gain = worker_impact * impact * cement_multiplier;
         if (global.city.biome === 'ashland'){

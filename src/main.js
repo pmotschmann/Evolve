@@ -4129,7 +4129,7 @@ function fastLoop(){
                 modRes('Omniscience', delta * time_multiplier);
             }
 
-            if (global.tech['science'] && global.tech.science >= 22){
+            if (global.tech['science'] && global.tech.science >= 23){
                 let scientist = workerScale(global.civic.scientist.workers,'scientist');
                 scientist *= racialTrait(scientist,'science');
                 scientist *= global.race['pompous'] ? (1 - traits.pompous.vars()[0] / 100) : 1;
@@ -4610,7 +4610,7 @@ function fastLoop(){
             breakdown.p.consume.Stone[loc(global.tech['isolation'] ? 'job_cement_worker_bd' : 'city_cement_plant_bd')] = -(stone_cost);
             modRes('Stone', -(stone_cost * time_multiplier));
 
-            let cement_base = global.tech['cement'] >= 4 ? 1.2 : 1;
+            let cement_base = global.tech['cement'] >= 4 ? (global.tech.cement >= 7 ? 1.45 : 1.2) : 1;
             cement_base *= global.civic.cement_worker.impact;
             cement_base *= racialTrait(workerScale(global.civic.cement_worker.workers,'cement_worker'),'factory');
             if (global.city.biome === 'ashland'){
@@ -8103,6 +8103,10 @@ function midLoop(){
             let soldiers = global.tech.marines >= 2 ? jobScale(8) : jobScale(5);
             lCaps['garrison'] += p_on['starbase'] * soldiers;
         }
+        if (global.eden['bunker']){
+            let soldiers = jobScale(5);
+            lCaps['garrison'] += support_on['bunker'] * soldiers;
+        }
         if (global.race['orbit_decayed'] && global.space.hasOwnProperty('red_mine')){
             lCaps['miner'] += jobScale(support_on['red_mine']);
             lCaps['coal_miner'] += jobScale(support_on['red_mine']);
@@ -8728,7 +8732,6 @@ function midLoop(){
                 bd_Omniscience[loc('eden_research_station_title')] = gain+'v';
             }
         }
-        
 
         if (global.tech['isolation'] && global.tauceti['alien_outpost'] && global.resource.Cipher.display){
             let cipher = 200000;

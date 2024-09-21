@@ -520,6 +520,35 @@ const edenicModules = {
                 return false;
             }
         },
+        bunker: {
+            id: 'eden-bunker',
+            title: loc('eden_bunker_title'),
+            desc: `<div>${loc('eden_bunker_title')}</div><div class="has-text-special">${loc('space_support',[loc('eden_asphodel_name')])}</div>`,
+            reqs: { asphodel: 9 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('bunker', offset, 777000000, 1.2, 'eden'); },
+                Stone(offset){ return spaceCostMultiplier('bunker', offset, 358000000, 1.2, 'eden'); },
+                Furs(offset){ return spaceCostMultiplier('bunker', offset, 66600000, 1.2, 'eden'); },
+                Asphodel_Powder(offset){ return spaceCostMultiplier('bunker', offset, 9999, 1.2, 'eden'); },
+            },
+            effect(){
+                let desc = `<div class="has-text-caution">${loc('space_used_support',[loc('eden_asphodel_name')])}</div>`;
+                desc += `<div>${loc('plus_max_soldiers',[5])}</div>`;
+
+                return desc;
+            },
+            s_type: 'asphodel',
+            support(){ return -1; },
+            powered(){ return 0; },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('bunker','eden');
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     eden_elysium: {
         info: {

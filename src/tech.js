@@ -7937,6 +7937,28 @@ const techs = {
             return false;
         }
     },
+    otherworldly_binder: {
+        id: 'tech-otherworldly_binder',
+        title: loc('tech_otherworldly_binder'),
+        desc: loc('tech_otherworldly_binder'),
+        category: 'cement',
+        era: 'existential',
+        reqs: { cement: 6, science: 22 },
+        not_trait: ['cataclysm','flier'],
+        grant: ['cement',7],
+        cost: {
+            Knowledge(){ return 85000000; },
+            Omniscience(){ return 20000; },
+            Asphodel_Powder(){ return 50000; }
+        },
+        effect: loc('tech_otherworldly_binder_effect',[global.resource.Asphodel_Powder.name,global.resource.Cement.name]),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     hunter_process: {
         id: 'tech-hunter_process',
         title: loc('tech_hunter_process'),
@@ -14313,6 +14335,27 @@ const techs = {
             return false;
         }
     },
+    edenic_bunker: {
+        id: 'tech-edenic_bunker',
+        title: loc('tech_edenic_bunker'),
+        desc: loc('tech_edenic_bunker'),
+        category: 'edenic',
+        era: 'existential',
+        reqs: { asphodel: 8, },
+        grant: ['asphodel',9],
+        cost: {
+            Knowledge(){ return 77500000; },
+            Omniscience(){ return 12000; },
+        },
+        effect(){ return loc('tech_edenic_bunker_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.eden['bunker'] = { count: 0, on: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
     outer_plane_study: {
         id: 'tech-outer_plane_study',
         title: loc('tech_outer_plane_study'),
@@ -14323,9 +14366,9 @@ const techs = {
         grant: ['elysium',1],
         cost: {
             Knowledge(){ return 75000000; },
-            Omniscience(){ return 12500; },
+            Omniscience(){ return 11655; },
         },
-        effect(){ return loc('tech_outer_plane_study_effect',[global.resource.Asphodel_Powder.name]); },
+        effect(){ return loc('tech_outer_plane_study_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 global.eden['rune_gate'] = { count: 0 };
