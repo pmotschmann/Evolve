@@ -8748,8 +8748,9 @@ function midLoop(){
         }
 
         if (p_on['embassy'] && global.galaxy['symposium']){
-            let dorm = 1750 * p_on['dormitory'];
-            let gtrade = 650 * global.galaxy.trade.cur;
+            let pirate = piracy('gxy_gorddon');
+            let dorm = 1750 * p_on['dormitory'] * pirate;
+            let gtrade = 650 * global.galaxy.trade.cur * pirate;
             let leave = 0;
             if (global.tech.xeno >= 7){
                 let crew = global.galaxy.defense.gxy_gorddon.scout_ship * (actions.galaxy.gxy_gateway.scout_ship.ship.civ() + actions.galaxy.gxy_gateway.scout_ship.ship.mil());
@@ -8761,7 +8762,7 @@ function midLoop(){
                 if (gal_on['freighter']){
                     crew += gal_on['freighter'] * (actions.galaxy.gxy_gorddon.freighter.ship.civ() + actions.galaxy.gxy_gorddon.freighter.ship.mil());
                 }
-                leave = +highPopAdjust(crew).toFixed(2) * 300;
+                leave = +highPopAdjust(crew).toFixed(2) * 300 * pirate;
             }
             let know = (dorm + gtrade + leave) * p_on['symposium'];
             caps['Knowledge'] += know;
@@ -8925,7 +8926,7 @@ function midLoop(){
             let attact = global.blood['attract'] ? global.blood.attract * 5 : 0;
             let sci = 200 + attact;
             if (global.tech['science'] && global.tech.science >= 22 && p_on['embassy'] && p_on['symposium']){
-                sci *= 1 + p_on['symposium'];
+                sci *= 1 + (p_on['symposium'] * piracy('gxy_gorddon'));
             }
             if (global.race['high_pop']){
                 sci = highPopAdjust(sci);

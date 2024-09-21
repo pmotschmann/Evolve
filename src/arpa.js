@@ -819,6 +819,29 @@ export const genePool = {
             defineGovernor();
         }
     },
+    bureaucratic_efficiency: {
+        id: 'genes-bureaucratic_efficiency',
+        title: loc('arpa_genepool_bureaucratic_efficiency_title'),
+        desc: loc('arpa_genepool_bureaucratic_efficiency_desc'),
+        reqs: { governor: 2 },
+        grant: ['governor',3],
+        cost: {
+            Plasmid(){ return 2500; },
+            Artifact(){ return 1; }
+        },
+        action(){
+            if (payCrispr('bureaucratic_efficiency')){
+                return true;
+            }
+            return false;
+        },
+        post(){
+            defineGovernor();
+        },
+        flair(){
+            return loc('arpa_genepool_bureaucratic_efficiency_flair');
+        }
+    },
     hardened_genes: {
         id: 'genes-hardened_genes',
         title: loc('arpa_genepool_hardened_genes_title'),

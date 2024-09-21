@@ -2,7 +2,7 @@ import { global, p_on, sizeApproximation } from './vars.js';
 import { vBind, clearElement, popover, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier } from './functions.js';
 import { spatialReasoning } from './resources.js';
 import { payCosts, powerOnNewStruct, setAction, storageMultipler } from './actions.js';
-import { checkRequirements, incrementStruct} from './space.js';
+import { checkRequirements, incrementStruct, piracy} from './space.js';
 import { mechRating } from './portal.js';
 import { jobScale } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
@@ -153,9 +153,9 @@ const edenicModules = {
                 },
                 Asphodel_Powder(offset){
                     if (offset){
-                        return offset + (global.eden.hasOwnProperty('mech_station') ? global.eden.mech_station.count : 0) < 10 ? 12500 : 0;
+                        return offset + (global.eden.hasOwnProperty('mech_station') ? global.eden.mech_station.count : 0) < 10 ? 7500 : 0;
                     }
-                    return !global.eden.hasOwnProperty('mech_station') || (global.eden.mech_station.count < 10) ? 12500 : 0;
+                    return !global.eden.hasOwnProperty('mech_station') || (global.eden.mech_station.count < 10) ? 7500 : 0;
                 },
             },
             effect(wiki){
@@ -260,10 +260,10 @@ const edenicModules = {
                 let attact = global.blood['attract'] ? global.blood.attract * 5 : 0;
                 let souls = 200 + attact;
                 if (global.tech['science'] && global.tech.science >= 22 && p_on['embassy'] && p_on['symposium']){
-                    souls *= 1 + p_on['symposium'];
+                    souls *= 1 + (p_on['symposium'] * piracy('gxy_gorddon'));
                 }
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[loc('eden_asphodel_name')])}</div>`;
-                desc += `<div>${loc('eden_research_station_effect',[highPopAdjust(souls), loc('job_ghost_trapper')])}</div>`;
+                desc += `<div>${loc('eden_research_station_effect',[highPopAdjust(souls).toFixed(0), loc('job_ghost_trapper')])}</div>`;
                 if (global.tech['science'] && global.tech.science >= 22){
                     desc += `<div>${loc('plus_max_resource',[777,global.resource.Omniscience.name])}</div>`;
                 }

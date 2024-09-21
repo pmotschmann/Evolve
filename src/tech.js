@@ -7509,7 +7509,7 @@ const techs = {
         grant: ['military',12],
         cost: {
             Knowledge(){ return 72500000; },
-            Asphodel_Powder(){ return 17500; },
+            Asphodel_Powder(){ return 10777; },
             Soul_Gem(){ return 100; },
         },
         effect: loc('tech_ethereal_weapons_effect'),
@@ -14240,7 +14240,7 @@ const techs = {
         cost: {
             Knowledge(){ return 71250000; },
             Omniscience(){ return 5000; },
-            Asphodel_Powder(){ return 15000; },
+            Asphodel_Powder(){ return 17500; },
         },
         effect(){ return loc('tech_purification_effect',[global.resource.Asphodel_Powder.name,loc('portal_purifier_title'),2,loc('eden_asphodel_harvester_title')]); },
         action(){

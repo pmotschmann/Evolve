@@ -569,13 +569,43 @@ export function drawnGovernOffice(){
         methods: {
             setTask(t,n){
                 global.race.governor.tasks[`t${n}`] = t;
+                if (t === 'combo_storage'){
+                    Object.keys(global.race.governor.tasks).forEach(function(ts){
+                        if (global.race.governor.tasks[ts] === 'storage' || global.race.governor.tasks[ts] === 'bal_storage'){
+                            global.race.governor.tasks[ts] = 'none';
+                        }
+                    });
+                }
+                else if (t === 'storage' || t === 'bal_storage'){
+                    Object.keys(global.race.governor.tasks).forEach(function(ts){
+                        if (global.race.governor.tasks[ts] === 'combo_storage'){
+                            global.race.governor.tasks[ts] = 'none';
+                        }
+                    });
+                }
+                if (t === 'combo_spy'){
+                    Object.keys(global.race.governor.tasks).forEach(function(ts){
+                        if (global.race.governor.tasks[ts] === 'spy' || global.race.governor.tasks[ts] === 'spyop'){
+                            global.race.governor.tasks[ts] = 'none';
+                        }
+                    });
+                }
+                else if (t === 'spy' || t === 'spyop'){
+                    Object.keys(global.race.governor.tasks).forEach(function(ts){
+                        if (global.race.governor.tasks[ts] === 'combo_spy'){
+                            global.race.governor.tasks[ts] = 'none';
+                        }
+                    });
+                }
                 tagEvent('govtask',{
                     'task': t
                 });
                 vBind({el: `#race`},'update');
             },
             showTask(t){
-                return Object.values(global.race.governor.tasks).includes(t);
+                return Object.values(global.race.governor.tasks).includes(t) 
+                || (Object.values(global.race.governor.tasks).includes('combo_storage') && ['storage','bal_storage'].includes(t))
+                || (Object.values(global.race.governor.tasks).includes('combo_spy') && ['spy','spyop'].includes(t));
             },
             activeTask(t){
                 let activeTasks = [];
@@ -922,6 +952,18 @@ export const gov_tasks = {
             }
         }
     },
+    combo_storage: {
+        name: loc(`gov_task_combo_storage`),
+        req(){
+            return checkCityRequirements('storage_yard') && global.tech['container'] && global.resource.Crates.display && global.genes.governor >= 3 ? true : false;
+        },
+        task(){
+            if ( $(this)[0].req() ){
+                gov_tasks.storage.task();
+                gov_tasks.bal_storage.task();
+            }
+        }
+    },
     assemble: { // Assemble Citizens
         name: loc(`gov_task_assemble`),
         req(){
@@ -1029,6 +1071,24 @@ export const gov_tasks = {
                         });
                     }
                 });
+            }
+        }
+    },
+    combo_spy: {
+        name: loc(`gov_task_combo_spy`),
+        req(){
+            if (global.tech['isolation']){
+                return false;
+            }
+            if (global.race['truepath'] && global.tech['spy'] && global.tech.spy >= 2){
+                return true;
+            }
+            return global.tech['spy'] && global.tech.spy >= 2 && !global.tech['world_control'] && !global.race['cataclysm'] && global.genes.governor >= 3 ? true : false;
+        },
+        task(){
+            if ( $(this)[0].req() ){
+                gov_tasks.spy.task();
+                gov_tasks.spyop.task();
             }
         }
     },
