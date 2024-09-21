@@ -2779,11 +2779,19 @@ export function drawStats(){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_trickortreat")}</span> {{ s.cfood | format }} ${trick}</div>`);
     }
 
+    if (global.race.hasOwnProperty('gods') && global.race.gods != 'none'){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_gods")}</span> {{ g.gods | species }}</div>`)
+    }
+    if (global.race.hasOwnProperty('old_gods') && global.race.old_gods != 'none'){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_old_gods")}</span> {{ g.old_gods | species }}</div>`)
+    }
+
     vBind({
         el: '#statsPanel',
         data: {
             s: global.stats,
             r: global.resource,
+            g: global.race
         },
         filters: {
             played(d){
@@ -2803,6 +2811,9 @@ export function drawStats(){
             },
             res(r){
                 return (+(r).toFixed(2)).toLocaleString();
+            },
+            species(s){
+                return s === 'custom' ? global.custom.race0.name : loc(`race_${s}`);
             }
         }
     });
