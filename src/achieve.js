@@ -568,10 +568,11 @@ export function checkAchievements(){
 
     if (global.tech['piracy'] && global.tech['chthonian'] && global.tech['chthonian'] >= 2 && global.galaxy){
         let chthonian = piracy('gxy_chthonian');
-        if (piracy('gxy_stargate') === 1 && piracy('gxy_gateway') === 1 && piracy('gxy_gorddon') === 1 && piracy('gxy_alien1') === 1 && piracy('gxy_alien2') === 1 && chthonian === 1){
+        let stargate = piracy('gxy_stargate');
+        if (stargate === 1 && piracy('gxy_gateway') === 1 && piracy('gxy_gorddon') === 1 && piracy('gxy_alien1') === 1 && piracy('gxy_alien2') === 1 && chthonian === 1){
             unlockAchieve('neutralized');
         }
-        if(global.race['fasting'] && chthonian === 1){
+        if(global.race['fasting'] && (chthonian - stargate) === 0){
             let affix = universeAffix();
             global.stats.endless_hunger.b2[affix] = true;
             if (affix !== 'm' && affix !== 'l'){
@@ -992,7 +993,7 @@ export const perkList = {
         desc(){
             let desc = '';
             Object.keys(universe_types).forEach(function(universe){
-                let mastery = masteryType(universe,true);
+                let mastery = masteryType(universe,true,true);
                 if (universe === 'standard'){
                     desc += `<span class="row"><span class="has-text-caution">${universe_types[universe].name}</span>: <span>${loc('perks_mastery_general',[`<span class="has-text-advanced">${+(mastery.g).toFixed(2)}%</span>`])}</span></span>`;
                 }
