@@ -639,6 +639,10 @@ export function descension(){
         if (affix !== 'm' && affix !== 'l'){
             global.stats['endless_hunger'].b5.l = true;
         }
+
+        if (global.stats.starved === 0){
+            unlockFeat('immortal');
+        }
     }
     if (races[global.race.species].type === 'angelic'){
         unlockFeat('twisted');
