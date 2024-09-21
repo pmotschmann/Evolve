@@ -4,6 +4,14 @@ import { clearElement } from './../functions.js';
 export const changeList = [
     {
         version: `1.3.15`,
+        revision: `a`,
+        date: `9/21/2024`,
+        changes: [
+            `Fixed Secret to Immortality feat not being awarded.`
+        ]
+    },
+    {
+        version: `1.3.15`,
         date: `9/19/2024`,
         changes: [
             `Fasting scenario Demonic Infusion goal updated with new tastier experience.`,
