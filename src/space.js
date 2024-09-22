@@ -3902,6 +3902,13 @@ const interstellarProjects = {
             queue_complete(){ return 0; },
             cost: {},
             powered(){
+                let power = $(this)[0].heatSink();
+                if (power < 0){
+                    power = 0;
+                }
+                return power;
+            },
+            heatSink(){
                 let heatsink = 100;
                 if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 2){
                     heatsink += global.stats.achieve.technophobe.l >= 4 ? 25 : 10;
@@ -3912,10 +3919,12 @@ const interstellarProjects = {
                     }
                 }
                 let power = Math.round(powerCostMod(10000) - (heatsink * (global.interstellar.hasOwnProperty('thermal_collector') ? global.interstellar.thermal_collector.count : 0)));
-                if (power < 0){
-                    power = 0;
-                }
                 return power;
+            },
+            special(){ return global.tech['science'] && global.tech.science >= 24 ? true : false; },
+            sAction(){
+                global.eden.encampment.asc = global.eden.encampment.asc ? false : true;
+                deepSpace();
             },
             postPower(o){
                 if (o){
@@ -3930,10 +3939,28 @@ const interstellarProjects = {
                 }
             },
             effect(){
-                let reward = astrialProjection();
-                let power = $(this)[0].powered();
-                let power_label = power > 0 ? `<div class="has-text-caution">${loc('minus_power',[power])}</div>` : '';
-                return `<div>${loc('interstellar_ascension_trigger_effect')}</div>${reward}${power_label}`;
+                if (global.eden.hasOwnProperty('encampment') && global.eden.encampment.asc){
+                    let heatSink = $(this)[0].heatSink();
+                    heatSink = heatSink < 0 ? Math.abs(heatSink) : 0;
+
+                    let omniscience = 150 + (heatSink / 10);
+                    let desc = `<div>${loc(`eden_ascension_machine_effect1`,[loc(`eden_encampment_title`),+omniscience.toFixed(0),global.resource.Omniscience.name])}</div>`;
+                    if (heatSink > 0){
+                        let stabilizer = heatSink / 175;
+                        desc += `<div>${loc(`eden_ascension_machine_effect2`,[loc(`eden_stabilizer_title`),+stabilizer.toFixed(2)])}</div>`;
+
+                        let ghost = heatSink / 125;
+                        desc += `<div>${loc(`eden_ascension_machine_effect2`,[loc(`job_ghost_trapper`),+ghost.toFixed(2)])}</div>`;
+                    }
+                    
+                    return desc;
+                }
+                else {
+                    let reward = astrialProjection();
+                    let power = $(this)[0].powered();
+                    let power_label = power > 0 ? `<div class="has-text-caution">${loc('minus_power',[power])}</div>` : '';
+                    return `<div>${loc('interstellar_ascension_trigger_effect')}</div>${reward}${power_label}`;
+                }
             },
             action(){
                 return false;
@@ -3944,6 +3971,9 @@ const interstellarProjects = {
             title: loc('interstellar_ascend'),
             desc: loc('interstellar_ascend'),
             reqs: { ascension: 8 },
+            condition(){
+                return !global.eden.hasOwnProperty('encampment') || !global.eden.encampment.asc;
+            },
             queue_complete(){ return 0; },
             no_multi: true,
             cost: {},

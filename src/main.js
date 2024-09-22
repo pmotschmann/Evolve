@@ -2880,6 +2880,13 @@ function fastLoop(){
         else {
             global.city.morale.zoo = 0;
         }
+        if (support_on['bliss_den']){
+            global.city.morale.bliss_den = support_on['bliss_den'] * 10;
+            morale += support_on['bliss_den'] * 10;
+        }
+        else {
+            global.city.morale.bliss_den = 0;
+        }
         if (eventActive('summer')){
             let boost = (global.resource.Thermite.diff * 2.5) / (global.resource.Thermite.diff * 2.5 + 500) * 500;
             global.city.morale['bonfire'] = boost;
@@ -2942,12 +2949,14 @@ function fastLoop(){
             let athVal = govActive('athleticism',0);
             mBaseCap += athVal ? (global.city.amphitheatre.count * athVal) : global.city.amphitheatre.count;
         }
-
         if (support_on['vr_center']){
             mBaseCap += support_on['vr_center'] * 2;
         }
         if (int_on['zoo'] && !global.race['fasting']){
             mBaseCap += int_on['zoo'] * 2;
+        }
+        if (support_on['bliss_den']){
+            mBaseCap += support_on['bliss_den'] * 2;
         }
         if (p_on['resort']){
             mBaseCap += p_on['resort'] * 2;
@@ -7428,8 +7437,19 @@ function fastLoop(){
         if (global.resource.Asphodel_Powder.display){
             if (global.resource.Asphodel_Powder.amount > 0){
                 let decay = +((global.resource.Asphodel_Powder.amount) * 0.0045).toFixed(3);
+
+                let stabilize = 0.92;
+                if (p_on['ascension_trigger'] && global.eden.hasOwnProperty('encampment') && global.eden.encampment.asc){
+                    let heatSink = actions.interstellar.int_sirius.ascension_trigger.heatSink();
+                    heatSink = heatSink < 0 ? Math.abs(heatSink) : 0;
+                    if (heatSink > 0){
+                        let coefficent = 0.08 * (1 + (heatSink / 17500));
+                        stabilize = 1 - coefficent;
+                    }
+                }
+
                 if (global.eden['stabilizer']){
-                    decay *= 0.92 ** global.eden.stabilizer.count;
+                    decay *= stabilize ** global.eden.stabilizer.count;
                 }
                 modRes('Asphodel_Powder', -(decay * time_multiplier));
                 breakdown.p.consume.Asphodel_Powder[loc('evo_challenge_decay')] = -(decay);
@@ -8730,6 +8750,16 @@ function midLoop(){
                 let gain = (support_on['research_station'] || 0) * 777;
                 caps['Omniscience'] += gain;
                 bd_Omniscience[loc('eden_research_station_title')] = gain+'v';
+            }
+
+            if (p_on['ascension_trigger'] && global.eden.hasOwnProperty('encampment') && global.eden.encampment.asc){
+                let heatSink = actions.interstellar.int_sirius.ascension_trigger.heatSink();
+                heatSink = heatSink < 0 ? Math.abs(heatSink) : 0;
+                let omniscience = +(150 + (heatSink / 10)).toFixed(0);
+
+                let gain = (p_on['encampment'] || 0) * omniscience;
+                caps['Omniscience'] += gain;
+                bd_Omniscience[loc('eden_encampment_title')] = gain+'v';
             }
         }
 

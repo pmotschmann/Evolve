@@ -5,7 +5,7 @@ import { traits, races, fathomCheck } from './races.js';
 import { spatialReasoning, unlockContainers } from './resources.js';
 import { loadFoundry, jobScale, limitCraftsmen } from './jobs.js';
 import { armyRating, govCivics, garrisonSize, mercCost } from './civics.js';
-import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc } from './actions.js';
+import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc, actions } from './actions.js';
 import { checkRequirements, incrementStruct, astrialProjection, ascendLab } from './space.js';
 import { asphodelResist } from './edenic.js';
 import { production } from './prod.js';
@@ -1943,7 +1943,7 @@ const fortressModules = {
                     global.settings.eden.asphodel = true;
                     global.settings.spaceTabs = 7;
                     global.resource.Blessed_Essence.display = false;
-                    global.eden['encampment'] = { count: 0, on: 0, support: 0, s_max: 0 };
+                    global.eden['encampment'] = { count: 0, on: 0, support: 0, s_max: 0, asc: false };
                     renderFortress();
                     renderEdenic();
                     return true;
@@ -2887,6 +2887,13 @@ export function bloodwar(){
         if (forgeOperating && global.tech['asphodel'] && global.tech.asphodel >= 2 && support_on['ectoplasm_processor']){
             let attract = global.blood['attract'] ? global.blood.attract * 5 : 0;
             let souls = global.civic.ghost_trapper.workers * Math.rand(150 + attract, 250 + attract);
+            if (p_on['ascension_trigger'] && global.eden.hasOwnProperty('encampment') && global.eden.encampment.asc){
+                let heatSink = actions.interstellar.int_sirius.ascension_trigger.heatSink();
+                heatSink = heatSink < 0 ? Math.abs(heatSink) : 0;
+                if (heatSink > 0){
+                    souls *= 1 + (heatSink / 12500);
+                }
+            }
             souls = Math.floor(souls * asphodelResist());
             global.portal.soul_forge.kills += souls;
             day_report.ghost_trappers = souls;

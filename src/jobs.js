@@ -6,6 +6,7 @@ import { armyRating } from './civics.js';
 import { craftingRatio, craftCost, craftingPopover } from './resources.js';
 import { planetName } from './space.js';
 import { asphodelResist } from './edenic.js';
+import { actions } from './actions.js';
 
 export const job_desc = {
     unemployed: function(servant){
@@ -325,8 +326,17 @@ export const job_desc = {
     ghost_trapper(){
         let attact = global.blood['attract'] ? global.blood.attract * 5 : 0;
         let resist = asphodelResist();
-        let min = Math.floor((150 + attact) * resist);
-        let max = Math.floor((250 + attact) * resist);
+        let ascend = 1;
+        if (p_on['ascension_trigger'] && global.eden.hasOwnProperty('encampment') && global.eden.encampment.asc){
+            let heatSink = actions.interstellar.int_sirius.ascension_trigger.heatSink();
+            heatSink = heatSink < 0 ? Math.abs(heatSink) : 0;
+            if (heatSink > 0){
+                ascend = 1 + (heatSink / 12500);
+            }
+        }
+        let min = Math.floor((150 + attact) * resist * ascend);
+        let max = Math.floor((250 + attact) * resist * ascend);
+        
         return loc('job_ghost_trapper_desc',[loc('portal_soul_forge_title'),global.resource.Soul_Gem.name,min,max]);
     },
     pit_miner(){

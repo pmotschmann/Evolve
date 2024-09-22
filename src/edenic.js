@@ -4,6 +4,7 @@ import { spatialReasoning } from './resources.js';
 import { payCosts, powerOnNewStruct, setAction, storageMultipler } from './actions.js';
 import { checkRequirements, incrementStruct, piracy} from './space.js';
 import { mechRating } from './portal.js';
+import { actions } from './actions.js';
 import { jobScale } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
 import { loc } from './locale.js';
@@ -64,6 +65,14 @@ const edenicModules = {
                 if (global.tech.hasOwnProperty('asphodel') && global.tech.asphodel >= 1){
                     let powder = spatialReasoning(250);
                     desc += `<div>${loc('plus_max_resource',[powder,loc('resource_Asphodel_Powder_name')])}</div>`;
+                }
+
+                if (p_on['ascension_trigger'] && global.eden.hasOwnProperty('encampment') && global.eden.encampment.asc){
+                    let heatSink = actions.interstellar.int_sirius.ascension_trigger.heatSink();
+                    heatSink = heatSink < 0 ? Math.abs(heatSink) : 0;
+                    let omniscience = 150 + (heatSink / 10);
+
+                    desc += `<div>${loc('plus_max_resource',[+omniscience.toFixed(0),global.resource.Omniscience.name])}</div>`;
                 }
 
                 desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
@@ -404,7 +413,17 @@ const edenicModules = {
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('eden_stabilizer_requirement',[loc('city_shed_title3')])}</div>`;
-                desc += `<div>${loc('eden_stabilizer_effect1',[global.resource.Asphodel_Powder.name, 8])}</div>`;
+
+                let stabilize = 8;
+                if (p_on['ascension_trigger'] && global.eden.hasOwnProperty('encampment') && global.eden.encampment.asc){
+                    let heatSink = actions.interstellar.int_sirius.ascension_trigger.heatSink();
+                    heatSink = heatSink < 0 ? Math.abs(heatSink) : 0;
+                    if (heatSink > 0){
+                        stabilize *= 1 + (heatSink / 17500);
+                    }
+                }
+
+                desc += `<div>${loc('eden_stabilizer_effect1',[global.resource.Asphodel_Powder.name, +stabilize.toFixed(1)])}</div>`;
                 desc += `<div>${loc('eden_stabilizer_effect2',[global.resource.Asphodel_Powder.name, loc('city_shed_title3'), 15])}</div>`;
                 desc += `<div class="has-text-special">${loc('eden_stabilizer_limit',[global.eden.warehouse.count])}</div>`;
                 return desc;
@@ -547,6 +566,42 @@ const edenicModules = {
                     return true;
                 }
                 return false;
+            }
+        },
+        bliss_den: {
+            id: 'eden-bliss_den',
+            title: loc('eden_bliss_den_title'),
+            desc: `<div>${loc('eden_bunker_title')}</div><div class="has-text-special">${loc('space_support',[loc('eden_asphodel_name')])}</div>`,
+            reqs: { asphodel: 10 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('bliss_den', offset, 450000000, 1.22, 'eden'); },
+                Furs(offset){ return spaceCostMultiplier('bliss_den', offset, 29000000, 1.22, 'eden'); },
+                Asphodel_Powder(offset){ return spaceCostMultiplier('bliss_den', offset, 35000, 1.22, 'eden'); },
+                Plywood(offset){ return spaceCostMultiplier('bliss_den', offset, 10000000, 1.22, 'eden'); },
+            },
+            effect(){
+                let morale = 10;
+                let max = 2;
+
+                let desc = `<div class="has-text-caution">${loc('space_used_support',[loc('eden_asphodel_name')])}</div>`;
+                desc += `<div>${loc('space_red_vr_center_effect1',[morale])}</div>`;
+                desc += `<div>${loc('space_red_vr_center_effect2',[max])}</div>`;
+
+                return desc;
+            },
+            s_type: 'asphodel',
+            support(){ return -1; },
+            powered(){ return 0; },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('bliss_den','eden');
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            },
+            flair(){
+                return loc(`eden_bliss_den_flair`);
             }
         },
     },

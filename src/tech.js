@@ -14208,6 +14208,28 @@ const techs = {
             return false;
         }
     },
+    dimensional_tap: {
+        id: 'tech-dimensional_tap',
+        title: loc('tech_dimensional_tap'),
+        desc: loc('tech_dimensional_tap'),
+        category: 'science',
+        era: 'existential',
+        reqs: { ascension: 7, science: 23 },
+        grant: ['science',24],
+        cost: {
+            Knowledge(){ return 87500000; },
+            Omniscience(){ return 13333; },
+        },
+        effect(){ return loc('tech_dimensional_tap_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.eden.encampment.asc = true;
+                return true;
+            }
+            return false;
+        },
+        flair(){ return loc(`tech_dimensional_tap_flair`); }
+    },
     soul_engine: {
         id: 'tech-soul_engine',
         title: loc('tech_soul_engine'),
@@ -14351,6 +14373,27 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.eden['bunker'] = { count: 0, on: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    bliss_den: {
+        id: 'tech-bliss_den',
+        title: loc('tech_bliss_den'),
+        desc: loc('tech_bliss_den'),
+        category: 'edenic',
+        era: 'existential',
+        reqs: { asphodel: 9, },
+        grant: ['asphodel',10],
+        cost: {
+            Knowledge(){ return 90000000; },
+            Omniscience(){ return 16666; },
+        },
+        effect(){ return loc('tech_bliss_den_effect',[global.resource.Asphodel_Powder.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.eden['bliss_den'] = { count: 0, on: 0 };
                 return true;
             }
             return false;

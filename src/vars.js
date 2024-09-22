@@ -1753,42 +1753,14 @@ if (!global.city['hot']){
     global.city['hot'] = 0;
 }
 
-if (!global.city.morale['unemployed']){
-    global.city.morale['unemployed'] = 0;
-}
-if (!global.city.morale['leadership']){
-    global.city.morale['leadership'] = 0;
-}
-if (!global.city.morale['warmonger']){
-    global.city.morale['warmonger'] = 0;
-}
-if (!global.city.morale['rev']){
-    global.city.morale['rev'] = 0;
-}
-if (!global.city.morale['tax']){
-    global.city.morale['tax'] = 0;
-}
-if (!global.city.morale['shrine']){
-    global.city.morale['shrine'] = 0;
-}
-if (!global.city.morale['blood_thirst']){
-    global.city.morale['blood_thirst'] = 0;
-}
-if (!global.city.morale['broadcast']){
-    global.city.morale['broadcast'] = 0;
-}
-if (!global.city.morale['vr']){
-    global.city.morale['vr'] = 0;
-}
-if (!global.city.morale['zoo']){
-    global.city.morale['zoo'] = 0;
-}
-if (!global.city.morale['cap']){
-    global.city.morale['cap'] = 0;
-}
-if (!global.city.morale['potential']){
-    global.city.morale['potential'] = 0;
-}
+[
+    'unemployed','leadership','warmonger','rev','tax','shrine','blood_thirst',
+    'broadcast','vr','zoo','bliss_den','cap','potential'
+].forEach(function(k){
+    if (!global.city.morale.hasOwnProperty(k)){
+        global.city.morale[k] = 0;
+    }
+});
 
 if (!global.city['calendar']){
     global.city['calendar'] = {
