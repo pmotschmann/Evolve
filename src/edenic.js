@@ -1,4 +1,4 @@
-import { global, p_on, sizeApproximation } from './vars.js';
+import { global, p_on, sizeApproximation, seededRandom } from './vars.js';
 import { vBind, clearElement, popover, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier } from './functions.js';
 import { spatialReasoning } from './resources.js';
 import { payCosts, powerOnNewStruct, setAction, storageMultipler } from './actions.js';
@@ -8,6 +8,7 @@ import { actions } from './actions.js';
 import { jobScale } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
 import { loc } from './locale.js';
+import { armyRating, armorCalc, garrisonSize } from './civics.js';
 
 const edenicModules = {
     eden_asphodel: {
@@ -510,6 +511,7 @@ const edenicModules = {
                     if (global.eden.rune_gate.count === 100){
                         global.eden['rune_gate_open'] = { count: 1, on: 0 };
                         global.settings.eden.elysium = true;
+                        global.tech.elysium = 2;
                         renderEdenic();
                     }
                     return true;
@@ -521,7 +523,7 @@ const edenicModules = {
             id: 'space-rune_gate_complete',
             title: loc('eden_rune_gate_title'),
             desc(){
-                return `<div>${loc('eden_rune_gate_title')}</div><div class="has-text-special">${loc('requires_power_support',[loc('eden_asphodel_name')])}</div>`;
+                return `<div>${loc('eden_rune_gate_title')}</div>`;
             },
             reqs: { elysium: 1 },
             condition(){
@@ -530,11 +532,8 @@ const edenicModules = {
             queue_complete(){ return 0; },
             cost: {},
             effect(){
-                return `<div class="has-text-caution">${loc('space_used_support',[loc('eden_asphodel_name')])}</div>`;
+                return `<div>${loc('eden_rune_gate_open',[loc('eden_elysium_name')])}</div>`;
             },
-            s_type: 'asphodel',
-            support(){ return -12; },
-            powered(){ return 0; },
             action(){
                 return false;
             }
@@ -578,6 +577,7 @@ const edenicModules = {
                 Furs(offset){ return spaceCostMultiplier('bliss_den', offset, 29000000, 1.22, 'eden'); },
                 Asphodel_Powder(offset){ return spaceCostMultiplier('bliss_den', offset, 35000, 1.22, 'eden'); },
                 Plywood(offset){ return spaceCostMultiplier('bliss_den', offset, 10000000, 1.22, 'eden'); },
+                Soul_Gem(offset){ return spaceCostMultiplier('bliss_den', offset, 10, 1.22, 'eden'); },
             },
             effect(){
                 let morale = 10;
@@ -609,7 +609,254 @@ const edenicModules = {
         info: {
             name: loc('eden_elysium_name'),
             desc: loc('eden_elysium_desc'),
+            prop(){
+                let soldier_title = global.tech['world_control'] && !global.race['truepath'] ? loc('civics_garrison_peacekeepers') : loc('civics_garrison_soldiers');
+                let desc = `<span class="pad"><span class="soldier">${soldier_title}</span> <span v-html="$options.filters.filter(workers,'stationed')"></span> / <span>{{ max | filter('s_max') }} | <span></span>`;
+                desc += `<span><span class="wounded">${loc('civics_garrison_wounded')}</span> <span>{{ wounded }}</span></span>`;
+                return desc;
+            },
+            bind(){
+                return global.civic.garrison;
+            },
+            filter(v,type){
+                switch (type){
+                    case 'stationed':
+                        let size = garrisonSize();
+                        let trickNum = global.race['cataclysm'] ? 13 : 31;
+                        let trick = size === trickNum && !full ? trickOrTreat(2,14,true) : false;
+                        return size === trickNum && trick.length > 0 ? trick : size;
+                    case 's_max':
+                        return garrisonSize(true);
+                }
+            }
         },
+        survey_fields: {
+            id: 'eden-survey_fields',
+            title: loc('eden_survey_fields'),
+            desc: loc('eden_survey_fields'),
+            reqs: { elysium: 2 },
+            grant: ['elysium',3],
+            cost: {
+                Money(){ return 1000000000; },
+                Oil(){ return 10000000; },
+                Helium_3(){ return 5000000; },
+            },
+            effect:loc('eden_survey_fields_effect'),
+            action(){
+                if (payCosts($(this)[0])){
+                    messageQueue(loc('eden_survey_fields_msg'),'info',false,['progress']);
+                    global.eden['fortress'] = { fortress: 1000, patrols: 20, armory: 100, detector: 100 };
+                    return true;
+                }
+                return false;
+            },
+            post(){
+                if (global.tech['elysium'] && global.tech.elysium === 3){
+                    renderEdenic();
+                    clearPopper('eden-survey_fields');
+                }
+            }
+        },
+        fortress: { 
+            id: 'eden-fortress',
+            title: loc('eden_fortress'),
+            desc: loc('eden_fortress'),
+            queue_complete(){ return 0; },
+            reqs: { elysium: 3 },
+            condition(){
+                return global.tech.elysium === 3;
+            },
+            effect(){ 
+                let desc = `<div>${loc('eden_fortress_rating',[global.eden['fortress'] ? global.eden.fortress.fortress / 10 : 0])}</div>`;
+                desc += `<div>${loc('eden_fortress_patrols',[global.eden['fortress'] ? global.eden.fortress.patrols : 0])}</div>`;
+                desc += `<div>${loc('eden_fortress_detect',[global.eden['fortress'] ? global.eden.fortress.detector : 0])}</div>`;
+                desc += `<div>${loc('eden_fortress_armory',[global.eden['fortress'] ? global.eden.fortress.armory : 0])}</div>`;
+
+                return desc;
+            },
+            action(){
+                return false;
+            }
+        },
+        siege_fortress: { 
+            id: 'eden-siege_fortress',
+            title: loc('eden_siege_fortress'),
+            desc: loc('eden_siege_fortress'),
+            queue_complete(){ return 0; },
+            reqs: { elysium: 3 },
+            condition(){
+                return global.tech.elysium === 3;
+            },
+            cost: {
+                Troops(){
+                    return jobScale(100);
+                },
+            },
+            effect(){ 
+                let desc = `<div class="has-text-warning">${loc(`eden_siege_fortress_effect`)}</div>`;
+                if (global.eden.fortress.hasOwnProperty('siege')){
+                    desc += `<div>${loc(`eden_siege_fortress_result`)}</div>`;
+                    desc += `<div>${loc(`eden_siege_fortress_lost`,[global.eden.fortress.siege.loss])}</div>`;
+                    desc += `<div>${loc(`eden_siege_fortress_damage`,[global.eden.fortress.siege.damage])}</div>`;
+                }
+                return desc;
+            },
+            action(){
+                let armySize = jobScale(100);
+                let armory = (global.eden.fortress.armory + 20) / 20; 
+                let enemy_pats = global.eden.fortress.patrols * armory;
+                let remain = jobScale(100 - enemy_pats < 0 ? 0 : 100 - enemy_pats);
+
+                if (remain <= 0){
+                    global.eden.fortress['siege'] = { loss: armySize, damage: 0 };
+                    global.civic.garrison.workers -= armySize;
+                    global.civic.garrison.protest += armySize;
+                    global.stats.died += armySize;
+                }
+                else {
+                    let dead = armySize - remain + Math.floor(seededRandom(0,jobScale(global.eden.fortress.detector),true));
+                    dead = deadCalc(dead, armySize);
+                    remain = armySize - dead;
+
+                    let troops = Math.ceil(armyRating(remain,'Troops'));
+                    let damage = Math.floor(seededRandom(0,troops,true));
+
+                    let more_dead = Math.floor(seededRandom(0,remain,true));
+                    more_dead = deadCalc(more_dead, remain);
+                    remain = remain - more_dead;
+                    dead += more_dead;
+
+                    global.civic.garrison.workers -= dead;
+                    global.civic.garrison.protest += dead;
+                    global.stats.died += dead;
+
+                    global.civic.garrison.wounded += Math.floor(seededRandom(0,remain,true));
+                    if (global.civic.garrison.wounded > global.civic.garrison.workers){
+                        global.civic.garrison.wounded = global.civic.garrison.workers;
+                    }
+
+                    global.eden.fortress.fortress -= damage;
+                    if (global.eden.fortress.fortress < 0){ global.eden.fortress.fortress = 0; }
+                    global.eden.fortress['siege'] = { loss: dead, damage: damage / 10 };
+                }
+
+                renderEdenic();
+                return false;
+            }
+        },
+        raid_supplies: { 
+            id: 'eden-raid_supplies',
+            title: loc('eden_raid_supplies'),
+            desc: loc('eden_raid_supplies'),
+            queue_complete(){ return 0; },
+            reqs: { elysium: 3 },
+            condition(){
+                return global.tech.elysium === 3 && global.eden.fortress.armory > 0;
+            },
+            cost: {
+                Troops(){
+                    return jobScale(50);
+                },
+            },
+            effect(){ 
+                let desc = `<div class="has-text-warning">${loc(`eden_raid_supplies_effect`)}</div>`;
+                if (global.eden.fortress.hasOwnProperty('raid')){
+                    desc += `<div>${loc(`eden_raid_fortress_result`)}</div>`;
+                    desc += `<div>${loc(`eden_siege_fortress_lost`,[global.eden.fortress.raid.loss])}</div>`;
+                    desc += `<div>${loc(`eden_siege_fortress_damage`,[global.eden.fortress.raid.damage])}</div>`;
+                }
+                return desc;
+            },
+            action(){
+                let armySize = jobScale(50);
+                let enemy_pats = global.eden.fortress.patrols * 2.5;
+                let remain = Math.ceil(jobScale(50 - enemy_pats < 0 ? 0 : 50 - enemy_pats));
+
+                if (remain <= 0){
+                    global.eden.fortress['raid'] = { loss: armySize, damage: 0 };
+                    global.civic.garrison.workers -= armySize;
+                    global.civic.garrison.protest += armySize;
+                    global.stats.died += armySize;
+                }
+                else {
+                    let dead = armySize - remain + Math.floor(seededRandom(0,jobScale(global.eden.fortress.detector / 2),true));
+                    dead = deadCalc(dead, armySize);
+                    remain = armySize - dead;
+
+                    let troops = Math.ceil(armyRating(remain,'Troops'));
+                    let damage = Math.floor(seededRandom(0,troops,true) / 10);
+
+                    global.civic.garrison.workers -= dead;
+                    global.civic.garrison.protest += dead;
+                    global.stats.died += dead;
+
+                    global.civic.garrison.wounded += Math.floor(seededRandom(0,remain,true));
+                    if (global.civic.garrison.wounded > global.civic.garrison.workers){
+                        global.civic.garrison.wounded = global.civic.garrison.workers;
+                    }
+
+                    global.eden.fortress.armory -= damage;
+                    if (global.eden.fortress.armory < 0){ global.eden.fortress.armory = 0; }
+                    global.eden.fortress['raid'] = { loss: dead, damage: damage };
+                }
+
+                renderEdenic();
+                return false;
+            }
+        },
+        ambush_patrol: { 
+            id: 'eden-ambush_patrol',
+            title: loc('eden_ambush_patrol'),
+            desc: loc('eden_ambush_patrol'),
+            queue_complete(){ return 0; },
+            reqs: { elysium: 3 },
+            condition(){
+                return global.tech.elysium === 3 && global.eden.fortress.patrols > 0
+            },
+            cost: {
+                Troops(){
+                    return jobScale(25);
+                },
+            },
+            effect(){ 
+                let desc = `<div class="has-text-warning">${loc(`eden_ambush_patrol_effect`)}</div>`;
+                if (global.eden.fortress.hasOwnProperty('ambush')){
+                    desc += `<div>${loc(`eden_ambush_patrol_result`)}</div>`;
+                    desc += `<div>${loc(`eden_siege_fortress_lost`,[global.eden.fortress.ambush.loss])}</div>`;
+                    desc += `<div>${loc(`eden_ambush_patrol_damage`,[global.eden.fortress.ambush.damage ? loc('true') : loc('false')])}</div>`;
+                }
+                return desc;
+            },
+            action(){
+                let armySize = jobScale(25);
+                if (armyRating(jobScale(1),'Troops') > Math.floor(seededRandom(0,global.eden.fortress.detector * 2,true))){
+                    let dead = Math.floor(seededRandom(0,armySize,true));
+                    dead = deadCalc(dead, armySize);
+                    let remain = armySize - dead;
+
+                    global.civic.garrison.workers -= dead;
+                    global.civic.garrison.protest += dead;
+                    global.stats.died += dead;
+
+                    global.civic.garrison.wounded += Math.floor(seededRandom(0,remain,true));
+                    if (global.civic.garrison.wounded > global.civic.garrison.workers){
+                        global.civic.garrison.wounded = global.civic.garrison.workers;
+                    }
+
+                    global.eden.fortress.patrols--;
+                    global.eden.fortress['ambush'] = { loss: dead, damage: true };
+                }
+                else {
+                    global.eden.fortress['ambush'] = { loss: armySize, damage: false };
+                    global.civic.garrison.workers -= armySize;
+                    global.civic.garrison.protest += armySize;
+                    global.stats.died += armySize;
+                }
+
+                renderEdenic();
+                return false;
+            }
+        }
     },
     eden_isle: {
         info: {
@@ -624,6 +871,14 @@ const edenicModules = {
         },
     }
 };
+
+function deadCalc(dead, armySize){
+    let armor = armorCalc(dead);
+    dead -= Math.floor(seededRandom(0,armor,true));
+    if (dead > armySize){ dead = armySize }
+    else if (dead < 0){ dead = 0; }
+    return dead;
+}
 
 export function edenicTech(){
     return edenicModules;
@@ -654,6 +909,11 @@ export function renderEdenic(){
                 property = edenicModules[region].info.prop();
             }
 
+            let bind = false;
+            if (edenicModules[region].info.hasOwnProperty('bind')){
+                bind = edenicModules[region].info.bind();
+            }
+
             if (edenicModules[region].info['support']){
                 let support = edenicModules[region].info['support'];
                 if (edenicModules[region].info['hide_support']){
@@ -664,7 +924,19 @@ export function renderEdenic(){
                 }
                 vBind({
                     el: `#sr${region}`,
-                    data: global.eden[support],
+                    data: bind ? bind : global.eden[support],
+                    filters: {
+                        filter(){
+                            return edenicModules[region].info.filter(...arguments);
+                        }
+                    }
+                });
+            }
+            else if (bind){
+                parent.append(`<div id="${region}" class="space"><div id="sr${region}"><h3 class="name has-text-warning">${name}</h3>${property}</div></div>`);
+                vBind({
+                    el: `#sr${region}`,
+                    data: bind,
                     filters: {
                         filter(){
                             return edenicModules[region].info.filter(...arguments);

@@ -896,7 +896,7 @@ export function timeCheck(c_action,track,detailed,reqMet){
         }
         let shorted = {};
         Object.keys(costs).forEach(function (res){
-            if (time >= 0 && !global.prestige.hasOwnProperty(res) && !['Morale','HellArmy','Structs','Bool'].includes(res)){
+            if (time >= 0 && !global.prestige.hasOwnProperty(res) && !['Morale','HellArmy','Structs','Bool','Army','Troops'].includes(res)){
                 var testCost = offset ? Number(costs[res](offset)) : Number(costs[res]());
                 if (testCost > 0){
                     let f_res = res === 'Species' ? global.race.species : res;
@@ -1876,7 +1876,7 @@ function smolderAdjust(costs, offset, wiki){
                 let adjustRate = res === 'Plywood' ? 2 : 1;
                 newCosts['Chrysotile'] = function(){ return Math.round(costs[res](offset, wiki) * adjustRate) || 0; }
             }
-            else if (['HellArmy','Structs','Chrysotile','Knowledge','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Corrupt_Gem','Codex','Demonic_Essence','Horseshoe','Mana','Energy'].includes(res)){
+            else if (['HellArmy','Army','Troops','Structs','Chrysotile','Knowledge','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Corrupt_Gem','Codex','Demonic_Essence','Horseshoe','Mana','Energy'].includes(res)){
                 newCosts[res] = function(){ return costs[res](offset, wiki); }
             }
             else {

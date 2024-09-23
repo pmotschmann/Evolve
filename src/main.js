@@ -9499,6 +9499,10 @@ function midLoop(){
             bd_Knowledge[loc('tech_alien_outpost')] = gain+iso+'v';
         }
 
+        if (global.eden['fortress'] && global.tech.hasOwnProperty('celestial_warfare')){
+            global.eden.fortress.detector = global.tech.celestial_warfare >= 1 ? 90 : 100;
+        }
+
         let tempCrates = caps['Crates'], tempContainers = caps['Containers'];
         Object.keys(caps).forEach(function (res){
             caps['Crates'] -= global.resource[res].crates;

@@ -3,10 +3,10 @@ import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
 import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck } from './races.js';
-import { defineResources, unlockCrates, unlockContainers, galacticTrade, spatialReasoning, resource_values, initResourceTabs, drawResourceTab, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus } from './resources.js';
+import { defineResources, unlockCrates, unlockContainers, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources, gridDefs } from './industry.js';
-import { govEffect, defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating } from './civics.js';
+import { defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating, garrisonSize } from './civics.js';
 import { spaceTech, interstellarTech, galaxyTech, universe_affixes, renderSpace, piracy, fuel_adjust, isStargateOn } from './space.js';
 import { renderFortress, fortressTech } from './portal.js';
 import { edenicTech, renderEdenic } from './edenic.js';
@@ -14,7 +14,7 @@ import { tauCetiTech, renderTauCeti, loneSurvivor } from './truepath.js';
 import { arpa, gainGene, gainBlood } from './arpa.js';
 import { production, highPopAdjust } from './prod.js';
 import { techList, techPath } from './tech.js';
-import { govActive, removeTask, defineGovernor, gov_tasks } from './governor.js';
+import { govActive, removeTask, gov_tasks } from './governor.js';
 import { bioseed } from './resets.js';
 import { loadTab } from './index.js';
 
@@ -6622,6 +6622,21 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
                         empty = false;
                         cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}: ${res_cost}${aria}</div>`));
                     }
+                    else if (res === 'Troops'){
+                        let label = global.tech['world_control'] && !global.race['truepath'] ? loc('civics_garrison_peacekeepers') : loc('civics_garrison_soldiers');
+                        let color = 'has-text-dark';
+                        if (garrisonSize() < res_cost){
+                            if (tc.r === f_res){
+                                color = 'has-text-danger';
+                                aria = ' <span class="is-sr-only">(blocking resource)</span>';
+                            }
+                            else {
+                                color = 'has-text-alert';
+                            }
+                        }
+                        empty = false;
+                        cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}: ${res_cost}${aria}</div>`));
+                    }
                     else {
                         let label = f_res === 'Money' ? '$' : global.resource[f_res].name+': ';
                         label = label.replace("_", " ");
@@ -6773,7 +6788,7 @@ export function payCosts(c_action, costs){
                 let cost = costs[res]();
                 global.portal.purifier.supply -= cost;
             }
-            else if (res !== 'Morale' && res !== 'Army' && res !== 'HellArmy' && res !== 'Structs' && res !== 'Bool' && res !== 'Custom'){
+            else if (res !== 'Morale' && res !== 'Army' && res !== 'HellArmy' && res !== 'Troops' && res !== 'Structs' && res !== 'Bool' && res !== 'Custom'){
                 let cost = costs[res]();
                 let f_res = res === 'Species' ? global.race.species : res;
                 global['resource'][f_res].amount -= cost;
@@ -6846,6 +6861,12 @@ function checkMaxCosts(costs){
                 return;
             }
         }
+        else if (res === 'Troops'){
+            if (garrisonSize() < Number(costs[res]())){
+                test = false;
+                return;
+            }
+        }
         else if (res === 'Supply'){
             if (global.portal.purifier.sup_max < Number(costs[res]())){
                 test = false;
@@ -6910,6 +6931,12 @@ export function checkCosts(costs){
         }
         else if (res === 'HellArmy'){
             if (typeof global.portal['fortress'] === 'undefined' || global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size) < Number(costs[res]())){
+                test = false;
+                return;
+            }
+        }
+        else if (res === 'Troops'){
+            if (garrisonSize() < Number(costs[res]())){
                 test = false;
                 return;
             }

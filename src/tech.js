@@ -14421,6 +14421,27 @@ const techs = {
             return false;
         }
     },
+    camouflage: {
+        id: 'tech-camouflage',
+        title: loc('tech_camouflage'),
+        desc: loc('tech_camouflage'),
+        category: 'edenic',
+        era: 'existential',
+        reqs: { elysium: 3, },
+        grant: ['celestial_warfare',1],
+        cost: {
+            Knowledge(){ return 83000000; },
+            Omniscience(){ return 15000; },
+            Asphodel_Powder(){ return 100000; }
+        },
+        effect(){ return loc('tech_camouflage_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
 };
 
 function uniteEffect(){

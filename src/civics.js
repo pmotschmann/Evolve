@@ -1532,25 +1532,7 @@ function war_campaign(gov){
         if (global.race['frail']){
             death += traits.frail.vars()[0];
         }
-        let armor = 0;
-        if (global.race['scales']){
-            armor += traits.scales.vars()[0];
-        }
-        if (global.tech['armor']){
-            armor += global.tech['armor'];
-        }
-        if (global.race['high_pop']){
-            armor += Math.floor(seededRandom(0, armor * traits.high_pop.vars()[0],true));
-        }
-        if (global.race['armored']){
-            let armored = traits.armored.vars()[0] / 100;
-            armor += Math.floor(death * armored);
-        }
-        let fathom = fathomCheck('tortoisan');
-        if (fathom > 0){
-            let armored = traits.armored.vars(1)[0] / 100 * fathom;
-            armor += Math.floor(death * armored);
-        }
+        let armor = armorCalc(death);
         if (global.civic.garrison.raid > wounded){
             death -= armor;
         }
@@ -1863,25 +1845,7 @@ function war_campaign(gov){
         if (global.race['frail']){
             death += global.civic.garrison.tactic + traits.frail.vars()[1];;
         }
-        let armor = 0;
-        if (global.race['scales']){
-            armor += traits.scales.vars()[1];
-        }
-        if (global.tech['armor']){
-            armor += global.tech['armor'];
-        }
-        if (global.race['high_pop']){
-            armor += Math.floor(seededRandom(0, Math.floor(armor * traits.high_pop.vars()[0] / 2),true));
-        }
-        if (global.race['armored']){
-            let armored = traits.armored.vars()[0] / 100;
-            armor += Math.floor(death * armored);
-        }
-        let fathom = fathomCheck('tortoisan');
-        if (fathom > 0){
-            let armored = traits.armored.vars(1)[0] / 100 * fathom;
-            armor += Math.floor(death * armored);
-        }
+        let armor = armorCalc(death);
         if (global.civic.garrison.raid > wounded){
             death -= armor;
         }
@@ -1937,6 +1901,29 @@ function war_campaign(gov){
     else if (global.civic.garrison.wounded < 0){
         global.civic.garrison.wounded = 0;
     }
+}
+
+export function armorCalc(dead){
+    let armor = 0;
+    if (global.race['scales']){
+        armor += traits.scales.vars()[0];
+    }
+    if (global.tech['armor']){
+        armor += global.tech['armor'];
+    }
+    if (global.race['high_pop']){
+        armor += Math.floor(seededRandom(0, armor * traits.high_pop.vars()[0],true));
+    }
+    if (global.race['armored']){
+        let armored = traits.armored.vars()[0] / 100;
+        armor += Math.floor(dead * armored);
+    }
+    let fathom = fathomCheck('tortoisan');
+    if (fathom > 0){
+        let armored = traits.armored.vars(1)[0] / 100 * fathom;
+        armor += Math.floor(dead * armored);
+    }
+    return armor;
 }
 
 function looters(){
@@ -2047,7 +2034,7 @@ export function armyRating(val,type,wound){
         adjusted_val = val + rageVal + fathomVal;
     }
     let army = global.tech['military'] ? adjusted_val * weapon_tech : adjusted_val;
-    if (type === 'army' || type === 'hellArmy'){
+    if (type === 'army' || type === 'hellArmy' || type === 'Troops'){
         if (global.race['rage']){
             army *= 1 + (traits.rage.vars()[0] / 100 * (global.civic.garrison.wounded || 0));
         }
