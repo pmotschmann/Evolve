@@ -230,6 +230,9 @@ export const job_desc = {
             interest *= traits.high_pop.vars()[1] / 100;
         }
         interest = +(interest).toFixed(0);
+        if(global.race['fasting']){
+            return loc('job_banker_desc_fasting');
+        }
         return loc('job_banker_desc',[interest]);
     },
     entertainer: function(){
@@ -609,7 +612,7 @@ function loadJob(job, define, impact, stress, color){
 
 export function loadServants(){
     clearElement($('#servants'));
-    if (global.race['servants']){
+    if (global.race['servants'] && Object.keys(global.race.servants.jobs).length > 0){
         var servants = $(`<div id="servantList" class="job"><div class="foundry job_label"><h3 class="serveHeader has-text-warning">${loc('civics_servants')}</h3><span :class="level()">{{ s.used }} / {{ s.max }}</span></div></div>`);
         $('#servants').append(servants);
 

@@ -1,7 +1,7 @@
 import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat, checkAdept } from './achieve.js';
-import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone, addATime, exceededATimeThreshold, loopTimers } from './functions.js';
+import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone, addATime, exceededATimeThreshold, loopTimers, calcQuantumLevel } from './functions.js';
 import { races, traits, racialTrait, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobScale, workerScale, limitCraftsmen, loadServants} from './jobs.js';
@@ -407,8 +407,8 @@ popover('powerStatus',function(obj){
         let drain = +(global.city.power_total - global.city.power).toFixed(2);
         Object.keys(power_generated).forEach(function (k){
             if (power_generated[k]){
-                let gen = +(power_generated[k]).toFixed(2);
-                obj.popper.append(`<p class="modal_bd"><span>${k}</span> <span class="has-text-success">+${gen}</span></p>`);
+                let gen = +power_generated[k];
+                obj.popper.append(`<p class="modal_bd"><span>${k}</span> <span class="has-text-success">+${+gen.toFixed(2)}</span></p>`);
             }
         });
         obj.popper.append(`<p class="modal_bd"><span>${loc('power_consumed')}</span> <span class="has-text-danger"> -${drain}</span></p>`);
@@ -711,7 +711,7 @@ else {
     setWeather();
 }
 
-q_check(true);
+set_qlevel(calcQuantumLevel(true));
 
 $('#lbl_city').html('Village');
 
@@ -1040,6 +1040,10 @@ function fastLoop(){
         breakdown.p['consume'][res] = {};
         breakdown.p[res] = {};
     });
+    if(global.race['fasting']){
+        breakdown.p['consume'][global.race.species] = {};
+        breakdown.p[global.race.species] = {};
+    }
 
     var time_multiplier = 0.25;
 
@@ -2312,8 +2316,10 @@ function fastLoop(){
                 if (global.galaxy[gateway_structs[i]]){
                     let operating = global.galaxy[gateway_structs[i]].on;
                     let id = actions.galaxy.gxy_gateway[gateway_structs[i]].id;
-                    if (used_support + operating > global.galaxy.starbase.s_max){
-                        operating -= (used_support + operating) - global.galaxy.starbase.s_max;
+                    let operating_cost = -(actions.galaxy.gxy_gateway[gateway_structs[i]].support());
+                    let max_operating = Math.floor((global.galaxy.starbase.s_max - used_support) / operating_cost);
+                    if (operating > max_operating){
+                        operating = max_operating;
                         $(`#${id} .on`).addClass('warn');
                         $(`#${id} .on`).prop('title',`ON ${operating}/${global.galaxy[gateway_structs[i]].on}`);
                     }
@@ -2321,7 +2327,7 @@ function fastLoop(){
                         $(`#${id} .on`).removeClass('warn');
                         $(`#${id} .on`).prop('title',`ON`);
                     }
-                    used_support += operating * -(actions.galaxy.gxy_gateway[gateway_structs[i]].support());
+                    used_support += operating * operating_cost;
                     gal_on[gateway_structs[i]] = operating;
                 }
                 else {
@@ -2380,33 +2386,33 @@ function fastLoop(){
             global.portal.guard_post.support = global.portal.guard_post.on;
         }
 
-        // Harbour
-        if (global.portal['harbour']){
-            global.portal.harbour.s_max = p_on['harbour'] * actions.portal.prtl_lake.harbour.support();
+        // harbor
+        if (global.portal['harbor']){
+            global.portal.harbor.s_max = p_on['harbor'] * actions.portal.prtl_lake.harbor.support();
 
             let used_support = 0;
-            let harbour_structs = global.support.lake.map(x => x.split(':')[1]);
-            for (var i = 0; i < harbour_structs.length; i++){
-                if (global.portal[harbour_structs[i]]){
-                    let operating = global.portal[harbour_structs[i]].on;
-                    let id = actions.portal.prtl_lake[harbour_structs[i]].id;
-                    if (used_support + operating > global.portal.harbour.s_max){
-                        operating -= (used_support + operating) - global.portal.harbour.s_max;
+            let harbor_structs = global.support.lake.map(x => x.split(':')[1]);
+            for (var i = 0; i < harbor_structs.length; i++){
+                if (global.portal[harbor_structs[i]]){
+                    let operating = global.portal[harbor_structs[i]].on;
+                    let id = actions.portal.prtl_lake[harbor_structs[i]].id;
+                    if (used_support + operating > global.portal.harbor.s_max){
+                        operating -= (used_support + operating) - global.portal.harbor.s_max;
                         $(`#${id} .on`).addClass('warn');
-                        $(`#${id} .on`).prop('title',`ON ${operating}/${global.portal[harbour_structs[i]].on}`);
+                        $(`#${id} .on`).prop('title',`ON ${operating}/${global.portal[harbor_structs[i]].on}`);
                     }
                     else {
                         $(`#${id} .on`).removeClass('warn');
                         $(`#${id} .on`).prop('title',`ON`);
                     }
-                    used_support += operating * -(actions.portal.prtl_lake[harbour_structs[i]].support());
-                    gal_on[harbour_structs[i]] = operating;
+                    used_support += operating * -(actions.portal.prtl_lake[harbor_structs[i]].support());
+                    gal_on[harbor_structs[i]] = operating;
                 }
                 else {
-                    gal_on[harbour_structs[i]] = 0;
+                    gal_on[harbor_structs[i]] = 0;
                 }
             }
-            global.portal.harbour.support = used_support;
+            global.portal.harbor.support = used_support;
         }
 
         // Purifier
@@ -2663,7 +2669,7 @@ function fastLoop(){
                 area: 'portal',
                 region: 'prtl_lake',
                 ships: ['bireme','transport'],
-                req: 'harbour'
+                req: 'harbor'
             }
         ];
 
@@ -2678,22 +2684,24 @@ function fastLoop(){
 
                 if (global[area][ship] && global[area][ship].hasOwnProperty('on')){
                     if (actions[area][region][ship].ship['civ'] && global[area][ship].hasOwnProperty('crew')){
+                        // Civilian ships can only be crewed at a rate of 1 ship (per type) per fast tick
+                        let civPerShip = actions[area][region][ship].ship.civ();
                         if (global[area][ship].crew < 0){
                             global[area][ship].crew = 0;
                         }
-                        if (global[area][ship]['crew'] < global[area][ship].on * actions[area][region][ship].ship.civ()){
+                        if (global[area][ship]['crew'] < global[area][ship].on * civPerShip){
                             if (total < global.resource[global.race.species].amount){
-                                if (global.civic[global.civic.d_job].workers > actions[area][region][ship].ship.civ()){
-                                    global.civic[global.civic.d_job].workers -= actions[area][region][ship].ship.civ();
-                                    global.civic.crew.workers += actions[area][region][ship].ship.civ();
-                                    global[area][ship]['crew'] += actions[area][region][ship].ship.civ();
+                                if (global.civic[global.civic.d_job].workers >= civPerShip){
+                                    global.civic[global.civic.d_job].workers -= civPerShip;
+                                    global.civic.crew.workers += civPerShip;
+                                    global[area][ship]['crew'] += civPerShip;
                                 }
                             }
                         }
-                        if (global[area][ship]['crew'] > global[area][ship].on * actions[area][region][ship].ship.civ()){
-                            global.civic[global.civic.d_job].workers += actions[area][region][ship].ship.civ();
-                            global.civic.crew.workers -= actions[area][region][ship].ship.civ();
-                            global[area][ship]['crew'] -= actions[area][region][ship].ship.civ();
+                        else if (global[area][ship]['crew'] > global[area][ship].on * civPerShip){
+                            global.civic[global.civic.d_job].workers += civPerShip;
+                            global.civic.crew.workers -= civPerShip;
+                            global[area][ship]['crew'] -= civPerShip;
                         }
                         global.civic.crew.assigned = global.civic.crew.workers;
                         crew_civ += global[area][ship]['crew'];
@@ -2701,8 +2709,10 @@ function fastLoop(){
                     }
 
                     if (actions[area][region][ship].ship['mil'] && global[area][ship].hasOwnProperty('mil')){
-                        if (global[area][ship]['mil'] !== global[area][ship].on * actions[area][region][ship].ship.mil()){
-                            global[area][ship]['mil'] = global[area][ship].on * actions[area][region][ship].ship.mil();
+                        // All military ships can be crewed instantly
+                        let milPerShip = actions[area][region][ship].ship.mil();
+                        if (global[area][ship]['mil'] !== global[area][ship].on * milPerShip){
+                            global[area][ship]['mil'] = global[area][ship].on * milPerShip;
                         }
                         if (global.civic.garrison.workers - global.portal.fortress.garrison < 0){
                             let underflow = global.civic.garrison.workers - global.portal.fortress.garrison;
@@ -3412,6 +3422,9 @@ function fastLoop(){
                     ravenous = (global.resource.Food.amount / traits.ravenous.vars()[1]);
                 }
                 breakdown.p.consume.Food[flib('name')] = -(consume + ravenous);
+                if(global.city.banquet && global.city.banquet.on){
+                    consume = Math.max(consume, 100); //minimum consumption for banquet hall
+                }
                 if(consume * banquet + ravenous >= global.resource.Food.amount){
                     if(global.city.banquet && banquet > 1){
                         global.city.banquet.strength = 0;
@@ -3486,21 +3499,42 @@ function fastLoop(){
                     fed = false;
                     if(global.resource[global.race.species].amount > 0){
                         let threshold = 1.25;
+                        let digestion = 0;
+                        let humpback = 0;
+                        let meditators = 0;
+                        let atrophy = 0;
+                        let infusion = 1;
                         if (global.race['slow_digestion']){
-                            threshold += traits.slow_digestion.vars()[0];
+                            digestion += traits.slow_digestion.vars()[0];
                         }
                         let fathom = fathomCheck('slitheryn');
                         if (fathom > 0){
-                            threshold += traits.slow_digestion.vars(1)[0] * fathom;
+                            digestion += traits.slow_digestion.vars(1)[0] * fathom;
                         }
                         if (global.race['humpback']){
-                            threshold += traits.humpback.vars()[0];
+                            humpback = traits.humpback.vars()[0];
                         }
                         if(global.race['fasting']){
-                            threshold += highPopAdjust(global.civic.meditator.workers) * 0.03;
+                            meditators = highPopAdjust(global.civic.meditator.workers) * 0.03;
                         }
                         if (global.race['atrophy']){
-                            threshold -= traits.atrophy.vars()[0];
+                            atrophy = traits.atrophy.vars()[0];
+                        }
+                        if(global.portal['dish_life_infuser'] && global.portal['dish_life_infuser'].on){
+                            infusion = 0.95 ** global.portal['dish_life_infuser'].on;
+                        }
+                        threshold += digestion + humpback + meditators;
+                        threshold -= atrophy;
+                        threshold *= infusion
+                        if(global.race['fasting']){
+                            let base = global.resource[global.race.species].amount/100;
+                            breakdown.p.consume[global.race.species][global.resource[global.race.species].name] = -(base).toFixed(2);
+                            breakdown.p.consume[global.race.species][loc('genelab_traits')] = (1 - food_consume_mod) * (base).toFixed(2);
+                            breakdown.p.consume[global.race.species][loc('Threshold')] = (threshold).toFixed(2);
+                            global.resource[global.race.species].delta = -(base * food_consume_mod - threshold) * time_multiplier;
+                            /*for(const x in breakdown.p.consume[global.race.species]){
+                                breakdown.p.consume[global.race.species][x] = (breakdown.p.consume[global.race.species][x] / time_multiplier).toFixed(2);
+                            }*/
                         }
                         // threshold can be thought of as the inverse of nutrition ratio per unit of food.
                         // So if the generated food doesn't have enough nutrition for the consuming population, they starve.
@@ -3704,7 +3738,7 @@ function fastLoop(){
                 Elerium: 0
             };
             global.space.shipyard.ships.forEach(function(ship){
-                if (ship.location !== 'spc_dwarf'){
+                if (ship.location !== 'spc_dwarf' || ship.transit !== 0){
                     let fuel = shipFuelUse(ship);
                     if (fuel.res && fuel.burn > 0){
                         if (fuel.burn * time_multiplier < global.resource[fuel.res].amount + (global.resource[fuel.res].diff > 0 ? global.resource[fuel.res].diff * time_multiplier : 0)){
@@ -3749,6 +3783,10 @@ function fastLoop(){
         if (global.race['malnutrition'] && fed === false){
             hunger += traits.malnutrition.vars()[0] / 100;
         }
+        if(global.portal['dish_soul_steeper'] && global.portal['dish_soul_steeper'].on){
+            hunger -= (0.03 + (global.race['malnutrition'] ? 0.01 : 0) + (global.race['angry'] ? -0.01 : 0)) * global.portal['dish_soul_steeper'].on;
+        }
+        hunger = Math.max(hunger, 0);
 
         // Furs
         if (global.resource.Furs.display){
@@ -3915,20 +3953,6 @@ function fastLoop(){
                 scientist_base *= 1 - (govEffect.theocracy()[2] / 100);
             }
 
-            let lib_multiplier = 0.05;
-            let muckVal = govActive('muckraker',2);
-            if (muckVal){
-                lib_multiplier -= (muckVal / 100);
-            }
-            if (global.race['autoignition']){
-                lib_multiplier -= (traits.autoignition.vars()[0] / 100);
-                if (lib_multiplier < 0){
-                    lib_multiplier = 0;
-                }
-            }
-            let library_mult = global.city['library'] ? 1 + (global.city.library.count * lib_multiplier) : 1;
-            let astro_mult = astroSign === 'gemini' ? 1 + (astroVal('gemini')[0] / 100) : 1;
-
             let gene_consume = 0;
             if (global.arpa['sequence'] && global.arpa.sequence.on && global.arpa.sequence.time > 0){
                 let gene_cost = 50 + (global.race.mutation * 10);
@@ -3951,30 +3975,52 @@ function fastLoop(){
             }
 
             let womling = global.tauceti.hasOwnProperty('womling_lab') ? global.tauceti.womling_lab.scientist * (global.tech['womling_gene'] ? 10 : 8) : 0;
-            let lab_mult = global.tech['isolation'] ? 1 + (support_on['infectious_disease_lab'] || 0) * 0.75 : 1;
 
             let delta = professors_base + scientist_base + womling;
             delta *= hunger * global_multiplier;
             delta += sundial_base * global_multiplier;
-            delta *= library_mult * lab_mult;
 
             breakdown.p['Knowledge'][loc('job_professor')] = professors_base + 'v';
-            breakdown.p['Knowledge'][loc('job_scientist')] = scientist_base + 'v';
+            if (global.race.universe === 'magic'){
+                breakdown.p['Knowledge'][loc('job_wizard')] = scientist_base + 'v';
+            }
+            else {
+                breakdown.p['Knowledge'][loc('job_scientist')] = scientist_base + 'v';
+            }
             breakdown.p['Knowledge'][loc('tau_red_womlings')] = womling + 'v';
             breakdown.p['Knowledge'][loc('hunger')] = ((hunger - 1) * 100) + '%';
             breakdown.p['Knowledge'][global.race['unfathomable'] ? loc('tech_moondial') : loc('tech_sundial')] = sundial_base + 'v';
+
             if (global.race['inspired']){
                 breakdown.p['Knowledge'][loc('event_inspiration_bd')] = '100%';
                 delta *= 2;
             }
             if (global.city['library']){
+                let lib_multiplier = 0.05;
+                let muckVal = govActive('muckraker',2);
+                if (muckVal){
+                    lib_multiplier -= (muckVal / 100);
+                }
+                if (global.race['autoignition']){
+                    lib_multiplier -= (traits.autoignition.vars()[0] / 100);
+                    if (lib_multiplier < 0){
+                        lib_multiplier = 0;
+                    }
+                }
+
+                let library_mult = 1 + (global.city.library.count * lib_multiplier);
                 breakdown.p['Knowledge'][loc('city_library')] = ((library_mult - 1) * 100) + '%';
+                delta *= library_mult;
             }
             if (astroSign === 'gemini'){
+                let astro_mult = 1 + (astroVal('gemini')[0] / 100);
                 breakdown.p['Knowledge'][loc(`sign_${astroSign}`)] = ((astro_mult - 1) * 100) + '%';
+                delta *= astro_mult;
             }
             if (global.tech['isolation'] && support_on['infectious_disease_lab']){
+                let lab_mult = 1 + support_on['infectious_disease_lab'] * 0.75;
                 breakdown.p['Knowledge'][actions.tauceti.tau_home.infectious_disease_lab.title()] = ((lab_mult - 1) * 100) + '%';
+                delta *= lab_mult;
             }
             if (global.civic.govern.type === 'technocracy'){
                 breakdown.p['Knowledge'][loc('govern_technocracy')] = govEffect.technocracy()[2] + '%';
@@ -4086,8 +4132,7 @@ function fastLoop(){
                     delta *= 0.5;
                 }
 
-                delta *= global_multiplier * hunger;
-                modRes('Money', delta * time_multiplier);
+                modRes('Money', delta * hunger * global_multiplier * time_multiplier);
             }
 
             if (global.city.factory['Furs'] && global.city.factory['Furs'] > 0){
@@ -4989,26 +5034,20 @@ function fastLoop(){
         // Vitreloy
         if (global.galaxy['vitreloy_plant'] && p_on['vitreloy_plant'] > 0){
 
-            let consume_money = p_on['vitreloy_plant'] * 50000;
-            let consume_bolognium = p_on['vitreloy_plant'] * 2.5;
-            let consume_stanene = p_on['vitreloy_plant'] * 100;
-
+            let consume_money = 50000;
+            let consume_bolognium = 2.5;
+            let consume_stanene = 100;
             let vitreloy_production = p_on['vitreloy_plant'];
 
-            while (consume_money * time_multiplier > global.resource.Money.amount && consume_money > 0){
-                consume_money -= 350;
-                vitreloy_production--;
-            }
-            while (consume_bolognium * time_multiplier > global.resource.Bolognium.amount && consume_bolognium > 0){
-                consume_bolognium -= 25;
-                vitreloy_production--;
-            }
-            while (consume_stanene * time_multiplier > global.resource.Stanene.amount && consume_stanene > 0){
-                consume_stanene -= 15;
-                vitreloy_production--;
-            }
+            vitreloy_production = Math.min(vitreloy_production, Math.floor(global.resource.Money.amount / (consume_money * time_multiplier)));
+            vitreloy_production = Math.min(vitreloy_production, Math.floor(global.resource.Bolognium.amount / (consume_bolognium * time_multiplier)));
+            vitreloy_production = Math.min(vitreloy_production, Math.floor(global.resource.Stanene.amount / (consume_stanene * time_multiplier)));
+            vitreloy_production = Math.max(vitreloy_production, 0);
 
             if (vitreloy_production > 0){
+                consume_money *= vitreloy_production;
+                consume_bolognium *= vitreloy_production;
+                consume_stanene *= vitreloy_production;
                 vitreloy_production *= production('vitreloy_plant') * production('psychic_boost','Vitreloy');
 
                 breakdown.p.consume.Money[loc('galaxy_vitreloy_plant_bd')] = -(consume_money);
@@ -5088,6 +5127,11 @@ function fastLoop(){
 
             let delta = (shock_base + tank_base) * global_multiplier * synd;
             modRes('Cipher', delta * time_multiplier);
+        }
+        
+        if(global.portal['oven_complete'] && p_on['oven_complete'] && !global.tech['dish_reset'] && global.portal['devilish_dish'].done >= 100){
+            global.tech['dish_reset'] = 1;
+            drawTech();
         }
 
         if (global.tech['isolation'] && global.tauceti['alien_outpost'] && p_on['alien_outpost']){
@@ -6930,7 +6974,7 @@ function fastLoop(){
         breakdown.p['Iridium'][loc('hunger')] = ((hunger - 1) * 100) + '%';
 
         // Income
-        let rawCash = FactoryMoney ? FactoryMoney * global_multiplier : 0;
+        let rawCash = FactoryMoney ? FactoryMoney * global_multiplier * hunger : 0;
         if (FactoryMoney && global.race['discharge'] && global.race['discharge'] > 0){rawCash *= 0.5;}
         if (global.tech['currency'] >= 1){
             let income_base = global.resource[global.race.species].amount + global.civic.garrison.workers - global.civic.unemployed.workers;
@@ -7379,6 +7423,9 @@ function fastLoop(){
             diffCalc(res,webWorker.mt);
         }
     });
+    if(global.race['fasting']){
+        diffCalc(global.race.species,webWorker.mt);
+    }
 
     if (global.settings.expose){
         if (!window['evolve']){
@@ -8243,11 +8290,11 @@ function midLoop(){
             };
         }
 
-        if (global.portal['harbour'] && p_on['harbour']){
-            let label = loc('portal_harbour_title');
-            for (const res of actions.portal.prtl_lake.harbour.res()){
+        if (global.portal['harbor'] && p_on['harbor']){
+            let label = loc('portal_harbor_title');
+            for (const res of actions.portal.prtl_lake.harbor.res()){
                 if (global.resource[res].display){
-                    let gain = p_on['harbour'] * spatialReasoning(actions.portal.prtl_lake.harbour.val(res));
+                    let gain = p_on['harbor'] * spatialReasoning(actions.portal.prtl_lake.harbor.val(res));
                     caps[res] += gain;
                     breakdown.c[res][label] = gain+'v';
                 }
@@ -9826,7 +9873,7 @@ function midLoop(){
             global.resource.Horseshoe.display = false;
         }
 
-        q_check(false);
+        set_qlevel(calcQuantumLevel(false));
 
         let belt_mining = support_on['iron_ship'] + support_on['iridium_ship'];
         if (belt_mining > 0 && global.tech['asteroid'] && global.tech['asteroid'] === 3){
@@ -9924,16 +9971,40 @@ function midLoop(){
                 if (!global.stats.spire[affix].hasOwnProperty(global.portal.spire.boss) || rank > global.stats.spire[affix][global.portal.spire.boss]){
                     global.stats.spire[affix][global.portal.spire.boss] = rank;
                 }
-                if (global.race['fasting'] && global.portal.spire.count > 50){
-                    global.stats['endless_hunger'].b5[affix] = true;
-                    if (affix !== 'm' && affix !== 'l'){
-                        global.stats['endless_hunger'].b5.l = true;
-                    }
-                }
 
                 genSpireFloor();
                 renderFortress();
             }
+        }
+        
+        if(global.race['fasting'] && global.portal['oven_complete']){
+            let progress = 0;
+            if(p_on['oven_complete']){
+                progress = 0.00025;
+                if(global.portal['dish_life_infuser'] && global.portal['dish_life_infuser'].on){
+                    let hunger = 0.5;
+                    if (global.race['angry']){
+                        hunger -= traits.angry.vars()[0] / 100;
+                    }
+                    if (global.race['malnutrition']){
+                        hunger += traits.malnutrition.vars()[0] / 100;
+                    }
+                    let working = Math.min(global.portal['dish_life_infuser'].on, Math.floor(hunger / 0.02));
+                    progress *= 1 + (0.15 * working);
+                }
+                if(global.portal['dish_soul_steeper'] && global.portal['dish_soul_steeper'].on && global.portal['spire']){
+                    progress *= 1 + (0.05 * global.portal['spire'].count * global.portal['dish_soul_steeper'].on);
+                }
+                global.portal['devilish_dish'].done += progress;
+                global.portal['devilish_dish'].done = Math.min(global.portal['devilish_dish'].done, 100);
+                global.portal['devilish_dish'].count = Math.floor(global.portal['devilish_dish'].done);
+                if(global.portal['devilish_dish'].done >= 0.05 && global.tech['dish'] === 3){
+                    messageQueue(loc('dish_progress'),'info',false,['progress']);
+                    global.tech['dish'] = 4;
+                    drawTech();
+                }
+            }
+            global.portal['devilish_dish'].time = progress === 0 ? timeFormat(-1) : timeFormat((100 - global.portal['devilish_dish'].done) / progress);
         }
 
         if (global.race['cannibalize'] && global.city['s_alter']){
@@ -11662,45 +11733,6 @@ function buildGene(){
     }
 }
 
-function q_check(load){
-    if (global.tech['high_tech'] && global.tech['high_tech'] >= 11){
-        let k_base = global.resource.Knowledge.max;
-        let k_inc = 250000;
-        let qbits = 0;
-        while (k_base > k_inc){
-            k_base -= k_inc;
-            k_inc *= 1.1;
-            qbits++;
-        }
-        qbits += +(k_base / k_inc).toFixed(2);
-        if (global.interstellar['citadel']){
-            let citadel = load ? global.interstellar.citadel.on : p_on['citadel']
-            if (global.tech['high_tech'] && global.tech['high_tech'] >= 15 && citadel > 0){
-                qbits *= 1 + (citadel * 0.05);
-            }
-        }
-        if (global.space['ai_core2']){
-            let core = load ? global.space.ai_core2.on : p_on['ai_core2']
-            if (global.tech['titan_ai_core'] && core > 0){
-                qbits *= 1.25;
-            }
-        }
-        if (global.stats.achieve['obsolete'] && global.stats.achieve[`obsolete`].l >= 5 && global.prestige.AICore.count > 0){
-            qbits *= 2 - (0.99 ** global.prestige.AICore.count);
-        }
-        if (global.race['linked']){
-            let factor = traits.linked.vars()[0] / 100 * global.resource[global.race.species].amount;
-            if (factor > traits.linked.vars()[1] / 100){
-                factor -= traits.linked.vars()[1] / 100;
-                factor = factor / (factor + 200 - traits.linked.vars()[1]);
-                factor += traits.linked.vars()[1] / 100;
-            }
-            qbits *= 1 + factor;
-        }
-        set_qlevel(+(qbits).toFixed(3));
-    }
-}
-
 function diffCalc(res,period){
     let sec = 1000;
     if (global.race['slow']){
@@ -11737,6 +11769,20 @@ function diffCalc(res,period){
             }
         }
         else if (global.resource[res].diff >= 0 && (el.hasClass('has-text-danger') || el.hasClass('has-text-warning'))){
+            el.removeClass('has-text-danger');
+            el.removeClass('has-text-warning');
+        }
+    }
+    else if(res === global.race.species && global.race['fasting']){
+        if(global.resource[res].diff >= 0 && global.resource[res].diff < 0.75){
+            el.addClass('has-text-warning');
+            el.removeClass('has-text-danger');
+        }
+        else if(global.resource[res].diff < 0){
+            el.removeClass('has-text-warning');
+            el.addClass('has-text-danger');
+        }
+        else if(global.resource[res].diff >= 0.75){
             el.removeClass('has-text-danger');
             el.removeClass('has-text-warning');
         }
