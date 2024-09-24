@@ -2060,7 +2060,7 @@ export function sizeApproximation(value, precision = 1, precise = false, exact =
         // while preventing excess precision for large numbers that also have many fractional digits.
         let maxSigFigs = Math.max(oom + 1,          // Full precision for the integer component of large numbers (at least 1e4)
                                   precision + 1,    // Requested precision for values with only 1 leading digit
-                                  5);               // Always allow 5 sigfigs, not only 4, for numbers where 1e3 <= x < 1e4
+                                  5);               // Always allow 5 sigfigs, not only 4, for numbers where 1e2 <= x < 1e4
         return value.toLocaleString(undefined, {maximumSignificantDigits: maxSigFigs, maximumFractionDigits: precision, roundingMode: 'trunc', roundingPriority: 'lessPrecision'});
     }
 
