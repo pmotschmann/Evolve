@@ -2067,13 +2067,14 @@ export function sizeApproximation(value, precision = 1, precise = false, exact =
     else {
         const oomMod3 = oom % 3;
         const dispShort = oom === 4; // Reduce significant figures from 4 to 3 for numbers below 100,000
+        const forceSI = global.settings.affix !== 'eng' && oom >= 27;
         // Reduce displayed order of magnitude to the nearest multiple of 3, except for SI mode
-        if (global.settings.affix !== 'sci'){
+        if (global.settings.affix !== 'sci' && !forceSI){
             oom -= oomMod3;
         }
 
         let affix;
-        if (global.settings.affix === 'sci' || global.settings.affix === 'eng' || oom >= 27){
+        if (global.settings.affix === 'sci' || global.settings.affix === 'eng' || forceSI){
             // Manually build SI suffix to guarantee that the 'e' is lowercase for aesthetic preference
             affix = 'e' + oom;
         } else {
