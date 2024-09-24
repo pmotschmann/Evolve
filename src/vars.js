@@ -2058,9 +2058,9 @@ export function sizeApproximation(value, precision = 1, precise = false, exact =
     else if (oom < 4 || precise){
         // The objective here is to provide high precision for both large and small numbers,
         // while preventing excess precision for large numbers that also have many fractional digits.
-        let maxSigFigs = Math.max(oom + 1,      // Full precision for the integer component of large numbers (at least 1e4)
-                                  precision,    // Requested precision for fractions less than 1
-                                  5);           // Always allow 5 sigfigs, not only 4, for numbers where 1e3 <= x < 1e4
+        let maxSigFigs = Math.max(oom + 1,          // Full precision for the integer component of large numbers (at least 1e4)
+                                  precision + 1,    // Requested precision for values with only 1 leading digit
+                                  5);               // Always allow 5 sigfigs, not only 4, for numbers where 1e3 <= x < 1e4
         return value.toLocaleString(undefined, {maximumSignificantDigits: maxSigFigs, maximumFractionDigits: precision, roundingMode: 'trunc', roundingPriority: 'lessPrecision'});
     }
 
