@@ -69,6 +69,7 @@ export function altRace(race,set){
                 }
                 return false;
             }
+        case 'human':
         case 'unicorn':
         case 'junker':
             {
@@ -3330,8 +3331,8 @@ export const races = {
         basic(){ return false; }
     },
     human: {
-        name: loc('race_human'),
-        desc: loc('race_human_desc'),
+        name: loc(altRace('human') ? 'race_zombie' : 'race_human'),
+        desc: loc(altRace('human') ? 'race_zombie_desc' : 'race_human_desc'),
         type: 'humanoid',
         home: loc('race_human_home'),
         entity: loc('race_human_entity'),
@@ -3340,11 +3341,11 @@ export const races = {
             diverse: 1
         },
         solar: {
-            red: loc('race_human_solar_red'),
-            hell: loc('race_human_solar_hell'),
-            gas: loc('race_human_solar_gas'),
-            gas_moon: loc('race_human_solar_gas_moon'),
-            dwarf: loc('race_human_solar_dwarf'),
+            red: loc(altRace('human') ? 'race_zombie_solar_red' : 'race_human_solar_red'),
+            hell: loc(altRace('human') ? 'race_zombie_solar_hell' : 'race_human_solar_hell'),
+            gas: loc(altRace('human') ? 'race_zombie_solar_gas' : 'race_human_solar_gas'),
+            gas_moon: loc(altRace('human') ? 'race_zombie_solar_gas_moon' : 'race_human_solar_gas_moon'),
+            dwarf: loc(altRace('human') ? 'race_zombie_solar_dwarf' : 'race_human_solar_dwarf'),
         },
         fanaticism: 'creative',
         basic(){ return true; }

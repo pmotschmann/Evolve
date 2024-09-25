@@ -7537,6 +7537,11 @@ function sentience(){
         setTraitRank('darkness',{ set: 1 });
         delete global.race['rainbow'];
     }
+    else if (global.race.species === 'human' && hallowed.active){
+        setTraitRank('anthropophagite',{ set: 1 });
+        setTraitRank('cannibalize',{ set: 2 });
+        setTraitRank('infectious',{ set: 3 });
+    }
 
     if (global.race['no_crispr'] || global.race['badgenes']){
         let repeat = global.race['badgenes'] ? 3 : 1;
