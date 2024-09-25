@@ -7542,6 +7542,12 @@ function sentience(){
         setTraitRank('cannibalize',{ set: 2 });
         setTraitRank('infectious',{ set: 3 });
     }
+    else if (global.race.species === 'tortoisan' && hallowed.active){   
+        setTraitRank('hyper',{ set: 0.25 });
+        setTraitRank('swift',{ set: 0.5 });
+        setTraitRank('infiltrator',{ set: 1 });
+        delete global.race['slow'];
+    }
 
     if (global.race['no_crispr'] || global.race['badgenes']){
         let repeat = global.race['badgenes'] ? 3 : 1;

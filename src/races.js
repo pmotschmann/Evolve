@@ -70,6 +70,7 @@ export function altRace(race,set){
                 return false;
             }
         case 'human':
+        case 'tortoisan':
         case 'unicorn':
         case 'junker':
             {
@@ -3688,21 +3689,21 @@ export const races = {
         basic(){ return true; }
     },
     tortoisan: {
-        name: loc('race_tortoisan'),
-        desc(){ return loc('race_tortoisan_desc',[shellColor()]); },
+        name: loc(altRace('tortoisan') ? 'race_ninja_turtle' : 'race_tortoisan'),
+        desc(){ return altRace('tortoisan') ? loc('race_ninja_turtle_desc',[shellColor()]) : loc('race_tortoisan_desc',[shellColor()]); },
         type: 'reptilian',
-        home: loc('race_tortoisan_home'),
-        entity: loc('race_tortoisan_entity'),
+        home: loc(altRace('tortoisan') ? 'race_ninja_turtle_home' : 'race_tortoisan_home'),
+        entity: loc(altRace('tortoisan') ? 'race_ninja_turtle_entity' : 'race_tortoisan_entity'),
         traits: {
             slow: 1,
             armored: 1
         },
         solar: {
-            red: loc('race_tortoisan_solar_red'),
-            hell: loc('race_tortoisan_solar_hell'),
-            gas: loc('race_tortoisan_solar_gas'),
-            gas_moon: loc('race_tortoisan_solar_gas_moon'),
-            dwarf: loc('race_tortoisan_solar_dwarf'),
+            red: loc(altRace('tortoisan') ? 'race_ninja_turtle_solar_red' : 'race_tortoisan_solar_red'),
+            hell: loc(altRace('tortoisan') ? 'race_ninja_turtle_solar_hell' : 'race_tortoisan_solar_hell'),
+            gas: loc(altRace('tortoisan') ? 'race_ninja_turtle_solar_gas' : 'race_tortoisan_solar_gas'),
+            gas_moon: loc(altRace('tortoisan') ? 'race_ninja_turtle_solar_gas_moon' : 'race_tortoisan_solar_gas_moon'),
+            dwarf: loc(altRace('tortoisan') ? 'race_ninja_turtle_solar_dwarf' : 'race_tortoisan_solar_dwarf'),
         },
         fanaticism: 'armored',
         basic(){ return true; }
