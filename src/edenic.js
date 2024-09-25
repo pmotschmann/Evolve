@@ -1,7 +1,7 @@
 import { global, p_on, sizeApproximation, seededRandom } from './vars.js';
 import { vBind, clearElement, popover, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier } from './functions.js';
 import { spatialReasoning } from './resources.js';
-import { payCosts, powerOnNewStruct, setAction, storageMultipler } from './actions.js';
+import { payCosts, powerOnNewStruct, setAction, storageMultipler, drawTech } from './actions.js';
 import { checkRequirements, incrementStruct, piracy} from './space.js';
 import { mechRating } from './portal.js';
 import { actions } from './actions.js';
@@ -552,7 +552,9 @@ const edenicModules = {
             effect(){
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[loc('eden_asphodel_name')])}</div>`;
                 desc += `<div>${loc('plus_max_soldiers',[5])}</div>`;
-
+                if (global.tech['celestial_warfare'] && global.tech.celestial_warfare >= 4){
+                    desc += `<div>${loc('eden_bunker_effect',[3])}</div>`;
+                }
                 return desc;
             },
             s_type: 'asphodel',
@@ -570,7 +572,7 @@ const edenicModules = {
         bliss_den: {
             id: 'eden-bliss_den',
             title: loc('eden_bliss_den_title'),
-            desc: `<div>${loc('eden_bunker_title')}</div><div class="has-text-special">${loc('space_support',[loc('eden_asphodel_name')])}</div>`,
+            desc: `<div>${loc('eden_bliss_den_title')}</div><div class="has-text-special">${loc('space_support',[loc('eden_asphodel_name')])}</div>`,
             reqs: { asphodel: 10 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('bliss_den', offset, 450000000, 1.22, 'eden'); },
@@ -671,7 +673,6 @@ const edenicModules = {
                 desc += `<div>${loc('eden_fortress_patrols',[global.eden['fortress'] ? global.eden.fortress.patrols : 0])}</div>`;
                 desc += `<div>${loc('eden_fortress_detect',[global.eden['fortress'] ? global.eden.fortress.detector : 0])}</div>`;
                 desc += `<div>${loc('eden_fortress_armory',[global.eden['fortress'] ? global.eden.fortress.armory : 0])}</div>`;
-
                 return desc;
             },
             action(){
@@ -698,6 +699,7 @@ const edenicModules = {
                     desc += `<div>${loc(`eden_siege_fortress_result`)}</div>`;
                     desc += `<div>${loc(`eden_siege_fortress_lost`,[global.eden.fortress.siege.loss])}</div>`;
                     desc += `<div>${loc(`eden_siege_fortress_damage`,[global.eden.fortress.siege.damage])}</div>`;
+                    desc += `<div class="has-text-caution">${loc('eden_fortress_rating',[global.eden['fortress'] ? global.eden.fortress.fortress / 10 : 0])}</div>`;
                 }
                 return desc;
             },
@@ -712,6 +714,7 @@ const edenicModules = {
                     global.civic.garrison.workers -= armySize;
                     global.civic.garrison.protest += armySize;
                     global.stats.died += armySize;
+                    messageQueue(loc('eden_siege_fortress_fail'),'warning',false,['combat']);
                 }
                 else {
                     let dead = armySize - remain + Math.floor(seededRandom(0,jobScale(global.eden.fortress.detector),true));
@@ -719,7 +722,7 @@ const edenicModules = {
                     remain = armySize - dead;
 
                     let troops = Math.ceil(armyRating(remain,'Troops'));
-                    let damage = Math.floor(seededRandom(0,troops,true));
+                    let damage = Math.floor(seededRandom(0,troops,true) / 50);
 
                     let more_dead = Math.floor(seededRandom(0,remain,true));
                     more_dead = deadCalc(more_dead, remain);
@@ -738,6 +741,11 @@ const edenicModules = {
                     global.eden.fortress.fortress -= damage;
                     if (global.eden.fortress.fortress < 0){ global.eden.fortress.fortress = 0; }
                     global.eden.fortress['siege'] = { loss: dead, damage: damage / 10 };
+                    messageQueue(loc('eden_siege_fortress_success',[damage / 10]),'success',false,['combat']);
+
+                    if (global.eden.fortress.fortress <= 0){
+                        drawTech();
+                    }
                 }
 
                 renderEdenic();
@@ -764,6 +772,7 @@ const edenicModules = {
                     desc += `<div>${loc(`eden_raid_fortress_result`)}</div>`;
                     desc += `<div>${loc(`eden_siege_fortress_lost`,[global.eden.fortress.raid.loss])}</div>`;
                     desc += `<div>${loc(`eden_siege_fortress_damage`,[global.eden.fortress.raid.damage])}</div>`;
+                    desc += `<div class="has-text-caution">${loc('eden_fortress_armory',[global.eden['fortress'] ? global.eden.fortress.armory : 0])}</div>`;
                 }
                 return desc;
             },
@@ -777,6 +786,7 @@ const edenicModules = {
                     global.civic.garrison.workers -= armySize;
                     global.civic.garrison.protest += armySize;
                     global.stats.died += armySize;
+                    messageQueue(loc('eden_raid_fortress_fail'),'warning',false,['combat']);
                 }
                 else {
                     let dead = armySize - remain + Math.floor(seededRandom(0,jobScale(global.eden.fortress.detector / 2),true));
@@ -784,7 +794,7 @@ const edenicModules = {
                     remain = armySize - dead;
 
                     let troops = Math.ceil(armyRating(remain,'Troops'));
-                    let damage = Math.floor(seededRandom(0,troops,true) / 10);
+                    let damage = Math.floor(seededRandom(0,troops,true) / 50);
 
                     global.civic.garrison.workers -= dead;
                     global.civic.garrison.protest += dead;
@@ -798,6 +808,8 @@ const edenicModules = {
                     global.eden.fortress.armory -= damage;
                     if (global.eden.fortress.armory < 0){ global.eden.fortress.armory = 0; }
                     global.eden.fortress['raid'] = { loss: dead, damage: damage };
+                    messageQueue(loc('eden_raid_fortress_success',[damage]),'success',false,['combat']);
+                    drawTech();
                 }
 
                 renderEdenic();
@@ -824,6 +836,7 @@ const edenicModules = {
                     desc += `<div>${loc(`eden_ambush_patrol_result`)}</div>`;
                     desc += `<div>${loc(`eden_siege_fortress_lost`,[global.eden.fortress.ambush.loss])}</div>`;
                     desc += `<div>${loc(`eden_ambush_patrol_damage`,[global.eden.fortress.ambush.damage ? loc('true') : loc('false')])}</div>`;
+                    desc += `<div class="has-text-caution">${loc('eden_fortress_patrols',[global.eden['fortress'] ? global.eden.fortress.patrols : 0])}</div>`;
                 }
                 return desc;
             },
@@ -845,12 +858,15 @@ const edenicModules = {
 
                     global.eden.fortress.patrols--;
                     global.eden.fortress['ambush'] = { loss: dead, damage: true };
+                    messageQueue(loc('eden_ambush_patrol_success'),'success',false,['combat']);
+                    drawTech();
                 }
                 else {
                     global.eden.fortress['ambush'] = { loss: armySize, damage: false };
                     global.civic.garrison.workers -= armySize;
                     global.civic.garrison.protest += armySize;
                     global.stats.died += armySize;
+                    messageQueue(loc('eden_ambush_patrol_fail'),'warning',false,['combat']);
                 }
 
                 renderEdenic();
@@ -877,7 +893,7 @@ function deadCalc(dead, armySize){
     dead -= Math.floor(seededRandom(0,armor,true));
     if (dead > armySize){ dead = armySize }
     else if (dead < 0){ dead = 0; }
-    return dead;
+    return Math.floor(dead);
 }
 
 export function edenicTech(){

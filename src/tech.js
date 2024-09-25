@@ -14442,6 +14442,75 @@ const techs = {
             return false;
         }
     },
+    celestial_tactics: {
+        id: 'tech-celestial_tactics',
+        title: loc('tech_celestial_tactics'),
+        desc: loc('tech_celestial_tactics'),
+        category: 'edenic',
+        era: 'existential',
+        reqs: { celestial_warfare: 1, },
+        condition(){
+            return global.eden.hasOwnProperty('fortress') && global.eden.fortress.patrols <= 18 ? true : false;
+        },
+        grant: ['celestial_warfare',2],
+        cost: {
+            Knowledge(){ return 86000000; },
+            Omniscience(){ return 17500; }
+        },
+        effect(){ return loc('tech_celestial_tactics_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    active_camouflage: {
+        id: 'tech-active_camouflage',
+        title: loc('tech_active_camouflage'),
+        desc: loc('tech_active_camouflage'),
+        category: 'edenic',
+        era: 'existential',
+        reqs: { celestial_warfare: 2, },
+        condition(){
+            return global.eden.hasOwnProperty('fortress') && global.eden.fortress.armory <= 100 ? true : false;
+        },
+        grant: ['celestial_warfare',3],
+        cost: {
+            Knowledge(){ return 89000000; },
+            Omniscience(){ return 19000; }
+        },
+        effect(){ return loc('tech_active_camouflage_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    special_ops_training: {
+        id: 'tech-special_ops_training',
+        title: loc('tech_special_ops_training'),
+        desc: loc('tech_special_ops_training'),
+        category: 'edenic',
+        era: 'existential',
+        reqs: { celestial_warfare: 3, },
+        condition(){
+            return global.eden.hasOwnProperty('fortress') && global.eden.fortress.armory <= 80 && global.eden.fortress.patrols <= 15 ? true : false;
+        },
+        grant: ['celestial_warfare',4],
+        cost: {
+            Knowledge(){ return 92000000; },
+            Omniscience(){ return 21000; }
+        },
+        effect(){ return loc('tech_special_ops_training_effect',[loc('eden_bunker_title')]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
 };
 
 function uniteEffect(){

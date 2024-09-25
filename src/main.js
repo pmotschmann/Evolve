@@ -9500,7 +9500,13 @@ function midLoop(){
         }
 
         if (global.eden['fortress'] && global.tech.hasOwnProperty('celestial_warfare')){
-            global.eden.fortress.detector = global.tech.celestial_warfare >= 1 ? 90 : 100;
+            let warefare_bonus = global.tech.celestial_warfare * 10;
+            if (warefare_bonus > 30){ warefare_bonus = 30; }
+            global.eden.fortress.detector = 100 - warefare_bonus;
+            if (support_on['bunker'] && global.tech.celestial_warfare >= 4){
+                global.eden.fortress.detector -= support_on['bunker'] * 3;
+                if (global.eden.fortress.detector < 0){ global.eden.fortress.detector = 0; }
+            }
         }
 
         let tempCrates = caps['Crates'], tempContainers = caps['Containers'];
