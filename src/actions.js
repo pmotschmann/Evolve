@@ -7531,6 +7531,13 @@ function sentience(){
         setTraitRank('sticky',{ set: 1 });
     }
 
+    const hallowed = getHalloween();
+    if (global.race.species === 'unicorn' && hallowed.active){
+        setTraitRank('broody',{ set: 1 });
+        setTraitRank('darkness',{ set: 1 });
+        delete global.race['rainbow'];
+    }
+
     if (global.race['no_crispr'] || global.race['badgenes']){
         let repeat = global.race['badgenes'] ? 3 : 1;
         for (let j=0; j<repeat; j++){

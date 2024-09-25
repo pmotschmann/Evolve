@@ -69,6 +69,7 @@ export function altRace(race,set){
                 }
                 return false;
             }
+        case 'unicorn':
         case 'junker':
             {
                 if (hallowed.active || (global.race['hrt'] && global.race.hrt === race)){
@@ -2891,6 +2892,26 @@ export const traits = {
             }
         }
     },
+    gloomy: { // Gain a bonus if cloudy
+        name: loc('trait_gloomy_name'),
+        desc: loc('trait_gloomy'),
+        type: 'major',
+        val: 3,
+        vars(r){
+            switch (r || global.race.gloomy || 1){
+                case 0.25:
+                    return [5];
+                case 0.5:
+                    return [8];
+                case 1:
+                    return [10];
+                case 2:
+                    return [12];
+                case 3:
+                    return [13];
+            }
+        }
+    },
     magnificent: { // construct shrines to receive boons
         name: loc('trait_magnificent_name'),
         desc: loc('trait_magnificent'),
@@ -4231,22 +4252,22 @@ export const races = {
         basic(){ return global.city.biome === 'eden' ? true : false; }
     },
     unicorn: {
-        name: loc('race_unicorn'),
-        desc: loc('race_unicorn_desc'),
+        name: loc(altRace('unicorn') ? 'race_emocorn' : 'race_unicorn'),
+        desc: loc(altRace('unicorn') ? 'race_emocorn_desc' : 'race_unicorn_desc'),
         type: 'angelic',
-        home: loc('race_unicorn_home'),
-        entity: loc('race_unicorn_entity'),
+        home: loc(altRace('unicorn') ? 'race_emocorn_home' : 'race_unicorn_home'),
+        entity: loc(altRace('unicorn') ? 'race_emocorn_entity' : 'race_unicorn_entity'),
         traits: {
             rainbow: 1,
             magnificent: 1,
             noble: 1,
         },
         solar: {
-            red: loc('race_unicorn_solar_red'),
-            hell: loc('race_unicorn_solar_hell'),
-            gas: loc('race_unicorn_solar_gas'),
-            gas_moon: loc('race_unicorn_solar_gas_moon'),
-            dwarf: loc('race_unicorn_solar_dwarf'),
+            red: loc(altRace('unicorn') ? 'race_emocorn_solar_red' : 'race_unicorn_solar_red'),
+            hell: loc(altRace('unicorn') ? 'race_emocorn_solar_hell' : 'race_unicorn_solar_hell'),
+            gas: loc(altRace('unicorn') ? 'race_emocorn_solar_gas' : 'race_unicorn_solar_gas'),
+            gas_moon: loc(altRace('unicorn') ? 'race_emocorn_solar_gas_moon' : 'race_unicorn_solar_gas_moon'),
+            dwarf: loc(altRace('unicorn') ? 'race_emocorn_solar_dwarf' : 'race_unicorn_solar_dwarf'),
         },
         fanaticism: 'magnificent',
         basic(){ return global.city.biome === 'eden' ? true : false; }

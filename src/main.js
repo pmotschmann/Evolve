@@ -782,6 +782,10 @@ function fastLoop(){
         breakdown.p['Global'][loc('trait_rainbow_bd')] = `${traits.rainbow.vars()[0]}%`;
         global_multiplier *= 1 + (traits.rainbow.vars()[0] / 100);
     }
+    if (global.race['gloomy'] && global.city.calendar.weather <= 1){
+        breakdown.p['Global'][loc('trait_gloomy_name')] = `${traits.gloomy.vars()[0]}%`;
+        global_multiplier *= 1 + (traits.gloomy.vars()[0] / 100);
+    }
     if (global.tech['world_control']){
         let bonus = 25;
         if (global.civic.govern.type === 'federation'){
