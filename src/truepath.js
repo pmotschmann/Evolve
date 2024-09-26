@@ -5338,8 +5338,8 @@ export function loneSurvivor(){
         global.resource.Containers.amount = 1000;
         global.resource.Money.max = 1000000000;
         global.resource.Money.amount = 1000000000;
-        global.resource.Knowledge.max = 8000000;
-        global.resource.Knowledge.amount = 8000000;
+        global.resource.Knowledge.max = 4321200;
+        global.resource.Knowledge.amount = 4321200;
         global.resource.Food.max = 10000;
         global.resource.Food.amount = 10000;
         global.resource.Oil.max = 500000;
