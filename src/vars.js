@@ -2025,7 +2025,7 @@ var affix_list = {
 };
 // Number formatting options, in the user's default locale
 var numFormatShort = new Intl.NumberFormat(undefined, {maximumFractionDigits: 2, maximumSignificantDigits: 3, roundingMode: 'trunc', roundingPriority: 'lessPrecision'});
-var numFormatLong = new Intl.NumberFormat(undefined, {maximumFractionDigits: 2, minimumSignificantDigits: 3, maximumSignificantDigits: 4, roundingMode: 'trunc', roundingPriority: 'lessPrecision'});
+var numFormatLong = new Intl.NumberFormat(undefined, {maximumFractionDigits: 2, maximumSignificantDigits: 4, roundingMode: 'trunc', roundingPriority: 'lessPrecision'});
 
 /**
  * Return a locale-dependent string that represents the significance of the input value.
