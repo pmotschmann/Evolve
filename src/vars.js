@@ -2024,7 +2024,7 @@ var affix_list = {
     sln: ['K','M','B','t','q','Q','s','S']
 };
 // Number formatting options, in the user's default locale
-var numFormatShort = new Intl.NumberFormat(undefined, {maximumFractionDigits: 2, minimumSignificantDigits: 3, maximumSignificantDigits: 3, roundingMode: 'trunc', roundingPriority: 'lessPrecision'});
+var numFormatShort = new Intl.NumberFormat(undefined, {maximumFractionDigits: 2, maximumSignificantDigits: 3, roundingMode: 'trunc', roundingPriority: 'lessPrecision'});
 var numFormatLong = new Intl.NumberFormat(undefined, {maximumFractionDigits: 2, minimumSignificantDigits: 3, maximumSignificantDigits: 4, roundingMode: 'trunc', roundingPriority: 'lessPrecision'});
 
 /**
