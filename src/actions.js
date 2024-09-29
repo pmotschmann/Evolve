@@ -1456,7 +1456,7 @@ export const actions = {
         basic_housing: {
             id: 'city-basic_housing',
             title(){
-                return basicHousingLabel();
+                return housingLabel('small');
             },
             desc(){
                 return $(this)[0].citizens() === 1 ? loc('city_basic_housing_desc') : loc('city_basic_housing_desc_plural',[$(this)[0].citizens()]);
@@ -2007,7 +2007,7 @@ export const actions = {
         },
         hospital: {
             id: 'city-hospital',
-            title: loc('city_hospital'),
+            title(){ return structName('hospital'); },
             desc: loc('city_hospital_desc'),
             category: 'military',
             reqs: { medic: 1 },
@@ -2472,7 +2472,7 @@ export const actions = {
         },
         sawmill: {
             id: 'city-sawmill',
-            title: loc('city_sawmill'),
+            title(){ return structName('sawmill'); },
             desc: loc('city_sawmill_desc'),
             category: 'industrial',
             reqs: { saw: 1 },
@@ -2806,7 +2806,7 @@ export const actions = {
         },
         mine: {
             id: 'city-mine',
-            title: loc('city_mine'),
+            title(){ return structName('mine'); },
             desc: loc('city_mine_desc'),
             category: 'industrial',
             reqs: { mining: 2 },
@@ -2849,7 +2849,7 @@ export const actions = {
         },
         coal_mine: {
             id: 'city-coal_mine',
-            title: loc('city_coal_mine'),
+            title(){ return structName('coal_mine'); },
             desc: loc('city_coal_mine_desc'),
             category: 'industrial',
             reqs: { mining: 4 },
@@ -3061,16 +3061,20 @@ export const actions = {
                 let amp = (global.civic.govern.type === 'corpocracy' ? 2 : 1) * xeno;
                 let cas = (global.civic.govern.type === 'corpocracy' ? 10 : 5) * xeno;
                 let mon = (global.civic.govern.type === 'corpocracy' ? 4 : 2) * xeno;
-                let post = '';
+
+                let desc = `<div class="has-text-caution">${loc('city_tourist_center_effect1',[global.resource.Food.name])}</div>`;
+                desc += `<div>${loc('city_tourist_center_effect2',[amp,actions.city.amphitheatre.title()])}</div>`;
+                desc += `<div>${loc('city_tourist_center_effect2',[cas,structName('casino')])}</div>`;
+                desc += `<div>${loc('city_tourist_center_effect2',[mon,loc(`arpa_project_monument_title`)])}</div>`;
                 if (global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 4){
-                    post = `<div>${loc(`city_tourist_center_effect5`,[(global.civic.govern.type === 'corpocracy' ? 6 : 3) * xeno])}</div>`;
+                    desc += `<div>${loc(`city_tourist_center_effect2`,[(global.civic.govern.type === 'corpocracy' ? 6 : 3) * xeno, loc('city_trade')])}</div>`;
                 }
-                let pious = '';
                 let piousVal = govActive('pious',1);
                 if (piousVal){
-                    pious = `<div>${loc(`city_tourist_center_effect6`,[(global.civic.govern.type === 'corpocracy' ? (piousVal * 2) : piousVal) * xeno])}</div>`;
+                    desc += `<div>${loc(`city_tourist_center_effect2`,[(global.civic.govern.type === 'corpocracy' ? (piousVal * 2) : piousVal) * xeno, loc('city_temple')])}</div>`;
                 }
-                return `<div class="has-text-caution">${loc('city_tourist_center_effect1',[global.resource.Food.name])}</div><div>${loc('city_tourist_center_effect2',[amp,actions.city.amphitheatre.title()])}</div><div>${loc('city_tourist_center_effect3',[cas])}</div><div>${loc('city_tourist_center_effect4',[mon])}</div>${post}${pious}`;
+
+                return desc;
             },
             powered(){ return 0; },
             action(){
@@ -3123,8 +3127,8 @@ export const actions = {
         },
         casino: {
             id: 'city-casino',
-            title: loc('city_casino'),
-            desc: loc('city_casino'),
+            title(){ return structName('casino'); },
+            desc(){ return structName('casino'); },
             category: 'commercial',
             reqs: { gambling: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -7277,6 +7281,11 @@ export function wardenLabel(){
 }
 
 function basicHousingLabel(){
+    let halloween = eventActive('halloween');
+    if (halloween.active){
+        return loc(`events_halloween_basic_house`);
+    }
+
     switch (global.race.species){
         case 'orc':
             return loc('city_basic_housing_orc_title');
@@ -7313,6 +7322,11 @@ function basicHousingLabel(){
 }
 
 function mediumHousingLabel(){
+    let halloween = eventActive('halloween');
+    if (halloween.active){
+        return loc(`events_halloween_medium_house`);
+    }
+
     switch (global.race.species){
         case 'sporgar':
             return loc('city_cottage_title2');
@@ -7339,6 +7353,11 @@ function mediumHousingLabel(){
 }
 
 function largeHousingLabel(basic){
+    let halloween = eventActive('halloween');
+    if (halloween.active){
+        return loc(`events_halloween_large_house`);
+    }
+
     if (!basic && govActive('extravagant',0)){
         return loc(`city_mansion`);
     }
@@ -7374,6 +7393,33 @@ export function housingLabel(type,flag){
             return mediumHousingLabel();
         case 'large':
             return largeHousingLabel(flag);
+    }
+}
+
+export function structName(type){
+    let halloween = eventActive('halloween');
+
+    switch (type){
+        case 'casino':
+        {
+            return halloween.active ? loc(`events_halloween_casino`) : loc(`city_casino`);
+        }
+        case 'mine':
+        {
+            return halloween.active ? loc(`events_halloween_mine`) : loc('city_mine');
+        }
+        case 'coal_mine':
+        {
+            return halloween.active ? loc(`events_halloween_coal_mine`) : loc('city_coal_mine');
+        }
+        case 'sawmill':
+        {
+            return halloween.active ? loc(`events_halloween_sawmill`) : loc('city_sawmill');
+        }
+        case 'hospital':
+        {
+            return halloween.active ? loc(`events_halloween_hospital`) : loc('city_hospital');
+        }
     }
 }
 

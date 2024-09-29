@@ -626,7 +626,13 @@ const spaceProjects = {
         assembly: buildTemplate(`assembly`,'space'),
         living_quarters: {
             id: 'space-living_quarters',
-            title: loc('space_red_living_quarters_title'),
+            title(){
+                let halloween = eventActive('halloween');
+                if (halloween.active){
+                    return loc(`events_halloween_red_housing`);
+                }
+                return loc('space_red_living_quarters_title');
+            },
             desc(){
                 return `<div>${loc('space_red_living_quarters_desc')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`;
             },
@@ -2688,7 +2694,13 @@ const interstellarProjects = {
         },
         luxury_condo: {
             id: 'interstellar-luxury_condo',
-            title: loc('tech_luxury_condo'),
+            title(){
+                let halloween = eventActive('halloween');
+                if (halloween.active){
+                    return loc(`events_halloween_condo`);
+                }
+                return loc('tech_luxury_condo');
+            },
             desc: `<div>${loc('tech_luxury_condo')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
             reqs: { alpha: 5 },
             cost: {
