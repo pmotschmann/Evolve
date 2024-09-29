@@ -1762,7 +1762,7 @@ export const actions = {
         captive_housing: buildTemplate(`captive_housing`,'city'),
         farm: {
             id: 'city-farm',
-            title: loc('city_farm'),
+            title(){ return structName('farm'); },
             desc: loc('city_farm_desc'),
             category: 'residential',
             reqs: { agriculture: 1 },
@@ -1860,7 +1860,7 @@ export const actions = {
         mill: {
             id: 'city-mill',
             title(){
-                return global.tech['agriculture'] >= 5 ? loc('city_mill_title2') : loc('city_mill_title1');
+                return global.tech['agriculture'] >= 5 ? structName('windmill') : loc('city_mill_title1');
             },
             desc(){
                 let bonus = global.tech['agriculture'] >= 5 ? 5 : 3;
@@ -1903,10 +1903,10 @@ export const actions = {
         windmill: {
             id: 'city-windmill',
             title(){
-                return global.race['unfathomable'] ? loc('tech_watermill') : loc('city_mill_title2');
+                return global.race['unfathomable'] ? loc('tech_watermill') : structName('windmill');
             },
             desc(){
-                return global.race['unfathomable'] ? loc('tech_watermill') : loc('city_mill_title2');
+                return global.race['unfathomable'] ? loc('tech_watermill') : structName('windmill');
             },
             wiki: false,
             category: 'utility',
@@ -2207,7 +2207,7 @@ export const actions = {
         },
         storage_yard: {
             id: 'city-storage_yard',
-            title: loc('city_storage_yard'),
+            title(){ return structName('storage_yard'); },
             desc: loc('city_storage_yard_desc'),
             category: 'trade',
             reqs: { container: 1 },
@@ -2438,8 +2438,8 @@ export const actions = {
         },
         lumber_yard: {
             id: 'city-lumber_yard',
-            title: loc('city_lumber_yard'),
-            desc: loc('city_lumber_yard_desc'),
+            title(){ return structName('lumberyard'); },
+            desc(){ return structName('lumberyard'); },
             category: 'industrial',
             reqs: { axe: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -2458,7 +2458,7 @@ export const actions = {
             },
             effect(){
                 let lum = BHStorageMulti(spatialReasoning(100));
-                return `<div>${loc('city_lumber_yard_effect',[2])}</div><div>${loc('plus_max_resource',[lum,global.resource.Lumber.name])}</div>`;
+                return `<div>${loc('production',[2,global.resource.Lumber.name])}</div><div>${loc('plus_max_resource',[lum,global.resource.Lumber.name])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -2473,7 +2473,7 @@ export const actions = {
         sawmill: {
             id: 'city-sawmill',
             title(){ return structName('sawmill'); },
-            desc: loc('city_sawmill_desc'),
+            desc(){ return structName('sawmill'); },
             category: 'industrial',
             reqs: { saw: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -2485,9 +2485,9 @@ export const actions = {
             effect(){
                 let impact = global.tech['saw'] >= 2 ? 8 : 5;
                 let lum = BHStorageMulti(spatialReasoning(200));
-                let desc = `<div>${loc('plus_max_resource',[lum,global.resource.Lumber.name])}</div><div>${loc('city_lumber_yard_effect',[impact])}</div>`;
+                let desc = `<div>${loc('plus_max_resource',[lum,global.resource.Lumber.name])}</div><div>${loc('production',[impact,global.resource.Lumber.name])}</div>`;
                 if (global.tech['foundry'] && global.tech['foundry'] >= 4){
-                    desc = desc + `<div>${loc('city_sawmill_effect2',[2])}</div>`;
+                    desc = desc + `<div>${loc('crafting',[2,global.resource.Plywood.name])}</div>`;
                 }
                 if (global.city.powered){
                     desc = desc + `<div class="has-text-caution">${loc('city_sawmill_effect3',[4,$(this)[0].powered()])}</div>`;
@@ -2672,7 +2672,7 @@ export const actions = {
         },
         factory: {
             id: 'city-factory',
-            title: loc('city_factory'),
+            title(){ return structName('factory'); },
             desc: `<div>${loc('city_factory_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
             category: 'industrial',
             reqs: { high_tech: 3 },
@@ -3071,7 +3071,7 @@ export const actions = {
                 }
                 let piousVal = govActive('pious',1);
                 if (piousVal){
-                    desc += `<div>${loc(`city_tourist_center_effect2`,[(global.civic.govern.type === 'corpocracy' ? (piousVal * 2) : piousVal) * xeno, loc('city_temple')])}</div>`;
+                    desc += `<div>${loc(`city_tourist_center_effect2`,[(global.civic.govern.type === 'corpocracy' ? (piousVal * 2) : piousVal) * xeno, structName('temple')])}</div>`;
                 }
 
                 return desc;
@@ -3161,7 +3161,7 @@ export const actions = {
         },
         temple: {
             id: 'city-temple',
-            title: loc('city_temple'),
+            title(){ return structName('temple'); },
             desc(){
                 let entity = global.race.gods !== 'none' ? races[global.race.gods.toLowerCase()].entity : races[global.race.species].entity;
                 return loc('city_temple_desc',[entity]);
@@ -7404,6 +7404,14 @@ export function structName(type){
         {
             return halloween.active ? loc(`events_halloween_casino`) : loc(`city_casino`);
         }
+        case 'farm':
+        {
+            return halloween.active ? loc(`events_halloween_farm`) : loc(`city_farm`);
+        }
+        case 'dormitory':
+        {
+            return halloween.active ? loc(`events_halloween_dorm`) : loc(`galaxy_dormitory`);
+        }
         case 'mine':
         {
             return halloween.active ? loc(`events_halloween_mine`) : loc('city_mine');
@@ -7412,6 +7420,10 @@ export function structName(type){
         {
             return halloween.active ? loc(`events_halloween_coal_mine`) : loc('city_coal_mine');
         }
+        case 'lumberyard':
+        {
+            return halloween.active ? loc(`events_halloween_lumberyard`) : loc('city_lumber_yard');
+        }
         case 'sawmill':
         {
             return halloween.active ? loc(`events_halloween_sawmill`) : loc('city_sawmill');
@@ -7419,6 +7431,22 @@ export function structName(type){
         case 'hospital':
         {
             return halloween.active ? loc(`events_halloween_hospital`) : loc('city_hospital');
+        }
+        case 'windmill':
+        {
+            return halloween.active ? loc(`events_halloween_windmill`) : loc('city_mill_title2');
+        }
+        case 'factory':
+        {
+            return halloween.active ? loc(`events_halloween_factory`) : loc('city_factory');
+        }
+        case 'storage_yard':
+        {
+            return halloween.active ? loc(`events_halloween_storage_yard`) : loc('city_storage_yard');
+        }
+        case 'temple':
+        {
+            return halloween.active ? loc(`events_halloween_temple`) : loc('city_temple');
         }
     }
 }

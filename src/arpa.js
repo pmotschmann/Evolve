@@ -1,6 +1,6 @@
 import { global, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
-import { clearElement, popover, clearPopper, flib, fibonacci, eventActive, timeFormat, vBind, messageQueue, adjustCosts, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, getTraitDesc, removeFromQueue, arpaTimeCheck, deepClone } from './functions.js';
-import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts } from './actions.js';
+import { clearElement, popover, clearPopper, flib, fibonacci, eventActive, timeFormat, vBind, messageQueue, adjustCosts, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, trickOrTreat, getTraitDesc, removeFromQueue, arpaTimeCheck, deepClone } from './functions.js';
+import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts, structName } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait, traitSkin, fathomCheck } from './races.js';
 import { renderSpace } from './space.js';
 import { drawMechLab } from './portal.js';
@@ -1767,6 +1767,11 @@ function genetics(){
                         let actualNovo = Math.min(keyMult, maxNovo);
                         global.resource.Knowledge.amount -= cost * actualNovo;
                         global.resource.Genes.amount += actualNovo;
+
+                        let trick = trickOrTreat(8,12,false);
+                        if (trick.length > 0){
+                            $(`#arpaSequence > div:first`).append(trick);
+                        }
                     }
                 },
                 novoLabel(){

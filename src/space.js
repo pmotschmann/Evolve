@@ -6,7 +6,7 @@ import { spatialReasoning, unlockContainers, drawResourceTab } from './resources
 import { loadFoundry, jobScale } from './jobs.js';
 import { defineIndustry } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
-import { actions, payCosts, powerOnNewStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, casinoEffect, wardenLabel, buildTemplate } from './actions.js';
+import { actions, payCosts, powerOnNewStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, casinoEffect, wardenLabel, buildTemplate, structName } from './actions.js';
 import { outerTruthTech, syndicate } from './truepath.js';
 import { production, highPopAdjust } from './prod.js';
 import { defineGovernor, govActive } from './governor.js';
@@ -870,7 +870,7 @@ const spaceProjects = {
         },
         red_mine: {
             id: 'space-red_mine',
-            title: loc('space_red_mine_title'),
+            title(){ return structName('mine'); },
             desc(){
                 return `<div>${loc('space_red_mine_desc')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`;
             },
@@ -950,7 +950,7 @@ const spaceProjects = {
         },
         red_factory: {
             id: 'space-red_factory',
-            title: loc('space_red_factory_title'),
+            title(){ return structName('factory'); },
             desc(){ return `<div>${loc('space_red_factory_desc')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Helium_3.name])}</div>`; },
             reqs: { mars: 4 },
             cost: {
@@ -1357,8 +1357,8 @@ const spaceProjects = {
         },
         spc_casino: {
             id: 'space-spc_casino',
-            title: loc('city_casino'),
-            desc: loc('city_casino'),
+            title(){ return structName('casino'); },
+            desc(){ return structName('casino'); },
             category: 'commercial',
             reqs: { hell: 1, gambling: 1 },
             condition(){
@@ -4702,9 +4702,9 @@ const galaxyProjects = {
         },
         dormitory: {
             id: 'galaxy-dormitory',
-            title: loc('galaxy_dormitory'),
+            title(){ return structName('dormitory'); },
             desc(){
-                return `<div>${loc('galaxy_dormitory')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+                return `<div>${structName('dormitory')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { xeno: 6 },
             cost: {

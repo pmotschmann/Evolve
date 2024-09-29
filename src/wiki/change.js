@@ -3,6 +3,14 @@ import { clearElement } from './../functions.js';
 
 export const changeList = [
     {
+        version: `1.3.16`,
+        date: `9/29/2024`,
+        changes: [
+            `Changed Scientic Notation to Engineering Notation.`,
+            `Added Scientic Notation option.`
+        ]
+    },
+    {
         version: `1.3.15`,
         revision: `a`,
         date: `9/21/2024`,
