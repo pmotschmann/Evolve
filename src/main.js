@@ -6106,6 +6106,9 @@ function fastLoop(){
                 let bonus = 1 + (traits.resilient.vars()[0] * global.race['resilient'] / 100);
                 coal_base *= bonus;
             }
+            if (!global.race['living_tool']){
+                coal_base *= (global.tech['pickaxe'] && global.tech.pickaxe > 0 ? global.tech.pickaxe * 0.12 : 0) + 1;
+            }
             if (global.tech['explosives'] && global.tech['explosives'] >= 2){
                 coal_base *= global.tech['explosives'] >= 3 ? 1.4 : 1.25;
             }
