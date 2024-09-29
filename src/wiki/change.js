@@ -6,6 +6,7 @@ export const changeList = [
         version: `1.3.16`,
         date: `9/29/2024`,
         changes: [
+            `Pickaxes once again affect Coal Mines.`,
             `Changed Scientic Notation to Engineering Notation.`,
             `Added Scientic Notation option.`
         ]
