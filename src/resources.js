@@ -1180,12 +1180,12 @@ function loadSpecialResource(name,color) {
 
     var res_container = $(`<div id="res${name}" class="resource" v-show="count"><span class="res has-text-${color}">${loc(`resource_${name}_name`)}</span><span class="count">{{ count | round }}</span></div>`);
     $('#resources').append(res_container);
-    
+
     vBind({
         el: `#res${name}`,
         data: global.prestige[name],
         filters: {
-            round(n){ return +(n).toFixed(3); }
+            round(n){ return n ? sizeApproximation(n, 3, false, true) : n; }
         }
     });
 

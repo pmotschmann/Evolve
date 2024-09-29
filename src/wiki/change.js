@@ -3,6 +3,15 @@ import { clearElement } from './../functions.js';
 
 export const changeList = [
     {
+        version: `1.3.16`,
+        date: `9/29/2024`,
+        changes: [
+            `Pickaxes once again affect Coal Mines.`,
+            `Changed Scientific Notation to Engineering Notation.`,
+            `Added Scientific Notation option.`
+        ]
+    },
+    {
         version: `1.3.15`,
         revision: `a`,
         date: `9/21/2024`,

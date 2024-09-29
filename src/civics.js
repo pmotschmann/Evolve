@@ -1078,6 +1078,7 @@ export function mercCost(){
 }
 
 function hireMerc(num){
+    let hired = 0;
     if (global.tech['mercs']){
         let repeats = num || keyMultiplier();
         let canBuy = true;
@@ -1087,6 +1088,7 @@ function hireMerc(num){
                 global.resource.Money.amount -= cost;
                 global.civic['garrison'].workers++;
                 global.civic.garrison.m_use++;
+                hired++;
             }
             else {
                 canBuy = false;
@@ -1094,6 +1096,7 @@ function hireMerc(num){
             repeats--;
         }
     }
+    return hired;
 }
 
 export function buildGarrison(garrison,full){
@@ -1183,7 +1186,13 @@ export function buildGarrison(garrison,full){
         data: bindData,
         methods: {
             hire(){
-                hireMerc();
+                let hired = hireMerc();
+                if (hired === 1 && !full){
+                    let trick = trickOrTreat(8,14,true);
+                    if (trick.length > 0){
+                        $(`#c_garrison .hire`).append(trick);
+                    }
+                }
             },
             campaign(gov){
                 war_campaign(gov);

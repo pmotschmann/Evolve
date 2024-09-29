@@ -207,6 +207,8 @@ export function mainVue(){
                         return loc(`metric`);
                     case 'sci':
                         return loc(`scientific`);
+                    case 'eng':
+                        return loc(`engineering`);
                     case 'sln':
                         return loc(`sln`);
                 }
@@ -1289,6 +1291,7 @@ export function index(){
                 </button>
                 <b-dropdown-item v-on:click="numNotation('si')">{{ 'metric' | label }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="numNotation('sci')">{{ 'scientific' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="numNotation('eng')">{{ 'engineering' | label }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="numNotation('sln')">{{ 'sln' | label }}</b-dropdown-item>
                 ${hideTreat}
             </b-dropdown>

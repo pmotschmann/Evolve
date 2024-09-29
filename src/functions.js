@@ -2250,7 +2250,7 @@ export function drawIcon(icon,size,shade,id,inject){
 export function easterEgg(num,size){
     let easter = getEaster();
     const date = new Date();
-    if (easter.active && !global.special.egg[date.getFullYear()][`egg${num}`]){
+    if (easter.active && !global.special.egg[date.getFullYear()][`egg${num}`] && $(`#egg${num}`).length === 0){
         return drawIcon('egg', size ? size : 16, 2, `egg${num}`, `role="button" aria-label="Egg" `);
     }
     return '';
@@ -2290,7 +2290,7 @@ export function trickOrTreat(num,size,trick){
     const date = new Date();
     const year = date.getFullYear();
     let tot = trick ? 'trick' : 'treat';
-    if (halloween.active && !global.special.trick[year][`${tot}${num}`]){
+    if (halloween.active && !global.special.trick[year][`${tot}${num}`] && $(`#${tot}${num}`).length === 0){
         let label = trick ? `Ghost`: `Candy Corn`;
         return drawIcon(trick ? 'ghost' : 'candycorn', size ? size : 16, 2, `${tot}${num}`, `role="button" aria-label="${label}" `);
     }
@@ -2311,14 +2311,14 @@ export function trickOrTreatBind(id,trick){
             }
             else {
                 if (global.race.universe === 'antimatter'){
-                    global.prestige.AntiPlasmid.count += 13;
-                    global.stats.antiplasmid += 13;
-                    messageQueue(loc('city_trick_msg',[13,loc('resource_AntiPlasmid_plural_name')]),'success',false,['events']);
+                    global.prestige.AntiPlasmid.count += 12;
+                    global.stats.antiplasmid += 12;
+                    messageQueue(loc('city_trick_msg',[12,loc('resource_AntiPlasmid_plural_name')]),'success',false,['events']);
                 }
                 else {
-                    global.prestige.Plasmid.count += 13;
-                    global.stats.plasmid += 13;
-                    messageQueue(loc('city_trick_msg',[13,loc('resource_Plasmid_plural_name')]),'success',false,['events']);
+                    global.prestige.Plasmid.count += 12;
+                    global.stats.plasmid += 12;
+                    messageQueue(loc('city_trick_msg',[12,loc('resource_Plasmid_plural_name')]),'success',false,['events']);
                 }
             }
             $(`#${tot}${id}`).remove();

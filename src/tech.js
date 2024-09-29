@@ -2,7 +2,7 @@ import { global, save, webWorker, p_on } from './vars.js';
 import { loc } from './locale.js';
 import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper, popCost } from './functions.js';
 import { unlockAchieve, alevel, universeAffix, unlockFeat } from './achieve.js';
-import { payCosts, housingLabel, wardenLabel, updateQueueNames, drawTech, fanaticism, checkAffordable, actions } from './actions.js';
+import { payCosts, housingLabel, wardenLabel, structName, updateQueueNames, drawTech, fanaticism, checkAffordable, actions } from './actions.js';
 import { races, checkAltPurgatory, renderPsychicPowers } from './races.js';
 import { drawResourceTab, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
@@ -1751,8 +1751,8 @@ const techs = {
     },
     casino: {
         id: 'tech-casino',
-        title: loc('tech_casino'),
-        desc: loc('tech_casino'),
+        title: structName('casino'),
+        desc: structName('casino'),
         category: 'entertainment',
         era: 'globalized',
         reqs: { high_tech: 4, currency: 5 },
