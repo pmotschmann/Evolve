@@ -7,8 +7,8 @@ export const changeList = [
         date: `9/29/2024`,
         changes: [
             `Pickaxes once again affect Coal Mines.`,
-            `Changed Scientic Notation to Engineering Notation.`,
-            `Added Scientic Notation option.`
+            `Changed Scientific Notation to Engineering Notation.`,
+            `Added Scientific Notation option.`
         ]
     },
     {
