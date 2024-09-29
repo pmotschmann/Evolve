@@ -85,6 +85,7 @@
   "units": "数字格式",
   "metric": "公制",
   "scientific": "科学计数法",
+  "engineering": "工程计数法",
   "sln": "单字母",
   "font": "文字大小",
   "standard": "标准",
