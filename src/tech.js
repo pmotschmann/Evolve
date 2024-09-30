@@ -7951,7 +7951,7 @@ const techs = {
             Omniscience(){ return 20000; },
             Asphodel_Powder(){ return 50000; }
         },
-        effect: loc('tech_otherworldly_binder_effect',[global.resource.Asphodel_Powder.name,global.resource.Cement.name]),
+        effect(){ return loc('tech_otherworldly_binder_effect',[global.resource.Asphodel_Powder.name, global.resource.Cement.name]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
