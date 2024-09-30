@@ -1551,7 +1551,7 @@ export function specialEventsPage(content){
 
                 let sol = `<span class="tcell">${loc('wiki_events_sol_avail')} ${loc(`month${easter.solveDate[0]}`)} ${easter.solveDate[1]}</span>`;
                 if (easter.solve){
-                    sol = `<span class="tcell eggsol" data-sol="${solutions[i-1]}">${loc('wiki_events_reveal_sol')}</span>`;
+                    sol = `<span class="tcell eggsol has-text-warning" data-sol="${solutions[i-1]}">${loc('wiki_events_reveal_sol')}</span>`;
                 }
 
                 eggs = eggs + `<div class="trow"><span role="img" class="tcell ${egg}" aria-label="${loc('wiki_feat_egghunt_num',[i])} ${found}">${loc('wiki_feat_egghunt_num',[i])}</span>${hint}${sol}</div>`
@@ -1644,6 +1644,7 @@ export function specialEventsPage(content){
             `U2FsdGVkX1+OfTMTHGhIpqmihvW7fMCt0q+bLWqhd7Z0Cj31jNUqmvBcxb6HzbGc4mL/msBX6PO5zpb4pBUzwA==`,
             `U2FsdGVkX1+hC03MwAyWdqH6ODAGNbgm7CRgC+0Wfreja2JZX7oPwYhPmfQXzn1RfeIncnkRTmdXGMqQ/mq2GQ==`,
             `U2FsdGVkX18cU5HWOtwNhFSnlxBHxpu5XEJBFj3EhtzU/PLXxynq5Rq9YGl23QNr`,
+            `U2FsdGVkX19Rdl9ftOHBiHA+Ro+Z6j0FMzkrjH1mjekV4XFsVhd/ZRowwRk5pTJ+`,
         ];
 
         let candy_solutions = [
@@ -1653,7 +1654,8 @@ export function specialEventsPage(content){
             `U2FsdGVkX1+xyixviw9PD/sRskoRG9owodNkZlwcAMSzQXe2PdAJPLwEBV9knjgGg11ws2eEBHXj7Y5j5SS7br+Uehaaj0MViyfxYdsZOEQ=`,
             `U2FsdGVkX18+2YEr0TG80mQY483i7yOr+Qnh66mOKEviX0ElRHI9VCha9TG+no1r`,
             `U2FsdGVkX1/Vuthb9MYQT02lO0ngkSI4f1tbvrrCwtVQiUTSIaVgDHVYYcIgfSl3WfiRhwGJWeP/6w+i7FEqaA==`,
-            `U2FsdGVkX1/3Zbp0Tlqh/n5TKvOJEIuaf9/DcDFlDz1s2Tb+qbUS1GmPTzpP3xLu`
+            `U2FsdGVkX1/3Zbp0Tlqh/n5TKvOJEIuaf9/DcDFlDz1s2Tb+qbUS1GmPTzpP3xLu`,
+            `U2FsdGVkX1/0hEWQw0u282nEqsjoNXqpSH3jXvtAYrGIyh78LmKMRbNZzJSTBmVd1GNN3O47YJ9Sp2/En1IidQ==`,
         ];
 
         let ghost_hints = [
@@ -1664,6 +1666,7 @@ export function specialEventsPage(content){
             `U2FsdGVkX18MRMhu9I4km+hryh9dnvVBSkHdUPBgyHnKLsRB8PxpcJSFNq9b0plJ`,
             `U2FsdGVkX18IDZ0hUGT3xuDSi9EVacctj7h0BThWEgzIovJAieOvqXg/0wrZWHXQvyyVMsQtOdBls2nDjryxiw==`,
             `U2FsdGVkX1891SskU89HRmZPzhBcScrDGfGpJsp8F1qgVnsuON0h6WL69wEF9/uEpRi393mOXOrubNYVFzRgjwqERT3G/f6u/4bWXGSLpS8=`,
+            `U2FsdGVkX188WPj2rcmEKb2XyTkf7No2huYPwH9vcY+1ITdcibOPMgptTpj6QA51`,
         ];
 
         let ghost_solutions = [
@@ -1674,6 +1677,7 @@ export function specialEventsPage(content){
             `U2FsdGVkX19CLOS3ivLPeqIYtjSBdW1WT4UFvJjNDto6jy9751Q73OZF2JQlhgKyayhswWuEk+JGbYwLbDbWhJgZUR/R9hYJnw8/Wcay4eM=`,
             `U2FsdGVkX19Pm5I9mqzijXCNM3dk4ut0IDPpownMePohkcfE6jsuLA0dgzv9vp5tjEVPaUD/bqMgEzsD9svhOEJd+zlslkqIsBee6EJTO/4=`,
             `U2FsdGVkX19TcqGI2bk6XYN40buKCGWH58AjMFDNE/jawAK+II3s6TvoVCcXbZsKzLF2++aeUgq6Ag+TysbSf5/T3IHeqQQnjFGIkkzlmMJH9wROKLirkPSzsw8O6J1J`,
+            `U2FsdGVkX18tnJdt5W7CkEPup//lBFySWsIU7Su5kvnkrFmh9Cv5yQ0mhc61d/7zFzf9cLEClvq5JVgeB6JViyeteDmu/1EaB5nal1IaWvU=`,
         ];
 
         const date = new Date();
@@ -1696,7 +1700,7 @@ export function specialEventsPage(content){
 
             let sol = `<span class="tcell">${loc('wiki_events_sol_avail')} ${loc(`month${halloween.solveDate[0]}`)} ${halloween.solveDate[1]}</span>`;
             if (halloween.solve){
-                sol = `<span class="tcell totsol" data-sol="${candy_solutions[i-1]}">${loc('wiki_events_reveal_sol')}</span>`;
+                sol = `<span class="tcell totsol has-text-warning" data-sol="${candy_solutions[i-1]}">${loc('wiki_events_reveal_sol')}</span>`;
             }
 
             treats = treats + `<div class="trow"><span class="tcell"></span>${sol}</div>`
@@ -1720,7 +1724,7 @@ export function specialEventsPage(content){
 
             let sol = `<span class="tcell">${loc('wiki_events_sol_avail')} ${loc(`month${halloween.solveDate[0]}`)} ${halloween.solveDate[1]}</span>`;
             if (halloween.solve){
-                sol = `<span class="tcell totsol" data-sol="${ghost_solutions[i-1]}">${loc('wiki_events_reveal_sol')}</span>`;
+                sol = `<span class="tcell totsol has-text-warning" data-sol="${ghost_solutions[i-1]}">${loc('wiki_events_reveal_sol')}</span>`;
             }
 
             tricks = tricks + `<div class="trow"><span class="tcell"></span>${sol}</div>`
@@ -1734,7 +1738,15 @@ export function specialEventsPage(content){
             $(this).html(bytes.toString(CryptoJS.enc.Utf8));
         });
 
-        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2,
+        ['human','tortoisan','unicorn'].forEach(function(species){
+            infoBoxBuilder(section,{ name: species, template: `events_${event}`, label: loc(`wiki_events_${event}`), paragraphs: 2, h_level: 0,
+                para_data: {
+                    1: [loc(`race_${species}`)],
+                }
+            });
+        });
+
+        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 3, break: [2,3], h_level: 2,
             para_data: {
                 1: [`${loc(`month${halloween.date[0]}`)} ${halloween.date[1]}`, `${loc(`month${halloween.endDate[0]}`)} ${halloween.endDate[1]}`],
             }

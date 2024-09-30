@@ -5,7 +5,7 @@ import { spatialReasoning, unlockContainers } from './resources.js';
 import { armyRating, garrisonSize } from './civics.js';
 import { jobScale, job_desc, loadFoundry, limitCraftsmen } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
-import { actions, payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, buildTemplate, casinoEffect, housingLabel } from './actions.js';
+import { actions, payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, buildTemplate, casinoEffect, housingLabel, structName } from './actions.js';
 import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, planetName } from './space.js';
 import { removeTask, govActive } from './governor.js';
 import { defineIndustry, nf_resources } from './industry.js';
@@ -210,7 +210,7 @@ const outerTruth = {
         },
         titan_mine: {
             id: 'space-titan_mine',
-            title: loc('space_red_mine_title'),
+            title(){ return structName('mine'); },
             desc(){
                 return `<div>${loc('space_red_mine_desc')}</div><div class="has-text-special">${loc('space_support',[planetName().titan])}</div>`;
             },
@@ -1870,7 +1870,7 @@ const tauCetiModules = {
                                 desc = desc + `<div>${loc('tau_home_mining_pit_effect2b',res_list)}</div>`;
                             }
                         }
-                        desc = desc + `<div>${loc('tau_gas_womling_station_effect',[8,global.resource.Cement.name])}</div>`;
+                        desc = desc + `<div>${loc('production',[8,global.resource.Cement.name])}</div>`;
                     }
                     else {
                         desc = desc + `<div>${loc('tau_home_mining_pit_effect2',[global.resource.Bolognium.name,global.resource.Adamantite.name,global.resource.Stone.name])}</div>`;
@@ -2229,7 +2229,7 @@ const tauCetiModules = {
                     desc = desc + `<div>${loc('city_library_effect',[75])}</div>`;
                 }
                 if (global.tech['alien_crafting']){
-                    desc = desc + `<div>${loc('tau_gas_womling_station_effect',[65,global.resource.Quantium.name])}</div>`;
+                    desc = desc + `<div>${loc('production',[65,global.resource.Quantium.name])}</div>`;
                 }
                 if (global.tech['focus_cure']){
                     desc = desc + `<div>${loc('tau_home_disease_lab_cure',[+global.tauceti.infectious_disease_lab.cure.toFixed(1)])}</div>`;
@@ -3069,7 +3069,7 @@ const tauCetiModules = {
                 if (global.tech['womling_gene']){
                     prod *= 1.25;
                 }
-                let desc = `<div>${loc('tau_gas_womling_station_effect',[prod,tauCetiModules.tau_gas.info.name()])}</div>`;
+                let desc = `<div>${loc('production',[prod,tauCetiModules.tau_gas.info.name()])}</div>`;
                 if (!global.race['flier']){
                     desc = desc + `<div>${loc('city_cement_plant_effect1',[jobScale(1)])}</div>`;
                 }
@@ -5338,8 +5338,8 @@ export function loneSurvivor(){
         global.resource.Containers.amount = 1000;
         global.resource.Money.max = 1000000000;
         global.resource.Money.amount = 1000000000;
-        global.resource.Knowledge.max = 8000000;
-        global.resource.Knowledge.amount = 8000000;
+        global.resource.Knowledge.max = 4321200;
+        global.resource.Knowledge.amount = 4321200;
         global.resource.Food.max = 10000;
         global.resource.Food.amount = 10000;
         global.resource.Oil.max = 500000;
