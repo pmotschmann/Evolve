@@ -16,6 +16,7 @@ export function highPopAdjust(v){
 export function teamster(v){
     if (global.race['gravity_well'] && global.race['teamster'] && global.race.teamster > 0){
         let cap = teamsterCap();
+        if (cap < 1){ cap = 1; }
         let teamster = global.civic.teamster.workers > cap ? cap : global.civic.teamster.workers;
         v *= teamster / cap;
     }
