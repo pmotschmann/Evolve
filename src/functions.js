@@ -160,7 +160,7 @@ export function gameLoop(act){
 // is controlled by loop lengths.
 export function loopTimers(){
     // Here come any speed modifiers not related to accelerated time.
-    let modifier = 1;
+    let modifier = 0.0621;
     if (global.race['slow']){
         modifier *= 1 + (traits.slow.vars()[0] / 100);
     }
@@ -195,7 +195,7 @@ export function addATime(currentTimestamp){
     if (exceededATimeThreshold(currentTimestamp) || global.stats.hasOwnProperty('current') && global.settings.at > 0){
         let timeDiff = currentTimestamp - global.stats.current;
         // Removing any accelerated time if the value is larger than the cap.
-        if (global.settings.at > 11520){
+        if (global.settings.at > 115200){
             global.settings.at = 0;
         }
         // Accelerated time is added only if it is over the threshold.
@@ -207,8 +207,8 @@ export function addATime(currentTimestamp){
             global.settings.at += Math.floor(2 / 3 * timeDiff * timers.timeAccelerationFactor / gameDayDuration);
         }
         // Accelerated time is capped at 8*60*60/2.5 game days.
-        if (global.settings.at > 11520){
-            global.settings.at = 11520;
+        if (global.settings.at > 115200){
+            global.settings.at = 115200;
         }
         atrack.t = global.settings.at;
         // Updating the current date so that it won't be counted twice (e.g., when unpausing).
@@ -1334,8 +1334,8 @@ export function masteryType(universe,detailed,unmodified){
     if (global.genes['challenge'] && global.genes.challenge >= 2){
         universe = universe || global.race.universe;
         let ua_level = universeLevel(universe);
-        let m_rate = universe === 'standard' ? 0.25 : 0.15;
-        let u_rate = global.genes.challenge >= 3 ? 0.15 : 0.1;
+        let m_rate = universe === 'standard' ? 1.25 : 0.75;
+        let u_rate = global.genes.challenge >= 3 ? 0.75 : 0.5;
         if (global.genes.challenge >= 4 && universe !== 'standard'){
             m_rate += 0.05;
             u_rate -= 0.05;
