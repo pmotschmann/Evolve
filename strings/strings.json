@@ -7952,6 +7952,7 @@
   "wiki_trait_effect_spiritual": "Temples are %0% more effective.",
   "wiki_trait_effect_truthful": "Bankers are %0% less effective.",
   "wiki_trait_effect_unified": "Start with Unification. Unification gains +%0%.",
+  "wiki_trait_effect_gloomy": "Gain a %0% global production bonus if not Sunny.",
   "wiki_trait_effect_rainbow": "Gain a %0% global production bonus if Sunny after Raining.",
   "wiki_trait_effect_magnificent": "Moon Shrines are available; gain boons depending on Moon Phase. Waxing Crescent Moon = %4% Morale Bonus, Waxing Gibbous Moon = %3% Metal Bonus, Waning Gibbous Moon = +%0Knowledge & %1% University Knowledge Bonus, Waning Crescent Moon = %2% Tax Bonus. Random if constructed during New Moon, Full Moon, or Quarter Moon.",
   "wiki_trait_effect_noble": "Taxes cannot be raised above %1% or lowered below %0%.",
