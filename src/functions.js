@@ -160,7 +160,7 @@ export function gameLoop(act){
 // is controlled by loop lengths.
 export function loopTimers(){
     // Here come any speed modifiers not related to accelerated time.
-    let modifier = 1.0;
+    let modifier = 0.2;
     if (global.race['slow']){
         modifier *= 1 + (traits.slow.vars()[0] / 100);
     }
