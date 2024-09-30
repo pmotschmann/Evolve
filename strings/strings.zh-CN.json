@@ -360,7 +360,7 @@
   "spend_power": "%1 -%0/s, 电力 -%2MW",
   "produce": "%1 +%0/s",
   "production": "%1产量 +%0%",
-  "crafting": "%1锻造工具加成 +%0%",
+  "crafting": "%1产量 +%0%",
   "malus": "惩罚",
   "bonus": "奖励",
   "unsuited": "水土不服",
