@@ -1,5 +1,5 @@
 import { global, keyMultiplier, p_on, support_on, tmp_vars } from './vars.js';
-import { vBind, clearElement, popover, darkEffect, eventActive, easterEgg } from './functions.js';
+import { vBind, clearElement, popover, darkEffect, eventActive, easterEgg, getHalloween } from './functions.js';
 import { loc } from './locale.js';
 import { racialTrait, servantTrait, races, traits, biomes, planetTraits, fathomCheck } from './races.js';
 import { armyRating } from './civics.js';
@@ -96,6 +96,10 @@ export const job_desc = {
             let desc = loc('job_lumberjack_desc',[gain,global.resource.Lumber.name]);
             if (global.civic.d_job === 'lumberjack' && !servant){
                 desc = desc + ' ' + loc('job_default',[loc('job_lumberjack')]);
+            }
+            let hallowed = getHalloween();
+            if (hallowed.active){
+                desc = desc + ` <span class="has-text-special">${loc('events_halloween_lumberjack')}</span> `;
             }
             return desc;
         }

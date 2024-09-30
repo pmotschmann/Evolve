@@ -1,6 +1,6 @@
 import { global, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
-import { clearElement, popover, clearPopper, flib, fibonacci, eventActive, timeFormat, vBind, messageQueue, adjustCosts, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, getTraitDesc, removeFromQueue, arpaTimeCheck, deepClone } from './functions.js';
-import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts } from './actions.js';
+import { clearElement, popover, clearPopper, flib, fibonacci, eventActive, timeFormat, vBind, messageQueue, adjustCosts, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, trickOrTreat, getTraitDesc, removeFromQueue, arpaTimeCheck, deepClone } from './functions.js';
+import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts, structName } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait, traitSkin, fathomCheck } from './races.js';
 import { renderSpace } from './space.js';
 import { drawMechLab } from './portal.js';
@@ -74,14 +74,18 @@ export const arpaProjects = {
         effect(){
             if (global.tech['banking'] >= 10){
                 if (global.race['cataclysm']){
-                    return global.tech['gambling'] && global.tech['gambling'] >= 4 ? loc('arpa_projects_stock_exchange_cataclysm2') : loc('arpa_projects_stock_exchange_cataclysm1');
+                    return global.tech['gambling'] && global.tech['gambling'] >= 4 
+                    ? loc('arpa_projects_stock_exchange_cataclysm2',[loc('space_red_spaceport_title'),10,structName('casino'),5,1]) 
+                    : loc('arpa_projects_stock_exchange_cataclysm1',[loc('space_red_spaceport_title'),10]);
                 }
                 else {
-                    return global.tech['gambling'] && global.tech['gambling'] >= 4 ? loc('arpa_projects_stock_exchange_effect3') : loc('arpa_projects_stock_exchange_effect2');
+                    return global.tech['gambling'] && global.tech['gambling'] >= 4 
+                        ? loc('arpa_projects_stock_exchange_effect3',[loc('city_bank'),10,loc(`job_banker`),2,structName('casino'),5,1]) 
+                        : loc('arpa_projects_stock_exchange_effect2',[loc('city_bank'),10,loc(`job_banker`),2]);
                 }
             }
             else {
-                return loc('arpa_projects_stock_exchange_effect1');
+                return loc('arpa_projects_stock_exchange_effect1',[loc('city_bank'),10]);
             }
         },
         cost: {
@@ -1763,6 +1767,11 @@ function genetics(){
                         let actualNovo = Math.min(keyMult, maxNovo);
                         global.resource.Knowledge.amount -= cost * actualNovo;
                         global.resource.Genes.amount += actualNovo;
+
+                        let trick = trickOrTreat(8,12,false);
+                        if (trick.length > 0){
+                            $(`#arpaSequence > div:first`).append(trick);
+                        }
                     }
                 },
                 novoLabel(){
