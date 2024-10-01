@@ -463,14 +463,14 @@ export const craftingRatio = (function(){
                 crafting.general.multi.push({
                     name: loc(`faith`),
                     manual: 1,
-                    auto: 1 + (faith / (global.race.universe === 'antimatter' ? 1.5 : 3))
+                    auto: 1 + (faith / (global.race.universe === 'antimatter' ? 0.375 : 0.75))
                 });
             }
             if (global.prestige.Plasmid.count > 0){
                 crafting.general.multi.push({
                     name: loc(`resource_Plasmid_plural_name`),
-                    manual: plasmidBonus() / 8 + 1,
-                    auto: plasmidBonus() / 8 + 1
+                    manual: plasmidBonus() / 2 + 1,
+                    auto: plasmidBonus() / 2 + 1
                 });
             }
             if (global.genes['challenge'] && global.genes['challenge'] >= 2){
