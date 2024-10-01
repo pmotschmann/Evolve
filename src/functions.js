@@ -160,7 +160,7 @@ export function gameLoop(act){
 // is controlled by loop lengths.
 export function loopTimers(){
     // Here come any speed modifiers not related to accelerated time.
-    let modifier = 1;
+    let modifier = 0.1;
     if (global.race['slow']){
         modifier *= 1 + (traits.slow.vars()[0] / 100);
     }
@@ -175,7 +175,7 @@ export function loopTimers(){
     // Long loop (game day) takes 5000ms without any modifiers.
     const baseLongTimer = 20 * webWorkerMainTimer;
     // The constant by which the time is accelerated when atrack.t > 0.
-    const timeAccelerationFactor = 1;
+    const timeAccelerationFactor = 2;
 
     const aTimeMultiplier = atrack.t > 0 ? 0.1 / timeAccelerationFactor : 0.1
     return {
