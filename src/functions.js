@@ -177,7 +177,7 @@ export function loopTimers(){
     // The constant by which the time is accelerated when atrack.t > 0.
     const timeAccelerationFactor = 1;
 
-    const aTimeMultiplier = 1/10;
+    const aTimeMultiplier = atrack.t > 0 ? 0.1 / timeAccelerationFactor : 0.1
     return {
         webWorkerMainTimer,
         mainTimer: Math.ceil(webWorkerMainTimer * aTimeMultiplier),
