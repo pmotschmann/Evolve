@@ -3614,7 +3614,9 @@ function fastLoop(){
                 // Do Nothing
             }
             else {
-                var lowerBound = global.tech['reproduction'] ? global.tech['reproduction'] : 0;
+                let lowerBound = global.tech['reproduction'] ? global.tech['reproduction'] : 0;
+                let upperBound = global['resource'][global.race.species].amount;
+
                 if (global.tech['reproduction'] && date.getMonth() === 1 && date.getDate() === 14){
                     lowerBound += 5;
                 }
@@ -3651,16 +3653,21 @@ function fastLoop(){
                 }
                 if (global.race['high_pop']){
                     lowerBound *= traits.high_pop.vars()[2];
+                    upperBound /= jobScale(1);
                 }
                 if (global.city.biome === 'taiga'){
                     lowerBound *= biomes.taiga.vars()[1];
                 }
-                let base = global.city.ptrait.includes('toxic') ? global['resource'][global.race.species].amount * planetTraits.toxic.vars()[1] : global['resource'][global.race.species].amount;
+                if (global.city.ptrait.includes('toxic')){
+                    upperBound *= planetTraits.toxic.vars()[1];
+                }
                 if (global.race['parasite'] && (global.race['cataclysm'] || global.race['orbit_decayed'])){
                     lowerBound = Math.round(lowerBound / 5);
-                    base *= 3;
+                    upperBound *= 3;
                 }
-                if(Math.rand(0, base * (3 - (2 ** time_multiplier))) <= lowerBound){
+
+                upperBound *= (3 - (2 ** time_multiplier));
+                if(Math.rand(0, upperBound) <= lowerBound){
                     global['resource'][global.race.species].amount++;
                 }
             }
