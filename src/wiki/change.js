@@ -4,6 +4,14 @@ import { clearElement } from './../functions.js';
 export const changeList = [
     {
         version: `1.3.16`,
+        revision: `a`,
+        date: `9/30/2024`,
+        changes: [
+            `Fixed an issue with with Gravity Well challenge and having too many Railways.`
+        ]
+    },
+    {
+        version: `1.3.16`,
         date: `9/29/2024`,
         changes: [
             `Pickaxes once again affect Coal Mines.`,
