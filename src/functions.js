@@ -1465,7 +1465,7 @@ export function getResetConstants(type, inputs){
             rc.k_inc = 100000;
             rc.k_mult = 1.1;
             rc.plasmid_cap = 150;
-            if (inputs.synth){
+            if (inputs.synth === true || inputs.synth.val === true){
                 rc.pop_divisor = 5;
                 rc.k_inc = 125000;
                 rc.plasmid_cap = 100;
@@ -1541,7 +1541,7 @@ export function calcPrestige(type,inputs){
     };
 
     if (!inputs) { inputs = {}; }
-    if (inputs.synth !== undefined) inputs.synth = races[global.race.species].type === 'synthetic';
+    if (inputs.synth === undefined) inputs.synth = races[global.race.species].type === 'synthetic';
     let challenge = inputs.genes;
     let universe = inputs.uni;
     universe = universe || global.race.universe;
