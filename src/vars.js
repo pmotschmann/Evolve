@@ -2042,8 +2042,13 @@ var numFormatLong = new Intl.NumberFormat(undefined, {maximumFractionDigits: 2, 
  * @return {String}
  */
 export function sizeApproximation(value, precision = 1, precise = false, exact = false){
-    const absValue = Math.abs(value);
+    let absValue = Math.abs(value);
     let oom = Math.floor(Math.log10(absValue));
+
+    // Add a few ULP of magnitude to all numbers to avoid rounding issues
+    absValue += 10**(oom-15);
+    // Explicitly avoid adding anything to either -0 or +0 to avoid altering the sign
+    value = value<0 ? -absValue : value>0 ? absValue : value;
 
     // Exact mode:
     //  The number of significant figures is not limited in any way.
