@@ -6138,7 +6138,7 @@ function fastLoop(){
 
             if (global.race['cataclysm'] && support_on['iridium_mine']){
                 coal_base = support_on['iridium_mine'] * production('iridium_mine','coal');
-                coal_base *= global.civic.coal_miner.impact * production('psychic_boost','Coal');
+                coal_base *= production('psychic_boost','Coal');
                 breakdown.p['Coal'][loc('space_moon_iridium_mine_title')] = coal_base + 'v';
                 if (coal_base > 0){
                     breakdown.p['Coal'][`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
