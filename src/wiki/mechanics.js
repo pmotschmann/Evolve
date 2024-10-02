@@ -1982,7 +1982,7 @@ function quantumLevelCalc(info){
     });
 }
 
-function massCalc(info){
+export function massCalc(info){
     let calc = $(`<div class="calc" id="massCalc"></div>`);
     info.append(calc);
     
