@@ -2027,7 +2027,7 @@ var affix_list = {
 var numFormatShort = new Intl.NumberFormat(undefined, {maximumFractionDigits: 2, maximumSignificantDigits: 3, roundingMode: 'trunc', roundingPriority: 'lessPrecision'});
 var numFormatLong = new Intl.NumberFormat(undefined, {maximumFractionDigits: 2, maximumSignificantDigits: 4, roundingMode: 'trunc', roundingPriority: 'lessPrecision'});
 // Constant value that is used frequently
-const ADD_4_ULP = 1 + (4 * Number.EPSILON);
+const ADD_16_ULP = 1 + (16 * Number.EPSILON);
 
 /**
  * Return a locale-dependent string that represents the significance of the input value.
@@ -2047,8 +2047,8 @@ export function sizeApproximation(value, precision = 1, precise = false, exact =
     let absValue = Math.abs(value);
     let oom = Math.floor(Math.log10(absValue));
 
-    // Increase magnitude of all numbers by 4 to 8 ULP to avoid rounding issues
-    absValue *= ADD_4_ULP;
+    // Increase magnitude of all numbers by 16 to 32 ULP to avoid rounding issues
+    absValue *= ADD_16_ULP;
     // Explicitly avoid adding anything to either -0 or +0 to avoid altering the sign
     value = value<0 ? -absValue : value>0 ? absValue : value;
 
