@@ -8,7 +8,8 @@ import { actions } from './actions.js';
 import { jobScale } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
 import { loc } from './locale.js';
-import { armyRating, armorCalc, garrisonSize } from './civics.js';
+import { armyRating, armorCalc, garrisonSize, mercCost } from './civics.js';
+import { govActive } from './governor.js';
 
 const edenicModules = {
     eden_asphodel: {
@@ -555,6 +556,17 @@ const edenicModules = {
                 if (global.tech['celestial_warfare'] && global.tech.celestial_warfare >= 4){
                     desc += `<div>${loc('eden_bunker_effect',[3])}</div>`;
                 }
+                if (global.tech['celestial_warfare'] && global.tech.celestial_warfare >= 5){
+                    let rate = 10;
+                    if (global.blood['lust']){
+                        rate += global.blood.lust * 0.2;
+                    }
+                    let milVal = govActive('militant',0);
+                    if (milVal){
+                        rate *= 1 + (milVal / 100);
+                    }
+                    desc += `<div>${loc('city_boot_camp_effect',[rate])}</div>`;
+                }
                 return desc;
             },
             s_type: 'asphodel',
@@ -613,8 +625,9 @@ const edenicModules = {
             desc: loc('eden_elysium_desc'),
             prop(){
                 let soldier_title = global.tech['world_control'] && !global.race['truepath'] ? loc('civics_garrison_peacekeepers') : loc('civics_garrison_soldiers');
-                let desc = `<span class="pad"><span class="soldier">${soldier_title}</span> <span v-html="$options.filters.filter(workers,'stationed')"></span> / <span>{{ max | filter('s_max') }} | <span></span>`;
-                desc += `<span><span class="wounded">${loc('civics_garrison_wounded')}</span> <span>{{ wounded }}</span></span>`;
+                let desc = `<span class="pad"><span class="soldier">${soldier_title}</span> <span v-html="$options.filters.filter(workers,'stationed')"></span> / <span>{{ max | filter('s_max') }}</span></span>`;
+                desc += `<span class="pad"><span class="wounded">${loc('civics_garrison_wounded')}</span> <span>{{ wounded }}</span></span>`;
+                desc += `<span class="pad"><span v-html="$options.filters.filter(m_use,'m_use')"></span></span>`;
                 return desc;
             },
             bind(){
@@ -629,6 +642,8 @@ const edenicModules = {
                         return size === trickNum && trick.length > 0 ? trick : size;
                     case 's_max':
                         return garrisonSize(true);
+                    case 'm_use':
+                        return loc(`civics_garrison_mercenary_cost`,[Math.round(mercCost()).toLocaleString()]);
                 }
             }
         },
@@ -686,7 +701,7 @@ const edenicModules = {
             queue_complete(){ return 0; },
             reqs: { elysium: 3 },
             condition(){
-                return global.tech.elysium === 3;
+                return global.tech.elysium === 3 && global.eden.fortress.fortress > 0;
             },
             cost: {
                 Troops(){
@@ -741,10 +756,13 @@ const edenicModules = {
                     global.eden.fortress.fortress -= damage;
                     if (global.eden.fortress.fortress < 0){ global.eden.fortress.fortress = 0; }
                     global.eden.fortress['siege'] = { loss: dead, damage: damage / 10 };
-                    messageQueue(loc('eden_siege_fortress_success',[damage / 10]),'success',false,['combat']);
 
                     if (global.eden.fortress.fortress <= 0){
-                        drawTech();
+                        messageQueue(loc('eden_siege_fortress_fall'),'success',false,['combat']);
+                        global.tech.elysium = 4;
+                    }
+                    else {
+                        messageQueue(loc('eden_siege_fortress_success',[damage / 10]),'success',false,['combat']);
                     }
                 }
 
@@ -872,7 +890,46 @@ const edenicModules = {
                 renderEdenic();
                 return false;
             }
-        }
+        },
+        ruined_fortress: { 
+            id: 'eden-ruined_fortress',
+            title: loc('eden_ruined_fortress'),
+            desc: loc('eden_ruined_fortress'),
+            queue_complete(){ return 0; },
+            reqs: { elysium: 4 },
+            effect(){ 
+                return loc('eden_ruined_fortress_effect');
+            },
+            action(){
+                return false;
+            }
+        },
+        scout_elysium: {
+            id: 'eden-scout_elysium',
+            title: loc('eden_scout_elysium_title'),
+            desc: loc('eden_scout_elysium_title'),
+            reqs: { elysium: 4 },
+            grant: ['elysium',5],
+            queue_complete(){ return global.tech.hell_lake >= 2 ? 0 : 1; },
+            cost: {
+                Money(){ return 10000000000; },
+                Oil(){ return 9000000; },
+                Helium_3(){ return 6000000; },
+                Troops(){ return jobScale(100); },
+            },
+            effect: loc('eden_scout_elysium_effect'),
+            action(){
+                if (payCosts($(this)[0])){
+                    messageQueue(loc('eden_scout_elysium_result'),'info',false,['progress']);
+                    global.settings.eden.isle = true;
+                    global.civic.garrison.workers -= jobScale(50);
+                    global.civic.garrison.protest += jobScale(50);
+                    global.stats.died += jobScale(50);
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     eden_isle: {
         info: {

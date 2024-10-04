@@ -7497,7 +7497,18 @@ function fastLoop(){
             if (milVal){
                 train *= 1 + (milVal / 100);
             }
-            rate *= 1 + ((global.race['orbit_decayed'] && global.space['space_barracks'] ? global.space.space_barracks.on : global.city['boot_camp'].count) * train);
+            rate *= 1 + ((global.race['orbit_decayed'] && global.space['space_barracks'] ? global.space.space_barracks.on : global.city.boot_camp.count) * train);
+        }
+        if (global.tech['celestial_warfare'] && global.tech.celestial_warfare >= 5 && global.eden['bunker']){
+            let train = 0.1;
+            if (global.blood['lust']){
+                train += global.blood.lust * 0.002;
+            }
+            let milVal = govActive('militant',0);
+            if (milVal){
+                train *= 1 + (milVal / 100);
+            }
+            rate *= 1 + (global.eden.bunker.count * train);
         }
         if (global.race['beast']){
             rate *= 1 + (traits.beast.vars()[2] / 100);

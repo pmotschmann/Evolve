@@ -14446,7 +14446,7 @@ const techs = {
         id: 'tech-celestial_tactics',
         title: loc('tech_celestial_tactics'),
         desc: loc('tech_celestial_tactics'),
-        category: 'edenic',
+        category: 'military',
         era: 'existential',
         reqs: { celestial_warfare: 1, },
         condition(){
@@ -14469,7 +14469,7 @@ const techs = {
         id: 'tech-active_camouflage',
         title: loc('tech_active_camouflage'),
         desc: loc('tech_active_camouflage'),
-        category: 'edenic',
+        category: 'military',
         era: 'existential',
         reqs: { celestial_warfare: 2, },
         condition(){
@@ -14478,7 +14478,7 @@ const techs = {
         grant: ['celestial_warfare',3],
         cost: {
             Knowledge(){ return 89000000; },
-            Omniscience(){ return 19000; }
+            Omniscience(){ return 18750; }
         },
         effect(){ return loc('tech_active_camouflage_effect'); },
         action(){
@@ -14492,7 +14492,7 @@ const techs = {
         id: 'tech-special_ops_training',
         title: loc('tech_special_ops_training'),
         desc: loc('tech_special_ops_training'),
-        category: 'edenic',
+        category: 'military',
         era: 'existential',
         reqs: { celestial_warfare: 3, },
         condition(){
@@ -14501,9 +14501,29 @@ const techs = {
         grant: ['celestial_warfare',4],
         cost: {
             Knowledge(){ return 92000000; },
-            Omniscience(){ return 21000; }
+            Omniscience(){ return 20000; }
         },
         effect(){ return loc('tech_special_ops_training_effect',[loc('eden_bunker_title')]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    spectral_training: {
+        id: 'tech-spectral_training',
+        title: loc('tech_spectral_training'),
+        desc: loc('tech_spectral_training'),
+        category: 'military',
+        era: 'existential',
+        reqs: { celestial_warfare: 4, },
+        grant: ['celestial_warfare',5],
+        cost: {
+            Knowledge(){ return 94500000; },
+            Omniscience(){ return 21000; }
+        },
+        effect(){ return loc('tech_spectral_training_effect',[loc('eden_bunker_title')]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
