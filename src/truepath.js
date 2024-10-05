@@ -2171,7 +2171,7 @@ const tauCetiModules = {
                 desc = desc + `<div>${loc('tau_home_tau_factory_effect',[$(this)[0].manufacturing()])}</div>`;
                 if (global.tech['isolation']){
                     if (!global.race['flier']){
-                        desc = desc + `<div>${loc('city_cement_plant_effect1',[jobScale(2)])}</div>`;
+                        desc = desc + `<div>${loc('plus_max_resource',[jobScale(2),loc(`job_cement_worker`)])}</div>`;
                     }
                     desc = desc + `<div>${loc('space_red_fabrication_effect1',[jobScale(5)])}</div>`;
                 }
@@ -3071,7 +3071,7 @@ const tauCetiModules = {
                 }
                 let desc = `<div>${loc('production',[prod,tauCetiModules.tau_gas.info.name()])}</div>`;
                 if (!global.race['flier']){
-                    desc = desc + `<div>${loc('city_cement_plant_effect1',[jobScale(1)])}</div>`;
+                    desc = desc + `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_cement_worker`)])}</div>`;
                 }
                 desc = desc + `<div>${loc('space_red_fabrication_effect1',[jobScale(1)])}</div>`;
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;

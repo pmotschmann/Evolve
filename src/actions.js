@@ -2591,10 +2591,10 @@ export const actions = {
             effect(){
                 if (global.tech['cement'] >= 5){
                     let screws = global.tech['cement'] >= 6 ? 8 : 5;
-                    return `<div>${loc('city_cement_plant_effect1',[jobScale(2)])}</div><div class="has-text-caution">${loc('city_cement_plant_effect2',[$(this)[0].powered(),screws])}</div>`;
+                    return `<div>${loc('plus_max_resource',[jobScale(2),loc(`job_cement_worker`)])}</div><div class="has-text-caution">${loc('city_cement_plant_effect2',[$(this)[0].powered(),screws])}</div>`;
                 }
                 else {
-                    return loc('city_cement_plant_effect1',[jobScale(2)]);
+                    return loc('plus_max_resource',[jobScale(2),loc(`job_cement_worker`)]);
                 }
             },
             powered(){ return powerCostMod(2); },
@@ -2818,10 +2818,10 @@ export const actions = {
             },
             effect(){
                 if (global.tech['mine_conveyor']){
-                    return `<div>${loc('city_mine_effect1',[jobScale(1)])}</div><div class="has-text-caution">${loc('city_mine_effect2',[$(this)[0].powered(),5])}</div>`;
+                    return `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_miner`)])}</div><div class="has-text-caution">${loc('city_mine_effect2',[$(this)[0].powered(),5])}</div>`;
                 }
                 else {
-                    return loc('city_mine_effect1',[jobScale(1)]);
+                    return loc('plus_max_resource',[jobScale(1),loc(`job_miner`)]);
                 }
             },
             powered(){ return powerCostMod(1); },
@@ -2863,10 +2863,10 @@ export const actions = {
             },
             effect(){
                 if (global.tech['mine_conveyor']){
-                    return `<div>${loc('city_coal_mine_effect1',[jobScale(1)])}</div><div class="has-text-caution">${loc('city_coal_mine_effect2',[$(this)[0].powered(),5])}</div>`;
+                    return `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_coal_miner`)])}</div><div class="has-text-caution">${loc('city_coal_mine_effect2',[$(this)[0].powered(),5])}</div>`;
                 }
                 else {
-                    return loc('city_coal_mine_effect1',[jobScale(1)]);
+                    return loc('plus_max_resource',[jobScale(1),loc(`job_coal_miner`)]);
                 }
             },
             powered(){ return powerCostMod(1); },
@@ -3109,7 +3109,7 @@ export const actions = {
             effect(){
                 let athVal1 = govActive('athleticism',0);
                 let athVal2 = govActive('athleticism',1);
-                return`<div>${loc('city_max_entertainer',[jobScale(athVal2 ? athVal2 : 1)])}</div><div>${loc('city_max_morale',[athVal1 ? athVal1 : 1])}</div>`;
+                return`<div>${loc('plus_max_resource',[jobScale(athVal2 ? athVal2 : 1),loc(`job_entertainer`)])}</div><div>${loc('city_max_morale',[athVal1 ? athVal1 : 1])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -3180,7 +3180,7 @@ export const actions = {
             effect(){
                 let desc = templeEffect();
                 if (global.genes['ancients'] && global.genes['ancients'] >= 2){
-                    desc = desc + `<div>${loc('city_temple_effect6',[jobScale(1)])}</div>`;
+                    desc = desc + `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_priest`)])}</div>`;
                 }
                 return desc;
             },
@@ -4930,7 +4930,10 @@ export function casinoEffect(){
         money *= 5.5;
     }
     money = Math.round(money);
-    let joy = global.race['joyless'] ? '' : `<div>${loc('city_max_entertainer',[jobScale(1)])}</div>`;
+
+    
+
+    let joy = global.race['joyless'] ? '' : `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_entertainer`)])}</div>`;
     let banker = global.race['orbit_decayed'] || global.tech['isolation'] ? `<div>${loc('plus_max_resource',[jobScale(1),loc('banker_name')])}</div>` : '';
     let desc = `<div>${loc('plus_max_resource',[`\$${money.toLocaleString()}`,loc('resource_Money_name')])}</div>${joy}${banker}<div>${loc('city_max_morale',[1])}</div>`;
     let cash = Math.log2(1 + global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5);

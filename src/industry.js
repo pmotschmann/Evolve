@@ -1446,7 +1446,7 @@ function loadReplicator(parent,bind){
         if (bind){
         let values = ``;
             Object.keys(atomic_mass).forEach(function(res){
-                if (res !== 'Asphodel_Powder'){
+                if (res !== 'Asphodel_Powder' && res !== 'Elysanite'){
                     values += `<b-dropdown-item aria-role="listitem" v-on:click="setVal('${res}')" data-val="${res}" v-show="avail('${res}')">${global.resource[res].name}</b-dropdown-item>`;
                 }
             });
@@ -1460,7 +1460,7 @@ function loadReplicator(parent,bind){
         else {
             let scrollMenu = ``;
             Object.keys(atomic_mass).forEach(function(res){
-                if (global.resource[res].display && res !== 'Asphodel_Powder'){
+                if (global.resource[res].display && res !== 'Asphodel_Powder' && res !== 'Elysanite'){
                     scrollMenu += `<b-radio-button v-model="res" native-value="${res}">${global.resource[res].name}</b-radio-button>`;
                 }
             });

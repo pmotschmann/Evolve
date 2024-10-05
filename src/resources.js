@@ -120,6 +120,7 @@ export const atomic_mass = {
     Vitreloy: 41.08,
     Orichalcum: 237.8,
     Asphodel_Powder: 0.01,
+    Elysanite: 13.666,
     Water: 18.01,
     Plywood: 7.666,
     Brick: 20.009,
@@ -703,6 +704,7 @@ export function defineResources(wiki){
     loadResource('Vitreloy',wiki,0,1,false,true,'advanced');
     loadResource('Orichalcum',wiki,0,1,false,true,'advanced');
     loadResource('Asphodel_Powder',wiki,0,1,false,false,'advanced');
+    loadResource('Elysanite',wiki,0,1,false,true,'advanced');
     loadResource('Unobtainium',wiki,0,1,false,false,'advanced');
     loadResource('Materials',wiki,0,1,false,false,'advanced');
     loadResource('Horseshoe',wiki,-2,0,false,false,'advanced');

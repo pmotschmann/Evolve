@@ -14298,7 +14298,7 @@ const techs = {
         id: 'tech-asphodel_mech',
         title: loc('tech_asphodel_mech'),
         desc: loc('tech_asphodel_mech'),
-        category: 'edenic',
+        category: 'military',
         era: 'existential',
         reqs: { asphodel: 5, military: 12 },
         grant: ['asphodel',6],
@@ -14319,7 +14319,7 @@ const techs = {
         id: 'tech-asphodel_storage',
         title: loc('tech_asphodel_storage'),
         desc: loc('tech_asphodel_storage'),
-        category: 'edenic',
+        category: 'storage',
         era: 'existential',
         reqs: { asphodel: 6, },
         grant: ['asphodel',7],
@@ -14340,7 +14340,7 @@ const techs = {
         id: 'tech-asphodel_stabilizer',
         title: loc('tech_asphodel_stabilizer'),
         desc: loc('tech_asphodel_stabilizer'),
-        category: 'edenic',
+        category: 'storage',
         era: 'existential',
         reqs: { asphodel: 7, },
         grant: ['asphodel',8],
@@ -14361,7 +14361,7 @@ const techs = {
         id: 'tech-edenic_bunker',
         title: loc('tech_edenic_bunker'),
         desc: loc('tech_edenic_bunker'),
-        category: 'edenic',
+        category: 'military',
         era: 'existential',
         reqs: { asphodel: 8, },
         grant: ['asphodel',9],
@@ -14382,7 +14382,7 @@ const techs = {
         id: 'tech-bliss_den',
         title: loc('tech_bliss_den'),
         desc: loc('tech_bliss_den'),
-        category: 'edenic',
+        category: 'entertainment',
         era: 'existential',
         reqs: { asphodel: 9, },
         grant: ['asphodel',10],
@@ -14394,6 +14394,27 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.eden['bliss_den'] = { count: 0, on: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    hallowed_housing: {
+        id: 'tech-hallowed_housing',
+        title: loc('tech_hallowed_housing'),
+        desc: loc('tech_hallowed_housing'),
+        category: 'housing',
+        era: 'existential',
+        reqs: { asphodel: 10, theology: 2 },
+        grant: ['asphodel',11],
+        cost: {
+            Knowledge(){ return 95000000; },
+            Omniscience(){ return 19500; },
+        },
+        effect(){ return loc('tech_hallowed_housing_effect',[loc(`job_priest`),loc('eden_asphodel_name')]); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.eden['rectory'] = { count: 0, on: 0 };
                 return true;
             }
             return false;
@@ -14526,6 +14547,49 @@ const techs = {
         effect(){ return loc('tech_spectral_training_effect',[loc('eden_bunker_title')]); },
         action(){
             if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    elysanite_mining: {
+        id: 'tech-elysanite_mining',
+        title: loc('tech_elysanite_mining'),
+        desc: loc('tech_elysanite_mining'),
+        category: 'mining',
+        era: 'existential',
+        reqs: { elysium: 5 },
+        grant: ['elysium',6],
+        cost: {
+            Knowledge(){ return 93000000; },
+            Omniscience(){ return 18500; },
+        },
+        effect(){ return loc('tech_elysanite_mining_effect',[global.resource.Elysanite.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.eden['elysanite_mine'] = { count: 0, on: 0 };
+                global.resource.Elysanite.display = true;
+                return true;
+            }
+            return false;
+        }
+    },
+    sacred_smelter: {
+        id: 'tech-sacred_smelter',
+        title: loc('tech_sacred_smelter'),
+        desc: loc('tech_sacred_smelter'),
+        category: 'mining',
+        era: 'existential',
+        reqs: { elysium: 6 },
+        grant: ['elysium',7],
+        cost: {
+            Knowledge(){ return 96000000; },
+            Omniscience(){ return 19425; },
+        },
+        effect(){ return loc('tech_sacred_smelter_effect',[global.resource.Elysanite.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.eden['sacred_smelter'] = { count: 0, on: 0 };
                 return true;
             }
             return false;

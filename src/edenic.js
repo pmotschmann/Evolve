@@ -240,7 +240,9 @@ const edenicModules = {
                 Asphodel_Powder(offset){ return spaceCostMultiplier('ectoplasm_processor', offset, 1000, 1.24, 'eden'); },
             },
             effect(){
-                return `<div class="has-text-caution">${loc('space_used_support',[loc('eden_asphodel_name')])}</div><div>${loc('eden_ectoplasm_processor_effect',[jobScale(5)])}</div>`;
+                let desc = `<div class="has-text-caution">${loc('space_used_support',[loc('eden_asphodel_name')])}</div>`;
+                desc += `<div>${loc('plus_max_resource',[jobScale(5),loc(`job_ghost_trapper`)])}</div>`;
+                return desc;
             },
             s_type: 'asphodel',
             support(){ return -1; },
@@ -618,6 +620,49 @@ const edenicModules = {
                 return loc(`eden_bliss_den_flair`);
             }
         },
+        rectory: {
+            id: 'eden-rectory',
+            title: loc('eden_rectory_title'),
+            desc: `<div>${loc('eden_rectory_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            reqs: { asphodel: 11 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('rectory', offset, 275000000, 1.24, 'eden'); },
+                Copper(offset){ return spaceCostMultiplier('rectory', offset, 18200000, 1.24, 'eden'); },
+                Brick(offset){ return spaceCostMultiplier('rectory', offset, 7500000, 1.24, 'eden'); },
+                Soul_Gem(offset){ return spaceCostMultiplier('rectory', offset, 18, 1.24, 'eden'); },
+            },
+            effect(){
+                let desc = `<div>${loc('eden_encampment_effect',[$(this)[0].support()])}</div>`;
+                desc += `<div>${loc('plus_max_citizens',[$(this)[0].citizens()])}</div>`;
+                if (global.genes['ancients'] && global.genes['ancients'] >= 4){
+                    desc += `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_priest`)])}</div>`;
+                }
+                desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            support(){ return 2; },
+            powered(){ return powerCostMod(50); },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('rectory','eden');
+                    if (powerOnNewStruct($(this)[0])){
+                        global['resource'][global.race.species].max += $(this)[0].citizens();
+                    }
+                    return true;
+                }
+                return false;
+            },
+            citizens(){
+                let pop = 4;
+                if (global.race['high_pop']){
+                    pop *= traits.high_pop.vars()[0];
+                }
+                return pop;
+            },
+            flair(){
+                return loc(`eden_rectory_flair`);
+            }
+        },
     },
     eden_elysium: {
         info: {
@@ -925,6 +970,32 @@ const edenicModules = {
                     global.civic.garrison.workers -= jobScale(50);
                     global.civic.garrison.protest += jobScale(50);
                     global.stats.died += jobScale(50);
+                    return true;
+                }
+                return false;
+            }
+        },
+        elysanite_mine: {
+            id: 'eden-elysanite_mine',
+            title: loc('eden_elysanite_mine_title'),
+            desc: `<div>${loc('eden_elysanite_mine_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            reqs: { elysium: 6 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('elysanite_mine', offset, 566000000, 1.24, 'eden'); },
+                Wrought_Iron(offset){ return spaceCostMultiplier('elysanite_mine', offset, 10000000, 1.24, 'eden'); },
+                Stanene(offset){ return spaceCostMultiplier('elysanite_mine', offset, 18000000, 1.24, 'eden'); },
+            },
+            effect(){
+                let desc = `<div>${loc('plus_max_resource',[jobScale(2),loc(`job_elysium_miner`)])}</div>`;
+                desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            powered(){ return powerCostMod(25); },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('elysanite_mine','eden');
+                    powerOnNewStruct($(this)[0]);
+                    global.civic.elysium_miner.display = true;
                     return true;
                 }
                 return false;

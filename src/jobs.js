@@ -343,6 +343,9 @@ export const job_desc = {
         
         return loc('job_ghost_trapper_desc',[loc('portal_soul_forge_title'),global.resource.Soul_Gem.name,min,max]);
     },
+    elysium_miner(){
+        return loc('job_elysium_miner_desc',[loc('eden_elysium_name')]);
+    },
     pit_miner(){
         return loc('job_pit_miner_desc',[loc('tau_planet',[races[global.race.species].home])]);
     },
@@ -382,6 +385,7 @@ export function defineJobs(define){
     loadJob('hell_surveyor',define,1,1,'advanced');
     loadJob('archaeologist',define,1,1,'advanced');
     loadJob('ghost_trapper',define,1,3,'advanced');
+    loadJob('elysium_miner',define,1,3,'advanced');
     loadJob('pit_miner',define,1,4.5,'advanced');
     loadJob('crew',define,1,4,'alert');
     if (!define && !global.race['start_cataclysm']){
