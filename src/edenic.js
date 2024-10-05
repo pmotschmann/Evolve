@@ -942,6 +942,7 @@ const edenicModules = {
             desc: loc('eden_ruined_fortress'),
             queue_complete(){ return 0; },
             reqs: { elysium: 4 },
+            wiki: false,
             effect(){ 
                 return loc('eden_ruined_fortress_effect');
             },
@@ -955,7 +956,7 @@ const edenicModules = {
             desc: loc('eden_scout_elysium_title'),
             reqs: { elysium: 4 },
             grant: ['elysium',5],
-            queue_complete(){ return global.tech.hell_lake >= 2 ? 0 : 1; },
+            queue_complete(){ return global.tech.elysium >= 5 ? 0 : 1; },
             cost: {
                 Money(){ return 10000000000; },
                 Oil(){ return 9000000; },

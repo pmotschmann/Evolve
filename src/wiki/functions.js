@@ -194,7 +194,7 @@ export function actionDesc(info, c_action, extended, isStruct){
                 cost.append($(`<div class="${color}">${costs[res]().label}</div>`));
                 render = true;
             }
-            else if (res !== 'Morale' && res !== 'Army' && res !== 'Bool'){
+            else if (res !== 'Morale' && res !== 'Army' && res !== 'Bool' && res !== 'Troops'){
                 let f_res = res === 'Species' ? global.race.species : res;
                 let label = f_res === 'Money' ? '$' : (res === 'HellArmy' ? loc('fortress_troops') : global.resource[f_res].name) + ': ';
                 label = label.replace("_", " ");
