@@ -640,7 +640,7 @@ const edenicModules = {
                 desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
             },
-            support(){ return 2; },
+            support(){ return 1; },
             powered(){ return powerCostMod(50); },
             action(){
                 if (payCosts($(this)[0])){
@@ -942,6 +942,9 @@ const edenicModules = {
             desc: loc('eden_ruined_fortress'),
             queue_complete(){ return 0; },
             reqs: { elysium: 4 },
+            condition(){
+                return global.tech.elysium < 8;
+            },
             wiki: false,
             effect(){ 
                 return loc('eden_ruined_fortress_effect');
@@ -976,6 +979,81 @@ const edenicModules = {
                 return false;
             }
         },
+        fire_support_base: {
+            id: 'eden-fire_support_base',
+            title: loc('eden_fire_support_base_title'),
+            desc(wiki){
+                if (!global.eden.hasOwnProperty('fire_support_base') || global.eden.fire_support_base.count < 100 || wiki){
+                    return `<div>${loc('eden_fire_support_base_title')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
+                }
+                else {
+                    return `<div>${loc('eden_fire_support_base_title')}</div>`;
+                }
+            },
+            reqs: { elysium: 8 },
+            queue_size: 10,
+            queue_complete(){ return 100 - global.eden.fire_support_base.count; },
+            cost: {
+                Money(offset){
+                    if (offset){
+                        return offset + (global.eden.hasOwnProperty('fire_support_base') ? global.eden.fire_support_base.count : 0) < 100 ? 2500000000 : 0;
+                    }
+                    return !global.eden.hasOwnProperty('fire_support_base') || (global.eden.fire_support_base.count < 100) ? 2500000000 : 0;
+                },
+                Stone(offset){
+                    if (offset){
+                        return offset + (global.eden.hasOwnProperty('fire_support_base') ? global.eden.fire_support_base.count : 0) < 100 ? 215000000 : 0;
+                    }
+                    return !global.eden.hasOwnProperty('fire_support_base') || (global.eden.fire_support_base.count < 100) ? 215000000 : 0;
+                },
+                Neutronium(offset){
+                    if (offset){
+                        return offset + (global.eden.hasOwnProperty('fire_support_base') ? global.eden.fire_support_base.count : 0) < 100 ? 3300000 : 0;
+                    }
+                    return !global.eden.hasOwnProperty('fire_support_base') || (global.eden.fire_support_base.count < 100) ? 3300000 : 0;
+                },
+                Polymer(offset){
+                    if (offset){
+                        return offset + (global.eden.hasOwnProperty('fire_support_base') ? global.eden.fire_support_base.count : 0) < 100 ? 65000000 : 0;
+                    }
+                    return !global.eden.hasOwnProperty('fire_support_base') || (global.eden.fire_support_base.count < 100) ? 65000000 : 0;
+                },
+                Elysanite(offset){
+                    if (offset){
+                        return offset + (global.eden.hasOwnProperty('fire_support_base') ? global.eden.fire_support_base.count : 0) < 100 ? 100000 : 0;
+                    }
+                    return !global.eden.hasOwnProperty('fire_support_base') || (global.eden.fire_support_base.count < 100) ? 100000 : 0;
+                },
+            },
+            effect(wiki){
+                let count = (wiki || 0) + (global.eden.hasOwnProperty('fire_support_base') ? global.eden.fire_support_base.count : 0);
+                if (count >= 100){
+                    let desc = `<div>${loc('plus_max_soldiers',[25])}</div>`;
+                    if (global.tech['elysium'] && global.tech.elysium >= 10){
+                        desc += `<div>${loc('eden_fire_support_base_effect')}</div>`;
+                        desc += `<div>${loc('eden_fire_support_base_effect2',[sizeApproximation(250000),global.resource.Elerium.name])}</div>`;
+                    }
+                    return desc;
+                }
+                else {
+                    let size = 100;
+                    let remain = size - count;
+                    return `<div>${loc('eden_fire_support_base_build')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                }
+            },
+            action(){
+                if (global.eden.fire_support_base.count < 100 && payCosts($(this)[0])){
+                    incrementStruct('fire_support_base','eden');
+                    if (global.eden.fire_support_base.count === 100 && !global.tech['isle']){
+                        global.tech['isle'] = 1;
+                        renderEdenic();
+                        drawTech();
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
         elysanite_mine: {
             id: 'eden-elysanite_mine',
             title: loc('eden_elysanite_mine_title'),
@@ -983,8 +1061,8 @@ const edenicModules = {
             reqs: { elysium: 6 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('elysanite_mine', offset, 566000000, 1.24, 'eden'); },
+                Adamantite(offset){ return spaceCostMultiplier('elysanite_mine', offset, 18000000, 1.24, 'eden'); },
                 Wrought_Iron(offset){ return spaceCostMultiplier('elysanite_mine', offset, 10000000, 1.24, 'eden'); },
-                Stanene(offset){ return spaceCostMultiplier('elysanite_mine', offset, 18000000, 1.24, 'eden'); },
             },
             effect(){
                 let desc = `<div>${loc('plus_max_resource',[jobScale(2),loc(`job_elysium_miner`)])}</div>`;
@@ -997,6 +1075,36 @@ const edenicModules = {
                     incrementStruct('elysanite_mine','eden');
                     powerOnNewStruct($(this)[0]);
                     global.civic.elysium_miner.display = true;
+                    return true;
+                }
+                return false;
+            }
+        },
+        sacred_smelter: {
+            id: 'eden-sacred_smelter',
+            title: loc('eden_sacred_smelter_title'),
+            desc: `<div>${loc('eden_sacred_smelter_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            reqs: { elysium: 7 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('sacred_smelter', offset, 625000000, 1.25, 'eden'); },
+                Iridium(offset){ return spaceCostMultiplier('sacred_smelter', offset, 25000000, 1.25, 'eden'); },
+                Elysanite(offset){ return spaceCostMultiplier('sacred_smelter', offset, 4500000, 1.25, 'eden'); },
+                Scarletite(offset){ return spaceCostMultiplier('sacred_smelter', offset, 1250000, 1.25, 'eden'); },
+            },
+            effect(){
+                let desc = `<div>${loc('interstellar_stellar_forge_effect3',[5])}</div>`;
+                return `${desc}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            powered(){ return powerCostMod(33); },
+            special: true,
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('sacred_smelter','eden');
+                    if (powerOnNewStruct($(this)[0])){
+                        global.city.smelter.cap += 5;
+                        global.city.smelter.Steel += 5;
+                        global.city.smelter.Oil += 5;
+                    }
                     return true;
                 }
                 return false;

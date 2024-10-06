@@ -1366,28 +1366,6 @@ const techs = {
             return false;
         }
     },
-    banquet:{
-        id: 'tech-banquet',
-        title: loc('tech_banquet'),
-        desc: loc('tech_banquet'),
-        category: 'special',
-        era: 'discovery',
-        reqs: { high_tech: 2 },
-        not_trait: ['fasting','cataclysm','lone_survivor'],
-        grant: ['banquet',1],
-        condition(){ return global.stats.achieve['endless_hunger'] && global.stats.achieve['endless_hunger'].l >= 1 ? true : false; },
-        cost: {
-            Knowledge(){ return 18500; }
-        },
-        effect: loc('tech_banquet_effect'),
-        action(){
-            if (payCosts($(this)[0])){
-                global.city['banquet'] = { count: 0, on: 0, strength:0 };
-                return true;
-            }
-            return false;
-        }
-    },
     brickworks: {
         id: 'tech-brickworks',
         title: loc('tech_brickworks'),
@@ -1588,6 +1566,28 @@ const techs = {
         effect: `<span>${loc('tech_high_tech_factories_effect')}</span> <span class="has-text-special">${loc('tech_factory_warning')}</span>`,
         action(){
             if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    banquet:{
+        id: 'tech-banquet',
+        title: loc('tech_banquet'),
+        desc: loc('tech_banquet'),
+        category: 'special',
+        era: 'discovery',
+        reqs: { high_tech: 2 },
+        not_trait: ['fasting','cataclysm','lone_survivor'],
+        grant: ['banquet',1],
+        condition(){ return global.stats.achieve['endless_hunger'] && global.stats.achieve['endless_hunger'].l >= 1 ? true : false; },
+        cost: {
+            Knowledge(){ return 18500; }
+        },
+        effect: loc('tech_banquet_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.city['banquet'] = { count: 0, on: 0, strength:0 };
                 return true;
             }
             return false;
@@ -2600,6 +2600,28 @@ const techs = {
             return false;
         }
     },
+    elysanite_crates: {
+        id: 'tech-elysanite_crates',
+        title(){ return loc('tech_crates',[global.resource.Elysanite.name]); },
+        desc(){ return loc('tech_crates',[global.resource.Elysanite.name]); },
+        category: 'storage',
+        era: 'existential',
+        reqs: { container: 8, elysium: 6 },
+        grant: ['container',9],
+        cost: {
+            Knowledge(){ return 95500000; },
+            Omniscience(){ return 20250; },
+            Asphodel_Powder(){ return 175000; },
+            Elysanite(){ return 75000000; }
+        },
+        effect(){ return loc('tech_elysanite_crates_effect',[global.resource.Elysanite.name,global.resource.Asphodel_Powder.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     steel_containers: {
         id: 'tech-steel_containers',
         title(){ return loc('tech_containers',[global.resource.Steel.name]); },
@@ -2766,6 +2788,27 @@ const techs = {
             Nanoweave(){ return 50000; }
         },
         effect(){ return loc('tech_nanoweave_containers_effect',[global.resource.Nanoweave.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    elysanite_containers: {
+        id: 'tech-elysanite_containers',
+        title(){ return loc('tech_containers',[global.resource.Elysanite.name]); },
+        desc(){ return loc('tech_containers',[global.resource.Elysanite.name]); },
+        category: 'storage',
+        era: 'existential',
+        reqs: { steel_container: 8, elysium: 6 },
+        grant: ['steel_container',9],
+        cost: {
+            Knowledge(){ return 100000000; },
+            Omniscience(){ return 22500; },
+            Elysanite(){ return 100000000; }
+        },
+        effect(){ return loc('tech_elysanite_containers_effect',[global.resource.Elysanite.name]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -6796,7 +6839,7 @@ const techs = {
         desc: loc('tech_steel_pickaxe_desc'),
         category: 'mining',
         era: 'discovery',
-        reqs: { pickaxe: 2, smelting: 2},
+        reqs: { pickaxe: 2, smelting: 2 },
         not_trait: ['living_tool'],
         grant: ['pickaxe',3],
         cost: {
@@ -6817,7 +6860,7 @@ const techs = {
         desc: loc('tech_jackhammer_desc'),
         category: 'mining',
         era: 'discovery',
-        reqs: { pickaxe: 3, high_tech: 2},
+        reqs: { pickaxe: 3, high_tech: 2 },
         not_trait: ['living_tool'],
         grant: ['pickaxe',4],
         cost: {
@@ -6838,7 +6881,7 @@ const techs = {
         desc: loc('tech_jackhammer_mk2'),
         category: 'mining',
         era: 'globalized',
-        reqs: { pickaxe: 4, high_tech: 4},
+        reqs: { pickaxe: 4, high_tech: 4 },
         not_trait: ['living_tool'],
         grant: ['pickaxe',5],
         cost: {
@@ -6856,18 +6899,40 @@ const techs = {
     },
     adamantite_hammer: {
         id: 'tech-adamantite_hammer',
-        title: loc('tech_adamantite_hammer'),
-        desc: loc('tech_adamantite_hammer'),
+        title: loc('tech_improved_jackhammer',[global.resource.Adamantite.name]),
+        desc: loc('tech_improved_jackhammer',[global.resource.Adamantite.name]),
         category: 'mining',
         era: 'interstellar',
-        reqs: { pickaxe: 5, alpha: 2},
+        reqs: { pickaxe: 5, alpha: 2 },
         not_trait: ['living_tool'],
         grant: ['pickaxe',6],
         cost: {
             Knowledge(){ return 535000; },
             Adamantite(){ return 12500; }
         },
-        effect: loc('tech_adamantite_hammer_effect'),
+        effect: loc('tech_improved_jackhammer_effect',[global.resource.Adamantite.name]),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    elysanite_hammer: {
+        id: 'tech-elysanite_hammer',
+        title: loc('tech_improved_jackhammer',[global.resource.Elysanite.name]),
+        desc: loc('tech_improved_jackhammer',[global.resource.Elysanite.name]),
+        category: 'mining',
+        era: 'existential',
+        reqs: { pickaxe: 6, elysium: 7 },
+        not_trait: ['living_tool'],
+        grant: ['pickaxe',7],
+        cost: {
+            Knowledge(){ return 97500000; },
+            Omniscience(){ return 21500; },
+            Elysanite(){ return 35000000; }
+        },
+        effect: loc('tech_improved_jackhammer_effect',[global.resource.Elysanite.name]),
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -7770,6 +7835,27 @@ const techs = {
             Oil(){ return 2500; }
         },
         effect: loc('tech_anfo_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    super_tnt: {
+        id: 'tech-super_tnt',
+        title: loc('tech_super_tnt'),
+        desc: loc('tech_super_tnt'),
+        category: 'mining',
+        era: 'existential',
+        reqs: { explosives: 3, science: 23 },
+        grant: ['explosives',4],
+        cost: {
+            Knowledge(){ return 85000000; },
+            Omniscience(){ return 14500; },
+            Asphodel_Powder(){ return 66777; }
+        },
+        effect(){ return loc('tech_super_tnt_effect',[global.resource.Asphodel_Powder.name]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -14576,8 +14662,8 @@ const techs = {
     },
     sacred_smelter: {
         id: 'tech-sacred_smelter',
-        title: loc('tech_sacred_smelter'),
-        desc: loc('tech_sacred_smelter'),
+        title: loc('eden_sacred_smelter_title'),
+        desc: loc('eden_sacred_smelter_title'),
         category: 'mining',
         era: 'existential',
         reqs: { elysium: 6 },
@@ -14586,10 +14672,76 @@ const techs = {
             Knowledge(){ return 96000000; },
             Omniscience(){ return 19425; },
         },
-        effect(){ return loc('tech_sacred_smelter_effect',[global.resource.Elysanite.name]); },
+        effect(){ return loc('tech_sacred_smelter_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 global.eden['sacred_smelter'] = { count: 0, on: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    fire_support_base: {
+        id: 'tech-fire_support_base',
+        title: loc('eden_fire_support_base_title'),
+        desc: loc('eden_fire_support_base_title'),
+        category: 'military',
+        era: 'existential',
+        reqs: { elysium: 7 },
+        grant: ['elysium',8],
+        cost: {
+            Knowledge(){ return 100000000; },
+            Omniscience(){ return 22500; },
+        },
+        effect(){ return loc('tech_fire_support_base_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.eden['fire_support_base'] = { count: 0, on: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    pillbox: {
+        id: 'tech-pillbox',
+        title: loc('eden_pillbox_title'),
+        desc: loc('eden_pillbox_title'),
+        category: 'military',
+        era: 'existential',
+        reqs: { elysium: 8 },
+        grant: ['elysium',9],
+        cost: {
+            Knowledge(){ return 102500000; },
+            Omniscience(){ return 23500; },
+        },
+        effect(){ return loc('tech_pillbox_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.eden['pillbox'] = { count: 0, on: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    elerium_cannon: {
+        id: 'tech-pillbox',
+        title: loc('tech_elerium_cannon'),
+        desc: loc('tech_elerium_cannon'),
+        category: 'military',
+        era: 'existential',
+        reqs: { elysium: 9, isle: 1 },
+        grant: ['elysium',10],
+        cost: {
+            Knowledge(){ return 105000000; },
+            Omniscience(){ return 25000; },
+            Steel(){ return 1000000000; },
+            Nano_Tube(){ return 500000000; },
+            Elysanite(){ return 100000000; },
+            Soul_Gem(){ return 5000; },
+        },
+        effect(){ return loc('tech_elerium_cannon_effect',[loc('eden_fire_support_base_title')]); },
+        action(){
+            if (payCosts($(this)[0])){
                 return true;
             }
             return false;

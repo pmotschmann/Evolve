@@ -2149,7 +2149,7 @@ function fastLoop(){
                         break;
                     case 'asphodel':
                         {
-                            global[sup.a][sup.s].s_max += (p_on['rectory'] ? p_on['rectory'] : 0) * 2;
+                            global[sup.a][sup.s].s_max += (p_on['rectory'] ? p_on['rectory'] : 0) * actions.eden.eden_asphodel.rectory.support();
                         }
                         break;
                 }
@@ -4713,6 +4713,9 @@ function fastLoop(){
             if (p_on['hell_forge']){
                 capacity += p_on['hell_forge'] * 3;
             }
+            if (p_on['sacred_smelter']){
+                capacity += p_on['sacred_smelter'] * 5;
+            }
             if (p_on['ore_refinery']){
                 capacity += p_on['ore_refinery'] * (global.tech['isolation'] ? 12 : 4);
             }
@@ -5501,8 +5504,8 @@ function fastLoop(){
             if (global.city.biome === 'swamp'){
                 stone_base *= biomes.swamp.vars()[3];
             }
-            if (global.tech['explosives'] && global.tech['explosives'] >= 2){
-                stone_base *= global.tech['explosives'] >= 3 ? 1.75 : 1.5;
+            if (global.tech['explosives'] && global.tech.explosives >= 2){
+                stone_base *= 1 + (global.tech.explosives * 0.25);
             }
 
             let asbestos_base = 0;
@@ -5811,8 +5814,8 @@ function fastLoop(){
             if (!global.race['living_tool']){
                 miner_base *= (global.tech['pickaxe'] && global.tech.pickaxe > 0 ? global.tech.pickaxe * 0.15 : 0) + 1;
             }
-            if (global.tech['explosives'] && global.tech['explosives'] >= 2){
-                miner_base *= global.tech['explosives'] >= 3 ? 1.4 : 1.25;
+            if (global.tech['explosives'] && global.tech.explosives >= 2){
+                miner_base *= 0.95 + (global.tech.explosives * 0.15);
             }
 
             let power_mult = 1;
@@ -6191,8 +6194,8 @@ function fastLoop(){
             if (!global.race['living_tool']){
                 coal_base *= (global.tech['pickaxe'] && global.tech.pickaxe > 0 ? global.tech.pickaxe * 0.12 : 0) + 1;
             }
-            if (global.tech['explosives'] && global.tech['explosives'] >= 2){
-                coal_base *= global.tech['explosives'] >= 3 ? 1.4 : 1.25;
+            if (global.tech['explosives'] && global.tech.explosives >= 2){
+                coal_base *= 0.95 + (global.tech.explosives * 0.15);
             }
             if (global.city.geology['Coal']){
                 coal_base *= global.city.geology['Coal'] + 1;
@@ -6802,13 +6805,19 @@ function fastLoop(){
         if (global.resource.Elysanite.display){
             if (global.civic.elysium_miner.display){
                 let miner_base = workerScale(global.civic.elysium_miner.workers,'elysium_miner');
-                miner_base *= racialTrait(miner_base,'miner');
+                miner_base *= racialTrait(miner_base,'miner') * 0.36;
                 miner_base = highPopAdjust(miner_base);
 
-                let miner_gain = miner_base * 0.5;
-                breakdown.p['Elysanite'][loc('job_elysium_miner')] = miner_gain + 'v';
+                if (!global.race['living_tool']){
+                    miner_base *= (global.tech['pickaxe'] && global.tech.pickaxe > 0 ? global.tech.pickaxe * 0.15 : 0) + 1;
+                }
+                if (global.tech['explosives'] && global.tech.explosives >= 2){
+                    miner_base *= 0.95 + (global.tech.explosives * 0.15);
+                }
 
-                let delta = miner_gain;
+                breakdown.p['Elysanite'][loc('job_elysium_miner')] = miner_base + 'v';
+
+                let delta = miner_base;
                 delta *= hunger * global_multiplier;
 
                 modRes('Elysanite', delta * time_multiplier);

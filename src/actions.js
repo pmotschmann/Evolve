@@ -7091,6 +7091,7 @@ function drawModal(c_action,type){
         case 'hell_smelter':
         case 'stellar_forge':
         case 'hell_forge':
+        case 'sacred_smelter':
         case 'geothermal':
         case 'ore_refinery':
             loadIndustry('smelter',body);

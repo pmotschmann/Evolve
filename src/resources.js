@@ -2544,7 +2544,7 @@ export function crateValue(){
         create_value += global.tech['container'] >= 7 ? 1200 : 500;
     }
     if (global.tech['container'] && global.tech['container'] >= 8){
-        create_value += 4000;
+        create_value += global.tech['container'] >= 9 ? 7500 : 4000;
     }
     if (global.race['pack_rat']){
         create_value *= 1 + (traits.pack_rat.vars()[0] / 100);
@@ -2569,7 +2569,7 @@ export function containerValue(){
         container_value += global.tech['steel_container'] >= 7 ? 7500 : 1000;
     }
     if (global.tech['steel_container'] && global.tech['steel_container'] >= 8){
-        container_value += 8000;
+        container_value += global.tech['steel_container'] >= 9 ? 15000 : 8000;
     }
     if (global.race['pack_rat']){
         container_value *= 1 + (traits.pack_rat.vars()[0] / 100);
