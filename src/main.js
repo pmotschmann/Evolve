@@ -11,7 +11,7 @@ import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMul
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay } from './portal.js';
 import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled } from './truepath.js';
-import { arpa, buildArpa } from './arpa.js';
+import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
 import { govern, govActive, removeTask } from './governor.js';
 import { production, highPopAdjust, teamster } from './prod.js';
@@ -3958,8 +3958,7 @@ function fastLoop(){
             }
 
             let gene_consume = 0;
-            let labs = global.race['cataclysm'] || global.race['orbit_decayed'] ? support_on['exotic_lab'] : p_on['biolab'];
-            if (global.arpa['sequence'] && global.arpa.sequence.on && global.arpa.sequence.time > 0 && labs > 0){
+            if (global.arpa['sequence'] && global.arpa.sequence.on && global.arpa.sequence.time > 0 && sequenceLabs() > 0){
                 let gene_cost = 50 + (global.race.mutation * 10);
                 if (global.arpa.sequence.boost){
                     gene_cost *= 4;
@@ -9781,12 +9780,7 @@ function midLoop(){
         }
 
         if (global.arpa['sequence'] && global.arpa.sequence.on && gene_sequence){
-            let labs = global.race['cataclysm'] || global.race['orbit_decayed'] ? support_on['exotic_lab'] : p_on['biolab'];
-            if (global.tech['isolation']){ labs = support_on['infectious_disease_lab'] * 5; }
-            if (global.race['lone_survivor']){ labs += 2; }
-            if (labs > 0 && global.city.ptrait.includes('toxic')){
-                labs += planetTraits.toxic.vars()[0];
-            }
+            let labs = sequenceLabs();
             global.arpa.sequence.labs = labs;
             global.arpa.sequence.time -= global.arpa.sequence.boost ? labs * 2 : labs;
             global.arpa.sequence.progress = global.arpa.sequence.max - global.arpa.sequence.time;
