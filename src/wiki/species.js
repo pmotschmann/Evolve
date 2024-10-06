@@ -96,19 +96,19 @@ export function racesPage(content){
         Object.keys(genus_traits[races[race].type]).sort().forEach(function (trait){
             let id = `raceTrait${race}${trait}`;
             let color = races[race].fanaticism === trait ? 'danger' : 'caution';
-            genes.append(`<span class="has-text-${color}" id="${id}">${traits[trait].name}<span>`);
+            genes.append(`<span class="has-text-${color}" id="${id}">${traitSkin('name', trait, race)}<span>`);
             traitList.push({ t: trait, r: 1});
         });
         Object.keys(races[race].traits).sort().forEach(function (trait){
             let id = `raceTrait${race}${trait}`;
             let color = races[race].fanaticism === trait ? 'danger' : 'info';
-            genes.append(`<span class="has-text-${color}" id="${id}">${traits[trait].name}<span>`);
+            genes.append(`<span class="has-text-${color}" id="${id}">${traitSkin('name', trait, race)}<span>`);
             traitList.push({ t: trait, r: races[race].traits[trait] });
         });
         for (let i=0; i<extraTraits.length; i++){
             let id = `raceTrait${race}${extraTraits[i].t}`;
             let color = races[race].fanaticism === extraTraits[i] ? 'danger' : 'info';
-            genes.append(`<span class="has-text-${color}" id="${id}">${traits[extraTraits[i].t].name}<span>`);
+            genes.append(`<span class="has-text-${color}" id="${id}">${traitSkin('name', extraTraits[i].t, race)}<span>`);
             traitList.push(extraTraits[i]);
         }
         info.append(genes);
@@ -123,7 +123,8 @@ export function racesPage(content){
             getTraitDesc(desc, traitList[i].t, {
                 fanatic: traitList[i].t === races[race].fanaticism ? races[race].name : false, 
                 trank: traitList[i].r,
-                wiki: true
+                wiki: true,
+                species: race
             });
 
             popover(id,desc,{ wide: true, classes: 'w25' });

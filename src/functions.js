@@ -2804,7 +2804,7 @@ const valAdjust = {
     living_tool: false,
 };
 
-function getTraitVals(trait,rank){
+function getTraitVals(trait, rank, species){
     let vals = traits[trait].hasOwnProperty('vars') ? traits[trait].vars(rank) : [];
     if (valAdjust.hasOwnProperty(trait)){
         if (trait === 'fibroblast'){
@@ -2829,7 +2829,7 @@ function getTraitVals(trait,rank){
             vals = [14 - vals[0], vals[0]];
         }
         else if (trait === 'hooved'){
-            vals.unshift(hoovedRename());
+            vals.unshift(hoovedRename(false, species));
         }
         else if (trait === 'anthropophagite'){
             vals = [vals[0] * 10000];
@@ -2841,53 +2841,53 @@ function getTraitVals(trait,rank){
     return vals;
 }
 
-export function hoovedRename(style){
-    if (global.race['sludge']){
+export function hoovedRename(style, species=global.race.species){
+    if (species === 'sludge'){
         return style ? 'craft' : loc('resource_Beaker_name');
     }
-    else if (global.race.species === 'cath'){
+    else if (species === 'cath'){
         return style ? 'craft' : loc('resource_Box_name');
     }
-    else if (global.race.species === 'wolven'){
+    else if (species === 'wolven'){
         return style ? 'craft' : loc('resource_ChewToy_name');
     }
-    else if (global.race.species === 'dracnid'){
+    else if (species === 'dracnid'){
         return style ? 'craft' : loc('resource_Hoard_name');
     }
-    else if (global.race.species === 'seraph'){
+    else if (species === 'seraph'){
         return style ? 'forge' : loc('resource_Halo_name');
     }
-    else if (global.race.species === 'cyclops'){
+    else if (species === 'cyclops'){
         return style ? 'craft' : loc('resource_Monocle_name');
     }
-    else if (global.race.species === 'kobold'){
+    else if (species === 'kobold'){
         return style ? 'craft' : loc('resource_Candle_name');
     }
-    else if (global.race.species === 'tuskin'){
+    else if (species === 'tuskin'){
         return style ? 'craft' : loc('resource_Goggles_name');
     }
-    else if (global.race.species === 'sharkin'){
+    else if (species === 'sharkin'){
         return style ? 'craft' : loc('resource_ToothSharpener_name');
     }
-    else if (races[global.race.species].type === 'humanoid'){
+    else if (races[species].type === 'humanoid'){
         return style ? 'craft' : loc('resource_Sandals_name');
     }
-    else if (races[global.race.species].type === 'avian'){
+    else if (races[species].type === 'avian'){
         return style ? 'craft' : loc('resource_Perch_name');
     }
-    else if (races[global.race.species].type === 'plant'){
+    else if (races[species].type === 'plant'){
         return style ? 'craft' : loc('resource_Planter_name');
     }
-    else if (races[global.race.species].type === 'fungi'){
+    else if (races[species].type === 'fungi'){
         return style ? 'craft' : loc('resource_DampCloth_name');
     }
-    else if (races[global.race.species].type === 'reptilian'){
+    else if (races[species].type === 'reptilian'){
         return style ? 'craft' : loc('resource_HeatRock_name');
     }
-    else if (races[global.race.species].type === 'fey'){
+    else if (races[species].type === 'fey'){
         return style ? 'craft' : loc('resource_PixieDust_name');
     }
-    else if (races[global.race.species].type === 'synthetic'){
+    else if (races[species].type === 'synthetic'){
         return style ? 'craft' : loc('resource_Battery_name');
     }
     else {
@@ -2914,7 +2914,7 @@ const traitExtra = {
         loc(`wiki_trait_effect_sniper_ex1`),
     ],
     hooved: [
-        loc(`wiki_trait_effect_hooved_ex1`,[hoovedRename(false)]),
+        function(opts){return loc(`wiki_trait_effect_hooved_ex1`,[hoovedRename(false, opts.species)])},
         loc(`wiki_trait_effect_hooved_ex2`,[
             `<span class="has-text-warning">${global.resource.hasOwnProperty('Lumber') ? global.resource.Lumber.name : loc('resource_Lumber_name')}</span>`,
             `<span class="has-text-warning">${global.resource.hasOwnProperty('Copper') ? global.resource.Copper.name : loc('resource_Copper_name')}</span>`,
@@ -2925,7 +2925,7 @@ const traitExtra = {
             12,75,150,500,5000
         ]),
         loc(`wiki_trait_effect_hooved_ex3`),
-        loc(`wiki_trait_effect_hooved_ex4`,[`<span class="has-text-warning">${5}</span>`,hoovedRename(false)]),
+        function(opts){return loc(`wiki_trait_effect_hooved_ex4`,[`<span class="has-text-warning">${5}</span>`,hoovedRename(false, opts.species)])},
         loc(`wiki_trait_effect_hooved_ex5`,[
             `<span class="has-text-warning">${global.resource.hasOwnProperty('Lumber') ? global.resource.Lumber.name : loc('resource_Lumber_name')}</span>`,
             `<span class="has-text-warning">${global.resource.hasOwnProperty('Copper') ? global.resource.Copper.name : loc('resource_Copper_name')}</span>`
@@ -2957,15 +2957,16 @@ function rName(r){
     return `<span class="has-text-warning">${res}</span>`;
 }
 
-export function getTraitDesc(info,trait,opts){
+export function getTraitDesc(info, trait, opts){
     let fanatic = opts['fanatic'] || false;
     let tpage = opts['tpage'] || false;
     let trank = opts['trank'] || false;
     let wiki = opts['wiki'] || false;
+    let species = opts['species']; // Intentionally keep undefined, not false, when undefined
     let rank = '';
 
-    let traitName = traitSkin('name',trait);
-    let traitDesc = traitSkin('desc',trait);
+    let traitName = traitSkin('name', trait, species);
+    let traitDesc = traitSkin('desc', trait, species);
 
     if (tpage && ['genus','major'].includes(traits[trait].type)){
         rank = `<span><span role="button" @click="down()">&laquo;</span><span class="has-text-warning">${loc(`wiki_trait_rank`)} {{ rank }}</span><span role="button" @click="up()">&raquo;</span></span>`;
@@ -2997,11 +2998,14 @@ export function getTraitDesc(info,trait,opts){
     }
     else {
         if (wiki || (global.stats.feat['journeyman'] && global.stats.achieve['seeder'] && global.stats.achieve.seeder.l > 0)){
-            info.append(`<div class="has-text-${color} effect">${loc(`wiki_trait_effect_${trait}`,getTraitVals(trait,trank))}</div>`);
+            info.append(`<div class="has-text-${color} effect">${loc(`wiki_trait_effect_${trait}`, getTraitVals(trait, trank, species))}</div>`);
         }
     }
     if (traitExtra[trait] && wiki){
         traitExtra[trait].forEach(function(te){
+            if (typeof te !== 'string'){
+                te = te(opts);
+            }
             info.append(`<div class="effect">${te}</div>`);
         });
     }
@@ -3013,7 +3017,7 @@ export function getTraitDesc(info,trait,opts){
             data: data,
             methods: {
                 getTraitDesc(rk){
-                    return loc(`wiki_trait_effect_${trait}`,getTraitVals(trait,rk));
+                    return loc(`wiki_trait_effect_${trait}`, getTraitVals(trait, rk, species));
                 },
                 up(){
                     switch (data.rank){
