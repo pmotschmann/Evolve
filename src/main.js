@@ -3958,7 +3958,8 @@ function fastLoop(){
             }
 
             let gene_consume = 0;
-            if (global.arpa['sequence'] && global.arpa.sequence.on && global.arpa.sequence.time > 0){
+            let labs = global.race['cataclysm'] || global.race['orbit_decayed'] ? support_on['exotic_lab'] : p_on['biolab'];
+            if (global.arpa['sequence'] && global.arpa.sequence.on && global.arpa.sequence.time > 0 && labs > 0){
                 let gene_cost = 50 + (global.race.mutation * 10);
                 if (global.arpa.sequence.boost){
                     gene_cost *= 4;
