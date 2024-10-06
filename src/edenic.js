@@ -1002,15 +1002,15 @@ const edenicModules = {
                 },
                 Stone(offset){
                     if (offset){
-                        return offset + (global.eden.hasOwnProperty('fire_support_base') ? global.eden.fire_support_base.count : 0) < 100 ? 215000000 : 0;
+                        return offset + (global.eden.hasOwnProperty('fire_support_base') ? global.eden.fire_support_base.count : 0) < 100 ? 235000000 : 0;
                     }
-                    return !global.eden.hasOwnProperty('fire_support_base') || (global.eden.fire_support_base.count < 100) ? 215000000 : 0;
+                    return !global.eden.hasOwnProperty('fire_support_base') || (global.eden.fire_support_base.count < 100) ? 235000000 : 0;
                 },
                 Neutronium(offset){
                     if (offset){
-                        return offset + (global.eden.hasOwnProperty('fire_support_base') ? global.eden.fire_support_base.count : 0) < 100 ? 3300000 : 0;
+                        return offset + (global.eden.hasOwnProperty('fire_support_base') ? global.eden.fire_support_base.count : 0) < 100 ? 3750000 : 0;
                     }
-                    return !global.eden.hasOwnProperty('fire_support_base') || (global.eden.fire_support_base.count < 100) ? 3300000 : 0;
+                    return !global.eden.hasOwnProperty('fire_support_base') || (global.eden.fire_support_base.count < 100) ? 3750000 : 0;
                 },
                 Polymer(offset){
                     if (offset){
@@ -1020,18 +1020,26 @@ const edenicModules = {
                 },
                 Elysanite(offset){
                     if (offset){
-                        return offset + (global.eden.hasOwnProperty('fire_support_base') ? global.eden.fire_support_base.count : 0) < 100 ? 100000 : 0;
+                        return offset + (global.eden.hasOwnProperty('fire_support_base') ? global.eden.fire_support_base.count : 0) < 100 ? 625000 : 0;
                     }
-                    return !global.eden.hasOwnProperty('fire_support_base') || (global.eden.fire_support_base.count < 100) ? 100000 : 0;
+                    return !global.eden.hasOwnProperty('fire_support_base') || (global.eden.fire_support_base.count < 100) ? 625000 : 0;
                 },
+                Elerium(){
+                    return global.tech.elysium >= 10 ? 250000 : 0;
+                }
             },
             effect(wiki){
                 let count = (wiki || 0) + (global.eden.hasOwnProperty('fire_support_base') ? global.eden.fire_support_base.count : 0);
                 if (count >= 100){
                     let desc = `<div>${loc('plus_max_soldiers',[25])}</div>`;
                     if (global.tech['elysium'] && global.tech.elysium >= 10){
-                        desc += `<div>${loc('eden_fire_support_base_effect')}</div>`;
-                        desc += `<div>${loc('eden_fire_support_base_effect2',[sizeApproximation(250000),global.resource.Elerium.name])}</div>`;
+                        if (global.resource.Elerium.amount >= 250000){
+                            desc += `<div class="has-text-success">${loc('eden_fire_support_base_effect')}</div>`;
+                        }
+                        else {
+                            desc += `<div class="has-text-danger">${loc('eden_fire_support_base_effect')}</div>`;
+                        }
+                        desc += `<div class="has-text-caution">${loc('eden_fire_support_base_effect2',[sizeApproximation(250000),global.resource.Elerium.name])}</div>`;
                     }
                     return desc;
                 }
@@ -1045,11 +1053,44 @@ const edenicModules = {
                 if (global.eden.fire_support_base.count < 100 && payCosts($(this)[0])){
                     incrementStruct('fire_support_base','eden');
                     if (global.eden.fire_support_base.count === 100 && !global.tech['isle']){
+                        global.eden['enemy_isle'] = { wt: 100, et: 100, g: 100 };
                         global.tech['isle'] = 1;
                         renderEdenic();
                         drawTech();
                     }
                     return true;
+                }
+                else if (global.eden.fire_support_base.count === 100 && global.tech.elysium >= 10 && payCosts($(this)[0])){
+                    let target = null, element = null;
+                    switch (Math.floor(seededRandom(0,3))){
+                        case 0:
+                            target = 'wt';
+                            element = '#eden-west_tower';
+                            break;
+                        case 1:
+                            target = 'et';
+                            element = '#eden-east_tower';
+                            break;
+                        default:
+                            target = 'g';
+                            element = 'eden-isle_garrison';
+                            break;
+                    }
+
+                    let nuke = $('<div class="mininuke"></div>');
+                    $(element).append(nuke);
+                    setTimeout(function(){
+                        nuke.addClass('burn');
+                    }, 500);
+                    setTimeout(function(){
+                        nuke.addClass('b');
+                    }, 600);
+                    setTimeout(function(){
+                        nuke.addClass('c');
+                    }, 2500);
+                    setTimeout(function(){
+                        $(`${element} .mininuke`).remove();
+                    }, 4500);
                 }
                 return false;
             }
@@ -1110,11 +1151,92 @@ const edenicModules = {
                 return false;
             }
         },
+        elerium_containment: {
+            id: 'eden-elerium_containment',
+            title(){ return loc('eden_elerium_containment',[global.resource.Elerium.name]); },
+            desc(){
+                return `<div>${loc('eden_elerium_containment',[global.resource.Elerium.name])}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { elysium: 11 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('elerium_containment', offset, 4500000000, 1.28, 'eden'); },
+                Graphene(offset){ return spaceCostMultiplier('elerium_containment', offset, 100000000, 1.28, 'eden'); },
+                Aerogel(offset){ return spaceCostMultiplier('elerium_containment', offset, 88000000, 1.28, 'eden'); },
+                Elysanite(offset){ return spaceCostMultiplier('elerium_containment', offset, 25000000, 1.28, 'eden'); }
+            },
+            effect(){
+                let elerium = sizeApproximation(spatialReasoning(1000));
+                return `<div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            powered(){ return powerCostMod(50); },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('elerium_containment','eden');
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     eden_isle: {
         info: {
             name: loc('eden_isle_name'),
             desc: loc('eden_isle_desc'),
+        },
+        west_tower: { 
+            id: 'eden-west_tower',
+            title: loc('eden_west_tower_title'),
+            desc: loc('eden_west_tower_title'),
+            queue_complete(){ return 0; },
+            reqs: { isle: 1 },
+            effect(){ 
+                if (global.eden['enemy_isle'] && global.eden.enemy_isle.wt === 0){
+                    return `<div>${loc('eden_tower_destroyed')}</div>`;
+                }
+                else {
+                    return `<div>${loc('eden_tower_intact',[global.eden['enemy_isle'] ? global.eden.enemy_isle.wt : 100])}</div>`;
+                }
+            },
+            action(){
+                return false;
+            }
+        },
+        isle_garrison: { 
+            id: 'eden-isle_garrison',
+            title: loc('eden_garrison_title'),
+            desc: loc('eden_garrison_title'),
+            queue_complete(){ return 0; },
+            reqs: { isle: 1 },
+            effect(){ 
+                if (global.eden['enemy_isle'] && global.eden.enemy_isle.g === 0){
+                    return `<div>${loc('eden_tower_destroyed')}</div>`;
+                }
+                else {
+                    return `<div>${loc('eden_tower_intact',[global.eden['enemy_isle'] ? global.eden.enemy_isle.g : 100])}</div>`;
+                }
+            },
+            action(){
+                return false;
+            }
+        },
+        east_tower: { 
+            id: 'eden-east_tower',
+            title: loc('eden_east_tower_title'),
+            desc: loc('eden_east_tower_title'),
+            queue_complete(){ return 0; },
+            reqs: { isle: 1 },
+            effect(){ 
+                if (global.eden['enemy_isle'] && global.eden.enemy_isle.et === 0){
+                    return `<div>${loc('eden_tower_destroyed')}</div>`;
+                }
+                else {
+                    return `<div>${loc('eden_tower_intact',[global.eden['enemy_isle'] ? global.eden.enemy_isle.et : 100])}</div>`;
+                }
+            },
+            action(){
+                return false;
+            }
         },
     },
     eden_palace: {

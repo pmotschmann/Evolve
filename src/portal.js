@@ -2966,7 +2966,7 @@ export function bloodwar(){
     }
 
     if (global.tech['hell_gate'] && global.tech['hell_gate'] >= 3){
-        if (forgeOperating && p_on['gate_turret']){
+        if (p_on['gate_turret']){
             day_report.gate_turrets = {};
             let gunKills = 0;
             let min = global.tech.hell_gun >= 2 ? 65 : 40;
@@ -2977,9 +2977,11 @@ export function bloodwar(){
                 gunKills += kills;
                 day_report.gate_turrets[i+1].kills = kills;
             }
-            day_report.stats.kills.turrets = gunKills;
-            global.portal.soul_forge.kills += gunKills;
-            soulCapacitor(gunKills);
+            if (forgeOperating){
+                day_report.stats.kills.turrets = gunKills;
+                global.portal.soul_forge.kills += gunKills;
+                soulCapacitor(gunKills);
+            }
             global.stats.dkills += gunKills;
             let gun_base = global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 5 ? 2700 : 3000;
             for (let i=0; i<p_on['gate_turret']; i++){

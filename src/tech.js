@@ -14724,7 +14724,7 @@ const techs = {
         }
     },
     elerium_cannon: {
-        id: 'tech-pillbox',
+        id: 'tech-elerium_cannon',
         title: loc('tech_elerium_cannon'),
         desc: loc('tech_elerium_cannon'),
         category: 'military',
@@ -14736,12 +14736,34 @@ const techs = {
             Omniscience(){ return 25000; },
             Steel(){ return 1000000000; },
             Nano_Tube(){ return 500000000; },
+            Asphodel_Powder(){ return 250000; },
             Elysanite(){ return 100000000; },
             Soul_Gem(){ return 5000; },
         },
         effect(){ return loc('tech_elerium_cannon_effect',[loc('eden_fire_support_base_title')]); },
         action(){
             if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    elerium_containment: {
+        id: 'tech-elerium_containment',
+        title(){ return loc('eden_elerium_containment',[global.resource.Elerium.name]); },
+        desc(){ return loc('eden_elerium_containment',[global.resource.Elerium.name]); },
+        category: 'military',
+        era: 'existential',
+        reqs: { elysium: 10 },
+        grant: ['elysium',11],
+        cost: {
+            Knowledge(){ return 106500000; },
+            Omniscience(){ return 26500; },
+        },
+        effect(){ return loc('tech_elerium_containment_effect',[global.resource.Elerium.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.eden['elerium_containment'] = { count: 0, on: 0 };
                 return true;
             }
             return false;

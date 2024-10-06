@@ -8094,6 +8094,9 @@ function midLoop(){
             let soldiers = jobScale(5);
             lCaps['garrison'] += support_on['bunker'] * soldiers;
         }
+        if (global.eden['fire_support_base'] && global.eden.fire_support_base.count === 100){
+            lCaps['garrison'] += jobScale(25);
+        }
         if (global.race['orbit_decayed'] && global.space.hasOwnProperty('red_mine')){
             lCaps['miner'] += jobScale(support_on['red_mine']);
             lCaps['coal_miner'] += jobScale(support_on['red_mine']);
@@ -8964,6 +8967,11 @@ function midLoop(){
             let el_gain = p_on['elerium_contain'] * spatialReasoning(100);
             caps['Elerium'] += el_gain;
             breakdown.c.Elerium[loc('space_dwarf_elerium_contain_title')] = el_gain+'v';
+        }
+        if (p_on['elerium_containment']){
+            let el_gain = p_on['elerium_containment'] * spatialReasoning(1000);
+            caps['Elerium'] += el_gain;
+            breakdown.c.Elerium[loc('eden_elerium_containment',[global.resource.Elerium.name])] = el_gain+'v';
         }
         if (global.city['foundry']){
             lCaps['craftsman'] += jobScale(global.city['foundry'].count);
