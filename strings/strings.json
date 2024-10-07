@@ -7630,7 +7630,7 @@
   "wiki_trait_effect_sniper": "Weapon upgrades are %0% stronger.",
   "wiki_trait_effect_sniper_ex1": "This upgrade effect is cumulative.",
   "wiki_trait_effect_hooved": "Expanding population requires %0. %0 costs scaled to %1%.",
-  "wiki_trait_effect_hooved_ex1": "%0 materials change at various breakpoints for total acquired shoes.",
+  "wiki_trait_effect_hooved_ex1": "%0 materials change at various breakpoints for total acquired quantity.",
   "wiki_trait_effect_hooved_ex2": "%0 --%6-> %1 --%7-> %2 --%8-> %3 --%9-> %4 --%10-> %5",
   "wiki_trait_effect_hooved_ex3": "If the next resource is not unlocked by the time you reach the breakpoint, it will keep charging the current resource but at a greatly inflated price.",
   "wiki_trait_effect_hooved_ex4": "Note that you start with %0 %1, which count against the total.",
