@@ -38,13 +38,6 @@ export function altRace(race,set){
                 return false;
             }
         case 'wolven':
-            {
-                if (easter.active || (global.race['hrt'] && global.race.hrt === race)){
-                    if (set){global.race['hrt'] = race;}
-                    return true;
-                }
-                return false;
-            }
         case 'vulpine':
             {
                 if (easter.active || (global.race['hrt'] && global.race.hrt === race)){
