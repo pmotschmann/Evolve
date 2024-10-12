@@ -2334,8 +2334,8 @@ const tauCetiModules = {
                 let bake = 15 * modifier;
 
                 let desc = `<div class="has-text-caution">${loc('tau_home_cultureal_effect1',[$(this)[0].p_fuel().a,global.resource[$(this)[0].p_fuel().r].name,$(this)[0].title])}</div>`;
-                desc += `<div>${loc('city_tourist_center_effect3',[cas])}</div>`;
-                desc += `<div>${loc('city_tourist_center_effect4',[mon])}</div>`;
+                desc += `<div>${loc('city_tourist_center_effect2',[cas,structName('casino')])}</div>`;
+                desc += `<div>${loc('city_tourist_center_effect2',[mon,loc(`arpa_project_monument_title`)])}</div>`;
                 desc += `<div>${loc('tau_home_cultureal_effect2',[womling,loc('tau_red_womlings')])}</div>`;
                 if (global.tech.tau_culture >= 2){
                     desc += `<div>${loc('tau_home_cultureal_effect3',[bake,loc(`tau_gas2_alien_station_data2_r${global.race.tau_food_item || 0}`)])}</div>`;
