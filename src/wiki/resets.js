@@ -2,6 +2,7 @@ import { loc } from './../locale.js';
 import { universe_types } from './../space.js';
 import { infoBoxBuilder, sideMenu, createCalcSection } from './functions.js';
 import { prestigeCalc } from './p_res.js';
+import { massCalc } from './mechanics.js';
 
 export function resetsPage(content){
     let mainContent = sideMenu('create',content);
@@ -86,10 +87,12 @@ export function resetsPage(content){
             10: ['warning','plain']
         }
     });
-    section = createCalcSection(section,'bigbang','gain');
-    prestigeCalc(section,'plasmid',false,'bigbang');
-    prestigeCalc(section,'phage',false,'bigbang');
-    prestigeCalc(section,'dark',false,'bigbang');
+    let subSection = createCalcSection(section,'bigbang','gain');
+    prestigeCalc(subSection,'plasmid',false,'bigbang');
+    prestigeCalc(subSection,'phage',false,'bigbang');
+    prestigeCalc(subSection,'dark',false,'bigbang');
+    subSection = createCalcSection(section,'eject','mass');
+    massCalc(subSection);
     sideMenu('add',`resets-prestige`,'blackhole',loc('wiki_resets_blackhole'));
 
     // Vacuum Collapse
