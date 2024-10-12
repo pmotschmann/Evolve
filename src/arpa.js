@@ -1,7 +1,7 @@
-import { global, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
-import { clearElement, popover, clearPopper, flib, fibonacci, eventActive, timeFormat, vBind, messageQueue, adjustCosts, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, getTraitDesc, removeFromQueue, arpaTimeCheck, deepClone } from './functions.js';
-import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts } from './actions.js';
-import { races, traits, cleanAddTrait, cleanRemoveTrait, traitSkin, fathomCheck } from './races.js';
+import { global, keyMultiplier, sizeApproximation, srSpeak, p_on, support_on } from './vars.js';
+import { clearElement, popover, clearPopper, flib, fibonacci, eventActive, timeFormat, vBind, messageQueue, adjustCosts, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, trickOrTreat, getTraitDesc, removeFromQueue, arpaTimeCheck, deepClone } from './functions.js';
+import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts, structName } from './actions.js';
+import { races, traits, cleanAddTrait, cleanRemoveTrait, traitSkin, fathomCheck, planetTraits } from './races.js';
 import { renderSpace } from './space.js';
 import { drawMechLab } from './portal.js';
 import { govActive, defineGovernor } from './governor.js';
@@ -74,14 +74,18 @@ export const arpaProjects = {
         effect(){
             if (global.tech['banking'] >= 10){
                 if (global.race['cataclysm']){
-                    return global.tech['gambling'] && global.tech['gambling'] >= 4 ? loc('arpa_projects_stock_exchange_cataclysm2') : loc('arpa_projects_stock_exchange_cataclysm1');
+                    return global.tech['gambling'] && global.tech['gambling'] >= 4 
+                    ? loc('arpa_projects_stock_exchange_cataclysm2',[loc('space_red_spaceport_title'),10,structName('casino'),5,1]) 
+                    : loc('arpa_projects_stock_exchange_cataclysm1',[loc('space_red_spaceport_title'),10]);
                 }
                 else {
-                    return global.tech['gambling'] && global.tech['gambling'] >= 4 ? loc('arpa_projects_stock_exchange_effect3') : loc('arpa_projects_stock_exchange_effect2');
+                    return global.tech['gambling'] && global.tech['gambling'] >= 4 
+                        ? loc('arpa_projects_stock_exchange_effect3',[loc('city_bank'),10,loc(`job_banker`),2,structName('casino'),5,1]) 
+                        : loc('arpa_projects_stock_exchange_effect2',[loc('city_bank'),10,loc(`job_banker`),2]);
                 }
             }
             else {
-                return loc('arpa_projects_stock_exchange_effect1');
+                return loc('arpa_projects_stock_exchange_effect1',[loc('city_bank'),10]);
             }
         },
         cost: {
@@ -1757,13 +1761,16 @@ function genetics(){
                 },
                 novo(){
                     let keyMult = keyMultiplier();
-                    for (let i=0; i<keyMult; i++){
-                        if (global.resource.Knowledge.amount >= 200000){
-                            global.resource.Knowledge.amount -= 200000;
-                            global.resource.Genes.amount++;
-                        }
-                        else {
-                            break;
+                    let cost = 200000;
+                    if (global.resource.Knowledge.amount >= cost){
+                        let maxNovo = Math.floor(global.resource.Knowledge.amount / cost);
+                        let actualNovo = Math.min(keyMult, maxNovo);
+                        global.resource.Knowledge.amount -= cost * actualNovo;
+                        global.resource.Genes.amount += actualNovo;
+
+                        let trick = trickOrTreat(8,12,false);
+                        if (trick.length > 0){
+                            $(`#arpaSequence > div:first`).append(trick);
                         }
                     }
                 },
@@ -2224,6 +2231,16 @@ function genetics(){
 
         dragGeneticsList();
     }
+}
+
+export function sequenceLabs(){
+    let labs = global.race['cataclysm'] || global.race['orbit_decayed'] ? support_on['exotic_lab'] : p_on['biolab'];
+    if (global.tech['isolation']){ labs = support_on['infectious_disease_lab'] * 5; }
+    if (global.race['lone_survivor']){ labs += 2; }
+    if (labs > 0 && global.city.ptrait.includes('toxic')){
+        labs += planetTraits.toxic.vars()[0];
+    }
+    return labs;
 }
 
 function bindTrait(breakdown,trait){

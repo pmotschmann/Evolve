@@ -38,13 +38,6 @@ export function altRace(race,set){
                 return false;
             }
         case 'wolven':
-            {
-                if (easter.active || (global.race['hrt'] && global.race.hrt === race)){
-                    if (set){global.race['hrt'] = race;}
-                    return true;
-                }
-                return false;
-            }
         case 'vulpine':
             {
                 if (easter.active || (global.race['hrt'] && global.race.hrt === race)){
@@ -69,6 +62,9 @@ export function altRace(race,set){
                 }
                 return false;
             }
+        case 'human':
+        case 'tortoisan':
+        case 'unicorn':
         case 'junker':
             {
                 if (hallowed.active || (global.race['hrt'] && global.race.hrt === race)){
@@ -2891,6 +2887,26 @@ export const traits = {
             }
         }
     },
+    gloomy: { // Gain a bonus if cloudy
+        name: loc('trait_gloomy_name'),
+        desc: loc('trait_gloomy'),
+        type: 'major',
+        val: 3,
+        vars(r){
+            switch (r || global.race.gloomy || 1){
+                case 0.25:
+                    return [5];
+                case 0.5:
+                    return [8];
+                case 1:
+                    return [10];
+                case 2:
+                    return [12];
+                case 3:
+                    return [13];
+            }
+        }
+    },
     magnificent: { // construct shrines to receive boons
         name: loc('trait_magnificent_name'),
         desc: loc('trait_magnificent'),
@@ -3309,8 +3325,8 @@ export const races = {
         basic(){ return false; }
     },
     human: {
-        name: loc('race_human'),
-        desc: loc('race_human_desc'),
+        name: loc(altRace('human') ? 'race_zombie' : 'race_human'),
+        desc: loc(altRace('human') ? 'race_zombie_desc' : 'race_human_desc'),
         type: 'humanoid',
         home: loc('race_human_home'),
         entity: loc('race_human_entity'),
@@ -3319,11 +3335,11 @@ export const races = {
             diverse: 1
         },
         solar: {
-            red: loc('race_human_solar_red'),
-            hell: loc('race_human_solar_hell'),
-            gas: loc('race_human_solar_gas'),
-            gas_moon: loc('race_human_solar_gas_moon'),
-            dwarf: loc('race_human_solar_dwarf'),
+            red: loc(altRace('human') ? 'race_zombie_solar_red' : 'race_human_solar_red'),
+            hell: loc(altRace('human') ? 'race_zombie_solar_hell' : 'race_human_solar_hell'),
+            gas: loc(altRace('human') ? 'race_zombie_solar_gas' : 'race_human_solar_gas'),
+            gas_moon: loc(altRace('human') ? 'race_zombie_solar_gas_moon' : 'race_human_solar_gas_moon'),
+            dwarf: loc(altRace('human') ? 'race_zombie_solar_dwarf' : 'race_human_solar_dwarf'),
         },
         fanaticism: 'creative',
         basic(){ return true; }
@@ -3666,21 +3682,21 @@ export const races = {
         basic(){ return true; }
     },
     tortoisan: {
-        name: loc('race_tortoisan'),
-        desc(){ return loc('race_tortoisan_desc',[shellColor()]); },
+        name: loc(altRace('tortoisan') ? 'race_ninja_turtle' : 'race_tortoisan'),
+        desc(){ return altRace('tortoisan') ? loc('race_ninja_turtle_desc',[shellColor()]) : loc('race_tortoisan_desc',[shellColor()]); },
         type: 'reptilian',
-        home: loc('race_tortoisan_home'),
-        entity: loc('race_tortoisan_entity'),
+        home: loc(altRace('tortoisan') ? 'race_ninja_turtle_home' : 'race_tortoisan_home'),
+        entity: loc(altRace('tortoisan') ? 'race_ninja_turtle_entity' : 'race_tortoisan_entity'),
         traits: {
             slow: 1,
             armored: 1
         },
         solar: {
-            red: loc('race_tortoisan_solar_red'),
-            hell: loc('race_tortoisan_solar_hell'),
-            gas: loc('race_tortoisan_solar_gas'),
-            gas_moon: loc('race_tortoisan_solar_gas_moon'),
-            dwarf: loc('race_tortoisan_solar_dwarf'),
+            red: loc(altRace('tortoisan') ? 'race_ninja_turtle_solar_red' : 'race_tortoisan_solar_red'),
+            hell: loc(altRace('tortoisan') ? 'race_ninja_turtle_solar_hell' : 'race_tortoisan_solar_hell'),
+            gas: loc(altRace('tortoisan') ? 'race_ninja_turtle_solar_gas' : 'race_tortoisan_solar_gas'),
+            gas_moon: loc(altRace('tortoisan') ? 'race_ninja_turtle_solar_gas_moon' : 'race_tortoisan_solar_gas_moon'),
+            dwarf: loc(altRace('tortoisan') ? 'race_ninja_turtle_solar_dwarf' : 'race_tortoisan_solar_dwarf'),
         },
         fanaticism: 'armored',
         basic(){ return true; }
@@ -4231,22 +4247,22 @@ export const races = {
         basic(){ return global.city.biome === 'eden' ? true : false; }
     },
     unicorn: {
-        name: loc('race_unicorn'),
-        desc: loc('race_unicorn_desc'),
+        name: loc(altRace('unicorn') ? 'race_emocorn' : 'race_unicorn'),
+        desc: loc(altRace('unicorn') ? 'race_emocorn_desc' : 'race_unicorn_desc'),
         type: 'angelic',
-        home: loc('race_unicorn_home'),
-        entity: loc('race_unicorn_entity'),
+        home: loc(altRace('unicorn') ? 'race_emocorn_home' : 'race_unicorn_home'),
+        entity: loc(altRace('unicorn') ? 'race_emocorn_entity' : 'race_unicorn_entity'),
         traits: {
             rainbow: 1,
             magnificent: 1,
             noble: 1,
         },
         solar: {
-            red: loc('race_unicorn_solar_red'),
-            hell: loc('race_unicorn_solar_hell'),
-            gas: loc('race_unicorn_solar_gas'),
-            gas_moon: loc('race_unicorn_solar_gas_moon'),
-            dwarf: loc('race_unicorn_solar_dwarf'),
+            red: loc(altRace('unicorn') ? 'race_emocorn_solar_red' : 'race_unicorn_solar_red'),
+            hell: loc(altRace('unicorn') ? 'race_emocorn_solar_hell' : 'race_unicorn_solar_hell'),
+            gas: loc(altRace('unicorn') ? 'race_emocorn_solar_gas' : 'race_unicorn_solar_gas'),
+            gas_moon: loc(altRace('unicorn') ? 'race_emocorn_solar_gas_moon' : 'race_unicorn_solar_gas_moon'),
+            dwarf: loc(altRace('unicorn') ? 'race_emocorn_solar_dwarf' : 'race_unicorn_solar_dwarf'),
         },
         fanaticism: 'magnificent',
         basic(){ return global.city.biome === 'eden' ? true : false; }
@@ -4701,6 +4717,9 @@ export function racialTrait(workers,type){
         if (global.race['dark_dweller'] && global.city.calendar.weather === 2){
             modifier *= 1 - traits.dark_dweller.vars()[0] / 100;
         }
+        if(global.city.banquet && global.city.banquet.on && global.city.banquet.count >= 3){
+            modifier *= 1 + (global.city.banquet.strength ** 0.65) / 100;
+        }
     }
     if (global.race.universe === 'magic'){
         if (type === 'science'){
@@ -4727,9 +4746,6 @@ export function racialTrait(workers,type){
     }
     if (global.race['living_tool'] && type === 'miner'){
         modifier *= 1 + traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science * 0.12 : 0);
-    }
-    if(global.city.banquet && global.city.banquet.on && global.city.banquet.count >= 3 && (type === 'army' || type === 'hellArmy')){
-        modifier *= 1 + (global.city.banquet.strength ** 0.65) / 100;
     }
     if (global.race['high_pop']){
         modifier = highPopAdjust(modifier);
@@ -5636,40 +5652,41 @@ export function fathomCheck(race){
     return 0;
 }
 
-export function traitSkin(type,trait){
+export function traitSkin(type, trait, species){
+    let artificial = species ? genus_traits[races[species].type].artifical : global.race['artifical'];
     switch (type){
         case 'name':
         {
             let name = {
-                hooved: hoovedReskin(false),
-                promiscuous: global.race['artifical'] ? loc('trait_promiscuous_synth_name') : traits['promiscuous'].name,
+                hooved: hoovedReskin(false, species),
+                promiscuous: artificial ? loc('trait_promiscuous_synth_name') : traits['promiscuous'].name,
             };
             return trait ? (name[trait] ? name[trait] : traits[trait].name) : name;
         } 
         case 'desc':
         {
             let desc = {
-                hooved: hoovedReskin(true),
-                promiscuous: global.race['artifical'] ? loc('trait_promiscuous_synth') : traits['promiscuous'].desc,
+                hooved: hoovedReskin(true, species),
+                promiscuous: artificial ? loc('trait_promiscuous_synth') : traits['promiscuous'].desc,
             };
             return trait ? (desc[trait] ? desc[trait] : traits[trait].desc) : desc;
         }
     }
 }
 
-export function hoovedReskin(desc){
-    if (global.race['sludge']){
+export function hoovedReskin(desc, species=global.race.species){
+    if (species === 'sludge'){
         return desc ? loc('trait_hooved_slime') : loc('trait_hooved_slime_name');
     }
     else if ([
         'cath','wolven','dracnid','seraph','cyclops','kobold','tuskin','sharkin'
-        ].includes(global.race.species)){
-        return desc ? loc(`trait_hooved_${global.race.species}`) : loc(`trait_hooved_${global.race.species}_name`);
+        ].includes(species)){
+        return desc ? loc(`trait_hooved_${species}`) : loc(`trait_hooved_${species}_name`);
     }
     else if ([
         'humanoid','avian','plant','fungi','reptilian','fey','synthetic'
-        ].includes(races[global.race.species].type)){
-        return desc ? loc(`trait_hooved_${races[global.race.species].type}`) : loc(`trait_hooved_${races[global.race.species].type}_name`);
+        ].includes(races[species].type)){
+        return desc ? loc(`trait_hooved_${races[species].type}`) : loc(`trait_hooved_${races[species].type}_name`);
     }
     else {
         return desc ? traits['hooved'].desc : traits['hooved'].name;

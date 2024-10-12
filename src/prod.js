@@ -16,13 +16,14 @@ export function highPopAdjust(v){
 export function teamster(v){
     if (global.race['gravity_well'] && global.race['teamster'] && global.race.teamster > 0){
         let cap = teamsterCap();
+        if (cap < 1){ cap = 1; }
         let teamster = global.civic.teamster.workers > cap ? cap : global.civic.teamster.workers;
         v *= teamster / cap;
     }
     return v;
 }
 
-export function production(id,val){
+export function production(id,val,wiki){
     switch (id){
         case 'transmitter':
         {
@@ -230,7 +231,7 @@ export function production(id,val){
         }
         case 'infernite_mine':
         {
-            let sup = hellSupression('gate');
+            let sup = hellSupression('gate', 0, wiki);
             return 0.5 * sup.supress;
         }
         case 'water_freighter':

@@ -1078,6 +1078,7 @@ export function mercCost(){
 }
 
 function hireMerc(num){
+    let hired = 0;
     if (global.tech['mercs']){
         let repeats = num || keyMultiplier();
         let canBuy = true;
@@ -1087,6 +1088,7 @@ function hireMerc(num){
                 global.resource.Money.amount -= cost;
                 global.civic['garrison'].workers++;
                 global.civic.garrison.m_use++;
+                hired++;
             }
             else {
                 canBuy = false;
@@ -1094,6 +1096,7 @@ function hireMerc(num){
             repeats--;
         }
     }
+    return hired;
 }
 
 export function buildGarrison(garrison,full){
@@ -1183,7 +1186,13 @@ export function buildGarrison(garrison,full){
         data: bindData,
         methods: {
             hire(){
-                hireMerc();
+                let hired = hireMerc();
+                if (hired === 1 && !full){
+                    let trick = trickOrTreat(8,14,true);
+                    if (trick.length > 0){
+                        $(`#c_garrison .hire`).append(trick);
+                    }
+                }
             },
             campaign(gov){
                 war_campaign(gov);
@@ -1604,7 +1613,7 @@ function war_campaign(gov){
         let basic = gov === 3 && global.race['truepath'] ? ['Food','Lumber','Stone','Copper','Iron'] : ['Food','Lumber','Stone'];
         let common = gov === 3 && global.race['truepath'] ? ['Aluminium','Coal','Cement','Steel','Furs'] : ['Copper','Iron','Aluminium','Coal'];
         let rare = gov === 3 && global.race['truepath'] ? ['Titanium','Oil','Iridium','Alloy','Polymer'] : ['Cement','Steel'];
-        if (global.race['artifical']){
+        if (global.race['artifical'] || global.race['fasting']){
             basic.shift();
         }
         if (global.race['smoldering']){
@@ -1827,6 +1836,7 @@ function war_campaign(gov){
         let occCost = jobScale(global.civic.govern.type === 'federation' ? 15 : 20);
         if (gov <= 2 && global.civic.garrison.tactic === 4 && global.civic.garrison.workers >= occCost){
             let drawTechs = !global.tech['gov_fed'] && !checkControlling();
+            global.civic.garrison.max -= occCost;
             global.civic.garrison.workers -= occCost;
             global.civic.foreign[`gov${gov}`].occ = true;
             global.civic.foreign[`gov${gov}`].sab = 0;
@@ -2145,6 +2155,9 @@ export function armyRating(val,type,wound){
     if (type === 'hunting'){
         if (global.race['unfathomable']){
             army *= 0.66;
+        }
+        if(global.city.banquet && global.city.banquet.on && global.city.banquet.count >= 3){
+            army *= 1 + (global.city.banquet.strength ** 0.65) / 100;
         }
     }
     if (global.race['rejuvenated']){

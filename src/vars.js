@@ -1197,8 +1197,15 @@ if (convertVersion(global['version']) < 103014){
     }
 }
 
-global['version'] = '1.3.13';
-global['revision'] = 'b';
+if (convertVersion(global['version']) <= 103015){
+    if (global.portal.hasOwnProperty('harbour')){
+        global.portal['harbor'] = global.portal.harbour;
+        delete global.portal.harbour;
+    }
+}
+
+global['version'] = '1.3.16';
+global['revision'] = 'a';
 delete global['beta'];
 
 if (!global.hasOwnProperty('prestige')){
@@ -2014,59 +2021,82 @@ export function resizeGame(){
 
 var affix_list = {
     si: ['K','M','G','T','P','E','Z','Y'],
-    sci: ['e3','e6','e9','e12','e15','e18','e21','e24'],
     sln: ['K','M','B','t','q','Q','s','S']
 };
+// Number formatting options, in the user's default locale
+var numFormatShort = new Intl.NumberFormat(undefined, {maximumFractionDigits: 2, maximumSignificantDigits: 3, roundingMode: 'trunc', roundingPriority: 'lessPrecision'});
+var numFormatLong = new Intl.NumberFormat(undefined, {maximumFractionDigits: 2, maximumSignificantDigits: 4, roundingMode: 'trunc', roundingPriority: 'lessPrecision'});
+// Constant value that is used frequently
+const ADD_16_ULP = 1 + (16 * Number.EPSILON);
 
-export function sizeApproximation(value,precision,fixed){
-    let result = 0;
-    let affix = '';
-    let neg = value < 0 ? true : false;
-    if (neg){
-        value *= -1;
+/**
+ * Return a locale-dependent string that represents the significance of the input value.
+ * Numbers are typically represented with 3 or 4 significant figures.
+ * Abbreviations are not applied to numbers less than 10,000.
+ *
+ * All input values are truncated toward 0 when precision reduction is required.
+ * Trailing fractional zeroes are never printed, regardless of the apparent significant figure requirement.
+ *
+ * @arg {Number} value - The value to format
+ * @arg {Number} precision - The maximum number of fractional digits to display
+ * @arg {Boolean} precise - Do not apply abbreviation and display all integer significant figures in the value.
+ * @arg {Boolean} exact - Do not apply abbreviation and display all significant figures in the value.
+ * @return {String}
+ */
+export function sizeApproximation(value, precision = 1, precise = false, exact = false){
+    let absValue = Math.abs(value);
+    let oom = Math.floor(Math.log10(absValue));
+
+    // Increase magnitude of all numbers by 16 to 32 ULP to avoid rounding issues
+    absValue *= ADD_16_ULP;
+    // Explicitly avoid adding anything to either -0 or +0 to avoid altering the sign
+    value = value<0 ? -absValue : value>0 ? absValue : value;
+
+    // Exact mode:
+    //  The number of significant figures is not limited in any way.
+    //  The number of fractional digits is limited by the precision argument.
+    if (exact){
+        return value.toLocaleString(undefined, {maximumFractionDigits: precision, roundingMode: 'trunc'});
     }
-    if (value <= 9999){
-        result = +value.toFixed(precision);
+
+    // Fixed mode:
+    //  The number of significant figures is at least 5, but may increase for large values.
+    //  The number of fractional digits is limited by the precision argument, but may be reduced for large values.
+    else if (oom < 4 || precise){
+        // The objective here is to provide high precision for both large and small numbers,
+        // while preventing excess precision for large numbers that also have many fractional digits.
+        let maxSigFigs = Math.max(oom + 1,          // Full precision for the integer component of large numbers (at least 1e4)
+                                  precision + 1,    // Requested precision for values with only 1 leading digit
+                                  5);               // Always allow 5 sigfigs, not only 4, for numbers where 1e2 <= x < 1e4
+        return value.toLocaleString(undefined, {maximumSignificantDigits: maxSigFigs, maximumFractionDigits: precision, roundingMode: 'trunc', roundingPriority: 'lessPrecision'});
     }
-    else if (value < 1000000){
-        affix = affix_list[global.settings.affix][0];
-        result = fixed ? +(value / 1000).toFixed(1) : (Math.floor(value / 100) / 10);
-    }
-    else if (value < 1000000000){
-        affix = affix_list[global.settings.affix][1];
-        result = fixed ? +(value / 1000000).toFixed(1) : (Math.floor(value / 10000) / 100);
-    }
-    else if (value < 1000000000000){
-        affix = affix_list[global.settings.affix][2];
-        result = fixed ? +(value / 1000000000).toFixed(1) : (Math.floor(value / 10000000) / 100);
-    }
-    else if (value < 1000000000000000){
-        affix = affix_list[global.settings.affix][3];
-        result = fixed ? +(value / 1000000000000).toFixed(1) : (Math.floor(value / 10000000000) / 100);
-    }
-    else if (value < 1000000000000000000){
-        affix = affix_list[global.settings.affix][4];
-        result = fixed ? +(value / 1000000000000000).toFixed(1) : (Math.floor(value / 10000000000000) / 100);
-    }
-    else if (value < 1000000000000000000000){
-        affix = affix_list[global.settings.affix][5];
-        result = fixed ? +(value / 1000000000000000000).toFixed(1) : (Math.floor(value / 10000000000000000) / 100);
-    }
-    else if (value < 1000000000000000000000000){
-        affix = affix_list[global.settings.affix][6];
-        result = fixed ? +(value / 1000000000000000000000).toFixed(1) : (Math.floor(value / 10000000000000000000) / 100);
-    }
+
     else {
-        affix = affix_list[global.settings.affix][7];
-        result = fixed ? +(value / 1000000000000000000000000).toFixed(1) : (Math.floor(value / 10000000000000000000000) / 100);
+        const oomMod3 = oom % 3;
+        const dispShort = oom === 4; // Reduce significant figures from 4 to 3 for numbers below 100,000
+        const forceSI = global.settings.affix !== 'eng' && oom >= 27;
+        // Reduce displayed order of magnitude to the nearest multiple of 3, except for SI mode
+        if (global.settings.affix !== 'sci' && !forceSI){
+            oom -= oomMod3;
+        }
+
+        let affix;
+        if (global.settings.affix === 'sci' || global.settings.affix === 'eng' || forceSI){
+            // Manually build SI suffix to guarantee that the 'e' is lowercase for aesthetic preference
+            affix = 'e' + oom;
+        } else {
+            // Get the string suffix from the configured lookup table
+            affix = affix_list[global.settings.affix][(oom / 3) - 1];
+        }
+
+        value /= (10**oom);
+
+        if (dispShort){
+            return numFormatShort.format(value) + affix;
+        } else {
+            return numFormatLong.format(value) + affix;
+        }
     }
-    if (result >= 100){
-        result = +result.toFixed(1);
-    }
-    if (neg){
-        result *= -1;
-    }
-    return result + affix;
 }
 
 $(window).resize(function(){

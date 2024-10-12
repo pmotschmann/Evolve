@@ -1,4 +1,4 @@
-import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame, atrack } from './vars.js';
+import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame, atrack, p_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits, genus_traits, traitSkin, fathomCheck } from './races.js';
 import { actions, actionDesc } from './actions.js';
@@ -275,10 +275,10 @@ export function powerGrid(type,reset){
                 'city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','prtl_pit:soul_forge','gxy_chthonian:excavator',
                 'int_blackhole:far_reach','prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','gxy_stargate:gateway_station','gxy_alien1:vitreloy_plant','gxy_alien2:foothold',
                 'gxy_gorddon:symposium','int_blackhole:mass_ejector','city:casino','spc_hell:spc_casino','tau_home:tauceti_casino','prtl_fortress:repair_droid','gxy_stargate:defense_platform','prtl_ruins:guard_post',
-                'prtl_lake:cooling_tower','prtl_lake:harbour','prtl_spire:purifier','prtl_ruins:archaeology','prtl_pit:gun_emplacement','prtl_gate:gate_turret','prtl_pit:soul_attractor',
+                'prtl_lake:cooling_tower','prtl_lake:harbor','prtl_spire:purifier','prtl_ruins:archaeology','prtl_pit:gun_emplacement','prtl_gate:gate_turret','prtl_pit:soul_attractor',
                 'prtl_gate:infernite_mine','int_sirius:ascension_trigger','spc_kuiper:orichalcum_mine','spc_kuiper:elerium_mine','spc_kuiper:uranium_mine','spc_kuiper:neutronium_mine','spc_dwarf:m_relay',
                 'tau_home:tau_factory','tau_home:infectious_disease_lab','tau_home:alien_outpost','tau_gas:womling_station','spc_red:atmo_terraformer','tau_star:matrix','tau_home:tau_cultural_center',
-                'prtl_pit:soul_capacitor','city:replicator'
+                'prtl_pit:soul_capacitor','prtl_lake:oven_complete','city:replicator'
             ];
             break;
         case 'moon':
@@ -1112,29 +1112,40 @@ export function timeFormat(time){
     }
     else {
         time = +(time.toFixed(0));
-        if (time > 60){
-            let secs = time % 60;
-            let mins = (time - secs) / 60;
-            if (mins >= 60){
-                let r = mins % 60;
-                let hours = (mins - r) / 60;
-                if (hours > 24){
-                    r = hours % 24;
-                    let days = (hours - r) / 24;
-                    formatted = `${days}d ${r}h`;
-                }
-                else {
-                    r = ('0' + r).slice(-2);
-                    formatted = `${hours}h ${r}m`;
-                }
-            }
-            else {
-                secs = ('0' + secs).slice(-2);
-                formatted = `${mins}m ${secs}s`;
-            }
+        const secs_per_min = 60;
+
+        if (time < secs_per_min){
+            formatted = `${time}s`;
         }
         else {
-            formatted = `${time}s`;
+            const mins_per_hour = 60;
+            const secs_per_hour = secs_per_min*mins_per_hour;
+            const secs = time % secs_per_min;
+            const mins = Math.floor(time / secs_per_min) % mins_per_hour;
+
+            if (time < secs_per_hour){
+                if (secs > 0){ formatted = `${mins}m ${secs}s`; }
+                else { formatted = `${mins}m`; }
+            }
+            else {
+                const hours_per_day = 24;
+                const secs_per_day = secs_per_hour*hours_per_day;
+                const hours = Math.floor(time / secs_per_hour) % hours_per_day;
+
+                if (time < secs_per_day){
+                    if (mins > 0){ formatted = `${hours}h ${mins}m`; }
+                    else if (secs > 0){ formatted = `${hours}h ${secs}s`; }
+                    else { formatted = `${hours}h`; }
+                }
+                else {
+                    const days = Math.floor(time / secs_per_day);
+
+                    if (hours > 0){ formatted = `${days}d ${hours}h`; }
+                    else if (mins > 0){ formatted = `${days}d ${mins}m`; }
+                    else if (secs > 0){ formatted = `${days}d ${secs}s`; }
+                    else { formatted = `${days}d`; }
+                }
+            }
         }
     }
     return formatted;
@@ -1157,6 +1168,50 @@ export function powerCostMod(energy){
         return +(energy * 1.5).toFixed(2);
     }
     return energy;
+}
+
+export function calcQuantumLevel(load){
+    if (global.tech['high_tech'] && global.tech['high_tech'] >= 11){
+        let k_base = global.resource.Knowledge.max;
+        let k_inc = 250000;
+        let qbits = 0;
+        while (k_base > k_inc){
+            k_base -= k_inc;
+            k_inc *= 1.1;
+            qbits++;
+        }
+        qbits += +(k_base / k_inc).toFixed(2);
+        if (global.interstellar['citadel']){
+            let citadel = load ? global.interstellar.citadel.on : p_on['citadel']
+            if (global.tech['high_tech'] && global.tech['high_tech'] >= 15 && citadel > 0){
+                qbits *= 1 + (citadel * 0.05);
+            }
+        }
+        if (global.space['ai_core2']){
+            let core = load ? global.space.ai_core2.on : p_on['ai_core2']
+            if (global.tech['titan_ai_core'] && core > 0){
+                qbits *= 1.25;
+            }
+        }
+        if (global.stats.achieve['obsolete'] && global.stats.achieve[`obsolete`].l >= 5 && global.prestige.AICore.count > 0){
+            qbits *= 2 - (0.99 ** global.prestige.AICore.count);
+        }
+        if (global.race['linked']){
+            let factor = traits.linked.vars()[0] / 100 * global.resource[global.race.species].amount;
+            if (factor > traits.linked.vars()[1] / 100){
+                factor -= traits.linked.vars()[1] / 100;
+                factor = factor / (factor + 200 - traits.linked.vars()[1]);
+                factor += traits.linked.vars()[1] / 100;
+            }
+            qbits *= 1 + factor;
+        }
+        return +(qbits).toFixed(3);
+    }
+    return 0;
+}
+
+export function get_qlevel(wiki){
+    return wiki ? calcQuantumLevel(wiki) : quantum_level;
 }
 
 export function darkEffect(universe, flag, info, inputs){
@@ -1275,7 +1330,7 @@ export const calc_mastery = (function(){
     }
 })();
 
-export function masteryType(universe,detailed){
+export function masteryType(universe,detailed,unmodified){
     if (global.genes['challenge'] && global.genes.challenge >= 2){
         universe = universe || global.race.universe;
         let ua_level = universeLevel(universe);
@@ -1285,31 +1340,36 @@ export function masteryType(universe,detailed){
             m_rate += 0.05;
             u_rate -= 0.05;
         }
-        if (global.race['weak_mastery'] && universe === 'antimatter'){
-            m_rate /= 10;
-            u_rate /= 10;
-        }
-        if (global.race['nerfed']){
-            m_rate /= universe === 'antimatter' ? 5 : 2;
-            u_rate /= universe === 'antimatter' ? 5 : 2;
-        }
-        if (global.race['ooze']){
-            m_rate *= 1 - (traits.ooze.vars()[2] / 100);
-            u_rate *= 1 - (traits.ooze.vars()[2] / 100);
-        }
+
         let perk_rank = global.stats.feat['grandmaster'] && global.stats.achieve['corrupted'] && global.stats.achieve.corrupted.l > 0 ? Math.min(global.stats.achieve.corrupted.l,global.stats.feat['grandmaster']) : 0;
         if (perk_rank > 0){
             m_rate *= 1 + (perk_rank / 100);
             u_rate *= 1 + (perk_rank / 100);
         }
+
+        if (! unmodified) {
+            if (global.race['weak_mastery'] && universe === 'antimatter'){
+                m_rate /= 10;
+                u_rate /= 10;
+            }
+            if (global.race['nerfed']){
+                m_rate /= universe === 'antimatter' ? 5 : 2;
+                u_rate /= universe === 'antimatter' ? 5 : 2;
+            }
+            if (global.race['ooze']){
+                m_rate *= 1 - (traits.ooze.vars()[2] / 100);
+                u_rate *= 1 - (traits.ooze.vars()[2] / 100);
+            }
+            if (global.genes.challenge >= 5 && global.race.hasOwnProperty('mastery')){
+                m_rate *= 1 + (traits.mastery.vars()[0] * global.race.mastery / 100);
+                u_rate *= 1 + (traits.mastery.vars()[0] * global.race.mastery / 100);
+            }
+        }
+
         let m_mastery = ua_level.aLvl * m_rate;
         let u_mastery = 0;
         if (universe !== 'standard'){
             u_mastery = ua_level.uLvl * u_rate;
-        }
-        if (global.genes.challenge >= 5 && global.race.hasOwnProperty('mastery')){
-            m_mastery *= 1 + (traits.mastery.vars()[0] * global.race.mastery / 100);
-            u_mastery *= 1 + (traits.mastery.vars()[0] * global.race.mastery / 100);
         }
         return detailed ? { g: m_mastery, u: u_mastery, m: m_mastery + u_mastery } : m_mastery + u_mastery;
     }
@@ -1405,7 +1465,7 @@ export function getResetConstants(type, inputs){
             rc.k_inc = 100000;
             rc.k_mult = 1.1;
             rc.plasmid_cap = 150;
-            if (inputs.synth){
+            if (inputs.synth === true || inputs.synth.val === true){
                 rc.pop_divisor = 5;
                 rc.k_inc = 125000;
                 rc.plasmid_cap = 100;
@@ -1481,7 +1541,7 @@ export function calcPrestige(type,inputs){
     };
 
     if (!inputs) { inputs = {}; }
-    if (inputs.synth !== undefined) inputs.synth = races[global.race.species].type === 'synthetic';
+    if (inputs.synth === undefined) inputs.synth = races[global.race.species].type === 'synthetic';
     let challenge = inputs.genes;
     let universe = inputs.uni;
     universe = universe || global.race.universe;
@@ -2030,6 +2090,9 @@ export function svgIcons(icon){
             return `<g transform="translate(0 -1036.4)">
             <path style="stroke-linejoin:round;stroke:#ffbf00;stroke-width:.25;" d="m3.4724 8.5186 3.0305-7.0711h6.9448l-5.0192 5.0823h4.1353l-8.1128 9.0914 2.0834-7.1342z" transform="translate(0 1036.4)"/>
           </g>`;
+        case 'meat':
+            return `<path d="M0.26,147.54c0.03,9.81,8.69,19.93,16.89,24.05c5.21,2.61,8.18,9.46,12.72,13.81c5.23,5.01,10.4,11.42,16.8,13.59 c17.18,5.81,35.19-14.63,32.08-29.95c-1.06-5.24-0.61-12.9,2.51-16.31c3.18-3.47,10.44-3.48,16.02-4.26 c12.61-1.76,25.38-2.53,37.9-4.76c6.75-1.2,14.1-3.23,19.48-7.22c11.88-8.81,24.21-17.81,33.6-29.08 c14.98-17.96,15.19-45.27,3.06-65.42c-4.04-6.72-7.15-14.9-12.95-19.46c-11.04-8.66-23.71-15.23-35.79-22.5  c-0.41-0.25-2.4,1.08-2.71,2c-0.62,1.82-0.58,3.86-0.82,5.81c-0.56,4.48-1.93,7.93-4.65,12.19c-6.13,9.62-14.8,8.16-22.83,10.88 c-4.74,1.61-8.27,6.55-12.73,9.39c-4.74,3.01-9.7,6.25-15.01,7.52c-2.92,0.7-7.29-1.75-10.06-3.98c-8.91-7.2-11.87-0.5-13.71,6.14  c-3.48,12.54-6.44,25.26-8.8,38.06c-1.1,5.97-0.3,12.29-0.37,18.45c-0.12,10.04-5.06,15.03-15.05,14.97  c-4.4-0.03-8.83-0.87-13.17-0.52C14.13,121.63-2.27,136.46,0.26,147.54z"/>`;
+               
     }
 }
 
@@ -2105,6 +2168,8 @@ export function svgViewBox(icon){
             return `0 0 552 495`;
         case 'lightning':
             return `0 0 16 16`;
+        case 'meat':
+            return `0 0 200 200`;
     }
 }
 
@@ -2161,6 +2226,8 @@ export function getBaseIcon(name,type){
                 return 'turkey';
             case 'xmas':
                 return 'present';
+            case 'immortal':
+                return 'meat';
             default:
                 return 'star';
         }
@@ -2180,7 +2247,7 @@ export function drawIcon(icon,size,shade,id,inject){
 export function easterEgg(num,size){
     let easter = getEaster();
     const date = new Date();
-    if (easter.active && !global.special.egg[date.getFullYear()][`egg${num}`]){
+    if (easter.active && !global.special.egg[date.getFullYear()][`egg${num}`] && $(`#egg${num}`).length === 0){
         return drawIcon('egg', size ? size : 16, 2, `egg${num}`, `role="button" aria-label="Egg" `);
     }
     return '';
@@ -2220,7 +2287,7 @@ export function trickOrTreat(num,size,trick){
     const date = new Date();
     const year = date.getFullYear();
     let tot = trick ? 'trick' : 'treat';
-    if (halloween.active && !global.special.trick[year][`${tot}${num}`]){
+    if (halloween.active && !global.special.trick[year][`${tot}${num}`] && $(`#${tot}${num}`).length === 0){
         let label = trick ? `Ghost`: `Candy Corn`;
         return drawIcon(trick ? 'ghost' : 'candycorn', size ? size : 16, 2, `${tot}${num}`, `role="button" aria-label="${label}" `);
     }
@@ -2241,14 +2308,14 @@ export function trickOrTreatBind(id,trick){
             }
             else {
                 if (global.race.universe === 'antimatter'){
-                    global.prestige.AntiPlasmid.count += 13;
-                    global.stats.antiplasmid += 13;
-                    messageQueue(loc('city_trick_msg',[13,loc('resource_AntiPlasmid_plural_name')]),'success',false,['events']);
+                    global.prestige.AntiPlasmid.count += 12;
+                    global.stats.antiplasmid += 12;
+                    messageQueue(loc('city_trick_msg',[12,loc('resource_AntiPlasmid_plural_name')]),'success',false,['events']);
                 }
                 else {
-                    global.prestige.Plasmid.count += 13;
-                    global.stats.plasmid += 13;
-                    messageQueue(loc('city_trick_msg',[13,loc('resource_Plasmid_plural_name')]),'success',false,['events']);
+                    global.prestige.Plasmid.count += 12;
+                    global.stats.plasmid += 12;
+                    messageQueue(loc('city_trick_msg',[12,loc('resource_Plasmid_plural_name')]),'success',false,['events']);
                 }
             }
             $(`#${tot}${id}`).remove();
@@ -2737,7 +2804,7 @@ const valAdjust = {
     living_tool: false,
 };
 
-function getTraitVals(trait,rank){
+function getTraitVals(trait, rank, species){
     let vals = traits[trait].hasOwnProperty('vars') ? traits[trait].vars(rank) : [];
     if (valAdjust.hasOwnProperty(trait)){
         if (trait === 'fibroblast'){
@@ -2762,7 +2829,7 @@ function getTraitVals(trait,rank){
             vals = [14 - vals[0], vals[0]];
         }
         else if (trait === 'hooved'){
-            vals.unshift(hoovedRename());
+            vals.unshift(hoovedRename(false, species));
         }
         else if (trait === 'anthropophagite'){
             vals = [vals[0] * 10000];
@@ -2774,53 +2841,53 @@ function getTraitVals(trait,rank){
     return vals;
 }
 
-export function hoovedRename(style){
-    if (global.race['sludge']){
+export function hoovedRename(style, species=global.race.species){
+    if (species === 'sludge'){
         return style ? 'craft' : loc('resource_Beaker_name');
     }
-    else if (global.race.species === 'cath'){
+    else if (species === 'cath'){
         return style ? 'craft' : loc('resource_Box_name');
     }
-    else if (global.race.species === 'wolven'){
+    else if (species === 'wolven'){
         return style ? 'craft' : loc('resource_ChewToy_name');
     }
-    else if (global.race.species === 'dracnid'){
+    else if (species === 'dracnid'){
         return style ? 'craft' : loc('resource_Hoard_name');
     }
-    else if (global.race.species === 'seraph'){
+    else if (species === 'seraph'){
         return style ? 'forge' : loc('resource_Halo_name');
     }
-    else if (global.race.species === 'cyclops'){
+    else if (species === 'cyclops'){
         return style ? 'craft' : loc('resource_Monocle_name');
     }
-    else if (global.race.species === 'kobold'){
+    else if (species === 'kobold'){
         return style ? 'craft' : loc('resource_Candle_name');
     }
-    else if (global.race.species === 'tuskin'){
+    else if (species === 'tuskin'){
         return style ? 'craft' : loc('resource_Goggles_name');
     }
-    else if (global.race.species === 'sharkin'){
+    else if (species === 'sharkin'){
         return style ? 'craft' : loc('resource_ToothSharpener_name');
     }
-    else if (races[global.race.species].type === 'humanoid'){
+    else if (races[species].type === 'humanoid'){
         return style ? 'craft' : loc('resource_Sandals_name');
     }
-    else if (races[global.race.species].type === 'avian'){
+    else if (races[species].type === 'avian'){
         return style ? 'craft' : loc('resource_Perch_name');
     }
-    else if (races[global.race.species].type === 'plant'){
+    else if (races[species].type === 'plant'){
         return style ? 'craft' : loc('resource_Planter_name');
     }
-    else if (races[global.race.species].type === 'fungi'){
+    else if (races[species].type === 'fungi'){
         return style ? 'craft' : loc('resource_DampCloth_name');
     }
-    else if (races[global.race.species].type === 'reptilian'){
+    else if (races[species].type === 'reptilian'){
         return style ? 'craft' : loc('resource_HeatRock_name');
     }
-    else if (races[global.race.species].type === 'fey'){
+    else if (races[species].type === 'fey'){
         return style ? 'craft' : loc('resource_PixieDust_name');
     }
-    else if (races[global.race.species].type === 'synthetic'){
+    else if (races[species].type === 'synthetic'){
         return style ? 'craft' : loc('resource_Battery_name');
     }
     else {
@@ -2847,7 +2914,7 @@ const traitExtra = {
         loc(`wiki_trait_effect_sniper_ex1`),
     ],
     hooved: [
-        loc(`wiki_trait_effect_hooved_ex1`,[hoovedRename(false)]),
+        function(opts){return loc(`wiki_trait_effect_hooved_ex1`,[hoovedRename(false, opts.species)])},
         loc(`wiki_trait_effect_hooved_ex2`,[
             `<span class="has-text-warning">${global.resource.hasOwnProperty('Lumber') ? global.resource.Lumber.name : loc('resource_Lumber_name')}</span>`,
             `<span class="has-text-warning">${global.resource.hasOwnProperty('Copper') ? global.resource.Copper.name : loc('resource_Copper_name')}</span>`,
@@ -2858,7 +2925,7 @@ const traitExtra = {
             12,75,150,500,5000
         ]),
         loc(`wiki_trait_effect_hooved_ex3`),
-        loc(`wiki_trait_effect_hooved_ex4`,[`<span class="has-text-warning">${5}</span>`,hoovedRename(false)]),
+        function(opts){return loc(`wiki_trait_effect_hooved_ex4`,[`<span class="has-text-warning">${5}</span>`,hoovedRename(false, opts.species)])},
         loc(`wiki_trait_effect_hooved_ex5`,[
             `<span class="has-text-warning">${global.resource.hasOwnProperty('Lumber') ? global.resource.Lumber.name : loc('resource_Lumber_name')}</span>`,
             `<span class="has-text-warning">${global.resource.hasOwnProperty('Copper') ? global.resource.Copper.name : loc('resource_Copper_name')}</span>`
@@ -2890,15 +2957,16 @@ function rName(r){
     return `<span class="has-text-warning">${res}</span>`;
 }
 
-export function getTraitDesc(info,trait,opts){
+export function getTraitDesc(info, trait, opts){
     let fanatic = opts['fanatic'] || false;
     let tpage = opts['tpage'] || false;
     let trank = opts['trank'] || false;
     let wiki = opts['wiki'] || false;
+    let species = opts['species']; // Intentionally keep undefined, not false, when undefined
     let rank = '';
 
-    let traitName = traitSkin('name',trait);
-    let traitDesc = traitSkin('desc',trait);
+    let traitName = traitSkin('name', trait, species);
+    let traitDesc = traitSkin('desc', trait, species);
 
     if (tpage && ['genus','major'].includes(traits[trait].type)){
         rank = `<span><span role="button" @click="down()">&laquo;</span><span class="has-text-warning">${loc(`wiki_trait_rank`)} {{ rank }}</span><span role="button" @click="up()">&raquo;</span></span>`;
@@ -2930,11 +2998,14 @@ export function getTraitDesc(info,trait,opts){
     }
     else {
         if (wiki || (global.stats.feat['journeyman'] && global.stats.achieve['seeder'] && global.stats.achieve.seeder.l > 0)){
-            info.append(`<div class="has-text-${color} effect">${loc(`wiki_trait_effect_${trait}`,getTraitVals(trait,trank))}</div>`);
+            info.append(`<div class="has-text-${color} effect">${loc(`wiki_trait_effect_${trait}`, getTraitVals(trait, trank, species))}</div>`);
         }
     }
     if (traitExtra[trait] && wiki){
         traitExtra[trait].forEach(function(te){
+            if (typeof te !== 'string'){
+                te = te(opts);
+            }
             info.append(`<div class="effect">${te}</div>`);
         });
     }
@@ -2946,7 +3017,7 @@ export function getTraitDesc(info,trait,opts){
             data: data,
             methods: {
                 getTraitDesc(rk){
-                    return loc(`wiki_trait_effect_${trait}`,getTraitVals(trait,rk));
+                    return loc(`wiki_trait_effect_${trait}`, getTraitVals(trait, rk, species));
                 },
                 up(){
                     switch (data.rank){
