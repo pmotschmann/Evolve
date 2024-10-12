@@ -1,10 +1,12 @@
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
-import { clearElement, popover, getEaster, getTraitDesc } from './../functions.js';
+import { clearElement, popover, getEaster, getHalloween, getTraitDesc } from './../functions.js';
 import { races, traits, genus_traits, traitSkin } from './../races.js';
 import { ascendLab } from './../space.js';
 import { actions } from './../actions.js';
 import { sideMenu, infoBoxBuilder } from './functions.js';
+
+const hallowed = getHalloween();
 
 export function speciesPage(zone){
     let content = $(`#content`);
@@ -100,6 +102,9 @@ export function racesPage(content){
             traitList.push({ t: trait, r: 1});
         });
         Object.keys(races[race].traits).sort().forEach(function (trait){
+            if (hallowed.active && (race === 'tortoisan' && trait === 'slow') || (race === 'unicorn' && trait === 'rainbow')){
+                return;
+            }
             let id = `raceTrait${race}${trait}`;
             let color = races[race].fanaticism === trait ? 'danger' : 'info';
             genes.append(`<span class="has-text-${color}" id="${id}">${traits[trait].name}<span>`);
@@ -137,7 +142,7 @@ export function racesPage(content){
 
 function extraTraitList(race){
     const date = new Date();
-    let easter = getEaster();
+    const easter = getEaster();
     switch (race){
         case 'wolven':
             return easter.active ? [{t: 'hyper', r: 1},{t: 'fast_growth', r: 1},{t: 'rainbow', r: 1},{t: 'optimistic', r: 1}] : [];
@@ -155,6 +160,12 @@ function extraTraitList(race){
             return date.getMonth() === 11 && date.getDate() >= 17 ? [{t: 'scavenger', r: 3},{t: 'regenerative', r: 0.5},{t: 'musical', r: 0.25}] : [];
         case 'entish':
             return date.getMonth() === 11 && date.getDate() >= 17 ? [{t: 'photosynth', r: 3},{t: 'optimistic', r: 0.5},{t: 'armored', r: 0.25}] : [];
+        case 'human':
+            return hallowed.active ? [{t: 'anthropophagite', r: 1}, {t: 'cannibalize', r: 2}, {t: 'infectious', r: 3}] : [];
+        case 'tortoisan':
+            return hallowed.active ? [{t: 'hyper', r: 0.25}, {t: 'swift', r: 0.5}, {t: 'infiltrator', r: 1}] : [];
+        case 'unicorn':
+            return hallowed.active ? [{t: 'gloomy', r: 1}, {t: 'darkness', r: 1}] : [];
         default:
             return [];
     }
