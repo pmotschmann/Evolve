@@ -8001,7 +8001,8 @@ function midLoop(){
             lCaps['garrison'] += global.space.space_barracks.on * soldiers;
         }
         if (global.interstellar['cruiser']){
-            lCaps['garrison'] += int_on['cruiser'] * jobScale(3);
+            let soldiers = global.race['fasting'] ? jobScale(4) : jobScale(3);
+            lCaps['garrison'] += int_on['cruiser'] * soldiers;
         }
         if (p_on['s_gate'] && global.galaxy['starbase']){
             let soldiers = global.tech.marines >= 2 ? jobScale(8) : jobScale(5);
