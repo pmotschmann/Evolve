@@ -1062,19 +1062,20 @@ const edenicModules = {
                 }
                 else if (global.eden.fire_support_base.count === 100 && global.tech.elysium >= 10 && payCosts($(this)[0])){
                     let target = null, element = null;
-                    switch (Math.floor(seededRandom(0,3))){
-                        case 0:
-                            target = 'wt';
-                            element = '#eden-west_tower';
-                            break;
-                        case 1:
-                            target = 'et';
-                            element = '#eden-east_tower';
-                            break;
-                        default:
-                            target = 'g';
-                            element = 'eden-isle_garrison';
-                            break;
+                    let targets = [];
+                    if (global.eden.enemy_isle.wt > 0){ targets.push('wt'); }
+                    if (global.eden.enemy_isle.g > 0){ targets.push('g'); }
+                    if (global.eden.enemy_isle.et > 0){ targets.push('et'); }
+
+                    target = targets[Math.floor(seededRandom(0,targets.length))];
+                    if (target === 'wt'){
+                        element = '#eden-west_tower';
+                    }
+                    else if (target === 'et'){
+                        element = '#eden-east_tower';
+                    }
+                    else if (target === 'g'){
+                        element = 'eden-isle_garrison';
                     }
 
                     let nuke = $('<div class="mininuke"></div>');
