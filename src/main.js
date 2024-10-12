@@ -6655,7 +6655,7 @@ function fastLoop(){
 
             if (global.civic.hell_surveyor.workers > 0){
                 let rate = global.tech.infernite >= 3 ? 0.015 : 0.01;
-                let surveyor_base = workerScale(global.civic.hell_surveyor.workers,'hell_surveyor') * rate * production('psychic_boost','Infernite');
+                let surveyor_base = workerScale(highPopAdjust(global.civic.hell_surveyor.workers),'hell_surveyor') * rate * production('psychic_boost','Infernite');
 
                 let sensors = 1;
                 if (global.tech['infernite'] >= 2 && p_on['sensor_drone']){
@@ -8852,7 +8852,7 @@ function midLoop(){
             lCaps['craftsman'] += jobScale(p_on['stellar_forge'] * 2);
         }
         if (global.portal['carport']){
-            lCaps['hell_surveyor'] += global.portal.carport.count - global.portal.carport.damaged;
+            lCaps['hell_surveyor'] += jobScale(global.portal.carport.count) - global.portal.carport.damaged;
         }
         if (p_on['archaeology']){
             lCaps['archaeologist'] += jobScale(p_on['archaeology'] * 2);
