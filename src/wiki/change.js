@@ -3,6 +3,19 @@ import { clearElement } from './../functions.js';
 
 export const changeList = [
     {
+        version: `1.3.17`,
+        date: `10/12/2024`,
+        changes: [
+            `Cruisers now grant the correct number of soldiers in Fasting scenario.`,
+            `Mass Ejector will now show a timer until destabilization if T3 previously completed.`,
+            `Fixed Coal income in Cataclysm.`,
+            `Adjusted High Pop growth rates.`,
+            `Craftsmen have been renamed to Crafters.`,
+            `Fixed some issues with the Wiki.`,
+            `Fixed display error with Cultural Center strings.`
+        ]
+    },
+    {
         version: `1.3.16`,
         revision: `a`,
         date: `9/30/2024`,

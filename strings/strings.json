@@ -6270,6 +6270,8 @@
   "interstellar_mass_ejector_per": "Mass per unit",
   "interstellar_mass_ejector_vol": "Volume Ejecting",
   "interstellar_mass_ejector_mass": "Total Mass",
+  "interstellar_mass_ejector_timer": "Time to Destabilization: %0",
+  "interstellar_mass_ejector_reached": "Blackhole destabilized",
   "interstellar_jump_ship": "Jump Ship",
   "interstellar_jump_ship_desc": "Wormhole Jump Ship",
   "interstellar_jump_ship_effect": "Construct a special ship designed to navigate a natural wormhole. This ship must be heavily shielded and requires a unique drive capable of jumping into and out of an unstable wormhole.",

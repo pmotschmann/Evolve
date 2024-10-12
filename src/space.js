@@ -3564,18 +3564,16 @@ const interstellarProjects = {
                     let exoticEjectRate = (global.interstellar?.mass_ejector?.Elerium ?? 0) * atomic_mass['Elerium'];
                     exoticEjectRate += (global.interstellar?.mass_ejector?.Infernite ?? 0) * atomic_mass['Infernite'];
 
-                    desc += `<div><span class="has-text-caution">${loc('wiki_calc_mass_time_to_explode')}:</span> `;
                     if (exoticEjectNeeded <= 0){
-                        desc += `<span class="has-text-success">${loc('wiki_calc_mass_time_reached')}</span>`;
+                        desc += `<div class="has-text-danger-pulse">${loc('interstellar_mass_ejector_reached')}</div>`;
                     }
                     else if (exoticEjectRate <= 0){
-                        desc += `<span class="has-text-danger">${loc('time_never')}</span>`;
+                        desc += `<div class="has-text-danger">${loc('interstellar_mass_ejector_timer',[loc('time_never')])}</div>`;
                     }
                     else {
                         let timeReq = timeFormat(Math.round(exoticEjectNeeded / exoticEjectRate));
-                        desc += timeReq;
+                        desc += `<div class="has-text-caution">${loc('interstellar_mass_ejector_timer',[timeReq])}</div>`;
                     }
-                    desc += '</div>';
                 }
                 desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
