@@ -1,17 +1,20 @@
 import { global, setGlobal, save } from './../vars.js';
 import { loc } from './../locale.js';
+import {} from './init.js';
 import {} from './../achieve.js';
-import { vBind, clearElement } from './../functions.js';
+import { vBind, clearElement, tagEvent } from './../functions.js';
 import { faqPage } from './faq.js';
-import { racesPage, traitsPage } from './species.js';
+import { speciesPage } from './species.js';
 import { planetsPage } from './planets.js';
 import { renderStructurePage } from './structures.js';
 import { renderTechPage } from './tech.js';
 import { renderAchievePage } from './achieve.js';
 import { gamePlayPage } from './gameplay.js';
 import { prestigePage } from './prestige.js';
+import { eventsPage } from './events.js';
 import { arpaPage } from './arpa.js';
 import { changeLog } from './change.js';
+import { cancelSearchIndexing, search } from './search.js';
 
 $('body').empty();
 initPage();
@@ -38,7 +41,9 @@ function initPage(){
                 { key: 'basics' },
                 { key: 'mechanics' },
                 { key: 'government' },
+                { key: 'governor' },
                 { key: 'combat' },
+                { key: 'challenges' },
                 { key: 'resets' },
                 { key: 'planets' },
                 { key: 'universes' },
@@ -56,10 +61,20 @@ function initPage(){
             ]
         },
         {
+            key: 'events',
+            submenu: [
+                { key: 'major' },
+                { key: 'minor' },
+                { key: 'progress' },
+                { key: 'special' }              
+            ]
+        },
+        {
             key: 'species',
             submenu: [
                 { key: 'races' },
-                { key: 'traits' }
+                { key: 'traits' },
+                { key: 'custom' }
             ]
         },
         {
@@ -89,6 +104,29 @@ function initPage(){
             ]
         },
         {
+            key: 'tp_structures',
+            submenu: [
+                { key: 'prehistoric' },
+                { key: 'planetary' },
+                { key: 'space' },
+                { key: 'tauceti' }
+            ]
+        },
+        {
+            key: 'tp_tech',
+            submenu: [
+                { key: 'primitive' },
+                { key: 'civilized' },
+                { key: 'discovery' },
+                { key: 'industrialized' },
+                { key: 'globalized' },
+                { key: 'early_space' },
+                { key: 'deep_space' },
+                { key: 'solar' },
+                { key: 'tauceti' }
+            ]
+        },
+        {
             key: 'arpa',
             submenu: [
                 { key: 'projects' },
@@ -106,6 +144,9 @@ function initPage(){
         },
         {
             key: 'changelog',
+        },
+        {
+            key: 'search',
         }
     ];
 
@@ -142,13 +183,24 @@ function initPage(){
     }
 }
 
-function menuDispatch(main,sub,frag){
+async function menuDispatch(main,sub,frag){
+    if(window.location.hash === "#search" && main !== "search"){
+        const until = (condition) => {
+            const poll = resolve => condition() ? resolve() : setTimeout(_ => poll(resolve), 16);
+            return new Promise(poll);
+        }
+        cancelSearchIndexing();
+        await until(_ => $(".temp-indexer").length === 0);
+    }
+    
     $(`#content`).removeClass('flex');
 
     var global_data = save.getItem('evolved') || false;
     if (global_data){
         setGlobal(JSON.parse(LZString.decompressFromUTF16(global_data)));
     }
+
+    tagEvent('page_view',{ page_title: `Evolve Wiki - ${main}` });
 
     switch (main){
         case 'intro':
@@ -158,7 +210,7 @@ function menuDispatch(main,sub,frag){
 
         case 'faq':
             faqPage();
-            window.location.hash = `#${main}`;
+            setWindowHash(main,sub,frag);
             break;
 
         case 'gameplay':
@@ -171,28 +223,40 @@ function menuDispatch(main,sub,frag){
             setWindowHash(main,sub,frag);
             break;
 
+        case 'events':
+            eventsPage(sub);
+            setWindowHash(main,sub,frag);
+            break;
+
         case 'species':
             switch (sub){
-                case 'races':
-                    racesPage();
-                    break;
-                case 'traits':
-                    traitsPage();
-                    break;
                 case 'planets':
                     planetsPage();
                     break;
-                }
-                setWindowHash(main,sub,frag);
+                default:
+                    speciesPage(sub);
+                    break;
+            }
+            setWindowHash(main,sub,frag);
             break;
 
         case 'structures':
-            renderStructurePage(sub);
+            renderStructurePage(sub,'standard');
             setWindowHash(main,sub,frag);
             break;
 
         case 'tech':
-            renderTechPage(sub);
+            renderTechPage(sub,'standard');
+            setWindowHash(main,sub,frag);
+            break;
+
+        case 'tp_structures':
+            renderStructurePage(sub,'truepath');
+            setWindowHash(main,sub,frag);
+            break;
+
+        case 'tp_tech':
+            renderTechPage(sub,'truepath');
             setWindowHash(main,sub,frag);
             break;
 
@@ -215,6 +279,11 @@ function menuDispatch(main,sub,frag){
 
         case 'changelog':
             changeLog();
+            setWindowHash(main, sub, frag);
+            break;
+        
+        case 'search':
+            search();
             window.location.hash = `#${main}`;
             break;
     }
@@ -222,14 +291,21 @@ function menuDispatch(main,sub,frag){
 
 function setWindowHash(main,sub,frag){
     if (typeof frag === 'undefined'){
-        window.location.hash = `#${sub}-${main}`;
+        if(sub){
+            window.location.hash = `#${sub}-${main}`;
+        } else {
+            window.location.hash = `#${main}`;
+        }
     }
     else {
         window.location.hash = `#${sub}-${main}-${frag}`;
-        document.getElementById(frag).scrollIntoView({
-            block: 'start',
-            behavior: 'smooth'
-        });
+        setTimeout(function(){
+            document.getElementById(frag).scrollIntoView({
+                block: 'start',
+                behavior: 'smooth'
+            });
+        }, 125);
+        
     }
 }
 
@@ -258,12 +334,14 @@ function mainPage(){
     let content = $(`#content`);
     clearElement(content);
 
+    let contribute = `<span class="has-text-caution">${['Beorseder','Rodrigodd','Volch'].join('</span>, <span class="has-text-caution">').replace(/, ([^,]*)$/, `, & $1`)}</span>`;
+
     let version = global['beta'] ? `beta v${global.version}.${global.beta}` : 'v'+global.version;
     content.append(`<div class="title has-text-warning">${loc(`wiki_main_title`)} - ${version}</div>`);
     content.append(`<div class="paragraph has-text-advanced">${loc(`wiki_main_author`,['Demagorddon'])}</div>`);
     content.append(`<div class="paragraph has-text-danger">${loc(`wiki_main_spoiler`)}</div>`);
     content.append(`<div class="paragraph">${loc(`wiki_main_blurb`)}</div>`);
-    content.append(`<div class="paragraph has-text-caution">${loc(`wiki_main_construction`)}</div>`);
+    content.append(`<div class="paragraph has-text-warning">${loc(`wiki_main_contribution`,[contribute])}</div>`);
     content.append(`<div class="paragraph">${loc(`wiki_resources`)}</div>`);
     
     let list = $(`<ul class="paragraph"></ul>`);
@@ -271,5 +349,5 @@ function mainPage(){
 
     list.append(`<li><a href="https://wooledge.org/~greg/evolve/guide.html" target="_blank">${loc(`wiki_resources_begin_guide`)}</a> ${loc(`wiki_resources_by`,['GreyCat'])}</li>`);
     list.append(`<li><a href="https://karsen777.github.io/" target="_blank">${loc(`wiki_resources_tracker`)}</a> ${loc(`wiki_resources_by`,['Karsen777'])}</li>`);
-    list.append(`<li><a href="https://zarakon.github.io/EvolveHellSim/" target="_blank">${loc(`wiki_resources_hell_sim`)}</a> ${loc(`wiki_resources_by`,['Jotun'])}</li>`);
+    //list.append(`<li><a href="https://zarakon.github.io/EvolveHellSim/" target="_blank">${loc(`wiki_resources_hell_sim`)}</a> ${loc(`wiki_resources_by`,['Jotun'])}</li>`);
 }

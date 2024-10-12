@@ -9,7 +9,8 @@ export var global = {
     space: {},
     interstellar: {},
     portal: {},
-    civic: { free: 0 },
+    tauceti: {},
+    civic: {},
     race: {},
     genes: {},
     blood: {},
@@ -18,25 +19,30 @@ export var global = {
         days: 0,
         tdays: 0
     },
-    event: 200
+    event: {
+        t: 200,
+        l: false
+    },
+    m_event: {
+        t: 499,
+        l: false
+    }
 };
 export var tmp_vars = {};
-export var vues = {};
-export var poppers = {};
 export var breakdown = {
     c: {},
     p: {}
 };
+export var power_generated = {};
 export var p_on = {};
-export var red_on = {};
-export var moon_on = {};
-export var belt_on = {};
+export var support_on = {};
 export var int_on = {};
 export var gal_on = {};
 export var spire_on = {};
 export var quantum_level = 0;
 export var achieve_level = 0;
 export var universe_level = 0;
+export var atrack = {t:0};
 export function set_qlevel(q_level){
     quantum_level = q_level;
 }
@@ -46,20 +52,25 @@ export function set_alevel(a_level){
 export function set_ulevel(u_level){
     universe_level = u_level;
 }
+export var hell_reports = {};
+export var hell_graphs = {};
+export var message_logs = {
+    view: 'all'
+};
+export const message_filters = ['all','progress','queue','building_queue','research_queue','combat','spy','events','major_events','minor_events','achievements','hell'];
 
 Math.rand = function(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
-Math.seed = 2;
-Math.war = 2;
-Math.seededRandom = function(min, max, alt) {
+global['seed'] = 2;
+global['warseed'] = 2;
+export function seededRandom(min, max, alt) {
     max = max || 1;
     min = min || 0;
 
-    Math[alt ? 'war' : 'seed'] = (Math[alt ? 'war' : 'seed'] * 9301 + 49297) % 233280;
-    let rnd = Math[alt ? 'war' : 'seed']/ 233280;
-    global[alt ? 'warseed' : 'seed'] = Math[alt ? 'war' : 'seed'];
+    global[alt ? 'warseed' : 'seed'] = (global[alt ? 'warseed' : 'seed'] * 9301 + 49297) % 233280;
+    let rnd = global[alt ? 'warseed' : 'seed'] / 233280;
     return min + rnd * (max - min);
 }
 
@@ -71,8 +82,6 @@ Math.seededRandom = function(min, max, alt) {
 
         if (saveState){
             global = saveState;
-            Math.seed = global.seed;
-            Math.war = global.hasOwnProperty('warseed') ? global.warseed : (global.seed + 1);
         }
         else {
             newGameData();
@@ -190,6 +199,12 @@ if (convertVersion(global['version']) < 4003 && global.stats['achieve']){
     Object.keys(global.stats.achieve).forEach(function (key){
         global.stats.achieve[key] = 1;
     });
+}
+
+if (convertVersion(global['version']) < 4010){
+    if (global.stats['achieve'] && global.stats.achieve['doomed']){
+        global.stats['portals'] = 1;
+    }
 }
 
 if (convertVersion(global['version']) < 4028 && global.stats['achieve'] && global.stats.achieve['genus_demonic']){
@@ -450,6 +465,12 @@ if (convertVersion(global['version']) < 8017){
     }
 }
 
+if (convertVersion(global['version']) < 9000){
+    if (global.settings && global.settings.showCity){
+        global.settings.showCiv = global.settings.showCity;
+    }
+}
+
 if (convertVersion(global['version']) < 9005){
     if (global.race.hasOwnProperty('terrifying') && global.tech.hasOwnProperty('gambling') && !global.space.hasOwnProperty('spc_casino')){
         global.space['spc_casino'] = { count: 0, on: 0 };
@@ -651,13 +672,13 @@ if (convertVersion(global['version']) < 100023){
             global.resource.Lumber.containers = 0;
             global.resource.Lumber.trade = 0;
             global.resource.Plywood.display = false;
-            global.city['lumber'] = 0;
             if (global.city['sawmill']){ delete global.city['sawmill']; }
             if (global.city['graveyard']){ delete global.city['graveyard']; }
             if (global.city['lumber_yard']){ delete global.city['lumber_yard']; }
             delete global.tech['axe']; delete global.tech['reclaimer']; delete global.tech['saw'];
             global.civic.lumberjack.display = false;
             global.civic.lumberjack.workers = 0;
+            global.civic.lumberjack.assigned = 0;
             if (global.civic.d_job === 'lumberjack') { global.civic.d_job = 'unemployed'; }
             if (global.race['casting']){
                 global.race.casting.total -= global.race.casting.lumberjack;
@@ -667,7 +688,6 @@ if (convertVersion(global['version']) < 100023){
                 global.civic.craftsman.workers -= global.city.foundry['Plywood'];
                 global.city.foundry.crafting -= global.city.foundry['Plywood'];
                 global.city.foundry['Plywood'] = 0;
-                global['loadFoundry'] = true;
             }
             if (global.city['s_alter']) { global.city.s_alter.harvest = 0; }
             if (global.interstellar['mass_ejector']){
@@ -685,26 +705,534 @@ if (convertVersion(global['version']) < 100025){
     }
 }
 
-global['version'] = '1.0.31';
+if (convertVersion(global['version']) < 100032){
+    if (global.civic.hasOwnProperty('free')){
+        global.civic['hunter'] = {
+            job: 'hunter',
+            display: global.race['carnivore'] || global.race['soul_eater'],
+            workers: global.race['carnivore'] || global.race['soul_eater'] ? global.civic.free : 0,
+            max: -1
+        };
+        global.civic['unemployed'] = {
+            job: 'unemployed',
+            display: !(global.race['carnivore'] || global.race['soul_eater']),
+            workers: global.race['carnivore'] || global.race['soul_eater'] ? 0 : global.civic.free,
+            max: -1
+        };
+        if (global.civic.d_job === 'unemployed' && (global.race['carnivore'] || global.race['soul_eater'])){
+            global.civic.d_job = 'hunter';
+        }
+        delete global.civic.free;
+    }
+}
+
+if (convertVersion(global['version']) < 100033){
+    if (global.hasOwnProperty('special') && global.special.hasOwnProperty('egg')){
+        global.special.egg['2020'] = JSON.parse(JSON.stringify(global.special['egg']));
+        delete global.special.egg.egg1;
+        delete global.special.egg.egg2;
+        delete global.special.egg.egg3;
+        delete global.special.egg.egg4;
+        delete global.special.egg.egg5;
+        delete global.special.egg.egg6;
+        delete global.special.egg.egg7;
+        delete global.special.egg.egg8;
+        delete global.special.egg.egg9;
+        delete global.special.egg.egg10;
+        delete global.special.egg.egg11;
+        delete global.special.egg.egg12;
+    }
+}
+
+if (convertVersion(global['version']) < 100035){
+    if (global.race['terrifying']){
+        delete global.tech['trade'];
+        delete global.city['trade'];
+    }
+}
+
+if (convertVersion(global['version']) < 100040){
+    const dt = new Date();
+    if (dt.getFullYear() === 2021 && dt.getMonth() === 3 && dt.getDate() <= 14 && global.race.hasOwnProperty('species') && global.race.species === 'wolven'){
+        global.race['hrt'] = 'wolven';
+    }
+}
+
+if (convertVersion(global['version']) < 100041){
+    global['event'] = {
+        t: 499,
+        l: false
+    };
+    global['m_event'] = {
+        t: 99,
+        l: false
+    };
+}
+
+if (convertVersion(global['version']) < 101000){
+    if (global.race['jtype'] && global.race['jtype'] === 'animal'){
+        global.race['jtype'] = 'omnivore';
+    }
+    if (global.hasOwnProperty('custom') && global.custom.hasOwnProperty('race0') && global.custom.race0.hasOwnProperty('genus') && global.custom.race0.genus === 'animal'){
+        global.custom.race0.genus = 'omnivore';
+    }
+    if (global.portal.hasOwnProperty('mechbay')){
+        for (let i=0; i<global.portal.mechbay.mechs.length; i++){
+            if (!global.portal.mechbay.mechs[i].hasOwnProperty('infernal')){
+                global.portal.mechbay.mechs[i]['infernal'] = false;
+            }
+        }
+    }
+    if (global.hasOwnProperty('stats') && global.stats.hasOwnProperty('achieve') && global.stats.achieve.hasOwnProperty('genus_animal')){
+        global.stats.achieve['genus_carnivore'] = global.stats.achieve.genus_animal;
+        delete global.stats.achieve.genus_animal;
+    }
+}
+
+if (convertVersion(global['version']) < 101001){
+    if (global.hasOwnProperty('race') && global.race.hasOwnProperty('governor') && global.race.governor.hasOwnProperty('config') && global.race.governor.config.hasOwnProperty('merc')){
+        global.race.governor.config.merc['reserve'] = 100;
+    }
+}
+
+if (convertVersion(global['version']) < 101002){
+    if (global.race.hasOwnProperty('frenzy')){
+        global.race['blood_thirst'] = global.race['frenzy'];
+        delete global.race['frenzy'];
+        if (global.city.hasOwnProperty('morale') && global.city.morale.hasOwnProperty('frenzy')){
+            global.city.morale['blood_thirst'] = global.city.morale['frenzy'];
+            delete global.city.morale['frenzy'];
+        }
+    }
+
+    if (global.hasOwnProperty('custom') && global.custom.hasOwnProperty('race0') && global.custom.race0.hasOwnProperty('traits')){
+        for (let i=0; i<global.custom.race0.traits.length; i++){
+            if (global.custom.race0.traits[i] === 'frenzy'){
+                global.custom.race0.traits[i] = 'blood_thirst';
+            }
+        }
+    }
+    
+    if (global.race['jtype'] && global.race['jtype'] === 'omnivore'){
+        global.race['jtype'] = 'carnivore';
+    }
+    if (global.hasOwnProperty('custom') && global.custom.hasOwnProperty('race0') && global.custom.race0.hasOwnProperty('genus') && global.custom.race0.genus === 'omnivore'){
+        global.custom.race0.genus = 'carnivore';
+    }
+}
+
+if (convertVersion(global['version']) < 101010){
+    if (global.hasOwnProperty('settings') && !global.settings.hasOwnProperty('q_merge')){
+        global.settings['q_merge'] = 'merge_nearby';
+    }
+}
+
+if (convertVersion(global['version']) < 101011){
+    if (global.hasOwnProperty('settings') && !global.settings.hasOwnProperty('msgFilters')){
+        global.settings['msgFilters'] = {
+            all: true,
+            progress: true,
+            queue: global['queue'] && global.queue.display,
+            building_queue: global['r_queue'] && global.r_queue.display,
+            research_queue: global['r_queue'] && global.r_queue.display,
+            combat: global.civic['garrison'] && global.civic.garrison.display,
+            spy: global.tech['spy'] && global.tech.spy >= 2,
+            events: true,
+            major_events: true,
+            minor_events: true,
+            achievements: (global.stats['achieve'] && Object.keys(global.stats.achieve).length > 0) || (global.stats['feat'] && Object.keys(global.stats.feat).length > 0),
+            hell: global.settings.showPortal || global.stats.blackhole || global.stats.ascend || global.stats.descend
+        }
+    }
+    if (global.race.hasOwnProperty('inflation')){
+        ['supercollider','stock_exchange','launch_facility','monuments','railway','roid_eject','nexus','syphon'].forEach(function(arpa){
+            if (global.tech.hasOwnProperty(arpa)){
+                global.race.inflation += global.tech[arpa] * 10;
+            }
+        });
+    }
+}
+
+if (convertVersion(global['version']) < 101012){
+    if (global.civic['garrison']){
+        global.civic.garrison['rate'] = 0;
+    }
+} 
+
+if (convertVersion(global['version']) < 101014){
+    if (global.hasOwnProperty('settings') && global.settings.hasOwnProperty('msgFilters')){
+        Object.keys(global.settings.msgFilters).forEach(function (filter){
+            global.settings.msgFilters[filter] = {
+                unlocked: global.settings.msgFilters[filter] ? true : false,
+                vis: global.settings.msgFilters[filter] ? true : false,
+                max: 60,
+                save: 3
+            };
+        });
+    }
+    if (global.hasOwnProperty('lastMsg') && global.lastMsg){
+        let lastMsg = {};
+        message_filters.forEach(function (filter){
+            lastMsg[filter] = [];
+        });
+        global.lastMsg.forEach(function (msg){
+            if (msg.t){
+                msg.t.forEach(function (tag){
+                    lastMsg[tag].push({ m: msg.m, c: msg.c });
+                });
+            }
+            else {
+                lastMsg.all.push({ m: msg.m, c: msg.c })
+            }
+        });
+        global.lastMsg = lastMsg;
+    }
+}
+
+if (convertVersion(global['version']) <= 101014 && !global['revision']){
+    if (global.race['cataclysm'] && global.race['universe'] && global.race['universe'] === 'magic' && global.tech['magic'] && global.tech['magic'] >= 2){
+        global.space['pylon'] = { count: 0 };
+    }
+}
+
+if (convertVersion(global['version']) < 101015){
+    if (global.hasOwnProperty('special') && global.special.hasOwnProperty('trick')){
+        global.special.trick['2020'] = JSON.parse(JSON.stringify(global.special['trick']));
+        delete global.special.trick.trick1;
+        delete global.special.trick.trick2;
+        delete global.special.trick.trick3;
+        delete global.special.trick.trick4;
+        delete global.special.trick.trick5;
+        delete global.special.trick.trick6;
+        delete global.special.trick.trick7;
+        delete global.special.trick.trick8;
+        delete global.special.trick.trick9;
+        delete global.special.trick.trick10;
+        delete global.special.trick.trick11;
+        delete global.special.trick.trick12;
+    }
+}
+
+if (convertVersion(global['version']) < 102000){
+    if (global.hasOwnProperty('portal') && global.portal.hasOwnProperty('fortress') && !global.portal.fortress.hasOwnProperty('nocrew')){
+        global.portal.fortress['nocrew'] = false;
+    }
+    if (global.city.hasOwnProperty('smelter') && !global.city.smelter.hasOwnProperty('Iridium')){
+        global.city.smelter['Iridium'] = 0;
+    }
+    if (global.hasOwnProperty('portal') && global.portal.hasOwnProperty('mechbay') && !global.portal.mechbay.hasOwnProperty('active')){
+        global.portal.mechbay['active'] = 0;
+        global.portal.mechbay['scouts'] = 0;
+    }
+}
+
+if (convertVersion(global['version']) < 102001){
+    if (global.race['blood_thirst'] && global.race.blood_thirst > 3){
+        global.race.blood_thirst = 1;
+    }
+    if (global.race['rainbow'] && global.race.rainbow > 3){
+        global.race.rainbow = 1;
+    }
+}
+
+if (convertVersion(global['version']) < 102005){
+    if (!global.stats['cores'] && global.race.hasOwnProperty('AICore')){
+        global.stats['cores'] = global.race.AICore.count;
+    }
+}
+
+if (convertVersion(global['version']) < 102006){
+    if (global.race['artifical']){
+        if (global.race['calm']){
+            if (global.resource.hasOwnProperty('Zen')){
+                global.resource.Zen.display = true;
+            }
+            global.city['meditation'] = { count: 0 };
+        }
+        if (global.race['cannibalize']){
+            global.city['s_alter'] = {
+                count: 0,
+                rage: 0,
+                mind: 0,
+                regen: 0,
+                mine: 0,
+                harvest: 0,
+            };
+        }
+        if (global.race['magnificent']){
+            global.city['shrine'] = {
+                count: 0,
+                morale: 0,
+                metal: 0,
+                know: 0,
+                tax: 0
+            };
+        }
+    }
+}
+
+if (convertVersion(global['version']) < 102007){
+    if (global.stats.hasOwnProperty('achieve')){
+        delete global.stats.achieve['extinct_sludge'];
+    }
+}
+
+if (convertVersion(global['version']) < 102012){
+    if (global.city.hasOwnProperty('ptrait')){
+        global.city.ptrait = global.city.ptrait === 'none' ? [] : [global.city.ptrait];
+    }
+    if (global.tech['hell_ruins'] && global.tech.hell_ruins >= 3){
+        global.tech['hell_vault'] = 1;
+    }
+}
+
+if (convertVersion(global['version']) < 102015){
+    if (global.race.hasOwnProperty('governor') && global.race.governor.hasOwnProperty('tasks')){
+        for (let task in global.race.governor.tasks) {
+            if (global.race.governor.tasks[task] === 'asssemble'){
+                global.race.governor.tasks[task] = 'assemble';
+            }
+        }
+    }
+    if (global['settings'] && global.settings.hasOwnProperty('restoreCheck')){
+        delete global.settings['restoreCheck'];
+    }
+}
+
+if (convertVersion(global['version']) < 102017){
+    if (global.portal.hasOwnProperty('fortress')){
+        global.portal.observe = {
+            settings: {
+                expanded: false,
+                average: false,
+                hyperSlow: false,
+                display: 'game_days',
+                dropKills: true,
+                dropGems: true
+            },
+            stats: {
+                total: {
+                    start: { year: global.city.calendar.year, day: global.city.calendar.day },
+                    days: 0,
+                    wounded: 0, died: 0, revived: 0, surveyors: 0, sieges: 0,
+                    kills: {
+                        drones: 0,
+                        patrols: 0,
+                        sieges: 0,
+                        guns: 0,
+                        soul_forge: 0,
+                        turrets: 0
+                    },
+                    gems: {
+                        patrols: 0,
+                        guns: 0,
+                        soul_forge: 0,
+                        crafted: 0,
+                        turrets: 0
+                    },
+                },
+                period: {
+                    start: { year: global.city.calendar.year, day: global.city.calendar.day },
+                    days: 0,
+                    wounded: 0, died: 0, revived: 0, surveyors: 0, sieges: 0,
+                    kills: {
+                        drones: 0,
+                        patrols: 0,
+                        sieges: 0,
+                        guns: 0,
+                        soul_forge: 0,
+                        turrets: 0
+                    },
+                    gems: {
+                        patrols: 0,
+                        guns: 0,
+                        soul_forge: 0,
+                        crafted: 0,
+                        turrets: 0
+                    },
+                }
+            },
+            graphID: 0,
+            graphs: {}
+        };
+    }
+    if (global.tech.hasOwnProperty('genetics') && global.tech.genetics > 1 && global.hasOwnProperty('arpa')){
+        if (!global.arpa.hasOwnProperty('sequence')){
+            global.arpa['sequence'] = {
+                max: 50000,
+                progress: 0,
+                time: 50000,
+                on: false
+            };
+        }
+        if (!global.arpa.sequence['boost']){
+            global.arpa.sequence['boost'] = false;
+        }
+        if (!global.arpa.sequence['auto']){
+            global.arpa.sequence['auto'] = false;
+        }
+        if (!global.arpa.sequence['labs']){
+            global.arpa.sequence['labs'] = 0;
+        }
+    }
+}
+
+if (convertVersion(global['version']) < 102021){
+    if (global.hasOwnProperty('custom') && !global.custom.hasOwnProperty('race0')){
+        let race = global.race.hasOwnProperty('species') ? global.race.species : 'protoplasm';
+        if (global.galaxy.hasOwnProperty('alien1') && global.galaxy.alien1.id === 'custom'){
+            global.galaxy.alien1.id = race === 'human' ? 'elven' : 'human';
+        }
+        if (global.galaxy.hasOwnProperty('alien2') && global.galaxy.alien2.id === 'custom'){
+            global.galaxy.alien2.id = race === 'orc' || global.galaxy.alien1.id === 'orc' ? 'cath' : 'orc';
+        }
+    }
+}
+
+if (convertVersion(global['version']) < 103000){
+    if (!global.hasOwnProperty('tauceti')){
+        global['tauceti'] = {};
+    }
+
+    if (global.race.species === 'protoplasm'){
+        if (global.evolution.hasOwnProperty('sexual_reproduction')){
+            global.tech['evo'] = global.evolution.sexual_reproduction.count > 0 ? 2 : 1;
+            delete global.evolution['sexual_reproduction'];
+        }
+        [
+            ['phagocytosis', {evo: 3, evo_animal: 1}],
+            ['chloroplasts', {evo: 3, evo_plant: 1}],
+            ['chitin', {evo: 3, evo_fungi: 1}],
+            ['exterminate', {evo: 7, evo_synthetic: 2}],
+            ['multicellular', {evo: 4}],
+            ['spores', {evo: 5}],
+            ['poikilohydric', {evo: 5}],
+            ['bilateral_symmetry', {evo: 5, evo_insectoid: 1, evo_mammals: 1, evo_eggshell: 1, evo_aquatic: 1, evo_fey: 1, evo_sand: 1, evo_heat: 1, evo_polar: 1}],
+            ['bryophyte', {evo: 7}],
+            ['athropods', {evo: 7, evo_insectoid: 2}],
+            ['mammals', {evo: 6, evo_humanoid: 1, evo_giant: 1, evo_small: 1, evo_animalism: 1, evo_demonic: 1, evo_angelic: 1}],
+            ['humanoid', {evo: 7, evo_humanoid: 2}],
+            ['gigantism', {evo: 7, evo_giant: 2}],
+            ['dwarfism', {evo: 7, evo_small: 2}],
+            ['animalism', {evo: 7, evo_animalism: 2}],
+            ['carnivore', {evo_animalism: 3, evo_carnivore: 2}],
+            ['herbivore', {evo_animalism: 3, evo_herbivore: 2}],
+            ['omnivore', {evo_animalism: 3, evo_omnivore: 2}],
+            ['celestial', {evo: 7, evo_angelic: 2}],
+            ['demonic', {evo: 7, evo_demonic: 2}],
+            ['aquatic', {evo: 7, evo_aquatic: 2}],
+            ['fey', {evo: 7, evo_fey: 2}],
+            ['heat', {evo: 7, evo_heat: 2}],
+            ['polar', {evo: 7, evo_polar: 2}],
+            ['sand', {evo: 7, evo_sand: 2}],
+            ['eggshell', {evo: 6, evo_eggshell: 2}],
+            ['endothermic', {evo: 7, evo_avian: 2}],
+            ['ectothermic', {evo: 7, evo_reptilian: 2}],
+            ['bunker', {evo_challenge: 1}]
+        ].forEach(function(step){
+            if (global.evolution.hasOwnProperty(step[0]) && global.evolution[step[0]].count > 0){
+                for (let [key, value] of Object.entries(step[1])){
+                    global.tech[key] = value;
+                }
+            }
+            delete global.evolution[step[0]];
+        });
+        global.evolution['mloaded'] = 1;
+        global.evolution['gmloaded'] = 1;
+    }
+}
+
+if (convertVersion(global['version']) < 103001){
+    if (!global.hasOwnProperty('prestige')){
+        global.prestige = {};
+    }
+    if (global.race.Plasmid && global.race.Plasmid.hasOwnProperty('anti')){
+        global.prestige['AntiPlasmid'] = { count: global.race.Plasmid.anti };
+    }
+    ['Plasmid','Phage','AICore','Dark','Harmony'].forEach(function (res){
+        if (global.race.hasOwnProperty(res)) {
+            global.prestige[res] = { count: global.race[res].count };
+            delete global.race[res];
+        }
+    });
+    ['Artifact','Blood_Stone'].forEach(function (res){
+        if (global.resource.hasOwnProperty(res)) {
+            global.prestige[res] = { count: global.resource[res].amount };
+            delete global.resource[res];
+        }
+    });
+    if (!global.stats.hasOwnProperty('synth') && global.race.hasOwnProperty('srace')){
+        global.stats['synth'] = {};
+        global.stats.synth[global.race.srace] = true;
+    }
+    if (global.race.hasOwnProperty('governor') && global.race.governor.hasOwnProperty('config') && global.race.governor.config.hasOwnProperty('trash')){
+        ['Infernite','Elerium','Copper','Iron'].forEach(function(res){
+            if (global.race.governor.config.trash.hasOwnProperty(res) && typeof global.race.governor.config.trash[res] === 'number'){
+                global.race.governor.config.trash[res] = { v: global.race.governor.config.trash[res], s: true } ;
+            }
+        });
+    }
+}
+
+if (convertVersion(global['version']) < 103002){
+    if (global.portal.hasOwnProperty('observe') && global.portal.observe.hasOwnProperty('stats')){
+        global.portal.observe.stats.period.gems['surveyors'] = 0;
+        global.portal.observe.stats.total.gems['surveyors'] = 0;
+    }
+}
+
+if (convertVersion(global['version']) < 103011){
+    if (global.city.hasOwnProperty('slave_pen') && global.city.slave_pen.hasOwnProperty('slaves')){
+        global.resource.Slave.amount = global.city.slave_pen.slaves;
+        delete global.city.slave_pen.slaves;
+    }
+}
+
+if (convertVersion(global['version']) < 103014){
+    if (global.race['cataclysm'] && !global.race['start_cataclysm']){
+        global.civic.craftsman.display = true;
+    }
+    if (global.race['lone_survivor'] && ((global.tauceti['tau_factory'] && global.tauceti.tau_factory.count > 0) || (global.tauceti['womling_station'] && global.tauceti.womling_station.count > 0))){
+        global.civic.craftsman.display = true;
+    }
+}
+
+if (convertVersion(global['version']) <= 103015){
+    if (global.portal.hasOwnProperty('harbour')){
+        global.portal['harbor'] = global.portal.harbour;
+        delete global.portal.harbour;
+    }
+}
+
+global['version'] = '1.3.16';
+global['revision'] = 'a';
 delete global['beta'];
+
+if (!global.hasOwnProperty('prestige')){
+    global.prestige = {};
+}
+['Plasmid','AntiPlasmid','Phage','Dark','Harmony','AICore','Artifact','Blood_Stone'].forEach(function (res){
+    if (!global.prestige.hasOwnProperty(res)){
+        global.prestige[res] = { count: 0 };
+    }
+});
 
 if (!global.hasOwnProperty('power')){
     global['power'] = [];       
 }
 
 if (!global.hasOwnProperty('support')){
-    global['support'] = {
-        moon: [],
-        red: [],
-        belt: [],
-        alpha: [],
-        nebula: [],
-        gateway: [],
-        alien2: [],
-        lake: [],
-        spire: [],
-    };
+    global['support'] = {};
 }
+
+[
+    'moon','red','belt','alpha','nebula','gateway','alien2','lake','spire',
+    'titan','enceladus','eris','tau_home','tau_red','tau_roid'
+].forEach(function(s){
+    if (!global.support.hasOwnProperty(s)){
+        global.support[s] = [];
+    }
+});
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -712,39 +1240,28 @@ if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25)
 
 if (!global['settings']){
     global['settings'] = {
-        civTabs: 0,
         showEvolve: true,
-        showCiv: false,
-        showCity: false,
-        showIndustry: false,
-        showPowerGrid: false,
-        showResearch: false,
-        showCivic: false,
-        showMil: false,
-        showResources: false,
-        showMarket: false,
-        showStorage: false,
-        showAlchemy: false,
-        showGenetics: false,
-        showSpace: false,
         showAchieve: false,
         animated: true,
         disableReset: false,
         font: 'standard',
+        q_merge: 'merge_nearby',
         cLabels: true,
-        theme: 'dark',
+        theme: 'gruvboxDark',
         locale: 'en-US',
         icon: 'star'
     };
 }
 
-if (!global.settings.hasOwnProperty('showMechLab')){
-    global.settings['showMechLab'] = false;
+if (!global.settings['space']){
+    global.settings['space'] = {};
 }
 
-if (!global.settings.hasOwnProperty('showCiv')){
-    global.settings['showCiv'] = global.settings['showCity'];
+if (!global.settings.space.hasOwnProperty('home')){
+    global.settings.space['home'] = true;
 }
+
+setRegionStates(false);
 
 if (!global.settings['icon']){
     global.settings['icon'] = 'star';
@@ -763,88 +1280,12 @@ if (!global.settings['showStorage']){
     }
 }
 
-if (!global.settings['showAlchemy']){
-    global.settings['showAlchemy'] = false;
+if (!global.settings.hasOwnProperty('touch')){
+    global.settings['touch'] = false;
 }
 
-if (!global.settings['space']){
-    global.settings['space'] = {
-        home: true,
-        moon: false,
-        red: false,
-        hell: false,
-        sun: false,
-        gas: false,
-        gas_moon: false,
-        belt: false,
-        dwarf: false,
-        blackhole: false,
-        sirius: false,
-        stargate: false,
-        gateway: false,
-        gorddon: false,
-        alien1: false,
-        alien2: false,
-        chthonian: false
-    }
-}
-
-if (!global.settings.space['alpha']){
-    global.settings.space['alpha'] = false;
-    global.settings.space['proxima'] = false;
-    global.settings.space['nebula'] = false;
-    global.settings.space['neutron'] = false;
-    global.settings.space['blackhole'] = false;
-}
-
-if (typeof global.settings.space['stargate'] === 'undefined'){
-    global.settings.space['stargate'] = false;
-    global.settings.space['gateway'] = false;
-}
-
-if (typeof global.settings.space['gorddon'] === 'undefined'){
-    global.settings.space['gorddon'] = false;
-}
-if (typeof global.settings.space['alien1'] === 'undefined'){
-    global.settings.space['alien1'] = false;
-    global.settings.space['alien2'] = false;
-}
-if (typeof global.settings.space['alien1'] === 'undefined'){
-    global.settings.space['alien1'] = false;
-    global.settings.space['alien2'] = false;
-}
-if (typeof global.settings.space['chthonian'] === 'undefined'){
-    global.settings.space['chthonian'] = false;
-}
-if (typeof global.settings.space['sirius'] === 'undefined'){
-    global.settings.space['sirius'] = false;
-}
-
-if (!global.settings['showDeep']){
-    global.settings['showDeep'] = false;
-}
-
-if (!global.settings['showGalactic']){
-    global.settings['showGalactic'] = false;
-}
-
-if (!global.settings['showPortal']){
-    global.settings['showPortal'] = false;
-}
-
-if (!global.settings['portal']){
-    global.settings['portal'] = {
-        fortress : false,
-        badlands : false,
-        pit : false,
-    };
-}
-
-if (!global.settings.portal.hasOwnProperty('ruins')){
-    global.settings.portal['ruins'] = false;
-    global.settings.portal['gate'] = false;
-    global.settings.portal['lake'] = false;
-    global.settings.portal['spire'] = false;
+if (!global.settings.hasOwnProperty('lowPowerBalance')){
+    global.settings['lowPowerBalance'] = false;
 }
 
 if (!global['queue']){
@@ -863,6 +1304,62 @@ if (!global['r_queue']){
 
 if (!global['queue']['rename']){
     global.queue['rename'] = false;
+}
+
+if (!global['queue']['max']){
+    global.queue['max'] = 0;
+}
+
+if (!global['r_queue']['max']){
+    global.r_queue['max'] = 0;
+}
+
+if (!global['queue']['pause']){
+    global.queue['pause'] = false;
+}
+
+if (!global['r_queue']['pause']){
+    global.r_queue['pause'] = false;
+}
+
+if (!global['lastMsg']){
+    global['lastMsg'] = {};
+}
+
+if (!global.settings['msgFilters']){
+    global.settings['msgFilters'] = {};
+}
+
+//Message Filters unlocked by default
+['all','progress','events','major_events','minor_events'].forEach(function (filter){
+    if (!global.settings.msgFilters[filter]){
+        global.settings.msgFilters[filter] = {
+            unlocked: true,
+            vis: true,
+            max: 60,
+            save: 3
+        };
+    }
+});
+
+message_filters.forEach(function (filter){
+    if (!global.lastMsg[filter]){
+        global.lastMsg[filter] = [];
+    }
+    //Message Filters not unlocked by default.
+    if (!global.settings.msgFilters[filter]){
+        global.settings.msgFilters[filter] = {
+            unlocked: false,
+            vis: false,
+            max: 60,
+            save: 3
+        };
+    }
+});
+
+if (!global.settings['msgQueueHeight']){
+    global.settings['msgQueueHeight'] = $(`#msgQueue`).outerHeight();
+    global.settings['buildQueueHeight'] = $(`#buildQueue`).outerHeight();
 }
 
 if (!global['space']){
@@ -912,29 +1409,8 @@ if (!global.settings.space['alpha']){
 if (!global.settings['showAchieve']){
     global.settings['showAchieve'] = false;
 }
-if (!global.settings['showEjector']){
-    global.settings['showEjector'] = false;
-}
-if (!global.settings['showCargo']){
-    global.settings['showCargo'] = false;
-}
-if (!global.settings['resTabs']){
-    global.settings['resTabs'] = 0;
-}
-if (!global.settings['govTabs']){
-    global.settings['govTabs'] = 0;
-}
-if (!global.settings['marketTabs']){
-    global.settings['marketTabs'] = 0;
-}
-if (!global.settings['spaceTabs']){
-    global.settings['spaceTabs'] = 0;
-}
-if (!global.settings['statsTabs']){
-    global.settings['statsTabs'] = 0;
-}
 if (!global.settings['locale']){
-    global.settings['locale'] = 'en-us';
+    global.settings['locale'] = 'en-US';
 }
 if (typeof global.settings.pause === 'undefined'){
     global.settings['pause'] = false;
@@ -963,8 +1439,20 @@ delete global.settings.keyMap['d'];
 if (typeof global.settings.qAny === 'undefined'){
     global.settings['qAny'] = false;
 }
+if (typeof global.settings.sPackOn === 'undefined'){
+    global.settings['sPackOn'] = true;
+}
+if (typeof global.settings.qAny_res === 'undefined'){
+    global.settings['qAny_res'] = false;
+}
+if (typeof global.settings.sPackMsg === 'undefined'){
+    global.settings['sPackMsg'] = false;
+}
 if (typeof global.settings.expose === 'undefined'){
     global.settings['expose'] = false;
+}
+if (typeof global.settings.alwaysPower === 'undefined'){
+    global.settings['alwaysPower'] = false;
 }
 if (typeof global.settings.tabLoad === 'undefined'){
     global.settings['tabLoad'] = false;
@@ -972,109 +1460,69 @@ if (typeof global.settings.tabLoad === 'undefined'){
 if (typeof global.settings.boring === 'undefined'){
     global.settings['boring'] = false;
 }
-if (!global.stats['reset']){
-    global.stats['reset'] = 0;
-}
-if (!global.stats['plasmid']){
-    global.stats['plasmid'] = 0;
-}
-if (!global.stats['antiplasmid']){
-    global.stats['antiplasmid'] = 0;
-}
-if (!global.stats['universes']){
-    global.stats['universes'] = 0;
-}
-if (!global.stats['phage']){
-    global.stats['phage'] = 0;
-}
-if (!global.stats['starved']){
-    global.stats['starved'] = 0;
-}
-if (!global.stats['tstarved']){
-    global.stats['tstarved'] = 0;
-}
-if (!global.stats['died']){
-    global.stats['died'] = 0;
-}
-if (!global.stats['tdied']){
-    global.stats['tdied'] = 0;
-}
-if (!global.stats['sac']){
-    global.stats['sac'] = 0;
-}
-if (!global.stats['tsac']){
-    global.stats['tsac'] = 0;
-}
-if (!global.stats['know']){
-    global.stats['know'] = 0;
-}
-if (!global.stats['tknow']){
-    global.stats['tknow'] = 0;
-}
-if (!global.stats['portals']){
-    global.stats['portals'] = global.stats['achieve'] && global.stats.achieve['doomed'] ? 1 : 0;
-}
-if (!global.stats['dkills']){
-    global.stats['dkills'] = 0;
-}
-if (!global.stats['attacks']){
-    global.stats['attacks'] = 0;
-}
-if (!global.stats['mad']){
-    global.stats['mad'] = 0;
-}
-if (!global.stats['bioseed']){
-    global.stats['bioseed'] = 0;
-}
-if (!global.stats['cataclysm']){
-    global.stats['cataclysm'] = 0;
-}
-if (!global.stats['blackhole']){
-    global.stats['blackhole'] = 0;
-}
-if (!global.stats['ascend']){
-    global.stats['ascend'] = 0;
-}
-if (!global.stats['descend']){
-    global.stats['descend'] = 0;
-}
-if (!global.stats['dark']){
-    global.stats['dark'] = 0;
-}
-if (!global.stats['harmony']){
-    global.stats['harmony'] = 0;
-}
-if (!global.stats['blood']){
-    global.stats['blood'] = 0;
-}
-if (!global.stats['artifact']){
-    global.stats['artifact'] = 0;
+if (!global.settings.hasOwnProperty('mtorder')){
+    global.settings['mtorder'] = [];
 }
 
-if (!global.stats['spire']){
-    global.stats['spire'] = {};
+export function setupStats(){
+    // Stat Counters
+    [
+        'reset','plasmid','antiplasmid','universes','phage','starved','tstarved','died','tdied',
+        'sac','tsac','know','tknow','portals','dkills','attacks','cfood','tfood','cstone','tstone',
+        'clumber','tlumber','mad','bioseed','cataclysm','blackhole','ascend','descend','terraform',
+        'aiappoc','matrix','retire','eden','geck','dark','harmony','blood','cores','artifact',
+        'cattle','tcattle','murders','tmurders','psykill','tpsykill'
+    ].forEach(function(k){
+        if (!global.stats.hasOwnProperty(k)){
+            global.stats[k] = 0;
+        }
+    });
+
+    if (!global.stats['achieve']){
+        global.stats['achieve'] = {};
+    }
+    if (!global.stats['feat']){
+        global.stats['feat'] = {};
+    }
+
+    if (!global.stats.hasOwnProperty('womling')){
+        global.stats['womling'] = {
+            god: {l:0},
+            lord: {l:0},
+            friend: {l:0}
+        };
+    }
+
+    if (!global.stats['spire']){
+        global.stats['spire'] = {};
+    }
+    if (!global.stats['synth']){
+        global.stats['synth'] = {};
+    }
+    if (!global.stats.hasOwnProperty('banana')){
+        global.stats['banana'] = {
+            b1: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
+            b2: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
+            b3: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
+            b4: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
+            b5: { l: false, h: false, a: false, e: false, m: false, mg: false }
+        };
+    }
+    if (!global.stats.hasOwnProperty('endless_hunger')){
+        global.stats['endless_hunger'] = {
+            b1: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
+            b2: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
+            b3: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
+            b4: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
+            b5: { l: false, h: false, a: false, e: false, m: false, mg: false }
+        };
+    }
 }
 
-if (!global['lastMsg']){
-    global['lastMsg'] = [];
-}
+setupStats();
+
 if (!global.race['seeded']){
     global.race['seeded'] = false;
-}
-if (!global.race['Plasmid']){
-    global.race['Plasmid'] = { count: 0, anti: 0 };
-}
-if (!global.race.Plasmid['anti']){
-    global.race.Plasmid['anti'] = 0;
-}
-if (!global.race['Phage']){
-    global.race['Phage'] = { count: 0 };
-}
-if (!global.race['Dark']){
-    global.race['Dark'] = { count: 0 };
-}
-if (!global.race['Harmony']){
-    global.race['Harmony'] = { count: 0 };
 }
 if (!global.race['deterioration']){
     global.race['deterioration'] = 0;
@@ -1086,7 +1534,6 @@ if (!global.race['gene_fortify']){
 if (!global.race['old_gods']){
     global.race['old_gods'] = 'none';
 }
-
 if (!global.race['universe']){
     global.race['universe'] = 'standard';
 }
@@ -1094,9 +1541,16 @@ if (!global.race['universe']){
 if (!global.genes['minor']){
     global.genes['minor'] = {};
 }
-
 if (!global.race['minor']){
     global.race['minor'] = {};
+}
+
+if (!global.hasOwnProperty('govern')){
+    global['govern'] = {
+        governor: {},
+        candidate: [],
+        policy: {}
+    };
 }
 
 if (!global.settings.hasOwnProperty('showMil')){
@@ -1117,20 +1571,7 @@ if (!global.special['gift']){
     global.special['gift'] = {};
 }
 if (!global.special.hasOwnProperty('egg')){
-    global.special['egg'] = {
-        egg1: false,
-        egg2: false,
-        egg3: false,
-        egg4: false,
-        egg5: false,
-        egg6: false,
-        egg7: false,
-        egg8: false,
-        egg9: false,
-        egg10: false,
-        egg11: false,
-        egg12: false
-    };
+    global.special['egg'] = {};
 }
 
 if (!global.special.hasOwnProperty('trick')){
@@ -1159,8 +1600,19 @@ if (!global.civic['govern']){
 }
 global.civic.govern.fr = 0;
 
+if (!global.hasOwnProperty('custom')){
+    global['custom'] = {};
+}
+if (global.custom.hasOwnProperty('planet') && global.custom.planet.hasOwnProperty('biome')){
+    delete global.custom.planet;
+}
+
 if (global.city.hasOwnProperty('smelter') && !global.city.smelter.hasOwnProperty('cap')){
     global.city.smelter['cap'] = 0;
+}
+
+if (!global.civic['homeless']){
+    global.civic.homeless = 0;
 }
 
 if (!global.civic['foreign']){
@@ -1232,14 +1684,13 @@ if (typeof global.civic.foreign.gov2['name'] !== "undefined" && global.civic.for
     global.civic.foreign.gov2.name.s1 = 'Divine';
 }
 
-if (!global.race['evil'] && global.race['immoral']){
+if (!global.race['evil'] && global.race['immoral'] && global.race !== undefined && global.race.species !== 'wendigo'){
     delete global.race['immoral'];
 }
-
-{
+else if (global.race !== undefined && global.race.species === 'wendigo'){
     const date = new Date();
-    if (global.race.species === 'elven' && date.getMonth() === 11 && date.getDate() >= 17){
-        global.race['slaver'] = 1;
+    if (global.settings.hasOwnProperty('boring') && !global.settings.boring && date.getMonth() === 11 && date.getDate() >= 17){
+        global.race['immoral'] = 3;
     }
 }
 
@@ -1256,7 +1707,16 @@ if (!global.race['evil'] && global.race['immoral']){
     }
 }
 
+if (!global.settings['queuestyle']){
+    global.settings['queuestyle'] = 'standardqueuestyle';
+}
+
+if (!global.settings['q_resize']){
+    global.settings.q_resize = 'auto';
+}
+
 $('html').addClass(global.settings.theme);
+$('html').addClass(global.settings.queuestyle);
 
 if (!global.settings['at']){
     global.settings['at'] = 0;
@@ -1265,6 +1725,8 @@ if (!global.settings['at']){
 if (!global.city['morale']){
     global.city['morale'] = {
         current: 0,
+        cap: 0,
+        potential: 0,
         unemployed: 0,
         stress: 0,
         entertain: 0,
@@ -1304,6 +1766,9 @@ if (!global.city.morale['tax']){
 if (!global.city.morale['shrine']){
     global.city.morale['shrine'] = 0;
 }
+if (!global.city.morale['blood_thirst']){
+    global.city.morale['blood_thirst'] = 0;
+}
 if (!global.city.morale['broadcast']){
     global.city.morale['broadcast'] = 0;
 }
@@ -1312,6 +1777,12 @@ if (!global.city.morale['vr']){
 }
 if (!global.city.morale['zoo']){
     global.city.morale['zoo'] = 0;
+}
+if (!global.city.morale['cap']){
+    global.city.morale['cap'] = 0;
+}
+if (!global.city.morale['potential']){
+    global.city.morale['potential'] = 0;
 }
 
 if (!global.city['calendar']){
@@ -1372,6 +1843,9 @@ if (global.city['foundry'] && !global.city.foundry['Nanoweave']){
 }
 if (global.city['foundry'] && !global.city.foundry['Scarletite']){
     global.city.foundry['Scarletite'] = 0;
+}
+if (global.city['foundry'] && !global.city.foundry['Quantium']){
+    global.city.foundry['Quantium'] = 0;
 }
 
 if (!global.settings['arpa']){
@@ -1446,14 +1920,23 @@ if (!global.civic['new']){
     global.civic['new'] = 0;
 }
 
+if (!global.race['purgatory']){
+    global.race['purgatory'] = {
+        city: {},
+        space: {},
+        portal: {},
+        tech: {},
+    };
+}
+
 if (!global.civic['d_job']){
     if (global.race['carnivore'] || global.race['soul_eater']){
-        global.civic['d_job'] = 'unemployed';
+        global.civic['d_job'] = 'hunter';
     }
     else if (global.tech['agriculture'] && global.tech['agriculture'] >= 1){
         global.civic['d_job'] = 'farmer';
     }
-    else{
+    else {
         global.civic['d_job'] = 'unemployed';
     }
 }
@@ -1465,14 +1948,10 @@ if (global['arpa'] && global.arpa['launch_facility'] && global.arpa.launch_facil
     global.tech['space'] = 1;
 }
 
-if (!(save.getItem('evolveBak'))){
-    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
-}
-
 function newGameData(){
     global['race'] = { species : 'protoplasm', gods: 'none', old_gods: 'none', seeded: false };
-    Math.seed = Math.rand(0,10000);
-    global.seed = Math.seed;
+    global['seed'] = Math.rand(0,10000);
+    global['warseed'] = Math.rand(0,10000);
     global['new'] = true;
 }
 
@@ -1511,11 +1990,11 @@ export function resizeGame(){
         let build = $('#buildQueue').detach();
         build.addClass('right');
         build.removeClass('has-text-info');
-        build.find('h2').removeClass('is-sr-only');
 
         let queue = $('#msgQueue').detach();
         queue.addClass('right');
         queue.removeClass('has-text-info');
+        queue.css('resize', 'none');
         $('#queueColumn').addClass('is-one-quarter');
         $('#queueColumn').append(build);
         $('#queueColumn').append(queue);
@@ -1527,11 +2006,11 @@ export function resizeGame(){
         let build = $('#buildQueue').detach();
         build.removeClass('right');
         build.addClass('has-text-info');
-        build.find('h2').addClass('is-sr-only');
 
         let queue = $('#msgQueue').detach();
         queue.removeClass('right');
         queue.addClass('has-text-info');
+        queue.css('resize', 'vertical');
         $('#queueColumn').removeClass('is-one-quarter');
         $('#sideQueue').append(build);
         $('#sideQueue').append(queue);
@@ -1542,49 +2021,82 @@ export function resizeGame(){
 
 var affix_list = {
     si: ['K','M','G','T','P','E','Z','Y'],
-    sci: ['e3','e6','e9','e12','e15','e18','e21','e24'],
     sln: ['K','M','B','t','q','Q','s','S']
 };
+// Number formatting options, in the user's default locale
+var numFormatShort = new Intl.NumberFormat(undefined, {maximumFractionDigits: 2, maximumSignificantDigits: 3, roundingMode: 'trunc', roundingPriority: 'lessPrecision'});
+var numFormatLong = new Intl.NumberFormat(undefined, {maximumFractionDigits: 2, maximumSignificantDigits: 4, roundingMode: 'trunc', roundingPriority: 'lessPrecision'});
+// Constant value that is used frequently
+const ADD_16_ULP = 1 + (16 * Number.EPSILON);
 
-export function sizeApproximation(value,precision,fixed){
-    let result = 0;
-    let affix = '';
-    if (value <= 9999){
-        result = +value.toFixed(precision);
+/**
+ * Return a locale-dependent string that represents the significance of the input value.
+ * Numbers are typically represented with 3 or 4 significant figures.
+ * Abbreviations are not applied to numbers less than 10,000.
+ *
+ * All input values are truncated toward 0 when precision reduction is required.
+ * Trailing fractional zeroes are never printed, regardless of the apparent significant figure requirement.
+ *
+ * @arg {Number} value - The value to format
+ * @arg {Number} precision - The maximum number of fractional digits to display
+ * @arg {Boolean} precise - Do not apply abbreviation and display all integer significant figures in the value.
+ * @arg {Boolean} exact - Do not apply abbreviation and display all significant figures in the value.
+ * @return {String}
+ */
+export function sizeApproximation(value, precision = 1, precise = false, exact = false){
+    let absValue = Math.abs(value);
+    let oom = Math.floor(Math.log10(absValue));
+
+    // Increase magnitude of all numbers by 16 to 32 ULP to avoid rounding issues
+    absValue *= ADD_16_ULP;
+    // Explicitly avoid adding anything to either -0 or +0 to avoid altering the sign
+    value = value<0 ? -absValue : value>0 ? absValue : value;
+
+    // Exact mode:
+    //  The number of significant figures is not limited in any way.
+    //  The number of fractional digits is limited by the precision argument.
+    if (exact){
+        return value.toLocaleString(undefined, {maximumFractionDigits: precision, roundingMode: 'trunc'});
     }
-    else if (value < 1000000){
-        affix = affix_list[global.settings.affix][0];
-        result = fixed ? +(value / 1000).toFixed(1) : (Math.floor(value / 100) / 10);
+
+    // Fixed mode:
+    //  The number of significant figures is at least 5, but may increase for large values.
+    //  The number of fractional digits is limited by the precision argument, but may be reduced for large values.
+    else if (oom < 4 || precise){
+        // The objective here is to provide high precision for both large and small numbers,
+        // while preventing excess precision for large numbers that also have many fractional digits.
+        let maxSigFigs = Math.max(oom + 1,          // Full precision for the integer component of large numbers (at least 1e4)
+                                  precision + 1,    // Requested precision for values with only 1 leading digit
+                                  5);               // Always allow 5 sigfigs, not only 4, for numbers where 1e2 <= x < 1e4
+        return value.toLocaleString(undefined, {maximumSignificantDigits: maxSigFigs, maximumFractionDigits: precision, roundingMode: 'trunc', roundingPriority: 'lessPrecision'});
     }
-    else if (value < 1000000000){
-        affix = affix_list[global.settings.affix][1];
-        result = fixed ? +(value / 1000000).toFixed(1) : (Math.floor(value / 10000) / 100);
-    }
-    else if (value < 1000000000000){
-        affix = affix_list[global.settings.affix][2];
-        result = fixed ? +(value / 1000000000).toFixed(1) : (Math.floor(value / 10000000) / 100);
-    }
-    else if (value < 1000000000000000){
-        affix = affix_list[global.settings.affix][3];
-        result = fixed ? +(value / 1000000000000).toFixed(1) : (Math.floor(value / 10000000000) / 100);
-    }
-    else if (value < 1000000000000000000){
-        affix = affix_list[global.settings.affix][4];
-        result = fixed ? +(value / 1000000000000000).toFixed(1) : (Math.floor(value / 10000000000000) / 100);
-    }
-    else if (value < 1000000000000000000000){
-        affix = affix_list[global.settings.affix][5];
-        result = fixed ? +(value / 1000000000000000000).toFixed(1) : (Math.floor(value / 10000000000000000) / 100);
-    }
-    else if (value < 1000000000000000000000000){
-        affix = affix_list[global.settings.affix][6];
-        result = fixed ? +(value / 1000000000000000000000).toFixed(1) : (Math.floor(value / 10000000000000000000) / 100);
-    }
+
     else {
-        affix = affix_list[global.settings.affix][7];
-        result = fixed ? +(value / 1000000000000000000000000).toFixed(1) : (Math.floor(value / 10000000000000000000000) / 100);
+        const oomMod3 = oom % 3;
+        const dispShort = oom === 4; // Reduce significant figures from 4 to 3 for numbers below 100,000
+        const forceSI = global.settings.affix !== 'eng' && oom >= 27;
+        // Reduce displayed order of magnitude to the nearest multiple of 3, except for SI mode
+        if (global.settings.affix !== 'sci' && !forceSI){
+            oom -= oomMod3;
+        }
+
+        let affix;
+        if (global.settings.affix === 'sci' || global.settings.affix === 'eng' || forceSI){
+            // Manually build SI suffix to guarantee that the 'e' is lowercase for aesthetic preference
+            affix = 'e' + oom;
+        } else {
+            // Get the string suffix from the configured lookup table
+            affix = affix_list[global.settings.affix][(oom / 3) - 1];
+        }
+
+        value /= (10**oom);
+
+        if (dispShort){
+            return numFormatShort.format(value) + affix;
+        } else {
+            return numFormatLong.format(value) + affix;
+        }
     }
-    return (result >= 100 ? +result.toFixed(1) : result) + affix;
 }
 
 $(window).resize(function(){
@@ -1609,19 +2121,36 @@ export function srSpeak(text, priority) {
 }
 
 // executes a soft reset
-window.soft_reset = function reset(){
+window.soft_reset = function reset(source){
+    try {
+        source = source && source === 'replicator' ? 'replicator' : 'soft';
+        gtag('event', 'reset', { 'end': source});
+    } catch (err){}
+    
+    if (!source){
+        clearSavedMessages();
+    }
+
+    let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
+    let gecks = global.race.hasOwnProperty('geck') ? global.race.geck : 0;
+    if (global.race.hasOwnProperty('gecked')){
+        gecks += global.race.gecked;
+        global.stats.geck -= global.race.gecked;
+    }
     let replace = {
         species : 'protoplasm',
-        Plasmid: { count: global.race.Plasmid.count },
-        Plasmid: { count: global.race.Plasmid.count, anti: global.race.Plasmid.anti },
-        Phage: { count: global.race.Phage.count },
-        Dark: { count: global.race.Dark.count },
-        Harmony: { count: global.race.Harmony.count },
         universe: global.race.universe,
         seeded: global.race.seeded,
         probes: global.race.probes,
         seed: global.race.seed,
         ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
+        rejuvenated: global.race.hasOwnProperty('rejuvenated') ? global.race.rejuvenated : false,
+    }
+    if (gecks > 0){
+        replace['geck'] = gecks;
+    }
+    if (srace){
+        replace['srace'] = srace;
     }
     if (global.race['bigbang']){
         replace['bigbang'] = true;
@@ -1673,9 +2202,9 @@ window.soft_reset = function reset(){
     }
 
     clearStates();
-    global.lastMsg = [];
     global.new = true;
-    Math.seed = Math.rand(0,10000);
+    global.seed = Math.rand(0,10000);
+    global.warseed = Math.rand(0,10000);
 
     global.stats['current'] = Date.now();
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
@@ -1684,6 +2213,64 @@ window.soft_reset = function reset(){
 
 export var webWorker = { w: false, s: false, mt: 250 };
 export var intervals = {};
+
+export function clearSavedMessages(){
+    message_filters.forEach(function (filter){
+        //Preserve achievements log.
+        if (filter !== 'achievements'){
+            global.lastMsg[filter] = [];
+        }
+    });
+}
+
+function setRegionStates(reset){
+    // Display Keys
+    let regions = {
+        base: [
+            'showCiv','showCity','showIndustry','showPowerGrid','showMechLab','showShipYard',
+            'showResearch','showCivic','showMil','showResources','showMarket','showStorage',
+            'showGenetics','showSpace','showDeep','showGalactic','showPortal','showOuter',
+            'showTau','showEjector','showCargo','showAlchemy','showGovernor','arpa','showPsychic'
+        ],
+        space: [
+            'moon','red','hell','sun','gas','gas_moon','belt','dwarf','alpha','proxima',
+            'nebula','neutron','blackhole','sirius','stargate','gateway','gorddon',
+            'alien1','alien2','chthonian','titan','enceladus','triton','eris','kuiper'
+        ],
+        portal: ['fortress','badlands','pit','ruins','gate','lake','spire'],
+        tau: ['home','red','roid','gas','gas2','star']
+    };
+    
+    Object.keys(regions).forEach(function(r){
+        if (r === 'base'){
+            regions[r].forEach(function(v){
+                if (!global.settings.hasOwnProperty(v) || reset){
+                    global.settings[v] = false;
+                }
+            });
+        }
+        else {
+            if (!global.settings.hasOwnProperty(r)){
+                global.settings[r] = {};
+            }
+            regions[r].forEach(function(v){
+                if (!global.settings[r].hasOwnProperty(v) || reset){
+                    global.settings[r][v] = false;
+                }
+            });
+        }
+    });
+
+
+    // Tab Indexes
+    [
+        'civTabs','govTabs','govTabs2','hellTabs','resTabs','spaceTabs','marketTabs','statsTabs'
+    ].forEach(function(k){
+        if (!global.settings.hasOwnProperty(k) || reset){
+            global.settings[k] = 0;
+        }
+    });
+}
 
 export function clearStates(){
     if (webWorker.w){
@@ -1696,13 +2283,14 @@ export function clearStates(){
     global.galaxy = {};
     global.portal = {};
     global.starDock = {};
-    global.civic = { free: 0, new: 0 };
+    global.tauceti = {};
+    global.civic = { new: 0 };
     global.civic['foreign'] = {
         gov0: {
             unrest: 0,
-            hstl: Math.floor(Math.seededRandom(80,100)),
-            mil: Math.floor(Math.seededRandom(75,125)),
-            eco: Math.floor(Math.seededRandom(60,90)),
+            hstl: Math.floor(seededRandom(80,100)),
+            mil: Math.floor(seededRandom(75,125)),
+            eco: Math.floor(seededRandom(60,90)),
             spy: 0,
             esp: 0,
             trn: 0,
@@ -1714,9 +2302,9 @@ export function clearStates(){
         },
         gov1: {
             unrest: 0,
-            hstl: Math.floor(Math.seededRandom(0,20)),
-            mil: Math.floor(Math.seededRandom(125,175)),
-            eco: Math.floor(Math.seededRandom(80,120)),
+            hstl: Math.floor(seededRandom(0,20)),
+            mil: Math.floor(seededRandom(125,175)),
+            eco: Math.floor(seededRandom(80,120)),
             spy: 0,
             esp: 0,
             trn: 0,
@@ -1728,9 +2316,9 @@ export function clearStates(){
         },
         gov2: {
             unrest: 0,
-            hstl: Math.floor(Math.seededRandom(40,60)),
-            mil: Math.floor(Math.seededRandom(200,300)),
-            eco: Math.floor(Math.seededRandom(130,170)),
+            hstl: Math.floor(seededRandom(40,60)),
+            mil: Math.floor(seededRandom(200,300)),
+            eco: Math.floor(seededRandom(130,170)),
             spy: 0,
             esp: 0,
             trn: 0,
@@ -1741,88 +2329,36 @@ export function clearStates(){
             buy: false
         }
     };
+    if (!global.genes['blood']){
+        global.prestige.Blood_Stone.count = 0;
+    }
 
-    let artifacts = global.resource.Artifact;
-    if (global.genes['blood']){
-        let stones = global.resource.Blood_Stone;
-        global.resource = {};
-        global.resource['Blood_Stone'] = stones;
-    }
-    else {
-        global.resource = {};
-    }
-    if (artifacts.amount > 0){
-        global.resource['Artifact'] = artifacts;
-    }
+    global.resource = {};
     global.evolution = {};
-    global.event = 100;
+    global.event = { t: 100, l: false };
+    global.m_event = { t: 499, l: false };
     global.stats.days = 0;
     global.stats.know = 0;
     global.stats.starved = 0;
     global.stats.died = 0;
     global.stats.attacks = 0;
     global.stats.dkills = 0;
+    global.stats.cfood = 0;
+    global.stats.cstone = 0;
+    global.stats.clumber = 0;
     global.stats.sac = 0;
+    global.stats.cattle = 0;
+    global.stats.murders = 0;
     global.settings.at = 0;
 
     global.settings.showEvolve = true;
-    global.settings.showCiv = false;
-    global.settings.showCity = false;
-    global.settings.showIndustry = false;
-    global.settings.showPowerGrid = false;
-    global.settings.showMechLab = false;
-    global.settings.showResearch = false;
-    global.settings.showCivic = false;
-    global.settings.showMil = false;
-    global.settings.showResources = false;
-    global.settings.showMarket = false;
-    global.settings.showStorage = false;
-    global.settings.showGenetics = false;
-    global.settings.showSpace = false;
-    global.settings.showDeep = false;
-    global.settings.showGalactic = false;
-    global.settings.showPortal = false;
-    global.settings.showEjector = false;
-    global.settings.showCargo = false;
-    global.settings.showAlchemy  = false;
     global.settings.space.home = true;
-    global.settings.space.moon = false;
-    global.settings.space.red = false;
-    global.settings.space.hell = false;
-    global.settings.space.sun = false;
-    global.settings.space.gas = false;
-    global.settings.space.gas_moon = false;
-    global.settings.space.belt = false;
-    global.settings.space.dwarf = false;
-    global.settings.space.alpha = false;
-    global.settings.space.proxima = false;
-    global.settings.space.nebula = false;
-    global.settings.space.neutron = false;
-    global.settings.space.blackhole = false;
-    global.settings.space.sirius = false;
-    global.settings.space.stargate = false;
-    global.settings.space.gateway = false;
-    global.settings.space.gorddon = false;
-    global.settings.space.alien1 = false;
-    global.settings.space.alien2 = false;
-    global.settings.space.chthonian = false;
-    global.settings.portal.fortress = false;
-    global.settings.portal.badlands = false;
-    global.settings.portal.pit = false;
-    global.settings.portal.ruins = false;
-    global.settings.portal.gate = false;
-    global.settings.portal.lake = false;
-    global.settings.portal.spire = false;
-    global.settings.arpa = false;
-    global.settings.civTabs = 0;
-    global.settings.govTabs = 0;
-    global.settings.resTabs = 0;
-    global.settings.spaceTabs = 0;
-    global.settings.marketTabs = 0
-    global.settings.statsTabs = 0
+    setRegionStates(true);
     global.settings.disableReset = false;
     global.settings.pause = false;
     global.arpa = {};
+
+    delete global.race['hrt'];
 
     if (global.genes['queue']){
         global.tech['queue'] = 1;
@@ -1832,6 +2368,9 @@ export function clearStates(){
 
 // executes a hard reset
 window.reset = function reset(){
+    try {
+        gtag('event', 'reset', { 'end': 'hard'});
+    } catch (err){}
     localStorage.removeItem('evolved');
     global = null;
     if (webWorker.w){

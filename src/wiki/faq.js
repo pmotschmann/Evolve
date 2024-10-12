@@ -31,7 +31,7 @@ export function faqPage(){
             tokens = values[questions[i]];
         }
 
-        qna.append(`<h2 class="has-text-warning">${loc(`wiki_faq_q_${questions[i]}`)}</h2>`);
+        qna.append(`<h2 class="has-text-warning" id="${questions[i]}">${loc(`wiki_faq_q_${questions[i]}`)}</h2>`);
         qna.append(`<div>${loc(`wiki_faq_a_${questions[i]}`,tokens)}</div>`);
     }
 }

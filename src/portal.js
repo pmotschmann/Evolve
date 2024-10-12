@@ -1,12 +1,15 @@
-import { global, save, webWorker, keyMultiplier, p_on, gal_on, spire_on, quantum_level, poppers, sizeApproximation, clearStates } from './vars.js';
-import { vBind, clearElement, popover, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, updateResetStats, deepClone } from './functions.js';
-import { unlockAchieve, unlockFeat, alevel, universeAffix, checkAchievements } from './achieve.js';
-import { traits, races } from './races.js';
-import { defineResources, spatialReasoning } from './resources.js';
-import { loadFoundry } from './jobs.js';
-import { armyRating } from './civics.js';
-import { payCosts, setAction, drawTech, bank_vault, cleanTechPopOver } from './actions.js';
-import { checkRequirements, incrementStruct } from './space.js';
+import { global, seededRandom, keyMultiplier, p_on, gal_on, spire_on, hell_reports, hell_graphs, sizeApproximation } from './vars.js';
+import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost, calcPrestige, get_qlevel } from './functions.js';
+import { unlockAchieve, alevel, universeAffix } from './achieve.js';
+import { traits, races, fathomCheck } from './races.js';
+import { spatialReasoning, unlockContainers } from './resources.js';
+import { loadFoundry, jobScale, limitCraftsmen } from './jobs.js';
+import { armyRating, govCivics, garrisonSize, mercCost } from './civics.js';
+import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc } from './actions.js';
+import { checkRequirements, incrementStruct, astrialProjection, ascendLab } from './space.js';
+import { production, highPopAdjust } from './prod.js';
+import { govActive, defineGovernor } from './governor.js';
+import { descension } from './resets.js';
 import { loadTab } from './index.js';
 import { loc } from './locale.js';
 
@@ -54,10 +57,9 @@ const fortressModules = {
                 return `<div>${loc('portal_turret_effect',[rating])}</div><div class="has-text-caution">${loc('minus_power',[power])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('turret','portal');
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.portal.turret.on++;
+                    if (powerOnNewStruct($(this)[0])){
                         p_on['turret']++;
                         vBind({el: `#fort`},'update');
                     }
@@ -70,7 +72,7 @@ const fortressModules = {
             id: 'portal-carport',
             title: loc('portal_carport_title'),
             desc(){
-                return loc('portal_carport_desc');
+                return loc('portal_carport_desc',[jobScale(1)]);
             },
             reqs: { portal: 2 },
             cost: {
@@ -82,17 +84,21 @@ const fortressModules = {
             repair(){
                 let repair = 180;
                 if (p_on['repair_droid']){
-                    repair *= 0.95 ** p_on['repair_droid'];
+                    repair *= 0.92 ** p_on['repair_droid'];
+                }
+                if (global.race['high_pop']){
+                    repair /= traits.high_pop.vars()[2];
                 }
                 return Math.round(repair);
             },
             effect(){
-                return `${loc('portal_carport_effect')}`;
+                return `${loc('portal_carport_effect',[jobScale(1)])}`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('carport','portal');
                     global.civic.hell_surveyor.display = true;
+                    global.civic.hell_surveyor.max += jobScale(1);
                     global.resource.Infernite.display = true;
                     if (!global.tech['infernite']){
                         global.tech['infernite'] = 1;
@@ -122,11 +128,9 @@ const fortressModules = {
                 return `<div>${loc('portal_war_droid_effect')}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('war_droid','portal');
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.portal.war_droid.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -149,14 +153,12 @@ const fortressModules = {
             },
             powered(){ return powerCostMod(3); },
             effect(){
-                return `<div>${loc('portal_repair_droid_effect',[5])}</div><div>${loc('portal_repair_droid_effect2',[5])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('portal_repair_droid_effect',[5])}</div><div>${loc('portal_repair_droid_effect2',[8])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('repair_droid','portal');
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.portal.repair_droid.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -188,11 +190,9 @@ const fortressModules = {
                 return `<div>${loc('portal_war_drone_effect')}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('war_drone','portal');
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.portal.war_drone.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -221,11 +221,9 @@ const fortressModules = {
                 return `<div>${loc('portal_sensor_drone_effect',[bonus])}</div>${sci}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('sensor_drone','portal');
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.portal.sensor_drone.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -248,11 +246,9 @@ const fortressModules = {
                 return `<div>${loc('portal_attractor_effect1')}</div><div>${loc('portal_attractor_effect2',[global.resource.Soul_Gem.name])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('attractor','portal');
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.portal.attractor.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -270,7 +266,7 @@ const fortressModules = {
             desc: loc('portal_pit_mission_title'),
             reqs: { hell_pit: 1 },
             grant: ['hell_pit',2],
-            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            queue_complete(){ return global.tech.hell_pit >= 2 ? 0 : 1; },
             cost: {
                 Money(){ return 5000000; },
                 Helium_3(){ return 300000; },
@@ -278,8 +274,8 @@ const fortressModules = {
             },
             effect: loc('portal_pit_mission_effect'),
             action(){
-                if (payCosts($(this)[0].cost)){
-                    messageQueue(loc('portal_pit_mission_result'),'info');
+                if (payCosts($(this)[0])){
+                    messageQueue(loc('portal_pit_mission_result'),'info',false,['progress','hell']);
                     return true;
                 }
                 return false;
@@ -291,7 +287,7 @@ const fortressModules = {
             desc: loc('portal_assault_forge_title'),
             reqs: { hell_pit: 2 },
             grant: ['hell_pit',3],
-            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            queue_complete(){ return global.tech.hell_pit >= 3 ? 0 : 1; },
             cost: {
                 Money(){ return 10000000; },
                 HellArmy(){
@@ -304,8 +300,8 @@ const fortressModules = {
             },
             effect: loc('portal_assault_forge_effect'),
             action(){
-                if (payCosts($(this)[0].cost)){
-                    messageQueue(loc('portal_assault_forge_result'),'info');
+                if (payCosts($(this)[0])){
+                    messageQueue(loc('portal_assault_forge_result'),'info',false,['progress','hell']);
                     return true;
                 }
                 return false;
@@ -318,40 +314,38 @@ const fortressModules = {
                 return `<div>${loc('portal_soul_forge_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { hell_pit: 4 },
-            no_queue(){ return global.portal.soul_forge.count >= 1 || global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
-            q_once: true,
             queue_complete(){ return 1 - global.portal.soul_forge.count; },
             powered(){ return powerCostMod(30); },
             postPower(o){
                 vBind({el: `#fort`},'update');
             },
             cost: {
-                Money(wiki){ return !global.portal.hasOwnProperty('soul_forge') || global.portal.soul_forge.count < 1 || wiki ? 25000000 : 0; },
-                Graphene(wiki){ return !global.portal.hasOwnProperty('soul_forge') || global.portal.soul_forge.count < 1 || wiki ? 1500000 : 0; },
-                Infernite(wiki){ return !global.portal.hasOwnProperty('soul_forge') || global.portal.soul_forge.count < 1 || wiki ? 25000 : 0; },
-                Bolognium(wiki){ return !global.portal.hasOwnProperty('soul_forge') || global.portal.soul_forge.count < 1 || wiki ? 100000 : 0; },
+                Money(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('soul_forge') ? global.portal.soul_forge.count : 0)) < 1 ? 25000000 : 0; },
+                Graphene(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('soul_forge') ? global.portal.soul_forge.count : 0)) < 1 ? 1500000 : 0; },
+                Infernite(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('soul_forge') ? global.portal.soul_forge.count : 0)) < 1 ? 25000 : 0; },
+                Bolognium(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('soul_forge') ? global.portal.soul_forge.count : 0)) < 1 ? 100000 : 0; },
             },
-            effect(){
+            effect(wiki){
                 let desc = `<div>${loc('portal_soul_forge_effect',[global.resource.Soul_Gem.name])}</div>`;
-                if (global.portal.hasOwnProperty('soul_forge') && global.portal.soul_forge.count >= 1){
+                let count = (wiki?.count ?? 0) + (global.portal.hasOwnProperty('soul_forge') ? global.portal.soul_forge.count : 0);
+                if (count >= 1){
                     let cap = global.tech.hell_pit >= 6 ? 750000 : 1000000;
-                    if (global.tech.hell_pit >= 7 && p_on['soul_attractor'] > 0){
-                        cap *= 0.97 ** p_on['soul_attractor'];
+                    let num_s_attractor_on = (wiki ? global.portal.soul_attractor.on : p_on['soul_attractor']);
+                    if (global.tech.hell_pit >= 7 && num_s_attractor_on > 0){
+                        cap *= 0.97 ** num_s_attractor_on;
                     }
-                    desc = desc + `<div>${loc('portal_soul_forge_effect2',[global.portal.soul_forge.kills.toLocaleString(),Math.round(cap).toLocaleString()])}</div>`;
+                    desc = desc + `<div>${loc('portal_soul_forge_effect2',[global.portal['soul_forge'] ? global.portal.soul_forge.kills.toLocaleString() : 0,Math.round(cap).toLocaleString()])}</div>`;
                 }
-                let soldiers = soulForgeSoldiers();
+                let soldiers = soulForgeSoldiers(wiki);
                 return `${desc}<div><span class="has-text-caution">${loc('portal_soul_forge_soldiers',[soldiers])}</span>, <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span></div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     if (global.portal.soul_forge.count < 1){
                         incrementStruct('soul_forge','portal');
-                        if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                            global.portal.soul_forge.on++;
-                        }
+                        powerOnNewStruct($(this)[0]);
+                        return true;
                     }
-                    return true;
                 }
                 return false;
             }
@@ -371,17 +365,15 @@ const fortressModules = {
                 Wrought_Iron(offset){ return spaceCostMultiplier('gun_emplacement', offset, 200000, 1.25, 'portal'); },
             },
             effect(){
-                let soldiers = global.tech.hell_gun >= 2 ? 2 : 1;
+                let soldiers = global.tech.hell_gun >= 2 ? jobScale(2) : jobScale(1);
                 let min = global.tech.hell_gun >= 2 ? 35 : 20;
                 let max = global.tech.hell_gun >= 2 ? 75 : 40;
                 return `<div>${loc('portal_gun_emplacement_effect',[soldiers])}</div><div>${loc('portal_gun_emplacement_effect2',[min,max])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('gun_emplacement','portal');
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.portal.gun_emplacement.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -408,12 +400,111 @@ const fortressModules = {
                 return `<div>${loc('portal_soul_attractor_effect',[40 + attact, 120 + attact])}</div>${link}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('soul_attractor','portal');
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.portal.soul_attractor.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
+                }
+                return false;
+            }
+        },
+        soul_capacitor: {
+            id: 'portal-soul_capacitor',
+            title: loc('portal_soul_capacitor_title'),
+            desc(){
+                return `<div>${loc('portal_soul_capacitor_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { forbidden: 2 },
+            powered(){ return powerCostMod(125); },
+            queue_complete(){ return 40 - global.portal.soul_capacitor.count; },
+            cost: {
+                Money(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('soul_capacitor') ? global.portal.soul_capacitor.count : 0)) >= 40 ? 0 : spaceCostMultiplier('soul_capacitor', offset, 750000000, 1.01, 'portal'); },
+                Crystal(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('soul_capacitor') ? global.portal.soul_capacitor.count : 0)) >= 40 ? 0 : spaceCostMultiplier('soul_capacitor', offset, 1250000, 1.01, 'portal'); },
+                Adamantite(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('soul_capacitor') ? global.portal.soul_capacitor.count : 0)) >= 40 ? 0 : spaceCostMultiplier('soul_capacitor', offset, 6500000, 1.01, 'portal'); },
+                Infernite(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('soul_capacitor') ? global.portal.soul_capacitor.count : 0)) >= 40 ? 0 : spaceCostMultiplier('soul_capacitor', offset, 10000, 1.01, 'portal'); },
+                Stanene(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('soul_capacitor') ? global.portal.soul_capacitor.count : 0)) >= 40 ? 0 : spaceCostMultiplier('soul_capacitor', offset, 2500000, 1.01, 'portal'); },
+                Bolognium(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('soul_capacitor') ? global.portal.soul_capacitor.count : 0)) >= 40 ? 0 : spaceCostMultiplier('soul_capacitor', offset, 1000000, 1.01, 'portal'); },
+                Soul_Gem(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('soul_capacitor') ? global.portal.soul_capacitor.count : 0)) >= 40 ? 0 : spaceCostMultiplier('soul_capacitor', offset, 3, 1.01, 'portal'); },
+                Mythril(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('soul_capacitor') ? global.portal.soul_capacitor.count : 0)) >= 40 ? 0 : spaceCostMultiplier('soul_capacitor', offset, 1250000, 1.01, 'portal'); },
+            },
+            effect(){
+                let cap = 2500000;
+                let eCap = global.portal.hasOwnProperty('soul_capacitor') ? global.portal.soul_capacitor.ecap : 0;
+                let energy = global.portal.hasOwnProperty('soul_capacitor') ? global.portal.soul_capacitor.energy : 0;
+                let desc = `<div>${loc('portal_soul_capacitor_effect',[energy.toLocaleString()])}</div>`;
+                desc += `<div>${loc('portal_soul_capacitor_effect2',[eCap.toLocaleString()])}</div>`;
+                desc += `<div>${loc('portal_soul_capacitor_effect3',[cap.toLocaleString()])}</div>`;
+                desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            action(){
+                if (global.portal.soul_capacitor.count < 40 && payCosts($(this)[0])){
+                    global.portal.soul_capacitor.count++;
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            },
+            postPower(){
+                updateDesc($(this)[0],'portal','soul_capacitor');
+            },
+        },
+        absorption_chamber: {
+            id: 'portal-absorption_chamber',
+            title: loc('portal_absorption_chamber_title'),
+            desc(wiki){
+                if (!global.interstellar.hasOwnProperty('absorption_chamber') || global.portal.absorption_chamber.count < 100 || wiki){
+                    return `<div>${loc('portal_absorption_chamber_title')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
+                }
+                else {
+                    return `<div>${loc('portal_absorption_chamber_title')}</div>`;
+                }
+            },
+            reqs: { forbidden: 3 },
+            queue_size: 5,
+            queue_complete(){ return 100 - global.portal.absorption_chamber.count; },
+            cost: {
+                Money(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('absorption_chamber') ? global.portal.absorption_chamber.count : 0)) < 100 ? 75000000 : 0; },
+                Alloy(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('absorption_chamber') ? global.portal.absorption_chamber.count : 0)) < 100 ? 750000 : 0; },
+                Neutronium(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('absorption_chamber') ? global.portal.absorption_chamber.count : 0)) < 100 ? 125000 : 0; },
+                Elerium(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('absorption_chamber') ? global.portal.absorption_chamber.count : 0)) < 100 ? 1000 : 0; },
+                Orichalcum(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('absorption_chamber') ? global.portal.absorption_chamber.count : 0)) < 100 ? 250000 : 0; },
+                Nanoweave(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('absorption_chamber') ? global.portal.absorption_chamber.count : 0)) < 100 ? 75000 : 0; },
+            },
+            effect(wiki){
+                let count = (wiki?.count ?? 0) + (global.portal.hasOwnProperty('absorption_chamber') ? global.portal.absorption_chamber.count : 0);
+                if (count < 100){
+                    let remain = 100 - count;
+                    return `<div>${loc('portal_absorption_chamber_incomplete')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                }
+                else {
+                    if (global.tech.forbidden === 5){
+                        return `<div>${loc('portal_absorption_chamber_effect_eld',[(100000000).toLocaleString()])}</div><div class="has-text-special">${loc('tech_demonic_infusion_effect2',[calcPrestige('descend').artifact])}</div>`;
+                    }
+                    else {
+                        let reward = astrialProjection();
+                        return `<div>${loc(`portal_absorption_chamber_effect`,[(100000000).toLocaleString()])}</div><div>${reward}</div>`;
+                    }
+                }
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    if (global.portal.absorption_chamber.count < 100){
+                        incrementStruct('absorption_chamber','portal');
+                        if (global.portal.absorption_chamber.count >= 100){
+                            global.tech.forbidden = 4;
+                        }
+                        return true;
+                    }
+                    else if (global.portal.soul_capacitor.energy >= 100000000){
+                        if (global.tech.forbidden === 5){
+                            descension();
+                        }
+                        else {
+                            ascendLab();
+                        }
+                        return true;
+                    }
                 }
                 return false;
             }
@@ -446,7 +537,7 @@ const fortressModules = {
             desc: loc('portal_ruins_mission_title'),
             reqs: { hell_ruins: 1 },
             grant: ['hell_ruins',2],
-            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            queue_complete(){ return global.tech.hell_ruins >= 2 ? 0 : 1; },
             cost: {
                 Money(){ return 100000000; },
                 Oil(){ return 500000; },
@@ -454,8 +545,8 @@ const fortressModules = {
             },
             effect: loc('portal_ruins_mission_effect'),
             action(){
-                if (payCosts($(this)[0].cost)){
-                    messageQueue(loc('portal_ruins_mission_result'),'info');
+                if (payCosts($(this)[0])){
+                    messageQueue(loc('portal_ruins_mission_result'),'info',false,['progress','hell']);
                     global.portal['vault'] = { count: 0 };
                     global.portal['stonehedge'] = { count: 0 };
                     global.portal['archaeology'] = { count: 0, on: 0 };
@@ -479,11 +570,16 @@ const fortressModules = {
             powered(){ return powerCostMod(5); },
             support(){ return 1; },
             effect(){
-                let rating = Math.round(armyRating(1,'hellArmy',0));
-                return `<div>${loc('portal_guard_post_effect1',[rating])}</div><div class="has-text-caution">${loc('portal_guard_post_effect2',[1,$(this)[0].powered()])}</div>`;
+                let holy = global.race['holy'] ? 1 + (traits.holy.vars()[1] / 100) : 1;
+                let unicornFathom = fathomCheck('unicorn');
+                if (unicornFathom > 0){
+                    holy *= 1 + (traits.holy.vars(1)[1] / 100 * unicornFathom);
+                }
+                let rating = Math.round(holy * armyRating(jobScale(1),'hellArmy',0));
+                return `<div>${loc('portal_guard_post_effect1',[rating])}</div><div class="has-text-caution">${loc('portal_guard_post_effect2',[jobScale(1),$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('guard_post','portal');
                     global.portal.guard_post.on++;
                     return true;
@@ -499,27 +595,28 @@ const fortressModules = {
             id: 'portal-vault',
             title: loc('portal_vault_title'),
             desc: loc('portal_vault_title'),
-            reqs: { hell_ruins: 2 },
+            reqs: { hell_ruins: 2, hell_vault: 1 },
             condition(){
                 return global.portal.vault.count >= 2 ? false : true;
             },
+            queue_complete(){ return 2 - global.portal.vault.count; },
             cost: {
-                Soul_Gem(wiki){ return !global.portal.hasOwnProperty('vault') || global.portal.vault.count === 0 || wiki ? 100 : 0; },
-                Money(wiki){ return !global.portal.hasOwnProperty('vault') || global.portal.vault.count === 1 || wiki ? 250000000 : 0; },
-                Adamantite(wiki){ return !global.portal.hasOwnProperty('vault') || global.portal.vault.count === 1 || wiki ? 12500000 : 0; },
-                Orichalcum(wiki){ return !global.portal.hasOwnProperty('vault') || global.portal.vault.count === 1 || wiki ? 30000000 : 0; },
+                Soul_Gem(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('vault') ? global.portal.vault.count : 0)) === 0 ? 100 : 0; },
+                Money(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('vault') ? global.portal.vault.count : 0)) === 1 ? 250000000 : 0; },
+                Adamantite(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('vault') ? global.portal.vault.count : 0)) === 1 ? 12500000 : 0; },
+                Orichalcum(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('vault') ? global.portal.vault.count : 0)) === 1 ? 30000000 : 0; },
             },
-            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
-            q_once: true,
-            effect(){ return !global.portal.hasOwnProperty('vault') || global.portal.vault.count < 1 ? loc('portal_vault_effect',[100]) : loc('portal_vault_effect2'); },
+            effect(wiki){
+                let count = (wiki?.count ?? 0) + (global.portal.hasOwnProperty('vault') ? global.portal.vault.count : 0);
+                return count < 1 ? loc('portal_vault_effect',[100]) : loc('portal_vault_effect2'); },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (global.portal.vault.count < 2 && payCosts($(this)[0])){
                     incrementStruct('vault','portal');
                     if (global.portal.vault.count === 2){
                         global.tech.hell_ruins = 3;
                         global.resource.Codex.display = true;
                         global.resource.Codex.amount = 1;
-                        messageQueue(loc('portal_vault_result'),'info');
+                        messageQueue(loc('portal_vault_result'),'info',false,['progress','hell']);
                     }
                     return true;
                 }
@@ -529,14 +626,7 @@ const fortressModules = {
                 if (global.portal.vault.count === 2){
                     drawTech();
                     renderFortress();
-                    setTimeout(function(){
-                        let id = 'portal-vault';
-                        $(`#pop${id}`).hide();
-                        if (poppers[id]){
-                            poppers[id].destroy();
-                        }
-                        clearElement($(`#pop${id}`),true);
-                    },250);
+                    clearPopper();
                 }
             }
         },
@@ -554,26 +644,19 @@ const fortressModules = {
             },
             powered(){ return powerCostMod(8); },
             effect(){
-                return `<div>${loc('portal_archaeology_effect',[2])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('portal_archaeology_effect',[jobScale(2)])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('archaeology','portal');
                     global.civic.archaeologist.display = true;
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.portal.archaeology.on++;
-                        if (global.civic.d_job === 'unemployed'){
-                            if (global.civic.free > 0){
-                                let hired = global.civic.free - 2 < 0 ? 1 : 2;
-                                global.civic.free -= hired;
-                                global.civic.archaeologist.workers += hired;
-                            }
-                        }
-                        else if (global.civic[global.civic.d_job].workers > 0){
-                            let hired = global.civic[global.civic.d_job].workers - 2 < 0 ? 1 : 2;
-                            global.civic[global.civic.d_job].workers -= hired;
-                            global.civic.archaeologist.workers += hired;
-                        }
+                    if (powerOnNewStruct($(this)[0])){
+                        let hiredMax = jobScale(2);
+                        global.civic.archaeologist.max += hiredMax;
+
+                        let hired = Math.min(hiredMax, global.civic[global.civic.d_job].workers);
+                        global.civic[global.civic.d_job].workers -= hired;
+                        global.civic.archaeologist.workers += hired;
                     }  
                     return true;
                 }
@@ -593,22 +676,26 @@ const fortressModules = {
                 Bolognium(offset){ return spaceCostMultiplier('arcology', offset, 2800000, 1.22, 'portal'); },
                 Orichalcum(offset){ return spaceCostMultiplier('arcology', offset, 5500000, 1.22, 'portal'); },
                 Nanoweave(offset){ return spaceCostMultiplier('arcology', offset, 650000, 1.22, 'portal'); },
+                Horseshoe(){ return global.race['hooved'] ? 13 : 0; }
             },
             powered(){ return powerCostMod(25); },
-            effect(){
-                let sup = hellSupression('ruins');
+            effect(wiki){
+                let sup = hellSupression('ruins', 0, wiki);
                 let vault = spatialReasoning(bank_vault() * 8 * sup.supress);
                 vault = +(vault).toFixed(0);
-                let containers = Math.round(quantum_level) * 10;
+                let containers = Math.round(get_qlevel(wiki)) * 10;
                 let container_string = `<div>${loc('plus_max_resource',[containers,loc('resource_Crates_name')])}</div><div>${loc('plus_max_resource',[containers,loc('resource_Containers_name')])}</div>`;
-                return `<div>${loc('plus_max_resource',[`\$${vault.toLocaleString()}`,loc('resource_Money_name')])}</div><div>${loc('plus_max_citizens',[8])}</div><div>${loc('plus_max_resource',[5,loc('civics_garrison_soldiers')])}</div><div>${loc('portal_guard_post_effect1',[75])}</div>${container_string}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('plus_max_resource',[`\$${vault.toLocaleString()}`,loc('resource_Money_name')])}</div><div>${loc('plus_max_citizens',[$(this)[0].citizens()])}</div><div>${loc('plus_max_resource',[jobScale(5),loc('civics_garrison_soldiers')])}</div><div>${loc('portal_guard_post_effect1',[75])}</div>${container_string}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('arcology','portal');
-                    if (global.city.power >= $(this)[0].powered()){
+
+                    if (powerOnNewStruct($(this)[0])){
                         global['resource'][global.race.species].max += 8;
-                        global.portal.arcology.on++;
+                    }
+                    if (!global.resource.Containers.display){
+                        unlockContainers();
                     }
                     return true;
                 }
@@ -620,6 +707,14 @@ const fortressModules = {
             },
             postPower(){
                 vBind({el: `#srprtl_ruins`},'update');
+                vBind({el: `#srprtl_gate`},'update');
+            },
+            citizens(){
+                let pop = 8;
+                if (global.race['high_pop']){
+                    pop *= traits.high_pop.vars()[0];
+                }
+                return pop;
             }
         },
         hell_forge: {
@@ -639,19 +734,19 @@ const fortressModules = {
             },
             powered(){ return powerCostMod(12); },
             special: true,
-            effect(){
-                let sup = hellSupression('ruins');
+            effect(wiki){
+                let sup = hellSupression('ruins', 0, wiki);
                 let craft = +(75 * sup.supress).toFixed(1);
                 let reactor = global.tech['inferno_power'] ? `<div>${loc('portal_hell_forge_effect2',[10,loc(`portal_inferno_power_title`)])}</div>` : ``;
-                return `<div>${loc('portal_hell_forge_effect',[1])}</div>${reactor}<div>${loc('interstellar_stellar_forge_effect3',[3])}</div><div>${loc('interstellar_stellar_forge_effect',[craft])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('portal_hell_forge_effect',[jobScale(1)])}</div>${reactor}<div>${loc('interstellar_stellar_forge_effect3',[3])}</div><div>${loc('interstellar_stellar_forge_effect',[craft])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('hell_forge','portal');
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.portal.hell_forge.on++;
+                    if (powerOnNewStruct($(this)[0])){
                         global.city.smelter.cap += 3;
                         global.city.smelter.Oil += 3;
+                        global.city.smelter.Iron += 3;
                     }
                     return true;
                 }
@@ -661,15 +756,7 @@ const fortressModules = {
                 loadFoundry();
             },
             postPower(on){
-                if (!on){
-                    if (global.portal.hell_forge.on < global.city.foundry.Scarletite){
-                        let diff = global.city.foundry.Scarletite - global.portal.hell_forge.on;
-                        global.civic.craftsman.workers -= diff;
-                        global.city.foundry.crafting -= diff;
-                        global.city.foundry.Scarletite -= diff;
-                    }
-                }
-                loadFoundry();
+                limitCraftsmen('Scarletite');
             }
         },
         inferno_power: {
@@ -685,10 +772,11 @@ const fortressModules = {
                 Stanene(offset){ return spaceCostMultiplier('inferno_power', offset, 12000000, 1.18, 'portal'); },
                 Bolognium(offset){ return spaceCostMultiplier('inferno_power', offset, 8000000, 1.18, 'portal'); },
             },
-            powered(){
+            powered(wiki){
                 let power = 20;
-                if (p_on.hasOwnProperty('hell_forge')){
-                    power += p_on['hell_forge'] * 10; 
+                let infernal_forges_on = wiki ? (global.portal?.hell_forge?.on ?? 0) : p_on['hell_forge'];
+                if (infernal_forges_on){
+                    power += infernal_forges_on * 10; 
                 }
                 return powerModifier(-(power));
             },
@@ -697,12 +785,12 @@ const fortressModules = {
                 Coal: 100,
                 Oil: 80
             },
-            effect(){
+            effect(wiki){
                 let fuel = $(this)[0].fuel;
-                return `<div>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered())])}</div><div class="has-text-caution">${loc('portal_inferno_power_effect',[fuel.Infernite,global.resource.Infernite.name,fuel.Coal,global.resource.Coal.name,fuel.Oil,global.resource.Oil.name])}</div>`;
+                return `<div>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered(wiki))])}</div><div class="has-text-caution">${loc('portal_inferno_power_effect',[fuel.Infernite,global.resource.Infernite.name,fuel.Coal,global.resource.Coal.name,fuel.Oil,global.resource.Oil.name])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('inferno_power','portal');
                     global.portal.inferno_power.on++;
                     return true;
@@ -718,14 +806,32 @@ const fortressModules = {
             title: loc('portal_ancient_pillars_title'),
             desc: loc('portal_ancient_pillars_desc'),
             reqs: { hell_ruins: 2 },
+            queue_complete(){ return global.tech['pillars'] && global.tech.pillars === 1 && global.race.universe !== 'micro' ? 1 : 0; },
             cost: {
-                Harmony(){ return global.race.universe !== 'micro' && global.tech['pillars'] && global.tech.pillars === 1 ? 1 : 0; },
-                Scarletite(){ return global.race.universe !== 'micro' && global.tech['pillars'] && global.tech.pillars === 1 ? Object.keys(global.pillars).length * 125000 + 1000000 : 0; },
+                Harmony(offset,wiki){
+                    if (offset !== undefined){
+                        return offset + Object.keys(global.pillars).length < Object.keys(races).length - 1 ? 1 : 0;
+                    }
+                    return global.race.universe !== 'micro' && global.tech['pillars'] && global.tech.pillars === 1 ? 1 : 0;
+                },
+                Scarletite(offset,wiki){
+                    if (offset !== undefined){
+                        let pillars = offset + Object.keys(global.pillars).length;
+                        return pillars < Object.keys(races).length - 1 ? pillars * 125000 + 1000000 : 0;
+                    }
+                    return global.race.universe !== 'micro' && global.tech['pillars'] && global.tech.pillars === 1 ? Object.keys(global.pillars).length * 125000 + 1000000 : 0;
+                },
             },
-            no_queue(){ return true },
-            effect(){
-                if (Object.keys(global.pillars).length >= 1){
-                    return `<div>${loc('portal_ancient_pillars_effect2',[Object.keys(races).length - 1,Object.keys(global.pillars).length])}</div>`;
+            count(){
+                return Object.keys(races).length - 1;
+            },
+            on(){
+                return Object.keys(global.pillars).length;
+            },
+            effect(wiki){
+                let pillars = (wiki?.count ?? 0) + Object.keys(global.pillars).length;
+                if (pillars >= 1){
+                    return `<div>${loc('portal_ancient_pillars_effect2',[Object.keys(races).length - 1,pillars])}</div>`;
                 }
                 else {
                     return `<div>${loc('portal_ancient_pillars_effect',[Object.keys(races).length - 1])}</div>`;
@@ -733,13 +839,14 @@ const fortressModules = {
             },
             action(){
                 if (global.tech['pillars'] && global.tech.pillars === 1 && global.race.universe !== 'micro'){
-                    if (payCosts($(this)[0].cost)){
+                    if (payCosts($(this)[0])){
                         global.pillars[global.race.species] = alevel();
                         global.tech.pillars = 2;
                         spatialReasoning(0,false,true);
                         calcPillar(true);
                         towerSize(true);
                         unlockAchieve('resonance');
+                        vBind({el: `#portal-ancient_pillars`},'update');
                         return true;
                     }
                 }
@@ -777,15 +884,15 @@ const fortressModules = {
             desc: loc('portal_gate_mission_title'),
             reqs: { high_tech: 18 },
             grant: ['hell_gate',1],
-            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            queue_complete(){ return global.tech.hell_gate >= 1 ? 0 : 1; },
             cost: {
                 Money(){ return 250000000; },
                 Knowledge(){ return 27500000; }
             },
             effect: loc('portal_gate_mission_effect'),
             action(){
-                if (payCosts($(this)[0].cost)){
-                    messageQueue(loc('portal_gate_mission_result'),'info');
+                if (payCosts($(this)[0])){
+                    messageQueue(loc('portal_gate_mission_result'),'info',false,['progress','hell']);
                     return true;
                 }
                 return false;
@@ -797,29 +904,29 @@ const fortressModules = {
             desc(wiki){
                 let size = towerSize();
                 if (!global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < size || wiki){
-                    return `<div>${loc('portal_west_tower')}</div><div class="has-text-special">${loc('requires_segmemts',[size])}</div>`;
+                    return `<div>${loc('portal_west_tower')}</div><div class="has-text-special">${loc('requires_segments',[size])}</div>`;
                 }
                 else {
                     return `<div>${loc('portal_west_tower')}</div>`;
                 }
             },
             reqs: { hell_gate: 2 },
-            no_queue(){ return global.portal.west_tower.count < towerSize() ? false : true },
             queue_size: 25,
             queue_complete(){ return towerSize() - global.portal.west_tower.count; },
             cost: {
-                Money(wiki){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() || wiki ? towerPrice(10000000) : 0; },
-                Stone(wiki){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() || wiki ? towerPrice(100000) : 0; },
-                Uranium(wiki){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() || wiki ? towerPrice(1000) : 0; },
-                Adamantite(wiki){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() || wiki ? towerPrice(18000) : 0; },
-                Vitreloy(wiki){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() || wiki ? towerPrice(25000) : 0; },
-                Soul_Gem(wiki){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() || wiki ? 1 : 0; },
-                Scarletite(wiki){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() || wiki ? towerPrice(5000) : 0; },
+                Money(offset,wiki){ return ((offset || 0) + (global.portal.hasOwnProperty('west_tower') ? global.portal.west_tower.count : 0)) < towerSize() ? towerPrice(10000000,wiki) : 0; },
+                Stone(offset,wiki){ return ((offset || 0) + (global.portal.hasOwnProperty('west_tower') ? global.portal.west_tower.count : 0)) < towerSize() ? towerPrice(100000,wiki) : 0; },
+                Uranium(offset,wiki){ return ((offset || 0) + (global.portal.hasOwnProperty('west_tower') ? global.portal.west_tower.count : 0)) < towerSize() ? towerPrice(1000,wiki) : 0; },
+                Adamantite(offset,wiki){ return ((offset || 0) + (global.portal.hasOwnProperty('west_tower') ? global.portal.west_tower.count : 0)) < towerSize() ? towerPrice(18000,wiki) : 0; },
+                Vitreloy(offset,wiki){ return ((offset || 0) + (global.portal.hasOwnProperty('west_tower') ? global.portal.west_tower.count : 0)) < towerSize() ? towerPrice(25000,wiki) : 0; },
+                Soul_Gem(offset,wiki){ return ((offset || 0) + (global.portal.hasOwnProperty('west_tower') ? global.portal.west_tower.count : 0)) < towerSize() ? 1 : 0; },
+                Scarletite(offset,wiki){ return ((offset || 0) + (global.portal.hasOwnProperty('west_tower') ? global.portal.west_tower.count : 0)) < towerSize() ? towerPrice(5000,wiki) : 0; },
             },
-            effect(){
+            effect(wiki){
                 let size = towerSize();
-                if (!global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < size){
-                    let remain = global.portal.hasOwnProperty('west_tower') ? size - global.portal.west_tower.count : size;
+                let count = (wiki?.count ?? 0) + (global.portal.hasOwnProperty('west_tower') ? global.portal.west_tower.count : 0);
+                if (count < size){
+                    let remain = size - count;
                     return `<div>${loc('portal_tower_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div><div class="has-text-caution">${loc('portal_tower_effect2')}</div>`;
                 }
                 else {
@@ -827,7 +934,7 @@ const fortressModules = {
                 }
             },
             action(){
-                if (global.portal.west_tower.count < towerSize() && payCosts($(this)[0].cost)){
+                if (global.portal.west_tower.count < towerSize() && payCosts($(this)[0])){
                     incrementStruct('west_tower','portal');
                     return true;
                 }
@@ -839,8 +946,8 @@ const fortressModules = {
                     if (global.tech['wtower'] && global.tech['etower'] && !global.tech['hell_lake']){
                         global.tech['hell_lake'] = 1;
                         global.settings.portal.lake = true;
-                        global.portal['harbour'] = { count: 0, on: 0, support: 0, s_max: 0 };
-                        messageQueue(loc('portal_gate_open'),'info');
+                        global.portal['harbor'] = { count: 0, on: 0, support: 0, s_max: 0 };
+                        messageQueue(loc('portal_gate_open'),'info',false,['progress','hell']);
                         renderFortress();
                     }
                 }
@@ -852,29 +959,29 @@ const fortressModules = {
             desc(wiki){
                 let size = towerSize();
                 if (!global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < size || wiki){
-                    return `<div>${loc('portal_east_tower')}</div><div class="has-text-special">${loc('requires_segmemts',[size])}</div>`;
+                    return `<div>${loc('portal_east_tower')}</div><div class="has-text-special">${loc('requires_segments',[size])}</div>`;
                 }
                 else {
                     return `<div>${loc('portal_east_tower')}</div>`;
                 }
             },
             reqs: { hell_gate: 2 },
-            no_queue(){ return global.portal.east_tower.count < towerSize() ? false : true },
             queue_size: 25,
             queue_complete(){ return towerSize() - global.portal.east_tower.count; },
             cost: {
-                Money(wiki){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() || wiki ? towerPrice(10000000) : 0; },
-                Stone(wiki){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() || wiki ? towerPrice(100000) : 0; },
-                Uranium(wiki){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() || wiki ? towerPrice(1000) : 0; },
-                Adamantite(wiki){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() || wiki ? towerPrice(18000) : 0; },
-                Vitreloy(wiki){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() || wiki ? towerPrice(25000) : 0; },
-                Soul_Gem(wiki){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() || wiki ? 1 : 0; },
-                Scarletite(wiki){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() || wiki ? towerPrice(5000) : 0; },
+                Money(offset,wiki){ return ((offset || 0) + (global.portal.hasOwnProperty('east_tower') ? global.portal.east_tower.count : 0)) < towerSize() ? towerPrice(10000000,wiki) : 0; },
+                Stone(offset,wiki){ return ((offset || 0) + (global.portal.hasOwnProperty('east_tower') ? global.portal.east_tower.count : 0)) < towerSize() ? towerPrice(100000,wiki) : 0; },
+                Uranium(offset,wiki){ return ((offset || 0) + (global.portal.hasOwnProperty('east_tower') ? global.portal.east_tower.count : 0)) < towerSize() ? towerPrice(1000,wiki) : 0; },
+                Adamantite(offset,wiki){ return ((offset || 0) + (global.portal.hasOwnProperty('east_tower') ? global.portal.east_tower.count : 0)) < towerSize() ? towerPrice(18000,wiki) : 0; },
+                Vitreloy(offset,wiki){ return ((offset || 0) + (global.portal.hasOwnProperty('east_tower') ? global.portal.east_tower.count : 0)) < towerSize() ? towerPrice(25000,wiki) : 0; },
+                Soul_Gem(offset,wiki){ return ((offset || 0) + (global.portal.hasOwnProperty('east_tower') ? global.portal.east_tower.count : 0)) < towerSize() ? 1 : 0; },
+                Scarletite(offset,wiki){ return ((offset || 0) + (global.portal.hasOwnProperty('east_tower') ? global.portal.east_tower.count : 0)) < towerSize() ? towerPrice(5000,wiki) : 0; },
             },
-            effect(){
+            effect(wiki){
                 let size = towerSize();
-                if (!global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < size){
-                    let remain = global.portal.hasOwnProperty('east_tower') ? size - global.portal.east_tower.count : size;
+                let count = (wiki?.count ?? 0) + (global.portal.hasOwnProperty('east_tower') ? global.portal.east_tower.count : 0);
+                if (count < size){
+                    let remain = size - count;
                     return `<div>${loc('portal_tower_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div><div class="has-text-caution">${loc('portal_tower_effect2')}</div>`;
                 }
                 else {
@@ -882,7 +989,7 @@ const fortressModules = {
                 }
             },
             action(){
-                if (global.portal.east_tower.count < towerSize() && payCosts($(this)[0].cost)){
+                if (global.portal.east_tower.count < towerSize() && payCosts($(this)[0])){
                     incrementStruct('east_tower','portal');
                     return true;
                 }
@@ -894,8 +1001,8 @@ const fortressModules = {
                     if (global.tech['wtower'] && global.tech['etower'] && !global.tech['hell_lake']){
                         global.tech['hell_lake'] = 1;
                         global.settings.portal.lake = true;
-                        global.portal['harbour'] = { count: 0, on: 0, support: 0, s_max: 0 };
-                        messageQueue(loc('portal_gate_open'),'info');
+                        global.portal['harbor'] = { count: 0, on: 0, support: 0, s_max: 0 };
+                        messageQueue(loc('portal_gate_open'),'info',false,['progress','hell']);
                         renderFortress();
                     }
                 }
@@ -918,21 +1025,26 @@ const fortressModules = {
             effect(){
                 let security = 100;
                 if (global.race['holy']){
-                    security *= 1 + (traits.holy.vars[1] / 100);
+                    security *= 1 + (traits.holy.vars()[1] / 100);
+                }
+                let unicornFathom = fathomCheck('unicorn');
+                if (unicornFathom > 0){
+                    security *= 1 + (traits.holy.vars(1)[1] / 100 * unicornFathom);
                 }
                 let min = global.tech.hell_gun >= 2 ? 65 : 40;
                 let max = global.tech.hell_gun >= 2 ? 100 : 60;
-                return `<div>${loc('portal_gate_turret_effect',[security])}</div><div>${loc('portal_gate_turret_effect2',[min,max])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('portal_gate_turret_effect',[Math.round(security)])}</div><div>${loc('portal_gate_turret_effect2',[min,max])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('gate_turret','portal');
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.portal.gate_turret.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
+            },
+            post(){
+                vBind({el: `#srprtl_gate`},'update');
             },
             postPower(){
                 vBind({el: `#srprtl_gate`},'update');
@@ -946,23 +1058,23 @@ const fortressModules = {
             },
             reqs: { hell_gate: 4 },
             powered(){ return powerCostMod(5); },
+            powerBalancer(){
+                return [{ r: 'Infernite', k: 'lpmod' }];
+            },
             cost: {
                 Money(offset){ return spaceCostMultiplier('infernite_mine', offset, 75000000, 1.26, 'portal'); },
                 Alloy(offset){ return spaceCostMultiplier('infernite_mine', offset, 2450000, 1.26, 'portal'); },
                 Orichalcum(offset){ return spaceCostMultiplier('infernite_mine', offset, 1650000, 1.26, 'portal'); },
                 Wrought_Iron(offset){ return spaceCostMultiplier('infernite_mine', offset, 680000, 1.26, 'portal'); },
             },
-            effect(){                
-                let sup = hellSupression('gate');
-                let mining = 0.5 * sup.supress;
+            effect(wiki){
+                let mining = production('infernite_mine', '', wiki);
                 return `<div>${loc('portal_infernite_mine_effect',[+(mining).toFixed(3)])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('infernite_mine','portal');
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.portal.infernite_mine.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -973,7 +1085,7 @@ const fortressModules = {
         info: {
             name: loc('portal_lake_name'),
             desc: loc('portal_lake_desc'),
-            support: 'harbour',
+            support: 'harbor',
         },
         lake_mission: {
             id: 'portal-lake_mission',
@@ -981,7 +1093,7 @@ const fortressModules = {
             desc: loc('portal_lake_mission_title'),
             reqs: { hell_lake: 1 },
             grant: ['hell_lake',2],
-            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            queue_complete(){ return global.tech.hell_lake >= 2 ? 0 : 1; },
             cost: {
                 Money(){ return 500000000; },
                 Oil(){ return 750000; },
@@ -989,99 +1101,94 @@ const fortressModules = {
             },
             effect: loc('portal_lake_mission_effect'),
             action(){
-                if (payCosts($(this)[0].cost)){
-                    messageQueue(loc('portal_lake_mission_result'),'info');
+                if (payCosts($(this)[0])){
+                    messageQueue(loc('portal_lake_mission_result'),'info',false,['progress','hell']);
                     return true;
                 }
                 return false;
             }
         },
-        harbour: {
-            id: 'portal-harbour',
-            title: loc('portal_harbour_title'),
+        harbor: {
+            id: 'portal-harbor',
+            title: loc('portal_harbor_title'),
             desc(){
-                return `<div>${loc('portal_harbour_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+                return `<div>${loc('portal_harbor_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { hell_lake: 3 },
-            powered(){
-                let factor = p_on['cooling_tower'] || 0;
+            powered(wiki){
+                let num_cooling_tower = wiki ? (global.portal?.cooling_tower?.on ?? 0) : p_on['cooling_tower'];
+                let factor = num_cooling_tower || 0;
                 return +(powerCostMod(500 * (0.92 ** factor))).toFixed(2);
             },
             support(){ return 1; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('harbour', offset, 225000000, spireCreep(1.18), 'portal'); },
-                Cement(offset){ return spaceCostMultiplier('harbour', offset, 50000000, spireCreep(1.18), 'portal'); },
-                Iridium(offset){ return spaceCostMultiplier('harbour', offset, 7500000, spireCreep(1.18), 'portal'); },
-                Infernite(offset){ return spaceCostMultiplier('harbour', offset, 800000, spireCreep(1.18), 'portal'); },
-                Stanene(offset){ return spaceCostMultiplier('harbour', offset, 17500000, spireCreep(1.18), 'portal'); },
+                Money(offset){ return spaceCostMultiplier('harbor', offset, 225000000, spireCreep(1.18), 'portal'); },
+                Cement(offset){ return spaceCostMultiplier('harbor', offset, 50000000, spireCreep(1.18), 'portal'); },
+                Iridium(offset){ return spaceCostMultiplier('harbor', offset, 7500000, spireCreep(1.18), 'portal'); },
+                Infernite(offset){ return spaceCostMultiplier('harbor', offset, 800000, spireCreep(1.18), 'portal'); },
+                Stanene(offset){ return spaceCostMultiplier('harbor', offset, 17500000, spireCreep(1.18), 'portal'); },
             },
             wide: true,
-            effect(){
+            res(){
+                return [
+                    'Oil','Alloy','Polymer','Iridium','Helium_3','Deuterium','Neutronium','Adamantite',
+                    'Infernite','Nano_Tube','Graphene','Stanene','Bolognium','Orichalcum'
+                ];
+            },
+            val(res){
+                switch (res){
+                    case 'Oil':
+                        return 30000;
+                    case 'Alloy':
+                        return 250000;
+                    case 'Polymer':
+                        return 250000;
+                    case 'Iridium':
+                        return 200000;
+                    case 'Helium_3':
+                        return 18000;
+                    case 'Deuterium':
+                        return 12000;
+                    case 'Neutronium':
+                        return 180000;
+                    case 'Adamantite':
+                        return 150000;
+                    case 'Infernite':
+                        return 75000;
+                    case 'Nano_Tube':
+                        return 750000;
+                    case 'Graphene':
+                        return 1200000;
+                    case 'Stanene':
+                        return 1200000;
+                    case 'Bolognium':
+                        return 130000;
+                    case 'Orichalcum':
+                        return 130000;
+                    default:
+                        return 0;
+                }
+            },
+            effect(wiki){
                 let storage = '<div class="aTable">';
-                if (global.resource.Oil.display){
-                    let val = sizeApproximation(+(spatialReasoning(30000)).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Oil.name])}</span>`
-                }
-                if (global.resource.Alloy.display){
-                    let val = sizeApproximation(+(spatialReasoning(250000)).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Alloy.name])}</span>`
-                }
-                if (global.resource.Polymer.display){
-                    let val = sizeApproximation(+(spatialReasoning(250000)).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Polymer.name])}</span>`
-                }
-                if (global.resource.Iridium.display){
-                    let val = sizeApproximation(+(spatialReasoning(200000)).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Iridium.name])}</span>`
-                }
-                if (global.resource.Helium_3.display){
-                    let val = sizeApproximation(+(spatialReasoning(18000)).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Helium_3.name])}</span>`
-                }
-                if (global.resource.Deuterium.display){
-                    let val = sizeApproximation(+(spatialReasoning(12000)).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Deuterium.name])}</span>`
-                }
-                if (global.resource.Neutronium.display){
-                    let val = sizeApproximation(+(spatialReasoning(180000)).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Neutronium.name])}</span>`
-                }
-                if (global.resource.Adamantite.display){
-                    let val = sizeApproximation(+(spatialReasoning(150000)).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Adamantite.name])}</span>`
-                }
-                if (global.resource.Infernite.display){
-                    let val = sizeApproximation(+(spatialReasoning(75000)).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Infernite.name])}</span>`
-                }
-                if (global.resource.Nano_Tube.display){
-                    let val = sizeApproximation(+(spatialReasoning(750000)).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Nano_Tube.name])}</span>`
-                }
-                if (global.resource.Graphene.display){
-                    let val = sizeApproximation(+(spatialReasoning(1200000)).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Graphene.name])}</span>`
-                }
-                if (global.resource.Stanene.display){
-                    let val = sizeApproximation(+(spatialReasoning(1200000)).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Stanene.name])}</span>`
-                }
-                if (global.resource.Bolognium.display){
-                    let val = sizeApproximation(+(spatialReasoning(130000)).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Bolognium.name])}</span>`
-                }
-                if (global.resource.Orichalcum.display){
-                    let val = sizeApproximation(+(spatialReasoning(130000)).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Orichalcum.name])}</span>`
-                }
+                for (const res of $(this)[0].res()){
+                    if (global.resource[res].display){
+                        let val = sizeApproximation(+(spatialReasoning($(this)[0].val(res))).toFixed(0),1);
+                        storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
+                    }
+                };
                 storage = storage + '</div>';
-                return `<div>${loc('portal_harbour_effect',[1])}</div>${storage}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('portal_harbor_effect',[1])}</div>${storage}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered(wiki)])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
-                    incrementStruct('harbour','portal');
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.portal.harbour.on++;
+                if (payCosts($(this)[0])){
+                    incrementStruct('harbor','portal');
+                    if (powerOnNewStruct($(this)[0])){
+                        for (const res of $(this)[0].res()){
+                            if (global.resource[res].display){
+                                global.resource[res].max += (spatialReasoning($(this)[0].val(res)));
+                            }
+                        };
                     }
                     return true;
                 }
@@ -1106,11 +1213,9 @@ const fortressModules = {
                 return `<div>${loc('portal_cooling_tower_effect',[8])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('cooling_tower','portal');
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.portal.cooling_tower.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1123,7 +1228,8 @@ const fortressModules = {
                 return `<div>${loc('portal_bireme_title')}</div><div class="has-text-special">${loc('space_support',[loc('lake')])}</div>`;
             },
             reqs: { hell_lake: 4 },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
+            s_type: 'lake',
             support(){ return -1; },
             cost: {
                 Money(offset){ return spaceCostMultiplier('bireme', offset, 190000000, 1.24, 'portal'); },
@@ -1135,18 +1241,16 @@ const fortressModules = {
             },
             effect(){
                 let rating = global.blood['spire'] && global.blood.spire >= 2 ? 20 : 15;
-                return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div><div>${loc('portal_bireme_effect',[rating])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div>`;
+                return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div><div>${loc('portal_bireme_effect',[rating])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil()])}</div>`;
             },
             ship: {
-                civ: 0,
-                mil: 2
+                civ(){ return 0; },
+                mil(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 2 : 2; },
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('bireme','portal');
-                    if (global.portal.harbour.support < global.portal.harbour.s_max){
-                        global.portal.bireme.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1159,20 +1263,22 @@ const fortressModules = {
                 return `<div>${loc('portal_transport_title')}</div><div class="has-text-special">${loc('space_support',[loc('lake')])}</div>`;
             },
             reqs: { hell_lake: 5 },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
+            s_type: 'lake',
             support(){ return -1; },
             cost: {
                 Money(offset){ return spaceCostMultiplier('transport', offset, 300000000, 1.22, 'portal'); },
-                Oil(offset){ return spaceCostMultiplier('bireme', offset, 180000, 1.22, 'portal'); },
-                Alloy(offset){ return spaceCostMultiplier('bireme', offset, 18000000, 1.22, 'portal'); },
-                Graphene(offset){ return spaceCostMultiplier('bireme', offset, 12500000, 1.22, 'portal'); },
-                Soul_Gem(offset){ return spaceCostMultiplier('bireme', offset, 5, 1.22, 'portal'); },
-                Scarletite(offset){ return spaceCostMultiplier('bireme', offset, 250000, 1.22, 'portal'); },
+                Oil(offset){ return spaceCostMultiplier('transport', offset, 180000, 1.22, 'portal'); },
+                Alloy(offset){ return spaceCostMultiplier('transport', offset, 18000000, 1.22, 'portal'); },
+                Graphene(offset){ return spaceCostMultiplier('transport', offset, 12500000, 1.22, 'portal'); },
+                Soul_Gem(offset){ return spaceCostMultiplier('transport', offset, 5, 1.22, 'portal'); },
+                Scarletite(offset){ return spaceCostMultiplier('transport', offset, 250000, 1.22, 'portal'); },
             },
-            effect(){
+            effect(wiki){
                 let rating = global.blood['spire'] && global.blood.spire >= 2 ? 0.8 : 0.85;
-                let bireme = +((rating ** (gal_on['bireme'] || 0)) * 100).toFixed(1);
-                return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div><div>${loc('portal_transport_effect',[5])}</div><div class="has-text-danger">${loc('portal_transport_effect2',[bireme])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div>`;
+                let num_on = wiki ? (global.portal?.bireme?.on ?? 0) : gal_on['bireme'];
+                let bireme = +((rating ** num_on) * 100).toFixed(1);
+                return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div><div>${loc('portal_transport_effect',[5])}</div><div class="has-text-danger">${loc('portal_transport_effect2',[bireme])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ()])}</div>`;
             },
             special: true,
             sAction(){
@@ -1180,28 +1286,24 @@ const fortressModules = {
                 global.settings.marketTabs = 3;
                 if (!global.settings.tabLoad){
                     loadTab('mTabResource');
-                    clearElement($('#popportal-transport'),true);
+                    clearPopper(`portal-transport`);
                 }
             },
             ship: {
-                civ: 3,
-                mil: 0
+                civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 3 : 3; },
+                mil(){ return 0; },
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('transport','portal');
-                    if (global.portal.harbour.support < global.portal.harbour.s_max){
-                        global.portal.transport.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     if (!global.settings.portal.spire){
                         global.settings.portal.spire = true;
                         global.settings.showCargo = true;
-                        clearElement($('#resources'));
-                        defineResources();
                         global.tech['hell_spire'] = 1;
                         global.portal['purifier'] = { count: 0, on: 0, support: 0, s_max: 0, supply: 0, sup_max: 100, diff: 0 };
                         global.portal['port'] = { count: 0, on: 0 };
-                        messageQueue(loc('portal_transport_unlocked'),'info');
+                        messageQueue(loc('portal_transport_unlocked'),'info',false,['progress','hell']);
                         renderFortress();
                     }
                     return true;
@@ -1209,6 +1311,139 @@ const fortressModules = {
                 return false;
             }
         },
+        oven: {
+            id: 'portal-oven',
+            title: loc('portal_oven_title'),
+            desc(wiki){
+                if (!global.portal.hasOwnProperty('oven') || global.portal.oven.count < 100 || wiki){
+                    return `<div>${loc('portal_oven_title')}</div><div class="has-text-special">${loc('requires_segments', [100])}</div>` + (global.portal.hasOwnProperty('oven') && global.portal.oven.count >= 100 ? `<div class="has-text-special">${loc('requires_power')}</div>` : ``);
+                }
+            },
+            reqs: { dish:2 },
+            condition(){
+                return global.portal.oven.count < 100;
+            },
+            queue_size: 10,
+            queue_complete(){ return 100 - global.portal.oven.count; },
+            cost: {
+                Money(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('oven') ? global.portal.oven.count : 0)) < 100 ? 190000000 : 0; },
+                Steel(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('oven') ? global.portal.oven.count : 0)) < 100 ? 2000000 : 0; },
+                Infernite(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('oven') ? global.portal.oven.count : 0)) < 100 ? 600000 : 0; },
+                Bolognium(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('oven') ? global.portal.oven.count : 0)) < 100 ? 1000000 : 0; },
+                Scarletite(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('oven') ? global.portal.oven.count : 0)) < 100 ? 15000 : 0; }
+            },
+            effect(wiki){
+                let count = (wiki?.count ?? 0) + (global.portal.hasOwnProperty('oven') ? global.portal.oven.count : 0);
+                if (count < 100){
+                    let remain = 100 - count;
+                    return `<div>${loc('portal_oven_effect1')}</div><div class="has-text-special">${loc('requires_segments',[remain])}</div>`;
+                }
+                else {
+                    return fortressModules.prtl_lake.oven_complete.effect();
+                }
+            },
+            action(){
+                if (global.portal.oven.count < 100 && payCosts($(this)[0])){
+                    global.portal['oven'].count++;
+                    if (global.portal.oven.count >= 100){
+                        global.tech['dish'] = 3;
+                        global.portal['oven_complete'] = { count: 1, on: 0 };
+                        global.portal['devilish_dish'] = { count: 0, done: 0, time: 0 };
+                        renderFortress();
+                        clearPopper();
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        oven_complete: {
+            id: 'portal-oven_complete',
+            title: loc('portal_oven_title'),
+            desc(){
+                return `<div>${loc('portal_oven_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            wiki: false,
+            reqs: { dish: 3 },
+            condition(){
+                return global.portal.oven.count >= 100;
+            },
+            queue_complete(){ return 0; },
+            cost: {},
+            effect(wiki){
+                let fuel = $(this)[0].p_fuel();
+                return `<div>${loc(`portal_oven_desc`)}</div>${global.tech['dish'] === 4 ? `<div class="has-text-special">${loc('portal_oven_desc2')}</div>` : ``}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}, ${loc('spend', [fuel.a, fuel.r])}</div>`;
+            },
+            powered(){ return powerCostMod(3500); },
+            p_fuel(){ return { r: 'Infernite', a: 225 }},
+            action(){
+                return false;
+            }
+        },
+        devilish_dish: {
+            id: 'portal-devilish_dish',
+            title: loc('portal_devilish_dish_title'),
+            desc: loc('portal_devilish_dish_title'),
+            reqs: { dish: 3 },
+            queue_complete(){ return 0; },
+            cost: {},
+            effect(){
+                const progress = (global.portal['devilish_dish'] ? global.portal['devilish_dish'].done : 0);
+                return `<div>${loc(`portal_devilish_dish_desc`,[progress.toFixed(1)])}</div><div>${loc(`portal_devilish_dish_flavor${progress >= 100 ? 6 : Math.ceil(progress/20)}`)}</div>`;
+            },
+            action(){
+                return false;
+            }
+        },
+        dish_soul_steeper: {
+            id: 'portal-dish_soul_steeper',
+            title: loc('portal_dish_soul_steeper_title'),
+            desc: loc('portal_dish_soul_steeper_desc'),
+            reqs: { dish: 5 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('dish_soul_steeper', offset, 750000000, spireCreep(1.3), 'portal'); },
+                Bolognium(offset){ return spaceCostMultiplier('dish_soul_steeper', offset, 12000000, spireCreep(1.3), 'portal'); },
+                Scarletite(offset){ return spaceCostMultiplier('dish_soul_steeper', offset, 300000, spireCreep(1.3), 'portal'); },
+            },
+            powered(){ return 0; },
+            effect(){
+                return `<div>${loc('portal_dish_soul_steeper_effect1')}</div><div class="has-text-danger">${loc('portal_dish_soul_steeper_effect2', [3 + (global.race['malnutrition'] ? 1 : 0) + (global.race['angry'] ? -1 : 0)])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.portal['dish_soul_steeper'].count++;
+                    global.portal['dish_soul_steeper'].on++;
+                    return true;
+                }
+                return false;
+            },
+            flair: loc('portal_dish_soul_steeper_flair')
+        },
+        dish_life_infuser: {
+            id: 'portal-dish_life_infuser',
+            title: loc('portal_dish_life_infuser_title'),
+            desc: loc('portal_dish_life_infuser_desc'),
+            reqs: { dish: 5 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 280000000, spireCreep(1.2), 'portal'); },
+                Bolognium(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 8000000, spireCreep(1.2), 'portal'); },
+                Orichalcum(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 8000000, spireCreep(1.2), 'portal'); },
+                Species(offset){ return popCost(10)}
+            },
+            powered(){ return 0; },
+            effect(){
+                return `<div>${loc('portal_dish_life_infuser_effect1', [15])}</div><div class="has-text-danger">${loc('portal_dish_life_infuser_effect2', [5])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.portal['dish_life_infuser'].count++;
+                    global.portal['dish_life_infuser'].on++;
+                    return true;
+                }
+                return false;
+            },
+            flair: loc('portal_dish_life_infuser_flair')
+        }
     },
     prtl_spire: {
         info: {
@@ -1229,9 +1464,9 @@ const fortressModules = {
             desc: loc('portal_spire_mission_title'),
             reqs: { hell_spire: 1 },
             grant: ['hell_spire',2],
-            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            queue_complete(){ return global.tech.hell_spire >= 2 ? 0 : 1; },
             cost: {
-                Species(){ return 50; },
+                Species(){ return popCost(50); },
                 Oil(){ return 900000; },
                 Helium_3(){ return 750000; },
                 Structs(){
@@ -1245,8 +1480,8 @@ const fortressModules = {
             },
             effect: loc('portal_spire_mission_effect'),
             action(){
-                if (payCosts($(this)[0].cost)){
-                    messageQueue(loc('portal_spire_mission_result'),'info');
+                if (payCosts($(this)[0])){
+                    messageQueue(loc('portal_spire_mission_result'),'info',false,['progress','hell']);
                     return true;
                 }
                 return false;
@@ -1270,11 +1505,9 @@ const fortressModules = {
                 return `<div>${loc('portal_purifier_effect',[$(this)[0].support()])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('purifier','portal');
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.portal.purifier.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1291,21 +1524,21 @@ const fortressModules = {
                 Money(offset){ return spaceCostMultiplier('port', offset, 135000000, spireCreep(1.2), 'portal'); },
                 Supply(offset){ return global.portal.hasOwnProperty('port') && global.portal.port.count === 0 ? 100 : spaceCostMultiplier('port', offset, 6250, spireCreep(1.2), 'portal'); },
             },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
+            s_type: 'spire',
             support(){ return -1; },
-            effect(){
+            effect(wiki){
                 let port_value = 10000;
-                if (spire_on['base_camp']){
-                    port_value *= 1 + (spire_on['base_camp'] * 0.4);
+                let num_base_camps_on = wiki ? (global.portal?.base_camp?.on ?? 0) : spire_on['base_camp'];
+                if (num_base_camps_on > 0){
+                    port_value *= 1 + (num_base_camps_on * 0.4);
                 }
                 return `<div class="has-text-caution">${loc('portal_port_effect1',[$(this)[0].support()])}</div><div>${loc('portal_port_effect2',[Math.round(port_value)])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('port','portal');
-                    if (global.portal.purifier.support < global.portal.purifier.s_max){
-                        global.portal.port.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     if (global.tech.hell_spire === 3){
                         global.tech.hell_spire = 4;
                         global.portal['base_camp'] = { count: 0, on: 0 };
@@ -1327,21 +1560,20 @@ const fortressModules = {
                 Money(offset){ return spaceCostMultiplier('base_camp', offset, 425000000, spireCreep(1.2), 'portal'); },
                 Supply(offset){ return spaceCostMultiplier('base_camp', offset, 50000, spireCreep(1.2), 'portal'); },
             },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
+            s_type: 'spire',
             support(){ return -1; },
             effect(){
                 return `<div class="has-text-caution">${loc('portal_port_effect1',[$(this)[0].support()])}</div><div>${loc('portal_base_camp_effect',[40])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('base_camp','portal');
-                    if (global.portal.purifier.support < global.portal.purifier.s_max){
-                        global.portal.base_camp.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     if (global.tech.hell_spire === 4){
                         global.tech.hell_spire = 5;
                         global.portal['bridge'] = { count: 0 };
-                        messageQueue(loc('portal_spire_bridge_collapse'),'info');
+                        messageQueue(loc('portal_spire_bridge_collapse'),'info',false,['progress','hell']);
                         renderFortress();
                     }
                     return true;
@@ -1354,25 +1586,25 @@ const fortressModules = {
             title: loc('portal_bridge_title'),
             desc(wiki){
                 if (!global.portal.hasOwnProperty('bridge') || global.portal.bridge.count < 10 || wiki){
-                    return `<div>${loc('portal_bridge_title')}</div><div class="has-text-special">${loc('requires_segmemts',[10])}</div>`;
+                    return `<div>${loc('portal_bridge_title')}</div><div class="has-text-special">${loc('requires_segments',[10])}</div>`;
                 }
                 else {
                     return `<div>${loc('portal_bridge_title')}</div>`;
                 }
             },
             reqs: { hell_spire: 5 },
-            no_queue(){ return global.portal.bridge.count < 10 ? false : true },
             queue_size: 1,
             queue_complete(){ return 10 - global.portal.bridge.count; },
             cost: {
-                [global.race.species](wiki){ return !global.portal.hasOwnProperty('bridge') || global.portal.bridge.count < 10 || wiki ? 10 : 0; },
-                Money(wiki){ return !global.portal.hasOwnProperty('bridge') || global.portal.bridge.count < 10 || wiki ? 500000000 : 0; },
-                Supply(wiki){ return !global.portal.hasOwnProperty('bridge') || global.portal.bridge.count < 10 || wiki ? 100000 : 0; },
+                Species(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('bridge') ? global.portal.bridge.count : 0)) < 10 ? popCost(10) : 0; },
+                Money(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('bridge') ? global.portal.bridge.count : 0)) < 10 ? 500000000 : 0; },
+                Supply(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('bridge') ? global.portal.bridge.count : 0)) < 10 ? 100000 : 0; },
             },
-            effect(){
+            effect(wiki){
                 let size = 10;
-                if (!global.portal.hasOwnProperty('bridge') || global.portal.bridge.count < size){
-                    let remain = global.portal.hasOwnProperty('bridge') ? size - global.portal.bridge.count : size;
+                let count = (wiki?.count ?? 0) + (global.portal.hasOwnProperty('bridge') ? global.portal.bridge.count : 0);
+                if (count < size){
+                    let remain = size - count;
                     return `<div>${loc('portal_bridge_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div><div class="has-text-caution">${loc('portal_bridge_effect2')}</div>`;
                 }
                 else {
@@ -1380,7 +1612,7 @@ const fortressModules = {
                 }
             },
             action(){
-                if (global.portal.bridge.count < 10 && payCosts($(this)[0].cost)){
+                if (global.portal.bridge.count < 10 && payCosts($(this)[0])){
                     incrementStruct('bridge','portal');
                     if (global.portal.bridge.count >= 10){
                         global.portal['sphinx'] = { count: 0 };
@@ -1397,31 +1629,35 @@ const fortressModules = {
             title(){ return global.tech.hell_spire === 7 ? loc('portal_sphinx_solve') : loc('portal_sphinx_title'); },
             desc: loc('portal_sphinx_desc'),
             reqs: { hell_spire: 6 },
-            no_queue(){ return global.tech.hell_spire < 8 ? false : true; },
+            queue_complete(){ return 8 - global.tech.hell_spire; },
             cost: {
-                Knowledge(wiki){ return global.tech.hell_spire === 6 || global.tech.hell_spire === 7 || wiki ? (global.tech.hell_spire === 7 ? 50000000 : 40000000) : 0; }
+                Knowledge(offset){
+                    let count = (offset || 0) + (!global.tech['hell_spire'] || global.tech.hell_spire < 7 ? 0 : global.tech.hell_spire === 7 ? 1 : 2);
+                    return count === 1 ? 50000000 : count === 0 ? 40000000 : 0;
+                }
             },
-            effect(){
-                if (global.tech.hell_spire === 7){
+            effect(wiki){
+                let count = (wiki?.count ?? 0) + (!global.tech['hell_spire'] || global.tech.hell_spire < 7 ? 0 : global.tech.hell_spire === 7 ? 1 : 2);
+                if (count === 1){
                     return loc('portal_sphinx_effect2');
                 }
-                else if (global.tech.hell_spire >= 8){
+                else if (count === 2){
                     return loc('portal_sphinx_effect3');
                 }
                 return loc('portal_sphinx_effect');
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     if (global.tech.hell_spire === 6){
                         global.tech.hell_spire = 7;
-                        messageQueue(loc('portal_sphinx_msg'),'info');
+                        messageQueue(loc('portal_sphinx_msg'),'info',false,['progress','hell']);
                         renderFortress();
                         return true;
                     }
                     else if (global.tech.hell_spire === 7){
                         global.tech.hell_spire = 8;
                         renderFortress();
-                        messageQueue(loc('portal_sphinx_answer_msg'),'info');  
+                        messageQueue(loc('portal_sphinx_answer_msg'),'info',false,['progress','hell']);  
                         return true;
                     }
                 }
@@ -1444,12 +1680,12 @@ const fortressModules = {
                 return loc('portal_sphinx_bribe_effect');
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     if (global.tech.hell_spire === 7 && !global.tech['sphinx_bribe']){
                         global.tech['sphinx_bribe'] = 1;
                         global.resource.Codex.display = true;
                         global.resource.Codex.amount = 1;
-                        messageQueue(loc('portal_sphinx_bribe_msg'),'info');                        
+                        messageQueue(loc('portal_sphinx_bribe_msg'),'info',false,['progress','hell']);                        
                         return true;
                     }
                 }
@@ -1459,7 +1695,7 @@ const fortressModules = {
                 if (global.tech['sphinx_bribe']){
                     drawTech();
                     renderFortress();
-                    cleanTechPopOver('portal-bribe_sphinx');
+                    clearPopper('portal-bribe_sphinx');
                 }
             }
         },
@@ -1469,18 +1705,18 @@ const fortressModules = {
             desc: loc('portal_spire_survey_title'),
             reqs: { hell_spire: 8 },
             grant: ['hell_spire',9],
-            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            queue_complete(){ return global.tech.hell_spire >= 9 ? 0 : 1; },
             cost: {
                 Oil(){ return 1200000; },
                 Helium_3(){ return 900000; },
             },
             effect: loc('portal_spire_survey_effect'),
             action(){
-                if (payCosts($(this)[0].cost)){
-                    global.portal['mechbay'] = { count: 0, on: 0, bay: 0, max: 0, mechs: [] };
+                if (payCosts($(this)[0])){
+                    global.portal['mechbay'] = { count: 0, on: 0, bay: 0, max: 0, active: 0, scouts: 0, mechs: [] };
                     global.portal['spire'] = { count: 1, progress: 0, boss: '', type: '', status: {} };
                     genSpireFloor();
-                    messageQueue(loc('portal_spire_survey_msg'),'info');
+                    messageQueue(loc('portal_spire_survey_msg'),'info',false,['progress','hell']);
                     return true;
                 }
                 return false;
@@ -1488,7 +1724,7 @@ const fortressModules = {
             post(){
                 if (global.tech['hell_spire'] && global.tech.hell_spire === 9){
                     renderFortress();
-                    cleanTechPopOver('portal-spire_survey');
+                    clearPopper('portal-spire_survey');
                 }
             }
         },
@@ -1503,7 +1739,8 @@ const fortressModules = {
                 Money(offset){ return spaceCostMultiplier('mechbay', offset, 100000000, 1.2, 'portal'); },
                 Supply(offset){ return spaceCostMultiplier('mechbay', offset, 250000, 1.2, 'portal'); },
             },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
+            s_type: 'spire',
             support(){ return -1; },
             special: true,
             sAction(){
@@ -1511,7 +1748,7 @@ const fortressModules = {
                 global.settings.govTabs = 4;
                 if (!global.settings.tabLoad){
                     loadTab('mTabCivic');
-                    clearElement($('#popportal-mechbay'),true);
+                    clearPopper(`portal-mechbay`);
                 }
             },
             effect(){
@@ -1520,25 +1757,23 @@ const fortressModules = {
                 return `<div class="has-text-caution">${loc('portal_port_effect1',[$(this)[0].support()])}</div><div>${loc('portal_mechbay_effect')}</div><div>${loc('portal_mechbay_effect2',[bay,max])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('mechbay','portal');
-                    if (global.portal.purifier.support < global.portal.purifier.s_max){
-                        global.portal.mechbay.on++;
+                    if (powerOnNewStruct($(this)[0])){
                         global.portal.mechbay.max += 25;
                     }
                     global.settings.showMechLab = true;
                     if (global.portal.mechbay.count === 1){
-                        messageQueue(loc('portal_mechbay_unlocked'),'info');
+                        messageQueue(loc('portal_mechbay_unlocked'),'info',false,['progress','hell']);
                         drawMechLab();
+                        defineGovernor();
                     }
                     return true;
                 }
                 return false;
             },
             postPower(){
-                let bays = (spire_on['mechbay'] || 0);
-                global.portal.mechbay.max = bays * 25;
-                drawMechs();
+                updateMechbay();
             }
         },
         spire: {
@@ -1546,19 +1781,48 @@ const fortressModules = {
             title: loc('portal_spire_title'),
             desc: loc('portal_spire_title'),
             reqs: { hell_spire: 9 },
-            no_queue(){ return true; },
+            queue_complete(){ return 0; },
             cost: {},
             effect(){
                 let floor = global.portal.hasOwnProperty('spire') ? global.portal.spire.count : 0;
                 let terrain = global.portal.hasOwnProperty('spire') ? `<span class="has-text-warning">${loc(`portal_spire_type_${global.portal.spire.type}`)}</span>` : '?';
                 let status = ``;
                 if (global.portal.hasOwnProperty('spire') && Object.keys(global.portal.spire.status).length > 0){
-                    status = `<div>${Object.keys(global.portal.spire.status).map(v => `<span class="has-text-warning">${loc(`portal_spire_status_${v}`)}</span>`).join(', ')}</div>`;
+                    status = `<div>${loc('portal_spire_hazard',[Object.keys(global.portal.spire.status).map(v => `<span class="has-text-warning">${loc(`portal_spire_status_${v}`)}</span>`).join(', ')])}</div>`;
                 }
                 let progress = global.portal.hasOwnProperty('spire') ? `<span class="has-text-warning">${+(global.portal.spire.progress).toFixed(3)}%</span>` : '0%';
+                let leftSide = `<div>${loc('portal_spire_effect',[floor])}</div><div>${loc('portal_spire_type',[terrain])}</div>${status}<div>${loc('portal_spire_progress',[progress])}</div>`;
+                
                 let boss = global.portal.hasOwnProperty('spire') ? global.portal.spire.boss : 'crazed';
-                return `<div>${loc('portal_spire_effect',[floor])}</div><div>${loc('portal_spire_type',[terrain])}</div><div>${loc('portal_spire_mob',[`<span class="has-text-danger">${loc(`portal_mech_boss_${boss}`)}</span>`])}</div>${status}<div>${loc('portal_spire_progress',[progress])}</div>`;
+                let threat = `<div>${loc('portal_spire_mob',[`<span class="has-text-danger">${loc(`portal_mech_boss_${boss}`)}</span>`])}</div>`;
+
+                let weak = `???`;
+                let resist = `???`;
+                if (global.stats['spire']){
+                    let resists = bossResists(boss);
+                    let level = $(this)[0].mscan();
+                    if (level > 0){
+                        weak = loc(`portal_mech_weapon_${resists.w}`);
+                    }
+                    if (level >= 5){
+                        resist = loc(`portal_mech_weapon_${resists.r}`);
+                    }
+                }
+                let rightSide = `<div>${threat}<div>${loc('portal_spire_mob_weak',[`<span class="has-text-warning">${weak}</span>`])}</div><div>${loc('portal_spire_mob_resist',[`<span class="has-text-warning">${resist}</span>`])}</div></div>`;
+
+                return `<div class="split"><div>${leftSide}</div><div>${rightSide}</div></div>`;
             },
+            mscan(){
+                let level = 0;
+                Object.keys(global.stats.spire).forEach(function(uni){
+                    let boss = global.portal.hasOwnProperty('spire') ? global.portal.spire.boss : 'crazed';
+                    if (global.stats.spire.hasOwnProperty(uni) && global.stats.spire[uni].hasOwnProperty(boss) && global.stats.spire[uni][boss] > level){
+                        level = global.stats.spire[uni][boss];
+                    }
+                });
+                return level;
+            },
+            wide: true,
             action(){
                 return false;
             }
@@ -1568,51 +1832,71 @@ const fortressModules = {
             title: loc('portal_waygate_title'),
             desc(wiki){
                 if (!global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) || wiki){
-                    return `<div>${loc('portal_waygate_title')}</div><div class="has-text-special">${loc('requires_segmemts',[10])}</div>`;
+                    return `<div>${loc('portal_waygate_title')}</div><div class="has-text-special">${loc('requires_segments',[10])}</div>`;
                 }
                 else {
                     return `<div>${loc('portal_waygate_title')}</div>`;
                 }
             },
             reqs: { waygate: 1 },
-            no_queue(){ return global.tech['waygate'] && global.tech.waygate < 2 ? false : true },
             queue_size: 1,
-            queue_complete(){ return global.tech['waygate'] && global.tech.waygate >= 2 ? 0 : 10 - global.portal.waygate.count; },
+            queue_complete(){ return global.tech.waygate >= 2 ? 0 : 10 - global.portal.waygate.count; },
             cost: {
-                [global.race.species](wiki){ return !global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) || wiki ? 25 : 0; },
-                Money(wiki){ return !global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) || wiki ? 1000000000 : 0; },
-                Supply(wiki){ return !global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) || wiki ? 500000 : 0; },
-                Blood_Stone(wiki){ return !global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) || wiki ? 5 : 0; },
+                Species(offset){
+                    if (offset){
+                        return offset + (global.portal.hasOwnProperty('waygate') ? global.portal.waygate.count : 0) < 10 ? popCost(25) : 0;
+                    }
+                    return !global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) ? popCost(25) : 0;
+                },
+                Money(offset){
+                    if (offset){
+                        return offset + (global.portal.hasOwnProperty('waygate') ? global.portal.waygate.count : 0) < 10 ? 1000000000 : 0;
+                    }
+                    return !global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) ? 1000000000 : 0;
+                },
+                Supply(offset){
+                    if (offset){
+                        return offset + (global.portal.hasOwnProperty('waygate') ? global.portal.waygate.count : 0) < 10 ? 500000 : 0;
+                    }
+                    return !global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) ? 500000 : 0;
+                },
+                Blood_Stone(offset){
+                    if (offset){
+                        return offset + (global.portal.hasOwnProperty('waygate') ? global.portal.waygate.count : 0) < 10 ? 5 : 0;
+                    }
+                    return !global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) ?  5 : 0;
+                },
             },
             powered(){
                 return global.portal.hasOwnProperty('waygate') && global.portal.waygate.count >= 10 ? 1 : 0;
             },
             power_reqs: { waygate: 2 },
-            effect(){
-                if (global.tech['waygate'] && global.tech.waygate >= 2){
+            effect(wiki){
+                let count = (wiki?.count ?? 0) + (global.tech['waygate'] && global.tech.waygate >= 2 ? 10 : global.portal.hasOwnProperty('waygate') ? global.portal.waygate.count : 0);
+                if (count >= 10){
                     let progress = global.portal.hasOwnProperty('waygate') ? `<span class="has-text-warning">${+(global.portal.waygate.progress).toFixed(3)}%</span>` : '0%';
                     return `<div>${loc('portal_waygate_open')}</div><div>${loc('portal_waygate_progress',[progress])}</div>`;
                 }
                 else {
                     let size = 10;
-                    let remain = global.portal.hasOwnProperty('waygate') ? size - global.portal.waygate.count : size;
+                    let remain = size - count;
                     return `<div>${loc('portal_waygate_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
             },
             action(){
-                if (global.portal.waygate.count < 10 && global.tech['waygate'] && global.tech.waygate === 1 && payCosts($(this)[0].cost)){
+                if (global.portal.waygate.count < 10 && global.tech['waygate'] && global.tech.waygate === 1 && payCosts($(this)[0])){
                     incrementStruct('waygate','portal');
                     if (global.portal.waygate.count >= 10){
                         global.tech.waygate = 2;
                         global.portal.waygate.count = 1;
                         renderFortress();
+                        drawTech();
                     }
                     return true;
                 }
                 return false;
             }
-        },
-
+        }
     }
 };
 
@@ -1621,7 +1905,7 @@ function spireCreep(base){
     return creep >= 1.01 ? creep : 1.01;
 }
 
-const towerSize = (function(){
+export const towerSize = (function(){
     var size;
     return function(recalc){
         if (size && !recalc){
@@ -1639,15 +1923,16 @@ const towerSize = (function(){
     }
 })();
 
-function towerPrice(cost){
-    let sup = hellSupression('gate');
+function towerPrice(cost, wiki){
+    let sup = hellSupression('gate', 0, wiki);
     return Math.round(cost / (sup.supress > 0.01 ? sup.supress : 0.01));
 }
 
-export function soulForgeSoldiers(){
+export function soulForgeSoldiers(wiki){
     let soldiers = Math.round(650 / armyRating(1,'hellArmy'));
-    if (p_on['gun_emplacement']){
-        soldiers -= p_on['gun_emplacement'] * (global.tech.hell_gun >= 2 ? 2 : 1);
+    let num_gun_emplacement = wiki ? (global.portal?.gun_emplacement?.on ?? 0) : p_on['gun_emplacement'];
+    if (num_gun_emplacement){
+        soldiers -= num_gun_emplacement * (global.tech.hell_gun >= 2 ? jobScale(2) : jobScale(1));
         if (soldiers < 0){
             soldiers = 0;
         }
@@ -1725,6 +2010,10 @@ export function renderFortress(){
     });
 }
 
+export function checkHellRequirements(region,tech){
+    return checkRequirements(fortressModules,region,tech);
+}
+
 function fortressData(dt){
     switch (dt){
         case 'hostiles':
@@ -1763,17 +2052,7 @@ function fortressData(dt){
             }
         case 'hireLabel':
             {
-                let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
-                if (cost > 25000){
-                    cost = 25000;
-                }
-                if (global.civic.garrison.m_use > 0){
-                    cost *= 1.1 ** global.civic.garrison.m_use;
-                }
-                if (global.race['brute']){
-                    cost = cost / 2;
-                }
-                cost = Math.round(cost);
+                let cost = Math.round(govCivics('m_cost')).toLocaleString();
                 return loc('civics_garrison_hire_mercenary_cost',[cost]);
             }
     }
@@ -1812,7 +2091,7 @@ export function buildFortress(parent,full){
             fort = $(`<div id="${id}" class="fort gFort"></div>`);
             parent.append(fort);
         }
-        fort.append(`<div><h3 class="has-text-warning">${loc('portal_fortress_name')}</h3></div>`);
+        fort.append(`<div><h3 class="has-text-warning">${loc('portal_fortress_name')}</h3><button class="button observe right" @click="observation">${loc('hell_observation_button')}</button></div>`);
     }
     
 
@@ -1829,7 +2108,7 @@ export function buildFortress(parent,full){
     let wallStatus = $('<div></div>');
     fort.append(wallStatus);
 
-    wallStatus.append($(`<span class="has-text-warning" :aria-label="defense()">${loc('fortress_wall')} <span :class="wall()">{{ f.walls }}%</span></span>`))
+    wallStatus.append($(`<span class="has-text-warning" :aria-label="defense()">${loc('fortress_wall')} <span :class="wall()">{{ f.walls }}%</span></span>`));
 
     let station = $(`<div></div>`);
     fort.append(station);
@@ -1851,21 +2130,31 @@ export function buildFortress(parent,full){
 
     station.append($(`<span class="hireLabel"><button v-show="g.mercs" class="button merc" @click="hire" :aria-label="hireLabel()">${loc('civics_garrison_hire_mercenary')}</button></span>`));
 
+    var bunks = $('<div class="bunks"></div>');
+    station.append(bunks);
+    bunks.append($(`<span class="has-text-warning">${loc('civics_garrison')}: </span>`));
+    let soldier_title = global.tech['world_control'] && !global.race['truepath'] ? loc('civics_garrison_peacekeepers') : loc('civics_garrison_soldiers');
+    bunks.append($(`<span><span class="soldier">${soldier_title}</span> <span v-html="$options.filters.stationed(g.workers)"></span> / <span>{{ g.max | s_max }} | <span></span>`));
+    bunks.append($(`<span v-show="g.crew > 0"><span class="crew">${loc('civics_garrison_crew')}</span> <span>{{ g.crew }} | </span></span>`));
+    bunks.append($(`<span><span class="wounded">${loc('civics_garrison_wounded')}</span> <span>{{ g.wounded }}</span></span>`));
+
     let color = global.settings.theme === 'light' ? ` type="is-light"` : ` type="is-dark"`;
     let reports = $(`<div></div>`);
     station.append(reports);
     reports.append($(`<b-checkbox class="patrol" v-model="f.notify" true-value="Yes" false-value="No"${color}>${loc('fortress_patrol_reports')}</b-checkbox>`));
     reports.append($(`<b-checkbox class="patrol" v-model="f.s_ntfy" true-value="Yes" false-value="No"${color}>${loc('fortress_surv_reports')}</b-checkbox>`));
+    reports.append($(`<b-checkbox class="patrol" v-model="f.nocrew"${color} v-show="s.showGalactic">${loc('fortress_nocrew')}</b-checkbox>`));
 
     if (full){
-        fort.append($(`<div class="training"><span>${loc('civics_garrison_training')}</span> <progress class="progress" :value="g.progress" max="100">{{ g.progress }}%</progress></div>`));
+        fort.append($(`<div class="training"><span>${loc('civics_garrison_training')} - ${loc('arpa_to_complete')} {{ g.rate, g.progress | trainTime }}</span><button class="button observe right" @click="observation">${loc('hell_observation_button')}</button> <progress class="progress" :value="g.progress" max="100">{{ g.progress }}%</progress></div>`));
     }
 
     vBind({
         el: `#${id}`,
         data: {
             f: global.portal.fortress,
-            g: global.civic.garrison
+            g: global.civic.garrison,
+            s: global.settings
         },
         methods: {
             defense(){
@@ -1895,7 +2184,7 @@ export function buildFortress(parent,full){
                     min += soulForgeSoldiers();
                 }
                 if (global.portal.hasOwnProperty('guard_post')){
-                    min += global.portal.guard_post.on;
+                    min += jobScale(global.portal.guard_post.on);
                 }
                 if (global.portal.fortress.garrison > min){
                     global.portal.fortress.garrison -= dec;
@@ -1973,17 +2262,7 @@ export function buildFortress(parent,full){
                 let repeats = keyMultiplier();
                 let canBuy = true;
                 while (canBuy && repeats > 0){
-                    let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
-                    if (cost > 25000){
-                        cost = 25000;
-                    }
-                    if (global.civic.garrison.m_use > 0){
-                        cost *= 1.1 ** global.civic.garrison.m_use;
-                    }
-                    if (global.race['brute']){
-                        cost = cost / 2;
-                    }
-                    cost = Math.round(cost);
+                    let cost = mercCost();
                     if (global.civic['garrison'].workers < global.civic['garrison'].max && global.resource.Money.amount >= cost){
                         global.resource.Money.amount -= cost;
                         global.civic['garrison'].workers++;
@@ -2000,6 +2279,12 @@ export function buildFortress(parent,full){
             },
             hireLabel(){
                 return fortressData('hireLabel');
+            },
+            observation(){
+                global.settings.civTabs = $(`#mainTabs > nav ul li`).length - 1;
+                if (!global.settings.tabLoad){
+                    drawHellObservations();
+                }
             }
         },
         filters: {
@@ -2015,7 +2300,7 @@ export function buildFortress(parent,full){
                     }
                 }
                 if (global.portal.hasOwnProperty('guard_post')){
-                    stationed -= global.portal.guard_post.on;
+                    stationed -= jobScale(global.portal.guard_post.on);
                 }
                 return stationed;
             },
@@ -2038,6 +2323,15 @@ export function buildFortress(parent,full){
                 else {
                     return loc('fortress_threat_level3');
                 }
+            },
+            trainTime(r,p){
+                return r === 0 ? timeFormat(-1) : timeFormat((100 - p) / (r * 4));
+            },
+            stationed(){
+                return garrisonSize();
+            },
+            s_max(v){
+                return garrisonSize(true);
             }
         }
     });
@@ -2064,6 +2358,13 @@ export function buildFortress(parent,full){
             }
         );
     });
+    popover(`hf${id}observe`, function(){
+            return loc('hell_observation_tooltip');
+        },
+        {
+            elm: `#${id} button.observe`
+        }
+    );
 }
 
 function fortressDefenseRating(v){
@@ -2075,7 +2376,7 @@ function fortressDefenseRating(v){
         }
     }
     if (global.portal.hasOwnProperty('guard_post')){
-        army -= global.portal.guard_post.on;
+        army -= jobScale(global.portal.guard_post.on);
     }
     let wounded = 0;
     if (global.civic.garrison.wounded > global.civic.garrison.workers - global.portal.fortress.garrison){
@@ -2086,13 +2387,13 @@ function fortressDefenseRating(v){
     }
     if (p_on['war_droid']){
         let droids = p_on['war_droid'] - global.portal.fortress.patrols > 0 ? p_on['war_droid'] - global.portal.fortress.patrols : 0;
-        army += global.tech['hdroid'] ? droids * 2 : droids;
+        army += global.tech['hdroid'] ? jobScale(droids * 2) : jobScale(droids);
     }
     let turret = global.tech['turret'] ? (global.tech['turret'] >= 2 ? 70 : 50) : 35;
     return Math.round(armyRating(army,'hellArmy',wounded)) + (p_on['turret'] ? p_on['turret'] * turret : 0);
 }
 
-function casualties(demons,pat_armor,ambush){
+function casualties(demons,pat_armor,ambush,report){
     let casualties = Math.round(Math.log2((demons / global.portal.fortress.patrol_size) / (pat_armor || 1))) - Math.rand(0,pat_armor);
     let dead = 0;
     if (casualties > 0){
@@ -2102,6 +2403,13 @@ function casualties(demons,pat_armor,ambush){
         casualties = Math.rand(ambush ? 1 : 0,casualties + 1);
         dead = Math.rand(0,casualties + 1);
         let wounded = casualties - dead;
+        if (global.race['instinct']){
+            let reduction = Math.floor(dead * (traits.instinct.vars()[1] / 100));
+            dead -= reduction;
+            wounded += reduction;
+        }
+        report.wounded = wounded;
+        report.died = dead;
         global.civic.garrison.wounded += wounded;
         global.civic.garrison.workers -= dead;
         global.stats.died += dead;
@@ -2110,12 +2418,39 @@ function casualties(demons,pat_armor,ambush){
 }
 
 export function bloodwar(){
+    let day_report = {
+        start: global.portal.fortress.threat,
+        foundGems: 0,
+        stats: {
+            wounded: 0, died: 0, revived: 0, surveyors: 0, sieges: 0,
+            kills: {
+                drones: 0,
+                patrols: 0,
+                sieges: 0,
+                guns: 0,
+                soul_forge: 0,
+                turrets: 0
+            },
+            gems: {
+                patrols: 0,
+                guns: 0,
+                soul_forge: 0,
+                crafted: 0,
+                turrets: 0,
+                surveyors: 0
+            },
+        }
+    };
     let pat_armor = global.tech['armor'] ? global.tech['armor'] : 0;
     if (global.race['armored']){
-        pat_armor += traits.armored.vars[1];
+        pat_armor += traits.armored.vars()[1];
+    }
+    let torFathom = fathomCheck('tortoisan');
+    if (torFathom > 0){
+        pat_armor += Math.floor(traits.armored.vars(1)[1] * torFathom);
     }
     if (global.race['scales']){
-        pat_armor += traits.scales.vars[2];
+        pat_armor += traits.scales.vars()[2];
     }
 
     let forgeOperating = false;                    
@@ -2136,27 +2471,28 @@ export function bloodwar(){
     }
 
     // Drones
+    let drone_kills = 0;
     if (global.tech['portal'] >= 3 && p_on['war_drone']){
+        day_report.drones = {};
         for (let i=0; i<p_on['war_drone']; i++){
+            let drone_report = { encounter: false, kills: 0 };
             if (Math.rand(0,global.portal.fortress.threat) >= Math.rand(0,999)){
                 let demons = Math.rand(Math.floor(global.portal.fortress.threat / 50), Math.floor(global.portal.fortress.threat / 10));
                 let killed = global.tech.portal >= 7 ? Math.rand(50,125) : Math.rand(25,75);
-                let remain = demons - killed;
-                if (remain > 0){
-                    global.portal.fortress.threat -= demons - remain;
-                    global.stats.dkills += demons - remain;
-                    if (forgeOperating){
-                        global.portal.soul_forge.kills += demons - remain;
-                    }
+                if (demons < killed){
+                    killed = demons;
                 }
-                else {
-                    global.portal.fortress.threat -= demons;
-                    global.stats.dkills += demons;
-                    if (forgeOperating){
-                        global.portal.soul_forge.kills += demons;
-                    }
+                global.portal.fortress.threat -= killed;
+                global.stats.dkills += killed;
+                if (forgeOperating){
+                    global.portal.soul_forge.kills += killed;
+                    soulCapacitor(killed);
                 }
+                drone_report = { encounter: true, kills: killed };
+                day_report.stats.kills.drones += killed;
+                drone_kills += killed;
             }
+            day_report.drones[i+1] = drone_report;
         }
     }
 
@@ -2166,27 +2502,35 @@ export function bloodwar(){
 
     let game_base = global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 5 ? 9000 : 10000;
     let gem_chance = game_base - global.portal.fortress.pity;
-    if (global.race.universe === 'evil' && global.race.Dark.count > 1){
-        let de = global.race.Dark.count;
-        if (global.race.Harmony.count > 0){
-            de *= 1 + (global.race.Harmony.count * 0.01);
+    if (global.race.universe === 'evil' && global.prestige.Dark.count > 1){
+        let de = global.prestige.Dark.count;
+        if (global.prestige.Harmony.count > 0){
+            de *= 1 + (global.prestige.Harmony.count * 0.01);
         }
         gem_chance -= Math.round(Math.log2(de) * 2);
     }
     
     if (global.tech['portal'] >= 4 && p_on['attractor']){
-        for (let i=0; i<p_on['attractor']; i++){
-            gem_chance = Math.round(gem_chance * 0.92);
-        }
+        gem_chance = Math.round(gem_chance * (0.948 ** p_on['attractor']));
     }
+
     if (global.race['ghostly']){
-        gem_chance = Math.round(gem_chance * ((100 - traits.ghostly.vars[2]) / 100));
+        gem_chance = Math.round(gem_chance * ((100 - traits.ghostly.vars()[2]) / 100));
+    }
+
+    let wendFathom = fathomCheck('wendigo');
+    if (wendFathom > 0){
+        gem_chance = Math.round(gem_chance * ((100 - (traits.ghostly.vars(1)[2] * wendFathom)) / 100));
+    }
+
+    if (gem_chance < 12){
+        gem_chance = 12;
     }
 
     // Patrols
     let dead = 0;
     let terminators = p_on['war_droid'] ? p_on['war_droid'] : 0;
-    let failed_drop = false;
+    let has_drop = false;
     let wounded = 0;
     if (global.civic.garrison.wounded > global.civic.garrison.workers - global.portal.fortress.garrison){
         wounded = global.civic.garrison.wounded - (global.civic.garrison.workers - global.portal.fortress.garrison);
@@ -2199,78 +2543,93 @@ export function bloodwar(){
         }
     }
     let brkpnt = +(wounded % 1).toFixed(10);
+    day_report.patrols = {};
     for (let i=0; i<global.portal.fortress.patrols; i++){
+        let patrol_report = { encounter: false, droid: false, ambush: false, gem: 0, kills: 0, wounded: 0, died: 0};
         let hurt = brkpnt > (1 / global.portal.fortress.patrols * i) ? Math.ceil(wounded) : Math.floor(wounded);
         if (Math.rand(0,global.portal.fortress.threat) >= Math.rand(0,999)){
+            patrol_report.encounter = true;
             let pat_size = global.portal.fortress.patrol_size;
             if (terminators > 0){
-                pat_size += global.tech['hdroid'] ? 2 : 1;
+                patrol_report.droid = true;
+                pat_size += global.tech['hdroid'] ? jobScale(2) : jobScale(1);
                 terminators--;
             }
             let pat_rating = Math.round(armyRating(pat_size,'hellArmy',hurt));
 
             let demons = Math.rand(Math.floor(global.portal.fortress.threat / 50), Math.floor(global.portal.fortress.threat / 10));
 
-            if (global.race['frenzy']){
-                global.race['frenzy'] += Math.rand(0,Math.ceil(demons / 10));
-                if (global.race['frenzy'] > 1000000){
-                    global.race['frenzy'] = 1000000;
+            if (global.race['blood_thirst']){
+                global.race['blood_thirst_count'] += Math.rand(0,Math.ceil(demons / 10));
+                if (global.race['blood_thirst_count'] > traits.blood_thirst.vars()[0]){
+                    global.race['blood_thirst_count'] = traits.blood_thirst.vars()[0];
                 }
             }
 
-            if (Math.rand(0,global.race['chameleon'] || global.race['elusive'] ? 50 : 30) === 0){
-                dead += casualties(Math.round(demons * (1 + Math.random() * 3)),0,true);
-                let remain = demons - Math.round(pat_rating / 2);
-                if (remain > 0){
-                    global.portal.fortress.threat -= demons - remain;
-                    global.stats.dkills += demons - remain;
-                    if (forgeOperating){
-                        global.portal.soul_forge.kills += demons - remain;
-                    }
+            let odds = 30 + Math.max(global.race['chameleon'] ? traits.chameleon.vars()[1] : 0,
+                                     global.race['elusive'] ? traits.elusive.vars()[0] : 0);
+            if (Math.rand(0,odds) === 0){
+                patrol_report.ambush = true;
+                dead += casualties(Math.round(demons * (1 + Math.random() * 3)),0,true,patrol_report);
+                let killed = Math.round(pat_rating / 2);
+                if (demons < killed){
+                    killed = demons;
                 }
-                else {
-                    global.portal.fortress.threat -= demons;
-                    global.stats.dkills += demons;
-                    if (forgeOperating){
-                        global.portal.soul_forge.kills += demons;
-                    }
+                global.portal.fortress.threat -= killed;
+                global.stats.dkills += killed;
+                if (forgeOperating){
+                    global.portal.soul_forge.kills += killed;
+                    soulCapacitor(killed);
                 }
+                patrol_report.kills = killed;
             }
             else {
-                let remain = demons - pat_rating;
-                if (remain > 0){
-                    global.portal.fortress.threat -= demons - remain;
-                    global.stats.dkills += demons - remain;
-                    if (forgeOperating){
-                        global.portal.soul_forge.kills += demons - remain;
-                    }
-                    dead += casualties(remain,pat_armor,false);
+                let killed = pat_rating;
+                if (demons <= killed){
+                    killed = demons;
                 }
                 else {
-                    global.portal.fortress.threat -= demons;
-                    global.stats.dkills += demons;
-                    if (forgeOperating){
-                        global.portal.soul_forge.kills += demons;
-                    }
+                    dead += casualties(demons-killed,pat_armor,false,patrol_report);
                 }
-                if (Math.rand(0,gem_chance) === 0){
-                    global.resource.Soul_Gem.amount++;
-                    global.portal.fortress.pity = 0;
-                    if (!global.resource.Soul_Gem.display){
-                        global.resource.Soul_Gem.display = true;
-                        messageQueue(loc('portal_first_gem'),'info');
-                    }
+                patrol_report.kills = killed;
+                global.portal.fortress.threat -= killed;
+                global.stats.dkills += killed;
+                if (forgeOperating){
+                    global.portal.soul_forge.kills += killed;
+                    soulCapacitor(killed);
                 }
-                else {
-                    failed_drop = true;
+                if (killed > 0){
+                    let div = 35 - Math.floor(p_on['attractor'] / 3);
+                    if (div < 5){ div = 5; }
+                    let chances = Math.round(killed / div);
+                    for (let j=0; j<chances; j++){
+                        if (Math.rand(0,gem_chance) === 0){
+                            patrol_report.gem++;
+                            day_report.stats.gems.patrols++;
+                            global.resource.Soul_Gem.amount++;
+                            global.portal.fortress.pity = 0;
+                            if (!global.resource.Soul_Gem.display){
+                                global.resource.Soul_Gem.display = true;
+                                messageQueue(loc('portal_first_gem'),'info',false,['progress','hell']);
+                            }
+                            has_drop = true;
+                        }
+                    }
                 }
             }
+                
+            day_report.stats.kills.patrols += patrol_report.kills;
+            day_report.stats.wounded += patrol_report.wounded;
+            day_report.stats.died += patrol_report.died;
         }
+        day_report.patrols[i+1] = patrol_report;
     }
 
     let revive = 0;
     if (global.race['revive']){
-        revive = Math.round(Math.seededRandom(0,(dead / 3) + 0.25));
+        revive = Math.round(Math.rand(0,(dead / traits.revive.vars()[6]) + 0.25));
+        day_report.revived = revive;
+        day_report.stats.revived = revive;
         global.civic.garrison.workers += revive;
     }
 
@@ -2278,24 +2637,23 @@ export function bloodwar(){
     if (global.civic.garrison.wounded > global.civic.garrison.workers){
         global.civic.garrison.wounded = global.civic.garrison.workers;
     }
-    if (global.civic.garrison.workers < global.portal.fortress.garrison){
-        global.portal.fortress.garrison = global.civic.garrison.workers;
+    let garrison_size = global.portal.fortress.nocrew ? global.civic.garrison.workers - global.civic.garrison.crew : global.civic.garrison.workers;
+    if (garrison_size < global.portal.fortress.garrison){
+        global.portal.fortress.garrison = garrison_size;
     }
     if (global.portal.fortress.garrison < global.portal.fortress.patrols * global.portal.fortress.patrol_size){
+        let patrol_start = global.portal.fortress.patrols;
         global.portal.fortress.patrols = Math.floor(global.portal.fortress.garrison / global.portal.fortress.patrol_size);
+        day_report.patrols_lost = patrol_start - global.portal.fortress.patrols;
     }
 
     if (dead > 0 && global.portal.fortress.notify === 'Yes'){
         if (revive > 0){
-            messageQueue(loc('fortress_patrol_casualties_revive',[dead,revive]));
+            messageQueue(loc('fortress_patrol_casualties_revive',[dead,revive]),false,false,['hell']);
         }
         else {
-            messageQueue(loc('fortress_patrol_casualties',[dead]));
+            messageQueue(loc('fortress_patrol_casualties',[dead]),false,false,['hell']);
         }
-    }
-    
-    if (failed_drop && global.portal.fortress.pity < 10000){
-        global.portal.fortress.pity++;
     }
 
     // Siege Chance
@@ -2303,6 +2661,7 @@ export function bloodwar(){
         global.portal.fortress.siege--;
     }
     if (global.portal.fortress.siege <= 900 && global.portal.fortress.garrison > 0 && 1 > Math.rand(0,global.portal.fortress.siege)){
+        let siege_report = { destroyed: false, damage: 0, kills: 0, surveyors: 0, soldiers: 0};
         let defense = fortressDefenseRating(global.portal.fortress.garrison);
         let defend = defense / 35 > 1 ? defense / 35 : 1;
         let siege = Math.round(global.portal.fortress.threat / 2);
@@ -2320,24 +2679,32 @@ export function bloodwar(){
             global.stats.dkills += terminated;
             if (forgeOperating){
                 global.portal.soul_forge.kills += terminated;
+                soulCapacitor(terminated);
             }
             killed += terminated;
             if (siege > 0){
                 damage++;
                 global.portal.fortress.walls--;
                 if (global.portal.fortress.walls === 0){
+                    siege_report.destroyed = true;
                     destroyed = true;
                     break;
                 }
             }
         }
-
+        siege_report.damage = damage;
+        siege_report.kills = killed;
+        day_report.stats.kills.sieges = killed;
+        
         if (destroyed){
-            messageQueue(loc('fortress_lost'));
+            messageQueue(loc('fortress_lost'),false,false,['hell']);
+            siege_report.surveyors = global.civic.hell_surveyor.workers;
             global.resource[global.race.species].amount -= global.civic.hell_surveyor.workers;
             global.civic.hell_surveyor.workers = 0;
             global.civic.hell_surveyor.assigned = 0;
 
+            siege_report.soldiers = global.portal.fortress.garrison;
+            day_report.stats.died += global.portal.fortress.garrison;
             global.portal.fortress.patrols = 0;
             global.stats.died += global.portal.fortress.garrison;
             global.civic.garrison.workers -= global.portal.fortress.garrison;
@@ -2345,10 +2712,12 @@ export function bloodwar(){
             global.portal.fortress['assigned'] = 0;
         }
         else {
-            messageQueue(loc('fortress_sieged',[killed,damage]));
+            messageQueue(loc('fortress_sieged',[killed,damage]),false,false,['hell']);
         }
 
         global.portal.fortress.siege = 999;
+        day_report.stats.sieges++;
+        day_report.siege = siege_report;
     }
 
     if (global.portal.fortress.threat < 10000){
@@ -2356,61 +2725,134 @@ export function bloodwar(){
         if (global.tech['portal'] >= 4 && p_on['attractor']){
             influx *= 1 + (p_on['attractor'] * 0.22);
         }
-        global.portal.fortress.threat += Math.rand(Math.round(10 * influx),Math.round(50 * influx));
+        let demon_spawn = Math.rand(Math.round(10 * influx),Math.round(50 * influx));
+        global.portal.fortress.threat += demon_spawn;
+        day_report.demons = demon_spawn;
     }
 
     // Surveyor threats
     if (global.civic.hell_surveyor.display && global.civic.hell_surveyor.workers > 0){
         let divisor = 1000;
+        let painVal = govActive('nopain',1);
+        if (painVal){
+            divisor *= 1 + (painVal / 100);
+        }
         if (global.race['blurry']){
-            divisor *= 1 + (traits.blurry.vars[0] / 100);
+            divisor *= 1 + (traits.blurry.vars()[0] / 100);
+        }
+        let fathom = fathomCheck('yeti');
+        if (fathom > 0){
+            divisor *= 1 + (traits.blurry.vars(1)[0] / 100 * fathom);
+        }
+        if (global.race['instinct']){
+            divisor *= 1 + (traits.instinct.vars()[0] / 100);
         }
         if (global.tech['infernite'] && global.tech.infernite >= 5){
             divisor += 250;
         }
-        let danger = global.portal.fortress.threat / divisor;
-        let exposure = global.civic.hell_surveyor.workers > 10 ? 10 : global.civic.hell_surveyor.workers;
-        let risk = 10 - (Math.rand(0,exposure + 1));
+        // Higher danger increases both chance of death and average number of deaths, with no limit
+        let danger = jobScale(global.portal.fortress.threat / divisor);
+
+        // Higher exposure increases only chance of death, up to a limit
+        let max_risk = jobScale(10);
+        let exposure = Math.min(max_risk, global.civic.hell_surveyor.workers);
+        let risk = max_risk - Math.rand(0,exposure + 1);
 
         if (danger > risk){
             let cap = Math.round(danger);
-            let dead = Math.rand(0,cap + 1);
-            if (dead > global.civic.hell_surveyor.workers){
-                dead = global.civic.hell_surveyor.workers;
-            }
-            if (dead === 1 && global.portal.fortress.s_ntfy === 'Yes'){
-                messageQueue(loc('fortress_killed'));
-            }
-            else if (dead > 1 && global.portal.fortress.s_ntfy === 'Yes'){
-                messageQueue(loc('fortress_eviscerated',[dead]));
-            }
+            let dead = Math.rand(0,cap + 1); // +1 for inclusive cap
             if (dead > 0){
+                if (dead > global.civic.hell_surveyor.workers){
+                    dead = global.civic.hell_surveyor.workers;
+                }
+                if (global.portal.fortress.s_ntfy === 'Yes'){
+                    if (dead === 1){
+                        messageQueue(loc('fortress_killed'),false,false,['hell']);
+                    }
+                    else {
+                        messageQueue(loc('fortress_eviscerated',[dead]),false,false,['hell']);
+                    }
+                }
+                day_report.surveyors = dead;
+                day_report.stats.surveyors = dead;
                 global.civic.hell_surveyor.workers -= dead;
+                global.civic.hell_surveyor.max -= dead;
                 global.resource[global.race.species].amount -= dead;
                 global.portal.carport.damaged += dead;
             }
         }
+
+        day_report.surveyor_finds = {};
+        if (global.civic.hell_surveyor.workers > 0 && drone_kills > 0){
+            let drone_kills_left = drone_kills;
+            for (let i=0; i<global.civic.hell_surveyor.workers; i++){
+                let surv_report = { gem: 0, bodies: 0 };
+                // Avoid rounding error in total number of drone kills to distribute
+                let max_search_chance = Math.round(drone_kills_left / (global.civic.hell_surveyor.workers - i));
+                let min_search_chance = Math.round(max_search_chance / 2);
+                drone_kills_left -= max_search_chance;
+
+                // Each surveyor may search from 50% to 100% of 1 equal share of drone kills
+                let searched = Math.rand(min_search_chance, max_search_chance+1);
+                // Limit to 100 bodies per surveyor
+                let search_limit = highPopAdjust(100);
+                if (searched > search_limit){ searched = search_limit; }
+                surv_report.bodies = searched;
+                if (searched > 0){
+                    let div = 25 - Math.floor(p_on['attractor'] / 5);
+                    if (div < 5){ div = 5; }
+                    let chances = Math.round(searched / div);
+                    for (let j=0; j<chances; j++){
+                        if (Math.rand(0,gem_chance) === 0){
+                            surv_report.gem++;
+                            day_report.stats.gems.surveyors++;
+                            global.resource.Soul_Gem.amount++;
+                            global.portal.fortress.pity = 0;
+                            if (!global.resource.Soul_Gem.display){
+                                global.resource.Soul_Gem.display = true;
+                                messageQueue(loc('portal_first_gem'),'info',false,['progress','hell']);
+                            }
+                            has_drop = true;
+                        }
+                    }
+                }
+                day_report.surveyor_finds[i+1] = surv_report;
+            }
+        } 
+    }
+
+    if (!has_drop && global.portal.fortress.pity < 10000){
+        global.portal.fortress.pity++;
     }
 
     if (global.stats.dkills >= 1000000 && global.tech['gateway'] && !global.tech['hell_pit']){
         global.tech['hell_pit'] = 1;
         global.settings.portal.pit = true;
-        messageQueue(loc('portal_hell_pit_found'),'info');
+        messageQueue(loc('portal_hell_pit_found'),'info',false,['progress','hell']);
         renderFortress();
     }
 
     if (global.tech['hell_pit']){
         if (forgeOperating && global.tech.hell_pit >= 5 && p_on['soul_attractor']){
             let attact = global.blood['attract'] ? global.blood.attract * 5 : 0;
-            global.portal.soul_forge.kills += p_on['soul_attractor'] * Math.rand(40 + attact, 120 + attact);
+            let souls = p_on['soul_attractor'] * Math.rand(40 + attact, 120 + attact);
+            global.portal.soul_forge.kills += souls;
+            day_report.soul_attractors = souls;
+            soulCapacitor(souls);
         }
 
         if (forgeOperating && global.tech['hell_gun'] && p_on['gun_emplacement']){
+            day_report.gun_emplacements = {};
             let gunKills = 0;
             for (let i=0; i<p_on['gun_emplacement']; i++){
-                gunKills += global.tech.hell_gun >= 2 ? Math.rand(35,75) : Math.rand(20,40);
+                day_report.gun_emplacements[i+1] = { kills: 0, gem: false };
+                let kills = global.tech.hell_gun >= 2 ? Math.rand(35,75) : Math.rand(20,40);
+                gunKills += kills;
+                day_report.gun_emplacements[i+1].kills = kills;
             }
+            day_report.stats.kills.guns = gunKills;
             global.portal.soul_forge.kills += gunKills;
+            soulCapacitor(gunKills);
             global.stats.dkills += gunKills;
             let gun_base = global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 5 ? 6750 : 7500;
             if (global.tech.hell_pit >= 7 && p_on['soul_attractor'] > 0){
@@ -2418,17 +2860,25 @@ export function bloodwar(){
             }
             for (let i=0; i<p_on['gun_emplacement']; i++){
                 if (Math.rand(0,Math.round(gun_base)) === 0){
+                    day_report.gun_emplacements[i+1].gem = true;
+                    day_report.stats.gems.guns++;
                     global.resource.Soul_Gem.amount++;
                 }
             }
         }
 
         if (forgeOperating){
+            day_report.soul_forge = { kills: 0, gem: false, gem_craft: false, corrupt: false };
             let forgeKills = Math.rand(25,150);
+            day_report.stats.kills.soul_forge = forgeKills;
+            day_report.soul_forge.kills = forgeKills;
             global.stats.dkills += forgeKills;
             global.portal.soul_forge.kills += forgeKills;
+            soulCapacitor(forgeKills);
             let forge_base = global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 5 ? 4500 : 5000;
             if (Math.rand(0,forge_base) === 0){
+                day_report.soul_forge.gem = true;
+                day_report.stats.gems.soul_forge++;
                 global.resource.Soul_Gem.amount++;
             }
         }
@@ -2438,50 +2888,111 @@ export function bloodwar(){
             cap *= 0.97 ** p_on['soul_attractor'];
         }
         if (forgeOperating && global.portal.soul_forge.kills >= Math.round(cap)){
+            day_report.soul_forge.gem_craft = true;
             global.portal.soul_forge.kills = 0;
             let c_max = 10 - p_on['soul_attractor'] > 0 ? 10 - p_on['soul_attractor'] : 1;
             if (global.tech.high_tech >= 16 && !global.tech['corrupt'] && Math.rand(0,c_max + 1) === 0){
+                day_report.soul_forge.corrupt = true;
                 global.resource.Corrupt_Gem.amount++;                  
                 global.resource.Corrupt_Gem.display = true;
-                messageQueue(loc('portal_corrupt_gem'),'info');
+                messageQueue(loc('portal_corrupt_gem'),'info',false,['progress','hell']);
                 global.tech['corrupt'] = 1;
                 drawTech();
             }
             else {
                 global.resource.Soul_Gem.amount++;
+                day_report.stats.gems.crafted++;
             }
         }
     }
 
-    if (global.tech['gate_turret']){
+    if (global.tech['hell_gate'] && global.tech['hell_gate'] >= 3){
         if (forgeOperating && p_on['gate_turret']){
+            day_report.gate_turrets = {};
             let gunKills = 0;
             let min = global.tech.hell_gun >= 2 ? 65 : 40;
             let max = global.tech.hell_gun >= 2 ? 100 : 60;
             for (let i=0; i<p_on['gate_turret']; i++){
-                gunKills += Math.rand(min,max);
+                day_report.gate_turrets[i+1] = { kills: 0, gem: false };
+                let kills = Math.rand(min,max);
+                gunKills += kills;
+                day_report.gate_turrets[i+1].kills = kills;
             }
+            day_report.stats.kills.turrets = gunKills;
             global.portal.soul_forge.kills += gunKills;
+            soulCapacitor(gunKills);
             global.stats.dkills += gunKills;
             let gun_base = global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 5 ? 2700 : 3000;
             for (let i=0; i<p_on['gate_turret']; i++){
                 if (Math.rand(0,Math.round(gun_base)) === 0){
+                    day_report.gate_turrets[i+1].gem = true;
+                    day_report.stats.gems.turrets++;
                     global.resource.Soul_Gem.amount++;
                 }
             }
         }
     }
+    
+    global.portal.observe.stats.total.days++;
+    global.portal.observe.stats.period.days++;
+    Object.keys(day_report.stats).forEach(function(stat){
+        if (['kills','gems'].includes(stat)){
+            Object.keys(day_report.stats[stat]).forEach(function(subStat){
+                if (stat === 'gems' && day_report.stats[stat][subStat]){
+                    day_report.foundGems += day_report.stats[stat][subStat];
+                }
+                global.portal.observe.stats.total[stat][subStat] += day_report.stats[stat][subStat];
+                global.portal.observe.stats.period[stat][subStat] += day_report.stats[stat][subStat];
+            });
+        }
+        else {
+            global.portal.observe.stats.total[stat] += day_report.stats[stat];
+            global.portal.observe.stats.period[stat] += day_report.stats[stat];
+        }
+    });
+    if (!hell_reports[`year-${global.city.calendar.year}`]){
+        hell_reports[`year-${global.city.calendar.year}`] = {};
+    }
+    hell_reports[`year-${global.city.calendar.year}`][`day-${global.city.calendar.day}`] = day_report;
+    
+    purgeReports();
+    
+    Object.keys(global.portal.observe.graphs).forEach(function (id){
+        if (!!document.getElementById(global.portal.observe.graphs[id].chartID)){
+            let newData = [];
+            hell_graphs[id].data.forEach(function (dataPoint){
+                newData.push(dataPoint.length === 3 ? global.portal.observe.stats[dataPoint[0]][dataPoint[1]][dataPoint[2]] : global.portal.observe.stats[dataPoint[0]][dataPoint[1]]);
+            });
+            hell_graphs[id].graph.data.datasets[0].data = newData;
+            hell_graphs[id].graph.update();
+        }
+    });
 }
 
-export function hellSupression(area, val){
+function soulCapacitor(souls){
+    if (global.race['witch_hunter'] && global.portal.hasOwnProperty('soul_capacitor') && p_on['soul_capacitor'] > 0){
+        global.portal.soul_capacitor.energy += souls;
+        if (global.portal.soul_capacitor.energy > global.portal.soul_capacitor.ecap){
+            global.portal.soul_capacitor.energy = global.portal.soul_capacitor.ecap;
+        }
+    }
+}
+
+export function hellSupression(area, val, wiki){
+    // It might be nice to set suppression to 100% in the wiki before unlocking the ruins
     switch (area){
         case 'ruins':
             {
-                let army = val || p_on['guard_post'];
-                let arc = (p_on['arcology'] || 0) * 75;
+                let guard_posts_on = wiki ? (global.portal?.guard_post?.on ?? 0) : p_on['guard_post'];
+                let army = val || jobScale(guard_posts_on);
+                let arc = (wiki ? (global.portal?.arcology?.on ?? 0) : p_on['arcology']) * 75;
                 let aRating = armyRating(army,'hellArmy',0);
                 if (global.race['holy']){
-                    aRating *= 1 + (traits.holy.vars[1] / 100);
+                    aRating *= 1 + (traits.holy.vars()[1] / 100);
+                }
+                let unicornFathom = fathomCheck('unicorn');
+                if (unicornFathom > 0){
+                    aRating *= 1 + (traits.holy.vars(1)[1] / 100 * unicornFathom);
                 }
                 let supress = (aRating + arc) / 5000;
                 return {
@@ -2491,10 +3002,14 @@ export function hellSupression(area, val){
             }
         case 'gate':
             {
-                let gSup = hellSupression('ruins',val);
-                let turret = (p_on['gate_turret'] || 0) * 100;
+                let gSup = hellSupression('ruins',val,wiki);
+                let turret = (wiki ? (global.portal?.gate_turret?.on ?? 0) : p_on['gate_turret']) * 100;
                 if (global.race['holy']){
-                    turret *= 1 + (traits.holy.vars[1] / 100);
+                    turret *= 1 + (traits.holy.vars()[1] / 100);
+                }
+                let unicornFathom = fathomCheck('unicorn');
+                if (unicornFathom > 0){
+                    turret *= 1 + (traits.holy.vars(1)[1] / 100 * unicornFathom);
                 }
                 let supress = (gSup.rating + turret) / 7500;
                 return {
@@ -3091,6 +3606,65 @@ export const monsters = {
     }
 };
 
+export function mechCost(size,infernal){
+    let soul = 9999;
+    let cost = 10000000;
+    switch (size){
+        case 'small':
+            {
+                let baseCost = global.blood['prepared'] && global.blood.prepared >= 2 ? 50000 : 75000;
+                cost = infernal ? baseCost * 2.5 : baseCost;
+                soul = infernal ? 20 : 1;
+            }
+            break;
+        case 'medium':
+            {
+                cost = infernal ? 450000 : 180000;
+                soul = infernal ? 100 : 4;
+            }
+            break;
+        case 'large':
+            {
+                cost = infernal ? 925000 : 375000;
+                soul = infernal ? 500 : 20;
+            }
+            break;
+        case 'titan':
+            {
+                cost = infernal ? 1500000 : 750000;
+                soul = infernal ? 1500 : 75;
+            }
+            break;
+        case 'collector':
+            {
+                let baseCost = global.blood['prepared'] && global.blood.prepared >= 2 ? 8000 : 10000;
+                cost = infernal ? baseCost * 2.5 : baseCost;
+                soul = 1;
+            }
+            break;
+    }
+    return { s: soul, c: cost };
+};
+
+function bossResists(boss){
+    let weak = `laser`;
+    let resist = `laser`;
+    
+    Object.keys(monsters[boss].weapon).forEach(function(weapon){
+        if (monsters[boss].weapon[weapon] > monsters[boss].weapon[weak]){
+            weak = weapon;
+        }
+        if (monsters[boss].weapon[weapon] < monsters[boss].weapon[resist]){
+            resist = weapon;
+        }
+    });
+    if (weak === resist){
+        weak = 'none';
+        resist = 'none';
+    }
+    return { w: weak, r: resist };
+}
+
 export function drawMechLab(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 4)){
         return;
@@ -3104,7 +3678,8 @@ export function drawMechLab(){
                 size: 'small',
                 hardpoint: ['laser'],
                 chassis: 'tread',
-                equip: []
+                equip: [],
+                infernal: false
             };
         }
 
@@ -3117,18 +3692,19 @@ export function drawMechLab(){
         title.append(` | <span><span class="has-text-warning">${loc('portal_mech_bay_space')}</span>: {{ m.bay }} / {{ m.max }}</span>`);
         title.append(` | <span><span class="has-text-warning">${loc('portal_mech_sup_avail')}</span>: {{ p.supply | round }} / {{ p.sup_max }}</span>`);
 
-        assemble.append(`<div><span class="has-text-warning">${loc(`portal_mech_space`)}</span> <span class="has-text-danger">{{ b.size | bay }}</span> | <span class="has-text-warning">${loc(`portal_mech_cost`)}</span> <span class="has-text-danger">{{ b.size | price }}</span> | <span class="has-text-warning">${loc(`portal_mech_soul`,[global.resource.Soul_Gem.name])}</span> <span class="has-text-danger">{{ b.size | soul }}</span></div>`)
+        let infernal = global.blood['prepared'] && global.blood.prepared >= 3 ? `<b-checkbox class="patrol" v-model="b.infernal">${loc('portal_mech_infernal')} (${loc('portal_mech_infernal_effect',[25])})</b-checkbox>` : ``;
+        assemble.append(`<div><span class="has-text-warning">${loc(`portal_mech_space`)}</span> <span class="has-text-danger">{{ b.size | bay }}</span> | <span class="has-text-warning">${loc(`portal_mech_cost`)}</span> <span class="has-text-danger">{{ b.size | price }}</span> | <span class="has-text-warning">${loc(`portal_mech_soul`,[global.resource.Soul_Gem.name])}</span> <span class="has-text-danger">{{ b.size | soul }}</span>${infernal}</div>`)
         assemble.append(`<div>{{ b.size | desc }}</div>`);
 
         let options = $(`<div class="bayOptions"></div>`);
         assemble.append(options);
 
         let sizes = ``;
-        ['small','medium','large','titan'].forEach(function(size){
-            sizes += `<b-dropdown-item aria-role="listitem" v-on:click="setSize('${size}')" class="size r0" data-val="${size}">${loc(`portal_mech_size_${size}`)}</b-dropdown-item>`;
+        ['small','medium','large','titan','collector'].forEach(function(size,idx){
+            sizes += `<b-dropdown-item aria-role="listitem" v-on:click="setSize('${size}')" class="size r0 a${idx}" data-val="${size}">${loc(`portal_mech_size_${size}`)}</b-dropdown-item>`;
         });
 
-        options.append(`<b-dropdown :triggers="['hover']" aria-role="list">
+        options.append(`<b-dropdown :triggers="['hover', 'click']" aria-role="list">
             <button class="button is-info" slot="trigger">
                 <span>${loc(`portal_mech_size`)}: {{ b.size | slabel }}</span>
                 <b-icon icon="menu-down"></b-icon>
@@ -3136,24 +3712,24 @@ export function drawMechLab(){
         </b-dropdown>`);
 
         let chassis = ``;
-        ['wheel','tread','biped','quad','spider','hover'].forEach(function(val){
-            chassis += `<b-dropdown-item aria-role="listitem" v-on:click="setType('${val}')" class="chassis r0" data-val="${val}">${loc(`portal_mech_chassis_${val}`)}</b-dropdown-item>`;
+        ['wheel','tread','biped','quad','spider','hover'].forEach(function(val,idx){
+            chassis += `<b-dropdown-item aria-role="listitem" v-on:click="setType('${val}')" class="chassis r0 a${idx}" data-val="${val}">${loc(`portal_mech_chassis_${val}`)}</b-dropdown-item>`;
         });
 
-        options.append(`<b-dropdown :triggers="['hover']" aria-role="list">
+        options.append(`<b-dropdown :triggers="['hover', 'click']" aria-role="list">
             <button class="button is-info" slot="trigger">
                 <span>${loc(`portal_mech_type`)}: {{ b.chassis | clabel }}</span>
                 <b-icon icon="menu-down"></b-icon>
             </button>${chassis}
         </b-dropdown>`);
 
-        for (let i=0; i<2; i++){
+        for (let i=0; i<4; i++){
             let weapons = ``;
-            ['laser','kinetic','shotgun','missile','flame','plasma','sonic','tesla'].forEach(function(val){
-                weapons += `<b-dropdown-item aria-role="listitem" v-on:click="setWep('${val}',${i})" class="weapon r${i}" data-val="${val}">${loc(`portal_mech_weapon_${val}`)}</b-dropdown-item>`;
+            ['laser','kinetic','shotgun','missile','flame','plasma','sonic','tesla'].forEach(function(val,idx){
+                weapons += `<b-dropdown-item aria-role="listitem" v-on:click="setWep('${val}',${i})" class="weapon r${i} a${idx}" data-val="${val}">${loc(`portal_mech_weapon_${val}`)}</b-dropdown-item>`;
             });
 
-            options.append(`<b-dropdown :triggers="['hover']" aria-role="list" v-show="vis(${i})">
+            options.append(`<b-dropdown :triggers="['hover', 'click']" aria-role="list" v-show="vis(${i})">
                 <button class="button is-info" slot="trigger">
                     <span>${loc(`portal_mech_weapon`)}: {{ b.hardpoint[${i}] || 'laser' | wlabel }}</span>
                     <b-icon icon="menu-down"></b-icon>
@@ -3161,16 +3737,16 @@ export function drawMechLab(){
             </b-dropdown>`);
         }
 
-        let e_cap = global.blood['prepared'] ? 4 : 3;
+        let e_cap = global.blood['prepared'] ? 5 : 4;
         for (let i=0; i<e_cap; i++){
             let equip = ``;
-            ['shields','sonar','grapple','infrared','flare','radiator','coolant','ablative','stabilizer','seals'].forEach(function(val){
-                equip += `<b-dropdown-item aria-role="listitem" v-on:click="setEquip('${val}',${i})" class="equip r${i}" data-val="${val}">${loc(`portal_mech_equip_${val}`)}</b-dropdown-item>`;
+            ['special','shields','sonar','grapple','infrared','flare','radiator','coolant','ablative','stabilizer','seals'].forEach(function(val,idx){
+                equip += `<b-dropdown-item aria-role="listitem" v-on:click="setEquip('${val}',${i})" class="equip r${i} a${idx}" data-val="${val}">{{ '${val}' | equipment }}</b-dropdown-item>`;
             });
 
-            options.append(`<b-dropdown :triggers="['hover']" aria-role="list" v-show="eVis(${i})">
+            options.append(`<b-dropdown :triggers="['hover', 'click']" aria-role="list" v-show="eVis(${i})">
                 <button class="button is-info" slot="trigger">
-                    <span>${loc(`portal_mech_equipment`)}: {{ b.equip[${i}] || 'shields' | elabel }}</span>
+                    <span>${loc(`portal_mech_equipment`)}: {{ b.equip[${i}] || 'shields' | equipment }}</span>
                     <b-icon icon="menu-down"></b-icon>
                 </button>${equip}
             </b-dropdown>`);
@@ -3187,31 +3763,11 @@ export function drawMechLab(){
             },
             methods: {
                 build(){
-                    let cost = 10000000;
-                    let size = 25;
-                    let soul = 10;
-                    switch (global.portal.mechbay.blueprint.size){
-                        case 'small':
-                            cost = global.blood['prepared'] && global.blood.prepared >= 2 ? 50000 : 75000;
-                            size = mechSize('small');
-                            soul = 1;
-                            break;
-                        case 'medium':
-                            cost = 180000;
-                            size = mechSize('medium');
-                            soul = 2;
-                            break;
-                        case 'large':
-                            cost = 375000;
-                            size = mechSize('large');
-                            soul = 5;
-                            break;
-                        case 'titan':
-                            cost = 750000;
-                            size = mechSize('titan');
-                            soul = 10;
-                            break;
-                    }
+                    let costs = mechCost(global.portal.mechbay.blueprint.size,global.portal.mechbay.blueprint.infernal);
+
+                    let cost = costs.c;
+                    let soul = costs.s;
+                    let size = mechSize(global.portal.mechbay.blueprint.size);
 
                     let avail = global.portal.mechbay.max - global.portal.mechbay.bay;
                     if (global.portal.purifier.supply >= cost && avail >= size && global.resource.Soul_Gem.amount >= soul){
@@ -3220,61 +3776,83 @@ export function drawMechLab(){
                         let mech = deepClone(global.portal.mechbay.blueprint);
                         global.portal.mechbay.mechs.push(mech);
                         global.portal.mechbay.bay += size;
-                        drawMechs();
+                        global.portal.mechbay.active++;
                     }
                 },
                 setSize(s){
                     global.portal.mechbay.blueprint.size = s;
-                    if (s === 'small' || s === 'medium'){
+                    if (s === 'collector'){
+                        global.portal.mechbay.blueprint.hardpoint.length = 0;
+                    }
+                    else if (s === 'small' || s === 'medium'){
+                        if (global.portal.mechbay.blueprint.hardpoint.length === 0){
+                            global.portal.mechbay.blueprint.hardpoint.push('laser');
+                        }
                         global.portal.mechbay.blueprint.hardpoint.length = 1;
                     }
                     else {
+                        if (global.portal.mechbay.blueprint.hardpoint.length === 0){
+                            global.portal.mechbay.blueprint.hardpoint.push('laser');
+                        }
                         if (global.portal.mechbay.blueprint.hardpoint.length === 1){
-                            global.portal.mechbay.blueprint.hardpoint.push(global.portal.mechbay.blueprint.hardpoint[0]);
+                            global.portal.mechbay.blueprint.hardpoint.push(global.portal.mechbay.blueprint.hardpoint.includes('laser') ? 'plasma' : 'laser');
+                        }
+                        if (s === 'titan'){
+                            if (global.portal.mechbay.blueprint.hardpoint.length === 2){
+                                global.portal.mechbay.blueprint.hardpoint.push(global.portal.mechbay.blueprint.hardpoint.includes('laser')  ? 'shotgun' : 'laser');
+                                global.portal.mechbay.blueprint.hardpoint.push(global.portal.mechbay.blueprint.hardpoint.includes('laser')  ? 'kinetic' : 'laser');
+                            }
+                        }
+                        else {
+                            global.portal.mechbay.blueprint.hardpoint.length = 2;
                         }
                     }
                     switch (s){
                         case 'small':
                             if (global.blood['prepared']){
-                                global.portal.mechbay.blueprint.equip.push('infrared');
+                                global.portal.mechbay.blueprint.equip.push('special');
                             }
                             global.portal.mechbay.blueprint.equip.length = global.blood['prepared'] ? 1 : 0;
                             break;
                         case 'medium':
                             if (global.portal.mechbay.blueprint.equip.length < 1){
-                                global.portal.mechbay.blueprint.equip.push('shields');
+                                global.portal.mechbay.blueprint.equip.push('special');
                             }
                             if (global.blood['prepared']){
-                                global.portal.mechbay.blueprint.equip.push('infrared');
+                                global.portal.mechbay.blueprint.equip.push('shields');
                             }
                             global.portal.mechbay.blueprint.equip.length = global.blood['prepared'] ? 2 : 1;
                             break;
+                        case 'collector':
                         case 'large':
                             if (global.portal.mechbay.blueprint.equip.length < 1){
-                                global.portal.mechbay.blueprint.equip.push('shields');
+                                global.portal.mechbay.blueprint.equip.push('special');
                             }
                             if (global.portal.mechbay.blueprint.equip.length < 2){
-                                global.portal.mechbay.blueprint.equip.push('sonar');
+                                global.portal.mechbay.blueprint.equip.push('shields');
                             }
                             if (global.blood['prepared']){
-                                global.portal.mechbay.blueprint.equip.push('infrared');
+                                global.portal.mechbay.blueprint.equip.push('grapple');
                             }
                             global.portal.mechbay.blueprint.equip.length = global.blood['prepared'] ? 3 : 2;
                             break;
                         case 'titan':
                             if (global.portal.mechbay.blueprint.equip.length < 1){
-                                global.portal.mechbay.blueprint.equip.push('shields');
+                                global.portal.mechbay.blueprint.equip.push('special');
                             }
                             if (global.portal.mechbay.blueprint.equip.length < 2){
-                                global.portal.mechbay.blueprint.equip.push('sonar');
+                                global.portal.mechbay.blueprint.equip.push('shields');
                             }
                             if (global.portal.mechbay.blueprint.equip.length < 3){
                                 global.portal.mechbay.blueprint.equip.push('grapple');
                             }
-                            if (global.blood['prepared']){
-                                global.portal.mechbay.blueprint.equip.push('infrared');
+                            if (global.portal.mechbay.blueprint.equip.length < 4){
+                                global.portal.mechbay.blueprint.equip.push('seals');
                             }
-                            global.portal.mechbay.blueprint.equip.length = global.blood['prepared'] ? 4 : 3;
+                            if (global.blood['prepared']){
+                                global.portal.mechbay.blueprint.equip.push('stabilizer');
+                            }
+                            global.portal.mechbay.blueprint.equip.length = global.blood['prepared'] ? 5 : 4;
                             break;
                     }
                 },
@@ -3290,7 +3868,10 @@ export function drawMechLab(){
                     vBind({el: `#mechAssembly`},'update');
                 },
                 vis(hp){
-                    if (hp === 0 || global.portal.mechbay.blueprint.size === 'large' || global.portal.mechbay.blueprint.size === 'titan'){
+                    if (global.portal.mechbay.blueprint.size === 'collector'){
+                        return false;
+                    }
+                    if (hp === 0 || (global.portal.mechbay.blueprint.size === 'large' && hp < 2) || global.portal.mechbay.blueprint.size === 'titan'){
                         return true;
                     }
                     return false;
@@ -3302,6 +3883,7 @@ export function drawMechLab(){
                             return prep === 1 && es === 0 ? true : false;
                         case 'medium':
                             return es <= (0 + prep) ? true : false;
+                        case 'collector':
                         case 'large':
                             return es <= (1 + prep) ? true : false;
                         case 'titan':
@@ -3314,28 +3896,12 @@ export function drawMechLab(){
                     return mechSize(s);
                 },
                 price(s){
-                    switch (s){
-                        case 'small':
-                            return global.blood['prepared'] && global.blood.prepared >= 2 ? 50000 : 75000;
-                        case 'medium':
-                            return 180000;
-                        case 'large':
-                            return 375000;
-                        case 'titan':
-                            return 750000;
-                    }
+                    let costs = mechCost(s,global.portal.mechbay.blueprint.infernal);
+                    return costs.c;
                 },
                 soul(s){
-                    switch (s){
-                        case 'small':
-                            return 1
-                        case 'medium':
-                            return 2;
-                        case 'large':
-                            return 5;
-                        case 'titan':
-                            return 10;
-                    }
+                    let costs = mechCost(s,global.portal.mechbay.blueprint.infernal);
+                    return costs.s;
                 },
                 slabel(s){
                     return loc(`portal_mech_size_${s}`);
@@ -3346,14 +3912,26 @@ export function drawMechLab(){
                 wlabel(w){
                     return loc(`portal_mech_weapon_${w}`);
                 },
-                elabel(e){
-                    return loc(`portal_mech_equip_${e}`);
-                },
                 desc(s){
                     return loc(`portal_mech_size_${s}_desc`);
                 },
                 round(v){
                     return Math.round(v);
+                },
+                equipment(e){
+                    if (e !== 'special'){
+                        return loc(`portal_mech_equip_${e}`);
+                    }
+                    let type = 'jumpjet';
+                    switch (global.portal.mechbay.blueprint.size){
+                        case 'large':
+                            type = 'battery';
+                            break;
+                        case 'titan':
+                            type = 'target';
+                            break;
+                    }
+                    return loc(`portal_mech_equip_${type}`);
                 }
             }
         });
@@ -3361,29 +3939,36 @@ export function drawMechLab(){
         ['size','chassis','weapon','equip'].forEach(function(type){
             let range = 1;
             if (type === 'weapon'){
-                range = 2;
+                range = 4;
             }
             else if (type === 'equip'){
                 range = e_cap;
             }
 
             for (let idx=0; idx<range; idx++){
-                popover(`mechAssembly${type}${idx}`, function(obj){
-                    return loc(`portal_mech_${type}_${$(obj.this).attr(`data-val`)}_desc`);
-                },
-                {
-                    elm: `#mechAssembly .${type}.r${idx}`,
-                    prop: {
-                        modifiers: {
-                            preventOverflow: { enabled: false },
-                            hide: { enabled: false },
-                            flip: {
-                                behavior: ['left','right']
+                for (let i=0; i<$(`#mechAssembly .${type}.r${idx}`).length; i++){
+                    popover(`mechAssembly${type}${idx}${i}`, function(obj){
+                        let val = $(obj.this).attr(`data-val`);
+                        if (val === 'special'){
+                            switch (global.portal.mechbay.blueprint.size){
+                                case 'large':
+                                    val = 'battery';
+                                    break;
+                                case 'titan':
+                                    val = 'target';
+                                    break;
+                                default:
+                                    val = 'jumpjet';
+                                    break;
                             }
-                        },
+                        }
+                        return loc(`portal_mech_${type}_${val}_desc`);
+                    },
+                    {
+                        elm: `#mechAssembly .${type}.r${idx}.a${i}`,
                         placement: 'right'
-                    }
-                });
+                    });
+                }
             }
         });
 
@@ -3397,52 +3982,87 @@ function drawMechs(){
     clearMechDrag();
     clearElement($('#mechList'));
     let list = $('#mechList');
-    let used = 0;
-    for (let i=0; i<global.portal.mechbay.mechs.length; i++){
-        let mech = global.portal.mechbay.mechs[i];
-        used += mechSize(mech.size);
-        let inactive = used > global.portal.mechbay.max ? true : false;
-        let desc = $(`<div${inactive ? ` class="inactive-row"` : ``}><a${inactive ? ` class="has-text-danger"` : ``} @click="scrap(${i})">${loc(`portal_mech_scrap`)}</a> | <span>${loc(`portal_mech`)} #${i+1}</span>: <span class="has-text-caution">${loc(`portal_mech_size_${mech.size}`)} ${loc(`portal_mech_chassis_${mech.chassis}`)}</span></div>`);
-        mech.hardpoint.forEach(function(hp){
-            desc.append(` | <span class="has-text-danger">${loc(`portal_mech_weapon_${hp}`)}</span>`);
-        });
-        mech.equip.forEach(function(eq){
-            desc.append(` | <span class="has-text-warning">${loc(`portal_mech_equip_${eq}`)}</span>`);
-        });
-        list.append(desc);
-    }
+
+    list.append(`
+      <div v-for="(mech, index) of mechs" :key="index" class="mechRow" :class="index < active ? '' : 'inactive-row' ">
+        <a class="scrap" @click="scrap(index)">${loc('portal_mech_scrap')}</a>
+        <span> | </span><span>${loc('portal_mech')} #{{index + 1}}: </span>
+        <span class="has-text-caution">{{ mech.infernal ? "${loc('portal_mech_infernal')} " : "" }}{{ mech | size }} {{ mech | chassis }}</span>
+        <div :class="'gearList '+mech.size">
+          <div>
+            <template v-for="hp of mech.hardpoint">
+              <span> | </span>
+              <span class="has-text-danger">{{ hp | weapon }}</span>
+            </template>
+          </div>
+          <div>
+            <template v-for="eq of mech.equip">
+              <span> | </span>
+              <span class="has-text-warning">{{ eq, mech.size | equipment }}</span>
+            </template>
+          </div>
+        </div>
+      </div>`);
 
     vBind({
         el: '#mechList',
-        data: global.portal.mechbay.mechs,
+        data: global.portal.mechbay,
         methods: {
             scrap(id){
                 if (global.portal.mechbay.mechs[id]){
-                    switch (global.portal.mechbay.mechs[id].size){
-                        case 'small':
-                            global.portal.purifier.supply += 25000;
-                            break;
-                        case 'medium':
-                            global.portal.purifier.supply += 60000;
-                            break;
-                        case 'large':
-                            global.portal.purifier.supply += 125000;
-                            break;
-                        case 'titan':
-                            global.portal.purifier.supply += 250000;
-                            break;
-                    }
+                    let costs = mechCost(global.portal.mechbay.mechs[id].size,global.portal.mechbay.mechs[id].infernal);
+                    let size = mechSize(global.portal.mechbay.mechs[id].size);
+                    global.portal.purifier.supply += Math.floor(costs.c / 3);
+                    global.resource.Soul_Gem.amount += Math.floor(costs.s / 2);
+
                     if (global.portal.purifier.supply > global.portal.purifier.sup_max){
                         global.portal.purifier.supply = global.portal.purifier.sup_max;
                     }
                     global.portal.mechbay.mechs.splice(id,1);
-                    drawMechs();
+                    global.portal.mechbay.bay -= size;
+                    global.portal.mechbay.active--;
                 }
+            }
+        },
+        filters: {
+            equipment(e,size){
+                if (e !== 'special'){
+                    return loc(`portal_mech_equip_${e}`);
+                }
+                let type = 'jumpjet';
+                switch (size){
+                    case 'large':
+                        type = 'battery';
+                        break;
+                    case 'titan':
+                        type = 'target';
+                        break;
+                }
+                return loc(`portal_mech_equip_${type}`);
+            },
+            weapon(hp) {
+                return loc(`portal_mech_weapon_${hp}`);
+            },
+            size(m) {
+                return loc(`portal_mech_size_${m.size}`);
+            },
+            chassis(m) {
+                return loc(`portal_mech_chassis_${m.chassis}`);
             }
         }
     });
 
     dragMechList();
+
+    $(`#mechList .scrap`).each(function(i, node){
+        popover(`mechList-scrap${i}`, function(){
+            let costs = mechCost(global.portal.mechbay.mechs[i].size,global.portal.mechbay.mechs[i].infernal);
+            return loc(`portal_mech_scrap_refund`,[Math.floor(costs.c / 3),Math.floor(costs.s / 2)]);
+        },
+        {
+            elm: node,
+        });
+    });
 }
 
 export function mechSize(s){
@@ -3455,12 +4075,14 @@ export function mechSize(s){
             return global.blood['prepared'] && global.blood.prepared >= 2 ? 8 : 10;
         case 'titan':
             return global.blood['prepared'] && global.blood.prepared >= 2 ? 20 : 25;
+        case 'collector':
+            return 1;
         case 'default':
             return 25;
     }
 }
 
-function clearMechDrag(){
+export function clearMechDrag(){
     let el = $('#mechList')[0];
     if (el){
         let sort = Sortable.get(el);
@@ -3474,47 +4096,69 @@ function dragMechList(){
     let el = $('#mechList')[0];
     Sortable.create(el,{
         onEnd(e){
+            let items = e.from.querySelectorAll(':scope > .mechRow');
+            e.from.insertBefore(e.item, items[e.oldIndex + (e.oldIndex > e.newIndex)]);
+
             let order = global.portal.mechbay.mechs;
             order.splice(e.newDraggableIndex, 0, order.splice(e.oldDraggableIndex, 1)[0]);
-            global.portal.mechbay.mechs = order;
-            drawMechs();
+            updateMechbay();
         }
     });
 }
 
+export function updateMechbay(){
+    let max = (spire_on['mechbay'] || 0) * 25;
+    let bay = 0;
+    let active = 0;
+    let scouts = 0;
+    for (let mech of global.portal.mechbay.mechs) {
+        bay += mechSize(mech.size);
+        if (bay <= max){
+            active++;
+            if (mech.size === 'small') {
+                scouts++;
+            }
+        }
+    }
+    global.portal.mechbay.bay = bay;
+    global.portal.mechbay.max = max;
+    global.portal.mechbay.active = active;
+    global.portal.mechbay.scouts = scouts;
+}
+
 export function genSpireFloor(){
-    let types = ['sand','swamp','forest','jungle','rocky','gravel','muddy','grass','brush'];
-    global.portal.spire.type = types[Math.floor(Math.seededRandom(0,types.length))];
+    let types = ['sand','swamp','forest','jungle','rocky','gravel','muddy','grass','brush','concrete'];
+    global.portal.spire.type = types[Math.floor(seededRandom(0,types.length))];
     if (global.portal.spire.count >= 10){
         global.portal.spire.status = {};
         let effects = ['freeze','hot','corrosive','humid','windy','hilly','mountain','radioactive','quake','dust','river','tar','steam','flooded','fog','rain','hail','chasm','dark','gravity'];
-        assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
+        assignValidStatus(effects[Math.floor(seededRandom(0,effects.length))]);
         
         if (global.portal.spire.count >= 25 && global.portal.spire.count <= 100){
             let odds = 105 - global.portal.spire.count;
-            if (Math.floor(Math.seededRandom(0,odds) <= 5)){
-                assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
+            if (Math.floor(seededRandom(0,odds) <= 5)){
+                assignValidStatus(effects[Math.floor(seededRandom(0,effects.length))]);
             }
         }
         else if (global.portal.spire.count > 100 && global.portal.spire.count <= 250){
-            assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
+            assignValidStatus(effects[Math.floor(seededRandom(0,effects.length))]);
             let odds = 260 - global.portal.spire.count;
-            if (Math.floor(Math.seededRandom(0,odds) <= 10)){
-                assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
+            if (Math.floor(seededRandom(0,odds) <= 10)){
+                assignValidStatus(effects[Math.floor(seededRandom(0,effects.length))]);
             }
         }
         else if (global.portal.spire.count > 250 && global.portal.spire.count <= 1000){
-            assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
-            assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
+            assignValidStatus(effects[Math.floor(seededRandom(0,effects.length))]);
+            assignValidStatus(effects[Math.floor(seededRandom(0,effects.length))]);
             let odds = 1025 - global.portal.spire.count;
-            if (Math.floor(Math.seededRandom(0,odds) <= 25)){
-                assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
+            if (Math.floor(seededRandom(0,odds) <= 25)){
+                assignValidStatus(effects[Math.floor(seededRandom(0,effects.length))]);
             }
         }
         else if (global.portal.spire.count > 1000){
-            assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
-            assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
-            assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
+            assignValidStatus(effects[Math.floor(seededRandom(0,effects.length))]);
+            assignValidStatus(effects[Math.floor(seededRandom(0,effects.length))]);
+            assignValidStatus(effects[Math.floor(seededRandom(0,effects.length))]);
         }
     }
 
@@ -3525,7 +4169,7 @@ export function genSpireFloor(){
         }
         return true;
     });
-    global.portal.spire.boss = mobs[Math.floor(Math.seededRandom(0,mobs.length))];
+    global.portal.spire.boss = mobs[Math.floor(seededRandom(0,mobs.length))];
 }
 
 function assignValidStatus(effect){
@@ -3544,21 +4188,405 @@ function assignValidStatus(effect){
     }
 }
 
-export function mechRating(mech,boss){
-    let rating = 0;
-    switch (mech.size){
+function terrainRating(mech,rating,effects){
+    if (mech.equip.includes('special') && (mech.size === 'small' || mech.size === 'medium' || mech.size === 'collector')){
+        if (rating < 1){
+            rating += (1 - rating) * (effects.includes('gravity') ? 0.1 : 0.2);
+        }
+    }
+    if (mech.size !== 'small' && rating < 1){
+        rating += (effects.includes('fog') || effects.includes('dark') ? 0.005 : 0.01) * global.portal.mechbay.scouts;
+        if (rating > 1){
+            rating = 1;
+        }
+    }
+    return rating;
+}
+
+function weaponPower(mech,power){
+    if (power < 1 && power !== 0){
+        if (mech.equip.includes('special') && mech.size === 'titan'){
+            power += (1 - power) * 0.25;
+        }
+    }
+    if (mech.equip.includes('special') && mech.size === 'large'){
+        power *= 1.02;
+    }
+    return power;
+}
+
+function statusEffect(mech,effect){
+    let rating = 1;
+    switch (effect){
+        case 'freeze':
+            {
+                if (!mech.equip.includes('radiator')){
+                    rating = 0.25;
+                }
+            }
+            break;
+        case 'hot':
+            {
+                if (!mech.equip.includes('coolant')){
+                    rating = 0.25;
+                }
+            }
+            break;
+        case 'corrosive':
+            {
+                if (!mech.equip.includes('ablative')){
+                    rating = mech.equip.includes('shields') ? 0.75 : 0.25;
+                }
+            }
+            break;
+        case 'humid':
+            {
+                if (!mech.equip.includes('seals')){
+                    rating = 0.75;
+                }
+            }
+            break;
+        case 'windy':
+            {
+                if (mech.chassis === 'hover'){
+                    rating = 0.5;
+                }
+            }
+            break;
+        case 'hilly':
+            {
+                if (mech.chassis !== 'spider'){
+                    rating = 0.75;
+                }
+            }
+            break;
+        case 'mountain':
+            {
+                if (mech.chassis !== 'spider' && !mech.equip.includes('grapple')){
+                    rating = mech.equip.includes('flare') ? 0.75 : 0.5;
+                }
+            }
+            break;
+        case 'radioactive':
+            {
+                if (!mech.equip.includes('shields')){
+                    rating = 0.5;
+                }
+            }
+            break;
+        case 'quake':
+            {
+                if (!mech.equip.includes('stabilizer')){
+                    rating = 0.25;
+                }
+            }
+            break;
+        case 'dust':
+            {
+                if (!mech.equip.includes('seals')){
+                    rating = 0.5;
+                }
+            }
+            break;
+        case 'river':
+            {
+                if (mech.chassis !== 'hover'){
+                    rating = 0.65;
+                }
+            }
+            break;
+        case 'tar':
+            {
+                if (mech.chassis !== 'quad'){
+                    rating = mech.chassis === 'tread' || mech.chassis === 'wheel' ? 0.5 : 0.75;
+                }
+            }
+            break;
+        case 'steam':
+            {
+                if (!mech.equip.includes('shields')){
+                    rating = 0.75;
+                }
+            }
+            break;
+        case 'flooded':
+            {
+                if (mech.chassis !== 'hover'){
+                    rating = 0.35;
+                }
+            }
+            break;
+        case 'fog':
+            {
+                if (!mech.equip.includes('sonar')){
+                    rating = 0.2;
+                }
+            }
+            break;
+        case 'rain':
+            {
+                if (!mech.equip.includes('seals')){
+                    rating = 0.75;
+                }
+            }
+            break;
+        case 'hail':
+            {
+                if (!mech.equip.includes('ablative') && !mech.equip.includes('shields')){
+                    rating = 0.75;
+                }
+            }
+            break;
+        case 'chasm':
+            {
+                if (!mech.equip.includes('grapple')){
+                    rating = 0.1;
+                }
+            }
+            break;
+        case 'dark':
+            {
+                if (!mech.equip.includes('infrared')){
+                    rating = mech.equip.includes('flare') ? 0.25 : 0.1;
+                }
+            }
+            break;
+        case 'gravity':
+            {
+                switch (mech.size){
+                    case 'medium':
+                        rating = 0.8;
+                        break;
+                    case 'large':
+                        rating = 0.45;
+                        break;
+                    case 'titan':
+                        rating = 0.25;
+                        break;
+                }
+            }
+            break;
+    }
+    return rating;
+}
+
+export function terrainEffect(mech,type){
+    let terrain = type || global.portal.spire.type;
+    let terrainFactor = 1;
+    switch (mech.chassis){
+        case 'wheel':
+            {
+                switch (terrain){
+                    case 'sand':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.9 : 0.85;
+                        break;
+                    case 'swamp':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.35 : 0.18;
+                        break;
+                    case 'jungle':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.92 : 0.85;
+                        break;
+                    case 'rocky':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.65 : 0.5;
+                        break;
+                    case 'gravel':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 1 : 0.95;
+                        break;
+                    case 'muddy':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.85 : 0.58;
+                        break;
+                    case 'grass':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.3 : 1.2;
+                        break;
+                    case 'brush':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.9 : 0.8;
+                        break;
+                    case 'concrete':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.1 : 1;
+                        break;
+                }
+            }
+            break;
+        case 'tread':
+            {
+                switch (terrain){
+                    case 'sand':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.15 : 1.1;
+                        break;
+                    case 'swamp':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.55 : 0.4;
+                        break;
+                    case 'forest':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 1 : 0.95;
+                        break;
+                    case 'jungle':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.95 : 0.9;
+                        break;
+                    case 'rocky':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.65 : 0.5;
+                        break;
+                    case 'gravel':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.3 : 1.2;
+                        break;
+                    case 'muddy':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.88 : 0.72;
+                        break;
+                }
+            }
+            break;
+        case 'biped':
+            {
+                switch (terrain){
+                    case 'sand':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.78 : 0.65;
+                        break;
+                    case 'swamp':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.68 : 0.5;
+                        break;
+                    case 'forest':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 1 : 0.95;
+                        break;
+                    case 'jungle':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.82 : 0.7;
+                        break;
+                    case 'rocky':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.48 : 0.4;
+                        break;
+                    case 'muddy':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.85 : 0.7;
+                        break;
+                    case 'grass':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.25 : 1.2;
+                        break;
+                    case 'brush':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.92 : 0.85;
+                        break;
+                }
+            }
+            break;
+        case 'quad':
+            {
+                switch (terrain){
+                    case 'sand':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.86 : 0.75;
+                        break;
+                    case 'swamp':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.58 : 0.42;
+                        break;
+                    case 'forest':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.25 : 1.2;
+                        break;
+                    case 'rocky':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.95 : 0.9;
+                        break;
+                    case 'gravel':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.9 : 0.8;
+                        break;
+                    case 'muddy':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.68 : 0.5;
+                        break;
+                    case 'grass':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 1 : 0.95;
+                        break;
+                    case 'brush':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.95 : 0.9;
+                        break;
+                }
+            }
+            break;
+        case 'spider':
+            {
+                switch (terrain){
+                    case 'sand':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.75 : 0.65;
+                        break;
+                    case 'swamp':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.9 : 0.78;
+                        break;
+                    case 'forest':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.82 : 0.75;
+                        break;
+                    case 'jungle':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.77 : 0.65;
+                        break;
+                    case 'rocky':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.25 : 1.2;
+                        break;
+                    case 'gravel':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.86 : 0.75;
+                        break;
+                    case 'muddy':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.92 : 0.82;
+                        break;
+                    case 'brush':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 1 : 0.95;
+                        break;
+                }
+            }
+            break;
+        case 'hover':
+            {
+                switch (terrain){
+                    case 'swamp':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.35 : 1.2;
+                        break;
+                    case 'forest':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.65 : 0.48;
+                        break;
+                    case 'jungle':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.55 : 0.35;
+                        break;
+                    case 'rocky':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.82 : 0.68;
+                        break;
+                    case 'muddy':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.15 : 1.08;
+                        break;
+                    case 'brush':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.78 : 0.7;
+                        break;
+                }
+            }
+            break;
+    }
+    return terrainFactor;
+}
+
+export function mechCollect(mech){
+    let rating = mech.infernal ? 31.25 : 25;
+    let terrainFactor = terrainEffect(mech);
+    let effects = [];
+    Object.keys(global.portal.spire.status).forEach(function(effect){
+        effects.push(effect);
+        rating *= statusEffect(mech,effect);
+    });
+    rating *= terrainRating(mech,terrainFactor,effects);
+    return rating;
+}
+
+export function mechWeaponPower(size){
+    switch (size){
         case 'small':
-            rating = 0.002;
-            break;
+            return 0.0025;
         case 'medium':
-            rating = 0.005;
-            break;
+            return 0.0075;
         case 'large':
-            rating = 0.01;
-            break;
+            return 0.01;
         case 'titan':
-            rating = 0.0225;
-            break;
+            return 0.012;
+        default:
+            return 0;
+    }
+}
+
+export function mechRating(mech,boss){
+    let rating = mechWeaponPower(mech.size);
+    if (rating === 0){
+        return 0;
+    }
+
+    if (mech.hasOwnProperty('infernal') && mech.infernal && global.blood['prepared'] && global.blood.prepared >= 3){
+        rating *= 1.25;
     }
 
     if (boss){
@@ -3567,6 +4595,9 @@ export function mechRating(mech,boss){
         }
         if (global.blood['wrath']){
             rating *= 1 + (global.blood.wrath / 20);
+        }
+        if (mech.size === 'titan'){
+            rating *= 1.1;
         }
 
         let affix = universeAffix();
@@ -3591,456 +4622,837 @@ export function mechRating(mech,boss){
             rating *= 1 + (global.blood.wrath / 20);
         }
 
-        switch (mech.chassis){
-            case 'wheel':
-                {
-                    switch (global.portal.spire.type){
-                        case 'sand':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.9 : 0.85;
-                            break;
-                        case 'swamp':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.35 : 0.25;
-                            break;
-                        case 'jungle':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.92 : 0.85;
-                            break;
-                        case 'rocky':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.65 : 0.5;
-                            break;
-                        case 'gravel':
-                            rating *= ['small','medium'].includes(mech.size) ? 1 : 0.95;
-                            break;
-                        case 'muddy':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.85 : 0.65;
-                            break;
-                        case 'grass':
-                            rating *= ['small','medium'].includes(mech.size) ? 1.3 : 1.2;
-                            break;
-                        case 'brush':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.9 : 0.8;
-                            break;
-                    }
-                }
-                break;
-            case 'tread':
-                {
-                    switch (global.portal.spire.type){
-                        case 'sand':
-                            rating *= ['small','medium'].includes(mech.size) ? 1.15 : 1.1;
-                            break;
-                        case 'swamp':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.55 : 0.45;
-                            break;
-                        case 'forest':
-                            rating *= ['small','medium'].includes(mech.size) ? 1 : 0.95;
-                            break;
-                        case 'jungle':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.95 : 0.9;
-                            break;
-                        case 'rocky':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.65 : 0.5;
-                            break;
-                        case 'gravel':
-                            rating *= ['small','medium'].includes(mech.size) ? 1.3 : 1.2;
-                            break;
-                        case 'muddy':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.88 : 0.75;
-                            break;
-                    }
-                }
-                break;
-            case 'biped':
-                {
-                    switch (global.portal.spire.type){
-                        case 'sand':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.78 : 0.65;
-                            break;
-                        case 'swamp':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.68 : 0.55;
-                            break;
-                        case 'forest':
-                            rating *= ['small','medium'].includes(mech.size) ? 1 : 0.95;
-                            break;
-                        case 'jungle':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.82 : 0.7;
-                            break;
-                        case 'rocky':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.48 : 0.4;
-                            break;
-                        case 'muddy':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.85 : 0.75;
-                            break;
-                        case 'grass':
-                            rating *= ['small','medium'].includes(mech.size) ? 1.25 : 1.2;
-                            break;
-                        case 'brush':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.92 : 0.85;
-                            break;
-                    }
-                }
-                break;
-            case 'quad':
-                {
-                    switch (global.portal.spire.type){
-                        case 'sand':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.86 : 0.75;
-                            break;
-                        case 'swamp':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.58 : 0.45;
-                            break;
-                        case 'forest':
-                            rating *= ['small','medium'].includes(mech.size) ? 1.25 : 1.2;
-                            break;
-                        case 'rocky':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.95 : 0.9;
-                            break;
-                        case 'gravel':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.9 : 0.8;
-                            break;
-                        case 'muddy':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.68 : 0.55;
-                            break;
-                        case 'grass':
-                            rating *= ['small','medium'].includes(mech.size) ? 1 : 0.95;
-                            break;
-                        case 'brush':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.95 : 0.9;
-                            break;
-                    }
-                }
-                break;
-            case 'spider':
-                {
-                    switch (global.portal.spire.type){
-                        case 'sand':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.75 : 0.65;
-                            break;
-                        case 'swamp':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.9 : 0.8;
-                            break;
-                        case 'forest':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.82 : 0.75;
-                            break;
-                        case 'jungle':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.77 : 0.65;
-                            break;
-                        case 'rocky':
-                            rating *= ['small','medium'].includes(mech.size) ? 1.25 : 1.2;
-                            break;
-                        case 'gravel':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.86 : 0.75;
-                            break;
-                        case 'muddy':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.92 : 0.85;
-                            break;
-                        case 'brush':
-                            rating *= ['small','medium'].includes(mech.size) ? 1 : 0.95;
-                            break;
-                    }
-                }
-                break;
-            case 'hover':
-                {
-                    switch (global.portal.spire.type){
-                        case 'swamp':
-                            rating *= ['small','medium'].includes(mech.size) ? 1.3 : 1.2;
-                            break;
-                        case 'forest':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.74 : 0.65;
-                            break;
-                        case 'jungle':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.6 : 0.5;
-                            break;
-                        case 'rocky':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.82 : 0.75;
-                            break;
-                        case 'muddy':
-                            rating *= ['small','medium'].includes(mech.size) ? 1.15 : 1.1;
-                            break;
-                        case 'brush':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.78 : 0.7;
-                            break;
-                    }
-                }
-                break;
-        }
-
-        Object.keys(global.portal.spire.status).forEach(function(effect){
-            switch (effect){
-                case 'freeze':
-                    {
-                        if (!mech.equip.includes('radiator')){
-                            rating *= 0.25;
-                        }
-                    }
+        if (global.portal.spire.type === 'concrete'){
+            switch (mech.size){
+                case 'small':
+                    rating *= 0.92;
                     break;
-                case 'hot':
-                    {
-                        if (!mech.equip.includes('coolant')){
-                            rating *= 0.25;
-                        }
-                    }
+                case 'medium':
+                    rating *= 0.95;
                     break;
-                case 'corrosive':
-                    {
-                        if (!mech.equip.includes('ablative')){
-                            rating *= mech.equip.includes('shields') ? 0.75 : 0.25;
-                        }
-                    }
-                    break;
-                case 'humid':
-                    {
-                        if (!mech.equip.includes('seals')){
-                            rating *= 0.75;
-                        }
-                    }
-                    break;
-                case 'windy':
-                    {
-                        if (mech.chassis === 'hover'){
-                            rating *= 0.5;
-                        }
-                    }
-                    break;
-                case 'hilly':
-                    {
-                        if (mech.chassis !== 'spider'){
-                            rating *= 0.75;
-                        }
-                    }
-                    break;
-                case 'mountain':
-                    {
-                        if (mech.chassis !== 'spider' && !mech.equip.includes('grapple')){
-                            rating *= mech.equip.includes('flare') ? 0.75 : 0.5;
-                        }
-                    }
-                    break;
-                case 'radioactive':
-                    {
-                        if (!mech.equip.includes('shields')){
-                            rating *= 0.5;
-                        }
-                    }
-                    break;
-                case 'quake':
-                    {
-                        if (!mech.equip.includes('stabilizer')){
-                            rating *= 0.25;
-                        }
-                    }
-                    break;
-                case 'dust':
-                    {
-                        if (!mech.equip.includes('seals')){
-                            rating *= 0.5;
-                        }
-                    }
-                    break;
-                case 'river':
-                    {
-                        if (mech.chassis !== 'hover'){
-                            rating *= 0.65;
-                        }
-                    }
-                    break;
-                case 'tar':
-                    {
-                        if (mech.chassis !== 'quad'){
-                            rating *= mech.chassis === 'tread' || mech.chassis === 'wheel' ? 0.5 : 0.75;
-                        }
-                    }
-                    break;
-                case 'steam':
-                    {
-                        if (!mech.equip.includes('shields')){
-                            rating *= 0.75;
-                        }
-                    }
-                    break;
-                case 'flooded':
-                    {
-                        if (mech.chassis !== 'hover'){
-                            rating *= 0.35;
-                        }
-                    }
-                    break;
-                case 'fog':
-                    {
-                        if (!mech.equip.includes('sonar')){
-                            rating *= 0.2;
-                        }
-                    }
-                    break;
-                case 'rain':
-                    {
-                        if (!mech.equip.includes('seals')){
-                            rating *= 0.75;
-                        }
-                    }
-                    break;
-                case 'hail':
-                    {
-                        if (!mech.equip.includes('ablative') && !mech.equip.includes('shields')){
-                            rating *= 0.75;
-                        }
-                    }
-                    break;
-                case 'chasm':
-                    {
-                        if (!mech.equip.includes('grapple')){
-                            rating *= 0.1;
-                        }
-                    }
-                    break;
-                case 'dark':
-                    {
-                        if (!mech.equip.includes('infrared')){
-                            rating *= mech.equip.includes('flare') ? 0.25 : 0.1;
-                        }
-                    }
-                    break;
-                case 'gravity':
-                    {
-                        switch (mech.size){
-                            case 'medium':
-                                rating *= 0.75;
-                                break;
-                            case 'large':
-                                rating *= 0.5;
-                                break;
-                            case 'titan':
-                                rating *= 0.25;
-                                break;
-                        }
-                    }
+                case 'titan':
+                    rating *= 1.25;
                     break;
             }
+        }
+
+        let terrainFactor = terrainEffect(mech);
+
+        let effects = [];
+        Object.keys(global.portal.spire.status).forEach(function(effect){
+            effects.push(effect);
+            rating *= statusEffect(mech,effect);
         });
+
+        rating *= terrainRating(mech,terrainFactor,effects);
 
         rating /= global.portal.spire.count;
         let damage = 0;
         for (let i=0; i<mech.hardpoint.length; i++){
-            damage += rating * monsters[global.portal.spire.boss].weapon[mech.hardpoint[i]];
+            let effect = monsters[global.portal.spire.boss].weapon[mech.hardpoint[i]];
+            damage += rating * weaponPower(mech,effect);
         }
         return damage;
     }
 }
 
-export function descension(){
-    if (webWorker.w){
-        webWorker.w.terminate();
-    }
-    global.lastMsg = false;
 
-    unlockAchieve(`squished`,true);
-    unlockAchieve(`extinct_${global.race.species}`);
-    unlockAchieve(`corrupted`);
-    if (races[global.race.species].type === 'angelic'){
-        unlockFeat('twisted');
+export function drawHellObservations(startup){
+    if (!global.settings.tabLoad && global.settings.civTabs !== ($(`#mainTabs > nav ul li`).length - 1) && !startup){
+        return;
     }
-    if (global.race.species === 'junker'){
-        unlockFeat('the_misery');
+    let info = $('#mTabObserve');
+    clearElement(info);
+    
+    let observe = $(`<div id="hellObservations"></div>`);
+    info.append(observe);
+    
+    observe.append(`<b-tabs id="hellTabs" class="resTabs" v-model="s.hellTabs" :animated="s.animated" @input="swapTab">
+        <b-tab-item id="h_Report">
+            <template slot="header">
+                <span>${loc('hell_tabs_reports')}</span>
+            </template>
+        </b-tab-item>
+        <b-tab-item id="h_Analysis">
+            <template slot="header">
+                <span>${loc('hell_tabs_analysis')}</span>
+            </template>
+        </b-tab-item>
+    </b-tabs>`);
+    
+    vBind({
+        el: `#hellObservations`,
+        data: {
+            s: global.settings
+        },
+        methods: {
+            swapTab(tab){
+                if (!global.settings.tabLoad){
+                    clearElement($(`#h_Report`));
+                    clearElement($(`#h_Analysis`));
+                    switch (tab){
+                        case 0:
+                            drawHellReports();
+                            break;
+                        case 1:
+                            drawHellAnalysis();
+                            break;
+                    }
+                }
+                return tab;
+            }
+        }
+    });
+    
+    if (!global.settings.tabLoad){
+        switch (global.settings.hellTabs){
+            case 0:
+                drawHellReports();
+                break;
+            case 1:
+                drawHellAnalysis();
+                break;
+        }
     }
-    if (!global.race['modified'] && global.race['junker'] && global.race.species === 'junker'){
-        unlockFeat(`garbage_pie`);
+    else {
+        drawHellReports();
+        drawHellAnalysis();
     }
-    if (global.race['cataclysm']){
-        unlockFeat(`finish_line`);
-    }
+}
 
-    let artifacts = 0;
-    switch (global.race.universe){
-        case 'micro':
-            artifacts = 1;
+function drawHellAnalysis(){
+    if (!global.settings.tabLoad && global.settings.hellTabs !== 1){
+        return;
+    }
+    let info = ($(`#h_Analysis`));
+    let stats = $(`<div id="hellAnalysis" class="vscroll"></div>`);
+    info.append(stats);
+    let bd_settings = $(`<div></div>`);
+    stats.append(bd_settings);
+    let analysis = $(`<div class="hellAnalysis"></div>`);
+    stats.append(analysis);
+    let breakdown = $(`<div class="hellAnalysis"></div>`);
+    analysis.append(breakdown);
+    
+    let totalAnal = $(`<div id="hellAnalysisTotal" class="analysisColumn"></div>`);
+    let partialAnal = $(`<div id="hellAnalysisPeriod" class="analysisColumn"></div>`);
+    breakdown.append(totalAnal);
+    breakdown.append(partialAnal);
+    
+    bd_settings.append(`
+        <div>
+            <h2 class="has-text-warning">${loc('tab_settings')}</h2>
+        </div>
+        <div>
+            <b-checkbox v-model="s.expanded">${loc('hell_analysis_expanded')}</b-checkbox>
+            <b-checkbox v-model="s.average">${loc('hell_analysis_average')}</b-checkbox>
+            <b-checkbox v-show="r.hyper || r.slow" v-model="s.hyperSlow">${loc('hell_analysis_hyperSlow')}</b-checkbox>
+        </div>
+        <div>
+            <b-radio v-model="s.display" native-value="game_days">${loc('hell_analysis_time_game_days')}</b-radio>
+            <b-radio v-model="s.display" native-value="seconds">${loc('hell_analysis_time_seconds')}</b-radio>
+            <b-radio v-model="s.display" native-value="minutes">${loc('hell_analysis_time_minutes')}</b-radio>
+            <b-radio v-model="s.display" native-value="hours">${loc('hell_analysis_time_hours')}</b-radio>
+            <b-radio v-model="s.display" native-value="days">${loc('hell_analysis_time_days')}</b-radio>
+        </div>
+    `);
+    
+    vBind({
+        el: '#hellAnalysis',
+        data: {
+            s: global.portal.observe.settings,
+            r: global.race
+        }
+    });
+    
+    let calcAverage = function(num,gameDays,units){
+        if (num){
+            if (units !== 'game_days' && global.portal.observe.settings.hyperSlow){
+                if (global.race['slow']){
+                    gameDays *= 1 + (traits.slow.vars()[0] / 100);
+                }
+                if (global.race['hyper']){
+                    gameDays *= 1 - (traits.hyper.vars()[0] / 100);
+                }
+            }
+            num /= gameDays;
+            switch (units){
+                case 'seconds':
+                    num /= 5;
+                    break;
+                case 'minutes':
+                    num *= 12;
+                    break;
+                case 'hours':
+                    num *= 720;
+                    break;
+                case 'days':
+                    num *= 17280;
+                    break;
+                default:
+                    break;
+            }
+            num = sizeApproximation(num, 5, global.portal.observe.settings.expanded);
+        }
+        return loc('hell_analysis_time_average',[num,loc(`hell_analysis_time_${units}_abbr`)])
+    };
+    
+    let drawStats = function(id,type){
+        if (!id){
+            return;
+        }
+        let elem = $(`#${id}`)
+        clearElement(elem);
+        
+        elem.append(`
+            <div><h2 class="has-text-warning">${loc('hell_analysis_' + type)}</h2>${type === 'period' ? '<h2 id="resetHellObservation" class="text-button has-text-danger" @click="resetObservations()">{{ | resetLabel }}</h2>' : ''}</div>
+            <div><h2 class="has-text-alert">{{ st.${type}.start | startLabel }}</h2></div>
+            <div><h2>{{ st.${type}.days, s.display | time }}</h2></div>
+            <div><h2>{{ st.${type}.kills, 'kills', s.average | genericMulti }}</h2><h2 class="text-button has-text-advanced" aria-label="${loc('hell_analysis_toggle_bd',[loc('hell_analysis_toggle_bd_kills')])}" @click="toggleDropdown('dropKills')">{{ s.dropKills | dropdownLabel }}</h2></div>
+            <div v-show="s.dropKills">
+                <div v-show="p.war_drone"><h2>{{ st.${type}.kills.drones, 'kills_drones', s.average | genericSub }}</h2></div>
+                <div><h2>{{ st.${type}.kills.patrols, 'kills_patrols', s.average | genericSub }}</h2></div>
+                <div><h2>{{ st.${type}.kills.sieges, 'kills_sieges', s.average | genericSub }}</h2></div>
+                <div v-show="p.gun_emplacement"><h2>{{ st.${type}.kills.guns, 'kills_guns', s.average | genericSub }}</h2></div>
+                <div v-show="p.soul_forge"><h2>{{ st.${type}.kills.soul_forge, 'kills_soul_forge', s.average | genericSub }}</h2></div>
+                <div v-show="p.gate_turret"><h2>{{ st.${type}.kills.turrets, 'kills_turrets', s.average | genericSub }}</h2></div>
+            </div>
+            <div v-show="sg.display"><h2>{{ st.${type}.gems, 'gems', s.average | genericMulti }}</h2><h2 class="text-button has-text-advanced" aria-label="${loc('hell_analysis_toggle_bd',[loc('resource_Soul_Gem_name')])}" @click="toggleDropdown('dropGems')">{{ s.dropGems | dropdownLabel }}</h2></div>
+            <div v-show="sg.display && s.dropGems">
+                <div><h2>{{ st.${type}.gems.patrols, 'gems_patrols', s.average | genericSub }}</h2></div>
+                <div v-show="p.gun_emplacement"><h2>{{ st.${type}.gems.guns, 'gems_guns', s.average | genericSub }}</h2></div>
+                <div v-show="p.soul_forge"><h2>{{ st.${type}.gems.soul_forge, 'gems_soul_forge', s.average | genericSub }}</h2></div>
+                <div v-show="p.soul_forge"><h2>{{ st.${type}.gems.crafted, 'gems_crafted', s.average | genericSub }}</h2></div>
+                <div v-show="p.gate_turret"><h2>{{ st.${type}.gems.turrets, 'gems_turrets', s.average | genericSub }}</h2></div>
+                <div v-show="p.war_drone && p.carport"><h2>{{ st.${type}.gems.surveyors, 'gems_surveyors', s.average | genericSub }}</h2></div>
+            </div>
+            <div><h2>{{ st.${type}.wounded, 'wounded', s.average | generic }}</h2></div>
+            <div><h2>{{ st.${type}.died, 'died', s.average | generic }}</h2></div>
+            <div v-show="r.revive"><h2>{{ st.${type}.revived, 'revived', s.average | generic }}</h2></div>
+            <div><h2>{{ st.${type}.surveyors, 'surveyors', s.average | generic }}</h2></div>
+            <div><h2>{{ st.${type}.sieges, 'sieges', s.average | generic }}</h2></div>
+        `);
+    
+        vBind({
+            el: `#${id}`,
+            data: {
+                st: global.portal.observe.stats,
+                s: global.portal.observe.settings,
+                p: global.portal,
+                r: global.race,
+                sg: global.resource.Soul_Gem
+            },
+            methods: {
+                resetObservations(){
+                    Object.keys(global.portal.observe.stats.period).forEach(function(stat){
+                        if (['kills','gems'].includes(stat)){
+                            Object.keys(global.portal.observe.stats.period[stat]).forEach(function(subStat){
+                                global.portal.observe.stats.period[stat][subStat] = 0;
+                            });
+                        }
+                        else if (stat === 'start'){
+                            global.portal.observe.stats.period.start = { year: global.city.calendar.year, day: global.city.calendar.day }
+                        }
+                        else {
+                            global.portal.observe.stats.period[stat] = 0;
+                        }
+                    });
+                },
+                toggleDropdown(type){
+                    global.portal.observe.settings[type] = !global.portal.observe.settings[type];
+                }
+            },
+            filters: {
+                generic(num, name, average){
+                    if (!average){
+                        let val = sizeApproximation(num, 5, global.portal.observe.settings.expanded);
+                        return loc('hell_analysis_number_display', [loc(`hell_analysis_${name}`), val]);
+                    }
+                    return loc('hell_analysis_number_display',[loc(`hell_analysis_${name}`),calcAverage(num,global.portal.observe.stats[type].days,global.portal.observe.settings.display)]);
+                },
+                genericSub(num, name, average){
+                    if (!average){
+                        let val = sizeApproximation(num, 5, global.portal.observe.settings.expanded);
+                        return 'ᄂ' + loc('hell_analysis_number_display', [loc(`hell_analysis_${name}`), val]);
+                    }
+                    return 'ᄂ' + loc('hell_analysis_number_display',[loc(`hell_analysis_${name}`),calcAverage(num,global.portal.observe.stats[type].days,global.portal.observe.settings.display)]);
+                },
+                genericMulti(group, name, average){
+                    let num = 0;
+                    Object.keys(group).forEach(function(type){
+                        num += group[type];
+                    });
+                    if (!average){
+                        let val = sizeApproximation(num, 5, global.portal.observe.settings.expanded);
+                        return loc('hell_analysis_number_display', [loc(`hell_analysis_${name}`), val]);
+                    }
+                    return loc('hell_analysis_number_display',[loc(`hell_analysis_${name}`),calcAverage(num,global.portal.observe.stats[type].days,global.portal.observe.settings.display)]);
+                },
+                time(days, units){
+                    if (units !== 'game_days' && global.portal.observe.settings.hyperSlow){
+                        if (global.race['slow']){
+                            days *= 1 + (traits.slow.vars()[0] / 100);
+                        }
+                        if (global.race['hyper']){
+                            days *= 1 - (traits.hyper.vars()[0] / 100);
+                        }
+                    }
+                    switch (units){
+                        case 'seconds':
+                            days *= 5;
+                            break;
+                        case 'minutes':
+                            days /= 12;
+                            break;
+                        case 'hours':
+                            days /= 720;
+                            break;
+                        case 'days':
+                            days /= 17280;
+                            break;
+                        default:
+                            break;
+                    }
+                    let formattedTime = sizeApproximation(days, global.portal.observe.settings.expanded ? 8 : 5, global.portal.observe.settings.expanded);
+                    return loc('hell_analysis_time', [loc(`hell_analysis_time_${units}`), formattedTime]);
+                },
+                resetLabel(){
+                    return loc('hell_analysis_period_reset');
+                },
+                startLabel(start){
+                    return loc('hell_analysis_start',[start.year, start.day]);
+                },
+                dropdownLabel(open){
+                    return open ? '▲' : '▼';
+                }
+            }
+        });
+    }
+    drawStats('hellAnalysisTotal','total');
+    drawStats('hellAnalysisPeriod','period');
+    
+    stats = ($(`#hellAnalysis`));
+    let graphs = $(`<div></div>`);
+    stats.append(graphs);
+    graphs.append(`<div><h2 id="hellGraphCreator" class="text-button has-text-success" @click="createGraph()">${loc('hell_graph_create')}</h2></div>`);
+    let graphArea = $(`<div id="hellGraphingArea" class="graphingArea"></div>`);
+    graphs.append(graphArea);
+    
+    vBind({
+        el: '#hellGraphCreator',
+        methods: {
+            createGraph(){
+                let modal = {
+                    template: '<div id="modalBox" class="modalBox"></div>'
+                };
+                this.$buefy.modal.open({
+                    parent: this,
+                    component: modal
+                });
+
+                let checkExist = setInterval(function(){
+                    if ($('#modalBox').length > 0){
+                        clearInterval(checkExist);
+                        $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${loc('hell_graph_title')}</p>`));
+
+                        var body = $('<div id="specialModal" class="modalBody vscroll"></div>');
+                        $('#modalBox').append(body);
+                        let creator = $(`<div class="graphCreator"></div>`);
+                        body.append(creator);
+
+                        let settings = {
+                            chartType: 'pie',
+                            name: '',
+                            chartName: '',
+                            data: [],
+                            radioFake: '',
+                            showGroups: true
+                        };
+                        let error = {
+                            show: false,
+                            message: ''
+                        }
+                        
+                        creator.append(`
+                            <div><h2 class="has-text-warning">${loc('hell_graph_name')}</h2> <b-input v-model="s.name" :input="nameUpdate(s.name)"></b-input></div>
+                        `)
+                        creator.append(`
+                            <div>
+                                <div>
+                                    <h2 class="has-text-warning">${loc('hell_graph_type')}</h2>
+                                </div>
+                                <div>
+                                    <b-radio v-model="s.chartType" native-value="pie" @click.native="dataOptions('pie')">${loc('hell_graph_pie')}</b-radio>
+                                </div>
+                            </div>
+                        `);
+                        
+                        let dataRegion = $(`<div id="graphDataSelection"></div>`);
+                        creator.append(dataRegion); 
+                        dataRegion.append(`<div><h2 class="has-text-warning">${loc('hell_graph_data')}</h2></div>`);
+                        Object.keys(global.portal.observe.stats).forEach(function(dataSet){
+                            ['kills','gems'].forEach(function(group){
+                                dataRegion.append(`<div>
+                                    <b-radio v-show="${group === 'gems' ? 'sg.display && ' : ''}s.showGroups" v-model="s.radioFake" native-value="${dataSet}${group}" @click.native="setData('${dataSet}','${group}')">${loc('hell_graph_datapoint',[loc(`hell_analysis_${dataSet}`),loc(`hell_analysis_${group}`)])}</b-radio>
+                                </div>`);
+                            });
+                        });
+
+                        creator.append(`
+                            <div>
+                                <div v-show="e.show">
+                                    <h2 class="has-text-danger">{{ e.message }}</h2>
+                                </div>
+                                <div>
+                                    <button class="button" @click="createGraph()">${loc('hell_graph_create')}</button>
+                                </div>
+                            </div>
+                        `);
+                        
+                        vBind({
+                            el: `#specialModal`,
+                            data: {
+                                s: settings,
+                                e: error,
+                                sg: global.resource.Soul_Gem
+                            },
+                            methods: {
+                                nameUpdate(name){
+                                    if (settings.chartName !== name){
+                                        error.show = false;
+                                        settings.chartName = name;
+                                    }
+                                },
+                                dataOptions(type){
+                                    switch (type){
+                                        case 'pie':
+                                            settings.showGroups = true;
+                                            break;
+                                        case 'bar':
+                                            settings.showGroups = false;
+                                            break;
+                                    }
+                                },
+                                setData(type,group){
+                                    error.show = false;
+                                    settings.data = [type,group];
+                                },
+                                createGraph(){
+                                    if (!settings.name){
+                                        error.show = true;
+                                        error.message = loc('hell_graph_error_name_blank');
+                                        return;
+                                    }
+                                    else if (settings.data.length === 0){
+                                        error.show = true;
+                                        error.message = loc('hell_graph_error_data_missing');
+                                        return;
+                                    }
+                                    let graphLabels = [];
+                                    let graphData = [];
+                                    switch(settings.chartType){
+                                        case 'pie':
+                                            Object.keys(global.portal.observe.stats[settings.data[0]][settings.data[1]]).forEach(function(dataPoint){
+                                                graphLabels.push(loc(`hell_analysis_${settings.data[1]}_${dataPoint}`));
+                                                graphData.push([settings.data[0],settings.data[1],dataPoint]);
+                                            });
+                                            break;
+                                        case 'bar':
+                                            break;
+                                    }
+                                    let graphID = newGraph(settings.chartName,settings.chartType,graphLabels,graphData,{title: settings.chartName});
+                                    drawGraph(graphArea,global.portal.observe.graphs[graphID]);
+                                    //Exit the modal
+                                    document.dispatchEvent(new KeyboardEvent('keydown', {'key': 'Escape'}));
+                                    document.dispatchEvent(new KeyboardEvent('keyup', {'key': 'Escape'}));
+                                }
+                            }
+                        });
+                    }
+                }, 50);
+            }
+        }
+    });
+    
+    //Draw existing graphs.
+    Object.keys(global.portal.observe.graphs).forEach(function(id){
+        drawGraph(graphArea,global.portal.observe.graphs[id]);
+    });
+}
+
+function newGraph(name,type,labels,data,settings){
+    let id = `hellGraph-${global.portal.observe.graphID}`;
+    global.portal.observe.graphID++;
+    global.portal.observe.graphs[id] = {
+        id: id,
+        chartID: `${id}-chart`,
+        name: name,
+        type: type,
+        labels: labels,
+        data: data,
+        settings: settings
+    };
+    return id;
+}
+
+function drawGraph(info,graphInfo){
+    let id = graphInfo.id;
+    if (hell_graphs[id]){
+        hell_graphs[id].graph.destroy();
+    }
+    
+    let chartCont = $(`<div id="graph-${id}-container" class="graphContainer"></div>`);
+    info.append(chartCont);
+    chartCont.append(`<div id="graph-${id}-controls" class="graphControls">
+        <div>
+            <h2></h2>
+            <h2 class="text-button has-text-danger" @click="deleteGraph()">Delete</h2>
+        </div>
+        <div class="graphTitle">
+            <h2>${graphInfo.name}</h2>
+        </div>
+    </div>`);
+    let graph = $(`<div class="graph"></div>`);
+    chartCont.append(graph);
+    
+    vBind({
+        el: `#graph-${id}-controls`,
+        methods: {
+            deleteGraph(){
+                hell_graphs[id].graph.destroy();
+                delete hell_graphs[id];
+                delete global.portal.observe.graphs[id];
+                clearElement($(`#graph-${id}-container`),true);
+                return;
+            }
+        }
+    });
+    
+    let newChart = $(`<canvas id="${graphInfo.chartID}"></canvas>`);
+    graph.append(newChart);
+    
+    hell_graphs[id] = {
+        data: graphInfo.data
+    };
+    switch (graphInfo.type){
+        case 'pie':
+            hell_graphs[id].graph = drawPieChart(newChart,graphInfo.labels,graphInfo.data,graphInfo.settings);
             break;
         default:
-            artifacts = alevel();
             break;
     }
+}
 
-    [50,100].forEach(function(x){
-        if (global.portal.spire.count > x){
-            artifacts++;
+function drawPieChart(info,labels,data,settings){
+    let drawData = [];
+    data.forEach(function (dataPath){
+        drawData.push(dataPath.length === 3 ? global.portal.observe.stats[dataPath[0]][dataPath[1]][dataPath[2]] : global.portal.observe.stats[dataPath[0]][dataPath[1]]);
+    });
+    return new Chart(info, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: drawData,
+                backgroundColor: ['rgb(255, 99, 132)',
+                'rgb(54, 162, 235)',
+                'rgb(255, 205, 86)',
+                'rgb(201, 203, 207)',
+                'rgb(75, 192, 192)',
+                '#B86BFF',
+                '#48c774'],
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+}
+
+function drawHellReports(){
+    if (!global.settings.tabLoad && global.settings.hellTabs !== 0){
+        return;
+    }
+    purgeReports();
+    
+    let list = ``;
+    
+    let info = ($(`#h_Report`));
+    let reports = $(`<div id="hellReport" class="hellReports"></div>`);
+    info.append(reports);
+    let reportListSection = $(`<div class="reportList vscroll"></div>`);
+    reports.append(reportListSection);
+    reportListSection.append(`<div id="hellReportLogTitle"><h2 class="has-text-info">${loc('hell_report_log')}</h2><span class="refresh" @click="updateList()" aria-label="${loc('hell_report_log_refresh_aria')}">
+        <svg version="1.1" x="0px" y="0px" viewBox="0 0 492.883 492.883" enable-background="new 0 0 492.883 492.883" xml:space="preserve">
+            <path d="M122.941,374.241c-20.1-18.1-34.6-39.8-44.1-63.1c-25.2-61.8-13.4-135.3,35.8-186l45.4,45.4c2.5,2.5,7,0.7,7.6-3    l24.8-162.3c0.4-2.7-1.9-5-4.6-4.6l-162.4,24.8c-3.7,0.6-5.5,5.1-3,7.6l45.5,45.5c-75.1,76.8-87.9,192-38.6,282    c14.8,27.1,35.3,51.9,61.4,72.7c44.4,35.3,99,52.2,153.2,51.1l10.2-66.7C207.441,421.641,159.441,407.241,122.941,374.241z"/>
+		    <path d="M424.941,414.341c75.1-76.8,87.9-192,38.6-282c-14.8-27.1-35.3-51.9-61.4-72.7c-44.4-35.3-99-52.2-153.2-51.1l-10.2,66.7    c46.6-4,94.7,10.4,131.2,43.4c20.1,18.1,34.6,39.8,44.1,63.1c25.2,61.8,13.4,135.3-35.8,186l-45.4-45.4c-2.5-2.5-7-0.7-7.6,3    l-24.8,162.3c-0.4,2.7,1.9,5,4.6,4.6l162.4-24.8c3.7-0.6,5.4-5.1,3-7.6L424.941,414.341z"/>
+        </svg>
+    </span></div>`);
+    let reportList = $(`<div id="hellReportList"></div>`);
+    reportListSection.append(reportList);
+    reports.append($(`<div id="hellReportDisplay" class="reportDisplay is-vertical vscroll"></div>`));
+    
+    let recentDay = { year: 0, day: 0 };
+    if (Object.keys(hell_reports).length){
+        recentDay.year = Object.keys(hell_reports)[0].split('-')[1];
+        recentDay.day = Object.keys(hell_reports[`year-${recentDay.year}`])[0].split('-')[1];
+    }
+
+    let updateList = function(startYear,startDay){
+        if (purgeReports(true)){
+            list = ``;
+            startYear = Object.keys(hell_reports)[0].split('-')[1];
+            startDay = Object.keys(hell_reports[`year-${recentDay.year}`])[0].split('-')[1];
+        }
+        for (startYear; startYear<global.city.calendar.year; startYear++){
+            for (startDay; startDay<=global.city.calendar.orbit; startDay++){
+                let gemString = ""; let gemCount = hell_reports[`year-${startYear}`][`day-${startDay}`].foundGems;
+                if (gemCount) {
+                    gemString = `<span class="has-text-advanced" aria-label="${loc(`hell_report_log_soul_gem_aria`)}">${gemCount >= 5 ? `&#9830x${gemCount}` : "&#9830".repeat(gemCount)}</span>`;
+                }
+                list = `
+                    <div class="text-button"><span @click="reportLoad('${startYear}','${startDay}')">${loc('year') + " " + startYear + " | " + loc('day') + " " + startDay}</span>${gemString}</div>
+                ` + list;
+            }
+            startDay = 1;
+        }
+        //Remaining days in current year.
+        for (startDay; startDay<global.city.calendar.day; startDay++){
+            let gemString = ""; let gemCount = hell_reports[`year-${startYear}`][`day-${startDay}`].foundGems;
+            if (gemCount) {
+                gemString = `<span class="has-text-advanced" aria-label="${loc(`hell_report_log_soul_gem_aria`)}">${gemCount >= 5 ? `&#9830x${gemCount}` : "&#9830".repeat(gemCount)}</span>`;
+            }
+            list = `
+                <div class="text-button"><span @click="reportLoad('${startYear}','${startDay}')">${loc('year') + " " + startYear + " | " + loc('day') + " " + startDay}</span>${gemString}</div>
+            ` + list;
+        }
+        recentDay.year = startYear;
+        recentDay.day = startDay;
+        
+        let reportList = ($(`#hellReportList`));
+        clearElement(reportList);
+        reportList.append(list);
+        vBind({
+            el: '#hellReportList',
+            methods: {
+                reportLoad(year,day){
+                    loadReport(year,day);
+                }
+            }
+        });
+    }
+
+    let loadReport = function(year,day){
+        if (!year || !day){
+            return;
+        }
+        let info = $(`#hellReportDisplay`);
+        clearElement(info);
+        let curr_report = hell_reports[`year-${year}`][`day-${day}`];
+
+        let statsBar = $(`<div id="hellReportStats" class="reportStats"></div>`);
+        info.append(statsBar);
+        let kills = 0;
+        let gems = 0;
+        Object.keys(curr_report.stats.kills).forEach(function(killType){
+            kills += curr_report.stats.kills[killType];
+        });
+        Object.keys(curr_report.stats.gems).forEach(function(gemType){
+            gems += curr_report.stats.gems[gemType];
+        });
+        statsBar.append(`<div><h2 class="has-text-info">${loc('hell_report_log_stats',[year,day])}</h2></div>`);
+        statsBar.append(`<div>
+            <h2>${loc('hell_report_log_stats_kills',[kills])}</h2>
+            <h2 v-show="g.display">${loc('hell_report_log_stats_gems',[gems])}</h2>
+            <h2>${loc('hell_report_log_stats_wounded',[curr_report.stats.wounded])}</h2>
+            <h2>${loc('hell_report_log_stats_died',[curr_report.stats.died])}</h2>
+        </div>`);
+
+        info.append(`<div><h2 class="has-text-info">${loc('hell_report_log_report',[year,day])}</h2></div>`);
+        info.append(`<p class="has-text-danger">${loc('hell_report_log_start',[curr_report.start])}</p>`);
+        if (curr_report.drones){
+            Object.keys(curr_report.drones).forEach(function(num){
+                let drone = curr_report.drones[num];
+                let name = loc('hell_report_log_obj_counter',[loc('portal_war_drone_title'),num]);
+                if (drone.encounter){
+                    info.append(`<p>${loc('hell_report_log_encounter',[name,drone.kills])}</p>`);
+                }
+                else {
+                    info.append(`<p class="has-text-warning">${loc('hell_report_log_encounter_fail',[name])}</p>`);
+                }
+            });
+        }
+        if (curr_report.patrols){
+            Object.keys(curr_report.patrols).forEach(function(num){
+                let patrol = curr_report.patrols[num];
+                let name = loc('hell_report_log_obj_counter',[loc('hell_report_log_patrol'),num]);
+                name = patrol.droid ? loc('hell_report_log_patrol_droid',[name]) : name;
+                if (patrol.encounter){
+                    let displayText = $(`<p></p>`);
+                    if (patrol.ambush){
+                        displayText.append(`<span class="has-text-warning">${loc('hell_report_log_patrol_ambush',[name,patrol.kills])}</span>`);
+                    }
+                    else {
+                        displayText.append(`<span>${loc('hell_report_log_encounter',[name,patrol.kills])}</span>`);
+                    }
+                    if (patrol.wounded){
+                        displayText.append(`<span class="has-text-danger">${patrol.wounded > 1 ? loc('hell_report_log_patrol_wounded_plural',[patrol.wounded]) : loc('hell_report_log_patrol_wounded')}</span>`);
+                    }
+                    if (patrol.died){
+                        displayText.append(`<span class="has-text-danger">${patrol.died > 1 ? loc('hell_report_log_patrol_killed_plural',[patrol.died]) : loc('hell_report_log_patrol_killed')}</span>`);
+                    }
+                    if (patrol.gem > 0){
+                        displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_find',[global.resource.Soul_Gem.name,patrol.gem])}</span>`);
+                    }
+                    info.append(displayText);
+                }
+                else {
+                    info.append(`<p class="has-text-warning">${loc('hell_report_log_encounter_fail',[name])}</p>`);
+                }
+            });
+        }
+
+        if (curr_report.surveyor_finds){
+            Object.keys(curr_report.surveyor_finds).forEach(function(num){
+                let surveyor = curr_report.surveyor_finds[num];
+                let name = loc('hell_report_log_obj_counter',[loc('job_hell_surveyor'),num]);
+
+                let displayText = $(`<p></p>`);
+                displayText.append(`<span>${loc('hell_report_log_search',[name,surveyor.bodies])}</span>`);
+                if (surveyor.gem > 0){
+                    displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_search',[global.resource.Soul_Gem.name,surveyor.gem])}</span>`);
+                }
+                info.append(displayText);
+            });
+        }
+
+        if (curr_report.revived){
+            info.append(`<p>${curr_report.revived > 1 ? loc('hell_report_log_revived_plural',[curr_report.revived]) : loc('hell_report_log_revived')}</p>`);
+        }
+        if (curr_report.patrols_lost){
+            info.append(`<p class="has-text-danger">${loc('hell_report_log_patrols_lost',[curr_report.patrols_lost])}</p>`);
+        }
+        if (curr_report.siege){
+            if (curr_report.siege.destroyed){
+                info.append(`<p class="has-text-danger">${loc('hell_report_log_siege',[curr_report.siege.surveyors,curr_report.siege.soldiers,curr_report.siege.kills])}</p>`);
+            }
+            else {
+                info.append(`<p class="has-text-warning">${loc('hell_report_log_siege_fail',[curr_report.siege.damage,curr_report.siege.kills])}</p>`);
+            }
+        }
+        if (curr_report.demons){
+            info.append(`<p class="has-text-danger">${loc('hell_report_log_demons',[curr_report.demons])}</p>`);
+        }
+        if (curr_report.surveyors){
+            info.append(`<p class="has-text-danger">${curr_report.surveyors > 1 ? loc('hell_report_log_surveyors_plural',[curr_report.surveyors]) : loc('hell_report_log_surveyors')}</p>`);
+        }
+        if (curr_report.soul_attractors){
+            info.append(`<p>${loc('hell_report_log_soul_attractors',[curr_report.soul_attractors])}</p>`);
+        }
+        if (curr_report.gun_emplacements){
+            Object.keys(curr_report.gun_emplacements).forEach(function(num){
+                let displayText = $(`<p></p>`);
+                let gun = curr_report.gun_emplacements[num];
+                let name = loc('hell_report_log_obj_counter',[loc('portal_gun_emplacement_title'),num]);
+                displayText.append($(`<span>${loc('hell_report_log_misc_kills',[name,gun.kills,loc('portal_pit_name')])}</span>`));
+                if (gun.gem){
+                    displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_find',[global.resource.Soul_Gem.name,1])}</span>`);
+                }
+                info.append(displayText);
+            });
+        }
+        if (curr_report.soul_forge){
+            let displayText = $(`<p></p>`);
+            displayText.append(`<span>${loc('hell_report_log_soul_forge',[curr_report.soul_forge.kills])}</span>`);
+            if (curr_report.soul_forge.gem){
+                displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_find',[global.resource.Soul_Gem.name,1])}</span>`);
+            }
+            if (curr_report.soul_forge.gem_craft){
+                displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_craft',[curr_report.soul_forge.corrupt ? loc('resource_Corrupt_Gem_name') : global.resource.Soul_Gem.name])}</span>`);
+            }
+            info.append(displayText);
+        }
+        if (curr_report.gate_turrets){
+            Object.keys(curr_report.gate_turrets).forEach(function(num){
+                let displayText = $(`<p></p>`);
+                let turret = curr_report.gate_turrets[num];
+                let name = loc('hell_report_log_obj_counter',[loc('portal_gate_turret_title'),num]);
+                displayText.append(`<span>${loc('hell_report_log_misc_kills',[name,turret.kills,loc('portal_gate_name')])}</span>`);
+                if (turret.gem){
+                    displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_find',[global.resource.Soul_Gem.name,1])}</span>`);
+                }
+                info.append(displayText);
+            });
+        }
+    
+        vBind({
+            el: '#hellReportDisplay',
+            data: {
+                g: global.resource.Soul_Gem
+            }
+        });
+    }
+
+    if (recentDay.day !== 0){
+        updateList(recentDay.year, recentDay.day);
+        let lastReportYear = recentDay.year;
+        let lastReportDay = recentDay.day;
+        if (lastReportDay - 1 === 0){
+            lastReportYear--;
+            lastReportDay = global.city.calendar.orbit;
+        }
+        else {
+            lastReportDay--;
+        }
+        loadReport(lastReportYear,lastReportDay);
+    }
+    else {
+        recentDay.year = global.city.calendar.year;
+        recentDay.day = global.city.calendar.day;
+    }
+
+    vBind({
+        el: '#hellReportLogTitle',
+        methods: {
+            updateList(){
+                updateList(recentDay.year, recentDay.day);
+            }
         }
     });
 
-    global.resource.Artifact.amount += artifacts;
-    global.resource.Artifact.display = true;
-
-    let affix = universeAffix();
-    if (global.stats.spire.hasOwnProperty(affix)){
-        if (global.stats.spire[affix].hasOwnProperty('lord')){
-            global.stats.spire[affix].lord++;
-        }
-        else {
-            global.stats.spire[affix]['lord'] = 1;
-        }
-
-        if (global.tech['dl_reset']){
-            global.stats.spire[affix]['dlstr'] = 0;
-        }
-        else { 
-            if (global.stats.spire[affix].hasOwnProperty('dlstr')){
-                global.stats.spire[affix].dlstr++;
-            }
-            else {
-                global.stats.spire[affix]['dlstr'] = 1;
-            }
-        }
-    }
-
-    let god = global.race.species;
-    let old_god = global.race.gods;
-    let orbit = global.city.calendar.orbit;
-    let biome = global.city.biome;
-    let atmo = global.city.ptrait;
-    let geo = global.city.geology;
-    let plasmid = global.race.Plasmid.count;
-    let antiplasmid = global.race.Plasmid.anti;
-    let phage = global.race.Phage.count;
-    let harmony = global.race.Harmony.count;
-
-    global.stats.artifact += artifacts;
-    global.stats.descend++;
-    updateResetStats();
-    checkAchievements();
-
-    global['race'] = {
-        species : 'protoplasm',
-        gods: god,
-        old_gods: old_god,
-        Plasmid: { count: plasmid, anti: antiplasmid },
-        Phage: { count: phage },
-        Dark: { count: global.race.Dark.count },
-        Harmony: { count: harmony },
-        universe: global.race.universe,
-        seeded: false,
-        seed: Math.floor(Math.seededRandom(10000)),
-        corruption: 5,
-        ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
-    };
-
-    global.city = {
-        calendar: {
-            day: 0,
-            year: 0,
-            weather: 2,
-            temp: 1,
-            moon: 0,
-            wind: 0,
-            orbit: orbit
+    popover(`hellReportLogs`, function(){
+            return loc(`hell_report_log_tooltip`,[2500]);
         },
-        biome: biome,
-        ptrait: atmo,
-        geology: geo
-    };
-    global.tech = { theology: 1 };
-    clearStates();
-    global.new = true;
-    Math.seed = Math.rand(0,10000);
-    global.seed = Math.seed;
+        {
+            elm: `#hellReport .reportList div:first-child h2`
+        }
+    );
+}
 
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-    window.location.reload();
+function purgeReports(refresh){
+    if (!(!!document.getElementById(`hellReportList`)) || refresh){
+        let removed = false;
+        let threshold = 2500;
+
+        let approx = ((Object.keys(hell_reports).length - 1) * global.city.calendar.orbit) + global.city.calendar.day;
+
+        if (approx > threshold){
+            let firstYear = Object.keys(hell_reports[Object.keys(hell_reports)[0]]).length;
+            if (approx - global.city.calendar.orbit + firstYear > threshold){
+                removed = true;
+                approx -= firstYear;
+                delete hell_reports[Object.keys(hell_reports)[0]];
+            }
+            while (approx > threshold){
+                approx -= global.city.calendar.orbit;
+                delete hell_reports[Object.keys(hell_reports)[0]];
+            }
+        }
+        return removed;
+    }
 }

@@ -73,6 +73,10 @@ span, div {
         padding: .25rem .5rem;
         border: .0625rem solid;
 
+        span[role=button] {
+            cursor: pointer;
+        }
+
         span.row {
             display: block;
         }
@@ -148,7 +152,7 @@ span, div {
         }
 
         .reqs {
-            span:not(:first-child) {
+            span:not(:first-child):not(.subreqs) {
                 margin-left: 0.5rem;
             }
         }
@@ -157,6 +161,10 @@ span, div {
             border-top: .0625rem solid;
             margin-top: .5rem;
             padding-top: .5rem;
+
+            .calcButton button {
+                height: 1.5rem;
+            }
         }
 
         div.aTable {
@@ -179,6 +187,26 @@ span, div {
             border-radius: .25rem;
             line-height: 1.3125rem;
             margin-right: 1rem;
+        }
+
+        &.col2 {
+            display: flex;
+            flex-wrap: wrap;
+            align-content: space-between;
+            > h2,
+            > h3,
+            > h4 {
+                width: 100%;
+            }
+            > div {
+                width: 50%;
+            }
+        }
+
+        &.sk1 {
+            div:first-of-type {
+                width: 100%;
+            }
         }
     }
 
@@ -275,11 +303,72 @@ span, div {
         list-style: disc;
         margin-left: 1.25rem;
     }
+
+    .tbl {
+        display: table;
+        .trow {
+            display: table-row;
+            .tcell {
+                display: table-cell;
+                padding-right: 0.75rem;
+                min-width: 5rem;
+            }
+            .tcell:last-child {
+                padding-right: 0;
+            }
+            .eggsol,
+            .totsol {
+                cursor: pointer;
+                padding-bottom: .5rem;
+            }
+        }
+    }
+    
+    .reveal {
+        cursor: pointer;
+        margin-bottom: .5rem;
+    }
+    .calcInput {
+        width: 7.5rem;
+        display: inline-block;
+        height: 1.25rem;
+        margin-bottom: .5rem;
+        text-align: center;
+
+        input {
+            height: 1.25rem;
+            line-height: 1.25rem;
+            text-align: center;
+        }
+
+        .dropdown button {
+            height: 1.25rem;
+            padding: 0 .75rem;
+        }
+        
+        .calcInputButton {
+            height: 1.25rem;
+            padding: 0 .25rem;
+            margin: 0;
+        }
+    }
+    .calcButton{
+        margin-bottom: 1rem;
+    }
+}
+
+.main>div.popper.wide.w25,
+body .modal>div.popper.wide.w25 {
+    max-width: 25rem;
 }
 
 html.dark,
 html.night,
-html.redgreen {
+html.redgreen,
+html.darkNight,
+html.gruvboxDark,
+html.orangeSoda,
+html.dracula {
     .menu-label {
         color: #ffa500 !important;
     }
@@ -297,7 +386,8 @@ html.redgreen {
     }
 }
 
-html.light {
+html.light,
+html.gruvboxLight {
     .menu-label {
         color: #966100 !important;
     }

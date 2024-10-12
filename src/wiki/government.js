@@ -123,7 +123,7 @@ export function govPage(content){
             break: [2,5,6],
             para_data: {
                 2: ['3%'],
-                4: [5],
+                4: ['25%'],
                 5: ['10%'],
                 6: ['25%','32%'],
                 7: ['36%',loc('tech_virtual_reality'),'40%',loc('tech_metaphysics')]

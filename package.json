@@ -1,19 +1,20 @@
 {
   "name": "evolveidle",
-  "version": "1.0.31",
+  "version": "1.3.16",
   "description": "Evolve Idle",
   "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "less": "lessc -x src/evolve.less evolve/evolve.css",
-    "dev": "npx webpack --config webpack.evolve.dev.js",
-    "evolve": "npx webpack --config webpack.evolve.prod.js",
-    "build": "npm run evolve && npm run wiki",
-    "build-dev": "npm run dev && npm run wiki-dev",
-    "wiki-dev": "npx webpack --config webpack.wiki.dev.js",
-    "wiki": "npx webpack --config webpack.wiki.prod.js",
-    "wiki-less": "lessc -x src/wiki/wiki.less wiki/wiki.css",
-    "serve": "servehere -c"
+    "build": "npm run evolve && npm run evolve-less && npm run wiki && npm run wiki-less",
+    "build-win": "npm run evolve && npm run evolve-less-win && npm run wiki && npm run wiki-less-win",
+    "evolve": "node buildEvolve.js",
+    "evolve-less": "lessc src/evolve.less evolve/evolve-unminified.css && csso -i evolve/evolve-unminified.css -o evolve/evolve.css && rm evolve/evolve-unminified.css",
+    "evolve-less-win": "lessc src/evolve.less evolve/evolve-unminified.css && csso -i evolve/evolve-unminified.css -o evolve/evolve.css && del evolve\\evolve-unminified.css",
+    "wiki": "node buildWiki.js",
+    "wiki-less": "lessc src/wiki/wiki.less wiki/wiki-unminified.css && csso -i wiki/wiki-unminified.css -o wiki/wiki.css && rm wiki/wiki-unminified.css",
+    "wiki-less-win": "lessc src/wiki/wiki.less wiki/wiki-unminified.css && csso -i wiki/wiki-unminified.css -o wiki/wiki.css && del wiki\\wiki-unminified.css",
+    "serve": "servehere -c",
+    "deploy": "rm -rf dist && mkdir dist && cp -r *.html *.ico LICENSE evolve lib font strings wiki dist && gh-pages -d dist",
+    "deploy-win": "(rmdir /S /Q dist || echo recreating dist) && mkdir dist && xcopy /E /I evolve dist\\evolve && xcopy /E /I font dist\\font && xcopy /E /I lib dist\\lib && xcopy /E /I strings dist\\strings && xcopy /E /I wiki dist\\wiki && copy *.html dist && copy *.ico dist && copy LICENSE dist && gh-pages -d dist"
   },
   "repository": {
     "type": "git",
@@ -29,10 +30,15 @@
   },
   "homepage": "https://github.com/pmotschmann/Evolve#readme",
   "devDependencies": {
+    "csso-cli": "^4.0.2",
+    "ini": "^1.3.8",
     "less": "^3.13.0",
     "servehere": "^1.7.0",
-    "webpack": "^5.10.1",
-    "webpack-cli": "^4.2.0",
-    "ini": "^1.3.8"
+    "gh-pages": "^6.1.1"
+  },
+  "dependencies": {
+    "esbuild": "0.17.19",
+    "node": "^16.1.0",
+    "npmcli": "^1.2.2"
   }
 }

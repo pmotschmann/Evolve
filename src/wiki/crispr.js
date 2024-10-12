@@ -21,36 +21,53 @@ export function crisprPage(content){
 
 const specialRequirements = {
     universal: [
-        [
-            loc(`wiki_tech_special_universe_not`,[loc(`universe_standard`)]),
-            global.race.universe !== 'standard'
-        ]
+        {
+            title: loc(`wiki_tech_special_universe_not`,[loc(`universe_standard`)]),
+            color: global.race.universe !== 'standard',
+            link: 'wiki.html#universes-gameplay-standard'
+        }
     ],
     standard: [
-        [
-            loc(`wiki_tech_special_universe_not`,[loc(`universe_standard`)]),
-            global.race.universe !== 'standard'
-        ]
+        {
+            title: loc(`wiki_tech_special_universe_not`,[loc(`universe_standard`)]),
+            color: global.race.universe !== 'standard',
+            link: 'wiki.html#universes-gameplay-standard'
+        }
     ],
     ancients: [
-        [
-            loc(`wiki_arpa_crispr_special_ancients`),
-            global.genes['old_gods'] ? true : false
-        ]
+        {
+            title: loc(`wiki_arpa_crispr_special_ancients`),
+            color: global.genes['old_gods'] ? true : false,
+            link: 'wiki.html#resets-prestige-intro'
+        }
     ],
     bleeding_effect: [
-        [
-            loc(`wiki_tech_special_universe`,[loc(`universe_antimatter`)]),
-            global.race.universe === 'antimatter'
-        ]
+        {
+            title: loc(`wiki_tech_special_universe`,[loc(`universe_antimatter`)]),
+            color: global.race.universe === 'antimatter',
+            link: 'wiki.html#universes-gameplay-antimatter'
+        }
     ],
     blood_remembrance: [
-        [
-            loc(`wiki_arpa_crispr_special_blood_remembrance`),
-            global.resource['Blood_Stone'] && global.resource.Blood_Stone.amount >= 1
-        ]
+        {
+            title: loc(`wiki_arpa_crispr_special_blood_remembrance`),
+            color: global.prestige.Blood_Stone.count >= 1,
+            link: 'wiki.html#resources-prestige-blood'
+        }
     ]
 }
+
+var crisprTrees = {};
+Object.keys(genePool).forEach(function (gene){
+    let crispr = genePool[gene];
+    if (!crisprTrees[crispr.grant[0]]){
+        crisprTrees[crispr.grant[0]] = {};
+    }
+    let text = typeof genePool[gene].title === 'string' ? genePool[gene].title : genePool[gene].title();
+    crisprTrees[crispr.grant[0]][crispr.grant[1]] = {
+        name: gene
+    };
+});
 
 function geneDesc(info,gene){
     let owned = global.genes[genePool[gene].grant[0]] && global.genes[genePool[gene].grant[0]] >= genePool[gene].grant[1] ? true : false;
@@ -82,7 +99,7 @@ function geneDesc(info,gene){
         let comma = false;
         Object.keys(genePool[gene].reqs).forEach(function (req){
             let color = global.genes[req] && global.genes[req] >= genePool[gene].reqs[req] ? 'success' : 'danger';
-            reqs.append(`${comma ? `, ` : ``}<span class="has-text-${color}">${loc(`wiki_arpa_crispr_${req}`)} ${genePool[gene].reqs[req]}</span>`);
+            reqs.append(`${comma ? `, ` : ``}<span><a href="wiki.html#crispr-prestige-${crisprTrees[req][genePool[gene].reqs[req]].name}" class="has-text-${color}" target="_blank">${loc(`wiki_arpa_crispr_${req}`)} ${genePool[gene].reqs[req]}</a></span>`);
             comma = true;
         });
     }
@@ -91,8 +108,10 @@ function geneDesc(info,gene){
         let specialReq = $(`<div class="reqs"><span class="has-text-caution">${loc('wiki_arpa_crispr_req_extra')}</span></div>`);
         info.append(specialReq);
         Object.keys(specialRequirements[gene]).forEach(function (req){
-            let color = specialRequirements[gene][req][1] ? 'success' : 'danger';
-            specialReq.append(`${comma ? `, ` : ``}<span class="has-text-${color}">${specialRequirements[gene][req][0]}</span>`);
+            let color = specialRequirements[gene][req].color ? 'success' : 'danger';
+            let text = specialRequirements[gene][req].link ? `<a href="${specialRequirements[gene][req].link}" class="has-text-${color}" target="_blank">${specialRequirements[gene][req].title}</a>` : specialRequirements[gene][req].title;
+            specialReq.append(`${comma ? `, ` : ``}<span class="has-text-${color}">${text}</span>`);
+            
             comma = true;
         });
     }
