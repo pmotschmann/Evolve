@@ -6266,7 +6266,7 @@
   "interstellar_mass_ejector_vol": "喷射质量",
   "interstellar_mass_ejector_mass": "总质量",
   "interstellar_mass_ejector_timer": "黑洞不稳定剩余时间：%0",
-  "interstellar_mass_ejector_reached": "黑洞已不稳定；如果没有相应的稳定措施，黑洞将会引爆！",
+  "interstellar_mass_ejector_reached": "黑洞已不稳定",
   "interstellar_jump_ship": "跃迁飞船",
   "interstellar_jump_ship_desc": "虫洞跃迁飞船",
   "interstellar_jump_ship_effect": "建造专用于穿越天然虫洞的特殊飞船。它需要极其强大的护盾来保护，并且要有独特的引擎，以便于在不稳定的虫洞之间穿梭。",
