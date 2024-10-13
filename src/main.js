@@ -12,7 +12,7 @@ import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, ziggurat
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay } from './portal.js';
 import { asphodelResist, mechStationEffect } from './edenic.js';
 import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled } from './truepath.js';
-import { arpa, buildArpa } from './arpa.js';
+import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
 import { govern, govActive, removeTask } from './governor.js';
 import { production, highPopAdjust, teamster } from './prod.js';
@@ -3663,7 +3663,9 @@ function fastLoop(){
                 // Do Nothing
             }
             else {
-                var lowerBound = global.tech['reproduction'] ? global.tech['reproduction'] : 0;
+                let lowerBound = global.tech['reproduction'] ? global.tech['reproduction'] : 0;
+                let upperBound = global['resource'][global.race.species].amount;
+
                 if (global.tech['reproduction'] && date.getMonth() === 1 && date.getDate() === 14){
                     lowerBound += 5;
                 }
@@ -3700,16 +3702,21 @@ function fastLoop(){
                 }
                 if (global.race['high_pop']){
                     lowerBound *= traits.high_pop.vars()[2];
+                    upperBound /= jobScale(1);
                 }
                 if (global.city.biome === 'taiga'){
                     lowerBound *= biomes.taiga.vars()[1];
                 }
-                let base = global.city.ptrait.includes('toxic') ? global['resource'][global.race.species].amount * planetTraits.toxic.vars()[1] : global['resource'][global.race.species].amount;
+                if (global.city.ptrait.includes('toxic')){
+                    upperBound *= planetTraits.toxic.vars()[1];
+                }
                 if (global.race['parasite'] && (global.race['cataclysm'] || global.race['orbit_decayed'])){
                     lowerBound = Math.round(lowerBound / 5);
-                    base *= 3;
+                    upperBound *= 3;
                 }
-                if(Math.rand(0, base * (3 - (2 ** time_multiplier))) <= lowerBound){
+
+                upperBound *= (3 - (2 ** time_multiplier));
+                if(Math.rand(0, upperBound) <= lowerBound){
                     global['resource'][global.race.species].amount++;
                 }
             }
@@ -4007,7 +4014,7 @@ function fastLoop(){
             }
 
             let gene_consume = 0;
-            if (global.arpa['sequence'] && global.arpa.sequence.on && global.arpa.sequence.time > 0){
+            if (global.arpa['sequence'] && global.arpa.sequence.on && global.arpa.sequence.time > 0 && sequenceLabs() > 0){
                 let gene_cost = 50 + (global.race.mutation * 10);
                 if (global.arpa.sequence.boost){
                     gene_cost *= 4;
@@ -6223,7 +6230,7 @@ function fastLoop(){
 
             if (global.race['cataclysm'] && support_on['iridium_mine']){
                 coal_base = support_on['iridium_mine'] * production('iridium_mine','coal');
-                coal_base *= global.civic.coal_miner.impact * production('psychic_boost','Coal');
+                coal_base *= production('psychic_boost','Coal');
                 breakdown.p['Coal'][loc('space_moon_iridium_mine_title')] = coal_base + 'v';
                 if (coal_base > 0){
                     breakdown.p['Coal'][`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
@@ -6733,7 +6740,7 @@ function fastLoop(){
 
             if (global.civic.hell_surveyor.workers > 0){
                 let rate = global.tech.infernite >= 3 ? 0.015 : 0.01;
-                let surveyor_base = workerScale(global.civic.hell_surveyor.workers,'hell_surveyor') * rate * production('psychic_boost','Infernite');
+                let surveyor_base = workerScale(highPopAdjust(global.civic.hell_surveyor.workers),'hell_surveyor') * rate * production('psychic_boost','Infernite');
 
                 let sensors = 1;
                 if (global.tech['infernite'] >= 2 && p_on['sensor_drone']){
@@ -8084,7 +8091,8 @@ function midLoop(){
             lCaps['garrison'] += global.space.space_barracks.on * soldiers;
         }
         if (global.interstellar['cruiser']){
-            lCaps['garrison'] += int_on['cruiser'] * jobScale(3);
+            let soldiers = global.race['fasting'] ? jobScale(4) : jobScale(3);
+            lCaps['garrison'] += int_on['cruiser'] * soldiers;
         }
         if (p_on['s_gate'] && global.galaxy['starbase']){
             let soldiers = global.tech.marines >= 2 ? jobScale(8) : jobScale(5);
@@ -8994,7 +9002,7 @@ function midLoop(){
             lCaps['craftsman'] += jobScale(p_on['stellar_forge'] * 2);
         }
         if (global.portal['carport']){
-            lCaps['hell_surveyor'] += global.portal.carport.count - global.portal.carport.damaged;
+            lCaps['hell_surveyor'] += jobScale(global.portal.carport.count) - global.portal.carport.damaged;
         }
         if (p_on['archaeology']){
             lCaps['archaeologist'] += jobScale(p_on['archaeology'] * 2);
@@ -9953,12 +9961,7 @@ function midLoop(){
         }
 
         if (global.arpa['sequence'] && global.arpa.sequence.on && gene_sequence){
-            let labs = global.race['cataclysm'] || global.race['orbit_decayed'] ? support_on['exotic_lab'] : p_on['biolab'];
-            if (global.tech['isolation']){ labs = support_on['infectious_disease_lab'] * 5; }
-            if (global.race['lone_survivor']){ labs += 2; }
-            if (labs > 0 && global.city.ptrait.includes('toxic')){
-                labs += planetTraits.toxic.vars()[0];
-            }
+            let labs = sequenceLabs();
             global.arpa.sequence.labs = labs;
             global.arpa.sequence.time -= global.arpa.sequence.boost ? labs * 2 : labs;
             global.arpa.sequence.progress = global.arpa.sequence.max - global.arpa.sequence.time;

@@ -1,7 +1,7 @@
-import { global, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
+import { global, keyMultiplier, sizeApproximation, srSpeak, p_on, support_on } from './vars.js';
 import { clearElement, popover, clearPopper, flib, fibonacci, eventActive, timeFormat, vBind, messageQueue, adjustCosts, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, trickOrTreat, getTraitDesc, removeFromQueue, arpaTimeCheck, deepClone } from './functions.js';
 import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts, structName } from './actions.js';
-import { races, traits, cleanAddTrait, cleanRemoveTrait, traitSkin, fathomCheck } from './races.js';
+import { races, traits, cleanAddTrait, cleanRemoveTrait, traitSkin, fathomCheck, planetTraits } from './races.js';
 import { renderSpace } from './space.js';
 import { drawMechLab } from './portal.js';
 import { govActive, defineGovernor } from './governor.js';
@@ -2259,6 +2259,16 @@ function genetics(){
 
         dragGeneticsList();
     }
+}
+
+export function sequenceLabs(){
+    let labs = global.race['cataclysm'] || global.race['orbit_decayed'] ? support_on['exotic_lab'] : p_on['biolab'];
+    if (global.tech['isolation']){ labs = support_on['infectious_disease_lab'] * 5; }
+    if (global.race['lone_survivor']){ labs += 2; }
+    if (labs > 0 && global.city.ptrait.includes('toxic')){
+        labs += planetTraits.toxic.vars()[0];
+    }
+    return labs;
 }
 
 function bindTrait(breakdown,trait){
