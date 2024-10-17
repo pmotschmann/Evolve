@@ -4849,8 +4849,8 @@ export function tritonWar(){
         }
 
         global.civic.garrison.wounded += hurt;
-        if (global.civic.garrison.wounded > garrisonSize(false,true)){
-            global.civic.garrison.wounded = garrisonSize(false,true);
+        if (global.civic.garrison.wounded > garrisonSize(false,{nofob: true})){
+            global.civic.garrison.wounded = garrisonSize(false,{nofob: true});
         }
 
         {

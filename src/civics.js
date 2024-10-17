@@ -1,4 +1,4 @@
-import { global, seededRandom, keyMultiplier, sizeApproximation } from './vars.js';
+import { global, seededRandom, keyMultiplier, sizeApproximation, p_on } from './vars.js';
 import { loc } from './locale.js';
 import { calcPrestige, clearElement, popover, clearPopper, vBind, timeFormat, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat } from './functions.js';
 import { universeAffix } from './achieve.js';
@@ -2157,14 +2157,15 @@ export function armyRating(val,type,wound){
     return army * racialTrait(val,type);
 }
 
-export function garrisonSize(max,nofob){
+export function garrisonSize(max, args = {} ){
     if (!global.civic.garrison){
         return 0;
     }
     let type = max ? 'max' : 'workers';
     let fortress = global.portal['fortress'] ? global.portal.fortress.garrison : 0;
-    let fob = global.space['fob'] && !nofob ? global.space.fob.troops : 0;
-    return global.civic.garrison[type] - global.civic.garrison.crew - fortress - fob;
+    let fob = global.space['fob'] && !args['nofob'] ? global.space.fob.troops : 0;
+    let pillbox = global.eden['pillbox'] && !args['nopill'] ? global.eden.pillbox.staffed : 0;
+    return global.civic.garrison[type] - global.civic.garrison.crew - fortress - fob - pillbox;
 }
 
 function defineMad(){

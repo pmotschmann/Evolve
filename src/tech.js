@@ -14717,7 +14717,7 @@ const techs = {
         effect(){ return loc('tech_pillbox_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.eden['pillbox'] = { count: 0, on: 0 };
+                global.eden['pillbox'] = { count: 0, on: 0, staffed: 0 };
                 return true;
             }
             return false;

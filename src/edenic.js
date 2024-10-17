@@ -1025,14 +1025,14 @@ const edenicModules = {
                     return !global.eden.hasOwnProperty('fire_support_base') || (global.eden.fire_support_base.count < 100) ? 625000 : 0;
                 },
                 Elerium(){
-                    return global.tech.elysium >= 10 ? 250000 : 0;
+                    return global.tech.elysium >= 10 && global.eden.fire_support_base.count === 100 ? 250000 : 0;
                 }
             },
             effect(wiki){
                 let count = (wiki || 0) + (global.eden.hasOwnProperty('fire_support_base') ? global.eden.fire_support_base.count : 0);
                 if (count >= 100){
                     let desc = `<div>${loc('plus_max_soldiers',[25])}</div>`;
-                    if (global.tech['elysium'] && global.tech.elysium >= 10){
+                    if (global.tech['elysium'] && global.tech.elysium >= 10 && global.tech.isle === 1){
                         if (global.resource.Elerium.amount >= 250000){
                             desc += `<div class="has-text-success">${loc('eden_fire_support_base_effect')}</div>`;
                         }
@@ -1063,20 +1063,37 @@ const edenicModules = {
                 else if (global.eden.fire_support_base.count === 100 && global.tech.elysium >= 10 && payCosts($(this)[0])){
                     let target = null, element = null;
                     let targets = [];
+                    if (!global.eden['enemy_isle']){ global.eden['enemy_isle'] = { wt: 100, et: 100, g: 100 }; }
                     if (global.eden.enemy_isle.wt > 0){ targets.push('wt'); }
                     if (global.eden.enemy_isle.g > 0){ targets.push('g'); }
                     if (global.eden.enemy_isle.et > 0){ targets.push('et'); }
 
+                    if (global.eden['pillbox'] && global.eden.pillbox.staffed > 0){
+                        let rating = +(Math.round(armyRating(global.eden.pillbox.staffed,'army',0)) / 100).toFixed(0);
+                        if (rating > 100){ rating = 100; }
+                        global.eden.fire_support_base.count = Math.floor(rating);
+                    }
+                    else {
+                        global.eden.fire_support_base.count = 0;
+                    }
+
+                    if (global.eden.fire_support_base.count < 100){
+                        messageQueue(loc('eden_fire_support_base_counterattack',[loc('eden_fire_support_base_title')]),'danger',false,['progress']);
+                    }
+
                     target = targets[Math.floor(seededRandom(0,targets.length))];
                     if (target === 'wt'){
-                        element = '#eden-west_tower';
+                        element = '#eden-west_tower .button';
                     }
                     else if (target === 'et'){
-                        element = '#eden-east_tower';
+                        element = '#eden-east_tower .button';
                     }
                     else if (target === 'g'){
-                        element = 'eden-isle_garrison';
+                        element = 'eden-isle_garrison .button';
                     }
+
+                    global.eden.enemy_isle[target] -= Math.floor(seededRandom(25,75));
+                    if (global.eden.enemy_isle[target] < 0){ global.eden.enemy_isle[target] = 0; }
 
                     let nuke = $('<div class="mininuke"></div>');
                     $(element).append(nuke);
@@ -1092,6 +1109,11 @@ const edenicModules = {
                     setTimeout(function(){
                         $(`${element} .mininuke`).remove();
                     }, 4500);
+
+                    if (global.eden.enemy_isle.wt === 0 && global.eden.enemy_isle.g === 0 && global.eden.enemy_isle.et === 0){
+                        global.tech['isle'] = 2;
+                        return true;
+                    }
                 }
                 return false;
             }
@@ -1179,6 +1201,34 @@ const edenicModules = {
                 return false;
             }
         },
+        pillbox: {
+            id: 'eden-pillbox',
+            title(){ return loc('eden_pillbox_title'); },
+            desc(){
+                return `<div>${loc('eden_pillbox_title',)}</div><div class="has-text-special">${loc('requires_soldiers')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { elysium: 11 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('pillbox', offset, 1500000000, 1.26, 'eden'); },
+                Cement(offset){ return spaceCostMultiplier('pillbox', offset, 500000000, 1.26, 'eden'); },
+                Steel(offset){ return spaceCostMultiplier('pillbox', offset, 65000000, 1.26, 'eden'); },
+                Nanoweave(offset){ return spaceCostMultiplier('pillbox', offset, 38000000, 1.26, 'eden'); },
+            },
+            effect(){
+                let rating = +(Math.round(armyRating(global.eden['pillbox'] && global.eden.pillbox.staffed ? global.eden.pillbox.staffed : jobScale(10),'army',0)) / 100).toFixed(1);
+                if (rating > 100){ rating = 100; }
+                return `<div>${loc('eden_pillbox_effect',[rating])}</div><div class="has-text-caution">${loc('portal_guard_post_effect2',[jobScale(10),$(this)[0].powered()])}</div>`;
+            },
+            powered(){ return powerCostMod(12); },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('pillbox','eden');
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            }
+        }
     },
     eden_isle: {
         info: {
@@ -1187,8 +1237,8 @@ const edenicModules = {
         },
         west_tower: { 
             id: 'eden-west_tower',
-            title: loc('eden_west_tower_title'),
-            desc: loc('eden_west_tower_title'),
+            title(){ return global.eden['enemy_isle'] && global.eden.enemy_isle.wt === 0 ? loc('eden_west_tower_ruin') : loc('eden_west_tower_title'); },
+            desc(){ return global.eden['enemy_isle'] && global.eden.enemy_isle.wt === 0 ? loc('eden_west_tower_ruin') : loc('eden_west_tower_title'); },
             queue_complete(){ return 0; },
             reqs: { isle: 1 },
             effect(){ 
@@ -1205,8 +1255,8 @@ const edenicModules = {
         },
         isle_garrison: { 
             id: 'eden-isle_garrison',
-            title: loc('eden_garrison_title'),
-            desc: loc('eden_garrison_title'),
+            title(){ return global.eden['enemy_isle'] && global.eden.enemy_isle.g === 0 ? loc('eden_garrison_ruin') : loc('eden_garrison_title'); },
+            desc(){ return global.eden['enemy_isle'] && global.eden.enemy_isle.g === 0 ? loc('eden_garrison_ruin') : loc('eden_garrison_title'); },
             queue_complete(){ return 0; },
             reqs: { isle: 1 },
             effect(){ 
@@ -1223,8 +1273,8 @@ const edenicModules = {
         },
         east_tower: { 
             id: 'eden-east_tower',
-            title: loc('eden_east_tower_title'),
-            desc: loc('eden_east_tower_title'),
+            title(){ return global.eden['enemy_isle'] && global.eden.enemy_isle.et === 0 ? loc('eden_east_tower_ruin') : loc('eden_east_tower_title'); },
+            desc(){ return global.eden['enemy_isle'] && global.eden.enemy_isle.et === 0 ? loc('eden_east_tower_ruin') : loc('eden_east_tower_title'); },
             queue_complete(){ return 0; },
             reqs: { isle: 1 },
             effect(){ 

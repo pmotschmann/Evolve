@@ -2012,7 +2012,7 @@ function fastLoop(){
                 let fuel = fuel_adjust(50,true);
                 support_on['lander'] = global.space.lander.on;
 
-                let total = garrisonSize(false,true);
+                let total = garrisonSize(false,{nofob: true});
                 let troopReq = jobScale(3);
                 let deployed = support_on['lander'] * troopReq;
                 if (deployed <= total){
@@ -2634,6 +2634,29 @@ function fastLoop(){
                 }
             }
             int_on['cruiser'] = active;
+        }
+
+        // Pillbox
+        if (global.eden['pillbox']){
+            let pillsize = jobScale(10);
+            if (p_on['pillbox']){
+                var staff = p_on['pillbox'] * pillsize;
+                let soldiers = garrisonSize(false,{nopill: true});
+                if (soldiers < staff){
+                    staff = Math.floor(soldiers / pillsize) * pillsize;
+                }
+                global.eden.pillbox.staffed = staff;
+            }
+            else {
+                global.eden.pillbox.staffed = 0;
+            }
+
+            if (global.eden.pillbox.staffed < p_on['pillbox'] * pillsize){
+                $(`#eden-pillbox .on`).addClass('warn');
+            }
+            else {
+                $(`#eden-pillbox .on`).removeClass('warn')
+            }
         }
 
         // Graphene Hack
