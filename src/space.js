@@ -2595,6 +2595,7 @@ const interstellarProjects = {
             effect(wiki){
                 let banks = global.race['cataclysm'] || global.race['orbit_decayed'] ? (wiki ? global.space.spaceport.on : p_on['spaceport']) : (global.city['bank'] ? global.city.bank.count : 0);
                 let b_vault = global.race['cataclysm'] || global.race['orbit_decayed']  ? (bank_vault() * 4) : bank_vault();
+                if (global.eden['eternal_bank']){ banks += global.eden.eternal_bank.count * 2; }
                 let vault = spatialReasoning(global.city['bank'] ? b_vault * banks / 18 : 0);
                 if (global.race['inflation']){
                     vault *= 2;

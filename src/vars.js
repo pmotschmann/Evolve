@@ -1755,7 +1755,7 @@ if (!global.city['hot']){
 
 [
     'unemployed','leadership','warmonger','rev','tax','shrine','blood_thirst',
-    'broadcast','vr','zoo','bliss_den','cap','potential'
+    'broadcast','vr','zoo','bliss_den','restaurant','cap','potential'
 ].forEach(function(k){
     if (!global.city.morale.hasOwnProperty(k)){
         global.city.morale[k] = 0;

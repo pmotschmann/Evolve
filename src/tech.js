@@ -5109,6 +5109,26 @@ const techs = {
             return false;
         }
     },
+    divinity: {
+        id: 'tech-divinity',
+        title: loc('tech_divinity'),
+        desc: loc('tech_divinity'),
+        category: 'existential',
+        era: 'dimensional',
+        reqs: { high_tech: 18, elysium: 15, isle: 2 },
+        grant: ['high_tech',19],
+        cost: {
+            Knowledge(){ return 120000000; },
+            Omniscience(){ return 34000; },
+        },
+        effect(){ return loc('tech_divinity_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     blood_pact: {
         id: 'tech-blood_pact',
         title: loc('tech_blood_pact'),
@@ -14764,6 +14784,69 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.eden['elerium_containment'] = { count: 0, on: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    ambrosia: {
+        id: 'tech-ambrosia',
+        title(){ return loc('tech_ambrosia'); },
+        desc(){ return loc('tech_ambrosia'); },
+        category: 'entertainment',
+        era: 'existential',
+        reqs: { elysium: 11 },
+        grant: ['elysium',12],
+        cost: {
+            Knowledge(){ return 112000000; },
+            Omniscience(){ return 28000; },
+        },
+        effect(){ return loc('tech_ambrosia_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.eden['restaurant'] = { count: 0, on: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    eternal_bank: {
+        id: 'tech-eternal_bank',
+        title(){ return loc('tech_eternal_bank'); },
+        desc(){ return loc('tech_eternal_bank'); },
+        category: 'banking',
+        era: 'existential',
+        reqs: { elysium: 12 },
+        grant: ['elysium',13],
+        cost: {
+            Knowledge(){ return 115000000; },
+            Omniscience(){ return 30000; },
+        },
+        effect(){ return loc('tech_eternal_bank_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.eden['eternal_bank'] = { count: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    wisdom: {
+        id: 'tech-wisdom',
+        title(){ return loc('tech_wisdom'); },
+        desc(){ return loc('tech_wisdom'); },
+        category: 'science',
+        era: 'existential',
+        reqs: { elysium: 13 },
+        grant: ['elysium',14],
+        cost: {
+            Knowledge(){ return 118000000; },
+            Omniscience(){ return 32000; },
+        },
+        effect(){ return loc('tech_wisdom_effect',[loc('eden_elysium_name')]); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.eden['archive'] = { count: 0, on: 0 };
                 return true;
             }
             return false;

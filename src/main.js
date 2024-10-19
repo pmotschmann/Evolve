@@ -2062,7 +2062,7 @@ function fastLoop(){
         }
 
         if(global.race['fasting']){
-            const foodBuildings = ["city:tourist_center", "space:spaceport", "int_:starport", "gxy_:starbase"/*, "space:space_station", "space:embassy"*/, "space:space_barracks", "int_:zoo"];
+            const foodBuildings = ["city:tourist_center", "space:spaceport", "int_:starport", "gxy_:starbase"/*, "space:space_station", "space:embassy"*/, "space:space_barracks", "int_:zoo", "eden_:restaurant"];
             //titan quarters is excluded but not necessary because the scenario is incompatible with true path.
             //some buildings are excluded to make progression not impossible.
             for(let i=0;i<foodBuildings.length;i++){
@@ -2920,11 +2920,18 @@ function fastLoop(){
             global.city.morale.zoo = 0;
         }
         if (support_on['bliss_den']){
-            global.city.morale.bliss_den = support_on['bliss_den'] * 10;
-            morale += support_on['bliss_den'] * 10;
+            global.city.morale.bliss_den = support_on['bliss_den'] * 8;
+            morale += support_on['bliss_den'] * 8;
         }
         else {
             global.city.morale.bliss_den = 0;
+        }
+        if (p_on['restaurant'] && !global.race['fasting']){
+            global.city.morale.restaurant = p_on['restaurant'] * 12;
+            morale += p_on['restaurant'] * 12;
+        }
+        else {
+            global.city.morale.restaurant = 0;
         }
         if (eventActive('summer')){
             let boost = (global.resource.Thermite.diff * 2.5) / (global.resource.Thermite.diff * 2.5 + 500) * 500;
@@ -3489,6 +3496,7 @@ function fastLoop(){
             let space_marines = 0;
             let embassy = 0;
             let zoo = 0;
+            let restaurant = 0;
             if(!global.race['fasting']){
                 consume = (global.resource[global.race.species].amount + soldiers - ((global.civic.unemployed.workers + workerScale(global.civic.hunter.workers,'hunter')) * 0.5)) * food_consume_mod;
                 if (global.race['forager']){
@@ -3552,6 +3560,11 @@ function fastLoop(){
                     zoo = int_on['zoo'] * 12000;
                     breakdown.p.consume.Food[loc('tech_zoo')] = -(zoo);
                 }
+
+                if (global.eden['restaurant']){
+                    restaurant = p_on['restaurant'] * 250000;
+                    breakdown.p.consume.Food[loc('eden_restaurant_bd')] = -(restaurant);
+                }
             }
 
             breakdown.p['Food'][loc('soldiers')] = hunting + 'v';
@@ -3563,7 +3576,7 @@ function fastLoop(){
                 generated *= 0;
             }
 
-            let delta = generated - consume - ravenous - tourism - spaceport - starport - starbase - space_station - space_marines - embassy - zoo;
+            let delta = generated - consume - ravenous - tourism - spaceport - starport - starbase - space_station - space_marines - embassy - zoo - restaurant;
 
             if (!modRes('Food', delta * time_multiplier) || global.race['fasting']){
                 if (global.race['anthropophagite'] && global.resource[global.race.species].amount > 1 && !global.race['fasting']){
@@ -8770,6 +8783,12 @@ function midLoop(){
                 caps['Omniscience'] += gain;
                 breakdown.c.Omniscience[loc('eden_encampment_title')] = gain+'v';
             }
+
+            if (global.eden['archive']){
+                let gain = (p_on['archive'] || 0) * 1013;
+                caps['Omniscience'] += gain;
+                breakdown.c.Omniscience[loc('eden_archive_bd')] = gain+'v';
+            }
         }
 
         if (global.tech['isolation'] && global.tauceti['alien_outpost'] && global.resource.Cipher.display){
@@ -8814,6 +8833,7 @@ function midLoop(){
         if (global.city['bank'] || (global.race['cataclysm'] && p_on['spaceport'])){
             let vault = global.race['cataclysm'] || global.race['orbit_decayed'] ? bank_vault() * 4 : bank_vault();
             let banks = global.race['cataclysm'] || global.race['orbit_decayed'] ? p_on['spaceport'] : global.city['bank'].count;
+
             let gain = (banks * spatialReasoning(vault));
             caps['Money'] += gain;
 
@@ -8825,6 +8845,7 @@ function midLoop(){
             }
 
             if (global.interstellar['exchange']){
+                if (global.eden['eternal_bank']){ banks += global.eden.eternal_bank.count * 2; }
                 let g_vault = spatialReasoning(int_on['exchange'] * (vault * banks / 18));
                 if (global.race['inflation']){
                     g_vault *= 2;
@@ -8841,6 +8862,14 @@ function midLoop(){
                 caps['Money'] += g_vault;
                 breakdown.c.Money[loc('interstellar_exchange_bd')] = g_vault+'v';
             }
+        }
+
+        if (global.eden['eternal_bank']){
+            let vault = bank_vault() * 10;
+            let banks = global.eden.eternal_bank.count;
+            let gain = (banks * spatialReasoning(vault));
+            caps['Money'] += gain;
+            breakdown.c.Money[loc('eden_eternal_bank_title')] = gain+'v';
         }
 
         if (global.space['titan_bank']){

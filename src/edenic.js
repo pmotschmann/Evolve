@@ -1,7 +1,7 @@
 import { global, p_on, sizeApproximation, seededRandom } from './vars.js';
 import { vBind, clearElement, popover, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier } from './functions.js';
-import { spatialReasoning } from './resources.js';
-import { payCosts, powerOnNewStruct, setAction, storageMultipler, drawTech } from './actions.js';
+import { drawResourceTab, spatialReasoning } from './resources.js';
+import { payCosts, powerOnNewStruct, setAction, storageMultipler, drawTech, bank_vault } from './actions.js';
 import { checkRequirements, incrementStruct, piracy} from './space.js';
 import { mechRating } from './portal.js';
 import { actions } from './actions.js';
@@ -314,7 +314,7 @@ const edenicModules = {
                 let r_list = [
                     'Lumber','Stone','Chrysotile','Furs','Copper','Iron','Aluminium','Cement','Coal',
                     'Nano_Tube','Neutronium','Adamantite','Infernite','Alloy','Polymer','Iridium',
-                    'Graphene','Stanene','Bolognium','Orichalcum','Asphodel_Powder'
+                    'Graphene','Stanene','Bolognium','Orichalcum','Asphodel_Powder',
                 ];
                 if (global.tech['storage'] >= 3 && global.resource.Steel.display){
                     r_list.push('Steel');
@@ -596,7 +596,7 @@ const edenicModules = {
                 Soul_Gem(offset){ return spaceCostMultiplier('bliss_den', offset, 10, 1.22, 'eden'); },
             },
             effect(){
-                let morale = 10;
+                let morale = 8;
                 let max = 2;
 
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[loc('eden_asphodel_name')])}</div>`;
@@ -1112,6 +1112,7 @@ const edenicModules = {
 
                     if (global.eden.enemy_isle.wt === 0 && global.eden.enemy_isle.g === 0 && global.eden.enemy_isle.et === 0){
                         global.tech['isle'] = 2;
+                        drawTech();
                         return true;
                     }
                 }
@@ -1228,7 +1229,99 @@ const edenicModules = {
                 }
                 return false;
             }
-        }
+        },
+        restaurant: {
+            id: 'eden-restaurant',
+            title(){ return loc('eden_restaurant_title'); },
+            desc(){
+                return `<div>${loc('eden_restaurant_title',)}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Food.name])}</div>`;
+            },
+            reqs: { elysium: 12 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('restaurant', offset, 4250000000, 1.26, 'eden'); },
+                Oil(offset){ return spaceCostMultiplier('restaurant', offset, 1000000, 1.26, 'eden'); },
+                Polymer(offset){ return spaceCostMultiplier('restaurant', offset, 110000000, 1.26, 'eden'); },
+                Sheet_Metal(offset){ return spaceCostMultiplier('restaurant', offset, 25000000, 1.26, 'eden'); },
+            },
+            effect(){
+                let food = 250000;
+                let morale = 12;
+                
+                let desc =  `<div>${loc('space_red_vr_center_effect1',[morale])}</div>`
+                desc += `<div class="has-text-caution">${loc('interstellar_alpha_starport_effect3',[sizeApproximation(food),global.resource.Food.name])}</div>`;
+                desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            powered(){ return powerCostMod(25); },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('restaurant','eden');
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            }
+        },
+        eternal_bank: {
+            id: 'eden-eternal_bank',
+            title(){ return loc('eden_eternal_bank_title'); },
+            desc(){
+                return `<div>${loc('eden_eternal_bank_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { elysium: 13 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('eternal_bank', offset, 2500000000, 1.26, 'eden'); },
+                Bolognium(offset){ return spaceCostMultiplier('eternal_bank', offset, 10000000, 1.26, 'eden'); },
+                Orichalcum(offset){ return spaceCostMultiplier('eternal_bank', offset, 12500000, 1.26, 'eden'); },
+                Mythril(offset){ return spaceCostMultiplier('eternal_bank', offset, 7500000, 1.26, 'eden'); }
+            },
+            effect(){
+                let vault = spatialReasoning(bank_vault() * 10);
+                vault = (+(vault).toFixed(0)).toLocaleString();
+                return loc('plus_max_resource',[`\$${vault}`,loc('resource_Money_name')]);
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('eternal_bank','eden');
+                    global['resource']['Money'].max += spatialReasoning(bank_vault() * 10);
+                    return true;
+                }
+                return false;
+            }
+        },
+        archive: {
+            id: 'eden-archive',
+            title(){ return loc('eden_archive_title'); },
+            desc(){
+                return `<div>${loc('eden_archive_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { elysium: 14 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('archive', offset, 3750000000, 1.26, 'eden'); },
+                Nano_Tube(offset){ return spaceCostMultiplier('archive', offset, 90000000, 1.26, 'eden'); },
+                Asphodel_Powder(offset){ return spaceCostMultiplier('archive', offset, 50000, 1.26, 'eden'); },
+                Elysanite(offset){ return spaceCostMultiplier('archive', offset, 35000000, 1.26, 'eden'); },
+                Soul_Gem(offset){ return spaceCostMultiplier('archive', offset, 99, 1.26, 'eden'); },
+            },
+            effect(){
+                let desc = `<div>${loc('plus_max_resource',[1013,global.resource.Omniscience.name])}</div>`;
+                desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            powered(){ return powerCostMod(75); },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('archive','eden');
+                    powerOnNewStruct($(this)[0]);
+                    if (global.tech.elysium === 14){
+                        global.tech.elysium = 15;
+                        drawTech();
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     eden_isle: {
         info: {
