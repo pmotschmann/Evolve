@@ -43,6 +43,38 @@ const extraInformation = {
     cottage: [
         loc(`wiki_tech_building_unlock`,[housingLabel('medium')])
     ],
+    captive_housing: [
+        loc(`wiki_tech_building_unlock`,[loc('city_captive_housing')])
+    ],
+    torture : [ // displayed as "torment"
+        loc(`wiki_tech_job_unlock`,[loc(`job_torturer`)])
+    ],
+    thrall_quarters : [
+        loc("wiki_tech_thrall_quarters")
+    ],
+    psychic_stun : [
+        loc("wiki_tech_psychic_stun")
+    ],
+    psychic_attack : [
+        loc("wiki_tech_psychic_attack")
+    ],
+    psychic_finance : [
+        loc("wiki_tech_psychic_finance")
+    ],
+    psychic_channeling : [
+        loc("wiki_tech_psychic_channeling")
+    ],
+    psychic_efficiency : [
+        loc("wiki_tech_psychic_efficiency")
+    ],
+    mind_break : [
+        loc("wiki_tech_mind_break")
+    ],
+    psychic_energy : [
+        loc("wiki_tech_psychic_energy",
+            [traits.psychic.vars()[3],
+            72 * (global.stats.achieve['nightmare'] && global.stats.achieve.nightmare['mg'] ? global.stats.achieve.nightmare.mg : 0)])
+    ],
     apartment: [
         loc(`wiki_tech_building_unlock`,[housingLabel('large')])
     ],
