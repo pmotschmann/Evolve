@@ -1025,7 +1025,7 @@ const edenicModules = {
                     return !global.eden.hasOwnProperty('fire_support_base') || (global.eden.fire_support_base.count < 100) ? 625000 : 0;
                 },
                 Elerium(){
-                    return global.tech.elysium >= 10 && global.eden.fire_support_base.count === 100 ? 250000 : 0;
+                    return global.tech.elysium >= 10 && global.eden.fire_support_base.count === 100 && global.tech['isle'] && global.tech.isle === 1 ? 250000 : 0;
                 }
             },
             effect(wiki){
@@ -1060,7 +1060,7 @@ const edenicModules = {
                     }
                     return true;
                 }
-                else if (global.eden.fire_support_base.count === 100 && global.tech.elysium >= 10 && payCosts($(this)[0])){
+                else if (global.eden.fire_support_base.count === 100 && global.tech.elysium >= 10 && global.tech['isle'] && global.tech.isle === 1 && payCosts($(this)[0])){
                     let target = null, element = null;
                     let targets = [];
                     if (!global.eden['enemy_isle']){ global.eden['enemy_isle'] = { wt: 100, et: 100, g: 100 }; }
@@ -1092,6 +1092,8 @@ const edenicModules = {
                         element = 'eden-isle_garrison .button';
                     }
 
+                    console.log(target);
+
                     global.eden.enemy_isle[target] -= Math.floor(seededRandom(25,75));
                     if (global.eden.enemy_isle[target] < 0){ global.eden.enemy_isle[target] = 0; }
 
@@ -1113,6 +1115,7 @@ const edenicModules = {
                     if (global.eden.enemy_isle.wt === 0 && global.eden.enemy_isle.g === 0 && global.eden.enemy_isle.et === 0){
                         global.tech['isle'] = 2;
                         drawTech();
+                        renderEdenic();
                         return true;
                     }
                 }
@@ -1232,7 +1235,7 @@ const edenicModules = {
         },
         restaurant: {
             id: 'eden-restaurant',
-            title(){ return loc('eden_restaurant_title'); },
+            title(){ return global.eden['restaurant'] && global.eden.restaurant.count >= 10 ? loc('eden_restaurant_bd') : loc('eden_restaurant_title'); },
             desc(){
                 return `<div>${loc('eden_restaurant_title',)}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Food.name])}</div>`;
             },
@@ -1246,7 +1249,7 @@ const edenicModules = {
             effect(){
                 let food = 250000;
                 let morale = 12;
-                
+
                 let desc =  `<div>${loc('space_red_vr_center_effect1',[morale])}</div>`
                 desc += `<div class="has-text-caution">${loc('interstellar_alpha_starport_effect3',[sizeApproximation(food),global.resource.Food.name])}</div>`;
                 desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
@@ -1291,7 +1294,7 @@ const edenicModules = {
         },
         archive: {
             id: 'eden-archive',
-            title(){ return loc('eden_archive_title'); },
+            title(){ return global.eden['archive'] && global.eden.archive.count >= 10 ? loc('eden_archive_bd') : loc('eden_archive_title'); },
             desc(){
                 return `<div>${loc('eden_archive_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },

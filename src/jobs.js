@@ -357,7 +357,7 @@ export const job_desc = {
 // Sets up jobs in civics tab
 export function defineJobs(define){
     if (!define){
-        $('#civics').append($(`<h2 class="is-sr-only">${loc('civics_jobs')}</h2><div class="tile is-child"><div id="sshifter" class="tile sshifter"></div><div id="jobs" class="tile is-child"></div><div id="foundry" class="tile is-child"></div><div id="servants" class="tile is-child"></div><div id="skilledServants" class="tile is-child"></div></div>`));
+        $('#civics').append($(`<h2 class="is-sr-only">${loc('civics_jobs')}</h2><div class="tile is-child jobList"><div id="sshifter" class="tile sshifter"></div><div id="jobs" class="tile is-child"></div><div id="foundry" class="tile is-child"></div><div id="servants" class="tile is-child"></div><div id="skilledServants" class="tile is-child"></div></div>`));
     }
     loadJob('unemployed',define,0,0,'warning');
     loadJob('hunter',define,0,0);

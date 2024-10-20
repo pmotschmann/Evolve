@@ -14916,3 +14916,11 @@ export function techList(path){
     }
     return techs;
 }
+
+export function stabilize_blackhole(){
+    if (global.interstellar['stellar_engine'] && global.interstellar.stellar_engine.exotic >= 0.025 && global.tech['whitehole']){
+        if (techs.stabilize_blackhole.action()){
+            global.tech['stablized'] = 1;
+        }
+    }
+}

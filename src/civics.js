@@ -739,6 +739,10 @@ function spyAction(sa,g){
             {
                 if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1 && global.civic.foreign[`gov${g}`].sab === 0){
                     let timer = global.tech['spy'] >= 4 ? 200 : 300;
+                    if (global.civic.foreign[`gov${g}`].spy === 1){ timer *= 1.5; }
+                    else if (global.civic.foreign[`gov${g}`].spy >= 3){ timer -= (global.civic.foreign[`gov${g}`].spy - 2) * 50; }
+                    if (global.genes.hasOwnProperty('governor') && global.genes.governor >= 3){ timer *= 0.9; }
+                    timer = Math.ceil(timer);
                     if (global.race['befuddle']){
                         timer = Math.round(timer * (1 - traits.befuddle.vars()[0] / 100));
                     }
@@ -755,6 +759,9 @@ function spyAction(sa,g){
             {
                 if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1 && global.civic.foreign[`gov${g}`].sab === 0){
                     let timer = global.tech['spy'] >= 4 ? 400 : 600;
+                    if (global.civic.foreign[`gov${g}`].spy >= 2){ timer -= (global.civic.foreign[`gov${g}`].spy - 1) * 50; }
+                    if (global.genes.hasOwnProperty('governor') && global.genes.governor >= 3){ timer *= 0.9; }
+                    timer = Math.ceil(timer);
                     if (global.race['befuddle']){
                         timer = Math.round(timer * (1 - traits.befuddle.vars()[0] / 100));
                     }
@@ -772,6 +779,10 @@ function spyAction(sa,g){
                 if (g >= 3){ break; }
                 else if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1 && global.civic.foreign[`gov${g}`].sab === 0){
                     let timer = global.tech['spy'] >= 4 ? 600 : 900;
+                    if (global.civic.foreign[`gov${g}`].spy <= 2){ timer *= 1.5; }
+                    else if (global.civic.foreign[`gov${g}`].spy >= 4){ timer -= (global.civic.foreign[`gov${g}`].spy - 3) * 100; }
+                    if (global.genes.hasOwnProperty('governor') && global.genes.governor >= 3){ timer *= 0.9; }
+                    timer = Math.ceil(timer);
                     if (global.race['befuddle']){
                         timer = Math.round(timer * (1 - traits.befuddle.vars()[0] / 100));
                     }

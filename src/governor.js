@@ -8,6 +8,7 @@ import { checkHellRequirements, mechSize, mechCost } from './portal.js';
 import { loc } from './locale.js';
 import { jobScale } from './jobs.js';
 import { isStargateOn } from './space.js';
+import { stabilize_blackhole } from './tech.js';
 
 export const gmen = {
     soldier: {
@@ -520,13 +521,18 @@ export function drawnGovernOffice(){
                 global.race.governor.config.trash[res] = { v: 0, s: true };
             }
         });
+        if (!global.race.governor.config.trash.hasOwnProperty('stab')){
+            global.race.governor.config.trash['stab'] = false;
+        }
 
-        let contain = $(`<div class="tConfig" v-show="showTask('trash')"><div class="has-text-warning">${loc(`gov_task_trash`)}</div></div>`);
+        let advanced = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? `<div class="chk"><b-checkbox v-model="c.trash.stab">${loc(`gov_task_auto_stabilize`)}</b-checkbox></div>` : ``;
+
+        let contain = $(`<div class="tConfig" v-show="showTask('trash')"><div class="hRow"><div class="has-text-warning">${loc(`gov_task_trash`)}</div>${advanced}</div></div>`);
         options.append(contain);
         let trash = $(`<div class="storage"></div>`);
         contain.append(trash);
 
-        Object.keys(global.race.governor.config.trash).forEach(function(res){
+        ['Infernite','Elerium','Copper','Iron'].forEach(function(res){
             trash.append($(`<b-field class="trash"><div class="trashButton" role="button" @click="trashStrat('${res}')" v-html="$options.methods.trashLabel('${res}')"></div><b-numberinput min="0" :max="1000000" v-model="c.trash.${res}.v" :controls="false"></b-numberinput></b-field>`));
         });
     }
@@ -1189,6 +1195,10 @@ export const gov_tasks = {
                 }
             });
             global.interstellar.mass_ejector.total = p_on['mass_ejector'] * 1000 - remain;
+
+            if (global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 && global.race.governor.config.trash.stab){
+                stabilize_blackhole();
+            }
         }
     },
     mech: { // Mech Builder

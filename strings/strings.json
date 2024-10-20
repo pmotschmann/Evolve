@@ -5870,6 +5870,7 @@
   "gov_task_merc_reserve": "Money Reserve % (0-100)",
   "gov_task_trash_min": "%0 >=",
   "gov_task_trash_max": "%0 <=",
+  "gov_task_auto_stabilize": "Auto Stabilize",
   "gov_task_spy": "Spy Recruitment",
   "gov_task_spyop": "Spy Operator",
   "gov_task_spyop_priority": "%0 Priority",
