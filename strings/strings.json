@@ -7097,6 +7097,7 @@
   "eden_pillbox_title": "Pillbox",
   "eden_pillbox_effect": "Enemy Counterattack -%0%",
   "eden_restaurant_title": "Restaurant of Eternity",
+  "eden_restaurant_effect": "+%0% %1 Morale",
   "eden_restaurant_bd": "Restaurant",
   "eden_eternal_bank_title": "Eternal Bank",
   "eden_archive_title": "Archive of the Ancients",

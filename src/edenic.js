@@ -1092,8 +1092,6 @@ const edenicModules = {
                         element = 'eden-isle_garrison .button';
                     }
 
-                    console.log(target);
-
                     global.eden.enemy_isle[target] -= Math.floor(seededRandom(25,75));
                     if (global.eden.enemy_isle[target] < 0){ global.eden.enemy_isle[target] = 0; }
 
@@ -1221,7 +1219,17 @@ const edenicModules = {
             effect(){
                 let rating = +(Math.round(armyRating(global.eden['pillbox'] && global.eden.pillbox.staffed ? global.eden.pillbox.staffed : jobScale(10),'army',0)) / 100).toFixed(1);
                 if (rating > 100){ rating = 100; }
-                return `<div>${loc('eden_pillbox_effect',[rating])}</div><div class="has-text-caution">${loc('portal_guard_post_effect2',[jobScale(10),$(this)[0].powered()])}</div>`;
+
+                let desc = ``;
+                if (!global.tech['isle'] || global.tech.isle === 1){
+                    desc += `<div>${loc('eden_pillbox_effect',[rating])}</div>`;
+                }
+                if (global.tech['elysium'] && global.tech.elysium >= 12){
+                    desc += `<div>${loc('eden_restaurant_effect',[0.35,loc(`eden_restaurant_bd`)])}</div>`;
+                }
+                desc += `<div class="has-text-caution">${loc('portal_guard_post_effect2',[jobScale(10),$(this)[0].powered()])}</div>`;
+
+                return desc;
             },
             powered(){ return powerCostMod(12); },
             action(){
@@ -1248,10 +1256,12 @@ const edenicModules = {
             },
             effect(){
                 let food = 250000;
-                let morale = 6;
-                morale += global.eden.hasOwnProperty('pillbox') && p_on['pillbox'] ? 0.5 * p_on['pillbox'] : 0;
+                let morale = 0;
+                morale += global.eden.hasOwnProperty('pillbox') && p_on['pillbox'] ? 0.35 * p_on['pillbox'] : 0;
+                morale += global.civic.elysium_miner.workers * 0.15;
+                morale += global.eden.hasOwnProperty('archive') && p_on['archive'] ? 0.4 * p_on['archive'] : 0;
 
-                let desc =  `<div>${loc('space_red_vr_center_effect1',[morale])}</div>`
+                let desc =  `<div>${loc('space_red_vr_center_effect1',[morale.toFixed(1)])}</div>`
                 desc += `<div class="has-text-caution">${loc('interstellar_alpha_starport_effect3',[sizeApproximation(food),global.resource.Food.name])}</div>`;
                 desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
@@ -1309,6 +1319,9 @@ const edenicModules = {
             },
             effect(){
                 let desc = `<div>${loc('plus_max_resource',[1013,global.resource.Omniscience.name])}</div>`;
+                if (global.tech['elysium'] && global.tech.elysium >= 12){
+                    desc += `<div>${loc('eden_restaurant_effect',[0.4,loc(`eden_restaurant_bd`)])}</div>`;
+                }
                 desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
             },

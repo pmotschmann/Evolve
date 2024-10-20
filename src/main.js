@@ -2927,7 +2927,10 @@ function fastLoop(){
             global.city.morale.bliss_den = 0;
         }
         if (p_on['restaurant'] && !global.race['fasting']){
-            let val = 6 + (global.eden.hasOwnProperty('pillbox') && p_on['pillbox'] ? 0.5 * p_on['pillbox'] : 0);
+            let val = 0;
+            val += global.eden.hasOwnProperty('pillbox') && p_on['pillbox'] ? 0.35 * p_on['pillbox'] : 0;
+            val += global.civic.elysium_miner.workers * 0.15;
+            val += global.eden.hasOwnProperty('archive') && p_on['archive'] ? 0.4 * p_on['archive'] : 0;
             global.city.morale.restaurant = p_on['restaurant'] * val;
             morale += p_on['restaurant'] * val;
         }

@@ -344,7 +344,11 @@ export const job_desc = {
         return loc('job_ghost_trapper_desc',[loc('portal_soul_forge_title'),global.resource.Soul_Gem.name,min,max]);
     },
     elysium_miner(){
-        return loc('job_elysium_miner_desc',[loc('eden_elysium_name')]);
+        let desc = loc('job_elysium_miner_desc',[loc('eden_elysium_name')]);
+        if (global.tech['elysium'] && global.tech.elysium >= 12){
+            desc += ` ${loc('eden_restaurant_effect',[0.15,loc(`eden_restaurant_bd`)])}.`;
+        }
+        return desc;
     },
     pit_miner(){
         return loc('job_pit_miner_desc',[loc('tau_planet',[races[global.race.species].home])]);
