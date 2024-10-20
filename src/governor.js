@@ -106,12 +106,12 @@ export const gov_traits = {
     tactician: {
         name: loc(`gov_trait_tactician`),
         effect(){ return loc(`gov_trait_tactician_effect`,[$(this)[0].vars()[0]]); },
-        vars(){ return [25]; },
+        vars(){ return global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? [30] : [25]; },
     },
     militant: {
         name: loc(`gov_trait_militant`),
         effect(){ return loc(`gov_trait_militant_effect`,[$(this)[0].vars()[0],$(this)[0].vars()[1]]); },
-        vars(){ return [25,10]; },
+        vars(){ return global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? [30,10] : [25,10]; },
     },
     noquestions: {
         name: loc(`gov_trait_noquestions`),
@@ -121,17 +121,17 @@ export const gov_traits = {
     racketeer: {
         name: loc(`gov_trait_racketeer`),
         effect(){ return loc(`gov_trait_racketeer_effect`,[$(this)[0].vars()[0],$(this)[0].vars()[1]]); },
-        vars(){ return [20,35]; },
+        vars(){ return global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? [18,45] : [20,35]; },
     },
     dealmaker: {
         name: loc(`gov_trait_dealmaker`),
         effect(){ return loc(`gov_trait_dealmaker_effect`,[$(this)[0].vars()[0]]); },
-        vars(){ return [125]; },
+        vars(){ return global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? [150] : [125]; },
     },
     risktaker: {
         name: loc(`gov_trait_risktaker`),
         effect(){ return loc(`gov_trait_risktaker_effect`,[$(this)[0].vars()[0]]); },
-        vars(){ return [12]; },
+        vars(){ return global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? [14] : [12]; },
     },
     teacher: {
         name: loc(`gov_trait_teacher`),
@@ -141,12 +141,12 @@ export const gov_traits = {
     theorist: {
         name: loc(`gov_trait_theorist`),
         effect(){ return loc(`gov_trait_theorist_effect`,[$(this)[0].vars()[0],$(this)[0].vars()[1]]); },
-        vars(){ return [50,4]; },
+        vars(){ return global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? [100,2] : [50,4]; },
     },
     inspirational: {
         name: loc(`gov_trait_inspirational`),
         effect(){ return loc(`gov_trait_inspirational_effect`,[$(this)[0].vars()[0]]); },
-        vars(){ return [20]; },
+        vars(){ return global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? [30] : [20]; },
     },
     pious: {
         name: loc(`gov_trait_pious`),
@@ -156,51 +156,51 @@ export const gov_traits = {
             val = (global.civic.govern.type === 'corpocracy' ? (val * 2) : val) * xeno;
             return loc(`gov_trait_pious_effect`,[$(this)[0].vars()[0],val]);
         },
-        vars(){ return [10,5]; },
+        vars(){ return global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? [8,8] : [10,5]; },
     },
     pragmatist: {
         name: loc(`gov_trait_pragmatist`),
         effect(){ return loc(`gov_trait_pragmatist_effect`,[$(this)[0].vars()[0],$(this)[0].vars()[1]]); },
-        vars(){ return [50,2]; },
+        vars(){ return global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? [100,2] : [50,2]; },
     },
     dirty_jobs: {
         name: loc(`gov_trait_dirty_jobs`),
         effect(){ return loc(`gov_trait_dirty_jobs_effect`,[$(this)[0].vars()[0],$(this)[0].vars()[1],$(this)[0].vars()[2]]); },
-        vars(){ return [0.015,1,10]; },
+        vars(){ return global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? [0.015,2,12] : [0.015,1,10]; },
     },
     extravagant: {
         name: loc(`gov_trait_extravagant`),
         effect(){ return loc(`gov_trait_extravagant_effect`,[$(this)[0].vars()[0],housingLabel('large',true),$(this)[0].vars()[1],jobScale($(this)[0].vars()[2]+5)]); },
-        vars(){ return [10,1.25,1]; },
+        vars(){ return global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? [8,1,1] : [10,1.25,1]; },
     },
     aristocrat: {
         name: loc(`gov_trait_aristocrat`),
         effect(){ return loc(`gov_trait_aristocrat_effect`,[$(this)[0].vars()[0],$(this)[0].vars()[1],$(this)[0].vars()[2]]); },
-        vars(){ return [50,20,10]; },
+        vars(){ return global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? [60,20,5] : [50,20,10]; },
     },
     gaslighter: {
         name: loc(`gov_trait_gaslighter`),
         effect(){
             return loc(`gov_trait_gaslighter_effect`,[$(this)[0].vars()[0],wardenLabel(),$(this)[0].vars()[1],$(this)[0].vars()[2]]);
         },
-        vars(){ return [1,1,0.5]; },
+        vars(){ return global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? [2,2,0.5] : [1,1,0.5]; },
     },
     muckraker: {
         name: loc(`gov_trait_muckraker`),
         effect(){
             return loc(`gov_trait_muckraker_effect`,[$(this)[0].vars()[1],$(this)[0].vars()[2]]);
         },
-        vars(){ return [8,12,3]; },
+        vars(){ return global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? [6,12,2] : [8,12,3]; },
     },
     athleticism: {
         name: loc(`gov_trait_athleticism`),
         effect(){ return loc(`gov_trait_athleticism_effect`,[$(this)[0].vars()[0],jobScale($(this)[0].vars()[1]),$(this)[0].vars()[2],wardenLabel()]); },
-        vars(){ return [1.5,2,4]; },
+        vars(){ return global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? [1.5,2,3] : [1.5,2,4]; },
     },
     nopain: {
         name: loc(`gov_trait_nopain`),
         effect(){ return loc(`gov_trait_nopain_effect`,[$(this)[0].vars()[0],$(this)[0].vars()[1]]); },
-        vars(){ return [50,10]; },
+        vars(){ return global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? [50,20] : [50,10]; },
     },
     organizer: {
         name: loc(`gov_trait_organizer`),

@@ -4026,7 +4026,7 @@
   "arpa_genepool_civil_service_title": "Civil Service",
   "arpa_genepool_civil_service_desc": "Upgrade your governors with genes harvested from the best civil servants in history, enabling them to manage more tasks",
   "arpa_genepool_bureaucratic_efficiency_title": "Bureaucratic Efficiency",
-  "arpa_genepool_bureaucratic_efficiency_desc": "Increase the efficiency of complex governor tasks allowing them to use up less task slots.",
+  "arpa_genepool_bureaucratic_efficiency_desc": "Increase the efficiency of governors. They may use up less task slots or have other advanced options and enhanced effects.",
   "arpa_genepool_bureaucratic_efficiency_flair": "Obviously an Oxymoron",
   "arpa_genepool_hardened_genes_title": "Hardened Genes",
   "arpa_genepool_hardened_genes_desc": "Unlocks challenge traits",

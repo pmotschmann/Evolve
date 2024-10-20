@@ -2927,8 +2927,9 @@ function fastLoop(){
             global.city.morale.bliss_den = 0;
         }
         if (p_on['restaurant'] && !global.race['fasting']){
-            global.city.morale.restaurant = p_on['restaurant'] * 12;
-            morale += p_on['restaurant'] * 12;
+            let val = 6 + (global.eden.hasOwnProperty('pillbox') && p_on['pillbox'] ? 0.5 * p_on['pillbox'] : 0);
+            global.city.morale.restaurant = p_on['restaurant'] * val;
+            morale += p_on['restaurant'] * val;
         }
         else {
             global.city.morale.restaurant = 0;
@@ -11797,7 +11798,9 @@ function longLoop(){
             if (global.tech['stablized']){
                 delete global.tech['stablized'];
             }
-            messageQueue(loc('interstellar_blackhole_unstable'),'danger',false,['progress']);
+            if (!global.race.governor.config.hasOwnProperty('trash') || (global.race.governor.config.hasOwnProperty('trash') && !global.race.governor.config.trash['stab'])){
+                messageQueue(loc('interstellar_blackhole_unstable'),'danger',false,['progress']);
+            }
             drawTech();
         }
         else if (global.interstellar['stellar_engine'] && global.interstellar.stellar_engine.exotic >= 0.025){

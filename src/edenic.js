@@ -1248,7 +1248,8 @@ const edenicModules = {
             },
             effect(){
                 let food = 250000;
-                let morale = 12;
+                let morale = 6;
+                morale += global.eden.hasOwnProperty('pillbox') && p_on['pillbox'] ? 0.5 * p_on['pillbox'] : 0;
 
                 let desc =  `<div>${loc('space_red_vr_center_effect1',[morale])}</div>`
                 desc += `<div class="has-text-caution">${loc('interstellar_alpha_starport_effect3',[sizeApproximation(food),global.resource.Food.name])}</div>`;

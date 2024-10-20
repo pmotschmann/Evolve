@@ -336,7 +336,7 @@ function mainPage(){
     let content = $(`#content`);
     clearElement(content);
 
-    let contribute = `<span class="has-text-caution">${['Beorseder','Rodrigodd','Volch'].join('</span>, <span class="has-text-caution">').replace(/, ([^,]*)$/, `, & $1`)}</span>`;
+    let contribute = `<span class="has-text-caution">${['Beorseder','Rodrigodd','Volch','Condoslime','Yarukishi'].join('</span>, <span class="has-text-caution">').replace(/, ([^,]*)$/, `, & $1`)}</span>`;
 
     let version = global['beta'] ? `beta v${global.version}.${global.beta}` : 'v'+global.version;
     content.append(`<div class="title has-text-warning">${loc(`wiki_main_title`)} - ${version}</div>`);
