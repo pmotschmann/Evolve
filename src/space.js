@@ -3143,7 +3143,7 @@ const interstellarProjects = {
                 }
             },
             reqs: { proxima: 3, dyson: 3 },
-            queue_size: 25,
+            queue_size: 50,
             queue_complete(){ return 1000 - global.interstellar.elysanite_sphere.count; },
             condition(){
                 return global.interstellar.orichalcum_sphere.count >= 100 && global.tech['dyson'] && global.tech.dyson === 3 ? true : false;

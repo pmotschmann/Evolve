@@ -14895,6 +14895,27 @@ const techs = {
             return false;
         }
     },
+    spirit_capacitor: {
+        id: 'tech-spirit_capacitor',
+        title: loc('tech_spirit_capacitor'),
+        desc: loc('tech_spirit_capacitor'),
+        category: 'progress',
+        era: 'existential',
+        reqs: { isle: 4 },
+        grant: ['isle',5],
+        cost: {
+            Knowledge(){ return 130000000; },
+            Omniscience(){ return 37500; },
+        },
+        effect(){ return loc('tech_spirit_capacitor_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.eden['spirit_battery'] = { count: 0, on: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
 };
 
 function uniteEffect(){

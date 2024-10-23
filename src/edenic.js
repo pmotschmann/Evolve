@@ -1552,7 +1552,11 @@ const edenicModules = {
                 desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
             },
-            powered(){ return powerCostMod(12000); },
+            powered(wiki){
+                let num_battery = wiki ? (global.eden?.spirit_battery?.on ?? 0) : (p_on['spirit_battery'] || 0);
+                let factor = num_battery || 0;
+                return +(powerCostMod(18000 * (0.9 ** factor))).toFixed(2);
+            },
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('spirit_vacuum','eden');
@@ -1562,6 +1566,36 @@ const edenicModules = {
                 return false;
             },
             flair(){ return loc(`eden_spirit_vacuum_flair`); }
+        },
+        spirit_battery: {
+            id: 'eden-spirit_battery',
+            title(){ return loc('eden_spirit_battery_title'); },
+            desc(){
+                return `<div>${loc('eden_spirit_battery_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { isle: 5 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('spirit_battery', offset, 18000000000, 1.2, 'eden'); },
+                Copper(offset){ return spaceCostMultiplier('spirit_battery', offset, 5000000000, 1.2, 'eden'); },
+                Vitreloy(offset){ return spaceCostMultiplier('spirit_battery', offset, 50000000, 1.2, 'eden'); },
+                Elysanite(offset){ return spaceCostMultiplier('spirit_battery', offset, 100000000, 1.2, 'eden'); },
+            },
+            effect(){
+                let desc = `<div>${loc('eden_spirit_battery_effect',[loc('eden_spirit_vacuum_title'),10])}</div>`;
+                desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            powered(){
+                return powerCostMod(500);
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('spirit_battery','eden');
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            }
         },
     },
     eden_palace: {
