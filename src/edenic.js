@@ -1541,7 +1541,7 @@ const edenicModules = {
                 Money(offset){ return spaceCostMultiplier('spirit_vacuum', offset, 30000000000, 1.1, 'eden'); },
                 Neutronium(offset){ return spaceCostMultiplier('spirit_vacuum', offset, 175000000, 1.1, 'eden'); },
                 Stanene(offset){ return spaceCostMultiplier('spirit_vacuum', offset, 1000000000, 1.1, 'eden'); },
-                Elerium(offset){ return spaceCostMultiplier('spirit_vacuum', offset, 250000, 1.1, 'eden'); },
+                Elerium(offset){ return spaceCostMultiplier('spirit_vacuum', offset, 240000, 1.1, 'eden'); },
                 Soul_Gem(offset){ return spaceCostMultiplier('spirit_vacuum', offset, 1000, 1.1, 'eden'); },
             },
             effect(){
@@ -1583,7 +1583,7 @@ const edenicModules = {
             effect(){
                 let desc = `<div>${loc('eden_spirit_battery_effect',[loc('eden_spirit_vacuum_title'),10])}</div>`;
                 if (global.tech['isle'] && global.tech.isle >= 6){
-                    desc += `<div>${loc('eden_spirit_battery_effect2',[loc('eden_spirit_vacuum_title'),5])}</div>`;
+                    desc += `<div>${loc('eden_spirit_battery_effect2',[loc('eden_spirit_vacuum_title'),8])}</div>`;
                 }
                 desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;

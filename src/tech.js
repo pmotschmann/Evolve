@@ -6961,8 +6961,8 @@ const techs = {
     },
     adamantite_hammer: {
         id: 'tech-adamantite_hammer',
-        title: loc('tech_improved_jackhammer',[global.resource.Adamantite.name]),
-        desc: loc('tech_improved_jackhammer',[global.resource.Adamantite.name]),
+        title(){ return loc('tech_improved_jackhammer',[global.resource.Adamantite.name]); },
+        desc(){ return loc('tech_improved_jackhammer',[global.resource.Adamantite.name]); },
         category: 'mining',
         era: 'interstellar',
         reqs: { pickaxe: 5, alpha: 2 },
@@ -6972,7 +6972,7 @@ const techs = {
             Knowledge(){ return 535000; },
             Adamantite(){ return 12500; }
         },
-        effect: loc('tech_improved_jackhammer_effect',[global.resource.Adamantite.name]),
+        effect(){ return loc('tech_improved_jackhammer_effect',[global.resource.Adamantite.name]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -6982,8 +6982,8 @@ const techs = {
     },
     elysanite_hammer: {
         id: 'tech-elysanite_hammer',
-        title: loc('tech_improved_jackhammer',[global.resource.Elysanite.name]),
-        desc: loc('tech_improved_jackhammer',[global.resource.Elysanite.name]),
+        title(){ return loc('tech_improved_jackhammer',[global.resource.Elysanite.name]); },
+        desc(){ return loc('tech_improved_jackhammer',[global.resource.Elysanite.name]); },
         category: 'mining',
         era: 'existential',
         reqs: { pickaxe: 6, elysium: 7 },
@@ -6994,7 +6994,7 @@ const techs = {
             Omniscience(){ return 21500; },
             Elysanite(){ return 35000000; }
         },
-        effect: loc('tech_improved_jackhammer_effect',[global.resource.Elysanite.name]),
+        effect(){ return loc('tech_improved_jackhammer_effect',[global.resource.Elysanite.name]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
