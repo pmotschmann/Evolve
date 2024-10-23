@@ -5113,8 +5113,8 @@ const techs = {
         id: 'tech-divinity',
         title: loc('tech_divinity'),
         desc: loc('tech_divinity'),
-        category: 'existential',
-        era: 'dimensional',
+        category: 'progress',
+        era: 'existential',
         reqs: { high_tech: 18, elysium: 15, isle: 2 },
         grant: ['high_tech',19],
         cost: {
@@ -9036,6 +9036,27 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.interstellar['orichalcum_sphere'] = { count: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    elysanite_sphere: {
+        id: 'tech-elysanite_sphere',
+        title: loc('tech_elysanite_sphere'),
+        desc: loc('tech_elysanite_sphere'),
+        category: 'power_generation',
+        era: 'existential',
+        reqs: { high_tech: 19, dyson: 2 },
+        grant: ['dyson',3],
+        cost: {
+            Knowledge(){ return 122500000; },
+            Omniscience(){ return 36500; },
+        },
+        effect(){ return loc('tech_elysanite_sphere_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.interstellar['elysanite_sphere'] = { count: 0 };
                 return true;
             }
             return false;
@@ -14847,6 +14868,28 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.eden['archive'] = { count: 0, on: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    spirit_syphon: {
+        id: 'tech-spirit_syphon',
+        title: loc('tech_spirit_syphon'),
+        desc: loc('tech_spirit_syphon'),
+        category: 'progress',
+        era: 'existential',
+        reqs: { high_tech: 19, isle: 3 },
+        grant: ['isle',4],
+        cost: {
+            Knowledge(){ return 125000000; },
+            Omniscience(){ return 35000; },
+        },
+        effect(){ return loc('tech_spirit_syphon_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.eden['spirit_vacuum'] = { count: 0, on: 0 };
+                global.eden['palace'] = { energy: 1000000000000, rate: 0 };
                 return true;
             }
             return false;

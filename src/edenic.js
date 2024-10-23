@@ -1,6 +1,6 @@
 import { global, p_on, sizeApproximation, seededRandom } from './vars.js';
-import { vBind, clearElement, popover, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier } from './functions.js';
-import { drawResourceTab, spatialReasoning } from './resources.js';
+import { vBind, clearElement, popover, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, timeFormat } from './functions.js';
+import { spatialReasoning } from './resources.js';
 import { payCosts, powerOnNewStruct, setAction, storageMultipler, drawTech, bank_vault } from './actions.js';
 import { checkRequirements, incrementStruct, piracy} from './space.js';
 import { mechRating } from './portal.js';
@@ -1111,7 +1111,10 @@ const edenicModules = {
                     }, 4500);
 
                     if (global.eden.enemy_isle.wt === 0 && global.eden.enemy_isle.g === 0 && global.eden.enemy_isle.et === 0){
-                        global.tech['isle'] = 2;
+                        global.tech.isle = 2;
+                        global.settings.eden.palace = true;
+                        global.eden['north_pier'] = { count: 0 };
+                        global.eden['south_pier'] = { count: 0 };
                         drawTech();
                         renderEdenic();
                         return true;
@@ -1339,16 +1342,144 @@ const edenicModules = {
                 return false;
             }
         },
+        north_pier: {
+            id: 'eden-north_pier',
+            title(){ return loc('eden_pier',[loc('north')]); },
+            desc(wiki){
+                if (!global.eden.hasOwnProperty('rune_gate') || global.eden.north_pier.count < 10 || wiki){
+                    return `<div>${loc('eden_pier',[loc('north')])}</div><div class="has-text-special">${loc('requires_segments',[10])}</div>`;
+                }
+                else {
+                    return `<div>${loc('eden_pier',[loc('north')])}</div>`;
+                }
+            },
+            reqs: { isle: 2 },
+            queue_complete(){ return 10 - global.eden.north_pier.count; },
+            cost: {
+                Money(offset){
+                    if (offset){
+                        return offset + (global.eden.hasOwnProperty('north_pier') ? global.eden.north_pier.count : 0) < 10 ? 7500000000 : 0;
+                    }
+                    return !global.eden.hasOwnProperty('north_pier') || (global.eden.north_pier.count < 10) ? 7500000000 : 0;
+                },
+                Iron(offset){
+                    if (offset){
+                        return offset + (global.eden.hasOwnProperty('north_pier') ? global.eden.north_pier.count : 0) < 10 ? 500000000 : 0;
+                    }
+                    return !global.eden.hasOwnProperty('north_pier') || (global.eden.north_pier.count < 10) ? 500000000 : 0;
+                },
+                Plywood(offset){
+                    if (global.race['kindling_kindred'] || global.race['smoldering']){ return 0; }
+                    if (offset){
+                        return offset + (global.eden.hasOwnProperty('north_pier') ? global.eden.north_pier.count : 0) < 10 ? 250000000 : 0;
+                    }
+                    return !global.eden.hasOwnProperty('north_pier') || (global.eden.north_pier.count < 10) ? 250000000 : 0;
+                },
+                Sheet_Metal(offset){
+                    if (!global.race['kindling_kindred'] && !global.race['smoldering']){ return 0; }
+                    if (offset){
+                        return offset + (global.eden.hasOwnProperty('north_pier') ? global.eden.north_pier.count : 0) < 10 ? 62500000 : 0;
+                    }
+                    return !global.eden.hasOwnProperty('north_pier') || (global.eden.north_pier.count < 10) ? 62500000 : 0;
+                },
+            },
+            effect(wiki){
+                let count = (wiki || 0) + (global.eden.hasOwnProperty('north_pier') ? global.eden.north_pier.count : 0);
+                if (count >= 10){
+                    let desc = `<div>${loc('eden_pier_effect',[loc('eden_pier',[loc('south')]),loc('eden_isle_name')])}</div>`;
+                    return desc;
+                }
+                else {
+                    let size = 10;
+                    let remain = size - count;
+                    return `<div>${loc('eden_pier_effect',[loc('eden_pier',[loc('south')]),loc('eden_isle_name')])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                }
+            },
+            action(){
+                if (global.eden.north_pier.count < 10 && payCosts($(this)[0])){
+                    incrementStruct('north_pier','eden');
+                    if (global.eden.south_pier.count === 10 && global.eden.north_pier.count === 10 && global.tech.isle === 2){
+                        global.tech.isle = 3;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     eden_isle: {
         info: {
             name: loc('eden_isle_name'),
             desc: loc('eden_isle_desc'),
         },
+        south_pier: {
+            id: 'eden-south_pier',
+            title(){ return loc('eden_pier',[loc('south')]); },
+            desc(wiki){
+                if (!global.eden.hasOwnProperty('rune_gate') || global.eden.south_pier.count < 10 || wiki){
+                    return `<div>${loc('eden_pier',[loc('south')])}</div><div class="has-text-special">${loc('requires_segments',[10])}</div>`;
+                }
+                else {
+                    return `<div>${loc('eden_pier',[loc('south')])}</div>`;
+                }
+            },
+            reqs: { isle: 2 },
+            queue_complete(){ return 10 - global.eden.south_pier.count; },
+            cost: {
+                Money(offset){
+                    if (offset){
+                        return offset + (global.eden.hasOwnProperty('south_pier') ? global.eden.south_pier.count : 0) < 10 ? 7500000000 : 0;
+                    }
+                    return !global.eden.hasOwnProperty('south_pier') || (global.eden.south_pier.count < 10) ? 7500000000 : 0;
+                },
+                Iron(offset){
+                    if (offset){
+                        return offset + (global.eden.hasOwnProperty('south_pier') ? global.eden.south_pier.count : 0) < 10 ? 500000000 : 0;
+                    }
+                    return !global.eden.hasOwnProperty('south_pier') || (global.eden.south_pier.count < 10) ? 500000000 : 0;
+                },
+                Plywood(offset){
+                    if (global.race['kindling_kindred'] || global.race['smoldering']){ return 0; }
+                    if (offset){
+                        return offset + (global.eden.hasOwnProperty('south_pier') ? global.eden.south_pier.count : 0) < 10 ? 250000000 : 0;
+                    }
+                    return !global.eden.hasOwnProperty('south_pier') || (global.eden.south_pier.count < 10) ? 250000000 : 0;
+                },
+                Sheet_Metal(offset){
+                    if (!global.race['kindling_kindred'] && !global.race['smoldering']){ return 0; }
+                    if (offset){
+                        return offset + (global.eden.hasOwnProperty('south_pier') ? global.eden.south_pier.count : 0) < 10 ? 62500000 : 0;
+                    }
+                    return !global.eden.hasOwnProperty('south_pier') || (global.eden.south_pier.count < 10) ? 62500000 : 0;
+                },
+            },
+            effect(wiki){
+                let count = (wiki || 0) + (global.eden.hasOwnProperty('south_pier') ? global.eden.south_pier.count : 0);
+                if (count >= 10){
+                    let desc = `<div>${loc('eden_pier_effect',[loc('eden_pier',[loc('north')]),loc('eden_elysium_name')])}</div>`;
+                    return desc;
+                }
+                else {
+                    let size = 10;
+                    let remain = size - count;
+                    return `<div>${loc('eden_pier_effect',[loc('eden_pier',[loc('north')]),loc('eden_elysium_name')])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                }
+            },
+            action(){
+                if (global.eden.south_pier.count < 10 && payCosts($(this)[0])){
+                    incrementStruct('south_pier','eden');
+                    if (global.eden.south_pier.count === 10 && global.eden.north_pier.count === 10 && global.tech.isle === 2){
+                        global.tech.isle = 3;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
         west_tower: { 
             id: 'eden-west_tower',
-            title(){ return global.eden['enemy_isle'] && global.eden.enemy_isle.wt === 0 ? loc('eden_west_tower_ruin') : loc('eden_west_tower_title'); },
-            desc(){ return global.eden['enemy_isle'] && global.eden.enemy_isle.wt === 0 ? loc('eden_west_tower_ruin') : loc('eden_west_tower_title'); },
+            title(){ return global.eden['enemy_isle'] && global.eden.enemy_isle.wt === 0 ? loc('eden_rampart_ruin',[loc('west')]) : loc('eden_rampart_title',[loc('west')]); },
+            desc(){ return global.eden['enemy_isle'] && global.eden.enemy_isle.wt === 0 ? loc('eden_rampart_ruin',[loc('west')]) : loc('eden_rampart_title',[loc('west')]); },
             queue_complete(){ return 0; },
             reqs: { isle: 1 },
             effect(){ 
@@ -1383,8 +1514,8 @@ const edenicModules = {
         },
         east_tower: { 
             id: 'eden-east_tower',
-            title(){ return global.eden['enemy_isle'] && global.eden.enemy_isle.et === 0 ? loc('eden_east_tower_ruin') : loc('eden_east_tower_title'); },
-            desc(){ return global.eden['enemy_isle'] && global.eden.enemy_isle.et === 0 ? loc('eden_east_tower_ruin') : loc('eden_east_tower_title'); },
+            title(){ return global.eden['enemy_isle'] && global.eden.enemy_isle.et === 0 ? loc('eden_rampart_ruin',[loc('east')]) : loc('eden_rampart_title',[loc('east')]); },
+            desc(){ return global.eden['enemy_isle'] && global.eden.enemy_isle.et === 0 ? loc('eden_rampart_ruin',[loc('east')]) : loc('eden_rampart_title',[loc('east')]); },
             queue_complete(){ return 0; },
             reqs: { isle: 1 },
             effect(){ 
@@ -1399,11 +1530,56 @@ const edenicModules = {
                 return false;
             }
         },
+        spirit_vacuum: {
+            id: 'eden-spirit_vacuum',
+            title(){ return loc('eden_spirit_vacuum_title'); },
+            desc(){
+                return `<div>${loc('eden_spirit_vacuum_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { isle: 4 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('spirit_vacuum', offset, 30000000000, 1.1, 'eden'); },
+                Neutronium(offset){ return spaceCostMultiplier('spirit_vacuum', offset, 175000000, 1.1, 'eden'); },
+                Stanene(offset){ return spaceCostMultiplier('spirit_vacuum', offset, 1000000000, 1.1, 'eden'); },
+                Elerium(offset){ return spaceCostMultiplier('spirit_vacuum', offset, 250000, 1.1, 'eden'); },
+                Soul_Gem(offset){ return spaceCostMultiplier('spirit_vacuum', offset, 1000, 1.1, 'eden'); },
+            },
+            effect(){
+                let desc = `<div>${loc('eden_spirit_vacuum_effect')}</div>`;
+                if (global.eden.palace.rate > 0){
+                    desc += `<div>${loc(`eden_spirit_vacuum_time`,[timeFormat(global.eden.palace.energy / global.eden.palace.rate)])}</div>`;
+                }
+                desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            powered(){ return powerCostMod(12000); },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('spirit_vacuum','eden');
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            },
+            flair(){ return loc(`eden_spirit_vacuum_flair`); }
+        },
     },
     eden_palace: {
         info: {
             name: loc('eden_palace_name'),
-            desc: loc('eden_palace_desc'),
+            desc(){ return loc('eden_palace_desc'); },
+            prop(){
+                return `<span class="pad"><span v-html="$options.filters.filter(energy,'energy')"></span></span>`;
+            },
+            bind(){
+                return global.eden.palace;
+            },
+            filter(v,type){
+                switch (type){
+                    case 'energy':
+                        return loc(`eden_palace_energy`,[v.toLocaleString()]);
+                }
+            }
         },
     }
 };

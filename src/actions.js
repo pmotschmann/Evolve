@@ -5444,6 +5444,9 @@ export function drawTech(){
                 if(actions.tech[b.t].cost.Knowledge == undefined){
                     return 1;
                 }
+                if (actions.tech[a.t].cost.Omniscience != undefined && actions.tech[b.t].cost.Omniscience != undefined){
+                    return actions.tech[a.t].cost.Omniscience() > actions.tech[b.t].cost.Omniscience() ? 1 : -1;
+                }
                 return actions.tech[a.t].cost.Knowledge() > actions.tech[b.t].cost.Knowledge() ? 1 : -1;
             });
             new_techs[era].forEach(function(tech){

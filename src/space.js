@@ -3131,6 +3131,49 @@ const interstellarProjects = {
                 return false;
             }
         },
+        elysanite_sphere: {
+            id: 'interstellar-elysanite_sphere',
+            title: loc('interstellar_dyson_sphere_title'),
+            desc(wiki){
+                if (!global.interstellar.hasOwnProperty('elysanite_sphere') || global.interstellar.elysanite_sphere.count < 1000 || wiki){
+                    return `<div>${loc('interstellar_elysanite_sphere_desc')}</div><div class="has-text-special">${loc('requires_segments',[1000])}</div>`;
+                }
+                else {
+                    return `<div>${loc('interstellar_elysanite_sphere_desc')}</div>`;
+                }
+            },
+            reqs: { proxima: 3, dyson: 3 },
+            queue_size: 25,
+            queue_complete(){ return 1000 - global.interstellar.elysanite_sphere.count; },
+            condition(){
+                return global.interstellar.orichalcum_sphere.count >= 100 && global.tech['dyson'] && global.tech.dyson === 3 ? true : false;
+            },
+            cost: {
+                Money(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('elysanite_sphere') ? global.interstellar.elysanite_sphere.count : 0)) < 1000 ? 1000000000 : 0; },
+                Asphodel_Powder(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('elysanite_sphere') ? global.interstellar.elysanite_sphere.count : 0)) < 1000 ? 25000 : 0; },
+                Elysanite(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('elysanite_sphere') ? global.interstellar.elysanite_sphere.count : 0)) < 1000 ? 100000 : 0; },
+            },
+            effect(wiki){
+                let count = (wiki?.count ?? 0) + (global.interstellar.hasOwnProperty('elysanite_sphere') ? global.interstellar.elysanite_sphere.count : 0);
+                if (count < 100){
+                    let power = 1750 + (count * 18);
+                    let remain = 1000 - count;
+                    return `<div>${loc('interstellar_elysanite_sphere_effect')}</div><div>${loc('space_dwarf_reactor_effect1',[powerModifier(power)])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                }
+                else {
+                    return loc('interstellar_dyson_sphere_complete',[powerModifier(22500)]);
+                }
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    if (global.interstellar.elysanite_sphere.count < 1000){
+                        incrementStruct('elysanite_sphere','interstellar');
+                        return true;
+                    }
+                }
+                return false;
+            }
+        },
     },
     int_nebula: {
         info: {

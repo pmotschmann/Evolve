@@ -1596,7 +1596,20 @@ function fastLoop(){
             power_generated[loc('tau_star_ringworld')] = output;
         }
 
-        if (global.interstellar['orichalcum_sphere'] && global.interstellar.orichalcum_sphere.count > 0){
+        if (global.interstellar['elysanite_sphere'] && global.interstellar.elysanite_sphere.count > 0){
+            let output = 0;
+            if (global.interstellar.elysanite_sphere.count >= 1000){
+                output = powerModifier(22500);
+            }
+            else {
+                output = powerModifier(1750 + (global.interstellar.elysanite_sphere.count * 18));
+            }
+            max_power -= output;
+            power_grid += output;
+            power_generated[loc('interstellar_dyson_sphere_title')] = output;
+            delete power_generated[loc('tech_dyson_net')];
+        }
+        else if (global.interstellar['orichalcum_sphere'] && global.interstellar.orichalcum_sphere.count > 0){
             let output = 0;
             if (global.interstellar.orichalcum_sphere.count >= 100){
                 output = powerModifier(1750);
@@ -5715,6 +5728,18 @@ function fastLoop(){
                 }
 
                 modRes('Water', delta * time_multiplier);
+            }
+        }
+
+        if (global.eden['palace'] && p_on['spirit_vacuum'] && global.eden.palace.energy > 0){
+            let drain = 1653439 * p_on['spirit_vacuum'];
+            global.eden.palace.rate = drain;
+            global.eden.palace.energy -= drain * time_multiplier;
+            global.eden.palace.energy = Math.round(global.eden.palace.energy);
+            if (global.eden.palace.energy <= 0){
+                global.eden.palace.energy = 0;
+                global.tech['palace'] = 1;
+                drawTech();
             }
         }
 

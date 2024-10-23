@@ -1186,6 +1186,9 @@ const extraInformation = {
     orichalcum_sphere: [
         loc(`wiki_tech_dyson_sphere2`)
     ],
+    elysanite_sphere: [
+        loc(`wiki_tech_elysanite_sphere`)
+    ],
     gps: [
         loc(`wiki_tech_building_unlock`,[loc(`space_home_gps_title`)])
     ],
@@ -1938,6 +1941,9 @@ const extraInformation = {
     ],
     wisdom: [
         loc(`wiki_tech_wisdom`)
+    ],
+    spirit_syphon: [
+        loc(`wiki_tech_spirit_syphon`)
     ],
 };
 
