@@ -267,7 +267,7 @@ function achieveDesc(achievement,showFlair,universe){
             }
         });
         defeated = defeated + `</div>`;
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${defeated}${flair}`),{
+        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`,[42])}</div>${defeated}${flair}`),{
             wide: true
         });
     }

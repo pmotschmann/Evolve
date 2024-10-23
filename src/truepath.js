@@ -45,7 +45,7 @@ const outerTruth = {
             path: ['truepath'],
             queue_complete(){ return global.tech.titan >= 1 ? 0 : 1; },
             cost: {
-                Helium_3(offset,wiki){ return +fuel_adjust(250000,false,wiki).toFixed(0); },
+                Helium_3(o,wiki){ return +fuel_adjust(250000,false,wiki).toFixed(0); },
                 Elerium(){ return 100; }
             },
             effect(){
@@ -1488,7 +1488,7 @@ const tauCetiModules = {
             support: 'orbital_station',
             extra(region){
                 if (global.tech['tau_home'] && global.tech.tau_home >= 2 && !tauEnabled()){
-                    $(`#${region}`).append(`<div id="${region}Mats" v-show="tauShow()" class="syndThreat has-text-warning">${loc('resource_Materials_name')} <span class="has-text-info">{{ amount | round }}</span> / <span class="has-text-info">{{ max }}</span></div>`);
+                    $(`#${region}`).append(`<div id="${region}Mats" v-show="tauShow()" class="syndThreat has-text-warning">${loc('resource_Materials_name')} <span class="has-text-info">{{ amount | round | locale }}</span> / <span class="has-text-info">{{ max | locale }}</span></div>`);
                     vBind({
                         el: `#${region}Mats`,
                         data: global.resource.Materials,
@@ -1500,6 +1500,9 @@ const tauCetiModules = {
                         filters: {
                             round(v){
                                 return +v.toFixed(0);
+                            },
+                            locale(v){
+                                return v.toLocaleString();
                             }
                         }
                     });

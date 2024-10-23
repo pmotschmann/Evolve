@@ -14915,6 +14915,69 @@ const techs = {
             return false;
         }
     },
+    rushmore: {
+        id: 'tech-rushmore',
+        title(){ return loc('eden_rushmore',[races[global.race.species].name]); },
+        desc(){ return loc('eden_rushmore',[races[global.race.species].name]); },
+        category: 'entertainment',
+        era: 'existential',
+        reqs: { high_tech: 19, elysium: 15 },
+        grant: ['elysium',16],
+        cost: {
+            Knowledge(){ return 125000000; },
+            Omniscience(){ return 37250; },
+        },
+        effect(){ return loc('tech_rushmore_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.eden['rushmore'] = { count: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    reincarnation: {
+        id: 'tech-reincarnation',
+        title(){ return loc('eden_reincarnation_title'); },
+        desc(){ return loc('eden_reincarnation_title'); },
+        category: 'housing',
+        era: 'existential',
+        reqs: { elysium: 16 },
+        grant: ['elysium',17],
+        cost: {
+            Knowledge(){ return 130000000; },
+            Omniscience(){ return 40000; },
+        },
+        effect(){ return loc('tech_reincarnation_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.eden['reincarnation'] = { count: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    otherworldly_cement: {
+        id: 'tech-otherworldly_cement',
+        title(){ return loc('tech_otherworldly_cement',[global.resource.Cement.name]); },
+        desc(){ return loc('tech_otherworldly_cement',[global.resource.Cement.name]); },
+        category: 'housing',
+        era: 'existential',
+        reqs: { elysium: 17, cement: 7 },
+        grant: ['elysium',18],
+        cost: {
+            Knowledge(){ return 135000000; },
+            Omniscience(){ return 42500; },
+        },
+        effect(){ return loc('tech_otherworldly_cement_effect',[global.resource.Cement.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.eden['eden_cement'] = { count: 0, on: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
     spirit_syphon: {
         id: 'tech-spirit_syphon',
         title: loc('tech_spirit_syphon'),
@@ -14973,6 +15036,48 @@ const techs = {
         effect(){ return loc('tech_suction_force_effect'); },
         action(){
             if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    soul_compactor: {
+        id: 'tech-soul_compactor',
+        title(){ return loc('eden_soul_compactor_title'); },
+        desc(){ return loc('eden_soul_compactor_title'); },
+        category: 'edenic',
+        era: 'existential',
+        reqs: { isle: 6 },
+        grant: ['isle',7],
+        cost: {
+            Knowledge(){ return 135000000; },
+            Omniscience(){ return 42500; },
+        },
+        effect(){ return loc('tech_soul_compactor_effect',[global.resource.Soul_Gem.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.eden['soul_compactor'] = { count: 0, energy: 0, report: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    tomb: {
+        id: 'tech-tomb',
+        title(){ return loc('eden_tomb_title'); },
+        desc(){ return loc('eden_tomb_title'); },
+        category: 'edenic',
+        era: 'existential',
+        reqs: { palace: 2 },
+        grant: ['palace',3],
+        cost: {
+            Knowledge(){ return 140000000; },
+            Omniscience(){ return 45000; },
+        },
+        effect(){ return loc('tech_tomb_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.eden['tomb'] = { count: 0 };
                 return true;
             }
             return false;

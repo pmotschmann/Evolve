@@ -10,6 +10,7 @@ import { production, highPopAdjust } from './prod.js';
 import { loc } from './locale.js';
 import { armyRating, armorCalc, garrisonSize, mercCost } from './civics.js';
 import { govActive } from './governor.js';
+import { races } from './races.js';
 
 const edenicModules = {
     eden_asphodel: {
@@ -1406,6 +1407,91 @@ const edenicModules = {
                 return false;
             }
         },
+        rushmore: {
+            id: 'eden-rushmore',
+            title(){ return loc('eden_rushmore',[races[global.race.species].name]); },
+            desc(){ return `<div>${loc('eden_rushmore',[races[global.race.species].name])}</div>`; },
+            reqs: { elysium: 16 },
+            cost: {
+                Money(o,wiki){ return global.eden?.rushmore?.count === 0 || wiki ? 55000000000 : 0; },
+                Stone(o,wiki){ return global.eden?.rushmore?.count === 0 || wiki ? 10000000000 : 0; },
+            },
+            queue_complete(){ return 1 - (global.eden?.rushmore?.count || 0); },
+            effect(){
+                return `<div>${loc('space_red_vr_center_effect2',[10])}</div>`;
+            },
+            action(){
+                if (global.eden.rushmore.count === 0 && payCosts($(this)[0])){
+                    incrementStruct('rushmore','eden');
+                    return true;
+                }
+                return false;
+            },
+            flair(){
+                return loc('eden_rushmore_flair');
+            }
+        },
+        reincarnation: {
+            id: 'eden-reincarnation',
+            title(){ return loc('eden_reincarnation_title'); },
+            desc(){ return `<div>${loc('eden_reincarnation_title')}</div>`; },
+            reqs: { elysium: 17 },
+            cost: {
+                Money(o){
+                    return global.eden?.reincarnation?.count === 0 ? 35000000000
+                        : (global.eden?.reincarnation?.count === 1 ? 5000000000 : 0);
+                },
+                Aluminium(o){ return global.eden?.reincarnation?.count === 0 ? 10000000000 : 0; },
+                Nano_Tube(o){ return global.eden?.reincarnation?.count === 0 ? 2000000000 : 0; },
+                Nanoweave(o){ return global.eden?.reincarnation?.count === 0 ? 5000000000 : 0; },
+            },
+            queue_complete(){ return 1 - (global.eden?.reincarnation?.count || 0); },
+            effect(){
+                return `<div>${loc('eden_reincarnation_effect',[races[global.race.species].name])}</div>`;
+            },
+            action(){
+                if (global.eden.reincarnation.count === 0 && payCosts($(this)[0])){
+                    incrementStruct('reincarnation','eden');
+                    return true;
+                }
+                else if (global.eden.reincarnation.count === 1 && global['resource'][global.race.species].max > global['resource'][global.race.species].amount && payCosts($(this)[0])){
+                    global['resource'][global.race.species].amount++;
+                    return true;
+                }
+                return false;
+            },
+            flair(){
+                return loc('eden_reincarnation_flair');
+            }
+        },
+        eden_cement: {
+            id: 'eden-eden_cement',
+            title(){ return loc('city_cement_plant'); },
+            desc(){
+                return `<div>${loc('city_cement_plant_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { elysium: 18 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('eden_cement', offset, 5000000000, 1.24, 'eden'); },
+                Stone(offset){ return spaceCostMultiplier('eden_cement', offset, 1000000000, 1.24, 'eden'); },
+                Iron(offset){ return spaceCostMultiplier('eden_cement', offset, 6800000000, 1.24, 'eden'); },
+                Asphodel_Powder(offset){ return spaceCostMultiplier('eden_cement', offset, 65000, 1.24, 'eden'); },
+            },
+            effect(){
+                let desc = loc('plus_max_resource',[jobScale(5),loc(`job_cement_worker`)]);
+                desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            powered(){ return powerCostMod(10); },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('eden_cement','eden');
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     eden_isle: {
         info: {
@@ -1546,7 +1632,7 @@ const edenicModules = {
             },
             effect(){
                 let desc = `<div>${loc('eden_spirit_vacuum_effect')}</div>`;
-                if (global.eden.palace.rate > 0){
+                if (global.eden.palace.rate > 0 && global.eden.palace.energy > 0){
                     desc += `<div>${loc(`eden_spirit_vacuum_time`,[timeFormat(global.eden.palace.energy / global.eden.palace.rate)])}</div>`;
                 }
                 desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
@@ -1600,6 +1686,32 @@ const edenicModules = {
                 return false;
             }
         },
+        soul_compactor: {
+            id: 'eden-soul_compactor',
+            title(){ return loc('eden_soul_compactor_title'); },
+            desc(){ return `<div>${loc('eden_soul_compactor_title')}</div>`; },
+            reqs: { isle: 7 },
+            cost: {
+                Money(o,wiki){ return global.eden?.soul_compactor?.count === 0 || wiki ? 50000000000 : 0; },
+                Iron(o,wiki){ return global.eden?.soul_compactor?.count === 0 || wiki ? 22500000000 : 0; },
+                Uranium(o,wiki){ return global.eden?.soul_compactor?.count === 0 || wiki ? 4000000 : 0; },
+                Scarletite(o,wiki){ return global.eden?.soul_compactor?.count === 0 || wiki ? 500000000 : 0; },
+            },
+            queue_complete(){ return 1 - (global.eden?.soul_compactor?.count || 0); },
+            effect(){
+                let desc = `<div>${loc('eden_soul_compactor_effect1',[global.eden?.soul_compactor?.energy.toLocaleString() || 0])}</div>`;
+                desc += `<div>${loc('eden_soul_compactor_effect2',[(1000000000).toLocaleString()])}</div>`;
+                desc += `<div>${loc('eden_soul_compactor_effect3',[global.resource.Soul_Gem.name])}</div>`;
+                return desc;
+            },
+            action(){
+                if (global.eden.soul_compactor.count === 0 && payCosts($(this)[0])){
+                    incrementStruct('soul_compactor','eden');
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     eden_palace: {
         info: {
@@ -1618,6 +1730,97 @@ const edenicModules = {
                 }
             }
         },
+        scout_palace: {
+            id: 'eden-scout_palace',
+            title: loc('eden_scout_palace_title'),
+            desc: loc('eden_scout_palace_title'),
+            reqs: { palace: 1 },
+            grant: ['palace',2],
+            queue_complete(){ return global.tech.palace >= 2 ? 0 : 1; },
+            cost: {
+                Money(){ return 50000000000; },
+                Deuterium(){ return 5000000; },
+            },
+            effect: loc('eden_scout_palace_effect'),
+            action(){
+                if (payCosts($(this)[0])){
+                    messageQueue(loc('eden_scout_palace_result'),'info',false,['progress']);
+                    return true;
+                }
+                return false;
+            }
+        },
+        throne: {
+            id: 'eden-scout_palace',
+            title(){ return loc('eden_abandoned_throne_title'); },
+            desc(){ return loc('eden_abandoned_throne_title'); },
+            reqs: { palace: 2 },
+            queue_complete(){ return false },
+            cost: {
+                Money(){ return 0; },
+            },
+            effect: loc('eden_abandoned_throne_effect'),
+            action(){
+                return false;
+            }
+        },
+        tomb: {
+            id: 'eden-tomb',
+            title(){ return loc('eden_tomb_title'); },
+            desc(wiki){
+                if (!global.eden.hasOwnProperty('tomb') || global.eden.tomb.count < 10 || wiki){
+                    return `<div>${loc('eden_tomb_title')}</div><div class="has-text-special">${loc('requires_segments',[10])}</div>`;
+                }
+                else {
+                    return `<div>${loc('eden_tomb_title')}</div>`;
+                }
+            },
+            reqs: { palace: 3 },
+            queue_complete(){ return 10 - global.eden.tomb.count; },
+            cost: {
+                Money(offset){
+                    if (offset){
+                        return offset + (global.eden.hasOwnProperty('tomb') ? global.eden.tomb.count : 0) < 10 ? 25000000000 : 0;
+                    }
+                    return !global.eden.hasOwnProperty('tomb') || (global.eden.tomb.count < 10) ? 25000000000 : 0;
+                },
+                Cement(offset){
+                    if (offset){
+                        return offset + (global.eden.hasOwnProperty('tomb') ? global.eden.tomb.count : 0) < 10 ? 10000000000 : 0;
+                    }
+                    return !global.eden.hasOwnProperty('tomb') || (global.eden.tomb.count < 10) ? 10000000000 : 0;
+                },
+                Neutronium(offset){
+                    if (offset){
+                        return offset + (global.eden.hasOwnProperty('tomb') ? global.eden.tomb.count : 0) < 10 ? 100000000 : 0;
+                    }
+                    return !global.eden.hasOwnProperty('tomb') || (global.eden.tomb.count < 10) ? 100000000 : 0;
+                },
+            },
+            effect(wiki){
+                let count = (wiki || 0) + (global.eden.hasOwnProperty('tomb') ? global.eden.tomb.count : 0);
+                if (count >= 10){
+                    let desc = `<div>${loc('eden_tomb_effect')}</div>`;
+                    return desc;
+                }
+                else {
+                    let size = 10;
+                    let remain = size - count;
+                    return `<div>${loc('eden_tomb_constuct')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                }
+            },
+            action(){
+                if (global.eden.tomb.count < 10 && payCosts($(this)[0])){
+                    incrementStruct('tomb','eden');
+                    if (global.eden.tomb.count === 10 && global.tech.palace === 3){
+                        global.tech.palace = 4;
+                        drawTech();
+                    }
+                    return true;
+                }
+                return false;
+            }
+        }
     }
 };
 

@@ -1957,6 +1957,18 @@ const extraInformation = {
     suction_force: [
         loc(`wiki_tech_suction_force`)
     ],
+    rushmore: [
+        loc(`wiki_tech_rushmore`)
+    ],
+    reincarnation: [
+        loc(`wiki_tech_reincarnation`)
+    ],
+    otherworldly_cement: [
+        loc(`wiki_tech_otherworldly_cement`)
+    ],
+    tomb: [
+        loc(`wiki_tech_tomb`)
+    ],
 };
 
 const extraInformationTP = {

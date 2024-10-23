@@ -10,7 +10,7 @@ import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEff
 import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, structName } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay } from './portal.js';
-import { asphodelResist, mechStationEffect } from './edenic.js';
+import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
 import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled } from './truepath.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
@@ -3043,6 +3043,9 @@ function fastLoop(){
         if (p_on['resort']){
             mBaseCap += p_on['resort'] * 2;
         }
+        if (global.eden['rushmore'] && global.eden.rushmore.count === 1){
+            mBaseCap += 10;
+        }
         if (global.tech['superstar']){
             let mcapval = global.race['high_pop'] ? highPopAdjust(1) : 1;
             mBaseCap += workerScale(global.civic.entertainer.workers,'entertainer') * mcapval;
@@ -5750,19 +5753,33 @@ function fastLoop(){
             }
         }
 
-        if (global.eden['palace'] && p_on['spirit_vacuum'] && global.eden.palace.energy > 0 && global.tech['isle']){
+        if (global.eden['palace'] && p_on['spirit_vacuum'] && global.tech['isle']){
             let drain = 1653439 * p_on['spirit_vacuum'];
             if (global.tech.isle >= 6 && p_on['spirit_battery']){
                 let battery = p_on['spirit_battery'] || 0;
                 drain *= 1 + (battery * 0.08);
             }
-            global.eden.palace.rate = drain;
-            global.eden.palace.energy -= drain * time_multiplier;
-            global.eden.palace.energy = Math.round(global.eden.palace.energy);
-            if (global.eden.palace.energy <= 0){
-                global.eden.palace.energy = 0;
-                global.tech['palace'] = 1;
-                drawTech();
+
+            if (global.eden['soul_compactor'] && global.eden.soul_compactor.count === 1){
+                global.eden.soul_compactor.energy += Math.round(drain / 2);
+                if (global.eden.soul_compactor.energy >= 1000000000){
+                    global.eden.soul_compactor.energy -= 1000000000;
+                    global.resource.Soul_Gem.amount++;
+                    global.eden.soul_compactor.report++;
+                }
+            }
+
+            if (global.eden.palace.energy > 0){
+                global.eden.palace.rate = drain;
+                global.eden.palace.energy -= drain * time_multiplier;
+                global.eden.palace.energy = Math.round(global.eden.palace.energy);
+
+                if (global.eden.palace.energy <= 0){
+                    global.eden.palace.energy = 0;
+                    global.tech['palace'] = 1;
+                    drawTech();
+                    renderEdenic();
+                }
             }
         }
 
@@ -8161,6 +8178,10 @@ function midLoop(){
         }
         if (global.city['cement_plant']){
             lCaps['cement_worker'] += jobScale(global.city.cement_plant.count * 2);
+        }
+        if (global.eden['eden_cement']){
+            let ec = p_on['eden_cement'] || 0;
+            lCaps['cement_worker'] += jobScale(ec * 5);
         }
         if (global.race['orbit_decayed'] && p_on['red_factory']){
             lCaps['cement_worker'] += jobScale(p_on['red_factory']);

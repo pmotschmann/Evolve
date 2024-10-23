@@ -1454,11 +1454,12 @@ const fortressModules = {
             desc: loc('portal_spire_desc'),
             support: 'purifier',
             prop(){
-                let desc = ` - <span class="has-text-advanced">${loc('portal_spire_supply')}:</span> <span class="has-text-caution">{{ supply | filter }} / {{ sup_max }}</span>`;
+                let desc = ` - <span class="has-text-advanced">${loc('portal_spire_supply')}:</span> <span class="has-text-caution">{{ supply | filter }} / {{ sup_max | filter }}</span>`;
                 return desc + ` (<span class="has-text-success">+{{ diff | filter(2) }}/s</span>)`;
             },
             filter(v,fix){
-                return fix ? +(v).toFixed(fix) : Math.floor(v);
+                let val = fix ? +(v).toFixed(fix) : Math.floor(v);
+                return val.toLocaleString();
             }
         },
         spire_mission: {
@@ -1508,7 +1509,7 @@ const fortressModules = {
                 if (global.tech['hell_spire'] && global.tech.hell_spire >= 11 && global.eden['asphodel_harvester'] && support_on['asphodel_harvester']){
                     base *= 1 + (support_on['asphodel_harvester'] / 50);
                 }
-                return base;
+                return +(base).toFixed(2);
             },
             effect(){
                 return `<div>${loc('portal_purifier_effect',[$(this)[0].support()])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
@@ -2494,7 +2495,8 @@ export function bloodwar(){
                 soul_forge: 0,
                 crafted: 0,
                 turrets: 0,
-                surveyors: 0
+                surveyors: 0,
+                compactor: 0
             },
         }
     };
@@ -3007,6 +3009,11 @@ export function bloodwar(){
                 }
             }
         }
+    }
+
+    if (global.eden.hasOwnProperty('soul_compactor') && global.eden.soul_compactor.count === 1){
+        day_report.stats.gems.compactor = global.eden.soul_compactor.report;
+        global.eden.soul_compactor.report = 0;
     }
     
     global.portal.observe.stats.total.days++;
@@ -3675,6 +3682,34 @@ export const monsters = {
             missile: 0.65,
             sonic: 0.5,
             shotgun: 0.75,
+            tesla: 0.2
+        },
+        nozone: {},
+        amp: {}
+    },
+    giant_chicken: {
+        weapon: {
+            laser: 0.95,
+            flame: 0.95,
+            plasma: 0.95,
+            kinetic: 0.95,
+            missile: 0.95,
+            sonic: 0.95,
+            shotgun: 0.95,
+            tesla: 0.95
+        },
+        nozone: {},
+        amp: {}
+    },
+    skeleton_pack: {
+        weapon: {
+            laser: 0.5,
+            flame: 0.1,
+            plasma: 0.5,
+            kinetic: 1,
+            missile: 1.2,
+            sonic: 0.5,
+            shotgun: 1.05,
             tesla: 0.2
         },
         nozone: {},
@@ -4901,6 +4936,7 @@ function drawHellAnalysis(){
                 <div v-show="p.soul_forge"><h2>{{ st.${type}.gems.crafted, 'gems_crafted', s.average | genericSub }}</h2></div>
                 <div v-show="p.gate_turret"><h2>{{ st.${type}.gems.turrets, 'gems_turrets', s.average | genericSub }}</h2></div>
                 <div v-show="p.war_drone && p.carport"><h2>{{ st.${type}.gems.surveyors, 'gems_surveyors', s.average | genericSub }}</h2></div>
+                <div v-show="e.soul_compactor"><h2>{{ st.${type}.gems.compactor, 'gems_compactor', s.average | genericSub }}</h2></div>
             </div>
             <div><h2>{{ st.${type}.wounded, 'wounded', s.average | generic }}</h2></div>
             <div><h2>{{ st.${type}.died, 'died', s.average | generic }}</h2></div>
@@ -4916,7 +4952,8 @@ function drawHellAnalysis(){
                 s: global.portal.observe.settings,
                 p: global.portal,
                 r: global.race,
-                sg: global.resource.Soul_Gem
+                sg: global.resource.Soul_Gem,
+                e: global.eden,
             },
             methods: {
                 resetObservations(){
@@ -5366,6 +5403,14 @@ function drawHellReports(){
             }
             if (curr_report.soul_forge.gem_craft){
                 displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_craft',[curr_report.soul_forge.corrupt ? loc('resource_Corrupt_Gem_name') : global.resource.Soul_Gem.name])}</span>`);
+            }
+            info.append(displayText);
+        }
+
+        if (curr_report.stats.gems.compactor){
+            let displayText = $(`<p></p>`);
+            if (curr_report.stats.gems.compactor){
+                displayText.append(`<span class="has-text-success">${loc('hell_report_log_compactor',[curr_report.stats.gems.compactor, global.resource.Soul_Gem.name])}</span>`);
             }
             info.append(displayText);
         }
