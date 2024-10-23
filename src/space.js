@@ -3155,7 +3155,7 @@ const interstellarProjects = {
             },
             effect(wiki){
                 let count = (wiki?.count ?? 0) + (global.interstellar.hasOwnProperty('elysanite_sphere') ? global.interstellar.elysanite_sphere.count : 0);
-                if (count < 100){
+                if (count < 1000){
                     let power = 1750 + (count * 18);
                     let remain = 1000 - count;
                     return `<div>${loc('interstellar_elysanite_sphere_effect')}</div><div>${loc('space_dwarf_reactor_effect1',[powerModifier(power)])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
@@ -3387,6 +3387,9 @@ const interstellarProjects = {
                     if (global.tech['ai_core'] >= 3){
                         let graph = +(quantum_lv / 5).toFixed(1);
                         desc = desc + `<div>${loc('interstellar_citadel_effect4',[graph])}</div>`;
+                    }
+                    if (global.tech['ai_core'] >= 4){
+                        desc = desc + `<div>${loc('interstellar_citadel_effect5',[1])}</div>`;
                     }
                 }
                 return `${desc}<div class="has-text-caution">${loc('interstellar_citadel_power',[$(this)[0].powered(wiki),powerCostMod(2.5)])}</div>`;

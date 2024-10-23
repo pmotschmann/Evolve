@@ -246,10 +246,22 @@ if (global.eden['soul_engine']){
     support_on['soul_engine'] = global.eden.soul_engine.on;
 }
 if (global.eden['ectoplasm_processor']){
+    p_on['ectoplasm_processor'] = global.eden.ectoplasm_processor.on;
     support_on['ectoplasm_processor'] = global.eden.ectoplasm_processor.on;
 }
 if (global.eden['research_station']){
+    p_on['research_station'] = global.eden.research_station.on;
     support_on['research_station'] = global.eden.research_station.on;
+}
+if (global.eden['bunker']){
+    p_on['bunker'] = global.eden.bunker.on;
+    support_on['bunker'] = global.eden.bunker.on;
+}
+if (global.eden['spirit_vacuum']){
+    p_on['spirit_vacuum'] = global.eden.spirit_vacuum.on;
+}
+if (global.eden['spirit_battery']){
+    p_on['spirit_battery'] = global.eden.spirit_battery.on;
 }
 
 defineJobs(true);
@@ -5731,8 +5743,12 @@ function fastLoop(){
             }
         }
 
-        if (global.eden['palace'] && p_on['spirit_vacuum'] && global.eden.palace.energy > 0){
+        if (global.eden['palace'] && p_on['spirit_vacuum'] && global.eden.palace.energy > 0 && global.tech['isle']){
             let drain = 1653439 * p_on['spirit_vacuum'];
+            if (global.tech.isle >= 6 && p_on['spirit_battery']){
+                let battery = p_on['spirit_battery'] || 0;
+                drain *= 1 + (battery / 20);
+            }
             global.eden.palace.rate = drain;
             global.eden.palace.energy -= drain * time_multiplier;
             global.eden.palace.energy = Math.round(global.eden.palace.energy);
@@ -8957,10 +8973,13 @@ function midLoop(){
         }
         if (global.tech['banking'] >= 4){
             let cm = 250;
-            if (global.tech['banking'] >= 11){
+            if (global.tech.banking >= 14){
+                cm = 1000000;
+            }
+            else if (global.tech.banking >= 11){
                 cm = 1000;
             }
-            else if (global.tech['banking'] >= 6){
+            else if (global.tech.banking >= 6){
                 cm = 600;
             }
             let gain = cm * (global.resource[global.race.species].amount + global.civic.garrison.workers);
@@ -8968,7 +8987,7 @@ function midLoop(){
                 gain = highPopAdjust(gain);
             }
             caps['Money'] += gain;
-            breakdown.c.Money[loc('tech_bonds')] = gain+'v';
+            breakdown.c.Money[global.tech.banking >= 14 ? loc('tech_crypto_currency') : loc('tech_bonds')] = gain+'v';
         }
         if (p_on['moon_base']){
             let gain = p_on['moon_base'] * spatialReasoning(500);

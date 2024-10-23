@@ -8831,10 +8831,10 @@ export function bank_vault(){
     if (fathom > 0){
         vault *= 1 + (traits.hoarder.vars(1)[0] / 100 * fathom);
     }
-    if (global.tech['banking'] >= 7){
+    if (global.tech.banking >= 7){
         vault *= 1 + highPopAdjust(workerScale(global.civic.banker.workers,'banker') * 0.05);
     }
-    if (global.tech['banking'] >= 8){
+    if (global.tech.banking >= 8){
         vault += highPopAdjust(25 * global.resource[global.race.species].amount);
     }
     if (global.tech['stock_exchange']){
@@ -8854,6 +8854,10 @@ export function bank_vault(){
     }
     if (global.race['inflation']){
         vault *= 1 + (global.race.inflation / 125);
+    }
+    if (global.tech['ai_core'] && global.tech.ai_core >= 4){
+        let citadel = p_on['citadel'] || 0;
+        vault *= 1 + (citadel / 100);
     }
     let rskVal = govActive('risktaker',0);
     if (rskVal){

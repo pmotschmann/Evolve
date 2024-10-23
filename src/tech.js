@@ -3748,6 +3748,27 @@ const techs = {
             return false;
         }
     },
+    crypto_currency: {
+        id: 'tech-crypto_currency',
+        title: loc('tech_crypto_currency'),
+        desc: loc('tech_crypto_currency'),
+        category: 'banking',
+        era: 'existential',
+        reqs: { banking: 13, high_tech: 19 },
+        grant: ['banking',14],
+        cost: {
+            Money(){ return 10000000000; },
+            Knowledge(){ return 127500000; },
+            Omniscience(){ return 38500; },
+        },
+        effect: loc('tech_crypto_currency_effect',[loc('tech_bonds')]),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     mythril_vault: {
         id: 'tech-mythril_vault',
         title: loc('tech_mythril_vault'),
@@ -5738,6 +5759,27 @@ const techs = {
             Knowledge(){ return 2500000; },
         },
         effect: loc('tech_graphene_processing_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    crypto_mining: {
+        id: 'tech-crypto_mining',
+        title: loc('tech_crypto_mining'),
+        desc: loc('tech_crypto_mining'),
+        category: 'ai_core',
+        era: 'existential',
+        reqs: { ai_core: 3, banking: 14 },
+        grant: ['ai_core',4],
+        cost: {
+            Money(){ return 30000000000; },
+            Knowledge(){ return 135000000; },
+            Omniscience(){ return 45000; },
+        },
+        effect: loc('tech_crypto_mining_effect',[loc('interstellar_citadel_title')]),
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -14793,7 +14835,7 @@ const techs = {
         id: 'tech-elerium_containment',
         title(){ return loc('eden_elerium_containment',[global.resource.Elerium.name]); },
         desc(){ return loc('eden_elerium_containment',[global.resource.Elerium.name]); },
-        category: 'military',
+        category: 'storage',
         era: 'existential',
         reqs: { elysium: 10 },
         grant: ['elysium',11],
@@ -14877,7 +14919,7 @@ const techs = {
         id: 'tech-spirit_syphon',
         title: loc('tech_spirit_syphon'),
         desc: loc('tech_spirit_syphon'),
-        category: 'progress',
+        category: 'edenic',
         era: 'existential',
         reqs: { high_tech: 19, isle: 3 },
         grant: ['isle',4],
@@ -14899,18 +14941,38 @@ const techs = {
         id: 'tech-spirit_capacitor',
         title: loc('tech_spirit_capacitor'),
         desc: loc('tech_spirit_capacitor'),
-        category: 'progress',
+        category: 'edenic',
         era: 'existential',
         reqs: { isle: 4 },
         grant: ['isle',5],
         cost: {
-            Knowledge(){ return 130000000; },
+            Knowledge(){ return 128000000; },
             Omniscience(){ return 37500; },
         },
         effect(){ return loc('tech_spirit_capacitor_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 global.eden['spirit_battery'] = { count: 0, on: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    suction_force: {
+        id: 'tech-suction_force',
+        title: loc('tech_suction_force'),
+        desc: loc('tech_suction_force'),
+        category: 'edenic',
+        era: 'existential',
+        reqs: { isle: 5 },
+        grant: ['isle',6],
+        cost: {
+            Knowledge(){ return 130000000; },
+            Omniscience(){ return 40000; },
+        },
+        effect(){ return loc('tech_suction_force_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
                 return true;
             }
             return false;

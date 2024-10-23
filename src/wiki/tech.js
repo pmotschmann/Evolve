@@ -474,6 +474,9 @@ const extraInformation = {
         loc(`wiki_tech_foreign_investment`,[loc(`galaxy_freighter`),3]),
         loc(`wiki_tech_foreign_investment`,[loc(`galaxy_super_freighter`),8])
     ],
+    crypto_currency: [
+        loc(`wiki_tech_crypto_currency`)
+    ],
     mythril_vault: [
         loc(`wiki_tech_vault`,[9000,15000])
     ],
@@ -715,6 +718,9 @@ const extraInformation = {
     ],
     graphene_processing: [
         loc(`wiki_tech_graphene_processing`)
+    ],
+    crypto_mining: [
+        loc(`wiki_tech_crypto_mining`)
     ],
     fusion_power: [
         loc(`wiki_tech_building_unlock`,[loc(`interstellar_fusion_title`)])
@@ -1944,6 +1950,12 @@ const extraInformation = {
     ],
     spirit_syphon: [
         loc(`wiki_tech_spirit_syphon`)
+    ],
+    spirit_capacitor: [
+        loc(`wiki_tech_spirit_capacitor`)
+    ],
+    suction_force: [
+        loc(`wiki_tech_suction_force`)
     ],
 };
 
