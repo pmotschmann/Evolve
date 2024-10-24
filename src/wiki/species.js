@@ -47,7 +47,7 @@ export function customPage(content) {
     });
     let lab = $(`<div class="infoBox wide"></div>`);
     content.append(lab);
-    ascendLab(lab);
+    ascendLab(false,lab);
 }
 
 const evolutionPath = {

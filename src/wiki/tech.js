@@ -1969,6 +1969,12 @@ const extraInformation = {
     tomb: [
         loc(`wiki_tech_tomb`)
     ],
+    energy_drain: [
+        loc(`wiki_tech_energy_drain`)
+    ],
+    devine_infuser: [
+        loc(`wiki_tech_devine_infuser`)
+    ],
 };
 
 const extraInformationTP = {

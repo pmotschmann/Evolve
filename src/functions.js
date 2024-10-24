@@ -670,7 +670,7 @@ export function modRes(res,val,notrack,buffer){
 }
 
 export function genCivName(alt){
-    let genus = races[global.race.species].type;
+    let genus = global.race.maintype || races[global.race.species].type;
     switch (genus){
         case 'animal':
             genus = 'animalism';
@@ -1542,6 +1542,7 @@ export function calcPrestige(type,inputs){
         harmony: 0,
         artifact: 0,
         cores: 0,
+        supercoiled: 0,
     };
 
     if (!inputs) { inputs = {}; }
@@ -1580,7 +1581,6 @@ export function calcPrestige(type,inputs){
     let k_mult = rc.k_mult;
     let phage_mult = rc.phage_mult;
     let plasmid_cap = rc.plasmid_cap;
-
 
     if (challenge !== undefined){
         plasmid_cap = Math.floor(plasmid_cap * (1 + (challenge + (inputs.tp ? 1 : 0)) / 8));
@@ -1640,36 +1640,36 @@ export function calcPrestige(type,inputs){
     }
 
 
-    if (['ascend','descend','terraform'].includes(type)){
-        let harmony = 1;
+    if (['ascend','descend','terraform','apotheosis'].includes(type)){
+        let pr_gain = 1;
         if (challenge === undefined){
-            harmony = alevel();
-            if (harmony > 5){
-                harmony = 5;
+            pr_gain = alevel();
+            if (pr_gain > 5){
+                pr_gain = 5;
             }
         }
         else {
-            harmony = challenge + 1;
+            pr_gain = challenge + 1;
         }
 
         if (type === 'ascend' || type === 'terraform'){
             switch (universe){
                 case 'micro':
-                    harmony *= 0.25;
+                    pr_gain *= 0.25;
                     break;
                 case 'heavy':
-                    harmony *= 1.2;
+                    pr_gain *= 1.2;
                     break;
                 case 'antimatter':
-                    harmony *= 1.1;
+                    pr_gain *= 1.1;
                     break;
                 default:
                     break;
             }
-            gains.harmony = parseFloat(harmony.toFixed(2));
+            gains.harmony = parseFloat(pr_gain.toFixed(2));
         }
         else if (type === 'descend'){
-            let artifact = universe === 'micro' ? 1 : harmony;
+            let artifact = universe === 'micro' ? 1 : pr_gain;
             let spire = inputs.floor;
             if (spire !== undefined){
                 spire++;
@@ -1683,6 +1683,15 @@ export function calcPrestige(type,inputs){
                 }
             });
             gains.artifact = artifact;
+        }
+        else if (type === 'apotheosis'){
+            gains.plasmid = 1;
+            if (universe === 'micro'){
+                gains.supercoiled = pr_gain ** 2;
+            }
+            else {
+                gains.supercoiled = pr_gain ** 3;
+            }
         }
     }
 

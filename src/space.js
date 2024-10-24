@@ -10,7 +10,7 @@ import { actions, payCosts, powerOnNewStruct, setAction, setPlanet, storageMulti
 import { outerTruthTech, syndicate } from './truepath.js';
 import { production, highPopAdjust } from './prod.js';
 import { defineGovernor, govActive } from './governor.js';
-import { ascend, terraform } from './resets.js';
+import { ascend, terraform, apotheosis } from './resets.js';
 import { loadTab } from './index.js';
 import { loc } from './locale.js';
 
@@ -5619,6 +5619,9 @@ function xeno_race(){
     if (!global.custom.hasOwnProperty('race0')){
         skip.push('custom');
     }
+    if (!global.custom.hasOwnProperty('race1')){
+        skip.push('hybrid');
+    }
     
     let list = Object.keys(races).filter(function(r){ return !['demonic','eldritch'].includes(races[r].type) && !skip.includes(r) });
     let key1 = randomKey(list);
@@ -6387,21 +6390,29 @@ export function zigguratBonus(){
 }
 
 export function planetName(){
+    let type = races[global.race.species].type === 'hybrid' ? global.race.maintype : races[global.race.species].type;
     let names = {
         red: races[global.race.species].solar.red,
         hell: races[global.race.species].solar.hell,
         gas: races[global.race.species].solar.gas,
         gas_moon: races[global.race.species].solar.gas_moon,
         dwarf: races[global.race.species].solar.dwarf,
-        titan: genusVars[races[global.race.species].type].solar.titan,
-        enceladus: genusVars[races[global.race.species].type].solar.enceladus,
-        triton: genusVars[races[global.race.species].type].solar.triton,
-        eris: genusVars[races[global.race.species].type].solar.eris,
+        titan: genusVars[type].solar.titan,
+        enceladus: genusVars[type].solar.enceladus,
+        triton: genusVars[type].solar.triton,
+        eris: genusVars[type].solar.eris,
     };
     if (global.race.species === 'custom'){
         for (let p of ['titan','enceladus','triton','eris']){
             if (global.custom.race0.hasOwnProperty(p)){
                 names[p] = global.custom.race0[p];
+            }
+        }
+    }
+    if (global.race.species === 'hybrid'){
+        for (let p of ['titan','enceladus','triton','eris']){
+            if (global.custom.race1.hasOwnProperty(p)){
+                names[p] = global.custom.race1[p];
             }
         }
     }
@@ -6515,7 +6526,7 @@ export function setUniverse(){
     }
 }
 
-export function ascendLab(wiki){
+export function ascendLab(hybrid,wiki){
     if (!wiki && !global.race['noexport']){
         if (webWorker.w){
             webWorker.w.terminate();
@@ -6526,28 +6537,45 @@ export function ascendLab(wiki){
 
         unlockAchieve(`biome_${global.city.biome}`);
         unlockAchieve(`genus_${races[global.race.species].type}`);
-        if (global.race['witch_hunter'] && global.race.universe === 'magic'){
-            unlockAchieve(`soul_sponge`);
-        }
-        else {
-            unlockAchieve(`ascended`);
-            if (global.interstellar.thermal_collector.count === 0){
-                unlockFeat(`energetic`);
+
+        if (hybrid){
+            unlockAchieve(`godslayer`);
+            if (['unicorn','seraph'].includes(global.race.species)){
+                unlockAchieve(`traitor`);
+            }
+            if (global.stats.achieve['what_is_best'] && global.stats.achieve.what_is_best['e']){
+                global.race['noexport'] = `Hybrid`;
+            }
+            else {
+                apotheosis();
+                return;
             }
         }
-        if (global.race.species === 'junker'){
-            unlockFeat('the_misery');
+        else {
+            if (global.race['witch_hunter'] && global.race.universe === 'magic'){
+                unlockAchieve(`soul_sponge`);
+            }
+            else {
+                unlockAchieve(`ascended`);
+                if (global.interstellar.thermal_collector.count === 0){
+                    unlockFeat(`energetic`);
+                }
+            }
+            if (global.race.species === 'junker'){
+                unlockFeat('the_misery');
+            }
+            if (!global.race['modified'] && global.race['junker'] && global.race.species === 'junker'){
+                unlockFeat(`garbage_pie`);
+            }
+            if (global.race['emfield']){
+                unlockAchieve(`technophobe`);
+            }
+            if (global.race['cataclysm']){
+                unlockFeat(`finish_line`);
+            }
+            global.race['noexport'] = `Race`;
         }
-        if (!global.race['modified'] && global.race['junker'] && global.race.species === 'junker'){
-            unlockFeat(`garbage_pie`);
-        }
-        if (global.race['emfield']){
-            unlockAchieve(`technophobe`);
-        }
-        if (global.race['cataclysm']){
-            unlockFeat(`finish_line`);
-        }
-        global.race['noexport'] = `Race`;
+
         clearElement($(`#city`));
         global.settings.showCity = true;
         global.settings.showCivic = false;
@@ -6687,23 +6715,24 @@ export function ascendLab(wiki){
     }
     lab.append(buttons);
 
-    var genome = global.hasOwnProperty('custom') && global.custom.hasOwnProperty('race0') ? {
-        name: global.custom.race0.name,
-        desc: global.custom.race0.desc,
-        entity: global.custom.race0.entity,
-        home: global.custom.race0.home,
-        red: global.custom.race0.red,
-        hell: global.custom.race0.hell,
-        gas: global.custom.race0.gas,
-        gas_moon: global.custom.race0.gas_moon,
-        dwarf: global.custom.race0.dwarf,
-        titan: global.custom.race0.titan || planetName().titan,
-        enceladus: global.custom.race0.enceladus || planetName().enceladus,
-        triton: global.custom.race0.triton || planetName().triton,
-        eris: global.custom.race0.eris || planetName().eris,
+    let slot = hybrid ? 'race1' : 'race0';
+    var genome = global.hasOwnProperty('custom') && global.custom.hasOwnProperty(slot) ? {
+        name: global.custom[slot].name,
+        desc: global.custom[slot].desc,
+        entity: global.custom[slot].entity,
+        home: global.custom[slot].home,
+        red: global.custom[slot].red,
+        hell: global.custom[slot].hell,
+        gas: global.custom[slot].gas,
+        gas_moon: global.custom[slot].gas_moon,
+        dwarf: global.custom[slot].dwarf,
+        titan: global.custom[slot].titan || planetName().titan,
+        enceladus: global.custom[slot].enceladus || planetName().enceladus,
+        triton: global.custom[slot].triton || planetName().triton,
+        eris: global.custom[slot].eris || planetName().eris,
         genes: 0,
-        genus: global.custom.race0.genus,
-        traitlist: global.custom.race0.traits
+        genus: global.custom[slot].genus,
+        traitlist: global.custom[slot].traits
     } : {
         name: 'Zombie',
         desc: `Zombies aren't so much a species as they are the shambling remains of a race who succumbed to a nightmarish virus. Yet somehow they continue to drone on.`,
@@ -6764,7 +6793,7 @@ export function ascendLab(wiki){
             setRace(){
                 if (calcGenomeScore(genome) >= 0 && genome.name.length > 0 && genome.desc.length > 0 && genome.entity.length > 0 && genome.home.length > 0
                     && genome.red.length > 0 && genome.hell.length > 0 && genome.gas.length > 0 && genome.gas_moon.length > 0 && genome.dwarf.length > 0){
-                    global.custom['race0'] = {
+                    global.custom[slot] = {
                         name: genome.name,
                         desc: genome.desc,
                         entity: genome.entity,

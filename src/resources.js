@@ -318,6 +318,13 @@ export const craftingRatio = (function(){
                     auto: support_on['fabrication'] * global.civic.colonist.workers * (noEarth ? highPopAdjust(0.05) : highPopAdjust(0.02))
                 });
             }
+            if (global.race['artisan']){
+                crafting.general.multi.push({
+                    name: loc(`trait_artisan_name`),
+                    manual: 1,
+                    auto: 1 + (traits.artisan.vars()[1] / 100)
+                });
+            }
             if (p_on['stellar_forge']){
                 crafting.Mythril.add.push({
                     name: loc(`interstellar_stellar_forge_title`),
@@ -343,7 +350,6 @@ export const craftingRatio = (function(){
                     auto: sup.supress
                 });
             }
-
             if (global.tauceti['tau_factory'] && support_on['tau_factory']){
                 crafting.general.add.push({
                     name: loc(`tau_home_tau_factory`),
@@ -351,7 +357,6 @@ export const craftingRatio = (function(){
                     auto: (support_on['tau_factory'] * (global.tech['isolation'] ? 2.75 : 0.9))
                 });
             }
-
             if (global.tech['isolation'] && global.tauceti['colony'] && support_on['colony']){
                 crafting.general.add.push({
                     name: loc(`tau_home_colony`),
@@ -359,7 +364,6 @@ export const craftingRatio = (function(){
                     auto: support_on['colony'] * 0.5
                 });
             }
-
             if ((support_on['zero_g_lab'] && p_on['zero_g_lab']) || (support_on['infectious_disease_lab'] && p_on['infectious_disease_lab'])){
                 let synd = syndicate('spc_enceladus');
                 crafting.Quantium.multi.push({
@@ -730,6 +734,7 @@ export function defineResources(wiki){
     loadSpecialResource('Artifact','caution');
     loadSpecialResource('Plasmid');
     loadSpecialResource('AntiPlasmid');
+    loadSpecialResource('Supercoiled');
     loadSpecialResource('Phage');
     loadSpecialResource('Dark');
     loadSpecialResource('Harmony');
@@ -1199,64 +1204,72 @@ function loadSpecialResource(name,color) {
         let desc = $(`<div></div>`);
         switch (name){
             case 'Plasmid':
-                let active = global.race['no_plasmid'] ? Math.min(global.race.p_mutation, global.prestige.Plasmid.count) : global.prestige.Plasmid.count;
-                desc.append($(`<span>${loc(`resource_${name}_desc`,[active, +(plasmidBonus('plasmid') * 100).toFixed(2)])}</span>`));
-                if (global.genes['store'] && (global.race.universe !== 'antimatter' || global.genes['bleed'] >= 3)){
-                    let plasmidSpatial = spatialReasoning(1,'plasmid');
-                    if (plasmidSpatial > 1){
-                        desc.append($(`<span> ${loc(`resource_Plasmid_desc2`,[+((plasmidSpatial - 1) * 100).toFixed(2)])}</span>`));
-                    }   
+                {
+                    let active = global.race['no_plasmid'] ? Math.min(global.race.p_mutation, global.prestige.Plasmid.count) : global.prestige.Plasmid.count;
+                    desc.append($(`<span>${loc(`resource_${name}_desc`,[active, +(plasmidBonus('plasmid') * 100).toFixed(2)])}</span>`));
+                    if (global.genes['store'] && (global.race.universe !== 'antimatter' || global.genes['bleed'] >= 3)){
+                        let plasmidSpatial = spatialReasoning(1,'plasmid');
+                        if (plasmidSpatial > 1){
+                            desc.append($(`<span> ${loc(`resource_Plasmid_desc2`,[+((plasmidSpatial - 1) * 100).toFixed(2)])}</span>`));
+                        }   
+                    }
                 }
                 break;
     
             case 'AntiPlasmid':
-                desc.append($(`<span>${loc(`resource_${name}_desc`,[global.prestige.AntiPlasmid.count, +(plasmidBonus('antiplasmid') * 100).toFixed(2)])}</span>`));
-                let antiSpatial = spatialReasoning(1,'anti');
-                if (global.genes['store'] && (global.race.universe === 'antimatter' || global.genes['bleed'] >= 3)){
-                    if (antiSpatial > 1){
-                        desc.append($(`<span> ${loc(`resource_Plasmid_desc2`,[+((antiSpatial - 1) * 100).toFixed(2)])}</span>`));
+                {
+                    desc.append($(`<span>${loc(`resource_${name}_desc`,[global.prestige.AntiPlasmid.count, +(plasmidBonus('antiplasmid') * 100).toFixed(2)])}</span>`));
+                    let antiSpatial = spatialReasoning(1,'anti');
+                    if (global.genes['store'] && (global.race.universe === 'antimatter' || global.genes['bleed'] >= 3)){
+                        if (antiSpatial > 1){
+                            desc.append($(`<span> ${loc(`resource_Plasmid_desc2`,[+((antiSpatial - 1) * 100).toFixed(2)])}</span>`));
+                        }
                     }
                 }
                 break;
     
             case 'Phage':
-                desc.append($(`<span>${loc(global.prestige.AntiPlasmid.count > 0 ? `resource_Phage_desc2` : `resource_Phage_desc`,[250 + global.prestige.Phage.count])}</span>`));
-                let phageSpatial = spatialReasoning(1,'phage');
-                if (global.genes['store'] && global.genes['store'] >= 4){
-                    if (phageSpatial > 1){
-                        desc.append($(`<span> ${loc(`resource_Plasmid_desc2`,[+((phageSpatial - 1) * 100).toFixed(2)])}</span>`));
+                {
+                    desc.append($(`<span>${loc(global.prestige.AntiPlasmid.count > 0 ? `resource_Phage_desc2` : `resource_Phage_desc`,[250 + global.prestige.Phage.count])}</span>`));
+                    let phageSpatial = spatialReasoning(1,'phage');
+                    if (global.genes['store'] && global.genes['store'] >= 4){
+                        if (phageSpatial > 1){
+                            desc.append($(`<span> ${loc(`resource_Plasmid_desc2`,[+((phageSpatial - 1) * 100).toFixed(2)])}</span>`));
+                        }
                     }
                 }
                 break;
     
             case 'Dark':
-                switch (global.race.universe){
-                    case 'standard':
-                        desc.append($(`<span>${loc(`resource_${name}_desc_s`,[+((darkEffect('standard') - 1) * 100).toFixed(2)])}</span>`));
-                        break;
-    
-                    case 'evil':
-                        desc.append($(`<span>${loc(`resource_${name}_desc_e`,[+((darkEffect('evil') - 1) * 100).toFixed(2)])}</span>`));
-                        break;
-    
-                    case 'micro':
-                        desc.append($(`<span>${loc(`resource_${name}_desc_m`,[darkEffect('micro',false),darkEffect('micro',true)])}</span>`));
-                        break;
-    
-                    case 'heavy':
-                        let hDE = darkEffect('heavy');
-                        let space = 0.25 + (0.5 * hDE);
-                        let int = 0.2 + (0.3 * hDE);
-                        desc.append($(`<span>${loc(`resource_${name}_desc_h`,[+(space * 100).toFixed(4),+(int * 100).toFixed(4)])}</span>`));
-                        break;
-    
-                    case 'antimatter':
-                        desc.append($(`<span>${loc(`resource_${name}_desc_a`,[+((darkEffect('antimatter') - 1) * 100).toFixed(2)])}</span>`));
-                        break;
+                {
+                    switch (global.race.universe){
+                        case 'standard':
+                            desc.append($(`<span>${loc(`resource_${name}_desc_s`,[+((darkEffect('standard') - 1) * 100).toFixed(2)])}</span>`));
+                            break;
+        
+                        case 'evil':
+                            desc.append($(`<span>${loc(`resource_${name}_desc_e`,[+((darkEffect('evil') - 1) * 100).toFixed(2)])}</span>`));
+                            break;
+        
+                        case 'micro':
+                            desc.append($(`<span>${loc(`resource_${name}_desc_m`,[darkEffect('micro',false),darkEffect('micro',true)])}</span>`));
+                            break;
+        
+                        case 'heavy':
+                            let hDE = darkEffect('heavy');
+                            let space = 0.25 + (0.5 * hDE);
+                            let int = 0.2 + (0.3 * hDE);
+                            desc.append($(`<span>${loc(`resource_${name}_desc_h`,[+(space * 100).toFixed(4),+(int * 100).toFixed(4)])}</span>`));
+                            break;
+        
+                        case 'antimatter':
+                            desc.append($(`<span>${loc(`resource_${name}_desc_a`,[+((darkEffect('antimatter') - 1) * 100).toFixed(2)])}</span>`));
+                            break;
 
-                    case 'magic':
-                        desc.append($(`<span>${loc(`resource_${name}_desc_mg`,[loc('resource_Mana_name'),+((darkEffect('magic') - 1) * 100).toFixed(2)])}</span>`));
-                        break;
+                        case 'magic':
+                            desc.append($(`<span>${loc(`resource_${name}_desc_mg`,[loc('resource_Mana_name'),+((darkEffect('magic') - 1) * 100).toFixed(2)])}</span>`));
+                            break;
+                    }
                 }
                 break;
     
@@ -1265,8 +1278,14 @@ function loadSpecialResource(name,color) {
                 break;
 
             case 'AICore':
-                let bonus = +((1 - (0.99 ** global.prestige.AICore.count)) * 100).toFixed(2);
-                desc.append($(`<span>${loc(`resource_${name}_desc`,[bonus])}</span>`));
+                {
+                    let bonus = +((1 - (0.99 ** global.prestige.AICore.count)) * 100).toFixed(2);
+                    desc.append($(`<span>${loc(`resource_${name}_desc`,[bonus])}</span>`));
+                }
+                break;
+
+            case 'Supercoiled':
+                desc.append($(`<span>${loc(`resource_${name}_desc`)}</span>`));
                 break;
         }
         return desc;

@@ -4190,8 +4190,8 @@ export function setChallengeScreen(){
     if (global.race.universe === 'magic' && ((global.stats.achieve['ascended'] && global.stats.achieve.ascended['mg']) || global['sim'])){
         global.evolution['witch_hunter'] = { count: 0 };
     }
-    if (global.race.universe === 'evil' && ((global.stats.achieve['corrupted'] && global.stats.achieve.corrupted['e']) || global['sim'])){
-        //global.evolution['warlord'] = { count: 0 };
+    if (global.race.universe === 'evil' && ((global.stats.achieve['godslayer'] && global.stats.achieve.godslayer['e']) || global['sim'])){
+        global.evolution['warlord'] = { count: 0 };
     }
     if (global.stats.achieve['ascended'] || global.stats.achieve['corrupted'] || global['sim']){
         global.evolution['truepath'] = { count: 0 };
@@ -4255,8 +4255,8 @@ export function setChallengeScreen(){
     if (global.race.universe === 'magic' && ((global.stats.achieve['ascended'] && global.stats.achieve.ascended['mg']) || global['sim'])){
         addAction('evolution','witch_hunter');
     }
-    if (global.race.universe === 'evil' && ((global.stats.achieve['corrupted'] && global.stats.achieve.corrupted['e']) || global['sim'])){
-        //addAction('evolution','warlord');
+    if (global.race.universe === 'evil' && ((global.stats.achieve['godslayer'] && global.stats.achieve.godslayer['e']) || global['sim'])){
+        addAction('evolution','warlord');
     }
     if (global.hasOwnProperty('beta') && !global['sim']){
         addAction('evolution','simulation');
@@ -4603,7 +4603,7 @@ const raceList = [
     'synth','nano',
     'ghast','shoggoth',
     'dwarf','raccoon','lichen','wyvern','beholder','djinn','pengiun','bombardier','nephilim',
-    'custom'
+    'custom','hybrid'
 ];
 raceList.forEach(function(race){
     if (race !== 'custom' || global.custom.hasOwnProperty('race0')) {
@@ -4613,8 +4613,19 @@ raceList.forEach(function(race){
             desc(){ return `${loc("evo_evolve")} ${races[race].name}`; },
             reqs: { evo: 7 },
             grant: ['evo',8],
-            condition(){ return (global.race.seeded || (global.stats.achieve['mass_extinction'] && global.stats.achieve['mass_extinction'].l >= 1) || (global.stats.achieve[`extinct_${race}`] && global.stats.achieve[`extinct_${race}`].l >= 1))
-              && global.tech[`evo_${races[race].type}`] >= 2 && global.evolution.final === 100 && !global.race['evoFinalMenu']; },
+            condition(){ 
+                let typeList = global.stats.achieve['godslayer'] && races[race].type === 'hybrid' ? races[race].hybrid : [races[race].type];
+                let typeCheck = false;
+                typeList.forEach(function(t){
+                    if (global.tech[`evo_${t}`] >= 2){ typeCheck = true; }
+                });
+                 
+                return (global.race.seeded 
+                    || (global.stats.achieve['mass_extinction'] && global.stats.achieve['mass_extinction'].l >= 1) 
+                    || (global.stats.achieve[`extinct_${race}`] && global.stats.achieve[`extinct_${race}`].l >= 1))
+                    && typeCheck 
+                    && global.evolution.final === 100 && !global.race['evoFinalMenu']; 
+            },
             cost: {
                 RNA(){ return 320; },
                 DNA(){ return 320; }
@@ -4726,7 +4737,7 @@ const advancedChallengeList = {
     //'nonstandard': {t: 'c', e: 'anathema' },
     'gravity_well': {t: 'c', e: 'escape_velocity' },
     'witch_hunter': {t: 'c', e: 'soul_sponge' },
-    //'warlord': {t: 'c', e: 'what_is_best' },
+    'warlord': {t: 'c', e: 'what_is_best' },
     //'storage_wars': {t: 'c', e: '???' },
     'simulation': {t: 'c', e: 'thereisnospoon' },
     'junker': {t: 's', e: 'extinct_junker' },
@@ -4930,8 +4941,6 @@ export function casinoEffect(){
         money *= 5.5;
     }
     money = Math.round(money);
-
-    
 
     let joy = global.race['joyless'] ? '' : `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_entertainer`)])}</div>`;
     let banker = global.race['orbit_decayed'] || global.tech['isolation'] ? `<div>${loc('plus_max_resource',[jobScale(1),loc('banker_name')])}</div>` : '';
@@ -7356,7 +7365,7 @@ function basicHousingLabel(){
             return loc('city_basic_housing_unicorn_title');
     }
 
-    switch (races[global.race.species].type){
+    switch (global.race.maintype || races[global.race.species].type){
         case 'avian':
             return loc('city_basic_housing_nest_title');
         case 'plant':
@@ -7393,7 +7402,7 @@ function mediumHousingLabel(){
             return loc('city_cottage_title7');
     }
 
-    switch (races[global.race.species].type){
+    switch (global.race.maintype || races[global.race.species].type){
         case 'avian':
             return loc('city_cottage_title6');
         case 'eldritch':
@@ -7418,7 +7427,7 @@ function largeHousingLabel(basic){
             return loc('city_apartment_title2');
     }
 
-    switch (races[global.race.species].type){
+    switch (global.race.maintype || races[global.race.species].type){
         case 'avian':
             return loc('city_apartment_title5');
         case 'sand':
@@ -7586,12 +7595,29 @@ function sentience(){
         }
     }
 
-    Object.keys(genus_traits[races[global.race.species].type]).forEach(function (trait) {
-        setTraitRank(trait,{ set: genus_traits[races[global.race.species].type][trait] });
-        if (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 4){
-            setTraitRank(trait);
-        }
+    let typeList = global.stats.achieve['godslayer'] && races[global.race.species].type === 'hybrid' ? races[global.race.species].hybrid : [races[global.race.species].type];
+    typeList.forEach(function(type){
+        Object.keys(genus_traits[type]).forEach(function (trait) {
+            let mainspec = global.tech[`evo_${type}`] >= 2 ? true : false;
+            if (mainspec){
+                global.race['maintype'] = type;
+                setTraitRank(trait,{ set: genus_traits[type][trait] });
+                if (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 4){
+                    setTraitRank(trait);
+                }
+            }
+            else {
+                setTraitRank(trait,{ set: genus_traits[type][trait] });
+                if (traits[trait].val > 0){
+                    setTraitRank(trait, {down:true});
+                }
+                else {
+                    setTraitRank(trait);
+                }
+            }
+        });
     });
+
     Object.keys(races[global.race.species].traits).forEach(function (trait) {
         setTraitRank(trait,{ set: races[global.race.species].traits[trait] });
     });
@@ -7904,7 +7930,7 @@ function sentience(){
         messageQueue(loc('cataclysm_sentience',[races[global.race.species].home,flib('name')]),'info',false,['progress']);
     }
     else {
-        messageQueue(loc('sentience',[loc('genelab_genus_' + races[global.race.species].type),races[global.race.species].entity,flib('name')]),'info',false,['progress']);
+        messageQueue(loc('sentience',[loc('genelab_genus_' + global.race.maintype),races[global.race.species].entity,flib('name')]),'info',false,['progress']);
     }
 
     if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){

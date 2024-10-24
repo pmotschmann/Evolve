@@ -453,6 +453,10 @@ export function loadTab(tab){
                         clearElement($(`#city`));
                         ascendLab();
                     }
+                    else if (global.race['noexport'] === 'Hybrid'){
+                        clearElement($(`#city`));
+                        ascendLab(true);
+                    }
                     else if (global.race['noexport'] === 'Planet'){
                         clearElement($(`#city`));
                         terraformLab();

@@ -3,6 +3,21 @@ import { clearElement } from './../functions.js';
 
 export const changeList = [
     {
+        version: `1.4.0`,
+        date: `11/??/2024`,
+        changes: [
+            `Push past the Spire and invade the Edenic Realms.`,
+            `Added new CRISPR upgrade Bureaucratic Efficiency.`,
+            `Exotic Materials are now harder to replicate.`,
+            `Progenitor races are now shown on stats page.`,
+            `Symposium is now affected by piracy.`,
+            `Gate Turrets will now kill demons when the Soul Forge is turned off.`,
+            `Stellar Engine now has diminishing returns when pushed to extreme levels.`,
+            `The number of spies available when starting a spy op now affects mission time.`,
+            `Fluidized Bed Reactor no longer incorrectly applies to Nano Tubes.`
+        ]
+    },
+    {
         version: `1.3.17`,
         date: `10/13/2024`,
         changes: [

@@ -235,7 +235,7 @@ function achieveDesc(achievement,showFlair,universe){
             if (genus[key] && genus[key] >= 1){
                 checked = checked + `<span class="wide iclr${genus[key]}">${label}</span>`;
             }
-            else {
+            else if (key !== 'hybrid'){
                 checked = checked + `<span class="wide has-text-danger">${label}</span>`;
             }
         });

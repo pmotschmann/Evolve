@@ -15083,6 +15083,48 @@ const techs = {
             return false;
         }
     },
+    energy_drain: {
+        id: 'tech-energy_drain',
+        title(){ return loc('tech_energy_drain'); },
+        desc(){ return loc('tech_energy_drain'); },
+        category: 'edenic',
+        era: 'existential',
+        reqs: { palace: 4 },
+        grant: ['palace',5],
+        cost: {
+            Knowledge(){ return 145000000; },
+            Omniscience(){ return 47500; },
+        },
+        effect(){ return loc('tech_energy_drain_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.eden['conduit'] = { count: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    devine_infuser: {
+        id: 'tech-devine_infuser',
+        title(){ return loc('tech_devine_infuser'); },
+        desc(){ return loc('tech_devine_infuser'); },
+        category: 'edenic',
+        era: 'existential',
+        reqs: { palace: 5 },
+        grant: ['palace',6],
+        cost: {
+            Knowledge(){ return 150000000; },
+            Omniscience(){ return 50000; },
+        },
+        effect(){ return loc('tech_devine_infuser_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.eden['infuser'] = { count: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
 };
 
 function uniteEffect(){

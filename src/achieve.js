@@ -12,7 +12,7 @@ const achieve_list = {
         'laser_shark','infested','mass_starvation','colonist','world_domination','illuminati',
         'syndicate','cult_of_personality','doomed','pandemonium','blood_war','landfill','seeder',
         'miners_dream','shaken','blacken_the_sun','trade','resonance','enlightenment','gladiator',
-        'corrupted','red_dead','godslayer'
+        'corrupted','red_dead','godslayer','traitor'
     ],
     species: [
         'mass_extinction','extinct_human','extinct_elven','extinct_orc','extinct_cath','extinct_wolven','extinct_vulpine','extinct_centaur',
@@ -44,7 +44,8 @@ const achieve_list = {
     ],
     challenge: [
         'joyless','steelen','dissipated','technophobe','wheelbarrow','iron_will','failed_history','banana','pathfinder',
-        'ashanddust','exodus','obsolete','bluepill','retired','gross','lamentis','overlord',`adam_eve`,'endless_hunger'
+        'ashanddust','exodus','obsolete','bluepill','retired','gross','lamentis','overlord',`adam_eve`,'endless_hunger',
+        'what_is_best'
     ],
 };
 
@@ -625,10 +626,10 @@ export function checkAchievements(){
                 equilProgress[global.pillars[race]]++;
             }
         });
-        if (Object.keys(genus).length >= Object.keys(genus_traits).length){
+        if (Object.keys(genus).length >= Object.keys(genus_traits).length - 1){
             let rank = 5;
             Object.keys(genus).forEach(function(g){
-                if (genus[g] < rank){
+                if (genus[g] < rank && g !== 'hybrid'){
                     rank = genus[g];
                 }
             });

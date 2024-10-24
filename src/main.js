@@ -4330,6 +4330,9 @@ function fastLoop(){
                 if (global.race['toxic']) {
                     factory_output *= 1 + (traits.toxic.vars()[0] / 100);
                 }
+                if (global.race['artisan']){
+                    factory_output *= 1 + (traits.artisan.vars()[1] / 100);
+                }
                 let fathom = fathomCheck('shroomi');
                 if (fathom > 0){
                     factory_output *= 1 + (traits.toxic.vars(1)[0] / 100 * fathom);
@@ -4399,6 +4402,9 @@ function fastLoop(){
 
                 if (global.race['toxic']){
                     factory_output *= 1 + (traits.toxic.vars()[0] / 100);
+                }
+                if (global.race['artisan']){
+                    factory_output *= 1 + (traits.artisan.vars()[1] / 100);
                 }
                 let fathom = fathomCheck('shroomi');
                 if (fathom > 0){
@@ -4480,6 +4486,9 @@ function fastLoop(){
                 let factory_output = workDone * f_rate.Polymer.output[assembly] * eff * production('psychic_boost','Polymer');
                 if (global.race['toxic']) {
                     factory_output *= 1 + (traits.toxic.vars()[0] / 100);
+                }
+                if (global.race['artisan']){
+                    factory_output *= 1 + (traits.artisan.vars()[1] / 100);
                 }
                 let fathom = fathomCheck('shroomi');
                 if (fathom > 0){
@@ -4569,12 +4578,12 @@ function fastLoop(){
                 if (global.race['toxic']) {
                     factory_output *= 1 + (traits.toxic.vars()[1] / 100);
                 }
+                if (global.race['artisan']){
+                    factory_output *= 1 + (traits.artisan.vars()[1] / 100);
+                }
                 let fathom = fathomCheck('shroomi');
                 if (fathom > 0){
                     factory_output *= 1 + (traits.toxic.vars(1)[1] / 100 * fathom);
-                }
-                if (global.tech['polymer'] >= 2){
-                    factory_output *= 1.42;
                 }
                 if (global.civic.govern.type === 'corpocracy'){
                     factory_output *= 1 + (govEffect.corpocracy()[4] / 100);
@@ -4646,6 +4655,9 @@ function fastLoop(){
                 let factory_output = workDone * f_rate.Stanene.output[assembly] * eff * production('psychic_boost','Stanene');
                 if (global.race['toxic']) {
                     factory_output *= 1 + (traits.toxic.vars()[1] / 100);
+                }
+                if (global.race['artisan']){
+                    factory_output *= 1 + (traits.artisan.vars()[1] / 100);
                 }
                 let fathom = fathomCheck('shroomi');
                 if (fathom > 0){

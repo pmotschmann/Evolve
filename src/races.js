@@ -3178,6 +3178,48 @@ export const traits = {
             }
         }
     },
+    artisan: {
+        name: loc('trait_artisan_name'),
+        desc: loc('trait_artisan'),
+        type: 'major',
+        val: 10,
+        vars(r){
+            // [Auto Crafting Boost, Manufactoring Boost]
+            switch (r || global.race.artisan || 1){
+                case 0.25:
+                    return [25,10];
+                case 0.5:
+                    return [50,15];
+                case 1:
+                    return [75,20];
+                case 2:
+                    return [100,25];
+                case 3:
+                    return [125,30];
+            }
+        }
+    },
+    stubborn: {
+        name: loc('trait_stubborn_name'),
+        desc: loc('trait_stubborn'),
+        type: 'major',
+        val: -10,
+        vars(r){
+            // [???]
+            switch (r || global.race.stubborn || 1){
+                case 0.25:
+                    return [25,10];
+                case 0.5:
+                    return [50,15];
+                case 1:
+                    return [75,20];
+                case 2:
+                    return [100,25];
+                case 3:
+                    return [125,30];
+            }
+        }
+    },
     ooze: { // you are some kind of ooze, everything is bad
         name: loc('trait_ooze_name'),
         desc: loc('trait_ooze'),
@@ -4362,7 +4404,8 @@ export const races = {
         home: loc('race_dwarf_home'),
         entity: loc('race_dwarf_entity'),
         traits: {
-
+            artisan: 1,
+            stubborn: 1
         },
         solar: {
             red: loc('race_dwarf_solar_red'),
@@ -4632,7 +4675,8 @@ export const races = {
         fanaticism: 'ooze',
         basic(){ return false; }
     },
-    custom: customRace()
+    custom: customRace(),
+    hybrid: customRace(true)
 };
 
 export const genusVars = {
@@ -4674,33 +4718,34 @@ export function setJType(){
     races.sludge.type = global.race.hasOwnProperty('jtype') ? global.race.jtype : 'humanoid';;
 }
 
-function customRace(){
-    if (global.hasOwnProperty('custom') && global.custom.hasOwnProperty('race0')){
+function customRace(hybrid){
+    let slot = hybrid ? 'race1' : 'race0';
+    if (global.hasOwnProperty('custom') && global.custom.hasOwnProperty(slot)){
         let trait = {};
-        for (let i=0; i<global.custom.race0.traits.length; i++){
-            trait[global.custom.race0.traits[i]] = 1;
+        for (let i=0; i<global.custom[slot].traits.length; i++){
+            trait[global.custom[slot].traits[i]] = 1;
         }
 
         let fanatic = 'pathetic';
-        for (let i=0; i<global.custom.race0.traits.length; i++){
-            if (traits[global.custom.race0.traits[i]].val > traits[fanatic].val){
-                fanatic = global.custom.race0.traits[i];
+        for (let i=0; i<global.custom[slot].traits.length; i++){
+            if (traits[global.custom[slot].traits[i]].val > traits[fanatic].val){
+                fanatic = global.custom[slot].traits[i];
             }
         }
 
         return {
-            name: global.custom.race0.name,
-            desc: global.custom.race0.desc,
-            type: global.custom.race0.genus,
-            home: global.custom.race0.home,
-            entity: global.custom.race0.entity,
+            name: global.custom[slot].name,
+            desc: global.custom[slot].desc,
+            type: global.custom[slot].genus,
+            home: global.custom[slot].home,
+            entity: global.custom[slot].entity,
             traits: trait,
             solar: {
-                red: global.custom.race0.red,
-                hell: global.custom.race0.hell,
-                gas: global.custom.race0.gas,
-                gas_moon: global.custom.race0.gas_moon,
-                dwarf: global.custom.race0.dwarf,
+                red: global.custom[slot].red,
+                hell: global.custom[slot].hell,
+                gas: global.custom[slot].gas,
+                gas_moon: global.custom[slot].gas_moon,
+                dwarf: global.custom[slot].dwarf,
             },
             fanaticism: fanatic,
             basic(){ return false; }
