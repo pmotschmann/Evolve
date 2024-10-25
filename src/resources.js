@@ -322,7 +322,7 @@ export const craftingRatio = (function(){
                 crafting.general.multi.push({
                     name: loc(`trait_artisan_name`),
                     manual: 1,
-                    auto: 1 + (traits.artisan.vars()[1] / 100)
+                    auto: 1 + (traits.artisan.vars()[0] / 100)
                 });
             }
             if (p_on['stellar_forge']){

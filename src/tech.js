@@ -3,7 +3,7 @@ import { loc } from './locale.js';
 import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper, popCost } from './functions.js';
 import { unlockAchieve, alevel, universeAffix, unlockFeat } from './achieve.js';
 import { payCosts, housingLabel, wardenLabel, structName, updateQueueNames, drawTech, fanaticism, checkAffordable, actions } from './actions.js';
-import { races, checkAltPurgatory, renderPsychicPowers } from './races.js';
+import { races, checkAltPurgatory, renderPsychicPowers, traitCostMod } from './races.js';
 import { drawResourceTab, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
 import { buildGarrison, checkControlling, govTitle } from './civics.js';
@@ -3990,7 +3990,7 @@ const techs = {
         reqs: { housing: 1 },
         grant: ['science',1],
         cost: {
-            Knowledge(){ return 65; }
+            Knowledge(){ return traitCostMod('stubborn',65); }
         },
         effect: loc('tech_science_effect'),
         action(){
@@ -4010,7 +4010,7 @@ const techs = {
         reqs: { science: 1, cement: 1 },
         grant: ['science',2],
         cost: {
-            Knowledge(){ return 720; }
+            Knowledge(){ return traitCostMod('stubborn',720); }
         },
         effect: loc('tech_library_effect'),
         action(){
@@ -4030,7 +4030,7 @@ const techs = {
         reqs: { science: 2 },
         grant: ['science',3],
         cost: {
-            Knowledge(){ return 1125; }
+            Knowledge(){ return traitCostMod('stubborn',1125); }
         },
         effect: loc('tech_thesis_effect'),
         action(){
@@ -4049,7 +4049,7 @@ const techs = {
         reqs: { science: 3 },
         grant: ['science',4],
         cost: {
-            Knowledge(){ return 3240; }
+            Knowledge(){ return traitCostMod('stubborn',3240); }
         },
         effect: loc('tech_research_grant_effect'),
         action(){
@@ -4068,7 +4068,7 @@ const techs = {
         reqs: { science: 4, high_tech: 3 },
         grant: ['science',5],
         cost: {
-            Knowledge(){ return 27000; }
+            Knowledge(){ return traitCostMod('stubborn',27000); }
         },
         effect(){ return global.race.universe === 'magic' ? loc('tech_magic_tomes_effect') : loc('tech_scientific_journal_effect'); },
         action(){
@@ -4087,7 +4087,7 @@ const techs = {
         reqs: { science: 5 },
         grant: ['science',6],
         cost: {
-            Knowledge(){ return 36000; }
+            Knowledge(){ return traitCostMod('stubborn',36000); }
         },
         effect(){ return loc('tech_adjunct_professor_effect',[wardenLabel(),global.civic.scientist ? global.civic.scientist.name : loc('job_scientist')]); },
         action(){
@@ -4106,7 +4106,7 @@ const techs = {
         reqs: { science: 6, high_tech: 3 },
         grant: ['science',7],
         cost: {
-            Knowledge(){ return 51750; }
+            Knowledge(){ return traitCostMod('stubborn',51750); }
         },
         effect(){ return loc('tech_tesla_coil_effect',[wardenLabel()]); },
         action(){
@@ -4125,7 +4125,7 @@ const techs = {
         reqs: { science: 7, high_tech: 4 },
         grant: ['science',8],
         cost: {
-            Knowledge(){ return 61200; }
+            Knowledge(){ return traitCostMod('stubborn',61200); }
         },
         effect: loc('tech_internet_effect'),
         action(){
@@ -4147,7 +4147,7 @@ const techs = {
         reqs: { science: 8, space: 3, luna: 1 },
         grant: ['science',9],
         cost: {
-            Knowledge(){ return 148000; }
+            Knowledge(){ return traitCostMod('stubborn',148000); }
         },
         effect: loc('tech_observatory_effect'),
         action(){
@@ -4171,7 +4171,7 @@ const techs = {
         reqs: { science: 9, elerium: 2 },
         grant: ['science',10],
         cost: {
-            Knowledge(){ return 350000; }
+            Knowledge(){ return traitCostMod('stubborn',350000); }
         },
         effect(){ return loc('tech_world_collider_effect',[planetName().dwarf]); },
         action(){
@@ -4198,7 +4198,7 @@ const techs = {
         reqs: { science: 11, alpha: 2 },
         grant: ['science',12],
         cost: {
-            Knowledge(){ return 500000; }
+            Knowledge(){ return traitCostMod('stubborn',500000); }
         },
         effect(){ return global.race.universe === 'magic' ? loc('tech_sanctum_effect') : loc('tech_laboratory_effect'); },
         action(){
@@ -4222,7 +4222,7 @@ const techs = {
         reqs: { science: 12, high_tech: 12 },
         grant: ['science',13],
         cost: {
-            Knowledge(){ return 635000; }
+            Knowledge(){ return traitCostMod('stubborn',635000); }
         },
         effect(){ return global.race.universe === 'magic' ? loc('tech_virtual_assistant_magic_effect') : loc('tech_virtual_assistant_effect'); },
         action(){
@@ -4241,7 +4241,7 @@ const techs = {
         reqs: { science: 13, infernite: 2 },
         grant: ['science',14],
         cost: {
-            Knowledge(){ return 750000; }
+            Knowledge(){ return traitCostMod('stubborn',750000); }
         },
         effect(){ return loc('tech_dimensional_readings_effect'); },
         action(){
@@ -4260,7 +4260,7 @@ const techs = {
         reqs: { science: 14, neutron: 1 },
         grant: ['science',15],
         cost: {
-            Knowledge(){ return 850000; },
+            Knowledge(){ return traitCostMod('stubborn',850000); },
             Neutronium(){ return 7500; },
             Soul_Gem(){ return 2; }
         },
@@ -4281,7 +4281,7 @@ const techs = {
         reqs: { science: 15, xeno: 4 },
         grant: ['science',16],
         cost: {
-            Knowledge(){ return 5350000; }
+            Knowledge(){ return traitCostMod('stubborn',5350000); }
         },
         effect(){ return global.race.universe === 'magic' ? loc('tech_expedition_wiz_effect') : loc('tech_expedition_effect'); },
         action(){
@@ -4300,7 +4300,7 @@ const techs = {
         reqs: { science: 16, high_tech: 16 },
         grant: ['science',17],
         cost: {
-            Knowledge(){ return 6000000; }
+            Knowledge(){ return traitCostMod('stubborn',6000000); }
         },
         effect(){ return loc('tech_subspace_sensors_effect'); },
         action(){
@@ -4319,7 +4319,7 @@ const techs = {
         reqs: { science: 17, conflict: 5 },
         grant: ['science',18],
         cost: {
-            Knowledge(){ return 8250000; }
+            Knowledge(){ return traitCostMod('stubborn',8250000); }
         },
         effect(){ return loc('tech_alien_database_effect'); },
         action(){
@@ -4338,7 +4338,7 @@ const techs = {
         reqs: { science: 18, high_tech: 17 },
         grant: ['science',19],
         cost: {
-            Knowledge(){ return 12500000; },
+            Knowledge(){ return traitCostMod('stubborn',12500000); },
             Orichalcum(){ return 250000; }
         },
         effect(){ return loc('tech_orichalcum_capacitor_effect'); },
@@ -4358,7 +4358,7 @@ const techs = {
         reqs: { science: 19, high_tech: 18 },
         grant: ['science',20],
         cost: {
-            Knowledge(){ return 25500000; }
+            Knowledge(){ return traitCostMod('stubborn',25500000); }
         },
         effect(){ return loc('tech_advanced_biotech_effect'); },
         action(){
@@ -4377,7 +4377,7 @@ const techs = {
         reqs: { science: 20, sphinx_bribe: 1 },
         grant: ['science',21],
         cost: {
-            Knowledge(){ return 40100000; },
+            Knowledge(){ return traitCostMod('stubborn',40100000); },
             Codex(){ return 1; }
         },
         effect(){ return loc('tech_codex_infinium_effect'); },
@@ -4659,7 +4659,7 @@ const techs = {
         cost: {
             Money(){ return 10000; },
             Mana(){ return global.race.universe === 'magic' ? 50 : 0; },
-            Knowledge(){ return 6750; },
+            Knowledge(){ return traitCostMod('stubborn',6750); },
             Crystal(){ return global.race.universe === 'magic' ? 1000 : 0; },
             Aluminium(){ return 750; }
         },
@@ -4692,7 +4692,7 @@ const techs = {
         reqs: { high_tech: 1 },
         grant: ['high_tech',2],
         cost: {
-            Knowledge(){ return 13500; },
+            Knowledge(){ return traitCostMod('stubborn',13500); },
             Copper(){ return 1000; }
         },
         effect: loc('tech_electricity_effect'),
@@ -4764,7 +4764,7 @@ const techs = {
         reqs: { high_tech: 2, cement: 2, steel_container: 1 },
         grant: ['high_tech',3],
         cost: {
-            Knowledge(){ return 25200; }
+            Knowledge(){ return traitCostMod('stubborn',25200); }
         },
         effect: loc('tech_industrialization_effect'),
         action(){
@@ -4797,7 +4797,7 @@ const techs = {
         reqs: { high_tech: 3, titanium: 1 },
         grant: ['high_tech',4],
         cost: {
-            Knowledge(){ return 50000; }
+            Knowledge(){ return traitCostMod('stubborn',50000); }
         },
         effect: loc('tech_electronics_effect'),
         action(){
@@ -4821,7 +4821,7 @@ const techs = {
         reqs: { high_tech: 4, uranium: 1 },
         grant: ['high_tech',5],
         cost: {
-            Knowledge(){ return 77400; },
+            Knowledge(){ return traitCostMod('stubborn',77400); },
             Uranium(){ return 10; }
         },
         effect: loc('tech_fission_effect'),
@@ -4846,7 +4846,7 @@ const techs = {
         reqs: { high_tech: 5 },
         grant: ['high_tech',6],
         cost: {
-            Knowledge(){ return 90000; }
+            Knowledge(){ return traitCostMod('stubborn',90000); }
         },
         effect: loc('tech_arpa_effect'),
         action(){
@@ -4873,7 +4873,7 @@ const techs = {
         reqs: { high_tech: 6 },
         grant: ['high_tech',7],
         cost: {
-            Knowledge(){ return 112500; },
+            Knowledge(){ return traitCostMod('stubborn',112500); },
             Oil(){ return global.city.ptrait.includes('dense') ? 8000 : 6800; }
         },
         effect: loc('tech_rocketry_effect'),
@@ -4900,7 +4900,7 @@ const techs = {
         reqs: { high_tech: 7 },
         grant: ['high_tech',8],
         cost: {
-            Knowledge(){ return 125000; }
+            Knowledge(){ return traitCostMod('stubborn',125000); }
         },
         effect: loc('tech_robotics_effect'),
         action(){
@@ -4919,7 +4919,7 @@ const techs = {
         reqs: { high_tech: 8, space: 3, supercollider: 1, elerium: 1 },
         grant: ['high_tech',9],
         cost: {
-            Knowledge(){ return 280000; },
+            Knowledge(){ return traitCostMod('stubborn',280000); },
             Elerium(){ return 100; }
         },
         effect: loc('tech_lasers_effect'),
@@ -4942,7 +4942,7 @@ const techs = {
         reqs: { high_tech: 9 },
         grant: ['high_tech',10],
         cost: {
-            Knowledge(){ return 325000; }
+            Knowledge(){ return traitCostMod('stubborn',325000); }
         },
         effect: loc('tech_artificial_intelligence_effect'),
         action(){
@@ -4964,7 +4964,7 @@ const techs = {
         reqs: { high_tech: 10, nano: 1 },
         grant: ['high_tech',11],
         cost: {
-            Knowledge(){ return 435000; },
+            Knowledge(){ return traitCostMod('stubborn',435000); },
             Elerium(){ return 250 },
             Nano_Tube(){ return 100000 }
         },
@@ -4988,7 +4988,7 @@ const techs = {
         reqs: { high_tech: 11, alpha: 2, infernite: 1, stanene: 1 },
         grant: ['high_tech',12],
         cost: {
-            Knowledge(){ return 600000; },
+            Knowledge(){ return traitCostMod('stubborn',600000); },
             Stanene(){ return 1250 },
             Soul_Gem(){ return 1 }
         },
@@ -5013,7 +5013,7 @@ const techs = {
         reqs: { high_tech: 12 },
         grant: ['high_tech',13],
         cost: {
-            Knowledge(){ return 755000; },
+            Knowledge(){ return traitCostMod('stubborn',755000); },
             Infernite(){ return global.race['truepath'] ? 0 : 1000; },
             Stanene(){ return global.race['truepath'] ? 1000000 : 250000; }
         },
@@ -5034,7 +5034,7 @@ const techs = {
         reqs: { high_tech: 13 },
         grant: ['high_tech',14],
         cost: {
-            Knowledge(){ return 850000; },
+            Knowledge(){ return traitCostMod('stubborn',850000); },
         },
         effect: loc('tech_shields_effect'),
         action(){
@@ -5055,7 +5055,7 @@ const techs = {
         reqs: { high_tech: 14, science: 15, blackhole: 3 },
         grant: ['high_tech',15],
         cost: {
-            Knowledge(){ return 1500000; },
+            Knowledge(){ return traitCostMod('stubborn',1500000); },
         },
         effect: loc('tech_ai_core_effect'),
         action(){
@@ -5075,7 +5075,7 @@ const techs = {
         reqs: { high_tech: 15, xeno: 5 },
         grant: ['high_tech',16],
         cost: {
-            Knowledge(){ return 5000000; },
+            Knowledge(){ return traitCostMod('stubborn',5000000); },
             Vitreloy(){ return 10000; },
             Soul_Gem(){ return 10; }
         },
@@ -5096,7 +5096,7 @@ const techs = {
         reqs: { high_tech: 16, chthonian: 3 },
         grant: ['high_tech',17],
         cost: {
-            Knowledge(){ return 12200000; },
+            Knowledge(){ return traitCostMod('stubborn',12200000); },
             Orichalcum(){ return 100000; }
         },
         effect(){ return loc('tech_orichalcum_analysis_effect'); },
@@ -5117,7 +5117,7 @@ const techs = {
         reqs: { high_tech: 17, hell_ruins: 4 },
         grant: ['high_tech',18],
         cost: {
-            Knowledge(){ return 25000000; },
+            Knowledge(){ return traitCostMod('stubborn',25000000); },
             Adamantite(){ return 12500000; },
             Stanene(){ return 50000000; },
             Vitreloy(){ return 10000000; },
@@ -5139,7 +5139,7 @@ const techs = {
         reqs: { high_tech: 18, elysium: 15, isle: 2 },
         grant: ['high_tech',19],
         cost: {
-            Knowledge(){ return 120000000; },
+            Knowledge(){ return traitCostMod('stubborn',120000000); },
             Omniscience(){ return 34000; },
         },
         effect(){ return loc('tech_divinity_effect'); },
@@ -15104,10 +15104,10 @@ const techs = {
             return false;
         }
     },
-    devine_infuser: {
-        id: 'tech-devine_infuser',
-        title(){ return loc('tech_devine_infuser'); },
-        desc(){ return loc('tech_devine_infuser'); },
+    divine_infuser: {
+        id: 'tech-divine_infuser',
+        title(){ return loc('tech_divine_infuser'); },
+        desc(){ return loc('tech_divine_infuser'); },
         category: 'edenic',
         era: 'existential',
         reqs: { palace: 5 },
@@ -15116,7 +15116,7 @@ const techs = {
             Knowledge(){ return 150000000; },
             Omniscience(){ return 50000; },
         },
-        effect(){ return loc('tech_devine_infuser_effect'); },
+        effect(){ return loc('tech_divine_infuser_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 global.eden['infuser'] = { count: 0 };

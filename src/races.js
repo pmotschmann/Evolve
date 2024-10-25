@@ -3203,20 +3203,62 @@ export const traits = {
         name: loc('trait_stubborn_name'),
         desc: loc('trait_stubborn'),
         type: 'major',
-        val: -10,
+        val: -5,
         vars(r){
-            // [???]
+            // Raises Knowledge cost of scientific advancements
             switch (r || global.race.stubborn || 1){
                 case 0.25:
-                    return [25,10];
+                    return [18];
                 case 0.5:
-                    return [50,15];
+                    return [14];
                 case 1:
-                    return [75,20];
+                    return [10];
                 case 2:
-                    return [100,25];
+                    return [6];
                 case 3:
-                    return [125,30];
+                    return [3];
+            }
+        }
+    },
+    rogue: {
+        name: loc('trait_rogue_name'),
+        desc: loc('trait_rogue'),
+        type: 'major',
+        val: 6,
+        vars(r){
+            // [Randomly Steal Things]
+            switch (r || global.race.rogue || 1){
+                case 0.25:
+                    return [6];
+                case 0.5:
+                    return [8];
+                case 1:
+                    return [10];
+                case 2:
+                    return [12];
+                case 3:
+                    return [14];
+            }
+        }
+    },
+    untrustworthy: {
+        name: loc('trait_untrustworthy_name'),
+        desc: loc('trait_untrustworthy'),
+        type: 'major',
+        val: -4,
+        vars(r){
+            // [Financial Institutions Cost Extra]
+            switch (r || global.race.untrustworthy || 1){
+                case 0.25:
+                    return [7];
+                case 0.5:
+                    return [6];
+                case 1:
+                    return [5];
+                case 2:
+                    return [4];
+                case 3:
+                    return [3];
             }
         }
     },
@@ -4425,7 +4467,8 @@ export const races = {
         home: loc('race_raccoon_home'),
         entity: loc('race_raccoon_entity'),
         traits: {
-
+            rogue: 1,
+            untrustworthy: 1
         },
         solar: {
             red: loc('race_raccoon_solar_red'),
@@ -4445,7 +4488,7 @@ export const races = {
         home: loc('race_lichen_home'),
         entity: loc('race_lichen_entity'),
         traits: {
-
+            purifier: 1
         },
         solar: {
             red: loc('race_lichen_solar_red'),
@@ -4505,7 +4548,8 @@ export const races = {
         home: loc('race_djinn_home'),
         entity: loc('race_djinn_entity'),
         traits: {
-
+            wish: 1,
+            
         },
         solar: {
             red: loc('race_djinn_solar_red'),
@@ -5272,6 +5316,23 @@ function adjustFood() {
     removeFromQueue(disabledCity);
     removeFromRQueue(disabledTech);
     setResourceName('Food');
+}
+
+export function traitCostMod(t,val){
+    if (!global.race[t]){
+        return val;
+    }
+    switch (t){
+        case 'stubborn':
+        {
+            val *= 1 + (traits.stubborn.vars()[1] / 100);
+        }
+        case 'untrustworthy':
+        {
+            val *= 1 + (traits.untrustworthy.vars()[1] / 100);
+        }
+    }
+    return Math.round(val);
 }
 
 export function cleanAddTrait(trait){

@@ -10,7 +10,7 @@ import { production, highPopAdjust } from './prod.js';
 import { loc } from './locale.js';
 import { armyRating, armorCalc, garrisonSize, mercCost } from './civics.js';
 import { govActive } from './governor.js';
-import { races } from './races.js';
+import { races, traitCostMod } from './races.js';
 
 const edenicModules = {
     eden_asphodel: {
@@ -1288,10 +1288,10 @@ const edenicModules = {
             },
             reqs: { elysium: 13 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('eternal_bank', offset, 2500000000, 1.26, 'eden'); },
-                Bolognium(offset){ return spaceCostMultiplier('eternal_bank', offset, 10000000, 1.26, 'eden'); },
-                Orichalcum(offset){ return spaceCostMultiplier('eternal_bank', offset, 12500000, 1.26, 'eden'); },
-                Mythril(offset){ return spaceCostMultiplier('eternal_bank', offset, 7500000, 1.26, 'eden'); }
+                Money(offset){ return spaceCostMultiplier('eternal_bank', offset, traitCostMod('untrustworthy',2500000000), 1.26, 'eden'); },
+                Bolognium(offset){ return spaceCostMultiplier('eternal_bank', offset, traitCostMod('untrustworthy',10000000), 1.26, 'eden'); },
+                Orichalcum(offset){ return spaceCostMultiplier('eternal_bank', offset, traitCostMod('untrustworthy',12500000), 1.26, 'eden'); },
+                Mythril(offset){ return spaceCostMultiplier('eternal_bank', offset, traitCostMod('untrustworthy',7500000), 1.26, 'eden'); }
             },
             effect(){
                 let vault = spatialReasoning(bank_vault() * 10);

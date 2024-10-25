@@ -7,6 +7,7 @@ import { tradeRatio } from './resources.js';
 import { checkControlling } from './civics.js';
 import { govActive } from './governor.js';
 import { unlockAchieve } from './achieve.js';
+import { payBloodPrice } from './arpa.js';
 
 export const events = {
     dna_replication: {
@@ -542,6 +543,43 @@ export const events = {
             global.resource[global.race.species].amount--;
             global.civic.miner.workers--;
             return loc('event_mine_collapse');
+        }
+    },
+    klepto: {
+        reqs: {
+            trait: 'rogue',
+            resource: 'Money'
+        },
+        type: 'major',
+        effect(){
+            let stealList = [];
+            [
+                'Money','Food','Lumber','Stone','Chrysotile','Crystal','Furs','Copper','Iron',
+                'Cement','Coal','Uranium','Aluminium','Steel','Titanium','Alloy','Polymer','Iridium',
+                'Neutronium','Adamantite','Infernite','Elerium','Nano_Tube','Graphene','Stanene',
+                'Bolognium','Vitreloy','Orichalcum','Asphodel_Powder','Elysanite','Unobtainium','Quantium',
+                'Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril','Aerogel','Nanoweave','Scarletite'
+            ].forEach(function(r){
+                if (global.resource[r].display){
+                    stealList.push(r);
+                }
+            });
+
+            let maxRoll = Math.round(global.stats.know / 25);
+            let res = stealList[Math.floor(seededRandom(0,stealList.length))];
+            if (global.resource[res].max > 0 && maxRoll > global.resource[res].max * traits.rogue.vars()[0] / 100){
+                maxRoll = Math.round(global.resource[res].max * traits.rogue.vars()[0] / 100);
+            }
+
+            let gain = Math.floor(seededRandom(1,maxRoll));
+            if (global.resource[res].amount + gain > global.resource[res].max){
+                global.resource[res].amount = global.resource[res].max;
+            }
+            else {
+                global.resource[res].amount += gain;
+            }
+
+            return res === 'Money' ? loc('event_klepto',[gain]) : loc('event_klepto',[gain,global.resource[res].name]);
         }
     },
     m_curious: {
