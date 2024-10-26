@@ -401,6 +401,16 @@ popover('morale',
             obj.popper.append(`<p class="modal_bd"><span>${loc(`event_pet_${global.race.pet.type}_owner`)}</span> <span class="has-text-success"> +${1}%</span></p>`);
         }
 
+        if (global.race['wishStats'] && global.race.wishStats.fame !== 0){
+            total += global.race.wishStats.fame;
+            if (global.race.wishStats.fame > 0){
+                obj.popper.append(`<p class="modal_bd"><span>${loc(`wish_reputable`)}</span> <span class="has-text-success"> +${global.race.wishStats.fame}%</span></p>`);
+            }
+            else {
+                obj.popper.append(`<p class="modal_bd"><span>${loc(`wish_notorious`)}</span> <span class="has-text-danger"> ${global.race.wishStats.fame}%</span></p>`);
+            }
+        }
+
         if (global.civic['homeless']){
             let homeless = global.civic.homeless / 2;
             total -= homeless;
@@ -1324,6 +1334,10 @@ function fastLoop(){
 
         if (global.race['pet']){
             morale += 1;
+        }
+
+        if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.fame !== 0){
+            morale += global.race.wishStats.fame;
         }
 
         let stress = 0;
@@ -8226,6 +8240,9 @@ function midLoop(){
             let soldiers = global.race['fasting'] ? jobScale(4) : jobScale(3);
             lCaps['garrison'] += int_on['cruiser'] * soldiers;
         }
+        if (global.race['wish'] && global.race['wishStats']){
+            lCaps['garrison'] += jobScale(global.race.wishStats.troop);
+        }
         if (p_on['s_gate'] && global.galaxy['starbase']){
             let soldiers = global.tech.marines >= 2 ? jobScale(8) : jobScale(5);
             lCaps['garrison'] += p_on['starbase'] * soldiers;
@@ -9110,6 +9127,11 @@ function midLoop(){
             lCaps['professor'] += jobScale(support_on['infectious_disease_lab'] * 2);
             lCaps['scientist'] += jobScale(support_on['infectious_disease_lab']);
         }
+
+        if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.prof){
+            lCaps['scientist'] += jobScale(global.race.wishStats.prof);
+        }
+
         if (support_on['decoder']){
             let titan_colonists = p_on['ai_colonist'] ? workerScale(global.civic.titan_colonist.workers,'titan_colonist') + jobScale(p_on['ai_colonist']) : workerScale(global.civic.titan_colonist.workers,'titan_colonist');
             let gain = support_on['decoder'] * titan_colonists * 2500;

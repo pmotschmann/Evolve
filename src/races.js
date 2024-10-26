@@ -10,6 +10,7 @@ import { unlockAchieve } from './achieve.js';
 import { highPopAdjust, teamster } from './prod.js';
 import { actions, checkTechQualifications, drawCity, drawTech } from './actions.js';
 import { events, eventList } from './events.js';
+import { swissKnife } from './tech.js';
 
 const date = new Date();
 const easter = getEaster();
@@ -3267,7 +3268,7 @@ export const traits = {
         name: loc('trait_wish_name'),
         desc: loc('trait_wish'),
         type: 'major',
-        val: 20,
+        val: 13,
         vars(r){
             // [Wish Cooldown Period]
             switch (r || global.race.wish || 1){
@@ -6228,14 +6229,14 @@ function minorWish(parent){
     let spells = $(`<div class="flexWrap"></div>`);
     container.append(spells);
 
-    spells.append(`<div><b-button id="wishKnow" v-html="$options.filters.know()" @click="know()"></b-button></div>`);
     spells.append(`<div><b-button id="wishMoney" v-html="$options.filters.money()" @click="money()"></b-button></div>`);
     spells.append(`<div><b-button id="wishRes" v-html="$options.filters.label('resources')" @click="res()"></b-button></div>`);
-    spells.append(`<div><b-button id="wishPower" v-html="$options.filters.label('power')" @click="power()"></b-button></div>`);
+    spells.append(`<div><b-button id="wishKnow" v-html="$options.filters.know()" @click="know()"></b-button></div>`);
+    spells.append(`<div><b-button id="wishFame" v-html="$options.filters.label('fame')" @click="famous()"></b-button></div>`);
     spells.append(`<div><b-button id="wishStrength" v-html="$options.filters.label('strength')" @click="strength()"></b-button></div>`);
-    spells.append(`<div><b-button id="wishExcite" v-html="$options.filters.label('event')" @click="excite()"></b-button></div>`);
-    spells.append(`<div><b-button id="wishFame" v-html="$options.filters.label('fame')" @click="fame()"></b-button></div>`);
     spells.append(`<div><b-button id="wishInfluence" v-html="$options.filters.label('influence')" @click="influence()"></b-button></div>`);
+    spells.append(`<div><b-button id="wishExcite" v-html="$options.filters.label('event')" @click="excite()"></b-button></div>`);
+    spells.append(`<div><b-button id="wishLove" v-html="$options.filters.label('love')" @click="love()"></b-button></div>`);
 
     vBind({
         el: `#minorWish`,
@@ -6243,7 +6244,7 @@ function minorWish(parent){
         methods: {
             know(){
                 if (global.race.wishStats.minor === 0){
-                    global.race.wishStats.minor = traits.wish.vars()[0] / 2;
+                    global.race.wishStats.minor = traits.wish.vars()[0] / 3;
 
                     let options = ['inspire'];
                     if (!global.race['lone_survivor'] && !global.race['cataclysm'] && !global.race['orbit_decay']){
@@ -6302,6 +6303,8 @@ function minorWish(parent){
                         case 'inspire':
                         {
                             global.race['inspired'] = Math.floor(seededRandom(300,600));
+                            let msg = loc('event_inspiration');
+                            messageQueue(msg,false,false,['events','major_events']);
                             break;
                         }
                         case 'know':
@@ -6333,6 +6336,15 @@ function minorWish(parent){
                             }
                             drawCity();
                             drawTech();
+
+                            let techs = {
+                                2: 'library', 3: 'thesis', 4: 'research_grant', 5: 'scientific_journal', 6: 'adjunct_professor', 7: 'tesla_coil', 8: 'internet',
+                                9: 'observatory', 12: 'laboratory', 13: 'virtual_assistant', 14: 'dimensional_readings', 15: 'quantum_entanglement',
+                                16: 'expedition', 17: 'subspace_sensors', 18: 'alien_database', 19: 'orichalcum_capacitor', 20: 'advanced_biotech'
+                            };
+
+                            let tech = typeof actions.tech[techs[global.tech.science]].title === 'function' ? actions.tech[techs[global.tech.science]].title() : actions.tech[techs[global.tech.science]].title;
+                            messageQueue(loc('wish_tech',[tech]), 'warning',false,['progress']);
                             break;
                         }
                     }
@@ -6340,7 +6352,7 @@ function minorWish(parent){
             },
             money(){
                 if (global.race.wishStats.minor === 0){
-                    global.race.wishStats.minor = traits.wish.vars()[0] / 2;
+                    global.race.wishStats.minor = traits.wish.vars()[0] / 3;
 
                     let options = ['money','robbery'];
                     if (global.race.wishStats.tax === 0){
@@ -6381,7 +6393,7 @@ function minorWish(parent){
             },
             res(){
                 if (global.race.wishStats.minor === 0){
-                    global.race.wishStats.minor = traits.wish.vars()[0] / 2;
+                    global.race.wishStats.minor = traits.wish.vars()[0] / 3;
 
                     let options = ['useless','common','rare','stolen','2xcommon','2xrare'];
                     let spell = options[Math.floor(seededRandom(0,options.length))];
@@ -6418,23 +6430,48 @@ function minorWish(parent){
                         }
                         
                         picked.forEach(function(res){
-                            global.resource[res].amount += Math.floor(seededRandom(1,global.resource[res].max * 0.25));
-                            if (global.resource[res].amount > global.resource[res].max){
-                                global.resource[res].amount = global.resource[res].max;
+                            if (res === 'Soul_Gem'){
+                                global.resource[res].amount += Math.floor(seededRandom(1,global.tech['science'] || 2));
+                            }
+                            else {
+                                global.resource[res].amount += Math.floor(seededRandom(1,Math.floor(global.resource[res].max * 0.25)));
+                                if (global.resource[res].amount > global.resource[res].max){
+                                    global.resource[res].amount = global.resource[res].max;
+                                }
                             }
                         });
                     }
                 }
             },
-            power(){
+            love(){
                 if (global.race.wishStats.minor === 0){
-                    global.race.wishStats.minor = traits.wish.vars()[0] / 2;
+                    global.race.wishStats.minor = traits.wish.vars()[0] / 3;
 
+                    let options = ['pet'];
+                    let rivals = ['gov0','gov1','gov2'];
+                    if (global.race['truepath'] && !global.tech['isolation'] && global.tech['rival']){
+                        rivals.push('gov3');
+                    }
+
+                    ['gov0','gov1','gov2','gov3'].forEach(function(gov){
+                        if (global.civic.foreign[gov].hstl > 0 && !global.civic.foreign[gov].anx  && !global.civic.foreign[gov].buy && !global.civic.foreign[gov].occ){
+                            options.push(gov);
+                        }
+                    });
+
+                    let spell = options[Math.floor(seededRandom(0,options.length))];
+                    if (spell === 'pet'){
+                        let msg = events.pet.effect();
+                        messageQueue(msg,false,false,['events','minor_events']);
+                    }
+                    else {
+                        global.civic.foreign[spell].hstl = 0;
+                    }
                 }
             },
             excite(){
                 if (global.race.wishStats.minor === 0){
-                    global.race.wishStats.minor = traits.wish.vars()[0] / 2;
+                    global.race.wishStats.minor = traits.wish.vars()[0] / 4;
 
                     let event_pool = eventList('minor');
                     if (event_pool.length > 0){
@@ -6445,22 +6482,152 @@ function minorWish(parent){
                     }
                 }
             },
-            fame(){
+            famous(){
                 if (global.race.wishStats.minor === 0){
-                    global.race.wishStats.minor = traits.wish.vars()[0] / 2;
+                    global.race.wishStats.minor = traits.wish.vars()[0] / 3;
 
+                    let options = ['notorious','reputable'];
+                    let event = Math.floor(seededRandom(0,10));
+                    let cheeseList = swissKnife(false,true);
+                    let cheese = cheeseList[Math.floor(seededRandom(0,cheeseList.length))];
+
+                    let spell = options[Math.floor(seededRandom(0,options.length))];
+                    switch (spell){
+                        case 'notorious':
+                        {
+                            global.race.wishStats.fame = -10;
+                            let args = event === 8 ? [cheese] : [];
+                            messageQueue(loc('wish_famous',[loc(`wish_notorious${event}`,args)]),'warning',false,['events']);
+                            break;
+                        }
+                        case 'reputable':
+                        {
+                            global.race.wishStats.fame = 10;
+                            let args = event === 4 ? [cheese] : [];
+                            messageQueue(loc('wish_famous',[loc(`wish_reputable${event}`,args)]),'warning',false,['events']);
+                            break;
+                        }
+                    }
                 }
             },
             strength(){
                 if (global.race.wishStats.minor === 0){
-                    global.race.wishStats.minor = traits.wish.vars()[0] / 2;
+                    global.race.wishStats.minor = traits.wish.vars()[0] / 3;
 
+                    let options = ['troops'];
+                    if (!global.race['strong']){
+                        options.push('trait');
+                    }
+
+                    if (global.tech['military']){
+                        if (global.tech.military === 1){
+                            options.push('military');
+                        }
+                        else if (global.tech.military === 2 && global.tech['explosives']){
+                            options.push('military');
+                        }
+                        else if (global.tech.military === 3 && global.tech['oil']){
+                            options.push('military');
+                        }
+                        else if (global.tech.military === 4 && global.tech['high_tech'] && global.tech.high_tech >= 4){
+                            options.push('military');
+                        }
+                        else if (global.tech.military === 5 && global.tech['mass']){
+                            options.push('military');
+                        }
+                        else if (global.tech.military === 6 && global.tech['high_tech'] && global.tech.high_tech >= 9 && global.tech['elerium']){
+                            options.push('military');
+                        }
+                        else if (global.tech.military === 7 && global.tech['high_tech'] && global.tech.high_tech >= 13){
+                            options.push('military');
+                        }
+                        else if (global.tech.military === 8 && global.tech['high_tech'] && global.tech.high_tech >= 14 && global.tech['science'] && global.tech.science >= 15 && global.tech['infernite']){
+                            options.push('military');
+                        }
+                        else if (global.tech.military === 9 && global.tech['science'] && global.tech.science >= 18){
+                            options.push('military');
+                        }
+                        else if (global.tech.military === 10 && global.tech['high_tech'] && global.tech.high_tech >= 18){
+                            options.push('military');
+                        }
+                        else if (global.tech.military === 11 && global.tech['asphodel'] && global.tech.asphodel >= 5){
+                            options.push('military');
+                        }
+                    }
+
+                    let spell = options[Math.floor(seededRandom(0,options.length))];
+                    switch (spell){
+                        case 'troops':
+                        {
+                            if (global.race.wishStats.troop < 25){
+                                global.race.wishStats.troop++;
+                                messageQueue(loc('wish_troop'),'warning',false,['events']);
+                            }
+                            break;
+                        }
+                        case 'trait':
+                        {
+                            setTraitRank('strong',{ set: 0.25, force: true });
+                            messageQueue(loc('wish_muscle'),'warning',false,['events']);
+                            break;
+                        }
+                        case 'military':
+                        {
+                            global.tech.military++;
+                            switch(global.tech.military){
+                                case 7:
+                                    if (global.race.species === 'sharkin'){
+                                        unlockAchieve('laser_shark');
+                                    }
+                                    break;
+                            }
+                            drawCity();
+                            drawTech();
+
+                            let techs = {
+                                2: 'bows', 3: 'flintlock_rifle', 4: 'machine_gun', 5: 'bunk_beds', 6: 'rail_guns', 7: 'laser_rifles',
+                                8: 'plasma_rifles', 9: 'disruptor_rifles', 10: 'gauss_rifles', 11: 'cyborg_soldiers', 12: 'ethereal_weapons',
+                            };
+
+                            let tech = typeof actions.tech[techs[global.tech.military]].title === 'function' ? actions.tech[techs[global.tech.military]].title() : actions.tech[techs[global.tech.military]].title;
+                            messageQueue(loc('wish_tech',[tech]), 'warning',false,['progress']);
+                            break;
+                        }
+                    }
                 }
             },
             influence(){
                 if (global.race.wishStats.minor === 0){
-                    global.race.wishStats.minor = traits.wish.vars()[0] / 4;
+                    global.race.wishStats.minor = traits.wish.vars()[0] / 3;
 
+                    let options = ['magazine'];
+                    if (!global.race.wishStats.astro){
+                        options.push('astro');
+                    }
+                    if (global.race.wishStats.prof < 25 && global.civic.professor.display){
+                        options.push('professor');
+                    }
+
+                    let spell = options[Math.floor(seededRandom(0,options.length))];
+                    switch (spell){
+                        case 'magazine':
+                        {
+                            messageQueue(loc('wish_magazine',[races[global.race.species].name]),'warning',false,['events']);
+                            break;
+                        }
+                        case 'astro':
+                        {
+                            global.race.wishStats.astro = true;
+                            messageQueue(loc('wish_astro'),'warning',false,['events']);
+                            break;
+                        }
+                        case 'professor':
+                        {
+                            global.race.wishStats.prof++;
+                            messageQueue(loc('wish_prof'),'warning',false,['events']);
+                            break;
+                        }
+                    }
                 }
             }
         },
@@ -6468,19 +6635,19 @@ function minorWish(parent){
             wish(v){
                 return v === 0 ? `<span class="has-text-success">${loc(`power_available`)}</span>` : `<span class="has-text-danger">${v}</span>`;
             },
+            label(v){
+                return loc(`wish_${v}`);
+            },
             know(){
                 return global.resource.Knowledge.name;
             },
             money(){
                 return loc('resource_Money_name');
             },
-            label(v){
-                return loc(`wish_${v}`);
-            },
         }
     });
 
-    ['Know','Money','Res','Power','Excite','Fame','Strength','Influence'].forEach(function(wish){
+    ['Know','Money','Res','Love','Excite','Fame','Strength','Influence'].forEach(function(wish){
         popover(`wish${wish}`,
             function(){
                 switch(wish){
@@ -6490,8 +6657,8 @@ function minorWish(parent){
                         return loc(`wish_for`,[loc('resource_Money_name')]);
                     case 'Res':
                         return loc(`wish_for`,[loc('wish_resources')]);
-                    case 'Power':
-                        return loc(`wish_for`,[loc('wish_power')]);
+                    case 'Love':
+                        return loc(`wish_for`,[loc('wish_love')]);
                     case 'Excite':
                         return loc(`wish_for`,[loc('wish_event')]);
                     case 'Fame':
@@ -6516,7 +6683,8 @@ function majorWish(parent){
     let spells = $(`<div class="flexWrap"></div>`);
     container.append(spells);
 
-    spells.append(`<div><b-button id="wishPlasmid" v-html="$options.filters.plasmid()" @click="plasmid()"></b-button></div>`);
+    spells.append(`<div><b-button id="wishPlasmid" v-html="$options.filters.label('plasmid')" @click="plasmid()"></b-button></div>`);
+    spells.append(`<div><b-button id="wishPower" v-html="$options.filters.label('power')" @click="power()"></b-button></div>`);
 
     vBind({
         el: `#majorWish`,
@@ -6527,24 +6695,32 @@ function majorWish(parent){
                     global.race.wishStats.major = traits.wish.vars()[0];
 
                 }
+            },
+            power(){
+                if (global.race.wishStats.major === 0){
+                    global.race.wishStats.major = traits.wish.vars()[0];
+
+                }
             }
         },
         filters: {
             wish(v){
                 return v === 0 ? `<span class="has-text-success">${loc(`power_available`)}</span>` : `<span class="has-text-danger">${v}</span>`;
             },
-            plasmid(){
-                return loc('wish_plasmid');
-            }
+            label(v){
+                return loc(`wish_${v}`);
+            },
         }
     });
 
-    ['Plasmid'].forEach(function(wish){
+    ['Plasmid','Power'].forEach(function(wish){
         popover(`wish${wish}`,
             function(){
                 switch(wish){
                     case 'Plasmid':
                         return loc(`wish_for`,[loc('wish_plasmid')]);
+                    case 'Power':
+                        return loc(`wish_for`,[loc('wish_power')]);
                 }
             },{
                 elm: `#wish${wish}`

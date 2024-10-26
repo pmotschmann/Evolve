@@ -294,31 +294,32 @@ function tempDescription(){
 }
 
 export function astroVal(sign){
+    let boosted = global.race['wish'] && global.race['wishStats'] && global.race.wishStats.astro ? true : false;
     switch (sign){
         case 'aries': // Combat Rating
-            return [10];
+            return [boosted ? 12 : 10];
         case 'taurus': // Unification Bonus
-            return [2];
+            return [boosted ? 3 : 2];
         case 'gemini': // Knowledge
-            return [20];
+            return [boosted ? 30 : 20];
         case 'cancer': // Soldier Healing
-            return [5];
+            return [boosted ? 8 : 5];
         case 'leo': // Power
-            return [4];
+            return [boosted ? 5 : 4];
         case 'virgo': // Food Bonus
-            return [15];
+            return [boosted ? 20 : 15];
         case 'libra': // Pop growth rate
-            return [25];
+            return [boosted ? 40 : 25];
         case 'scorpio': // Cheaper and more effective spies
-            return [12,1];
+            return boosted ? [20,2] : [12,1];
         case 'sagittarius': // Entertainer Morale
-            return [5];
+            return [boosted ? 6 : 5];
         case 'capricorn': // Trade gains
-            return [10];
+            return [boosted ? 20 : 10];
         case 'aquarius': // Boosts tourism revenue
-            return [20];
+            return [boosted ? 30 : 20];
         case 'pisces': // Random Events are more common
-            return [49,25];
+            return boosted ? [79,45] : [49,25];
     }
 }
 

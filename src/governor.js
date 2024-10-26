@@ -234,7 +234,7 @@ const names = {
 
 function genGovernor(setSize){
     let governors = [];
-    let genus = races[global.race.species].type;
+    let genus = global.race.maintype || races[global.race.species].type;
     let backgrounds = Object.keys(gmen);
     let nameList = JSON.parse(JSON.stringify(names[genus]));
 
