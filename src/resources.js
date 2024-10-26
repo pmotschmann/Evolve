@@ -681,6 +681,7 @@ export function defineResources(wiki){
     loadResource('Chrysotile',wiki,200,1,true,true);
     loadResource('Stone',wiki,200,1,true,true);
     loadResource('Crystal',wiki,200,1,true,true);
+    loadResource('Useless',wiki,-1,1,false,false);
     loadResource('Furs',wiki,100,1,true,true);
     loadResource('Copper',wiki,100,1,true,true);
     loadResource('Iron',wiki,100,1,true,true);
@@ -1023,6 +1024,21 @@ export function setResourceName(name){
     }
     else {
         global.resource[name].name = name === 'Money' ? '$' : loc(`resource_${name}_name`);
+    }
+
+    if (name === 'Useless'){
+        if (!global.resource.Lumber.display){
+            global.resource.Useless.name = loc('resource_Lumber_name');
+        }
+        else if (!global.resource.Chrysotile.display){
+            global.resource.Useless.name = loc('resource_Chrysotile_name');
+        }
+        else if (!global.resource.Crystal.display){
+            global.resource.Useless.name = loc('resource_Crystal_name');
+        }
+        else {
+            global.resource.Useless.name = loc('resource_Bronze_name');
+        }
     }
     
     if (eventActive('fool',2022)){

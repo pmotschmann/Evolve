@@ -423,6 +423,12 @@ popover('morale',
             obj.popper.append(`<p class="modal_bd"><span>${loc(`trait_tormented_name`)}</span> <span class="has-text-danger"> -${global.city.tormented}%</span></p>`);
         }
 
+        if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.bad > 0){
+            let badPress = Math.floor(global.race.wishStats.bad / 75) + 1;
+            total -= badPress * 5;
+            obj.popper.append(`<p class="modal_bd"><span>${loc(`wish_bad`)}</span> <span class="has-text-danger"> -${badPress * 5}%</span></p>`);
+        }
+
         total = +(total).toFixed(1);
 
         let container = $(`<div></div>`);
@@ -3104,6 +3110,11 @@ function fastLoop(){
         }
         else {
             delete global.city['tormented'];
+        }
+
+        if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.bad > 0){
+            let badPress = Math.floor(global.race.wishStats.bad / 75) + 1;
+            morale -= badPress * 5;
         }
 
         global.city.morale.potential = +(morale).toFixed(1);
@@ -11313,6 +11324,18 @@ function longLoop(){
             }
             else if (global.tech['conflict'] && global.tech.piracy < 5000){
                 global.tech.piracy++;
+            }
+        }
+
+        if (global.race['wish'] && global.race['wishStats']){
+            if (global.race.wishStats.minor > 0){
+                global.race.wishStats.minor--;
+            }
+            if (global.race.wishStats.major > 0){
+                global.race.wishStats.major--;
+            }
+            if (global.race.wishStats.bad > 0){
+                global.race.wishStats.bad--;
             }
         }
 

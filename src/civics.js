@@ -979,6 +979,9 @@ function taxCap(min){
         if (aristoVal){
             cap += aristoVal;
         }
+        if (global.race['wish'] && global.race['wishStats']){
+            cap += global.race.wishStats.tax;
+        }
         return cap;
     }
 }

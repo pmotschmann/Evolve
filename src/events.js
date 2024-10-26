@@ -7,7 +7,6 @@ import { tradeRatio } from './resources.js';
 import { checkControlling } from './civics.js';
 import { govActive } from './governor.js';
 import { unlockAchieve } from './achieve.js';
-import { payBloodPrice } from './arpa.js';
 
 export const events = {
     dna_replication: {

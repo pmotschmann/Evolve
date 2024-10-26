@@ -3,7 +3,7 @@ import { loc } from './locale.js';
 import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper, popCost } from './functions.js';
 import { unlockAchieve, alevel, universeAffix, unlockFeat } from './achieve.js';
 import { payCosts, housingLabel, wardenLabel, structName, updateQueueNames, drawTech, fanaticism, checkAffordable, actions } from './actions.js';
-import { races, checkAltPurgatory, renderPsychicPowers, traitCostMod } from './races.js';
+import { races, checkAltPurgatory, renderPsychicPowers, renderWishSpell, traitCostMod } from './races.js';
 import { drawResourceTab, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
 import { buildGarrison, checkControlling, govTitle } from './civics.js';
@@ -596,6 +596,56 @@ const techs = {
                 return true;
             }
             return false;
+        }
+    },
+    minor_wish: {
+        id: 'tech-minor_wish',
+        title: loc('tech_minor_wish'),
+        desc: loc('tech_minor_wish'),
+        category: 'paranormal',
+        era: 'civilized',
+        reqs: { housing: 1 },
+        condition(){ return global.settings.showCivic; },
+        trait: ['wish'],
+        grant: ['wish',1],
+        cost: {
+            Knowledge(){ return 50; }
+        },
+        effect: loc('tech_minor_wish_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.settings.showWish = true;
+                global.race['wishStats'] = { minor: 0, major: 0, plas: 0, tax: 0, bad: 0 };
+                return true;
+            }
+            return false;
+        },
+        post(){
+            renderWishSpell();
+        }
+    },
+    major_wish: {
+        id: 'tech-major_wish',
+        title: loc('tech_major_wish'),
+        desc: loc('tech_major_wish'),
+        category: 'paranormal',
+        era: 'civilized',
+        reqs: { wish: 1, high_tech: 7 },
+        condition(){ return global.settings.showCivic; },
+        trait: ['wish'],
+        grant: ['wish',2],
+        cost: {
+            Knowledge(){ return 110000; }
+        },
+        effect: loc('tech_major_wish_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        },
+        post(){
+            renderWishSpell();
         }
     },
     psychic_energy: {
@@ -4388,6 +4438,69 @@ const techs = {
             }
             return false;
         }
+    },
+    spirit_box: {
+        id: 'tech-spirit_box',
+        title: loc('tech_spirit_box'),
+        desc: loc('tech_spirit_box'),
+        category: 'science',
+        era: 'existential',
+        reqs: { science: 21, asphodel: 3 },
+        grant: ['science',22],
+        cost: {
+            Knowledge(){ return 62750000; },
+            Asphodel_Powder(){ return 10000; },
+        },
+        effect(){ return loc('tech_spirit_box_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.resource.Omniscience.display = true;
+                return true;
+            }
+            return false;
+        }
+    },
+    spirit_researcher: {
+        id: 'tech-spirit_researcher',
+        title: loc('tech_spirit_researcher'),
+        desc: loc('tech_spirit_researcher'),
+        category: 'science',
+        era: 'existential',
+        reqs: { science: 22, asphodel: 8 },
+        grant: ['science',23],
+        cost: {
+            Knowledge(){ return 80000000; },
+            Omniscience(){ return 12500; },
+        },
+        effect(){ return loc('tech_spirit_researcher_effect',[global.civic.scientist.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    dimensional_tap: {
+        id: 'tech-dimensional_tap',
+        title: loc('tech_dimensional_tap'),
+        desc: loc('tech_dimensional_tap'),
+        category: 'science',
+        era: 'existential',
+        reqs: { science: 23, ascension: 7 },
+        grant: ['science',24],
+        cost: {
+            Knowledge(){ return 87500000; },
+            Omniscience(){ return 13333; },
+        },
+        effect(){ return loc('tech_dimensional_tap_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.eden.encampment.asc = true;
+                return true;
+            }
+            return false;
+        },
+        flair(){ return loc(`tech_dimensional_tap_flair`); }
     },
     devilish_dish: {
         id: 'tech-devilish_dish',
@@ -14335,69 +14448,6 @@ const techs = {
             }
             return false;
         }
-    },
-    spirit_box: {
-        id: 'tech-spirit_box',
-        title: loc('tech_spirit_box'),
-        desc: loc('tech_spirit_box'),
-        category: 'science',
-        era: 'existential',
-        reqs: { asphodel: 3, science: 21 },
-        grant: ['science',22],
-        cost: {
-            Knowledge(){ return 62750000; },
-            Asphodel_Powder(){ return 10000; },
-        },
-        effect(){ return loc('tech_spirit_box_effect'); },
-        action(){
-            if (payCosts($(this)[0])){
-                global.resource.Omniscience.display = true;
-                return true;
-            }
-            return false;
-        }
-    },
-    spirit_researcher: {
-        id: 'tech-spirit_researcher',
-        title: loc('tech_spirit_researcher'),
-        desc: loc('tech_spirit_researcher'),
-        category: 'science',
-        era: 'existential',
-        reqs: { asphodel: 8, science: 22 },
-        grant: ['science',23],
-        cost: {
-            Knowledge(){ return 80000000; },
-            Omniscience(){ return 12500; },
-        },
-        effect(){ return loc('tech_spirit_researcher_effect',[global.civic.scientist.name]); },
-        action(){
-            if (payCosts($(this)[0])){
-                return true;
-            }
-            return false;
-        }
-    },
-    dimensional_tap: {
-        id: 'tech-dimensional_tap',
-        title: loc('tech_dimensional_tap'),
-        desc: loc('tech_dimensional_tap'),
-        category: 'science',
-        era: 'existential',
-        reqs: { ascension: 7, science: 23 },
-        grant: ['science',24],
-        cost: {
-            Knowledge(){ return 87500000; },
-            Omniscience(){ return 13333; },
-        },
-        effect(){ return loc('tech_dimensional_tap_effect'); },
-        action(){
-            if (payCosts($(this)[0])){
-                global.eden.encampment.asc = true;
-                return true;
-            }
-            return false;
-        },
-        flair(){ return loc(`tech_dimensional_tap_flair`); }
     },
     soul_engine: {
         id: 'tech-soul_engine',
