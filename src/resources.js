@@ -1397,6 +1397,9 @@ export function marketItem(mount,market_item,name,color,full){
                 if (global.race['persuasive']){
                     rate *= 1 + (global.race['persuasive'] / 100);
                 }
+                if (global.race['devious']){
+                    rate *= 1 - (traits.devious.vars()[0] / 100);
+                }
                 if (global.race['merchant']){
                     rate *= 1 + (traits.merchant.vars()[1] / 100);
                 }
@@ -1555,6 +1558,9 @@ export function marketItem(mount,market_item,name,color,full){
                 let fathom = fathomCheck('goblin');
                 if (fathom > 0){
                     divide *= 1 - (traits.merchant.vars(1)[0] / 100 * fathom);
+                }
+                if (global.race['devious']){
+                    divide *= 1 - (traits.devious.vars()[0] / 100);
                 }
                 if (global.race['asymmetrical']){
                     divide *= 1 + (traits.asymmetrical.vars()[0] / 100);
@@ -1723,6 +1729,9 @@ export function galacticTrade(modal){
                 let buy_vol = offers[idx].buy.vol;
                 if (global.race['persuasive']){
                     buy_vol *= 1 + (global.race['persuasive'] / 100);
+                }
+                if (global.race['devious']){
+                    buy_vol *= 1 - (traits.devious.vars()[0] / 100);
                 }
                 if (global.race['merchant']){
                     buy_vol *= 1 + (traits.merchant.vars()[1] / 100);
@@ -1905,6 +1914,9 @@ export function tradeSellPrice(res){
     }
     if (global.race['asymmetrical']){
         divide *= 1 + (traits.asymmetrical.vars()[0] / 100);
+    }
+    if (global.race['devious']){
+        divide *= 1 + (traits.devious.vars()[0] / 100);
     }
     if (global.race['conniving']){
         divide--;

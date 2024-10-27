@@ -1423,6 +1423,9 @@ function fastLoop(){
                         if (astroSign === 'capricorn'){
                             rate *= 1 + (astroVal('capricorn')[0] / 100);
                         }
+                        if (global.race['devious']){
+                            rate *= 1 - (traits.devious.vars()[0] / 100);
+                        }
                         if (global.genes['trader']){
                             let mastery = calc_mastery();
                             rate *= 1 + (mastery / 100);
@@ -1539,6 +1542,9 @@ function fastLoop(){
                 }
                 if (astroSign === 'capricorn'){
                     imprt_vol *= 1 + (astroVal('capricorn')[0] / 100);
+                }
+                if (global.race['devious']){
+                    imprt_vol *= 1 - (traits.devious.vars()[0] / 100);
                 }
                 if (global.genes['trader']){
                     let mastery = calc_mastery();

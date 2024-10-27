@@ -2965,7 +2965,8 @@ export function bloodwar(){
         }
         if (forgeOperating && global.portal.soul_forge.kills >= Math.round(cap)){
             day_report.soul_forge.gem_craft = true;
-            global.portal.soul_forge.kills = 0;
+            let gems = Math.floor(global.portal.soul_forge.kills / Math.round(cap));
+            global.portal.soul_forge.kills -= Math.round(cap) * gems;
             let c_max = 10 - p_on['soul_attractor'] > 0 ? 10 - p_on['soul_attractor'] : 1;
             if (global.tech.high_tech >= 16 && !global.tech['corrupt'] && Math.rand(0,c_max + 1) === 0){
                 day_report.soul_forge.corrupt = true;
@@ -2976,8 +2977,8 @@ export function bloodwar(){
                 drawTech();
             }
             else {
-                global.resource.Soul_Gem.amount++;
-                day_report.stats.gems.crafted++;
+                global.resource.Soul_Gem.amount += gems;
+                day_report.stats.gems.crafted += gems;
             }
         }
     }

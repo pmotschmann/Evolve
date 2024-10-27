@@ -3286,6 +3286,27 @@ export const traits = {
             }
         }
     },
+    devious: {
+        name: loc('trait_devious_name'),
+        desc: loc('trait_devious'),
+        type: 'major',
+        val: -5,
+        vars(r){
+            // [Trade Less Productive]
+            switch (r || global.race.devious || 1){
+                case 0.25:
+                    return [30];
+                case 0.5:
+                    return [25];
+                case 1:
+                    return [20];
+                case 2:
+                    return [15];
+                case 3:
+                    return [10];
+            }
+        }
+    },
     ooze: { // you are some kind of ooze, everything is bad
         name: loc('trait_ooze_name'),
         desc: loc('trait_ooze'),
@@ -4573,7 +4594,7 @@ export const races = {
         entity: loc('race_djinn_entity'),
         traits: {
             wish: 1,
-            
+            devious: 1
         },
         solar: {
             red: loc('race_djinn_solar_red'),
