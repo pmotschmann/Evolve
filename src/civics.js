@@ -162,6 +162,7 @@ const government_desc = (function(){
         federation: loc('govern_federation_effect',[govEffect.federation()[0],govEffect.federation()[1]]),
         federation_alt: loc('govern_federation_effect_alt',[25, govEffect.federation()[2], govEffect.federation()[1]]),
         magocracy: loc('govern_magocracy_effect',govEffect.magocracy()),
+        dictator: loc('govern_dictator_effect',govEffect.dictator()),
     };
 });
 
@@ -251,6 +252,17 @@ export const govEffect = {
             crystal += govActive('organizer',0) ? 10 : 5;
         }
         return [wiz, crystal];
+    },
+    dictator(){
+        let stress = govActive('organizer',0) ? 25 : 30;
+        let production = global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? 12 : 10;
+        let materials = global.tech['high_tech'] && global.tech['high_tech'] >= 16 ? 6 : 4;
+        if (global.genes.hasOwnProperty('governor') && global.genes.governor >= 3){
+            stress -= govActive('organizer',0) ? 10 : 5;
+            production += govActive('organizer',0) ? 3 : 2;
+            materials += govActive('organizer',0) ? 4 : 2;
+        }
+        return [stress, production, materials];
     }
 }
 
@@ -378,6 +390,9 @@ function drawGovModal(){
         }
         if (global.tech['gov_mage'] && global.civic.govern.type !== 'magocracy'){
             body.append($(`<button class="button gap" data-gov="magocracy" @click="setGov('magocracy')">${loc(`govern_magocracy`)}</button>`));
+        }
+        if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.gov && global.civic.govern.type !== 'dictator'){
+            body.append($(`<button class="button gap" data-gov="dictator" @click="setGov('dictator')">${loc(`govern_dictator`)}</button>`));
         }
     }
 

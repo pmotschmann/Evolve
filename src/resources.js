@@ -681,7 +681,7 @@ export function defineResources(wiki){
     loadResource('Chrysotile',wiki,200,1,true,true);
     loadResource('Stone',wiki,200,1,true,true);
     loadResource('Crystal',wiki,200,1,true,true);
-    loadResource('Useless',wiki,-1,1,false,false);
+    loadResource('Useless',wiki,-1,0,false,false);
     loadResource('Furs',wiki,100,1,true,true);
     loadResource('Copper',wiki,100,1,true,true);
     loadResource('Iron',wiki,100,1,true,true);
@@ -733,6 +733,7 @@ export function defineResources(wiki){
     if (wiki){ return; }
     loadSpecialResource('Blood_Stone','caution');
     loadSpecialResource('Artifact','caution');
+    loadResource('Knockoff',wiki,-2,0,false,false,'special');
     loadSpecialResource('Plasmid');
     loadSpecialResource('AntiPlasmid');
     loadSpecialResource('Supercoiled');
@@ -1221,7 +1222,8 @@ function loadSpecialResource(name,color) {
         switch (name){
             case 'Plasmid':
                 {
-                    let active = global.race['no_plasmid'] ? Math.min(global.race.p_mutation, global.prestige.Plasmid.count) : global.prestige.Plasmid.count;
+                    let potential = global.race.p_mutation + (global.race['wish'] && global.race['wishStats'] ? global.race.wishStats.plas : 0);
+                    let active = global.race['no_plasmid'] ? Math.min(potential, global.prestige.Plasmid.count) : global.prestige.Plasmid.count;
                     desc.append($(`<span>${loc(`resource_${name}_desc`,[active, +(plasmidBonus('plasmid') * 100).toFixed(2)])}</span>`));
                     if (global.genes['store'] && (global.race.universe !== 'antimatter' || global.genes['bleed'] >= 3)){
                         let plasmidSpatial = spatialReasoning(1,'plasmid');
@@ -2991,7 +2993,8 @@ export const spatialReasoning = (function(){
                     plasmids = global.race.universe === 'antimatter' ? global.prestige.AntiPlasmid.count : global.prestige.Plasmid.count;
                     let raw = plasmids;
                     if (global.race['no_plasmid']){
-                        raw = Math.min(global.race.p_mutation, plasmids);
+                        let active = global.race.p_mutation + (global.race['wish'] && global.race['wishStats'] ? global.race.wishStats.plas : 0);
+                        raw = Math.min(active, plasmids);
                     }
                     else if (global.race['nerfed']){
                         raw = Math.floor(plasmids / (global.race.universe === 'antimatter' ? 2 : 5));
@@ -3166,7 +3169,8 @@ export const plasmidBonus = (function (){
             let standard = 0;
             let anti = 0; 
             if (global.race.universe !== 'antimatter' || global.genes['bleed']){
-                let plasmids = global.race['no_plasmid'] ? Math.min(global.race.p_mutation, global.prestige.Plasmid.count) : global.prestige.Plasmid.count;
+                let active = global.race.p_mutation + (global.race['wish'] && global.race['wishStats'] ? global.race.wishStats.plas : 0);
+                let plasmids = global.race['no_plasmid'] ? Math.min(active, global.prestige.Plasmid.count) : global.prestige.Plasmid.count;
                 if (global.race.universe === 'antimatter' && global.genes['bleed']){
                     plasmids *= 0.025
                 }

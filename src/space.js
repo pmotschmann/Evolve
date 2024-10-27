@@ -4336,7 +4336,13 @@ const galaxyProjects = {
                 civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 1 : 1; },
                 mil(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 1 : 1; },
                 helium: 6,
-                rating(){ return global.race['banana'] ? 7 : 10; }
+                rating(){ 
+                    let rating = global.race['banana'] ? 7 : 10; 
+                    if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.ship){
+                        rating += global.race['banana'] ? 1 : 5;
+                    }
+                    return rating;
+                }
             },
             powered(){ return 0; },
             action(){
@@ -4373,7 +4379,13 @@ const galaxyProjects = {
                 civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 2 : 2; },
                 mil(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 3 : 3; },
                 helium: 10,
-                rating(){ return global.race['banana'] ? 21 : 30; }
+                rating(){ 
+                    let rating = global.race['banana'] ? 21 : 30; 
+                    if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.ship){
+                        rating += global.race['banana'] ? 4 : 10;
+                    }
+                    return rating;
+                }
             },
             powered(){ return 0; },
             action(){
@@ -4410,7 +4422,13 @@ const galaxyProjects = {
                 civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 3 : 3; },
                 mil(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 5 : 5; },
                 helium: 25,
-                rating(){ return global.race['banana'] ? 56 : 80; }
+                rating(){ 
+                    let rating = global.race['banana'] ? 56 : 80;
+                    if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.ship){
+                        rating += global.race['banana'] ? 14 : 20;
+                    }
+                    return rating;
+                }
             },
             powered(){ return 0; },
             action(){
@@ -4449,7 +4467,13 @@ const galaxyProjects = {
                 civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 6 : 6; },
                 mil(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 10 : 10; },
                 deuterium: 25,
-                rating(){ return global.race['banana'] ? 175 : 250; }
+                rating(){ 
+                    let rating = global.race['banana'] ? 175 : 250;
+                    if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.ship){
+                        rating += global.race['banana'] ? 25 : 50;
+                    }
+                    return rating;
+                }
             },
             powered(){ return 0; },
             action(){
@@ -4488,7 +4512,13 @@ const galaxyProjects = {
                 civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 10 : 10; },
                 mil(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 20 : 20; },
                 deuterium: 80,
-                rating(){ return global.race['banana'] ? 1260 : 1800; }
+                rating(){ 
+                    let rating = global.race['banana'] ? 1260 : 1800;
+                    if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.ship){
+                        rating += global.race['banana'] ? 140 : 200;
+                    }
+                    return rating;
+                }
             },
             powered(){ return 0; },
             action(){
@@ -5215,7 +5245,13 @@ const galaxyProjects = {
                 civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 2 : 2; },
                 mil(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 1 : 1; },
                 helium: 10,
-                rating(){ return global.race['banana'] ? 4 : 5; }
+                rating(){ 
+                    let rating = global.race['banana'] ? 4 : 5;
+                    if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.ship){
+                        rating += global.race['banana'] ? 2 : 5;
+                    }
+                    return rating;
+                }
             },
             s_type: 'alien2',
             support(){ return -1; },
@@ -5409,7 +5445,13 @@ const galaxyProjects = {
                 civ(){ return 0; },
                 mil(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 1 : 1; },
                 helium: 8,
-                rating(){ return global.race['banana'] ? 35 : 50; }
+                rating(){ 
+                    let rating = global.race['banana'] ? 35 : 50;
+                    if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.ship){
+                        rating += global.race['banana'] ? 15 : 25;
+                    }
+                    return rating;
+                }
             },
             powered(){ return 0; },
             action(){
@@ -5483,7 +5525,13 @@ const galaxyProjects = {
                 civ(){ return 0; },
                 mil(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 2 : 2; },
                 helium: 18,
-                rating(){ return global.race['banana'] ? 9 : 12; }
+                rating(){ 
+                    let rating = global.race['banana'] ? 9 : 12;
+                    if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.ship){
+                        rating += global.race['banana'] ? 3 : 6;
+                    }
+                    return rating;
+                }
             },
             powered(){ return 0; },
             action(){

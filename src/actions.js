@@ -4967,6 +4967,9 @@ export function casinoEffect(){
             cash *= 1 + (workerScale(global.civic.banker.workers,'banker') * 0.05)
         }
     }
+    if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.casino){
+        cash *= 1.35;
+    }
     cash = +(cash).toFixed(2);
     desc = desc + `<div>${loc('tech_casino_effect2',[cash])}</div>`;
     return desc;

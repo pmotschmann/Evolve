@@ -1,7 +1,7 @@
 import { global, keyMultiplier, sizeApproximation, srSpeak, p_on, support_on } from './vars.js';
 import { clearElement, popover, clearPopper, flib, fibonacci, eventActive, timeFormat, vBind, messageQueue, adjustCosts, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, trickOrTreat, getTraitDesc, removeFromQueue, arpaTimeCheck, deepClone } from './functions.js';
 import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts, structName } from './actions.js';
-import { races, traits, cleanAddTrait, cleanRemoveTrait, traitSkin, fathomCheck, planetTraits } from './races.js';
+import { races, traits, cleanAddTrait, cleanRemoveTrait, traitSkin, fathomCheck, planetTraits, setTraitRank } from './races.js';
 import { renderSpace } from './space.js';
 import { drawMechLab } from './portal.js';
 import { govActive, defineGovernor } from './governor.js';
@@ -1936,19 +1936,25 @@ function genetics(){
             }
         });
 
+        let offspec_traits = [];
         let trait_list = [];
         if (global.genes['mutation'] && global.genes['mutation'] >= 3){
             if (global.race.species !== 'sludge' || !global.race['modified']){
                 breakdown.append(`<div class="trait major has-text-success">${loc('arpa_race_genetic_gain')}</div>`)
 
                 let conflict_traits = ['dumb','smart']; //Conflicting traits are paired together
+                let mainType = races[global.race.species].type === 'hybrid' ? global.race.maintype : races[global.race.species].type
+                let speciesTypes = races[global.race.species].type === 'hybrid' ? races[global.race.species].hybrid : [races[global.race.species].type];
                 Object.keys(races).forEach(function (race){
-                    if (race !== 'junker' && race !== 'sludge' && race !== 'custom' && races[race].type === races[global.race.species].type){
+                    if (race !== 'junker' && race !== 'sludge' && race !== 'custom' && speciesTypes.includes(races[race].type)){
                         Object.keys(races[race].traits).forEach(function (trait){
                             if (!global.race[trait] && trait !== 'soul_eater'){
                                 let conflict_pos = conflict_traits.indexOf(trait);
                                 if (conflict_pos === -1){
                                     trait_list.push(trait);
+                                    if (races[race].type !== mainType){
+                                        offspec_traits.push(trait);
+                                    }
                                 }
                                 else {
                                     let is_conflict = false;
@@ -1966,6 +1972,9 @@ function genetics(){
                                     }
                                     if (!is_conflict) {
                                         trait_list.push(trait);
+                                        if (races[race].type !== mainType){
+                                            offspec_traits.push(trait);
+                                        }
                                     }
                                 }
                             }
@@ -1997,6 +2006,9 @@ function genetics(){
             if (global.race.species === 'custom' || global.race.species === 'sludge'){
                 cost *= 10;
             }
+            if (races[global.race.species].type === 'hybrid'){
+                cost *= 2;
+            }
             if (cost < 0){
                 cost *= -1;
             }
@@ -2007,6 +2019,9 @@ function genetics(){
             let cost = traits[t].val * 5;
             if (global.race.species === 'custom' || global.race.species === 'sludge'){
                 cost *= 10;
+            }
+            if (races[global.race.species].type === 'hybrid'){
+                cost *= 2;
             }
             if (cost < 0){
                 cost *= -1;
@@ -2099,6 +2114,9 @@ function genetics(){
                     if (global.race.species === 'custom' || global.race.species === 'sludge'){
                         cost *= 10;
                     }
+                    if (races[global.race.species].type === 'hybrid'){
+                        cost *= 2;
+                    }
                     if (cost < 0){
                         cost *= -1;
                     }
@@ -2134,11 +2152,11 @@ function genetics(){
                         return;
                     }
                     let cost = traits[t].val * 5;
-                    if (global.race.species === 'sludge'){
-                        cost *= 2;
-                    }
-                    if (global.race.species === 'custom'){
+                    if (global.race.species === 'custom' || global.race.species === 'sludge'){
                         cost *= 10;
+                    }
+                    if (races[global.race.species].type === 'hybrid'){
+                        cost *= 2;
                     }
                     if (cost < 0){
                         cost *= -1;
@@ -2154,6 +2172,9 @@ function genetics(){
                             global.race['modified']++;
                         }
                         cleanAddTrait(t);
+                        if (offspec_traits.includes(t)){
+                            setTraitRank(t, {down:true});
+                        }
                         genetics();
                         drawTech();
                         drawCity();
@@ -2253,7 +2274,7 @@ function genetics(){
 
             let id = `raceTrait${t}`;
             let desc = $(`<div></div>`);
-            getTraitDesc(desc, t, { trank: global.race[t] });
+            getTraitDesc(desc, t, { trank: offspec_traits.includes(t) ? 0.5 : 1 });
             popover(id,desc,{ wide: true, classes: 'w30' });
         });
 

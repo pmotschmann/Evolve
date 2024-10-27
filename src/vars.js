@@ -1476,7 +1476,7 @@ export function setupStats(){
         'sac','tsac','know','tknow','portals','dkills','attacks','cfood','tfood','cstone','tstone',
         'clumber','tlumber','mad','bioseed','cataclysm','blackhole','ascend','descend','apotheosis',
         'terraform','aiappoc','matrix','retire','eden','geck','dark','harmony','blood','cores',
-        'artifact','supercoiled','cattle','tcattle','murders','tmurders','psykill','tpsykill',
+        'artifact','supercoiled','cattle','tcattle','murders','tmurders','psykill','tpsykill','pdebt'
     ].forEach(function(k){
         if (!global.stats.hasOwnProperty(k)){
             global.stats[k] = 0;

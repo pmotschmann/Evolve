@@ -1830,6 +1830,13 @@ function fastLoop(){
             power_generated[loc('space_sun_swarm_satellite_title')] = output;
         }
 
+        if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.potato){
+            let power = global.race.wishStats.potato;
+            max_power -= power;
+            power_grid += power;
+            power_generated[loc('wish_potato')] = power;
+        }
+
         if (global.city['mill'] && global.tech['agriculture'] && global.tech['agriculture'] >= 6){
             let power = powerModifier(global.city.mill.on * actions.city.mill.powered());
             max_power += power;
@@ -3015,6 +3022,11 @@ function fastLoop(){
                 stress *= 1.1;
             }
         }
+
+        if (global.civic.govern.type === 'dictator'){
+            stress *= 1 + (govEffect.dictator()[0] / 100);
+        }
+
         stress = +(stress).toFixed(1);
         global.city.morale.stress = stress;
         morale += stress;
@@ -3169,6 +3181,11 @@ function fastLoop(){
         if (global.race['stimulated']){
             breakdown.p['Global'][loc('event_m_curious4_bd')] = '+10%';
             global_multiplier *= 1.1;
+        }
+
+        if (global.civic.govern.type === 'dictator'){
+            breakdown.p['Global'][loc('wish_dictator')] = `+${govEffect.dictator()[1]}%`;
+            global_multiplier *= 1 + (govEffect.dictator()[1] / 100);
         }
 
         if (global.race['selenophobia']){
@@ -7376,6 +7393,9 @@ function fastLoop(){
             let racVal = govActive('racketeer',1);
             if (racVal){
                 cash *= 1 + (racVal / 100);
+            }
+            if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.casino){
+                cash *= 1.35;
             }
             cash *= casinos;
             breakdown.p['Money'][loc('city_casino')] = cash + 'v';

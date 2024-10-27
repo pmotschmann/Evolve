@@ -615,7 +615,10 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.settings.showWish = true;
-                global.race['wishStats'] = { minor: 0, major: 0, plas: 0, tax: 0, bad: 0, fame: 0, troop: 0, prof: 0, astro: false };
+                global.race['wishStats'] = { 
+                    minor: 0, major: 0, plas: 0, tax: 0, bad: 0, fame: 0, troop: 0, 
+                    prof: 0, potato: 0, astro: false, casino: false, ship: false, gov: false
+                };
                 return true;
             }
             return false;

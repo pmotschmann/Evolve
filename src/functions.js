@@ -1543,6 +1543,7 @@ export function calcPrestige(type,inputs){
         artifact: 0,
         cores: 0,
         supercoiled: 0,
+        pdebt: 0
     };
 
     if (!inputs) { inputs = {}; }
@@ -1698,6 +1699,17 @@ export function calcPrestige(type,inputs){
     if (type === 'ai'){
         gains.cores = universe === 'micro' ? 2 : 5;
     }
+    
+    if (global.stats.pdebt > 0){
+        gains.plasmid -= global.stats.pdebt;
+        if (gains.plasmid < 0){
+            gains.pdebt = Math.abs(gains.plasmid);
+            gains.plasmid = 0;
+        }
+        else {
+            gains.pdebt = 0;
+        }
+    }
 
     return gains;
 }
@@ -1725,6 +1737,7 @@ export function adjustCosts(c_action, offset, wiki){
     costs = rebarAdjust(costs, offset, wiki);
     costs = extraAdjust(costs, offset, wiki);
     costs = heavyAdjust(costs, offset, wiki);
+    costs = dictatorAdjust(costs, offset, wiki);
     return craftAdjust(costs, offset, wiki);
 }
 
@@ -1978,6 +1991,23 @@ function craftAdjust(costs, offset, wiki){
                     }
                     return Math.round(cost);
                 }
+            }
+            else {
+                newCosts[res] = function(){ return costs[res](offset, wiki); }
+            }
+        });
+        return newCosts;
+    }
+    return costs;
+}
+
+function dictatorAdjust(costs, offset, wiki){
+    if (global.civic.govern.type === 'dictator'){
+        let adjustRate = 1 - (govEffect.dictator()[2] / 100);
+        var newCosts = {};
+        Object.keys(costs).forEach(function (res){
+            if (['Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal'].includes(res)){
+                newCosts[res] = function(){ return costs[res](offset, wiki) * adjustRate; }
             }
             else {
                 newCosts[res] = function(){ return costs[res](offset, wiki); }

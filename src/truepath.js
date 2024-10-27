@@ -4084,6 +4084,10 @@ export function shipAttackPower(ship){
             break;
     }
 
+    if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.ship){
+        rating = Math.round(rating * 1.25);
+    }
+
     switch (ship.class){
         case 'corvette':
             return rating;

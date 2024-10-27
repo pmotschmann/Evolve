@@ -1,4 +1,4 @@
-import { global, seededRandom, save, webWorker, power_generated, keyMultiplier } from './vars.js';
+import { global, seededRandom, save, webWorker, power_generated, keyMultiplier, sizeApproximation } from './vars.js';
 import { loc } from './locale.js';
 import { defineIndustry } from './industry.js';
 import { setJobName, jobScale, loadFoundry } from './jobs.js';
@@ -8,9 +8,10 @@ import { buildGarrison, govEffect } from './civics.js';
 import { govActive, removeTask, defineGovernor } from './governor.js';
 import { unlockAchieve } from './achieve.js';
 import { highPopAdjust, teamster } from './prod.js';
-import { actions, checkTechQualifications, drawCity, drawTech } from './actions.js';
+import { actions, checkTechQualifications, drawCity, drawTech, structName } from './actions.js';
 import { events, eventList } from './events.js';
 import { swissKnife } from './tech.js';
+import { warhead, big_bang } from './resets.js';
 
 const date = new Date();
 const easter = getEaster();
@@ -6368,6 +6369,7 @@ function minorWish(parent){
                             if (global.resource.Money.amount > global.resource.Money.max){
                                 global.resource.Money.amount = global.resource.Money.max;
                             }
+                            messageQueue(loc('wish_cash',[sizeApproximation(cash)]),'warning',false,['events']);
                             break;
                         }
                         case 'taxes':
@@ -6385,7 +6387,7 @@ function minorWish(parent){
                             }
                             let victim = Math.floor(seededRandom(0,10));
                             global.race.wishStats.bad += Math.floor(seededRandom(50,100));
-                            messageQueue(loc('wish_robbery',[loc(`wish_robbery${victim}`)]),'warning',false,['events']);
+                            messageQueue(loc('wish_robbery',[loc(`wish_robbery${victim}`),sizeApproximation(cash)]),'warning',false,['events']);
                             break;
                         }
                     }
@@ -6421,7 +6423,9 @@ function minorWish(parent){
 
                     if (spell === 'useless' || resList.length === 0){
                         global.resource.Useless.display = true;
-                        global.resource.Useless.amount += Math.floor(seededRandom(1,global.stats.know));
+                        let gain = Math.floor(seededRandom(1,global.stats.know));
+                        global.resource.Useless.amount += gain;
+                        messageQueue(loc('wish_gain_res',[sizeApproximation(gain),global.resource.Useless.name]),'warning',false,['events']);
                     }
                     else {
                         let picked = [resList[Math.floor(seededRandom(0,resList.length))]];
@@ -6429,17 +6433,33 @@ function minorWish(parent){
                             picked.push(resList[Math.floor(seededRandom(0,resList.length))]);
                         }
                         
+                        let gains = [];
                         picked.forEach(function(res){
+                            let gain = 0;
                             if (res === 'Soul_Gem'){
-                                global.resource[res].amount += Math.floor(seededRandom(1,global.tech['science'] || 2));
+                                gain = Math.floor(seededRandom(1,global.tech['science'] || 2));
+                                global.resource[res].amount += gain;
                             }
                             else {
+                                gain = Math.floor(seededRandom(1,Math.floor(global.resource[res].max * 0.25)));
                                 global.resource[res].amount += Math.floor(seededRandom(1,Math.floor(global.resource[res].max * 0.25)));
                                 if (global.resource[res].amount > global.resource[res].max){
                                     global.resource[res].amount = global.resource[res].max;
                                 }
                             }
+                            gains.push(gain);
                         });
+
+                        if (['2xcommon','2xrare'].includes(spell)){
+                            messageQueue(loc('wish_gain_double',[sizeApproximation(gains[0]),global.resource[picked[0]].name,sizeApproximation(gains[1]),global.resource[picked[1]].name]),'warning',false,['events']);
+                        }
+                        else if (['common','rare'].includes(spell)){
+                            messageQueue(loc('wish_gain_res',[sizeApproximation(gains[0]),global.resource[picked[0]].name]),'warning',false,['events']);
+                        }
+                        else if (spell === 'stolen'){
+                            global.race.wishStats.bad += Math.floor(seededRandom(50,100));
+                            messageQueue(loc('wish_steal_res',[sizeApproximation(gains[0]),global.resource[picked[0]].name]),'warning',false,['events']);
+                        }
                     }
                 }
             },
@@ -6683,6 +6703,8 @@ function majorWish(parent){
     let spells = $(`<div class="flexWrap"></div>`);
     container.append(spells);
 
+    spells.append(`<div><b-button id="wishBigMoney" v-html="$options.filters.money()" @click="money()"></b-button></div>`);
+    spells.append(`<div><b-button id="wishBigRes" v-html="$options.filters.label('resources')" @click="res()"></b-button></div>`)
     spells.append(`<div><b-button id="wishPlasmid" v-html="$options.filters.label('plasmid')" @click="plasmid()"></b-button></div>`);
     spells.append(`<div><b-button id="wishPower" v-html="$options.filters.label('power')" @click="power()"></b-button></div>`);
 
@@ -6690,16 +6712,226 @@ function majorWish(parent){
         el: `#majorWish`,
         data: global.race.wishStats,
         methods: {
+            money(){
+                if (global.race.wishStats.major === 0){
+                    global.race.wishStats.major = traits.wish.vars()[0];
+
+                    let options = ['money','robbery'];
+                    if (!global.race.wishStats.casino){
+                        options.push('casino');
+                    }
+
+                    let spell = options[Math.floor(seededRandom(0,options.length))];
+                    switch (spell){
+                        case 'money':
+                        {
+                            let cash = Math.floor(seededRandom(Math.round(global.resource.Money.max / 12),Math.round(global.resource.Money.max / 36)));
+                            global.resource.Money.amount += cash;
+                            if (global.resource.Money.amount > global.resource.Money.max){
+                                global.resource.Money.amount = global.resource.Money.max;
+                            }
+                            messageQueue(loc('wish_cash',[sizeApproximation(cash)]),'warning',false,['events']);
+                            break;
+                        }
+                        case 'robbery':
+                        {
+                            let cash = Math.floor(seededRandom(Math.round(global.resource.Money.max / 12),Math.round(global.resource.Money.max / 36)));
+                            global.resource.Money.amount += cash;
+                            if (global.resource.Money.amount > global.resource.Money.max){
+                                global.resource.Money.amount = global.resource.Money.max;
+                            }
+                            let victim = Math.floor(seededRandom(0,10));
+                            global.race.wishStats.bad += Math.floor(seededRandom(100,200));
+                            messageQueue(loc('wish_robbery',[loc(`wish_robbery${victim}`),sizeApproximation(cash)]),'warning',false,['events']);
+                            break;
+                        }
+                        case 'casino':
+                        {
+                            global.race.wishStats.casino = true;
+                            let game = Math.floor(seededRandom(0,10));
+                            messageQueue(loc('wish_casino',[loc(`wish_casino${game}`),structName('casino')]),'warning',false,['events']);
+                        }
+                    }
+                }
+            },
+            res(){
+                if (global.race.wishStats.major === 0){
+                    global.race.wishStats.major = traits.wish.vars()[0];
+
+                    let options = ['useless','common','rare','stolen','2xcommon','2xrare'];
+                    let spell = options[Math.floor(seededRandom(0,options.length))];
+
+                    let resList = [];
+                    [
+                        'Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal','Oil','Uranium',
+                        'Steel','Titanium','Alloy','Polymer','Iridium','Helium_3','Crystal','Chrysotile'
+                    ].forEach(function(res){
+                        if (global.resource[res].display && global.resource[res].amount * 1.05 < global.resource[res].max){
+                            resList.push(res);
+                        }
+                    });
+
+                    if (spell === 'rare' || spell === 'stolen' || spell === '2xrare'){
+                        [
+                            'Deuterium','Neutronium','Adamantite','Nano_Tube','Graphene','Stanene','Bolognium',
+                            'Vitreloy','Orichalcum','Infernite','Elerium','Soul_Gem'
+                        ].forEach(function(res){
+                            if (global.resource[res].display && (res === 'Soul_Gem' || global.resource[res].amount * 1.05 < global.resource[res].max)){
+                                resList.push(res);
+                            }
+                        });
+                    }
+
+                    if (spell === 'useless' || resList.length === 0){
+                        global.resource.Useless.display = true;
+                        let gain = Math.floor(seededRandom(100,global.stats.know * 4));
+                        global.resource.Useless.amount += gain;
+                        messageQueue(loc('wish_gain_res',[sizeApproximation(gain),global.resource.Useless.name]),'warning',false,['events']);
+                    }
+                    else {
+                        let picked = [resList[Math.floor(seededRandom(0,resList.length))]];
+                        if (spell === '2xcommon' || spell === '2xrare'){
+                            picked.push(resList[Math.floor(seededRandom(0,resList.length))]);
+                        }
+                        
+                        let gains = [];
+                        picked.forEach(function(res){
+                            let gain = 0;
+                            if (res === 'Soul_Gem'){
+                                gain = Math.floor(seededRandom(1,(global.tech['science'] + global.tech['high_tech']) || 2));
+                                global.resource[res].amount += gain;
+                            }
+                            else {
+                                gain = Math.floor(seededRandom(10000,Math.floor(global.resource[res].max * 0.5)));
+                                global.resource[res].amount += Math.floor(seededRandom(10000,Math.floor(global.resource[res].max * 0.5)));
+                                if (global.resource[res].amount > global.resource[res].max){
+                                    global.resource[res].amount = global.resource[res].max;
+                                }
+                            }
+                            gains.push(gain);
+                        });
+
+                        if (['2xcommon','2xrare'].includes(spell)){
+                            messageQueue(loc('wish_gain_double',[sizeApproximation(gains[0]),global.resource[picked[0]].name,sizeApproximation(gains[1]),global.resource[picked[1]].name]),'warning',false,['events']);
+                        }
+                        else if (['common','rare'].includes(spell)){
+                            messageQueue(loc('wish_gain_res',[sizeApproximation(gains[0]),global.resource[picked[0]].name]),'warning',false,['events']);
+                        }
+                        else if (spell === 'stolen'){
+                            global.race.wishStats.bad += Math.floor(seededRandom(100,200));
+                            messageQueue(loc('wish_steal_res',[sizeApproximation(gains[0]),global.resource[picked[0]].name]),'warning',false,['events']);
+                        }
+                    }
+                }
+            },
             plasmid(){
                 if (global.race.wishStats.major === 0){
                     global.race.wishStats.major = traits.wish.vars()[0];
 
+                    let options = ['fake','future'];
+                    if (global.tech['blackhole'] && global.tech.blackhole >= 5 && global.interstellar['mass_ejector'] && global.interstellar.mass_ejector.count >= 1){
+                        options.push('blackhole');
+                    }
+                    else if (!global.race['cataclysm'] && !global.race['lone_survivor']){
+                        options.push('mad');
+                    }
+
+                    let spell = options[Math.floor(seededRandom(0,options.length))];
+                    switch (spell){
+                        case 'fake':
+                        {
+                            let gain = Math.floor(seededRandom(100,50000));
+                            global.resource.Knockoff.amount = gain;
+                            global.resource.Knockoff.display = true;
+                            messageQueue(loc('wish_plasmid_gain',[gain,loc(`resource_Knockoff_plural_name`)]),'warning',false,['events']);
+                            break;
+                        }
+                        case 'future':
+                        {
+                            let gain = Math.floor(seededRandom(2,global.tech.science + 2));
+                            global.stats.pdebt += gain;
+                            global.race.wishStats.plas += gain;
+                            if (global.race.universe === 'antimatter'){
+                                global.prestige.AntiPlasmid.count += gain;
+                                global.stats.antiplasmid += gain;
+                            }
+                            else {
+                                global.prestige.Plasmid.count += gain;
+                                global.stats.plasmid += gain;
+                            }
+                            messageQueue(loc('wish_plasmid_gain',[gain,loc(global.race.universe === 'antimatter' ? `resource_AntiPlasmid_plural_name` : `resource_Plasmid_plural_name`)]),'warning',false,['events']);
+                            break;
+                        }
+                        case 'mad':
+                        {
+                            $('body').addClass('nuke');
+                            let nuke = $('<div class="nuke"></div>');
+                            $('body').append(nuke);
+                            setTimeout(function(){
+                                nuke.addClass('burn');
+                            }, 500);
+                            setTimeout(function(){
+                                nuke.addClass('b');
+                            }, 600);
+                            setTimeout(function(){
+                                global.civic.mad.armed = false;
+                                warhead();
+                            }, 4000);
+                            break;
+                        }
+                        case 'blackhole':
+                        {
+                            let bang = $('<div class="bigbang"></div>');
+                            $('body').append(bang);
+                            setTimeout(function(){
+                                bang.addClass('burn');
+                            }, 125);
+                            setTimeout(function(){
+                                bang.addClass('b');
+                            }, 150);
+                            setTimeout(function(){
+                                bang.addClass('c');
+                            }, 2000);
+                            setTimeout(function(){
+                                big_bang();
+                            }, 4000);
+                        }
+                    }
                 }
             },
             power(){
                 if (global.race.wishStats.major === 0){
                     global.race.wishStats.major = traits.wish.vars()[0];
 
+                    let options = ['potato'];
+                    if (!global.race.wishStats.ship && (global.tech['shipyard'] || (global.tech['science'] && global.tech.science >= 16))){
+                        options.push('ship');
+                    }
+                    if (!global.race.wishStats.gov){
+                        options.push('government');
+                    }
+
+                    let spell = options[Math.floor(seededRandom(0,options.length))];
+                    switch (spell){
+                        case 'potato':
+                        {
+                            global.race.wishStats.potato++;
+                            messageQueue(loc('wish_energized'),'warning',false,['events']);
+                            break;
+                        }
+                        case 'ship':
+                        {
+                            global.race.wishStats.ship = true;
+                            messageQueue(loc('wish_ship'),'warning',false,['events']);
+                            break;
+                        }
+                        case 'government':
+                        {
+                            global.race.wishStats.gov = true;
+                            global.civic.govern.type = 'dictator';
+                            messageQueue(loc('wish_gov'),'warning',false,['events']);
+                        }
+                    }
                 }
             }
         },
@@ -6710,13 +6942,20 @@ function majorWish(parent){
             label(v){
                 return loc(`wish_${v}`);
             },
+            money(){
+                return loc('resource_Money_name');
+            },
         }
     });
 
-    ['Plasmid','Power'].forEach(function(wish){
+    ['BigMoney','BigRes','Plasmid','Power'].forEach(function(wish){
         popover(`wish${wish}`,
             function(){
                 switch(wish){
+                    case 'BigMoney':
+                        return loc(`wish_for`,[loc('wish_big_money')]);
+                    case 'BigRes':
+                        return loc(`wish_for`,[loc('wish_big_resources')]);
                     case 'Plasmid':
                         return loc(`wish_for`,[loc('wish_plasmid')]);
                     case 'Power':

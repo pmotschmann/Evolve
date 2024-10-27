@@ -34,6 +34,8 @@ export function warhead(){
             global.prestige.Plasmid.count += gains.plasmid;
             global.stats.plasmid += gains.plasmid;
         }
+        global.stats.pdebt = gains.pdebt;
+
         unlockAchieve(`apocalypse`);
         unlockAchieve(`squished`,true);
         unlockAchieve(`extinct_${god}`);
@@ -111,6 +113,8 @@ export function bioseed(){
         global.prestige.Plasmid.count += gains.plasmid;
         global.stats.plasmid += gains.plasmid;
     }
+    global.stats.pdebt = gains.pdebt;
+
     unlockAchieve(`seeder`);
     unlockAchieve(`biome_${biome}`);
     atmo.forEach(function(a){
@@ -248,6 +252,7 @@ export function cataclysm_end(){
             global.prestige.Plasmid.count += gains.plasmid;
             global.stats.plasmid += gains.plasmid;
         }
+        global.stats.pdebt = gains.pdebt;
 
         unlockAchieve(`squished`,true);
         unlockAchieve(`extinct_${global.race.species}`);
@@ -375,6 +380,7 @@ export function big_bang(){
         global.prestige.Plasmid.count += gains.plasmid;
         global.stats.plasmid += gains.plasmid;
     }
+    global.stats.pdebt = gains.pdebt;
     global.prestige.Dark.count = +(global.prestige.Dark.count + gains.dark).toFixed(3);
     global.stats.dark = +(global.stats.dark + gains.dark).toFixed(3);
     global.stats.universes++;
@@ -471,6 +477,7 @@ export function vacuumCollapse(){
             global.prestige.Plasmid.count += gains.plasmid;
             global.stats.plasmid += gains.plasmid;
         }
+        global.stats.pdebt = gains.pdebt;
         global.prestige.Dark.count = +(global.prestige.Dark.count + gains.dark).toFixed(3);
         global.stats.dark = +(global.stats.dark + gains.dark).toFixed(3);
         global.stats.universes++;
@@ -539,7 +546,7 @@ export function ascend(){
         global.prestige.Plasmid.count += gains.plasmid;
         global.stats.plasmid += gains.plasmid;
     }
-
+    global.stats.pdebt = gains.pdebt;
     global.prestige.Harmony.count = parseFloat((global.prestige.Harmony.count + gains.harmony).toFixed(2));
     global.stats.harmony = parseFloat((global.stats.harmony + gains.harmony).toFixed(2));
 
@@ -753,6 +760,7 @@ export function apotheosis(){
         global.prestige.Plasmid.count += gains.plasmid;
         global.stats.plasmid += gains.plasmid;
     }
+    global.stats.pdebt = gains.pdebt;
 
     atmo.forEach(function(a){
         if (planetTraits.hasOwnProperty(a)){
@@ -847,7 +855,7 @@ export function terraform(planet){
         global.prestige.Plasmid.count += gains.plasmid;
         global.stats.plasmid += gains.plasmid;
     }
-
+    global.stats.pdebt = gains.pdebt;
     global.prestige.Harmony.count = parseFloat((global.prestige.Harmony.count + gains.harmony).toFixed(2));
     global.stats.harmony = parseFloat((global.stats.harmony + gains.harmony).toFixed(2));
 
@@ -948,7 +956,7 @@ export function aiApocalypse(){
         global.prestige.Plasmid.count += gains.plasmid;
         global.stats.plasmid += gains.plasmid;
     }
-
+    global.stats.pdebt = gains.pdebt;
     global.prestige.AICore.count += gains.cores;
     global.stats.cores += gains.cores;
 
@@ -1030,6 +1038,7 @@ export function matrix(){
         global.prestige.Plasmid.count += gains.plasmid;
         global.stats.plasmid += gains.plasmid;
     }
+    global.stats.pdebt = gains.pdebt;
     global.prestige.Phage.count += gains.phage;
     global.stats.phage += gains.phage;
 
@@ -1114,6 +1123,7 @@ export function retirement(){
         global.prestige.Plasmid.count += gains.plasmid;
         global.stats.plasmid += gains.plasmid;
     }
+    global.stats.pdebt = gains.pdebt;
     global.prestige.Phage.count += gains.phage;
     global.stats.phage += gains.phage;
 
@@ -1198,6 +1208,7 @@ export function gardenOfEden(){
         global.prestige.Plasmid.count += gains.plasmid;
         global.stats.plasmid += gains.plasmid;
     }
+    global.stats.pdebt = gains.pdebt;
     global.prestige.Phage.count += gains.phage;
     global.stats.phage += gains.phage;
 
