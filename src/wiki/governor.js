@@ -171,7 +171,7 @@ export function governPage(content){
 
         {
             let task = 'slave';
-            infoBoxBuilder(govern,{ name: task, template: 'government', label: loc(`gov_task_${task}`), paragraphs: 2, break: [2], h_level: 3,
+            infoBoxBuilder(govern,{ name: task, template: 'government', label: loc(`gov_task_${task}`,[loc(`resource_Slave_name`)]), paragraphs: 2, break: [2], h_level: 3,
                 text: {
                     1: `wiki_governor_task_${task}1`,
                     2: `wiki_governor_task_trait`
@@ -183,7 +183,7 @@ export function governPage(content){
                     2: ['wiki.html#traits-species-major_slaver']
                 }
             });
-            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
+            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`,[loc(`resource_Slave_name`)]));
         }
 
         {
