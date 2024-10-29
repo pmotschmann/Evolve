@@ -19,6 +19,14 @@ export const changeList = [
     },
     {
         version: `1.3.17`,
+        revision: `b`,
+        date: `10/29/2024`,
+        changes: [
+            `Fixed Ghost #3 with Forge Trait.`
+        ]
+    },
+    {
+        version: `1.3.17`,
         revision: `a`,
         date: `10/27/2024`,
         changes: [

@@ -191,7 +191,7 @@ function loadSmelter(parent,bind){
     }
 
     if (global.race['forge']){
-        let oil = $(`<span :aria-label="buildLabel('oil') + ariaCount('Oil')" class="current oil infoOnly">${loc('trait_forge_name')} {{ s.Oil }}</span>`);
+        let oil = $(`<span :aria-label="buildLabel('oil') + ariaCount('Oil')" class="current oil infoOnly">${loc('trait_forge_name')} <span v-html="$options.filters.altspook(s.Oil)"></span></span>`);
         fuelTypes.append(oil);
     }
     else if (global.resource.Oil.display){
@@ -423,7 +423,7 @@ function loadSmelter(parent,bind){
                 return v;
             },
             altspook(v){
-                if (bind && global.race['forge'] && global.city.smelter.Steel === 6){
+                if (bind && global.race['forge'] && global.city.smelter.Steel === 6 && global.city.smelter.Iron === 6){
                     let trick = trickOrTreat(3,12,true);
                     if (trick.length > 0){
                         return trick;
