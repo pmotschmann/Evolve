@@ -6,7 +6,7 @@ import { spatialReasoning, unlockContainers, drawResourceTab, atomic_mass } from
 import { loadFoundry, jobScale } from './jobs.js';
 import { defineIndustry } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
-import { actions, payCosts, powerOnNewStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, casinoEffect, wardenLabel, buildTemplate, structName } from './actions.js';
+import { actions, payCosts, powerOnNewStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, casinoEffect, wardenLabel, buildTemplate, structName, fanaticism } from './actions.js';
 import { outerTruthTech, syndicate } from './truepath.js';
 import { production, highPopAdjust } from './prod.js';
 import { defineGovernor, govActive } from './governor.js';
@@ -6583,8 +6583,9 @@ export function ascendLab(hybrid,wiki){
             save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
         }
 
+        let genusType = races[global.race.species].type === 'hybrid' ? global.race.maintype : races[global.race.species].type;
         unlockAchieve(`biome_${global.city.biome}`);
-        unlockAchieve(`genus_${races[global.race.species].type}`);
+        unlockAchieve(`genus_${genusType}`);
 
         if (hybrid){
             unlockAchieve(`godslayer`);
@@ -6780,7 +6781,8 @@ export function ascendLab(hybrid,wiki){
         eris: global.custom[slot].eris || planetName().eris,
         genes: 0,
         genus: global.custom[slot].genus,
-        traitlist: global.custom[slot].traits
+        traitlist: global.custom[slot].traits,
+        fanaticism: global.custom[slot].hasOwnProperty('fanaticism') && global.custom[slot].fanaticism ? global.custom[slot].fanaticism : false,
     } : {
         name: 'Zombie',
         desc: `Zombies aren't so much a species as they are the shambling remains of a race who succumbed to a nightmarish virus. Yet somehow they continue to drone on.`,
@@ -6797,7 +6799,8 @@ export function ascendLab(hybrid,wiki){
         eris: 'Zombieland',
         genes: 10,
         genus: dGenus,
-        traitlist: []
+        traitlist: [],
+        fanaticism: false,
     };
 
     for (let i=genome.traitlist.length - 1; i >= 0; i--){
@@ -6856,7 +6859,8 @@ export function ascendLab(hybrid,wiki){
                         triton: genome.triton,
                         eris: genome.eris,
                         genus: genome.genus,
-                        traits: genome.traitlist
+                        traits: genome.traitlist,
+                        fanaticism: genome.fanaticism,
                     };
                     ascend();
                 }
@@ -6887,6 +6891,7 @@ export function ascendLab(hybrid,wiki){
                 genome.genus = dGenus;
                 genome.traitlist = [];
                 genome.genes = calcGenomeScore(genome,(wiki ? wikiVars : false));
+                genome.fanaticism = false;
             },
             customImport(){
                 let file = document.getElementById("customFile").files[0];
@@ -6943,6 +6948,7 @@ export function ascendLab(hybrid,wiki){
                                 fixTraitlist.push(genome.traitlist[i]);
                             }
                         }
+                        genome.fanaticism = importCustom.hasOwnProperty('fanaticism') ? importCustom.fanaticism : false,
                         genome.traitlist = fixTraitlist;
                         genome.genes = calcGenomeScore(genome,(wiki ? wikiVars : false));
 
@@ -7050,8 +7056,9 @@ export function terraformLab(wiki){
             save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
         }
 
+        let genusType = races[global.race.species].type === 'hybrid' ? global.race.maintype : races[global.race.species].type;
         unlockAchieve(`biome_${global.city.biome}`);
-        unlockAchieve(`genus_${races[global.race.species].type}`);
+        unlockAchieve(`genus_${genusType}`);
         unlockAchieve(`lamentis`);
         if (global.race.species === 'junker'){
             unlockFeat('the_misery');

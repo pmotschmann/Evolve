@@ -8384,7 +8384,8 @@ const techs = {
                         morale: 0,
                         metal: 0,
                         know: 0,
-                        tax: 0
+                        tax: 0,
+                        cycle: 0,
                     };
                 }
                 if (global.genes['ancients'] && global.genes['ancients'] >= 2){

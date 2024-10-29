@@ -1205,6 +1205,12 @@ if (convertVersion(global['version']) <= 103015){
     }
 }
 
+if (convertVersion(global['version']) <= 104000){
+    if (global.city.hasOwnProperty('shrine') && !global.city.shrine.hasOwnProperty('cycle')){
+        global.city.shrine['cycle'] = 0;
+    }
+}
+
 global['version'] = '1.4.0';
 delete global['revision'];
 global['beta'] = 1;

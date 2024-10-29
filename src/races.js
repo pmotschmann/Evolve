@@ -3290,7 +3290,7 @@ export const traits = {
         name: loc('trait_devious_name'),
         desc: loc('trait_devious'),
         type: 'major',
-        val: -5,
+        val: -4,
         vars(r){
             // [Trade Less Productive]
             switch (r || global.race.devious || 1){
@@ -4603,7 +4603,7 @@ export const races = {
             gas_moon: loc('race_djinn_solar_gas_moon'),
             dwarf: loc('race_djinn_solar_dwarf'),
         },
-        fanaticism: '',
+        fanaticism: 'wish',
         basic(){ return ['forest','swamp','taiga','desert','ashland'].includes(global.city.biome) ? true : false; }
     },
     pengiun: {
@@ -4815,10 +4815,14 @@ function customRace(hybrid){
             trait[global.custom[slot].traits[i]] = 1;
         }
 
-        let fanatic = 'pathetic';
-        for (let i=0; i<global.custom[slot].traits.length; i++){
-            if (traits[global.custom[slot].traits[i]].val > traits[fanatic].val){
-                fanatic = global.custom[slot].traits[i];
+        let fanatic = global.custom[slot].hasOwnProperty('fanaticism') && global.custom[slot].fanaticism ? global.custom[slot].fanaticism : false;
+        if (fanatic && !global.custom[slot].traits.includes('fanatic')){ fanatic = false; }
+        if (!fanatic){
+            fanatic = 'pathetic';
+            for (let i=0; i<global.custom[slot].traits.length; i++){
+                if (traits[global.custom[slot].traits[i]].val > traits[fanatic].val){
+                    fanatic = global.custom[slot].traits[i];
+                }
             }
         }
 
@@ -6495,7 +6499,7 @@ function minorWish(parent){
                     }
 
                     ['gov0','gov1','gov2','gov3'].forEach(function(gov){
-                        if (global.civic.foreign[gov].hstl > 0 && !global.civic.foreign[gov].anx  && !global.civic.foreign[gov].buy && !global.civic.foreign[gov].occ){
+                        if (global.civic.foreign[gov].hstl > 0 && !global.civic.foreign[gov].anx && !global.civic.foreign[gov].buy && !global.civic.foreign[gov].occ){
                             options.push(gov);
                         }
                     });
