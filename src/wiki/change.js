@@ -7,7 +7,8 @@ export const changeList = [
         revision: `b`,
         date: `10/29/2024`,
         changes: [
-            `Fixed Ghost #3 with Forge Trait.`
+            `Fixed Ghost #3 with Forge Trait.`,
+            `Fixed Emocorn gloomy trait.`
         ]
     },
     {
