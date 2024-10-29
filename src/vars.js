@@ -1205,6 +1205,13 @@ if (convertVersion(global['version']) <= 103015){
     }
 }
 
+if (convertVersion(global['version']) <= 103017){
+    if (global.race['broody']){
+        global.race['gloomy'] = global.race['broody'];
+        delete global.race['broody'];
+    }
+}
+
 if (convertVersion(global['version']) <= 104000){
     if (global.city.hasOwnProperty('shrine') && !global.city.shrine.hasOwnProperty('cycle')){
         global.city.shrine['cycle'] = 0;

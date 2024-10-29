@@ -7685,7 +7685,7 @@ function sentience(){
 
     const hallowed = getHalloween();
     if (global.race.species === 'unicorn' && hallowed.active){
-        setTraitRank('broody',{ set: 1 });
+        setTraitRank('gloomy',{ set: 1 });
         setTraitRank('darkness',{ set: 1 });
         delete global.race['rainbow'];
     }
