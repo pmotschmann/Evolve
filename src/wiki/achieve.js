@@ -361,11 +361,11 @@ function featDesc(feat,showFlair){
         const date = new Date();
         let year = date.getFullYear();
         let tricks = `<div class="has-text-warning">${loc('wiki_feat_trickortreat_found')}</div><div class="flexed">`;
-        for (let i=1; i<=7; i++){
+        for (let i=1; i<=8; i++){
             let treat = global.special.trick[year][`treat${i}`] ? 'has-text-success' : 'has-text-danger';   
             tricks = tricks + `<span class="wide ${treat}">${loc('wiki_feat_treat_num',[i])}</span>`
         }
-        for (let i=1; i<=7; i++){
+        for (let i=1; i<=8; i++){
             let trick = global.special.trick[year][`trick${i}`] ? 'has-text-success' : 'has-text-danger';   
             tricks = tricks + `<span class="wide ${trick}">${loc('wiki_feat_trick_num',[i])}</span>`
         }

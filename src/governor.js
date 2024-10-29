@@ -504,7 +504,7 @@ export function drawnGovernOffice(){
             };
         }
 
-        let contain = $(`<div class="tConfig" v-show="showTask('slave')"><div class="has-text-warning">${loc(`gov_task_slave`)}</div></div>`);
+        let contain = $(`<div class="tConfig" v-show="showTask('slave')"><div class="has-text-warning">${loc(`gov_task_slave`,[global.resource.Slave.name])}</div></div>`);
         options.append(contain);
         let slave = $(`<div class="storage"></div>`);
         contain.append(slave);
@@ -1099,7 +1099,7 @@ export const gov_tasks = {
         }
     },
     slave: { // Replace Slaves
-        name: loc(`gov_task_slave`),
+        name(){ return loc(`gov_task_slave`,[global.resource.Slave.name]); },
         req(){
             return !global.race['orbit_decayed'] && checkCityRequirements('slave_market') && global.race['slaver'] && global.city['slave_pen'] ? true : false;
         },

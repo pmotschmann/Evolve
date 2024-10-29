@@ -1342,8 +1342,8 @@ export const actions = {
         firework: buildTemplate(`firework`,'city'),
         slave_market: {
             id: 'city-slave_market',
-            title: loc('city_slave_market'),
-            desc: loc('city_slave_market_desc'),
+            title(){ return loc('city_slaver_market',[global.resource.Slave.name]); },
+            desc(){ return loc('city_slaver_market_desc',[global.resource.Slave.name]); },
             category: 'outskirts',
             reqs: { slaves: 2 },
             trait: ['slaver'],
@@ -1703,8 +1703,8 @@ export const actions = {
         },
         slave_pen: {
             id: 'city-slave_pen',
-            title: loc('city_slave_pen'),
-            desc: loc('city_slave_pen'),
+            title(){ return loc('city_slave_housing',[global.resource.Slave.name]); },
+            desc(){ return loc('city_slave_housing',[global.resource.Slave.name]); },
             category: 'commercial',
             reqs: { slaves: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -1716,9 +1716,7 @@ export const actions = {
                 Nanite(offset){ return global.race['deconstructor'] ? costMultiplier('slave_pen', offset, 4, 1.36) : 0; },
             },
             effect(){
-                let max = global.city['slave_pen'] ? global.city.slave_pen.count * 4 : 4;
-                let slaves = global.city['slave_pen'] ? global.resource.Slave.amount : 0;
-                return `<div>${loc('city_slave_pen_effect',[4])}</div><div>${loc('city_slave_pen_effect2',[slaves,max])}</div>`;
+                return `<div>${loc('plus_max_resource',[4,global.resource.Slave.name])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){

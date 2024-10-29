@@ -19,6 +19,14 @@ export const changeList = [
     },
     {
         version: `1.3.17`,
+        revision: `a`,
+        date: `10/27/2024`,
+        changes: [
+            `Fixed Trick or Treat! Feat tracker.`
+        ]
+    },
+    {
+        version: `1.3.17`,
         date: `10/13/2024`,
         changes: [
             `Cruisers now grant the correct number of soldiers in Fasting scenario.`,

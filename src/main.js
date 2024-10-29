@@ -8300,7 +8300,7 @@ function midLoop(){
         }
         if (global.race['slaver'] && global.tech['slaves'] && global.city['slave_pen']) {
             caps['Slave'] = global.city.slave_pen.count * 4;
-            breakdown.c.Slave[loc('city_slave_pen')] = global.city.slave_pen.count * 4 + 'v';
+            breakdown.c.Slave[loc('city_slave_housing',[global.resource.Slave.name])] = global.city.slave_pen.count * 4 + 'v';
 
             if (caps['Slave'] < global.resource.Slave.amount){
                 global.resource.Slave.amount = caps['Slave'];

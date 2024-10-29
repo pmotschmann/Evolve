@@ -1,6 +1,6 @@
 import { global, save, webWorker, p_on } from './vars.js';
 import { loc } from './locale.js';
-import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper, popCost } from './functions.js';
+import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper, popCost, eventActive } from './functions.js';
 import { unlockAchieve, alevel, universeAffix, unlockFeat } from './achieve.js';
 import { payCosts, housingLabel, wardenLabel, structName, updateQueueNames, drawTech, fanaticism, checkAffordable, actions } from './actions.js';
 import { races, checkAltPurgatory, renderPsychicPowers, renderWishSpell, traitCostMod } from './races.js';
@@ -7244,8 +7244,8 @@ const techs = {
     },
     slave_pens: {
         id: 'tech-slave_pens',
-        title: loc('tech_slave_pens'),
-        desc: loc('tech_slave_pens'),
+        title(){ return loc('city_slave_housing',[global.resource.Slave.name]); },
+        desc(){ return loc('city_slave_housing',[global.resource.Slave.name]); },
         category: 'slaves',
         era: 'civilized',
         reqs: { military: 1, mining: 1 },
@@ -7255,7 +7255,9 @@ const techs = {
         cost: {
             Knowledge(){ return 150; }
         },
-        effect: loc('tech_slave_pens_effect'),
+        effect(){
+            return loc('tech_slave_pens_effect');
+        },
         action(){
             if (payCosts($(this)[0])){
                 global.city['slave_pen'] = { count: 0 };
@@ -7267,8 +7269,8 @@ const techs = {
     },
     slave_market: {
         id: 'tech-slave_market',
-        title: loc('tech_slave_market'),
-        desc: loc('tech_slave_market'),
+        title(){ return loc('city_slaver_market',[global.resource.Slave.name]); },
+        desc(){ return loc('city_slaver_market',[global.resource.Slave.name]); },
         category: 'slaves',
         era: 'discovery',
         reqs: { slaves: 1, high_tech: 1 },
@@ -7277,7 +7279,9 @@ const techs = {
         cost: {
             Knowledge(){ return 8000; }
         },
-        effect: loc('tech_slave_market_effect'),
+        effect(){
+            return loc('tech_slave_market_effect');
+        },
         action(){
             if (payCosts($(this)[0])){
                 return true;

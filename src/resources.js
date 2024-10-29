@@ -1189,6 +1189,9 @@ export function setResourceName(name){
             case 'Soul_Gem':
                 global['resource'][name].name = loc('resource_CandyCorn_name');
                 break;
+            case 'Slave':
+                global['resource'][name].name = loc('events_halloween_ghoul');
+                break;
         }
     }
 }
