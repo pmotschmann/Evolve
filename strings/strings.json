@@ -7733,6 +7733,8 @@
   "genelab_genus": "Genus",
   "genelab_traits": "Traits",
   "genelab_create": "Create Race",
+  "genelab_unset": "Default Fanaticism",
+  "genelab_fanatic_set": "Set Fanaticism Trait",
   "genelab_genus_humanoid": "Humanoid",
   "genelab_genus_humanoid_desc": "Humanoids are your standard bipedal creatures that are typically between 1.5-2 meters in height.",
   "genelab_genus_animal": "Animal",

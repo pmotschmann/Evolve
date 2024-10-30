@@ -5508,7 +5508,8 @@ export function cleanAddTrait(trait){
                     morale: 0,
                     metal: 0,
                     know: 0,
-                    tax: 0
+                    tax: 0,
+                    cycle: 0
                 });
             }
             break;

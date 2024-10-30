@@ -6695,6 +6695,8 @@ export function ascendLab(hybrid,wiki){
     let genes = $(`<div class="sequence"></div>`);
     lab.append(genes);
 
+    let fanatic = `<div id="geneLabFanatic"><button class="button" @click="fanatic()">${loc(`tech_fanaticism`)}</button><div class="has-text-special">{{ g.fanaticism | fanaticism }}</div></div>`;
+
     let dGenus = false;
     let genus = `<div class="genus_selection"><div class="has-text-caution">${loc('genelab_genus')}</div><template><section>`;
     Object.keys(genus_traits).forEach(function (type){
@@ -6703,7 +6705,7 @@ export function ascendLab(hybrid,wiki){
             genus = genus + `<div class="field ${type}"><b-radio v-model="g.genus" native-value="${type}">${loc(`genelab_genus_${type}`)}</b-radio></div>`;
         }
     });
-    genus = genus + `</section></template></div>`;
+    genus = genus + `</section></template>${fanatic}</div>`;
     genes.append($(genus));
 
     let trait_list = `<div class="trait_selection"><div class="has-text-warning">${loc('genelab_traits')}</div><template><section>`;
@@ -6812,6 +6814,10 @@ export function ascendLab(hybrid,wiki){
     genome.genes = calcGenomeScore(genome,(wiki ? wikiVars : false));
     let error = { msg: "" };
 
+    var modal = {
+        template: '<div id="modalBox" class="modalBox"></div>'
+    };
+
     vBind({
         el: '#celestialLab',
         data: {
@@ -6842,6 +6848,7 @@ export function ascendLab(hybrid,wiki){
                 genome.genes = calcGenomeScore(genome,(wiki ? wikiVars : false));
             },
             setRace(){
+                if (genome.fanaticism && !genome.traitlist.includes(genome.fanaticism)){ return false; }
                 if (calcGenomeScore(genome) >= 0 && genome.name.length > 0 && genome.desc.length > 0 && genome.entity.length > 0 && genome.home.length > 0
                     && genome.red.length > 0 && genome.hell.length > 0 && genome.gas.length > 0 && genome.gas_moon.length > 0 && genome.dwarf.length > 0){
                     global.custom[slot] = {
@@ -6892,6 +6899,35 @@ export function ascendLab(hybrid,wiki){
                 genome.traitlist = [];
                 genome.genes = calcGenomeScore(genome,(wiki ? wikiVars : false));
                 genome.fanaticism = false;
+            },
+            fanatic(){
+                this.$buefy.modal.open({
+                    parent: this,
+                    component: modal
+                });
+            
+                var checkExist = setInterval(function() {
+                    if ($('#modalBox').length > 0) {
+                        clearInterval(checkExist);
+                        
+                        $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${loc(`genelab_fanatic_set`)}</p>`));
+                        var body = $('<div id="specialModal" class="modalBody"></div>');
+                        $('#modalBox').append(body);
+
+                        let traits = `<div class="fanatic"><template><section>`;
+                        genome.traitlist.forEach(function (trait){
+                            traits += `<div class="field ${trait}"><b-radio v-model="fanaticism" native-value="${trait}">${loc(`trait_${trait}_name`)}</b-radio></div>`;
+                        });
+                        traits += `</section></template></div>`;
+                        body.append($(traits));
+
+                        vBind({
+                            el: '#specialModal',
+                            data: genome
+                        });
+                    }
+                }, 50);
+
             },
             customImport(){
                 let file = document.getElementById("customFile").files[0];
@@ -7006,8 +7042,12 @@ export function ascendLab(hybrid,wiki){
                 }
             },
             untapped(genes){
+                if (!genome.traitlist.includes(genome.fanaticism)){ genome.fanaticism = false; }
                 let num = genes > 0 ? +((genes / (genes + 20) / 10 + 0.00024) * 100).toFixed(3) : 0;
                 return `+${num}%`;
+            },
+            fanaticism(trait){
+                return trait ? loc(`trait_${trait}_name`) : loc(`genelab_unset`);
             }
         }
     });

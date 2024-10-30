@@ -3247,20 +3247,7 @@ export const actions = {
                         global.city.shrine.tax++;
                     }
                     else {
-                        switch (Math.floor(seededRandom(0,4))){
-                            case 0:
-                                global.city.shrine.morale++;
-                                break;
-                            case 1:
-                                global.city.shrine.metal++;
-                                break;
-                            case 2:
-                                global.city.shrine.know++;
-                                break;
-                            case 3:
-                                global.city.shrine.tax++;
-                                break;
-                        }
+                        global.city.shrine.cycle++;
                     }
                     return true;
                 }
@@ -8367,7 +8354,8 @@ function aiStart(){
                 morale: 0,
                 metal: 0,
                 know: 0,
-                tax: 0
+                tax: 0,
+                cycle: 0
             };
         }
 

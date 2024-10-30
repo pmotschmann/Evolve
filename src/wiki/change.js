@@ -8,13 +8,15 @@ export const changeList = [
         changes: [
             `Push past the Spire and invade the Edenic Realms.`,
             `Added new CRISPR upgrade Bureaucratic Efficiency.`,
+            `Custom Race lab now allows player to set a desired fanaticism trait.`,
             `Exotic Materials are now harder to replicate.`,
             `Progenitor races are now shown on stats page.`,
             `Symposium is now affected by piracy.`,
             `Gate Turrets will now kill demons when the Soul Forge is turned off.`,
             `Stellar Engine now has diminishing returns when pushed to extreme levels.`,
             `The number of spies available when starting a spy op now affects mission time.`,
-            `Fluidized Bed Reactor no longer incorrectly applies to Nano Tubes.`
+            `Fluidized Bed Reactor no longer incorrectly applies to Nano Tubes.`,
+            `Shrines now cycle their effect with moon phase if purchased during a full, new, or quarter moon.`,
         ]
     },
     {
