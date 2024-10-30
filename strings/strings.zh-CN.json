@@ -6256,7 +6256,7 @@
   "interstellar_stellar_engine_effect2": "黑洞重达 %0 个太阳质量。",
   "interstellar_stellar_engine_effect3": "黑洞重达 %0 个太阳质量，其中奇异物质重达 %1 个太阳质量。",
   "interstellar_mass_ejector": "质量喷射器",
-  "interstellar_mass_ejector_effect": "向黑洞喷射物质以扩充它的质量（在魔法宇宙外，超铀和地狱石是奇异物质）",
+  "interstellar_mass_ejector_effect": "向黑洞喷射物质以扩充它的质量（超铀和地狱石是奇异物质）",
   "interstellar_mass_ejector_flair": "这主意不错，一切平安",
   "interstellar_mass_ejector_msg": "资源面板下新增了一个面板",
   "interstellar_mass_ejector_active": "%0已激活",
