@@ -9,6 +9,7 @@ export const changeList = [
             `Push past the Spire and invade the Edenic Realms.`,
             `Added new CRISPR upgrade Bureaucratic Efficiency.`,
             `Custom Race lab now allows player to set a desired fanaticism trait.`,
+            `Truepath Ships can now be queued for construction.`,
             `Exotic Materials are now harder to replicate.`,
             `Progenitor races are now shown on stats page.`,
             `Symposium is now affected by piracy.`,

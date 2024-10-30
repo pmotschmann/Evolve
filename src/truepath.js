@@ -1,5 +1,5 @@
-import { global, p_on, support_on, sizeApproximation } from './vars.js';
-import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect, adjustCosts, get_qlevel } from './functions.js';
+import { global, p_on, support_on, sizeApproximation, keyMap } from './vars.js';
+import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect, adjustCosts, get_qlevel, timeCheck, buildQueue } from './functions.js';
 import { races, traits } from './races.js';
 import { spatialReasoning, unlockContainers } from './resources.js';
 import { armyRating, garrisonSize } from './civics.js';
@@ -3810,33 +3810,32 @@ export function drawShipYard(){
                         Object.keys(raw).forEach(function(res){
                             costs[res] = function(){ return raw[res]; }
                         });
-                        if (payCosts(false, costs)){
+                        if (!(global.settings.qKey && keyMap.q) && payCosts(false, costs)){
                             let ship = deepClone(global.space.shipyard.blueprint);
-                            ship['location'] = 'spc_dwarf';
-                            ship['xy'] = genXYcoord('spc_dwarf');
-                            ship['origin'] = deepClone(ship['xy']);
-                            ship['destination'] = deepClone(ship['xy']);
-                            ship['transit'] = 0;
-                            ship['dist'] = 0;
-                            ship['damage'] = 0;
-                            ship['fueled'] = false;
-
-                            if (ship.name.length === 0){
-                                ship.name = getRandomShipName();
+                            buildTPShip(ship,false);
+                        }
+                        else {
+                            let used = 0;
+                            for (let j=0; j<global.queue.queue.length; j++){
+                                used += Math.ceil(global.queue.queue[j].q / global.queue.queue[j].qs);
                             }
-
-                            let num = 1;
-                            let name = ship.name;
-                            while (global.space.shipyard.ships.filter(s => s.name === name).length > 0){
-                                num++;
-                                name = ship.name + ` ${num}`;
+                            if (used < global.queue.max){
+                                let blueprint = deepClone(global.space.shipyard.blueprint);
+                                global.queue.queue.push({ 
+                                    id: `tp-ship-${Math.rand(0,100000)}`, 
+                                    action: 'tp-ship', 
+                                    type: blueprint,
+                                    label: blueprint.name, 
+                                    cna: false, 
+                                    time: 0, 
+                                    q: 1, 
+                                    qs: 1, 
+                                    t_max: 0, 
+                                    bres: false 
+                                });
+                                global.space.shipyard.blueprint.name = getRandomShipName();
+                                buildQueue();
                             }
-                            ship.name = name;
-
-                            global.space.shipyard.ships.push(ship);
-                            drawShips();
-                            updateCosts();
-                            global.space.shipyard.blueprint.name = getRandomShipName();
                         }
                     }
                 },
@@ -3879,6 +3878,71 @@ export function drawShipYard(){
 
         yard.append($(`<div id="shipList" class="sticky"></div>`));
         drawShips();
+    }
+}
+
+export function buildTPShipQueue(action){
+    if (payCosts(false, action.cost)){
+        buildTPShip(deepClone(action.bp,true));
+        return true;
+    }
+    return false;
+}
+
+export function TPShipDesc(ship){
+    let raw = shipCosts(ship);
+    let costs = {};
+    Object.keys(raw).forEach(function(res){
+        costs[res] = function(){ return raw[res]; }
+    });
+
+    var desc = $(`<div class="shipPopper"></div>`);
+    var shipPattern = $(`<div class="divider">${loc(`outer_shipyard_class_${ship.class}`)} | ${loc(`outer_shipyard_engine_${ship.engine}`)} | ${loc(`outer_shipyard_weapon_${ship.weapon}`)} | ${loc(`outer_shipyard_power_${ship.power}`)} | ${loc(`outer_shipyard_sensor_${ship.sensor}`)}</div>`);
+
+    desc.append(shipPattern);
+
+    var cost = $('<div class="costList"></div>');
+    desc.append(cost);
+
+    let tc = timeCheck({ id: ship.name , cost: costs });
+    Object.keys(costs).forEach(function (res){
+        if (costs[res]() > 0){
+            var label = res === 'Money' ? '$' : global.resource[res].name + ': ';
+            var color = global.resource[res].amount >= costs[res]() ? 'has-text-dark' : ( res === tc.r ? 'has-text-danger' : 'has-text-alert');
+            cost.append($(`<div class="${color}" data-${res}="${costs[res]()}">${label}${sizeApproximation(costs[res](),2)}</div>`));
+        }
+    });
+    
+    return desc;
+}
+
+function buildTPShip(ship, queue){
+    ship['location'] = 'spc_dwarf';
+    ship['xy'] = genXYcoord('spc_dwarf');
+    ship['origin'] = deepClone(ship['xy']);
+    ship['destination'] = deepClone(ship['xy']);
+    ship['transit'] = 0;
+    ship['dist'] = 0;
+    ship['damage'] = 0;
+    ship['fueled'] = false;
+
+    if (ship.name.length === 0){
+        ship.name = getRandomShipName();
+    }
+
+    let num = 1;
+    let name = ship.name;
+    while (global.space.shipyard.ships.filter(s => s.name === name).length > 0){
+        num++;
+        name = ship.name + ` ${num}`;
+    }
+    ship.name = name;
+
+    global.space.shipyard.ships.push(ship);
+    drawShips();
+    updateCosts();
+    if (!queue){
+        global.space.shipyard.blueprint.name = getRandomShipName();
     }
 }
 

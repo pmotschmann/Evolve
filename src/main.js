@@ -11,7 +11,7 @@ import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMul
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
-import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled } from './truepath.js';
+import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue } from './truepath.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
 import { govern, govActive, removeTask } from './governor.js';
@@ -10555,7 +10555,20 @@ function midLoop(){
             let struct = global.queue.queue[i];
 
             let t_action = false;
-            if (deepScan.includes(struct.action)){
+            if (struct.action === 'tp-ship'){
+                let raw = shipCosts(struct.type);
+                let costs = {};
+                Object.keys(raw).forEach(function(res){
+                    costs[res] = function(){ return raw[res]; }
+                });
+                t_action = { 
+                    id: struct.id,
+                    cost: costs,
+                    type: 'tp-ship',
+                    bp: struct.type
+                };
+            }
+            else if (deepScan.includes(struct.action)){
                 for (let region in actions[struct.action]) {
                     if (actions[struct.action][region][struct.type]){
                         t_action = actions[struct.action][region][struct.type];
@@ -10598,12 +10611,12 @@ function midLoop(){
                 }
             }
             else {
-                if (checkAffordable(t_action,true)){
+                if (checkAffordable(t_action,true,t_action.type === 'tp-ship' ? true : false,true)){
                     struct.cna = false;
                     let t_time = timeCheck(t_action, spent);
                     struct['bres'] = false;
                     if (t_time >= 0){
-                        if (!stop && checkAffordable(t_action)){
+                        if (!stop && checkAffordable(t_action,false,t_action.type === 'tp-ship' ? true : false)){
                             c_action = t_action;
                             idx = i;
                             arpa = false;
@@ -10652,6 +10665,13 @@ function midLoop(){
                         global.queue.queue.splice(idx,1);
                         buildQueue();
                     }
+                }
+            }
+            else if (c_action.hasOwnProperty('type') && c_action.type === 'tp-ship'){
+                if (buildTPShipQueue(c_action)){
+                    clearPopper(`q${c_action.id}${idx}`);
+                    global.queue.queue.splice(idx,1);
+                    buildQueue();
                 }
             }
             else {

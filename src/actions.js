@@ -4176,7 +4176,7 @@ export function setChallengeScreen(){
         global.evolution['witch_hunter'] = { count: 0 };
     }
     if (global.race.universe === 'evil' && ((global.stats.achieve['godslayer'] && global.stats.achieve.godslayer['e']) || global['sim'])){
-        global.evolution['warlord'] = { count: 0 };
+        //global.evolution['warlord'] = { count: 0 };
     }
     if (global.stats.achieve['ascended'] || global.stats.achieve['corrupted'] || global['sim']){
         global.evolution['truepath'] = { count: 0 };
@@ -4241,7 +4241,7 @@ export function setChallengeScreen(){
         addAction('evolution','witch_hunter');
     }
     if (global.race.universe === 'evil' && ((global.stats.achieve['godslayer'] && global.stats.achieve.godslayer['e']) || global['sim'])){
-        addAction('evolution','warlord');
+        //addAction('evolution','warlord');
     }
     if (global.hasOwnProperty('beta') && !global['sim']){
         addAction('evolution','simulation');
@@ -4722,7 +4722,7 @@ const advancedChallengeList = {
     //'nonstandard': {t: 'c', e: 'anathema' },
     'gravity_well': {t: 'c', e: 'escape_velocity' },
     'witch_hunter': {t: 'c', e: 'soul_sponge' },
-    'warlord': {t: 'c', e: 'what_is_best' },
+    //'warlord': {t: 'c', e: 'what_is_best' },
     //'storage_wars': {t: 'c', e: '???' },
     'simulation': {t: 'c', e: 'thereisnospoon' },
     'junker': {t: 's', e: 'extinct_junker' },

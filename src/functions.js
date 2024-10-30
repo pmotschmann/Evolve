@@ -10,6 +10,7 @@ import { govActive } from './governor.js';
 import { govEffect } from './civics.js';
 import { universeLevel, universeAffix, alevel } from './achieve.js';
 import { astrologySign, astroVal } from './seasons.js';
+import { shipCosts, TPShipDesc } from './truepath.js';
 
 var popperRef = false;
 export function popover(id,content,opts){
@@ -493,6 +494,14 @@ export function buildQueue(){
                     if (segments[0].substring(0,4) === 'arpa'){
                         c_action = segments[0].substring(4);
                     }
+                    else if (segments[0] === 'tp' && segments[1].substring(0,4) === 'ship'){
+                        let raw = shipCosts(global.queue.queue[index].type);
+                        let costs = {};
+                        Object.keys(raw).forEach(function(res){
+                            costs[res] = function(){ return raw[res]; }
+                        });
+                        c_action = { cost: costs };
+                    }
                     else if (segments[0] === 'city' || segments[0] === 'evolution' || segments[0] === 'starDock'){
                         c_action = actions[segments[0]][segments[1]];
                     }
@@ -597,6 +606,9 @@ function attachQueuePopovers(){
                 if (struct.s[0].substring(0,4) === 'arpa'){
                     obj.popper.append(arpaProjectCosts(100,struct.a));
                 }
+                else if (struct.s[0].substring(0,2) === 'tp' && struct.s[1].substring(0,4) === 'ship'){
+                    obj.popper.append(TPShipDesc(deepClone(global.queue.queue[i].type)));
+                }
                 else {
                     actionDesc(obj.popper,struct.a,global[struct.s[0]][struct.s[1]],false,false,false,b_res);
                 }
@@ -619,6 +631,9 @@ export function decodeStructId(id){
     let segments = id.split("-");
     if (segments[0].substring(0,4) === 'arpa'){
         c_action = segments[0].substring(4);
+    }
+    else if (segments[0] === 'tp' && segments[1].substring(0,4) === 'ship'){
+        c_action = 'ship';
     }
     else if (segments[0] === 'city' || segments[0] === 'evolution' || segments[0] === 'starDock'){
         c_action = actions[segments[0]][segments[1]];
@@ -2823,7 +2838,7 @@ export function getShrineBonus(type) {
                 shrine_bonus.mult += +(know * traits.magnificent.vars()[1] / 100);
 				break;
 			case 'morale':
-                morale = global.city.shrine.morale;
+                let morale = global.city.shrine.morale;
                 if (global.city.calendar.moon > 0 && global.city.calendar.moon < 7){ morale += global.city.shrine.cycle; }
 				shrine_bonus.add += morale * traits.magnificent.vars()[4];
 				break;
