@@ -7,7 +7,7 @@ import { atomic_mass } from './resources.js';
 import { checkRequirements, checkSpaceRequirements, convertSpaceSector, planetName } from './space.js';
 import { fortressTech } from './portal.js';
 import { checkPathRequirements } from './truepath.js';
-import { production } from './prod.js';
+import { highPopAdjust, production } from './prod.js';
 
 export function loadIndustry(industry,parent,bind){
     switch (industry){
@@ -187,7 +187,7 @@ function loadSmelter(parent,bind){
     }
 
     if (global.race['forge']){
-        let oil = $(`<span :aria-label="buildLabel('oil') + ariaCount('Oil')" class="current oil infoOnly">${loc('trait_forge_name')} {{ s.Oil }}</span>`);
+        let oil = $(`<span :aria-label="buildLabel('oil') + ariaCount('Oil')" class="current oil infoOnly">${loc('trait_forge_name')} <span v-html="$options.filters.altspook(s.Oil)"></span></span>`);
         fuelTypes.append(oil);
     }
     else if (global.resource.Oil.display){
@@ -419,7 +419,7 @@ function loadSmelter(parent,bind){
                 return v;
             },
             altspook(v){
-                if (bind && global.race['forge'] && global.city.smelter.Steel === 6){
+                if (bind && global.race['forge'] && global.city.smelter.Steel === 6 && global.city.smelter.Iron === 6){
                     let trick = trickOrTreat(3,12,true);
                     if (trick.length > 0){
                         return trick;
@@ -678,7 +678,7 @@ function loadFactory(parent,bind){
         let assembly = global.tech['factory'] ? true : false;
         switch(type){
             case 'Lux':{
-                let demand = +(global.resource[global.race.species].amount * (assembly ? f_rate.Lux.demand[global.tech['factory']] : f_rate.Lux.demand[0]));
+                let demand = +(highPopAdjust(global.resource[global.race.species].amount) * (assembly ? f_rate.Lux.demand[global.tech['factory']] : f_rate.Lux.demand[0]));
                 demand = luxGoodPrice(demand).toFixed(2);
                 let fur = assembly ? f_rate.Lux.fur[global.tech['factory']] : f_rate.Lux.fur[0];
                 return loc('modal_factory_lux_label',[fur,global.resource.Furs.name,demand]);

@@ -7,7 +7,7 @@ import { loadFoundry, jobScale, limitCraftsmen } from './jobs.js';
 import { armyRating, govCivics, garrisonSize, mercCost } from './civics.js';
 import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc } from './actions.js';
 import { checkRequirements, incrementStruct, astrialProjection, ascendLab } from './space.js';
-import { production } from './prod.js';
+import { production, highPopAdjust } from './prod.js';
 import { govActive, defineGovernor } from './governor.js';
 import { descension } from './resets.js';
 import { loadTab } from './index.js';
@@ -72,7 +72,7 @@ const fortressModules = {
             id: 'portal-carport',
             title: loc('portal_carport_title'),
             desc(){
-                return loc('portal_carport_desc',[1]);
+                return loc('portal_carport_desc',[jobScale(1)]);
             },
             reqs: { portal: 2 },
             cost: {
@@ -86,10 +86,13 @@ const fortressModules = {
                 if (p_on['repair_droid']){
                     repair *= 0.92 ** p_on['repair_droid'];
                 }
+                if (global.race['high_pop']){
+                    repair /= traits.high_pop.vars()[2];
+                }
                 return Math.round(repair);
             },
             effect(){
-                return `${loc('portal_carport_effect',[1])}`;
+                return `${loc('portal_carport_effect',[jobScale(1)])}`;
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -362,7 +365,7 @@ const fortressModules = {
                 Wrought_Iron(offset){ return spaceCostMultiplier('gun_emplacement', offset, 200000, 1.25, 'portal'); },
             },
             effect(){
-                let soldiers = global.tech.hell_gun >= 2 ? 2 : 1;
+                let soldiers = global.tech.hell_gun >= 2 ? jobScale(2) : jobScale(1);
                 let min = global.tech.hell_gun >= 2 ? 35 : 20;
                 let max = global.tech.hell_gun >= 2 ? 75 : 40;
                 return `<div>${loc('portal_gun_emplacement_effect',[soldiers])}</div><div>${loc('portal_gun_emplacement_effect2',[min,max])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
@@ -1929,7 +1932,7 @@ export function soulForgeSoldiers(wiki){
     let soldiers = Math.round(650 / armyRating(1,'hellArmy'));
     let num_gun_emplacement = wiki ? (global.portal?.gun_emplacement?.on ?? 0) : p_on['gun_emplacement'];
     if (num_gun_emplacement){
-        soldiers -= num_gun_emplacement * (global.tech.hell_gun >= 2 ? 2 : 1);
+        soldiers -= num_gun_emplacement * (global.tech.hell_gun >= 2 ? jobScale(2) : jobScale(1));
         if (soldiers < 0){
             soldiers = 0;
         }
@@ -2747,23 +2750,29 @@ export function bloodwar(){
         if (global.tech['infernite'] && global.tech.infernite >= 5){
             divisor += 250;
         }
-        let danger = global.portal.fortress.threat / divisor;
-        let exposure = global.civic.hell_surveyor.workers > 10 ? 10 : global.civic.hell_surveyor.workers;
-        let risk = 10 - (Math.rand(0,exposure + 1));
+        // Higher danger increases both chance of death and average number of deaths, with no limit
+        let danger = jobScale(global.portal.fortress.threat / divisor);
+
+        // Higher exposure increases only chance of death, up to a limit
+        let max_risk = jobScale(10);
+        let exposure = Math.min(max_risk, global.civic.hell_surveyor.workers);
+        let risk = max_risk - Math.rand(0,exposure + 1);
 
         if (danger > risk){
             let cap = Math.round(danger);
-            let dead = Math.rand(0,cap + 1);
-            if (dead > global.civic.hell_surveyor.workers){
-                dead = global.civic.hell_surveyor.workers;
-            }
-            if (dead === 1 && global.portal.fortress.s_ntfy === 'Yes'){
-                messageQueue(loc('fortress_killed'),false,false,['hell']);
-            }
-            else if (dead > 1 && global.portal.fortress.s_ntfy === 'Yes'){
-                messageQueue(loc('fortress_eviscerated',[dead]),false,false,['hell']);
-            }
+            let dead = Math.rand(0,cap + 1); // +1 for inclusive cap
             if (dead > 0){
+                if (dead > global.civic.hell_surveyor.workers){
+                    dead = global.civic.hell_surveyor.workers;
+                }
+                if (global.portal.fortress.s_ntfy === 'Yes'){
+                    if (dead === 1){
+                        messageQueue(loc('fortress_killed'),false,false,['hell']);
+                    }
+                    else {
+                        messageQueue(loc('fortress_eviscerated',[dead]),false,false,['hell']);
+                    }
+                }
                 day_report.surveyors = dead;
                 day_report.stats.surveyors = dead;
                 global.civic.hell_surveyor.workers -= dead;
@@ -2775,13 +2784,19 @@ export function bloodwar(){
 
         day_report.surveyor_finds = {};
         if (global.civic.hell_surveyor.workers > 0 && drone_kills > 0){
+            let drone_kills_left = drone_kills;
             for (let i=0; i<global.civic.hell_surveyor.workers; i++){
                 let surv_report = { gem: 0, bodies: 0 };
-                let searched = Math.rand(
-                    Math.round(drone_kills / 2 / global.civic.hell_surveyor.workers),
-                    Math.round(drone_kills / global.civic.hell_surveyor.workers)
-                );
-                if (searched > 100){ searched = 100; }
+                // Avoid rounding error in total number of drone kills to distribute
+                let max_search_chance = Math.round(drone_kills_left / (global.civic.hell_surveyor.workers - i));
+                let min_search_chance = Math.round(max_search_chance / 2);
+                drone_kills_left -= max_search_chance;
+
+                // Each surveyor may search from 50% to 100% of 1 equal share of drone kills
+                let searched = Math.rand(min_search_chance, max_search_chance+1);
+                // Limit to 100 bodies per surveyor
+                let search_limit = highPopAdjust(100);
+                if (searched > search_limit){ searched = search_limit; }
                 surv_report.bodies = searched;
                 if (searched > 0){
                     let div = 25 - Math.floor(p_on['attractor'] / 5);

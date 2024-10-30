@@ -38,13 +38,6 @@ export function altRace(race,set){
                 return false;
             }
         case 'wolven':
-            {
-                if (easter.active || (global.race['hrt'] && global.race.hrt === race)){
-                    if (set){global.race['hrt'] = race;}
-                    return true;
-                }
-                return false;
-            }
         case 'vulpine':
             {
                 if (easter.active || (global.race['hrt'] && global.race.hrt === race)){
@@ -5659,40 +5652,41 @@ export function fathomCheck(race){
     return 0;
 }
 
-export function traitSkin(type,trait){
+export function traitSkin(type, trait, species){
+    let artificial = species ? genus_traits[races[species].type].artifical : global.race['artifical'];
     switch (type){
         case 'name':
         {
             let name = {
-                hooved: hoovedReskin(false),
-                promiscuous: global.race['artifical'] ? loc('trait_promiscuous_synth_name') : traits['promiscuous'].name,
+                hooved: hoovedReskin(false, species),
+                promiscuous: artificial ? loc('trait_promiscuous_synth_name') : traits['promiscuous'].name,
             };
             return trait ? (name[trait] ? name[trait] : traits[trait].name) : name;
         } 
         case 'desc':
         {
             let desc = {
-                hooved: hoovedReskin(true),
-                promiscuous: global.race['artifical'] ? loc('trait_promiscuous_synth') : traits['promiscuous'].desc,
+                hooved: hoovedReskin(true, species),
+                promiscuous: artificial ? loc('trait_promiscuous_synth') : traits['promiscuous'].desc,
             };
             return trait ? (desc[trait] ? desc[trait] : traits[trait].desc) : desc;
         }
     }
 }
 
-export function hoovedReskin(desc){
-    if (global.race['sludge']){
+export function hoovedReskin(desc, species=global.race.species){
+    if (species === 'sludge'){
         return desc ? loc('trait_hooved_slime') : loc('trait_hooved_slime_name');
     }
     else if ([
         'cath','wolven','dracnid','seraph','cyclops','kobold','tuskin','sharkin'
-        ].includes(global.race.species)){
-        return desc ? loc(`trait_hooved_${global.race.species}`) : loc(`trait_hooved_${global.race.species}_name`);
+        ].includes(species)){
+        return desc ? loc(`trait_hooved_${species}`) : loc(`trait_hooved_${species}_name`);
     }
     else if ([
         'humanoid','avian','plant','fungi','reptilian','fey','synthetic'
-        ].includes(races[global.race.species].type)){
-        return desc ? loc(`trait_hooved_${races[global.race.species].type}`) : loc(`trait_hooved_${races[global.race.species].type}_name`);
+        ].includes(races[species].type)){
+        return desc ? loc(`trait_hooved_${races[species].type}`) : loc(`trait_hooved_${races[species].type}_name`);
     }
     else {
         return desc ? traits['hooved'].desc : traits['hooved'].name;

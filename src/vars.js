@@ -1204,8 +1204,15 @@ if (convertVersion(global['version']) <= 103015){
     }
 }
 
-global['version'] = '1.3.16';
-global['revision'] = 'a';
+if (convertVersion(global['version']) <= 103017){
+    if (global.race['broody']){
+        global.race['gloomy'] = global.race['broody'];
+        delete global.race['broody'];
+    }
+}
+
+global['version'] = '1.3.17';
+global['revision'] = 'b';
 delete global['beta'];
 
 if (!global.hasOwnProperty('prestige')){
@@ -2026,6 +2033,8 @@ var affix_list = {
 // Number formatting options, in the user's default locale
 var numFormatShort = new Intl.NumberFormat(undefined, {maximumFractionDigits: 2, maximumSignificantDigits: 3, roundingMode: 'trunc', roundingPriority: 'lessPrecision'});
 var numFormatLong = new Intl.NumberFormat(undefined, {maximumFractionDigits: 2, maximumSignificantDigits: 4, roundingMode: 'trunc', roundingPriority: 'lessPrecision'});
+// Constant value that is used frequently
+const ADD_16_ULP = 1 + (16 * Number.EPSILON);
 
 /**
  * Return a locale-dependent string that represents the significance of the input value.
@@ -2042,8 +2051,13 @@ var numFormatLong = new Intl.NumberFormat(undefined, {maximumFractionDigits: 2, 
  * @return {String}
  */
 export function sizeApproximation(value, precision = 1, precise = false, exact = false){
-    const absValue = Math.abs(value);
+    let absValue = Math.abs(value);
     let oom = Math.floor(Math.log10(absValue));
+
+    // Increase magnitude of all numbers by 16 to 32 ULP to avoid rounding issues
+    absValue *= ADD_16_ULP;
+    // Explicitly avoid adding anything to either -0 or +0 to avoid altering the sign
+    value = value<0 ? -absValue : value>0 ? absValue : value;
 
     // Exact mode:
     //  The number of significant figures is not limited in any way.

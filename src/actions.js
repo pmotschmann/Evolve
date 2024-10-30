@@ -1341,8 +1341,8 @@ export const actions = {
         firework: buildTemplate(`firework`,'city'),
         slave_market: {
             id: 'city-slave_market',
-            title: loc('city_slave_market'),
-            desc: loc('city_slave_market_desc'),
+            title(){ return loc('city_slaver_market',[global.resource.Slave.name]); },
+            desc(){ return loc('city_slaver_market_desc',[global.resource.Slave.name]); },
             category: 'outskirts',
             reqs: { slaves: 2 },
             trait: ['slaver'],
@@ -1702,8 +1702,8 @@ export const actions = {
         },
         slave_pen: {
             id: 'city-slave_pen',
-            title: loc('city_slave_pen'),
-            desc: loc('city_slave_pen'),
+            title(){ return loc('city_slave_housing',[global.resource.Slave.name]); },
+            desc(){ return loc('city_slave_housing',[global.resource.Slave.name]); },
             category: 'commercial',
             reqs: { slaves: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -1715,9 +1715,7 @@ export const actions = {
                 Nanite(offset){ return global.race['deconstructor'] ? costMultiplier('slave_pen', offset, 4, 1.36) : 0; },
             },
             effect(){
-                let max = global.city['slave_pen'] ? global.city.slave_pen.count * 4 : 4;
-                let slaves = global.city['slave_pen'] ? global.resource.Slave.amount : 0;
-                return `<div>${loc('city_slave_pen_effect',[4])}</div><div>${loc('city_slave_pen_effect2',[slaves,max])}</div>`;
+                return `<div>${loc('plus_max_resource',[4,global.resource.Slave.name])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -5232,20 +5230,29 @@ export function checkTechQualifications(c_action,type){
 function checkOldTech(tech){
     let tch = actions.tech[tech].grant[0];
     if (global.tech[tch] && global.tech[tch] >= actions.tech[tech].grant[1]){
-        if (tech !== 'fanaticism' && tech !== 'anthropology' && tech !== 'deify' && tech !== 'study'){
-            return true;
-        }
-        else if (tech === 'fanaticism' && global.tech['fanaticism']){
-            return true;
-        }
-        else if (tech === 'anthropology' && global.tech['anthropology']){
-            return true;
-        }
-        else if (tech === 'deify' && global.tech['ancient_deify']){
-            return true;
-        }
-        else if (tech === 'study' && global.tech['ancient_study']){
-            return true;
+        switch (tech) {
+            case 'fanaticism':
+                return Boolean(global.tech['fanaticism']);
+            case 'anthropology':
+                return Boolean(global.tech['anthropology']);
+            case 'deify':
+                return Boolean(global.tech['ancient_deify']);
+            case 'study':
+                return Boolean(global.tech['ancient_study']);
+            case 'isolation_protocol':
+                return Boolean(global.tech['isolation']);
+            case 'focus_cure':
+                return Boolean(global.tech['focus_cure']);
+            case 'vax_strat1':
+                return Boolean(global.tech['vax_p']);
+            case 'vax_strat2':
+                return Boolean(global.tech['vax_f']);
+            case 'vax_strat3':
+                return Boolean(global.tech['vax_s']);
+            case 'vax_strat4':
+                return Boolean(global.tech['vax_c']);
+            default:
+                return true;
         }
     }
     return false;
@@ -7607,7 +7614,7 @@ function sentience(){
 
     const hallowed = getHalloween();
     if (global.race.species === 'unicorn' && hallowed.active){
-        setTraitRank('broody',{ set: 1 });
+        setTraitRank('gloomy',{ set: 1 });
         setTraitRank('darkness',{ set: 1 });
         delete global.race['rainbow'];
     }
