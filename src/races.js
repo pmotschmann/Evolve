@@ -4,9 +4,9 @@ import { defineIndustry } from './industry.js';
 import { setJobName, jobScale, loadFoundry } from './jobs.js';
 import { vBind, clearElement, popover, removeFromQueue, removeFromRQueue, calc_mastery, gameLoop, getEaster, getHalloween, randomKey, modRes, messageQueue } from './functions.js';
 import { setResourceName, atomic_mass } from './resources.js';
-import { buildGarrison, govEffect } from './civics.js';
+import { buildGarrison, govEffect, govTitle } from './civics.js';
 import { govActive, removeTask, defineGovernor } from './governor.js';
-import { unlockAchieve } from './achieve.js';
+import { unlockAchieve, unlockFeat, alevel } from './achieve.js';
 import { highPopAdjust, teamster } from './prod.js';
 import { actions, checkTechQualifications, drawCity, drawTech, structName } from './actions.js';
 import { events, eventList } from './events.js';
@@ -6515,7 +6515,7 @@ function minorWish(parent){
                         rivals.push('gov3');
                     }
 
-                    ['gov0','gov1','gov2','gov3'].forEach(function(gov){
+                    rivals.forEach(function(gov){
                         if (global.civic.foreign[gov].hstl > 0 && !global.civic.foreign[gov].anx && !global.civic.foreign[gov].buy && !global.civic.foreign[gov].occ){
                             options.push(gov);
                         }
@@ -6750,6 +6750,10 @@ function majorWish(parent){
     spells.append(`<div><b-button id="wishBigRes" v-html="$options.filters.label('resources')" @click="res()"></b-button></div>`)
     spells.append(`<div><b-button id="wishPlasmid" v-html="$options.filters.label('plasmid')" @click="plasmid()"></b-button></div>`);
     spells.append(`<div><b-button id="wishPower" v-html="$options.filters.label('power')" @click="power()"></b-button></div>`);
+    spells.append(`<div><b-button id="wishAdoration" v-html="$options.filters.label('adoration')" @click="adoration()"></b-button></div>`);
+    spells.append(`<div><b-button id="wishThrill" v-html="$options.filters.label('thrill')" @click="thrill()"></b-button></div>`);
+    spells.append(`<div><b-button id="wishPeace" v-html="$options.filters.label('peace')" @click="peace()"></b-button></div>`);
+    spells.append(`<div><b-button id="wishGreatness" v-html="$options.filters.label('greatness')" @click="greatness()"></b-button></div>`);
 
     vBind({
         el: `#majorWish`,
@@ -6976,7 +6980,180 @@ function majorWish(parent){
                         }
                     }
                 }
-            }
+            },
+            adoration(){
+                if (global.race.wishStats.major === 0){
+                    global.race.wishStats.major = traits.wish.vars()[0];
+
+                    let options = ['priest'];
+                    if (!global.race.wishStats.temple){
+                        options.push('temple');
+                    }
+                    if (!global.race.wishStats.zigg){
+                        options.push('zigg');
+                    }
+
+                    let spell = options[Math.floor(seededRandom(0,options.length))];
+                    switch (spell){
+                        case 'priest':
+                        {
+                            if (global.tech['cleric'] && global.civic.priest.display && global.race.wishStats.priest < 25){
+                                global.race.wishStats.priest++;
+                                messageQueue(loc('wish_priest'),'warning',false,['events']);
+                            }
+                            else {
+                                messageQueue(loc('wish_priest_fail'),'warning',false,['events']);
+                            }
+                            break;
+                        }
+                        case 'temple':
+                        {
+                            global.race.wishStats.temple = true;
+                            messageQueue(loc('wish_temple',[structName('temple')]),'warning',false,['events']);
+                            break;
+                        }
+                        case 'zigg':
+                        {
+                            global.race.wishStats.zigg = true;
+                            messageQueue(loc('wish_temple',[loc('space_red_ziggurat_title')]),'warning',false,['events']);
+                        }
+                    }
+                }
+            },
+            thrill(){
+                if (global.race.wishStats.major === 0){
+                    global.race.wishStats.major = traits.wish.vars()[0];
+
+                    let event_pool = eventList('major');
+                    if (event_pool.length > 0){
+                        let event = event_pool[Math.floor(seededRandom(0,event_pool.length))];
+                        let msg = events[event].effect();
+                        messageQueue(msg,'caution',false,['events','major_events']);
+                        global.m_event.l = event;
+                    }
+                }
+            },
+            peace(){
+                if (global.race.wishStats.major === 0){
+                    global.race.wishStats.major = traits.wish.vars()[0];
+
+                    let options = ['flower'];
+                    let rivals = ['gov0','gov1','gov2'];
+                    rivals.forEach(function(gov){
+                        if (!global.civic.foreign[gov].anx && !global.civic.foreign[gov].buy && !global.civic.foreign[gov].occ){
+                            options.push(gov);
+                        }
+                    });
+
+                    if (global.race['truepath'] && !global.tech['isolation'] && global.tech['rival'] && global.civic.foreign.gov3.hstl > 0){
+                        options.push('gov3');
+                    }
+
+                    if (!global.race['truepath'] && global.tech.piracy > 1){
+                        options.push('piracy');
+                    }
+
+                    if (global.race['truepath'] && global.space['syndicate']){
+                        options.push('syndicate');
+                    }
+                    
+                    let spell = options[Math.floor(seededRandom(0,options.length))];
+                    if (['gov0','gov1','gov2'].includes(spell)){
+                        global.civic.foreign[spell].hstl = 0;
+                        global.civic.foreign[spell].anx = true;
+                        messageQueue(loc('wish_peace_join',[govTitle(spell.substring(3))]),'warning',false,['events']);
+                    }
+                    else {
+                        switch(spell){
+                            case 'flower':
+                                messageQueue(loc('wish_peace_flower',[govTitle(spell.substring(3))]),'warning',false,['events']);
+                                break;
+                            case 'gov3':
+                                global.civic.foreign[spell].hstl = 0;
+                                break;
+                            case 'piracy':
+                                global.tech.piracy = Math.floor(seededRandom(1,global.tech.piracy));
+                                messageQueue(loc('wish_piracy'),'warning',false,['events']);
+                                break;
+                            case 'syndicate':
+                                Object.keys(global.space.syndicate).forEach(function(synd){
+                                    if (global.space.syndicate[synd] > 10){
+                                        global.space.syndicate[synd] = Math.floor(seededRandom(10,global.space.syndicate[synd]));
+                                    }
+                                });
+                                messageQueue(loc('wish_piracy'),'warning',false,['events']);
+                                break;
+                        }
+                    }
+                }
+            },
+            greatness(){
+                if (global.race.wishStats.major === 0){
+                    global.race.wishStats.major = traits.wish.vars()[0];
+
+                    let options = ['wonder'];
+
+                    let a_level = alevel();
+                    if (!global.race['lone_survivor'] && !global.stats.feat['wish'] || (global.stats.feat['wish'] && global.stats.feat['wish'] < a_level)){
+                        options.push('feat');
+                    }
+
+                    let spell = options[Math.floor(seededRandom(0,options.length))];
+                    switch (spell){
+                        case 'wonder':
+                        {
+                            let wonders = [];
+                            if (!global.race['lone_survivor']){
+                                let hasCity = global.race['cataclysm'] || global.race['orbit_decay'] ? false : true;
+                                let hasMars = global.tech['mars'] ? true : false;
+                                if (!global.city.hasOwnProperty('wonder_lighthouse') && hasCity){
+                                    wonders.push('lighthouse');
+                                }
+                                if (!global.city.hasOwnProperty('wonder_pyramid') && hasCity){
+                                    wonders.push('pyramid');
+                                }
+                                if (!global.space.hasOwnProperty('wonder_statue') && hasMars){
+                                    wonders.push('statue');
+                                }
+                                if (!global.race['truepath'] && !global.interstellar.hasOwnProperty('wonder_gardens') && global.tech['alpha'] && global.tech.alpha >= 2){
+                                    wonders.push('gardens');
+                                }
+                                if (global.race['truepath'] && !global.space.hasOwnProperty('wonder_gardens') && global.tech['titan'] && global.tech.titan >= 2){
+                                    wonders.push('gardens');
+                                }
+                            }
+
+                            if (wonders.length > 0){
+                                let monument = wonders[Math.floor(seededRandom(0,wonders.length))];
+                                switch (monument){
+                                    case 'lighthouse':
+                                        global.city['wonder_lighthouse'] = { count: 1 };
+                                        break;
+                                    case 'pyramid':
+                                        global.city['wonder_pyramid'] = { count: 1 };
+                                        break
+                                    case 'statue':
+                                        global.space['wonder_statue'] = { count: 1 };
+                                        break;
+                                    case 'gardens':
+                                        global[global.race['truepath'] ? 'space' : 'interstellar']['wonder_gardens'] = { count: 1 };
+                                        break;
+                                }
+                                messageQueue(loc('wish_wonder'),'warning',false,['events']);
+                            }
+                            else {
+                                messageQueue(loc('wish_no_wonder'),'warning',false,['events']);
+                            }
+                            break;
+                        }
+                        case 'feat':
+                        {
+                            unlockFeat('wish',global.race.universe === 'micro' ? true : false);
+                            break;
+                        }
+                    }
+                }
+            },
         },
         filters: {
             wish(v){
@@ -6991,7 +7168,7 @@ function majorWish(parent){
         }
     });
 
-    ['BigMoney','BigRes','Plasmid','Power'].forEach(function(wish){
+    ['BigMoney','BigRes','Plasmid','Power','Adoration','Thrill','Peace','Greatness'].forEach(function(wish){
         popover(`wish${wish}`,
             function(){
                 switch(wish){
@@ -7003,6 +7180,14 @@ function majorWish(parent){
                         return loc(`wish_for`,[loc('wish_plasmid')]);
                     case 'Power':
                         return loc(`wish_for`,[loc('wish_power')]);
+                    case 'Adoration':
+                        return loc(`wish_for`,[loc('wish_adoration')]);
+                    case 'Thrill':
+                        return loc(`wish_for`,[loc('wish_thrill')]);
+                    case 'Peace':
+                        return loc(`wish_for`,[loc('wish_peace')]);
+                    case 'Greatness':
+                        return loc(`wish_for`,[loc('wish_greatness')]);
                 }
             },{
                 elm: `#wish${wish}`

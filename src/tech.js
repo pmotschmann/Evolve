@@ -617,8 +617,8 @@ const techs = {
                 global.settings.showWish = true;
                 global.race['wishStats'] = { 
                     minor: 0, major: 0, plas: 0, tax: 0, bad: 0, fame: 0, troop: 0, 
-                    prof: 0, potato: 0, astro: false, casino: false, ship: false,
-                    gov: false, strong: false
+                    prof: 0, potato: 0, priest: 0, temple: false, zigg: false, 
+                    astro: false, casino: false, ship: false, gov: false, strong: false
                 };
                 return true;
             }

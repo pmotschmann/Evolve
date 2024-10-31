@@ -2150,7 +2150,8 @@ export function svgIcons(icon){
           </g>`;
         case 'meat':
             return `<path d="M0.26,147.54c0.03,9.81,8.69,19.93,16.89,24.05c5.21,2.61,8.18,9.46,12.72,13.81c5.23,5.01,10.4,11.42,16.8,13.59 c17.18,5.81,35.19-14.63,32.08-29.95c-1.06-5.24-0.61-12.9,2.51-16.31c3.18-3.47,10.44-3.48,16.02-4.26 c12.61-1.76,25.38-2.53,37.9-4.76c6.75-1.2,14.1-3.23,19.48-7.22c11.88-8.81,24.21-17.81,33.6-29.08 c14.98-17.96,15.19-45.27,3.06-65.42c-4.04-6.72-7.15-14.9-12.95-19.46c-11.04-8.66-23.71-15.23-35.79-22.5  c-0.41-0.25-2.4,1.08-2.71,2c-0.62,1.82-0.58,3.86-0.82,5.81c-0.56,4.48-1.93,7.93-4.65,12.19c-6.13,9.62-14.8,8.16-22.83,10.88 c-4.74,1.61-8.27,6.55-12.73,9.39c-4.74,3.01-9.7,6.25-15.01,7.52c-2.92,0.7-7.29-1.75-10.06-3.98c-8.91-7.2-11.87-0.5-13.71,6.14  c-3.48,12.54-6.44,25.26-8.8,38.06c-1.1,5.97-0.3,12.29-0.37,18.45c-0.12,10.04-5.06,15.03-15.05,14.97  c-4.4-0.03-8.83-0.87-13.17-0.52C14.13,121.63-2.27,136.46,0.26,147.54z"/>`;
-               
+        case 'trophy':
+            return `<rect width='24' height='24' stroke='none' fill='#000000' opacity='0'/><g transform="matrix(0.42 0 0 0.42 12 12)" ><g style=""><g transform="matrix(1 0 0 1 0 7)" ><path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(255,160,0); fill-rule: nonzero; opacity: 1;" transform=" translate(-24, -31)" d="M 25 34 L 24 36 L 23 34 L 22 26 L 26 26 z" stroke-linecap="round" /></g><g transform="matrix(1 0 0 1 0 16)" ><path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(251,192,45); fill-rule: nonzero; opacity: 1;" transform=" translate(-24, -40)" d="M 29 44 C 29 45.105 28.104 46 27 46 L 21 46 C 19.896 46 19 45.105 19 44 L 19 37 C 19 35.895 23 34 23 34 L 25 34 C 25 34 29 35.895 29 37 L 29 44 z" stroke-linecap="round" /></g><g transform="matrix(1 0 0 1 0 -5.5)" ><path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill-rule: nonzero; opacity: 1;" transform=" translate(-24, -18.5)" d="M 25 34 L 25 35 L 23 35 L 23 34 L 22 26 L 26 26 z M 19.71 24.971 C 19.204 24.842 7.292000000000002 21.735 5.32 12.203 C 4.443 7.958 5.529 5.508 6.596 4.199 C 7.915 2.578 9.713 2 10.955 2 C 12.616 2 13.9 2.457 14.773 3.359 C 15.871 4.496 15.855 5.879 15.850999999999999 6.035 C 15.850999999999999 7.607 14.786 10 11.850999999999999 10 L 11.850999999999999 10 C 11.728 10 11.094999999999999 9.982 10.437 9.635 C 9.48 9.133 8.955 8.195 8.955 7 L 10.955 7 C 10.955 7.574 11.178 7.764 11.37 7.867 C 11.598 7.986 11.85 8 11.852 8 C 13.755 8 13.852 6.333 13.852 6 C 13.852 5.951 13.85 5.268 13.317 4.731 C 12.834 4.246 12.039 4 10.955 4 C 10.353 4 9.086 4.309 8.146 5.461 C 7.01 6.857 6.71 9.047 7.279 11.797 C 8.999 20.115000000000002 20.087 23.002000000000002 20.198999999999998 23.029 L 19.71 24.971 z M 28.09 25 L 27.491 23.092 C 27.591 23.063 37.562 19.83 40.397999999999996 11.714999999999998 C 41.266999999999996 9.234999999999998 41.206999999999994 7.273999999999998 40.217999999999996 5.882999999999998 C 39.263 4.534999999999998 37.644 4.046999999999998 36.79 4.046999999999998 C 33.824 4.046999999999998 33.79 5.964999999999998 33.79 6.046999999999998 C 33.798 6.507999999999998 33.964 8.046999999999997 35.79 8.046999999999997 C 36.24 8.034999999999997 36.79 7.851999999999997 36.79 7.046999999999997 L 38.79 7.046999999999997 C 38.79 9.245999999999997 36.996 10.046999999999997 35.79 10.046999999999997 C 32.854 10.046999999999997 31.79 7.6519999999999975 31.79 6.046999999999997 C 31.79 4.663999999999997 32.835 2.046999999999997 36.79 2.046999999999997 C 38.311 2.046999999999997 40.544 2.882999999999997 41.851 4.722999999999997 C 42.802 6.062999999999997 43.65 8.480999999999998 42.289 12.374999999999996 C 39.115 21.449 28.539 24.859 28.09 25 z" stroke-linecap="round" /></g><g transform="matrix(1 0 0 1 0 -3)" ><path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill-rule: nonzero; opacity: 1;" transform=" translate(-24, -21)" d="M 29 39 L 19 39 L 19 37 C 19 35.896 23 34 23 34 L 25 34 C 25 34 29 35.896 29 37 L 29 39 z M 34 3 C 34 11 31.916 28 24 28 C 16.084 28 14 11 14 3 L 34 3 z" stroke-linecap="round" /></g><g transform="matrix(1 0 0 1 -1 -10)" ><path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(255,236,179); fill-rule: nonzero; opacity: 1;" transform=" translate(-23, -14)" d="M 25 19 L 23 19 L 23 11.609 L 21 12.275 L 21 10.515 L 24.813 9 L 25 9 L 25 19 z" stroke-linecap="round" /></g><g transform="matrix(1 0 0 1 0 18)" ><path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(122,83,75); fill-rule: nonzero; opacity: 1;" transform=" translate(-24, -42)" d="M 17 38 L 31 38 L 31 46 L 17 46 z" stroke-linecap="round" /></g><g transform="matrix(1 0 0 1 0 18)" ><path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill-rule: nonzero; opacity: 1;" transform=" translate(-24, -42)" d="M 19 41 L 29 41 L 29 43 L 19 43 z" stroke-linecap="round" /></g></g></g>`;
     }
 }
 
@@ -2228,6 +2229,8 @@ export function svgViewBox(icon){
             return `0 0 16 16`;
         case 'meat':
             return `0 0 200 200`;
+        case 'trophy':
+            return `0 0 24 24`;
     }
 }
 
@@ -2260,6 +2263,10 @@ export function getBaseIcon(name,type){
                 return 'slime';
             case 'annihilation':
                 return 'lightning';
+            case 'immortal':
+                return 'meat';
+            case 'wish':
+                return 'trophy';
             case 'friday':
                 return 'mask';
             case 'valentine':
@@ -2284,8 +2291,6 @@ export function getBaseIcon(name,type){
                 return 'turkey';
             case 'xmas':
                 return 'present';
-            case 'immortal':
-                return 'meat';
             default:
                 return 'star';
         }

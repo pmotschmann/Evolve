@@ -3194,6 +3194,50 @@ export const actions = {
                 return false;
             }
         },
+        wonder_lighthouse: {
+            id: 'city-wonder_lighthouse',
+            title(){
+                return loc('city_wonder_lighthouse',[races[global.race.species].home]);
+            },
+            desc(){
+                return loc('city_wonder_lighthouse',[races[global.race.species].home]);
+            },
+            category: 'commercial',
+            reqs: {},
+            condition(){
+                return global.race['wish'] && global.race['wishStats'] && global.city['wonder_lighthouse'] ? true : false;
+            },
+            trait: ['wish'],
+            queue_complete(){ return false; },
+            effect(){
+                return loc(`city_wonder_effect`,[5]);
+            },
+            action(){
+                return false;
+            }
+        },
+        wonder_pyramid: {
+            id: 'city-wonder_pyramid',
+            title(){
+                return loc('city_wonder_pyramid',[races[global.race.species].name]);
+            },
+            desc(){
+                return loc('city_wonder_pyramid',[races[global.race.species].name]);
+            },
+            category: 'commercial',
+            reqs: {},
+            condition(){
+                return global.race['wish'] && global.race['wishStats'] && global.city['wonder_pyramid'] ? true : false;
+            },
+            trait: ['wish'],
+            queue_complete(){ return false; },
+            effect(){
+                return loc(`city_wonder_effect`,[5]);
+            },
+            action(){
+                return false;
+            }
+        },
         shrine: {
             id: 'city-shrine',
             title: loc('city_shrine'),
@@ -5579,7 +5623,7 @@ export function setAction(c_action,action,type,old,prediction){
         }
     }
     else if (action !== 'tech' && global[action] && global[action][type] && global[action][type].count >= 0){
-        element.append($('<span class="count">{{ act.count }}</span>'));
+        element.append($(`<span class="count" v-html="$options.filters.count(act.count,'${type}')"></span>`));
     }
     else if (action === 'blood' && global[action] && global[action][c_action.grant[0]] && global[action][c_action.grant[0]] > 0 && c_action.grant[1] === '*'){
         element.append($(`<span class="count"> ${global[action][c_action.grant[0]]} </span>`));
@@ -5749,6 +5793,12 @@ export function setAction(c_action,action,type,old,prediction){
             },
             options(t){
                 return loc(`action_options`,[t]);
+            },
+            count(v,t){
+                if (['temple','ziggurat'].includes(t)){
+                    return templeCount(t === 'temple' ? false : true);
+                }
+                return v;
             }
         }
     });
@@ -6830,6 +6880,22 @@ export function checkAffordable(c_action,max,raw){
     }
     return true;
 }
+
+export function templeCount(zig){
+    if (!zig && global.city['temple']){
+        if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.temple){
+            return global.city.temple.count + 1;
+        }
+        return global.city.temple.count;
+    }
+    else if (zig && global.space['ziggurat']){
+        if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.zigg){
+            return global.city.ziggurat.count + 1;
+        }
+        return global.space.ziggurat.count;
+    }
+    return 0;
+} 
 
 function checkMaxCosts(costs){
     var test = true;

@@ -198,6 +198,11 @@ export const feats = {
         desc: loc("feat_immortal_desc"),
         flair: loc("feat_immortal_flair")
     },
+    wish: {
+        name: loc("feat_wish_name"),
+        desc: loc("feat_wish_desc"),
+        flair: loc("feat_wish_flair")
+    },
     friday: {
         name: loc("feat_friday_name"),
         desc: loc("feat_friday_desc"),

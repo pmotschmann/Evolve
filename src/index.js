@@ -1229,6 +1229,7 @@ export function index(){
         {i: 'floppy',       f: 'digital_ascension', r: 2 },
         {i: 'slime',        f: 'slime_lord',        r: 2 },
         {i: 'lightning',    f: 'annihilation',      r: 2 },
+        {i: 'trophy',       f: 'wish',              r: 2 },
         {i: 'heart',        f: 'valentine',         r: 1 },
         {i: 'clover',       f: 'leprechaun',        r: 1 },
         {i: 'bunny',        f: 'easter',            r: 1 },
@@ -1240,7 +1241,7 @@ export function index(){
         {i: 'candy',        f: 'trickortreat',      r: 1 },
         {i: 'turkey',       f: 'thanksgiving',      r: 1 },
         {i: 'meat',         f: 'immortal',          r: 1 },
-        {i: 'present',      f: 'xmas',              r: 1 }
+        {i: 'present',      f: 'xmas',              r: 1 },
     ];
 
     let irank = alevel();

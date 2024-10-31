@@ -602,6 +602,27 @@ const outerTruth = {
             },
             flair: loc(`tech_combat_droids_flair`)
         },
+        wonder_gardens: {
+            id: 'space-wonder_gardens',
+            title(){
+                return loc('space_wonder_gardens',[planetName().titan]);
+            },
+            desc(){
+                return loc('space_wonder_gardens',[planetName().titan]);
+            },
+            reqs: {},
+            condition(){
+                return global.race['wish'] && global.race['wishStats'] && global.space['wonder_gardens'] ? true : false;
+            },
+            trait: ['wish'],
+            queue_complete(){ return false; },
+            effect(){
+                return loc(`city_wonder_effect`,[5]);
+            },
+            action(){
+                return false;
+            }
+        },
     },
     spc_enceladus: {
         info: {

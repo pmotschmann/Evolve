@@ -1250,6 +1250,27 @@ const spaceProjects = {
                 return loc('space_red_space_barracks_flair');
             }
         },
+        wonder_statue: {
+            id: 'space-wonder_statue',
+            title(){
+                return loc('space_wonder_statue',[planetName().red]);
+            },
+            desc(){
+                return loc('space_wonder_statue',[planetName().red]);
+            },
+            reqs: {},
+            condition(){
+                return global.race['wish'] && global.race['wishStats'] && global.space['wonder_statue'] ? true : false;
+            },
+            trait: ['wish'],
+            queue_complete(){ return false; },
+            effect(){
+                return loc(`city_wonder_effect`,[5]);
+            },
+            action(){
+                return false;
+            }
+        },
         bonfire: buildTemplate(`bonfire`,'space'),
         horseshoe: buildTemplate(`horseshoe`,'space'),
     },
@@ -2851,6 +2872,27 @@ const interstellarProjects = {
                     };
                     return true;
                 }
+                return false;
+            }
+        },
+        wonder_gardens: {
+            id: 'interstellar-wonder_gardens',
+            title(){
+                return loc('interstellar_wonder_gardens');
+            },
+            desc(){
+                return loc('interstellar_wonder_gardens');
+            },
+            reqs: {},
+            condition(){
+                return global.race['wish'] && global.race['wishStats'] && global.interstellar['wonder_gardens'] ? true : false;
+            },
+            trait: ['wish'],
+            queue_complete(){ return false; },
+            effect(){
+                return loc(`city_wonder_effect`,[5]);
+            },
+            action(){
                 return false;
             }
         },

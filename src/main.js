@@ -7,7 +7,7 @@ import { defineResources, resource_values, spatialReasoning, craftCost, plasmidB
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobScale, workerScale, limitCraftsmen, loadServants} from './jobs.js';
 import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, luxGoodPrice } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
-import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, structName } from './actions.js';
+import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, structName, templeCount } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
@@ -817,7 +817,7 @@ function fastLoop(){
         global_multiplier += pBonus[0];
     }
     if (global.race['no_plasmid'] || global.race.universe === 'antimatter'){
-        if (((global.race['cataclysm'] || global.race['orbit_decayed']) && global.space['ziggurat'] && global.space.ziggurat.count) || (global.city['temple'] && global.city['temple'].count)){
+        if (((global.race['cataclysm'] || global.race['orbit_decayed']) && global.space['ziggurat'] && templeCount(true)) || (global.city['temple'] && global.city['temple'].count)){
             let faith = faithBonus();
             breakdown.p['Global'][loc('faith')] = (faith * 100) + '%';
             global_multiplier *= (1 + faith);
@@ -3093,7 +3093,14 @@ function fastLoop(){
         if (global.tech['monuments']){
             let gasVal = govActive('gaslighter',2);
             let mcap = gasVal ? (2 - gasVal) : 2;
-            moraleCap += global.tech['monuments'] * mcap;
+            let monuments = global.tech.monuments;
+            if (global.race['wish'] && global.race['wishStats']){
+                if (global.city['wonder_lighthouse']){ monuments += 5; }
+                if (global.city['wonder_pyramid']){ monuments += 5; }
+                if (global.space['wonder_statue']){ monuments += 5; }
+                if (global.interstellar['wonder_gardens'] || global.space['wonder_gardens']){ monuments += 5; }
+            }
+            moraleCap += monuments * mcap;
         }
 
         if (global.civic.taxes.tax_rate < 20 && !global.race['banana']){
@@ -4113,7 +4120,7 @@ function fastLoop(){
             professors_base *= global.race['pompous'] ? (1 - traits.pompous.vars()[0] / 100) : 1;
             professors_base *= racialTrait(workerScale(global.civic.professor.workers,'professor'),'science');
             if (global.tech['anthropology'] && global.tech['anthropology'] >= 3){
-                professors_base *= 1 + (global.race['cataclysm'] || global.race['orbit_decayed'] ? (global.space['ziggurat'] ? global.space.ziggurat.count : 0) : global.city.temple.count) * 0.05;
+                professors_base *= 1 + (global.race['cataclysm'] || global.race['orbit_decayed'] ? (global.space['ziggurat'] ? templeCount(true) : 0) : templeCount()) * 0.05;
             }
             if (global.civic.govern.type === 'theocracy'){
                 professors_base *= 1 - (govEffect.theocracy()[1] / 100);
@@ -7331,7 +7338,7 @@ function fastLoop(){
 
             let temple_mult = 1;
             if (global.tech['anthropology'] && global.tech['anthropology'] >= 4 && !global.race['truepath']){
-                temple_mult += (global.race['cataclysm'] || global.race['orbit_decayed'] ? (global.space['ziggurat'] ? global.space.ziggurat.count : 0) : global.city.temple.count) * 0.025;
+                temple_mult += (global.race['cataclysm'] || global.race['orbit_decayed'] ? (global.space['ziggurat'] ? templeCount(true) : 0) : templeCount()) * 0.025;
             }
 
             let upkeep = 0;
@@ -7422,14 +7429,21 @@ function fastLoop(){
                 tourism += global.city['tourist_center'].on * global.space.spc_casino.count * 5 * amp;
             }
             if (global.tech['monuments']){
-                tourism += global.city['tourist_center'].on * global.tech['monuments'] * 2 * amp;
+                let monuments = global.tech.monuments;
+                if (global.race['wish'] && global.race['wishStats']){
+                    if (global.city['wonder_lighthouse']){ monuments += 5; }
+                    if (global.city['wonder_pyramid']){ monuments += 5; }
+                    if (global.space['wonder_statue']){ monuments += 5; }
+                    if (global.interstellar['wonder_gardens'] || global.space['wonder_gardens']){ monuments += 5; }
+                }
+                tourism += global.city['tourist_center'].on * monuments * 2 * amp;
             }
             if (global.city['trade'] && global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 4){
                 tourism += global.city['tourist_center'].on * global.city.trade.count * 3 * amp;
             }
             let piousVal = govActive('pious',1);
             if (piousVal && global.city['temple']){
-                tourism += global.city['tourist_center'].on * global.city.temple.count * piousVal * amp;
+                tourism += global.city['tourist_center'].on * templeCount() * piousVal * amp;
             }
             if (global.civic.govern.type === 'corpocracy'){
                 tourism *= 1 + (govEffect.corpocracy()[2] / 100);
@@ -7455,7 +7469,14 @@ function fastLoop(){
                 revenue += p_on['tau_cultural_center'] * p_on['tauceti_casino'] * 20;
             }
             if (global.tech['monuments']){
-                revenue += p_on['tau_cultural_center'] * global.tech['monuments'] * 5;
+                let monuments = global.tech.monuments;
+                if (global.race['wish'] && global.race['wishStats']){
+                    if (global.city['wonder_lighthouse']){ monuments += 5; }
+                    if (global.city['wonder_pyramid']){ monuments += 5; }
+                    if (global.space['wonder_statue']){ monuments += 5; }
+                    if (global.interstellar['wonder_gardens'] || global.space['wonder_gardens']){ monuments += 5; }
+                }
+                revenue += p_on['tau_cultural_center'] * monuments * 5;
             }
             if (global.tech['tau_culture'] && global.tech.tau_culture >= 2){
                 revenue += p_on['tau_cultural_center'] * support_on['colony'] * 15;
@@ -7495,7 +7516,7 @@ function fastLoop(){
         breakdown.p['Money'][loc('hunger')] = ((hunger - 1) * 100) + '%';
 
         if (global.tech['anthropology'] && global.tech['anthropology'] >= 4 && global.race['truepath']){
-            let merchsales = global.resource[global.race.species].amount * global.city.temple.count * 0.08;
+            let merchsales = global.resource[global.race.species].amount * templeCount() * 0.08;
             breakdown.p['Money'][structName('temple')] = (merchsales) + 'v';
             modRes('Money', +(merchsales * global_multiplier * time_multiplier).toFixed(2));
             rawCash += merchsales * global_multiplier;
@@ -8720,13 +8741,16 @@ function midLoop(){
             breakdown.c.Knowledge[loc('city_shrine')] = getShrineResult.add+'v';
         }
         if (global.city['temple'] && global.genes['ancients'] && global.genes['ancients'] >= 2){
-            lCaps['priest'] += jobScale(global.city.temple.count);
+            lCaps['priest'] += jobScale(templeCount());
         }
         if (global.space['ziggurat'] && global.genes['ancients'] && global.genes['ancients'] >= 4){
-            lCaps['priest'] += jobScale(global.space.ziggurat.count);
+            lCaps['priest'] += jobScale(templeCount(true));
         }
         if (global.eden['rectory'] && global.genes['ancients'] && global.genes['ancients'] >= 2 && p_on['rectory']){
             lCaps['priest'] += jobScale(p_on['rectory']);
+        }
+        if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.priest){
+            lCaps['priest'] += jobScale(global.race.wishStats.priest);
         }
         let pirate_alien2 = piracy('gxy_alien2');
         if (global.city['university']){
@@ -8761,7 +8785,7 @@ function midLoop(){
                 shelving *= 1 + (sci_val * 0.12);
             }
             if (global.tech['anthropology'] && global.tech['anthropology'] >= 2){
-                shelving *= 1 + (global.race['cataclysm'] || global.race['orbit_decayed'] ? (global.space['ziggurat'] ? global.space.ziggurat.count : 0) : global.city.temple.count) * 0.05;
+                shelving *= 1 + (global.race['cataclysm'] || global.race['orbit_decayed'] ? (global.space['ziggurat'] ? templeCount(true) : 0) : templeCount()) * 0.05;
             }
             let teachVal = govActive('teacher',0);
             if (teachVal){
@@ -9105,7 +9129,7 @@ function midLoop(){
                 sci += int_on['laboratory'] * 25;
             }
             if (global.tech['ancient_study'] && global.tech['ancient_study'] >= 2){
-                sci += global.space.ziggurat.count * 15;
+                sci += templeCount(true) * 15;
             }
             if (global.tech.mass >= 2){
                 let brain = workerScale(global.civic.scientist.workers,'scientist');
@@ -9280,7 +9304,7 @@ function midLoop(){
             global.city.market.mtrade += routes * global.city.trade.count;
             breakdown.t_route[loc('city_trade')] = routes * global.city.trade.count;
             if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 3){
-                let r_count = global.race['cataclysm'] || global.race['orbit_decayed'] ? (global.space['ziggurat'] ? global.space.ziggurat.count : 0) : global.city.temple.count;
+                let r_count = global.race['cataclysm'] || global.race['orbit_decayed'] ? (global.space['ziggurat'] ? templeCount(true) : 0) : templeCount();
                 global.city.market.mtrade += r_count;
                 breakdown.t_route[global.race['cataclysm'] ? loc('space_red_ziggurat_title') : structName('temple')] = r_count;
             }
