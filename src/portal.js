@@ -1973,10 +1973,11 @@ export const towerSize = (function(){
         if (global.hasOwnProperty('pillars')){
             Object.keys(global.pillars).forEach(function(pillar){
                 if (global.pillars[pillar]){
-                    size -= 12;
+                    size -= global.pillars[pillar] * 2 + 2;
                 }
             });            
         }
+        if (size < 250){ size = 250; }
         return size;
     }
 })();

@@ -918,7 +918,7 @@ const extraInformation = {
         loc(`wiki_tech_cyber_limbs`)
     ],
     slave_pens: [
-        loc(`wiki_tech_building_unlock`,[loc(`city_slave_pen`)])
+        loc(`wiki_tech_building_unlock`,[loc(`city_slave_housing`,[global.resource.Slave.name])])
     ],
     slave_market: [
         loc(`wiki_tech_slave_market`)
@@ -1972,8 +1972,14 @@ const extraInformation = {
     energy_drain: [
         loc(`wiki_tech_energy_drain`)
     ],
-    devine_infuser: [
-        loc(`wiki_tech_devine_infuser`)
+    divine_infuser: [
+        loc(`wiki_tech_divine_infuser`)
+    ],
+    minor_wish: [
+        loc(`wiki_tech_minor_wish`)
+    ],
+    major_wish: [
+        loc(`wiki_tech_major_wish`)
     ],
 };
 
@@ -3498,6 +3504,26 @@ const specialRequirements = {
             subreqs: [
                 {
                     name: 'apex_predator'
+                }
+            ]
+        }
+    ],
+    minor_wish: [
+        {
+            category: 'trait',
+            subreqs: [
+                {
+                    name: 'wish'
+                }
+            ]
+        }
+    ],
+    major_wish: [
+        {
+            category: 'trait',
+            subreqs: [
+                {
+                    name: 'wish'
                 }
             ]
         }

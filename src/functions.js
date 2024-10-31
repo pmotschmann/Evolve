@@ -891,7 +891,7 @@ export function timeCheck(c_action,track,detailed,reqMet){
         let time = 0;
         let bottleneck = false;
         let offset = track && track.id[c_action.id] ? track.id[c_action.id] : false;
-        let costs = adjustCosts(c_action,offset);
+        let costs = c_action['doNotAdjustCost'] ? c_action.cost : adjustCosts(c_action,offset);
         let og_track_r = track ? {} : false;
         let og_track_rr = track ? {} : false;
         if (track){

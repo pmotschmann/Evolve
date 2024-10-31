@@ -1946,13 +1946,15 @@ function genetics(){
                 let mainType = races[global.race.species].type === 'hybrid' ? global.race.maintype : races[global.race.species].type
                 let speciesTypes = races[global.race.species].type === 'hybrid' ? races[global.race.species].hybrid : [races[global.race.species].type];
                 Object.keys(races).forEach(function (race){
-                    if (race !== 'junker' && race !== 'sludge' && race !== 'custom' && speciesTypes.includes(races[race].type)){
+                    if (race !== 'junker' && race !== 'sludge' && race !== 'custom' && 
+                        (speciesTypes.includes(races[race].type) || (races[global.race.species].type === 'hybrid' && race === global.race.species))
+                    ){
                         Object.keys(races[race].traits).forEach(function (trait){
                             if (!global.race[trait] && trait !== 'soul_eater'){
                                 let conflict_pos = conflict_traits.indexOf(trait);
                                 if (conflict_pos === -1){
                                     trait_list.push(trait);
-                                    if (races[race].type !== mainType){
+                                    if (races[race].type !== mainType && race !== global.race.species){
                                         offspec_traits.push(trait);
                                     }
                                 }

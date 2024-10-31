@@ -10565,7 +10565,8 @@ function midLoop(){
                     id: struct.id,
                     cost: costs,
                     type: 'tp-ship',
-                    bp: struct.type
+                    bp: struct.type,
+                    doNotAdjustCost: true,
                 };
             }
             else if (deepScan.includes(struct.action)){
@@ -10611,12 +10612,12 @@ function midLoop(){
                 }
             }
             else {
-                if (checkAffordable(t_action,true,t_action.type === 'tp-ship' ? true : false,true)){
+                if (checkAffordable(t_action,true,t_action['doNotAdjustCost'] ? true : false,true)){
                     struct.cna = false;
                     let t_time = timeCheck(t_action, spent);
                     struct['bres'] = false;
                     if (t_time >= 0){
-                        if (!stop && checkAffordable(t_action,false,t_action.type === 'tp-ship' ? true : false)){
+                        if (!stop && checkAffordable(t_action,false,t_action['doNotAdjustCost'] ? true : false)){
                             c_action = t_action;
                             idx = i;
                             arpa = false;

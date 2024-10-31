@@ -5619,6 +5619,15 @@ export function cleanAddTrait(trait){
                 global.settings.showPsychic = true;
             }
             break;
+        case 'wish':
+            if (global.tech['wish']){
+                global.settings.showWish = true;
+                if (global.race['wishStats'] && global.race.wishStats.strong && !global.race['strong']){
+                    global.race['strong'] = 0.25;
+                    cleanAddTrait('strong')
+                }
+            }
+            break;
         case 'ooze':
             if (!global.tech['high_tech'] && global.race.species !== 'custom' && global.race.species !== 'sludge'){
                 global.race['gross_enabled'] = 1;
@@ -5823,6 +5832,13 @@ export function cleanRemoveTrait(trait,rank){
         case 'psychic':
             global.resource.Energy.display = false;
             global.settings.showPsychic = false;
+            break;
+        case 'wish':
+            global.settings.showWish = false;
+            if (global.race['wishStats'] && global.race.wishStats.strong){
+                delete global.race['strong'];
+                cleanRemoveTrait('strong')
+            }
             break;
         case 'ooze':
             delete global.race['gross_enabled'];
@@ -6613,6 +6629,7 @@ function minorWish(parent){
                         }
                         case 'trait':
                         {
+                            global.race.wishStats.strong = true;
                             setTraitRank('strong',{ set: 0.25, force: true });
                             messageQueue(loc('wish_muscle'),'warning',false,['events']);
                             break;
