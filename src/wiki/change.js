@@ -22,6 +22,14 @@ export const changeList = [
     },
     {
         version: `1.3.17`,
+        revision: `c`,
+        date: `11/1/2024`,
+        changes: [
+            `Non-Evil Wendigo can now Trick or Treat!`,
+        ]
+    },
+    {
+        version: `1.3.17`,
         revision: `b`,
         date: `10/29/2024`,
         changes: [
