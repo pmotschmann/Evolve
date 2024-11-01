@@ -3478,17 +3478,17 @@ export const traits = {
             // [Auto Crafting Boost, Manufactoring Boost]
             switch (r || traitRank('artisan') || 1){
                 case 0.25:
-                    return [25,10];
+                    return [20,10,0.2];
                 case 0.5:
-                    return [50,15];
+                    return [35,15,0.35];
                 case 1:
-                    return [75,20];
+                    return [50,20,0.5];
                 case 2:
-                    return [100,25];
+                    return [65,25,0.6];
                 case 3:
-                    return [125,30];
+                    return [80,30,0.7];
                 case 4:
-                    return [140,35];
+                    return [95,35,0.8];
             }
         }
     },
@@ -5699,11 +5699,11 @@ export function traitCostMod(t,val){
     switch (t){
         case 'stubborn':
         {
-            val *= 1 + (traits.stubborn.vars()[1] / 100);
+            val *= 1 + (traits.stubborn.vars()[0] / 100);
         }
         case 'untrustworthy':
         {
-            val *= 1 + (traits.untrustworthy.vars()[1] / 100);
+            val *= 1 + (traits.untrustworthy.vars()[0] / 100);
         }
     }
     return Math.round(val);

@@ -8267,7 +8267,7 @@
   "wiki_trait_effect_anthropophagite": "Your citizens will kill and eat each other if food runs low. Gain %0 food per murder.",
   "wiki_trait_effect_bloated": "Your sheer mass requires you to use %0% extra basic resources when building things.",
   "wiki_trait_effect_living_tool": "You do not need to develop basic tools like pickaxes; instead, you adapt your body to perform those functions. Gets better with scientific advancement.",
-  "wiki_trait_effect_artisan": "Your mastery of crafting grants %0% improved crafting and %1% improve factory production.",
+  "wiki_trait_effect_artisan": "Your mastery and love of crafting grants %0% improved crafting, %1% improve factory production, and %2% improved morale per crafter.",
   "wiki_trait_effect_stubborn": "You subbornly refuse to accept new things, increasing knowledge costs of significant scientic advancements by %0%.",
   "wiki_trait_effect_rogue": "Randomly steal a resource, upto %0% of current cap.",
   "wiki_trait_effect_untrustworthy": "Buildings that store money cost %0% more due to needing increased security measures.",

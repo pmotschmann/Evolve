@@ -345,7 +345,7 @@ popover('morale',
                     value /= democracy;
                 }
 
-                obj.popper.append(`<p class="modal_bd"><span>${loc(`morale_${morale}`)}</span> <span class="has-text-${type}"> ${+(value).toFixed(1)}%</span></p>`)
+                obj.popper.append(`<p class="modal_bd"><span>${loc(`morale_${morale}`)}</span> <span class="has-text-${type}"> +${+(value).toFixed(1)}%</span></p>`)
 
                 if (morale === 'entertain' && global.civic.govern.type === 'democracy'){
                     let democracy = govEffect.democracy()[0];
@@ -394,6 +394,12 @@ popover('morale',
             let boost = Math.ceil(global.race['motivated'] ** 0.4);
             total += boost;
             obj.popper.append(`<p class="modal_bd"><span>${loc(`event_motivation_bd`)}</span> <span class="has-text-success"> +${boost}%</span></p>`);
+        }
+
+        if (global.race['artisan'] && global.civic.craftsman.workers > 0){
+            let boost = traits.artisan.vars()[2] * global.civic.craftsman.workers;
+            total += boost;
+            obj.popper.append(`<p class="modal_bd"><span>${loc(`trait_artisan_name`)}</span> <span class="has-text-success"> +${boost}%</span></p>`)
         }
 
         if (global.race['pet']){
@@ -1338,6 +1344,10 @@ function fastLoop(){
 
         if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.fame !== 0){
             morale += global.race.wishStats.fame;
+        }
+
+        if (global.race['artisan'] && !global.race['joyless']){
+            morale += traits.artisan.vars()[2] * global.civic.craftsman.workers;
         }
 
         let stress = 0;
