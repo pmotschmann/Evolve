@@ -81,7 +81,9 @@ export function racesPage(content){
 
     let list = [];
     Object.keys(races).forEach(function (race){
-        if ((race === 'custom' && !global.custom.hasOwnProperty('race0')) || race === 'protoplasm'){
+        if ((race === 'custom' && !global.custom.hasOwnProperty('race0')) 
+            || (race === 'hybrid' && !global.custom.hasOwnProperty('race1'))
+            || race === 'protoplasm'){
             return;
         }
 

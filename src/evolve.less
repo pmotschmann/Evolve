@@ -2962,6 +2962,13 @@ a {
 
         .govType {
             margin-bottom: .25rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+
+            > div:first-child {
+                margin-right: .5rem;
+            }
 
             button {
                 margin-top: .25rem;
@@ -3095,6 +3102,7 @@ a {
             }
 
             margin-bottom: 0;
+            margin-right: 0.5rem;
         }
 
         .barracks {
@@ -3141,7 +3149,7 @@ a {
         }
 
         .launch {
-            width: 10rem;
+            min-width: 10rem;
             margin-top: .75rem;
             margin-right: .5rem;
             text-align: center;
@@ -3151,6 +3159,16 @@ a {
                 white-space: normal;
                 margin-top: .5rem;
             }
+        }
+    }
+
+    #c_garrison.garrison {
+        margin-top: .25rem;
+
+        > div:nth-child(2){
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
         }
     }
 

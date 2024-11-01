@@ -3105,7 +3105,10 @@ export function getTraitDesc(info, trait, opts){
                             data.rank =  3;
                             break;
                         case 3:
-                            data.rank =  3;
+                            data.rank =  4;
+                            break;
+                        case 4:
+                            data.rank =  4;
                             break;
                     }
                 },
@@ -3125,6 +3128,9 @@ export function getTraitDesc(info, trait, opts){
                             break;
                         case 3:
                             data.rank =  2;
+                            break;
+                        case 4:
+                            data.rank =  3;
                             break;
                     }
                 },

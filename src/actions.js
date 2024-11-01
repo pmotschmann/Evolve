@@ -7676,6 +7676,10 @@ function sentience(){
         setTraitRank(trait,{ set: races[global.race.species].traits[trait] });
     });
 
+    if (global.race['evil'] && global.race['maintype'] && global.race.maintype === 'angelic'){
+        delete global.race['evil'];
+    }
+
     if (global.race['imitation'] && global.race['srace']){
         setImitation(false);
     }

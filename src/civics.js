@@ -1165,8 +1165,11 @@ export function buildGarrison(garrison,full){
         garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success">${loc('rating')} <span class="defenseRating">{{ g.workers | hell | rating }}</span> / <span class="offenseRating">{{ g.raid | rating }}</span></span></div>`));
     }
 
+    var soliders = $(`<div></div>`);
+    garrison.append(soliders);
+
     var barracks = $('<div class="columns is-mobile bunk"></div>');
-    garrison.append(barracks);
+    soliders.append(barracks);
 
     var bunks = $('<div class="bunks"></div>');
     barracks.append(bunks);
@@ -1189,7 +1192,7 @@ export function buildGarrison(garrison,full){
     }
 
     var campaign = $('<div class="columns is-mobile battle"></div>');
-    garrison.append(campaign);
+    soliders.append(campaign);
 
     var wrap = $('<div class="war"></div>');
     campaign.append(wrap);
