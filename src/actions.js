@@ -1108,7 +1108,14 @@ export const actions = {
             },
             category: 'outskirts',
             reqs: { primitive: 1 },
-            not_trait: ['soul_eater','cataclysm','artifical'],
+            not_trait: ['cataclysm','artifical'],
+            condition(){
+                let hallowed = getHalloween();
+                if (hallowed && global.race['soul_eater'] && !global.race['evil']){
+                    return true;
+                }
+                return global.race['soul_eater'] ? false : true;
+            },
             queue_complete(){ return 0; },
             cost: {
                 Mana(){ return global.tech['conjuring'] ? 1 : 0; },
