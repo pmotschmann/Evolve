@@ -3473,7 +3473,7 @@ export const traits = {
         name: loc('trait_artisan_name'),
         desc: loc('trait_artisan'),
         type: 'major',
-        val: 10,
+        val: 8,
         vars(r){
             // [Auto Crafting Boost, Manufactoring Boost]
             switch (r || traitRank('artisan') || 1){
@@ -3561,6 +3561,52 @@ export const traits = {
             }
         }
     },
+    formal: {
+        name: loc('trait_formal_name'),
+        desc: loc('trait_formal'),
+        type: 'major',
+        val: 5,
+        vars(r){
+            // [???]
+            switch (r || traitRank('formal') || 1){
+                case 0.25:
+                    return [1];
+                case 0.5:
+                    return [1];
+                case 1:
+                    return [1];
+                case 2:
+                    return [1];
+                case 3:
+                    return [1];
+                case 4:
+                    return [1];
+            }
+        }
+    },
+    butler: {
+        name: loc('trait_butler_name'),
+        desc: loc('trait_butler'),
+        type: 'major',
+        val: 5,
+        vars(r){
+            // [???]
+            switch (r || traitRank('butler') || 1){
+                case 0.25:
+                    return [1];
+                case 0.5:
+                    return [1];
+                case 1:
+                    return [1];
+                case 2:
+                    return [1];
+                case 3:
+                    return [1];
+                case 4:
+                    return [1];
+            }
+        }
+    },
     wish: {
         name: loc('trait_wish_name'),
         desc: loc('trait_wish'),
@@ -3627,6 +3673,29 @@ export const traits = {
                     return [2];
                 case 4:
                     return [2];
+            }
+        }
+    },
+    blasphemous: {
+        name: loc('trait_blasphemous_name'),
+        desc: loc('trait_blasphemous'),
+        type: 'major',
+        val: -5,
+        vars(r){
+            // [Temples less effective]
+            switch (r || traitRank('blasphemous') || 1){
+                case 0.25:
+                    return [20];
+                case 0.5:
+                    return [15];
+                case 1:
+                    return [10];
+                case 2:
+                    return [8];
+                case 3:
+                    return [6];
+                case 4:
+                    return [4];
             }
         }
     },
@@ -4859,6 +4928,7 @@ export const races = {
         entity: loc('race_lichen_entity'),
         traits: {
             //purifier: 1
+            
         },
         solar: {
             red: loc('race_lichen_solar_red'),
@@ -4878,7 +4948,7 @@ export const races = {
         home: loc('race_wyvern_home'),
         entity: loc('race_wyvern_entity'),
         traits: {
-
+            
         },
         solar: {
             red: loc('race_wyvern_solar_red'),
@@ -4939,7 +5009,8 @@ export const races = {
         home: loc('race_pengiun_home'),
         entity: loc('race_pengiun_entity'),
         traits: {
-
+            //formal: 1,
+            //butler: 1
         },
         solar: {
             red: loc('race_pengiun_solar_red'),
@@ -4979,7 +5050,8 @@ export const races = {
         home: loc('race_nephilim_home'),
         entity: loc('race_nephilim_entity'),
         traits: {
-            empowered: 1
+            empowered: 1,
+            blasphemous: 1
         },
         solar: {
             red: loc('race_nephilim_solar_red'),
@@ -4988,7 +5060,7 @@ export const races = {
             gas_moon: loc('race_nephilim_solar_gas_moon'),
             dwarf: loc('race_nephilim_solar_dwarf'),
         },
-        fanaticism: '',
+        fanaticism: 'empowered',
         basic(){ return ['eden','hellscape'].includes(global.city.biome) ? true : false; }
     },
     junker: {

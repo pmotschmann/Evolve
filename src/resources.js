@@ -3101,6 +3101,9 @@ export function faithBonus(num_temples = -1){
             if (fathom > 0){
                 temple_bonus *= 1 + (traits.spiritual.vars(1)[0] / 100 * fathom);
             }
+            if (global.race['blasphemous']){
+                temple_bonus *= 1 - (traits.blasphemous.vars()[0] / 100);
+            }
             if (global.civic.govern.type === 'theocracy'){
                 temple_bonus *= 1 + (govEffect.theocracy()[0] / 100);
             }
@@ -3136,6 +3139,9 @@ export function templePlasmidBonus(num_temples = -1){
             let fathom = fathomCheck('seraph');
             if (fathom > 0){
                 temple_bonus *= 1 + (traits.spiritual.vars(1)[0] / 100 * fathom);
+            }
+            if (global.race['blasphemous']){
+                temple_bonus *= 1 - (traits.blasphemous.vars()[0] / 100);
             }
             if (global.civic.govern.type === 'theocracy'){
                 temple_bonus *= 1 + (govEffect.theocracy()[0] / 100);
