@@ -253,6 +253,12 @@ window.importGame = function importGame(data,utf16){
                 saveState.stats.know -= 5000000;
             }
         }
+        // prevent invalid message colors from escaping class attribute
+        for (const msgQueue in saveState.lastMsg) {
+            for (const msg of saveState.lastMsg[msgQueue]) {
+                msg.c = msg.c.replaceAll('"', '')
+            }
+        }
         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(saveState)));
         window.location.reload();
     }
@@ -368,7 +374,7 @@ export function messageQueue(msg,color,dnr,tags,reload){
     color = color || 'warning';
 
     if (tags.includes(message_logs.view)){
-        let new_message = $('<p class="has-text-'+color+'">'+msg+'</p>');
+        let new_message = $('<p class="has-text-'+color+'"></p>').text(msg);
         $('#msgQueueLog').prepend(new_message);
         if ($('#msgQueueLog').children().length > global.settings.msgFilters[message_logs.view].max){
             $('#msgQueueLog').children().last().remove();

@@ -938,7 +938,7 @@ export function index(){
                     let queue = $(`#msgQueueLog`);
                     clearElement(queue);
                     message_logs[filter].forEach(function (msg){
-                        queue.append($('<p class="has-text-'+msg.color+'">'+msg.msg+'</p>'));
+                        queue.append($('<p class="has-text-'+msg.color+'"></p>').text(msg.msg));
                     });
                 }
             },
@@ -1049,7 +1049,7 @@ export function index(){
                                                 let queue = $(`#msgQueueLog`);
                                                 clearElement(queue);
                                                 message_logs[filt].forEach(function (msg){
-                                                    queue.append($('<p class="has-text-'+msg.color+'">'+msg.msg+'</p>'));
+                                                    queue.append($('<p class="has-text-'+msg.color+'"></p>').text(msg.msg));
                                                 });
                                             }
                                         });
