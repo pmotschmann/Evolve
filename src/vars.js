@@ -1212,7 +1212,7 @@ if (convertVersion(global['version']) <= 103017){
 }
 
 global['version'] = '1.3.17';
-global['revision'] = 'b';
+global['revision'] = 'c';
 delete global['beta'];
 
 if (!global.hasOwnProperty('prestige')){
