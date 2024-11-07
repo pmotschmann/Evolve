@@ -2210,6 +2210,9 @@ export function armyRating(val,type,wound){
             army *= 1 + (global.city.banquet.strength ** 0.65) / 100;
         }
     }
+    if (global.race['grenadier']){
+        army *= 1 + (traits.grenadier.vars()[0] / 100);
+    }
     if (global.race['rejuvenated']){
         army *= 1.05;
     }

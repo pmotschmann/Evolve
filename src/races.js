@@ -3726,6 +3726,29 @@ export const traits = {
             }
         }
     },
+    grenadier: {
+        name: loc('trait_grenadier_name'),
+        desc: loc('trait_grenadier'),
+        type: 'major',
+        val: 6,
+        vars(r){
+            // [More Powerful Soldiers]
+            switch (r || traitRank('grenadier') || 1){
+                case 0.25:
+                    return [75];
+                case 0.5:
+                    return [100];
+                case 1:
+                    return [125];
+                case 2:
+                    return [150];
+                case 3:
+                    return [175];
+                case 4:
+                    return [200];
+            }
+        }
+    },
     empowered: {
         name: loc('trait_empowered_name'),
         desc: loc('trait_empowered'),
@@ -5031,7 +5054,7 @@ export const races = {
             gas_moon: loc('race_wyvern_solar_gas_moon'),
             dwarf: loc('race_wyvern_solar_dwarf'),
         },
-        fanaticism: '',
+        fanaticism: 'elemental',
         basic(){ return true; }
     },
     beholder: {
@@ -5104,7 +5127,7 @@ export const races = {
         home: loc('race_bombardier_home'),
         entity: loc('race_bombardier_entity'),
         traits: {
-
+            grenadier: 1,
         },
         solar: {
             red: loc('race_bombardier_solar_red'),
@@ -5113,7 +5136,7 @@ export const races = {
             gas_moon: loc('race_bombardier_solar_gas_moon'),
             dwarf: loc('race_bombardier_solar_dwarf'),
         },
-        fanaticism: '',
+        fanaticism: 'grenadier',
         basic(){ return true }
     },
     nephilim: {

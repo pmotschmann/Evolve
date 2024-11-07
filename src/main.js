@@ -8207,32 +8207,29 @@ function midLoop(){
             lCaps['garrison'] += jobScale(2);
         }
         if (global.city['garrison']){
-            lCaps['garrison'] += global.city.garrison.on * (global.tech['military'] >= 5 ? jobScale(3) : jobScale(2));
-            if (global.race['chameleon']){
-                lCaps['garrison'] -= global.city.garrison.on;
-            }
+            lCaps['garrison'] += global.city.garrison.on * actions.city.garrison.soldiers();
         }
         if (global.space['space_barracks'] && !global.race['fasting']){
-            let soldiers = global.tech.marines >= 2 ? jobScale(4) : jobScale(2);
+            let soldiers = actions.space.spc_red.space_barracks.soldiers();
             lCaps['garrison'] += global.space.space_barracks.on * soldiers;
         }
         if (global.interstellar['cruiser']){
-            let soldiers = global.race['fasting'] ? jobScale(4) : jobScale(3);
+            let soldiers = actions.interstellar.int_proxima.cruiser.soldiers();
             lCaps['garrison'] += int_on['cruiser'] * soldiers;
         }
         if (global.race['wish'] && global.race['wishStats']){
             lCaps['garrison'] += jobScale(global.race.wishStats.troop);
         }
         if (p_on['s_gate'] && global.galaxy['starbase']){
-            let soldiers = global.tech.marines >= 2 ? jobScale(8) : jobScale(5);
+            let soldiers = actions.galaxy.gxy_gateway.starbase.soldiers();
             lCaps['garrison'] += p_on['starbase'] * soldiers;
         }
         if (global.eden['bunker']){
-            let soldiers = jobScale(5);
+            let soldiers = actions.eden.eden_asphodel.bunker.soldiers();
             lCaps['garrison'] += support_on['bunker'] * soldiers;
         }
         if (global.eden['fire_support_base'] && global.eden.fire_support_base.count === 100){
-            lCaps['garrison'] += jobScale(25);
+            lCaps['garrison'] += actions.eden.eden_elysium.fire_support_base.soldiers();
         }
         if (global.race['orbit_decayed'] && global.space.hasOwnProperty('red_mine')){
             lCaps['miner'] += jobScale(support_on['red_mine']);
@@ -8324,7 +8321,7 @@ function midLoop(){
             let pop = p_on['arcology'] * actions.portal.prtl_ruins.arcology.citizens();
             caps[global.race.species] += pop;
             breakdown.c[global.race.species][loc('portal_arcology_title')] = pop + 'v';
-            lCaps['garrison'] += p_on['arcology'] * jobScale(5);
+            lCaps['garrison'] += p_on['arcology'] * actions.portal.prtl_ruins.arcology.soldiers();
 
             caps['Containers'] += (p_on['arcology'] * Math.round(quantum_level) * 10);
             breakdown.c.Containers[loc('portal_arcology_title')] = (p_on['arcology'] * Math.round(quantum_level) * 10) + 'v';
@@ -8348,10 +8345,10 @@ function midLoop(){
             breakdown.c[global.race.species][loc('tau_home_colony')] = pop + 'v';
         }
         if (p_on['operating_base']){
-            lCaps['garrison'] += Math.min(support_on['operating_base'],p_on['operating_base']) * jobScale(4);
+            lCaps['garrison'] += Math.min(support_on['operating_base'],p_on['operating_base']) * actions.space.spc_enceladus.operating_base.soldiers();
         }
         if (p_on['fob']){
-            lCaps['garrison'] += jobScale(10);
+            lCaps['garrison'] += actions.space.spc_triton.fob.soldiers();
         }
         if (global.space['living_quarters']){
             let gain = Math.round(support_on['living_quarters'] * actions.space.spc_red.living_quarters.citizens());

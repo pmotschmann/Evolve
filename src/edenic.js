@@ -556,7 +556,7 @@ const edenicModules = {
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[loc('eden_asphodel_name')])}</div>`;
-                desc += `<div>${loc('plus_max_soldiers',[5])}</div>`;
+                desc += `<div>${loc('plus_max_soldiers',[$(this)[0].soldiers()])}</div>`;
                 if (global.tech['celestial_warfare'] && global.tech.celestial_warfare >= 4){
                     desc += `<div>${loc('eden_bunker_effect',[3])}</div>`;
                 }
@@ -583,6 +583,10 @@ const edenicModules = {
                     return true;
                 }
                 return false;
+            },
+            soldiers(){
+                let soldiers = global.race['grenadier'] ? 3 : 5;
+                return jobScale(soldiers);
             }
         },
         bliss_den: {
@@ -1030,7 +1034,7 @@ const edenicModules = {
             effect(wiki){
                 let count = (wiki || 0) + (global.eden.hasOwnProperty('fire_support_base') ? global.eden.fire_support_base.count : 0);
                 if (count >= 100){
-                    let desc = `<div>${loc('plus_max_soldiers',[25])}</div>`;
+                    let desc = `<div>${loc('plus_max_soldiers',[$(this)[0].soldiers()])}</div>`;
                     if (global.tech['elysium'] && global.tech.elysium >= 10 && global.tech.isle === 1){
                         if (global.resource.Elerium.amount >= 250000){
                             desc += `<div class="has-text-success">${loc('eden_fire_support_base_effect')}</div>`;
@@ -1120,6 +1124,10 @@ const edenicModules = {
                     }
                 }
                 return false;
+            },
+            soldiers(){
+                let soldiers = global.race['grenadier'] ? 15 : 25;
+                return jobScale(soldiers);
             }
         },
         elysanite_mine: {

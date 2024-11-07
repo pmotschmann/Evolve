@@ -712,12 +712,12 @@ const fortressModules = {
                 vBind({el: `#srprtl_ruins`},'update');
                 vBind({el: `#srprtl_gate`},'update');
             },
+            soldiers(){
+                let soldiers = global.race['grenadier'] ? 3 : 5;
+                return jobScale(soldiers);
+            },
             citizens(){
-                let pop = 8;
-                if (global.race['high_pop']){
-                    pop *= traits.high_pop.vars()[0];
-                }
-                return pop;
+                return jobScale(8);
             }
         },
         hell_forge: {

@@ -1233,7 +1233,7 @@ const spaceProjects = {
             effect(wiki){
                 let train = global.race['orbit_decayed'] ? actions.city.boot_camp.effect() : '';
                 let oil = +fuel_adjust(2,true,wiki).toFixed(2);
-                let soldiers = global.tech.marines >= 2 ? jobScale(4) : jobScale(2);
+                let soldiers = $(this)[0].soldiers();
                 let food = global.race['cataclysm'] ? `` : `<div class="has-text-caution">${loc('space_red_space_barracks_effect3',[global.resource.Food.name])}</div>`;
                 return `<div>${loc('plus_max_soldiers',[soldiers])}</div>${train}<div class="has-text-caution">${loc('space_red_space_barracks_effect2',[oil])}</div>${food}`;
             },
@@ -1245,6 +1245,13 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            soldiers(){
+                let soldiers = global.tech.marines >= 2 ? 4 : 2;
+                if (global.race['grenadier']){
+                    soldiers /= 2;
+                }
+                return jobScale(soldiers);
             },
             flair(){
                 return loc('space_red_space_barracks_flair');
@@ -3022,7 +3029,7 @@ const interstellarProjects = {
             powered(){ return 0; },
             effect(){
                 let helium = +int_fuel_adjust(6).toFixed(2);
-                let troops = jobScale(global.race['fasting'] ? 4 : 3);
+                let troops = $(this)[0].soldiers();
                 return `<div>${loc('plus_max_soldiers',[troops])}</div><div class="has-text-caution">${loc('space_belt_station_effect3',[helium])}</div>`;
             },
             action(){
@@ -3032,6 +3039,13 @@ const interstellarProjects = {
                     return true;
                 }
                 return false;
+            },
+            soldiers(){
+                let soldiers = global.race['fasting'] ? 4 : 3;
+                if (global.race['grenadier']){
+                    soldiers--;
+                }
+                return jobScale(soldiers);
             }
         },
         dyson: {
@@ -4252,7 +4266,7 @@ const galaxyProjects = {
             effect(wiki){
                 let helium = +(int_fuel_adjust(25)).toFixed(2);
                 let food = 250;
-                let soldiers = global.tech.marines >= 2 ? jobScale(8) : jobScale(5);
+                let soldiers = $(this)[0].soldiers();
                 return `<div class="has-text-advanced">${loc('galaxy_defense_platform_effect',[25])}</div><div>${loc('galaxy_gateway_support',[$(this)[0].support()])}</div><div>${loc('plus_max_soldiers',[soldiers])}</div><div class="has-text-caution">${loc('interstellar_alpha_starport_effect2',[helium,$(this)[0].powered(wiki)])}</div><div class="has-text-caution">${loc('interstellar_alpha_starport_effect3',[food,global.resource.Food.name])}</div>`;
             },
             support(){ return 2; },
@@ -4272,6 +4286,10 @@ const galaxyProjects = {
                     return true;
                 }
                 return false;
+            },
+            soldiers(){
+                let soldiers = global.tech.marines >= 2 ? (global.race['grenadier'] ? 5 : 8) : (global.race['grenadier'] ? 3 : 5);
+                return jobScale(soldiers);
             }
         },
         ship_dock: {
@@ -4375,8 +4393,11 @@ const galaxyProjects = {
             s_type: 'gateway',
             support(){ return -1; },
             ship: {
-                civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 1 : 1; },
-                mil(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 1 : 1; },
+                civ(){ return global.race['grenadier'] ? 0 : global.race['high_pop'] ? traits.high_pop.vars()[0] * 1 : 1; },
+                mil(){
+                    let base = global.race['high_pop'] ? traits.high_pop.vars()[0] * 1 : 1;
+                    return global.race['grenadier'] ? Math.ceil(base / 2) : base;
+                },
                 helium: 6,
                 rating(){ 
                     let rating = global.race['banana'] ? 7 : 10; 
@@ -4419,7 +4440,10 @@ const galaxyProjects = {
             support(){ return -1; },
             ship: {
                 civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 2 : 2; },
-                mil(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 3 : 3; },
+                mil(){
+                    let base = global.race['grenadier'] ? 2 : 3;
+                    return global.race['high_pop'] ? traits.high_pop.vars()[0] * base : base;
+                },
                 helium: 10,
                 rating(){ 
                     let rating = global.race['banana'] ? 21 : 30; 
@@ -4462,7 +4486,10 @@ const galaxyProjects = {
             support(){ return -2; },
             ship: {
                 civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 3 : 3; },
-                mil(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 5 : 5; },
+                mil(){
+                    let base = global.race['grenadier'] ? 3 : 5;
+                    return global.race['high_pop'] ? traits.high_pop.vars()[0] * base : base;
+                },
                 helium: 25,
                 rating(){ 
                     let rating = global.race['banana'] ? 56 : 80;
@@ -4507,7 +4534,10 @@ const galaxyProjects = {
             support(){ return -3; },
             ship: {
                 civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 6 : 6; },
-                mil(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 10 : 10; },
+                mil(){
+                    let base = global.race['grenadier'] ? 6 : 10;
+                    return global.race['high_pop'] ? traits.high_pop.vars()[0] * base : base;
+                },
                 deuterium: 25,
                 rating(){ 
                     let rating = global.race['banana'] ? 175 : 250;
@@ -4552,7 +4582,10 @@ const galaxyProjects = {
             support(){ return -5; },
             ship: {
                 civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 10 : 10; },
-                mil(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 20 : 20; },
+                mil(){
+                    let base = global.race['grenadier'] ? 12 : 20;
+                    return global.race['high_pop'] ? traits.high_pop.vars()[0] * base : base;
+                },
                 deuterium: 80,
                 rating(){ 
                     let rating = global.race['banana'] ? 1260 : 1800;
@@ -5485,7 +5518,10 @@ const galaxyProjects = {
             },
             ship: {
                 civ(){ return 0; },
-                mil(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 1 : 1; },
+                mil(){
+                    let base = global.race['high_pop'] ? traits.high_pop.vars()[0] * 1 : 1;
+                    return global.race['grenadier'] ? Math.ceil(base / 2) : base;
+                },
                 helium: 8,
                 rating(){ 
                     let rating = global.race['banana'] ? 35 : 50;
@@ -5565,7 +5601,10 @@ const galaxyProjects = {
             },
             ship: {
                 civ(){ return 0; },
-                mil(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 2 : 2; },
+                mil(){
+                    let base = global.race['grenadier'] ? 1 : 2;
+                    return global.race['high_pop'] ? traits.high_pop.vars()[0] * base : base;
+                },
                 helium: 18,
                 rating(){ 
                     let rating = global.race['banana'] ? 9 : 12;

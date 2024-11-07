@@ -765,7 +765,7 @@ const outerTruth = {
             effect(){
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[planetName().enceladus])}</div>`;
                 desc += `<div>${loc('galaxy_defense_platform_effect',[50])}</div>`;
-                desc += loc('plus_max_resource',[jobScale(4),loc('civics_garrison_soldiers')]);
+                desc += loc('plus_max_resource',[$(this)[0].soldiers(),loc('civics_garrison_soldiers')]);
                 if (global.race['orbit_decayed']){
                     let healing = global.tech['medic'] * 5;
                     desc += `<div>${loc('city_hospital_effect',[healing])}</div>`;
@@ -782,6 +782,10 @@ const outerTruth = {
                     return true;
                 }
                 return false;
+            },
+            soldiers(){
+                let soldiers = global.race['grenadier'] ? 3 : 4;
+                return jobScale(soldiers);
             },
             post(){
                 vBind({el: `#spc_enceladussynd`},'update');
@@ -900,7 +904,7 @@ const outerTruth = {
                 let troops = garrisonSize();
                 let max_troops = garrisonSize(true);
                 let desc = `<div>${loc('galaxy_defense_platform_effect',[500])}</div>`;
-                desc += loc('plus_max_resource',[jobScale(10),loc('civics_garrison_soldiers')]);
+                desc += loc('plus_max_resource',[$(this)[0].soldiers(),loc('civics_garrison_soldiers')]);
                 desc += `<div class="has-text-warning"><span class="soldier">${loc('civics_garrison_soldiers')}:</span> <span>${troops}</span> / <span>${max_troops}<span></div>`;
                 desc += `<div class="has-text-warning"><span class="wounded">${loc('civics_garrison_wounded')}:</span> <span>${global.civic['garrison'] ? global.civic.garrison.wounded : 0}</span></div>`;
                 desc += `<div class="has-text-warning">${loc('space_fob_landed',[global.space['fob'] ? global.space.fob.troops : 0])}</div>`;
@@ -915,6 +919,10 @@ const outerTruth = {
                     return true;
                 }
                 return false;
+            },
+            soldiers(){
+                let soldiers = global.race['grenadier'] ? 6 : 10;
+                return jobScale(soldiers);
             },
             post(){
                 if (global.tech['triton'] === 2){
@@ -4021,19 +4029,19 @@ function updateCosts(){
 export function shipCrewSize(ship){
     switch (ship.class){
         case 'corvette':
-            return jobScale(2);
+            return global.race['grenadier'] ? jobScale(1) : jobScale(2);
         case 'frigate':
-            return jobScale(3);
+            return global.race['grenadier'] ? jobScale(2) : jobScale(3);
         case 'destroyer':
-            return jobScale(4);
+            return global.race['grenadier'] ? jobScale(3) : jobScale(4);
         case 'cruiser':
-            return jobScale(6);
+            return global.race['grenadier'] ? jobScale(4) : jobScale(6);
         case 'battlecruiser':
-            return jobScale(8);
+            return global.race['grenadier'] ? jobScale(5) : jobScale(8);
         case 'dreadnought':
-            return jobScale(10);
+            return global.race['grenadier'] ? jobScale(6) : jobScale(10);
         case 'explorer':
-            return jobScale(10);
+            return global.race['grenadier'] ? jobScale(6) : jobScale(10);
     }
 }
 

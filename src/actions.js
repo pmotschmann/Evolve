@@ -1979,10 +1979,7 @@ export const actions = {
                 Horseshoe(){ return global.race['hooved'] ? (global.race['chameleon'] ? 1 : 2) : 0; }
             },
             effect(){
-                let bunks = global.tech['military'] >= 5 ? jobScale(3) : jobScale(2);
-                if (global.race['chameleon']){
-                    bunks--;
-                }
+                let bunks = $(this)[0].soldiers();
                 return loc('plus_max_resource',[bunks,loc('civics_garrison_soldiers')]);
             },
             switchable(){ return true; },
@@ -1998,17 +1995,24 @@ export const actions = {
                         vBind({el: `#garrison`},'update');
                         vBind({el: `#c_garrison`},'update');
                     }
-                    let gain = global.tech['military'] >= 5 ? 3 : 2;
-                    if (global.race['chameleon']){
-                        gain -= global.city.garrison.count;
-                    }
-                    global.civic['garrison'].max += jobScale(gain);
+                    global.civic['garrison'].max += $(this)[0].soldiers();
                     global.city['garrison'].count++;
                     global.city['garrison'].on++;
                     global.resource.Furs.display = true;
                     return true;
                 }
                 return false;
+            },
+            soldiers(){
+                let soldiers = global.tech['military'] >= 5 ? 3 : 2;
+                if (global.race['chameleon']){
+                    soldiers--;
+                }
+                if (global.race['grenadier']){
+                    soldiers--;
+                }
+                if (soldiers <= 0){ return 1; }
+                return jobScale(soldiers);
             }
         },
         hospital: {
