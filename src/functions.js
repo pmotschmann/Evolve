@@ -2820,32 +2820,37 @@ export function shrineBonusActive() {
 
 export function getShrineBonus(type) {
 	let shrine_bonus = {
-		mult: 1,
-		add: 0
+        mult: 1,
+        add: 0,
+        active: false
 	};
 
 	if (shrineBonusActive()){
 		switch(type){
 			case 'metal':
                 let metal = global.city.shrine.metal;
-                if (global.city.calendar.moon > 7 && global.city.calendar.moon < 14){ metal += global.city.shrine.cycle; }
+                if ((global.city.calendar.moon >= 7 && global.city.calendar.moon < 14) || global.city.calendar.moon === 14){ metal += global.city.shrine.cycle; }
 				shrine_bonus.mult += +(metal / 100 * traits.magnificent.vars()[3]);
+                if (metal > 0){ shrine_bonus.active = true; }
 				break;
 			case 'tax':
                 let tax = global.city.shrine.tax;
-                if (global.city.calendar.moon > 21){ tax += global.city.shrine.cycle; }
+                if (global.city.calendar.moon >= 21 || global.city.calendar.moon === 14){ tax += global.city.shrine.cycle; }
 				shrine_bonus.mult += +(tax / 100 * traits.magnificent.vars()[2]);
+                if (tax > 0){ shrine_bonus.active = true; }
 				break;
 			case 'know':
                 let know = global.city.shrine.know;
-                if (global.city.calendar.moon > 14 && global.city.calendar.moon < 21){ know += global.city.shrine.cycle; }
+                if ((global.city.calendar.moon > 14 && global.city.calendar.moon <= 21) || global.city.calendar.moon === 14){ know += global.city.shrine.cycle; }
                 shrine_bonus.add += +(know* traits.magnificent.vars()[0]);
                 shrine_bonus.mult += +(know * traits.magnificent.vars()[1] / 100);
+                if (know > 0){ shrine_bonus.active = true; }
 				break;
 			case 'morale':
                 let morale = global.city.shrine.morale;
-                if (global.city.calendar.moon > 0 && global.city.calendar.moon < 7){ morale += global.city.shrine.cycle; }
+                if ((global.city.calendar.moon > 0 && global.city.calendar.moon <= 7) || global.city.calendar.moon === 14){ morale += global.city.shrine.cycle; }
 				shrine_bonus.add += morale * traits.magnificent.vars()[4];
+                if (morale > 0){ shrine_bonus.active = true; }
 				break;
 			default:
 				break;

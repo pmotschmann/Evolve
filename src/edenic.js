@@ -5,12 +5,12 @@ import { payCosts, powerOnNewStruct, setAction, storageMultipler, drawTech, bank
 import { checkRequirements, incrementStruct, piracy, ascendLab} from './space.js';
 import { mechRating } from './portal.js';
 import { actions } from './actions.js';
-import { jobScale } from './jobs.js';
+import { jobScale, workerScale } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
 import { loc } from './locale.js';
 import { armyRating, armorCalc, garrisonSize, mercCost } from './civics.js';
 import { govActive } from './governor.js';
-import { races, traitCostMod } from './races.js';
+import { races, traitCostMod, racialTrait } from './races.js';
 
 const edenicModules = {
     eden_asphodel: {
@@ -280,6 +280,13 @@ const edenicModules = {
                 desc += `<div>${loc('eden_research_station_effect',[highPopAdjust(souls).toFixed(0), loc('job_ghost_trapper')])}</div>`;
                 if (global.tech['science'] && global.tech.science >= 22){
                     desc += `<div>${loc('plus_max_resource',[777,global.resource.Omniscience.name])}</div>`;
+
+                    let ghost_base = workerScale(global.civic.ghost_trapper.workers,'ghost_trapper');
+                    ghost_base *= racialTrait(ghost_base,'science');
+                    ghost_base *= global.race['pompous'] ? (1 - traits.pompous.vars()[0] / 100) : 1;
+                    ghost_base = highPopAdjust(ghost_base);
+                    let ghost_gain = ghost_base * 0.0000325;
+                    desc += `<div>${loc('gain',[+ghost_gain.toFixed(5),global.resource.Omniscience.name])}</div>`;
                 }
                 return desc;
             },

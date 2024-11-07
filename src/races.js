@@ -3735,17 +3735,17 @@ export const traits = {
             // [More Powerful Soldiers]
             switch (r || traitRank('grenadier') || 1){
                 case 0.25:
-                    return [75];
-                case 0.5:
                     return [100];
-                case 1:
+                case 0.5:
                     return [125];
-                case 2:
+                case 1:
                     return [150];
-                case 3:
+                case 2:
                     return [175];
-                case 4:
+                case 3:
                     return [200];
+                case 4:
+                    return [225];
             }
         }
     },

@@ -3266,22 +3266,23 @@ export const actions = {
                 Copper(offset){ return costMultiplier('shrine', offset, 15, 1.32); }
             },
             effect(){
+                let morale = getShrineBonus('morale');
+                let metal = getShrineBonus('metal');
+                let know = getShrineBonus('know');
+                let tax = getShrineBonus('tax');
+
                 let desc = `<div class="has-text-special">${loc('city_shrine_effect')}</div>`;
-                if (global.city['shrine'] && global.city.shrine.morale > 0){
-                    let morale = getShrineBonus('morale');
+                if (global.city['shrine'] && morale.active){
                     desc = desc + `<div>${loc('city_shrine_morale',[+(morale.add).toFixed(1)])}</div>`;
                 }
-                if (global.city['shrine'] && global.city.shrine.metal > 0){
-                    let metal = getShrineBonus('metal');
+                if (global.city['shrine'] && metal.active){
                     desc = desc + `<div>${loc('city_shrine_metal',[+((metal.mult - 1) * 100).toFixed(1)])}</div>`;
                 }
-                if (global.city['shrine'] && global.city.shrine.know > 0){
-                    let know = getShrineBonus('know');
+                if (global.city['shrine'] && know.active){
                     desc = desc + `<div>${loc('city_shrine_know',[(+(know.add).toFixed(1)).toLocaleString()])}</div>`;
                     desc = desc + `<div>${loc('city_shrine_know2',[+((know.mult - 1) * 100).toFixed(1)])}</div>`;
                 }
-                if (global.city['shrine'] && global.city.shrine.tax > 0){
-                    let tax = getShrineBonus('tax');
+                if (global.city['shrine'] && tax.active){
                     desc = desc + `<div>${loc('city_shrine_tax',[+((tax.mult - 1) * 100).toFixed(1)])}</div>`;
                 }
                 return desc;
