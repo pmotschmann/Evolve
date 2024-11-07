@@ -601,6 +601,25 @@ export const events = {
             return loc('event_chicken',[loc(`event_chicken_eaten${Math.floor(seededRandom(0,10))}`),dead]);
         }
     },
+    brawl:{ 
+        reqs: {
+            tech: 'primitive',
+            trait: 'aggressive'
+        },
+        condition(){
+            if (global.resource[global.race.species].amount > 0){
+                return true;
+            }
+            return false;
+        },
+        type: 'major',
+        effect(){
+            let dead = Math.floor(seededRandom(1,jobScale(traits.aggressive.vars()[0] + 1)));
+            if (dead > global.resource[global.race.species].amount){ dead = global.resource[global.race.species].amount; }
+            global.resource[global.race.species].amount -= dead;
+            return loc('event_brawl',[loc(`event_brawl${Math.floor(seededRandom(0,10))}`),dead]);
+        }
+    },
     m_curious: {
         reqs: {
             tech: 'primitive',
@@ -750,6 +769,25 @@ export const events = {
         effect(){
             global.resource[global.race.species].amount--;
             return loc('event_chicken',[loc(`event_chicken_eaten${Math.rand(0,10)}`),1]);
+        }
+    },
+    fight:{ 
+        reqs: {
+            tech: 'primitive',
+            trait: 'aggressive'
+        },
+        condition(){
+            if (global.resource[global.race.species].amount > 0){
+                return true;
+            }
+            return false;
+        },
+        type: 'minor',
+        effect(){
+            let dead = Math.floor(seededRandom(1,jobScale(traits.aggressive.vars()[1] + 1)));
+            if (dead > global.resource[global.race.species].amount){ dead = global.resource[global.race.species].amount; }
+            global.resource[global.race.species].amount -= dead;
+            return loc('event_brawl',[loc(`event_brawl${Math.floor(seededRandom(0,10))}`),dead]);
         }
     },
     heatwave: {

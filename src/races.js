@@ -3680,6 +3680,52 @@ export const traits = {
         }
     },
     */
+    ocular_power: {
+        name: loc('trait_ocular_power_name'),
+        desc: loc('trait_ocular_power'),
+        type: 'major',
+        val: 7,
+        vars(r){
+            // []
+            switch (r || traitRank('ocular_power') || 1){
+                case 0.25:
+                    return [1];
+                case 0.5:
+                    return [1];
+                case 1:
+                    return [1];
+                case 2:
+                    return [1];
+                case 3:
+                    return [1];
+                case 4:
+                    return [1];
+            }
+        }
+    },
+    floating: {
+        name: loc('trait_floating_name'),
+        desc: loc('trait_floating'),
+        type: 'major',
+        val: -3,
+        vars(r){
+            // [Wind lowers production]
+            switch (r || traitRank('floating') || 1){
+                case 0.25:
+                    return [14];
+                case 0.5:
+                    return [12];
+                case 1:
+                    return [10];
+                case 2:
+                    return [8];
+                case 3:
+                    return [6];
+                case 4:
+                    return [4];
+            }
+        }
+    },
     wish: {
         name: loc('trait_wish_name'),
         desc: loc('trait_wish'),
@@ -3732,7 +3778,7 @@ export const traits = {
         type: 'major',
         val: 6,
         vars(r){
-            // [More Powerful Soldiers]
+            // [More Powerful Soldiers but less of them]
             switch (r || traitRank('grenadier') || 1){
                 case 0.25:
                     return [100];
@@ -3746,6 +3792,29 @@ export const traits = {
                     return [200];
                 case 4:
                     return [225];
+            }
+        }
+    },
+    aggressive: {
+        name: loc('trait_aggressive_name'),
+        desc: loc('trait_aggressive'),
+        type: 'major',
+        val: -2,
+        vars(r){
+            // [Major Death, Minor Death]
+            switch (r || traitRank('aggressive') || 1){
+                case 0.25:
+                    return [30,12];
+                case 0.5:
+                    return [25,10];
+                case 1:
+                    return [20,8];
+                case 2:
+                    return [15,6];
+                case 3:
+                    return [10,4];
+                case 4:
+                    return [5,2];
             }
         }
     },
@@ -5065,7 +5134,8 @@ export const races = {
         home: loc('race_beholder_home'),
         entity: loc('race_beholder_entity'),
         traits: {
-            //telekenesis: 1
+            ocular_power: 1,
+            floating: 1
         },
         solar: {
             red: loc('race_beholder_solar_red'),
@@ -5128,6 +5198,7 @@ export const races = {
         entity: loc('race_bombardier_entity'),
         traits: {
             grenadier: 1,
+            aggressive: 1
         },
         solar: {
             red: loc('race_bombardier_solar_red'),

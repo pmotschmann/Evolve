@@ -1636,6 +1636,7 @@ Misc ---------> Main template
         .vscroll::-webkit-scrollbar-track,
         .sticky::-webkit-scrollbar-track,
         .resTabs>section::-webkit-scrollbar-track,
+        .resTabs>.tabs::-webkit-scrollbar-track,
         .bldQueue::-webkit-scrollbar-track,
         .dropdown-content::-webkit-scrollbar-track {
             -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
@@ -1646,6 +1647,7 @@ Misc ---------> Main template
         .vscroll::-webkit-scrollbar,
         .sticky::-webkit-scrollbar,
         .resTabs>section::-webkit-scrollbar,
+        .resTabs>.tabs::-webkit-scrollbar,
         .bldQueue::-webkit-scrollbar,
         .dropdown-content::-webkit-scrollbar {
             width: 6px;
@@ -1661,6 +1663,7 @@ Misc ---------> Main template
         .hscroll::-webkit-scrollbar-thumb,
         .sticky::-webkit-scrollbar-thumb,
         .resTabs>section::-webkit-scrollbar-thumb,
+        .resTabs>.tabs::-webkit-scrollbar-thumb,
         .bldQueue::-webkit-scrollbar-thumb,
         .dropdown-content::-webkit-scrollbar-thumb {
             background-color: @webkit-scrollbar-thumb-background;
@@ -1670,6 +1673,7 @@ Misc ---------> Main template
         .hscroll,
         .sticky,
         .resTabs>section,
+        .resTabs>.tabs,
         .bldQueue {
             scrollbar-color: @webkit-scrollbar-thumb-background @webkit-scrollbar-background;
         }
@@ -4113,6 +4117,10 @@ body .modal>div.popper.wide {
     .tabs>ul {
         margin-left: 1rem;
     }
+
+    .tabs {
+        overflow-x: auto;
+    }
 }
 
 .modalBox,
@@ -4936,6 +4944,7 @@ div.bigbang {
 }
 
 .resTabs>section,
+.resTabs>.tabs,
 .bldQueue {
     scrollbar-width: thin;
 }
