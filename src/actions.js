@@ -3809,6 +3809,9 @@ export const actions = {
                 if (global.tech['biotech'] >= 1){
                     gain *= 2.5;
                 }
+                if (global.race['elemental'] && traits.elemental.vars()[0] === 'frost'){
+                    gain *= 1 + (traits.elemental.vars()[4] * global.resource[global.race.species].amount / 100);
+                }
                 gain = +(gain).toFixed(0);
                 return `<span>${loc('city_max_knowledge',[gain.toLocaleString()])}</span>, <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span>`;
             },

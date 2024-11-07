@@ -2873,6 +2873,7 @@ const valAdjust = {
     unfathomable: false,
     darkness: false,
     living_tool: false,
+    empowered: false,
 };
 
 function getTraitVals(trait, rank, species){
@@ -2907,6 +2908,22 @@ function getTraitVals(trait, rank, species){
         }
         else if (!valAdjust[trait]){
             vals = [];
+        }
+    }
+    else if (trait === 'elemental'){
+        switch (traits.elemental.vars(rank)[0]){
+            case 'electric':
+                vals = [loc(`element_electric`), traits.elemental.vars(rank)[1], traits.elemental.vars(rank)[5]];
+                break;
+            case 'acid':
+                vals = [loc(`element_acid`), traits.elemental.vars(rank)[2], traits.elemental.vars(rank)[5]];
+                break;
+            case 'fire':
+                vals = [loc(`element_fire`), traits.elemental.vars(rank)[3], traits.elemental.vars(rank)[5]];
+                break;
+            case 'frost':
+                vals = [loc(`element_frost`), traits.elemental.vars(rank)[3], traits.elemental.vars(rank)[5], loc('city_biolab')];
+                break;
         }
     }
     return vals;
@@ -3069,7 +3086,14 @@ export function getTraitDesc(info, trait, opts){
     }
     else {
         if (wiki || (global.stats.feat['journeyman'] && global.stats.achieve['seeder'] && global.stats.achieve.seeder.l > 0)){
-            info.append(`<div class="has-text-${color} effect">${loc(`wiki_trait_effect_${trait}`, getTraitVals(trait, trank, species))}</div>`);
+            let trait_desc = '';
+            if (trait === 'elemental'){
+                trait_desc = loc(`wiki_trait_effect_${trait}_${traits.elemental.vars()[0]}`, getTraitVals(trait, trank, species));
+            }
+            else {
+                trait_desc = loc(`wiki_trait_effect_${trait}`, getTraitVals(trait, trank, species));
+            }
+            info.append(`<div class="has-text-${color} effect">${trait_desc}</div>`);
         }
     }
     if (traitExtra[trait] && wiki){
@@ -3088,6 +3112,9 @@ export function getTraitDesc(info, trait, opts){
             data: data,
             methods: {
                 getTraitDesc(rk){
+                    if (trait === 'elemental'){
+                        return loc(`wiki_trait_effect_${trait}_${traits.elemental.vars()[0]}`, getTraitVals(trait, rk, species));
+                    }
                     return loc(`wiki_trait_effect_${trait}`, getTraitVals(trait, rk, species));
                 },
                 up(){

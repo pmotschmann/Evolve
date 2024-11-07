@@ -2291,7 +2291,10 @@ export function sequenceLabs(){
     if (labs > 0 && global.city.ptrait.includes('toxic')){
         labs += planetTraits.toxic.vars()[0];
     }
-    return labs;
+    if (labs > 0 && global.race['elemental'] && traits.elemental.vars()[0] === 'frost'){
+        labs *= 1 + (global.resource[global.race.species].amount * traits.elemental.vars()[4] / 100);
+    }
+    return Math.round(labs);
 }
 
 function bindTrait(breakdown,trait){

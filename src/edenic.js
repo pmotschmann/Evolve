@@ -682,10 +682,7 @@ const edenicModules = {
             filter(v,type){
                 switch (type){
                     case 'stationed':
-                        let size = garrisonSize();
-                        let trickNum = global.race['cataclysm'] ? 13 : 31;
-                        let trick = size === trickNum && !full ? trickOrTreat(2,14,true) : false;
-                        return size === trickNum && trick.length > 0 ? trick : size;
+                        return garrisonSize();
                     case 's_max':
                         return garrisonSize(true);
                     case 'm_use':
@@ -1213,7 +1210,7 @@ const edenicModules = {
             desc(){
                 return `<div>${loc('eden_pillbox_title',)}</div><div class="has-text-special">${loc('requires_soldiers')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
-            reqs: { elysium: 11 },
+            reqs: { elysium: 9 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('pillbox', offset, 1500000000, 1.26, 'eden'); },
                 Cement(offset){ return spaceCostMultiplier('pillbox', offset, 500000000, 1.26, 'eden'); },
@@ -1710,6 +1707,9 @@ const edenicModules = {
                     return true;
                 }
                 return false;
+            },
+            flair(){
+                return loc(`eden_soul_compactor_flair`);
             }
         },
     },

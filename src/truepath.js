@@ -4825,6 +4825,10 @@ export function syndicate(region,extra){
         }
 
         let piracy = global.space.syndicate[region];
+        if (global.race['chicken']){
+            piracy *= 1 + (traits.chicken.vars()[1] / 100);
+            piracy = Math.round(pirate);
+        }
         let patrol = 0;
         let sensor = 0;
         let overkill = 0;

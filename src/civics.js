@@ -2179,6 +2179,9 @@ export function armyRating(val,type,wound){
         if (global.city.ptrait.includes('rage')){
             army *= planetTraits.rage.vars()[0];
         }
+        if (global.race['elemental']){
+            army *= 1 + (traits.elemental.vars()[5] / 100);
+        }
         if (global.race['parasite']){
             if (val === 1){
                 army += 2;

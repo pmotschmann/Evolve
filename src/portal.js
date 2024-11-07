@@ -2628,6 +2628,9 @@ export function bloodwar(){
 
             let odds = 30 + Math.max(global.race['chameleon'] ? traits.chameleon.vars()[1] : 0,
                                      global.race['elusive'] ? traits.elusive.vars()[0] : 0);
+            if (global.race['chicken']){
+                odds -= Math.round(traits.chicken.vars()[0] / 5);
+            }
             if (Math.rand(0,odds) === 0){
                 patrol_report.ambush = true;
                 dead += casualties(Math.round(demons * (1 + Math.random() * 3)),0,true,patrol_report);
@@ -2784,6 +2787,9 @@ export function bloodwar(){
         let influx = ((10000 - global.portal.fortress.threat) / 2500) + 1;
         if (global.tech['portal'] >= 4 && p_on['attractor']){
             influx *= 1 + (p_on['attractor'] * 0.22);
+        }
+        if (global.race['chicken']){
+            influx *= 1 + traits.chicken.vars()[0] / 100;
         }
         let demon_spawn = Math.rand(Math.round(10 * influx),Math.round(50 * influx));
         global.portal.fortress.threat += demon_spawn;

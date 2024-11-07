@@ -3561,6 +3561,78 @@ export const traits = {
             }
         }
     },
+    elemental: {
+        name: loc('trait_elemental_name'),
+        desc: loc('trait_elemental'),
+        type: 'major',
+        val: 5,
+        vars(r){
+            let element = 'fire';
+            switch (global.city.biome || 'grassland'){
+                case 'savanna':
+                case 'forest':
+                case 'swamp':
+                    element = 'acid';
+                    break;
+                case 'grassland':
+                case 'desert':
+                case 'eden':
+                    element = 'electric';
+                    break;
+                case 'oceanic':
+                case 'tundra':
+                case 'taiga':
+                    element = 'frost';
+                    break;
+                case 'volcanic':
+                case 'ashland':
+                case 'hellscape':
+                    element = 'fire';
+                    break;
+            }
+
+            // [Element, Electric, Acid, Fire, Frost, Combat]
+            // [Type, Power, Industry, Smelting, Bioscience, Combat]
+            switch (r || traitRank('elemental') || 1){
+                case 0.25:
+                    return [element, 0.2, 0.02, 0.03, 0.01, 2];
+                case 0.5:
+                    return [element, 0.4, 0.04, 0.06, 0.02, 4];
+                case 1:
+                    return [element, 0.6, 0.06, 0.09, 0.03, 6];
+                case 2:
+                    return [element, 0.8, 0.08, 0.12, 0.04, 8];
+                case 3:
+                    return [element, 1.0, 0.10, 0.15, 0.05, 10];
+                case 4:
+                    return [element, 1.2, 0.12, 0.18, 0.06, 12];
+            }
+        }
+    },
+    chicken: {
+        name: loc('trait_chicken_name'),
+        desc: loc('trait_chicken'),
+        type: 'major',
+        val: -8,
+        vars(r){
+            // [Hell Worse, Piracy Worse, Events Worse]
+            switch (r || traitRank('chicken') || 1){
+                case 0.25:
+                    return [100,18];
+                case 0.5:
+                    return [75,15];
+                case 1:
+                    return [50,12];
+                case 2:
+                    return [40,9];
+                case 3:
+                    return [30,6];
+                case 4:
+                    return [20,3];
+            }
+        }
+    },
+    /*
     formal: {
         name: loc('trait_formal_name'),
         desc: loc('trait_formal'),
@@ -3607,6 +3679,7 @@ export const traits = {
             }
         }
     },
+    */
     wish: {
         name: loc('trait_wish_name'),
         desc: loc('trait_wish'),
@@ -4948,7 +5021,8 @@ export const races = {
         home: loc('race_wyvern_home'),
         entity: loc('race_wyvern_entity'),
         traits: {
-            
+            elemental: 1,
+            chicken: 1
         },
         solar: {
             red: loc('race_wyvern_solar_red'),

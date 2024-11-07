@@ -5653,6 +5653,11 @@ export function piracy(region,rating,raw,wiki){
                 break;
         }
 
+        if (global.race['chicken']){
+            pirate *= 1 + (traits.chicken.vars()[1] / 100);
+            pirate = Math.round(pirate);
+        }
+
         let num_def_plat_on = wiki ? global.galaxy.defense_platform.on : p_on['defense_platform'];
         if (region === 'gxy_stargate' && num_def_plat_on){
             armada += num_def_plat_on * 20;

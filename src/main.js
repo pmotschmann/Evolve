@@ -15,7 +15,7 @@ import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, sh
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
 import { govern, govActive, removeTask } from './governor.js';
-import { production, highPopAdjust, teamster } from './prod.js';
+import { production, highPopAdjust, teamster, factoryBonus } from './prod.js';
 import { swissKnife } from './tech.js';
 import { vacuumCollapse } from './resets.js';
 import { index, mainVue, initTabs, loadTab } from './index.js';
@@ -345,7 +345,7 @@ popover('morale',
                     value /= democracy;
                 }
 
-                obj.popper.append(`<p class="modal_bd"><span>${loc(`morale_${morale}`)}</span> <span class="has-text-${type}"> +${+(value).toFixed(1)}%</span></p>`)
+                obj.popper.append(`<p class="modal_bd"><span>${loc(`morale_${morale}`)}</span> <span class="has-text-${type}"> ${+(value).toFixed(1)}%</span></p>`)
 
                 if (morale === 'entertain' && global.civic.govern.type === 'democracy'){
                     let democracy = govEffect.democracy()[0];
@@ -369,12 +369,12 @@ popover('morale',
         if (global.civic.govern.type === 'republic'){
             let repub = govEffect.republic()[1];
             total += repub;
-            obj.popper.append(`<p class="modal_bd"><span>${loc('govern_republic')}</span> <span class="has-text-success"> +${repub}%</span></p>`);
+            obj.popper.append(`<p class="modal_bd"><span>${loc('govern_republic')}</span> <span class="has-text-success"> ${repub}%</span></p>`);
         }
         if (global.civic.govern.type === 'federation'){
             let fed = govEffect.federation()[1];
             total += fed;
-            obj.popper.append(`<p class="modal_bd"><span>${loc('govern_federation')}</span> <span class="has-text-success"> +${fed}%</span></p>`);
+            obj.popper.append(`<p class="modal_bd"><span>${loc('govern_federation')}</span> <span class="has-text-success"> ${fed}%</span></p>`);
         }
 
         let milVal = govActive('militant',1);
@@ -387,30 +387,30 @@ popover('morale',
             let raw_cheese = global.stats.hasOwnProperty('reset') ? global.stats.reset + 1 : 1;
             let cheese = +(raw_cheese / (raw_cheese + 10) * 11).toFixed(2);
             total += cheese;
-            obj.popper.append(`<p class="modal_bd"><span>${swissKnife(true,false)}</span> <span class="has-text-success"> +${cheese}%</span></p>`);
+            obj.popper.append(`<p class="modal_bd"><span>${swissKnife(true,false)}</span> <span class="has-text-success"> ${cheese}%</span></p>`);
         }
 
         if (global.race['motivated']){
             let boost = Math.ceil(global.race['motivated'] ** 0.4);
             total += boost;
-            obj.popper.append(`<p class="modal_bd"><span>${loc(`event_motivation_bd`)}</span> <span class="has-text-success"> +${boost}%</span></p>`);
+            obj.popper.append(`<p class="modal_bd"><span>${loc(`event_motivation_bd`)}</span> <span class="has-text-success"> ${boost}%</span></p>`);
         }
 
         if (global.race['artisan'] && global.civic.craftsman.workers > 0){
             let boost = traits.artisan.vars()[2] * global.civic.craftsman.workers;
             total += boost;
-            obj.popper.append(`<p class="modal_bd"><span>${loc(`trait_artisan_name`)}</span> <span class="has-text-success"> +${boost}%</span></p>`)
+            obj.popper.append(`<p class="modal_bd"><span>${loc(`trait_artisan_name`)}</span> <span class="has-text-success"> ${boost}%</span></p>`)
         }
 
         if (global.race['pet']){
             total += 1;
-            obj.popper.append(`<p class="modal_bd"><span>${loc(`event_pet_${global.race.pet.type}_owner`)}</span> <span class="has-text-success"> +${1}%</span></p>`);
+            obj.popper.append(`<p class="modal_bd"><span>${loc(`event_pet_${global.race.pet.type}_owner`)}</span> <span class="has-text-success"> ${1}%</span></p>`);
         }
 
         if (global.race['wishStats'] && global.race.wishStats.fame !== 0){
             total += global.race.wishStats.fame;
             if (global.race.wishStats.fame > 0){
-                obj.popper.append(`<p class="modal_bd"><span>${loc(`wish_reputable`)}</span> <span class="has-text-success"> +${global.race.wishStats.fame}%</span></p>`);
+                obj.popper.append(`<p class="modal_bd"><span>${loc(`wish_reputable`)}</span> <span class="has-text-success"> ${global.race.wishStats.fame}%</span></p>`);
             }
             else {
                 obj.popper.append(`<p class="modal_bd"><span>${loc(`wish_notorious`)}</span> <span class="has-text-danger"> ${global.race.wishStats.fame}%</span></p>`);
@@ -431,7 +431,7 @@ popover('morale',
         else if (global.tech['vax_s']){
             let gain = 20;
             total += gain;
-            obj.popper.append(`<p class="modal_bd"><span>${loc(`tech_vax_strat3_bd`)}</span> <span class="has-text-success"> +${gain}%</span></p>`);
+            obj.popper.append(`<p class="modal_bd"><span>${loc(`tech_vax_strat3_bd`)}</span> <span class="has-text-success"> ${gain}%</span></p>`);
         }
 
         if (global.city['tormented']){
@@ -1865,6 +1865,13 @@ function fastLoop(){
             max_power += power;
             power_grid -= power;
             power_generated[loc('city_mill_title2')] = -(power);
+        }
+
+        if (global.race['elemental'] && traits.elemental.vars()[0] === 'electric'){
+            let power = powerModifier(global.resource[global.race.species].amount * traits.elemental.vars()[1]);
+            max_power -= power;
+            power_grid += power;
+            power_generated[loc('trait_elemental_name')] = power;
         }
 
         if (global.race['powered']){
@@ -4392,25 +4399,7 @@ function fastLoop(){
                 modRes('Polymer', -(polymer_cost * time_multiplier));
 
                 let factory_output = workDone * f_rate.Furs.output[assembly] * eff * production('psychic_boost','Furs');
-                if (global.race['toxic']) {
-                    factory_output *= 1 + (traits.toxic.vars()[0] / 100);
-                }
-                if (global.race['artisan']){
-                    factory_output *= 1 + (traits.artisan.vars()[1] / 100);
-                }
-                let fathom = fathomCheck('shroomi');
-                if (fathom > 0){
-                    factory_output *= 1 + (traits.toxic.vars(1)[0] / 100 * fathom);
-                }
-                if (global.civic.govern.type === 'corpocracy'){
-                    factory_output *= 1 + (govEffect.corpocracy()[4] / 100);
-                }
-                if (global.civic.govern.type === 'socialist'){
-                    factory_output *= 1 + (govEffect.socialist()[1] / 100);
-                }
-                if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2){
-                    factory_output *= 1.1;
-                }
+                factory_output = factoryBonus(factory_output);
 
                 let delta = factory_output * tauBonus;
                 delta *= hunger * global_multiplier;
@@ -4464,31 +4453,13 @@ function fastLoop(){
                 modRes('Aluminium', -(aluminium_cost * time_multiplier));
 
                 let factory_output = workDone * f_rate.Alloy.output[assembly] * eff * production('psychic_boost','Alloy');
+                factory_output = factoryBonus(factory_output);
 
-                if (global.race['toxic']){
-                    factory_output *= 1 + (traits.toxic.vars()[0] / 100);
-                }
-                if (global.race['artisan']){
-                    factory_output *= 1 + (traits.artisan.vars()[1] / 100);
-                }
-                let fathom = fathomCheck('shroomi');
-                if (fathom > 0){
-                    factory_output *= 1 + (traits.toxic.vars(1)[0] / 100 * fathom);
-                }
                 if (global.tech['alloy']){
                     factory_output *= 1.37;
                 }
                 if (global.race['metallurgist']){
                     factory_output *= 1 + (traits.metallurgist.vars()[0] * global.race['metallurgist'] / 100);
-                }
-                if (global.civic.govern.type === 'corpocracy'){
-                    factory_output *= 1 + (govEffect.corpocracy()[4] / 100);
-                }
-                if (global.civic.govern.type === 'socialist'){
-                    factory_output *= 1 + (govEffect.socialist()[1] / 100);
-                }
-                if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2){
-                    factory_output *= 1.1;
                 }
 
                 let delta = factory_output * tauBonus;
@@ -4549,27 +4520,10 @@ function fastLoop(){
                 modRes('Oil', -(oil_cost * time_multiplier));
 
                 let factory_output = workDone * f_rate.Polymer.output[assembly] * eff * production('psychic_boost','Polymer');
-                if (global.race['toxic']) {
-                    factory_output *= 1 + (traits.toxic.vars()[0] / 100);
-                }
-                if (global.race['artisan']){
-                    factory_output *= 1 + (traits.artisan.vars()[1] / 100);
-                }
-                let fathom = fathomCheck('shroomi');
-                if (fathom > 0){
-                    factory_output *= 1 + (traits.toxic.vars(1)[0] / 100 * fathom);
-                }
+                factory_output = factoryBonus(factory_output);
+                
                 if (global.tech['polymer'] >= 2){
                     factory_output *= 1.42;
-                }
-                if (global.civic.govern.type === 'corpocracy'){
-                    factory_output *= 1 + (govEffect.corpocracy()[4] / 100);
-                }
-                if (global.civic.govern.type === 'socialist'){
-                    factory_output *= 1 + (govEffect.socialist()[1] / 100);
-                }
-                if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2){
-                    factory_output *= 1.1;
                 }
 
                 let delta = factory_output * tauBonus;
@@ -4640,25 +4594,7 @@ function fastLoop(){
                 modRes('Coal', -(coal_cost * time_multiplier));
 
                 let factory_output = workDone * f_rate.Nano_Tube.output[assembly] * eff * production('psychic_boost','Nano_Tube');
-                if (global.race['toxic']) {
-                    factory_output *= 1 + (traits.toxic.vars()[1] / 100);
-                }
-                if (global.race['artisan']){
-                    factory_output *= 1 + (traits.artisan.vars()[1] / 100);
-                }
-                let fathom = fathomCheck('shroomi');
-                if (fathom > 0){
-                    factory_output *= 1 + (traits.toxic.vars(1)[1] / 100 * fathom);
-                }
-                if (global.civic.govern.type === 'corpocracy'){
-                    factory_output *= 1 + (govEffect.corpocracy()[4] / 100);
-                }
-                if (global.civic.govern.type === 'socialist'){
-                    factory_output *= 1 + (govEffect.socialist()[1] / 100);
-                }
-                if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2){
-                    factory_output *= 1.1;
-                }
+                factory_output = factoryBonus(factory_output);
 
                 let delta = factory_output * tauBonus;
                 delta *= hunger * global_multiplier;
@@ -4718,25 +4654,7 @@ function fastLoop(){
                 modRes('Nano_Tube', -(nano_cost * time_multiplier));
 
                 let factory_output = workDone * f_rate.Stanene.output[assembly] * eff * production('psychic_boost','Stanene');
-                if (global.race['toxic']) {
-                    factory_output *= 1 + (traits.toxic.vars()[1] / 100);
-                }
-                if (global.race['artisan']){
-                    factory_output *= 1 + (traits.artisan.vars()[1] / 100);
-                }
-                let fathom = fathomCheck('shroomi');
-                if (fathom > 0){
-                    factory_output *= 1 + (traits.toxic.vars(1)[1] / 100 * fathom);
-                }
-                if (global.civic.govern.type === 'corpocracy'){
-                    factory_output *= 1 + (govEffect.corpocracy()[4] / 100);
-                }
-                if (global.civic.govern.type === 'socialist'){
-                    factory_output *= 1 + (govEffect.socialist()[1] / 100);
-                }
-                if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2){
-                    factory_output *= 1.1;
-                }
+                factory_output = factoryBonus(factory_output);
 
                 let delta = factory_output * tauBonus;
                 delta *= hunger * global_multiplier;
@@ -5068,6 +4986,11 @@ function fastLoop(){
                 iron_smelter *= 1 - (traits.pyrophobia.vars()[0] / 100);
                 iridium_smelter *= 1 - (traits.pyrophobia.vars()[0] / 100);
             }
+            if (global.race['elemental'] && traits.elemental.vars()[0] === 'fire'){
+                iron_smelter *= 1 - (traits.elemental.vars()[3] * global.resource[global.race.species].amount / 100);
+                iridium_smelter *= 1 - (traits.elemental.vars()[3] * global.resource[global.race.species].amount / 100);
+            }
+
             let salFathom = fathomCheck('salamander');
             if (salFathom > 0){
                 iron_smelter *= 1 + (0.2 * salFathom);
@@ -8922,6 +8845,10 @@ function midLoop(){
             if (global.tech['biotech'] >= 1){
                 gain *= 2.5;
             }
+            if (global.race['elemental'] && traits.elemental.vars()[0] === 'frost'){
+                gain *= 1 + (traits.elemental.vars()[4] * global.resource[global.race.species].amount / 100);
+            }
+
             caps['Knowledge'] += (p_on['biolab'] * gain);
             breakdown.c.Knowledge[loc('city_biolab')] = (p_on['biolab'] * gain)+'v';
         }

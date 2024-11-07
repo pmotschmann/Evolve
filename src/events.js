@@ -581,6 +581,25 @@ export const events = {
             return res === 'Money' ? loc('event_klepto',[gain]) : loc('event_klepto',[gain,global.resource[res].name]);
         }
     },
+    chicken_feast:{ 
+        reqs: {
+            tech: 'primitive',
+            trait: 'chicken'
+        },
+        condition(){
+            if (global.resource[global.race.species].amount > 0){
+                return true;
+            }
+            return false;
+        },
+        type: 'major',
+        effect(){
+            let dead = Math.floor(seededRandom(2,10));
+            if (dead > global.resource[global.race.species].amount){ dead = global.resource[global.race.species].amount; }
+            global.resource[global.race.species].amount -= dead;
+            return loc('event_chicken',[loc(`event_chicken_eaten${Math.floor(seededRandom(0,10))}`),dead]);
+        }
+    },
     m_curious: {
         reqs: {
             tech: 'primitive',
@@ -713,6 +732,23 @@ export const events = {
             global.civic.scientist.workers--;
             global.civic.scientist.assigned--;
             return loc(`witch_hunter_witch_hunt`);
+        }
+    },
+    chicken:{ 
+        reqs: {
+            tech: 'primitive',
+            trait: 'chicken'
+        },
+        condition(){
+            if (global.resource[global.race.species].amount > 0){
+                return true;
+            }
+            return false;
+        },
+        type: 'minor',
+        effect(){
+            global.resource[global.race.species].amount--;
+            return loc('event_chicken',[loc(`event_chicken_eaten${Math.rand(0,10)}`),1]);
         }
     },
     heatwave: {
