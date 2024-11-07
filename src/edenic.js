@@ -416,6 +416,7 @@ const edenicModules = {
                 Elerium(offset){ return spaceCostMultiplier('stabilizer', offset, 7500, 1.25, 'eden'); },
                 Asphodel_Powder(offset){ return spaceCostMultiplier('stabilizer', offset, 4250, 1.25, 'eden'); },
             },
+            queue_complete(){ return global.eden.warehouse.count - global.eden.stabilizer.count; },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('eden_stabilizer_requirement',[loc('city_shed_title3')])}</div>`;
 

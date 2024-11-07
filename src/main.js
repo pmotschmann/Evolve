@@ -88,12 +88,12 @@ $(document).keydown(function(e){
                             // are truthy, so the sub tab name is used for clarity.
                         case quickMap.showCiv:
                             tabName = 'spaceTabs';
-                            tabList = [s.showCity, s.showSpace, s.showDeep, s.showGalactic, s.showPortal, s.showOuter, s.showTau];
+                            tabList = [s.showCity, s.showSpace, s.showDeep, s.showGalactic, s.showPortal, s.showOuter, s.showTau, s.showEden];
                             break;
                         case quickMap.showCivic:
                             // not reaching Military
                             tabName = 'govTabs';
-                            tabList = ["Government", s.showIndustry, s.showPowerGrid, s.showMil, s.showMechLab, s.showShipYard, s.showPsychic];
+                            tabList = ["Government", s.showIndustry, s.showPowerGrid, s.showMil, s.showMechLab, s.showShipYard, s.showPsychic, s.showWish];
                             break;
                         case quickMap.showResearch:
                             tabName = 'resTabs';
@@ -1868,7 +1868,7 @@ function fastLoop(){
         }
 
         if (global.race['elemental'] && traits.elemental.vars()[0] === 'electric'){
-            let power = powerModifier(global.resource[global.race.species].amount * traits.elemental.vars()[1]);
+            let power = powerModifier(highPopAdjust(global.resource[global.race.species].amount * traits.elemental.vars()[1]));
             max_power -= power;
             power_grid += power;
             power_generated[loc('trait_elemental_name')] = power;
@@ -4987,8 +4987,8 @@ function fastLoop(){
                 iridium_smelter *= 1 - (traits.pyrophobia.vars()[0] / 100);
             }
             if (global.race['elemental'] && traits.elemental.vars()[0] === 'fire'){
-                iron_smelter *= 1 - (traits.elemental.vars()[3] * global.resource[global.race.species].amount / 100);
-                iridium_smelter *= 1 - (traits.elemental.vars()[3] * global.resource[global.race.species].amount / 100);
+                iron_smelter *= 1 + highPopAdjust(traits.elemental.vars()[3] * global.resource[global.race.species].amount / 100);
+                iridium_smelter *= 1 + highPopAdjust(traits.elemental.vars()[3] * global.resource[global.race.species].amount / 100);
             }
 
             let salFathom = fathomCheck('salamander');
@@ -8846,7 +8846,7 @@ function midLoop(){
                 gain *= 2.5;
             }
             if (global.race['elemental'] && traits.elemental.vars()[0] === 'frost'){
-                gain *= 1 + (traits.elemental.vars()[4] * global.resource[global.race.species].amount / 100);
+                gain *= 1 + highPopAdjust(traits.elemental.vars()[4] * global.resource[global.race.species].amount / 100);
             }
 
             caps['Knowledge'] += (p_on['biolab'] * gain);

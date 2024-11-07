@@ -7,6 +7,7 @@ import { tradeRatio } from './resources.js';
 import { checkControlling } from './civics.js';
 import { govActive } from './governor.js';
 import { unlockAchieve } from './achieve.js';
+import { jobScale } from './jobs.js';
 
 export const events = {
     dna_replication: {
@@ -594,7 +595,7 @@ export const events = {
         },
         type: 'major',
         effect(){
-            let dead = Math.floor(seededRandom(2,10));
+            let dead = Math.floor(seededRandom(2,jobScale(10)));
             if (dead > global.resource[global.race.species].amount){ dead = global.resource[global.race.species].amount; }
             global.resource[global.race.species].amount -= dead;
             return loc('event_chicken',[loc(`event_chicken_eaten${Math.floor(seededRandom(0,10))}`),dead]);

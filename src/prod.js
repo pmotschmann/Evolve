@@ -550,7 +550,7 @@ export function factoryBonus(factory){
         factory *= 1.1;
     }
     if (global.race['elemental'] && traits.elemental.vars()[0] === 'acid'){
-        factory *= 1 + (traits.elemental.vars()[2] * global.resource[global.race.species].amount / 100);
+        factory *= 1 + highPopAdjust(traits.elemental.vars()[2] * global.resource[global.race.species].amount / 100);
     }
     return factory;
 }

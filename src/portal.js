@@ -1913,7 +1913,7 @@ const fortressModules = {
         edenic_gate:{
             id: 'portal-edenic_gate',
             title(wiki){
-                return `<div>${loc(global.tech['edenic'] && global.tech.edenic >= 3 ? 'portal_edenic_gate_title' : 'portal_waygate_title')}</div>`;
+                return loc(global.tech['edenic'] && global.tech.edenic >= 3 ? 'portal_edenic_gate_title' : 'portal_waygate_title');
             },
             desc(wiki){
                 return $(this)[0].title();
