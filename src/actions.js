@@ -4646,7 +4646,7 @@ const raceList = [
     'seraph','unicorn',
     'synth','nano',
     'ghast','shoggoth',
-    'dwarf','raccoon','lichen','wyvern','beholder','djinn','pengiun','bombardier','nephilim',
+    'dwarf','raccoon','lichen','wyvern','beholder','djinn','penguin','bombardier','nephilim',
     'custom','hybrid'
 ];
 raceList.forEach(function(race){

@@ -5168,23 +5168,23 @@ export const races = {
         fanaticism: 'wish',
         basic(){ return false; }
     },
-    pengiun: {
-        name: loc('race_pengiun'),
-        desc: loc('race_pengiun_desc'),
+    penguin: {
+        name: loc('race_penguin'),
+        desc: loc('race_penguin_desc'),
         type: 'hybrid',
         hybrid: ['aquatic','polar'],
-        home: loc('race_pengiun_home'),
-        entity: loc('race_pengiun_entity'),
+        home: loc('race_penguin_home'),
+        entity: loc('race_penguin_entity'),
         traits: {
             //formal: 1,
             //butler: 1
         },
         solar: {
-            red: loc('race_pengiun_solar_red'),
-            hell: loc('race_pengiun_solar_hell'),
-            gas: loc('race_pengiun_solar_gas'),
-            gas_moon: loc('race_pengiun_solar_gas_moon'),
-            dwarf: loc('race_pengiun_solar_dwarf'),
+            red: loc('race_penguin_solar_red'),
+            hell: loc('race_penguin_solar_hell'),
+            gas: loc('race_penguin_solar_gas'),
+            gas_moon: loc('race_penguin_solar_gas_moon'),
+            dwarf: loc('race_penguin_solar_dwarf'),
         },
         fanaticism: '',
         basic(){ return false; }
