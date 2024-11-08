@@ -10,7 +10,7 @@ import { production, highPopAdjust } from './prod.js';
 import { loc } from './locale.js';
 import { armyRating, armorCalc, garrisonSize, mercCost } from './civics.js';
 import { govActive } from './governor.js';
-import { races, traitCostMod, racialTrait } from './races.js';
+import { races, traits, traitCostMod, racialTrait } from './races.js';
 
 const edenicModules = {
     eden_asphodel: {

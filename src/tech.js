@@ -3,7 +3,7 @@ import { loc } from './locale.js';
 import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper, popCost, eventActive } from './functions.js';
 import { unlockAchieve, alevel, universeAffix, unlockFeat } from './achieve.js';
 import { payCosts, housingLabel, wardenLabel, structName, updateQueueNames, drawTech, fanaticism, checkAffordable, actions } from './actions.js';
-import { races, checkAltPurgatory, renderPsychicPowers, renderWishSpell, traitCostMod } from './races.js';
+import { races, checkAltPurgatory, renderPsychicPowers, renderSupernatural, traitCostMod } from './races.js';
 import { drawResourceTab, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
 import { buildGarrison, checkControlling, govTitle } from './civics.js';
@@ -625,7 +625,7 @@ const techs = {
             return false;
         },
         post(){
-            renderWishSpell();
+            renderSupernatural();
         }
     },
     major_wish: {
@@ -649,7 +649,7 @@ const techs = {
             return false;
         },
         post(){
-            renderWishSpell();
+            renderSupernatural();
         }
     },
     psychic_energy: {

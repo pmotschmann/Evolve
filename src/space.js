@@ -5697,6 +5697,11 @@ export function piracy(region,rating,raw,wiki){
             pirate = Math.round(pirate);
         }
 
+        if (global.race['ocular_power'] && global.race['ocularPowerConfig'] && global.race.ocularPowerConfig.f){
+            pirate *= 1 - (traits.ocular_power.vars()[1] / 500);
+            pirate = Math.round(pirate);
+        }
+
         let num_def_plat_on = wiki ? global.galaxy.defense_platform.on : p_on['defense_platform'];
         if (region === 'gxy_stargate' && num_def_plat_on){
             armada += num_def_plat_on * 20;

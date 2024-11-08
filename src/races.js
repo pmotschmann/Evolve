@@ -3684,22 +3684,22 @@ export const traits = {
         name: loc('trait_ocular_power_name'),
         desc: loc('trait_ocular_power'),
         type: 'major',
-        val: 7,
+        val: 9,
         vars(r){
-            // []
+            // [Powers Active, Power Scaling]
             switch (r || traitRank('ocular_power') || 1){
                 case 0.25:
-                    return [1];
+                    return [1, 25];
                 case 0.5:
-                    return [1];
+                    return [1, 50];
                 case 1:
-                    return [1];
+                    return [2, 75];
                 case 2:
-                    return [1];
+                    return [2, 100];
                 case 3:
-                    return [1];
+                    return [3, 125];
                 case 4:
-                    return [1];
+                    return [3, 150];
             }
         }
     },
@@ -5061,7 +5061,7 @@ export const races = {
             dwarf: loc('race_dwarf_solar_dwarf'),
         },
         fanaticism: 'artisan',
-        basic(){ return true; }
+        basic(){ return false; }
     },
     raccoon: {
         name: loc('race_raccoon'),
@@ -5082,7 +5082,7 @@ export const races = {
             dwarf: loc('race_raccoon_solar_dwarf'),
         },
         fanaticism: 'rogue',
-        basic(){ return true; }
+        basic(){ return false; }
     },
     lichen: {
         name: loc('race_lichen'),
@@ -5103,7 +5103,7 @@ export const races = {
             dwarf: loc('race_lichen_solar_dwarf'),
         },
         fanaticism: '',
-        basic(){ return true; }
+        basic(){ return false; }
     },
     wyvern: {
         name: loc('race_wyvern'),
@@ -5124,7 +5124,7 @@ export const races = {
             dwarf: loc('race_wyvern_solar_dwarf'),
         },
         fanaticism: 'elemental',
-        basic(){ return true; }
+        basic(){ return false; }
     },
     beholder: {
         name: loc('race_beholder'),
@@ -5144,8 +5144,8 @@ export const races = {
             gas_moon: loc('race_beholder_solar_gas_moon'),
             dwarf: loc('race_beholder_solar_dwarf'),
         },
-        fanaticism: '',
-        basic(){ return true; }
+        fanaticism: 'ocular_power',
+        basic(){ return false; }
     },
     djinn: {
         name: loc('race_djinn'),
@@ -5166,7 +5166,7 @@ export const races = {
             dwarf: loc('race_djinn_solar_dwarf'),
         },
         fanaticism: 'wish',
-        basic(){ return ['forest','swamp','taiga','desert','ashland'].includes(global.city.biome) ? true : false; }
+        basic(){ return false; }
     },
     pengiun: {
         name: loc('race_pengiun'),
@@ -5187,7 +5187,7 @@ export const races = {
             dwarf: loc('race_pengiun_solar_dwarf'),
         },
         fanaticism: '',
-        basic(){ return ['oceanic','swamp','tundra','taiga'].includes(global.city.biome) ? true : false; }
+        basic(){ return false; }
     },
     bombardier: {
         name: loc('race_bombardier'),
@@ -5208,7 +5208,7 @@ export const races = {
             dwarf: loc('race_bombardier_solar_dwarf'),
         },
         fanaticism: 'grenadier',
-        basic(){ return true }
+        basic(){ return false; }
     },
     nephilim: {
         name: loc('race_nephilim'),
@@ -5229,7 +5229,7 @@ export const races = {
             dwarf: loc('race_nephilim_solar_dwarf'),
         },
         fanaticism: 'empowered',
-        basic(){ return ['eden','hellscape'].includes(global.city.biome) ? true : false; }
+        basic(){ return false; }
     },
     junker: {
         name: altRace('junker') ? loc('race_ghoul') : loc('race_junker'),
@@ -5559,6 +5559,11 @@ export function racialTrait(workers,type){
     }
     if (global.tech['cyber_worker'] && (type === 'lumberjack' || type === 'miner')){
         modifier *= 1.25;
+    }
+    if (global.race['ocular_power'] && global.race['ocularPowerConfig'] && global.race.ocularPowerConfig.t 
+        && ['farmer','miner','lumberjack','scavenger','factory'].includes(type)){
+        let labor = 20 * (traits.ocular_power.vars()[1] / 100);
+        modifier *= 1 + (labor / 100);
     }
     if (type === 'hunting'){
         if (global.race['tracker']){
@@ -6193,6 +6198,13 @@ export function cleanAddTrait(trait){
                 }
             }
             break;
+        case 'ocular_power':
+            global.settings.showWish = true;
+            global.race['ocularPowerConfig'] = {
+                d: false, p: false, w: false, t: false, f: false, c: false, ds: 0
+            };
+            renderSupernatural();
+            break;
         case 'ooze':
             if (!global.tech['high_tech'] && global.race.species !== 'custom' && global.race.species !== 'sludge'){
                 global.race['gross_enabled'] = 1;
@@ -6399,10 +6411,17 @@ export function cleanRemoveTrait(trait,rank){
             global.settings.showPsychic = false;
             break;
         case 'wish':
-            global.settings.showWish = false;
+            if (!global.race['ocular_power']){
+                global.settings.showWish = false;
+            }
             if (global.race['wishStats'] && global.race.wishStats.strong){
                 delete global.race['strong'];
                 cleanRemoveTrait('strong')
+            }
+            break;
+        case 'ocular_power':
+            if (!global.tech['wish']){
+                global.settings.showWish = false;
             }
             break;
         case 'ooze':
@@ -6829,16 +6848,16 @@ function foxColor(){
 
 export function basicRace(skip){
     skip = skip || [];
-    let basicList = Object.keys(races).filter(function(r){ return races[r].basic() && !skip.includes(r) });
+    let basicList = Object.keys(races).filter(function(r){ return !['custom','hybrid'].includes(r) && !skip.includes(r) && races[r].basic(); });
     let key = randomKey(basicList);
     return basicList[key];
 }
 
-export function renderWishSpell(){
+export function renderSupernatural(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 7)){
         return;
     }
-    let parent = $(`#wishSpell`);
+    let parent = $(`#supernatural`);
     clearElement(parent);
 
     if (global.race['wish'] && global.tech['wish'] && global.race['wishStats']){
@@ -6846,6 +6865,10 @@ export function renderWishSpell(){
         if (global.tech.wish >= 2){
             majorWish(parent);
         }
+    }
+
+    if (global.race['ocular_power']){
+        ocularPower(parent);
     }
 }
 
@@ -7776,6 +7799,84 @@ function majorWish(parent){
                 }
             },{
                 elm: `#wish${wish}`
+            }
+        );
+    });
+}
+
+function ocularPower(parent){
+    let container = $(`<div id="ocularPower" class="industry"></div>`);
+    parent.append(container);
+
+    container.append($(`<div class="header"><span class="has-text-warning">${loc('trait_ocular_power_name')}</span> - <span v-html="$options.filters.max()"></span></div>`));
+    let powers = $(`<div class="flexWrap"></div>`);
+    container.append(powers);
+
+    powers.append(`<div id="oculardisintegration" class="chk"><b-checkbox v-model="d" @input="pow('d')">${loc(`ocular_disintegration`)}</b-checkbox></div>`);
+    powers.append(`<div id="ocularpetrification" class="chk"><b-checkbox v-model="p" @input="pow('p')">${loc(`ocular_petrification`)}</b-checkbox></div>`);
+    powers.append(`<div id="ocularwound" class="chk"><b-checkbox v-model="w" @input="pow('w')">${loc(`ocular_wound`)}</b-checkbox></div>`);
+    powers.append(`<div id="oculartelekinesis" class="chk"><b-checkbox v-model="t" @input="pow('t')">${loc(`ocular_telekinesis`)}</b-checkbox></div>`);
+    powers.append(`<div id="ocularfear" class="chk"><b-checkbox v-model="f" @input="pow('f')">${loc(`ocular_fear`)}</b-checkbox></div>`);
+    powers.append(`<div id="ocularcharm" class="chk"><b-checkbox v-model="c" @input="pow('c')">${loc(`ocular_charm`)}</b-checkbox></div>`);
+
+    vBind({
+        el: `#ocularPower`,
+        data: global.race.ocularPowerConfig,
+        methods: {
+            pow(v){
+                let active = 0;
+                ['d','p','w','t','f','c'].forEach(function(p){
+                    if (global.race.ocularPowerConfig[p]){ active++ }
+                    if (active > traits.ocular_power.vars()[0] && p !== v){
+                        global.race.ocularPowerConfig[p] = false;
+                    }
+                });
+                if (active > traits.ocular_power.vars()[0]){
+                    active = 0;
+                    ['d','p','w','t','f','c'].reverse().forEach(function(p){
+                        if (global.race.ocularPowerConfig[p]){ active++ }
+                        if (active > traits.ocular_power.vars()[0] && p !== v){
+                            global.race.ocularPowerConfig[p] = false;
+                        }
+                    });
+                    renderSupernatural();
+                }
+            }
+        },
+        filters: {
+            max(){
+                let active = 0;
+                ['d','p','w','t','f','c'].forEach(function(p){
+                    if (global.race.ocularPowerConfig[p]){ active++ }
+                });
+                return loc('ocular_max',[active,traits.ocular_power.vars()[0]]);
+            },
+        }
+    });
+
+    ['disintegration','petrification','wound','telekinesis','fear','charm'].forEach(function(power){
+        popover(`ocular${power}`,
+            function(){
+                switch(power){
+                    case 'disintegration':
+                        let attack = 50 * (traits.ocular_power.vars()[1] / 100);
+                        return loc(`ocular_${power}_desc`,[attack]);
+                    case 'petrification':
+                        return loc(`ocular_${power}_desc`,[global.resource.Stone.name]);
+                    case 'wound':
+                        let hunt = 60 * (traits.ocular_power.vars()[1] / 100);
+                        return loc(`ocular_${power}_desc`,[hunt]);
+                    case 'telekinesis':
+                        let labor = 20 * (traits.ocular_power.vars()[1] / 100);
+                        return loc(`ocular_${power}_desc`,[labor]);
+                    case 'fear':
+                        return loc(`ocular_${power}_desc`);
+                    case 'charm':
+                        let trade = 70 * (traits.ocular_power.vars()[1] / 100);
+                        return loc(`ocular_${power}_desc`,[trade]);
+                }
+            },{
+                elm: `#ocular${power}`
             }
         );
     });

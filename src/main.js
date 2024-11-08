@@ -1430,6 +1430,10 @@ function fastLoop(){
                         if (global.race['merchant']){
                             rate *= 1 + (traits.merchant.vars()[1] / 100);
                         }
+                        if (global.race['ocular_power'] && global.race['ocularPowerConfig'] && global.race.ocularPowerConfig.c){
+                            let trade = 70 * (traits.ocular_power.vars()[1] / 100);
+                            rate *= 1 + (trade / 100);
+                        }
                         let fathom = fathomCheck('goblin');
                         if (fathom > 0){
                             rate *= 1 + (traits.merchant.vars(1)[1] / 100 * fathom);
@@ -5722,6 +5726,22 @@ function fastLoop(){
 
                 modRes('Aluminium', delta * time_multiplier);
             }
+        }
+
+        if (global.race['ocular_power'] && global.race['ocularPowerConfig'] && global.race.ocularPowerConfig.p && global.race.ocularPowerConfig.ds > 0){
+            if (!global.race.ocularPowerConfig.hasOwnProperty('ticks') || global.race.ocularPowerConfig.ticks <= 0){
+                global.race.ocularPowerConfig['dsl'] = Math.round(global.race.ocularPowerConfig.ds / 10);
+                global.race.ocularPowerConfig.ds = 0;
+                global.race.ocularPowerConfig['ticks'] = Math.round(10 / time_multiplier);
+                
+            }
+
+            let base = global.race.ocularPowerConfig.dsl;
+            let delta = base * hunger * q_multiplier * global_multiplier;
+            global.race.ocularPowerConfig.ticks--;
+
+            breakdown.p['Stone'][loc('ocular_petrification')] = base + 'v';
+            modRes('Stone', delta * time_multiplier);
         }
 
         // Water

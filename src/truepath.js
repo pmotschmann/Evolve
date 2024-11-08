@@ -4837,6 +4837,10 @@ export function syndicate(region,extra){
             piracy *= 1 + (traits.chicken.vars()[1] / 100);
             piracy = Math.round(pirate);
         }
+        if (global.race['ocular_power'] && global.race['ocularPowerConfig'] && global.race.ocularPowerConfig.f){
+            piracy *= 1 - (traits.ocular_power.vars()[1] / 500);
+            piracy = Math.round(pirate);
+        }
         let patrol = 0;
         let sensor = 0;
         let overkill = 0;

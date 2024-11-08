@@ -7,7 +7,7 @@ import { defineJobs, } from './jobs.js';
 import { clearSpyopDrag } from './governor.js';
 import { defineIndustry, setPowerGrid, gridDefs, clearGrids } from './industry.js';
 import { defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov } from './civics.js';
-import { races, shapeShift, renderPsychicPowers, renderWishSpell } from './races.js';
+import { races, shapeShift, renderPsychicPowers, renderSupernatural } from './races.js';
 import { drawEvolution, drawCity, drawTech, resQueue, clearResDrag } from './actions.js';
 import { renderSpace, ascendLab, terraformLab } from './space.js';
 import { renderFortress, buildFortress, drawMechLab, clearMechDrag, drawHellObservations } from './portal.js';
@@ -513,10 +513,10 @@ export function loadTab(tab){
                             <span aria-hidden="true">{{ 'tab_psychic' | label }}</span>
                         </template>
                     </b-tab-item>
-                    <b-tab-item id="wishSpell" class="wishTab" :visible="s.showWish">
+                    <b-tab-item id="supernatural" class="supernaturalTab" :visible="s.showWish">
                         <template slot="header">
-                            <h2 class="is-sr-only">{{ 'tab_wish' | label }}</h2>
-                            <span aria-hidden="true">{{ 'tab_wish' | label }}</span>
+                            <h2 class="is-sr-only">{{ 'tab_supernatural' | label }}</h2>
+                            <span aria-hidden="true">{{ 'tab_supernatural' | label }}</span>
                         </template>
                     </b-tab-item>
                 </b-tabs>`);
@@ -539,7 +539,7 @@ export function loadTab(tab){
                                 clearElement($(`#mechLab`));
                                 clearElement($(`#dwarfShipYard`));
                                 clearElement($(`#psychicPowers`));
-                                clearElement($(`#wishSpell`));
+                                clearElement($(`#supernatural`));
                                 switch (tab){
                                     case 0:
                                         {
@@ -590,8 +590,8 @@ export function loadTab(tab){
                                         }
                                         break;
                                     case 7:
-                                        if (global.race['wish'] && global.tech['wish'] && global.race.species !== 'protoplasm'){
-                                            renderWishSpell();
+                                        if (((global.race['wish'] && global.tech['wish']) || global.race['ocular_power']) && global.race.species !== 'protoplasm'){
+                                            renderSupernatural();
                                         }
                                         break;
                                 }
@@ -627,8 +627,8 @@ export function loadTab(tab){
                     if (global.race['psychic'] && global.tech['psychic']){
                         renderPsychicPowers();
                     }
-                    if (global.race['wish'] && global.tech['wish']){
-                        renderWishSpell();
+                    if ((global.race['wish'] && global.tech['wish']) || global.race['ocular_power']){
+                        renderSupernatural();
                     }
                 }
                 if (global.race['shapeshifter']){

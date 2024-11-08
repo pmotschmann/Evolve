@@ -2501,6 +2501,7 @@ export function bloodwar(){
             },
         }
     };
+
     let pat_armor = global.tech['armor'] ? global.tech['armor'] : 0;
     if (global.race['armored']){
         pat_armor += traits.armored.vars()[1];
@@ -2631,6 +2632,10 @@ export function bloodwar(){
             if (global.race['chicken']){
                 odds -= Math.round(traits.chicken.vars()[0] / 5);
             }
+            if (global.race['ocular_power'] && global.race['ocularPowerConfig'] && global.race.ocularPowerConfig.f){
+                odds += Math.round(3 * traits.ocular_power.vars()[1] / 100);
+            }
+
             if (Math.rand(0,odds) === 0){
                 patrol_report.ambush = true;
                 dead += casualties(Math.round(demons * (1 + Math.random() * 3)),0,true,patrol_report);
@@ -2645,6 +2650,9 @@ export function bloodwar(){
                     soulCapacitor(killed);
                 }
                 patrol_report.kills = killed;
+                if (global.race['ocular_power'] && global.race['ocularPowerConfig'] && global.race.ocularPowerConfig.p){
+                    global.race.ocularPowerConfig.ds += Math.round(killed * traits.ocular_power.vars()[1]);
+                }
             }
             else {
                 let killed = pat_rating;
@@ -2677,6 +2685,9 @@ export function bloodwar(){
                             }
                             has_drop = true;
                         }
+                    }
+                    if (global.race['ocular_power'] && global.race['ocularPowerConfig'] && global.race.ocularPowerConfig.p){
+                        global.race.ocularPowerConfig.ds += Math.round(killed * traits.ocular_power.vars()[1]);
                     }
                 }
             }

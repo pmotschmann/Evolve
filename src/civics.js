@@ -1629,6 +1629,10 @@ function war_campaign(gov){
             wounded -= death;
         }
 
+        if (global.race['ocular_power'] && global.race['ocularPowerConfig'] && global.race.ocularPowerConfig.p){
+            global.race.ocularPowerConfig.ds += Math.round(enemy * traits.ocular_power.vars()[1]);
+        }
+
         global.civic.garrison.wounded += Math.floor(seededRandom(wounded,global.civic.garrison.raid - death,true));
 
         let gains = {
@@ -2182,6 +2186,10 @@ export function armyRating(val,type,wound){
         if (global.race['elemental']){
             army *= 1 + (traits.elemental.vars()[5] / 100);
         }
+        if (global.race['ocular_power'] && global.race['ocularPowerConfig'] && global.race.ocularPowerConfig.d){
+            let attack = 50 * (traits.ocular_power.vars()[1] / 100);
+            army *= 1 + (attack / 100);
+        }
         if (global.race['parasite']){
             if (val === 1){
                 army += 2;
@@ -2208,6 +2216,10 @@ export function armyRating(val,type,wound){
         }
         if(global.city.banquet && global.city.banquet.on && global.city.banquet.count >= 3){
             army *= 1 + (global.city.banquet.strength ** 0.65) / 100;
+        }
+        if (global.race['ocular_power'] && global.race['ocularPowerConfig'] && global.race.ocularPowerConfig.w){
+            let hunt = 60 * (traits.ocular_power.vars()[1] / 100);
+            army *= 1 + (hunt / 100);
         }
     }
     if (global.race['grenadier']){
