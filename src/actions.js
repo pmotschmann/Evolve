@@ -6898,16 +6898,24 @@ export function checkAffordable(c_action,max,raw){
 
 export function templeCount(zig){
     if (!zig && global.city['temple']){
+        let count = global.city.temple.count;
         if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.temple){
-            return global.city.temple.count + 1;
+            count++;
         }
-        return global.city.temple.count;
+        if (global.genes.hasOwnProperty('ancients') && global.genes.ancients >= 6){
+            count++;
+        }
+        return count;
     }
     else if (zig && global.space['ziggurat']){
+        let count = global.space.ziggurat.count;
         if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.zigg){
-            return global.city.ziggurat.count + 1;
+            count++;
         }
-        return global.space.ziggurat.count;
+        if (global.genes.hasOwnProperty('ancients') && global.genes.ancients >= 7){
+            count++;
+        }
+        return count;
     }
     return 0;
 } 

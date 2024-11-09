@@ -1,6 +1,7 @@
 import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, support_on } from './vars.js';
 import { vBind, clearElement, modRes, flib, calc_mastery, calcPillar, eventActive, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect, hoovedRename, messageQueue } from './functions.js';
 import { traits, fathomCheck } from './races.js';
+import { templeCount } from './actions.js';
 import { workerScale } from './jobs.js';
 import { hellSupression } from './portal.js';
 import { syndicate } from './truepath.js';
@@ -1306,7 +1307,15 @@ function loadSpecialResource(name,color) {
                 break;
 
             case 'Supercoiled':
-                desc.append($(`<span>${loc(`resource_${name}_desc`)}</span>`));
+                {
+                    let coiled = global.prestige.Supercoiled.count;
+                    let bonus = (coiled / (coiled + 5000)) * 100;
+                    desc.append($(`<span>${loc(`resource_${name}_desc`,[+bonus.toFixed(2)])}</span>`));
+                    if (global.genes.hasOwnProperty('trader') && global.genes.trader >= 2){
+                        let trade = (coiled / (coiled + 500)) * 100;
+                        desc.append($(`<span> ${loc(`resource_${name}_trade_desc`,[+trade.toFixed(2)])}</span>`));
+                    }
+                }
                 break;
         }
         return desc;
@@ -3064,10 +3073,10 @@ function faithTempleCount(){
     let num_temples = 0;
     let noEarth = global.race['cataclysm'] || global.race['orbit_decayed'] ? true : false;
     if (noEarth && global.space['ziggurat']){
-        num_temples = global.space.ziggurat.count;
+        num_temples = templeCount(true);
     }
     else if (global.city['temple']){
-        num_temples = global.city.temple.count;
+        num_temples = templeCount(false);
     }
     return num_temples;
 }

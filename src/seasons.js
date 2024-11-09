@@ -1,6 +1,7 @@
 import { global } from './vars.js';
 import { loc } from './locale.js';
 import { clearElement, easterEgg } from './functions.js';
+import { traits } from './races.js';
 
 export function setWeather(){
     // Moon Phase
@@ -295,31 +296,37 @@ function tempDescription(){
 
 export function astroVal(sign){
     let boosted = global.race['wish'] && global.race['wishStats'] && global.race.wishStats.astro ? true : false;
+    let multiplier = 1;
+    if (global.race['astrologer']){
+        multiplier += traits.astrologer.vars()[0] / 100;
+    }
     switch (sign){
         case 'aries': // Combat Rating
-            return [boosted ? 12 : 10];
+            return [boosted ? Math.round(12 * multiplier) : Math.round(10 * multiplier)];
         case 'taurus': // Unification Bonus
-            return [boosted ? 3 : 2];
+            return [boosted ? 3 * multiplier : 2 * multiplier];
         case 'gemini': // Knowledge
-            return [boosted ? 30 : 20];
+            return [boosted ? Math.round(30 * multiplier) : Math.round(20 * multiplier)];
         case 'cancer': // Soldier Healing
-            return [boosted ? 8 : 5];
+            return [boosted ? Math.round(8 * multiplier) : Math.round(5 * multiplier)];
         case 'leo': // Power
-            return [boosted ? 5 : 4];
+            return [boosted ? 5 * multiplier : 4 * multiplier];
         case 'virgo': // Food Bonus
-            return [boosted ? 20 : 15];
+            return [boosted ? Math.round(20 * multiplier) : Math.round(15 * multiplier)];
         case 'libra': // Pop growth rate
-            return [boosted ? 40 : 25];
+            return [boosted ? Math.round(40 * multiplier) : Math.round(25 * multiplier)];
         case 'scorpio': // Cheaper and more effective spies
-            return boosted ? [20,2] : [12,1];
+            return boosted ? [Math.round(20 * multiplier),2] : [Math.round(12 * multiplier),1];
         case 'sagittarius': // Entertainer Morale
-            return [boosted ? 6 : 5];
+            return [boosted ? 6 * multiplier : 5 * multiplier];
         case 'capricorn': // Trade gains
-            return [boosted ? 20 : 10];
+            return [boosted ? Math.round(20 * multiplier) : Math.round(10 * multiplier)];
         case 'aquarius': // Boosts tourism revenue
-            return [boosted ? 30 : 20];
+            return [boosted ? Math.round(30 * multiplier) : Math.round(20 * multiplier)];
         case 'pisces': // Random Events are more common
-            return boosted ? [79,45] : [49,25];
+            return boosted 
+                ? [Math.round(79 * multiplier),Math.round(45 * multiplier)] 
+                : [Math.round(49 * multiplier),Math.round(25 * multiplier)];
     }
 }
 

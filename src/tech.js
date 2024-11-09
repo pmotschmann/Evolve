@@ -8491,6 +8491,7 @@ const techs = {
         era: 'early_space',
         reqs: { theology: 4 },
         grant: ['theology',5],
+        condition(){ return !global.genes['transcendence'] || global.genes.transcendence < 2 ? true : false; },
         no_queue(){ return global.r_queue.queue.some(item => item.id === 'tech-deify') ? true : false; },
         cost: {
             Knowledge(){ return 195000; }
@@ -8502,6 +8503,29 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.tech['ancient_study'] = 1;
+                return true;
+            }
+            return false;
+        }
+    },
+    study_alt: {
+        id: 'tech-study_alt',
+        title: loc('tech_study'),
+        desc: loc('tech_study_desc'),
+        category: 'religion',
+        era: 'early_space',
+        reqs: { theology: 4 },
+        grant: ['ancient_study',1],
+        condition(){ return global.genes['transcendence'] && global.genes.transcendence >= 2 ? true : false; },
+        cost: {
+            Knowledge(){ return 195000; }
+        },
+        effect(){
+            let entity = global.race.old_gods !== 'none' ? races[global.race.old_gods.toLowerCase()].entity : races[global.race.species].entity;
+            return `<div>${loc('tech_study_effect',[entity])}</div>`;
+        },
+        action(){
+            if (payCosts($(this)[0])){
                 return true;
             }
             return false;
@@ -8534,6 +8558,7 @@ const techs = {
         era: 'early_space',
         reqs: { theology: 4 },
         grant: ['theology',5],
+        condition(){ return !global.genes['transcendence'] || global.genes.transcendence < 2 ? true : false; },
         no_queue(){ return global.r_queue.queue.some(item => item.id === 'tech-study') ? true : false; },
         cost: {
             Knowledge(){ return 195000; }
@@ -8545,6 +8570,31 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.tech['ancient_deify'] = 1;
+                fanaticism(global.race.old_gods);
+                arpa('Genetics');
+                return true;
+            }
+            return false;
+        }
+    },
+    deify_alt: {
+        id: 'tech-deify_alt',
+        title: loc('tech_deify'),
+        desc: loc('tech_deify_desc'),
+        category: 'religion',
+        era: 'early_space',
+        reqs: { theology: 4 },
+        grant: ['ancient_deify',1],
+        condition(){ return global.genes['transcendence'] && global.genes.transcendence >= 2 ? true : false; },
+        cost: {
+            Knowledge(){ return 195000; }
+        },
+        effect(){
+            let entity = global.race.old_gods !== 'none' ? races[global.race.old_gods.toLowerCase()].entity : races[global.race.species].entity;
+            return `<div>${loc('tech_deify_effect',[entity])}</div><div class="has-text-special">${loc('tech_deify_warning')}</div>`;
+        },
+        action(){
+            if (payCosts($(this)[0])){
                 fanaticism(global.race.old_gods);
                 arpa('Genetics');
                 return true;

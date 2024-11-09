@@ -822,6 +822,11 @@ function fastLoop(){
     if (applyPlasmid){
         global_multiplier += pBonus[0];
     }
+    if (global.prestige.Supercoiled.count > 0){
+        let bonus = (global.prestige.Supercoiled.count / (global.prestige.Supercoiled.count + 5000));
+        breakdown.p['Global'][loc('resource_Supercoiled_short')] = +(bonus * 100).toFixed(2) + '%';
+        global_multiplier *= (1 + bonus);
+    }
     if (global.race['no_plasmid'] || global.race.universe === 'antimatter'){
         if (((global.race['cataclysm'] || global.race['orbit_decayed']) && global.space['ziggurat'] && templeCount(true)) || (global.city['temple'] && global.city['temple'].count)){
             let faith = faithBonus();
@@ -1447,6 +1452,10 @@ function fastLoop(){
                         if (global.genes['trader']){
                             let mastery = calc_mastery();
                             rate *= 1 + (mastery / 100);
+                            if (global.genes.trader >= 2){
+                                let coiled = global.prestige.Supercoiled.count;
+                                rate *= 1 + (coiled / (coiled + 500));
+                            }
                         }
                         if (global.stats.achieve.hasOwnProperty('trade')){
                             let rank = global.stats.achieve.trade.l * 2;

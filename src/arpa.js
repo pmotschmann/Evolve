@@ -948,6 +948,22 @@ export const genePool = {
             return false;
         }
     },
+    haggler: {
+        id: 'genes-haggler',
+        title: loc('arpa_genepool_haggler_title'),
+        desc: loc('arpa_genepool_haggler_desc'),
+        reqs: {trader:1},
+        grant: ['trader',2],
+        cost: { Supercoiled(){ return 10; } },
+        action(){
+            if (payCrispr('haggler')){
+                global.genes['trader'] = 2;
+                updateTrades();
+                return true;
+            }
+            return false;
+        }
+    },
     ancients: {
         id: 'genes-ancients',
         title: loc('arpa_genepool_ancients_title'),
@@ -1024,6 +1040,34 @@ export const genePool = {
             return false;
         }
     },
+    doctrine: {
+        id: 'genes-doctrine',
+        title: loc('arpa_genepool_doctrine_title'),
+        desc: loc('arpa_genepool_doctrine_desc'),
+        reqs: { ancients: 5 },
+        grant: ['ancients',6],
+        cost: { Supercoiled(){ return 50; } },
+        action(){
+            if (payCrispr('doctrine')){
+                return true;
+            }
+            return false;
+        }
+    },
+    ideology: {
+        id: 'genes-ideology',
+        title: loc('arpa_genepool_ideology_title'),
+        desc: loc('arpa_genepool_ideology_desc'),
+        reqs: { ancients: 6 },
+        grant: ['ancients',7],
+        cost: { Supercoiled(){ return 75; } },
+        action(){
+            if (payCrispr('ideology')){
+                return true;
+            }
+            return false;
+        }
+    },
     transcendence: {
         id: 'genes-transcendence',
         title: loc('arpa_genepool_transcendence_title'),
@@ -1040,20 +1084,23 @@ export const genePool = {
             return false;
         }
     },
-    /*preeminence: {
+    preeminence: {
         id: 'genes-preeminence',
         title: loc('arpa_genepool_preeminence_title'),
         desc: loc('arpa_genepool_preeminence_desc'),
-        reqs: {transcendence: 1, challenge:3},
+        reqs: { transcendence: 1, challenge:5, ancients: 7 },
         grant: ['transcendence',2],
-        cost: { Plasmid(){ return 4200; } },
+        cost: { 
+            Supercoiled(){ return 250; },
+            Harmony(){ return 10; },
+        },
         action(){
             if (payCrispr('preeminence')){
                 return true;
             }
             return false;
         }
-    },*/
+    },
     bleeding_effect: {
         id: 'genes-bleeding_effect',
         title: loc('arpa_genepool_bleeding_effect_title'),
