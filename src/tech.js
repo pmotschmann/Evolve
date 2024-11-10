@@ -8491,6 +8491,7 @@ const techs = {
         era: 'early_space',
         reqs: { theology: 4 },
         grant: ['theology',5],
+        wiki: global.genes['transcendence'] && global.genes.transcendence >= 2 ? false : true,
         condition(){ return !global.genes['transcendence'] || global.genes.transcendence < 2 ? true : false; },
         no_queue(){ return global.r_queue.queue.some(item => item.id === 'tech-deify') ? true : false; },
         cost: {
@@ -8516,6 +8517,7 @@ const techs = {
         era: 'early_space',
         reqs: { theology: 4 },
         grant: ['ancient_study',1],
+        wiki: global.genes['transcendence'] && global.genes.transcendence >= 2 ? true : false,
         condition(){ return global.genes['transcendence'] && global.genes.transcendence >= 2 ? true : false; },
         cost: {
             Knowledge(){ return 195000; }
@@ -8558,6 +8560,7 @@ const techs = {
         era: 'early_space',
         reqs: { theology: 4 },
         grant: ['theology',5],
+        wiki: global.genes['transcendence'] && global.genes.transcendence >= 2 ? false : true,
         condition(){ return !global.genes['transcendence'] || global.genes.transcendence < 2 ? true : false; },
         no_queue(){ return global.r_queue.queue.some(item => item.id === 'tech-study') ? true : false; },
         cost: {
@@ -8585,6 +8588,7 @@ const techs = {
         era: 'early_space',
         reqs: { theology: 4 },
         grant: ['ancient_deify',1],
+        wiki: global.genes['transcendence'] && global.genes.transcendence >= 2 ? true : false,
         condition(){ return global.genes['transcendence'] && global.genes.transcendence >= 2 ? true : false; },
         cost: {
             Knowledge(){ return 195000; }

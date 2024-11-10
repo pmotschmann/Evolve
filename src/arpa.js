@@ -953,6 +953,9 @@ export const genePool = {
         title: loc('arpa_genepool_haggler_title'),
         desc: loc('arpa_genepool_haggler_desc'),
         reqs: {trader:1},
+        condition(){
+            return global.stats.achieve['godslayer'] ? true : false;
+        },
         grant: ['trader',2],
         cost: { Supercoiled(){ return 10; } },
         action(){
@@ -1045,6 +1048,9 @@ export const genePool = {
         title: loc('arpa_genepool_doctrine_title'),
         desc: loc('arpa_genepool_doctrine_desc'),
         reqs: { ancients: 5 },
+        condition(){
+            return global.stats.achieve['godslayer'] ? true : false;
+        },
         grant: ['ancients',6],
         cost: { Supercoiled(){ return 50; } },
         action(){
