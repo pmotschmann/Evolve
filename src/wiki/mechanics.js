@@ -7,7 +7,7 @@ import { races, traits, planetTraits } from './../races.js';
 import { atomic_mass } from './../resources.js';
 import { universe_types } from './../space.js';
 import { swissKnife } from './../tech.js';
-import { actions } from './../actions.js';
+import { actions, structName } from './../actions.js';
 import { astroVal, astrologySign } from './../seasons.js';
 import { shipAttackPower, sensorRange, shipCrewSize, shipPower } from './../truepath.js';
 import { sideMenu, infoBoxBuilder, createRevealSection, createCalcSection, getSolarName } from './functions.js';
@@ -1120,9 +1120,62 @@ export function mechanicsPage(content){
         infoBoxBuilder(limited,{ name: 'wish_minor_influence', template: 'mechanics', label: loc(`wish_for`,[loc('wish_influence')]), paragraphs: 4, h_level: 4,
             para_data: {
                 2: ['+1',loc(`job_professor`),25],
-                3: [astrologySign()]
+                3: [loc(`sign_${astrologySign()}`)]
             }
         });
+
+        let greater = infoBoxBuilder(wish,{ name: 'wish_major', template: 'mechanics', label: loc('tech_major_wish'), paragraphs: 0, h_level: 3 });
+
+        infoBoxBuilder(greater,{ name: 'wish_major_money', template: 'mechanics', label: loc(`wish_for`,[loc('wish_big_money')]), paragraphs: 1, h_level: 4,
+            para_data: {
+                1: [loc('resource_Money_name'),structName('casino')]
+            }
+        });
+
+        infoBoxBuilder(greater,{ name: 'wish_major_res', template: 'mechanics', label: loc(`wish_for`,[loc('wish_big_resources')]), paragraphs: 3, break: [2,3], h_level: 4,
+            para_data: {
+                1: [`1-2`],
+                2: [
+                    global.resource['Lumber'].name,global.resource['Stone'].name,global.resource['Furs'].name,global.resource['Copper'].name,global.resource['Iron'].name,global.resource['Aluminium'].name,global.resource['Cement'].name,global.resource['Coal'].name,
+                    global.resource['Oil'].name,global.resource['Uranium'].name,global.resource['Steel'].name,global.resource['Titanium'].name,global.resource['Alloy'].name,global.resource['Polymer'].name,global.resource['Iridium'].name,global.resource['Helium_3'].name,
+                    global.resource['Crystal'].name,global.resource['Chrysotile'].name,global.resource['Deuterium'].name,global.resource['Neutronium'].name,global.resource['Adamantite'].name,global.resource['Nano_Tube'].name,global.resource['Graphene'].name,
+                    global.resource['Stanene'].name,global.resource['Bolognium'].name,global.resource['Vitreloy'].name,global.resource['Orichalcum'].name,global.resource['Infernite'].name,global.resource['Elerium'].name,global.resource['Soul_Gem'].name,
+                ],
+            }
+        });
+
+        infoBoxBuilder(greater,{ name: 'wish_major_plasmids', template: 'mechanics', label: loc(`wish_for`,[loc('wish_plasmid')]), paragraphs: 8, break: [7,8], h_level: 4,
+            para_data: {
+                1: [loc('resource_Plasmid_plural_name')],
+                4: [loc('resource_Plasmid_plural_name')],
+                5: [loc('resource_Plasmid_plural_name')],
+                6: [loc('resource_Plasmid_plural_name')],
+                8: [loc('wiki_resets_mad'),loc('wiki_resets_blackhole')],
+            },
+            data_link: {
+                8: ['wiki.html#resets-prestige-mad','wiki.html#resets-prestige-blackhole'],
+            }
+        });
+
+        infoBoxBuilder(greater,{ name: 'wish_major_power', template: 'mechanics', label: loc(`wish_for`,[loc('wish_power')]), paragraphs: 4, break:[2,3,4], h_level: 4,
+            para_data: {
+                2: [loc('wish_dictator'),loc('govern_dictator')],
+                4: [loc('wish_potato')]
+            }
+        });
+
+        infoBoxBuilder(greater,{ name: 'wish_major_adoration', template: 'mechanics', label: loc(`wish_for`,[loc('wish_adoration')]), paragraphs: 3, break:[3], h_level: 4,
+            para_data: {
+                1: [structName('temple'),loc('space_red_ziggurat_title')],
+                3: [1,loc(`job_priest`),25]
+            }
+        });
+
+        infoBoxBuilder(greater,{ name: 'wish_major_thrill', template: 'mechanics', label: loc(`wish_for`,[loc('wish_thrill')]), paragraphs: 1, h_level: 4 });
+
+        infoBoxBuilder(greater,{ name: 'wish_major_peace', template: 'mechanics', label: loc(`wish_for`,[loc('wish_peace')]), paragraphs: 3, break:[2,3], h_level: 4 });
+
+        infoBoxBuilder(greater,{ name: 'wish_major_greatness', template: 'mechanics', label: loc(`wish_for`,[loc('wish_greatness')]), paragraphs: 2, break:[2], h_level: 4 });
 
         sideMenu('add',`mechanics-gameplay`,`wish`,loc('wiki_mechanics_wish'));
     }
