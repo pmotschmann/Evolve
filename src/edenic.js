@@ -775,6 +775,10 @@ const edenicModules = {
             },
             action(){
                 let armySize = jobScale(100);
+                if (garrisonSize() < armySize){
+                    return false;
+                }
+
                 let armory = (global.eden.fortress.armory + 20) / 20; 
                 let enemy_pats = global.eden.fortress.patrols * armory;
                 let remain = jobScale(100 - enemy_pats < 0 ? 0 : 100 - enemy_pats);
@@ -851,6 +855,10 @@ const edenicModules = {
             },
             action(){
                 let armySize = jobScale(50);
+                if (garrisonSize() < armySize){
+                    return false;
+                }
+
                 let enemy_pats = global.eden.fortress.patrols * 2.5;
                 let remain = Math.ceil(jobScale(50 - enemy_pats < 0 ? 0 : 50 - enemy_pats));
 
@@ -915,6 +923,10 @@ const edenicModules = {
             },
             action(){
                 let armySize = jobScale(25);
+                if (garrisonSize() < armySize){
+                    return false;
+                }
+                
                 if (armyRating(jobScale(1),'Troops') > Math.floor(seededRandom(0,global.eden.fortress.detector * 2,true))){
                     let dead = Math.floor(seededRandom(0,armySize,true));
                     dead = deadCalc(dead, armySize);

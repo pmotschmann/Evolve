@@ -14776,7 +14776,7 @@ const techs = {
         era: 'existential',
         reqs: { celestial_warfare: 2, },
         condition(){
-            return global.eden.hasOwnProperty('fortress') && global.eden.fortress.armory <= 100 ? true : false;
+            return global.eden.hasOwnProperty('fortress') && global.eden.fortress.armory < 100 ? true : false;
         },
         grant: ['celestial_warfare',3],
         cost: {
