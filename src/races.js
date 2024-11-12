@@ -3583,26 +3583,26 @@ export const traits = {
             }
         }
     },
-    absorber: {
-        name: loc('trait_absorber_name'),
-        desc: loc('trait_absorber'),
+    living_materials: {
+        name: loc('trait_living_materials_name'),
+        desc: loc('trait_living_materials'),
         type: 'major',
-        val: 5,
+        val: 6,
         vars(r){
-            // [Hell if I know]
-            switch (r || traitRank('absorber') || 1){
+            // [Some building materials self replicate]
+            switch (r || traitRank('living_materials') || 1){
                 case 0.25:
-                    return [7];
+                    return [0.99];
                 case 0.5:
-                    return [6];
+                    return [0.98];
                 case 1:
-                    return [5];
+                    return [0.97];
                 case 2:
-                    return [4];
+                    return [0.96];
                 case 3:
-                    return [3];
+                    return [0.95];
                 case 4:
-                    return [2];
+                    return [0.94];
             }
         }
     },
@@ -5137,7 +5137,7 @@ export const races = {
         home: loc('race_lichen_home'),
         entity: loc('race_lichen_entity'),
         traits: {
-            absorber: 1
+            living_materials: 1
             
         },
         solar: {
@@ -5147,7 +5147,7 @@ export const races = {
             gas_moon: loc('race_lichen_solar_gas_moon'),
             dwarf: loc('race_lichen_solar_dwarf'),
         },
-        fanaticism: 'absorber',
+        fanaticism: 'living_materials',
         basic(){ return false; }
     },
     wyvern: {
@@ -7059,7 +7059,7 @@ function minorWish(parent){
                     switch (spell){
                         case 'money':
                         {
-                            let cash = Math.floor(seededRandom(1,Math.round(global.resource.Money.max / 12)));
+                            let cash = Math.floor(seededRandom(1,Math.round(global.resource.Money.max / 8)));
                             global.resource.Money.amount += cash;
                             if (global.resource.Money.amount > global.resource.Money.max){
                                 global.resource.Money.amount = global.resource.Money.max;
@@ -7075,7 +7075,7 @@ function minorWish(parent){
                         }
                         case 'robbery':
                         {
-                            let cash = Math.floor(seededRandom(1,Math.round(global.resource.Money.max / 18)));
+                            let cash = Math.floor(seededRandom(1,Math.round(global.resource.Money.max / 8)));
                             global.resource.Money.amount += cash;
                             if (global.resource.Money.amount > global.resource.Money.max){
                                 global.resource.Money.amount = global.resource.Money.max;
@@ -7425,7 +7425,7 @@ function majorWish(parent){
                     switch (spell){
                         case 'money':
                         {
-                            let cash = Math.floor(seededRandom(Math.round(global.resource.Money.max / 12),Math.round(global.resource.Money.max / 36)));
+                            let cash = Math.floor(seededRandom(Math.round(global.resource.Money.max / 12),Math.round(global.resource.Money.max / 4)));
                             global.resource.Money.amount += cash;
                             if (global.resource.Money.amount > global.resource.Money.max){
                                 global.resource.Money.amount = global.resource.Money.max;
@@ -7435,7 +7435,7 @@ function majorWish(parent){
                         }
                         case 'robbery':
                         {
-                            let cash = Math.floor(seededRandom(Math.round(global.resource.Money.max / 12),Math.round(global.resource.Money.max / 36)));
+                            let cash = Math.floor(seededRandom(Math.round(global.resource.Money.max / 12),Math.round(global.resource.Money.max / 4)));
                             global.resource.Money.amount += cash;
                             if (global.resource.Money.amount > global.resource.Money.max){
                                 global.resource.Money.amount = global.resource.Money.max;

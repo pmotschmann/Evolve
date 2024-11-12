@@ -1,8 +1,8 @@
 import { global, save, webWorker, p_on } from './vars.js';
 import { loc } from './locale.js';
-import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper, popCost, eventActive } from './functions.js';
+import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper, popCost } from './functions.js';
 import { unlockAchieve, alevel, universeAffix, unlockFeat } from './achieve.js';
-import { payCosts, housingLabel, wardenLabel, structName, updateQueueNames, drawTech, fanaticism, checkAffordable, actions } from './actions.js';
+import { payCosts, housingLabel, wardenLabel, structName, updateQueueNames, drawTech, fanaticism, checkAffordable, actions, initStruct } from './actions.js';
 import { races, checkAltPurgatory, renderPsychicPowers, renderSupernatural, traitCostMod } from './races.js';
 import { drawResourceTab, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
@@ -311,7 +311,7 @@ const techs = {
         effect: loc('tech_housing_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['basic_housing'] = { count: 0 };
+                initStruct(actions.city.basic_housing);
                 return true;
             }
             return false;
@@ -333,7 +333,7 @@ const techs = {
         effect: loc('tech_cottage_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['cottage'] = { count: 0 };
+                initStruct(actions.city.cottage);
                 return true;
             }
             return false;
@@ -357,10 +357,7 @@ const techs = {
         effect: loc('tech_apartment_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['apartment'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.city.apartment);
                 return true;
             }
             return false;
@@ -380,10 +377,7 @@ const techs = {
         effect(){ return loc('tech_arcology_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.portal['arcology'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.portal.prtl_ruins.arcology);
                 return true;
             }
             return false;
@@ -542,13 +536,7 @@ const techs = {
         effect: loc('tech_captive_housing_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['captive_housing'] = {
-                    count: 0, cattle: 0, cattleCatch: 0,
-                    race0: 0, jailrace0: 0,
-                    race1: 0, jailrace1: 0,
-                    race2: 0, jailrace2: 0,
-                    raceCap: 0, cattleCap: 0,
-                };
+                initStruct(actions.city.captive_housing);
                 return true;
             }
             return false;
@@ -941,7 +929,7 @@ const techs = {
         effect(){ return global.race['hrt'] && ['wolven','vulpine'].includes(global.race['hrt']) ? loc('tech_smokehouse_easter_effect') : loc('tech_smokehouse_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                checkAltPurgatory('city','smokehouse','silo',{ count: 0 });
+                checkAltPurgatory('city','smokehouse','silo',actions.city.smokehouse.struct().d);
                 return true;
             }
             return false;
@@ -968,7 +956,7 @@ const techs = {
         effect: loc('tech_lodge_effect'),
         action(){
             if (payCosts($(this)[0])){
-                checkAltPurgatory('city','lodge','farm',{ count: 0 });
+                checkAltPurgatory('city','lodge','farm',actions.city.lodge.struct().d);
                 return true;
             }
             return false;
@@ -993,7 +981,7 @@ const techs = {
         effect(){ return this.condition() ? loc('tech_lodge_effect_alt') : loc('tech_lodge_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                checkAltPurgatory('city','lodge','farm',{ count: 0 });
+                checkAltPurgatory('city','lodge','farm',actions.city.lodge.struct().d);
                 return true;
             }
             return false;
@@ -1015,7 +1003,7 @@ const techs = {
         effect: loc('tech_soul_well_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['soul_well'] = { count: 0 };
+                initStruct(actions.city.soul_well);
                 return true;
             }
             return false;
@@ -1037,7 +1025,7 @@ const techs = {
         effect: loc('tech_compost_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['compost'] = { count: 0, on: 0 };
+                initStruct(actions.city.compost);
                 return true;
             }
             return false;
@@ -1121,7 +1109,7 @@ const techs = {
         effect: loc('tech_agriculture_effect'),
         action(){
             if (payCosts($(this)[0])){
-                checkAltPurgatory('city','farm','lodge',{ count: 0 });
+                checkAltPurgatory('city','farm','lodge',actions.city.farm.struct().d);
                 return true;
             }
             return false;
@@ -1180,7 +1168,7 @@ const techs = {
         effect: loc('tech_silo_effect'),
         action(){
             if (payCosts($(this)[0])){
-                checkAltPurgatory('city','silo','smokehouse',{ count: 0 });
+                checkAltPurgatory('city','silo','smokehouse',actions.city.silo.struct().d);
                 return true;
             }
             return false;
@@ -1200,7 +1188,7 @@ const techs = {
         effect: loc('tech_mill_effect'),
         action(){
             if (payCosts($(this)[0])){
-                checkAltPurgatory('city','mill','windmill',{ count: 0, on: 0 });
+                checkAltPurgatory('city','mill','windmill',actions.city.mill.struct().d);
                 return true;
             }
             return false;
@@ -1262,7 +1250,7 @@ const techs = {
         effect(){ return global.race['unfathomable'] ? loc('tech_watermill_effect') : loc('tech_wind_plant_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                checkAltPurgatory('city','windmill','mill',{ count: 0, on: 0 });
+                checkAltPurgatory('city','windmill','mill',actions.city.windmill.struct().d);
                 return true;
             }
             return false;
@@ -1301,20 +1289,7 @@ const techs = {
         effect: loc('tech_foundry_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['foundry'] = {
-                    count: 0,
-                    crafting: 0,
-                    Plywood: 0,
-                    Brick: 0,
-                    Bronze: 0,
-                    Wrought_Iron: 0,
-                    Sheet_Metal: 0,
-                    Mythril: 0,
-                    Aerogel: 0,
-                    Nanoweave: 0,
-                    Scarletite: 0,
-                    Quantium: 0,
-                };
+                initStruct(actions.city.foundry);
                 return true;
             }
             return false;
@@ -1510,7 +1485,7 @@ const techs = {
         effect: loc('tech_stellar_forge_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['stellar_forge'] = { count: 0, on: 0 };
+                initStruct(actions.interstellar.int_neutron.stellar_forge);
                 return true;
             }
             return false;
@@ -1641,7 +1616,7 @@ const techs = {
         effect: loc('tech_banquet_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['banquet'] = { count: 0, on: 0, strength:0 };
+                initStruct(actions.city.banquet);
                 return true;
             }
             return false;
@@ -1662,7 +1637,7 @@ const techs = {
         effect: loc('tech_theatre_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['amphitheatre'] = { count: 0 };
+                initStruct(actions.city.amphitheatre);
                 return true;
             }
             return false;

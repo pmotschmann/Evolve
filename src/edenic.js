@@ -564,7 +564,7 @@ const edenicModules = {
             effect(){
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[loc('eden_asphodel_name')])}</div>`;
                 desc += `<div>${loc('plus_max_soldiers',[$(this)[0].soldiers()])}</div>`;
-                if (global.tech['celestial_warfare'] && global.tech.celestial_warfare >= 4){
+                if (global.tech['celestial_warfare'] && global.tech.celestial_warfare >= 4 && (!global.tech['elysium'] || global.tech.elysium < 8)){
                     desc += `<div>${loc('eden_bunker_effect',[3])}</div>`;
                 }
                 if (global.tech['celestial_warfare'] && global.tech.celestial_warfare >= 5){
@@ -926,7 +926,7 @@ const edenicModules = {
                 if (garrisonSize() < armySize){
                     return false;
                 }
-                
+
                 if (armyRating(jobScale(1),'Troops') > Math.floor(seededRandom(0,global.eden.fortress.detector * 2,true))){
                     let dead = Math.floor(seededRandom(0,armySize,true));
                     dead = deadCalc(dead, armySize);
@@ -1091,7 +1091,7 @@ const edenicModules = {
                     if (global.eden.enemy_isle.et > 0){ targets.push('et'); }
 
                     if (global.eden['pillbox'] && global.eden.pillbox.staffed > 0){
-                        let rating = +(Math.round(armyRating(global.eden.pillbox.staffed,'army',0)) / 100).toFixed(0);
+                        let rating = +(Math.round(armyRating(global.eden.pillbox.staffed,'army',0)) / 75).toFixed(0);
                         if (rating > 100){ rating = 100; }
                         global.eden.fire_support_base.count = Math.floor(rating);
                     }
@@ -1246,7 +1246,7 @@ const edenicModules = {
                 Nanoweave(offset){ return spaceCostMultiplier('pillbox', offset, 38000000, 1.26, 'eden'); },
             },
             effect(){
-                let rating = +(Math.round(armyRating(global.eden['pillbox'] && global.eden.pillbox.staffed ? global.eden.pillbox.staffed : jobScale(10),'army',0)) / 100).toFixed(1);
+                let rating = +(Math.round(armyRating(global.eden['pillbox'] && global.eden.pillbox.staffed ? global.eden.pillbox.staffed : jobScale(10),'army',0)) / 75).toFixed(1);
                 if (rating > 100){ rating = 100; }
 
                 let desc = ``;
@@ -1468,7 +1468,7 @@ const edenicModules = {
                 },
                 Aluminium(o){ return global.eden?.reincarnation?.count === 0 ? 10000000000 : 0; },
                 Nano_Tube(o){ return global.eden?.reincarnation?.count === 0 ? 2000000000 : 0; },
-                Nanoweave(o){ return global.eden?.reincarnation?.count === 0 ? 5000000000 : 0; },
+                Asphodel_Powder(o){ return global.eden?.reincarnation?.count === 0 ? 750000 : 0; },
             },
             queue_complete(){ return 1 - (global.eden?.reincarnation?.count || 0); },
             effect(){

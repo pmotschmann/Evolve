@@ -682,7 +682,7 @@ export function defineResources(wiki){
     loadResource('Chrysotile',wiki,200,1,true,true);
     loadResource('Stone',wiki,200,1,true,true);
     loadResource('Crystal',wiki,200,1,true,true);
-    loadResource('Useless',wiki,-1,0,false,false);
+    loadResource('Useless',wiki,-2,0,false,false);
     loadResource('Furs',wiki,100,1,true,true);
     loadResource('Copper',wiki,100,1,true,true);
     loadResource('Iron',wiki,100,1,true,true);

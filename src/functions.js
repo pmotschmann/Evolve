@@ -1753,6 +1753,7 @@ export function adjustCosts(c_action, offset, wiki){
     costs = extraAdjust(costs, offset, wiki);
     costs = heavyAdjust(costs, offset, wiki);
     costs = dictatorAdjust(costs, offset, wiki);
+    costs = lMatAdjust(costs, c_action, offset, wiki);
     return craftAdjust(costs, offset, wiki);
 }
 
@@ -1777,7 +1778,7 @@ function loneAdjust(costs, offset, wiki){
     if (global.race['lone_survivor']){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
-            if (['Structs','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Corrupt_Gem','Codex','Demonic_Essence','Horseshoe'].includes(res)){
+            if (['Structs','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Supercoiled','Corrupt_Gem','Codex','Demonic_Essence','Horseshoe'].includes(res)){
                 newCosts[res] = function(){ return costs[res](offset, wiki); }
             }
             else if (['Knowledge'].includes(res)){
@@ -1805,7 +1806,7 @@ function truthAdjust(costs, c_action, offset, wiki){
             if (res === 'Money'){
                 newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 3); }
             }
-            else if (['Structs','Knowledge','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Corrupt_Gem','Codex','Demonic_Essence','Horseshoe'].includes(res)){
+            else if (['Structs','Knowledge','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Supercoiled','Corrupt_Gem','Codex','Demonic_Essence','Horseshoe'].includes(res)){
                 newCosts[res] = function(){ return costs[res](offset, wiki); }
             }
             else {
@@ -1914,7 +1915,7 @@ function smolderAdjust(costs, offset, wiki){
                 let adjustRate = res === 'Plywood' ? 2 : 1;
                 newCosts['Chrysotile'] = function(){ return Math.round(costs[res](offset, wiki) * adjustRate) || 0; }
             }
-            else if (['HellArmy','Army','Troops','Structs','Chrysotile','Knowledge','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Corrupt_Gem','Codex','Demonic_Essence','Horseshoe','Mana','Energy'].includes(res)){
+            else if (['HellArmy','Army','Troops','Structs','Chrysotile','Knowledge','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Supercoiled','Corrupt_Gem','Codex','Demonic_Essence','Horseshoe','Mana','Energy'].includes(res)){
                 newCosts[res] = function(){ return costs[res](offset, wiki); }
             }
             else {
@@ -2019,10 +2020,27 @@ function craftAdjust(costs, offset, wiki){
 function dictatorAdjust(costs, offset, wiki){
     if (global.civic.govern.type === 'dictator'){
         let adjustRate = 1 - (govEffect.dictator()[2] / 100);
-        var newCosts = {};
+        let newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (['Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal'].includes(res)){
                 newCosts[res] = function(){ return costs[res](offset, wiki) * adjustRate; }
+            }
+            else {
+                newCosts[res] = function(){ return costs[res](offset, wiki); }
+            }
+        });
+        return newCosts;
+    }
+    return costs;
+}
+
+function lMatAdjust(costs, c_action, offset, wiki){
+    if (global.race['living_materials']){
+        let newCosts = {};
+        let path = c_action.hasOwnProperty('struct') ? c_action.struct().p : false;
+        Object.keys(costs).forEach(function (res){
+            if (path && global[path[1]][path[0]].hasOwnProperty('l_m') && (['Lumber','Furs','Plywood'].includes(res) || (res === 'Stone' && global.race['sappy']))){
+                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * traits.living_materials.vars()[0] ** (global[path[1]][path[0]].l_m / 25)); }
             }
             else {
                 newCosts[res] = function(){ return costs[res](offset, wiki); }
@@ -2879,6 +2897,7 @@ const valAdjust = {
     darkness: false,
     living_tool: false,
     empowered: false,
+    living_materials: true,
 };
 
 function getTraitVals(trait, rank, species){
@@ -2910,6 +2929,9 @@ function getTraitVals(trait, rank, species){
         }
         else if (trait === 'anthropophagite'){
             vals = [vals[0] * 10000];
+        }
+        else if (trait === 'living_materials'){
+            vals = [global.resource.Lumber.name, global.resource.Plywood.name, global.resource.Furs.name, loc('resource_Amber_name')];
         }
         else if (!valAdjust[trait]){
             vals = [];

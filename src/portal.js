@@ -5,7 +5,7 @@ import { traits, races, fathomCheck, traitCostMod } from './races.js';
 import { spatialReasoning, unlockContainers } from './resources.js';
 import { loadFoundry, jobScale, limitCraftsmen } from './jobs.js';
 import { armyRating, govCivics, garrisonSize, mercCost } from './civics.js';
-import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc, actions } from './actions.js';
+import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc, actions, initStruct } from './actions.js';
 import { checkRequirements, incrementStruct, astrialProjection, ascendLab } from './space.js';
 import { asphodelResist } from './edenic.js';
 import { production, highPopAdjust } from './prod.js';
@@ -711,6 +711,12 @@ const fortressModules = {
             postPower(){
                 vBind({el: `#srprtl_ruins`},'update');
                 vBind({el: `#srprtl_gate`},'update');
+            },
+            struct(){
+                return {
+                    d: { count: 0,  on: 0 },
+                    p: ['arcology','portal']
+                };
             },
             soldiers(){
                 let soldiers = global.race['grenadier'] ? 3 : 5;
@@ -2766,6 +2772,9 @@ export function bloodwar(){
                 }
             }
         }
+        if (global.race['ocular_power'] && global.race['ocularPowerConfig'] && global.race.ocularPowerConfig.p){
+            global.race.ocularPowerConfig.ds += Math.round(killed * traits.ocular_power.vars()[1]);
+        }
         siege_report.damage = damage;
         siege_report.kills = killed;
         day_report.stats.kills.sieges = killed;
@@ -2969,6 +2978,9 @@ export function bloodwar(){
             global.stats.dkills += forgeKills;
             global.portal.soul_forge.kills += forgeKills;
             soulCapacitor(forgeKills);
+            if (global.race['ocular_power'] && global.race['ocularPowerConfig'] && global.race.ocularPowerConfig.p){
+                global.race.ocularPowerConfig.ds += Math.round(forgeKills * traits.ocular_power.vars()[1]);
+            }
             let forge_base = global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 5 ? 4500 : 5000;
             if (Math.rand(0,forge_base) === 0){
                 day_report.soul_forge.gem = true;

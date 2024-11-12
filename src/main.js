@@ -850,7 +850,7 @@ function fastLoop(){
         global_multiplier *= 1 + (traits.gloomy.vars()[0] / 100);
     }
     if (global.race['floating'] && global.city.calendar.wind === 1){
-        breakdown.p['Global'][loc('trait_floating_name')] = `${traits.floating.vars()[0]}%`;
+        breakdown.p['Global'][loc('trait_floating_name')] = `-${traits.floating.vars()[0]}%`;
         global_multiplier *= 1 - (traits.floating.vars()[0] / 100);
     }
     if (global.tech['world_control']){
@@ -12019,6 +12019,16 @@ function longLoop(){
                 $(`#infoTimer`).html(`T-${global.race['orbit_decay'] - global.stats.days}`);
             }
             orbitDecayed();
+        }
+
+        if (global.race['living_materials']){
+            ['city','space','interstellar','galaxy','portal','eden','tauceti'].forEach(function(sector){
+                Object.keys(global[sector]).forEach(function(struct){
+                    if (global[sector][struct].hasOwnProperty('l_m')){
+                        global[sector][struct].l_m++;
+                    }
+                });
+            });
         }
 
         govern();

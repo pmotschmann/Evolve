@@ -3505,6 +3505,12 @@ const interstellarProjects = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['stellar_forge','interstellar']
+                };
+            },
             flair(){
                 return loc('interstellar_stellar_forge_flair');
             }
@@ -5886,12 +5892,20 @@ const structDefinitions = {
     attractor: { count: 0, on: 0 },
 };
 
-export function incrementStruct(struct,sector){
+export function incrementStruct(c_action,sector){
+    let struct = c_action;
+    if (typeof c_action === 'object'){
+        struct = c_action.struct().p[0];
+        sector = c_action.struct().p[1];
+    }
     if (!sector){
         sector = 'space';
     }
     if (!global[sector][struct]){
-        global[sector][struct] = structDefinitions[struct];
+        global[sector][struct] = typeof c_action === 'object' ? c_action.struct().d : structDefinitions[struct];
+    }
+    if (global.race['living_materials'] || global[sector][struct]['l_m']){
+        global[sector][struct]['l_m'] = 0;
     }
     global[sector][struct].count++;
 }
