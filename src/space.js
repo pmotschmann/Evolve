@@ -740,6 +740,12 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['vr_center','space']
+                };
             }
         },
         garage: {
@@ -1415,6 +1421,12 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['casino','space']
+                };
             },
             flair: loc('city_casino_flair')
         },
@@ -2791,6 +2803,12 @@ const interstellarProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['zoo','interstellar']
+                };
             }
         },
         warehouse: {

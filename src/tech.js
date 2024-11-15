@@ -113,7 +113,7 @@ const techs = {
                 if (global.race['infectious']){
                     global.civic.garrison.display = true;
                     global.settings.showCivic = true;
-                    global.city['garrison'] = { count: 0, on: 0 };
+                    initStruct(actions.city.garrison);
                 }
                 if (global.race['banana'] && !global.race['terrifying']){
                     global.settings.showResources = true;
@@ -1752,7 +1752,7 @@ const techs = {
         effect(){ return loc('tech_vr_center_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['vr_center'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_red.vr_center);
                 return true;
             }
             return false;
@@ -1772,7 +1772,7 @@ const techs = {
         effect(){ return loc('tech_zoo_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['zoo'] = { count: 0, on: 0 };
+                initStruct(actions.interstellar.int_alpha.zoo);
                 return true;
             }
             return false;
@@ -1792,8 +1792,8 @@ const techs = {
         effect: loc('tech_casino_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['casino'] = { count: 0, on: 0 };
-                global.space['spc_casino'] = { count: 0, on: 0 };
+                initStruct(actions.city.casino);
+                initStruct(actions.space.spc_hell.casino);
                 return true;
             }
             return false;
@@ -1910,20 +1910,9 @@ const techs = {
         effect(){ return global.race['sappy'] ? loc('tech_amber_effect') : loc(global.race['flier'] ? 'tech_mining_effect_alt' : 'tech_mining_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.city['rock_quarry'] = {
-                    count: 0,
-                    on: 0,
-                    asbestos: 50
-                };
+                initStruct(actions.city.rock_quarry);
                 if (global.race['cannibalize']){
-                    global.city['s_alter'] = {
-                        count: 0,
-                        rage: 0,
-                        mind: 0,
-                        regen: 0,
-                        mine: 0,
-                        harvest: 0,
-                    };
+                    initStruct(actions.city.s_alter);
                 }
                 return true;
             }
@@ -1944,7 +1933,7 @@ const techs = {
         effect(){ return global.race['sappy'] ? loc('tech_bayer_process_effect_alt') : loc('tech_bayer_process_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.city['metal_refinery'] = { count: 0, on: 0 };
+                initStruct(actions.city.metal_refinery);
                 loadFoundry();
                 return true;
             }
@@ -1988,19 +1977,7 @@ const techs = {
         effect: loc('tech_smelting_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['smelter'] = {
-                    count: 0,
-                    cap: 0,
-                    Wood: 0,
-                    Coal: 0,
-                    Oil: 0,
-                    Star: 0,
-                    StarCap: 0,
-                    Inferno: 0,
-                    Iron: 0,
-                    Steel: 0,
-                    Iridium: 0
-                };
+                initStruct(actions.city.smelter);
                 return true;
             }
             return false;
@@ -2237,10 +2214,7 @@ const techs = {
         effect: loc('tech_metal_working_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['mine'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.city.mine);
                 return true;
             }
             return false;
@@ -2287,10 +2261,7 @@ const techs = {
         effect: loc('tech_coal_mining_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['coal_mine'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.city.coal_mine);
                 global.resource.Coal.display = true;
                 return true;
             }
@@ -2314,7 +2285,7 @@ const techs = {
         effect: loc('tech_storage_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['shed'] = { count: 0 };
+                initStruct(actions.city.shed);
                 return true;
             }
             return false;
@@ -2462,7 +2433,7 @@ const techs = {
         effect: loc('tech_containerization_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['storage_yard'] = { count: 0 };
+                initStruct(actions.city.storage_yard);
                 return true;
             }
             return false;
@@ -2674,7 +2645,7 @@ const techs = {
         },
         action(){
             if (payCosts($(this)[0])){
-                global.city['warehouse'] = { count: 0 };
+                initStruct(actions.city.warehouse);
                 return true;
             }
             return false;
@@ -3433,7 +3404,7 @@ const techs = {
         effect: loc('tech_trade_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['trade'] = { count: 0 };
+                initStruct(actions.city.trade);
                 global.city.market.active = true;
                 return true;
             }
@@ -3500,7 +3471,7 @@ const techs = {
         effect: loc('tech_wharf_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['wharf'] = { count: 0 };
+                initStruct(actions.city.wharf);
                 return true;
             }
             return false;
@@ -3520,7 +3491,7 @@ const techs = {
         effect: loc('tech_banking_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['bank'] = { count: 0 };
+                initStruct(actions.city.bank);
                 return true;
             }
             return false;
