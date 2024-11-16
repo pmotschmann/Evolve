@@ -1781,6 +1781,12 @@ const tauCetiModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['pylon','tauceti']
+                };
             }
         },
         cloning_facility: {

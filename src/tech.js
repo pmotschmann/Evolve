@@ -124,7 +124,7 @@ const techs = {
                 }
                 if (global.race['calm']){
                     global.resource.Zen.display = true;
-                    global.city['meditation'] = { count: 0 };
+                    initStruct(actions.city.meditation);
                 }
                 return true;
             }
@@ -1793,7 +1793,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.city.casino);
-                initStruct(actions.space.spc_hell.casino);
+                initStruct(actions.space.spc_hell.spc_casino);
                 return true;
             }
             return false;
@@ -3314,7 +3314,7 @@ const techs = {
         effect: loc('tech_tax_rates_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.civic['taxes'].display = true;
+                global.civic.taxes.display = true;
                 return true;
             }
             return false;
@@ -3722,7 +3722,7 @@ const techs = {
         effect: loc('tech_exchange_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['exchange'] = { count: 0, on: 0 };
+                initStruct(actions.interstellar.int_alpha.exchange);
                 return true;
             }
             return false;
@@ -3955,7 +3955,7 @@ const techs = {
         effect: loc('tech_tourism_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['tourist_center'] = { count: 0, on: 0 };
+                initStruct(actions.city.tourist_center);
                 return true;
             }
             return false;
@@ -3995,7 +3995,7 @@ const techs = {
         effect: loc('tech_science_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['university'] = { count: 0 };
+                initStruct(actions.city.university);
                 return true;
             }
             return false;
@@ -4015,7 +4015,7 @@ const techs = {
         effect: loc('tech_library_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['library'] = { count: 0 };
+                initStruct(actions.city.library);
                 return true;
             }
             return false;
@@ -4152,10 +4152,7 @@ const techs = {
         effect: loc('tech_observatory_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['observatory'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.space.spc_moon.observatory);
                 return true;
             }
             return false;
@@ -4176,13 +4173,8 @@ const techs = {
         effect(){ return loc('tech_world_collider_effect',[planetName().dwarf]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['world_collider'] = {
-                    count: 0
-                };
-                global.space['world_controller'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.space.spc_dwarf.world_collider);
+                initStruct(actions.space.spc_dwarf.world_controller);
                 return true;
             }
             return false;
@@ -4203,10 +4195,7 @@ const techs = {
         effect(){ return global.race.universe === 'magic' ? loc('tech_sanctum_effect') : loc('tech_laboratory_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['laboratory'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.interstellar.int_alpha.laboratory);
                 return true;
             }
             return false;
@@ -4490,7 +4479,7 @@ const techs = {
         effect(){return loc('tech_hell_oven_effect');},
         action(){
             if (payCosts($(this)[0])){
-                global.portal['oven'] = {count:0}
+                initStruct(actions.portal.prtl_lake.oven);
                 return true;
             }
             return false;
@@ -4511,8 +4500,8 @@ const techs = {
         effect(){return loc('tech_preparation_methods_effect');},
         action(){
             if (payCosts($(this)[0])){
-                global.portal['dish_soul_steeper'] = {count:0, on:0};
-                global.portal['dish_life_infuser'] = {count:0, on:0};
+                initStruct(actions.portal.prtl_lake.dish_soul_steeper);
+                initStruct(actions.portal.prtl_lake.dish_life_infuser);
                 return true;
             }
             return false;
@@ -4557,7 +4546,7 @@ const techs = {
         effect: loc('tech_bioscience_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['biolab'] = { count: 0 };
+                initStruct(actions.city.biolab);
                 return true;
             }
             return false;
@@ -4732,10 +4721,7 @@ const techs = {
                 if (global.race['terrifying']){
                     global.civic['taxes'].display = true;
                 }
-                global.city['wardenclyffe'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.city.wardenclyffe);
                 return true;
             }
             return false;
@@ -4764,10 +4750,7 @@ const techs = {
                 messageQueue(loc('tech_electricity_msg'),'info',false,['progress']);
                 global.city['power'] = 0;
                 global.city['powered'] = true;
-                global.city['coal_power'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.city.coal_power);
                 global.settings.showPowerGrid = true;
                 setPowerGrid();
                 return true;
@@ -4833,16 +4816,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.resource.Titanium.display = true;
-                global.city['factory'] = {
-                    count: 0,
-                    on: 0,
-                    Lux: 0,
-                    Furs: 0,
-                    Alloy: 0,
-                    Polymer: 0,
-                    Nano: 0,
-                    Stanene: 0
-                };
+                initStruct(actions.city.factory);
                 return true;
             }
             return false;
@@ -4867,8 +4841,8 @@ const techs = {
             if (payCosts($(this)[0])){
                 if (global.race['terrifying']){
                     global.tech['gambling'] = 1;
-                    global.city['casino'] = { count: 0, on: 0 };
-                    global.space['spc_casino'] = { count: 0, on: 0 };
+                    initStruct(actions.city.casino);
+                    initStruct(actions.space.spc_hell.spc_casino);
                 }
                 return true;
             }
@@ -4891,10 +4865,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 messageQueue(loc('tech_fission_msg'),'info',false,['progress']);
-                global.city['fission_power'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.city.fission_power);
                 return true;
             }
             return false;
@@ -5123,7 +5094,7 @@ const techs = {
         effect: loc('tech_ai_core_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['citadel'] = { count: 0, on: 0 };
+                initStruct(actions.interstellar.int_neutron.citadel);
                 return true;
             }
             return false;
@@ -6066,7 +6037,7 @@ const techs = {
         effect: loc('tech_oil_well_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['oil_well'] = { count: 0 };
+                initStruct(actions.city.oil_well);
                 return true;
             }
             return false;
@@ -6086,7 +6057,7 @@ const techs = {
         effect: loc('tech_oil_depot_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['oil_depot'] = { count: 0 };
+                initStruct(actions.city.oil_depot);
                 return true;
             }
             return false;
@@ -6112,7 +6083,7 @@ const techs = {
         },
         action(){
             if (payCosts($(this)[0])){
-                global.city['oil_power'] = { count: 0 , on: 0 };
+                initStruct(actions.city.oil_power);
                 return true;
             }
             return false;
@@ -6211,10 +6182,7 @@ const techs = {
         effect: loc('tech_mass_driver_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['mass_driver'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.city.mass_driver);
                 return true;
             }
             return false;
@@ -6473,7 +6441,7 @@ const techs = {
             if (payCosts($(this)[0])){
                 global.civic.lumberjack.name = loc('job_reclaimer');
                 global.civic.lumberjack.display = true;
-                global.city['graveyard'] = { count: 0 };
+                initStruct(actions.city.graveyard);
                 return true;
             }
             return false;
@@ -6674,7 +6642,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.civic.lumberjack.display = true;
-                global.city['lumber_yard'] = { count: 0 };
+                initStruct(actions.city.lumber_yard);
                 return true;
             }
             return false;
@@ -6717,10 +6685,7 @@ const techs = {
         effect: loc('tech_iron_saw_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['sawmill'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.city.sawmill);
                 return true;
             }
             return false;
@@ -7207,7 +7172,7 @@ const techs = {
         },
         action(){
             if (payCosts($(this)[0])){
-                global.city['slave_pen'] = { count: 0 };
+                initStruct(actions.city.slave_pen);
                 global.resource.Slave.amount = 0;
                 return true;
             }
@@ -7314,7 +7279,7 @@ const techs = {
         effect: loc('tech_garrison_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['garrison'] = { count: 0, on: 0 };
+                initStruct(actions.city.garrison);
                 return true;
             }
             return false;
@@ -7380,7 +7345,7 @@ const techs = {
         effect: loc('tech_hospital_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['hospital'] = { count: 0 };
+                initStruct(actions.city.hospital);
                 return true;
             }
             return false;
@@ -7420,7 +7385,7 @@ const techs = {
         effect: loc('tech_boot_camp_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['boot_camp'] = { count: 0 };
+                initStruct(actions.city.boot_camp);
                 return true;
             }
             return false;
@@ -7732,7 +7697,7 @@ const techs = {
         effect(){ return `<div>${loc('tech_space_marines_effect',[planetName().red])}</div>` },
         action(){
             if (payCosts($(this)[0])){
-                global.space['space_barracks'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_red.space_barracks);
                 return true;
             }
             return false;
@@ -8040,10 +8005,7 @@ const techs = {
         effect: loc('tech_cement_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['cement_plant'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.city.cement_plant);
                 return true;
             }
             return false;
@@ -8328,16 +8290,9 @@ const techs = {
         effect: loc('tech_theology_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['temple'] = { count: 0 };
+                initStruct(actions.city.temple);
                 if (global.race['magnificent']){
-                    global.city['shrine'] = {
-                        count: 0,
-                        morale: 0,
-                        metal: 0,
-                        know: 0,
-                        tax: 0,
-                        cycle: 0,
-                    };
+                    initStruct(actions.city.shrine);
                 }
                 if (global.genes['ancients'] && global.genes['ancients'] >= 2){
                     global.civic.priest.display = true;
@@ -8423,7 +8378,7 @@ const techs = {
         },
         action(){
             if (payCosts($(this)[0])){
-                global.space['ziggurat'] = { count: 0 };
+                initStruct(actions.space.spc_red.ziggurat);
                 return true;
             }
             return false;
@@ -11258,13 +11213,13 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 if (global.tech['isolation']){
-                    global.tauceti['pylon'] = { count: 0 };
+                    initStruct(actions.tauceti.tau_home.pylon);
                 }
                 else if (global.race['cataclysm'] || global.race['orbit_decayed']){
-                    global.space['pylon'] = { count: 0 };
+                    initStruct(actions.space.spc_red.pylon);
                 }
                 else {
-                    global.city['pylon'] = { count: 0 };
+                    initStruct(actions.city.pylon);
                 }
                 return true;
             }
@@ -11570,8 +11525,8 @@ const techs = {
         effect(){ return loc('tech_conceal_ward_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.city['conceal_ward'] = { count: 0 };
-                global.space['conceal_ward'] = { count: 0 };
+                initStruct(actions.city.conceal_ward);
+                global.space['conceal_ward'] = { count: 0 }; // ???
                 return true;
             }
             return false;

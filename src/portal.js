@@ -1364,7 +1364,13 @@ const fortressModules = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['oven','portal']
+                };
+            },
         },
         oven_complete: {
             id: 'portal-oven_complete',
@@ -1426,6 +1432,12 @@ const fortressModules = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['dish_soul_steeper','portal']
+                };
+            },
             flair: loc('portal_dish_soul_steeper_flair')
         },
         dish_life_infuser: {
@@ -1450,6 +1462,12 @@ const fortressModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['dish_soul_steeper','portal']
+                };
             },
             flair: loc('portal_dish_life_infuser_flair')
         }

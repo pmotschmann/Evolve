@@ -8,7 +8,7 @@ import { buildGarrison, govEffect, govTitle } from './civics.js';
 import { govActive, removeTask, defineGovernor } from './governor.js';
 import { unlockAchieve, unlockFeat, alevel } from './achieve.js';
 import { highPopAdjust, teamster } from './prod.js';
-import { actions, checkTechQualifications, drawCity, drawTech, structName } from './actions.js';
+import { actions, checkTechQualifications, drawCity, drawTech, structName, initStruct } from './actions.js';
 import { events, eventList } from './events.js';
 import { swissKnife } from './tech.js';
 import { warhead, big_bang } from './resets.js';
@@ -6105,27 +6105,13 @@ export function cleanAddTrait(trait){
         case 'cannibalize':
             checkPurgatory('tech','sacrifice');
             if (global.tech['mining']) {
-                global.city['s_alter'] = {
-                    count: 0,
-                    rage: 0,
-                    mind: 0,
-                    regen: 0,
-                    mine: 0,
-                    harvest: 0,
-                };
+                initStruct(actions.city.s_alter);
                 defineGovernor();
             }
             break;
         case 'magnificent':
             if (global.tech['theology'] >= 2) {
-                checkPurgatory('city','shrine',{
-                    count: 0,
-                    morale: 0,
-                    metal: 0,
-                    know: 0,
-                    tax: 0,
-                    cycle: 0
-                });
+                checkPurgatory('city','shrine',actions.city.shrine.struct().d);
             }
             break;
         case 'unified':
@@ -6197,7 +6183,7 @@ export function cleanAddTrait(trait){
             break;
         case 'calm':
             if (global.tech['primitive'] >= 3) {
-                checkPurgatory('city','meditation',{ count: 0 });
+                checkPurgatory('city','meditation',actions.city.meditation.struct().d);
                 if (!global.race['orbit_decayed']){
                     global.resource.Zen.display = true;
                 }

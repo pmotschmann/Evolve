@@ -1701,7 +1701,7 @@ export function calcPrestige(type,inputs){
             gains.artifact = artifact;
         }
         else if (type === 'apotheosis'){
-            gains.plasmid = 1;
+            gains.plasmid = (256 >> 4) ** 4 - 65535; // why? because I want you to cry about it.
             if (universe === 'micro'){
                 gains.supercoiled = pr_gain ** 2;
             }

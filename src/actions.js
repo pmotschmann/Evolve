@@ -1818,6 +1818,12 @@ export const actions = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['transmitter','city']
+                };
             }
         },
         captive_housing: buildTemplate(`captive_housing`,'city'),
@@ -2134,7 +2140,13 @@ export const actions = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['hospital','city']
+                };
+            },
         },
         boot_camp: {
             id: 'city-boot_camp',
@@ -2175,7 +2187,13 @@ export const actions = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['boot_camp','city']
+                };
+            },
         },
         shed: {
             id: 'city-shed',
@@ -2502,6 +2520,12 @@ export const actions = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['pylon','city']
+                };
             }
         },
         conceal_ward: {
@@ -2526,6 +2550,12 @@ export const actions = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['conceal_ward','city']
+                };
             }
         },
         graveyard: {
@@ -2559,6 +2589,12 @@ export const actions = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['graveyard','city']
+                };
             }
         },
         lumber_yard: {
@@ -2593,6 +2629,12 @@ export const actions = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['lumber_yard','city']
+                };
             }
         },
         sawmill: {
@@ -2633,6 +2675,12 @@ export const actions = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['sawmill','city']
+                };
             }
         },
         rock_quarry: {
@@ -2750,6 +2798,12 @@ export const actions = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['cement_plant','city']
+                };
             }
         },
         foundry: {
@@ -2861,7 +2915,22 @@ export const actions = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: {
+                        count: 0,
+                        on: 0,
+                        Lux: 0,
+                        Furs: 0,
+                        Alloy: 0,
+                        Polymer: 0,
+                        Nano: 0,
+                        Stanene: 0
+                    },
+                    p: ['factory','city']
+                };
+            },
         },
         nanite_factory: buildTemplate(`nanite_factory`,'city'),
         smelter: {
@@ -3112,6 +3181,12 @@ export const actions = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['oil_well','city']
+                };
+            },
             flair: loc('city_oil_well_flair')
         },
         oil_depot: {
@@ -3156,7 +3231,13 @@ export const actions = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['oil_depot','city']
+                };
+            },
         },
         trade: {
             id: 'city-trade',
@@ -3285,11 +3366,17 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('tourist_center','city');
-                    global.city['tourist_center'].on++;
+                    global.city.tourist_center.on++;
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['tourist_center','city']
+                };
+            },
         },
         amphitheatre: {
             id: 'city-amphitheatre',
@@ -3410,7 +3497,13 @@ export const actions = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['temple','city']
+                };
+            },
         },
         wonder_lighthouse: {
             id: 'city-wonder_lighthouse',
@@ -3515,7 +3608,20 @@ export const actions = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: {
+                        count: 0,
+                        morale: 0,
+                        metal: 0,
+                        know: 0,
+                        tax: 0,
+                        cycle: 0,
+                    },
+                    p: ['shrine','city']
+                };
+            },
         },
         meditation: {
             id: 'city-meditation',
@@ -3541,7 +3647,13 @@ export const actions = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['meditation','city']
+                };
+            },
         },
         banquet: {
             id: 'city-banquet',
@@ -3741,7 +3853,7 @@ export const actions = {
                     base += planetTraits.permafrost.vars()[1];
                 }
                 if (global.tech['science'] >= 4){
-                    multiplier += global.city['library'].count * 0.02;
+                    multiplier += global.city.library.count * 0.02;
                 }
                 if (global.space['observatory'] && global.space.observatory.count > 0){
                     multiplier += (wiki ? global.space.observatory.on : support_on['observatory']) * 0.05;
@@ -3797,7 +3909,7 @@ export const actions = {
                 if (payCosts($(this)[0])){
                     let gain = global.tech['science'] && global.tech['science'] >= 8 ? 700 : 500;
                     if (global.tech['science'] >= 4){
-                        gain *= 1 + (global.city['library'].count * 0.02);
+                        gain *= 1 + (global.city.library.count * 0.02);
                     }
                     if (global.tech['supercollider']){
                         let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
@@ -4061,6 +4173,12 @@ export const actions = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['biolab','city']
+                };
             }
         },
         coal_power: {
@@ -4113,7 +4231,13 @@ export const actions = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['coal_power','city']
+                };
+            },
         },
         oil_power: {
             id: 'city-oil_power',
@@ -4172,7 +4296,13 @@ export const actions = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['oil_power','city']
+                };
+            },
         },
         fission_power: {
             id: 'city-fission_power',
@@ -4202,7 +4332,13 @@ export const actions = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['fission_power','city']
+                };
+            },
         },
         mass_driver: {
             id: 'city-mass_driver',
@@ -4232,7 +4368,13 @@ export const actions = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['mass_driver','city']
+                };
+            },
         },
         replicator: {
             id: 'city-replicator',
@@ -8617,13 +8759,13 @@ function aiStart(){
         if (!global.race['kindling_kindred'] && !global.race['smoldering']){
             if (global.race['evil']){
                 global.tech['reclaimer'] = 3;
-                global.city['graveyard'] = { count: 1 };
+                initStruct(actions.city.graveyard); global.city.graveyard.count = 1;
             }
             else {
                 global.tech['axe'] = 3;
                 global.tech['saw'] = 2;
-                global.city['lumber_yard'] = { count: 1 };
-                global.city['sawmill'] = { count: 0, on: 0 };
+                initStruct(actions.city.lumber_yard); global.city.lumber_yard.count = 1;
+                initStruct(actions.city.sawmill);
             }
             global.resource.Lumber.display = true;
             global.resource.Plywood.display = true;
@@ -8655,23 +8797,23 @@ function aiStart(){
         global.city['power'] = 7.5;
         global.city['powered'] = true;
 
-        global.city['factory'] = { count: 0, on: 0, Lux: 0, Furs: 0, Alloy: 0, Polymer: 1, Nano: 0, Stanene: 0 };
-        global.city['foundry'] = { count: 0, crafting: 0, Plywood: 0, Brick: 0, Bronze: 0, Wrought_Iron: 0, Sheet_Metal: 0, Mythril: 0, Aerogel: 0, Nanoweave: 0, Scarletite: 0, Quantium: 0  };
+        initStruct(actions.city.factory);
+        initStruct(actions.city.foundry);
         initStruct(actions.city.smelter); global.city.smelter.count = 1; global.city.smelter.Oil = 1; global.city.smelter.Iron = 1;
-        global.city['oil_power'] = { count: 1, on: 1 };
-        global.city['coal_power'] = { count: 0, on: 0 };
-        global.city['transmitter'] = { count: 1, on: 1 };
+        initStruct(actions.city.oil_power); global.city.oil_power.count = 1; global.city.oil_power.on = 1; 
+        initStruct(actions.city.coal_power);
+        initStruct(actions.city.transmitter); global.city.transmitter.count = 1; global.city.transmitter.on = 1;
         initStruct(actions.city.mine); global.city.mine.count = 1;
         initStruct(actions.city.coal_mine); global.city.coal_mine.count = 1;
-        global.city['oil_well'] = { count: 1 };
-        global.city['oil_depot'] = { count: 1 };
-        global.city['cement_plant'] = { count: 1, on: 0 };
-        global.city['garrison'] = { count: 0, on: 0 };
-        global.city['boot_camp'] = { count: 0 };
-        global.city['basic_housing'] = { count: 0 };
-        global.city['cottage'] = { count: 0 };
-        global.city['apartment'] = { count: 0, on: 0 };
-        global.city['amphitheatre'] = { count: 0 };
+        initStruct(actions.city.oil_well); global.city.oil_well.count = 1;
+        initStruct(actions.city.oil_depot); global.city.oil_depot.count = 1;
+        initStruct(actions.city.cement_plant);  global.city.cement_plant.count = 1;
+        initStruct(actions.city.garrison);
+        initStruct(actions.city.boot_camp);
+        initStruct(actions.city.basic_housing);
+        initStruct(actions.city.cottage);
+        initStruct(actions.city.apartment);
+        initStruct(actions.city.amphitheatre);
         initStruct(actions.city.rock_quarry); global.city.rock_quarry.count = 1;
         initStruct(actions.city.metal_refinery); global.city.metal_refinery.count = 1;
         initStruct(actions.city.shed); global.city.shed.count = 2;
@@ -8680,27 +8822,20 @@ function aiStart(){
         initStruct(actions.city.trade);
         initStruct(actions.city.wharf);
         initStruct(actions.city.bank); global.city.bank.count = 1;
-        global.city['university'] = { count: 1 };
-        global.city['library'] = { count: 1 };
-        global.city['wardenclyffe'] = { count: 0, on: 0 };
-        global.city['temple'] = { count: 0 };
+        initStruct(actions.city.university); global.city.university.count = 1;
+        initStruct(actions.city.library); global.city.library.count = 1;
+        initStruct(actions.city.wardenclyffe);
+        initStruct(actions.city.temple);
 
         if (global.race['calm']){
             global.resource.Zen.display = true;
-            global.city['meditation'] = { count: 0 };
+            initStruct(actions.city.meditation);
         }
         if (global.race['cannibalize']){
             initStruct(actions.city.s_alter);
         }
         if (global.race['magnificent']){
-            global.city['shrine'] = {
-                count: 0,
-                morale: 0,
-                metal: 0,
-                know: 0,
-                tax: 0,
-                cycle: 0
-            };
+            initStruct(actions.city.shrine);
         }
 
         global.civic.govern.type = 'technocracy';
@@ -8914,20 +9049,19 @@ function cataclysm(){
         global.city['powered'] = true;
 
         if (global.race['artifical']){
-            global.city['transmitter'] = { count: 0, on: 0 };
+            initStruct(actions.city.transmitter);
         }
-        global.city['factory'] = { count: 0, on: 0, Lux: 0, Furs: 0, Alloy: 0, Polymer: 1, Nano: 0, Stanene: 0 };
-        global.city['foundry'] = { count: 0, crafting: 0, Plywood: 0, Brick: 0, Bronze: 0, Wrought_Iron: 0, Sheet_Metal: 0, Mythril: 0, Aerogel: 0, Nanoweave: 0, Scarletite: 0, Quantium: 0 };
+        initStruct(actions.city.factory);
+        initStruct(actions.city.foundry);
         initStruct(actions.city.smelter); global.city.smelter.cap = 2; global.city.smelter.Oil = 2; global.city.smelter.Iron = 1; global.city.smelter.Steel = 1;
-        global.city['fission_power'] = { count: 0, on: 0 };
-        global.city['oil_power'] = { count: 0, on: 0 };
-        global.city['coal_power'] = { count: 0, on: 0 };
-
-        global.city['mass_driver'] = { count: 0, on: 0 };
+        initStruct(actions.city.fission_power);
+        initStruct(actions.city.oil_power);
+        initStruct(actions.city.coal_power);
+        initStruct(actions.city.mass_driver);
         initStruct(actions.city.mine);
         initStruct(actions.city.coal_mine);
-        global.city['oil_well'] = { count: 0 };
-        global.city['oil_depot'] = { count: 0 };
+        initStruct(actions.city.oil_well);
+        initStruct(actions.city.oil_depot);
         initStruct(actions.city.garrison);
         initStruct(actions.city.basic_housing);
         initStruct(actions.city.cottage);
@@ -8941,14 +9075,14 @@ function cataclysm(){
         initStruct(actions.city.trade);
         initStruct(actions.city.wharf);
         initStruct(actions.city.bank);
-        global.city['tourist_center'] = { count: 0, on: 0 };
-        global.city['university'] = { count: 0 };
-        global.city['library'] = { count: 0 };
-        global.city['wardenclyffe'] = { count: 0, on: 0 };
-        global.city['biolab'] = { count: 0, on: 0 };
-        global.city['lumber_yard'] = { count: 0 };
-        global.city['sawmill'] = { count: 0, on: 0 };
-        global.city['temple'] = { count: 0 };
+        initStruct(actions.city.tourist_center);
+        initStruct(actions.city.university);
+        initStruct(actions.city.library);
+        initStruct(actions.city.wardenclyffe);
+        initStruct(actions.city.biolab);
+        initStruct(actions.city.lumber_yard);
+        initStruct(actions.city.sawmill);
+        initStruct(actions.city.temple);
 
         global.space['satellite'] = { count: 1 };
         global.space['propellant_depot'] = { count: 1 };
@@ -8972,7 +9106,7 @@ function cataclysm(){
         global.space['biodome'] = { count: 2, on: 2 };
         global.space['laboratory'] = { count: 0, on: 0 };
         global.space['geothermal'] = { count: 2, on: 2 };
-        initStruct(actions.space.spc_hell.casino);
+        initStruct(actions.space.spc_hell.spc_casino);
         global.space['swarm_plant'] = { count: 0 };
         global.space['swarm_control'] = { count: 5, support: 40, s_max: 50 };
         global.space['swarm_satellite'] = { count: 40 };

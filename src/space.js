@@ -390,6 +390,12 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['observatory','space']
+                };
             }
         },
     },
@@ -702,11 +708,17 @@ const spaceProjects = {
             special(){ return global.tech['magic'] && global.tech.magic >= 3 ? true : false; },
             action(){
                 if (payCosts($(this)[0])){
-                    global.space['pylon'].count++;
+                    incrementStruct($(this)[0]);
                     global.resource.Mana.max += spatialReasoning(2);
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['pylon','space']
+                };
             }
         },
         vr_center: {
@@ -735,7 +747,7 @@ const spaceProjects = {
             powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
-                    incrementStruct('vr_center');
+                    incrementStruct($(this)[0]);
                     powerOnNewStruct($(this)[0]);
                     return true;
                 }
@@ -1220,6 +1232,12 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['ziggurat','space']
+                };
             }
         },
         space_barracks: {
@@ -1258,6 +1276,12 @@ const spaceProjects = {
                     soldiers /= 2;
                 }
                 return jobScale(soldiers);
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['space_barracks','space']
+                };
             },
             flair(){
                 return loc('space_red_space_barracks_flair');
@@ -2193,6 +2217,12 @@ const spaceProjects = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['world_collider','space']
+                };
+            },
             flair: loc('space_dwarf_collider_flair')
         },
         world_controller: {
@@ -2225,6 +2255,12 @@ const spaceProjects = {
             powered(){ return powerCostMod(20); },
             action(){
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['world_controller','space']
+                };
             },
             flair: loc('space_dwarf_controller_flair')
         },
@@ -2619,6 +2655,12 @@ const interstellarProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['laboratory','interstellar']
+                };
             }
         },
         exchange: {
@@ -2665,7 +2707,13 @@ const interstellarProjects = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['exchange','interstellar']
+                };
+            },
         },
         g_factory: {
             id: 'interstellar-g_factory',
@@ -3482,6 +3530,12 @@ const interstellarProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['citadel','interstellar']
+                };
             },
             flair(){
                 return loc('interstellar_citadel_flair');
