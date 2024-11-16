@@ -3589,7 +3589,8 @@ export const traits = {
         type: 'major',
         val: 6,
         vars(r){
-            // [Some building materials self replicate]
+            // [Some building materials self replicate reducing cost of the next building]
+            // [Lumber/Bone, Plywood/Boneweave, Furs/Flesh, Amber (not Stone/Clay)]
             switch (r || traitRank('living_materials') || 1){
                 case 0.25:
                     return [0.99];
@@ -3603,6 +3604,29 @@ export const traits = {
                     return [0.95];
                 case 4:
                     return [0.94];
+            }
+        }
+    },
+    unstable: {
+        name: loc('trait_unstable_name'),
+        desc: loc('trait_unstable'),
+        type: 'major',
+        val: -3,
+        vars(r){
+            // [Randomly Die]
+            switch (r || traitRank('unstable') || 1){
+                case 0.25:
+                    return [6,10];
+                case 0.5:
+                    return [5,10];
+                case 1:
+                    return [4,10];
+                case 2:
+                    return [3,10];
+                case 3:
+                    return [2,10];
+                case 4:
+                    return [1,10];
             }
         }
     },
@@ -5137,8 +5161,8 @@ export const races = {
         home: loc('race_lichen_home'),
         entity: loc('race_lichen_entity'),
         traits: {
-            living_materials: 1
-            
+            living_materials: 1,
+            unstable: 1
         },
         solar: {
             red: loc('race_lichen_solar_red'),

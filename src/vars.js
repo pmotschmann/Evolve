@@ -1488,8 +1488,8 @@ export function setupStats(){
         'reset','plasmid','antiplasmid','universes','phage','starved','tstarved','died','tdied',
         'sac','tsac','know','tknow','portals','dkills','attacks','cfood','tfood','cstone','tstone',
         'clumber','tlumber','mad','bioseed','cataclysm','blackhole','ascend','descend','apotheosis',
-        'terraform','aiappoc','matrix','retire','eden','geck','dark','harmony','blood','cores',
-        'artifact','supercoiled','cattle','tcattle','murders','tmurders','psykill','tpsykill','pdebt'
+        'terraform','aiappoc','matrix','retire','eden','geck','dark','harmony','blood','cores','artifact',
+        'supercoiled','cattle','tcattle','murders','tmurders','psykill','tpsykill','pdebt','uDead'
     ].forEach(function(k){
         if (!global.stats.hasOwnProperty(k)){
             global.stats[k] = 0;
@@ -2342,6 +2342,7 @@ export function clearStates(){
     global.stats.sac = 0;
     global.stats.cattle = 0;
     global.stats.murders = 0;
+    global.stats.uDead = 0;
     global.settings.at = 0;
 
     global.settings.showEvolve = true;

@@ -5479,6 +5479,12 @@ const galaxyProjects = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['embassy','galaxy']
+                };
+            },
             citizens(){
                 let pop = 20;
                 if (global.race['high_pop']){

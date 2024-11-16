@@ -10942,6 +10942,16 @@ function longLoop(){
             }
         }
 
+        if (global.race['unstable']){
+            if (global.resource[global.race.species].amount > 0 && Math.rand(0,100) < traits.unstable.vars()[0]){
+                let bound = Math.ceil(global.resource[global.race.species].amount * traits.unstable.vars()[1] / 100);
+                let died = Math.rand(1,bound);
+                global.resource[global.race.species].amount -= died;
+                if (global.resource[global.race.species].amount < 0){ global.resource[global.race.species].amount = 0; }
+                global.stats.uDead += died;
+            }
+        }
+
         // Market price fluctuation
         if (global.tech['currency'] && global.tech['currency'] >= 2){
             let fluxVal = govActive('risktaker',0) ? 2 : 4;

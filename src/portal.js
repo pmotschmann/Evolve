@@ -68,6 +68,12 @@ const fortressModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['turret','portal']
+                };
             }
         },
         carport: {
@@ -109,6 +115,12 @@ const fortressModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, damaged: 0, repair: 0 },
+                    p: ['carport','portal']
+                };
             }
         },
         war_droid: {
@@ -137,6 +149,12 @@ const fortressModules = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['war_droid','portal']
+                };
+            },
             flair: loc('portal_war_droid_flair')
         },
         repair_droid: {
@@ -164,6 +182,12 @@ const fortressModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['repair_droid','portal']
+                };
             },
             flair: loc('portal_repair_droid_flair')
         },
@@ -199,6 +223,12 @@ const fortressModules = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['war_drone','portal']
+                };
+            },
             flair: loc('portal_war_drone_flair')
         },
         sensor_drone: {
@@ -229,6 +259,12 @@ const fortressModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['sensor_drone','attractor']
+                };
             }
         },
         attractor: {
@@ -254,6 +290,12 @@ const fortressModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['war_drone','attractor']
+                };
             }
         },
     },
@@ -466,6 +508,12 @@ const fortressModules = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, energy: 0, ecap: 0 },
+                    p: ['soul_capacitor','portal']
+                };
+            },
             postPower(){
                 updateDesc($(this)[0],'portal','soul_capacitor');
             },
@@ -528,6 +576,12 @@ const fortressModules = {
                     }
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['absorption_chamber','portal']
+                };
             }
         },
     },
@@ -568,9 +622,9 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     messageQueue(loc('portal_ruins_mission_result'),'info',false,['progress','hell']);
-                    global.portal['vault'] = { count: 0 };
                     global.portal['stonehedge'] = { count: 0 };
-                    global.portal['archaeology'] = { count: 0, on: 0 };
+                    initStruct(actions.portal.prtl_ruins.vault);
+                    initStruct(actions.portal.prtl_ruins.archaeology);
                     return true;
                 }
                 return false;
@@ -607,6 +661,12 @@ const fortressModules = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, support: 0, s_max: 0 },
+                    p: ['guard_post','portal']
+                };
+            },
             postPower(){
                 vBind({el: `#srprtl_ruins`},'update');
                 vBind({el: `#srprtl_gate`},'update');
@@ -642,6 +702,12 @@ const fortressModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['vault','portal']
+                };
             },
             post(){
                 if (global.portal.vault.count === 2){
@@ -682,7 +748,13 @@ const fortressModules = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['archaeology','portal']
+                };
+            },
         },
         arcology: {
             id: 'portal-arcology',
@@ -732,7 +804,7 @@ const fortressModules = {
             },
             struct(){
                 return {
-                    d: { count: 0,  on: 0 },
+                    d: { count: 0, on: 0 },
                     p: ['arcology','portal']
                 };
             },
@@ -778,6 +850,12 @@ const fortressModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['hell_forge','portal']
+                };
             },
             post(){
                 loadFoundry();
@@ -1376,8 +1454,8 @@ const fortressModules = {
                         global.settings.portal.spire = true;
                         global.settings.showCargo = true;
                         global.tech['hell_spire'] = 1;
-                        global.portal['purifier'] = { count: 0, on: 0, support: 0, s_max: 0, supply: 0, sup_max: 100, diff: 0 };
-                        global.portal['port'] = { count: 0, on: 0 };
+                        initStruct(actions.portal.prtl_spire.purifier);
+                        initStruct(actions.portal.prtl_spire.port);
                         messageQueue(loc('portal_transport_unlocked'),'info',false,['progress','hell']);
                         renderFortress();
                     }
@@ -1640,7 +1718,13 @@ const fortressModules = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, support: 0, s_max: 0, supply: 0, sup_max: 100, diff: 0 },
+                    p: ['purifier','portal']
+                };
+            },
         },
         port: {
             id: 'portal-port',
@@ -1866,8 +1950,8 @@ const fortressModules = {
             effect: loc('portal_spire_survey_effect'),
             action(){
                 if (payCosts($(this)[0])){
-                    global.portal['mechbay'] = { count: 0, on: 0, bay: 0, max: 0, active: 0, scouts: 0, mechs: [] };
-                    global.portal['spire'] = { count: 1, progress: 0, boss: '', type: '', status: {} };
+                    initStruct(actions.portal.prtl_spire.mechbay);
+                    initStruct(actions.portal.prtl_spire.spire);
                     genSpireFloor();
                     messageQueue(loc('portal_spire_survey_msg'),'info',false,['progress','hell']);
                     return true;
@@ -1925,6 +2009,12 @@ const fortressModules = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, bay: 0, max: 0, active: 0, scouts: 0, mechs: [] },
+                    p: ['mechbay','portal']
+                };
+            },
             postPower(){
                 updateMechbay();
             }
@@ -1978,7 +2068,13 @@ const fortressModules = {
             wide: true,
             action(){
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 1, progress: 0, boss: '', type: '', status: {} },
+                    p: ['spire','portal']
+                };
+            },
         },
         waygate: {
             id: 'portal-waygate',

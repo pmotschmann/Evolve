@@ -5428,7 +5428,7 @@ const techs = {
         effect(){ return loc('tech_soul_capacitor_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.portal['soul_capacitor'] = { count: 0, on: 0, energy: 0, ecap: 0 };
+                initStruct(actions.portal.prtl_pit.soul_capacitor);
                 return true;
             }
             return false;
@@ -5449,7 +5449,7 @@ const techs = {
         effect(){ return loc('tech_absorption_chamber_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.portal['absorption_chamber'] = { count: 0 };
+                initStruct(actions.portal.prtl_pit.absorption_chamber);
                 return true;
             }
             return false;
@@ -5503,7 +5503,7 @@ const techs = {
                 messageQueue(loc('tech_hell_search_result'),'info',false,['progress','hell']);
                 global.settings.portal.ruins = true;
                 global.settings.portal.gate = true;
-                global.portal['guard_post'] = { count: 0, on: 0, support: 0, s_max: 0 };
+                initStruct(actions.portal.prtl_ruins.guard_post);
                 return true;
             }
             return false;
@@ -6355,7 +6355,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.resource.Scarletite.display = true;
-                global.portal['hell_forge'] = { count: 0, on: 0 };
+                initStruct(actions.portal.prtl_ruins.hell_forge);
                 messageQueue(loc('tech_scarletite_avail'),'info',false,['progress']);
                 loadFoundry();
                 if (global.race.universe !== 'micro' && !global.pillars[global.race.species]){
@@ -10183,8 +10183,8 @@ const techs = {
                     s_ntfy: 'Yes',
                     nocrew: false,
                 };
-                global.portal['turret'] = { count: 0, on: 0 };
-                global.portal['carport'] = { count: 0, damaged: 0, repair: 0 };
+                initStruct(actions.portal.prtl_fortress.turret);
+                initStruct(actions.portal.prtl_fortress.carport);
                 if (races[global.race.species].type === 'demonic'){
                     unlockAchieve('blood_war');
                 }
@@ -10270,7 +10270,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.settings.portal.badlands = true;
-                global.portal['war_drone'] = { count: 0, on: 0 };
+                initStruct(actions.portal.prtl_badlands.war_drone);
                 return true;
             }
             return false;
@@ -10290,7 +10290,7 @@ const techs = {
         effect: loc('tech_demon_attractor_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.portal['attractor'] = { count: 0, on: 0 };
+                initStruct(actions.portal.prtl_badlands.attractor);
                 return true;
             }
             return false;
@@ -10311,7 +10311,7 @@ const techs = {
         effect: loc('tech_combat_droids_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.portal['war_droid'] = { count: 0, on: 0 };
+                initStruct(actions.portal.prtl_fortress.war_droid);
                 return true;
             }
             return false;
@@ -10335,7 +10335,7 @@ const techs = {
         effect: loc('tech_repair_droids_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.portal['repair_droid'] = { count: 0, on: 0 };
+                initStruct(actions.portal.prtl_fortress.repair_droid);
                 return true;
             }
             return false;
@@ -10395,7 +10395,7 @@ const techs = {
         effect: loc('tech_sensor_drone_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.portal['sensor_drone'] = { count: 0, on: 0 };
+                initStruct(actions.portal.prtl_badlands.sensor_drone);
                 return true;
             }
             return false;
@@ -10518,7 +10518,7 @@ const techs = {
         },
         action(){
             if (payCosts($(this)[0])){
-                global.galaxy['embassy'] = { count: 0, on: 0 };
+                initStruct(actions.galaxy.gxy_gorddon.embassy);
                 return true;
             }
             return false;
