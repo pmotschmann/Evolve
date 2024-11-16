@@ -1440,7 +1440,7 @@ export const gov_tasks = {
 
             if (!rBal){
                 let resSorted = Object.keys(atomic_mass).sort(function(a,b){return global.resource[a].diff-global.resource[b].diff});
-                delete resSorted['Asphodel_Powder'];
+                delete resSorted['Asphodel_Powder']; delete resSorted['Elysanite'];
                 resSorted = resSorted.filter(item => global.resource[item] && global.resource[item].display);
 
                 if (global.race.governor.config.replicate.res.neg && resSorted[0] && global.resource[resSorted[0]].diff < 0 && ((global.resource[resSorted[0]].amount <= global.resource[resSorted[0]].max * 0.95) || global.resource[resSorted[0]].max === -1)){

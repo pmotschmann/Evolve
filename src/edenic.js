@@ -1720,7 +1720,7 @@ const edenicModules = {
                 Money(o,wiki){ return global.eden?.soul_compactor?.count === 0 || wiki ? 50000000000 : 0; },
                 Iron(o,wiki){ return global.eden?.soul_compactor?.count === 0 || wiki ? 22500000000 : 0; },
                 Uranium(o,wiki){ return global.eden?.soul_compactor?.count === 0 || wiki ? 4000000 : 0; },
-                Scarletite(o,wiki){ return global.eden?.soul_compactor?.count === 0 || wiki ? 500000000 : 0; },
+                Scarletite(o,wiki){ return global.eden?.soul_compactor?.count === 0 || wiki ? 300000000 : 0; },
             },
             queue_complete(){ return 1 - (global.eden?.soul_compactor?.count || 0); },
             effect(){

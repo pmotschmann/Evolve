@@ -5243,7 +5243,7 @@ const techs = {
         effect(){ return loc('tech_waygate_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.portal['waygate'] = { count: 0, progress: 0, on: 0 };
+                initStruct(actions.portal.prtl_spire.waygate);
                 return true;
             }
             return false;
@@ -5322,8 +5322,8 @@ const techs = {
         effect(){ return loc('tech_gate_key_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.portal['west_tower'] = { count: 0, on: 0 };
-                global.portal['east_tower'] = { count: 0, on: 0 };
+                initStruct(actions.portal.prtl_gate.west_tower);
+                initStruct(actions.portal.prtl_gate.east_tower);
                 return true;
             }
             return false;
@@ -5343,7 +5343,7 @@ const techs = {
         effect(){ return loc('tech_gate_turret_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.portal['gate_turret'] = { count: 0, on: 0 };
+                initStruct(actions.portal.prtl_gate.gate_turret);
                 return true;
             }
             return false;
@@ -5363,7 +5363,7 @@ const techs = {
         effect(){ return loc('tech_infernite_mine_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.portal['infernite_mine'] = { count: 0, on: 0 };
+                initStruct(actions.portal.prtl_gate.infernite_mine);
                 return true;
             }
             return false;
@@ -5566,7 +5566,7 @@ const techs = {
         effect(){ return loc('tech_lake_threat_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.portal['bireme'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                initStruct(actions.portal.prtl_lake.bireme);
                 messageQueue(loc('tech_lake_threat_result'),'info',false,['progress','hell']);
                 return true;
             }
@@ -5587,30 +5587,7 @@ const techs = {
         effect(){ return loc('tech_lake_transport_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.portal['transport'] = {
-                    count: 0, on: 0, crew: 0, mil: 0,
-                    cargo: {
-                        used: 0, max: 0,
-                        Crystal: 0, Lumber: 0,
-                        Stone: 0, Furs: 0,
-                        Copper: 0, Iron: 0,
-                        Aluminium: 0, Cement: 0,
-                        Coal: 0, Oil: 0,
-                        Uranium: 0, Steel: 0,
-                        Titanium: 0, Alloy: 0,
-                        Polymer: 0, Iridium: 0,
-                        Helium_3: 0, Deuterium: 0,
-                        Neutronium: 0, Adamantite: 0,
-                        Infernite: 0, Elerium: 0,
-                        Nano_Tube: 0, Graphene: 0,
-                        Stanene: 0, Bolognium: 0,
-                        Vitreloy: 0, Orichalcum: 0,
-                        Plywood: 0, Brick: 0,
-                        Wrought_Iron: 0, Sheet_Metal: 0,
-                        Mythril: 0, Aerogel: 0,
-                        Nanoweave: 0, Scarletite: 0
-                    }
-                };
+                initStruct(actions.portal.prtl_lake.transport);
                 return true;
             }
             return false;
@@ -5630,7 +5607,7 @@ const techs = {
         effect(){ return loc('tech_cooling_tower_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.portal['cooling_tower'] = { count: 0, on: 0 };
+                initStruct(actions.portal.prtl_lake.cooling_tower);
                 return true;
             }
             return false;
@@ -5650,7 +5627,7 @@ const techs = {
         effect(){ return loc('tech_miasma_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.portal['port'] = { count: 0 };
+                initStruct(actions.portal.prtl_spire.port);
                 return true;
             }
             return false;
@@ -5715,7 +5692,7 @@ const techs = {
         effect(){ return loc('tech_terraforming_effect',[planetName().red]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space.terraformer = { count: 0 }
+                initStruct(actions.space.spc_red.terraformer);
                 return true;
             }
             return false;
@@ -5835,7 +5812,7 @@ const techs = {
         effect: loc('tech_fusion_power_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['fusion'] = { count: 0, on: 0 };
+                initStruct(actions.interstellar.int_alpha.fusion);
                 return true;
             }
             return false;
@@ -5855,7 +5832,7 @@ const techs = {
         effect: loc('tech_infernium_power_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.portal['inferno_power'] = { count: 0, on: 0 };
+                initStruct(actions.portal.prtl_ruins.inferno_power);
                 return true;
             }
             return false;
@@ -5913,7 +5890,7 @@ const techs = {
         effect(){ return loc('tech_worker_drone_effect',[planetName().gas_moon]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['drone'] = { count: 0 };
+                initStruct(actions.space.spc_gas_moon.drone);
                 return true;
             }
             return false;
@@ -6204,7 +6181,7 @@ const techs = {
         effect(){ return loc('tech_orichalcum_driver_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['terraformer'] = { count: 0 };
+                initStruct(actions.space.spc_red.terraformer);
                 return true;
             }
             return false;
@@ -7738,7 +7715,7 @@ const techs = {
         effect: loc('tech_cruiser_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['cruiser'] = { count: 0, on: 0 };
+                initStruct(actions.interstellar.int_proxima.cruiser);
                 return true;
             }
             return false;
@@ -8708,7 +8685,7 @@ const techs = {
         effect: loc('tech_astrophysics_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['propellant_depot'] = { count: 0 };
+                initStruct(actions.space.spc_home.propellant_depot);
                 return true;
             }
             return false;
@@ -8732,12 +8709,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.settings.space.moon = true;
-                global.space['moon_base'] = {
-                    count: 0,
-                    on: 0,
-                    support: 0,
-                    s_max: 0
-                };
+                initStruct(actions.space.spc_moon.moon_base);
                 return true;
             }
             return false;
@@ -8763,12 +8735,7 @@ const techs = {
             if (payCosts($(this)[0])){
                 global.settings.space.red = true;
                 global.settings.space.hell = true;
-                global.space['spaceport'] = {
-                    count: 0,
-                    on: 0,
-                    support: 0,
-                    s_max: 0
-                };
+                initStruct(actions.space.spc_red.spaceport);
                 return true;
             }
             return false;
@@ -8793,7 +8760,7 @@ const techs = {
                 if (global.race['truepath']){
                     global.settings.showOuter = true;
                 }
-                global.space['swarm_control'] = { count: 0, support: 0, s_max: 0 };
+                initStruct(actions.space.spc_sun.swarm_control);
                 return true;
             }
             return false;
@@ -8813,7 +8780,7 @@ const techs = {
         effect(){ return loc(global.race['artifical'] ? 'tech_colonization_artifical_effect' : 'tech_colonization_effect',[planetName().red]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['biodome'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_red.biodome);
                 return true;
             }
             return false;
@@ -8833,7 +8800,7 @@ const techs = {
         effect(){ return loc('tech_red_tower_effect',[planetName().red]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['red_tower'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_red.red_tower);
                 return true;
             }
             return false;
@@ -8853,7 +8820,7 @@ const techs = {
         effect(){ return loc('tech_space_manufacturing_effect',[planetName().red]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['red_factory'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_red.red_factory);
                 return true;
             }
             return false;
@@ -8873,7 +8840,7 @@ const techs = {
         effect: loc('tech_exotic_lab_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['exotic_lab'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_red.exotic_lab);
                 return true;
             }
             return false;
@@ -8932,7 +8899,7 @@ const techs = {
         effect: loc('tech_dyson_swarm_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['swarm_satellite'] = { count: 0 };
+                initStruct(actions.space.spc_sun.swarm_satellite);
                 return true;
             }
             return false;
@@ -8952,7 +8919,7 @@ const techs = {
         effect(){ return loc('tech_swarm_plant_effect',[races[global.race.species].home,planetName().hell]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['swarm_plant'] = { count: 0 };
+                initStruct(actions.space.spc_hell.swarm_plant);
                 return true;
             }
             return false;
@@ -9110,7 +9077,7 @@ const techs = {
         effect: loc('tech_dyson_net_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['dyson'] = { count: 0 };
+                initStruct(actions.interstellar.int_proxima.dyson);
                 return true;
             }
             return false;
@@ -9130,7 +9097,7 @@ const techs = {
         effect: loc('tech_dyson_sphere2_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['dyson_sphere'] = { count: 0 };
+                initStruct(actions.interstellar.int_proxima.dyson_sphere);
                 return true;
             }
             return false;
@@ -9154,7 +9121,7 @@ const techs = {
         effect: loc('tech_orichalcum_sphere_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['orichalcum_sphere'] = { count: 0 };
+                initStruct(actions.interstellar.int_proxima.orichalcum_sphere);
                 return true;
             }
             return false;
@@ -9175,7 +9142,7 @@ const techs = {
         effect(){ return loc('tech_elysanite_sphere_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['elysanite_sphere'] = { count: 0 };
+                initStruct(actions.interstellar.int_proxima.elysanite_sphere);
                 return true;
             }
             return false;
@@ -9196,7 +9163,7 @@ const techs = {
         effect: loc('tech_gps_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['gps'] = { count: 0 };
+                initStruct(actions.space.spc_home.gps);
                 return true;
             }
             return false;
@@ -9216,10 +9183,7 @@ const techs = {
         effect: loc('tech_nav_beacon_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['nav_beacon'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.space.spc_home.nav_beacon);
                 return true;
             }
             return false;
@@ -9259,8 +9223,8 @@ const techs = {
         effect: loc('tech_atmospheric_mining_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['gas_mining'] = { count: 0, on: 0 };
-                global.space['gas_storage'] = { count: 0 };
+                initStruct(actions.space.spc_gas.gas_mining);
+                initStruct(actions.space.spc_gas.gas_storage);
                 return true;
             }
             return false;
@@ -9319,7 +9283,7 @@ const techs = {
         effect(){ return loc('tech_elerium_prospecting_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['elerium_prospector'] = { count: 0, on: 0 };
+                initStruct(actions.interstellar.int_nebula.elerium_prospector);
                 return true;
             }
             return false;
@@ -9339,10 +9303,9 @@ const techs = {
         effect: loc('tech_zero_g_mining_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['space_station'] = { count: 0, on: 0, support: 0, s_max: 0 };
-                global.space['iridium_ship'] = { count: 0, on: 0 };
-                global.space['iron_ship'] = { count: 0, on: 0 };
-                return true;
+                initStruct(actions.space.spc_belt.space_station);
+                initStruct(actions.space.spc_belt.iridium_ship);
+                initStruct(actions.space.spc_belt.iron_ship);
             }
             return false;
         }
@@ -9362,7 +9325,7 @@ const techs = {
         effect: loc('tech_elerium_mining_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['elerium_ship'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_belt.elerium_ship);
                 if (global.race['cataclysm']){
                     unlockAchieve('iron_will',false,2);
                 }
@@ -9445,7 +9408,7 @@ const techs = {
         effect: loc('tech_elerium_reactor_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['e_reactor'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_dwarf.e_reactor);
                 return true;
             }
             return false;
@@ -9626,12 +9589,7 @@ const techs = {
         effect: loc('tech_star_dock_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['star_dock'] = {
-                    count: 0,
-                    ship: 0,
-                    probe: 0,
-                    template: global.race.species
-                };
+                initStruct(actions.space.spc_gas.star_dock);
                 return true;
             }
             return false;
@@ -9777,12 +9735,7 @@ const techs = {
             if (payCosts($(this)[0])){
                 global.settings.showDeep = true;
                 global.settings.space.alpha = true;
-                global.interstellar['starport'] = {
-                    count: 0,
-                    on: 0,
-                    support: 0,
-                    s_max: 0
-                };
+                initStruct(actions.interstellar.int_alpha.starport);
                 return true;
             }
             return false;
@@ -9802,7 +9755,7 @@ const techs = {
         effect: loc('tech_habitat_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['habitat'] = { count: 0, on: 0 };
+                initStruct(actions.interstellar.int_alpha.habitat);
                 return true;
             }
             return false;
@@ -9823,7 +9776,7 @@ const techs = {
         effect: loc('tech_graphene_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['g_factory'] = { count: 0, on: 0, Lumber: 0, Coal: 0, Oil: 0 };
+                initStruct(actions.interstellar.int_alpha.g_factory);
                 return true;
             }
             return false;
@@ -9869,7 +9822,7 @@ const techs = {
         effect(){ return loc('tech_mega_manufacturing_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['int_factory'] = { count: 0, on: 0 };
+                initStruct(actions.interstellar.int_alpha.int_factory);
                 return true;
             }
             return false;
@@ -9889,7 +9842,7 @@ const techs = {
         effect(){ return loc('tech_luxury_condo_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['luxury_condo'] = { count: 0, on: 0 };
+                initStruct(actions.interstellar.int_alpha.luxury_condo);
                 return true;
             }
             return false;
@@ -9909,7 +9862,7 @@ const techs = {
         effect: loc('tech_stellar_engine_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['stellar_engine'] = { count: 0, mass: 8, exotic: 0 };
+                initStruct(actions.interstellar.int_blackhole.stellar_engine);
                 return true;
             }
             return false;
@@ -9929,28 +9882,7 @@ const techs = {
         effect: loc('tech_mass_ejector_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['mass_ejector'] = {
-                    count: 0, on: 0, total: 0, mass: 0,
-                    Food: 0, Lumber: 0,
-                    Chrysotile: 0, Stone: 0,
-                    Crystal: 0, Furs: 0,
-                    Copper: 0, Iron: 0,
-                    Aluminium: 0, Cement: 0,
-                    Coal: 0, Oil: 0,
-                    Uranium: 0, Steel: 0,
-                    Titanium: 0, Alloy: 0,
-                    Polymer: 0, Iridium: 0,
-                    Helium_3: 0, Deuterium: 0,
-                    Neutronium: 0, Adamantite: 0,
-                    Infernite: 0, Elerium: 0,
-                    Nano_Tube: 0, Graphene: 0,
-                    Stanene: 0, Bolognium: 0,
-                    Vitreloy: 0, Orichalcum: 0,
-                    Plywood: 0, Brick: 0,
-                    Wrought_Iron: 0, Sheet_Metal: 0,
-                    Mythril: 0, Aerogel: 0,
-                    Nanoweave: 0, Scarletite: 0
-                };
+                initStruct(actions.interstellar.int_blackhole.mass_ejector);
                 return true;
             }
             return false;
@@ -10985,7 +10917,7 @@ const techs = {
         effect(){ return loc('tech_soul_forge_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.portal['soul_forge'] = { count: 0, on: 0, kills: 0 };
+                initStruct(actions.portal.prtl_pit.soul_forge);
                 return true;
             }
             return false;
@@ -11005,7 +10937,7 @@ const techs = {
         effect(){ return loc('tech_soul_attractor_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.portal['soul_attractor'] = { count: 0, on: 0 };
+                initStruct(actions.portal.prtl_pit.soul_attractor);
                 return true;
             }
             return false;
@@ -11085,7 +11017,7 @@ const techs = {
         effect(){ return loc('tech_gun_emplacement_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.portal['gun_emplacement'] = { count: 0, on: 0 };
+                initStruct(actions.portal.prtl_pit.gun_emplacement);
                 return true;
             }
             return false;
@@ -12251,7 +12183,7 @@ const techs = {
         effect: loc('tech_mass_relay_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['mass_relay'] = { count: 0 };
+                initStruct(actions.space.spc_dwarf.mass_relay);
                 return true;
             }
             return false;
@@ -12573,7 +12505,7 @@ const techs = {
         effect(){ return loc('tech_mercury_smelting_effect',[planetName().hell]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['hell_smelter'] = { count: 0 };
+                initStruct(actions.space.spc_hell.hell_smelter);
                 return true;
             }
             return false;
@@ -12832,7 +12764,7 @@ const techs = {
         effect(){ return loc('tech_shipyard_effect',[planetName().dwarf]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['shipyard'] = { count: 0, on: 0, ships: [], expand: true, sort: true };
+                initStruct(actions.space.spc_dwarf.shipyard);
                 setOrbits();
                 return true;
             }
@@ -13192,7 +13124,7 @@ const techs = {
             if (payCosts($(this)[0])){
                 global.tauceti['alien_outpost'] = { count: 1, on: 0 };
                 global.tauceti['jump_gate'] = { count: 0 };
-                global.space['jump_gate'] = { count: 0 };
+                initStruct(actions.space.spc_sun.jump_gate);
                 messageQueue(loc('tech_alien_outpost_msg'),'info',false,['progress']);
                 return true;
             }
@@ -14860,7 +14792,7 @@ const techs = {
         effect(){ return loc('tech_elerium_containment_effect',[global.resource.Elerium.name]); },
         action(){
             if (payCosts($(this)[0])){
-                global.eden['elerium_containment'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_dwarf.elerium_containment);
                 return true;
             }
             return false;

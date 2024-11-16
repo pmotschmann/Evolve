@@ -350,6 +350,12 @@ const fortressModules = {
                     }
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, kills: 0 },
+                    p: ['soul_forge','portal']
+                };
             }
         },
         gun_emplacement: {
@@ -379,6 +385,12 @@ const fortressModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['gun_emplacement','portal']
+                };
             }
         },
         soul_attractor: {
@@ -409,6 +421,12 @@ const fortressModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['soul_attractor','portal']
+                };
             }
         },
         soul_capacitor: {
@@ -806,6 +824,12 @@ const fortressModules = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['inferno_power','portal']
+                };
+            },
             post(){
                 vBind({el: `#foundry`},'update');
             },
@@ -949,13 +973,19 @@ const fortressModules = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['west_tower','portal']
+                };
+            },
             post(){
                 if (global.portal.west_tower.count >= towerSize()){
                     global.tech['wtower'] = 1;
                     if (global.tech['wtower'] && global.tech['etower'] && !global.tech['hell_lake']){
                         global.tech['hell_lake'] = 1;
                         global.settings.portal.lake = true;
-                        global.portal['harbor'] = { count: 0, on: 0, support: 0, s_max: 0 };
+                        initStruct(actions.portal.prtl_lake.harbor);
                         messageQueue(loc('portal_gate_open'),'info',false,['progress','hell']);
                         renderFortress();
                     }
@@ -1003,6 +1033,12 @@ const fortressModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['east_tower','portal']
+                };
             },
             post(){
                 if (global.portal.east_tower.count >= towerSize()){
@@ -1052,6 +1088,12 @@ const fortressModules = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['gate_turret','portal']
+                };
+            },
             post(){
                 vBind({el: `#srprtl_gate`},'update');
             },
@@ -1087,7 +1129,13 @@ const fortressModules = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['infernite_mine','portal']
+                };
+            },
         },
     },
     prtl_lake: {
@@ -1202,7 +1250,13 @@ const fortressModules = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, support: 0, s_max: 0 },
+                    p: ['harbor','portal']
+                };
+            },
         },
         cooling_tower: {
             id: 'portal-cooling_tower',
@@ -1228,7 +1282,13 @@ const fortressModules = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['cooling_tower','portal']
+                };
+            },
         },
         bireme: {
             id: 'portal-bireme',
@@ -1263,6 +1323,12 @@ const fortressModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, crew: 0, mil: 0 },
+                    p: ['bireme','portal']
+                };
             }
         },
         transport: {
@@ -1318,6 +1384,35 @@ const fortressModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: {
+                        count: 0, on: 0, crew: 0, mil: 0,
+                        cargo: {
+                            used: 0, max: 0,
+                            Crystal: 0, Lumber: 0,
+                            Stone: 0, Furs: 0,
+                            Copper: 0, Iron: 0,
+                            Aluminium: 0, Cement: 0,
+                            Coal: 0, Oil: 0,
+                            Uranium: 0, Steel: 0,
+                            Titanium: 0, Alloy: 0,
+                            Polymer: 0, Iridium: 0,
+                            Helium_3: 0, Deuterium: 0,
+                            Neutronium: 0, Adamantite: 0,
+                            Infernite: 0, Elerium: 0,
+                            Nano_Tube: 0, Graphene: 0,
+                            Stanene: 0, Bolognium: 0,
+                            Vitreloy: 0, Orichalcum: 0,
+                            Plywood: 0, Brick: 0,
+                            Wrought_Iron: 0, Sheet_Metal: 0,
+                            Mythril: 0, Aerogel: 0,
+                            Nanoweave: 0, Scarletite: 0
+                        }
+                    },
+                    p: ['transport','portal']
+                };
             }
         },
         oven: {
@@ -1575,12 +1670,18 @@ const fortressModules = {
                     powerOnNewStruct($(this)[0]);
                     if (global.tech.hell_spire === 3){
                         global.tech.hell_spire = 4;
-                        global.portal['base_camp'] = { count: 0, on: 0 };
+                        initStruct(actions.portal.prtl_spire.base_camp);
                         renderFortress();
                     }
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['port','portal']
+                };
             }
         },
         base_camp: {
@@ -1606,13 +1707,19 @@ const fortressModules = {
                     powerOnNewStruct($(this)[0]);
                     if (global.tech.hell_spire === 4){
                         global.tech.hell_spire = 5;
-                        global.portal['bridge'] = { count: 0 };
+                        initStruct(actions.portal.prtl_spire.bridge);
                         messageQueue(loc('portal_spire_bridge_collapse'),'info',false,['progress','hell']);
                         renderFortress();
                     }
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['base_camp','portal']
+                };
             }
         },
         bridge: {
@@ -1649,13 +1756,19 @@ const fortressModules = {
                 if (global.portal.bridge.count < 10 && payCosts($(this)[0])){
                     incrementStruct('bridge','portal');
                     if (global.portal.bridge.count >= 10){
-                        global.portal['sphinx'] = { count: 0 };
+                        initStruct(actions.portal.prtl_spire.sphinx);
                         global.tech.hell_spire = 6;
                         renderFortress();
                     }
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['bridge','portal']
+                };
             }
         },
         sphinx: {
@@ -1696,6 +1809,12 @@ const fortressModules = {
                     }
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['sphinx','portal']
+                };
             }
         },
         bribe_sphinx: {
@@ -1932,7 +2051,13 @@ const fortressModules = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0, progress: 0, on: 0 },
+                    p: ['waygate','portal']
+                };
+            },
         },
         edenic_gate:{
             id: 'portal-edenic_gate',

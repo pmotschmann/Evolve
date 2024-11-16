@@ -7,7 +7,7 @@ import { defineResources, resource_values, spatialReasoning, craftCost, plasmidB
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobScale, workerScale, limitCraftsmen, loadServants} from './jobs.js';
 import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, luxGoodPrice } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
-import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, structName, templeCount } from './actions.js';
+import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
@@ -2555,7 +2555,7 @@ function fastLoop(){
 
         // Purifier
         if (global.portal['purifier']){
-            global.portal.purifier.s_max = p_on['purifier'] * actions.portal.prtl_spire.purifier.support();
+            global.portal.purifier.s_max = +(p_on['purifier'] * actions.portal.prtl_spire.purifier.support()).toFixed(2);
 
             let used_support = 0;
             let purifier_structs = global.support.spire.map(x => x.split(':')[1]);
@@ -10265,7 +10265,7 @@ function midLoop(){
 
         if (p_on['outpost'] > 0 && global.tech['gas_moon'] && global.tech['gas_moon'] === 1){
             if (Math.rand(0,100) <= p_on['outpost']){
-                global.space['oil_extractor'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_gas_moon.oil_extractor);
                 global.tech['gas_moon'] = 2;
                 messageQueue(loc('discover_oil',[planetName().gas_moon]),'info',false,['progress']);
                 renderSpace();
@@ -11487,8 +11487,8 @@ function longLoop(){
                 }
                 if (global.tech.hasOwnProperty('tauceti') && global.tech.tauceti >= 1 && tScan >= 1){
                     if (global.tech.tauceti === 1){
-                        global.tauceti['orbital_station'] = { count: 0, on: 0, support: 0, s_max: 0 };
-                        global.tauceti['orbital_platform'] = { count: 0, on: 0, support: 0, s_max: 0 };
+                        initStruct(actions.tauceti.tau_home.orbital_station);
+                        initStruct(actions.tauceti.tau_red.orbital_platform);
                         global.tech.tauceti = 2;
                         global.settings.showTau = true;
                         global.settings.tau.home = true;

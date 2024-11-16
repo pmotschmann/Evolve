@@ -1644,6 +1644,12 @@ const tauCetiModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, support: 0, s_max: 0 },
+                    p: ['orbital_station','tauceti']
+                };
             }
         },
         colony: {
@@ -2472,6 +2478,12 @@ const tauCetiModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, support: 0, s_max: 0 },
+                    p: ['orbital_platform','tauceti']
+                };
             }
         },
         contact: {
@@ -5581,43 +5593,44 @@ export function loneSurvivor(){
         if (global.race['artifical']){
             global.city['transmitter'] = { count: 0, on: 0 };
         }
-        global.city['factory'] = { count: 0, on: 0, Lux: 0, Furs: 0, Alloy: 0, Polymer: 1, Nano: 0, Stanene: 0 };
-        global.city['foundry'] = { count: 0, crafting: 0, Plywood: 0, Brick: 0, Bronze: 0, Wrought_Iron: 0, Sheet_Metal: 0, Mythril: 0, Aerogel: 0, Nanoweave: 0, Scarletite: 0, Quantium: 0 };
-        global.city['smelter'] = { count: 0, cap: 2, Wood: 0, Coal: 0, Oil: 2, Star: 0, StarCap: 0, Inferno: 0, Iron: 1, Steel: 1, Iridium: 0 };
 
-        global.city['amphitheatre'] = { count: 0 };
-        global.city['apartment'] = { count: 0, on: 0 };
-        global.city['bank'] = { count: 0 };
-        global.city['basic_housing'] = { count: 0 };
-        global.city['biolab'] = { count: 0, on: 0 };
-        global.city['boot_camp'] = { count: 0 };
-        global.city['casino'] = { count: 0, on: 0 };
-        global.city['cement_plant'] = { count: 0, on: 0 };
-        global.city['coal_mine'] = { count: 0, on: 0 };
-        global.city['coal_power'] = { count: 0, on: 0 };
-        global.city['cottage'] = { count: 0 };
-        global.city['fission_power'] = { count: 0, on: 0 };
-        global.city['garrison'] = { count: 0, on: 0 };
-        global.city['hospital'] = { count: 0 };
-        global.city['library'] = { count: 0 };
-        global.city['lumber_yard'] = { count: 0 };
-        global.city['mass_driver'] = { count: 0, on: 0 };
-        global.city['metal_refinery'] = { count: 0, on: 0 };
-        global.city['mine'] = { count: 0, on: 0 };
-        global.city['oil_depot'] = { count: 0 };
-        global.city['oil_power'] = { count: 0, on: 0 };
-        global.city['oil_well'] = { count: 0 };
-        global.city['rock_quarry'] = { count: 0, on: 0, asbestos: 50 };
-        global.city['sawmill'] = { count: 0, on: 0 };
-        global.city['shed'] = { count: 0, on: 0 };
-        global.city['storage_yard'] = { count: 0 };
-        global.city['temple'] = { count: 0 };
-        global.city['tourist_center'] = { count: 0, on: 0 };
-        global.city['trade'] = { count: 0 };
-        global.city['university'] = { count: 0 };
-        global.city['wardenclyffe'] = { count: 0, on: 0 };
-        global.city['warehouse'] = { count: 0 };
-        global.city['wharf'] = { count: 0 };
+        initStruct(actions.city.factory);
+        initStruct(actions.city.foundry);
+        initStruct(actions.city.smelter); global.city.smelter.cap = 2; global.city.smelter.Oil = 2; global.city.smelter.Iron = 1; global.city.smelter.Steel = 1;
+
+        initStruct(actions.city.amphitheatre);
+        initStruct(actions.city.apartment);
+        initStruct(actions.city.bank);
+        initStruct(actions.city.basic_housing);
+        initStruct(actions.city.biolab);
+        initStruct(actions.city.boot_camp);
+        initStruct(actions.city.casino);
+        initStruct(actions.city.cement_plant);
+        initStruct(actions.city.coal_mine);
+        initStruct(actions.city.coal_power);
+        initStruct(actions.city.cottage);
+        initStruct(actions.city.fission_power);
+        initStruct(actions.city.garrison);
+        initStruct(actions.city.hospital);
+        initStruct(actions.city.library);
+        initStruct(actions.city.lumber_yard);
+        initStruct(actions.city.mass_driver);
+        initStruct(actions.city.metal_refinery);
+        initStruct(actions.city.mine);
+        initStruct(actions.city.oil_depot);
+        initStruct(actions.city.oil_power);
+        initStruct(actions.city.oil_well);
+        initStruct(actions.city.rock_quarry);
+        initStruct(actions.city.sawmill);
+        initStruct(actions.city.shed);
+        initStruct(actions.city.storage_yard);
+        initStruct(actions.city.temple);
+        initStruct(actions.city.tourist_center);
+        initStruct(actions.city.trade);
+        initStruct(actions.city.university);
+        initStruct(actions.city.wardenclyffe);
+        initStruct(actions.city.warehouse);
+        initStruct(actions.city.wharf);
 
         global.space['ai_colonist'] = { count: 0, on: 0 };
         global.space['ai_core'] = { count: 100 };

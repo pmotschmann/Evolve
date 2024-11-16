@@ -1,4 +1,4 @@
-import { save, global, seededRandom, webWorker, keyMultiplier, sizeApproximation, p_on, support_on, int_on, gal_on, keyMap } from './vars.js';
+import { save, global, seededRandom, webWorker, keyMultiplier, sizeApproximation, p_on, support_on, int_on, gal_on } from './vars.js';
 import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, calcGenomeScore, randomKey, getTraitDesc, deepClone, get_qlevel, timeFormat } from './functions.js';
 import { unlockAchieve, unlockFeat, universeAffix } from './achieve.js';
 import { races, traits, genus_traits, genusVars, planetTraits, biomes, traitCostMod } from './races.js';
@@ -6,7 +6,7 @@ import { spatialReasoning, unlockContainers, drawResourceTab, atomic_mass } from
 import { loadFoundry, jobScale } from './jobs.js';
 import { defineIndustry } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
-import { actions, payCosts, powerOnNewStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, casinoEffect, wardenLabel, buildTemplate, structName, fanaticism } from './actions.js';
+import { actions, payCosts, powerOnNewStruct, initStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, casinoEffect, wardenLabel, buildTemplate, structName } from './actions.js';
 import { outerTruthTech, syndicate } from './truepath.js';
 import { production, highPopAdjust } from './prod.js';
 import { defineGovernor, govActive } from './governor.js';
@@ -48,7 +48,7 @@ const spaceProjects = {
                             return 0;
                         }
                     }
-                    global.space['satellite'] = { count: 0 };
+                    initStruct(actions.space.spc_home.satellite);
                     messageQueue(loc('space_home_test_launch_action'),'info',false,['progress']);
                     return true;
                 }
@@ -84,6 +84,12 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['satellite','space']
+                };
             }
         },
         gps: {
@@ -121,6 +127,12 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['gps','space']
+                };
             }
         },
         propellant_depot: {
@@ -151,6 +163,12 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['propellant_depot','space']
+                };
             }
         },
         nav_beacon: {
@@ -188,6 +206,12 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['nav_beacon','space']
+                };
             }
         },
     },
@@ -216,8 +240,8 @@ const spaceProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     messageQueue(loc('space_moon_mission_action'),'info',false,['progress']);
-                    global.space['iridium_mine'] = { count: 0, on: 0 };
-                    global.space['helium_mine'] = { count: 0, on: 0 };
+                    initStruct(actions.space.spc_moon.iridium_mine);
+                    initStruct(actions.space.spc_moon.helium_mine);
                     return true;
                 }
                 return false;
@@ -273,7 +297,18 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: {
+                        count: 0,
+                        on: 0,
+                        support: 0,
+                        s_max: 0
+                    },
+                    p: ['moon_base','space']
+                };
+            },
         },
         iridium_mine: {
             id: 'space-iridium_mine',
@@ -316,7 +351,13 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['iridium_mine','space']
+                };
+            },
         },
         helium_mine: {
             id: 'space-helium_mine',
@@ -354,7 +395,13 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['helium_mine','space']
+                };
+            },
         },
         observatory: {
             id: 'space-observatory',
@@ -431,10 +478,10 @@ const spaceProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     messageQueue(loc('space_red_mission_action',[planetName().red]),'info',false,['progress']);
-                    global.space['living_quarters'] = { count: 0, on: 0 };
-                    global.space['garage'] = { count: 0 };
-                    global.space['red_mine'] = { count: 0, on: 0 };
-                    global.space['fabrication'] = { count: 0, on: 0 };
+                    initStruct(actions.space.spc_red.living_quarters);
+                    initStruct(actions.space.spc_red.garage);
+                    initStruct(actions.space.spc_red.red_mine);
+                    initStruct(actions.space.spc_red.fabrication);
                     return true;
                 }
                 return false;
@@ -485,7 +532,18 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: {
+                        count: 0,
+                        on: 0,
+                        support: 0,
+                        s_max: 0
+                    },
+                    p: ['spaceport','space']
+                };
+            },
         },
         red_tower: {
             id: 'space-red_tower',
@@ -515,7 +573,13 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['red_tower','space']
+                };
+            },
         },
         captive_housing: buildTemplate(`captive_housing`,'space'),
         terraformer: {
@@ -571,7 +635,13 @@ const spaceProjects = {
                     }
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['terraformer','space']
+                };
+            },
         },
         atmo_terraformer: {
             id: 'space-atmo_terraformer',
@@ -678,6 +748,12 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['living_quarters','space']
+                };
             },
             citizens(wiki){
                 let gain = global.race['cataclysm'] || global.race['orbit_decayed'] ? 2 : 1;
@@ -884,7 +960,13 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['garage','space']
+                };
+            },
         },
         red_mine: {
             id: 'space-red_mine',
@@ -929,7 +1011,13 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['red_mine','space']
+                };
+            },
         },
         fabrication: {
             id: 'space-fabrication',
@@ -964,7 +1052,13 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['fabrication','space']
+                };
+            },
         },
         red_factory: {
             id: 'space-red_factory',
@@ -1002,7 +1096,13 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['red_factory','space']
+                };
+            },
         },
         nanite_factory: buildTemplate(`nanite_factory`,'space'),
         biodome: {
@@ -1067,6 +1167,12 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['biodome','space']
+                };
             },
             flair(){
                 if (global.race['artifical']){
@@ -1167,6 +1273,12 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['exotic_lab','space']
+                };
             },
             flair(){
                 return `<div>${loc('space_red_exotic_lab_flair1')}</div><div>${loc('space_red_exotic_lab_flair2')}</div>`;
@@ -1342,7 +1454,7 @@ const spaceProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     messageQueue(loc('space_hell_mission_action',[planetName().hell]),'info',false,['progress']);
-                    global.space['geothermal'] = { count: 0, on: 0 };
+                    initStruct(actions.space.spc_hell.geothermal);
                     return true;
                 }
                 return false;
@@ -1382,6 +1494,12 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['geothermal','space']
+                };
             }
         },
         hell_smelter: {
@@ -1411,6 +1529,12 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['hell_smelter','space']
+                };
             }
         },
         spc_casino: {
@@ -1449,7 +1573,7 @@ const spaceProjects = {
             struct(){
                 return {
                     d: { count: 0, on: 0 },
-                    p: ['casino','space']
+                    p: ['spc_casino','space']
                 };
             },
             flair: loc('city_casino_flair')
@@ -1485,6 +1609,12 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['swarm_plant','space']
+                };
             }
         },
         firework: buildTemplate(`firework`,'space'),
@@ -1550,6 +1680,12 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, support: 0, s_max: 0 },
+                    p: ['swarm_control','space']
+                };
             }
         },
         swarm_satellite: {
@@ -1585,6 +1721,12 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['swarm_satellite','space']
+                };
             }
         },
         jump_gate: {
@@ -1628,6 +1770,12 @@ const spaceProjects = {
                     }
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['jump_gate','space']
+                };
             }
         },
     },
@@ -1696,6 +1844,12 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['gas_mining','space']
+                };
             }
         },
         gas_storage: {
@@ -1723,6 +1877,12 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['gas_storage','space']
+                };
             }
         },
         star_dock: {
@@ -1750,6 +1910,17 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: {
+                        count: 0,
+                        ship: 0,
+                        probe: 0,
+                        template: global.race.species
+                    },
+                    p: ['star_dock','space']
+                };
             }
         },
     },
@@ -1784,7 +1955,7 @@ const spaceProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     messageQueue(loc('space_gas_moon_mission_action',[planetName().gas_moon]),'info',false,['progress']);
-                    global.space['outpost'] = { count: 0, on: 0 };
+                    initStruct(actions.space.spc_gas_moon.outpost);
                     global.tech['gas_moon'] = 1;
                     return true;
                 }
@@ -1823,6 +1994,12 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['outpost','space']
+                };
             }
         },
         drone: {
@@ -1849,6 +2026,12 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['drone','space']
+                };
             }
         },
         oil_extractor: {
@@ -1879,6 +2062,12 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['oil_extractor','space']
+                };
             }
         },
     },
@@ -1972,6 +2161,12 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, support: 0, s_max: 0 },
+                    p: ['space_station','space']
+                };
             }
         },
         elerium_ship: {
@@ -2002,6 +2197,12 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['elerium_ship','space']
+                };
             }
         },
         iridium_ship: {
@@ -2032,6 +2233,12 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['iridium_ship','space']
+                };
             }
         },
         iron_ship: {
@@ -2067,6 +2274,12 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['iron_ship','space']
+                };
             }
         },
     },
@@ -2132,6 +2345,12 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['elerium_contain','space']
+                };
             }
         },
         e_reactor: {
@@ -2161,6 +2380,12 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['e_reactor','space']
+                };
             }
         },
         world_collider: {
@@ -2311,6 +2536,12 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, ships: [], expand: true, sort: true },
+                    p: ['shipyard','space']
+                };
             }
         },
         mass_relay: {
@@ -2359,6 +2590,12 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['mass_relay','space']
+                };
             }
         },
         m_relay: {
@@ -2415,8 +2652,8 @@ const interstellarProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     messageQueue(loc('interstellar_alpha_mission_result'),'info',false,['progress']);
-                    global.interstellar['nexus'] = { count: 0, on: 0, support: 0, s_max: 0 };
-                    global.interstellar['warehouse'] = { count: 0 };
+                    initStruct(actions.interstellar.int_proxima.nexus);
+                    initStruct(actions.interstellar.int_alpha.warehouse);
                     return true;
                 }
                 return false;
@@ -2452,7 +2689,7 @@ const interstellarProjects = {
                     powerOnNewStruct($(this)[0]);
                     if (global.tech['alpha'] === 1){
                         global.tech['alpha'] = 2;
-                        global.interstellar['mining_droid'] = { count: 0, on: 0, adam: 0, uran: 0, coal: 0, alum: 0 };
+                        initStruct(actions.interstellar.int_alpha.mining_droid);
                     }
                     if (global.race['orbit_decay'] && global.race.orbit_decay > global.stats.days + 100){
                         global.race.orbit_decay = global.stats.days + 100;
@@ -2461,6 +2698,17 @@ const interstellarProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: {
+                        count: 0,
+                        on: 0,
+                        support: 0,
+                        s_max: 0
+                    },
+                    p: ['starport','interstellar']
+                };
             }
         },
         habitat: {
@@ -2493,6 +2741,12 @@ const interstellarProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['habitat','interstellar']
+                };
             },
             citizens(){
                 let pop = 1;
@@ -2530,14 +2784,20 @@ const interstellarProjects = {
                     }
                     if (!global.tech['droids']){
                         global.tech['droids'] = 1;
-                        global.interstellar['processing'] = { count: 0, on: 0 };
+                        initStruct(actions.interstellar.int_alpha.processing);
                     }
                     global.settings.showIndustry = true;
                     defineIndustry();
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, adam: 0, uran: 0, coal: 0, alum: 0 },
+                    p: ['mining_droid','interstellar']
+                };
+            },
         },
         processing: {
             id: 'interstellar-processing',
@@ -2568,6 +2828,12 @@ const interstellarProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['processing','interstellar']
+                };
             }
         },
         fusion: {
@@ -2596,6 +2862,12 @@ const interstellarProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['fusion','interstellar']
+                };
             }
         },
         laboratory: {
@@ -2750,7 +3022,13 @@ const interstellarProjects = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, Lumber: 0, Coal: 0, Oil: 0 },
+                    p: ['g_factory','interstellar']
+                };
+            },
         },
         int_factory: {
             id: 'interstellar-int_factory',
@@ -2779,6 +3057,12 @@ const interstellarProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['int_factory','interstellar']
+                };
             }
         },
         luxury_condo: {
@@ -2815,6 +3099,12 @@ const interstellarProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['luxury_condo','interstellar']
+                };
             },
             citizens(){
                 let pop = 2;
@@ -2946,6 +3236,12 @@ const interstellarProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['warehouse','interstellar']
+                };
             }
         },
         wonder_gardens: {
@@ -2988,7 +3284,7 @@ const interstellarProjects = {
             effect: loc('interstellar_proxima_mission_effect'),
             action(){
                 if (payCosts($(this)[0])){
-                    global.interstellar['xfer_station'] = { count: 0, on: 0 };
+                    initStruct(actions.interstellar.int_proxima.xfer_station);
                     messageQueue(loc('interstellar_proxima_mission_result'),'info',false,['progress']);
                     return true;
                 }
@@ -3035,11 +3331,17 @@ const interstellarProjects = {
                     }
                     if (global.tech['proxima'] === 1){
                         global.tech['proxima'] = 2;
-                        global.interstellar['cargo_yard'] = { count: 0 };
+                        initStruct(actions.interstellar.int_proxima.cargo_yard);
                     }
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['xfer_station','interstellar']
+                };
             }
         },
         cargo_yard: {
@@ -3077,6 +3379,12 @@ const interstellarProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['cargo_yard','interstellar']
+                };
             }
         },
         cruiser: {
@@ -3105,6 +3413,12 @@ const interstellarProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['cruiser','interstellar']
+                };
             },
             soldiers(){
                 let soldiers = global.race['fasting'] ? 4 : 3;
@@ -3159,6 +3473,12 @@ const interstellarProjects = {
                     }
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['dyson','interstellar']
+                };
             }
         },
         dyson_sphere: {
@@ -3206,6 +3526,12 @@ const interstellarProjects = {
                     }
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['dyson_sphere','interstellar']
+                };
             }
         },
         orichalcum_sphere: {
@@ -3251,6 +3577,12 @@ const interstellarProjects = {
                     }
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['orichalcum_sphere','interstellar']
+                };
             }
         },
         elysanite_sphere: {
@@ -3294,6 +3626,12 @@ const interstellarProjects = {
                     }
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['elysanite_sphere','interstellar']
+                };
             }
         },
     },
@@ -3352,7 +3690,7 @@ const interstellarProjects = {
                     incrementStruct('nexus','interstellar');
                     global.resource.Deuterium.display = true;
                     if (global.tech['nebula'] === 1){
-                        global.interstellar['harvester'] = { count: 0, on: 0 };
+                        initStruct(actions.interstellar.int_nebula.harvester);
                         global.tech['nebula'] = 2;
                     }
                     if (powerOnNewStruct($(this)[0])){
@@ -3364,6 +3702,12 @@ const interstellarProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, support: 0, s_max: 0 },
+                    p: ['nexus','interstellar']
+                };
             }
         },
         harvester: {
@@ -3393,6 +3737,12 @@ const interstellarProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['harvester','interstellar']
+                };
             }
         },
         elerium_prospector: {
@@ -3421,6 +3771,12 @@ const interstellarProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['elerium_prospector','interstellar']
+                };
             }
         },
     },
@@ -3627,7 +3983,7 @@ const interstellarProjects = {
             effect: loc('interstellar_blackhole_mission_effect'),
             action(){
                 if (payCosts($(this)[0])){
-                    global.interstellar['far_reach'] = { count: 0, on: 0 };
+                    initStruct(actions.interstellar.int_blackhole.far_reach);
                     messageQueue(loc('interstellar_blackhole_mission_result'),'info',false,['progress']);
                     return true;
                 }
@@ -3661,6 +4017,12 @@ const interstellarProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['far_reach','interstellar']
+                };
             },
             flair: loc('interstellar_far_reach_flair')
         },
@@ -3728,6 +4090,12 @@ const interstellarProjects = {
                     }
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, mass: 8, exotic: 0 },
+                    p: ['stellar_engine','interstellar']
+                };
             }
         },
         mass_ejector: {
@@ -3788,6 +4156,33 @@ const interstellarProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: {
+                        count: 0, on: 0, total: 0, mass: 0,
+                        Food: 0, Lumber: 0,
+                        Chrysotile: 0, Stone: 0,
+                        Crystal: 0, Furs: 0,
+                        Copper: 0, Iron: 0,
+                        Aluminium: 0, Cement: 0,
+                        Coal: 0, Oil: 0,
+                        Uranium: 0, Steel: 0,
+                        Titanium: 0, Alloy: 0,
+                        Polymer: 0, Iridium: 0,
+                        Helium_3: 0, Deuterium: 0,
+                        Neutronium: 0, Adamantite: 0,
+                        Infernite: 0, Elerium: 0,
+                        Nano_Tube: 0, Graphene: 0,
+                        Stanene: 0, Bolognium: 0,
+                        Vitreloy: 0, Orichalcum: 0,
+                        Plywood: 0, Brick: 0,
+                        Wrought_Iron: 0, Sheet_Metal: 0,
+                        Mythril: 0, Aerogel: 0,
+                        Nanoweave: 0, Scarletite: 0
+                    },
+                    p: ['mass_ejector','interstellar']
+                };
             },
             flair(){
                 return loc('interstellar_mass_ejector_flair');
