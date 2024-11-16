@@ -3799,7 +3799,7 @@ const interstellarProjects = {
             effect: loc('interstellar_neutron_mission_effect'),
             action(){
                 if (payCosts($(this)[0])){
-                    global.interstellar['neutron_miner'] = { count: 0, on: 0 };
+                    initStruct(actions.interstellar.int_neutron.neutron_miner);
                     messageQueue(loc('interstellar_neutron_mission_result'),'info',false,['progress']);
                     return true;
                 }
@@ -3835,6 +3835,12 @@ const interstellarProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['neutron_miner','interstellar']
+                };
             }
         },
         citadel: {
@@ -4226,8 +4232,8 @@ const interstellarProjects = {
             effect: loc('interstellar_wormhole_mission_effect'),
             action(){
                 if (payCosts($(this)[0])){
-                    global.interstellar['stargate'] = { count: 0 };
-                    global.galaxy['gateway_station'] = { count: 0, on: 0 };
+                    initStruct(actions.interstellar.int_blackhole.stargate);
+                    initStruct(actions.galaxy.gxy_gateway.gateway_station);
                     messageQueue(loc('interstellar_wormhole_mission_result'),'info',false,['progress']);
                     return true;
                 }
@@ -4285,6 +4291,12 @@ const interstellarProjects = {
                     }
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['stargate','interstellar']
+                };
             }
         },
         s_gate: {
@@ -4348,7 +4360,7 @@ const interstellarProjects = {
             effect(){ return loc('interstellar_sirius_b_effect'); },
             action(){
                 if (payCosts($(this)[0])){
-                    global.interstellar['space_elevator'] = { count: 0 };
+                    initStruct(actions.interstellar.int_sirius.space_elevator);
                     return true;
                 }
                 return false;
@@ -4392,7 +4404,7 @@ const interstellarProjects = {
                         incrementStruct('space_elevator','interstellar');
                         if (global.interstellar.space_elevator.count >= 100){
                             global.tech['ascension'] = 5;
-                            global.interstellar['gravity_dome'] = { count: 0 };
+                            initStruct(actions.interstellar.int_sirius.gravity_dome);
                             deepSpace();
                             clearPopper();
                         }
@@ -4400,6 +4412,12 @@ const interstellarProjects = {
                     }
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['space_elevator','interstellar']
+                };
             }
         },
         gravity_dome: {
@@ -4440,8 +4458,8 @@ const interstellarProjects = {
                         incrementStruct('gravity_dome','interstellar');
                         if (global.interstellar.gravity_dome.count >= 100){
                             global.tech['ascension'] = 6;
-                            global.interstellar['ascension_machine'] = { count: 0 };
-                            global.interstellar['thermal_collector'] = { count: 0 };
+                            initStruct(actions.interstellar.int_sirius.ascension_machine);
+                            initStruct(actions.interstellar.int_sirius.thermal_collector);
                             deepSpace();
                             clearPopper();
                         }
@@ -4449,6 +4467,12 @@ const interstellarProjects = {
                     }
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['gravity_dome','interstellar']
+                };
             }
         },
         ascension_machine: {
@@ -4500,6 +4524,12 @@ const interstellarProjects = {
                     }
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['ascension_machine','interstellar']
+                };
             }
         },
         ascension_trigger: {
@@ -4630,6 +4660,12 @@ const interstellarProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['thermal_collector','interstellar']
+                };
             }
         },
     }
@@ -4753,12 +4789,18 @@ const galaxyProjects = {
                     incrementStruct('starbase','galaxy');
                     powerOnNewStruct($(this)[0]);
                     if (global.tech['gateway'] === 2){
-                        global.galaxy['bolognium_ship'] = { count: 0, on: 0, crew: 0 };
+                        initStruct(actions.galaxy.gxy_gateway.bolognium_ship);
                         global.tech['gateway'] = 3;
                     }
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, support: 0, s_max: 0 },
+                    p: ['starbase','galaxy']
+                };
             },
             soldiers(){
                 let soldiers = global.tech.marines >= 2 ? (global.race['grenadier'] ? 5 : 8) : (global.race['grenadier'] ? 3 : 5);
@@ -4806,6 +4848,12 @@ const galaxyProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['ship_dock','galaxy']
+                };
             }
         },
         bolognium_ship: {
@@ -4843,6 +4891,12 @@ const galaxyProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, crew: 0 },
+                    p: ['bolognium_ship','galaxy']
+                };
             }
         },
         scout_ship: {
@@ -4889,6 +4943,12 @@ const galaxyProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, crew: 0, mil: 0 },
+                    p: ['scout_ship','galaxy']
+                };
             }
         },
         corvette_ship: {
@@ -4935,6 +4995,12 @@ const galaxyProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, crew: 0, mil: 0 },
+                    p: ['corvette_ship','galaxy']
+                };
             }
         },
         frigate_ship: {
@@ -4981,6 +5047,12 @@ const galaxyProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, crew: 0, mil: 0 },
+                    p: ['frigate_ship','galaxy']
+                };
             },
             flair: loc('tech_frigate_ship_flair')
         },
@@ -5029,7 +5101,13 @@ const galaxyProjects = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, crew: 0, mil: 0 },
+                    p: ['cruiser_ship','galaxy']
+                };
+            },
         },
         dreadnought: {
             id: 'galaxy-dreadnought',
@@ -5077,7 +5155,13 @@ const galaxyProjects = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, crew: 0, mil: 0 },
+                    p: ['dreadnought','galaxy']
+                };
+            },
         },
     },
     gxy_stargate: {
@@ -5124,13 +5208,19 @@ const galaxyProjects = {
                     global['resource']['Helium_3'].max += spatialReasoning(2000);
                     global['resource']['Deuterium'].max += spatialReasoning(4500);
                     if (global.tech['stargate'] === 4){
-                        global.galaxy['telemetry_beacon'] = { count: 0, on: 0 };
+                        initStruct(actions.galaxy.gxy_stargate.telemetry_beacon);
                         global.tech['stargate'] = 5;
                     }
                     powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['gateway_station','galaxy']
+                };
             }
         },
         telemetry_beacon: {
@@ -5181,7 +5271,7 @@ const galaxyProjects = {
                         global['resource']['Knowledge'].max += 1750;
                     }
                     if (!global.tech['gateway']){
-                        global.galaxy['starbase'] = { count: 0, on: 0, support: 0, s_max: 0 };
+                        initStruct(actions.galaxy.gxy_gateway.starbase);
                         global.settings.space.gateway = true;
                         global.tech['gateway'] = 1;
                         galaxySpace();
@@ -5189,6 +5279,12 @@ const galaxyProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['telemetry_beacon','galaxy']
+                };
             }
         },
         gateway_depot: {
@@ -5241,6 +5337,12 @@ const galaxyProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['gateway_depot','galaxy']
+                };
             }
         },
         defense_platform: {
@@ -5269,6 +5371,12 @@ const galaxyProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['defense_platform','galaxy']
+                };
             },
             post(){
                 vBind({el: `#gxy_stargate`},'update');
@@ -5356,7 +5464,7 @@ const galaxyProjects = {
                     powerOnNewStruct($(this)[0]);
                     if (global.tech['xeno'] === 4){
                         global.tech['xeno'] = 5;
-                        global.galaxy['freighter'] = { count: 0, on: 0, crew: 0 };
+                        initStruct(actions.galaxy.gxy_gorddon.freighter);
                         global.galaxy['trade'] = { max: 0, cur: 0, f0: 0, f1: 0, f2: 0, f3: 0, f4: 0, f5: 0, f6: 0, f7: 0, f8: 0 };
                         messageQueue(loc('galaxy_embassy_complete',[races[global.galaxy.alien1.id].name,races[global.galaxy.alien2.id].name]),'info',false,['progress']);
                     }
@@ -5405,6 +5513,12 @@ const galaxyProjects = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['dormitory','galaxy']
+                };
+            },
             citizens(){
                 let pop = 3;
                 if (global.race['high_pop']){
@@ -5442,7 +5556,13 @@ const galaxyProjects = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['symposium','galaxy']
+                };
+            },
         },
         freighter: {
             id: 'galaxy-freighter',
@@ -5481,6 +5601,12 @@ const galaxyProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, crew: 0 },
+                    p: ['freighter','galaxy']
+                };
             }
         },
     },
@@ -5521,13 +5647,19 @@ const galaxyProjects = {
                 if (payCosts($(this)[0])){
                     if (global.galaxy.consulate.count < 1){
                         incrementStruct('consulate','galaxy');
-                        global.galaxy['resort'] = { count: 0, on: 0 };
-                        global.galaxy['super_freighter'] = { count: 0, on: 0, crew: 0 };
+                        initStruct(actions.galaxy.gxy_alien1.resort);
+                        initStruct(actions.galaxy.gxy_alien1.super_freighter);
                         global.tech.xeno = 9;
                         return true;
                     }
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['consulate','galaxy']
+                };
             },
             citizens(){
                 let pop = 10;
@@ -5569,6 +5701,12 @@ const galaxyProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['resort','galaxy']
+                };
             }
         },
         vitreloy_plant: {
@@ -5600,7 +5738,13 @@ const galaxyProjects = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['vitreloy_plant','galaxy']
+                };
+            },
         },
         super_freighter: {
             id: 'galaxy-super_freighter',
@@ -5637,7 +5781,13 @@ const galaxyProjects = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, crew: 0 },
+                    p: ['super_freighter','galaxy']
+                };
+            },
         },
     },
     gxy_alien2: {
@@ -5758,7 +5908,7 @@ const galaxyProjects = {
                     incrementStruct('foothold','galaxy');
                     powerOnNewStruct($(this)[0]);
                     if (global.tech['conflict'] === 1){
-                        global.galaxy['armed_miner'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                        initStruct(actions.galaxy.gxy_alien2.armed_miner);
                         global.tech['conflict'] = 2;
                         galaxySpace();
                         drawTech();
@@ -5766,6 +5916,12 @@ const galaxyProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, support: 0, s_max: 0 },
+                    p: ['foothold','galaxy']
+                };
             }
         },
         armed_miner: {
@@ -5811,6 +5967,12 @@ const galaxyProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, crew: 0, mil: 0 },
+                    p: ['armed_miner','galaxy']
+                };
             }
         },
         ore_processor: {
@@ -5839,6 +6001,12 @@ const galaxyProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['ore_processor','galaxy']
+                };
             }
         },
         scavenger: {
@@ -5875,6 +6043,12 @@ const galaxyProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, crew: 0 },
+                    p: ['scavenger','galaxy']
+                };
             }
         },
     },
@@ -6013,6 +6187,12 @@ const galaxyProjects = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, crew: 0, mil: 0 },
+                    p: ['minelayer','galaxy']
+                };
+            },
             postPower(){
                 vBind({el: `#gxy_chthonian`},'update');
             },
@@ -6048,6 +6228,12 @@ const galaxyProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['excavator','galaxy']
+                };
             }
         },
         raider: {
@@ -6095,6 +6281,12 @@ const galaxyProjects = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, crew: 0, mil: 0 },
+                    p: ['raider','galaxy']
+                };
             },
             postPower(){
                 vBind({el: `#gxy_chthonian`},'update');

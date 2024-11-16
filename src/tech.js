@@ -10541,8 +10541,8 @@ const techs = {
         },
         action(){
             if (payCosts($(this)[0])){
-                global.galaxy['symposium'] = { count: 0, on: 0 };
-                global.galaxy['dormitory'] = { count: 0, on: 0 };
+                initStruct(actions.galaxy.gxy_gorddon.dormitory);
+                initStruct(actions.galaxy.gxy_gorddon.symposium);
                 return true;
             }
             return false;
@@ -10582,7 +10582,7 @@ const techs = {
         effect(){ return loc('tech_xeno_gift_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.galaxy['consulate'] = { count: 0 };
+                initStruct(actions.galaxy.gxy_alien1.consulate);
                 global.settings.space.alien1 = true;
                 messageQueue(loc('tech_xeno_gift_msg',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name]),'info',false,['progress']);
                 return true;
@@ -10604,7 +10604,7 @@ const techs = {
         effect(){ return loc('tech_industrial_partnership_effect',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name]); },
         action(){
             if (payCosts($(this)[0])){
-                global.galaxy['vitreloy_plant'] = { count: 0, on: 0 };
+                initStruct(actions.galaxy.gxy_alien1.vitreloy_plant);
                 return true;
             }
             return false;
@@ -10665,7 +10665,7 @@ const techs = {
         effect: loc('tech_defense_platform_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.galaxy['defense_platform'] = { count: 0, on: 0 };
+                initStruct(actions.galaxy.gxy_stargate.defense_platform);
                 return true;
             }
             return false;
@@ -10685,7 +10685,7 @@ const techs = {
         effect(){ return loc('tech_scout_ship_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.galaxy['scout_ship'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                initStruct(actions.galaxy.gxy_gateway.scout_ship);
                 return true;
             }
             return false;
@@ -10705,7 +10705,7 @@ const techs = {
         effect(){ return loc('tech_corvette_ship_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.galaxy['corvette_ship'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                initStruct(actions.galaxy.gxy_gateway.corvette_ship);
                 return true;
             }
             return false;
@@ -10725,7 +10725,7 @@ const techs = {
         effect(){ return loc('tech_frigate_ship_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.galaxy['frigate_ship'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                initStruct(actions.galaxy.gxy_gateway.frigate_ship);
                 renderSpace();
                 return true;
             }
@@ -10746,8 +10746,8 @@ const techs = {
         effect(){ return loc('tech_cruiser_ship_effect',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name]); },
         action(){
             if (payCosts($(this)[0])){
-                global.galaxy['cruiser_ship'] = { count: 0, on: 0, crew: 0, mil: 0 };
-                global.galaxy['foothold'] = { count: 0, on: 0, support: 0, s_max: 0 };
+                initStruct(actions.galaxy.gxy_gateway.cruiser_ship);
+                initStruct(actions.galaxy.gxy_alien2.foothold);
                 global.settings.space.alien2 = true;
                 renderSpace();
                 return true;
@@ -10769,7 +10769,7 @@ const techs = {
         effect(){ return loc('tech_dreadnought_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.galaxy['dreadnought'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                initStruct(actions.galaxy.gxy_gateway.dreadnought);
                 renderSpace();
                 return true;
             }
@@ -10790,7 +10790,7 @@ const techs = {
         effect(){ return loc('tech_ship_dock_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.galaxy['ship_dock'] = { count: 0, on: 0 };
+                initStruct(actions.galaxy.gxy_gateway.ship_dock);
                 return true;
             }
             return false;
@@ -10810,7 +10810,7 @@ const techs = {
         effect(){ return loc('tech_ore_processor_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.galaxy['ore_processor'] = { count: 0, on: 0 };
+                initStruct(actions.galaxy.gxy_alien2.ore_processor);
                 return true;
             }
             return false;
@@ -10830,7 +10830,7 @@ const techs = {
         effect(){ return loc('tech_scavenger_effect',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name]); },
         action(){
             if (payCosts($(this)[0])){
-                global.galaxy['scavenger'] = { count: 0, on: 0, crew: 0 };
+                initStruct(actions.galaxy.gxy_alien2.scavenger);
                 return true;
             }
             return false;
@@ -10850,7 +10850,7 @@ const techs = {
         effect(){ return loc('tech_coordinates_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.galaxy['minelayer'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                initStruct(actions.galaxy.gxy_chthonian.minelayer);
                 global.settings.space.chthonian = true;
                 return true;
             }
@@ -10872,8 +10872,8 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.resource.Orichalcum.display = true;
-                global.galaxy['excavator'] = { count: 0, on: 0 };
-                global.galaxy['raider'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                initStruct(actions.galaxy.gxy_chthonian.excavator);
+                initStruct(actions.galaxy.gxy_chthonian.raider);
                 messageQueue(loc('tech_chthonian_survey_result'),'info',false,['progress']);
                 return true;
             }
@@ -10897,7 +10897,7 @@ const techs = {
         effect(){ return loc('tech_gateway_depot_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.galaxy['gateway_depot'] = { count: 0, on: 0 };
+                initStruct(actions.galaxy.gxy_stargate.gateway_depot);
                 return true;
             }
             return false;
