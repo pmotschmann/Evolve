@@ -218,6 +218,12 @@ const outerTruth = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['titan_quarters','space']
+                };
+            },
             citizens(){
                 let gain = 1;
                 if (global.race['high_pop']){
@@ -259,6 +265,12 @@ const outerTruth = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, ratio: 90 },
+                    p: ['titan_mine','space']
+                };
             }
         },
         storehouse: {
@@ -351,6 +363,12 @@ const outerTruth = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['storehouse','space']
+                };
             }
         },
         titan_bank: {
@@ -427,6 +445,12 @@ const outerTruth = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, Lumber: 0, Coal: 0, Oil: 0 },
+                    p: ['g_factory','space']
+                };
             }
         },
         sam: {
@@ -455,6 +479,12 @@ const outerTruth = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['sam','space']
+                };
             },
             post(){
                 vBind({el: `#spc_titansynd`},'update');
@@ -498,6 +528,12 @@ const outerTruth = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['sam','space']
+                };
             }
         },
         ai_core: {
@@ -555,6 +591,12 @@ const outerTruth = {
                     }
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['ai_core','space']
+                };
             }
         },
         ai_core2: {
@@ -974,6 +1016,12 @@ const outerTruth = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, troops: 0, enemy: 0 },
+                    p: ['fob','space']
+                };
+            },
             soldiers(){
                 let soldiers = global.race['grenadier'] ? 6 : 10;
                 return jobScale(soldiers);
@@ -1017,6 +1065,12 @@ const outerTruth = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['lander','space']
+                };
             }
         },
         crashed_ship: {
@@ -1035,6 +1089,12 @@ const outerTruth = {
             },
             action(){
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['crashed_ship','space']
+                };
             }
         },
     },
@@ -1071,9 +1131,9 @@ const outerTruth = {
             },
             action(){
                 if (payCosts($(this)[0])){
-                    global.space['orichalcum_mine'] = { count: 0, on: 0 };
-                    global.space['uranium_mine'] = { count: 0, on: 0 };
-                    global.space['neutronium_mine'] = { count: 0, on: 0 };
+                    initStruct(actions.space.spc_kuiper.orichalcum_mine);
+                    initStruct(actions.space.spc_kuiper.uranium_mine);
+                    initStruct(actions.space.spc_kuiper.neutronium_mine);
                     global.space.syndicate['spc_kuiper'] = 500;
                     messageQueue(loc('space_kuiper_mission_action'),'info',false,['progress']);
                     return true;
@@ -1112,6 +1172,12 @@ const outerTruth = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['orichalcum_mine','space']
+                };
             }
         },
         uranium_mine: {
@@ -1142,6 +1208,12 @@ const outerTruth = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['uranium_mine','space']
+                };
             }
         },
         neutronium_mine: {
@@ -1172,6 +1244,12 @@ const outerTruth = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['neutronium_mine','space']
+                };
             }
         },
         elerium_mine: {
@@ -1203,6 +1281,12 @@ const outerTruth = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['elerium_mine','space']
+                };
             }
         },
     },
@@ -1285,6 +1369,12 @@ const outerTruth = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, support: 0, s_max: 0 },
+                    p: ['drone_control','space']
+                };
             }
         },
         shock_trooper: {
@@ -1320,6 +1410,12 @@ const outerTruth = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['shock_trooper','space']
+                };
             }
         },
         tank: {
@@ -1355,6 +1451,12 @@ const outerTruth = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['tank','space']
+                };
             }
         },
         digsite: {
@@ -1373,6 +1475,12 @@ const outerTruth = {
             },
             action(){
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, enemy: 10000 },
+                    p: ['digsite','space']
+                };
             }
         },
     }
@@ -1445,6 +1553,12 @@ const tauCetiModules = {
                     }
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['ringworld','tauceti']
+                };
             }
         },
         matrix: {
@@ -1557,6 +1671,12 @@ const tauCetiModules = {
                     return false;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['goe_facility','tauceti']
+                };
             }
         },
     },
@@ -1606,8 +1726,8 @@ const tauCetiModules = {
             effect(){ return loc('tau_new_mission_effect',[races[global.race.species].home]); },
             action(){
                 if (payCosts($(this)[0])){
-                    global.tauceti['colony'] = { count: 0, on: 0 };
-                    global.tauceti['mining_pit'] = { count: 0, on: 0 };
+                    initStruct(actions.tauceti.tau_home.colony);
+                    initStruct(actions.tauceti.tau_home.mining_pit);
                     messageQueue(loc('tau_home_mission_result',[races[global.race.species].home]),'info',false,['progress']);
                     return true;
                 }
@@ -1771,6 +1891,12 @@ const tauCetiModules = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['colony','tauceti']
+                };
+            },
             citizens(){
                 let pop = global.tech['isolation'] ? 8 : 5;
                 if (global.race['high_pop']){
@@ -1807,6 +1933,12 @@ const tauCetiModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['tau_housing','tauceti']
+                };
             },
             citizens(){
                 let pop = 1;
@@ -1876,6 +2008,12 @@ const tauCetiModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count : 0, on: 0 },
+                    p: ['cloning_facility','tauceti']
+                };
             }
         },
         horseshoe: buildTemplate(`horseshoe`,'tauceti'),
@@ -1923,6 +2061,12 @@ const tauCetiModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count : 0, on: 0 },
+                    p: ['tau_farm','tauceti']
+                };
             }
         },
         mining_pit: {
@@ -1994,6 +2138,12 @@ const tauCetiModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['mining_pit','tauceti']
+                };
             }
         },
         excavate: {
@@ -2052,6 +2202,12 @@ const tauCetiModules = {
             },
             action(){
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 1, on: 0 },
+                    p: ['alien_outpost','tauceti']
+                };
             }
         },
         jump_gate: {
@@ -2092,6 +2248,12 @@ const tauCetiModules = {
                     }
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['jump_gate','tauceti']
+                };
             }
         },
         fusion_generator: {
@@ -2128,6 +2290,12 @@ const tauCetiModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count : 0, on: 0 },
+                    p: ['fusion_generator','tauceti']
+                };
             }
         },
         repository: {
@@ -2247,6 +2415,12 @@ const tauCetiModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count : 0 },
+                    p: ['repository','tauceti']
+                };
             }
         },
         tau_factory: {
@@ -2293,6 +2467,12 @@ const tauCetiModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count : 0, on: 0 },
+                    p: ['tau_factory','tauceti']
+                };
             }
         },
         infectious_disease_lab: {
@@ -2349,6 +2529,12 @@ const tauCetiModules = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count : 0, on: 0, cure: 0 },
+                    p: ['infectious_disease_lab','tauceti']
+                };
+            },
             post(){
                 if (global.tech.disease === 1){
                     global.tech.disease = 2;
@@ -2392,6 +2578,12 @@ const tauCetiModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['tauceti_casino','tauceti']
+                };
             },
             citizens(){
                 let gain = 1;
@@ -2450,6 +2642,12 @@ const tauCetiModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count : 0, on: 0 },
+                    p: ['tau_cultural_center','tauceti']
+                };
             }
         },
     },
@@ -2689,6 +2887,12 @@ const tauCetiModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count : 0, on: 0, pop: 0, working: 0, injured: 0, morale: 0, loyal: 0, prod: 0 },
+                    p: ['overseer','tauceti']
+                };
             }
         },
         womling_village: {
@@ -2722,6 +2926,12 @@ const tauCetiModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count : 1, on: 1 },
+                    p: ['womling_village','tauceti']
+                };
             }
         },
         womling_farm: {
@@ -2758,6 +2968,12 @@ const tauCetiModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count : 1, on: 1, farmers: 0 },
+                    p: ['womling_farm','tauceti']
+                };
             }
         },
         womling_mine: {
@@ -2801,6 +3017,12 @@ const tauCetiModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count : 0, on: 0, miners: 0 },
+                    p: ['womling_mine','tauceti']
+                };
             },
             flair(){ return loc('tau_red_womling_mine_flair'); }
         },
@@ -2862,7 +3084,13 @@ const tauCetiModules = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count : 0, on: 0 },
+                    p: ['womling_fun','tauceti']
+                };
+            },
         },
         womling_lab: {
             id: 'tauceti-womling_lab',
@@ -2895,7 +3123,13 @@ const tauCetiModules = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count : 0, on: 0, scientist: 0, tech: 0 },
+                    p: ['womling_lab','tauceti']
+                };
+            },
         },
     },
     tau_gas: {
@@ -3105,6 +3339,12 @@ const tauCetiModules = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count : 0, on: 0, max: 0, fill: 0 },
+                    p: ['ore_refinery','tauceti']
+                };
+            },
             post(){
                 if (global.tech.tau_roid === 3){
                     global.tech.tau_roid = 4;
@@ -3145,6 +3385,12 @@ const tauCetiModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count : 0, on: 0, max: 0, fill: 0 },
+                    p: ['whaling_station','tauceti']
+                };
             },
             post(){
                 if (global.tech.tau_whale === 1){
@@ -3189,7 +3435,13 @@ const tauCetiModules = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count : 0, on: 0 },
+                    p: ['womling_station','tauceti']
+                };
+            },
         },
     },
     tau_roid: {
@@ -3259,6 +3511,12 @@ const tauCetiModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, support: 0, s_max: 0 },
+                    p: ['patrol_ship','tauceti']
+                };
             }
         },
         mining_ship: {
@@ -3292,6 +3550,12 @@ const tauCetiModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count : 0, on: 0, common: 50, uncommon: 50, rare: 50 },
+                    p: ['mining_ship','tauceti']
+                };
             }
         },
         whaling_ship: {
@@ -3324,6 +3588,12 @@ const tauCetiModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count : 0, on: 0 },
+                    p: ['whaling_ship','tauceti']
+                };
             }
         },
     },
@@ -3371,7 +3641,7 @@ const tauCetiModules = {
             effect(){ return loc('tau_gas2_alien_station_repair_effect',[tauCetiModules.tau_gas2.info.name()]); },
             action(){
                 if (payCosts($(this)[0])){
-                    global.tauceti['alien_station'] = { count: 0 };
+                    initStruct(actions.tauceti.tau_gas2.alien_station);
                     messageQueue(loc('tau_gas2_alien_station_msg',[tauCetiModules.tau_gas2.info.name()]),'info',false,['progress']);
                     return true;
                 }
@@ -3424,6 +3694,12 @@ const tauCetiModules = {
                     }
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['alien_station','tauceti']
+                };
             },
             post(){
                 if (global.resource.Elerium.diff >= 10){
@@ -3507,7 +3783,13 @@ const tauCetiModules = {
                     }
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['matrioshka_brain','tauceti']
+                };
+            },
         },
         ignition_device: {
             id: 'tauceti-ignition_device',
@@ -3552,7 +3834,13 @@ const tauCetiModules = {
                     }
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['ignition_device','tauceti']
+                };
+            },
         },
         ignite_gas_giant: {
             id: 'tauceti-ignite_gas_giant',
@@ -3651,11 +3939,16 @@ function edenProjection(){
 }
 
 function defineWomlings(){
-    global.tauceti['overseer'] = { count : 0, on: 0, pop: 0, working: 0, injured: 0, morale: 0, loyal: 0, prod: 0 };
-    global.tauceti['womling_village'] = global.race['lone_survivor'] ? { count : 2, on: 2 } : { count : 1, on: 1 };
-    global.tauceti['womling_mine'] = global.race['lone_survivor'] ? { count : 1, on: 1, miners: 0 } : { count : 0, on: 0, miners: 0 };
-    global.tauceti['womling_farm'] = { count : 1, on: 1, farmers: 0 };
-    global.tauceti['womling_fun'] = { count : 0, on: 0 };
+    initStruct(actions.tauceti.tau_red.overseer);
+    initStruct(actions.tauceti.tau_red.womling_village);
+    initStruct(actions.tauceti.tau_red.womling_mine);
+    initStruct(actions.tauceti.tau_red.womling_fun);
+    if (global.race['lone_survivor']){
+        global.tauceti.womling_village.count = 2;
+        global.tauceti.womling_village.on = 2;
+        global.tauceti.womling_mine.count = 1;
+        global.tauceti.womling_mine.on = 1;
+    }
 }
 
 function wom_repulse(v){
@@ -5299,8 +5592,8 @@ export function jumpGateShutdown(){
         }
     }
 
-    global.tauceti['tauceti_casino'] = { count: 0, on: 0 };
-    global.tauceti['tau_housing'] = { count: 0 };
+    initStruct(actions.tauceti.tau_home.tauceti_casino);
+    initStruct(actions.tauceti.tau_home.tau_housing);
     
     let pop = support_on['colony'] * tauCetiModules.tau_home.colony.citizens();
     if (global.resource[global.race.species].amount > pop){ global.resource[global.race.species].amount = pop; }

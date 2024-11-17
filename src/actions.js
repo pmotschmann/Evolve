@@ -4374,7 +4374,7 @@ export const actions = {
                     d: { count: 0, on: 0 },
                     p: ['mass_driver','city']
                 };
-            },
+            }
         },
         replicator: {
             id: 'city-replicator',
@@ -4427,6 +4427,12 @@ export const actions = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['probes','starDock']
+                };
+            }
         },
         geck: {
             id: 'starDock-geck',
@@ -4455,6 +4461,12 @@ export const actions = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['geck','starDock']
+                };
+            }
         },
         seeder: {
             id: 'starDock-seeder',
@@ -4497,6 +4509,12 @@ export const actions = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['seeder','starDock']
+                };
+            }
         },
         prep_ship: {
             id: 'starDock-prep_ship',

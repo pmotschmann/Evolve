@@ -9610,7 +9610,7 @@ const techs = {
         effect: loc('tech_interstellar_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.starDock['probes'] = { count: 0 };
+                initStruct(actions.starDock.probes);
                 return true;
             }
             return false;
@@ -9630,7 +9630,7 @@ const techs = {
         effect(){ return global.race['cataclysm'] ? loc('tech_generational_effect') : loc('tech_genesis_ship_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.starDock['seeder'] = { count: 0 };
+                initStruct(actions.starDock.seeder);
                 if (global.race['cataclysm']){
                     unlockAchieve('iron_will',false,4);
                 }
@@ -9656,7 +9656,7 @@ const techs = {
         effect(){ return loc('tech_geck_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.starDock['geck'] = { count: 0 };
+                initStruct(actions.starDock.geck);
                 return true;
             }
             return false;
@@ -11769,9 +11769,9 @@ const techs = {
         effect(){ return loc('tech_fob_effect',[planetName().triton]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['fob'] = { count: 0, on: 0, troops: 0, enemy: 0 };
-                global.space['lander'] = { count: 0, on: 0 };
-                global.space['crashed_ship'] = { count: 0 };
+                initStruct(actions.space.spc_triton.fob);
+                initStruct(actions.space.spc_triton.lander);
+                initStruct(actions.space.spc_triton.crashed_ship);
                 return true;
             }
             return false;
@@ -11834,7 +11834,7 @@ const techs = {
         effect(){ return loc('tech_sam_site_effect',[planetName().titan]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['sam'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_titan.sam);
                 return true;
             }
             return false;
@@ -11856,7 +11856,7 @@ const techs = {
         effect(){ return loc('tech_data_cracker_effect',[global.resource.Cipher.name]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['decoder'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_titan.decoder);
                 return true;
             }
             return false;
@@ -11878,7 +11878,7 @@ const techs = {
         effect: loc('tech_ai_core_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['ai_core'] = { count: 0 };
+                initStruct(actions.space.spc_titan.ai_core);
                 return true;
             }
             return false;
@@ -11923,7 +11923,6 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.space.spc_titan.ai_colonist);
-                global.space['ai_colonist'] = { count: 0, on: 0 };
                 return true;
             }
             return false;
@@ -12021,7 +12020,7 @@ const techs = {
         effect(){ return loc('tech_terraforming_effect',[planetName().red]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space.terraformer = { count: 0 };
+                initStruct(actions.space.spc_red.terraformer);
                 return true;
             }
             return false;
@@ -12210,7 +12209,7 @@ const techs = {
                 global.settings.space.eris = true;
                 global.settings.space.kuiper = true;
                 global.tech['eris_scan'] = 0;
-                global.space['drone_control'] = { count: 0, on: 0, support: 0, s_max: 0 };
+                initStruct(actions.space.spc_eris.drone_control);
                 messageQueue(loc('tech_nav_data_result',[planetName().eris]),'info',false,['progress']);
                 return true;
             }
@@ -12255,8 +12254,8 @@ const techs = {
         effect(){ return loc('tech_dronewar_effect',[planetName().eris]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['shock_trooper'] = { count: 0, on: 0 };
-                global.space['digsite'] = { count: 0, enemy: 10000 };
+                initStruct(actions.space.spc_eris.shock_trooper);
+                initStruct(actions.space.spc_eris.digsite);
                 return true;
             }
             return false;
@@ -12278,7 +12277,7 @@ const techs = {
         effect: loc('tech_drone_tank_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['tank'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_eris.tank);
                 return true;
             }
             return false;
@@ -12328,7 +12327,7 @@ const techs = {
         effect: loc('tech_graphene_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['g_factory'] = { count: 0, on: 0, Lumber: 0, Coal: 0, Oil: 0 };
+                initStruct(actions.space.spc_titan.g_factory);
                 return true;
             }
             return false;
@@ -12374,8 +12373,8 @@ const techs = {
         effect(){ return loc('tech_electrolysis_effect',[planetName().titan, global.resource.Water.name]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['titan_quarters'] = { count: 0, on: 0 };
-                global.space['titan_mine'] = { count: 0, on: 0, ratio: 90 };
+                initStruct(actions.space.spc_titan.titan_quarters);
+                initStruct(actions.space.spc_titan.titan_mine);
                 return true;
             }
             return false;
@@ -12396,7 +12395,6 @@ const techs = {
         effect(){ return loc('tech_storehouse_effect',[planetName().titan]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['storehouse'] = { count: 0 };
                 initStruct(actions.space.spc_titan.storehouse);
                 return true;
             }
@@ -12725,7 +12723,7 @@ const techs = {
         effect(){ return loc('tech_elerium_extraction_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['elerium_mine'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_kuiper.elerium_mine);
                 return true;
             }
             return false;
@@ -13125,8 +13123,8 @@ const techs = {
         effect: loc('tech_alien_outpost_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['alien_outpost'] = { count: 1, on: 0 };
-                global.tauceti['jump_gate'] = { count: 0 };
+                initStruct(actions.tauceti.tau_home.alien_outpost);
+                initStruct(actions.tauceti.tau_home.jump_gate);
                 initStruct(actions.space.spc_sun.jump_gate);
                 messageQueue(loc('tech_alien_outpost_msg'),'info',false,['progress']);
                 return true;
@@ -13171,7 +13169,7 @@ const techs = {
             if (payCosts($(this)[0])){
                 global.settings.tau.roid = true;
                 global.settings.tau.gas = true;
-                global.tauceti['patrol_ship'] = { count: 0, on: 0, support: 0, s_max: 0 };
+                initStruct(actions.tauceti.tau_roid.patrol_ship);
                 return true;
             }
             return false;
@@ -13192,7 +13190,7 @@ const techs = {
         effect: loc('tech_repository_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['repository'] = { count: 0 };
+                initStruct(actions.tauceti.tau_home.repository);
                 return true;
             }
             return false;
@@ -13213,7 +13211,7 @@ const techs = {
         effect: loc('tech_tau_fusion_power_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['fusion_generator'] = { count: 0, on: 0 };
+                initStruct(actions.tauceti.tau_home.fusion_generator);
                 return true;
             }
             return false;
@@ -13234,7 +13232,7 @@ const techs = {
         effect(){ return loc('tech_tau_cultivation_effect',[races[global.race.species].home]); },
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['tau_farm'] = { count: 0, on: 0 };
+                initStruct(actions.tauceti.tau_home.tau_farm);
                 return true;
             }
             return false;
@@ -13255,7 +13253,7 @@ const techs = {
         effect(){ return loc('tech_tau_manufacturing_effect',[races[global.race.species].home]); },
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['tau_factory'] = { count: 0, on: 0 };
+                initStruct(actions.tauceti.tau_home.tau_factory);
                 return true;
             }
             return false;
@@ -13338,7 +13336,7 @@ const techs = {
         effect(){ return loc('tech_womling_lab_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['womling_lab'] = { count : 0, on: 0, scientist: 0, tech: 0 };
+                initStruct(actions.tauceti.tau_red.womling_lab);
                 global.tech['womling_tech'] = 0;
                 return true;
             }
@@ -13480,7 +13478,7 @@ const techs = {
         effect(){ return `<div>${loc('tech_womling_support_effect')}</div>`; },
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['womling_station'] = { count : 0, on: 0 };
+                initStruct(actions.tauceti.tau_gas.womling_station);
                 return true;
             }
             return false;
@@ -13563,8 +13561,8 @@ const techs = {
         effect(){ return loc('tech_belt_mining_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['ore_refinery'] = { count : 0, on: 0, max: 0, fill: 0 };
-                global.tauceti['mining_ship'] = { count : 0, on: 0, common: 50, uncommon: 50, rare: 50 };
+                initStruct(actions.tauceti.tau_gas.ore_refinery);
+                initStruct(actions.tauceti.tau_roid.mining_ship);
                 return true;
             }
             return false;
@@ -13605,8 +13603,8 @@ const techs = {
         effect(){ return loc('tech_space_whaling_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['whaling_station'] = { count : 0, on: 0, max: 0, fill: 0 };
-                global.tauceti['whaling_ship'] = { count : 0, on: 0 };
+                initStruct(actions.tauceti.tau_gas.whaling_station);
+                initStruct(actions.tauceti.tau_roid.whaling_ship);
                 return true;
             }
             return false;
@@ -13627,7 +13625,7 @@ const techs = {
         effect(){ return loc(global.race['artifical'] ? 'tech_infectious_disease_lab_effect_s' : 'tech_infectious_disease_lab_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['infectious_disease_lab'] = { count : 0, on: 0, cure: 0 };
+                initStruct(actions.tauceti.tau_home.infectious_disease_lab);
                 return true;
             }
             return false;
@@ -13844,7 +13842,7 @@ const techs = {
         },
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['cloning_facility'] = { count : 0, on: 0 };
+                initStruct(actions.tauceti.tau_home.cloning_facility);
                 return true;
             }
             return false;
@@ -13918,7 +13916,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.settings.tau.star = true;
-                global.tauceti['ringworld'] = { count: 0 };
+                initStruct(actions.tauceti.tau_star.ringworld);
                 return true;
             }
             return false;
@@ -13979,7 +13977,7 @@ const techs = {
         effect: loc('tech_cultural_center_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['tau_cultural_center'] = { count: 0, on: 0 };
+                initStruct(actions.tauceti.tau_home.tau_cultural_center);
                 return true;
             }
             return false;
@@ -14187,7 +14185,7 @@ const techs = {
         effect(){ return loc('tech_matrioshka_brain_effect',[actions.tauceti.tau_gas2.info.name()]); },
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['matrioshka_brain'] = { count: 0 };
+                initStruct(actions.tauceti.tau_gas2.matrioshka_brain);
                 return true;
             }
             return false;
@@ -14208,9 +14206,9 @@ const techs = {
         effect(){ return loc('tech_ignition_device_effect',[actions.tauceti.tau_gas2.info.name()]); },
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['ignition_device'] = { count: 0 };
+                initStruct(actions.tauceti.tau_gas2.ignition_device);
                 if (!global.tauceti.hasOwnProperty('matrioshka_brain')){
-                    global.tauceti['matrioshka_brain'] = { count: 0 };
+                    initStruct(actions.tauceti.tau_gas2.matrioshka_brain);
                 }
                 return true;
             }
@@ -14278,7 +14276,7 @@ const techs = {
         effect(){ return loc('tech_garden_of_eden_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['goe_facility'] = { count: 0 };
+                initStruct(actions.tauceti.tau_star.goe_facility);
                 return true;
             }
             return false;
