@@ -69,7 +69,6 @@ const edenicModules = {
                     let powder = spatialReasoning(250);
                     desc += `<div>${loc('plus_max_resource',[powder,loc('resource_Asphodel_Powder_name')])}</div>`;
                 }
-
                 if (p_on['ascension_trigger'] && global.eden.hasOwnProperty('encampment') && global.eden.encampment.asc){
                     let heatSink = actions.interstellar.int_sirius.ascension_trigger.heatSink();
                     heatSink = heatSink < 0 ? Math.abs(heatSink) : 0;
@@ -79,7 +78,6 @@ const edenicModules = {
                 }
 
                 desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
-
                 return desc;
             },
             support(){ return 8; },
@@ -96,6 +94,12 @@ const edenicModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, support: 0, s_max: 0, asc: false },
+                    p: ['encampment','eden']
+                };
             }
         },
         soul_engine: {
@@ -123,6 +127,12 @@ const edenicModules = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['soul_engine','eden']
+                };
+            }
         },
         mech_station: {
             id: 'eden-mech_station',
@@ -194,6 +204,12 @@ const edenicModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, mode: 3, mechs: 0, effect: 0 },
+                    p: ['mech_station','eden']
+                };
             }
         },
         asphodel_harvester: {
@@ -227,6 +243,12 @@ const edenicModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['asphodel_harvester','eden']
+                };
             }
         },
         ectoplasm_processor: {
@@ -256,6 +278,12 @@ const edenicModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['ectoplasm_processor','eden']
+                };
             },
             flair(){ return loc('eden_ectoplasm_processor_flair'); }
         },
@@ -301,6 +329,12 @@ const edenicModules = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['research_station','eden']
+                };
+            }
         },
         warehouse: {
             id: 'eden-warehouse',
@@ -409,6 +443,12 @@ const edenicModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['warehouse','eden']
+                };
             }
         },
         stabilizer: {
@@ -448,6 +488,12 @@ const edenicModules = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['stabilizer','eden']
+                };
+            }
         },
         rune_gate: {
             id: 'eden-rune_gate',
@@ -521,7 +567,7 @@ const edenicModules = {
                 if (global.eden.rune_gate.count < 100 && payCosts($(this)[0])){
                     incrementStruct('rune_gate','eden');
                     if (global.eden.rune_gate.count === 100){
-                        global.eden['rune_gate_open'] = { count: 1, on: 0 };
+                        global.eden.rune_gate_open.count = 1;
                         global.settings.eden.elysium = true;
                         global.tech.elysium = 2;
                         renderEdenic();
@@ -529,6 +575,12 @@ const edenicModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['rune_gate','eden']
+                };
             }
         },
         rune_gate_open: {
@@ -548,6 +600,12 @@ const edenicModules = {
             },
             action(){
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['rune_gate_open','eden']
+                };
             }
         },
         bunker: {
@@ -591,6 +649,12 @@ const edenicModules = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['bunker','eden']
+                };
+            },
             soldiers(){
                 let soldiers = global.race['grenadier'] ? 3 : 5;
                 return jobScale(soldiers);
@@ -629,6 +693,12 @@ const edenicModules = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['bliss_den','eden']
+                };
+            },
             flair(){
                 return loc(`eden_bliss_den_flair`);
             }
@@ -664,6 +734,12 @@ const edenicModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['rectory','eden']
+                };
             },
             citizens(){
                 let pop = 4;
@@ -1135,14 +1211,20 @@ const edenicModules = {
                     if (global.eden.enemy_isle.wt === 0 && global.eden.enemy_isle.g === 0 && global.eden.enemy_isle.et === 0){
                         global.tech.isle = 2;
                         global.settings.eden.palace = true;
-                        global.eden['north_pier'] = { count: 0 };
-                        global.eden['south_pier'] = { count: 0 };
+                        initStruct(actions.eden.eden_elysium.north_pier);
+                        initStruct(actions.eden.eden_isle.south_pier);
                         drawTech();
                         renderEdenic();
                         return true;
                     }
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['fire_support_base','eden']
+                };
             },
             soldiers(){
                 let soldiers = global.race['grenadier'] ? 15 : 25;
@@ -1173,6 +1255,12 @@ const edenicModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['elysanite_mine','eden']
+                };
             }
         },
         sacred_smelter: {
@@ -1203,6 +1291,12 @@ const edenicModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['sacred_smelter','eden']
+                };
             }
         },
         elerium_containment: {
@@ -1230,6 +1324,12 @@ const edenicModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['elerium_containment','eden']
+                };
             }
         },
         pillbox: {
@@ -1268,6 +1368,12 @@ const edenicModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, staffed: 0 },
+                    p: ['pillbox','eden']
+                };
             }
         },
         restaurant: {
@@ -1303,6 +1409,12 @@ const edenicModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['restaurant','eden']
+                };
             }
         },
         eternal_bank: {
@@ -1330,6 +1442,12 @@ const edenicModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['eternal_bank','eden']
+                };
             }
         },
         archive: {
@@ -1366,6 +1484,12 @@ const edenicModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['archive','eden']
+                };
             }
         },
         north_pier: {
@@ -1430,6 +1554,12 @@ const edenicModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['north_pier','eden']
+                };
             }
         },
         rushmore: {
@@ -1451,6 +1581,12 @@ const edenicModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['rushmore','eden']
+                };
             },
             flair(){
                 return loc('eden_rushmore_flair');
@@ -1485,6 +1621,12 @@ const edenicModules = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['reincarnation','eden']
+                };
+            },
             flair(){
                 return loc('eden_reincarnation_flair');
             }
@@ -1515,6 +1657,12 @@ const edenicModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['eden_cement','eden']
+                };
             }
         },
     },
@@ -1585,6 +1733,12 @@ const edenicModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['south_pier','eden']
+                };
             }
         },
         west_tower: { 
@@ -1676,6 +1830,12 @@ const edenicModules = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['spirit_vacuum','eden']
+                };
+            },
             flair(){ return loc(`eden_spirit_vacuum_flair`); }
         },
         spirit_battery: {
@@ -1709,6 +1869,12 @@ const edenicModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['spirit_battery','eden']
+                };
             }
         },
         soul_compactor: {
@@ -1735,6 +1901,12 @@ const edenicModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, energy: 0, report: 0 },
+                    p: ['soul_compactor','eden']
+                };
             },
             flair(){
                 return loc(`eden_soul_compactor_flair`);
@@ -1856,7 +2028,13 @@ const edenicModules = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['infuser','eden']
+                };
+            },
         },
         apotheosis: {
             id: 'eden-apotheosis',
@@ -1939,6 +2117,12 @@ const edenicModules = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['conduit','eden']
+                };
+            },
             flair(){ return loc(`eden_conduit_flair`); }
         },
         tomb: {
@@ -1996,6 +2180,12 @@ const edenicModules = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['tomb','eden']
+                };
             },
             flair(){ return loc(`eden_tomb_flair`); }
         }

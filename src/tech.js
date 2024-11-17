@@ -9306,6 +9306,7 @@ const techs = {
                 initStruct(actions.space.spc_belt.space_station);
                 initStruct(actions.space.spc_belt.iridium_ship);
                 initStruct(actions.space.spc_belt.iron_ship);
+                return true;
             }
             return false;
         }
@@ -11705,7 +11706,7 @@ const techs = {
         effect: loc('tech_zero_g_lab_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['zero_g_lab'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_enceladus.zero_g_lab);
                 return true;
             }
             return false;
@@ -11726,7 +11727,7 @@ const techs = {
         effect(){ return loc('tech_operating_base_effect',[planetName().enceladus]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['operating_base'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_enceladus.operating_base);
                 return true;
             }
             return false;
@@ -11747,7 +11748,7 @@ const techs = {
         effect(){ return loc('tech_munitions_depot_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['munitions_depot'] = { count: 0 };
+                initStruct(actions.space.spc_enceladus.munitions_depot);
                 return true;
             }
             return false;
@@ -11921,6 +11922,7 @@ const techs = {
         effect: loc('tech_synthetic_life_effect'),
         action(){
             if (payCosts($(this)[0])){
+                initStruct(actions.space.spc_titan.ai_colonist);
                 global.space['ai_colonist'] = { count: 0, on: 0 };
                 return true;
             }
@@ -12114,8 +12116,8 @@ const techs = {
             if (payCosts($(this)[0])){
                 global.settings.space.titan = true;
                 global.settings.space.enceladus = true;
-                global.space['titan_spaceport'] = { count: 0, on: 0, support: 0, s_max: 0 };
-                global.space['electrolysis'] = { count: 0, on: 0, support: 0, s_max: 0 };
+                initStruct(actions.space.spc_titan.titan_spaceport);
+                initStruct(actions.space.spc_titan.electrolysis);
                 return true;
             }
             return false;
@@ -12395,6 +12397,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.space['storehouse'] = { count: 0 };
+                initStruct(actions.space.spc_titan.storehouse);
                 return true;
             }
             return false;
@@ -12437,7 +12440,7 @@ const techs = {
         effect(){ return loc('tech_titan_bank_effect',[planetName().titan]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['titan_bank'] = { count: 0 };
+                initStruct(actions.space.spc_titan.titan_bank);
                 return true;
             }
             return false;
@@ -12458,7 +12461,7 @@ const techs = {
         effect(){ return loc('tech_hydrogen_plant_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['hydrogen_plant'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_titan.hydrogen_plant);
                 return true;
             }
             return false;
@@ -12483,7 +12486,7 @@ const techs = {
         ]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['water_freighter'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_enceladus.water_freighter);
                 return true;
             }
             return false;
@@ -14296,7 +14299,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 messageQueue(loc('tech_asphodel_flowers_msg'),'info',false,['progress']);
-                global.eden['asphodel_harvester'] = { count: 0, on: 0 };
+                initStruct(actions.eden.eden_asphodel.asphodel_harvester);
                 global.resource.Asphodel_Powder.display = true;
                 return true;
             }
@@ -14318,7 +14321,7 @@ const techs = {
         effect(){ return loc('tech_ghost_traps_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.eden['ectoplasm_processor'] = { count: 0, on: 0 };
+                initStruct(actions.eden.eden_asphodel.ectoplasm_processor);
                 return true;
             }
             return false;
@@ -14339,7 +14342,7 @@ const techs = {
         effect(){ return loc('tech_research_station_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.eden['research_station'] = { count: 0, on: 0 };
+                initStruct(actions.eden.eden_asphodel.research_station);
                 return true;
             }
             return false;
@@ -14361,7 +14364,7 @@ const techs = {
         effect(){ return loc('tech_soul_engine_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.eden['soul_engine'] = { count: 0, on: 0 };
+                initStruct(actions.eden.eden_asphodel.soul_engine);
                 return true;
             }
             return false;
@@ -14424,7 +14427,7 @@ const techs = {
         effect(){ return loc('tech_asphodel_mech_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.eden['mech_station'] = { count: 0, mode: 3, mechs: 0, effect: 0 };
+                initStruct(actions.eden.eden_asphodel.mech_station);
                 return true;
             }
             return false;
@@ -14445,7 +14448,7 @@ const techs = {
         effect(){ return loc('tech_asphodel_storage_effect',[global.resource.Asphodel_Powder.name]); },
         action(){
             if (payCosts($(this)[0])){
-                global.eden['warehouse'] = { count: 0 };
+                initStruct(actions.eden.eden_asphodel.warehouse);
                 return true;
             }
             return false;
@@ -14466,7 +14469,7 @@ const techs = {
         effect(){ return loc('tech_asphodel_stabilizer_effect',[global.resource.Asphodel_Powder.name]); },
         action(){
             if (payCosts($(this)[0])){
-                global.eden['stabilizer'] = { count: 0 };
+                initStruct(actions.eden.eden_asphodel.stabilizer);
                 return true;
             }
             return false;
@@ -14487,7 +14490,7 @@ const techs = {
         effect(){ return loc('tech_edenic_bunker_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.eden['bunker'] = { count: 0, on: 0 };
+                initStruct(actions.eden.eden_asphodel.bunker);
                 return true;
             }
             return false;
@@ -14508,7 +14511,7 @@ const techs = {
         effect(){ return loc('tech_bliss_den_effect',[global.resource.Asphodel_Powder.name]); },
         action(){
             if (payCosts($(this)[0])){
-                global.eden['bliss_den'] = { count: 0, on: 0 };
+                initStruct(actions.eden.eden_asphodel.bliss_den);
                 return true;
             }
             return false;
@@ -14529,7 +14532,7 @@ const techs = {
         effect(){ return loc('tech_hallowed_housing_effect',[loc(`job_priest`),loc('eden_asphodel_name')]); },
         action(){
             if (payCosts($(this)[0])){
-                global.eden['rectory'] = { count: 0, on: 0 };
+                initStruct(actions.eden.eden_asphodel.rectory);
                 return true;
             }
             return false;
@@ -14550,8 +14553,8 @@ const techs = {
         effect(){ return loc('tech_outer_plane_study_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.eden['rune_gate'] = { count: 0 };
-                global.eden['rune_gate_open'] = { count: 0, on: 0 };
+                initStruct(actions.eden.eden_asphodel.rune_gate);
+                initStruct(actions.eden.eden_asphodel.rune_gate_open);
                 return true;
             }
             return false;
@@ -14682,7 +14685,7 @@ const techs = {
         effect(){ return loc('tech_elysanite_mining_effect',[global.resource.Elysanite.name]); },
         action(){
             if (payCosts($(this)[0])){
-                global.eden['elysanite_mine'] = { count: 0, on: 0 };
+                initStruct(actions.eden.eden_elysium.elysanite_mine);
                 global.resource.Elysanite.display = true;
                 return true;
             }
@@ -14704,7 +14707,7 @@ const techs = {
         effect(){ return loc('tech_sacred_smelter_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.eden['sacred_smelter'] = { count: 0, on: 0 };
+                initStruct(actions.eden.eden_elysium.sacred_smelter);
                 return true;
             }
             return false;
@@ -14725,7 +14728,7 @@ const techs = {
         effect(){ return loc('tech_fire_support_base_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.eden['fire_support_base'] = { count: 0, on: 0 };
+                initStruct(actions.eden.eden_elysium.fire_support_base);
                 return true;
             }
             return false;
@@ -14746,7 +14749,7 @@ const techs = {
         effect(){ return loc('tech_pillbox_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.eden['pillbox'] = { count: 0, on: 0, staffed: 0 };
+                initStruct(actions.eden.eden_elysium.pillbox);
                 return true;
             }
             return false;
@@ -14792,7 +14795,7 @@ const techs = {
         effect(){ return loc('tech_elerium_containment_effect',[global.resource.Elerium.name]); },
         action(){
             if (payCosts($(this)[0])){
-                initStruct(actions.space.spc_dwarf.elerium_containment);
+                initStruct(actions.eden.eden_elysium.elerium_containment);
                 return true;
             }
             return false;
@@ -14813,7 +14816,7 @@ const techs = {
         effect(){ return loc('tech_ambrosia_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.eden['restaurant'] = { count: 0, on: 0 };
+                initStruct(actions.eden.eden_elysium.restaurant);
                 return true;
             }
             return false;
@@ -14834,7 +14837,7 @@ const techs = {
         effect(){ return loc('tech_eternal_bank_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.eden['eternal_bank'] = { count: 0 };
+                initStruct(actions.eden.eden_elysium.eternal_bank);
                 return true;
             }
             return false;
@@ -14855,7 +14858,7 @@ const techs = {
         effect(){ return loc('tech_wisdom_effect',[loc('eden_elysium_name')]); },
         action(){
             if (payCosts($(this)[0])){
-                global.eden['archive'] = { count: 0, on: 0 };
+                initStruct(actions.eden.eden_elysium.archive);
                 return true;
             }
             return false;
@@ -14876,7 +14879,7 @@ const techs = {
         effect(){ return loc('tech_rushmore_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.eden['rushmore'] = { count: 0 };
+                initStruct(actions.eden.eden_elysium.rushmore);
                 return true;
             }
             return false;
@@ -14897,7 +14900,7 @@ const techs = {
         effect(){ return loc('tech_reincarnation_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.eden['reincarnation'] = { count: 0 };
+                initStruct(actions.eden.eden_elysium.reincarnation);
                 return true;
             }
             return false;
@@ -14918,7 +14921,7 @@ const techs = {
         effect(){ return loc('tech_otherworldly_cement_effect',[global.resource.Cement.name]); },
         action(){
             if (payCosts($(this)[0])){
-                global.eden['eden_cement'] = { count: 0, on: 0 };
+                initStruct(actions.eden.eden_elysium.eden_cement);
                 return true;
             }
             return false;
@@ -14939,7 +14942,7 @@ const techs = {
         effect(){ return loc('tech_spirit_syphon_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.eden['spirit_vacuum'] = { count: 0, on: 0 };
+                initStruct(actions.eden.eden_isle.spirit_vacuum);
                 global.eden['palace'] = { energy: 1000000000000, rate: 0 };
                 return true;
             }
@@ -14961,7 +14964,7 @@ const techs = {
         effect(){ return loc('tech_spirit_capacitor_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.eden['spirit_battery'] = { count: 0, on: 0 };
+                initStruct(actions.eden.eden_isle.spirit_battery);
                 return true;
             }
             return false;
@@ -15002,7 +15005,7 @@ const techs = {
         effect(){ return loc('tech_soul_compactor_effect',[global.resource.Soul_Gem.name]); },
         action(){
             if (payCosts($(this)[0])){
-                global.eden['soul_compactor'] = { count: 0, energy: 0, report: 0 };
+                initStruct(actions.eden.eden_isle.soul_compactor);
                 return true;
             }
             return false;
@@ -15023,7 +15026,7 @@ const techs = {
         effect(){ return loc('tech_tomb_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.eden['tomb'] = { count: 0 };
+                initStruct(actions.eden.eden_palace.tomb);
                 return true;
             }
             return false;
@@ -15044,7 +15047,7 @@ const techs = {
         effect(){ return loc('tech_energy_drain_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.eden['conduit'] = { count: 0 };
+                initStruct(actions.eden.eden_palace.conduit);
                 return true;
             }
             return false;
@@ -15065,7 +15068,7 @@ const techs = {
         effect(){ return loc('tech_divine_infuser_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.eden['infuser'] = { count: 0 };
+                initStruct(actions.eden.eden_palace.infuser);
                 return true;
             }
             return false;

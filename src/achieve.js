@@ -2773,6 +2773,10 @@ export function drawStats(){
     if (global.stats.psykill > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_psymurders")}</span> {{ s.psykill | format }}</div>`);
     }
+    if (global.stats.uDead > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_unstable")}</span> {{ s.uDead | format }}</div>`);
+    }
+
     if (global.resource.hasOwnProperty('Thermite') && global.resource.Thermite.amount > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_thermite")}</span> {{ r.Thermite.amount | res }}</div>`);
     }

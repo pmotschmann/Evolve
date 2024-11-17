@@ -1812,7 +1812,7 @@ const spaceProjects = {
                     messageQueue(loc('space_gas_mission_action',[planetName().gas]),'info',false,['progress']);
                     global.settings.space.gas_moon = true;
                     global.settings.space.belt = true;
-                    global.space['space_station'] = { count: 0, on: 0, support: 0, s_max: 0 };
+                    initStruct(actions.space.spc_belt.space_station);
                     return true;
                 }
                 return false;
@@ -2652,7 +2652,7 @@ const interstellarProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     messageQueue(loc('interstellar_alpha_mission_result'),'info',false,['progress']);
-                    initStruct(actions.interstellar.int_proxima.nexus);
+                    initStruct(actions.interstellar.int_nebula.nexus);
                     initStruct(actions.interstellar.int_alpha.warehouse);
                     return true;
                 }

@@ -87,6 +87,12 @@ const outerTruth = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, support: 0, s_max: 0 },
+                    p: ['titan_spaceport','space']
+                };
+            },
             post(){
                 if (global.tech['titan'] === 1){
                     global.tech['titan'] = 2;
@@ -123,6 +129,12 @@ const outerTruth = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, support: 0, s_max: 0 },
+                    p: ['electrolysis','space']
+                };
+            },
             post(){
                 if (global.tech['titan'] === 3){
                     global.tech['titan'] = 4;
@@ -158,6 +170,12 @@ const outerTruth = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['hydrogen_plant','space']
+                };
             }
         },
         titan_quarters: {
@@ -361,6 +379,12 @@ const outerTruth = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['titan_bank','space']
+                };
             }
         },
         g_factory: {
@@ -600,6 +624,12 @@ const outerTruth = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['ai_colonist','space']
+                };
+            },
             flair: loc(`tech_combat_droids_flair`)
         },
         wonder_gardens: {
@@ -699,6 +729,12 @@ const outerTruth = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['water_freighter','space']
+                };
             }
         },
         zero_g_lab: {
@@ -738,6 +774,12 @@ const outerTruth = {
                     return true;
                 }
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['zero_g_lab','space']
+                };
             },
             post(){
                 loadFoundry();
@@ -783,6 +825,12 @@ const outerTruth = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['operating_base','space']
+                };
+            },
             soldiers(){
                 let soldiers = global.race['grenadier'] ? 3 : 4;
                 return jobScale(soldiers);
@@ -819,7 +867,13 @@ const outerTruth = {
                     return true;
                 }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['munitions_depot','space']
+                };
+            },
         }
     },
     spc_triton: {
@@ -5697,7 +5751,7 @@ export function loneSurvivor(){
         global.space['uranium_mine'] = { count: 0, on: 0 };
         global.space['vr_center'] = { count: 0, on: 0 };
         global.space['water_freighter'] = { count: 0, on: 0 };
-        global.space['zero_g_lab'] = { count: 0, on: 0 };
+        initStruct(actions.space.spc_enceladus.zero_g_lab);
         global.space['ziggurat'] = { count: 0 };
 
         global.tauceti['alien_outpost'] = { count: 1, on: 1 };

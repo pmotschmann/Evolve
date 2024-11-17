@@ -263,7 +263,7 @@ const fortressModules = {
             struct(){
                 return {
                     d: { count: 0, on: 0 },
-                    p: ['sensor_drone','attractor']
+                    p: ['sensor_drone','portal']
                 };
             }
         },
@@ -294,7 +294,7 @@ const fortressModules = {
             struct(){
                 return {
                     d: { count: 0, on: 0 },
-                    p: ['war_drone','attractor']
+                    p: ['attractor','portal']
                 };
             }
         },
@@ -2192,7 +2192,7 @@ const fortressModules = {
                     global.settings.eden.asphodel = true;
                     global.settings.spaceTabs = 7;
                     global.resource.Blessed_Essence.display = false;
-                    global.eden['encampment'] = { count: 0, on: 0, support: 0, s_max: 0, asc: false };
+                    initStruct(actions.eden.eden_asphodel.encampment);
                     renderFortress();
                     renderEdenic();
                     return true;
