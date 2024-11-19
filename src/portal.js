@@ -623,8 +623,8 @@ const fortressModules = {
                 if (payCosts($(this)[0])){
                     messageQueue(loc('portal_ruins_mission_result'),'info',false,['progress','hell']);
                     global.portal['stonehedge'] = { count: 0 };
-                    initStruct(actions.portal.prtl_ruins.vault);
-                    initStruct(actions.portal.prtl_ruins.archaeology);
+                    initStruct(fortressModules.prtl_ruins.vault);
+                    initStruct(fortressModules.prtl_ruins.archaeology);
                     return true;
                 }
                 return false;
@@ -1063,7 +1063,7 @@ const fortressModules = {
                     if (global.tech['wtower'] && global.tech['etower'] && !global.tech['hell_lake']){
                         global.tech['hell_lake'] = 1;
                         global.settings.portal.lake = true;
-                        initStruct(actions.portal.prtl_lake.harbor);
+                        initStruct(fortressModules.prtl_lake.harbor);
                         messageQueue(loc('portal_gate_open'),'info',false,['progress','hell']);
                         renderFortress();
                     }
@@ -1454,8 +1454,8 @@ const fortressModules = {
                         global.settings.portal.spire = true;
                         global.settings.showCargo = true;
                         global.tech['hell_spire'] = 1;
-                        initStruct(actions.portal.prtl_spire.purifier);
-                        initStruct(actions.portal.prtl_spire.port);
+                        initStruct(fortressModules.prtl_spire.purifier);
+                        initStruct(fortressModules.prtl_spire.port);
                         messageQueue(loc('portal_transport_unlocked'),'info',false,['progress','hell']);
                         renderFortress();
                     }
@@ -1754,7 +1754,7 @@ const fortressModules = {
                     powerOnNewStruct($(this)[0]);
                     if (global.tech.hell_spire === 3){
                         global.tech.hell_spire = 4;
-                        initStruct(actions.portal.prtl_spire.base_camp);
+                        initStruct(fortressModules.prtl_spire.base_camp);
                         renderFortress();
                     }
                     return true;
@@ -1791,7 +1791,7 @@ const fortressModules = {
                     powerOnNewStruct($(this)[0]);
                     if (global.tech.hell_spire === 4){
                         global.tech.hell_spire = 5;
-                        initStruct(actions.portal.prtl_spire.bridge);
+                        initStruct(fortressModules.prtl_spire.bridge);
                         messageQueue(loc('portal_spire_bridge_collapse'),'info',false,['progress','hell']);
                         renderFortress();
                     }
@@ -1840,7 +1840,7 @@ const fortressModules = {
                 if (global.portal.bridge.count < 10 && payCosts($(this)[0])){
                     incrementStruct('bridge','portal');
                     if (global.portal.bridge.count >= 10){
-                        initStruct(actions.portal.prtl_spire.sphinx);
+                        initStruct(fortressModules.prtl_spire.sphinx);
                         global.tech.hell_spire = 6;
                         renderFortress();
                     }
@@ -1950,8 +1950,8 @@ const fortressModules = {
             effect: loc('portal_spire_survey_effect'),
             action(){
                 if (payCosts($(this)[0])){
-                    initStruct(actions.portal.prtl_spire.mechbay);
-                    initStruct(actions.portal.prtl_spire.spire);
+                    initStruct(fortressModules.prtl_spire.mechbay);
+                    initStruct(fortressModules.prtl_spire.spire);
                     genSpireFloor();
                     messageQueue(loc('portal_spire_survey_msg'),'info',false,['progress','hell']);
                     return true;

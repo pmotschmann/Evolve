@@ -6687,18 +6687,19 @@ export function traitSkin(type, trait, species){
 }
 
 export function hoovedReskin(desc, species=global.race.species){
+    let type = species === global.race.species ? global.race.maintype || races[species].type : races[species].type;
     if (species === 'sludge'){
         return desc ? loc('trait_hooved_slime') : loc('trait_hooved_slime_name');
     }
     else if ([
-        'cath','wolven','dracnid','seraph','cyclops','kobold','tuskin','sharkin'
+        'cath','wolven','dracnid','seraph','cyclops','kobold','tuskin','sharkin','beholder','djinn'
         ].includes(species)){
         return desc ? loc(`trait_hooved_${species}`) : loc(`trait_hooved_${species}_name`);
     }
     else if ([
         'humanoid','avian','plant','fungi','reptilian','fey','synthetic'
-        ].includes(races[species].type)){
-        return desc ? loc(`trait_hooved_${races[species].type}`) : loc(`trait_hooved_${races[species].type}_name`);
+        ].includes(type)){
+        return desc ? loc(`trait_hooved_${type}`) : loc(`trait_hooved_${type}_name`);
     }
     else {
         return desc ? traits['hooved'].desc : traits['hooved'].name;

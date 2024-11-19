@@ -1131,9 +1131,9 @@ const outerTruth = {
             },
             action(){
                 if (payCosts($(this)[0])){
-                    initStruct(actions.space.spc_kuiper.orichalcum_mine);
-                    initStruct(actions.space.spc_kuiper.uranium_mine);
-                    initStruct(actions.space.spc_kuiper.neutronium_mine);
+                    initStruct(outerTruth.spc_kuiper.orichalcum_mine);
+                    initStruct(outerTruth.spc_kuiper.uranium_mine);
+                    initStruct(outerTruth.spc_kuiper.neutronium_mine);
                     global.space.syndicate['spc_kuiper'] = 500;
                     messageQueue(loc('space_kuiper_mission_action'),'info',false,['progress']);
                     return true;
@@ -1726,8 +1726,8 @@ const tauCetiModules = {
             effect(){ return loc('tau_new_mission_effect',[races[global.race.species].home]); },
             action(){
                 if (payCosts($(this)[0])){
-                    initStruct(actions.tauceti.tau_home.colony);
-                    initStruct(actions.tauceti.tau_home.mining_pit);
+                    initStruct(tauCetiModules.tau_home.colony);
+                    initStruct(tauCetiModules.tau_home.mining_pit);
                     messageQueue(loc('tau_home_mission_result',[races[global.race.species].home]),'info',false,['progress']);
                     return true;
                 }
@@ -3286,6 +3286,12 @@ const tauCetiModules = {
                 }
                 return false;
             },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['refueling_station','tauceti']
+                };
+            },
             post(){
                 if (global.tech.tau_gas === 2){
                     global.tech.tau_gas = 3;
@@ -3641,7 +3647,7 @@ const tauCetiModules = {
             effect(){ return loc('tau_gas2_alien_station_repair_effect',[tauCetiModules.tau_gas2.info.name()]); },
             action(){
                 if (payCosts($(this)[0])){
-                    initStruct(actions.tauceti.tau_gas2.alien_station);
+                    initStruct(tauCetiModules.tau_gas2.alien_station);
                     messageQueue(loc('tau_gas2_alien_station_msg',[tauCetiModules.tau_gas2.info.name()]),'info',false,['progress']);
                     return true;
                 }
@@ -3891,7 +3897,7 @@ for (let i=1; i<9; i++){
         action(){
             if (payCosts($(this)[0])){
                 global.race['gas_name'] = i;
-                global.tauceti['refueling_station'] = { count: 0, on: 0 };
+                initStruct(tauCetiModules.tauceti.tau_gas.refueling_station);
                 return true;
             }
             return false;
@@ -3939,10 +3945,10 @@ function edenProjection(){
 }
 
 function defineWomlings(){
-    initStruct(actions.tauceti.tau_red.overseer);
-    initStruct(actions.tauceti.tau_red.womling_village);
-    initStruct(actions.tauceti.tau_red.womling_mine);
-    initStruct(actions.tauceti.tau_red.womling_fun);
+    initStruct(tauCetiModules.tau_red.overseer);
+    initStruct(tauCetiModules.tau_red.womling_village);
+    initStruct(tauCetiModules.tau_red.womling_mine);
+    initStruct(tauCetiModules.tau_red.womling_fun);
     if (global.race['lone_survivor']){
         global.tauceti.womling_village.count = 2;
         global.tauceti.womling_village.on = 2;
@@ -5592,8 +5598,8 @@ export function jumpGateShutdown(){
         }
     }
 
-    initStruct(actions.tauceti.tau_home.tauceti_casino);
-    initStruct(actions.tauceti.tau_home.tau_housing);
+    initStruct(tauCetiModules.tau_home.tauceti_casino);
+    initStruct(tauCetiModules.tau_home.tau_housing);
     
     let pop = support_on['colony'] * tauCetiModules.tau_home.colony.citizens();
     if (global.resource[global.race.species].amount > pop){ global.resource[global.race.species].amount = pop; }
@@ -5979,85 +5985,86 @@ export function loneSurvivor(){
         initStruct(actions.city.warehouse);
         initStruct(actions.city.wharf);
 
-        global.space['ai_colonist'] = { count: 0, on: 0 };
+        initStruct(actions.space.spc_belt.elerium_ship);
+        initStruct(actions.space.spc_belt.iridium_ship);
+        initStruct(actions.space.spc_belt.iron_ship);
+        initStruct(actions.space.spc_belt.space_station);
+        initStruct(actions.space.spc_dwarf.e_reactor);
+        initStruct(actions.space.spc_dwarf.elerium_contain);
+        initStruct(actions.space.spc_dwarf.mass_relay); global.space.mass_relay.count = 100;
+        initStruct(actions.space.spc_dwarf.shipyard);
+        initStruct(actions.space.spc_enceladus.munitions_depot);
+        initStruct(actions.space.spc_enceladus.operating_base);
+        initStruct(actions.space.spc_enceladus.water_freighter);
+        initStruct(actions.space.spc_enceladus.zero_g_lab);
+        initStruct(actions.space.spc_eris.digsite);
+        initStruct(actions.space.spc_eris.drone_control);
+        initStruct(actions.space.spc_eris.shock_trooper);
+        initStruct(actions.space.spc_eris.tank);
+        initStruct(actions.space.spc_gas.gas_mining);
+        initStruct(actions.space.spc_gas.gas_storage);
+        initStruct(actions.space.spc_gas_moon.drone);
+        initStruct(actions.space.spc_gas_moon.oil_extractor);
+        initStruct(actions.space.spc_gas_moon.outpost);
+        initStruct(actions.space.spc_hell.geothermal);
+        initStruct(actions.space.spc_hell.hell_smelter);
+        initStruct(actions.space.spc_hell.spc_casino);
+        initStruct(actions.space.spc_hell.swarm_plant);
+        initStruct(actions.space.spc_home.gps);
+        initStruct(actions.space.spc_home.nav_beacon);
+        initStruct(actions.space.spc_home.propellant_depot);
+        initStruct(actions.space.spc_home.satellite);
+        initStruct(actions.space.spc_kuiper.elerium_mine);
+        initStruct(actions.space.spc_kuiper.neutronium_mine);
+        initStruct(actions.space.spc_kuiper.orichalcum_mine);
+        initStruct(actions.space.spc_kuiper.uranium_mine);
+        initStruct(actions.space.spc_moon.helium_mine);
+        initStruct(actions.space.spc_moon.iridium_mine);
+        initStruct(actions.space.spc_moon.moon_base);
+        initStruct(actions.space.spc_moon.observatory);
+        initStruct(actions.space.spc_red.biodome);
+        initStruct(actions.space.spc_red.exotic_lab);
+        initStruct(actions.space.spc_red.fabrication);
+        initStruct(actions.space.spc_red.garage);
+        initStruct(actions.space.spc_red.living_quarters);
+        initStruct(actions.space.spc_red.red_factory);
+        initStruct(actions.space.spc_red.red_mine);
+        initStruct(actions.space.spc_red.red_tower);
+        initStruct(actions.space.spc_red.space_barracks);
+        initStruct(actions.space.spc_red.spaceport);
+        initStruct(actions.space.spc_red.vr_center);
+        initStruct(actions.space.spc_red.ziggurat);
+        initStruct(actions.space.spc_sun.swarm_control);
+        initStruct(actions.space.spc_sun.swarm_satellite);
+        initStruct(actions.space.spc_titan.ai_colonist);
+        initStruct(actions.space.spc_titan.decoder);
+        initStruct(actions.space.spc_titan.electrolysis);
+        initStruct(actions.space.spc_titan.g_factory);
+        initStruct(actions.space.spc_titan.hydrogen_plant);
+        initStruct(actions.space.spc_titan.storehouse);
+        initStruct(actions.space.spc_titan.titan_bank);
+        initStruct(actions.space.spc_titan.titan_mine);
+        initStruct(actions.space.spc_titan.titan_quarters);
+        initStruct(actions.space.spc_titan.titan_spaceport);
+        initStruct(actions.space.spc_triton.crashed_ship); global.space.crashed_ship.count = 100;
+        initStruct(actions.space.spc_triton.fob);
+        initStruct(actions.space.spc_triton.lander);
+
+        initStruct(actions.tauceti.tau_gas.refueling_station);
+        initStruct(actions.tauceti.tau_home.alien_outpost); global.tauceti.alien_outpost.count = 1; global.tauceti.alien_outpost.on = 1;
+        initStruct(actions.tauceti.tau_home.colony); global.tauceti.colony.count = 1; global.tauceti.colony.on = 1;
+        initStruct(actions.tauceti.tau_home.fusion_generator); global.tauceti.fusion_generator.count = 1; global.tauceti.fusion_generator.on = 1;
+        initStruct(actions.tauceti.tau_home.infectious_disease_lab);
+        initStruct(actions.tauceti.tau_home.mining_pit); global.tauceti.mining_pit.count = 1; global.tauceti.mining_pit.on = 1;
+        initStruct(actions.tauceti.tau_home.orbital_station); global.tauceti.orbital_station.count = 1; global.tauceti.orbital_station.on = 1;
+        initStruct(actions.tauceti.tau_home.repository); global.tauceti.repository.count = 2;
+        initStruct(actions.tauceti.tau_home.tauceti_casino);
+        initStruct(actions.tauceti.tau_red.orbital_platform);
+
         global.space['ai_core'] = { count: 100 };
         global.space['ai_core2'] = { count: 0, on: 0 };
-        global.space['biodome'] = { count: 0, on: 0 };
-        global.space['crashed_ship'] = { count: 100 };
-        global.space['decoder'] = { count: 0, on: 0 };
-        global.space['digsite'] = { count: 0 };
-        global.space['drone'] = { count: 0 };
-        global.space['drone_control'] = { count: 0, on: 0 };
-        global.space['e_reactor'] = { count: 0, on: 0 };
-        global.space['electrolysis'] = { count: 0, on: 0, support: 0, s_max: 0 };
-        global.space['elerium_contain'] = { count: 0, on: 0 };
-        global.space['elerium_mine'] = { count: 0, on: 0 };
-        global.space['elerium_ship'] = { count: 0, on: 0 };
-        global.space['exotic_lab'] = { count: 0, on: 0 };
-        global.space['fabrication'] = { count: 0, on: 0 };
-        global.space['fob'] = { count: 0, on: 0, troops: 0, enemy: 0 };
-        global.space['g_factory'] = { count: 0, on: 0, Lumber: 0, Coal: 0, Oil: 0 };
-        global.space['garage'] = { count: 0 };
-        global.space['gas_mining'] = { count: 0, on: 0 };
-        global.space['gas_storage'] = { count: 0 };
-        global.space['geothermal'] = { count: 0, on: 0 };
-        global.space['gps'] = { count: 0 };
-        global.space['helium_mine'] = { count: 0, on: 0 };
-        global.space['hell_smelter'] = { count: 0, on: 0 };
-        global.space['hydrogen_plant'] = { count: 0, on: 0 };
-        global.space['iridium_mine'] = { count: 0, on: 0 };
-        global.space['iridium_ship'] = { count: 0, on: 0 };
-        global.space['iron_ship'] = { count: 0, on: 0 };
-        global.space['lander'] = { count: 0, on: 0 };
-        global.space['living_quarters'] = { count: 0, on: 0 };
         global.space['m_relay'] = { count: 0, on: 0 };
-        global.space['mass_relay'] = { count: 100 };
-        global.space['moon_base'] = { count: 0, on: 0, support: 0, s_max: 0 };
-        global.space['munitions_depot'] = { count: 0 };
-        global.space['nav_beacon'] = { count: 0, on: 0 };
-        global.space['neutronium_mine'] = { count: 0, on: 0 };
-        global.space['observatory'] = { count: 0, on: 0 };
-        global.space['oil_extractor'] = { count: 0, on: 0 };
-        global.space['operating_base'] = { count: 0, on: 0 };
-        global.space['orichalcum_mine'] = { count: 0, on: 0 };
-        global.space['outpost'] = { count: 0, on: 0 };
-        global.space['propellant_depot'] = { count: 0 };
-        global.space['red_factory'] = { count: 0, on: 0 };
-        global.space['red_mine'] = { count: 0, on: 0 };
-        global.space['red_tower'] = { count: 0, on: 0 };
-        global.space['satellite'] = { count: 0 };
-        global.space['shipyard'] = { count: 0, on: 0, ships: [], expand: false, sort: true };
-        global.space['shock_trooper'] = { count: 0, on: 0 };
-        global.space['space_barracks'] = { count: 0, on: 0 };
-        global.space['space_station'] = { count: 0, on: 0, support: 0, s_max: 0 };
-        global.space['spaceport'] = { count: 0, on: 0, support: 0, s_max: 0 };
-        global.space['spc_casino'] = { count: 0, on: 0 };
-        global.space['storehouse'] = { count: 0 };
-        global.space['swarm_control'] = { count: 0, support: 0, s_max: 0 };
-        global.space['swarm_plant'] = { count: 0 };
-        global.space['swarm_satellite'] = { count: 0 };
-        global.space['tank'] = { count: 0, on: 0 };
-        global.space['titan_bank'] = { count: 0 };
-        global.space['titan_mine'] = { count: 0, on: 0 };
-        global.space['titan_quarters'] = { count: 0, on: 0 };
-        global.space['titan_spaceport'] = { count: 0, on: 0, support: 0, s_max: 0 };
-        global.space['uranium_mine'] = { count: 0, on: 0 };
-        global.space['vr_center'] = { count: 0, on: 0 };
-        global.space['water_freighter'] = { count: 0, on: 0 };
-        initStruct(actions.space.spc_enceladus.zero_g_lab);
-        global.space['ziggurat'] = { count: 0 };
-
-        global.tauceti['alien_outpost'] = { count: 1, on: 1 };
-        global.tauceti['colony'] = { count: 1, on: 1 };
-        global.tauceti['fusion_generator'] = { count: 1, on: 1 };
-        global.tauceti['infectious_disease_lab'] = { count : 0, on: 0, cure: 0 };
-        global.tauceti['mining_pit'] = { count: 1, on: 1 };
-        global.tauceti['orbital_platform'] = { count: 0, on: 0, support: 0, s_max: 0 };
-        global.tauceti['orbital_station'] = { count: 1, on: 1, support: 0, s_max: 0 };
-        global.tauceti['refueling_station'] = { count: 0, on: 0 };
-        global.tauceti['repository'] = { count: 2 };
-        global.tauceti['tauceti_casino'] = { count: 0, on: 0 };
-
+        
         global.civic['garrison'] = {
             display: true,
             disabled: false,

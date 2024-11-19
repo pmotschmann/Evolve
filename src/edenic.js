@@ -1211,8 +1211,8 @@ const edenicModules = {
                     if (global.eden.enemy_isle.wt === 0 && global.eden.enemy_isle.g === 0 && global.eden.enemy_isle.et === 0){
                         global.tech.isle = 2;
                         global.settings.eden.palace = true;
-                        initStruct(actions.eden.eden_elysium.north_pier);
-                        initStruct(actions.eden.eden_isle.south_pier);
+                        initStruct(edenicModules.eden_elysium.north_pier);
+                        initStruct(edenicModules.eden_isle.south_pier);
                         drawTech();
                         renderEdenic();
                         return true;

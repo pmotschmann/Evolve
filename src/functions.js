@@ -2957,6 +2957,7 @@ function getTraitVals(trait, rank, species){
 }
 
 export function hoovedRename(style, species=global.race.species){
+    let type = species === global.race.species ? global.race.maintype || races[species].type : races[species].type;
     if (species === 'sludge'){
         return style ? 'craft' : loc('resource_Beaker_name');
     }
@@ -2983,6 +2984,12 @@ export function hoovedRename(style, species=global.race.species){
     }
     else if (species === 'sharkin'){
         return style ? 'craft' : loc('resource_ToothSharpener_name');
+    }
+    else if (species === 'beholder'){
+        return style ? 'craft' : loc('resource_ContactLens_name');
+    }
+    else if (species === 'djinn'){
+        return style ? 'craft' : loc('resource_Bottle_name');
     }
     else if (races[species].type === 'humanoid'){
         return style ? 'craft' : loc('resource_Sandals_name');
