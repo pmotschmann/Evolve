@@ -7391,7 +7391,7 @@ const techs = {
     },
     bows: {
         id: 'tech-bows',
-        title: loc('tech_bows'),
+        title(){ return global.race['blubber'] ? loc('tech_harpoon') : loc('tech_bows'); },
         desc: loc('tech_bows_desc'),
         category: 'military',
         era: 'civilized',
@@ -7401,7 +7401,7 @@ const techs = {
             Knowledge(){ return 225; },
             Lumber(){ return 250; }
         },
-        effect: loc('tech_bows_effect'),
+        effect(){ return global.race['blubber'] ? loc('tech_harpoon_effect') : loc('tech_bows_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 return true;

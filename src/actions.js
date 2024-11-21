@@ -5049,7 +5049,7 @@ const raceList = [
     'seraph','unicorn',
     'synth','nano',
     'ghast','shoggoth',
-    'dwarf','raccoon','lichen','wyvern','beholder','djinn','penguin','bombardier','nephilim',
+    'dwarf','raccoon','lichen','wyvern','beholder','djinn','narwhal','bombardier','nephilim',
     'custom','hybrid'
 ];
 raceList.forEach(function(race){
@@ -7376,7 +7376,7 @@ function checkMaxCosts(costs){
             }
         }
         else if (res === 'Supply'){
-            if (global.portal.purifier.sup_max < Number(costs[res]())){
+            if (!global.portal.hasOwnProperty('purifier') || global.portal.purifier.sup_max < Number(costs[res]())){
                 test = false;
                 return;
             }
@@ -7450,7 +7450,7 @@ export function checkCosts(costs){
             }
         }
         else if (res === 'Supply'){
-            if (global.portal.purifier.supply < Number(costs[res]())){
+            if (!global.portal.hasOwnProperty('purifier') || global.portal.purifier.supply < Number(costs[res]())){
                 test = false;
                 return;
             }

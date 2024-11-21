@@ -2222,6 +2222,11 @@ export function armyRating(val,type,wound){
             army *= 1 + (hunt / 100);
         }
     }
+    if (global.race['tusk']){
+        let bonus = traits.tusk.vars()[1] / 100;
+        if (type === 'hellArmy'){ bonus /= 2; }
+        army *= 1 + bonus;
+    }
     if (global.race['grenadier']){
         army *= 1 + (traits.grenadier.vars()[0] / 100);
     }

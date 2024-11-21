@@ -4,7 +4,7 @@ import { defineIndustry } from './industry.js';
 import { setJobName, jobScale, loadFoundry } from './jobs.js';
 import { vBind, clearElement, popover, removeFromQueue, removeFromRQueue, calc_mastery, gameLoop, getEaster, getHalloween, randomKey, modRes, messageQueue } from './functions.js';
 import { setResourceName, atomic_mass } from './resources.js';
-import { buildGarrison, govEffect, govTitle } from './civics.js';
+import { buildGarrison, govEffect, govTitle, armyRating } from './civics.js';
 import { govActive, removeTask, defineGovernor } from './governor.js';
 import { unlockAchieve, unlockFeat, alevel } from './achieve.js';
 import { highPopAdjust, teamster } from './prod.js';
@@ -3701,15 +3701,65 @@ export const traits = {
             }
         }
     },
-    /*
-    formal: {
-        name: loc('trait_formal_name'),
-        desc: loc('trait_formal'),
+    tusk: {
+        name: loc('trait_tusk_name'),
+        desc: loc('trait_tusk'),
         type: 'major',
-        val: 5,
+        val: 6,
+        vars(r){
+            let moisture = 0;
+            switch (global.city.biome || 'grassland'){
+                case 'oceanic':
+                case 'swamp':
+                    moisture = 30;
+                    break;
+                case 'eden':
+                case 'forest':
+                case 'grassland':
+                case 'savanna':
+                    moisture = 20;
+                    break;
+                case 'tundra':
+                case 'taiga':
+                    moisture = 10;
+                    break;
+                case 'desert':
+                case 'volcanic':
+                case 'ashland':
+                case 'hellscape':
+                    moisture = 0;
+                    break;
+            }
+
+            if (global.city.calendar.weather === 0 && global.city.calendar.temp > 0){
+                moisture += 10;
+            }
+
+            // [Mining based on Attack, Attack Bonus]
+            switch (r || traitRank('tusk') || 1){
+                case 0.25:
+                    return [75,Math.round(moisture * 0.5)];
+                case 0.5:
+                    return [100,Math.round(moisture * 0.75)];
+                case 1:
+                    return [125,Math.round(moisture * 1)];
+                case 2:
+                    return [150,Math.round(moisture * 1.2)];
+                case 3:
+                    return [175,Math.round(moisture * 1.4)];
+                case 4:
+                    return [200,Math.round(moisture * 1.6)];
+            }
+        }
+    },
+    blubber: {
+        name: loc('trait_blubber_name'),
+        desc: loc('trait_blubber'),
+        type: 'major',
+        val: -5,
         vars(r){
             // [???]
-            switch (r || traitRank('formal') || 1){
+            switch (r || traitRank('blubber') || 1){
                 case 0.25:
                     return [1];
                 case 0.5:
@@ -3725,30 +3775,6 @@ export const traits = {
             }
         }
     },
-    butler: {
-        name: loc('trait_butler_name'),
-        desc: loc('trait_butler'),
-        type: 'major',
-        val: 5,
-        vars(r){
-            // [???]
-            switch (r || traitRank('butler') || 1){
-                case 0.25:
-                    return [1];
-                case 0.5:
-                    return [1];
-                case 1:
-                    return [1];
-                case 2:
-                    return [1];
-                case 3:
-                    return [1];
-                case 4:
-                    return [1];
-            }
-        }
-    },
-    */
     ocular_power: {
         name: loc('trait_ocular_power_name'),
         desc: loc('trait_ocular_power'),
@@ -5237,25 +5263,25 @@ export const races = {
         fanaticism: 'wish',
         basic(){ return false; }
     },
-    penguin: {
-        name: loc('race_penguin'),
-        desc: loc('race_penguin_desc'),
+    narwhal: {
+        name: loc('race_narwhal'),
+        desc: loc('race_narwhal_desc'),
         type: 'hybrid',
         hybrid: ['aquatic','polar'],
-        home: loc('race_penguin_home'),
-        entity: loc('race_penguin_entity'),
+        home: loc('race_narwhal_home'),
+        entity: loc('race_narwhal_entity'),
         traits: {
-            //formal: 1,
-            //butler: 1
+            tusk: 1,
+            blubber: 1
         },
         solar: {
-            red: loc('race_penguin_solar_red'),
-            hell: loc('race_penguin_solar_hell'),
-            gas: loc('race_penguin_solar_gas'),
-            gas_moon: loc('race_penguin_solar_gas_moon'),
-            dwarf: loc('race_penguin_solar_dwarf'),
+            red: loc('race_narwhal_solar_red'),
+            hell: loc('race_narwhal_solar_hell'),
+            gas: loc('race_narwhal_solar_gas'),
+            gas_moon: loc('race_narwhal_solar_gas_moon'),
+            dwarf: loc('race_narwhal_solar_dwarf'),
         },
-        fanaticism: '',
+        fanaticism: 'tusk',
         basic(){ return false; }
     },
     bombardier: {
@@ -5702,8 +5728,10 @@ export function racialTrait(workers,type){
             }
         }
     }
-    if (global.race['living_tool'] && type === 'miner'){
-        modifier *= 1 + traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science * 0.12 : 0);
+    if ((global.race['living_tool'] || global.race['tusk']) && type === 'miner'){
+        let tusk = global.race['tusk'] ? 1 + ((traits.tusk.vars()[0] / 100) * (armyRating(jobScale(1),'army',0) / 100)) : 1;
+        let lt = global.race['living_tool'] ? 1 + traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science * 0.12 : 0) : 1;
+        modifier *= lt > tusk ? lt : tusk;
     }
     if (global.race['high_pop']){
         modifier = highPopAdjust(modifier);

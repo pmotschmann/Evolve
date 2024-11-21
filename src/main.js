@@ -5589,9 +5589,11 @@ function fastLoop(){
 
             stone_base *= global.civic.quarry_worker.impact * production('psychic_boost','Stone');
 
-            if (global.race['living_tool']){
+            if (global.race['living_tool'] || global.race['tusk']){
                 // buffed twice with racial trait on purpose
-                stone_base *= traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science * 0.06 : 0) + 1;
+                let lt = global.race['living_tool'] ? traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science * 0.06 : 0) + 1 : 1;
+                let tusk = global.race['tusk'] ? ((traits.tusk.vars()[0] / 100) * (armyRating(jobScale(1),'army',0) / 100)) + 1 : 1;
+                stone_base *= lt > tusk ? lt : tusk;
             }
             else {
                 stone_base *= (global.tech['hammer'] && global.tech['hammer'] > 0 ? global.tech['hammer'] * 0.4 : 0) + 1;
@@ -5956,7 +5958,7 @@ function fastLoop(){
             if (global.city.ptrait.includes('permafrost')){
                 miner_base *= planetTraits.permafrost.vars()[0];
             }
-            if (!global.race['living_tool']){
+            if (!global.race['living_tool'] && !global.race['tusk']){
                 miner_base *= (global.tech['pickaxe'] && global.tech.pickaxe > 0 ? global.tech.pickaxe * 0.15 : 0) + 1;
             }
             if (global.tech['explosives'] && global.tech.explosives >= 2){
@@ -6336,7 +6338,7 @@ function fastLoop(){
                 let bonus = 1 + (traits.resilient.vars()[0] * global.race['resilient'] / 100);
                 coal_base *= bonus;
             }
-            if (!global.race['living_tool']){
+            if (!global.race['living_tool'] && !global.race['tusk']){
                 coal_base *= (global.tech['pickaxe'] && global.tech.pickaxe > 0 ? global.tech.pickaxe * 0.12 : 0) + 1;
             }
             if (global.tech['explosives'] && global.tech.explosives >= 2){
@@ -6953,7 +6955,7 @@ function fastLoop(){
                 miner_base *= racialTrait(miner_base,'miner') * 0.36;
                 miner_base = highPopAdjust(miner_base);
 
-                if (!global.race['living_tool']){
+                if (!global.race['living_tool'] && !global.race['tusk']){
                     miner_base *= (global.tech['pickaxe'] && global.tech.pickaxe > 0 ? global.tech.pickaxe * 0.15 : 0) + 1;
                 }
                 if (global.tech['explosives'] && global.tech.explosives >= 2){

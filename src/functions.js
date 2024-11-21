@@ -2039,7 +2039,8 @@ function lMatAdjust(costs, c_action, offset, wiki){
         let newCosts = {};
         let path = c_action.hasOwnProperty('struct') ? c_action.struct().p : false;
         Object.keys(costs).forEach(function (res){
-            if (path && global[path[1]][path[0]].hasOwnProperty('l_m') && (['Lumber','Furs','Plywood'].includes(res) || (res === 'Stone' && global.race['sappy']))){
+            if (path && global[path[1]].hasOwnProperty(path[0]) && global[path[1]][path[0]].hasOwnProperty('l_m') 
+                && (['Lumber','Furs','Plywood'].includes(res) || (res === 'Stone' && global.race['sappy']))){
                 newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * traits.living_materials.vars()[0] ** (global[path[1]][path[0]].l_m / 25)); }
             }
             else {
