@@ -4,7 +4,7 @@ import { defineIndustry } from './industry.js';
 import { setJobName, jobScale, loadFoundry } from './jobs.js';
 import { vBind, clearElement, popover, removeFromQueue, removeFromRQueue, calc_mastery, gameLoop, getEaster, getHalloween, randomKey, modRes, messageQueue } from './functions.js';
 import { setResourceName, atomic_mass } from './resources.js';
-import { buildGarrison, govEffect, govTitle, armyRating } from './civics.js';
+import { buildGarrison, govEffect, govTitle, armyRating, govCivics } from './civics.js';
 import { govActive, removeTask, defineGovernor } from './governor.js';
 import { unlockAchieve, unlockFeat, alevel } from './achieve.js';
 import { highPopAdjust, teamster } from './prod.js';
@@ -3738,17 +3738,17 @@ export const traits = {
             // [Mining based on Attack, Attack Bonus]
             switch (r || traitRank('tusk') || 1){
                 case 0.25:
-                    return [75,Math.round(moisture * 0.5)];
+                    return [100,Math.round(moisture * 0.5)];
                 case 0.5:
-                    return [100,Math.round(moisture * 0.75)];
+                    return [130,Math.round(moisture * 0.75)];
                 case 1:
-                    return [125,Math.round(moisture * 1)];
+                    return [160,Math.round(moisture * 1)];
                 case 2:
-                    return [150,Math.round(moisture * 1.2)];
+                    return [190,Math.round(moisture * 1.2)];
                 case 3:
-                    return [175,Math.round(moisture * 1.4)];
+                    return [220,Math.round(moisture * 1.4)];
                 case 4:
-                    return [200,Math.round(moisture * 1.6)];
+                    return [250,Math.round(moisture * 1.6)];
             }
         }
     },
@@ -7044,10 +7044,12 @@ function minorWish(parent){
                         }
                         case 'know':
                         {
-                            global.resource.Knowledge.amount += Math.floor(seededRandom(global.resource.Knowledge.max / 5,global.resource.Knowledge.max / 2));
+                            let gain = Math.floor(seededRandom(global.resource.Knowledge.max / 5,global.resource.Knowledge.max / 2));
+                            global.resource.Knowledge.amount += gain;
                             if (global.resource.Knowledge.amount > global.resource.Knowledge.max){
                                 global.resource.Knowledge.amount = global.resource.Knowledge.max;
                             }
+                            messageQueue(loc('wish_know',[global.resource.Knowledge.name,sizeApproximation(gain)]),'warning',false,['events']);
                             break;
                         }
                         case 'science':
@@ -7110,6 +7112,7 @@ function minorWish(parent){
                         {
                             global.race.wishStats.tax = 5;
                             global.civic.taxes.rax_rate = govCivics('tax_cap');
+                            messageQueue(loc('wish_taxes'),'warning',false,['events']);
                             break;
                         }
                         case 'robbery':
@@ -7689,7 +7692,7 @@ function majorWish(parent){
                     switch (spell){
                         case 'priest':
                         {
-                            if (global.tech['cleric'] && global.civic.priest.display && global.race.wishStats.priest < 25){
+                            if (global.civic.priest.display && global.race.wishStats.priest < 25){
                                 global.race.wishStats.priest++;
                                 messageQueue(loc('wish_priest'),'warning',false,['events']);
                             }

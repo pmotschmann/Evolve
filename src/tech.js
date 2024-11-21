@@ -6865,7 +6865,7 @@ const techs = {
         category: 'mining',
         era: 'civilized',
         reqs: { mining: 2 },
-        not_trait: ['cataclysm','living_tool'],
+        not_trait: ['cataclysm','living_tool','tusk'],
         grant: ['pickaxe',1],
         cost: {
             Knowledge(){ return 675; },
@@ -6886,7 +6886,7 @@ const techs = {
         category: 'mining',
         era: 'civilized',
         reqs: { pickaxe: 1, mining: 3 },
-        not_trait: ['cataclysm','living_tool'],
+        not_trait: ['cataclysm','living_tool','tusk'],
         grant: ['pickaxe',2],
         cost: {
             Knowledge(){ return global.city.ptrait.includes('unstable') ? 1600 : 3200; },
@@ -6907,7 +6907,7 @@ const techs = {
         category: 'mining',
         era: 'discovery',
         reqs: { pickaxe: 2, smelting: 2 },
-        not_trait: ['living_tool'],
+        not_trait: ['living_tool','tusk'],
         grant: ['pickaxe',3],
         cost: {
             Knowledge(){ return 9000; },
@@ -6928,7 +6928,7 @@ const techs = {
         category: 'mining',
         era: 'discovery',
         reqs: { pickaxe: 3, high_tech: 2 },
-        not_trait: ['living_tool'],
+        not_trait: ['living_tool','tusk'],
         grant: ['pickaxe',4],
         cost: {
             Knowledge(){ return 22500; },
@@ -6949,7 +6949,7 @@ const techs = {
         category: 'mining',
         era: 'globalized',
         reqs: { pickaxe: 4, high_tech: 4 },
-        not_trait: ['living_tool'],
+        not_trait: ['living_tool','tusk'],
         grant: ['pickaxe',5],
         cost: {
             Knowledge(){ return 67500; },
@@ -6971,7 +6971,7 @@ const techs = {
         category: 'mining',
         era: 'interstellar',
         reqs: { pickaxe: 5, alpha: 2 },
-        not_trait: ['living_tool'],
+        not_trait: ['living_tool','tusk'],
         grant: ['pickaxe',6],
         cost: {
             Knowledge(){ return 535000; },
@@ -6992,7 +6992,7 @@ const techs = {
         category: 'mining',
         era: 'existential',
         reqs: { pickaxe: 6, elysium: 7 },
-        not_trait: ['living_tool'],
+        not_trait: ['living_tool','tusk'],
         grant: ['pickaxe',7],
         cost: {
             Knowledge(){ return 97500000; },
