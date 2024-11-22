@@ -1220,7 +1220,7 @@ if (convertVersion(global['version']) <= 104000){
 
 global['version'] = '1.4.0';
 delete global['revision'];
-global['beta'] = 12;
+global['beta'] = 13;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
@@ -1533,6 +1533,15 @@ export function setupStats(){
             b3: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
             b4: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
             b5: { l: false, h: false, a: false, e: false, m: false, mg: false }
+        };
+    }
+    if (!global.stats.hasOwnProperty('death_tour')){
+        global.stats['death_tour'] = {
+            ct: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 }, 
+            bh: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 }, 
+            di: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 }, 
+            ai: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 }, 
+            vc: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 }
         };
     }
 }

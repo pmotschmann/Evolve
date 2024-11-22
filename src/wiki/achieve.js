@@ -169,7 +169,10 @@ function achieveDesc(achievement,showFlair,universe){
                 return 0;
             }            
         }).forEach(function (key){
-            if (key !== 'protoplasm' && (key !== 'custom' || (key === 'custom' && global.stats.achieve['ascended']))){
+            if (key !== 'protoplasm' 
+                && (key !== 'custom' || (key === 'custom' && global.stats.achieve['ascended']))
+                && (key !== 'hybrid' || (key === 'hybrid' && global.stats.achieve['what_is_best']))
+            ){
                 if (global.stats.achieve[`extinct_${key}`] 
                     && (
                         achievement === 'mass_extinction'
@@ -207,12 +210,14 @@ function achieveDesc(achievement,showFlair,universe){
     else if (achievement === 'creator' || achievement === 'heavyweight'){
         let genus = `<div class="flexed">`;
         Object.keys(genus_traits).sort().forEach(function (key){
-            let label = ['carnivore','herbivore','omnivore'].includes(key) ? loc(`evo_${key}_title`) : loc(`genelab_genus_${key}`);
-            if (achievement === 'creator' ? global.stats.achieve[`genus_${key}`] && global.stats.achieve[`genus_${key}`][uAffix] >= 0 : global.stats.achieve[`genus_${key}`] && global.stats.achieve[`genus_${key}`].h >= 0){
-                genus = genus + `<span class="wide iclr${achievement === 'creator' ? global.stats.achieve[`genus_${key}`][uAffix] : global.stats.achieve[`genus_${key}`].h}">${label}</span>`;
-            }
-            else {
-                genus = genus + `<span class="wide has-text-danger">${label}</span>`;
+            if (key !== 'hybrid'){
+                let label = ['carnivore','herbivore','omnivore'].includes(key) ? loc(`evo_${key}_title`) : loc(`genelab_genus_${key}`);
+                if (achievement === 'creator' ? global.stats.achieve[`genus_${key}`] && global.stats.achieve[`genus_${key}`][uAffix] >= 0 : global.stats.achieve[`genus_${key}`] && global.stats.achieve[`genus_${key}`].h >= 0){
+                    genus = genus + `<span class="wide iclr${achievement === 'creator' ? global.stats.achieve[`genus_${key}`][uAffix] : global.stats.achieve[`genus_${key}`].h}">${label}</span>`;
+                }
+                else {
+                    genus = genus + `<span class="wide has-text-danger">${label}</span>`;
+                }
             }
         });
         genus = genus + `</div>`;
@@ -403,6 +408,34 @@ function featDesc(feat,showFlair){
         popover(`f-${feat}`,$(`<div class="wide has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${checked}${flair}`),{
             wide: true
         });
+    }
+    else if (feat === 'grand_death_tour'){
+        let path = `<div class="flexed">`;
+        let map = {
+            ct: 'wiki_resets_cataclysm', 
+            bh: 'wiki_resets_blackhole', 
+            di: 'wiki_resets_infusion', 
+            ai: 'wiki_resets_ai', 
+            vc: 'wiki_resets_vacuum'
+        };
+        ['ct','bh','di','ai','vc'].forEach(function (key){
+            let reset = 0;
+            Object.keys(global.stats.death_tour).forEach(function(k){
+                if (global.stats.death_tour[k] > reset){
+                    reset = global.stats.death_tour[k];
+                }
+            });
+
+            let label = loc(map[key]);
+            if (reset >= 1){
+                path += `<span class="wide10 iclr${reset}">${label}</span>`;
+            }
+            else {
+                path += `<span class="wide10 has-text-danger">${label}</span>`;
+            }
+        });
+        path += `</div>`;
+        popover(`f-${feat}`,$(`<div class="wide has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${path}${flair}`),{ wide: true, classes: 'w25' });
     }
     else {
         popover(`f-${feat}`,$(`<div class="has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${flair}`));

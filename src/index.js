@@ -1228,6 +1228,7 @@ export function index(){
         {i: 'turtle',       f: 'finish_line',       r: 2 },
         {i: 'floppy',       f: 'digital_ascension', r: 2 },
         {i: 'slime',        f: 'slime_lord',        r: 2 },
+        {i: 'sludge',       f: 'grand_death_tour',  r: 2 },
         {i: 'lightning',    f: 'annihilation',      r: 2 },
         {i: 'trophy',       f: 'wish',              r: 2 },
         {i: 'heart',        f: 'valentine',         r: 1 },

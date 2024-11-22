@@ -8,6 +8,7 @@ export const changeList = [
         changes: [
             `Push past the Spire and invade the Edenic Realms.`,
             `Added new CRISPR upgrade Bureaucratic Efficiency.`,
+            `The Grand Death Tour is available after completing Apotheosis.`,
             `Custom Race lab now allows player to set a desired fanaticism trait.`,
             `You can no longer have more then 10 negative traits on a custom.`,
             `Truepath Ships can now be queued for construction.`,

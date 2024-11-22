@@ -178,6 +178,8 @@ export const traits = {
         val: 3,
         vars(r){ 
             switch (r || traitRank('adaptable') || 1){
+                case 0.1:
+                    return [2];
                 case 0.25:
                     return [3];
                 case 0.5:
@@ -200,6 +202,8 @@ export const traits = {
         val: -3,
         vars(r){ 
             switch (r || traitRank('wasteful') || 1){
+                case 0.1:
+                    return [16];
                 case 0.25:
                     return [14];
                 case 0.5:
@@ -229,6 +233,8 @@ export const traits = {
         vars(r){ 
             // [Rot Percent]
             switch (r || traitRank('carnivore') || 1){
+                case 0.1:
+                    return [70];
                 case 0.25:
                     return [65];
                 case 0.5:
@@ -252,6 +258,8 @@ export const traits = {
         vars(r){
             // [Hunting, Windy Hunting, Training Speed]
             switch (r || traitRank('beast') || 1){
+                case 0.1:
+                    return [3,6,3];
                 case 0.25:
                     return [4,8,4];
                 case 0.5:
@@ -274,6 +282,8 @@ export const traits = {
         val: -2,
         vars(r){ 
             switch (r || traitRank('cautious') || 1){
+                case 0.1:
+                    return [16];
                 case 0.25:
                     return [14];
                 case 0.5:
@@ -303,6 +313,8 @@ export const traits = {
         vars(r){
             // [Surveyor Survival Boost, Reduce Combat Deaths %]
             switch (r || traitRank('instinct') || 1){
+                case 0.1:
+                    return [2,10];
                 case 0.25:
                     return [3,15];
                 case 0.5:
@@ -332,6 +344,8 @@ export const traits = {
         vars(r){
             // [Planet Creep, Space Creep]
             switch (r || traitRank('small') || 1){
+                case 0.1:
+                    return [0.0015,0.001];
                 case 0.25:
                     return [0.0025,0.0015];
                 case 0.5:
@@ -354,6 +368,8 @@ export const traits = {
         val: -3,
         vars(r){
             switch (r || traitRank('weak') || 1){
+                case 0.1:
+                    return [16];
                 case 0.25:
                     return [14];
                 case 0.5:
@@ -376,6 +392,8 @@ export const traits = {
         val: -5,
         vars(r){
             switch (r || traitRank('large') || 1){
+                case 0.1:
+                    return [0.008];
                 case 0.25:
                     return [0.007];
                 case 0.5:
@@ -399,6 +417,8 @@ export const traits = {
         vars(r){
             // [Manual Gathering, Basic Jobs]
             switch (r || traitRank('strong') || 1){
+                case 0.1:
+                    return [2,1.1];
                 case 0.25:
                     return [2,1.25];
                 case 0.5:
@@ -445,6 +465,8 @@ export const traits = {
         vars(r){
             // [Win, Loss, Hell]
             switch (r || traitRank('scales') || 1){
+                case 0.1:
+                    return [1,0,0];
                 case 0.25:
                     return [1,0,1];
                 case 0.5:
@@ -468,6 +490,8 @@ export const traits = {
         vars(r){
             // [Reduce Stone Costs, Extra Trade Post Route]
             switch (r || traitRank('flier') || 1){
+                case 0.1:
+                    return [5,0];
                 case 0.25:
                     return [10,0];
                 case 0.5:
@@ -490,10 +514,12 @@ export const traits = {
         val: 2,
         vars(r){
             switch (r || traitRank('hollow_bones') || 1){
-                case 0.25:
+                case 0.1:
                     return [1];
-                case 0.5:
+                case 0.25:
                     return [2];
+                case 0.5:
+                    return [3];
                 case 1:
                     return [5];
                 case 2:
@@ -512,6 +538,8 @@ export const traits = {
         val: -2,
         vars(r){
             switch (r || traitRank('sky_lover') || 1){
+                case 0.1:
+                    return [50];
                 case 0.25:
                     return [40];
                 case 0.5:
@@ -534,6 +562,8 @@ export const traits = {
         val: -2,
         vars(r){
             switch (r || traitRank('rigid') || 1){
+                case 0.1:
+                    return [4];
                 case 0.25:
                     return [3];
                 case 0.5:
@@ -557,6 +587,8 @@ export const traits = {
         vars(r){
             // [Citizen Cap, Worker Effectiveness, Growth Multiplier]
             switch (r || traitRank('high_pop') || 1){
+                case 0.1:
+                    return [2, 50, 1.2];
                 case 0.25:
                     return [2, 50, 1.5];
                 case 0.5:
@@ -580,6 +612,8 @@ export const traits = {
         vars(r){
             // [bound multi, bound add]
             switch (r || traitRank('fast_growth') || 1){
+                case 0.1:
+                    return [1.2,1];
                 case 0.25:
                     return [1.5,1];
                 case 0.5:
@@ -602,6 +636,8 @@ export const traits = {
         val: -1,
         vars(r){
             switch (r || traitRank('high_metabolism') || 1){
+                case 0.1:
+                    return [12];
                 case 0.25:
                     return [10];
                 case 0.5:
@@ -625,6 +661,8 @@ export const traits = {
         vars(r){
             // [Sunny, Cloudy, Rainy]
             switch (r || traitRank('photosynth') || 1){
+                case 0.1:
+                    return [5,4,3];
                 case 0.25:
                     return [10,5,4];
                 case 0.5:
@@ -647,6 +685,8 @@ export const traits = {
         val: 4,
         vars(r){
             switch (r || traitRank('sappy') || 1){
+                case 0.1:
+                    return [0.3];
                 case 0.25:
                     return [0.4];
                 case 0.5:
@@ -669,6 +709,8 @@ export const traits = {
         val: -3,
         vars(r){
             switch (r || traitRank('asymmetrical') || 1){
+                case 0.1:
+                    return [35];
                 case 0.25:
                     return [30];
                 case 0.5:
@@ -691,6 +733,8 @@ export const traits = {
         val: 2,
         vars(r){
             switch (r || traitRank('detritivore') || 1){
+                case 0.1:
+                    return [60];
                 case 0.25:
                     return [65];
                 case 0.5:
@@ -714,6 +758,8 @@ export const traits = {
         vars(r){
             // [Bound Add, Bound Multi, Bound Add Parasite]
             switch (r || traitRank('spores') || 1){
+                case 0.1:
+                    return [1,1.2,1];
                 case 0.25:
                     return [1,1.5,1];
                 case 0.5:
@@ -748,6 +794,8 @@ export const traits = {
         val: -2,
         vars(r){
             switch (r || traitRank('low_light') || 1){
+                case 0.1:
+                    return [16];
                 case 0.25:
                     return [14];
                 case 0.5:
@@ -770,6 +818,8 @@ export const traits = {
         val: 7,
         vars(r){
             switch (r || traitRank('elusive') || 1){
+                case 0.1:
+                    return [5];
                 case 0.25:
                     return [10];
                 case 0.5:
@@ -792,6 +842,8 @@ export const traits = {
         val: -4,
         vars(r){
             switch (r || traitRank('iron_allergy') || 1){
+                case 0.1:
+                    return [45];
                 case 0.25:
                     return [40];
                 case 0.5:
@@ -815,6 +867,8 @@ export const traits = {
         vars(r){
             // [Seasonal Morale, Hot Bonus, High Hot Bonus]
             switch (r || traitRank('smoldering') || 1){
+                case 0.1:
+                    return [2,0.1,0.06];
                 case 0.25:
                     return [3,0.14,0.08];
                 case 0.5:
@@ -837,6 +891,8 @@ export const traits = {
         val: -4,
         vars(r){
             switch (r || traitRank('cold_intolerance') || 1){
+                case 0.1:
+                    return [0.4];
                 case 0.25:
                     return [0.35];
                 case 0.5:
@@ -860,6 +916,8 @@ export const traits = {
         vars(r){
             // [Seasonal Morale, Cold Bonus, High Cold Bonus, Snow Food Bonus, Cold Food Bonus, Sun Food Penalty]
             switch (r || traitRank('chilled') || 1){
+                case 0.1:
+                    return [1,0.12,0.06,3,2,22];
                 case 0.25:
                     return [1,0.14,0.08,5,2,20];
                 case 0.5:
@@ -882,6 +940,8 @@ export const traits = {
         val: -4,
         vars(r){
             switch (r || traitRank('heat_intolerance') || 1){
+                case 0.1:
+                    return [0.4];
                 case 0.25:
                     return [0.35];
                 case 0.5:
@@ -905,6 +965,8 @@ export const traits = {
         vars(r){
             // [impact, duel bonus]
             switch (r || traitRank('scavenger') || 1){
+                case 0.1:
+                    return [0.05,18];
                 case 0.25:
                     return [0.08,20];
                 case 0.5:
@@ -933,6 +995,8 @@ export const traits = {
         val: 4,
         vars(r){
             switch (r || traitRank('immoral') || 1){
+                case 0.1:
+                    return [-40];
                 case 0.25:
                     return [-30];
                 case 0.5:
@@ -961,6 +1025,8 @@ export const traits = {
         val: 3,
         vars(r){
             switch (r || traitRank('blissful') || 1){
+                case 0.1:
+                    return [75];
                 case 0.25:
                     return [70];
                 case 0.5:
@@ -983,6 +1049,8 @@ export const traits = {
         val: -6,
         vars(r){
             switch (r || traitRank('pompous') || 1){
+                case 0.1:
+                    return [90];
                 case 0.25:
                     return [85];
                 case 0.5:
@@ -1006,6 +1074,8 @@ export const traits = {
         vars(r){
             // [Hell Army Bonus, Hell Suppression Bonus]
             switch (r || traitRank('holy') || 1){
+                case 0.1:
+                    return [20,5];
                 case 0.25:
                     return [25,10];
                 case 0.5:
@@ -1029,6 +1099,8 @@ export const traits = {
         vars(r){
             // [Science Bonus]
             switch (r || traitRank('artifical') || 1){
+                case 0.1:
+                    return [3];
                 case 0.25:
                     return [5];
                 case 0.5:
@@ -1052,6 +1124,8 @@ export const traits = {
         vars(r){
             // [Power Req, Labor Boost]
             switch (r || traitRank('powered') || 1){
+                case 0.1:
+                    return [0.4,4];
                 case 0.25:
                     return [0.35,5];
                 case 0.5:
@@ -1075,6 +1149,8 @@ export const traits = {
         vars(r){
             // [Mind Break Modifer, Thrall Modifer, Recharge Rate, Effect Strength]
             switch (r || traitRank('psychic') || 1){
+                case 0.1:
+                    return [0.2,4,0.01,15];
                 case 0.25:
                     return [0.35,5,0.01,20];
                 case 0.5:
@@ -1098,8 +1174,10 @@ export const traits = {
         vars(r){
             // [Morale above 100% is greatly reduced]
             switch (r || traitRank('tormented') || 1){
-                case 0.25:
+                case 0.1:
                     return [99];
+                case 0.25:
+                    return [98];
                 case 0.5:
                     return [95];
                 case 1:
@@ -1121,6 +1199,8 @@ export const traits = {
         vars(r){
             // [Sunny Days less frequent]
             switch (r || traitRank('darkness') || 1){
+                case 0.1:
+                    return [0];
                 case 0.25:
                     return [1];
                 case 0.5:
@@ -1144,6 +1224,8 @@ export const traits = {
         vars(r){
             // [Thrall Races, Catch Modifer, Thrall Effectiveness]
             switch (r || traitRank('unfathomable') || 1){
+                case 0.1:
+                    return [1,0.4,0.03];
                 case 0.25:
                     return [1,0.5,0.05];
                 case 0.5:
@@ -1166,6 +1248,8 @@ export const traits = {
         val: 8,
         vars(r){
             switch (r || traitRank('creative') || 1){
+                case 0.1:
+                    return [0.001,3];
                 case 0.25:
                     return [0.0015,5];
                 case 0.5:
@@ -1188,6 +1272,8 @@ export const traits = {
         val: -4,
         vars(r){
             switch (r || traitRank('diverse') || 1){
+                case 0.1:
+                    return [40];
                 case 0.25:
                     return [35];
                 case 0.5:
@@ -1211,6 +1297,8 @@ export const traits = {
         vars(r){
             // [Prof Bonus, Library Bonus]
             switch (r || traitRank('studious') || 1){
+                case 0.1:
+                    return [0.08,4];
                 case 0.25:
                     return [0.1,6];
                 case 0.5:
@@ -1233,6 +1321,8 @@ export const traits = {
         val: -2,
         vars(r){
             switch (r || traitRank('arrogant') || 1){
+                case 0.1:
+                    return [16]
                 case 0.25:
                     return [14];
                 case 0.5:
@@ -1256,6 +1346,8 @@ export const traits = {
         vars(r){
             // [Merc Discount, Training Bonus]
             switch (r || traitRank('brute') || 1){
+                case 0.1:
+                    return [15,40];
                 case 0.25:
                     return [20,50];
                 case 0.5:
@@ -1278,6 +1370,8 @@ export const traits = {
         val: -1,
         vars(r){
             switch (r || traitRank('angry') || 1){
+                case 0.1:
+                    return [40];
                 case 0.25:
                     return [35];
                 case 0.5:
@@ -1300,6 +1394,8 @@ export const traits = {
         val: -4,
         vars(r){
             switch (r || traitRank('lazy') || 1){
+                case 0.1:
+                    return [16];
                 case 0.25:
                     return [14];
                 case 0.5:
@@ -1322,6 +1418,8 @@ export const traits = {
         val: 4,
         vars(r){
             switch (r || traitRank('curious') || 1){
+                case 0.1:
+                    return [0.02];
                 case 0.25:
                     return [0.03];
                 case 0.5:
@@ -1345,10 +1443,12 @@ export const traits = {
         vars(r){
             // [Cabin Creep penatly, Cottage Creep bonus]
             switch (r || traitRank('pack_mentality') || 1){
+                case 0.1:
+                    return [0.03,0.014];
                 case 0.25:
-                    return [0.04,0.016];
+                    return [0.03,0.016];
                 case 0.5:
-                    return [0.035,0.018];
+                    return [0.03,0.018];
                 case 1:
                     return [0.03,0.02];
                 case 2:
@@ -1367,6 +1467,8 @@ export const traits = {
         val: 2,
         vars(r){
             switch (r || traitRank('tracker') || 1){
+                case 0.1:
+                    return [5];
                 case 0.25:
                     return [10];
                 case 0.5:
@@ -1389,6 +1491,8 @@ export const traits = {
         val: 5,
         vars(r){
             switch (r || traitRank('playful') || 1){
+                case 0.1:
+                    return [0.2];
                 case 0.25:
                     return [0.3];
                 case 0.5:
@@ -1411,6 +1515,8 @@ export const traits = {
         val: -3,
         vars(r){
             switch (r || traitRank('freespirit') || 1){
+                case 0.1:
+                    return [70];
                 case 0.25:
                     return [65];
                 case 0.5:
@@ -1439,6 +1545,8 @@ export const traits = {
         val: 6,
         vars(r){
             switch (r || traitRank('sniper') || 1){
+                case 0.1:
+                    return [3];
                 case 0.25:
                     return [4];
                 case 0.5:
@@ -1462,6 +1570,8 @@ export const traits = {
         vars(r){
             // [Cost Adjustment]
             switch (r || traitRank('hooved') || 1){
+                case 0.1:
+                    return [140];
                 case 0.25:
                     return [130];
                 case 0.5:
@@ -1485,6 +1595,8 @@ export const traits = {
         vars(r){
             // [Rage Bonus, Wounded Bonus]
             switch (r || traitRank('rage') || 1){
+                case 0.1:
+                    return [0.2,10];
                 case 0.25:
                     return [0.3,20];
                 case 0.5:
@@ -1508,6 +1620,8 @@ export const traits = {
         vars(r){
             // [Fuel Costs, Stone Cement and Wrought Iron Costs]
             switch (r || traitRank('heavy') || 1){
+                case 0.1:
+                    return [20,12];
                 case 0.25:
                     return [18,10];
                 case 0.5:
@@ -1530,6 +1644,8 @@ export const traits = {
         val: -1,
         vars(r){
             switch (r || traitRank('gnawer') || 1){
+                case 0.1:
+                    return [0.6];
                 case 0.25:
                     return [0.5];
                 case 0.5:
@@ -1552,6 +1668,8 @@ export const traits = {
         val: 6,
         vars(r){
             switch (r || traitRank('calm') || 1){
+                case 0.1:
+                    return [6];
                 case 0.25:
                     return [7];
                 case 0.5:
@@ -1575,6 +1693,8 @@ export const traits = {
         vars(r){
             // [Crate Bonus, Storage Bonus]
             switch (r || traitRank('pack_rat') || 1){
+                case 0.1:
+                    return [4,1];
                 case 0.25:
                     return [5,2];
                 case 0.5:
@@ -1597,6 +1717,8 @@ export const traits = {
         val: -3,
         vars(r){
             switch (r || traitRank('paranoid') || 1){
+                case 0.1:
+                    return [16];
                 case 0.25:
                     return [14];
                 case 0.5:
@@ -1619,6 +1741,8 @@ export const traits = {
         val: -5,
         vars(r){
             switch (r || traitRank('greedy') || 1){
+                case 0.1:
+                    return [20];
                 case 0.25:
                     return [17.5];
                 case 0.5:
@@ -1642,6 +1766,8 @@ export const traits = {
         vars(r){
             // [Sell Price, Galactic Buy Volume]
             switch (r || traitRank('merchant') || 1){
+                case 0.1:
+                    return [5,2];
                 case 0.25:
                     return [10,3];
                 case 0.5:
@@ -1664,6 +1790,8 @@ export const traits = {
         val: 6,
         vars(r){
             switch (r || traitRank('smart') || 1){
+                case 0.1:
+                    return [2];
                 case 0.25:
                     return [3];
                 case 0.5:
@@ -1686,6 +1814,8 @@ export const traits = {
         val: -4,
         vars(r){
             switch (r || traitRank('puny') || 1){
+                case 0.1:
+                    return [20];
                 case 0.25:
                     return [18];
                 case 0.5:
@@ -1708,6 +1838,8 @@ export const traits = {
         val: -5,
         vars(r){
             switch (r || traitRank('dumb') || 1){
+                case 0.1:
+                    return [8];
                 case 0.25:
                     return [7];
                 case 0.5:
@@ -1730,6 +1862,8 @@ export const traits = {
         val: 4,
         vars(r){
             switch (r || traitRank('tough') || 1){
+                case 0.1:
+                    return [5];
                 case 0.25:
                     return [10];
                 case 0.5:
@@ -1752,6 +1886,8 @@ export const traits = {
         val: -4,
         vars(r){
             switch (r || traitRank('nearsighted') || 1){
+                case 0.1:
+                    return [20];
                 case 0.25:
                     return [18];
                 case 0.5:
@@ -1775,6 +1911,8 @@ export const traits = {
         vars(r){
             // [Prof Bonus, Scientist Bonus]
             switch (r || traitRank('intelligent') || 1){
+                case 0.1:
+                    return [0.05,0.1];
                 case 0.25:
                     return [0.08,0.15];
                 case 0.5:
@@ -1797,6 +1935,8 @@ export const traits = {
         val: 8,
         vars(r){
             switch (r || traitRank('regenerative') || 1){
+                case 0.1:
+                    return [1];
                 case 0.25:
                     return [2];
                 case 0.5:
@@ -1819,6 +1959,8 @@ export const traits = {
         val: -2,
         vars(r){
             switch (r || traitRank('gluttony') || 1){
+                case 0.1:
+                    return [25];
                 case 0.25:
                     return [20];
                 case 0.5:
@@ -1841,6 +1983,8 @@ export const traits = {
         val: -5,
         vars(r){
             switch (r || traitRank('slow') || 1){
+                case 0.1:
+                    return [14];
                 case 0.25:
                     return [13];
                 case 0.5:
@@ -1864,6 +2008,8 @@ export const traits = {
         vars(r){
             // [Solder % death prevention, Hell Armor Bonus]
             switch (r || traitRank('armored') || 1){
+                case 0.1:
+                    return [10,0];
                 case 0.25:
                     return [15,1];
                 case 0.5:
@@ -1886,6 +2032,8 @@ export const traits = {
         val: 5,
         vars(r){
             switch (r || traitRank('optimistic') || 1){
+                case 0.1:
+                    return [3,4];
                 case 0.25:
                     return [4,6];
                 case 0.5:
@@ -1909,6 +2057,8 @@ export const traits = {
         vars(r){
             // [Combat Rating Bonus, Ambush Avoid]
             switch (r || traitRank('chameleon') || 1){
+                case 0.1:
+                    return [3,5];
                 case 0.25:
                     return [5,10];
                 case 0.5:
@@ -1931,6 +2081,8 @@ export const traits = {
         val: 1,
         vars(r){
             switch (r || traitRank('slow_digestion') || 1){
+                case 0.1:
+                    return [0.2];
                 case 0.25:
                     return [0.3];
                 case 0.5:
@@ -1953,6 +2105,8 @@ export const traits = {
         val: 3,
         vars(r){
             switch (r || traitRank('astrologer') || 1){
+                case 0.1:
+                    return [5];
                 case 0.25:
                     return [10];
                 case 0.5:
@@ -1975,6 +2129,8 @@ export const traits = {
         val: -3,
         vars(r){
             switch (r || traitRank('hard_of_hearing') || 1){
+                case 0.1:
+                    return [8];
                 case 0.25:
                     return [7];
                 case 0.5:
@@ -1997,6 +2153,8 @@ export const traits = {
         val: 4,
         vars(r){
             switch (r || traitRank('resourceful') || 1){
+                case 0.1:
+                    return [4];
                 case 0.25:
                     return [6];
                 case 0.5:
@@ -2020,6 +2178,8 @@ export const traits = {
         vars(r){
             // [Max bonus]
             switch (r || traitRank('selenophobia') || 1){
+                case 0.1:
+                    return [1];
                 case 0.25:
                     return [2];
                 case 0.5:
@@ -2043,6 +2203,8 @@ export const traits = {
         vars(r){
             // Morale loss (Base value is 5)
             switch (r || traitRank('leathery') || 1){
+                case 0.1:
+                    return [5];
                 case 0.25:
                     return [4];
                 case 0.5:
@@ -2065,6 +2227,8 @@ export const traits = {
         val: -1,
         vars(r){
             switch (r || traitRank('pessimistic') || 1){
+                case 0.1:
+                    return [5];
                 case 0.25:
                     return [4];
                 case 0.5:
@@ -2087,6 +2251,8 @@ export const traits = {
         val: 4,
         vars(r){
             switch (r || traitRank('hoarder') || 1){
+                case 0.1:
+                    return [3];
                 case 0.25:
                     return [5];
                 case 0.5:
@@ -2110,6 +2276,8 @@ export const traits = {
         vars(r){
             // [Cabin Creep bonus, Cottage Creep malus]
             switch (r || traitRank('solitary') || 1){
+                case 0.1:
+                    return [0.01,0.03];
                 case 0.25:
                     return [0.01,0.025];
                 case 0.5:
@@ -2132,6 +2300,8 @@ export const traits = {
         val: 8,
         vars(r){
             switch (r || traitRank('kindling_kindred') || 1){
+                case 0.1:
+                    return [12];
                 case 0.25:
                     return [10];
                 case 0.5:
@@ -2154,6 +2324,8 @@ export const traits = {
         val: -4,
         vars(r){
             switch (r || traitRank('pyrophobia') || 1){
+                case 0.1:
+                    return [16];
                 case 0.25:
                     return [14];
                 case 0.5:
@@ -2176,6 +2348,8 @@ export const traits = {
         val: 4,
         vars(r){
             switch (r || traitRank('hyper') || 1){
+                case 0.1:
+                    return [1];
                 case 0.25:
                     return [2];
                 case 0.5:
@@ -2198,6 +2372,8 @@ export const traits = {
         val: -4,
         vars(r){
             switch (r || traitRank('skittish') || 1){
+                case 0.1:
+                    return [20];
                 case 0.25:
                     return [18];
                 case 0.5:
@@ -2220,6 +2396,8 @@ export const traits = {
         val: -3,
         vars(r){
             switch (r || traitRank('fragrant') || 1){
+                case 0.1:
+                    return [40];
                 case 0.25:
                     return [35];
                 case 0.5:
@@ -2243,6 +2421,8 @@ export const traits = {
         vars(r){
             // [Food Consumption, Army Bonus]
             switch (r || traitRank('sticky') || 1){
+                case 0.1:
+                    return [3,3];
                 case 0.25:
                     return [5,5];
                 case 0.5:
@@ -2266,6 +2446,8 @@ export const traits = {
         vars(r){
             // [Ambush, Raid, Pillage, Assault, Siege]
             switch (r || traitRank('infectious') || 1){
+                case 0.1:
+                    return [1,2,3,6,15];
                 case 0.25:
                     return [1,2,3,7,18];
                 case 0.5:
@@ -2295,6 +2477,8 @@ export const traits = {
         vars(r){
             // [Lux Fur Alloy Polymer, Nano Stanene, Cement]
             switch (r || traitRank('toxic') || 1){
+                case 0.1:
+                    return [3,2,8];
                 case 0.25:
                     return [5,3,10];
                 case 0.5:
@@ -2318,6 +2502,8 @@ export const traits = {
         vars(r){
             // [Sunny, Cloudy]
             switch (r || traitRank('nyctophilia') || 1){
+                case 0.1:
+                    return [12,6];
                 case 0.25:
                     return [10,6];
                 case 0.5:
@@ -2340,6 +2526,8 @@ export const traits = {
         val: 4,
         vars(r){ // [Steal Cap]
             switch (r || traitRank('infiltrator') || 1){
+                case 0.1:
+                    return [120];
                 case 0.25:
                     return [110];
                 case 0.5:
@@ -2363,8 +2551,10 @@ export const traits = {
         vars(r){
             // [Food Consumption, Production]
             switch (r || traitRank('hibernator') || 1){
+                case 0.1:
+                    return [10,10];
                 case 0.25:
-                    return [15,8];
+                    return [15,9];
                 case 0.5:
                     return [20,8];
                 case 1:
@@ -2385,6 +2575,8 @@ export const traits = {
         val: 5,
         vars(r){
             switch (r || traitRank('cannibalize') || 1){
+                case 0.1:
+                    return [6];
                 case 0.25:
                     return [8];
                 case 0.5:
@@ -2408,6 +2600,8 @@ export const traits = {
         vars(r){
             // [Win Deaths, Loss Deaths]
             switch (r || traitRank('frail') || 1){
+                case 0.1:
+                    return [2,3];
                 case 0.25:
                     return [2,2];
                 case 0.5:
@@ -2430,6 +2624,8 @@ export const traits = {
         val: 1,
         vars(r){
             switch (r || traitRank('malnutrition') || 1){
+                case 0.1:
+                    return [8];
                 case 0.25:
                     return [10];
                 case 0.5:
@@ -2452,6 +2648,8 @@ export const traits = {
         val: 5,
         vars(r){
             switch (r || traitRank('claws') || 1){
+                case 0.1:
+                    return [5];
                 case 0.25:
                     return [8];
                 case 0.5:
@@ -2474,6 +2672,8 @@ export const traits = {
         val: -1,
         vars(r){
             switch (r || traitRank('atrophy') || 1){
+                case 0.1:
+                    return [0.4];
                 case 0.25:
                     return [0.35];
                 case 0.5:
@@ -2496,6 +2696,8 @@ export const traits = {
         val: 9,
         vars(r){
             switch (r || traitRank('hivemind') || 1){
+                case 0.1:
+                    return [13];
                 case 0.25:
                     return [12];
                 case 0.5:
@@ -2518,6 +2720,8 @@ export const traits = {
         val: 2,
         vars(r){
             switch (r || traitRank('tunneler') || 1){
+                case 0.1:
+                    return [0.001];
                 case 0.25:
                     return [0.002];
                 case 0.5:
@@ -2541,6 +2745,8 @@ export const traits = {
         vars(r){
             // [Cap]
             switch (r || traitRank('blood_thirst') || 1){
+                case 0.1:
+                    return [150000];
                 case 0.25:
                     return [250000];
                 case 0.5:
@@ -2564,6 +2770,8 @@ export const traits = {
         vars(r){
             // [Combat, Hunting]
             switch (r || traitRank('apex_predator') || 1){
+                case 0.1:
+                    return [10,15];
                 case 0.25:
                     return [15,20];
                 case 0.5:
@@ -2586,6 +2794,8 @@ export const traits = {
         val: -2,
         vars(r){
             switch (r || traitRank('invertebrate') || 1){
+                case 0.1:
+                    return [30];
                 case 0.25:
                     return [25];
                 case 0.5:
@@ -2608,6 +2818,8 @@ export const traits = {
         val: 4,
         vars(r){
             switch (r || traitRank('suction_grip') || 1){
+                case 0.1:
+                    return [3];
                 case 0.25:
                     return [5];
                 case 0.5:
@@ -2630,6 +2842,8 @@ export const traits = {
         val: 4,
         vars(r){
             switch (r || traitRank('befuddle') || 1){
+                case 0.1:
+                    return [10];
                 case 0.25:
                     return [20];
                 case 0.5:
@@ -2658,6 +2872,8 @@ export const traits = {
         val: -2,
         vars(r){
             switch (r || traitRank('unorganized') || 1){
+                case 0.1:
+                    return [100];
                 case 0.25:
                     return [90];
                 case 0.5:
@@ -2680,6 +2896,8 @@ export const traits = {
         val: 5,
         vars(r){
             switch (r || traitRank('musical') || 1){
+                case 0.1:
+                    return [0.15];
                 case 0.25:
                     return [0.25];
                 case 0.5:
@@ -2703,6 +2921,8 @@ export const traits = {
         vars(r){
             // [cold win, normal win, hot win, cold loss, normal loss, hot loss, hell]
             switch (r || traitRank('revive') || 1){
+                case 0.1:
+                    return [8,6,2,9,7,3.5,4];
                 case 0.25:
                     return [7,5,2,8,6,3,4];
                 case 0.5:
@@ -2725,6 +2945,8 @@ export const traits = {
         val: -4,
         vars(r){
             switch (r || traitRank('slow_regen') || 1){
+                case 0.1:
+                    return [45];
                 case 0.25:
                     return [40];
                 case 0.5:
@@ -2747,6 +2969,8 @@ export const traits = {
         val: 4,
         vars(r){
             switch (r || traitRank('forge') || 1){
+                case 0.1:
+                    return [0.25];
                 case 0.25:
                     return [0.5];
                 case 0.5:
@@ -2769,6 +2993,8 @@ export const traits = {
         val: -4,
         vars(r){
             switch (r || traitRank('autoignition') || 1){
+                case 0.1:
+                    return [5];
                 case 0.25:
                     return [4];
                 case 0.5:
@@ -2791,6 +3017,8 @@ export const traits = {
         val: 5,
         vars(r){
             switch (r || traitRank('blurry') || 1){
+                case 0.1:
+                    return [5];
                 case 0.25:
                     return [10];
                 case 0.5:
@@ -2814,6 +3042,8 @@ export const traits = {
         vars(r){
             // [Not Hot, Hot]
             switch (r || traitRank('snowy') || 1){
+                case 0.1:
+                    return [5,12];
                 case 0.25:
                     return [4,10];
                 case 0.5:
@@ -2837,6 +3067,8 @@ export const traits = {
         vars(r){
             // [Extra Food Consumed, Stockpile Divisor]
             switch (r || traitRank('ravenous') || 1){
+                case 0.1:
+                    return [35,2];
                 case 0.25:
                     return [30,2];
                 case 0.5:
@@ -2860,6 +3092,8 @@ export const traits = {
         vars(r){
             // [Hunting Food, Soul Well Food, Soul Gem Adjust]
             switch (r || traitRank('ghostly') || 1){
+                case 0.1:
+                    return [15,1.1,2];
                 case 0.25:
                     return [20,1.2,5];
                 case 0.5:
@@ -2882,6 +3116,8 @@ export const traits = {
         val: 3,
         vars(r){
             switch (r || traitRank('lawless') || 1){
+                case 0.1:
+                    return [20];
                 case 0.25:
                     return [30];
                 case 0.5:
@@ -2904,6 +3140,8 @@ export const traits = {
         val: -1,
         vars(r){
             switch (r || traitRank('mistrustful') || 1){
+                case 0.1:
+                    return [5];
                 case 0.25:
                     return [4];
                 case 0.5:
@@ -2927,6 +3165,8 @@ export const traits = {
         vars(r){
             // [Starve Resist, Miner/Lumber boost]
             switch (r || traitRank('humpback') || 1){
+                case 0.1:
+                    return [0.15, 5];
                 case 0.25:
                     return [0.2, 8];
                 case 0.5:
@@ -2956,6 +3196,8 @@ export const traits = {
         vars(r){
             // [Combat Bonus, Hunting Bonus]
             switch (r || traitRank('fiery') || 1){
+                case 0.1:
+                    return [20,12];
                 case 0.25:
                     return [30,15];
                 case 0.5:
@@ -2979,6 +3221,8 @@ export const traits = {
         vars(r){
             // [Titanium Low Roll, Titanium High Roll]
             switch (r || traitRank('terrifying') || 1){
+                case 0.1:
+                    return [6,15];
                 case 0.25:
                     return [8,20];
                 case 0.5:
@@ -3001,6 +3245,8 @@ export const traits = {
         val: 12,
         vars(r){
             switch (r || traitRank('slaver') || 1){
+                case 0.1:
+                    return [0.05];
                 case 0.25:
                     return [0.1];
                 case 0.5:
@@ -3024,6 +3270,8 @@ export const traits = {
         vars(r){
             // [Planet Creep, Space Creep]
             switch (r || traitRank('compact') || 1){
+                case 0.1:
+                    return [0.003,0.002];
                 case 0.25:
                     return [0.005,0.003];
                 case 0.5:
@@ -3047,6 +3295,8 @@ export const traits = {
         vars(r){
             // [Buy Price, Sell Price]
             switch (r || traitRank('conniving') || 1){
+                case 0.1:
+                    return [1,6];
                 case 0.25:
                     return [2,8];
                 case 0.5:
@@ -3069,6 +3319,8 @@ export const traits = {
         val: -5,
         vars(r){
             switch (r || traitRank('pathetic') || 1){
+                case 0.1:
+                    return [40];
                 case 0.25:
                     return [35];
                 case 0.5:
@@ -3091,6 +3343,8 @@ export const traits = {
         val: 4,
         vars(r){
             switch (r || traitRank('spiritual') || 1){
+                case 0.1:
+                    return [6];
                 case 0.25:
                     return [8];
                 case 0.5:
@@ -3113,6 +3367,8 @@ export const traits = {
         val: -7,
         vars(r){
             switch (r || traitRank('truthful') || 1){
+                case 0.1:
+                    return [85];
                 case 0.25:
                     return [75];
                 case 0.5:
@@ -3136,10 +3392,12 @@ export const traits = {
         vars(r){
             // [Bonus to unification]
             switch (r || traitRank('unified') || 1){
-                case 0.25:
+                case 0.1:
                     return [0];
-                case 0.5:
+                case 0.25:
                     return [1];
+                case 0.5:
+                    return [2];
                 case 1:
                     return [3];
                 case 2:
@@ -3158,6 +3416,8 @@ export const traits = {
         val: 3,
         vars(r){
             switch (r || traitRank('rainbow') || 1){
+                case 0.1:
+                    return [10];
                 case 0.25:
                     return [20];
                 case 0.5:
@@ -3180,6 +3440,8 @@ export const traits = {
         val: 3,
         vars(r){
             switch (r || traitRank('gloomy') || 1){
+                case 0.1:
+                    return [3];
                 case 0.25:
                     return [5];
                 case 0.5:
@@ -3203,6 +3465,8 @@ export const traits = {
         vars(r){
             // [Knowledge Base, Knowledge Scale, Tax Bonus, Metal Bonus, Morale Bonus]
             switch (r || traitRank('magnificent') || 1){
+                case 0.1:
+                    return [250, 1, 0.35, 0.65, 0.5];
                 case 0.25:
                     return [300, 1, 0.5, 0.75, 1];
                 case 0.5:
@@ -3226,6 +3490,8 @@ export const traits = {
         vars(r){
             // [min tax, max tax]
             switch (r || traitRank('noble') || 1){
+                case 0.1:
+                    return [18,20];
                 case 0.25:
                     return [15,20];
                 case 0.5:
@@ -3249,6 +3515,8 @@ export const traits = {
         vars(r){
             // [Postitive Trait Rank, Negative Trait Rank]
             switch (r || traitRank('imitation') || 1){
+                case 0.1:
+                    return [0.1,0.5]
                 case 0.25:
                     return [0.25,0.5];
                 case 0.5:
@@ -3272,6 +3540,8 @@ export const traits = {
         vars(r){
             // [Entertainer Reduction, Stress Reduction]
             switch (r || traitRank('emotionless') || 1){
+                case 0.1:
+                    return [55,8];
                 case 0.25:
                     return [50,10];
                 case 0.5:
@@ -3295,6 +3565,8 @@ export const traits = {
         vars(r){
             // [Reduce Wardenclyffe Knowledge Cost, Knowledge per Citizen]
             switch (r || traitRank('logical') || 1){
+                case 0.1:
+                    return [10,5];
                 case 0.25:
                     return [25,10];
                 case 0.5:
@@ -3318,6 +3590,8 @@ export const traits = {
         vars(r){
             // [Postitive Trait Rank, Negative Trait Rank]
             switch (r || traitRank('shapeshifter') || 1){
+                case 0.1:
+                    return [0.1,0.5];
                 case 0.25:
                     return [0.25,0.5];
                 case 0.5:
@@ -3340,6 +3614,8 @@ export const traits = {
         val: -4,
         vars(r){
             switch (r || traitRank('deconstructor') || 1){
+                case 0.1:
+                    return [25]
                 case 0.25:
                     return [40];
                 case 0.5:
@@ -3363,6 +3639,8 @@ export const traits = {
         vars(r){
             // [Quantum Bonus per Citizen, Softcap]
             switch (r || traitRank('linked') || 1){
+                case 0.1:
+                    return [0.02,40];
                 case 0.25:
                     return [0.03,40];
                 case 0.5:
@@ -3385,6 +3663,8 @@ export const traits = {
         val: -3,
         vars(r){
             switch (r || traitRank('dark_dweller') || 1){
+                case 0.1:
+                    return [99];
                 case 0.25:
                     return [90];
                 case 0.5:
@@ -3408,6 +3688,8 @@ export const traits = {
         vars(r){
             // [Combat Bonus, Thrall Catch Bonus]
             switch (r || traitRank('swift') || 1){
+                case 0.1:
+                    return [20,8];
                 case 0.25:
                     return [35,15];
                 case 0.5:
@@ -3430,6 +3712,8 @@ export const traits = {
         val: -2,
         vars(r){
             switch (r || traitRank('anthropophagite') || 1){
+                case 0.1:
+                    return [0.25];
                 case 0.25:
                     return [0.4];
                 case 0.5:
@@ -3453,6 +3737,8 @@ export const traits = {
         vars(r){
             // [Tool Factor, Crafting Factor]
             switch (r || traitRank('living_tool') || 1){
+                case 0.1:
+                    return [0.5,2];
                 case 0.25:
                     return [0.65,5];
                 case 0.5:
@@ -3476,6 +3762,8 @@ export const traits = {
         vars(r){
             // [Costs are higher]
             switch (r || traitRank('bloated') || 1){
+                case 0.1:
+                    return [30];
                 case 0.25:
                     return [25];
                 case 0.5:
@@ -3499,6 +3787,8 @@ export const traits = {
         vars(r){
             // [Auto Crafting Boost, Manufactoring Boost]
             switch (r || traitRank('artisan') || 1){
+                case 0.1:
+                    return [15,8,0.15];
                 case 0.25:
                     return [20,10,0.2];
                 case 0.5:
@@ -3522,6 +3812,8 @@ export const traits = {
         vars(r){
             // Raises Knowledge cost of scientific advancements
             switch (r || traitRank('stubborn') || 1){
+                case 0.1:
+                    return [20];
                 case 0.25:
                     return [18];
                 case 0.5:
@@ -3545,6 +3837,8 @@ export const traits = {
         vars(r){
             // [Randomly Steal Things]
             switch (r || traitRank('rogue') || 1){
+                case 0.1:
+                    return [4];
                 case 0.25:
                     return [6];
                 case 0.5:
@@ -3568,6 +3862,8 @@ export const traits = {
         vars(r){
             // [Financial Institutions Cost Extra]
             switch (r || traitRank('untrustworthy') || 1){
+                case 0.1:
+                    return [8];
                 case 0.25:
                     return [7];
                 case 0.5:
@@ -3592,6 +3888,8 @@ export const traits = {
             // [Some building materials self replicate reducing cost of the next building]
             // [Lumber/Bone, Plywood/Boneweave, Furs/Flesh, Amber (not Stone/Clay)]
             switch (r || traitRank('living_materials') || 1){
+                case 0.1:
+                    return [0.995];
                 case 0.25:
                     return [0.99];
                 case 0.5:
@@ -3615,6 +3913,8 @@ export const traits = {
         vars(r){
             // [Randomly Die]
             switch (r || traitRank('unstable') || 1){
+                case 0.1:
+                    return [7,10];
                 case 0.25:
                     return [6,10];
                 case 0.5:
@@ -3663,6 +3963,8 @@ export const traits = {
             // [Element, Electric, Acid, Fire, Frost, Combat]
             // [Type, Power, Industry, Smelting, Bioscience, Combat]
             switch (r || traitRank('elemental') || 1){
+                case 0.1:
+                    return [element, 0.1, 0.01, 0.02, 0.005, 1];
                 case 0.25:
                     return [element, 0.2, 0.02, 0.03, 0.01, 2];
                 case 0.5:
@@ -3686,6 +3988,8 @@ export const traits = {
         vars(r){
             // [Hell Worse, Piracy Worse, Events Worse]
             switch (r || traitRank('chicken') || 1){
+                case 0.1:
+                    return [110,20];
                 case 0.25:
                     return [100,18];
                 case 0.5:
@@ -3737,6 +4041,8 @@ export const traits = {
 
             // [Mining based on Attack, Attack Bonus]
             switch (r || traitRank('tusk') || 1){
+                case 0.1:
+                    return [80,Math.round(moisture * 0.4)];
                 case 0.25:
                     return [100,Math.round(moisture * 0.5)];
                 case 0.5:
@@ -3760,6 +4066,8 @@ export const traits = {
         vars(r){
             // [Refine your dead to make Oil]
             switch (r || traitRank('blubber') || 1){
+                case 0.1:
+                    return [2.5];
                 case 0.25:
                     return [2];
                 case 0.5:
@@ -3783,6 +4091,8 @@ export const traits = {
         vars(r){
             // [Powers Active, Power Scaling]
             switch (r || traitRank('ocular_power') || 1){
+                case 0.1:
+                    return [1, 10];
                 case 0.25:
                     return [1, 25];
                 case 0.5:
@@ -3806,6 +4116,8 @@ export const traits = {
         vars(r){
             // [Wind lowers production]
             switch (r || traitRank('floating') || 1){
+                case 0.1:
+                    return [16];
                 case 0.25:
                     return [14];
                 case 0.5:
@@ -3829,6 +4141,8 @@ export const traits = {
         vars(r){
             // [Wish Cooldown Period]
             switch (r || traitRank('wish') || 1){
+                case 0.1:
+                    return [2520];
                 case 0.25:
                     return [2160];
                 case 0.5:
@@ -3852,6 +4166,8 @@ export const traits = {
         vars(r){
             // [Trade Less Productive]
             switch (r || traitRank('devious') || 1){
+                case 0.1:
+                    return [35];
                 case 0.25:
                     return [30];
                 case 0.5:
@@ -3875,8 +4191,10 @@ export const traits = {
         vars(r){
             // [More Powerful Soldiers but less of them]
             switch (r || traitRank('grenadier') || 1){
-                case 0.25:
+                case 0.1:
                     return [100];
+                case 0.25:
+                    return [110];
                 case 0.5:
                     return [125];
                 case 1:
@@ -3898,6 +4216,8 @@ export const traits = {
         vars(r){
             // [Major Death, Minor Death]
             switch (r || traitRank('aggressive') || 1){
+                case 0.1:
+                    return [35,14]
                 case 0.25:
                     return [30,12];
                 case 0.5:
@@ -3921,6 +4241,8 @@ export const traits = {
         vars(r){
             // [Boosts Other Traits]
             switch (r || traitRank('empowered') || 1){
+                case 0.1:
+                    return [0];
                 case 0.25:
                     return [0];
                 case 0.5:
@@ -3944,6 +4266,8 @@ export const traits = {
         vars(r){
             // [Temples less effective]
             switch (r || traitRank('blasphemous') || 1){
+                case 0.1:
+                    return [25];
                 case 0.25:
                     return [20];
                 case 0.5:
@@ -3967,6 +4291,8 @@ export const traits = {
         vars(r){
             // [All jobs worse, Theology weaker, Mastery weaker]
             switch (r || traitRank('ooze') || 1){
+                case 0.1:
+                    return [25,30,50];
                 case 0.25:
                     return [20,25,40];
                 case 0.5:
@@ -5424,6 +5750,71 @@ export const races = {
         fanaticism: 'ooze',
         basic(){ return false; }
     },
+    ultra_sludge: {
+        name: loc('race_ultra_sludge'),
+        desc: loc('race_ultra_sludge_desc'),
+        type: (function(){ return global.race.hasOwnProperty('jtype') ? global.race.jtype : 'humanoid'; })(),
+        home: loc('race_sludge_home'),
+        entity: loc('race_sludge_entity'),
+        traits: {
+            ooze: 0.1,
+            diverse: 0.1,
+            arrogant: 0.1,
+            angry: 0.1,
+            lazy: 0.1,
+            hooved: 0.1,
+            freespirit: 0.1,
+            heavy: 0.1,
+            gnawer: 0.1,
+            paranoid: 0.1,
+            greedy: 0.1,
+            puny: 0.1,
+            dumb: 0.1,
+            nearsighted: 0.1,
+            gluttony: 0.1,
+            slow: 0.1,
+            hard_of_hearing: 0.1,
+            selenophobia: 0.1,
+            pessimistic: 0.1,
+            solitary: 0.1,
+            pyrophobia: 0.1,
+            skittish: 0.1,
+            fragrant: 0.1,
+            nyctophilia: 0.1,
+            hibernator: 0.1,
+            frail: 0.1,
+            atrophy: 0.1,
+            invertebrate: 0.1,
+            unorganized: 0.1,
+            slow_regen: 0.1,
+            autoignition: 0.1,
+            snowy: 0.1,
+            mistrustful: 0.1,
+            thalassophobia: 0.1,
+            pathetic: 0.1,
+            truthful: 0.1,
+            blubber: 0.25,
+            aggressive: 0.25,
+            devious: 0.25,
+            floating: 0.25,
+            blasphemous: 0.25,
+            chicken: 0.25,
+            unstable: 0.25,
+            stubborn: 0.25,
+            untrustworthy: 0.25,
+            bloated: 0.25,
+            dark_dweller: 0.25,
+        },
+        solar: {
+            red: loc('race_sludge_solar_red'),
+            hell: loc('race_sludge_solar_hell'),
+            gas: loc('race_sludge_solar_gas'),
+            gas_moon: loc('race_sludge_solar_gas_moon'),
+            dwarf: loc('race_sludge_solar_dwarf'),
+        },
+        fanaticism: 'ooze',
+        basic(){ return false; }
+    },
     custom: customRace(),
     hybrid: customRace(true)
 };
@@ -5464,7 +5855,8 @@ Object.keys(genusVars).forEach(function(k){
 
 export function setJType(){
     races.junker.type = global.race.hasOwnProperty('jtype') ? global.race.jtype : 'humanoid';
-    races.sludge.type = global.race.hasOwnProperty('jtype') ? global.race.jtype : 'humanoid';;
+    races.sludge.type = global.race.hasOwnProperty('jtype') ? global.race.jtype : 'humanoid';
+    races.ultra_sludge.type = global.race.hasOwnProperty('jtype') ? global.race.jtype : 'humanoid';
 }
 
 function customRace(hybrid){
@@ -6289,7 +6681,7 @@ export function cleanAddTrait(trait){
             renderSupernatural();
             break;
         case 'ooze':
-            if (!global.tech['high_tech'] && global.race.species !== 'custom' && global.race.species !== 'sludge'){
+            if (!global.tech['high_tech'] && global.race.species !== 'custom' && (global.race.species !== 'sludge' || global.race.species !== 'ultra_sludge')){
                 global.race['gross_enabled'] = 1;
             }
             calc_mastery(true);
@@ -6632,6 +7024,8 @@ export function shapeShift(genus,setup){
 function traitRank(trait){
     if (global.race['empowered'] && trait !== 'empowered'){
         switch (global.race[trait]){
+            case 0.1:
+                return traits.empowered.vars()[0] >= 2 ? 0.5 : 0.25;
             case 0.25:
                 return traits.empowered.vars()[0] >= 2 ? 1 : 0.5;
             case 0.5:
@@ -6653,9 +7047,12 @@ export function setTraitRank(trait,opts){
     opts = opts || {};
     if (global.race[trait] && !opts['force']){
         switch (global.race[trait]){
-            case 0.25:
-                global.race[trait] = opts['down'] ? 0.25 : 0.5;
+            case 0.1:
+                global.race[trait] = opts['down'] ? 0.1 : 0.25;
                 return opts['down'] ? false : true;
+            case 0.25:
+                global.race[trait] = opts['down'] ? 0.1 : 0.5;
+                return true;
             case 0.5:
                 global.race[trait] = opts['down'] ? 0.25 : 1;
                 return true;
@@ -6667,7 +7064,7 @@ export function setTraitRank(trait,opts){
                 return true;
             case 3:
                 global.race[trait] = opts['down'] ? 2 : 4;
-                return opts['down'] ? true : false;
+                return true;
             case 4:
                 global.race[trait] = opts['down'] ? 3 : 4;
                 return opts['down'] ? true : false;
@@ -6719,7 +7116,7 @@ export function traitSkin(type, trait, species){
 
 export function hoovedReskin(desc, species=global.race.species){
     let type = species === global.race.species ? global.race.maintype || races[species].type : races[species].type;
-    if (species === 'sludge'){
+    if (species === 'sludge' || species === 'ultra_sludge'){
         return desc ? loc('trait_hooved_slime') : loc('trait_hooved_slime_name');
     }
     else if ([

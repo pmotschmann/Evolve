@@ -265,6 +265,8 @@ export function cataclysm_end(){
             unlockAchieve('failed_history');
         }
 
+        grandDeathTour('ct');
+
         let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
         let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
         global['race'] = {
@@ -357,6 +359,8 @@ export function big_bang(){
     if (global.race['steelen']){
         unlockFeat('steelem');
     }
+
+    grandDeathTour('bh');
 
     let god = global.race.species;
     let old_god = global.race.gods;
@@ -453,6 +457,8 @@ export function vacuumCollapse(){
         if (global.race['steelen']){
             unlockFeat('steelem');
         }
+
+        grandDeathTour('vc');
 
         let god = global.race.species;
         let old_god = global.race.gods;
@@ -666,6 +672,8 @@ export function descension(){
     if (global.race['ooze'] && global.race.species === 'sludge'){
         unlockFeat('slime_lord');
     }
+
+    grandDeathTour('di');
 
     let gains = calcPrestige('descend');
     global.prestige.Artifact.count += gains.artifact;
@@ -933,6 +941,8 @@ export function aiApocalypse(){
     if (global.race['junker'] && global.race.species === 'junker'){
         unlockFeat('the_misery');
     }
+
+    grandDeathTour('ai');
 
     let god = global.race.species;
     let old_god = global.race.gods;
@@ -1313,3 +1323,30 @@ function trackWomling(){
     }
 }
 
+function grandDeathTour(type){
+    if (global.race.species === 'ultra_sludge'){
+        let rank = alevel();
+        let uni = universeAffix();
+
+        if (global.stats.death_tour[type][uni] < rank){
+            global.stats.death_tour[type][uni] = rank;
+        }
+
+        let gdt_rank = 5;
+        Object.keys(global.stats.death_tour).forEach(function(k){
+            let universe = 0;
+            Object.keys(global.stats.death_tour[k]).forEach(function(u){
+                if (u !== 'm' && global.stats.death_tour[k][u] > universe){
+                    universe = global.stats.death_tour[k][u];
+                }
+            });
+            if (gdt_rank > universe){
+                gdt_rank = universe;
+            }
+        });
+
+        if (gdt_rank > 0){
+            unlockFeat('grand_death_tour',false,gdt_rank);
+        }
+    }
+}

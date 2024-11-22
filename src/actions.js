@@ -891,8 +891,8 @@ export const actions = {
                         }
                     }
 
-                    if (global.race['junker'] || global.race['sludge']){
-                        let race = global.race['sludge'] ? 'sludge' : 'junker';
+                    if (global.race['junker'] || global.race['sludge'] || global.race['ultra_sludge']){
+                        let race = global.race['sludge'] ? 'sludge' : (global.race['ultra_sludge'] ? 'ultra_sludge' : 'junker');
                         global.race['jtype'] = type;
                         allowed.push(race);
                     }
@@ -4641,6 +4641,9 @@ export function setChallengeScreen(){
     if ((global.stats.achieve['ascended'] || global.stats.achieve['corrupted']) && global.stats.achieve['extinct_junker'] || global['sim']){
         global.evolution['sludge'] = { count: 0 };
     }
+    if (global.stats.achieve['godslayer'] && global.stats.achieve['extinct_sludge'] || global['sim']){
+        global.evolution['ultra_sludge'] = { count: 0 };
+    }
     if (global.stats.achieve['bluepill'] || global['sim']){
         global.evolution['simulation'] = { count: 0 };
     }
@@ -4684,6 +4687,9 @@ export function setChallengeScreen(){
     }
     if ((global.stats.achieve['ascended'] || global.stats.achieve['corrupted']) && global.stats.achieve['extinct_junker'] || global['sim']){
         addAction('evolution','sludge');
+    }
+    if (global.stats.achieve['godslayer'] && global.stats.achieve['extinct_sludge'] || global['sim']){
+        addAction('evolution','ultra_sludge');
     }
     if (global.stats.achieve['whitehole'] || global.stats.achieve['ascended'] || global['sim']){
         addAction('evolution','orbit_decay');
@@ -5109,7 +5115,7 @@ raceList.forEach(function(race){
 
 if (Object.keys(global.stats.synth).length > 1){
     let synthList = deepClone(raceList);
-    synthList.push('junker'); synthList.push('sludge');
+    synthList.push('junker'); synthList.push('sludge'); synthList.push('ultra_sludge');
     synthList.forEach(race => actions.evolution[`s-${race}`] = {
         id: `evolution-s-${race}`,
         title(){ return races[race].name; },
@@ -5187,6 +5193,7 @@ const advancedChallengeList = {
     'emfield': {t: 'c', e: 'technophobe' },
     'inflation': {t: 'c', e: 'wheelbarrow' },
     'sludge': {t: 'c', e: 'extinct_sludge' },
+    'ultra_sludge': {t: 'c', e: 'extinct_ultra_sludge' },
     'orbit_decay': {t: 'c', e: 'lamentis' },
     //'nonstandard': {t: 'c', e: 'anathema' },
     'gravity_well': {t: 'c', e: 'escape_velocity' },
@@ -5210,7 +5217,7 @@ Object.keys(advancedChallengeList).forEach(challenge => actions.evolution[challe
             desc = desc + `<div class="has-text-danger">${loc('evo_challenge_micro_warn')}</div>`;
         }
         desc = desc + `<div>${loc(`evo_challenge_${challenge}_desc`)}</div>`;
-        if (['sludge','junker'].includes(challenge)){
+        if (['sludge','junker','ultra_sludge'].includes(challenge)){
             desc = desc + `<div class="has-text-danger">${loc('evo_start')}</div>`;
         }
         return desc;
@@ -5440,7 +5447,7 @@ function setChallenge(challenge){
         $(`#evolution-${challenge}`).removeClass('hl');
         if (challenge === 'sludge'){
             Object.keys(races).forEach(function(r){
-                if (r !== 'junker' && r !== 'sludge'){
+                if (r !== 'junker' && r !== 'sludge' && r !== 'ultra_sludge'){
                     $(`#evolution-${r}`).removeClass('is-hidden');
                 }
             });
@@ -5449,14 +5456,20 @@ function setChallenge(challenge){
     else {
         global.race[challenge] = 1;
         $(`#evolution-${challenge}`).addClass('hl');
-        if (challenge === 'sludge'){
+        if (challenge === 'sludge' || challenge === 'ultra_sludge'){
             Object.keys(races).forEach(function(r){
-                if (r !== 'junker' && r !== 'sludge'){
+                if (r !== 'junker' && r !== 'sludge' && r !== 'ultra_sludge'){
                     $(`#evolution-${r}`).addClass('is-hidden');
                 }
             });
             if (global.race['junker']){
                 delete global.race['junker'];
+            }
+            if (challenge !== 'sludge'){
+                delete global.race['sludge'];
+            }
+            if (challenge !== 'ultra_sludge'){
+                delete global.race['ultra_sludge'];
             }
         }
         if (challenge === 'orbit_decay'){
@@ -5476,7 +5489,7 @@ function setChallenge(challenge){
 function setScenario(scenario){
     if (!global.race['sludge']){
         Object.keys(races).forEach(function(r){
-            if (r !== 'junker' && r !== 'sludge'){
+            if (r !== 'junker' && r !== 'sludge' && r !== 'ultra_sludge'){
                 $(`#evolution-${r}`).removeClass('is-hidden');
             }
         });
@@ -5498,12 +5511,15 @@ function setScenario(scenario){
 
         if (scenario === 'junker'){
             Object.keys(races).forEach(function(r){
-                if (r !== 'junker' && r !== 'sludge'){
+                if (r !== 'junker' && r !== 'sludge' && r !== 'ultra_sludge'){
                     $(`#evolution-${r}`).addClass('is-hidden');
                 }
             });
             if (global.race['sludge']){
                 delete global.race['sludge'];
+            }
+            if (global.race['ultra_sludge']){
+                delete global.race['ultra_sludge'];
             }
         }
 
@@ -8071,7 +8087,7 @@ function sentience(){
         global.resource.DNA.display = false;
     }
 
-    if (global.race.species === 'junker' || global.race.species === 'sludge'){
+    if (global.race.species === 'junker' || global.race.species === 'sludge' || global.race.species === 'ultra_sludge'){
         setJType();
     }
     if (global.race.species !== 'junker'){
@@ -8079,6 +8095,9 @@ function sentience(){
     }
     if (global.race.species !== 'sludge'){
         delete global.race['sludge'];
+    }
+    if (global.race.species !== 'ultra_sludge'){
+        delete global.race['ultra_sludge'];
     }
 
     var evolve_actions = ['rna','dna','membrane','organelles','nucleus','eukaryotic_cell','mitochondria'];
