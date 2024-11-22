@@ -6002,8 +6002,8 @@ const techs = {
     },
     oil_well: {
         id: 'tech-oil_well',
-        title: loc('tech_oil_well'),
-        desc: loc('tech_oil_well'),
+        title(){ return global.race['blubber'] ? loc('tech_oil_refinery') : loc('tech_oil_well'); },
+        desc(){ return global.race['blubber'] ? loc('tech_oil_refinery') : loc('tech_oil_well'); },
         category: 'power_generation',
         era: 'industrialized',
         reqs: { high_tech: 3 },
@@ -6011,7 +6011,7 @@ const techs = {
         cost: {
             Knowledge(){ return 27000; }
         },
-        effect: loc('tech_oil_well_effect'),
+        effect(){ return global.race['blubber'] ? loc('tech_oil_refinery_effect') : loc('tech_oil_well_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.city.oil_well);

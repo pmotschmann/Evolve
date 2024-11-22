@@ -4,7 +4,7 @@ import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { traits, races, fathomCheck, traitCostMod } from './races.js';
 import { spatialReasoning, unlockContainers } from './resources.js';
 import { loadFoundry, jobScale, limitCraftsmen } from './jobs.js';
-import { armyRating, govCivics, garrisonSize, mercCost } from './civics.js';
+import { armyRating, govCivics, garrisonSize, mercCost, soldierDeath } from './civics.js';
 import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc, actions, initStruct } from './actions.js';
 import { checkRequirements, incrementStruct, astrialProjection, ascendLab } from './space.js';
 import { asphodelResist } from './edenic.js';
@@ -2715,8 +2715,7 @@ function casualties(demons,pat_armor,ambush,report){
         report.wounded = wounded;
         report.died = dead;
         global.civic.garrison.wounded += wounded;
-        global.civic.garrison.workers -= dead;
-        global.stats.died += dead;
+        soldierDeath(dead);
     }
     return dead;
 }
@@ -3028,8 +3027,7 @@ export function bloodwar(){
             siege_report.soldiers = global.portal.fortress.garrison;
             day_report.stats.died += global.portal.fortress.garrison;
             global.portal.fortress.patrols = 0;
-            global.stats.died += global.portal.fortress.garrison;
-            global.civic.garrison.workers -= global.portal.fortress.garrison;
+            soldierDeath(global.portal.fortress.garrison);
             global.portal.fortress.garrison = 0;
             global.portal.fortress['assigned'] = 0;
         }

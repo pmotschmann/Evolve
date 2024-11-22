@@ -2,7 +2,7 @@ import { global, seededRandom, keyMultiplier, sizeApproximation, p_on } from './
 import { loc } from './locale.js';
 import { calcPrestige, clearElement, popover, clearPopper, vBind, timeFormat, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat } from './functions.js';
 import { universeAffix } from './achieve.js';
-import { races, racialTrait, traits, planetTraits, biomes, fathomCheck } from './races.js';
+import { races, racialTrait, traits, planetTraits, biomes, fathomCheck, blubberFill } from './races.js';
 import { defineGovernor, govActive } from './governor.js';
 import { drawTech } from  './actions.js';
 import { jobScale } from './jobs.js';
@@ -1617,8 +1617,7 @@ function war_campaign(gov){
             death -= reduction;
             wounded += reduction;
         }
-        global.civic.garrison.workers -= death;
-        global.stats.died += death;
+        soldierDeath(death);
         global.civic.garrison.protest += death;
         if (death > wounded){
             global.civic.garrison.wounded -= wounded;
@@ -1933,8 +1932,7 @@ function war_campaign(gov){
         if (death > global.civic.garrison.raid){
             death = global.civic.garrison.raid;
         }
-        global.civic.garrison.workers -= death;
-        global.stats.died += death;
+        soldierDeath(death);
         global.civic.garrison.protest += death;
         if (death > wounded){
             global.civic.garrison.wounded -= wounded;
@@ -2083,6 +2081,16 @@ export function weaponTechModifer(){
         weapon_tech += global.tech.military >= 11 ? 2 : 1;
     }
     return weapon_tech;
+}
+
+export function soldierDeath(v){
+    let killed = v;
+    if (killed > global.civic.garrison.workers){
+        killed = global.civic.garrison.workers;
+    }
+    global.civic.garrison.workers -= killed;
+    global.stats.died += killed;
+    blubberFill(killed);
 }
 
 export function armyRating(val,type,wound){

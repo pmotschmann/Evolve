@@ -2,7 +2,7 @@ import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resiz
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat, checkAdept } from './achieve.js';
 import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone, addATime, exceededATimeThreshold, loopTimers, calcQuantumLevel } from './functions.js';
-import { races, traits, racialTrait, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck } from './races.js';
+import { races, traits, racialTrait, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobScale, workerScale, limitCraftsmen, loadServants} from './jobs.js';
 import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, luxGoodPrice } from './industry.js';
@@ -3711,6 +3711,7 @@ function fastLoop(){
                     global.resource[global.race.species].amount--;
                     modRes('Food', 10000 * traits.anthropophagite.vars()[0]);
                     global.stats.murders++;
+                    blubberFill(1);
                 }
                 else {
                     fed = false;
@@ -3772,10 +3773,12 @@ function fastLoop(){
                                 }
                                 global.resource[global.race.species].amount -= starved;
                                 global.stats.starved += starved;
+                                blubberFill(starved);
                             }
                             else if (generated < consume / threshold){
                                 global['resource'][global.race.species].amount--;
                                 global.stats.starved++;
+                                blubberFill(1);
                             }
                         }
                     }
@@ -3786,6 +3789,7 @@ function fastLoop(){
                 global.resource[global.race.species].amount--;
                 modRes('Food', 10000 * traits.anthropophagite.vars()[0]);
                 global.stats.murders++;
+                blubberFill(1);
             }
         }
 
@@ -6461,7 +6465,20 @@ function fastLoop(){
             }
 
             let oil_extractor = global.space['oil_extractor'] ? p_on['oil_extractor'] * production('oil_extractor') : 0;
-            let oil_well = global.city['oil_well'] ? production('oil_well') * global.city.oil_well.count : 0;
+
+            let fueled_oil_wells = global.city.oil_well.count;
+            if (global.race['blubber']){
+                let tick = traits.blubber.vars()[0] * time_multiplier / 5;
+                if (global.city.oil_well.dead < fueled_oil_wells * tick){
+                    fueled_oil_wells = Math.floor(global.city.oil_well.dead / tick);
+                }
+                global.city.oil_well.dead -= fueled_oil_wells * tick;
+                if (global.city.oil_well.dead < tick){
+                    global.city.oil_well.dead = 0;
+                }
+            }
+
+            let oil_well = global.city['oil_well'] ? production('oil_well') * fueled_oil_wells : 0;
             oil_extractor *= production('psychic_boost','Oil');
             oil_well *= production('psychic_boost','Oil');
 
@@ -9750,7 +9767,7 @@ function midLoop(){
                 global.resource[res].amount = global.resource[res].max;
             }
             else if (global.resource[res].amount < 0){
-                global.resource[res].amount = 0;
+                //global.resource[res].amount = 0;
             }
             if (global.resource[res].amount >= global.resource[res].max * 0.99){
                 if (!$(`#res${res} .count`).hasClass('has-text-warning')){
@@ -10952,6 +10969,11 @@ function longLoop(){
                 if (global.resource[global.race.species].amount < 0){ global.resource[global.race.species].amount = 0; }
                 global.stats.uDead += died;
             }
+        }
+
+        if (global.race['blubber'] && global.resource[global.race.species].amount >= 50){
+            let oldAge = Math.rand(0,1 + Math.floor(global.resource[global.race.species].amount / 50));
+            blubberFill(oldAge);
         }
 
         // Market price fluctuation

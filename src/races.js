@@ -3756,22 +3756,22 @@ export const traits = {
         name: loc('trait_blubber_name'),
         desc: loc('trait_blubber'),
         type: 'major',
-        val: -5,
+        val: -2,
         vars(r){
-            // [???]
+            // [Refine your dead to make Oil]
             switch (r || traitRank('blubber') || 1){
                 case 0.25:
-                    return [1];
+                    return [2];
                 case 0.5:
-                    return [1];
+                    return [1.5];
                 case 1:
                     return [1];
                 case 2:
-                    return [1];
+                    return [0.75];
                 case 3:
-                    return [1];
+                    return [0.5];
                 case 4:
-                    return [1];
+                    return [0.25];
             }
         }
     },
@@ -6666,7 +6666,10 @@ export function setTraitRank(trait,opts){
                 global.race[trait] = opts['down'] ? 1 : 3;
                 return true;
             case 3:
-                global.race[trait] = opts['down'] ? 2 : 3;
+                global.race[trait] = opts['down'] ? 2 : 4;
+                return opts['down'] ? true : false;
+            case 4:
+                global.race[trait] = opts['down'] ? 3 : 4;
                 return opts['down'] ? true : false;
         }
     }
@@ -7179,7 +7182,7 @@ function minorWish(parent){
                             }
                             else {
                                 gain = Math.floor(seededRandom(1,Math.floor(global.resource[res].max * 0.25)));
-                                global.resource[res].amount += Math.floor(seededRandom(1,Math.floor(global.resource[res].max * 0.25)));
+                                global.resource[res].amount += gain;
                                 if (global.resource[res].amount > global.resource[res].max){
                                     global.resource[res].amount = global.resource[res].max;
                                 }
@@ -7545,7 +7548,7 @@ function majorWish(parent){
                             }
                             else {
                                 gain = Math.floor(seededRandom(10000,Math.floor(global.resource[res].max * 0.5)));
-                                global.resource[res].amount += Math.floor(seededRandom(10000,Math.floor(global.resource[res].max * 0.5)));
+                                global.resource[res].amount += gain;
                                 if (global.resource[res].amount > global.resource[res].max){
                                     global.resource[res].amount = global.resource[res].max;
                                 }
@@ -7735,7 +7738,7 @@ function majorWish(parent){
                     let options = ['flower'];
                     let rivals = ['gov0','gov1','gov2'];
                     rivals.forEach(function(gov){
-                        if (!global.civic.foreign[gov].anx && !global.civic.foreign[gov].buy && !global.civic.foreign[gov].occ){
+                        if (!global.civic.foreign[gov].anx && !global.civic.foreign[gov].buy && !global.civic.foreign[gov].occ && !global.tech['world_control']){
                             options.push(gov);
                         }
                     });
@@ -8105,6 +8108,7 @@ function psychicKill(parent){
                     global.resource.Energy.amount -= cost;
                     global.resource[global.race.species].amount--;
                     global.stats.psykill++;
+                    blubberFill(1);
                     if (global.race['anthropophagite']){
                         modRes('Food', 10000 * traits.anthropophagite.vars()[0]);
                     }
@@ -8368,4 +8372,14 @@ function psychicCapture(parent){
             elm: '#psychicCapture > div > button'
         }
     );
+}
+
+export function blubberFill(v){
+    if (global.race['blubber'] && global.city.hasOwnProperty('oil_well')){
+        let cap = global.city.oil_well.count * 50;
+        global.city.oil_well.dead += v;
+        if (global.city.oil_well.dead > cap){
+            global.city.oil_well.dead = cap;
+        }
+    }
 }

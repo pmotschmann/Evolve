@@ -2,7 +2,7 @@ import { global, p_on, support_on, sizeApproximation, keyMap } from './vars.js';
 import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect, adjustCosts, get_qlevel, timeCheck, buildQueue } from './functions.js';
 import { races, traits } from './races.js';
 import { spatialReasoning, unlockContainers } from './resources.js';
-import { armyRating, garrisonSize } from './civics.js';
+import { armyRating, garrisonSize, soldierDeath } from './civics.js';
 import { jobScale, job_desc, loadFoundry, limitCraftsmen } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
 import { actions, payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, buildTemplate, casinoEffect, housingLabel, structName } from './actions.js';
@@ -4922,6 +4922,9 @@ function shipyardShipCompare(a,b){
 }
 
 function drawShips(){
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 5)){
+        return;
+    }
     clearShipDrag();
     clearElement($('#shipList'));
 
@@ -5308,8 +5311,7 @@ export function tritonWar(){
         let defense = armyRating(global.space.fob.troops,'army',wounded);
 
         let died = Math.rand(0,wounded + 1);
-        global.civic.garrison.workers -= died;
-        global.stats.died += died;
+        soldierDeath(died);
         global.civic.garrison.wounded -= died;
 
         let kills = Math.min(Math.rand(0,defense),global.space.fob.enemy);

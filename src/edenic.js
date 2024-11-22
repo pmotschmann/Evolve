@@ -8,7 +8,7 @@ import { actions } from './actions.js';
 import { jobScale, workerScale } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
 import { loc } from './locale.js';
-import { armyRating, armorCalc, garrisonSize, mercCost } from './civics.js';
+import { armyRating, armorCalc, garrisonSize, mercCost, soldierDeath } from './civics.js';
 import { govActive } from './governor.js';
 import { races, traits, traitCostMod, racialTrait } from './races.js';
 
@@ -861,9 +861,8 @@ const edenicModules = {
 
                 if (remain <= 0){
                     global.eden.fortress['siege'] = { loss: armySize, damage: 0 };
-                    global.civic.garrison.workers -= armySize;
                     global.civic.garrison.protest += armySize;
-                    global.stats.died += armySize;
+                    soldierDeath(armySize);
                     messageQueue(loc('eden_siege_fortress_fail'),'warning',false,['combat']);
                 }
                 else {
@@ -879,9 +878,8 @@ const edenicModules = {
                     remain = remain - more_dead;
                     dead += more_dead;
 
-                    global.civic.garrison.workers -= dead;
                     global.civic.garrison.protest += dead;
-                    global.stats.died += dead;
+                    soldierDeath(dead);
 
                     global.civic.garrison.wounded += Math.floor(seededRandom(0,remain,true));
                     if (global.civic.garrison.wounded > global.civic.garrison.workers){
@@ -940,9 +938,8 @@ const edenicModules = {
 
                 if (remain <= 0){
                     global.eden.fortress['raid'] = { loss: armySize, damage: 0 };
-                    global.civic.garrison.workers -= armySize;
                     global.civic.garrison.protest += armySize;
-                    global.stats.died += armySize;
+                    soldierDeath(armySize);
                     messageQueue(loc('eden_raid_fortress_fail'),'warning',false,['combat']);
                 }
                 else {
@@ -953,9 +950,8 @@ const edenicModules = {
                     let troops = Math.ceil(armyRating(remain,'Troops'));
                     let damage = Math.floor(seededRandom(0,troops,true) / 50);
 
-                    global.civic.garrison.workers -= dead;
                     global.civic.garrison.protest += dead;
-                    global.stats.died += dead;
+                    soldierDeath(dead);
 
                     global.civic.garrison.wounded += Math.floor(seededRandom(0,remain,true));
                     if (global.civic.garrison.wounded > global.civic.garrison.workers){
@@ -1008,9 +1004,8 @@ const edenicModules = {
                     dead = deadCalc(dead, armySize);
                     let remain = armySize - dead;
 
-                    global.civic.garrison.workers -= dead;
                     global.civic.garrison.protest += dead;
-                    global.stats.died += dead;
+                    soldierDeath(dead);
 
                     global.civic.garrison.wounded += Math.floor(seededRandom(0,remain,true));
                     if (global.civic.garrison.wounded > global.civic.garrison.workers){
@@ -1024,9 +1019,8 @@ const edenicModules = {
                 }
                 else {
                     global.eden.fortress['ambush'] = { loss: armySize, damage: false };
-                    global.civic.garrison.workers -= armySize;
                     global.civic.garrison.protest += armySize;
-                    global.stats.died += armySize;
+                    soldierDeath(armySize);
                     messageQueue(loc('eden_ambush_patrol_fail'),'warning',false,['combat']);
                 }
 
@@ -1069,9 +1063,8 @@ const edenicModules = {
                 if (payCosts($(this)[0])){
                     messageQueue(loc('eden_scout_elysium_result'),'info',false,['progress']);
                     global.settings.eden.isle = true;
-                    global.civic.garrison.workers -= jobScale(50);
                     global.civic.garrison.protest += jobScale(50);
-                    global.stats.died += jobScale(50);
+                    soldierDeath(jobScale(50));
                     return true;
                 }
                 return false;

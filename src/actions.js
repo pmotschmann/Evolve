@@ -2,7 +2,7 @@ import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, 
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
-import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural } from './races.js';
+import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill } from './races.js';
 import { defineResources, unlockCrates, unlockContainers, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources, gridDefs } from './industry.js';
@@ -1414,9 +1414,10 @@ export const actions = {
                     else {
                         let sacrifices = global.civic[global.civic.d_job].workers;
                         if (sacrifices > 0){
-                            global['resource'][global.race.species].amount--;
+                            global.resource[global.race.species].amount--;
                             global.civic[global.civic.d_job].workers--;
                             global.stats.sac++;
+                            blubberFill(1);
                             modRes('Food', Math.rand(250,1000), true);
                             let low = 300;
                             let high = 600;
@@ -3153,8 +3154,8 @@ export const actions = {
         },
         oil_well: {
             id: 'city-oil_well',
-            title: loc('city_oil_well'),
-            desc: loc('city_oil_well_desc'),
+            title(){ return global.race['blubber'] ? loc('tech_oil_refinery') : loc('city_oil_well'); },
+            desc(){ return global.race['blubber'] ? loc('city_oil_well_blubber') : loc('city_oil_well_desc'); },
             category: 'industrial',
             reqs: { oil: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -3167,13 +3168,18 @@ export const actions = {
             effect(){
                 let oil = +(production('oil_well')).toFixed(2);
                 let oc = spatialReasoning(500);
-                return loc('city_oil_well_effect',[oil,oc]);
+                let desc = `<div>${loc('city_oil_well_effect',[oil,oc])}</div>`;
+                if (global.race['blubber']){
+                    desc += `<div>${loc('city_oil_well_bodies',[+(global.city.oil_well.dead).toFixed(1),50 * global.city.oil_well.count])}</div>`;
+                    desc += `<div>${loc('city_oil_well_consume',[traits.blubber.vars()[0]])}</div>`;
+                }
+                return desc;
             },
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('oil_well','city');
                     global['resource']['Oil'].max += spatialReasoning(500);
-                    if (global.city['oil_well'].count === 1) {
+                    if (global.city.oil_well.count === 1) {
                         global.resource.Oil.display = true;
                         defineIndustry();
                     }
@@ -3183,7 +3189,7 @@ export const actions = {
             },
             struct(){
                 return {
-                    d: { count: 0 },
+                    d: { count: 0, dead: 0 },
                     p: ['oil_well','city']
                 };
             },

@@ -4,7 +4,7 @@ import { races, traits, fathomCheck } from './races.js';
 import { govTitle, garrisonSize, armyRating } from './civics.js';
 import { housingLabel, drawTech, actions } from './actions.js';
 import { tradeRatio } from './resources.js';
-import { checkControlling } from './civics.js';
+import { checkControlling, soldierDeath } from './civics.js';
 import { govActive } from './governor.js';
 import { unlockAchieve } from './achieve.js';
 import { jobScale } from './jobs.js';
@@ -153,9 +153,8 @@ export const events = {
                 killed = Math.round(killed / 2);
                 wounded = Math.round(wounded / 2);
             }
-            global.civic.garrison.workers -= killed;
+            soldierDeath(killed);
             global.civic.garrison.wounded += wounded;
-            global.stats.died += killed;
             if (global.civic.garrison.wounded > global.civic.garrison.workers){
                 global.civic.garrison.wounded = global.civic.garrison.workers;
             }
@@ -209,9 +208,8 @@ export const events = {
                 killed = Math.round(killed / 2);
                 wounded = Math.round(wounded / 2);
             }
-            global.civic.garrison.workers -= killed;
+            soldierDeath(killed);;
             global.civic.garrison.wounded += wounded;
-            global.stats.died += killed;
             if (global.civic.garrison.wounded > global.civic.garrison.workers){
                 global.civic.garrison.wounded = global.civic.garrison.workers;
             }
@@ -311,9 +309,8 @@ export const events = {
                 killed = Math.round(killed / 2);
                 wounded = Math.round(wounded / 2);
             }
-            global.civic.garrison.workers -= killed;
+            soldierDeath(killed);
             global.civic.garrison.wounded += wounded;
-            global.stats.died += killed;
             if (global.civic.garrison.wounded > global.civic.garrison.workers){
                 global.civic.garrison.wounded = global.civic.garrison.workers;
             }
@@ -1050,9 +1047,8 @@ function pillaged(gov,serious){
         killed = Math.round(killed / 2);
         wounded = Math.round(wounded / 2);
     }
-    global.civic.garrison.workers -= killed;
+    soldierDeath(killed);
     global.civic.garrison.wounded += wounded;
-    global.stats.died += killed;
     if (global.civic.garrison.wounded > global.civic.garrison.workers){
         global.civic.garrison.wounded = global.civic.garrison.workers;
     }
