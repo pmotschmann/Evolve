@@ -1969,7 +1969,7 @@ export function keyMultiplier(){
     return number;
 }
 
-function convertVersion(version){
+export function convertVersion(version){
     let vNum = version.split('.',3);
     vNum[0] *= 100000;
     vNum[1] *= 1000;

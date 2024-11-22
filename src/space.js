@@ -7422,7 +7422,7 @@ export function ascendLab(hybrid,wiki){
         $(`#city`).append(lab);
     }
 
-    lab.append(`<div><h3 class="has-text-danger">${loc('genelab_title')}</h3> - <span class="has-text-warning">${loc('genelab_genes')} {{ g.genes }}</span> - <span class="has-text-warning">${loc('trait_untapped_name')}: {{ g.genes | untapped }}</span></div>`);
+    lab.append(`<div><h3 class="has-text-danger">${loc('genelab_title')}</h3> - <span class="has-text-warning">${loc('genelab_genes')} {{ g.genes }}</span> - <span class="has-text-warning">${loc('trait_untapped_name')}: {{ g.genes | untapped }}</span> - <span class="has-text-caution">${loc('genelab_neg')} {{ td.neg }}/10</span></div>`);
 
     if (wiki){
         lab.append(`
@@ -7536,8 +7536,12 @@ export function ascendLab(hybrid,wiki){
     }
     lab.append(buttons);
 
+    let trait_data = {
+        neg: 0
+    };
+
     let slot = hybrid ? 'race1' : 'race0';
-    var genome = global.hasOwnProperty('custom') && global.custom.hasOwnProperty(slot) ? {
+    let genome = global.hasOwnProperty('custom') && global.custom.hasOwnProperty(slot) ? {
         name: global.custom[slot].name,
         desc: global.custom[slot].desc,
         entity: global.custom[slot].entity,
@@ -7593,7 +7597,8 @@ export function ascendLab(hybrid,wiki){
         data: {
             g: genome,
             w: wikiVars,
-            err: error
+            err: error,
+            td: trait_data,
         },
         methods: {
             val(type){
@@ -7615,31 +7620,48 @@ export function ascendLab(hybrid,wiki){
                 }
             },
             geneEdit(){
+                let neg_traits = 0;
+                for (let i=0; i<genome.traitlist.length; i++){
+                    if (traits[genome.traitlist[i]].val < 0){
+                        neg_traits++;
+                    }
+                }
+                trait_data.neg = neg_traits;
                 genome.genes = calcGenomeScore(genome,(wiki ? wikiVars : false));
             },
             setRace(){
                 if (genome.fanaticism && !genome.traitlist.includes(genome.fanaticism)){ return false; }
                 if (calcGenomeScore(genome) >= 0 && genome.name.length > 0 && genome.desc.length > 0 && genome.entity.length > 0 && genome.home.length > 0
                     && genome.red.length > 0 && genome.hell.length > 0 && genome.gas.length > 0 && genome.gas_moon.length > 0 && genome.dwarf.length > 0){
-                    global.custom[slot] = {
-                        name: genome.name,
-                        desc: genome.desc,
-                        entity: genome.entity,
-                        home: genome.home,
-                        red: genome.red,
-                        hell: genome.hell,
-                        gas: genome.gas,
-                        gas_moon: genome.gas_moon,
-                        dwarf: genome.dwarf,
-                        titan: genome.titan,
-                        enceladus: genome.enceladus,
-                        triton: genome.triton,
-                        eris: genome.eris,
-                        genus: genome.genus,
-                        traits: genome.traitlist,
-                        fanaticism: genome.fanaticism,
-                    };
-                    ascend();
+
+                    let neg_traits = 0;
+                    for (let i=0; i<genome.traitlist.length; i++){
+                        if (traits[genome.traitlist[i]].val < 0){
+                            neg_traits++;
+                        }
+                    }
+
+                    if (neg_traits <= 10){
+                        global.custom[slot] = {
+                            name: genome.name,
+                            desc: genome.desc,
+                            entity: genome.entity,
+                            home: genome.home,
+                            red: genome.red,
+                            hell: genome.hell,
+                            gas: genome.gas,
+                            gas_moon: genome.gas_moon,
+                            dwarf: genome.dwarf,
+                            titan: genome.titan,
+                            enceladus: genome.enceladus,
+                            triton: genome.triton,
+                            eris: genome.eris,
+                            genus: genome.genus,
+                            traits: genome.traitlist,
+                            fanaticism: genome.fanaticism,
+                        };
+                        ascend();
+                    }
                 }
             },
             allowed(t){
@@ -7757,6 +7779,14 @@ export function ascendLab(hybrid,wiki){
                         genome.fanaticism = importCustom.hasOwnProperty('fanaticism') ? importCustom.fanaticism : false,
                         genome.traitlist = fixTraitlist;
                         genome.genes = calcGenomeScore(genome,(wiki ? wikiVars : false));
+
+                        let neg_traits = 0;
+                        for (let i=0; i<genome.traitlist.length; i++){
+                            if (traits[genome.traitlist[i]].val < 0){
+                                neg_traits++;
+                            }
+                        }
+                        trait_data.neg = neg_traits;
 
                         error.msg = "";
                     }

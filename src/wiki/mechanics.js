@@ -651,7 +651,7 @@ export function mechanicsPage(content){
     }
 
     { // Customs & Untapped Potential
-        let custom = infoBoxBuilder(mainContent,{ name: 'custom', template: 'mechanics', label: loc('wiki_mechanics_custom'), paragraphs: 12, break: [3,5,9,11], h_level: 2,
+        let custom = infoBoxBuilder(mainContent,{ name: 'custom', template: 'mechanics', label: loc('wiki_mechanics_custom'), paragraphs: 14, break: [3,5,9,11,13], h_level: 2,
             para_data: {
                 1: [loc('wiki_resets_ascension')],
                 2: [loc('wiki_resets_ascension')],
@@ -661,7 +661,9 @@ export function mechanicsPage(content){
                 8: [loc('achieve_technophobe_name'),5,7],
                 9: [loc('tech_fanaticism'),loc('tech_deify')],
                 11: [0,loc('resource_Genes_name')],
-                12: [loc('resource_Genes_name'),loc('trait_untapped_name')]
+                12: [loc('resource_Genes_name'),loc('trait_untapped_name')],
+                13: [10],
+                14: [10,'1.4.0',loc('trait_overtapped_name')]
             },
             data_link: {
                 1: ['wiki.html#resets-prestige-ascension'],

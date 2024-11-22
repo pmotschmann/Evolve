@@ -1,4 +1,4 @@
-import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, int_on, gal_on, spire_on, tmp_vars, setupStats } from './vars.js';
+import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, int_on, gal_on, spire_on, tmp_vars, setupStats, convertVersion } from './vars.js';
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
@@ -8305,6 +8305,17 @@ function sentience(){
             genus: global.custom.race0.genus,
             traitlist: global.custom.race0.traits
         });
+
+        let neg_traits = 0;
+        for (let i=0; i<global.custom.race0.traits.length; i++){
+            if (traits[global.custom.race0.traits[i]].val < 0){
+                neg_traits++;
+            }
+        }
+        if (neg_traits > 10 && convertVersion(global['version']) > 104000){
+            let suffering = convertVersion(global['version']) > 104001 ? 2 : 1;
+            global.race['overtapped'] = (neg_traits - 10) * suffering;
+        }
     }
 
     if (global.race.unfathomable){
