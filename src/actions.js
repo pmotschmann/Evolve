@@ -3169,8 +3169,9 @@ export const actions = {
                 let oil = +(production('oil_well')).toFixed(2);
                 let oc = spatialReasoning(500);
                 let desc = `<div>${loc('city_oil_well_effect',[oil,oc])}</div>`;
-                if (global.race['blubber']){
-                    desc += `<div>${loc('city_oil_well_bodies',[+(global.city.oil_well.dead).toFixed(1),50 * global.city.oil_well.count])}</div>`;
+                if (global.race['blubber'] && global.city.hasOwnProperty('oil_well')){
+                    let maxDead = global.city.oil_well.count + (global.space['oil_extractor'] ? global.space.oil_extractor.count : 0);
+                    desc += `<div>${loc('city_oil_well_bodies',[+(global.city.oil_well.dead).toFixed(1),50 * maxDead])}</div>`;
                     desc += `<div>${loc('city_oil_well_consume',[traits.blubber.vars()[0]])}</div>`;
                 }
                 return desc;

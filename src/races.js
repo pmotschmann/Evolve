@@ -3756,7 +3756,7 @@ export const traits = {
         name: loc('trait_blubber_name'),
         desc: loc('trait_blubber'),
         type: 'major',
-        val: -2,
+        val: -3,
         vars(r){
             // [Refine your dead to make Oil]
             switch (r || traitRank('blubber') || 1){
@@ -8376,7 +8376,7 @@ function psychicCapture(parent){
 
 export function blubberFill(v){
     if (global.race['blubber'] && global.city.hasOwnProperty('oil_well')){
-        let cap = global.city.oil_well.count * 50;
+        let cap = (global.city.oil_well.count + (global.space['oil_extractor'] ? global.space.oil_extractor.count : 0)) * 50;
         global.city.oil_well.dead += v;
         if (global.city.oil_well.dead > cap){
             global.city.oil_well.dead = cap;

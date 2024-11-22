@@ -6469,21 +6469,32 @@ function fastLoop(){
                 }
             }
 
-            let oil_extractor = global.space['oil_extractor'] ? p_on['oil_extractor'] * production('oil_extractor') : 0;
-
             let fueled_oil_wells = global.city.oil_well.count;
+            let fueled_oil_extractor = p_on['oil_extractor'];
             if (global.race['blubber']){
                 let tick = traits.blubber.vars()[0] * time_multiplier / 5;
-                if (global.city.oil_well.dead < fueled_oil_wells * tick){
-                    fueled_oil_wells = Math.floor(global.city.oil_well.dead / tick);
+                if (fueled_oil_wells > 0){
+                    if (global.city.oil_well.dead < fueled_oil_wells * tick){
+                        fueled_oil_wells = Math.floor(global.city.oil_well.dead / tick);
+                    }
+                    global.city.oil_well.dead -= fueled_oil_wells * tick;
+                    if (global.city.oil_well.dead < tick){
+                        global.city.oil_well.dead = 0;
+                    }
                 }
-                global.city.oil_well.dead -= fueled_oil_wells * tick;
-                if (global.city.oil_well.dead < tick){
-                    global.city.oil_well.dead = 0;
+                if (fueled_oil_extractor > 0){
+                    if (global.city.oil_well.dead < fueled_oil_extractor * tick){
+                        fueled_oil_extractor = Math.floor(global.city.oil_well.dead / tick);
+                    }
+                    global.city.oil_well.dead -= fueled_oil_wells * tick;
+                    if (global.city.oil_well.dead < tick){
+                        global.city.oil_well.dead = 0;
+                    }
                 }
             }
 
             let oil_well = global.city['oil_well'] ? production('oil_well') * fueled_oil_wells : 0;
+            let oil_extractor = global.space['oil_extractor'] ? fueled_oil_extractor * production('oil_extractor') : 0;
             oil_extractor *= production('psychic_boost','Oil');
             oil_well *= production('psychic_boost','Oil');
 
