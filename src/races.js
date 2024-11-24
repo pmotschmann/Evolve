@@ -3964,19 +3964,19 @@ export const traits = {
             // [Type, Power, Industry, Smelting, Bioscience, Combat]
             switch (r || traitRank('elemental') || 1){
                 case 0.1:
-                    return [element, 0.1, 0.01, 0.02, 0.005, 1];
+                    return [element, 0.08, 0.01, 0.02, 0.005, 1];
                 case 0.25:
-                    return [element, 0.2, 0.02, 0.03, 0.01, 2];
+                    return [element, 0.12, 0.02, 0.03, 0.01, 2];
                 case 0.5:
-                    return [element, 0.4, 0.04, 0.06, 0.02, 4];
+                    return [element, 0.16, 0.04, 0.06, 0.02, 4];
                 case 1:
-                    return [element, 0.6, 0.06, 0.09, 0.03, 6];
+                    return [element, 0.2, 0.06, 0.09, 0.03, 6];
                 case 2:
-                    return [element, 0.8, 0.08, 0.12, 0.04, 8];
+                    return [element, 0.23, 0.08, 0.12, 0.04, 8];
                 case 3:
-                    return [element, 1.0, 0.10, 0.15, 0.05, 10];
+                    return [element, 0.26, 0.10, 0.15, 0.05, 10];
                 case 4:
-                    return [element, 1.2, 0.12, 0.18, 0.06, 12];
+                    return [element, 0.28, 0.12, 0.18, 0.06, 12];
             }
         }
     },
@@ -6923,13 +6923,10 @@ export function setImitation(mod){
                 i_traits.push(trait);
             }
         });
-        if (global.race['srace'] === 'custom'){
-            let list = ['evil','evil'];
+        if (['custom','hybrid'].includes(global.race['srace'])){
+            let list = [races[global.race['srace']].fanaticism,'evil'];
             Object.keys(races[global.race['srace']].traits).forEach(function (trait) {
-                if (traits[trait].val > traits[list[0]].val){
-                    list[0] = trait;
-                }
-                else if (traits[trait].val < traits[list[1]].val){
+                if (traits[trait].val < traits[list[1]].val){
                     list[1] = trait;
                 }
             });

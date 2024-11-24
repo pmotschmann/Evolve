@@ -1890,7 +1890,7 @@ function fastLoop(){
         }
 
         if (global.race['elemental'] && traits.elemental.vars()[0] === 'electric'){
-            let power = powerModifier(highPopAdjust(global.resource[global.race.species].amount * traits.elemental.vars()[1]));
+            let power = powerModifier(highPopAdjust((global.resource[global.race.species].amount * traits.elemental.vars()[1]) ** 1.28));
             max_power -= power;
             power_grid += power;
             power_generated[loc('trait_elemental_name')] = power;
@@ -8942,7 +8942,7 @@ function midLoop(){
             if (p_on['ascension_trigger'] && global.eden.hasOwnProperty('encampment') && global.eden.encampment.asc){
                 let heatSink = actions.interstellar.int_sirius.ascension_trigger.heatSink();
                 heatSink = heatSink < 0 ? Math.abs(heatSink) : 0;
-                let omniscience = +(150 + (heatSink / 10)).toFixed(0);
+                let omniscience = +(150 + (heatSink ** 0.95 / 10)).toFixed(0);
 
                 let gain = (p_on['encampment'] || 0) * omniscience;
                 caps['Omniscience'] += gain;
@@ -9225,6 +9225,9 @@ function midLoop(){
         }
         if (p_on['stellar_forge']){
             lCaps['craftsman'] += jobScale(p_on['stellar_forge'] * 2);
+        }
+        if (global.tech['elysium'] && global.tech.elysium >= 19 && p_on['sacred_smelter']){
+            lCaps['craftsman'] += jobScale(p_on['sacred_smelter'] * 3);
         }
         if (global.portal['carport']){
             lCaps['hell_surveyor'] += jobScale(global.portal.carport.count) - global.portal.carport.damaged;
@@ -10389,6 +10392,10 @@ function midLoop(){
                 }
                 if (!global.stats.spire[affix].hasOwnProperty(global.portal.spire.boss) || rank > global.stats.spire[affix][global.portal.spire.boss]){
                     global.stats.spire[affix][global.portal.spire.boss] = rank;
+                }
+
+                if ((global.portal.spire.boss === 'djinni' && global.race.species === 'djinn') || global.portal.spire.boss === global.race.species){
+                    unlockAchieve('doppelganger');
                 }
 
                 genSpireFloor();

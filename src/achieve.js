@@ -12,7 +12,7 @@ const achieve_list = {
         'laser_shark','infested','mass_starvation','colonist','world_domination','illuminati',
         'syndicate','cult_of_personality','doomed','pandemonium','blood_war','landfill','seeder',
         'miners_dream','shaken','blacken_the_sun','trade','resonance','enlightenment','gladiator',
-        'corrupted','red_dead','godslayer','traitor'
+        'corrupted','red_dead','godslayer','traitor','doppelganger'
     ],
     species: [
         'mass_extinction','extinct_human','extinct_elven','extinct_orc','extinct_cath','extinct_wolven','extinct_vulpine','extinct_centaur',
@@ -669,7 +669,7 @@ export function checkAchievements(){
             let current = {};
             Object.keys(global.stats.spire[universe]).forEach(function(boss){
                 if (monsters[boss]){
-                    if (!highest.hasOwnProperty(boss) || highest[boss] < global.stats.spire[universe][boss]){
+                    if (universe !== 'm' && (!highest.hasOwnProperty(boss) || highest[boss] < global.stats.spire[universe][boss])){
                         highest[boss] = global.stats.spire[universe][boss];
                     }
                     if (global.stats.spire[universe][boss] > 0){
@@ -2739,6 +2739,9 @@ export function drawStats(){
     }
     if (global.stats.descend > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_descension_resets")}</span> {{ s.descend | format }}</div>`);
+    }
+    if (global.stats.apotheosis > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_apotheosis_resets")}</span> {{ s.apotheosis | format }}</div>`);
     }
     if (global.stats.aiappoc > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_aiappoc_resets")}</span> {{ s.aiappoc | format }}</div>`);

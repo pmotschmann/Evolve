@@ -5114,8 +5114,7 @@ raceList.forEach(function(race){
 });
 
 if (Object.keys(global.stats.synth).length > 1){
-    let synthList = deepClone(raceList);
-    synthList.push('junker'); synthList.push('sludge'); synthList.push('ultra_sludge');
+    let synthList = deepClone(raceList.filter(r => !['nano','synth'].includes(r)));
     synthList.forEach(race => actions.evolution[`s-${race}`] = {
         id: `evolution-s-${race}`,
         title(){ return races[race].name; },

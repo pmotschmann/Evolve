@@ -4593,7 +4593,7 @@ const interstellarProjects = {
                     let heatSink = $(this)[0].heatSink();
                     heatSink = heatSink < 0 ? Math.abs(heatSink) : 0;
 
-                    let omniscience = 150 + (heatSink / 10);
+                    let omniscience = 150 + (heatSink ** 0.95 / 10);
                     let desc = `<div>${loc(`eden_ascension_machine_effect1`,[loc(`eden_encampment_title`),+omniscience.toFixed(0),global.resource.Omniscience.name])}</div>`;
                     if (heatSink > 0){
                         let stabilizer = heatSink / 175;

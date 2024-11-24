@@ -6362,9 +6362,11 @@ const techs = {
                     global.tech['fusable'] = 1;
                 }
                 else {
-                    let rank = alevel();
-                    if (rank > global.pillars[global.race.species]){
-                        global.pillars[global.race.species] = rank;
+                    if (global.race.universe !== 'micro'){
+                        let rank = alevel();
+                        if (rank > global.pillars[global.race.species]){
+                            global.pillars[global.race.species] = rank;
+                        }
                     }
                     global.tech['pillars'] = 2;
                 }
@@ -14920,6 +14922,26 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.eden.eden_elysium.eden_cement);
+                return true;
+            }
+            return false;
+        }
+    },
+    ancient_crafters: {
+        id: 'tech-ancient_crafters',
+        title(){ return loc('tech_ancient_crafters'); },
+        desc(){ return loc('tech_ancient_crafters'); },
+        category: 'housing',
+        era: 'existential',
+        reqs: { elysium: 18 },
+        grant: ['elysium',19],
+        cost: {
+            Knowledge(){ return 140000000; },
+            Omniscience(){ return 44000; },
+        },
+        effect(){ return loc('tech_ancient_crafters_effect',[actions.eden.eden_elysium.sacred_smelter.title()]); },
+        action(){
+            if (payCosts($(this)[0])){
                 return true;
             }
             return false;

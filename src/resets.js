@@ -970,8 +970,8 @@ export function aiApocalypse(){
     global.prestige.AICore.count += gains.cores;
     global.stats.cores += gains.cores;
 
-    let srace = races[god].type !== 'synthetic' ? god : (global.race.hasOwnProperty('srace') ? global.race.srace : god);
-    global.stats.synth[srace] = true;
+    let srace = races[god].type !== 'synthetic' && !['junker','sludge','ultra_sludge'].includes(god) ? god : (global.race.hasOwnProperty('srace') ? global.race.srace : god);
+    global.stats.synth[god] = true;
 
     let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
     global['race'] = {

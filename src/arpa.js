@@ -1967,7 +1967,7 @@ function genetics(){
                 if ((global.race['ss_traits'] && global.race.ss_traits.includes(trait)) || (global.race['iTraits'] && global.race.iTraits.hasOwnProperty(trait))){
                     readOnly = true;
                 }
-                else if (['slidge','ultra_sludge'].includes(global.race.species) && (trait === 'ooze' || global.race['modified'])){
+                else if (['sludge','ultra_sludge'].includes(global.race.species) && (trait === 'ooze' || global.race['modified'])){
                     readOnly = true;
                 }
                 else if (!global.race.hasOwnProperty(trait)){
@@ -1994,14 +1994,14 @@ function genetics(){
         let trait_list = [];
         if (global.genes['mutation'] && global.genes['mutation'] >= 3){
             if ((global.race.species !== 'sludge' && global.race.species !== 'ultra_sludge') || !global.race['modified']){
-                breakdown.append(`<div class="trait major has-text-success">${loc('arpa_race_genetic_gain')}</div>`)
+                breakdown.append(`<div class="trait major has-text-success">${loc('arpa_race_genetic_gain')}</div>`);
 
                 let conflict_traits = ['dumb','smart']; //Conflicting traits are paired together
                 let mainType = races[global.race.species].type === 'hybrid' ? global.race.maintype : races[global.race.species].type
                 let speciesTypes = races[global.race.species].type === 'hybrid' ? races[global.race.species].hybrid : [races[global.race.species].type];
                 Object.keys(races).forEach(function (race){
                     if (race !== 'junker' && race !== 'sludge' && race !== 'ultra_sludge' && race !== 'custom' && 
-                        (speciesTypes.includes(races[race].type) || (races[global.race.species].type === 'hybrid' && race === global.race.species))
+                        (speciesTypes.includes(races[race].type) || (races[race].type === 'hybrid' && race === global.race.species))
                     ){
                         Object.keys(races[race].traits).forEach(function (trait){
                             if (!global.race[trait] && trait !== 'soul_eater'){

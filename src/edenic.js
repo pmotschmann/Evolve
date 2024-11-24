@@ -72,7 +72,7 @@ const edenicModules = {
                 if (p_on['ascension_trigger'] && global.eden.hasOwnProperty('encampment') && global.eden.encampment.asc){
                     let heatSink = actions.interstellar.int_sirius.ascension_trigger.heatSink();
                     heatSink = heatSink < 0 ? Math.abs(heatSink) : 0;
-                    let omniscience = 150 + (heatSink / 10);
+                    let omniscience = 150 + (heatSink ** 0.95 / 10);
 
                     desc += `<div>${loc('plus_max_resource',[+omniscience.toFixed(0),global.resource.Omniscience.name])}</div>`;
                 }
@@ -1258,8 +1258,8 @@ const edenicModules = {
         },
         sacred_smelter: {
             id: 'eden-sacred_smelter',
-            title: loc('eden_sacred_smelter_title'),
-            desc: `<div>${loc('eden_sacred_smelter_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            title(){ return loc('eden_sacred_smelter_title'); },
+            desc(){ return `<div>${loc('eden_sacred_smelter_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             reqs: { elysium: 7 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('sacred_smelter', offset, 625000000, 1.25, 'eden'); },
@@ -1269,6 +1269,9 @@ const edenicModules = {
             },
             effect(){
                 let desc = `<div>${loc('interstellar_stellar_forge_effect3',[5])}</div>`;
+                if (global.tech['elysium'] && global.tech.elysium >= 19){
+                    desc += `<div>${loc('city_foundry_effect1',[jobScale(3)])}</div>`;
+                }
                 return `${desc}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             powered(){ return powerCostMod(33); },
