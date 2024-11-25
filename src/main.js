@@ -10836,7 +10836,7 @@ function midLoop(){
                 buildQueueElement.scrollHeight > buildQueueElement.clientHeight
             ) {
                 // The build queue has a scroll-bar.
-                buildHeight++;
+                buildHeight += buildQueueElement.scrollHeight - buildQueueElement.clientHeight;
             } else if (['auto', 'shrink'].includes(global.settings.q_resize)) {
                 let minHeight = rem;
                 buildQueueElement.childNodes.forEach(function (e) {
