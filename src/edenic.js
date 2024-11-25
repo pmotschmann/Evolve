@@ -1,10 +1,9 @@
 import { global, p_on, sizeApproximation, seededRandom } from './vars.js';
 import { vBind, clearElement, popover, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, timeFormat, calcPrestige } from './functions.js';
 import { spatialReasoning } from './resources.js';
-import { payCosts, powerOnNewStruct, setAction, storageMultipler, drawTech, bank_vault } from './actions.js';
+import { actions, payCosts, initStruct, powerOnNewStruct, setAction, storageMultipler, drawTech, bank_vault } from './actions.js';
 import { checkRequirements, incrementStruct, piracy, ascendLab} from './space.js';
 import { mechRating } from './portal.js';
-import { actions } from './actions.js';
 import { jobScale, workerScale } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
 import { loc } from './locale.js';

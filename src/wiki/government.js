@@ -1,5 +1,7 @@
+import { global } from './../vars.js';
 import { loc } from './../locale.js';
-import { sideMenu, infoBoxBuilder } from './functions.js';
+import { govActive } from './../governor.js';
+import { sideMenu, infoBoxBuilder, resourceName } from './functions.js';
 
 export function govPage(content){
     let mainContent = sideMenu('create',content);
@@ -137,8 +139,24 @@ export function govPage(content){
                 3: ['25%'],
                 4: ['40%',loc('tech_virtual_reality'),'50%',loc('tech_metaphysics')]
             }
+        },
+        dictator: {
+            paragraphs: 6,
+            break: [2,3,5,6],
+            para_data: {
+                2: [govBoost() ? `${govActive('organizer',0) ? 15 : 25}%` : `${govActive('organizer',0) ? 25 : 30}%`],
+                3: [govBoost() ? `${govActive('organizer',0) ? 13 : 12}%` : '10%'],
+                4: [govBoost() ? `${govActive('organizer',0) ? 8 : 6}%` : '4%', resourceName('Lumber'),resourceName('Stone'),resourceName('Furs'),resourceName('Copper'),resourceName('Iron'),resourceName('Aluminium'),resourceName('Cement'),resourceName('Coal')],
+                5: [govBoost() ? `${govActive('organizer',0) ? 15 : 14}%` : '12%', 
+                    loc('tech_virtual_reality'), 
+                    govBoost() ? `${govActive('organizer',0) ? 10 : 8}%` : '6%', 
+                    loc('tech_metaphysics')
+                ]
+            }
         }
     };
+
+    //govActive('organizer',0);
 
     Object.keys(govs).forEach(function (gov){
         infoBoxBuilder(mainContent,{ name: gov, template: 'government', label: loc(`govern_${gov}`), paragraphs: govs[gov].paragraphs, break: govs[gov].break, h_level: 2,
@@ -150,4 +168,8 @@ export function govPage(content){
         });
         sideMenu('add',`government-gameplay`,gov,loc(`govern_${gov}`));
     });
+}
+
+function govBoost(){
+    return global?.genes?.hasOwnProperty('governor') && global?.genes?.governor >= 3 ? true : false;
 }

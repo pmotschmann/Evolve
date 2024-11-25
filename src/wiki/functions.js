@@ -2,7 +2,6 @@ import { global, sizeApproximation } from './../vars.js';
 import { loc } from './../locale.js';
 import { clearElement, vBind, adjustCosts } from './../functions.js';
 import { actions } from './../actions.js';
-import { races, genusVars } from './../races.js';
 import { planetName } from './../space.js';
 
 export function headerBoxBuilder(parent,args,box){
@@ -331,4 +330,8 @@ export function createCalcSection(info,id,type,insert){
     });
     
     return section;
+}
+
+export function resourceName(res){
+    return global?.resource?.[res]?.name || loc(`resource_${res}_name`);
 }

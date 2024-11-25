@@ -5,7 +5,7 @@ import { spatialReasoning, unlockContainers } from './resources.js';
 import { armyRating, garrisonSize, soldierDeath } from './civics.js';
 import { jobScale, job_desc, loadFoundry, limitCraftsmen } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
-import { actions, payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, buildTemplate, casinoEffect, housingLabel, structName } from './actions.js';
+import { actions, payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, buildTemplate, casinoEffect, housingLabel, structName, initStruct } from './actions.js';
 import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, incrementStruct, planetName } from './space.js';
 import { removeTask, govActive } from './governor.js';
 import { defineIndustry, nf_resources } from './industry.js';
