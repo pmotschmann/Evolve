@@ -1,5 +1,6 @@
 import { loc } from './../locale.js';
 import { sideMenu, infoBoxBuilder } from './functions.js';
+import { govBoost } from './government.js';
 import { gmen, gov_traits, gov_tasks } from './../governor.js';
 import { hoovedRename } from './../functions.js';
 import { hoovedReskin } from './../races.js';
@@ -20,18 +21,26 @@ export function governPage(content){
         sideMenu('add',`governor-gameplay`,`intro`,loc('governor'));
 
         Object.keys(gmen).forEach(function (gov){
-            let desc = '';
-            Object.keys(gmen[gov].traits).forEach(function (t){
-                desc += (gov_traits[t].hasOwnProperty('effect') ? gov_traits[t].effect({isWiki: true}) : '') + ' ';
-            });
-
             infoBoxBuilder(govern,{ name: gov, template: 'government', label: loc(`governor_${gov}`), paragraphs: 2, break: [2], h_level: 3,
                 text: {
                     1: `governor_${gov}_desc`
                 },
                 rawtext: {
-                    2: desc
-                }
+                    2: `{{ b | desc }}`
+                },
+                vue: {
+                    data: { b: govBoost(gov === 'bureaucrat' ? 2 : 3) },
+                    filters: {
+                        desc(b){
+                            let desc = '';
+                            Object.keys(gmen[gov].traits).forEach(function (t){
+                                desc += (gov_traits[t].hasOwnProperty('effect') ? gov_traits[t].effect(b,{isWiki: true}) : '') + ' ';
+                            });
+                            return desc;;
+                        }
+                    }
+                },
+                h_extra: `<div><b-checkbox v-model="b">${loc(gov === 'bureaucrat' ? `arpa_genepool_civil_service_title` : `arpa_genepool_bureaucratic_efficiency_title`)}</b-checkbox></div>`,
             });
             sideMenu('add',`governor-gameplay`,gov,loc(`governor_${gov}`));
         });

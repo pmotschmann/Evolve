@@ -247,10 +247,7 @@ export function govPage(content){
     });
 }
 
-function organActive(){
-    return govActive('organizer',0);
-}
-
-function govBoost(){
-    return global?.genes?.hasOwnProperty('governor') && global?.genes?.governor >= 3 ? true : false;
+export function govBoost(rank){
+    if (typeof(rank) === 'undefined'){ rank = 3; }
+    return global?.genes?.hasOwnProperty('governor') && global?.genes?.governor >= rank ? true : false;
 }
