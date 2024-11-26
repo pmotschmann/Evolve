@@ -343,6 +343,48 @@ export function challengesPage(content){
             subSideMenu('add',`challenges-gameplay`,'modes_sludge',loc('wiki_challenges_modes_sludge'));
         }
 
+        {   // Ultra Failed Experiment
+            let failed = infoBoxBuilder(modes,{ name: 'modes_ultra_sludge', template: 'challenges', paragraphs: 7, break: [3,4,5,6,7], h_level: 2,
+                para_data: {
+                    1: [loc(`evo_challenge_ultra_sludge`),loc(`wiki_challenges_challenge`),loc(`race_ultra_sludge`)],
+                    3: [loc(`race_ultra_sludge`),'10x',loc('trait_ooze_name')],
+                    4: [loc(`evo_challenge_ultra_sludge`)],
+                    5: [loc(`race_ultra_sludge`),loc(`wiki_resets_mad`)],
+                    6: [loc(`race_ultra_sludge`),loc(`wiki_resets_cataclysm`)],
+                    7: [loc(`wiki_challenges_scenarios_junker`)]
+                },
+                data_link: {
+                    1: [false,false,'wiki.html#races-species-ultra_sludge'],
+                    3: [false,false,'wiki.html#traits-species-major_ooze'],
+                    5: [false,'wiki.html#resets-prestige-mad']
+                }
+            });
+            addAchievements(failed,false,['extinct_ultra_sludge'],{gross: true});
+            addAchievements(failed,true,['grand_death_tour']);
+            addRequirements(failed,[
+                {
+                    text: `wiki_challenges_reqs_achieve`,
+                    subreqs: [
+                        {
+                            text: loc(`achieve_extinct_sludge_name`),
+                            color: global.stats.achieve['extinct_sludge'] ? true : false
+                        }
+                    ]
+                },
+                {
+                    text: `wiki_challenges_reqs_reset`,
+                    subreqs: [
+                        {
+                            text: loc(`wiki_resets_apotheosis`),
+                            color: global.stats.achieve['godslayer'] ? true : false,
+                            link: 'wiki.html#resets-prestige-apotheosis'
+                        }
+                    ]
+                }
+            ]);
+            subSideMenu('add',`challenges-gameplay`,'modes_ultra_sludge',loc('wiki_challenges_modes_ultra_sludge'));
+        }
+
         {   // Orbital Decay
             let orbit = infoBoxBuilder(modes,{ name: 'modes_orbitdecay', template: 'challenges', paragraphs: 14, break: [5,8,9,10,11,12,13,14], h_level: 2,
                 para_data: {
