@@ -22,19 +22,24 @@ export function infoBoxBuilder(parent,args,box){
     if (!args.hasOwnProperty('data_color')){ args['data_color'] = {}; }
     if (!args.hasOwnProperty('data_link')){ args['data_link'] = {}; }
     if (!args.hasOwnProperty('h_level')){ args['h_level'] = 3; }
+    if (!args.hasOwnProperty('h_extra')){ args['h_extra'] = false; }
     if (!args.hasOwnProperty('header')){ args['header'] = false; }
     if (!args.hasOwnProperty('full')){ args['full'] = false; }
     if (!args.hasOwnProperty('break')){ args['break'] = false; }
     if (!args.hasOwnProperty('default_color')){ args['default_color'] = 'warning'; }
     if (!args.hasOwnProperty('examples')){ args['examples'] = false; }
+    if (!args.hasOwnProperty('vue')){ args['vue'] = false; }
 
     let info = false;
     if (box){
         info = box;
     }
     else {
-        info = $(`<div class="infoBox${args.full ? ` wide` : ``}${args['pclass'] ? ` ${args['pclass']}`: ''}"></div>`);
-        if (args['h_level']){
+        info = $(`<div${args['vue'] ? ` id="${args.name}InfoBox"` : ``} class="infoBox${args.full ? ` wide` : ``}${args['pclass'] ? ` ${args['pclass']}`: ''}"></div>`);
+        if (args['h_level'] && args.h_extra){
+            info.append(`<div class="flexInfo"><h${args.h_level} id="${args.name}" class="header has-text-${args.header ? 'caution' : 'warning'}">${args['label'] ? args['label'] : loc(`wiki_${args.template}_${args.name}`)}</h${args.h_level}>${args.h_extra}</div>`);
+        }
+        else if (args['h_level']){
             info.append(`<h${args.h_level} id="${args.name}" class="header has-text-${args.header ? 'caution' : 'warning'}">${args['label'] ? args['label'] : loc(`wiki_${args.template}_${args.name}`)}</h${args.h_level}>`);
         }
     }
@@ -88,6 +93,12 @@ export function infoBoxBuilder(parent,args,box){
     if (!box){
         parent.append(info);
     }   
+
+    if (args['vue']){
+        args.vue['el'] = `#${args.name}InfoBox`;
+        vBind(args.vue);
+    }
+
     return info;
 }
 

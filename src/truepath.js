@@ -532,7 +532,7 @@ const outerTruth = {
             struct(){
                 return {
                     d: { count: 0, on: 0 },
-                    p: ['sam','space']
+                    p: ['decoder','space']
                 };
             }
         },
