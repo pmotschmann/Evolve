@@ -5122,14 +5122,17 @@ if (Object.keys(global.stats.synth).length > 1){
         reqs: { evo: 8 },
         grant: ['evo',9],
         condition(){
-            return global.stats.synth[race] && global.race['evoFinalMenu'];
+            if ((race === 'custom' && !global.custom.hasOwnProperty('race0')) || (race === 'hybrid' && !global.custom.hasOwnProperty('race1'))){
+                return false;
+            }
+            return (global.stats.synth[race] || global['beta']) && global.race['evoFinalMenu'];
         },
         cost: {},
         wiki: false,
         race: true,
         effect(){ return loc(`evo_imitate_race`,[races[race].name]); },
         action(){
-            if (global.stats.synth[race]){
+            if (global.stats.synth[race] || global['beta']){
                 global.race.species = global.race['evoFinalMenu'];
                 global.race['srace'] = race;
                 sentience();
@@ -8852,7 +8855,9 @@ function aiStart(){
 
         global.civic.miner.display = true;
         global.civic.coal_miner.display = true;
-        global.civic.quarry_worker.display = true;
+        if (!global.race['sappy']){
+            global.civic.quarry_worker.display = true;
+        }
         global.civic.professor.display = true;
         global.civic.scientist.display = true;
         if (!global.race['flier']){

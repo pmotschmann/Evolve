@@ -4,14 +4,14 @@ import { clearElement } from './../functions.js';
 export const changeList = [
     {
         version: `1.4.0`,
-        date: `11/??/2024`,
+        date: `11/27/2024`,
         changes: [
             `Push past the Spire and invade the Edenic Realms.`,
             `Added new planet trait: Kamikaze.`,
             `Added new CRISPR upgrade Bureaucratic Efficiency.`,
             `The Grand Death Tour is available after completing Apotheosis.`,
             `Custom Race lab now allows player to set a desired fanaticism trait.`,
-            `You can no longer have more then 10 negative traits on a custom.`,
+            `You can no longer have more than 10 negative traits on a custom.`,
             `Invalid legacy customs will take a penalty called Overtapped in future game versions.`,
             `Truepath Ships can now be queued for construction.`,
             `Exotic Materials are now harder to replicate.`,

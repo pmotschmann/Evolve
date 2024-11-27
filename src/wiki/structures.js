@@ -145,7 +145,17 @@ const calcInfo = {
             ignition_device: 10
         },
         eden: {
-            throne: 1
+            throne: 1,
+            mech_station: 10,
+            rune_gate: 100,
+            fire_support_base: 10,
+            rushmore: 1,
+            reincarnation: 1,
+            north_pier: 10,
+            south_pier: 10,
+            infuser: 25,
+            conduit: 25,
+            tomb: 10
         }
     },
     count: { // Structures that have "count" values that aren't tracked in the building itself. Here you calculate the count that building would have from the save provided.

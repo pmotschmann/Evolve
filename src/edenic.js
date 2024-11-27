@@ -180,7 +180,7 @@ const edenicModules = {
                 },
             },
             effect(wiki){
-                let count = (wiki || 0) + (global.eden.hasOwnProperty('mech_station') ? global.eden.mech_station.count : 0);
+                let count = (wiki?.count ?? 0) + (global.eden.hasOwnProperty('mech_station') ? global.eden.mech_station.count : 0);
                 if (count >= 10){
                     let desc = `<div>${loc('eden_mech_station_effect')}</div>`;
                     desc += `<div>${loc('eden_mech_station_mechs',[global.eden.mech_station.mechs])}</div>`;
@@ -551,7 +551,7 @@ const edenicModules = {
                 },
             },
             effect(wiki){
-                let count = (wiki || 0) + (global.eden.hasOwnProperty('rune_gate') ? global.eden.rune_gate.count : 0);
+                let count = (wiki?.count ?? 0) + (global.eden.hasOwnProperty('rune_gate') ? global.eden.rune_gate.count : 0);
                 if (count >= 100){
                     let desc = `<div>${loc('eden_rune_gate_effect')}</div>`;
                     return desc;
@@ -1119,7 +1119,7 @@ const edenicModules = {
                 }
             },
             effect(wiki){
-                let count = (wiki || 0) + (global.eden.hasOwnProperty('fire_support_base') ? global.eden.fire_support_base.count : 0);
+                let count = (wiki?.count ?? 0) + (global.eden.hasOwnProperty('fire_support_base') ? global.eden.fire_support_base.count : 0);
                 if (count >= 100){
                     let desc = `<div>${loc('plus_max_soldiers',[$(this)[0].soldiers()])}</div>`;
                     if (global.tech['elysium'] && global.tech.elysium >= 10 && global.tech.isle === 1){
@@ -1529,7 +1529,7 @@ const edenicModules = {
                 },
             },
             effect(wiki){
-                let count = (wiki || 0) + (global.eden.hasOwnProperty('north_pier') ? global.eden.north_pier.count : 0);
+                let count = (wiki?.count ?? 0) + (global.eden.hasOwnProperty('north_pier') ? global.eden.north_pier.count : 0);
                 if (count >= 10){
                     let desc = `<div>${loc('eden_pier_effect',[loc('eden_pier',[loc('south')]),loc('eden_isle_name')])}</div>`;
                     return desc;
@@ -1708,7 +1708,7 @@ const edenicModules = {
                 },
             },
             effect(wiki){
-                let count = (wiki || 0) + (global.eden.hasOwnProperty('south_pier') ? global.eden.south_pier.count : 0);
+                let count = (wiki?.count ?? 0) + (global.eden.hasOwnProperty('south_pier') ? global.eden.south_pier.count : 0);
                 if (count >= 10){
                     let desc = `<div>${loc('eden_pier_effect',[loc('eden_pier',[loc('north')]),loc('eden_elysium_name')])}</div>`;
                     return desc;
@@ -1999,7 +1999,7 @@ const edenicModules = {
                 },
             },
             effect(wiki){
-                let count = (wiki || 0) + (global.eden.hasOwnProperty('infuser') ? global.eden.infuser.count : 0);
+                let count = (wiki?.count ?? 0) + (global.eden.hasOwnProperty('infuser') ? global.eden.infuser.count : 0);
                 if (count >= 25){
                     let desc = `<div>${loc('eden_infuser_effect')}</div>`;
                     return desc;
@@ -2087,7 +2087,7 @@ const edenicModules = {
                 },
             },
             effect(wiki){
-                let count = (wiki || 0) + (global.eden.hasOwnProperty('conduit') ? global.eden.conduit.count : 0);
+                let count = (wiki?.count ?? 0) + (global.eden.hasOwnProperty('conduit') ? global.eden.conduit.count : 0);
                 if (count >= 25){
                     let desc = `<div>${loc('eden_conduit_done')}</div>`;
                     return desc;
@@ -2152,7 +2152,7 @@ const edenicModules = {
                 },
             },
             effect(wiki){
-                let count = (wiki || 0) + (global.eden.hasOwnProperty('tomb') ? global.eden.tomb.count : 0);
+                let count = (wiki?.count ?? 0) + (global.eden.hasOwnProperty('tomb') ? global.eden.tomb.count : 0);
                 if (count >= 10){
                     let desc = `<div>${loc('eden_tomb_effect')}</div>`;
                     return desc;

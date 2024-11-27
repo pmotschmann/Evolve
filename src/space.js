@@ -7716,7 +7716,9 @@ export function ascendLab(hybrid,wiki){
 
                         let traits = `<div class="fanatic"><template><section>`;
                         genome.traitlist.forEach(function (trait){
-                            traits += `<div class="field ${trait}"><b-radio v-model="fanaticism" native-value="${trait}">${loc(`trait_${trait}_name`)}</b-radio></div>`;
+                            if (trait !== 'imitation'){
+                                traits += `<div class="field ${trait}"><b-radio v-model="fanaticism" native-value="${trait}">${loc(`trait_${trait}_name`)}</b-radio></div>`;
+                            }
                         });
                         traits += `</section></template></div>`;
                         body.append($(traits));

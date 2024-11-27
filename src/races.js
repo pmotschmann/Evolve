@@ -6914,7 +6914,7 @@ export function setImitation(mod){
             global.race['iTraits'] = {};
         }
         if (global.race['shapeshifter']){
-            shapeShift(global.race['ss_genus'] === races[global.race['srace']].type ? 'none' : false, true);
+            shapeShift(global.race['ss_genus'] === races[global.race['srace']].type ? 'none' : false, true, true);
         }
 
         let i_traits = [];
@@ -6951,9 +6951,9 @@ export function setImitation(mod){
     }
 }
 
-export function shapeShift(genus,setup){
+export function shapeShift(genus,setup,forceClean){
     let shifted = global.race.hasOwnProperty('ss_traits') ? global.race.ss_traits : [];
-    if (!setup){
+    if (!setup || forceClean){
         shifted.forEach(function(trait){
             let rank = global.race[trait];
             delete global.race[trait];
