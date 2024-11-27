@@ -4633,7 +4633,7 @@ const interstellarProjects = {
             },
             action(){
                 if (payCosts($(this)[0])){
-                    ascendLab();
+                    ascendLab(false);
                     return true;
                 }
                 return false;
@@ -7498,11 +7498,9 @@ export function ascendLab(hybrid,wiki){
                 ||
             (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0)
             ){
-            if (races[race].hasOwnProperty('traits')){
+            if (races[race].hasOwnProperty('traits') && !['junker','sludge','ultra_sludge'].includes(race)){
                 Object.keys(races[race].traits).forEach(function (trait){
-                    if (trait !== 'ooze'){
-                        unlockedTraits[trait] = true;
-                    }
+                    unlockedTraits[trait] = true;
                 });
             }
         }
