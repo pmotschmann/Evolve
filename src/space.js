@@ -7413,6 +7413,7 @@ export function ascendLab(hybrid,wiki){
         global.settings.showDeep = false;
         global.settings.showGalactic = false;
         global.settings.showPortal = false;
+        global.settings.showEden = false;
         global.settings.spaceTabs = 0;
     }
 
