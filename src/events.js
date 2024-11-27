@@ -1,6 +1,6 @@
 import { global, seededRandom, p_on, support_on, sizeApproximation } from './vars.js';
 import { loc } from './locale.js';
-import { races, traits, fathomCheck } from './races.js';
+import { races, traits, fathomCheck, blubberFill } from './races.js';
 import { govTitle, garrisonSize, armyRating } from './civics.js';
 import { housingLabel, drawTech, actions } from './actions.js';
 import { tradeRatio } from './resources.js';
@@ -154,6 +154,7 @@ export const events = {
                 wounded = Math.round(wounded / 2);
             }
             soldierDeath(killed);
+            blubberFill(killed);
             global.civic.garrison.wounded += wounded;
             if (global.civic.garrison.wounded > global.civic.garrison.workers){
                 global.civic.garrison.wounded = global.civic.garrison.workers;
@@ -208,7 +209,8 @@ export const events = {
                 killed = Math.round(killed / 2);
                 wounded = Math.round(wounded / 2);
             }
-            soldierDeath(killed);;
+            soldierDeath(killed);
+            blubberFill(killed);
             global.civic.garrison.wounded += wounded;
             if (global.civic.garrison.wounded > global.civic.garrison.workers){
                 global.civic.garrison.wounded = global.civic.garrison.workers;
@@ -310,6 +312,7 @@ export const events = {
                 wounded = Math.round(wounded / 2);
             }
             soldierDeath(killed);
+            blubberFill(killed);
             global.civic.garrison.wounded += wounded;
             if (global.civic.garrison.wounded > global.civic.garrison.workers){
                 global.civic.garrison.wounded = global.civic.garrison.workers;
@@ -539,6 +542,7 @@ export const events = {
         effect(){
             global.resource[global.race.species].amount--;
             global.civic.miner.workers--;
+            blubberFill(1);
             return loc('event_mine_collapse');
         }
     },
@@ -595,6 +599,7 @@ export const events = {
             let dead = Math.floor(seededRandom(2,jobScale(10)));
             if (dead > global.resource[global.race.species].amount){ dead = global.resource[global.race.species].amount; }
             global.resource[global.race.species].amount -= dead;
+            blubberFill(dead);
             return loc('event_chicken',[loc(`event_chicken_eaten${Math.floor(seededRandom(0,10))}`),dead]);
         }
     },
@@ -612,9 +617,11 @@ export const events = {
         type: 'major',
         effect(){
             let dead = Math.floor(seededRandom(1,jobScale(traits.aggressive.vars()[0] + 1)));
-            if (dead > global.resource[global.race.species].amount){ dead = global.resource[global.race.species].amount; }
-            global.resource[global.race.species].amount -= dead;
-            return loc('event_brawl',[loc(`event_brawl${Math.floor(seededRandom(0,10))}`),dead]);
+            if (dead > global.civic.garrison.workers){ dead = global.civic.garrison.workers; }
+            global.civic.garrison.workers -= dead;
+            soldierDeath(dead);
+            blubberFill(dead);
+            return loc('event_brawl_s',[loc(`event_brawl${Math.floor(seededRandom(0,10))}`),dead]);
         }
     },
     m_curious: {
@@ -748,6 +755,7 @@ export const events = {
             global.resource[global.race.species].amount--;
             global.civic.scientist.workers--;
             global.civic.scientist.assigned--;
+            blubberFill(1);
             return loc(`witch_hunter_witch_hunt`);
         }
     },
@@ -765,6 +773,7 @@ export const events = {
         type: 'minor',
         effect(){
             global.resource[global.race.species].amount--;
+            blubberFill(1);
             return loc('event_chicken',[loc(`event_chicken_eaten${Math.rand(0,10)}`),1]);
         }
     },
@@ -784,7 +793,8 @@ export const events = {
             let dead = Math.floor(seededRandom(1,jobScale(traits.aggressive.vars()[1] + 1)));
             if (dead > global.resource[global.race.species].amount){ dead = global.resource[global.race.species].amount; }
             global.resource[global.race.species].amount -= dead;
-            return loc('event_brawl',[loc(`event_brawl${Math.floor(seededRandom(0,10))}`),dead]);
+            blubberFill(dead);
+            return loc('event_brawl_c',[loc(`event_brawl${Math.floor(seededRandom(0,10))}`),dead]);
         }
     },
     heatwave: {

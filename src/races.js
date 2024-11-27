@@ -3909,7 +3909,7 @@ export const traits = {
         name: loc('trait_unstable_name'),
         desc: loc('trait_unstable'),
         type: 'major',
-        val: -3,
+        val: -5,
         vars(r){
             // [Randomly Die]
             switch (r || traitRank('unstable') || 1){
