@@ -144,6 +144,8 @@ export function challengesPage(content){
             subSideMenu('add',`challenges-gameplay`,'genes_weak',loc('wiki_challenges_genes_weak'));
         }
     }
+
+    sideMenu('gap');
     
     // Challenge Modes
     {   // Intro
@@ -465,6 +467,8 @@ export function challengesPage(content){
             subSideMenu('add',`challenges-gameplay`,'modes_gravity_well',loc('wiki_challenges_modes_gravity_well'));
         }
     }
+
+    sideMenu('gap');
     
     // Scenarios
     {   // Intro

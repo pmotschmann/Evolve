@@ -150,7 +150,7 @@ export const feats = {
     },
     grand_death_tour: {
         name: loc("feat_grand_death_tour_name"),
-        desc: loc("feat_grand_death_tour_desc",[5]),
+        desc: loc("feat_grand_death_tour_desc",[6]),
         flair: loc("feat_grand_death_tour_flair")
     },
     novice: {
@@ -177,6 +177,11 @@ export const feats = {
         name: loc("feat_grandmaster_name"),
         desc: loc("feat_achievement_hunter_desc",[100]),
         flair: loc("feat_grandmaster_flair")
+    },
+    god: {
+        name: loc("feat_god_name"),
+        desc: loc("feat_achievement_hunter_desc",[150]),
+        flair: loc("feat_god_flair")
     },
     nephilim: {
         name: loc("feat_nephilim_name"),
@@ -855,9 +860,10 @@ export function checkAchievements(){
                 {c: 25, f: 'journeyman'},
                 {c: 50, f: 'adept'},
                 {c: 75, f: 'master'},
-                {c: 100, f: 'grandmaster'}
+                {c: 100, f: 'grandmaster'},
+                {c: 150, f: 'god'},
             ];
-            for (let i=0; i<5; i++){
+            for (let i=0; i<6; i++){
                 if (total >= progress[i].c && (!global.stats.feat[progress[i].f] || global.stats.feat[progress[i].f] < t_level)){
                     if (global.race.universe === 'micro'){
                         unlockFeat(progress[i].f,true,t_level);

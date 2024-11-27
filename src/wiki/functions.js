@@ -247,6 +247,10 @@ export function sideMenu(action,arg1,arg2,arg3){
         sideContent.append(sideMenu);
         return mainContent;
     }
+    else if (action === 'gap'){
+        let li = $(`<li class="gap"></li>`);
+        $(`#sideContent ul`).append(li);
+    }
     else {
         let anchor = $(`<a href="#${arg1}-${arg2}">${arg3}</a>`);
         let li = $(`<li></li>`);

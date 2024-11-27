@@ -48,7 +48,7 @@ const extraInfo = {
     unstable: ['trait','event'],
     permafrost: ['trait'],
     retrograde: ['trait'],
-    kamikaze: ['trait']
+    kamikaze: ['trait',{l:'death', v:[100]}]
 };
 
 function infoForFeature(planetFeatures, content) {
@@ -71,7 +71,12 @@ function infoForFeature(planetFeatures, content) {
 
         if (extraInfo[planetFeatureName]){
             extraInfo[planetFeatureName].forEach(function (label){
-                info.append($(`<div class="has-text-warning">${loc(`wiki_planet_${planetFeatureName}_${label}`)}</div>`));
+                if (typeof(label) === 'object'){
+                    info.append($(`<div class="has-text-warning">${loc(`wiki_planet_${planetFeatureName}_${label.l}`,label.v)}</div>`));
+                }
+                else {
+                    info.append($(`<div class="has-text-warning">${loc(`wiki_planet_${planetFeatureName}_${label}`)}</div>`));
+                }
             });
         }
     });

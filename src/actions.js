@@ -7718,7 +7718,12 @@ export function orbitDecayed(){
     if (global.race['orbit_decay'] && global.stats.hasOwnProperty('days') && global.stats.days >= global.race['orbit_decay'] && !global.race['orbit_decayed']){
         global.race['orbit_decayed'] = true;
 
-        messageQueue(loc('evo_challenge_orbit_decayed_msg',[races[global.race.species].home]),'info',false,['progress']);
+        if (global.race['tidal_decay']){
+            messageQueue(loc('planet_kamikaze_msg'),'info',false,['progress']);
+        }
+        else {
+            messageQueue(loc('evo_challenge_orbit_decayed_msg',[races[global.race.species].home]),'info',false,['progress']);
+        }
 
         if (global.race.universe === 'magic'){
             if (global.city['pylon']){
@@ -8134,12 +8139,7 @@ function sentience(){
             }
             else {
                 setTraitRank(trait,{ set: genus_traits[type][trait] });
-                if (traits[trait].val > 0){
-                    setTraitRank(trait, {down:true});
-                }
-                else {
-                    setTraitRank(trait);
-                }
+                setTraitRank(trait, {down:true});
             }
         });
     });

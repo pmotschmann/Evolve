@@ -642,9 +642,12 @@ popover('topBarPlanet',
             if (global.race['sludge']){
                 challenges = challenges + `<div>${loc('evo_challenge_sludge_desc')} ${loc('evo_challenge_sludge_conditions')}</div>`;
             }
+            if (global.race['ultra_sludge']){
+                challenges = challenges + `<div>${loc('evo_challenge_sludge_desc')} ${loc('evo_challenge_sludge_conditions')}</div>`;
+            }
             if (global.race['orbit_decay']){
                 let impact = global.race['orbit_decayed'] ? '' : loc('evo_challenge_orbit_decay_impact',[global.race['orbit_decay'] - global.stats.days]);
-                let state = global.race['orbit_decayed'] ? loc('evo_challenge_orbit_decay_impacted',[races[global.race.species].home]) : loc('evo_challenge_orbit_decay_desc');
+                let state = global.race['orbit_decayed'] ? (global.race['tidal_decay'] ? loc(`planet_kamikaze_msg`) : loc('evo_challenge_orbit_decay_impacted',[races[global.race.species].home])) : loc('evo_challenge_orbit_decay_desc');
                 challenges = challenges + `<div>${state} ${loc('evo_challenge_orbit_decay_conditions')} ${impact}</div>`;
                 if (calc_mastery() >= 100 && global.race.universe !== 'antimatter'){
                     challenges = challenges + `<div class="has-text-caution">${loc('evo_challenge_cataclysm_warn')}</div>`;
@@ -5717,7 +5720,7 @@ function fastLoop(){
             }
 
             // Aluminium
-            if ((global.city['metal_refinery'] && global.city['metal_refinery'].count > 0) || global.race['cataclysm'] || global.race['orbit_decayed']){
+            if (global.city['metal_refinery'] && (global.city['metal_refinery'].count > 0 || global.race['cataclysm'] || global.race['orbit_decayed'])){
                 let base = stone_base * rock_quarry * (global.race['cataclysm'] ? 0.16 : 0.08);
                 if (global.city.geology['Aluminium']){
                     base *= global.city.geology['Aluminium'] + 1;
@@ -12075,6 +12078,11 @@ function longLoop(){
             if (!global.race['orbit_decayed']){
                 $(`#infoTimer`).html(`T-${global.race['orbit_decay'] - global.stats.days}`);
             }
+            orbitDecayed();
+        }
+        if (global.race['truepath'] && global.city.ptrait.includes('kamikaze') && orbitLength() <= 10){
+            global.race['orbit_decay'] = 1;
+            global.race['tidal_decay'] = 1;
             orbitDecayed();
         }
 

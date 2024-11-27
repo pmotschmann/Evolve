@@ -416,9 +416,10 @@ function featDesc(feat,showFlair){
             bh: 'wiki_resets_blackhole', 
             di: 'wiki_resets_infusion', 
             ai: 'wiki_resets_ai', 
-            vc: 'wiki_resets_vacuum'
+            vc: 'wiki_resets_vacuum',
+            md: 'wiki_resets_mad_wish'
         };
-        ['ct','bh','di','ai','vc'].forEach(function (key){
+        ['ct','bh','di','ai','vc','md'].forEach(function (key){
             let reset = 0;
             Object.keys(global.stats.death_tour).forEach(function(k){
                 if (global.stats.death_tour[k] > reset){

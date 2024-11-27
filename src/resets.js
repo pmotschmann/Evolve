@@ -50,6 +50,8 @@ export function warhead(){
         }
         checkAchievements();
 
+        grandDeathTour('md');
+
         let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
         let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
         global['race'] = { 

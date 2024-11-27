@@ -7326,10 +7326,10 @@ export function orbitLength(){
     if (global.city.ptrait.includes('kamikaze')){
         orbit -= global.city.calendar.year;
     }
-    if (orbit < 100){
+    if (!global.race['truepath'] && orbit < 100){
         orbit = 100; // Trigger extinction event at 0? much to ponder.
     }
-    return orbit;
+    return global.race['tidal_decay'] ? 100 : orbit;
 }
 
 function shellColor(){
@@ -7990,7 +7990,7 @@ function majorWish(parent){
                     if (global.tech['blackhole'] && global.tech.blackhole >= 5 && global.interstellar['mass_ejector'] && global.interstellar.mass_ejector.count >= 1){
                         options.push('blackhole');
                     }
-                    else if (!global.race['cataclysm'] && !global.race['lone_survivor']){
+                    else if (!global.race['cataclysm'] && !global.race['lone_survivor'] && global.race.species !== 'sludge'){
                         options.push('mad');
                     }
 
