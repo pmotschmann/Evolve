@@ -1,7 +1,7 @@
 import { global, seededRandom, keyMultiplier, p_on, support_on, gal_on, spire_on, hell_reports, hell_graphs, sizeApproximation } from './vars.js';
 import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost, calcPrestige, get_qlevel } from './functions.js';
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
-import { traits, races, fathomCheck, traitCostMod } from './races.js';
+import { traits, races, fathomCheck, traitCostMod, orbitLength } from './races.js';
 import { spatialReasoning, unlockContainers } from './resources.js';
 import { loadFoundry, jobScale, limitCraftsmen } from './jobs.js';
 import { armyRating, govCivics, garrisonSize, mercCost, soldierDeath } from './civics.js';
@@ -5591,7 +5591,7 @@ function drawHellReports(){
             startDay = Object.keys(hell_reports[`year-${recentDay.year}`])[0].split('-')[1];
         }
         for (startYear; startYear<global.city.calendar.year; startYear++){
-            for (startDay; startDay<=global.city.calendar.orbit; startDay++){
+            for (startDay; startDay<=orbitLength(); startDay++){
                 let gemString = ""; let gemCount = hell_reports[`year-${startYear}`][`day-${startDay}`].foundGems;
                 if (gemCount) {
                     gemString = `<span class="has-text-advanced" aria-label="${loc(`hell_report_log_soul_gem_aria`)}">${gemCount >= 5 ? `&#9830x${gemCount}` : "&#9830".repeat(gemCount)}</span>`;
@@ -5798,7 +5798,7 @@ function drawHellReports(){
         let lastReportDay = recentDay.day;
         if (lastReportDay - 1 === 0){
             lastReportYear--;
-            lastReportDay = global.city.calendar.orbit;
+            lastReportDay = orbitLength();
         }
         else {
             lastReportDay--;
@@ -5833,17 +5833,17 @@ function purgeReports(refresh){
         let removed = false;
         let threshold = 2500;
 
-        let approx = ((Object.keys(hell_reports).length - 1) * global.city.calendar.orbit) + global.city.calendar.day;
+        let approx = ((Object.keys(hell_reports).length - 1) * orbitLength()) + global.city.calendar.day;
 
         if (approx > threshold){
             let firstYear = Object.keys(hell_reports[Object.keys(hell_reports)[0]]).length;
-            if (approx - global.city.calendar.orbit + firstYear > threshold){
+            if (approx - orbitLength() + firstYear > threshold){
                 removed = true;
                 approx -= firstYear;
                 delete hell_reports[Object.keys(hell_reports)[0]];
             }
             while (approx > threshold){
-                approx -= global.city.calendar.orbit;
+                approx -= orbitLength();
                 delete hell_reports[Object.keys(hell_reports)[0]];
             }
         }

@@ -2,7 +2,7 @@ import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resiz
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat, checkAdept } from './achieve.js';
 import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone, addATime, exceededATimeThreshold, loopTimers, calcQuantumLevel } from './functions.js';
-import { races, traits, racialTrait, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill } from './races.js';
+import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobScale, workerScale, limitCraftsmen, loadServants} from './jobs.js';
 import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, luxGoodPrice } from './industry.js';
@@ -592,7 +592,7 @@ popover('topBarPlanet',
                 });
                 planet_label = `${traits}${planet_label}`;
             }
-            let orbit = global.city.calendar.orbit;
+            let orbit = orbitLength();
 
             let geo_traits = planetGeology(global.city.geology);
 
@@ -11140,7 +11140,7 @@ function longLoop(){
             // Time
             global.city.calendar.day++;
             global.stats.days++;
-            if (global.city.calendar.day > global.city.calendar.orbit){
+            if (global.city.calendar.day > orbitLength()){
                 global.city.calendar.day = 1;
                 global.city.calendar.year++;
             }
@@ -11150,7 +11150,7 @@ function longLoop(){
             }
             else {
                 let s_segments = global.city.ptrait.includes('elliptical') ? 6 : 4;
-                let season_length = Math.round(global.city.calendar.orbit / s_segments);
+                let season_length = Math.round(orbitLength() / s_segments);
                 let days = global.city.calendar.day;
                 let season = 0;
                 while (days > season_length){
@@ -11360,22 +11360,22 @@ function longLoop(){
             let deterioration = Math.floor(50000000 / (1 + global.race.mutation)) - global.stats.days;
             if (global.race.deterioration === 0 && deterioration < 40000000){
                 global.race.deterioration = 1;
-                let death_clock = Math.round(deterioration / global.city.calendar.orbit);
+                let death_clock = Math.round(deterioration / orbitLength());
                 messageQueue(loc('deterioration1',[flib('name'),death_clock]),'danger',false,['progress']);
             }
             else if (global.race.deterioration === 1 && deterioration < 20000000){
                 global.race.deterioration = 2;
-                let death_clock = Math.round(deterioration / global.city.calendar.orbit);
+                let death_clock = Math.round(deterioration / orbitLength());
                 messageQueue(loc('deterioration2',[flib('name'),death_clock]),'danger',false,['progress']);
             }
             else if (global.race.deterioration === 2 && deterioration < 5000000){
                 global.race.deterioration = 3;
-                let death_clock = Math.round(deterioration / global.city.calendar.orbit);
+                let death_clock = Math.round(deterioration / orbitLength());
                 messageQueue(loc('deterioration3',[flib('name'),death_clock]),'danger',false,['progress']);
             }
             else if (global.race.deterioration === 3 && deterioration < 1000000){
                 global.race.deterioration = 4;
-                let death_clock = Math.round(deterioration / global.city.calendar.orbit);
+                let death_clock = Math.round(deterioration / orbitLength());
                 messageQueue(loc('deterioration4',[flib('name'),death_clock]),'danger',false,['progress']);
             }
             else if (global.race.deterioration === 4 && deterioration <= 0){
@@ -11559,7 +11559,7 @@ function longLoop(){
                 if (global.space.hasOwnProperty('position')){
                     Object.keys(spacePlanetStats).forEach(function(planet){
                         if (global.space.position.hasOwnProperty(planet)){
-                            let orbit = spacePlanetStats[planet].orbit === -1 ? global.city.calendar.orbit : spacePlanetStats[planet].orbit;
+                            let orbit = spacePlanetStats[planet].orbit === -1 ? orbitLength() : spacePlanetStats[planet].orbit;
                             if (orbit === -2){
                                 return;
                             }

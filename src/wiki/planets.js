@@ -47,7 +47,8 @@ const extraInfo = {
     flare: ['event'],
     unstable: ['trait','event'],
     permafrost: ['trait'],
-    retrograde: ['trait']
+    retrograde: ['trait'],
+    kamikaze: ['trait']
 };
 
 function infoForFeature(planetFeatures, content) {

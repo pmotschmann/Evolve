@@ -36,7 +36,7 @@ const achieve_list = {
         'explorer','biome_grassland','biome_oceanic','biome_forest','biome_desert','biome_volcanic','biome_tundra',
         'biome_savanna','biome_swamp','biome_ashland','biome_taiga','biome_hellscape','biome_eden',
         'atmo_toxic','atmo_mellow','atmo_rage','atmo_stormy','atmo_ozone','atmo_magnetic','atmo_trashed','atmo_elliptical','atmo_flare','atmo_dense',
-        'atmo_unstable','atmo_permafrost','atmo_retrograde'
+        'atmo_unstable','atmo_permafrost','atmo_retrograde','atmo_kamikaze'
     ],
     universe: [
         'vigilante','squished','double_density','cross','macro','marble','heavyweight','whitehole','heavy','canceled',

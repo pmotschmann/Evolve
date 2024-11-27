@@ -6240,6 +6240,7 @@ const techs = {
         category: 'crafting',
         era: 'globalized',
         reqs: { polymer: 1 },
+        condition(){ return global.resource.Furs.display; },
         grant: ['synthetic_fur',1],
         cost: {
             Knowledge(){ return 100000; },

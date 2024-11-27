@@ -7311,7 +7311,26 @@ export const planetTraits = {
         label: loc('planet_retrograde'),
         desc: loc('planet_retrograde_desc')
     },
+    kamikaze: {
+        label: loc('planet_kamikaze'),
+        desc: loc('planet_kamikaze_desc'),
+        vars(){
+            return [100,-1];
+        }, // [Orbit, Orbit Loss]
+        wiki: ['A','A']
+    },
 };
+
+export function orbitLength(){
+    let orbit = global.city.calendar.orbit;
+    if (global.city.ptrait.includes('kamikaze')){
+        orbit -= global.city.calendar.year;
+    }
+    if (orbit < 100){
+        orbit = 100; // Trigger extinction event at 0? much to ponder.
+    }
+    return orbit;
+}
 
 function shellColor(){
     if (global.race.hasOwnProperty('shell_color')){

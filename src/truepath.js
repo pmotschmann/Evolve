@@ -1,6 +1,6 @@
 import { global, p_on, support_on, sizeApproximation, keyMap } from './vars.js';
 import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect, adjustCosts, get_qlevel, timeCheck, buildQueue } from './functions.js';
-import { races, traits } from './races.js';
+import { races, traits, orbitLength } from './races.js';
 import { spatialReasoning, unlockContainers } from './resources.js';
 import { armyRating, garrisonSize, soldierDeath } from './civics.js';
 import { jobScale, job_desc, loadFoundry, limitCraftsmen } from './jobs.js';
@@ -5153,7 +5153,7 @@ function calcLandingPoint(ship, planet) {
         cross1_days = 0;
     }
     let planet_orbit = spacePlanetStats[planet].orbit === -1
-      ? global.city.calendar.orbit
+      ? orbitLength()
       : spacePlanetStats[planet].orbit;
     let planet_speed = 360 / planet_orbit;
     let planet_degree = (global.space.position[planet] + (cross1_days * planet_speed)) % 360;

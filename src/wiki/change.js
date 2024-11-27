@@ -7,6 +7,7 @@ export const changeList = [
         date: `11/??/2024`,
         changes: [
             `Push past the Spire and invade the Edenic Realms.`,
+            `Added new planet trait: Kamikaze.`,
             `Added new CRISPR upgrade Bureaucratic Efficiency.`,
             `The Grand Death Tour is available after completing Apotheosis.`,
             `Custom Race lab now allows player to set a desired fanaticism trait.`,

@@ -6498,7 +6498,6 @@ export function setPlanet(opt){
                     break;
             }
         }
-
         switch (biome){
             case 'hellscape':
                 orbit = 666;
@@ -6507,7 +6506,16 @@ export function setPlanet(opt){
                 orbit = 777;
                 break;
             default:
-                orbit = Math.floor(seededRandom(200,trait.includes('elliptical') ? 800 : 600));
+                {
+                    let maxOrbit = 600;
+                    if (trait.includes('elliptical')){
+                        maxOrbit += 200;
+                    }
+                    if (trait.includes('kamikaze')){
+                        maxOrbit += 100;
+                    }
+                    orbit = Math.floor(seededRandom(200,maxOrbit));
+                }
                 break;
         }
     }
@@ -6744,6 +6752,11 @@ function buildPlanet(aspect,opt,args){
                 case 12:
                     if (!trait.includes('retrograde')){
                         trait.push('retrograde');
+                    }
+                    break;
+                case 13:
+                    if (!trait.includes('kamikaze')){
+                        trait.push('kamikaze');
                     }
                     break;
                 default:
