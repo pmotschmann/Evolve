@@ -154,7 +154,6 @@ export const events = {
                 wounded = Math.round(wounded / 2);
             }
             soldierDeath(killed);
-            blubberFill(killed);
             global.civic.garrison.wounded += wounded;
             if (global.civic.garrison.wounded > global.civic.garrison.workers){
                 global.civic.garrison.wounded = global.civic.garrison.workers;
@@ -210,7 +209,6 @@ export const events = {
                 wounded = Math.round(wounded / 2);
             }
             soldierDeath(killed);
-            blubberFill(killed);
             global.civic.garrison.wounded += wounded;
             if (global.civic.garrison.wounded > global.civic.garrison.workers){
                 global.civic.garrison.wounded = global.civic.garrison.workers;
@@ -312,7 +310,6 @@ export const events = {
                 wounded = Math.round(wounded / 2);
             }
             soldierDeath(killed);
-            blubberFill(killed);
             global.civic.garrison.wounded += wounded;
             if (global.civic.garrison.wounded > global.civic.garrison.workers){
                 global.civic.garrison.wounded = global.civic.garrison.workers;
@@ -618,9 +615,7 @@ export const events = {
         effect(){
             let dead = Math.floor(seededRandom(1,jobScale(traits.aggressive.vars()[0] + 1)));
             if (dead > global.civic.garrison.workers){ dead = global.civic.garrison.workers; }
-            global.civic.garrison.workers -= dead;
             soldierDeath(dead);
-            blubberFill(dead);
             return loc('event_brawl_s',[loc(`event_brawl${Math.floor(seededRandom(0,10))}`),dead]);
         }
     },

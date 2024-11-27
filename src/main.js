@@ -1427,6 +1427,23 @@ function fastLoop(){
         if (global.tech['trade'] || (global.race['banana'] && global.tech['primitive'] && global.tech.primitive >= 3)){
             let used_trade = 0;
             let dealVal = govActive('dealmaker',0);
+            if (dealVal){
+                let exporting = 0;
+                let importing = 0;
+                Object.keys(global.resource).forEach(function(res){
+                    if (global.resource[res].hasOwnProperty('trade') && global.resource[res].trade < 0){
+                        exporting -= global.resource[res].trade;
+                    }
+                    if (global.resource[res].hasOwnProperty('trade') && global.resource[res].trade > 0){
+                        importing += global.resource[res].trade;
+                    }
+                });
+                if (exporting < importing){
+                    Object.keys(global.resource).forEach(function(res){
+                        global.resource[res].trade = 0;
+                    });
+                }
+            }
             Object.keys(global.resource).forEach(function (res){
                 if (global.resource[res].trade > 0){
                     used_trade += global.resource[res].trade;
