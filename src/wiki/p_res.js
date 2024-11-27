@@ -100,6 +100,19 @@ export function pResPage(content){
     prestigeCalc(subSection,'artifact');
     sideMenu('add',`resources-prestige`,'artifact',loc('wiki_p_res_artifact'));
 
+    //Supercoiled Plasmids
+    section = infoBoxBuilder(mainContent,{ name: 'supercoiled', template: 'p_res', paragraphs: 2, h_level: 2,
+        para_data: {
+            1: [loc('wiki_resets_apotheosis')]
+        },
+        data_link: {
+            1: ['wiki.html#resets-prestige-apotheosis']
+        }
+    });
+    subSection = createCalcSection(section,'supercoiled','gain');
+    prestigeCalc(subSection,'supercoiled');
+    sideMenu('add',`resources-prestige`,'supercoiled',loc('wiki_p_res_supercoiled'));
+
     //AI Core
     section = infoBoxBuilder(mainContent,{ name: 'ai_core', template: 'p_res', paragraphs: 2, h_level: 2,
         para_data: {
