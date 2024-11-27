@@ -94,7 +94,9 @@ const calcInfo = {
         prehistoric: {},
         planetary: {
             s_alter: 1,
-            banquet:5
+            banquet: 5,
+            wonder_lighthouse: 1,
+            wonder_pyramid: 1
         },
         space: {
             star_dock: 1,
@@ -141,6 +143,9 @@ const calcInfo = {
             alien_station: 100,
             matrioshka_brain: 1000,
             ignition_device: 10
+        },
+        eden: {
+            throne: 1
         }
     },
     count: { // Structures that have "count" values that aren't tracked in the building itself. Here you calculate the count that building would have from the save provided.

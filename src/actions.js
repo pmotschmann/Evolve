@@ -5066,7 +5066,7 @@ const raceList = [
     'custom','hybrid'
 ];
 raceList.forEach(function(race){
-    if (race !== 'custom' || global.custom.hasOwnProperty('race0')) {
+    if (!['custom','hybrid'].includes(race) || (race === 'custom' && global.custom.hasOwnProperty('race0')) || (race === 'hybrid' && global.custom.hasOwnProperty('race1')) ) {
         actions.evolution[race] = {
             id: `evolution-${race}`,
             title(){ return races[race].name; },
@@ -5125,6 +5125,7 @@ if (Object.keys(global.stats.synth).length > 1){
             return global.stats.synth[race] && global.race['evoFinalMenu'];
         },
         cost: {},
+        wiki: false,
         race: true,
         effect(){ return loc(`evo_imitate_race`,[races[race].name]); },
         action(){

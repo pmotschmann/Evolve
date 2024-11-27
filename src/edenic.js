@@ -477,7 +477,7 @@ const edenicModules = {
 
                 desc += `<div>${loc('eden_stabilizer_effect1',[global.resource.Asphodel_Powder.name, +stabilize.toFixed(1)])}</div>`;
                 desc += `<div>${loc('eden_stabilizer_effect2',[global.resource.Asphodel_Powder.name, loc('city_shed_title3'), 15])}</div>`;
-                desc += `<div class="has-text-special">${loc('eden_stabilizer_limit',[global.eden.warehouse.count])}</div>`;
+                desc += `<div class="has-text-special">${loc('eden_stabilizer_limit',[global?.eden?.warehouse?.count || 0])}</div>`;
                 return desc;
             },
             action(){
@@ -840,7 +840,7 @@ const edenicModules = {
             },
             effect(){ 
                 let desc = `<div class="has-text-warning">${loc(`eden_siege_fortress_effect`)}</div>`;
-                if (global.eden.fortress.hasOwnProperty('siege')){
+                if (global.eden.hasOwnProperty('fortress') && global.eden.fortress.hasOwnProperty('siege')){
                     desc += `<div>${loc(`eden_siege_fortress_result`)}</div>`;
                     desc += `<div>${loc(`eden_siege_fortress_lost`,[global.eden.fortress.siege.loss])}</div>`;
                     desc += `<div>${loc(`eden_siege_fortress_damage`,[global.eden.fortress.siege.damage])}</div>`;
@@ -918,7 +918,7 @@ const edenicModules = {
             },
             effect(){ 
                 let desc = `<div class="has-text-warning">${loc(`eden_raid_supplies_effect`)}</div>`;
-                if (global.eden.fortress.hasOwnProperty('raid')){
+                if (global.eden.hasOwnProperty('fortress') && global.eden.fortress.hasOwnProperty('raid')){
                     desc += `<div>${loc(`eden_raid_fortress_result`)}</div>`;
                     desc += `<div>${loc(`eden_siege_fortress_lost`,[global.eden.fortress.raid.loss])}</div>`;
                     desc += `<div>${loc(`eden_siege_fortress_damage`,[global.eden.fortress.raid.damage])}</div>`;
@@ -984,7 +984,7 @@ const edenicModules = {
             },
             effect(){ 
                 let desc = `<div class="has-text-warning">${loc(`eden_ambush_patrol_effect`)}</div>`;
-                if (global.eden.fortress.hasOwnProperty('ambush')){
+                if (global.eden.hasOwnProperty('fortress') && global.eden.fortress.hasOwnProperty('ambush')){
                     desc += `<div>${loc(`eden_ambush_patrol_result`)}</div>`;
                     desc += `<div>${loc(`eden_siege_fortress_lost`,[global.eden.fortress.ambush.loss])}</div>`;
                     desc += `<div>${loc(`eden_ambush_patrol_damage`,[global.eden.fortress.ambush.damage ? loc('true') : loc('false')])}</div>`;
@@ -1806,7 +1806,7 @@ const edenicModules = {
             },
             effect(){
                 let desc = `<div>${loc('eden_spirit_vacuum_effect')}</div>`;
-                if (global.eden.palace.rate > 0 && global.eden.palace.energy > 0){
+                if (global.eden.hasOwnProperty('palace') && global.eden.palace.rate > 0 && global.eden.palace.energy > 0){
                     desc += `<div>${loc(`eden_spirit_vacuum_time`,[timeFormat(global.eden.palace.energy / global.eden.palace.rate)])}</div>`;
                 }
                 desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
@@ -1952,9 +1952,7 @@ const edenicModules = {
             reqs: { palace: 2 },
             condition(){ return global.tech.palace < 6 ? true : false; },
             queue_complete(){ return false },
-            cost: {
-                Money(){ return 0; },
-            },
+            cost: {},
             effect: loc('eden_abandoned_throne_effect'),
             action(){
                 return false;
