@@ -22,7 +22,8 @@ export const changeList = [
             `The number of spies available when starting a spy op now affects mission time.`,
             `Fluidized Bed Reactor no longer incorrectly applies to Nano Tubes.`,
             `Shrines now cycle their effect with moon phase if purchased during a full, new, or quarter moon.`,
-            `Slitheryn Slow Digestion replaced with Astrologer.`
+            `Slitheryn Slow Digestion replaced with Astrologer.`,
+            `Slow trait value changed from -5 to -6.`
         ]
     },
     {

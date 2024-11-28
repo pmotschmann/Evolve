@@ -1980,7 +1980,7 @@ export const traits = {
         name: loc('trait_slow_name'),
         desc: loc('trait_slow'),
         type: 'major',
-        val: -5,
+        val: -6,
         vars(r){
             switch (r || traitRank('slow') || 1){
                 case 0.1:
