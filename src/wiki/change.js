@@ -4,7 +4,7 @@ import { clearElement } from './../functions.js';
 export const changeList = [
     {
         version: `1.4.0`,
-        date: `11/27/2024`,
+        date: `11/28/2024`,
         changes: [
             `Push past the Spire and invade the Edenic Realms.`,
             `Added new planet trait: Kamikaze.`,

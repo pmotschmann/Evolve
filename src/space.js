@@ -7431,7 +7431,8 @@ export function ascendLab(hybrid,wiki){
         $(`#city`).append(lab);
     }
 
-    lab.append(`<div><h3 class="has-text-danger">${loc('genelab_title')}</h3> - <span class="has-text-warning">${loc('genelab_genes')} {{ g.genes }}</span> - <span class="has-text-warning">${loc('trait_untapped_name')}: {{ g.genes | untapped }}</span> - <span class="has-text-caution">${loc('genelab_neg')} {{ td.neg }}/10</span></div>`);
+    let labStatus = `<div><h3 class="has-text-danger">${loc('genelab_title')}</h3> - <span class="has-text-warning">${loc('genelab_genes')} {{ g.genes }}</span> - <span class="has-text-warning">${loc('trait_untapped_name')}: {{ g.genes | untapped }}</span> - <span class="has-text-caution">${loc('genelab_neg')} {{ td.neg }}/10</span></div>`;
+    lab.append(labStatus);
 
     if (wiki){
         lab.append(`
@@ -7525,6 +7526,7 @@ export function ascendLab(hybrid,wiki){
             <button class="button" @click="reset()">${loc('genelab_reset')}</button>
         </div>
         <hr>
+        ${labStatus}
         <div class="importExport">
             <button class="button" @click="customImport">${loc('genelab_import')}</button>
             <input type="file" class="fileImport" id="customFile" accept=".txt">

@@ -1179,7 +1179,7 @@ const edenicModules = {
                         element = '#eden-east_tower .button';
                     }
                     else if (target === 'g'){
-                        element = 'eden-isle_garrison .button';
+                        element = '#eden-isle_garrison .button';
                     }
 
                     global.eden.enemy_isle[target] -= Math.floor(seededRandom(25,75));
