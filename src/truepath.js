@@ -3900,7 +3900,7 @@ for (let i=1; i<9; i++){
         action(){
             if (payCosts($(this)[0])){
                 global.race['gas_name'] = i;
-                initStruct(tauCetiModules.tauceti.tau_gas.refueling_station);
+                initStruct(tauCetiModules.tau_gas.refueling_station);
                 return true;
             }
             return false;
