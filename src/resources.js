@@ -811,10 +811,10 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
 
     var res_container;
     if (global.resource[name].max === -1 || global.resource[name].max === -2){
-        res_container = $(`<div id="res${name}" class="resource crafted" v-show="display"><h3 class="res has-text-${color}">{{ name | namespace }}</h3><span id="cnt${name}" class="count">{{ amount | diffSize }}</span></div>`);
+        res_container = $(`<div id="res${name}" class="resource crafted" v-show="display"><div><h3 class="res has-text-${color}">{{ name | namespace }}</h3><span id="cnt${name}" class="count">{{ amount | diffSize }}</span></div></div>`);
     }
     else {
-        res_container = $(`<div id="res${name}" class="resource" v-show="display"><h3 class="res has-text-${color}">{{ name | namespace }}</h3><span id="cnt${name}" class="count">{{ amount | size }} / {{ max | size }}</span></div>`);
+        res_container = $(`<div id="res${name}" class="resource" v-show="display"><div><h3 class="res has-text-${color}">{{ name | namespace }}</h3><span id="cnt${name}" class="count">{{ amount | size }} / {{ max | size }}</span></div></div>`);
     }
 
     if (stackable){
@@ -1206,7 +1206,7 @@ function loadSpecialResource(name,color) {
     }
     color = color || 'special';
 
-    var res_container = $(`<div id="res${name}" class="resource" v-show="count"><span class="res has-text-${color}">${loc(`resource_${name}_name`)}</span><span class="count">{{ count | round }}</span></div>`);
+    var res_container = $(`<div id="res${name}" class="resource" v-show="count"><div><span class="res has-text-${color}">${loc(`resource_${name}_name`)}</span><span class="count">{{ count | round }}</span></div></div>`);
     $('#resources').append(res_container);
 
     vBind({
