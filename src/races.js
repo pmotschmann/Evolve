@@ -7325,11 +7325,11 @@ export function orbitLength(){
     let orbit = global.city.calendar.orbit;
     if (global.city.ptrait.includes('kamikaze')){
         orbit -= global.city.calendar.year;
+        if ((!global.race['truepath'] || global.race['lone_survivor'] || global.tech['titan_ai_core'] || global.race['tidal_decay']) && orbit < 100){
+            orbit = 100;
+        }
     }
-    if (!global.race['truepath'] && orbit < 100){
-        orbit = 100; // Trigger extinction event at 0? much to ponder.
-    }
-    return global.race['tidal_decay'] ? 100 : orbit;
+    return orbit;
 }
 
 function shellColor(){

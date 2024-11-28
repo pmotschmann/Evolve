@@ -586,6 +586,9 @@ const outerTruth = {
                             powerOnNewStruct($(outerTruth.spc_titan.ai_core2)[0]);
                             renderSpace();
                             drawTech();
+                            if (global.city.ptrait.includes('kamikaze') && !global.race['tidal_decay']){
+                                messageQueue(loc('planet_kamikaze_stabilize',[races[global.race.species].home,100]),'info',false,['progress']);
+                            }
                         }
                         return true;
                     }

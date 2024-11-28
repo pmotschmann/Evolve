@@ -5543,6 +5543,7 @@
   "planet_kamikaze": "Kamikaze",
   "planet_kamikaze_desc": "This planet is slowly moving closer to its parent star and will eventually be ripped apart by tidal forces.",
   "planet_kamikaze_msg": "Your planet and moon have fallen too close to its parent star and been ripped apart by tidal forces.",
+  "planet_kamikaze_stabilize": "You have received new information that the orbit of your home planet %0 will stabilize at %1 days.",
   "wish_for": "Wish for %0",
   "wish_power": "Power",
   "wish_strength": "Strength",
