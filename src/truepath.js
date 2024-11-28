@@ -3952,6 +3952,7 @@ function defineWomlings(){
     initStruct(tauCetiModules.tau_red.womling_village);
     initStruct(tauCetiModules.tau_red.womling_mine);
     initStruct(tauCetiModules.tau_red.womling_fun);
+    initStruct(tauCetiModules.tau_red.womling_farm);
     if (global.race['lone_survivor']){
         global.tauceti.womling_village.count = 2;
         global.tauceti.womling_village.on = 2;
