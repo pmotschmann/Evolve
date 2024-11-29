@@ -6819,7 +6819,7 @@ export function powerOnNewStruct(c_action,extra){
 // Return the powered/supported/enabled quantity of a struct.
 // When called from the wiki, assume that "enough" support is available, because this information is not in the save.
 // For structs that cannot be enabled, powered, or supported, always return 0.
-export function getStructNumActive(c_action,isWiki){
+export function getStructNumActive(c_action,wiki){
     let parts = c_action.id.split('-');
     if (!global.hasOwnProperty(parts[0]) || !global[parts[0]].hasOwnProperty(parts[1])){
         return 0;
@@ -6835,7 +6835,7 @@ export function getStructNumActive(c_action,isWiki){
     if (c_action.hasOwnProperty('powered') && c_action.powered() > 0) {
         if (global.city.hasOwnProperty('powered')){
             // The p_on struct is empty in the wiki view
-            if (!isWiki){
+            if (!wiki){
                 num_on = p_on[parts[1]];
             }
         }
@@ -6846,12 +6846,12 @@ export function getStructNumActive(c_action,isWiki){
 
     // Support: production is positive, consumption is negative
     if (c_action.hasOwnProperty('s_type') && c_action.hasOwnProperty('support') && c_action.support() < 0){
-        if (isWiki) {
+        if (wiki) {
             // The support_on and similarly-named structs are empty in the wiki view
             // This means that the wiki can be wrong, but we can at least check "max" support
             let grids = gridDefs();
             let s_r = grids[c_action.s_type].r;
-            if (s_r === 'galaxy' && !isStargateOn(isWiki)){
+            if (s_r === 'galaxy' && !isStargateOn(wiki)){
                 num_on = 0;
             }
             else {
@@ -6872,7 +6872,7 @@ export function getStructNumActive(c_action,isWiki){
             }
             if (gal_on.hasOwnProperty(parts[1])){
                 found_support = true;
-                num_on = isStargateOn(isWiki) ? Math.min(num_on, gal_on[parts[1]]) : 0;
+                num_on = isStargateOn(wiki) ? Math.min(num_on, gal_on[parts[1]]) : 0;
             }
             if (spire_on.hasOwnProperty(parts[1])){
                 found_support = true;
@@ -6951,12 +6951,20 @@ function srDesc(c_action,old){
                 Object.keys(structs).forEach(function (region){
                     Object.keys(structs[region]).forEach(function (struct){
                         let label = '';
+                        const check_on = structs[region][struct].hasOwnProperty('on');
+                        let num_on;
                         if (structs[region][struct].hasOwnProperty('s')){
                             let sector = structs[region][struct].s;
                             label = typeof actions[region][sector][struct].title === 'string' ? actions[region][sector][struct].title : actions[region][sector][struct].title();
+                            if (check_on){
+                                num_on = getStructNumActive(actions[region][sector][struct]);
+                            }
                         }
                         else {
                             label = typeof actions[region][struct].title === 'string' ? actions[region][struct].title : actions[region][struct].title();
+                            if (check_on){
+                                num_on = getStructNumActive(actions[region][struct]);
+                            }
                         }
                         desc = desc + `${label}. `;
 
@@ -6966,7 +6974,7 @@ function srDesc(c_action,old){
                         else if (structs[region][struct].count > global[region][struct].count){
                             desc = desc + `${loc('insufficient')} ${label}. `;
                         }
-                        else if (structs[region][struct].hasOwnProperty('on') && structs[region][struct].on > global[region][struct].on){
+                        else if (check_on && structs[region][struct].on > num_on){
                             desc = desc + `${loc('insufficient')} ${label} enabled. `;
                         }
                     });
@@ -7066,9 +7074,27 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
                 let structs = costs[res]();
                 Object.keys(structs).forEach(function (region){
                     Object.keys(structs[region]).forEach(function (struct){
-                        let res_cost = structs[region][struct].hasOwnProperty('on') ? structs[region][struct].on : structs[region][struct].count;
+                        let label = '';
+                        const check_on = structs[region][struct].hasOwnProperty('on');
+                        let num_on;
+                        let res_cost = check_on ? structs[region][struct].on : structs[region][struct].count;
                         let color = 'has-text-dark';
                         let aria = '';
+
+                        if (structs[region][struct].hasOwnProperty('s')){
+                            const sector = structs[region][struct].s;
+                            label = typeof actions[region][sector][struct].title === 'string' ? actions[region][sector][struct].title : actions[region][sector][struct].title();
+                            if (check_on){
+                                num_on = getStructNumActive(actions[region][sector][struct]);
+                            }
+                        }
+                        else {
+                            label = typeof actions[region][struct].title === 'string' ? actions[region][struct].title : actions[region][struct].title();
+                            if (check_on){
+                                num_on = getStructNumActive(actions[region][struct]);
+                            }
+                        }
+
                         if (!global[region][struct]){
                             color = 'has-text-danger';
                             aria = ' <span class="is-sr-only">(blocking resource)</span>';
@@ -7077,18 +7103,10 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
                             color = 'has-text-danger';
                             aria = ' <span class="is-sr-only">(blocking resource)</span>';
                         }
-                        else if (structs[region][struct].hasOwnProperty('on') && structs[region][struct].on > global[region][struct].on){
+                        else if (check_on && structs[region][struct].on > num_on){
                             color = 'has-text-alert';
                         }
 
-                        let label = '';
-                        if (structs[region][struct].hasOwnProperty('s')){
-                            let sector = structs[region][struct].s;
-                            label = typeof actions[region][sector][struct].title === 'string' ? actions[region][sector][struct].title : actions[region][sector][struct].title();
-                        }
-                        else {
-                            label = typeof actions[region][struct].title === 'string' ? actions[region][struct].title : actions[region][struct].title();
-                        }
                         empty = false;
                         cost.append($(`<div class="${color}">${label}: ${res_cost}${aria}</div>`));
                     });
@@ -7520,9 +7538,18 @@ function checkStructs(structs){
                         test = false;
                         return;
                     }
-                    if (global[region][struct].hasOwnProperty('on') && global[region][struct].on < structs[region][struct].on){
-                        test = false;
-                        return;
+                    if (structs[region][struct].hasOwnProperty('on')){
+                        let num_on;
+                        if (structs[region][struct].hasOwnProperty('s')){
+                            const sector = structs[region][struct].s;
+                            num_on = getStructNumActive(actions[region][sector][struct]);
+                        } else {
+                            num_on = getStructNumActive(actions[region][struct]);
+                        }
+                        if (num_on < structs[region][struct].on){
+                            test = false;
+                            return;
+                        }
                     }
                 }
                 else {
