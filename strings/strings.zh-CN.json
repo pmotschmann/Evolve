@@ -7361,6 +7361,8 @@
   "genelab_genus_synthetic_desc": "机械生物是被另外的个体制造出来的。",
   "genelab_genus_eldritch": "异",
   "genelab_genus_eldritch_desc": "异形生物是生活在地下城市的噩梦般的恐怖生物。他们经常掠夺地表世界以获得奴役和资源。",
+  "genelab_genus_hybrid": "混",
+  "genelab_genus_hybrid_desc": "两个种群的特质结合在一起。",
   "genelab_genus_none": "无",
   "genelab_reset": "清除字段",
   "genelab_import": "导入种族",
