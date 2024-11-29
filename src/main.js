@@ -1939,7 +1939,9 @@ function fastLoop(){
                 let c_action = parts[0] === 'city' ? actions.city : actions[space][parts[0]];
                 if (global[region][parts[1]] && global[region][parts[1]]['on']){
                     let watts = c_action[parts[1]].powered();
-                    totalPowerDemand += global[region][parts[1]].on * watts;
+                    if (region !== 'galaxy' || p_on['s_gate']){
+                        totalPowerDemand += global[region][parts[1]].on * watts;
+                    }
                 }
             }
             let totalPowerUsage = totalPowerDemand;
@@ -1951,7 +1953,11 @@ function fastLoop(){
                 let c_action = parts[0] === 'city' ? actions.city : actions[space][parts[0]];
 
                 if (global[region][parts[1]] && global[region][parts[1]]['on']){
-                    p_on[parts[1]] = global[region][parts[1]].on;
+                    if (region !== 'galaxy' || p_on['s_gate']){
+                        p_on[parts[1]] = global[region][parts[1]].on;
+                    } else {
+                        p_on[parts[1]] = 0;
+                    }
 
                     if (c_action[parts[1]].hasOwnProperty('p_fuel')){
                         let s_fuels = c_action[parts[1]].p_fuel();
@@ -2058,9 +2064,16 @@ function fastLoop(){
                 let c_action = parts[0] === 'city' ? actions.city : actions[space][parts[0]];
                 if (global[region][parts[1]] && global[region][parts[1]]['on']){
                     let watts = c_action[parts[1]].powered();
-                    let power = global[region][parts[1]].on * watts;
+                    let power = 0;
 
-                    p_on[parts[1]] = global[region][parts[1]].on;
+                    if (region !== 'galaxy' || p_on['s_gate']){
+                        power = global[region][parts[1]].on * watts;
+                        p_on[parts[1]] = global[region][parts[1]].on;
+                    }
+                    else {
+                        p_on[parts[1]] = 0;
+                    }
+
                     while (power > power_grid && power > 0){
                         power -= c_action[parts[1]].powered();
                         p_on[parts[1]]--;
@@ -2102,19 +2115,6 @@ function fastLoop(){
                     $(`#${region}-${parts[1]} .on`).removeClass('warn');
                     $(`#${region}-${parts[1]} .on`).prop('title',`ON`);
                 }
-            }
-        }
-        //dormitories
-        if (!p_on['s_gate'] || !p_on['embassy']){
-            if(global.galaxy['dormitory']){
-                p_on['dormitory'] = 0;
-                $(`#galaxy-dormitory .on`).addClass('warn');
-                $(`#galaxy-dormitory .on`).prop('title',`ON 0`);
-            }
-            if(global.galaxy['symposium']){
-                p_on['symposium'] = 0;
-                $(`#galaxy-symposium .on`).addClass('warn');
-                $(`#galaxy-symposium .on`).prop('title',`ON 0`);
             }
         }
 
