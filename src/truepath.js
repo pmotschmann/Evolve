@@ -8,7 +8,7 @@ import { production, highPopAdjust } from './prod.js';
 import { actions, payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, buildTemplate, casinoEffect, housingLabel, structName, initStruct } from './actions.js';
 import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, incrementStruct, planetName } from './space.js';
 import { removeTask, govActive } from './governor.js';
-import { defineIndustry, nf_resources } from './industry.js';
+import { defineIndustry, nf_resources, addSmelter } from './industry.js';
 import { arpa } from './arpa.js';
 import { matrix, retirement, gardenOfEden } from './resets.js';
 import { loc } from './locale.js';
@@ -3335,14 +3335,7 @@ const tauCetiModules = {
                     incrementStruct('ore_refinery','tauceti');
                     if (powerOnNewStruct($(this)[0])){
                         let num_smelters = $(this)[0].smelting();
-                        global.city.smelter.cap += num_smelters;
-                        global.city.smelter.Steel += num_smelters;
-                        if (global.race['evil']) {
-                            global.city['smelter'].Wood += num_smelters;
-                        }
-                        else {
-                            global.city.smelter.Oil += num_smelters;
-                        }
+                        addSmelter(num_smelters, 'Steel', global.race['evil'] ? 'Wood' : 'Oil');
                     }
                     return true;
                 }
@@ -5955,7 +5948,7 @@ export function loneSurvivor(){
 
         initStruct(actions.city.factory);
         initStruct(actions.city.foundry);
-        initStruct(actions.city.smelter); global.city.smelter.cap = 2; global.city.smelter.Oil = 2; global.city.smelter.Iron = 1; global.city.smelter.Steel = 1;
+        initStruct(actions.city.smelter); addSmelter(1, 'Iron'); addSmelter(1, 'Steel');
 
         initStruct(actions.city.amphitheatre);
         initStruct(actions.city.apartment);

@@ -11,7 +11,7 @@ import { renderSpace, planetName, int_fuel_adjust } from './space.js';
 import { drawHellObservations } from './portal.js';
 import { setOrbits, jumpGateShutdown } from './truepath.js';
 import { arpa } from './arpa.js';
-import { setPowerGrid, defineIndustry } from './industry.js';
+import { setPowerGrid, defineIndustry, addSmelter } from './industry.js';
 import { defineGovernor, removeTask } from './governor.js';
 import { big_bang, cataclysm_end, descension, aiApocalypse } from './resets.js';
 
@@ -1506,17 +1506,14 @@ const techs = {
         effect: loc('tech_stellar_smelting_effect'),
         action(){
             if (payCosts($(this)[0])){
-                let num_forge_on = p_on['stellar_forge'];
-                let num_new_smelters = num_forge_on * 2;
-                global.city.smelter.cap += num_new_smelters;
-                global.city.smelter.Star += num_new_smelters;
-                global.city.smelter.StarCap += num_new_smelters;
-                global.city.smelter.Iron += num_new_smelters;
                 return true;
             }
             return false;
         },
         post(){
+            let num_forge_on = p_on['stellar_forge'];
+            let num_new_smelters = num_forge_on * actions.interstellar.int_neutron.stellar_forge.smelting();
+            addSmelter(num_new_smelters, 'Iron', 'Star');
             defineIndustry();
         }
     },
