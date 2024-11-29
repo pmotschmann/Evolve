@@ -7810,6 +7810,7 @@
   "wiki_trait_effect_unified": "开局直接达成统一，统一加成效果 +%0%。",
   "wiki_trait_effect_gloomy": "非晴天时，全局产量 +%0%。",
   "wiki_trait_effect_rainbow": "雨后的晴天全局产量 +%0%。",
+  "wiki_trait_effect_astrologer": "星座符号效果 +%0%。",
   "wiki_trait_effect_magnificent": "您可以建造圣地；圣地的加成与建造时的月相有关。峨眉月使士气 +%4%；盈凸月使金属产量 +%3%；张弦月使知识上限 +%0，同时使大学知识上限 +%1%；残月使税收收入 +%2%；剩余的新月、上弦月、满月、下弦月时提升随机一项。盈凸月提升的金属产量包括：铜、铁、铝、钢、钛、铱和精金。",
   "wiki_trait_effect_noble": "税率被限制在 %0% 至 %1% 之间。",
   "wiki_trait_effect_artifical": "人口不会自然增长；只能通过制造增加。从事科研工作的市民效率 +%0%。",
