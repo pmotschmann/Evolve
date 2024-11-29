@@ -2882,7 +2882,10 @@ const techs = {
             Knowledge(){ return 28000; }
         },
         effect(){
-            return loc('tech_zoning_permits_effect',[global.genes['queue'] && global.genes['queue'] >= 2 ? 4 : 2]);
+            return loc('tech_zoning_permits_effect',[$(this)[0].bQueue()]);
+        },
+        bQueue(){
+            return global.genes?.queue >= 2 ? 4 : 2;
         },
         action(){
             if (payCosts($(this)[0])){
@@ -2906,7 +2909,10 @@ const techs = {
             Knowledge(){ return 95000; }
         },
         effect(){
-            return loc('tech_urbanization_effect',[global.genes['queue'] && global.genes['queue'] >= 2 ? 6 : 3]);
+            return loc('tech_urbanization_effect',[$(this)[0].bQueue()]);
+        },
+        bQueue(){
+            return global.genes?.queue >= 2 ? 6 : 3;
         },
         action(){
             if (payCosts($(this)[0])){
