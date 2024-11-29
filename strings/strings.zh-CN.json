@@ -7876,7 +7876,7 @@
   "planetlab_create": "生成星球",
   "genelab_title": "种族生成器",
   "genelab_genes": "剩余基因点数：",
-  "genelab_neg": "Negative Genes:",
+  "genelab_neg": "负面特质个数：",
   "genelab_name": "种族名称",
   "genelab_entity": "种族类型",
   "genelab_desc": "种族描述",
