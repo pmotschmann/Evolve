@@ -1,5 +1,6 @@
 import { loc } from './../locale.js';
-import { sideMenu, infoBoxBuilder } from './functions.js';
+import { sideMenu, subSideMenu, infoBoxBuilder } from './functions.js';
+import { govBoost } from './government.js';
 import { gmen, gov_traits, gov_tasks } from './../governor.js';
 import { hoovedRename } from './../functions.js';
 import { hoovedReskin } from './../races.js';
@@ -20,22 +21,32 @@ export function governPage(content){
         sideMenu('add',`governor-gameplay`,`intro`,loc('governor'));
 
         Object.keys(gmen).forEach(function (gov){
-            let desc = '';
-            Object.keys(gmen[gov].traits).forEach(function (t){
-                desc += (gov_traits[t].hasOwnProperty('effect') ? gov_traits[t].effect({isWiki: true}) : '') + ' ';
-            });
-
             infoBoxBuilder(govern,{ name: gov, template: 'government', label: loc(`governor_${gov}`), paragraphs: 2, break: [2], h_level: 3,
                 text: {
                     1: `governor_${gov}_desc`
                 },
                 rawtext: {
-                    2: desc
-                }
+                    2: `{{ b | desc }}`
+                },
+                vue: {
+                    data: { b: govBoost(gov === 'bureaucrat' ? 2 : 3) },
+                    filters: {
+                        desc(b){
+                            let desc = '';
+                            Object.keys(gmen[gov].traits).forEach(function (t){
+                                desc += (gov_traits[t].hasOwnProperty('effect') ? gov_traits[t].effect(b,{isWiki: true}) : '') + ' ';
+                            });
+                            return desc;;
+                        }
+                    }
+                },
+                h_extra: `<div><b-checkbox v-model="b">${loc(gov === 'bureaucrat' ? `arpa_genepool_civil_service_title` : `arpa_genepool_bureaucratic_efficiency_title`)}</b-checkbox></div>`,
             });
-            sideMenu('add',`governor-gameplay`,gov,loc(`governor_${gov}`));
+            subSideMenu('add',`governor-gameplay`,gov,loc(`governor_${gov}`));
         });
     }
+
+    sideMenu('gap');
 
     {
         let govern = infoBoxBuilder(mainContent,{ name: 'task', template: 'governor', paragraphs: 2, h_level: 2,
@@ -61,7 +72,7 @@ export function governPage(content){
                     3: ['wiki.html#civilized-tech-tax_rates']
                 }
             });
-            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
+            subSideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
         }
 
         {
@@ -79,7 +90,7 @@ export function governPage(content){
                     3: ['wiki.html#civilized-tech-containerization']
                 }
             });
-            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
+            subSideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
         }
 
         {
@@ -98,7 +109,27 @@ export function governPage(content){
                     4: ['wiki.html#civilized-tech-containerization']
                 }
             });
-            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
+            subSideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
+        }
+
+        {
+            let task = 'combo_storage';
+            infoBoxBuilder(govern,{ name: task, template: 'government', label: loc(`gov_task_${task}`), paragraphs: 3, break: [2,3], h_level: 3,
+                text: {
+                    1: `wiki_governor_task_${task}1`,
+                    2: `wiki_governor_task_unlock`,
+                    3: `wiki_governor_task_upgrade`
+                },
+                para_data: {
+                    2: [loc(`tech_containerization`)],
+                    3: [loc(`arpa_genepool_bureaucratic_efficiency_title`)]
+                },
+                data_link: {
+                    2: ['wiki.html#civilized-tech-containerization'],
+                    3: ['wiki.html#crispr-prestige-bureaucratic_efficiency']
+                }
+            });
+            subSideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
         }
 
         {
@@ -117,7 +148,7 @@ export function governPage(content){
                     4: ['wiki.html#civilized-tech-mercs']
                 }
             });
-            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
+            subSideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
         }
 
         {
@@ -137,7 +168,7 @@ export function governPage(content){
                     3: ['wiki.html#early_space-tech-unification2']
                 }
             });
-            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
+            subSideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
         }
 
         {
@@ -166,7 +197,27 @@ export function governPage(content){
                     7: ['wiki.html#early_space-tech-unification2']
                 }
             });
-            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
+            subSideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
+        }
+
+        {
+            let task = 'combo_spy';
+            infoBoxBuilder(govern,{ name: task, template: 'government', label: loc(`gov_task_${task}`), paragraphs: 3, break: [2,3], h_level: 3,
+                text: {
+                    1: `wiki_governor_task_${task}1`,
+                    2: `wiki_governor_task_unlock`,
+                    3: `wiki_governor_task_upgrade`
+                },
+                para_data: {
+                    2: [loc(`tech_espionage`)],
+                    3: [loc(`arpa_genepool_bureaucratic_efficiency_title`)]
+                },
+                data_link: {
+                    2: ['wiki.html#civilized-tech-spy'],
+                    3: ['wiki.html#crispr-prestige-bureaucratic_efficiency']
+                }
+            });
+            subSideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
         }
 
         {
@@ -183,7 +234,7 @@ export function governPage(content){
                     2: ['wiki.html#traits-species-major_slaver']
                 }
             });
-            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`,[loc(`resource_Slave_name`)]));
+            subSideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`,[loc(`resource_Slave_name`)]));
         }
 
         {
@@ -200,7 +251,7 @@ export function governPage(content){
                     2: ['wiki.html#traits-species-major_cannibalize']
                 }
             });
-            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
+            subSideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
         }
 
         {
@@ -218,7 +269,7 @@ export function governPage(content){
                     2: ['wiki.html#traits-species-major_hooved']
                 }
             });
-            sideMenu('add',`governor-gameplay`,task,loc(`city_${hoovedRename(true)}`,[hoovedRename(false)]));
+            subSideMenu('add',`governor-gameplay`,task,loc(`city_${hoovedRename(true)}`,[hoovedRename(false)]));
         }
 
         {
@@ -240,7 +291,7 @@ export function governPage(content){
                     7: ['wiki.html#interstellar-structures-mass_ejector']
                 }
             });
-            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
+            subSideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
         }
 
         {
@@ -259,7 +310,7 @@ export function governPage(content){
                     4: [false,'wiki.html#resets-prestige-infusion','wiki.html#hell-structures-spire']
                 }
             });
-            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
+            subSideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
         }
     }
 }

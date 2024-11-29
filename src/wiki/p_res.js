@@ -100,6 +100,19 @@ export function pResPage(content){
     prestigeCalc(subSection,'artifact');
     sideMenu('add',`resources-prestige`,'artifact',loc('wiki_p_res_artifact'));
 
+    //Supercoiled Plasmids
+    section = infoBoxBuilder(mainContent,{ name: 'supercoiled', template: 'p_res', paragraphs: 2, h_level: 2,
+        para_data: {
+            1: [loc('wiki_resets_apotheosis')]
+        },
+        data_link: {
+            1: ['wiki.html#resets-prestige-apotheosis']
+        }
+    });
+    subSection = createCalcSection(section,'supercoiled','gain');
+    prestigeCalc(subSection,'supercoiled');
+    sideMenu('add',`resources-prestige`,'supercoiled',loc('wiki_p_res_supercoiled'));
+
     //AI Core
     section = infoBoxBuilder(mainContent,{ name: 'ai_core', template: 'p_res', paragraphs: 2, h_level: 2,
         para_data: {
@@ -150,7 +163,8 @@ const calcVars = {
     vacuum: ['mana', 'genes'],
     harmony: ['genes', 'uni'],
     artifact: ['genes', 'floor', 'micro'],
-    cores: ['micro']
+    cores: ['micro'],
+    supercoiled: ['genes', 'micro'],
 }
 
 export function prestigeCalc(info,resource,extraType,resetType){
@@ -183,6 +197,9 @@ export function prestigeCalc(info,resource,extraType,resetType){
         case 'descend':
             title += loc('wiki_resets_infusion') + " ";
             break;
+        case 'apotheosis':
+            title += loc('wiki_resets_apotheosis') + " ";
+            break;
         default:
             break;
     }
@@ -208,6 +225,9 @@ export function prestigeCalc(info,resource,extraType,resetType){
             break;
         case 'cores':
             title += loc('resource_AICore_name');
+            break;
+        case 'supercoiled':
+            title += loc('resource_Supercoiled_name');
             break;
     }
     calc.append(`<h2 class="has-text-caution">${loc('wiki_calc_gains',[title])}</h2>`);
@@ -269,7 +289,8 @@ export function prestigeCalc(info,resource,extraType,resetType){
         ai: { use: true },
         matrix: { use: true },
         retired: { use: true },
-        eden: { use: true }
+        eden: { use: true },
+        apotheosis: { use: true }
     };
     let showEval = { vis: false };
     let plasExtra = { capVis: false, overflowVis: false, totalVis: false, capVal: undefined, overflow: undefined, rawGains: undefined };
@@ -335,6 +356,10 @@ export function prestigeCalc(info,resource,extraType,resetType){
         case 'cores':
             inputs.reset.val = 'ai';
             equation += `<span v-show="!i.micro.val">5</span><span v-show="i.micro.val">2</span>`;
+            break;
+        case 'supercoiled':
+            inputs.reset.val = 'apotheosis';
+            equation += `{{ i.genes.val, 'genes' | generic }} ** <span v-show="!i.micro.val">3</span><span v-show="i.micro.val">2</span>`;
             break;
     }
     if (resource === 'plasmid'){

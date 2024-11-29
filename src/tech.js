@@ -1,9 +1,9 @@
 import { global, save, webWorker, p_on } from './vars.js';
 import { loc } from './locale.js';
-import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper, popCost, eventActive } from './functions.js';
+import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper, popCost } from './functions.js';
 import { unlockAchieve, alevel, universeAffix, unlockFeat } from './achieve.js';
-import { payCosts, housingLabel, wardenLabel, structName, updateQueueNames, drawTech, fanaticism, checkAffordable, actions } from './actions.js';
-import { races, checkAltPurgatory, renderPsychicPowers } from './races.js';
+import { payCosts, housingLabel, wardenLabel, structName, updateQueueNames, drawTech, fanaticism, checkAffordable, actions, initStruct } from './actions.js';
+import { races, checkAltPurgatory, renderPsychicPowers, renderSupernatural, traitCostMod } from './races.js';
 import { drawResourceTab, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
 import { buildGarrison, checkControlling, govTitle } from './civics.js';
@@ -113,7 +113,7 @@ const techs = {
                 if (global.race['infectious']){
                     global.civic.garrison.display = true;
                     global.settings.showCivic = true;
-                    global.city['garrison'] = { count: 0, on: 0 };
+                    initStruct(actions.city.garrison);
                 }
                 if (global.race['banana'] && !global.race['terrifying']){
                     global.settings.showResources = true;
@@ -124,7 +124,7 @@ const techs = {
                 }
                 if (global.race['calm']){
                     global.resource.Zen.display = true;
-                    global.city['meditation'] = { count: 0 };
+                    initStruct(actions.city.meditation);
                 }
                 return true;
             }
@@ -311,7 +311,7 @@ const techs = {
         effect: loc('tech_housing_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['basic_housing'] = { count: 0 };
+                initStruct(actions.city.basic_housing);
                 return true;
             }
             return false;
@@ -333,7 +333,7 @@ const techs = {
         effect: loc('tech_cottage_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['cottage'] = { count: 0 };
+                initStruct(actions.city.cottage);
                 return true;
             }
             return false;
@@ -357,10 +357,7 @@ const techs = {
         effect: loc('tech_apartment_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['apartment'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.city.apartment);
                 return true;
             }
             return false;
@@ -380,10 +377,7 @@ const techs = {
         effect(){ return loc('tech_arcology_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.portal['arcology'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.portal.prtl_ruins.arcology);
                 return true;
             }
             return false;
@@ -542,13 +536,7 @@ const techs = {
         effect: loc('tech_captive_housing_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['captive_housing'] = {
-                    count: 0, cattle: 0, cattleCatch: 0,
-                    race0: 0, jailrace0: 0,
-                    race1: 0, jailrace1: 0,
-                    race2: 0, jailrace2: 0,
-                    raceCap: 0, cattleCap: 0,
-                };
+                initStruct(actions.city.captive_housing);
                 return true;
             }
             return false;
@@ -596,6 +584,60 @@ const techs = {
                 return true;
             }
             return false;
+        }
+    },
+    minor_wish: {
+        id: 'tech-minor_wish',
+        title: loc('tech_minor_wish'),
+        desc: loc('tech_minor_wish'),
+        category: 'paranormal',
+        era: 'civilized',
+        reqs: { housing: 1 },
+        condition(){ return global.settings.showCivic; },
+        trait: ['wish'],
+        grant: ['wish',1],
+        cost: {
+            Knowledge(){ return 50; }
+        },
+        effect: loc('tech_minor_wish_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.settings.showWish = true;
+                global.race['wishStats'] = { 
+                    minor: 0, major: 0, plas: 0, tax: 0, bad: 0, fame: 0, troop: 0, 
+                    prof: 0, potato: 0, priest: 0, temple: false, zigg: false, 
+                    astro: false, casino: false, ship: false, gov: false, strong: false
+                };
+                return true;
+            }
+            return false;
+        },
+        post(){
+            renderSupernatural();
+        }
+    },
+    major_wish: {
+        id: 'tech-major_wish',
+        title: loc('tech_major_wish'),
+        desc: loc('tech_major_wish'),
+        category: 'paranormal',
+        era: 'civilized',
+        reqs: { wish: 1, high_tech: 7 },
+        condition(){ return global.settings.showCivic; },
+        trait: ['wish'],
+        grant: ['wish',2],
+        cost: {
+            Knowledge(){ return 110000; }
+        },
+        effect: loc('tech_major_wish_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        },
+        post(){
+            renderSupernatural();
         }
     },
     psychic_energy: {
@@ -887,7 +929,7 @@ const techs = {
         effect(){ return global.race['hrt'] && ['wolven','vulpine'].includes(global.race['hrt']) ? loc('tech_smokehouse_easter_effect') : loc('tech_smokehouse_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                checkAltPurgatory('city','smokehouse','silo',{ count: 0 });
+                checkAltPurgatory('city','smokehouse','silo',actions.city.smokehouse.struct().d);
                 return true;
             }
             return false;
@@ -914,7 +956,7 @@ const techs = {
         effect: loc('tech_lodge_effect'),
         action(){
             if (payCosts($(this)[0])){
-                checkAltPurgatory('city','lodge','farm',{ count: 0 });
+                checkAltPurgatory('city','lodge','farm',actions.city.lodge.struct().d);
                 return true;
             }
             return false;
@@ -939,7 +981,7 @@ const techs = {
         effect(){ return this.condition() ? loc('tech_lodge_effect_alt') : loc('tech_lodge_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                checkAltPurgatory('city','lodge','farm',{ count: 0 });
+                checkAltPurgatory('city','lodge','farm',actions.city.lodge.struct().d);
                 return true;
             }
             return false;
@@ -961,7 +1003,7 @@ const techs = {
         effect: loc('tech_soul_well_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['soul_well'] = { count: 0 };
+                initStruct(actions.city.soul_well);
                 return true;
             }
             return false;
@@ -983,7 +1025,7 @@ const techs = {
         effect: loc('tech_compost_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['compost'] = { count: 0, on: 0 };
+                initStruct(actions.city.compost);
                 return true;
             }
             return false;
@@ -1067,7 +1109,7 @@ const techs = {
         effect: loc('tech_agriculture_effect'),
         action(){
             if (payCosts($(this)[0])){
-                checkAltPurgatory('city','farm','lodge',{ count: 0 });
+                checkAltPurgatory('city','farm','lodge',actions.city.farm.struct().d);
                 return true;
             }
             return false;
@@ -1126,7 +1168,7 @@ const techs = {
         effect: loc('tech_silo_effect'),
         action(){
             if (payCosts($(this)[0])){
-                checkAltPurgatory('city','silo','smokehouse',{ count: 0 });
+                checkAltPurgatory('city','silo','smokehouse',actions.city.silo.struct().d);
                 return true;
             }
             return false;
@@ -1146,7 +1188,7 @@ const techs = {
         effect: loc('tech_mill_effect'),
         action(){
             if (payCosts($(this)[0])){
-                checkAltPurgatory('city','mill','windmill',{ count: 0, on: 0 });
+                checkAltPurgatory('city','mill','windmill',actions.city.mill.struct().d);
                 return true;
             }
             return false;
@@ -1208,7 +1250,7 @@ const techs = {
         effect(){ return global.race['unfathomable'] ? loc('tech_watermill_effect') : loc('tech_wind_plant_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                checkAltPurgatory('city','windmill','mill',{ count: 0, on: 0 });
+                checkAltPurgatory('city','windmill','mill',actions.city.windmill.struct().d);
                 return true;
             }
             return false;
@@ -1247,20 +1289,7 @@ const techs = {
         effect: loc('tech_foundry_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['foundry'] = {
-                    count: 0,
-                    crafting: 0,
-                    Plywood: 0,
-                    Brick: 0,
-                    Bronze: 0,
-                    Wrought_Iron: 0,
-                    Sheet_Metal: 0,
-                    Mythril: 0,
-                    Aerogel: 0,
-                    Nanoweave: 0,
-                    Scarletite: 0,
-                    Quantium: 0,
-                };
+                initStruct(actions.city.foundry);
                 return true;
             }
             return false;
@@ -1366,28 +1395,6 @@ const techs = {
             return false;
         }
     },
-    banquet:{
-        id: 'tech-banquet',
-        title: loc('tech_banquet'),
-        desc: loc('tech_banquet'),
-        category: 'special',
-        era: 'discovery',
-        reqs: { high_tech: 2 },
-        not_trait: ['fasting','cataclysm','lone_survivor'],
-        grant: ['banquet',1],
-        condition(){ return global.stats.achieve['endless_hunger'] && global.stats.achieve['endless_hunger'].l >= 1 ? true : false; },
-        cost: {
-            Knowledge(){ return 18500; }
-        },
-        effect: loc('tech_banquet_effect'),
-        action(){
-            if (payCosts($(this)[0])){
-                global.city['banquet'] = { count: 0, on: 0, strength:0 };
-                return true;
-            }
-            return false;
-        }
-    },
     brickworks: {
         id: 'tech-brickworks',
         title: loc('tech_brickworks'),
@@ -1478,7 +1485,7 @@ const techs = {
         effect: loc('tech_stellar_forge_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['stellar_forge'] = { count: 0, on: 0 };
+                initStruct(actions.interstellar.int_neutron.stellar_forge);
                 return true;
             }
             return false;
@@ -1593,6 +1600,28 @@ const techs = {
             return false;
         }
     },
+    banquet:{
+        id: 'tech-banquet',
+        title: loc('tech_banquet'),
+        desc: loc('tech_banquet'),
+        category: 'special',
+        era: 'discovery',
+        reqs: { high_tech: 2 },
+        not_trait: ['fasting','cataclysm','lone_survivor'],
+        grant: ['banquet',1],
+        condition(){ return global.stats.achieve['endless_hunger'] && global.stats.achieve['endless_hunger'].l >= 1 ? true : false; },
+        cost: {
+            Knowledge(){ return 18500; }
+        },
+        effect: loc('tech_banquet_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.city.banquet);
+                return true;
+            }
+            return false;
+        }
+    },
     theatre: {
         id: 'tech-theatre',
         title: loc('tech_theatre'),
@@ -1608,7 +1637,7 @@ const techs = {
         effect: loc('tech_theatre_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['amphitheatre'] = { count: 0 };
+                initStruct(actions.city.amphitheatre);
                 return true;
             }
             return false;
@@ -1723,7 +1752,7 @@ const techs = {
         effect(){ return loc('tech_vr_center_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['vr_center'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_red.vr_center);
                 return true;
             }
             return false;
@@ -1743,7 +1772,7 @@ const techs = {
         effect(){ return loc('tech_zoo_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['zoo'] = { count: 0, on: 0 };
+                initStruct(actions.interstellar.int_alpha.zoo);
                 return true;
             }
             return false;
@@ -1763,8 +1792,8 @@ const techs = {
         effect: loc('tech_casino_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['casino'] = { count: 0, on: 0 };
-                global.space['spc_casino'] = { count: 0, on: 0 };
+                initStruct(actions.city.casino);
+                initStruct(actions.space.spc_hell.spc_casino);
                 return true;
             }
             return false;
@@ -1881,20 +1910,9 @@ const techs = {
         effect(){ return global.race['sappy'] ? loc('tech_amber_effect') : loc(global.race['flier'] ? 'tech_mining_effect_alt' : 'tech_mining_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.city['rock_quarry'] = {
-                    count: 0,
-                    on: 0,
-                    asbestos: 50
-                };
+                initStruct(actions.city.rock_quarry);
                 if (global.race['cannibalize']){
-                    global.city['s_alter'] = {
-                        count: 0,
-                        rage: 0,
-                        mind: 0,
-                        regen: 0,
-                        mine: 0,
-                        harvest: 0,
-                    };
+                    initStruct(actions.city.s_alter);
                 }
                 return true;
             }
@@ -1915,7 +1933,7 @@ const techs = {
         effect(){ return global.race['sappy'] ? loc('tech_bayer_process_effect_alt') : loc('tech_bayer_process_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.city['metal_refinery'] = { count: 0, on: 0 };
+                initStruct(actions.city.metal_refinery);
                 loadFoundry();
                 return true;
             }
@@ -1959,19 +1977,7 @@ const techs = {
         effect: loc('tech_smelting_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['smelter'] = {
-                    count: 0,
-                    cap: 0,
-                    Wood: 0,
-                    Coal: 0,
-                    Oil: 0,
-                    Star: 0,
-                    StarCap: 0,
-                    Inferno: 0,
-                    Iron: 0,
-                    Steel: 0,
-                    Iridium: 0
-                };
+                initStruct(actions.city.smelter);
                 return true;
             }
             return false;
@@ -2208,10 +2214,7 @@ const techs = {
         effect: loc('tech_metal_working_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['mine'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.city.mine);
                 return true;
             }
             return false;
@@ -2258,10 +2261,7 @@ const techs = {
         effect: loc('tech_coal_mining_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['coal_mine'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.city.coal_mine);
                 global.resource.Coal.display = true;
                 return true;
             }
@@ -2285,7 +2285,7 @@ const techs = {
         effect: loc('tech_storage_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['shed'] = { count: 0 };
+                initStruct(actions.city.shed);
                 return true;
             }
             return false;
@@ -2433,7 +2433,7 @@ const techs = {
         effect: loc('tech_containerization_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['storage_yard'] = { count: 0 };
+                initStruct(actions.city.storage_yard);
                 return true;
             }
             return false;
@@ -2600,6 +2600,28 @@ const techs = {
             return false;
         }
     },
+    elysanite_crates: {
+        id: 'tech-elysanite_crates',
+        title(){ return loc('tech_crates',[global.resource.Elysanite.name]); },
+        desc(){ return loc('tech_crates',[global.resource.Elysanite.name]); },
+        category: 'storage',
+        era: 'existential',
+        reqs: { container: 8, elysium: 6 },
+        grant: ['container',9],
+        cost: {
+            Knowledge(){ return 95500000; },
+            Omniscience(){ return 20250; },
+            Asphodel_Powder(){ return 175000; },
+            Elysanite(){ return 75000000; }
+        },
+        effect(){ return loc('tech_elysanite_crates_effect',[global.resource.Elysanite.name,global.resource.Asphodel_Powder.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     steel_containers: {
         id: 'tech-steel_containers',
         title(){ return loc('tech_containers',[global.resource.Steel.name]); },
@@ -2623,7 +2645,7 @@ const techs = {
         },
         action(){
             if (payCosts($(this)[0])){
-                global.city['warehouse'] = { count: 0 };
+                initStruct(actions.city.warehouse);
                 return true;
             }
             return false;
@@ -2766,6 +2788,27 @@ const techs = {
             Nanoweave(){ return 50000; }
         },
         effect(){ return loc('tech_nanoweave_containers_effect',[global.resource.Nanoweave.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    elysanite_containers: {
+        id: 'tech-elysanite_containers',
+        title(){ return loc('tech_containers',[global.resource.Elysanite.name]); },
+        desc(){ return loc('tech_containers',[global.resource.Elysanite.name]); },
+        category: 'storage',
+        era: 'existential',
+        reqs: { steel_container: 8, elysium: 6 },
+        grant: ['steel_container',9],
+        cost: {
+            Knowledge(){ return 100000000; },
+            Omniscience(){ return 22500; },
+            Elysanite(){ return 100000000; }
+        },
+        effect(){ return loc('tech_elysanite_containers_effect',[global.resource.Elysanite.name]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -3271,7 +3314,7 @@ const techs = {
         effect: loc('tech_tax_rates_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.civic['taxes'].display = true;
+                global.civic.taxes.display = true;
                 return true;
             }
             return false;
@@ -3361,7 +3404,7 @@ const techs = {
         effect: loc('tech_trade_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['trade'] = { count: 0 };
+                initStruct(actions.city.trade);
                 global.city.market.active = true;
                 return true;
             }
@@ -3428,7 +3471,7 @@ const techs = {
         effect: loc('tech_wharf_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['wharf'] = { count: 0 };
+                initStruct(actions.city.wharf);
                 return true;
             }
             return false;
@@ -3448,7 +3491,7 @@ const techs = {
         effect: loc('tech_banking_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['bank'] = { count: 0 };
+                initStruct(actions.city.bank);
                 return true;
             }
             return false;
@@ -3679,7 +3722,7 @@ const techs = {
         effect: loc('tech_exchange_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['exchange'] = { count: 0, on: 0 };
+                initStruct(actions.interstellar.int_alpha.exchange);
                 return true;
             }
             return false;
@@ -3698,6 +3741,27 @@ const techs = {
             Knowledge(){ return 8000000; }
         },
         effect: loc('tech_foreign_investment_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    crypto_currency: {
+        id: 'tech-crypto_currency',
+        title: loc('tech_crypto_currency'),
+        desc: loc('tech_crypto_currency'),
+        category: 'banking',
+        era: 'existential',
+        reqs: { banking: 13, high_tech: 19 },
+        grant: ['banking',14],
+        cost: {
+            Money(){ return 10000000000; },
+            Knowledge(){ return 127500000; },
+            Omniscience(){ return 38500; },
+        },
+        effect: loc('tech_crypto_currency_effect',[loc('tech_bonds')]),
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -3891,7 +3955,7 @@ const techs = {
         effect: loc('tech_tourism_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['tourist_center'] = { count: 0, on: 0 };
+                initStruct(actions.city.tourist_center);
                 return true;
             }
             return false;
@@ -3926,12 +3990,12 @@ const techs = {
         reqs: { housing: 1 },
         grant: ['science',1],
         cost: {
-            Knowledge(){ return 65; }
+            Knowledge(){ return traitCostMod('stubborn',65); }
         },
         effect: loc('tech_science_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['university'] = { count: 0 };
+                initStruct(actions.city.university);
                 return true;
             }
             return false;
@@ -3946,12 +4010,12 @@ const techs = {
         reqs: { science: 1, cement: 1 },
         grant: ['science',2],
         cost: {
-            Knowledge(){ return 720; }
+            Knowledge(){ return traitCostMod('stubborn',720); }
         },
         effect: loc('tech_library_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['library'] = { count: 0 };
+                initStruct(actions.city.library);
                 return true;
             }
             return false;
@@ -3966,7 +4030,7 @@ const techs = {
         reqs: { science: 2 },
         grant: ['science',3],
         cost: {
-            Knowledge(){ return 1125; }
+            Knowledge(){ return traitCostMod('stubborn',1125); }
         },
         effect: loc('tech_thesis_effect'),
         action(){
@@ -3985,7 +4049,7 @@ const techs = {
         reqs: { science: 3 },
         grant: ['science',4],
         cost: {
-            Knowledge(){ return 3240; }
+            Knowledge(){ return traitCostMod('stubborn',3240); }
         },
         effect: loc('tech_research_grant_effect'),
         action(){
@@ -4004,7 +4068,7 @@ const techs = {
         reqs: { science: 4, high_tech: 3 },
         grant: ['science',5],
         cost: {
-            Knowledge(){ return 27000; }
+            Knowledge(){ return traitCostMod('stubborn',27000); }
         },
         effect(){ return global.race.universe === 'magic' ? loc('tech_magic_tomes_effect') : loc('tech_scientific_journal_effect'); },
         action(){
@@ -4023,7 +4087,7 @@ const techs = {
         reqs: { science: 5 },
         grant: ['science',6],
         cost: {
-            Knowledge(){ return 36000; }
+            Knowledge(){ return traitCostMod('stubborn',36000); }
         },
         effect(){ return loc('tech_adjunct_professor_effect',[wardenLabel(),global.civic.scientist ? global.civic.scientist.name : loc('job_scientist')]); },
         action(){
@@ -4042,7 +4106,7 @@ const techs = {
         reqs: { science: 6, high_tech: 3 },
         grant: ['science',7],
         cost: {
-            Knowledge(){ return 51750; }
+            Knowledge(){ return traitCostMod('stubborn',51750); }
         },
         effect(){ return loc('tech_tesla_coil_effect',[wardenLabel()]); },
         action(){
@@ -4061,7 +4125,7 @@ const techs = {
         reqs: { science: 7, high_tech: 4 },
         grant: ['science',8],
         cost: {
-            Knowledge(){ return 61200; }
+            Knowledge(){ return traitCostMod('stubborn',61200); }
         },
         effect: loc('tech_internet_effect'),
         action(){
@@ -4083,15 +4147,12 @@ const techs = {
         reqs: { science: 8, space: 3, luna: 1 },
         grant: ['science',9],
         cost: {
-            Knowledge(){ return 148000; }
+            Knowledge(){ return traitCostMod('stubborn',148000); }
         },
         effect: loc('tech_observatory_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['observatory'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.space.spc_moon.observatory);
                 return true;
             }
             return false;
@@ -4107,18 +4168,13 @@ const techs = {
         reqs: { science: 9, elerium: 2 },
         grant: ['science',10],
         cost: {
-            Knowledge(){ return 350000; }
+            Knowledge(){ return traitCostMod('stubborn',350000); }
         },
         effect(){ return loc('tech_world_collider_effect',[planetName().dwarf]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['world_collider'] = {
-                    count: 0
-                };
-                global.space['world_controller'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.space.spc_dwarf.world_collider);
+                initStruct(actions.space.spc_dwarf.world_controller);
                 return true;
             }
             return false;
@@ -4134,15 +4190,12 @@ const techs = {
         reqs: { science: 11, alpha: 2 },
         grant: ['science',12],
         cost: {
-            Knowledge(){ return 500000; }
+            Knowledge(){ return traitCostMod('stubborn',500000); }
         },
         effect(){ return global.race.universe === 'magic' ? loc('tech_sanctum_effect') : loc('tech_laboratory_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['laboratory'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.interstellar.int_alpha.laboratory);
                 return true;
             }
             return false;
@@ -4158,7 +4211,7 @@ const techs = {
         reqs: { science: 12, high_tech: 12 },
         grant: ['science',13],
         cost: {
-            Knowledge(){ return 635000; }
+            Knowledge(){ return traitCostMod('stubborn',635000); }
         },
         effect(){ return global.race.universe === 'magic' ? loc('tech_virtual_assistant_magic_effect') : loc('tech_virtual_assistant_effect'); },
         action(){
@@ -4177,7 +4230,7 @@ const techs = {
         reqs: { science: 13, infernite: 2 },
         grant: ['science',14],
         cost: {
-            Knowledge(){ return 750000; }
+            Knowledge(){ return traitCostMod('stubborn',750000); }
         },
         effect(){ return loc('tech_dimensional_readings_effect'); },
         action(){
@@ -4196,7 +4249,7 @@ const techs = {
         reqs: { science: 14, neutron: 1 },
         grant: ['science',15],
         cost: {
-            Knowledge(){ return 850000; },
+            Knowledge(){ return traitCostMod('stubborn',850000); },
             Neutronium(){ return 7500; },
             Soul_Gem(){ return 2; }
         },
@@ -4217,7 +4270,7 @@ const techs = {
         reqs: { science: 15, xeno: 4 },
         grant: ['science',16],
         cost: {
-            Knowledge(){ return 5350000; }
+            Knowledge(){ return traitCostMod('stubborn',5350000); }
         },
         effect(){ return global.race.universe === 'magic' ? loc('tech_expedition_wiz_effect') : loc('tech_expedition_effect'); },
         action(){
@@ -4236,7 +4289,7 @@ const techs = {
         reqs: { science: 16, high_tech: 16 },
         grant: ['science',17],
         cost: {
-            Knowledge(){ return 6000000; }
+            Knowledge(){ return traitCostMod('stubborn',6000000); }
         },
         effect(){ return loc('tech_subspace_sensors_effect'); },
         action(){
@@ -4255,7 +4308,7 @@ const techs = {
         reqs: { science: 17, conflict: 5 },
         grant: ['science',18],
         cost: {
-            Knowledge(){ return 8250000; }
+            Knowledge(){ return traitCostMod('stubborn',8250000); }
         },
         effect(){ return loc('tech_alien_database_effect'); },
         action(){
@@ -4274,7 +4327,7 @@ const techs = {
         reqs: { science: 18, high_tech: 17 },
         grant: ['science',19],
         cost: {
-            Knowledge(){ return 12500000; },
+            Knowledge(){ return traitCostMod('stubborn',12500000); },
             Orichalcum(){ return 250000; }
         },
         effect(){ return loc('tech_orichalcum_capacitor_effect'); },
@@ -4294,7 +4347,7 @@ const techs = {
         reqs: { science: 19, high_tech: 18 },
         grant: ['science',20],
         cost: {
-            Knowledge(){ return 25500000; }
+            Knowledge(){ return traitCostMod('stubborn',25500000); }
         },
         effect(){ return loc('tech_advanced_biotech_effect'); },
         action(){
@@ -4313,7 +4366,7 @@ const techs = {
         reqs: { science: 20, sphinx_bribe: 1 },
         grant: ['science',21],
         cost: {
-            Knowledge(){ return 40100000; },
+            Knowledge(){ return traitCostMod('stubborn',40100000); },
             Codex(){ return 1; }
         },
         effect(){ return loc('tech_codex_infinium_effect'); },
@@ -4324,6 +4377,69 @@ const techs = {
             }
             return false;
         }
+    },
+    spirit_box: {
+        id: 'tech-spirit_box',
+        title: loc('tech_spirit_box'),
+        desc: loc('tech_spirit_box'),
+        category: 'science',
+        era: 'existential',
+        reqs: { science: 21, asphodel: 3 },
+        grant: ['science',22],
+        cost: {
+            Knowledge(){ return 62750000; },
+            Asphodel_Powder(){ return 10000; },
+        },
+        effect(){ return loc('tech_spirit_box_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.resource.Omniscience.display = true;
+                return true;
+            }
+            return false;
+        }
+    },
+    spirit_researcher: {
+        id: 'tech-spirit_researcher',
+        title: loc('tech_spirit_researcher'),
+        desc: loc('tech_spirit_researcher'),
+        category: 'science',
+        era: 'existential',
+        reqs: { science: 22, asphodel: 8 },
+        grant: ['science',23],
+        cost: {
+            Knowledge(){ return 80000000; },
+            Omniscience(){ return 12500; },
+        },
+        effect(){ return loc('tech_spirit_researcher_effect',[global.civic.scientist.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    dimensional_tap: {
+        id: 'tech-dimensional_tap',
+        title: loc('tech_dimensional_tap'),
+        desc: loc('tech_dimensional_tap'),
+        category: 'science',
+        era: 'existential',
+        reqs: { science: 23, ascension: 7 },
+        grant: ['science',24],
+        cost: {
+            Knowledge(){ return 87500000; },
+            Omniscience(){ return 13333; },
+        },
+        effect(){ return loc('tech_dimensional_tap_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.eden.encampment.asc = true;
+                return true;
+            }
+            return false;
+        },
+        flair(){ return loc(`tech_dimensional_tap_flair`); }
     },
     devilish_dish: {
         id: 'tech-devilish_dish',
@@ -4363,7 +4479,7 @@ const techs = {
         effect(){return loc('tech_hell_oven_effect');},
         action(){
             if (payCosts($(this)[0])){
-                global.portal['oven'] = {count:0}
+                initStruct(actions.portal.prtl_lake.oven);
                 return true;
             }
             return false;
@@ -4384,8 +4500,8 @@ const techs = {
         effect(){return loc('tech_preparation_methods_effect');},
         action(){
             if (payCosts($(this)[0])){
-                global.portal['dish_soul_steeper'] = {count:0, on:0};
-                global.portal['dish_life_infuser'] = {count:0, on:0};
+                initStruct(actions.portal.prtl_lake.dish_soul_steeper);
+                initStruct(actions.portal.prtl_lake.dish_life_infuser);
                 return true;
             }
             return false;
@@ -4430,7 +4546,7 @@ const techs = {
         effect: loc('tech_bioscience_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['biolab'] = { count: 0 };
+                initStruct(actions.city.biolab);
                 return true;
             }
             return false;
@@ -4595,7 +4711,7 @@ const techs = {
         cost: {
             Money(){ return 10000; },
             Mana(){ return global.race.universe === 'magic' ? 50 : 0; },
-            Knowledge(){ return 6750; },
+            Knowledge(){ return traitCostMod('stubborn',6750); },
             Crystal(){ return global.race.universe === 'magic' ? 1000 : 0; },
             Aluminium(){ return 750; }
         },
@@ -4605,10 +4721,7 @@ const techs = {
                 if (global.race['terrifying']){
                     global.civic['taxes'].display = true;
                 }
-                global.city['wardenclyffe'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.city.wardenclyffe);
                 return true;
             }
             return false;
@@ -4628,7 +4741,7 @@ const techs = {
         reqs: { high_tech: 1 },
         grant: ['high_tech',2],
         cost: {
-            Knowledge(){ return 13500; },
+            Knowledge(){ return traitCostMod('stubborn',13500); },
             Copper(){ return 1000; }
         },
         effect: loc('tech_electricity_effect'),
@@ -4637,10 +4750,7 @@ const techs = {
                 messageQueue(loc('tech_electricity_msg'),'info',false,['progress']);
                 global.city['power'] = 0;
                 global.city['powered'] = true;
-                global.city['coal_power'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.city.coal_power);
                 global.settings.showPowerGrid = true;
                 setPowerGrid();
                 return true;
@@ -4700,22 +4810,13 @@ const techs = {
         reqs: { high_tech: 2, cement: 2, steel_container: 1 },
         grant: ['high_tech',3],
         cost: {
-            Knowledge(){ return 25200; }
+            Knowledge(){ return traitCostMod('stubborn',25200); }
         },
         effect: loc('tech_industrialization_effect'),
         action(){
             if (payCosts($(this)[0])){
                 global.resource.Titanium.display = true;
-                global.city['factory'] = {
-                    count: 0,
-                    on: 0,
-                    Lux: 0,
-                    Furs: 0,
-                    Alloy: 0,
-                    Polymer: 0,
-                    Nano: 0,
-                    Stanene: 0
-                };
+                initStruct(actions.city.factory);
                 return true;
             }
             return false;
@@ -4733,15 +4834,15 @@ const techs = {
         reqs: { high_tech: 3, titanium: 1 },
         grant: ['high_tech',4],
         cost: {
-            Knowledge(){ return 50000; }
+            Knowledge(){ return traitCostMod('stubborn',50000); }
         },
         effect: loc('tech_electronics_effect'),
         action(){
             if (payCosts($(this)[0])){
                 if (global.race['terrifying']){
                     global.tech['gambling'] = 1;
-                    global.city['casino'] = { count: 0, on: 0 };
-                    global.space['spc_casino'] = { count: 0, on: 0 };
+                    initStruct(actions.city.casino);
+                    initStruct(actions.space.spc_hell.spc_casino);
                 }
                 return true;
             }
@@ -4757,17 +4858,14 @@ const techs = {
         reqs: { high_tech: 4, uranium: 1 },
         grant: ['high_tech',5],
         cost: {
-            Knowledge(){ return 77400; },
+            Knowledge(){ return traitCostMod('stubborn',77400); },
             Uranium(){ return 10; }
         },
         effect: loc('tech_fission_effect'),
         action(){
             if (payCosts($(this)[0])){
                 messageQueue(loc('tech_fission_msg'),'info',false,['progress']);
-                global.city['fission_power'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.city.fission_power);
                 return true;
             }
             return false;
@@ -4782,7 +4880,7 @@ const techs = {
         reqs: { high_tech: 5 },
         grant: ['high_tech',6],
         cost: {
-            Knowledge(){ return 90000; }
+            Knowledge(){ return traitCostMod('stubborn',90000); }
         },
         effect: loc('tech_arpa_effect'),
         action(){
@@ -4809,7 +4907,7 @@ const techs = {
         reqs: { high_tech: 6 },
         grant: ['high_tech',7],
         cost: {
-            Knowledge(){ return 112500; },
+            Knowledge(){ return traitCostMod('stubborn',112500); },
             Oil(){ return global.city.ptrait.includes('dense') ? 8000 : 6800; }
         },
         effect: loc('tech_rocketry_effect'),
@@ -4836,7 +4934,7 @@ const techs = {
         reqs: { high_tech: 7 },
         grant: ['high_tech',8],
         cost: {
-            Knowledge(){ return 125000; }
+            Knowledge(){ return traitCostMod('stubborn',125000); }
         },
         effect: loc('tech_robotics_effect'),
         action(){
@@ -4855,7 +4953,7 @@ const techs = {
         reqs: { high_tech: 8, space: 3, supercollider: 1, elerium: 1 },
         grant: ['high_tech',9],
         cost: {
-            Knowledge(){ return 280000; },
+            Knowledge(){ return traitCostMod('stubborn',280000); },
             Elerium(){ return 100; }
         },
         effect: loc('tech_lasers_effect'),
@@ -4878,7 +4976,7 @@ const techs = {
         reqs: { high_tech: 9 },
         grant: ['high_tech',10],
         cost: {
-            Knowledge(){ return 325000; }
+            Knowledge(){ return traitCostMod('stubborn',325000); }
         },
         effect: loc('tech_artificial_intelligence_effect'),
         action(){
@@ -4900,7 +4998,7 @@ const techs = {
         reqs: { high_tech: 10, nano: 1 },
         grant: ['high_tech',11],
         cost: {
-            Knowledge(){ return 435000; },
+            Knowledge(){ return traitCostMod('stubborn',435000); },
             Elerium(){ return 250 },
             Nano_Tube(){ return 100000 }
         },
@@ -4924,7 +5022,7 @@ const techs = {
         reqs: { high_tech: 11, alpha: 2, infernite: 1, stanene: 1 },
         grant: ['high_tech',12],
         cost: {
-            Knowledge(){ return 600000; },
+            Knowledge(){ return traitCostMod('stubborn',600000); },
             Stanene(){ return 1250 },
             Soul_Gem(){ return 1 }
         },
@@ -4949,7 +5047,7 @@ const techs = {
         reqs: { high_tech: 12 },
         grant: ['high_tech',13],
         cost: {
-            Knowledge(){ return 755000; },
+            Knowledge(){ return traitCostMod('stubborn',755000); },
             Infernite(){ return global.race['truepath'] ? 0 : 1000; },
             Stanene(){ return global.race['truepath'] ? 1000000 : 250000; }
         },
@@ -4970,7 +5068,7 @@ const techs = {
         reqs: { high_tech: 13 },
         grant: ['high_tech',14],
         cost: {
-            Knowledge(){ return 850000; },
+            Knowledge(){ return traitCostMod('stubborn',850000); },
         },
         effect: loc('tech_shields_effect'),
         action(){
@@ -4991,12 +5089,12 @@ const techs = {
         reqs: { high_tech: 14, science: 15, blackhole: 3 },
         grant: ['high_tech',15],
         cost: {
-            Knowledge(){ return 1500000; },
+            Knowledge(){ return traitCostMod('stubborn',1500000); },
         },
         effect: loc('tech_ai_core_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['citadel'] = { count: 0, on: 0 };
+                initStruct(actions.interstellar.int_neutron.citadel);
                 return true;
             }
             return false;
@@ -5011,7 +5109,7 @@ const techs = {
         reqs: { high_tech: 15, xeno: 5 },
         grant: ['high_tech',16],
         cost: {
-            Knowledge(){ return 5000000; },
+            Knowledge(){ return traitCostMod('stubborn',5000000); },
             Vitreloy(){ return 10000; },
             Soul_Gem(){ return 10; }
         },
@@ -5032,7 +5130,7 @@ const techs = {
         reqs: { high_tech: 16, chthonian: 3 },
         grant: ['high_tech',17],
         cost: {
-            Knowledge(){ return 12200000; },
+            Knowledge(){ return traitCostMod('stubborn',12200000); },
             Orichalcum(){ return 100000; }
         },
         effect(){ return loc('tech_orichalcum_analysis_effect'); },
@@ -5053,12 +5151,32 @@ const techs = {
         reqs: { high_tech: 17, hell_ruins: 4 },
         grant: ['high_tech',18],
         cost: {
-            Knowledge(){ return 25000000; },
+            Knowledge(){ return traitCostMod('stubborn',25000000); },
             Adamantite(){ return 12500000; },
             Stanene(){ return 50000000; },
             Vitreloy(){ return 10000000; },
         },
         effect(){ return loc('tech_cybernetics_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    divinity: {
+        id: 'tech-divinity',
+        title: loc('tech_divinity'),
+        desc: loc('tech_divinity'),
+        category: 'progress',
+        era: 'existential',
+        reqs: { high_tech: 18, elysium: 15, isle: 2 },
+        grant: ['high_tech',19],
+        cost: {
+            Knowledge(){ return traitCostMod('stubborn',120000000); },
+            Omniscience(){ return 34000; },
+        },
+        effect(){ return loc('tech_divinity_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -5125,7 +5243,7 @@ const techs = {
         effect(){ return loc('tech_waygate_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.portal['waygate'] = { count: 0, progress: 0, on: 0 };
+                initStruct(actions.portal.prtl_spire.waygate);
                 return true;
             }
             return false;
@@ -5138,6 +5256,9 @@ const techs = {
         category: 'hell_dimension',
         era: 'dimensional',
         reqs: { hell_spire: 10, b_stone: 2, waygate: 3 },
+        condition(){
+            return global.resource.Demonic_Essence.amount >= 1 ? true : false;
+        },
         grant: ['waygate',4],
         not_trait: ['witch_hunter','fasting'],
         cost: {
@@ -5156,6 +5277,37 @@ const techs = {
             return false;
         }
     },
+    purify_essence: {
+        id: 'tech-purify_essence',
+        title: loc('tech_purify_essence'),
+        desc: loc('tech_purify_essence'),
+        category: 'hell_dimension',
+        era: 'existential',
+        reqs: { b_stone: 2, waygate: 3, edenic: 1 },
+        condition(){
+            return global.resource.Demonic_Essence.amount >= 1 ? true : false;
+        },
+        grant: ['edenic',2],
+        not_trait: ['witch_hunter'],
+        cost: {
+            Knowledge(){ return 60000000; },
+            Artifact(){ return 1; },
+            Demonic_Essence(){ return 1; }
+        },
+        effect(){
+            return `<div>${loc('tech_purify_essence_effect')}</div><div class="has-text-special">${loc('tech_purify_essence_warn')}</div>`;
+        },
+        action(){
+            if (payCosts($(this)[0])){
+                global.resource.Demonic_Essence.display = false;
+                global.resource.Demonic_Essence.amount = 0;
+                global.resource.Blessed_Essence.display = true;
+                global.resource.Blessed_Essence.amount = 1;
+                return true;
+            }
+            return false;
+        }
+    },
     gate_key: {
         id: 'tech-gate_key',
         title: loc('tech_gate_key'),
@@ -5170,8 +5322,8 @@ const techs = {
         effect(){ return loc('tech_gate_key_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.portal['west_tower'] = { count: 0, on: 0 };
-                global.portal['east_tower'] = { count: 0, on: 0 };
+                initStruct(actions.portal.prtl_gate.west_tower);
+                initStruct(actions.portal.prtl_gate.east_tower);
                 return true;
             }
             return false;
@@ -5191,7 +5343,7 @@ const techs = {
         effect(){ return loc('tech_gate_turret_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.portal['gate_turret'] = { count: 0, on: 0 };
+                initStruct(actions.portal.prtl_gate.gate_turret);
                 return true;
             }
             return false;
@@ -5211,7 +5363,7 @@ const techs = {
         effect(){ return loc('tech_infernite_mine_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.portal['infernite_mine'] = { count: 0, on: 0 };
+                initStruct(actions.portal.prtl_gate.infernite_mine);
                 return true;
             }
             return false;
@@ -5276,7 +5428,7 @@ const techs = {
         effect(){ return loc('tech_soul_capacitor_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.portal['soul_capacitor'] = { count: 0, on: 0, energy: 0, ecap: 0 };
+                initStruct(actions.portal.prtl_pit.soul_capacitor);
                 return true;
             }
             return false;
@@ -5297,7 +5449,7 @@ const techs = {
         effect(){ return loc('tech_absorption_chamber_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.portal['absorption_chamber'] = { count: 0 };
+                initStruct(actions.portal.prtl_pit.absorption_chamber);
                 return true;
             }
             return false;
@@ -5351,7 +5503,7 @@ const techs = {
                 messageQueue(loc('tech_hell_search_result'),'info',false,['progress','hell']);
                 global.settings.portal.ruins = true;
                 global.settings.portal.gate = true;
-                global.portal['guard_post'] = { count: 0, on: 0, support: 0, s_max: 0 };
+                initStruct(actions.portal.prtl_ruins.guard_post);
                 return true;
             }
             return false;
@@ -5414,7 +5566,7 @@ const techs = {
         effect(){ return loc('tech_lake_threat_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.portal['bireme'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                initStruct(actions.portal.prtl_lake.bireme);
                 messageQueue(loc('tech_lake_threat_result'),'info',false,['progress','hell']);
                 return true;
             }
@@ -5435,30 +5587,7 @@ const techs = {
         effect(){ return loc('tech_lake_transport_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.portal['transport'] = {
-                    count: 0, on: 0, crew: 0, mil: 0,
-                    cargo: {
-                        used: 0, max: 0,
-                        Crystal: 0, Lumber: 0,
-                        Stone: 0, Furs: 0,
-                        Copper: 0, Iron: 0,
-                        Aluminium: 0, Cement: 0,
-                        Coal: 0, Oil: 0,
-                        Uranium: 0, Steel: 0,
-                        Titanium: 0, Alloy: 0,
-                        Polymer: 0, Iridium: 0,
-                        Helium_3: 0, Deuterium: 0,
-                        Neutronium: 0, Adamantite: 0,
-                        Infernite: 0, Elerium: 0,
-                        Nano_Tube: 0, Graphene: 0,
-                        Stanene: 0, Bolognium: 0,
-                        Vitreloy: 0, Orichalcum: 0,
-                        Plywood: 0, Brick: 0,
-                        Wrought_Iron: 0, Sheet_Metal: 0,
-                        Mythril: 0, Aerogel: 0,
-                        Nanoweave: 0, Scarletite: 0
-                    }
-                };
+                initStruct(actions.portal.prtl_lake.transport);
                 return true;
             }
             return false;
@@ -5478,7 +5607,7 @@ const techs = {
         effect(){ return loc('tech_cooling_tower_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.portal['cooling_tower'] = { count: 0, on: 0 };
+                initStruct(actions.portal.prtl_lake.cooling_tower);
                 return true;
             }
             return false;
@@ -5498,7 +5627,7 @@ const techs = {
         effect(){ return loc('tech_miasma_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.portal['port'] = { count: 0 };
+                initStruct(actions.portal.prtl_spire.port);
                 return true;
             }
             return false;
@@ -5563,7 +5692,7 @@ const techs = {
         effect(){ return loc('tech_terraforming_effect',[planetName().red]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space.terraformer = { count: 0 }
+                initStruct(actions.space.spc_red.terraformer);
                 return true;
             }
             return false;
@@ -5648,6 +5777,27 @@ const techs = {
             return false;
         }
     },
+    crypto_mining: {
+        id: 'tech-crypto_mining',
+        title: loc('tech_crypto_mining'),
+        desc: loc('tech_crypto_mining'),
+        category: 'ai_core',
+        era: 'existential',
+        reqs: { ai_core: 3, banking: 14 },
+        grant: ['ai_core',4],
+        cost: {
+            Money(){ return 30000000000; },
+            Knowledge(){ return 135000000; },
+            Omniscience(){ return 45000; },
+        },
+        effect: loc('tech_crypto_mining_effect',[loc('interstellar_citadel_title')]),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     fusion_power: {
         id: 'tech-fusion_power',
         title: loc('tech_fusion_power'),
@@ -5662,7 +5812,7 @@ const techs = {
         effect: loc('tech_fusion_power_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['fusion'] = { count: 0, on: 0 };
+                initStruct(actions.interstellar.int_alpha.fusion);
                 return true;
             }
             return false;
@@ -5682,7 +5832,7 @@ const techs = {
         effect: loc('tech_infernium_power_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.portal['inferno_power'] = { count: 0, on: 0 };
+                initStruct(actions.portal.prtl_ruins.inferno_power);
                 return true;
             }
             return false;
@@ -5740,7 +5890,7 @@ const techs = {
         effect(){ return loc('tech_worker_drone_effect',[planetName().gas_moon]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['drone'] = { count: 0 };
+                initStruct(actions.space.spc_gas_moon.drone);
                 return true;
             }
             return false;
@@ -5852,8 +6002,8 @@ const techs = {
     },
     oil_well: {
         id: 'tech-oil_well',
-        title: loc('tech_oil_well'),
-        desc: loc('tech_oil_well'),
+        title(){ return global.race['blubber'] ? loc('tech_oil_refinery') : loc('tech_oil_well'); },
+        desc(){ return global.race['blubber'] ? loc('tech_oil_refinery') : loc('tech_oil_well'); },
         category: 'power_generation',
         era: 'industrialized',
         reqs: { high_tech: 3 },
@@ -5861,10 +6011,10 @@ const techs = {
         cost: {
             Knowledge(){ return 27000; }
         },
-        effect: loc('tech_oil_well_effect'),
+        effect(){ return global.race['blubber'] ? loc('tech_oil_refinery_effect') : loc('tech_oil_well_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.city['oil_well'] = { count: 0 };
+                initStruct(actions.city.oil_well);
                 return true;
             }
             return false;
@@ -5884,7 +6034,7 @@ const techs = {
         effect: loc('tech_oil_depot_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['oil_depot'] = { count: 0 };
+                initStruct(actions.city.oil_depot);
                 return true;
             }
             return false;
@@ -5910,7 +6060,7 @@ const techs = {
         },
         action(){
             if (payCosts($(this)[0])){
-                global.city['oil_power'] = { count: 0 , on: 0 };
+                initStruct(actions.city.oil_power);
                 return true;
             }
             return false;
@@ -6009,10 +6159,7 @@ const techs = {
         effect: loc('tech_mass_driver_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['mass_driver'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.city.mass_driver);
                 return true;
             }
             return false;
@@ -6034,7 +6181,7 @@ const techs = {
         effect(){ return loc('tech_orichalcum_driver_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['terraformer'] = { count: 0 };
+                initStruct(actions.space.spc_red.terraformer);
                 return true;
             }
             return false;
@@ -6093,6 +6240,7 @@ const techs = {
         category: 'crafting',
         era: 'globalized',
         reqs: { polymer: 1 },
+        condition(){ return global.resource.Furs.display; },
         grant: ['synthetic_fur',1],
         cost: {
             Knowledge(){ return 100000; },
@@ -6208,16 +6356,18 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.resource.Scarletite.display = true;
-                global.portal['hell_forge'] = { count: 0, on: 0 };
+                initStruct(actions.portal.prtl_ruins.hell_forge);
                 messageQueue(loc('tech_scarletite_avail'),'info',false,['progress']);
                 loadFoundry();
                 if (global.race.universe !== 'micro' && !global.pillars[global.race.species]){
                     global.tech['fusable'] = 1;
                 }
                 else {
-                    let rank = alevel();
-                    if (rank > global.pillars[global.race.species]){
-                        global.pillars[global.race.species] = rank;
+                    if (global.race.universe !== 'micro'){
+                        let rank = alevel();
+                        if (rank > global.pillars[global.race.species]){
+                            global.pillars[global.race.species] = rank;
+                        }
                     }
                     global.tech['pillars'] = 2;
                 }
@@ -6271,7 +6421,7 @@ const techs = {
             if (payCosts($(this)[0])){
                 global.civic.lumberjack.name = loc('job_reclaimer');
                 global.civic.lumberjack.display = true;
-                global.city['graveyard'] = { count: 0 };
+                initStruct(actions.city.graveyard);
                 return true;
             }
             return false;
@@ -6472,7 +6622,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.civic.lumberjack.display = true;
-                global.city['lumber_yard'] = { count: 0 };
+                initStruct(actions.city.lumber_yard);
                 return true;
             }
             return false;
@@ -6515,10 +6665,7 @@ const techs = {
         effect: loc('tech_iron_saw_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['sawmill'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.city.sawmill);
                 return true;
             }
             return false;
@@ -6721,7 +6868,7 @@ const techs = {
         category: 'mining',
         era: 'civilized',
         reqs: { mining: 2 },
-        not_trait: ['cataclysm','living_tool'],
+        not_trait: ['cataclysm','living_tool','tusk'],
         grant: ['pickaxe',1],
         cost: {
             Knowledge(){ return 675; },
@@ -6742,7 +6889,7 @@ const techs = {
         category: 'mining',
         era: 'civilized',
         reqs: { pickaxe: 1, mining: 3 },
-        not_trait: ['cataclysm','living_tool'],
+        not_trait: ['cataclysm','living_tool','tusk'],
         grant: ['pickaxe',2],
         cost: {
             Knowledge(){ return global.city.ptrait.includes('unstable') ? 1600 : 3200; },
@@ -6762,8 +6909,8 @@ const techs = {
         desc: loc('tech_steel_pickaxe_desc'),
         category: 'mining',
         era: 'discovery',
-        reqs: { pickaxe: 2, smelting: 2},
-        not_trait: ['living_tool'],
+        reqs: { pickaxe: 2, smelting: 2 },
+        not_trait: ['living_tool','tusk'],
         grant: ['pickaxe',3],
         cost: {
             Knowledge(){ return 9000; },
@@ -6783,8 +6930,8 @@ const techs = {
         desc: loc('tech_jackhammer_desc'),
         category: 'mining',
         era: 'discovery',
-        reqs: { pickaxe: 3, high_tech: 2},
-        not_trait: ['living_tool'],
+        reqs: { pickaxe: 3, high_tech: 2 },
+        not_trait: ['living_tool','tusk'],
         grant: ['pickaxe',4],
         cost: {
             Knowledge(){ return 22500; },
@@ -6804,8 +6951,8 @@ const techs = {
         desc: loc('tech_jackhammer_mk2'),
         category: 'mining',
         era: 'globalized',
-        reqs: { pickaxe: 4, high_tech: 4},
-        not_trait: ['living_tool'],
+        reqs: { pickaxe: 4, high_tech: 4 },
+        not_trait: ['living_tool','tusk'],
         grant: ['pickaxe',5],
         cost: {
             Knowledge(){ return 67500; },
@@ -6822,18 +6969,40 @@ const techs = {
     },
     adamantite_hammer: {
         id: 'tech-adamantite_hammer',
-        title: loc('tech_adamantite_hammer'),
-        desc: loc('tech_adamantite_hammer'),
+        title(){ return loc('tech_improved_jackhammer',[global.resource.Adamantite.name]); },
+        desc(){ return loc('tech_improved_jackhammer',[global.resource.Adamantite.name]); },
         category: 'mining',
         era: 'interstellar',
-        reqs: { pickaxe: 5, alpha: 2},
-        not_trait: ['living_tool'],
+        reqs: { pickaxe: 5, alpha: 2 },
+        not_trait: ['living_tool','tusk'],
         grant: ['pickaxe',6],
         cost: {
             Knowledge(){ return 535000; },
             Adamantite(){ return 12500; }
         },
-        effect: loc('tech_adamantite_hammer_effect'),
+        effect(){ return loc('tech_improved_jackhammer_effect',[global.resource.Adamantite.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    elysanite_hammer: {
+        id: 'tech-elysanite_hammer',
+        title(){ return loc('tech_improved_jackhammer',[global.resource.Elysanite.name]); },
+        desc(){ return loc('tech_improved_jackhammer',[global.resource.Elysanite.name]); },
+        category: 'mining',
+        era: 'existential',
+        reqs: { pickaxe: 6, elysium: 7 },
+        not_trait: ['living_tool','tusk'],
+        grant: ['pickaxe',7],
+        cost: {
+            Knowledge(){ return 97500000; },
+            Omniscience(){ return 21500; },
+            Elysanite(){ return 35000000; }
+        },
+        effect(){ return loc('tech_improved_jackhammer_effect',[global.resource.Elysanite.name]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -6983,7 +7152,7 @@ const techs = {
         },
         action(){
             if (payCosts($(this)[0])){
-                global.city['slave_pen'] = { count: 0 };
+                initStruct(actions.city.slave_pen);
                 global.resource.Slave.amount = 0;
                 return true;
             }
@@ -7090,7 +7259,7 @@ const techs = {
         effect: loc('tech_garrison_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['garrison'] = { count: 0, on: 0 };
+                initStruct(actions.city.garrison);
                 return true;
             }
             return false;
@@ -7156,7 +7325,7 @@ const techs = {
         effect: loc('tech_hospital_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['hospital'] = { count: 0 };
+                initStruct(actions.city.hospital);
                 return true;
             }
             return false;
@@ -7196,7 +7365,7 @@ const techs = {
         effect: loc('tech_boot_camp_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['boot_camp'] = { count: 0 };
+                initStruct(actions.city.boot_camp);
                 return true;
             }
             return false;
@@ -7225,7 +7394,7 @@ const techs = {
     },
     bows: {
         id: 'tech-bows',
-        title: loc('tech_bows'),
+        title(){ return global.race['blubber'] ? loc('tech_harpoon') : loc('tech_bows'); },
         desc: loc('tech_bows_desc'),
         category: 'military',
         era: 'civilized',
@@ -7235,7 +7404,7 @@ const techs = {
             Knowledge(){ return 225; },
             Lumber(){ return 250; }
         },
-        effect: loc('tech_bows_effect'),
+        effect(){ return global.race['blubber'] ? loc('tech_harpoon_effect') : loc('tech_bows_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -7469,6 +7638,31 @@ const techs = {
             vBind({el: `#c_garrison`},'update');
         }
     },
+    ethereal_weapons: {
+        id: 'tech-ethereal_weapons',
+        title: loc('tech_ethereal_weapons'),
+        desc: loc('tech_ethereal_weapons'),
+        category: 'military',
+        era: 'existential',
+        reqs: { military: 11, asphodel: 5 },
+        grant: ['military',12],
+        cost: {
+            Knowledge(){ return 72500000; },
+            Asphodel_Powder(){ return 10777; },
+            Soul_Gem(){ return 100; },
+        },
+        effect: loc('tech_ethereal_weapons_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        },
+        post(){
+            vBind({el: `#garrison`},'update');
+            vBind({el: `#c_garrison`},'update');
+        }
+    },
     space_marines: {
         id: 'tech-space_marines',
         title: loc('tech_space_marines'),
@@ -7483,7 +7677,7 @@ const techs = {
         effect(){ return `<div>${loc('tech_space_marines_effect',[planetName().red])}</div>` },
         action(){
             if (payCosts($(this)[0])){
-                global.space['space_barracks'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_red.space_barracks);
                 return true;
             }
             return false;
@@ -7524,7 +7718,7 @@ const techs = {
         effect: loc('tech_cruiser_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['cruiser'] = { count: 0, on: 0 };
+                initStruct(actions.interstellar.int_proxima.cruiser);
                 return true;
             }
             return false;
@@ -7722,6 +7916,27 @@ const techs = {
             return false;
         }
     },
+    super_tnt: {
+        id: 'tech-super_tnt',
+        title: loc('tech_super_tnt'),
+        desc: loc('tech_super_tnt'),
+        category: 'mining',
+        era: 'existential',
+        reqs: { explosives: 3, science: 23 },
+        grant: ['explosives',4],
+        cost: {
+            Knowledge(){ return 85000000; },
+            Omniscience(){ return 14500; },
+            Asphodel_Powder(){ return 66777; }
+        },
+        effect(){ return loc('tech_super_tnt_effect',[global.resource.Asphodel_Powder.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     mad: {
         id: 'tech-mad',
         title: loc('tech_mad'),
@@ -7732,7 +7947,7 @@ const techs = {
         not_trait: ['cataclysm','lone_survivor'],
         grant: ['mad',1],
         condition(){
-            if (global.race['sludge']){ return false; }
+            if (global.race['sludge'] || global.race['ultra_sludge']){ return false; }
             return global.race['truepath'] ? (global.tech['world_control'] ? true : false ) : true;
         },
         cost: {
@@ -7770,10 +7985,7 @@ const techs = {
         effect: loc('tech_cement_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['cement_plant'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.city.cement_plant);
                 return true;
             }
             return false;
@@ -7875,6 +8087,28 @@ const techs = {
             Adamantite(){ return 10000; }
         },
         effect: loc('tech_adamantite_screws_effect',[3]),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    otherworldly_binder: {
+        id: 'tech-otherworldly_binder',
+        title: loc('tech_otherworldly_binder'),
+        desc: loc('tech_otherworldly_binder'),
+        category: 'cement',
+        era: 'existential',
+        reqs: { cement: 6, science: 22 },
+        not_trait: ['cataclysm','flier'],
+        grant: ['cement',7],
+        cost: {
+            Knowledge(){ return 85000000; },
+            Omniscience(){ return 20000; },
+            Asphodel_Powder(){ return 50000; }
+        },
+        effect(){ return loc('tech_otherworldly_binder_effect',[global.resource.Asphodel_Powder.name, global.resource.Cement.name]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -8036,15 +8270,9 @@ const techs = {
         effect: loc('tech_theology_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['temple'] = { count: 0 };
+                initStruct(actions.city.temple);
                 if (global.race['magnificent']){
-                    global.city['shrine'] = {
-                        count: 0,
-                        morale: 0,
-                        metal: 0,
-                        know: 0,
-                        tax: 0
-                    };
+                    initStruct(actions.city.shrine);
                 }
                 if (global.genes['ancients'] && global.genes['ancients'] >= 2){
                     global.civic.priest.display = true;
@@ -8130,7 +8358,7 @@ const techs = {
         },
         action(){
             if (payCosts($(this)[0])){
-                global.space['ziggurat'] = { count: 0 };
+                initStruct(actions.space.spc_red.ziggurat);
                 return true;
             }
             return false;
@@ -8144,6 +8372,8 @@ const techs = {
         era: 'early_space',
         reqs: { theology: 4 },
         grant: ['theology',5],
+        wiki: global.genes['transcendence'] && global.genes.transcendence >= 2 ? false : true,
+        condition(){ return !global.genes['transcendence'] || global.genes.transcendence < 2 ? true : false; },
         no_queue(){ return global.r_queue.queue.some(item => item.id === 'tech-deify') ? true : false; },
         cost: {
             Knowledge(){ return 195000; }
@@ -8155,6 +8385,30 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.tech['ancient_study'] = 1;
+                return true;
+            }
+            return false;
+        }
+    },
+    study_alt: {
+        id: 'tech-study_alt',
+        title: loc('tech_study'),
+        desc: loc('tech_study_desc'),
+        category: 'religion',
+        era: 'early_space',
+        reqs: { theology: 4 },
+        grant: ['ancient_study',1],
+        wiki: global.genes['transcendence'] && global.genes.transcendence >= 2 ? true : false,
+        condition(){ return global.genes['transcendence'] && global.genes.transcendence >= 2 ? true : false; },
+        cost: {
+            Knowledge(){ return 195000; }
+        },
+        effect(){
+            let entity = global.race.old_gods !== 'none' ? races[global.race.old_gods.toLowerCase()].entity : races[global.race.species].entity;
+            return `<div>${loc('tech_study_effect',[entity])}</div>`;
+        },
+        action(){
+            if (payCosts($(this)[0])){
                 return true;
             }
             return false;
@@ -8187,6 +8441,8 @@ const techs = {
         era: 'early_space',
         reqs: { theology: 4 },
         grant: ['theology',5],
+        wiki: global.genes['transcendence'] && global.genes.transcendence >= 2 ? false : true,
+        condition(){ return !global.genes['transcendence'] || global.genes.transcendence < 2 ? true : false; },
         no_queue(){ return global.r_queue.queue.some(item => item.id === 'tech-study') ? true : false; },
         cost: {
             Knowledge(){ return 195000; }
@@ -8198,6 +8454,32 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.tech['ancient_deify'] = 1;
+                fanaticism(global.race.old_gods);
+                arpa('Genetics');
+                return true;
+            }
+            return false;
+        }
+    },
+    deify_alt: {
+        id: 'tech-deify_alt',
+        title: loc('tech_deify'),
+        desc: loc('tech_deify_desc'),
+        category: 'religion',
+        era: 'early_space',
+        reqs: { theology: 4 },
+        grant: ['ancient_deify',1],
+        wiki: global.genes['transcendence'] && global.genes.transcendence >= 2 ? true : false,
+        condition(){ return global.genes['transcendence'] && global.genes.transcendence >= 2 ? true : false; },
+        cost: {
+            Knowledge(){ return 195000; }
+        },
+        effect(){
+            let entity = global.race.old_gods !== 'none' ? races[global.race.old_gods.toLowerCase()].entity : races[global.race.species].entity;
+            return `<div>${loc('tech_deify_effect',[entity])}</div><div class="has-text-special">${loc('tech_deify_warning')}</div>`;
+        },
+        action(){
+            if (payCosts($(this)[0])){
                 fanaticism(global.race.old_gods);
                 arpa('Genetics');
                 return true;
@@ -8406,7 +8688,7 @@ const techs = {
         effect: loc('tech_astrophysics_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['propellant_depot'] = { count: 0 };
+                initStruct(actions.space.spc_home.propellant_depot);
                 return true;
             }
             return false;
@@ -8430,12 +8712,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.settings.space.moon = true;
-                global.space['moon_base'] = {
-                    count: 0,
-                    on: 0,
-                    support: 0,
-                    s_max: 0
-                };
+                initStruct(actions.space.spc_moon.moon_base);
                 return true;
             }
             return false;
@@ -8461,12 +8738,7 @@ const techs = {
             if (payCosts($(this)[0])){
                 global.settings.space.red = true;
                 global.settings.space.hell = true;
-                global.space['spaceport'] = {
-                    count: 0,
-                    on: 0,
-                    support: 0,
-                    s_max: 0
-                };
+                initStruct(actions.space.spc_red.spaceport);
                 return true;
             }
             return false;
@@ -8491,7 +8763,7 @@ const techs = {
                 if (global.race['truepath']){
                     global.settings.showOuter = true;
                 }
-                global.space['swarm_control'] = { count: 0, support: 0, s_max: 0 };
+                initStruct(actions.space.spc_sun.swarm_control);
                 return true;
             }
             return false;
@@ -8511,7 +8783,7 @@ const techs = {
         effect(){ return loc(global.race['artifical'] ? 'tech_colonization_artifical_effect' : 'tech_colonization_effect',[planetName().red]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['biodome'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_red.biodome);
                 return true;
             }
             return false;
@@ -8531,7 +8803,7 @@ const techs = {
         effect(){ return loc('tech_red_tower_effect',[planetName().red]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['red_tower'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_red.red_tower);
                 return true;
             }
             return false;
@@ -8551,7 +8823,7 @@ const techs = {
         effect(){ return loc('tech_space_manufacturing_effect',[planetName().red]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['red_factory'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_red.red_factory);
                 return true;
             }
             return false;
@@ -8571,7 +8843,7 @@ const techs = {
         effect: loc('tech_exotic_lab_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['exotic_lab'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_red.exotic_lab);
                 return true;
             }
             return false;
@@ -8630,7 +8902,7 @@ const techs = {
         effect: loc('tech_dyson_swarm_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['swarm_satellite'] = { count: 0 };
+                initStruct(actions.space.spc_sun.swarm_satellite);
                 return true;
             }
             return false;
@@ -8650,7 +8922,7 @@ const techs = {
         effect(){ return loc('tech_swarm_plant_effect',[races[global.race.species].home,planetName().hell]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['swarm_plant'] = { count: 0 };
+                initStruct(actions.space.spc_hell.swarm_plant);
                 return true;
             }
             return false;
@@ -8808,7 +9080,7 @@ const techs = {
         effect: loc('tech_dyson_net_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['dyson'] = { count: 0 };
+                initStruct(actions.interstellar.int_proxima.dyson);
                 return true;
             }
             return false;
@@ -8828,7 +9100,7 @@ const techs = {
         effect: loc('tech_dyson_sphere2_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['dyson_sphere'] = { count: 0 };
+                initStruct(actions.interstellar.int_proxima.dyson_sphere);
                 return true;
             }
             return false;
@@ -8852,7 +9124,28 @@ const techs = {
         effect: loc('tech_orichalcum_sphere_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['orichalcum_sphere'] = { count: 0 };
+                initStruct(actions.interstellar.int_proxima.orichalcum_sphere);
+                return true;
+            }
+            return false;
+        }
+    },
+    elysanite_sphere: {
+        id: 'tech-elysanite_sphere',
+        title: loc('tech_elysanite_sphere'),
+        desc: loc('tech_elysanite_sphere'),
+        category: 'power_generation',
+        era: 'existential',
+        reqs: { high_tech: 19, dyson: 2 },
+        grant: ['dyson',3],
+        cost: {
+            Knowledge(){ return 122500000; },
+            Omniscience(){ return 36500; },
+        },
+        effect(){ return loc('tech_elysanite_sphere_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.interstellar.int_proxima.elysanite_sphere);
                 return true;
             }
             return false;
@@ -8873,7 +9166,7 @@ const techs = {
         effect: loc('tech_gps_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['gps'] = { count: 0 };
+                initStruct(actions.space.spc_home.gps);
                 return true;
             }
             return false;
@@ -8893,10 +9186,7 @@ const techs = {
         effect: loc('tech_nav_beacon_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['nav_beacon'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.space.spc_home.nav_beacon);
                 return true;
             }
             return false;
@@ -8936,8 +9226,8 @@ const techs = {
         effect: loc('tech_atmospheric_mining_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['gas_mining'] = { count: 0, on: 0 };
-                global.space['gas_storage'] = { count: 0 };
+                initStruct(actions.space.spc_gas.gas_mining);
+                initStruct(actions.space.spc_gas.gas_storage);
                 return true;
             }
             return false;
@@ -8996,7 +9286,7 @@ const techs = {
         effect(){ return loc('tech_elerium_prospecting_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['elerium_prospector'] = { count: 0, on: 0 };
+                initStruct(actions.interstellar.int_nebula.elerium_prospector);
                 return true;
             }
             return false;
@@ -9016,9 +9306,9 @@ const techs = {
         effect: loc('tech_zero_g_mining_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['space_station'] = { count: 0, on: 0, support: 0, s_max: 0 };
-                global.space['iridium_ship'] = { count: 0, on: 0 };
-                global.space['iron_ship'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_belt.space_station);
+                initStruct(actions.space.spc_belt.iridium_ship);
+                initStruct(actions.space.spc_belt.iron_ship);
                 return true;
             }
             return false;
@@ -9039,7 +9329,7 @@ const techs = {
         effect: loc('tech_elerium_mining_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['elerium_ship'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_belt.elerium_ship);
                 if (global.race['cataclysm']){
                     unlockAchieve('iron_will',false,2);
                 }
@@ -9122,7 +9412,7 @@ const techs = {
         effect: loc('tech_elerium_reactor_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['e_reactor'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_dwarf.e_reactor);
                 return true;
             }
             return false;
@@ -9303,12 +9593,7 @@ const techs = {
         effect: loc('tech_star_dock_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['star_dock'] = {
-                    count: 0,
-                    ship: 0,
-                    probe: 0,
-                    template: global.race.species
-                };
+                initStruct(actions.space.spc_gas.star_dock);
                 return true;
             }
             return false;
@@ -9328,7 +9613,7 @@ const techs = {
         effect: loc('tech_interstellar_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.starDock['probes'] = { count: 0 };
+                initStruct(actions.starDock.probes);
                 return true;
             }
             return false;
@@ -9348,7 +9633,7 @@ const techs = {
         effect(){ return global.race['cataclysm'] ? loc('tech_generational_effect') : loc('tech_genesis_ship_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.starDock['seeder'] = { count: 0 };
+                initStruct(actions.starDock.seeder);
                 if (global.race['cataclysm']){
                     unlockAchieve('iron_will',false,4);
                 }
@@ -9374,7 +9659,7 @@ const techs = {
         effect(){ return loc('tech_geck_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.starDock['geck'] = { count: 0 };
+                initStruct(actions.starDock.geck);
                 return true;
             }
             return false;
@@ -9454,12 +9739,7 @@ const techs = {
             if (payCosts($(this)[0])){
                 global.settings.showDeep = true;
                 global.settings.space.alpha = true;
-                global.interstellar['starport'] = {
-                    count: 0,
-                    on: 0,
-                    support: 0,
-                    s_max: 0
-                };
+                initStruct(actions.interstellar.int_alpha.starport);
                 return true;
             }
             return false;
@@ -9479,7 +9759,7 @@ const techs = {
         effect: loc('tech_habitat_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['habitat'] = { count: 0, on: 0 };
+                initStruct(actions.interstellar.int_alpha.habitat);
                 return true;
             }
             return false;
@@ -9500,7 +9780,7 @@ const techs = {
         effect: loc('tech_graphene_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['g_factory'] = { count: 0, on: 0, Lumber: 0, Coal: 0, Oil: 0 };
+                initStruct(actions.interstellar.int_alpha.g_factory);
                 return true;
             }
             return false;
@@ -9546,7 +9826,7 @@ const techs = {
         effect(){ return loc('tech_mega_manufacturing_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['int_factory'] = { count: 0, on: 0 };
+                initStruct(actions.interstellar.int_alpha.int_factory);
                 return true;
             }
             return false;
@@ -9566,7 +9846,7 @@ const techs = {
         effect(){ return loc('tech_luxury_condo_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['luxury_condo'] = { count: 0, on: 0 };
+                initStruct(actions.interstellar.int_alpha.luxury_condo);
                 return true;
             }
             return false;
@@ -9586,7 +9866,7 @@ const techs = {
         effect: loc('tech_stellar_engine_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['stellar_engine'] = { count: 0, mass: 8, exotic: 0 };
+                initStruct(actions.interstellar.int_blackhole.stellar_engine);
                 return true;
             }
             return false;
@@ -9606,28 +9886,7 @@ const techs = {
         effect: loc('tech_mass_ejector_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.interstellar['mass_ejector'] = {
-                    count: 0, on: 0, total: 0, mass: 0,
-                    Food: 0, Lumber: 0,
-                    Chrysotile: 0, Stone: 0,
-                    Crystal: 0, Furs: 0,
-                    Copper: 0, Iron: 0,
-                    Aluminium: 0, Cement: 0,
-                    Coal: 0, Oil: 0,
-                    Uranium: 0, Steel: 0,
-                    Titanium: 0, Alloy: 0,
-                    Polymer: 0, Iridium: 0,
-                    Helium_3: 0, Deuterium: 0,
-                    Neutronium: 0, Adamantite: 0,
-                    Infernite: 0, Elerium: 0,
-                    Nano_Tube: 0, Graphene: 0,
-                    Stanene: 0, Bolognium: 0,
-                    Vitreloy: 0, Orichalcum: 0,
-                    Plywood: 0, Brick: 0,
-                    Wrought_Iron: 0, Sheet_Metal: 0,
-                    Mythril: 0, Aerogel: 0,
-                    Nanoweave: 0, Scarletite: 0
-                };
+                initStruct(actions.interstellar.int_blackhole.mass_ejector);
                 return true;
             }
             return false;
@@ -9928,8 +10187,8 @@ const techs = {
                     s_ntfy: 'Yes',
                     nocrew: false,
                 };
-                global.portal['turret'] = { count: 0, on: 0 };
-                global.portal['carport'] = { count: 0, damaged: 0, repair: 0 };
+                initStruct(actions.portal.prtl_fortress.turret);
+                initStruct(actions.portal.prtl_fortress.carport);
                 if (races[global.race.species].type === 'demonic'){
                     unlockAchieve('blood_war');
                 }
@@ -10015,7 +10274,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.settings.portal.badlands = true;
-                global.portal['war_drone'] = { count: 0, on: 0 };
+                initStruct(actions.portal.prtl_badlands.war_drone);
                 return true;
             }
             return false;
@@ -10035,7 +10294,7 @@ const techs = {
         effect: loc('tech_demon_attractor_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.portal['attractor'] = { count: 0, on: 0 };
+                initStruct(actions.portal.prtl_badlands.attractor);
                 return true;
             }
             return false;
@@ -10056,7 +10315,7 @@ const techs = {
         effect: loc('tech_combat_droids_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.portal['war_droid'] = { count: 0, on: 0 };
+                initStruct(actions.portal.prtl_fortress.war_droid);
                 return true;
             }
             return false;
@@ -10080,7 +10339,7 @@ const techs = {
         effect: loc('tech_repair_droids_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.portal['repair_droid'] = { count: 0, on: 0 };
+                initStruct(actions.portal.prtl_fortress.repair_droid);
                 return true;
             }
             return false;
@@ -10140,7 +10399,7 @@ const techs = {
         effect: loc('tech_sensor_drone_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.portal['sensor_drone'] = { count: 0, on: 0 };
+                initStruct(actions.portal.prtl_badlands.sensor_drone);
                 return true;
             }
             return false;
@@ -10263,7 +10522,7 @@ const techs = {
         },
         action(){
             if (payCosts($(this)[0])){
-                global.galaxy['embassy'] = { count: 0, on: 0 };
+                initStruct(actions.galaxy.gxy_gorddon.embassy);
                 return true;
             }
             return false;
@@ -10286,8 +10545,8 @@ const techs = {
         },
         action(){
             if (payCosts($(this)[0])){
-                global.galaxy['symposium'] = { count: 0, on: 0 };
-                global.galaxy['dormitory'] = { count: 0, on: 0 };
+                initStruct(actions.galaxy.gxy_gorddon.dormitory);
+                initStruct(actions.galaxy.gxy_gorddon.symposium);
                 return true;
             }
             return false;
@@ -10327,7 +10586,7 @@ const techs = {
         effect(){ return loc('tech_xeno_gift_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.galaxy['consulate'] = { count: 0 };
+                initStruct(actions.galaxy.gxy_alien1.consulate);
                 global.settings.space.alien1 = true;
                 messageQueue(loc('tech_xeno_gift_msg',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name]),'info',false,['progress']);
                 return true;
@@ -10349,7 +10608,7 @@ const techs = {
         effect(){ return loc('tech_industrial_partnership_effect',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name]); },
         action(){
             if (payCosts($(this)[0])){
-                global.galaxy['vitreloy_plant'] = { count: 0, on: 0 };
+                initStruct(actions.galaxy.gxy_alien1.vitreloy_plant);
                 return true;
             }
             return false;
@@ -10410,7 +10669,7 @@ const techs = {
         effect: loc('tech_defense_platform_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.galaxy['defense_platform'] = { count: 0, on: 0 };
+                initStruct(actions.galaxy.gxy_stargate.defense_platform);
                 return true;
             }
             return false;
@@ -10430,7 +10689,7 @@ const techs = {
         effect(){ return loc('tech_scout_ship_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.galaxy['scout_ship'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                initStruct(actions.galaxy.gxy_gateway.scout_ship);
                 return true;
             }
             return false;
@@ -10450,7 +10709,7 @@ const techs = {
         effect(){ return loc('tech_corvette_ship_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.galaxy['corvette_ship'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                initStruct(actions.galaxy.gxy_gateway.corvette_ship);
                 return true;
             }
             return false;
@@ -10470,7 +10729,7 @@ const techs = {
         effect(){ return loc('tech_frigate_ship_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.galaxy['frigate_ship'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                initStruct(actions.galaxy.gxy_gateway.frigate_ship);
                 renderSpace();
                 return true;
             }
@@ -10491,8 +10750,8 @@ const techs = {
         effect(){ return loc('tech_cruiser_ship_effect',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name]); },
         action(){
             if (payCosts($(this)[0])){
-                global.galaxy['cruiser_ship'] = { count: 0, on: 0, crew: 0, mil: 0 };
-                global.galaxy['foothold'] = { count: 0, on: 0, support: 0, s_max: 0 };
+                initStruct(actions.galaxy.gxy_gateway.cruiser_ship);
+                initStruct(actions.galaxy.gxy_alien2.foothold);
                 global.settings.space.alien2 = true;
                 renderSpace();
                 return true;
@@ -10514,7 +10773,7 @@ const techs = {
         effect(){ return loc('tech_dreadnought_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.galaxy['dreadnought'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                initStruct(actions.galaxy.gxy_gateway.dreadnought);
                 renderSpace();
                 return true;
             }
@@ -10535,7 +10794,7 @@ const techs = {
         effect(){ return loc('tech_ship_dock_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.galaxy['ship_dock'] = { count: 0, on: 0 };
+                initStruct(actions.galaxy.gxy_gateway.ship_dock);
                 return true;
             }
             return false;
@@ -10555,7 +10814,7 @@ const techs = {
         effect(){ return loc('tech_ore_processor_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.galaxy['ore_processor'] = { count: 0, on: 0 };
+                initStruct(actions.galaxy.gxy_alien2.ore_processor);
                 return true;
             }
             return false;
@@ -10575,7 +10834,7 @@ const techs = {
         effect(){ return loc('tech_scavenger_effect',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name]); },
         action(){
             if (payCosts($(this)[0])){
-                global.galaxy['scavenger'] = { count: 0, on: 0, crew: 0 };
+                initStruct(actions.galaxy.gxy_alien2.scavenger);
                 return true;
             }
             return false;
@@ -10595,7 +10854,7 @@ const techs = {
         effect(){ return loc('tech_coordinates_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.galaxy['minelayer'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                initStruct(actions.galaxy.gxy_chthonian.minelayer);
                 global.settings.space.chthonian = true;
                 return true;
             }
@@ -10617,8 +10876,8 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.resource.Orichalcum.display = true;
-                global.galaxy['excavator'] = { count: 0, on: 0 };
-                global.galaxy['raider'] = { count: 0, on: 0, crew: 0, mil: 0 };
+                initStruct(actions.galaxy.gxy_chthonian.excavator);
+                initStruct(actions.galaxy.gxy_chthonian.raider);
                 messageQueue(loc('tech_chthonian_survey_result'),'info',false,['progress']);
                 return true;
             }
@@ -10642,7 +10901,7 @@ const techs = {
         effect(){ return loc('tech_gateway_depot_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.galaxy['gateway_depot'] = { count: 0, on: 0 };
+                initStruct(actions.galaxy.gxy_stargate.gateway_depot);
                 return true;
             }
             return false;
@@ -10662,7 +10921,7 @@ const techs = {
         effect(){ return loc('tech_soul_forge_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.portal['soul_forge'] = { count: 0, on: 0, kills: 0 };
+                initStruct(actions.portal.prtl_pit.soul_forge);
                 return true;
             }
             return false;
@@ -10682,7 +10941,7 @@ const techs = {
         effect(){ return loc('tech_soul_attractor_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.portal['soul_attractor'] = { count: 0, on: 0 };
+                initStruct(actions.portal.prtl_pit.soul_attractor);
                 return true;
             }
             return false;
@@ -10728,6 +10987,26 @@ const techs = {
             return false;
         }
     },
+    soul_bait: {
+        id: 'tech-soul_bait',
+        title: loc('tech_soul_bait'),
+        desc: loc('tech_soul_bait'),
+        category: 'hell_dimension',
+        era: 'existential',
+        reqs: { hell_pit: 7, asphodel: 3 },
+        grant: ['hell_pit',8],
+        cost: {
+            Knowledge(){ return 65000000; },
+            Asphodel_Powder(){ return 10000; }
+        },
+        effect(){ return loc('tech_soul_bait_effect',[global.resource.Asphodel_Powder.name, loc('arpa_blood_attract_title')]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     gun_emplacement: {
         id: 'tech-gun_emplacement',
         title: loc('portal_gun_emplacement_title'),
@@ -10742,7 +11021,7 @@ const techs = {
         effect(){ return loc('tech_gun_emplacement_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.portal['gun_emplacement'] = { count: 0, on: 0 };
+                initStruct(actions.portal.prtl_pit.gun_emplacement);
                 return true;
             }
             return false;
@@ -10781,7 +11060,7 @@ const techs = {
             Knowledge(){ return 500000; }
         },
         condition(){
-            return global.race['sludge'] && !global.race['cataclysm'] ? false : true;
+            return (global.race['sludge'] || global.race['ultra_sludge']) && !global.race['cataclysm'] ? false : true;
         },
         effect(){
             let gains = calcPrestige('cataclysm');
@@ -10870,13 +11149,13 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 if (global.tech['isolation']){
-                    global.tauceti['pylon'] = { count: 0 };
+                    initStruct(actions.tauceti.tau_home.pylon);
                 }
                 else if (global.race['cataclysm'] || global.race['orbit_decayed']){
-                    global.space['pylon'] = { count: 0 };
+                    initStruct(actions.space.spc_red.pylon);
                 }
                 else {
-                    global.city['pylon'] = { count: 0 };
+                    initStruct(actions.city.pylon);
                 }
                 return true;
             }
@@ -11182,8 +11461,8 @@ const techs = {
         effect(){ return loc('tech_conceal_ward_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.city['conceal_ward'] = { count: 0 };
-                global.space['conceal_ward'] = { count: 0 };
+                initStruct(actions.city.conceal_ward);
+                global.space['conceal_ward'] = { count: 0 }; // ???
                 return true;
             }
             return false;
@@ -11430,7 +11709,7 @@ const techs = {
         effect: loc('tech_zero_g_lab_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['zero_g_lab'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_enceladus.zero_g_lab);
                 return true;
             }
             return false;
@@ -11451,7 +11730,7 @@ const techs = {
         effect(){ return loc('tech_operating_base_effect',[planetName().enceladus]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['operating_base'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_enceladus.operating_base);
                 return true;
             }
             return false;
@@ -11472,7 +11751,7 @@ const techs = {
         effect(){ return loc('tech_munitions_depot_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['munitions_depot'] = { count: 0 };
+                initStruct(actions.space.spc_enceladus.munitions_depot);
                 return true;
             }
             return false;
@@ -11493,9 +11772,9 @@ const techs = {
         effect(){ return loc('tech_fob_effect',[planetName().triton]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['fob'] = { count: 0, on: 0, troops: 0, enemy: 0 };
-                global.space['lander'] = { count: 0, on: 0 };
-                global.space['crashed_ship'] = { count: 0 };
+                initStruct(actions.space.spc_triton.fob);
+                initStruct(actions.space.spc_triton.lander);
+                initStruct(actions.space.spc_triton.crashed_ship);
                 return true;
             }
             return false;
@@ -11558,7 +11837,7 @@ const techs = {
         effect(){ return loc('tech_sam_site_effect',[planetName().titan]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['sam'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_titan.sam);
                 return true;
             }
             return false;
@@ -11580,7 +11859,7 @@ const techs = {
         effect(){ return loc('tech_data_cracker_effect',[global.resource.Cipher.name]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['decoder'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_titan.decoder);
                 return true;
             }
             return false;
@@ -11602,7 +11881,7 @@ const techs = {
         effect: loc('tech_ai_core_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['ai_core'] = { count: 0 };
+                initStruct(actions.space.spc_titan.ai_core);
                 return true;
             }
             return false;
@@ -11646,7 +11925,7 @@ const techs = {
         effect: loc('tech_synthetic_life_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['ai_colonist'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_titan.ai_colonist);
                 return true;
             }
             return false;
@@ -11744,7 +12023,7 @@ const techs = {
         effect(){ return loc('tech_terraforming_effect',[planetName().red]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space.terraformer = { count: 0 };
+                initStruct(actions.space.spc_red.terraformer);
                 return true;
             }
             return false;
@@ -11839,8 +12118,8 @@ const techs = {
             if (payCosts($(this)[0])){
                 global.settings.space.titan = true;
                 global.settings.space.enceladus = true;
-                global.space['titan_spaceport'] = { count: 0, on: 0, support: 0, s_max: 0 };
-                global.space['electrolysis'] = { count: 0, on: 0, support: 0, s_max: 0 };
+                initStruct(actions.space.spc_titan.titan_spaceport);
+                initStruct(actions.space.spc_titan.electrolysis);
                 return true;
             }
             return false;
@@ -11908,7 +12187,7 @@ const techs = {
         effect: loc('tech_mass_relay_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['mass_relay'] = { count: 0 };
+                initStruct(actions.space.spc_dwarf.mass_relay);
                 return true;
             }
             return false;
@@ -11933,7 +12212,7 @@ const techs = {
                 global.settings.space.eris = true;
                 global.settings.space.kuiper = true;
                 global.tech['eris_scan'] = 0;
-                global.space['drone_control'] = { count: 0, on: 0, support: 0, s_max: 0 };
+                initStruct(actions.space.spc_eris.drone_control);
                 messageQueue(loc('tech_nav_data_result',[planetName().eris]),'info',false,['progress']);
                 return true;
             }
@@ -11978,8 +12257,8 @@ const techs = {
         effect(){ return loc('tech_dronewar_effect',[planetName().eris]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['shock_trooper'] = { count: 0, on: 0 };
-                global.space['digsite'] = { count: 0, enemy: 10000 };
+                initStruct(actions.space.spc_eris.shock_trooper);
+                initStruct(actions.space.spc_eris.digsite);
                 return true;
             }
             return false;
@@ -12001,7 +12280,7 @@ const techs = {
         effect: loc('tech_drone_tank_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['tank'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_eris.tank);
                 return true;
             }
             return false;
@@ -12051,7 +12330,7 @@ const techs = {
         effect: loc('tech_graphene_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.space['g_factory'] = { count: 0, on: 0, Lumber: 0, Coal: 0, Oil: 0 };
+                initStruct(actions.space.spc_titan.g_factory);
                 return true;
             }
             return false;
@@ -12097,8 +12376,8 @@ const techs = {
         effect(){ return loc('tech_electrolysis_effect',[planetName().titan, global.resource.Water.name]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['titan_quarters'] = { count: 0, on: 0 };
-                global.space['titan_mine'] = { count: 0, on: 0, ratio: 90 };
+                initStruct(actions.space.spc_titan.titan_quarters);
+                initStruct(actions.space.spc_titan.titan_mine);
                 return true;
             }
             return false;
@@ -12119,7 +12398,7 @@ const techs = {
         effect(){ return loc('tech_storehouse_effect',[planetName().titan]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['storehouse'] = { count: 0 };
+                initStruct(actions.space.spc_titan.storehouse);
                 return true;
             }
             return false;
@@ -12162,7 +12441,7 @@ const techs = {
         effect(){ return loc('tech_titan_bank_effect',[planetName().titan]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['titan_bank'] = { count: 0 };
+                initStruct(actions.space.spc_titan.titan_bank);
                 return true;
             }
             return false;
@@ -12183,7 +12462,7 @@ const techs = {
         effect(){ return loc('tech_hydrogen_plant_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['hydrogen_plant'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_titan.hydrogen_plant);
                 return true;
             }
             return false;
@@ -12208,7 +12487,7 @@ const techs = {
         ]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['water_freighter'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_enceladus.water_freighter);
                 return true;
             }
             return false;
@@ -12230,7 +12509,7 @@ const techs = {
         effect(){ return loc('tech_mercury_smelting_effect',[planetName().hell]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['hell_smelter'] = { count: 0 };
+                initStruct(actions.space.spc_hell.hell_smelter);
                 return true;
             }
             return false;
@@ -12447,7 +12726,7 @@ const techs = {
         effect(){ return loc('tech_elerium_extraction_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['elerium_mine'] = { count: 0, on: 0 };
+                initStruct(actions.space.spc_kuiper.elerium_mine);
                 return true;
             }
             return false;
@@ -12489,7 +12768,7 @@ const techs = {
         effect(){ return loc('tech_shipyard_effect',[planetName().dwarf]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['shipyard'] = { count: 0, on: 0, ships: [], expand: true, sort: true };
+                initStruct(actions.space.spc_dwarf.shipyard);
                 setOrbits();
                 return true;
             }
@@ -12847,9 +13126,9 @@ const techs = {
         effect: loc('tech_alien_outpost_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['alien_outpost'] = { count: 1, on: 0 };
-                global.tauceti['jump_gate'] = { count: 0 };
-                global.space['jump_gate'] = { count: 0 };
+                initStruct(actions.tauceti.tau_home.alien_outpost);
+                initStruct(actions.tauceti.tau_home.jump_gate);
+                initStruct(actions.space.spc_sun.jump_gate);
                 messageQueue(loc('tech_alien_outpost_msg'),'info',false,['progress']);
                 return true;
             }
@@ -12893,7 +13172,7 @@ const techs = {
             if (payCosts($(this)[0])){
                 global.settings.tau.roid = true;
                 global.settings.tau.gas = true;
-                global.tauceti['patrol_ship'] = { count: 0, on: 0, support: 0, s_max: 0 };
+                initStruct(actions.tauceti.tau_roid.patrol_ship);
                 return true;
             }
             return false;
@@ -12914,7 +13193,7 @@ const techs = {
         effect: loc('tech_repository_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['repository'] = { count: 0 };
+                initStruct(actions.tauceti.tau_home.repository);
                 return true;
             }
             return false;
@@ -12935,7 +13214,7 @@ const techs = {
         effect: loc('tech_tau_fusion_power_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['fusion_generator'] = { count: 0, on: 0 };
+                initStruct(actions.tauceti.tau_home.fusion_generator);
                 return true;
             }
             return false;
@@ -12956,7 +13235,7 @@ const techs = {
         effect(){ return loc('tech_tau_cultivation_effect',[races[global.race.species].home]); },
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['tau_farm'] = { count: 0, on: 0 };
+                initStruct(actions.tauceti.tau_home.tau_farm);
                 return true;
             }
             return false;
@@ -12977,7 +13256,7 @@ const techs = {
         effect(){ return loc('tech_tau_manufacturing_effect',[races[global.race.species].home]); },
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['tau_factory'] = { count: 0, on: 0 };
+                initStruct(actions.tauceti.tau_home.tau_factory);
                 return true;
             }
             return false;
@@ -13060,7 +13339,7 @@ const techs = {
         effect(){ return loc('tech_womling_lab_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['womling_lab'] = { count : 0, on: 0, scientist: 0, tech: 0 };
+                initStruct(actions.tauceti.tau_red.womling_lab);
                 global.tech['womling_tech'] = 0;
                 return true;
             }
@@ -13202,7 +13481,7 @@ const techs = {
         effect(){ return `<div>${loc('tech_womling_support_effect')}</div>`; },
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['womling_station'] = { count : 0, on: 0 };
+                initStruct(actions.tauceti.tau_gas.womling_station);
                 return true;
             }
             return false;
@@ -13285,8 +13564,8 @@ const techs = {
         effect(){ return loc('tech_belt_mining_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['ore_refinery'] = { count : 0, on: 0, max: 0, fill: 0 };
-                global.tauceti['mining_ship'] = { count : 0, on: 0, common: 50, uncommon: 50, rare: 50 };
+                initStruct(actions.tauceti.tau_gas.ore_refinery);
+                initStruct(actions.tauceti.tau_roid.mining_ship);
                 return true;
             }
             return false;
@@ -13327,8 +13606,8 @@ const techs = {
         effect(){ return loc('tech_space_whaling_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['whaling_station'] = { count : 0, on: 0, max: 0, fill: 0 };
-                global.tauceti['whaling_ship'] = { count : 0, on: 0 };
+                initStruct(actions.tauceti.tau_gas.whaling_station);
+                initStruct(actions.tauceti.tau_roid.whaling_ship);
                 return true;
             }
             return false;
@@ -13349,7 +13628,7 @@ const techs = {
         effect(){ return loc(global.race['artifical'] ? 'tech_infectious_disease_lab_effect_s' : 'tech_infectious_disease_lab_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['infectious_disease_lab'] = { count : 0, on: 0, cure: 0 };
+                initStruct(actions.tauceti.tau_home.infectious_disease_lab);
                 return true;
             }
             return false;
@@ -13566,7 +13845,7 @@ const techs = {
         },
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['cloning_facility'] = { count : 0, on: 0 };
+                initStruct(actions.tauceti.tau_home.cloning_facility);
                 return true;
             }
             return false;
@@ -13640,7 +13919,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.settings.tau.star = true;
-                global.tauceti['ringworld'] = { count: 0 };
+                initStruct(actions.tauceti.tau_star.ringworld);
                 return true;
             }
             return false;
@@ -13701,7 +13980,7 @@ const techs = {
         effect: loc('tech_cultural_center_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['tau_cultural_center'] = { count: 0, on: 0 };
+                initStruct(actions.tauceti.tau_home.tau_cultural_center);
                 return true;
             }
             return false;
@@ -13909,7 +14188,7 @@ const techs = {
         effect(){ return loc('tech_matrioshka_brain_effect',[actions.tauceti.tau_gas2.info.name()]); },
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['matrioshka_brain'] = { count: 0 };
+                initStruct(actions.tauceti.tau_gas2.matrioshka_brain);
                 return true;
             }
             return false;
@@ -13930,9 +14209,9 @@ const techs = {
         effect(){ return loc('tech_ignition_device_effect',[actions.tauceti.tau_gas2.info.name()]); },
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['ignition_device'] = { count: 0 };
+                initStruct(actions.tauceti.tau_gas2.ignition_device);
                 if (!global.tauceti.hasOwnProperty('matrioshka_brain')){
-                    global.tauceti['matrioshka_brain'] = { count: 0 };
+                    initStruct(actions.tauceti.tau_gas2.matrioshka_brain);
                 }
                 return true;
             }
@@ -14000,12 +14279,822 @@ const techs = {
         effect(){ return loc('tech_garden_of_eden_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['goe_facility'] = { count: 0 };
+                initStruct(actions.tauceti.tau_star.goe_facility);
                 return true;
             }
             return false;
         }
-    }
+    },
+    asphodel_flowers: {
+        id: 'tech-asphodel_flowers',
+        title: loc('tech_asphodel_flowers'),
+        desc: loc('tech_asphodel_flowers'),
+        category: 'edenic',
+        era: 'existential',
+        reqs: { edenic: 4 },
+        grant: ['asphodel',1],
+        cost: {
+            Knowledge(){ return 61000000; }
+        },
+        effect(){ return loc('tech_asphodel_flowers_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                messageQueue(loc('tech_asphodel_flowers_msg'),'info',false,['progress']);
+                initStruct(actions.eden.eden_asphodel.asphodel_harvester);
+                global.resource.Asphodel_Powder.display = true;
+                return true;
+            }
+            return false;
+        }
+    },
+    ghost_traps: {
+        id: 'tech-ghost_traps',
+        title: loc('tech_ghost_traps'),
+        desc: loc('tech_ghost_traps'),
+        category: 'edenic',
+        era: 'existential',
+        reqs: { asphodel: 1 },
+        grant: ['asphodel',2],
+        cost: {
+            Knowledge(){ return 61250000; },
+            Asphodel_Powder(){ return 2500; },
+        },
+        effect(){ return loc('tech_ghost_traps_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.eden.eden_asphodel.ectoplasm_processor);
+                return true;
+            }
+            return false;
+        }
+    },
+    research_station: {
+        id: 'tech-research_station',
+        title: loc('tech_research_station'),
+        desc: loc('tech_research_station'),
+        category: 'science',
+        era: 'existential',
+        reqs: { asphodel: 2 },
+        grant: ['asphodel',3],
+        cost: {
+            Knowledge(){ return 61650000; },
+            Asphodel_Powder(){ return 5000; },
+        },
+        effect(){ return loc('tech_research_station_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.eden.eden_asphodel.research_station);
+                return true;
+            }
+            return false;
+        }
+    },
+    soul_engine: {
+        id: 'tech-soul_engine',
+        title: loc('tech_soul_engine'),
+        desc: loc('tech_soul_engine'),
+        category: 'power_generation',
+        era: 'existential',
+        reqs: { asphodel: 3 },
+        grant: ['asphodel',4],
+        cost: {
+            Knowledge(){ return 70000000; },
+            Omniscience(){ return 1000; },
+            Asphodel_Powder(){ return 12500; },
+        },
+        effect(){ return loc('tech_soul_engine_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.eden.eden_asphodel.soul_engine);
+                return true;
+            }
+            return false;
+        }
+    },
+    railway_to_hell: {
+        id: 'tech-railway_to_hell',
+        title: loc('tech_railway_to_hell'),
+        desc: loc('tech_railway_to_hell'),
+        category: 'hell_dimension',
+        era: 'existential',
+        reqs: { asphodel: 4, hell_lake: 6 },
+        grant: ['hell_lake',7],
+        cost: {
+            Knowledge(){ return 71250000; },
+            Omniscience(){ return 5000; },
+            Asphodel_Powder(){ return 15000; },
+        },
+        effect(){ return loc('tech_railway_to_hell_effect',[global.resource.Asphodel_Powder.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    purification: {
+        id: 'tech-purification',
+        title: loc('tech_purification'),
+        desc: loc('tech_purification'),
+        category: 'hell_dimension',
+        era: 'existential',
+        reqs: { asphodel: 4, hell_spire: 10 },
+        grant: ['hell_spire',11],
+        cost: {
+            Knowledge(){ return 71250000; },
+            Omniscience(){ return 5000; },
+            Asphodel_Powder(){ return 17500; },
+        },
+        effect(){ return loc('tech_purification_effect',[global.resource.Asphodel_Powder.name,loc('portal_purifier_title'),2,loc('eden_asphodel_harvester_title')]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    asphodel_mech: {
+        id: 'tech-asphodel_mech',
+        title: loc('tech_asphodel_mech'),
+        desc: loc('tech_asphodel_mech'),
+        category: 'military',
+        era: 'existential',
+        reqs: { asphodel: 5, military: 12 },
+        grant: ['asphodel',6],
+        cost: {
+            Knowledge(){ return 72300000; },
+            Omniscience(){ return 6000; },
+        },
+        effect(){ return loc('tech_asphodel_mech_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.eden.eden_asphodel.mech_station);
+                return true;
+            }
+            return false;
+        }
+    },
+    asphodel_storage: {
+        id: 'tech-asphodel_storage',
+        title: loc('tech_asphodel_storage'),
+        desc: loc('tech_asphodel_storage'),
+        category: 'storage',
+        era: 'existential',
+        reqs: { asphodel: 6, },
+        grant: ['asphodel',7],
+        cost: {
+            Knowledge(){ return 73000000; },
+            Omniscience(){ return 6500; },
+        },
+        effect(){ return loc('tech_asphodel_storage_effect',[global.resource.Asphodel_Powder.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.eden.eden_asphodel.warehouse);
+                return true;
+            }
+            return false;
+        }
+    },
+    asphodel_stabilizer: {
+        id: 'tech-asphodel_stabilizer',
+        title: loc('tech_asphodel_stabilizer'),
+        desc: loc('tech_asphodel_stabilizer'),
+        category: 'storage',
+        era: 'existential',
+        reqs: { asphodel: 7, },
+        grant: ['asphodel',8],
+        cost: {
+            Knowledge(){ return 74000000; },
+            Omniscience(){ return 10000; },
+        },
+        effect(){ return loc('tech_asphodel_stabilizer_effect',[global.resource.Asphodel_Powder.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.eden.eden_asphodel.stabilizer);
+                return true;
+            }
+            return false;
+        }
+    },
+    edenic_bunker: {
+        id: 'tech-edenic_bunker',
+        title: loc('tech_edenic_bunker'),
+        desc: loc('tech_edenic_bunker'),
+        category: 'military',
+        era: 'existential',
+        reqs: { asphodel: 8, },
+        grant: ['asphodel',9],
+        cost: {
+            Knowledge(){ return 77500000; },
+            Omniscience(){ return 12000; },
+        },
+        effect(){ return loc('tech_edenic_bunker_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.eden.eden_asphodel.bunker);
+                return true;
+            }
+            return false;
+        }
+    },
+    bliss_den: {
+        id: 'tech-bliss_den',
+        title: loc('tech_bliss_den'),
+        desc: loc('tech_bliss_den'),
+        category: 'entertainment',
+        era: 'existential',
+        reqs: { asphodel: 9, },
+        grant: ['asphodel',10],
+        cost: {
+            Knowledge(){ return 90000000; },
+            Omniscience(){ return 16666; },
+        },
+        effect(){ return loc('tech_bliss_den_effect',[global.resource.Asphodel_Powder.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.eden.eden_asphodel.bliss_den);
+                return true;
+            }
+            return false;
+        }
+    },
+    hallowed_housing: {
+        id: 'tech-hallowed_housing',
+        title: loc('tech_hallowed_housing'),
+        desc: loc('tech_hallowed_housing'),
+        category: 'housing',
+        era: 'existential',
+        reqs: { asphodel: 10, theology: 2 },
+        grant: ['asphodel',11],
+        cost: {
+            Knowledge(){ return 95000000; },
+            Omniscience(){ return 19500; },
+        },
+        effect(){ return loc('tech_hallowed_housing_effect',[loc(`job_priest`),loc('eden_asphodel_name')]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.eden.eden_asphodel.rectory);
+                return true;
+            }
+            return false;
+        }
+    },
+    outer_plane_study: {
+        id: 'tech-outer_plane_study',
+        title: loc('tech_outer_plane_study'),
+        desc: loc('tech_outer_plane_study'),
+        category: 'edenic',
+        era: 'existential',
+        reqs: { asphodel: 3, science: 22 },
+        grant: ['elysium',1],
+        cost: {
+            Knowledge(){ return 75000000; },
+            Omniscience(){ return 11655; },
+        },
+        effect(){ return loc('tech_outer_plane_study_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.eden.eden_asphodel.rune_gate);
+                initStruct(actions.eden.eden_asphodel.rune_gate_open);
+                return true;
+            }
+            return false;
+        }
+    },
+    camouflage: {
+        id: 'tech-camouflage',
+        title: loc('tech_camouflage'),
+        desc: loc('tech_camouflage'),
+        category: 'edenic',
+        era: 'existential',
+        reqs: { elysium: 3, },
+        grant: ['celestial_warfare',1],
+        cost: {
+            Knowledge(){ return 83000000; },
+            Omniscience(){ return 15000; },
+            Asphodel_Powder(){ return 100000; }
+        },
+        effect(){ return loc('tech_camouflage_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    celestial_tactics: {
+        id: 'tech-celestial_tactics',
+        title: loc('tech_celestial_tactics'),
+        desc: loc('tech_celestial_tactics'),
+        category: 'military',
+        era: 'existential',
+        reqs: { celestial_warfare: 1, },
+        condition(){
+            return global.eden.hasOwnProperty('fortress') && global.eden.fortress.patrols <= 18 ? true : false;
+        },
+        grant: ['celestial_warfare',2],
+        cost: {
+            Knowledge(){ return 86000000; },
+            Omniscience(){ return 17500; }
+        },
+        effect(){ return loc('tech_celestial_tactics_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    active_camouflage: {
+        id: 'tech-active_camouflage',
+        title: loc('tech_active_camouflage'),
+        desc: loc('tech_active_camouflage'),
+        category: 'military',
+        era: 'existential',
+        reqs: { celestial_warfare: 2, },
+        condition(){
+            return global.eden.hasOwnProperty('fortress') && global.eden.fortress.armory < 100 ? true : false;
+        },
+        grant: ['celestial_warfare',3],
+        cost: {
+            Knowledge(){ return 89000000; },
+            Omniscience(){ return 18750; }
+        },
+        effect(){ return loc('tech_active_camouflage_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    special_ops_training: {
+        id: 'tech-special_ops_training',
+        title: loc('tech_special_ops_training'),
+        desc: loc('tech_special_ops_training'),
+        category: 'military',
+        era: 'existential',
+        reqs: { celestial_warfare: 3, },
+        condition(){
+            return global.eden.hasOwnProperty('fortress') && global.eden.fortress.armory <= 80 && global.eden.fortress.patrols <= 15 ? true : false;
+        },
+        grant: ['celestial_warfare',4],
+        cost: {
+            Knowledge(){ return 92000000; },
+            Omniscience(){ return 20000; }
+        },
+        effect(){ return loc('tech_special_ops_training_effect',[loc('eden_bunker_title')]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    spectral_training: {
+        id: 'tech-spectral_training',
+        title: loc('tech_spectral_training'),
+        desc: loc('tech_spectral_training'),
+        category: 'military',
+        era: 'existential',
+        reqs: { celestial_warfare: 4, },
+        grant: ['celestial_warfare',5],
+        cost: {
+            Knowledge(){ return 94500000; },
+            Omniscience(){ return 21000; }
+        },
+        effect(){ return loc('tech_spectral_training_effect',[loc('eden_bunker_title')]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    elysanite_mining: {
+        id: 'tech-elysanite_mining',
+        title: loc('tech_elysanite_mining'),
+        desc: loc('tech_elysanite_mining'),
+        category: 'mining',
+        era: 'existential',
+        reqs: { elysium: 5 },
+        grant: ['elysium',6],
+        cost: {
+            Knowledge(){ return 93000000; },
+            Omniscience(){ return 18500; },
+        },
+        effect(){ return loc('tech_elysanite_mining_effect',[global.resource.Elysanite.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.eden.eden_elysium.elysanite_mine);
+                global.resource.Elysanite.display = true;
+                return true;
+            }
+            return false;
+        }
+    },
+    sacred_smelter: {
+        id: 'tech-sacred_smelter',
+        title: loc('eden_sacred_smelter_title'),
+        desc: loc('eden_sacred_smelter_title'),
+        category: 'mining',
+        era: 'existential',
+        reqs: { elysium: 6 },
+        grant: ['elysium',7],
+        cost: {
+            Knowledge(){ return 96000000; },
+            Omniscience(){ return 19425; },
+        },
+        effect(){ return loc('tech_sacred_smelter_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.eden.eden_elysium.sacred_smelter);
+                return true;
+            }
+            return false;
+        }
+    },
+    fire_support_base: {
+        id: 'tech-fire_support_base',
+        title: loc('eden_fire_support_base_title'),
+        desc: loc('eden_fire_support_base_title'),
+        category: 'military',
+        era: 'existential',
+        reqs: { elysium: 7 },
+        grant: ['elysium',8],
+        cost: {
+            Knowledge(){ return 100000000; },
+            Omniscience(){ return 22500; },
+        },
+        effect(){ return loc('tech_fire_support_base_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.eden.eden_elysium.fire_support_base);
+                return true;
+            }
+            return false;
+        }
+    },
+    pillbox: {
+        id: 'tech-pillbox',
+        title: loc('eden_pillbox_title'),
+        desc: loc('eden_pillbox_title'),
+        category: 'military',
+        era: 'existential',
+        reqs: { elysium: 8 },
+        grant: ['elysium',9],
+        cost: {
+            Knowledge(){ return 102500000; },
+            Omniscience(){ return 23500; },
+        },
+        effect(){ return loc('tech_pillbox_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.eden.eden_elysium.pillbox);
+                return true;
+            }
+            return false;
+        }
+    },
+    elerium_cannon: {
+        id: 'tech-elerium_cannon',
+        title: loc('tech_elerium_cannon'),
+        desc: loc('tech_elerium_cannon'),
+        category: 'military',
+        era: 'existential',
+        reqs: { elysium: 9, isle: 1 },
+        grant: ['elysium',10],
+        cost: {
+            Knowledge(){ return 105000000; },
+            Omniscience(){ return 25000; },
+            Steel(){ return 1000000000; },
+            Nano_Tube(){ return 500000000; },
+            Asphodel_Powder(){ return 250000; },
+            Elysanite(){ return 100000000; },
+            Soul_Gem(){ return 5000; },
+        },
+        effect(){ return loc('tech_elerium_cannon_effect',[loc('eden_fire_support_base_title')]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    elerium_containment: {
+        id: 'tech-elerium_containment',
+        title(){ return loc('eden_elerium_containment',[global.resource.Elerium.name]); },
+        desc(){ return loc('eden_elerium_containment',[global.resource.Elerium.name]); },
+        category: 'storage',
+        era: 'existential',
+        reqs: { elysium: 10 },
+        grant: ['elysium',11],
+        cost: {
+            Knowledge(){ return 106500000; },
+            Omniscience(){ return 26500; },
+        },
+        effect(){ return loc('tech_elerium_containment_effect',[global.resource.Elerium.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.eden.eden_elysium.elerium_containment);
+                return true;
+            }
+            return false;
+        }
+    },
+    ambrosia: {
+        id: 'tech-ambrosia',
+        title(){ return loc('tech_ambrosia'); },
+        desc(){ return loc('tech_ambrosia'); },
+        category: 'entertainment',
+        era: 'existential',
+        reqs: { elysium: 11 },
+        grant: ['elysium',12],
+        cost: {
+            Knowledge(){ return 112000000; },
+            Omniscience(){ return 28000; },
+        },
+        effect(){ return loc('tech_ambrosia_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.eden.eden_elysium.restaurant);
+                return true;
+            }
+            return false;
+        }
+    },
+    eternal_bank: {
+        id: 'tech-eternal_bank',
+        title(){ return loc('tech_eternal_bank'); },
+        desc(){ return loc('tech_eternal_bank'); },
+        category: 'banking',
+        era: 'existential',
+        reqs: { elysium: 12 },
+        grant: ['elysium',13],
+        cost: {
+            Knowledge(){ return 115000000; },
+            Omniscience(){ return 30000; },
+        },
+        effect(){ return loc('tech_eternal_bank_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.eden.eden_elysium.eternal_bank);
+                return true;
+            }
+            return false;
+        }
+    },
+    wisdom: {
+        id: 'tech-wisdom',
+        title(){ return loc('tech_wisdom'); },
+        desc(){ return loc('tech_wisdom'); },
+        category: 'science',
+        era: 'existential',
+        reqs: { elysium: 13 },
+        grant: ['elysium',14],
+        cost: {
+            Knowledge(){ return 118000000; },
+            Omniscience(){ return 32000; },
+        },
+        effect(){ return loc('tech_wisdom_effect',[loc('eden_elysium_name')]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.eden.eden_elysium.archive);
+                return true;
+            }
+            return false;
+        }
+    },
+    rushmore: {
+        id: 'tech-rushmore',
+        title(){ return loc('eden_rushmore',[races[global.race.species].name]); },
+        desc(){ return loc('eden_rushmore',[races[global.race.species].name]); },
+        category: 'entertainment',
+        era: 'existential',
+        reqs: { high_tech: 19, elysium: 15 },
+        grant: ['elysium',16],
+        cost: {
+            Knowledge(){ return 125000000; },
+            Omniscience(){ return 37250; },
+        },
+        effect(){ return loc('tech_rushmore_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.eden.eden_elysium.rushmore);
+                return true;
+            }
+            return false;
+        }
+    },
+    reincarnation: {
+        id: 'tech-reincarnation',
+        title(){ return loc('eden_reincarnation_title'); },
+        desc(){ return loc('eden_reincarnation_title'); },
+        category: 'housing',
+        era: 'existential',
+        reqs: { elysium: 16 },
+        grant: ['elysium',17],
+        cost: {
+            Knowledge(){ return 130000000; },
+            Omniscience(){ return 40000; },
+        },
+        effect(){ return loc('tech_reincarnation_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.eden.eden_elysium.reincarnation);
+                return true;
+            }
+            return false;
+        }
+    },
+    otherworldly_cement: {
+        id: 'tech-otherworldly_cement',
+        title(){ return loc('tech_otherworldly_cement',[global.resource.Cement.name]); },
+        desc(){ return loc('tech_otherworldly_cement',[global.resource.Cement.name]); },
+        category: 'housing',
+        era: 'existential',
+        reqs: { elysium: 17, cement: 7 },
+        grant: ['elysium',18],
+        cost: {
+            Knowledge(){ return 135000000; },
+            Omniscience(){ return 42500; },
+        },
+        effect(){ return loc('tech_otherworldly_cement_effect',[global.resource.Cement.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.eden.eden_elysium.eden_cement);
+                return true;
+            }
+            return false;
+        }
+    },
+    ancient_crafters: {
+        id: 'tech-ancient_crafters',
+        title(){ return loc('tech_ancient_crafters'); },
+        desc(){ return loc('tech_ancient_crafters'); },
+        category: 'housing',
+        era: 'existential',
+        reqs: { elysium: 18 },
+        grant: ['elysium',19],
+        cost: {
+            Knowledge(){ return 140000000; },
+            Omniscience(){ return 44000; },
+        },
+        effect(){ return loc('tech_ancient_crafters_effect',[actions.eden.eden_elysium.sacred_smelter.title()]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    spirit_syphon: {
+        id: 'tech-spirit_syphon',
+        title: loc('tech_spirit_syphon'),
+        desc: loc('tech_spirit_syphon'),
+        category: 'edenic',
+        era: 'existential',
+        reqs: { high_tech: 19, isle: 3 },
+        grant: ['isle',4],
+        cost: {
+            Knowledge(){ return 125000000; },
+            Omniscience(){ return 35000; },
+        },
+        effect(){ return loc('tech_spirit_syphon_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.eden.eden_isle.spirit_vacuum);
+                global.eden['palace'] = { energy: 1000000000000, rate: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    spirit_capacitor: {
+        id: 'tech-spirit_capacitor',
+        title: loc('tech_spirit_capacitor'),
+        desc: loc('tech_spirit_capacitor'),
+        category: 'edenic',
+        era: 'existential',
+        reqs: { isle: 4 },
+        grant: ['isle',5],
+        cost: {
+            Knowledge(){ return 128000000; },
+            Omniscience(){ return 37500; },
+        },
+        effect(){ return loc('tech_spirit_capacitor_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.eden.eden_isle.spirit_battery);
+                return true;
+            }
+            return false;
+        }
+    },
+    suction_force: {
+        id: 'tech-suction_force',
+        title: loc('tech_suction_force'),
+        desc: loc('tech_suction_force'),
+        category: 'edenic',
+        era: 'existential',
+        reqs: { isle: 5 },
+        grant: ['isle',6],
+        cost: {
+            Knowledge(){ return 130000000; },
+            Omniscience(){ return 40000; },
+        },
+        effect(){ return loc('tech_suction_force_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    soul_compactor: {
+        id: 'tech-soul_compactor',
+        title(){ return loc('eden_soul_compactor_title'); },
+        desc(){ return loc('eden_soul_compactor_title'); },
+        category: 'edenic',
+        era: 'existential',
+        reqs: { isle: 6 },
+        grant: ['isle',7],
+        cost: {
+            Knowledge(){ return 135000000; },
+            Omniscience(){ return 42500; },
+        },
+        effect(){ return loc('tech_soul_compactor_effect',[global.resource.Soul_Gem.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.eden.eden_isle.soul_compactor);
+                return true;
+            }
+            return false;
+        }
+    },
+    tomb: {
+        id: 'tech-tomb',
+        title(){ return loc('eden_tomb_title'); },
+        desc(){ return loc('eden_tomb_title'); },
+        category: 'edenic',
+        era: 'existential',
+        reqs: { palace: 2 },
+        grant: ['palace',3],
+        cost: {
+            Knowledge(){ return 140000000; },
+            Omniscience(){ return 45000; },
+        },
+        effect(){ return loc('tech_tomb_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.eden.eden_palace.tomb);
+                return true;
+            }
+            return false;
+        }
+    },
+    energy_drain: {
+        id: 'tech-energy_drain',
+        title(){ return loc('tech_energy_drain'); },
+        desc(){ return loc('tech_energy_drain'); },
+        category: 'edenic',
+        era: 'existential',
+        reqs: { palace: 4 },
+        grant: ['palace',5],
+        cost: {
+            Knowledge(){ return 145000000; },
+            Omniscience(){ return 47500; },
+        },
+        effect(){ return loc('tech_energy_drain_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.eden.eden_palace.conduit);
+                return true;
+            }
+            return false;
+        }
+    },
+    divine_infuser: {
+        id: 'tech-divine_infuser',
+        title(){ return loc('tech_divine_infuser'); },
+        desc(){ return loc('tech_divine_infuser'); },
+        category: 'edenic',
+        era: 'existential',
+        reqs: { palace: 5 },
+        grant: ['palace',6],
+        cost: {
+            Knowledge(){ return 150000000; },
+            Omniscience(){ return 50000; },
+        },
+        effect(){ return loc('tech_divine_infuser_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.eden.eden_palace.infuser);
+                return true;
+            }
+            return false;
+        }
+    },
 };
 
 function uniteEffect(){
@@ -14052,7 +15141,7 @@ export function swissKnife(cheeseOnly,cheeseList){
 }
 
 export const techPath = {
-    standard: ['primitive', 'discovery', 'civilized', 'industrialized', 'globalized', 'early_space', 'deep_space', 'interstellar', 'intergalactic', 'dimensional'],
+    standard: ['primitive', 'discovery', 'civilized', 'industrialized', 'globalized', 'early_space', 'deep_space', 'interstellar', 'intergalactic', 'dimensional','existential'],
     truepath: ['primitive', 'discovery', 'civilized', 'industrialized', 'globalized', 'early_space', 'deep_space', 'solar', 'tauceti'],
 };
 
@@ -14069,4 +15158,12 @@ export function techList(path){
         return techList;
     }
     return techs;
+}
+
+export function stabilize_blackhole(){
+    if (global.interstellar['stellar_engine'] && global.interstellar.stellar_engine.exotic >= 0.025 && global.tech['whitehole']){
+        if (techs.stabilize_blackhole.action()){
+            global.tech['stablized'] = 1;
+        }
+    }
 }

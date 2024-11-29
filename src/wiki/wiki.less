@@ -17,6 +17,10 @@ span, div {
 
 #sideContent.sticky {
     height: 95vh;
+
+    li.gap {
+        margin-top:1rem;
+    }
 }
 
 .wiki {
@@ -110,6 +114,10 @@ span, div {
             > span:nth-child(2) {
                 display: block;
                 text-align: right;
+                > span:nth-child(2) {
+                    margin-left: .5rem;
+                    margin-right: .5rem;
+                }
             }
         }
 
@@ -287,6 +295,9 @@ span, div {
         .wide {
             width: 6.9375rem;
         }
+        .wide10 {
+            width: 10rem;
+        }
         .swide {
             width: 12rem;
         }
@@ -297,6 +308,14 @@ span, div {
 
     .flex {
         display: flex;
+    }
+
+    .flexInfo {
+        display: flex;
+        justify-content: space-between;
+        > :nth-child(2){
+            margin: .25rem 1rem 0;
+        }
     }
 
     ul.disc {

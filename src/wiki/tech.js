@@ -43,6 +43,38 @@ const extraInformation = {
     cottage: [
         loc(`wiki_tech_building_unlock`,[housingLabel('medium')])
     ],
+    captive_housing: [
+        loc(`wiki_tech_building_unlock`,[loc('city_captive_housing')])
+    ],
+    torture : [ // displayed as "torment"
+        loc(`wiki_tech_job_unlock`,[loc(`job_torturer`)])
+    ],
+    thrall_quarters : [
+        loc("wiki_tech_thrall_quarters")
+    ],
+    psychic_stun : [
+        loc("wiki_tech_psychic_stun")
+    ],
+    psychic_attack : [
+        loc("wiki_tech_psychic_attack")
+    ],
+    psychic_finance : [
+        loc("wiki_tech_psychic_finance")
+    ],
+    psychic_channeling : [
+        loc("wiki_tech_psychic_channeling")
+    ],
+    psychic_efficiency : [
+        loc("wiki_tech_psychic_efficiency")
+    ],
+    mind_break : [
+        loc("wiki_tech_mind_break")
+    ],
+    psychic_energy : [
+        loc("wiki_tech_psychic_energy",
+            [traits.psychic.vars()[3],
+            72 * (global.stats.achieve['nightmare'] && global.stats.achieve.nightmare['mg'] ? global.stats.achieve.nightmare.mg : 0)])
+    ],
     apartment: [
         loc(`wiki_tech_building_unlock`,[housingLabel('large')])
     ],
@@ -297,7 +329,7 @@ const extraInformation = {
         loc(`wiki_tech_building_unlock`,[loc(`city_storage_yard`)])
     ],
     reinforced_crates: [
-        loc(`wiki_tech_containerized_upgrade`,[loc(`resource_Crates_name`),500,300])
+        loc(`wiki_tech_containerized_upgrade`,[loc(`resource_Crates_name`),500,350])
     ],
     cranes: [
         loc(`wiki_tech_cranes`,[loc(`city_storage_yard`),loc(`resource_Crates_name`)])
@@ -316,6 +348,9 @@ const extraInformation = {
     ],
     bolognium_crates: [
         loc(`wiki_tech_containerized_upgrade`,[loc(`resource_Crates_name`),6200,2200])
+    ],
+    elysanite_crates: [
+        loc(`wiki_tech_containerized_upgrade`,[loc(`resource_Crates_name`),10000,6200])
     ],
     steel_containers: [
         loc(`wiki_tech_building_unlock`,[loc(`city_warehouse`)])
@@ -340,6 +375,9 @@ const extraInformation = {
     ],
     nanoweave_containers: [
         loc(`wiki_tech_containerized_upgrade`,[loc(`resource_Containers_name`),17700,9700])
+    ],
+    elysanite_containers: [
+        loc(`wiki_tech_containerized_upgrade`,[loc(`resource_Containers_name`),25000,17700])
     ],
     evil_planning: [
         loc(`wiki_tech_urban_planning`)
@@ -467,6 +505,9 @@ const extraInformation = {
     foreign_investment: [
         loc(`wiki_tech_foreign_investment`,[loc(`galaxy_freighter`),3]),
         loc(`wiki_tech_foreign_investment`,[loc(`galaxy_super_freighter`),8])
+    ],
+    crypto_currency: [
+        loc(`wiki_tech_crypto_currency`)
     ],
     mythril_vault: [
         loc(`wiki_tech_vault`,[9000,15000])
@@ -710,6 +751,9 @@ const extraInformation = {
     graphene_processing: [
         loc(`wiki_tech_graphene_processing`)
     ],
+    crypto_mining: [
+        loc(`wiki_tech_crypto_mining`)
+    ],
     fusion_power: [
         loc(`wiki_tech_building_unlock`,[loc(`interstellar_fusion_title`)])
     ],
@@ -883,6 +927,10 @@ const extraInformation = {
         loc(`wiki_tech_copper_pickaxe1`,[90]),
         loc(`wiki_tech_copper_pickaxe2`,[72])
     ],
+    elysanite_hammer: [
+        loc(`wiki_tech_copper_pickaxe1`,[105]),
+        loc(`wiki_tech_copper_pickaxe2`,[84])
+    ],
     copper_hoe: [
         loc(`wiki_tech_copper_hoe`,[33.33])
     ],
@@ -902,7 +950,7 @@ const extraInformation = {
         loc(`wiki_tech_cyber_limbs`)
     ],
     slave_pens: [
-        loc(`wiki_tech_building_unlock`,[loc(`city_slave_pen`)])
+        loc(`wiki_tech_building_unlock`,[loc(`city_slave_housing`,[global.resource.Slave.name])])
     ],
     slave_market: [
         loc(`wiki_tech_slave_market`)
@@ -967,6 +1015,9 @@ const extraInformation = {
     cyborg_soldiers: [
         loc(`wiki_tech_bows`,[900])
     ],
+    ethereal_weapons: [
+        loc(`wiki_tech_bows`,[1000])
+    ],
     space_marines: [
         loc(`wiki_tech_building_unlock`,[loc(`space_red_space_barracks_title`)])
     ],
@@ -1007,6 +1058,11 @@ const extraInformation = {
         loc(`wiki_tech_dynamite2`,[40]),
         loc(`wiki_tech_dynamite3`,[40])
     ],
+    super_tnt: [
+        loc(`wiki_tech_dynamite1`,[100]),
+        loc(`wiki_tech_dynamite2`,[55]),
+        loc(`wiki_tech_dynamite3`,[55])
+    ],
     mad: [
         loc(`wiki_tech_mad`)
     ],
@@ -1028,6 +1084,9 @@ const extraInformation = {
     ],
     adamantite_screws: [
         loc(`wiki_tech_screw_conveyor`,[8])
+    ],
+    otherworldly_binder: [
+        loc(`wiki_tech_otherworldly_binder`)
     ],
     hunter_process: [
         loc(`wiki_tech_hunter_process`,[loc(`resource_Steel_name`),25])
@@ -1164,6 +1223,9 @@ const extraInformation = {
     ],
     orichalcum_sphere: [
         loc(`wiki_tech_dyson_sphere2`)
+    ],
+    elysanite_sphere: [
+        loc(`wiki_tech_elysanite_sphere`)
     ],
     gps: [
         loc(`wiki_tech_building_unlock`,[loc(`space_home_gps_title`)])
@@ -1421,6 +1483,9 @@ const extraInformation = {
     soul_link: [
         loc(`wiki_tech_soul_link1`),
         loc(`wiki_tech_soul_link2`)
+    ],
+    soul_bait: [
+        loc(`wiki_tech_soul_bait`)
     ],
     gun_emplacement: [
         loc(`wiki_tech_building_unlock`,[loc(`portal_gun_emplacement_title`)])
@@ -1824,6 +1889,129 @@ const extraInformation = {
     ],
     geck: [
         loc(`wiki_tech_geck`)
+    ],
+    asphodel_flowers: [
+        loc(`wiki_tech_asphodel_flowers`)
+    ],
+    ghost_traps: [
+        loc(`wiki_tech_ghost_traps`)
+    ],
+    research_station: [
+        loc(`wiki_tech_research_station`)
+    ],
+    spirit_box: [
+        loc(`wiki_tech_spirit_box`)
+    ],
+    spirit_researcher: [
+        loc(`wiki_tech_spirit_researcher`)
+    ],
+    dimensional_tap: [
+        loc(`wiki_tech_dimensional_tap`)
+    ],
+    soul_engine: [
+        loc(`wiki_tech_soul_engine`)
+    ],
+    railway_to_hell: [
+        loc(`wiki_tech_railway_to_hell`)
+    ],
+    purification: [
+        loc(`wiki_tech_purification`)
+    ],
+    asphodel_mech: [
+        loc(`wiki_tech_asphodel_mech`)
+    ],
+    asphodel_storage: [
+        loc(`wiki_tech_asphodel_storage`)
+    ],
+    asphodel_stabilizer: [
+        loc(`wiki_tech_asphodel_stabilizer`)
+    ],
+    edenic_bunker: [
+        loc(`wiki_tech_edenic_bunker`)
+    ],
+    bliss_den: [
+        loc(`wiki_tech_bliss_den`)
+    ],
+    hallowed_housing: [
+        loc(`wiki_tech_hallowed_housing`)
+    ],
+    outer_plane_study: [
+        loc(`wiki_tech_outer_plane_study`)
+    ],
+    camouflage: [
+        loc(`wiki_tech_celestial_tactics`)
+    ],
+    celestial_tactics: [
+        loc(`wiki_tech_celestial_tactics`)
+    ],
+    active_camouflage: [
+        loc(`wiki_tech_celestial_tactics`)
+    ],
+    special_ops_training: [
+        loc(`wiki_tech_celestial_tactics`)
+    ],
+    spectral_training: [
+        loc(`wiki_tech_spectral_training`)
+    ],
+    elysanite_mining: [
+        loc(`wiki_tech_elysanite_mining`)
+    ],
+    sacred_smelter: [
+        loc(`wiki_tech_sacred_smelter`)
+    ],
+    fire_support_base: [
+        loc(`wiki_tech_fire_support_base`)
+    ],
+    pillbox: [
+        loc(`wiki_tech_pillbox`)
+    ],
+    elerium_cannon: [
+        loc(`wiki_tech_elerium_cannon`)
+    ],
+    elerium_containment: [
+        loc(`wiki_tech_elerium_containment`)
+    ],
+    ambrosia: [
+        loc(`wiki_tech_ambrosia`)
+    ],
+    eternal_bank: [
+        loc(`wiki_tech_eternal_bank`)
+    ],
+    wisdom: [
+        loc(`wiki_tech_wisdom`)
+    ],
+    spirit_syphon: [
+        loc(`wiki_tech_spirit_syphon`)
+    ],
+    spirit_capacitor: [
+        loc(`wiki_tech_spirit_capacitor`)
+    ],
+    suction_force: [
+        loc(`wiki_tech_suction_force`)
+    ],
+    rushmore: [
+        loc(`wiki_tech_rushmore`)
+    ],
+    reincarnation: [
+        loc(`wiki_tech_reincarnation`)
+    ],
+    otherworldly_cement: [
+        loc(`wiki_tech_otherworldly_cement`)
+    ],
+    tomb: [
+        loc(`wiki_tech_tomb`)
+    ],
+    energy_drain: [
+        loc(`wiki_tech_energy_drain`)
+    ],
+    divine_infuser: [
+        loc(`wiki_tech_divine_infuser`)
+    ],
+    minor_wish: [
+        loc(`wiki_tech_minor_wish`)
+    ],
+    major_wish: [
+        loc(`wiki_tech_major_wish`)
     ],
 };
 
@@ -3348,6 +3536,26 @@ const specialRequirements = {
             subreqs: [
                 {
                     name: 'apex_predator'
+                }
+            ]
+        }
+    ],
+    minor_wish: [
+        {
+            category: 'trait',
+            subreqs: [
+                {
+                    name: 'wish'
+                }
+            ]
+        }
+    ],
+    major_wish: [
+        {
+            category: 'trait',
+            subreqs: [
+                {
+                    name: 'wish'
                 }
             ]
         }

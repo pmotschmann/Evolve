@@ -5,6 +5,8 @@ import { racialTrait, servantTrait, races, traits, biomes, planetTraits, fathomC
 import { armyRating } from './civics.js';
 import { craftingRatio, craftCost, craftingPopover } from './resources.js';
 import { planetName } from './space.js';
+import { asphodelResist } from './edenic.js';
+import { actions } from './actions.js';
 
 export const job_desc = {
     unemployed: function(servant){
@@ -210,7 +212,7 @@ export const job_desc = {
         }
         unit_price = +workerScale(unit_price,'cement_worker').toFixed(2);
         let worker_impact = +workerScale(global.civic.cement_worker.impact,'cement_worker').toFixed(2);
-        let impact = global.tech['cement'] >= 4 ? 1.2 : 1;
+        let impact = global.tech['cement'] >= 4 ? (global.tech.cement >= 7 ? 1.45 : 1.2) : 1;
         let cement_multiplier = racialTrait(global.civic.cement_worker.workers,'factory');
         let gain = worker_impact * impact * cement_multiplier;
         if (global.city.biome === 'ashland'){
@@ -325,6 +327,29 @@ export const job_desc = {
         let know = Math.round(value * supress);
         return loc('job_archaeologist_desc',[know.toLocaleString()]);
     },
+    ghost_trapper(){
+        let attact = global.blood['attract'] ? global.blood.attract * 5 : 0;
+        let resist = asphodelResist();
+        let ascend = 1;
+        if (p_on['ascension_trigger'] && global.eden.hasOwnProperty('encampment') && global.eden.encampment.asc){
+            let heatSink = actions.interstellar.int_sirius.ascension_trigger.heatSink();
+            heatSink = heatSink < 0 ? Math.abs(heatSink) : 0;
+            if (heatSink > 0){
+                ascend = 1 + (heatSink / 12500);
+            }
+        }
+        let min = Math.floor((150 + attact) * resist * ascend);
+        let max = Math.floor((250 + attact) * resist * ascend);
+        
+        return loc('job_ghost_trapper_desc',[loc('portal_soul_forge_title'),global.resource.Soul_Gem.name,min,max]);
+    },
+    elysium_miner(){
+        let desc = loc('job_elysium_miner_desc',[loc('eden_elysium_name')]);
+        if (global.tech['elysium'] && global.tech.elysium >= 12){
+            desc += ` ${loc('eden_restaurant_effect',[0.15,loc(`eden_restaurant_bd`)])}.`;
+        }
+        return desc;
+    },
     pit_miner(){
         return loc('job_pit_miner_desc',[loc('tau_planet',[races[global.race.species].home])]);
     },
@@ -336,7 +361,7 @@ export const job_desc = {
 // Sets up jobs in civics tab
 export function defineJobs(define){
     if (!define){
-        $('#civics').append($(`<h2 class="is-sr-only">${loc('civics_jobs')}</h2><div class="tile is-child"><div id="sshifter" class="tile sshifter"></div><div id="jobs" class="tile is-child"></div><div id="foundry" class="tile is-child"></div><div id="servants" class="tile is-child"></div><div id="skilledServants" class="tile is-child"></div></div>`));
+        $('#civics').append($(`<h2 class="is-sr-only">${loc('civics_jobs')}</h2><div class="tile is-child jobList"><div id="sshifter" class="tile sshifter"></div><div id="jobs" class="tile is-child"></div><div id="foundry" class="tile is-child"></div><div id="servants" class="tile is-child"></div><div id="skilledServants" class="tile is-child"></div></div>`));
     }
     loadJob('unemployed',define,0,0,'warning');
     loadJob('hunter',define,0,0);
@@ -363,6 +388,8 @@ export function defineJobs(define){
     loadJob('space_miner',define,1,5,'advanced');
     loadJob('hell_surveyor',define,1,1,'advanced');
     loadJob('archaeologist',define,1,1,'advanced');
+    loadJob('ghost_trapper',define,1,3,'advanced');
+    loadJob('elysium_miner',define,1,3,'advanced');
     loadJob('pit_miner',define,1,4.5,'advanced');
     loadJob('crew',define,1,4,'alert');
     if (!define && !global.race['start_cataclysm']){

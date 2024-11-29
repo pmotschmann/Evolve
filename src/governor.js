@@ -1,13 +1,14 @@
 import { global, seededRandom, p_on, breakdown } from './vars.js';
 import { vBind, popover, tagEvent, calcQueueMax, calcRQueueMax, clearElement, adjustCosts, decodeStructId, timeCheck, arpaTimeCheck, hoovedRename } from './functions.js';
 import { races } from './races.js';
-import { actions, checkCityRequirements, housingLabel, wardenLabel, updateQueueNames, checkAffordable } from './actions.js';
+import { actions, checkCityRequirements, housingLabel, wardenLabel, updateQueueNames, checkAffordable, drawTech } from './actions.js';
 import { govCivics, govTitle } from './civics.js';
 import { crateGovHook, atomic_mass } from './resources.js';
 import { checkHellRequirements, mechSize, mechCost } from './portal.js';
 import { loc } from './locale.js';
 import { jobScale } from './jobs.js';
 import { isStargateOn } from './space.js';
+import { stabilize_blackhole } from './tech.js';
 
 export const gmen = {
     soldier: {
@@ -104,107 +105,192 @@ export const gmen = {
 export const gov_traits = {
     tactician: {
         name: loc(`gov_trait_tactician`),
-        effect(){ return loc(`gov_trait_tactician_effect`,[$(this)[0].vars()[0]]); },
-        vars(){ return [25]; },
+        effect(b){ return loc(`gov_trait_tactician_effect`,[$(this)[0].vars(b)[0]]); },
+        vars(b){
+            if (typeof(b) === 'undefined'){
+                b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
+            }
+            return b ? [30] : [25]; 
+        },
     },
     militant: {
         name: loc(`gov_trait_militant`),
-        effect(){ return loc(`gov_trait_militant_effect`,[$(this)[0].vars()[0],$(this)[0].vars()[1]]); },
-        vars(){ return [25,10]; },
+        effect(b){ return loc(`gov_trait_militant_effect`,[$(this)[0].vars(b)[0],$(this)[0].vars(b)[1]]); },
+        vars(b){ 
+            if (typeof(b) === 'undefined'){
+                b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
+            }
+            return b ? [30,10] : [25,10]; 
+        },
     },
     noquestions: {
         name: loc(`gov_trait_noquestions`),
-        effect(){ return loc(`gov_trait_noquestions_effect`,[$(this)[0].vars()[0]]); },
-        vars(){ return [0.005]; },
+        effect(b){ return loc(`gov_trait_noquestions_effect`,[$(this)[0].vars(b)[0]]); },
+        vars(b){ return [0.005]; },
     },
     racketeer: {
         name: loc(`gov_trait_racketeer`),
-        effect(){ return loc(`gov_trait_racketeer_effect`,[$(this)[0].vars()[0],$(this)[0].vars()[1]]); },
-        vars(){ return [20,35]; },
+        effect(b){ return loc(`gov_trait_racketeer_effect`,[$(this)[0].vars(b)[0],$(this)[0].vars(b)[1]]); },
+        vars(b){
+            if (typeof(b) === 'undefined'){
+                b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
+            } 
+            return b ? [18,45] : [20,35]; 
+        },
     },
     dealmaker: {
         name: loc(`gov_trait_dealmaker`),
-        effect(){ return loc(`gov_trait_dealmaker_effect`,[$(this)[0].vars()[0]]); },
-        vars(){ return [125]; },
+        effect(b){ return loc(`gov_trait_dealmaker_effect`,[$(this)[0].vars(b)[0]]); },
+        vars(b){ 
+            if (typeof(b) === 'undefined'){
+                b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
+            }
+            return b ? [150] : [125]; 
+        },
     },
     risktaker: {
         name: loc(`gov_trait_risktaker`),
-        effect(){ return loc(`gov_trait_risktaker_effect`,[$(this)[0].vars()[0]]); },
-        vars(){ return [12]; },
+        effect(b){ return loc(`gov_trait_risktaker_effect`,[$(this)[0].vars(b)[0]]); },
+        vars(b){ 
+            if (typeof(b) === 'undefined'){
+                b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
+            }
+            return b ? [14] : [12]; 
+        },
     },
     teacher: {
         name: loc(`gov_trait_teacher`),
-        effect(){ return loc(`gov_trait_teacher_effect`,[$(this)[0].vars()[0]]); },
-        vars(){ return [6]; },
+        effect(b){ return loc(`gov_trait_teacher_effect`,[$(this)[0].vars(b)[0]]); },
+        vars(b){ return [6]; },
     },
     theorist: {
         name: loc(`gov_trait_theorist`),
-        effect(){ return loc(`gov_trait_theorist_effect`,[$(this)[0].vars()[0],$(this)[0].vars()[1]]); },
-        vars(){ return [50,4]; },
+        effect(b){ return loc(`gov_trait_theorist_effect`,[$(this)[0].vars(b)[0],$(this)[0].vars(b)[1]]); },
+        vars(b){
+            if (typeof(b) === 'undefined'){
+                b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
+            } 
+            return b ? [100,2] : [50,4]; 
+        },
     },
     inspirational: {
         name: loc(`gov_trait_inspirational`),
-        effect(){ return loc(`gov_trait_inspirational_effect`,[$(this)[0].vars()[0]]); },
-        vars(){ return [20]; },
+        effect(b){ return loc(`gov_trait_inspirational_effect`,[$(this)[0].vars(b)[0]]); },
+        vars(b){ 
+            if (typeof(b) === 'undefined'){
+                b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
+            }
+            return b ? [30] : [20]; 
+        },
     },
     pious: {
         name: loc(`gov_trait_pious`),
-        effect(wiki){
-            let val = $(this)[0].vars()[1];
+        effect(b,wiki){
+            let val = $(this)[0].vars(b)[1];
             let xeno = global.tech['monument'] && global.tech.monument >= 3 && isStargateOn(wiki) ? 3 : 1;
             val = (global.civic.govern.type === 'corpocracy' ? (val * 2) : val) * xeno;
-            return loc(`gov_trait_pious_effect`,[$(this)[0].vars()[0],val]);
+            return loc(`gov_trait_pious_effect`,[$(this)[0].vars(b)[0],val]);
         },
-        vars(){ return [10,5]; },
+        vars(b){ 
+            if (typeof(b) === 'undefined'){
+                b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
+            }
+            return b ? [8,8] : [10,5]; 
+        },
     },
     pragmatist: {
         name: loc(`gov_trait_pragmatist`),
-        effect(){ return loc(`gov_trait_pragmatist_effect`,[$(this)[0].vars()[0],$(this)[0].vars()[1]]); },
-        vars(){ return [50,2]; },
+        effect(b){ return loc(`gov_trait_pragmatist_effect`,[$(this)[0].vars(b)[0],$(this)[0].vars(b)[1]]); },
+        vars(b){ 
+            if (typeof(b) === 'undefined'){
+                b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
+            }
+            return b ? [100,2] : [50,2]; 
+        },
     },
     dirty_jobs: {
         name: loc(`gov_trait_dirty_jobs`),
-        effect(){ return loc(`gov_trait_dirty_jobs_effect`,[$(this)[0].vars()[0],$(this)[0].vars()[1],$(this)[0].vars()[2]]); },
-        vars(){ return [0.015,1,10]; },
+        effect(b){ return loc(`gov_trait_dirty_jobs_effect`,[$(this)[0].vars(b)[0],$(this)[0].vars(b)[1],$(this)[0].vars(b)[2]]); },
+        vars(b){ 
+            if (typeof(b) === 'undefined'){
+                b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
+            }
+            return b ? [0.015,2,12] : [0.015,1,10]; 
+        },
     },
     extravagant: {
         name: loc(`gov_trait_extravagant`),
-        effect(){ return loc(`gov_trait_extravagant_effect`,[$(this)[0].vars()[0],housingLabel('large',true),$(this)[0].vars()[1],jobScale($(this)[0].vars()[2]+5)]); },
-        vars(){ return [10,1.25,1]; },
+        effect(b){ return loc(`gov_trait_extravagant_effect`,[$(this)[0].vars(b)[0],housingLabel('large',true),$(this)[0].vars(b)[1],jobScale($(this)[0].vars(b)[2]+5)]); },
+        vars(b){ 
+            if (typeof(b) === 'undefined'){
+                b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
+            }
+            return b ? [8,1,1] : [10,1.25,1]; 
+        },
     },
     aristocrat: {
         name: loc(`gov_trait_aristocrat`),
-        effect(){ return loc(`gov_trait_aristocrat_effect`,[$(this)[0].vars()[0],$(this)[0].vars()[1],$(this)[0].vars()[2]]); },
-        vars(){ return [50,20,10]; },
+        effect(b){ return loc(`gov_trait_aristocrat_effect`,[$(this)[0].vars(b)[0],$(this)[0].vars(b)[1],$(this)[0].vars(b)[2]]); },
+        vars(b){ 
+            if (typeof(b) === 'undefined'){
+                b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
+            }
+            return b ? [60,20,5] : [50,20,10]; 
+        },
     },
     gaslighter: {
         name: loc(`gov_trait_gaslighter`),
-        effect(){
-            return loc(`gov_trait_gaslighter_effect`,[$(this)[0].vars()[0],wardenLabel(),$(this)[0].vars()[1],$(this)[0].vars()[2]]);
+        effect(b){
+            return loc(`gov_trait_gaslighter_effect`,[$(this)[0].vars(b)[0],wardenLabel(),$(this)[0].vars(b)[1],$(this)[0].vars(b)[2]]);
         },
-        vars(){ return [1,1,0.5]; },
+        vars(b){ 
+            if (typeof(b) === 'undefined'){
+                b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
+            }
+            return b ? [2,2,0.5] : [1,1,0.5]; 
+        },
     },
     muckraker: {
         name: loc(`gov_trait_muckraker`),
-        effect(){
-            return loc(`gov_trait_muckraker_effect`,[$(this)[0].vars()[1],$(this)[0].vars()[2]]);
+        effect(b){
+            return loc(`gov_trait_muckraker_effect`,[$(this)[0].vars(b)[1],$(this)[0].vars(b)[2]]);
         },
-        vars(){ return [8,12,3]; },
+        vars(b){ 
+            if (typeof(b) === 'undefined'){
+                b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
+            }
+            return b ? [6,12,2] : [8,12,3]; 
+        },
     },
     athleticism: {
         name: loc(`gov_trait_athleticism`),
-        effect(){ return loc(`gov_trait_athleticism_effect`,[$(this)[0].vars()[0],jobScale($(this)[0].vars()[1]),$(this)[0].vars()[2],wardenLabel()]); },
-        vars(){ return [1.5,2,4]; },
+        effect(b){ return loc(`gov_trait_athleticism_effect`,[$(this)[0].vars(b)[0],jobScale($(this)[0].vars(b)[1]),$(this)[0].vars(b)[2],wardenLabel()]); },
+        vars(b){ 
+            if (typeof(b) === 'undefined'){
+                b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
+            }
+            return b ? [1.5,2,3] : [1.5,2,4]; 
+        },
     },
     nopain: {
         name: loc(`gov_trait_nopain`),
-        effect(){ return loc(`gov_trait_nopain_effect`,[$(this)[0].vars()[0],$(this)[0].vars()[1]]); },
-        vars(){ return [50,10]; },
+        effect(b){ return loc(`gov_trait_nopain_effect`,[$(this)[0].vars(b)[0],$(this)[0].vars(b)[1]]); },
+        vars(b){ 
+            if (typeof(b) === 'undefined'){
+                b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
+            }
+            return b ? [50,20] : [50,10]; 
+        },
     },
     organizer: {
         name: loc(`gov_trait_organizer`),
-        effect(){ return loc(`gov_trait_organizer_effect`,[$(this)[0].vars()[0]]); },
-        vars(){ return [global.genes['governor'] && global.genes.governor >= 2 ? 2 : 1]; },
+        effect(b){ return loc(`gov_trait_organizer_effect`,[$(this)[0].vars(b)[0]]); },
+        vars(b){ 
+            if (typeof(b) === 'undefined'){
+                b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 2 ? true : false;
+            }
+            return [b ? 2 : 1]; 
+        },
     }
 };
 
@@ -233,7 +319,7 @@ const names = {
 
 function genGovernor(setSize){
     let governors = [];
-    let genus = races[global.race.species].type;
+    let genus = global.race.maintype || races[global.race.species].type;
     let backgrounds = Object.keys(gmen);
     let nameList = JSON.parse(JSON.stringify(names[genus]));
 
@@ -520,13 +606,18 @@ export function drawnGovernOffice(){
                 global.race.governor.config.trash[res] = { v: 0, s: true };
             }
         });
+        if (!global.race.governor.config.trash.hasOwnProperty('stab')){
+            global.race.governor.config.trash['stab'] = false;
+        }
 
-        let contain = $(`<div class="tConfig" v-show="showTask('trash')"><div class="has-text-warning">${loc(`gov_task_trash`)}</div></div>`);
+        let advanced = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? `<div class="chk"><b-checkbox v-model="c.trash.stab">${loc(`gov_task_auto_stabilize`)}</b-checkbox></div>` : ``;
+
+        let contain = $(`<div class="tConfig" v-show="showTask('trash')"><div class="hRow"><div class="has-text-warning">${loc(`gov_task_trash`)}</div>${advanced}</div></div>`);
         options.append(contain);
         let trash = $(`<div class="storage"></div>`);
         contain.append(trash);
 
-        Object.keys(global.race.governor.config.trash).forEach(function(res){
+        ['Infernite','Elerium','Copper','Iron'].forEach(function(res){
             trash.append($(`<b-field class="trash"><div class="trashButton" role="button" @click="trashStrat('${res}')" v-html="$options.methods.trashLabel('${res}')"></div><b-numberinput min="0" :max="1000000" v-model="c.trash.${res}.v" :controls="false"></b-numberinput></b-field>`));
         });
     }
@@ -569,13 +660,43 @@ export function drawnGovernOffice(){
         methods: {
             setTask(t,n){
                 global.race.governor.tasks[`t${n}`] = t;
+                if (t === 'combo_storage'){
+                    Object.keys(global.race.governor.tasks).forEach(function(ts){
+                        if (global.race.governor.tasks[ts] === 'storage' || global.race.governor.tasks[ts] === 'bal_storage'){
+                            global.race.governor.tasks[ts] = 'none';
+                        }
+                    });
+                }
+                else if (t === 'storage' || t === 'bal_storage'){
+                    Object.keys(global.race.governor.tasks).forEach(function(ts){
+                        if (global.race.governor.tasks[ts] === 'combo_storage'){
+                            global.race.governor.tasks[ts] = 'none';
+                        }
+                    });
+                }
+                if (t === 'combo_spy'){
+                    Object.keys(global.race.governor.tasks).forEach(function(ts){
+                        if (global.race.governor.tasks[ts] === 'spy' || global.race.governor.tasks[ts] === 'spyop'){
+                            global.race.governor.tasks[ts] = 'none';
+                        }
+                    });
+                }
+                else if (t === 'spy' || t === 'spyop'){
+                    Object.keys(global.race.governor.tasks).forEach(function(ts){
+                        if (global.race.governor.tasks[ts] === 'combo_spy'){
+                            global.race.governor.tasks[ts] = 'none';
+                        }
+                    });
+                }
                 tagEvent('govtask',{
                     'task': t
                 });
                 vBind({el: `#race`},'update');
             },
             showTask(t){
-                return Object.values(global.race.governor.tasks).includes(t);
+                return Object.values(global.race.governor.tasks).includes(t) 
+                || (Object.values(global.race.governor.tasks).includes('combo_storage') && ['storage','bal_storage'].includes(t))
+                || (Object.values(global.race.governor.tasks).includes('combo_spy') && ['spy','spyop'].includes(t));
             },
             activeTask(t){
                 let activeTasks = [];
@@ -922,6 +1043,18 @@ export const gov_tasks = {
             }
         }
     },
+    combo_storage: {
+        name: loc(`gov_task_combo_storage`),
+        req(){
+            return checkCityRequirements('storage_yard') && global.tech['container'] && global.resource.Crates.display && global.genes.governor >= 3 ? true : false;
+        },
+        task(){
+            if ( $(this)[0].req() ){
+                gov_tasks.storage.task();
+                gov_tasks.bal_storage.task();
+            }
+        }
+    },
     assemble: { // Assemble Citizens
         name: loc(`gov_task_assemble`),
         req(){
@@ -1032,6 +1165,24 @@ export const gov_tasks = {
             }
         }
     },
+    combo_spy: {
+        name: loc(`gov_task_combo_spy`),
+        req(){
+            if (global.tech['isolation']){
+                return false;
+            }
+            if (global.race['truepath'] && global.tech['spy'] && global.tech.spy >= 2){
+                return true;
+            }
+            return global.tech['spy'] && global.tech.spy >= 2 && !global.tech['world_control'] && !global.race['cataclysm'] && global.genes.governor >= 3 ? true : false;
+        },
+        task(){
+            if ( $(this)[0].req() ){
+                gov_tasks.spy.task();
+                gov_tasks.spyop.task();
+            }
+        }
+    },
     slave: { // Replace Slaves
         name(){ return loc(`gov_task_slave`,[global.resource.Slave.name]); },
         req(){
@@ -1129,6 +1280,11 @@ export const gov_tasks = {
                 }
             });
             global.interstellar.mass_ejector.total = p_on['mass_ejector'] * 1000 - remain;
+
+            if (global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 && global.race.governor.config.trash.stab){
+                stabilize_blackhole();
+                drawTech();
+            }
         }
     },
     mech: { // Mech Builder
@@ -1369,6 +1525,7 @@ export const gov_tasks = {
 
             if (!rBal){
                 let resSorted = Object.keys(atomic_mass).sort(function(a,b){return global.resource[a].diff-global.resource[b].diff});
+                delete resSorted['Asphodel_Powder']; delete resSorted['Elysanite'];
                 resSorted = resSorted.filter(item => global.resource[item] && global.resource[item].display);
 
                 if (global.race.governor.config.replicate.res.neg && resSorted[0] && global.resource[resSorted[0]].diff < 0 && ((global.resource[resSorted[0]].amount <= global.resource[resSorted[0]].max * 0.95) || global.resource[resSorted[0]].max === -1)){

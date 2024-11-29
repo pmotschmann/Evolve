@@ -12,7 +12,7 @@ const achieve_list = {
         'laser_shark','infested','mass_starvation','colonist','world_domination','illuminati',
         'syndicate','cult_of_personality','doomed','pandemonium','blood_war','landfill','seeder',
         'miners_dream','shaken','blacken_the_sun','trade','resonance','enlightenment','gladiator',
-        'corrupted','red_dead'
+        'corrupted','red_dead','godslayer','traitor','doppelganger'
     ],
     species: [
         'mass_extinction','extinct_human','extinct_elven','extinct_orc','extinct_cath','extinct_wolven','extinct_vulpine','extinct_centaur',
@@ -22,8 +22,9 @@ const achieve_list = {
         'extinct_arraak','extinct_pterodacti','extinct_dracnid','extinct_entish','extinct_cacti','extinct_pinguicula','extinct_sporgar',
         'extinct_shroomi','extinct_moldling','extinct_mantis','extinct_scorpid','extinct_antid','extinct_sharkin','extinct_octigoran','extinct_dryad',
         'extinct_satyr','extinct_phoenix','extinct_salamander','extinct_yeti','extinct_wendigo','extinct_tuskin','extinct_kamel','extinct_balorg',
-        'extinct_imp','extinct_seraph','extinct_unicorn','extinct_synth','extinct_nano','extinct_ghast','extinct_shoggoth',
-        'extinct_junker','extinct_sludge','extinct_custom'
+        'extinct_imp','extinct_seraph','extinct_unicorn','extinct_synth','extinct_nano','extinct_ghast','extinct_shoggoth','extinct_dwarf',
+        'extinct_raccoon','extinct_lichen','extinct_wyvern','extinct_beholder','extinct_djinn','extinct_narwhal','extinct_bombardier','extinct_nephilim',
+        'extinct_junker','extinct_sludge','extinct_ultra_sludge','extinct_custom'
     ],
     genus: [
         'creator','genus_humanoid','genus_carnivore','genus_herbivore','genus_small','genus_giant','genus_reptilian','genus_avian',
@@ -35,7 +36,7 @@ const achieve_list = {
         'explorer','biome_grassland','biome_oceanic','biome_forest','biome_desert','biome_volcanic','biome_tundra',
         'biome_savanna','biome_swamp','biome_ashland','biome_taiga','biome_hellscape','biome_eden',
         'atmo_toxic','atmo_mellow','atmo_rage','atmo_stormy','atmo_ozone','atmo_magnetic','atmo_trashed','atmo_elliptical','atmo_flare','atmo_dense',
-        'atmo_unstable','atmo_permafrost','atmo_retrograde'
+        'atmo_unstable','atmo_permafrost','atmo_retrograde','atmo_kamikaze'
     ],
     universe: [
         'vigilante','squished','double_density','cross','macro','marble','heavyweight','whitehole','heavy','canceled',
@@ -43,7 +44,8 @@ const achieve_list = {
     ],
     challenge: [
         'joyless','steelen','dissipated','technophobe','wheelbarrow','iron_will','failed_history','banana','pathfinder',
-        'ashanddust','exodus','obsolete','bluepill','retired','gross','lamentis','overlord',`adam_eve`,'endless_hunger'
+        'ashanddust','exodus','obsolete','bluepill','retired','gross','lamentis','overlord',`adam_eve`,'endless_hunger',
+        //'what_is_best'
     ],
 };
 
@@ -146,6 +148,11 @@ export const feats = {
         desc: loc("feat_digital_ascension_desc"),
         flair: loc("feat_digital_ascension_flair")
     },
+    grand_death_tour: {
+        name: loc("feat_grand_death_tour_name"),
+        desc: loc("feat_grand_death_tour_desc",[6]),
+        flair: loc("feat_grand_death_tour_flair")
+    },
     novice: {
         name: loc("feat_novice_name"),
         desc: loc("feat_achievement_hunter_desc",[10]),
@@ -171,6 +178,11 @@ export const feats = {
         desc: loc("feat_achievement_hunter_desc",[100]),
         flair: loc("feat_grandmaster_flair")
     },
+    god: {
+        name: loc("feat_god_name"),
+        desc: loc("feat_achievement_hunter_desc",[150]),
+        flair: loc("feat_god_flair")
+    },
     nephilim: {
         name: loc("feat_nephilim_name"),
         desc: loc("feat_nephilim_desc"),
@@ -195,6 +207,11 @@ export const feats = {
         name: loc("feat_immortal_name"),
         desc: loc("feat_immortal_desc"),
         flair: loc("feat_immortal_flair")
+    },
+    wish: {
+        name: loc("feat_wish_name"),
+        desc: loc("feat_wish_desc"),
+        flair: loc("feat_wish_flair")
     },
     friday: {
         name: loc("feat_friday_name"),
@@ -624,10 +641,10 @@ export function checkAchievements(){
                 equilProgress[global.pillars[race]]++;
             }
         });
-        if (Object.keys(genus).length >= Object.keys(genus_traits).length){
+        if (Object.keys(genus).length >= Object.keys(genus_traits).length - 1){
             let rank = 5;
             Object.keys(genus).forEach(function(g){
-                if (genus[g] < rank){
+                if (genus[g] < rank && g !== 'hybrid'){
                     rank = genus[g];
                 }
             });
@@ -657,7 +674,7 @@ export function checkAchievements(){
             let current = {};
             Object.keys(global.stats.spire[universe]).forEach(function(boss){
                 if (monsters[boss]){
-                    if (!highest.hasOwnProperty(boss) || highest[boss] < global.stats.spire[universe][boss]){
+                    if (universe !== 'm' && (!highest.hasOwnProperty(boss) || highest[boss] < global.stats.spire[universe][boss])){
                         highest[boss] = global.stats.spire[universe][boss];
                     }
                     if (global.stats.spire[universe][boss] > 0){
@@ -843,9 +860,10 @@ export function checkAchievements(){
                 {c: 25, f: 'journeyman'},
                 {c: 50, f: 'adept'},
                 {c: 75, f: 'master'},
-                {c: 100, f: 'grandmaster'}
+                {c: 100, f: 'grandmaster'},
+                {c: 150, f: 'god'},
             ];
-            for (let i=0; i<5; i++){
+            for (let i=0; i<6; i++){
                 if (total >= progress[i].c && (!global.stats.feat[progress[i].f] || global.stats.feat[progress[i].f] < t_level)){
                     if (global.race.universe === 'micro'){
                         unlockFeat(progress[i].f,true,t_level);
@@ -2728,6 +2746,9 @@ export function drawStats(){
     if (global.stats.descend > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_descension_resets")}</span> {{ s.descend | format }}</div>`);
     }
+    if (global.stats.apotheosis > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_apotheosis_resets")}</span> {{ s.apotheosis | format }}</div>`);
+    }
     if (global.stats.aiappoc > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_aiappoc_resets")}</span> {{ s.aiappoc | format }}</div>`);
     }
@@ -2766,6 +2787,10 @@ export function drawStats(){
     if (global.stats.psykill > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_psymurders")}</span> {{ s.psykill | format }}</div>`);
     }
+    if (global.stats.uDead > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_unstable")}</span> {{ s.uDead | format }}</div>`);
+    }
+
     if (global.resource.hasOwnProperty('Thermite') && global.resource.Thermite.amount > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_thermite")}</span> {{ r.Thermite.amount | res }}</div>`);
     }
@@ -2779,11 +2804,19 @@ export function drawStats(){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_trickortreat")}</span> {{ s.cfood | format }} ${trick}</div>`);
     }
 
+    if (global.race.hasOwnProperty('gods') && global.race.gods != 'none'){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_gods")}</span> {{ g.gods | species }}</div>`)
+    }
+    if (global.race.hasOwnProperty('old_gods') && global.race.old_gods != 'none'){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_old_gods")}</span> {{ g.old_gods | species }}</div>`)
+    }
+
     vBind({
         el: '#statsPanel',
         data: {
             s: global.stats,
             r: global.resource,
+            g: global.race
         },
         filters: {
             played(d){
@@ -2803,6 +2836,9 @@ export function drawStats(){
             },
             res(r){
                 return (+(r).toFixed(2)).toLocaleString();
+            },
+            species(s){
+                return s === 'custom' ? global.custom.race0.name : loc(`race_${s}`);
             }
         }
     });

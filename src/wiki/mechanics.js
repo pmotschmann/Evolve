@@ -7,7 +7,7 @@ import { races, traits, planetTraits } from './../races.js';
 import { atomic_mass } from './../resources.js';
 import { universe_types } from './../space.js';
 import { swissKnife } from './../tech.js';
-import { actions } from './../actions.js';
+import { actions, structName } from './../actions.js';
 import { astroVal, astrologySign } from './../seasons.js';
 import { shipAttackPower, sensorRange, shipCrewSize, shipPower } from './../truepath.js';
 import { sideMenu, infoBoxBuilder, createRevealSection, createCalcSection, getSolarName } from './functions.js';
@@ -651,7 +651,7 @@ export function mechanicsPage(content){
     }
 
     { // Customs & Untapped Potential
-        let custom = infoBoxBuilder(mainContent,{ name: 'custom', template: 'mechanics', label: loc('wiki_mechanics_custom'), paragraphs: 12, break: [3,5,9,11], h_level: 2,
+        let custom = infoBoxBuilder(mainContent,{ name: 'custom', template: 'mechanics', label: loc('wiki_mechanics_custom'), paragraphs: 14, break: [3,5,9,11,13], h_level: 2,
             para_data: {
                 1: [loc('wiki_resets_ascension')],
                 2: [loc('wiki_resets_ascension')],
@@ -661,7 +661,9 @@ export function mechanicsPage(content){
                 8: [loc('achieve_technophobe_name'),5,7],
                 9: [loc('tech_fanaticism'),loc('tech_deify')],
                 11: [0,loc('resource_Genes_name')],
-                12: [loc('resource_Genes_name'),loc('trait_untapped_name')]
+                12: [loc('resource_Genes_name'),loc('trait_untapped_name')],
+                13: [10],
+                14: [10,'1.4.0',loc('trait_overtapped_name')]
             },
             data_link: {
                 1: ['wiki.html#resets-prestige-ascension'],
@@ -1050,6 +1052,134 @@ export function mechanicsPage(content){
         });
 
         sideMenu('add',`mechanics-gameplay`,`thralls`,loc('wiki_mechanics_thralls'));
+    }
+
+    { // Wish
+        let wish = infoBoxBuilder(mainContent,{ name: 'wish', template: 'mechanics', label: loc('wiki_mechanics_wish'), paragraphs: 4, break: [1], h_level: 2,
+            para_data: {
+                1: [loc('race_djinn')],
+                2: [2,loc('tech_minor_wish'),loc('tech_major_wish')],
+                3: [loc('tech_minor_wish'),traits.wish.vars()[0] / 3,loc('tech_major_wish'),traits.wish.vars()[0]],
+            },
+            data_link: {
+                1: ['wiki.html#races-species-djinn'],
+            }
+        });
+
+        let limited = infoBoxBuilder(wish,{ name: 'wish_minor', template: 'mechanics', label: loc('tech_minor_wish'), paragraphs: 0, h_level: 3 });
+
+        infoBoxBuilder(limited,{ name: 'wish_minor_know', template: 'mechanics', label: loc(`wish_for`,[global.resource.Knowledge.name]), paragraphs: 2, break: [2], h_level: 4,
+            para_data: {
+                1: [global.resource.Knowledge.name,loc(`evo_challenge_lone_survivor`),loc(`evo_challenge_cataclysm`),loc(`evo_challenge_orbit_decay`)],
+                2: [loc(`tech_library`), loc(`tech_thesis`), loc(`tech_research_grant`), loc(`tech_scientific_journal`), loc(`tech_adjunct_professor`), loc(`tech_tesla_coil`),
+                    loc(`tech_internet`), loc(`tech_observatory`), loc(`tech_laboratory`), loc(`tech_virtual_assistant`), loc(`tech_dimensional_readings`), loc(`tech_quantum_entanglement`),
+                    loc(`tech_expedition`), loc(`tech_subspace_sensors`), loc(`tech_alien_database`), loc(`tech_orichalcum_capacitor`), loc(`tech_advanced_biotech`)]
+            },
+            data_link: {
+                1: [null,'wiki.html#challenges-gameplay-scenarios_lone_survivor','wiki.html#challenges-gameplay-scenarios_cataclysm','wiki.html#challenges-gameplay-modes_orbitdecay'],
+            }
+        });
+
+        infoBoxBuilder(limited,{ name: 'wish_minor_money', template: 'mechanics', label: loc(`wish_for`,[loc('resource_Money_name')]), paragraphs: 2, h_level: 4,
+            para_data: {
+                1: [loc('resource_Money_name')],
+                2: [global.resource.Money.name]
+            }
+        });
+
+        infoBoxBuilder(limited,{ name: 'wish_minor_res', template: 'mechanics', label: loc(`wish_for`,[loc('wish_resources')]), paragraphs: 3, break: [2,3], h_level: 4,
+            para_data: {
+                1: [`1-2`],
+                2: [
+                    global.resource['Lumber'].name,global.resource['Stone'].name,global.resource['Furs'].name,global.resource['Copper'].name,global.resource['Iron'].name,global.resource['Aluminium'].name,global.resource['Cement'].name,global.resource['Coal'].name,
+                    global.resource['Oil'].name,global.resource['Uranium'].name,global.resource['Steel'].name,global.resource['Titanium'].name,global.resource['Alloy'].name,global.resource['Polymer'].name,global.resource['Iridium'].name,global.resource['Helium_3'].name,
+                    global.resource['Crystal'].name,global.resource['Chrysotile'].name,global.resource['Deuterium'].name,global.resource['Neutronium'].name,global.resource['Adamantite'].name,global.resource['Nano_Tube'].name,global.resource['Graphene'].name,
+                    global.resource['Stanene'].name,global.resource['Bolognium'].name,global.resource['Vitreloy'].name,global.resource['Orichalcum'].name,global.resource['Infernite'].name,global.resource['Elerium'].name,global.resource['Soul_Gem'].name,
+                ],
+            }
+        });
+
+        infoBoxBuilder(limited,{ name: 'wish_minor_love', template: 'mechanics', label: loc(`wish_for`,[loc('wish_love')]), paragraphs: 1, h_level: 4 });
+
+        infoBoxBuilder(limited,{ name: 'wish_minor_event', template: 'mechanics', label: loc(`wish_for`,[loc('wish_event')]), paragraphs: 1, h_level: 4 });
+
+        infoBoxBuilder(limited,{ name: 'wish_minor_fame', template: 'mechanics', label: loc(`wish_for`,[loc('wish_fame')]), paragraphs: 1, h_level: 4 });
+
+        infoBoxBuilder(limited,{ name: 'wish_minor_strength', template: 'mechanics', label: loc(`wish_for`,[loc('wish_strength')]), paragraphs: 5, break: [5], h_level: 4,
+            para_data: {
+                2: [loc(`trait_strong_name`),0.25],
+                3: ['+1',25],
+                5: [
+                    loc(`tech_bows`), loc(`tech_flintlock_rifle`), loc(`tech_machine_gun`), loc(`tech_bunk_beds`), loc(`tech_rail_guns`), loc(`tech_laser_rifles`),
+                    loc(`tech_plasma_rifles`), loc(`tech_disruptor_rifles`), loc(`tech_gauss_rifles`), loc(`tech_cyborg_soldiers`), loc(`tech_ethereal_weapons`)
+                ]
+            },
+            data_link: {
+                2: ['wiki.html#traits-species-genus_strong',null],
+            }
+        });
+
+        infoBoxBuilder(limited,{ name: 'wish_minor_influence', template: 'mechanics', label: loc(`wish_for`,[loc('wish_influence')]), paragraphs: 4, h_level: 4,
+            para_data: {
+                2: ['+1',loc(`job_professor`),25],
+                3: [loc(`sign_${astrologySign()}`)]
+            }
+        });
+
+        let greater = infoBoxBuilder(wish,{ name: 'wish_major', template: 'mechanics', label: loc('tech_major_wish'), paragraphs: 0, h_level: 3 });
+
+        infoBoxBuilder(greater,{ name: 'wish_major_money', template: 'mechanics', label: loc(`wish_for`,[loc('wish_big_money')]), paragraphs: 1, h_level: 4,
+            para_data: {
+                1: [loc('resource_Money_name'),structName('casino')]
+            }
+        });
+
+        infoBoxBuilder(greater,{ name: 'wish_major_res', template: 'mechanics', label: loc(`wish_for`,[loc('wish_big_resources')]), paragraphs: 3, break: [2,3], h_level: 4,
+            para_data: {
+                1: [`1-2`],
+                2: [
+                    global.resource['Lumber'].name,global.resource['Stone'].name,global.resource['Furs'].name,global.resource['Copper'].name,global.resource['Iron'].name,global.resource['Aluminium'].name,global.resource['Cement'].name,global.resource['Coal'].name,
+                    global.resource['Oil'].name,global.resource['Uranium'].name,global.resource['Steel'].name,global.resource['Titanium'].name,global.resource['Alloy'].name,global.resource['Polymer'].name,global.resource['Iridium'].name,global.resource['Helium_3'].name,
+                    global.resource['Crystal'].name,global.resource['Chrysotile'].name,global.resource['Deuterium'].name,global.resource['Neutronium'].name,global.resource['Adamantite'].name,global.resource['Nano_Tube'].name,global.resource['Graphene'].name,
+                    global.resource['Stanene'].name,global.resource['Bolognium'].name,global.resource['Vitreloy'].name,global.resource['Orichalcum'].name,global.resource['Infernite'].name,global.resource['Elerium'].name,global.resource['Soul_Gem'].name,
+                ],
+            }
+        });
+
+        infoBoxBuilder(greater,{ name: 'wish_major_plasmids', template: 'mechanics', label: loc(`wish_for`,[loc('wish_plasmid')]), paragraphs: 8, break: [7,8], h_level: 4,
+            para_data: {
+                1: [loc('resource_Plasmid_plural_name')],
+                4: [loc('resource_Plasmid_plural_name')],
+                5: [loc('resource_Plasmid_plural_name')],
+                6: [loc('resource_Plasmid_plural_name')],
+                8: [loc('wiki_resets_mad'),loc('wiki_resets_blackhole')],
+            },
+            data_link: {
+                8: ['wiki.html#resets-prestige-mad','wiki.html#resets-prestige-blackhole'],
+            }
+        });
+
+        infoBoxBuilder(greater,{ name: 'wish_major_power', template: 'mechanics', label: loc(`wish_for`,[loc('wish_power')]), paragraphs: 4, break:[2,3,4], h_level: 4,
+            para_data: {
+                2: [loc('wish_dictator'),loc('govern_dictator')],
+                4: [loc('wish_potato')]
+            }
+        });
+
+        infoBoxBuilder(greater,{ name: 'wish_major_adoration', template: 'mechanics', label: loc(`wish_for`,[loc('wish_adoration')]), paragraphs: 3, break:[3], h_level: 4,
+            para_data: {
+                1: [structName('temple'),loc('space_red_ziggurat_title')],
+                3: [1,loc(`job_priest`),25]
+            }
+        });
+
+        infoBoxBuilder(greater,{ name: 'wish_major_thrill', template: 'mechanics', label: loc(`wish_for`,[loc('wish_thrill')]), paragraphs: 1, h_level: 4 });
+
+        infoBoxBuilder(greater,{ name: 'wish_major_peace', template: 'mechanics', label: loc(`wish_for`,[loc('wish_peace')]), paragraphs: 3, break:[2,3], h_level: 4 });
+
+        infoBoxBuilder(greater,{ name: 'wish_major_greatness', template: 'mechanics', label: loc(`wish_for`,[loc('wish_greatness')]), paragraphs: 2, break:[2], h_level: 4 });
+
+        sideMenu('add',`mechanics-gameplay`,`wish`,loc('wiki_mechanics_wish'));
     }
 }
 

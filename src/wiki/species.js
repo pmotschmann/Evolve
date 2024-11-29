@@ -47,7 +47,7 @@ export function customPage(content) {
     });
     let lab = $(`<div class="infoBox wide"></div>`);
     content.append(lab);
-    ascendLab(lab);
+    ascendLab(false,lab);
 }
 
 const evolutionPath = {
@@ -81,26 +81,45 @@ export function racesPage(content){
 
     let list = [];
     Object.keys(races).forEach(function (race){
-        if ((race === 'custom' && !global.custom.hasOwnProperty('race0')) || race === 'protoplasm'){
+        if ((race === 'custom' && !global.custom.hasOwnProperty('race0')) 
+            || (race === 'hybrid' && !global.custom.hasOwnProperty('race1'))
+            || race === 'protoplasm'){
             return;
         }
 
         let info = $(`<div id="${race}" class="infoBox"></div>`);
         content.append(info);
 
-        info.append(`<div class="type"><h2 class="has-text-warning">${races[race].name}</h2><span id="genus${race}" class="has-text-caution">${loc(`genelab_genus_${races[race].type}`)}</span></div>`);
+        let typeList = [];
+        let genusListing = ``;
+        if (races[race].type === 'hybrid'){
+            typeList = races[race].hybrid;
+        }
+        else {
+            typeList.push(races[race].type);
+        }
+
+        typeList.forEach(function (gType){
+            genusListing += `<span id="genus${race}${gType}" class="has-text-caution">${loc(`genelab_genus_${gType}`)}</span>`;
+        });
+
+        info.append(`<div class="type"><h2 class="has-text-warning">${races[race].name}</h2><span>${genusListing}</span></div>`);
         info.append(`<div class="desc">${typeof races[race].desc === 'string' ? races[race].desc : races[race].desc()}</div>`);
 
         let traitList = [];
         let extraTraits = extraTraitList(race);
 
         let genes = $(`<div class="itemlist"></div>`);
-        Object.keys(genus_traits[races[race].type]).sort().forEach(function (trait){
-            let id = `raceTrait${race}${trait}`;
-            let color = races[race].fanaticism === trait ? 'danger' : 'caution';
-            genes.append(`<span class="has-text-${color}" id="${id}">${traitSkin('name', trait, race)}<span>`);
-            traitList.push({ t: trait, r: 1});
+
+        typeList.forEach(function (gType){
+            Object.keys(genus_traits[gType]).sort().forEach(function (trait){
+                let id = `raceTrait${race}${trait}`;
+                let color = races[race].fanaticism === trait ? 'danger' : 'caution';
+                genes.append(`<span class="has-text-${color}" id="${id}">${traitSkin('name', trait, race)}<span>`);
+                traitList.push({ t: trait, r: 1});
+            });
         });
+        
         Object.keys(races[race].traits).sort().forEach(function (trait){
             if (hallowed.active && (race === 'tortoisan' && trait === 'slow') || (race === 'unicorn' && trait === 'rainbow')){
                 return;
@@ -119,7 +138,9 @@ export function racesPage(content){
         info.append(genes);
         list.push(race);
 
-        popover(`genus${race}`,$(`<div>${loc(`genelab_genus_${races[race].type}_desc`)}<br><br>${evolutionPath[races[race].type]}</div>`),{ wide: true, classes: 'w25' });
+        typeList.forEach(function (gType){
+            popover(`genus${race}${gType}`,$(`<div>${loc(`genelab_genus_${gType}_desc`)}<br><br>${evolutionPath[gType]}</div>`),{ wide: true, classes: 'w25' });
+        });
 
         for (let i=0; i<traitList.length; i++){
             let id = `raceTrait${race}${traitList[i].t}`;

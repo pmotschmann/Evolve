@@ -1,12 +1,13 @@
 import { global, seededRandom, p_on, support_on, sizeApproximation } from './vars.js';
 import { loc } from './locale.js';
-import { races, traits, fathomCheck } from './races.js';
+import { races, traits, fathomCheck, blubberFill } from './races.js';
 import { govTitle, garrisonSize, armyRating } from './civics.js';
 import { housingLabel, drawTech, actions } from './actions.js';
 import { tradeRatio } from './resources.js';
-import { checkControlling } from './civics.js';
+import { checkControlling, soldierDeath } from './civics.js';
 import { govActive } from './governor.js';
 import { unlockAchieve } from './achieve.js';
+import { jobScale } from './jobs.js';
 
 export const events = {
     dna_replication: {
@@ -152,9 +153,8 @@ export const events = {
                 killed = Math.round(killed / 2);
                 wounded = Math.round(wounded / 2);
             }
-            global.civic.garrison.workers -= killed;
+            soldierDeath(killed);
             global.civic.garrison.wounded += wounded;
-            global.stats.died += killed;
             if (global.civic.garrison.wounded > global.civic.garrison.workers){
                 global.civic.garrison.wounded = global.civic.garrison.workers;
             }
@@ -208,9 +208,8 @@ export const events = {
                 killed = Math.round(killed / 2);
                 wounded = Math.round(wounded / 2);
             }
-            global.civic.garrison.workers -= killed;
+            soldierDeath(killed);
             global.civic.garrison.wounded += wounded;
-            global.stats.died += killed;
             if (global.civic.garrison.wounded > global.civic.garrison.workers){
                 global.civic.garrison.wounded = global.civic.garrison.workers;
             }
@@ -310,9 +309,8 @@ export const events = {
                 killed = Math.round(killed / 2);
                 wounded = Math.round(wounded / 2);
             }
-            global.civic.garrison.workers -= killed;
+            soldierDeath(killed);
             global.civic.garrison.wounded += wounded;
-            global.stats.died += killed;
             if (global.civic.garrison.wounded > global.civic.garrison.workers){
                 global.civic.garrison.wounded = global.civic.garrison.workers;
             }
@@ -541,7 +539,84 @@ export const events = {
         effect(){
             global.resource[global.race.species].amount--;
             global.civic.miner.workers--;
+            blubberFill(1);
             return loc('event_mine_collapse');
+        }
+    },
+    klepto: {
+        reqs: {
+            trait: 'rogue',
+            resource: 'Money'
+        },
+        type: 'major',
+        effect(){
+            let stealList = [];
+            [
+                'Money','Food','Lumber','Stone','Chrysotile','Crystal','Furs','Copper','Iron',
+                'Cement','Coal','Uranium','Aluminium','Steel','Titanium','Alloy','Polymer','Iridium',
+                'Neutronium','Adamantite','Infernite','Elerium','Nano_Tube','Graphene','Stanene',
+                'Bolognium','Vitreloy','Orichalcum','Asphodel_Powder','Elysanite','Unobtainium','Quantium',
+                'Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril','Aerogel','Nanoweave','Scarletite'
+            ].forEach(function(r){
+                if (global.resource[r].display){
+                    stealList.push(r);
+                }
+            });
+
+            let maxRoll = Math.round(global.stats.know / 25);
+            let res = stealList[Math.floor(seededRandom(0,stealList.length))];
+            if (global.resource[res].max > 0 && maxRoll > global.resource[res].max * traits.rogue.vars()[0] / 100){
+                maxRoll = Math.round(global.resource[res].max * traits.rogue.vars()[0] / 100);
+            }
+
+            let gain = Math.floor(seededRandom(1,maxRoll));
+            if (global.resource[res].amount + gain > global.resource[res].max){
+                global.resource[res].amount = global.resource[res].max;
+            }
+            else {
+                global.resource[res].amount += gain;
+            }
+
+            return res === 'Money' ? loc('event_klepto',[gain]) : loc('event_klepto',[gain,global.resource[res].name]);
+        }
+    },
+    chicken_feast:{ 
+        reqs: {
+            tech: 'primitive',
+            trait: 'chicken'
+        },
+        condition(){
+            if (global.resource[global.race.species].amount > 0){
+                return true;
+            }
+            return false;
+        },
+        type: 'major',
+        effect(){
+            let dead = Math.floor(seededRandom(2,jobScale(10)));
+            if (dead > global.resource[global.race.species].amount){ dead = global.resource[global.race.species].amount; }
+            global.resource[global.race.species].amount -= dead;
+            blubberFill(dead);
+            return loc('event_chicken',[loc(`event_chicken_eaten${Math.floor(seededRandom(0,10))}`),dead]);
+        }
+    },
+    brawl:{ 
+        reqs: {
+            tech: 'primitive',
+            trait: 'aggressive'
+        },
+        condition(){
+            if (global.resource[global.race.species].amount > 0){
+                return true;
+            }
+            return false;
+        },
+        type: 'major',
+        effect(){
+            let dead = Math.floor(seededRandom(1,jobScale(traits.aggressive.vars()[0] + 1)));
+            if (dead > global.civic.garrison.workers){ dead = global.civic.garrison.workers; }
+            soldierDeath(dead);
+            return loc('event_brawl_s',[loc(`event_brawl${Math.floor(seededRandom(0,10))}`),dead]);
         }
     },
     m_curious: {
@@ -675,7 +750,46 @@ export const events = {
             global.resource[global.race.species].amount--;
             global.civic.scientist.workers--;
             global.civic.scientist.assigned--;
+            blubberFill(1);
             return loc(`witch_hunter_witch_hunt`);
+        }
+    },
+    chicken:{ 
+        reqs: {
+            tech: 'primitive',
+            trait: 'chicken'
+        },
+        condition(){
+            if (global.resource[global.race.species].amount > 0){
+                return true;
+            }
+            return false;
+        },
+        type: 'minor',
+        effect(){
+            global.resource[global.race.species].amount--;
+            blubberFill(1);
+            return loc('event_chicken',[loc(`event_chicken_eaten${Math.rand(0,10)}`),1]);
+        }
+    },
+    fight:{ 
+        reqs: {
+            tech: 'primitive',
+            trait: 'aggressive'
+        },
+        condition(){
+            if (global.resource[global.race.species].amount > 0){
+                return true;
+            }
+            return false;
+        },
+        type: 'minor',
+        effect(){
+            let dead = Math.floor(seededRandom(1,jobScale(traits.aggressive.vars()[1] + 1)));
+            if (dead > global.resource[global.race.species].amount){ dead = global.resource[global.race.species].amount; }
+            global.resource[global.race.species].amount -= dead;
+            blubberFill(dead);
+            return loc('event_brawl_c',[loc(`event_brawl${Math.floor(seededRandom(0,10))}`),dead]);
         }
     },
     heatwave: {
@@ -938,9 +1052,8 @@ function pillaged(gov,serious){
         killed = Math.round(killed / 2);
         wounded = Math.round(wounded / 2);
     }
-    global.civic.garrison.workers -= killed;
+    soldierDeath(killed);
     global.civic.garrison.wounded += wounded;
-    global.stats.died += killed;
     if (global.civic.garrison.wounded > global.civic.garrison.workers){
         global.civic.garrison.wounded = global.civic.garrison.workers;
     }

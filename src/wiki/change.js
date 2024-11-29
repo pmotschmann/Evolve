@@ -3,6 +3,30 @@ import { clearElement } from './../functions.js';
 
 export const changeList = [
     {
+        version: `1.4.0`,
+        date: `11/28/2024`,
+        changes: [
+            `Push past the Spire and invade the Edenic Realms.`,
+            `Added new planet trait: Kamikaze.`,
+            `Added new CRISPR upgrade Bureaucratic Efficiency.`,
+            `The Grand Death Tour is available after completing Apotheosis.`,
+            `Custom Race lab now allows player to set a desired fanaticism trait.`,
+            `You can no longer have more than 10 negative traits on a custom.`,
+            `Invalid legacy customs will take a penalty called Overtapped in future game versions.`,
+            `Truepath Ships can now be queued for construction.`,
+            `Exotic Materials are now harder to replicate.`,
+            `Progenitor races are now shown on stats page.`,
+            `Symposium is now affected by piracy.`,
+            `Gate Turrets will now kill demons when the Soul Forge is turned off.`,
+            `Stellar Engine now has diminishing returns when pushed to extreme levels.`,
+            `The number of spies available when starting a spy op now affects mission time.`,
+            `Fluidized Bed Reactor no longer incorrectly applies to Nano Tubes.`,
+            `Shrines now cycle their effect with moon phase if purchased during a full, new, or quarter moon.`,
+            `Slitheryn Slow Digestion replaced with Astrologer.`,
+            `Slow trait value changed from -5 to -6.`
+        ]
+    },
+    {
         version: `1.3.17`,
         revision: `c`,
         date: `11/1/2024`,
@@ -38,6 +62,14 @@ export const changeList = [
             `Craftsmen have been renamed to Crafters.`,
             `Fixed some issues with the Wiki.`,
             `Fixed display error with Cultural Center.`
+        ]
+    },
+    {
+        version: `1.3.16`,
+        revision: `a`,
+        date: `9/30/2024`,
+        changes: [
+            `Fixed an issue with with Gravity Well challenge and having too many Railways.`
         ]
     },
     {

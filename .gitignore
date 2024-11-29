@@ -6,3 +6,4 @@ strings/last-strings.json
 node_modules/*
 docs
 dist
+*.map

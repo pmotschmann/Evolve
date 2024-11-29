@@ -2,7 +2,6 @@ import { global, sizeApproximation } from './../vars.js';
 import { loc } from './../locale.js';
 import { clearElement, vBind, adjustCosts } from './../functions.js';
 import { actions } from './../actions.js';
-import { races, genusVars } from './../races.js';
 import { planetName } from './../space.js';
 
 export function headerBoxBuilder(parent,args,box){
@@ -23,19 +22,24 @@ export function infoBoxBuilder(parent,args,box){
     if (!args.hasOwnProperty('data_color')){ args['data_color'] = {}; }
     if (!args.hasOwnProperty('data_link')){ args['data_link'] = {}; }
     if (!args.hasOwnProperty('h_level')){ args['h_level'] = 3; }
+    if (!args.hasOwnProperty('h_extra')){ args['h_extra'] = false; }
     if (!args.hasOwnProperty('header')){ args['header'] = false; }
     if (!args.hasOwnProperty('full')){ args['full'] = false; }
     if (!args.hasOwnProperty('break')){ args['break'] = false; }
     if (!args.hasOwnProperty('default_color')){ args['default_color'] = 'warning'; }
     if (!args.hasOwnProperty('examples')){ args['examples'] = false; }
+    if (!args.hasOwnProperty('vue')){ args['vue'] = false; }
 
     let info = false;
     if (box){
         info = box;
     }
     else {
-        info = $(`<div class="infoBox${args.full ? ` wide` : ``}${args['pclass'] ? ` ${args['pclass']}`: ''}"></div>`);
-        if (args['h_level']){
+        info = $(`<div${args['vue'] ? ` id="${args.name}InfoBox"` : ``} class="infoBox${args.full ? ` wide` : ``}${args['pclass'] ? ` ${args['pclass']}`: ''}"></div>`);
+        if (args['h_level'] && args.h_extra){
+            info.append(`<div class="flexInfo"><h${args.h_level} id="${args.name}" class="header has-text-${args.header ? 'caution' : 'warning'}">${args['label'] ? args['label'] : loc(`wiki_${args.template}_${args.name}`)}</h${args.h_level}>${args.h_extra}</div>`);
+        }
+        else if (args['h_level']){
             info.append(`<h${args.h_level} id="${args.name}" class="header has-text-${args.header ? 'caution' : 'warning'}">${args['label'] ? args['label'] : loc(`wiki_${args.template}_${args.name}`)}</h${args.h_level}>`);
         }
     }
@@ -89,6 +93,12 @@ export function infoBoxBuilder(parent,args,box){
     if (!box){
         parent.append(info);
     }   
+
+    if (args['vue']){
+        args.vue['el'] = `#${args.name}InfoBox`;
+        vBind(args.vue);
+    }
+
     return info;
 }
 
@@ -194,7 +204,7 @@ export function actionDesc(info, c_action, extended, isStruct){
                 cost.append($(`<div class="${color}">${costs[res]().label}</div>`));
                 render = true;
             }
-            else if (res !== 'Morale' && res !== 'Army' && res !== 'Bool'){
+            else if (res !== 'Morale' && res !== 'Army' && res !== 'Bool' && res !== 'Troops'){
                 let f_res = res === 'Species' ? global.race.species : res;
                 let label = f_res === 'Money' ? '$' : (res === 'HellArmy' ? loc('fortress_troops') : global.resource[f_res].name) + ': ';
                 label = label.replace("_", " ");
@@ -236,6 +246,10 @@ export function sideMenu(action,arg1,arg2,arg3){
         content.append(sideContent);
         sideContent.append(sideMenu);
         return mainContent;
+    }
+    else if (action === 'gap'){
+        let li = $(`<li class="gap"></li>`);
+        $(`#sideContent ul`).append(li);
     }
     else {
         let anchor = $(`<a href="#${arg1}-${arg2}">${arg3}</a>`);
@@ -331,4 +345,8 @@ export function createCalcSection(info,id,type,insert){
     });
     
     return section;
+}
+
+export function resourceName(res){
+    return global?.resource?.[res]?.name || loc(`resource_${res}_name`);
 }

@@ -69,3 +69,14 @@ npm run deploy
 # Deploys the game to GitHub Pages on Windows (requires forking)
 npm run deploy-win
 ```
+
+## Docker
+If you already have a Docker environment set up and want to run an evolve server using Docker, you can execute the following command to build a Docker image for the evolve server.
+
+```
+# Build evolve server image
+docker build . -t evolve
+
+# Run evolve server. Default address: http://localhost:8080/
+docker run --name evolve -p 8080:80 -d evolve
+```

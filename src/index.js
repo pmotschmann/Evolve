@@ -7,10 +7,11 @@ import { defineJobs, } from './jobs.js';
 import { clearSpyopDrag } from './governor.js';
 import { defineIndustry, setPowerGrid, gridDefs, clearGrids } from './industry.js';
 import { defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov } from './civics.js';
-import { races, shapeShift, renderPsychicPowers } from './races.js';
+import { races, shapeShift, renderPsychicPowers, renderSupernatural } from './races.js';
 import { drawEvolution, drawCity, drawTech, resQueue, clearResDrag } from './actions.js';
 import { renderSpace, ascendLab, terraformLab } from './space.js';
 import { renderFortress, buildFortress, drawMechLab, clearMechDrag, drawHellObservations } from './portal.js';
+import { renderEdenic } from './edenic.js';
 import { drawShipYard, clearShipDrag, renderTauCeti } from './truepath.js';
 import { arpa, clearGeneticsDrag } from './arpa.js';
 
@@ -387,6 +388,12 @@ export function loadTab(tab){
                             <span aria-hidden="true">{{ 'tab_tauceti' | label }}</span>
                         </template>
                     </b-tab-item>
+                    <b-tab-item id="eden" :visible="s.showEden">
+                        <template slot="header">
+                            <h2 class="is-sr-only">{{ 'tab_eden' | label }}</h2>
+                            <span aria-hidden="true">{{ 'tab_eden' | label }}</span>
+                        </template>
+                    </b-tab-item>
                 </b-tabs>`);
                 vBind({
                     el: `#mTabCivil`,
@@ -403,6 +410,7 @@ export function loadTab(tab){
                                 clearElement($(`#portal`));
                                 clearElement($(`#outerSol`));
                                 clearElement($(`#tauCeti`));
+                                clearElement($(`#eden`));
                                 switch (tab){
                                     case 0:
                                         drawCity();
@@ -418,6 +426,9 @@ export function loadTab(tab){
                                         break;
                                     case 6:
                                         renderTauCeti();
+                                        break;
+                                    case 7:
+                                        renderEdenic();
                                         break;
                                 }
                             }
@@ -435,11 +446,16 @@ export function loadTab(tab){
                     renderSpace();
                     renderFortress();
                     renderTauCeti();
+                    renderEdenic();
                 }
                 if (global.race['noexport']){
                     if (global.race['noexport'] === 'Race'){
                         clearElement($(`#city`));
                         ascendLab();
+                    }
+                    else if (global.race['noexport'] === 'Hybrid'){
+                        clearElement($(`#city`));
+                        ascendLab(true);
                     }
                     else if (global.race['noexport'] === 'Planet'){
                         clearElement($(`#city`));
@@ -497,6 +513,12 @@ export function loadTab(tab){
                             <span aria-hidden="true">{{ 'tab_psychic' | label }}</span>
                         </template>
                     </b-tab-item>
+                    <b-tab-item id="supernatural" class="supernaturalTab" :visible="s.showWish">
+                        <template slot="header">
+                            <h2 class="is-sr-only">{{ 'tab_supernatural' | label }}</h2>
+                            <span aria-hidden="true">{{ 'tab_supernatural' | label }}</span>
+                        </template>
+                    </b-tab-item>
                 </b-tabs>`);
                 vBind({
                     el: `#mTabCivic`,
@@ -517,6 +539,7 @@ export function loadTab(tab){
                                 clearElement($(`#mechLab`));
                                 clearElement($(`#dwarfShipYard`));
                                 clearElement($(`#psychicPowers`));
+                                clearElement($(`#supernatural`));
                                 switch (tab){
                                     case 0:
                                         {
@@ -566,6 +589,11 @@ export function loadTab(tab){
                                             renderPsychicPowers();
                                         }
                                         break;
+                                    case 7:
+                                        if (((global.race['wish'] && global.tech['wish']) || global.race['ocular_power']) && global.race.species !== 'protoplasm'){
+                                            renderSupernatural();
+                                        }
+                                        break;
                                 }
                             }
                             return tab;
@@ -598,6 +626,9 @@ export function loadTab(tab){
                     }
                     if (global.race['psychic'] && global.tech['psychic']){
                         renderPsychicPowers();
+                    }
+                    if ((global.race['wish'] && global.tech['wish']) || global.race['ocular_power']){
+                        renderSupernatural();
                     }
                 }
                 if (global.race['shapeshifter']){
@@ -938,7 +969,7 @@ export function index(){
                     let queue = $(`#msgQueueLog`);
                     clearElement(queue);
                     message_logs[filter].forEach(function (msg){
-                        queue.append($('<p class="has-text-'+msg.color+'">'+msg.msg+'</p>'));
+                        queue.append($('<p class="has-text-'+msg.color+'"></p>').text(msg.msg));
                     });
                 }
             },
@@ -1049,7 +1080,7 @@ export function index(){
                                                 let queue = $(`#msgQueueLog`);
                                                 clearElement(queue);
                                                 message_logs[filt].forEach(function (msg){
-                                                    queue.append($('<p class="has-text-'+msg.color+'">'+msg.msg+'</p>'));
+                                                    queue.append($('<p class="has-text-'+msg.color+'"></p>').text(msg.msg));
                                                 });
                                             }
                                         });
@@ -1197,7 +1228,9 @@ export function index(){
         {i: 'turtle',       f: 'finish_line',       r: 2 },
         {i: 'floppy',       f: 'digital_ascension', r: 2 },
         {i: 'slime',        f: 'slime_lord',        r: 2 },
+        {i: 'sludge',       f: 'grand_death_tour',  r: 2 },
         {i: 'lightning',    f: 'annihilation',      r: 2 },
+        {i: 'trophy',       f: 'wish',              r: 2 },
         {i: 'heart',        f: 'valentine',         r: 1 },
         {i: 'clover',       f: 'leprechaun',        r: 1 },
         {i: 'bunny',        f: 'easter',            r: 1 },
@@ -1209,7 +1242,7 @@ export function index(){
         {i: 'candy',        f: 'trickortreat',      r: 1 },
         {i: 'turkey',       f: 'thanksgiving',      r: 1 },
         {i: 'meat',         f: 'immortal',          r: 1 },
-        {i: 'present',      f: 'xmas',              r: 1 }
+        {i: 'present',      f: 'xmas',              r: 1 },
     ];
 
     let irank = alevel();
