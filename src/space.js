@@ -6373,12 +6373,10 @@ export function piracy(region,rating,raw,wiki){
 
         if (global.race['chicken']){
             pirate *= 1 + (traits.chicken.vars()[1] / 100);
-            pirate = pirate;
         }
 
         if (global.race['ocular_power'] && global.race['ocularPowerConfig'] && global.race.ocularPowerConfig.f){
             pirate *= 1 - (traits.ocular_power.vars()[1] / 500);
-            pirate = pirate;
         }
 
         let num_def_plat_on = wiki ? global.galaxy.defense_platform.on : p_on['defense_platform'];
