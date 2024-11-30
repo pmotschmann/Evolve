@@ -2460,15 +2460,20 @@ function fastLoop(){
                     break;
                 }
             }
-            global.galaxy.starbase.s_max = p_on['starbase'] * actions.galaxy.gxy_gateway.starbase.support();
-            if (p_on['gateway_station']){
-                global.galaxy.starbase.s_max += p_on['gateway_station'] * actions.galaxy.gxy_stargate.gateway_station.support();
+            if (p_on['s_gate']){
+                global.galaxy.starbase.s_max = p_on['starbase'] * actions.galaxy.gxy_gateway.starbase.support();
+                if (p_on['gateway_station']){
+                    global.galaxy.starbase.s_max += p_on['gateway_station'] * actions.galaxy.gxy_stargate.gateway_station.support();
+                }
+                if (p_on['telemetry_beacon']){
+                    global.galaxy.starbase.s_max += p_on['telemetry_beacon'] * actions.galaxy.gxy_stargate.telemetry_beacon.support();
+                }
+                if (p_on['ship_dock']){
+                    global.galaxy.starbase.s_max += p_on['ship_dock'] * actions.galaxy.gxy_gateway.ship_dock.support();
+                }
             }
-            if (p_on['telemetry_beacon']){
-                global.galaxy.starbase.s_max += p_on['telemetry_beacon'] * actions.galaxy.gxy_stargate.telemetry_beacon.support();
-            }
-            if (p_on['ship_dock']){
-                global.galaxy.starbase.s_max += p_on['ship_dock'] * actions.galaxy.gxy_gateway.ship_dock.support();
+            else {
+                global.galaxy.starbase.s_max = 0;
             }
         }
 
@@ -2502,7 +2507,7 @@ function fastLoop(){
 
         // Foothold
         if (global.galaxy['foothold'] && global.galaxy.foothold.count > 0){
-            global.galaxy.foothold.s_max = p_on['foothold'] * actions.galaxy.gxy_alien2.foothold.support();
+            global.galaxy.foothold.s_max = p_on['s_gate'] * p_on['foothold'] * actions.galaxy.gxy_alien2.foothold.support();
         }
 
         // Guard Post
@@ -2828,7 +2833,7 @@ function fastLoop(){
                 if (global[area][ship] && global[area][ship].hasOwnProperty('on')){
                     const id = actions[area][region][ship].id;
                     const num_on = global[area][ship].on;
-                    let operating = num_on;
+                    let operating = (p_on['s_gate'] || area !== 'galaxy') ? num_on : 0;
 
                     // Support cost (currently only for gateway ships; others computed later)
                     const operating_cost = actions[area][region][ship].hasOwnProperty('support') ? -(actions[area][region][ship].support()) : 0;
@@ -3900,15 +3905,6 @@ function fastLoop(){
 
         let andromeda_helium = 0;
         let andromeda_deuterium = 0;
-
-        if (p_on['s_gate']){
-            let ship_list = ['freighter','super_freighter','minelayer','raider'];
-            for (let i=0; i<ship_list.length; i++){
-                if (p_on['s_gate'] && global.galaxy.hasOwnProperty(ship_list[i])){
-                    gal_on[ship_list[i]] = global.galaxy[ship_list[i]].on;
-                }
-            }
-        }
 
         for (let j=0; j<galaxy_ship_types.length; j++){
             let area = galaxy_ship_types[j].area;
