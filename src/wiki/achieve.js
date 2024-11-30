@@ -421,9 +421,9 @@ function featDesc(feat,showFlair){
         };
         ['ct','bh','di','ai','vc','md'].forEach(function (key){
             let reset = 0;
-            Object.keys(global.stats.death_tour).forEach(function(k){
-                if (global.stats.death_tour[k] > reset){
-                    reset = global.stats.death_tour[k];
+            Object.keys(global.stats.death_tour[key]).forEach(function(k){
+                if (global.stats.death_tour[key][k] > reset){
+                    reset = global.stats.death_tour[key][k];
                 }
             });
 

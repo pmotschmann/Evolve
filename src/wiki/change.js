@@ -7,6 +7,9 @@ export const changeList = [
         date: `11/30/2024`,
         changes: [
             `Genetics Lab now shows rank adjustments with Empowered.`,
+            `Fixed wiki display of the Grand Death Tour progress.`,
+            `Normalized Mimic and Imitate ranks.`,
+            `Fixed various minor bugs.`
         ]
     },
     {
