@@ -3017,7 +3017,7 @@ function fastLoop(){
 
         if (global.tech['broadcast']){
             let gasVal = govActive('gaslighter',0);
-            let signalVal = global.race['orbit_decayed'] ? (p_on['nav_beacon'] || 0) : (global.tech['isolation'] && global.race['truepath'] ? support_on['colony'] : global.city.wardenclyffe.on);
+            let signalVal = global.race['orbit_decayed'] ? (p_on['nav_beacon'] || 0) : (global.tech['isolation'] && global.race['truepath'] ? support_on['colony'] : p_on['wardenclyffe']);
             if (global.race['orbit_decayed']){ signalVal /= 2; }
             let mVal = gasVal ? gasVal + global.tech.broadcast : global.tech.broadcast;
             if (global.tech['isolation']){ mVal *= 2; }
