@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 export const changeList = [
     {
+        version: `1.4.1`,
+        date: `11/30/2024`,
+        changes: [
+            `Genetics Lab now shows rank adjustments with Empowered.`,
+        ]
+    },
+    {
         version: `1.4.0`,
         date: `11/28/2024`,
         changes: [

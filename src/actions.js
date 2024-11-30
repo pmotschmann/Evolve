@@ -8348,8 +8348,8 @@ function sentience(){
                 neg_traits++;
             }
         }
-        if (neg_traits > 10 && convertVersion(global['version']) > 104000){
-            let suffering = convertVersion(global['version']) > 104001 ? 2 : 1;
+        if (neg_traits > 10 && convertVersion(global['version']) > 104001){
+            let suffering = convertVersion(global['version']) > 104002 ? 2 : 1;
             global.race['overtapped'] = (neg_traits - 10) * suffering;
         }
     }

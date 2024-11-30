@@ -3516,19 +3516,19 @@ export const traits = {
             // [Postitive Trait Rank, Negative Trait Rank]
             switch (r || traitRank('imitation') || 1){
                 case 0.1:
-                    return [0.1,0.5]
+                    return [0.5,0.1]
                 case 0.25:
-                    return [0.25,0.5];
+                    return [0.5,0.25];
                 case 0.5:
-                    return [0.25,1];
+                    return [0.5,0.5];
                 case 1:
                     return [0.5,1];
                 case 2:
                     return [0.5,2];
                 case 3:
-                    return [1,2];
+                    return [0.5,3];
                 case 4:
-                    return [1,3];
+                    return [0.5,4];
             }
         }
     },
@@ -3591,19 +3591,19 @@ export const traits = {
             // [Postitive Trait Rank, Negative Trait Rank]
             switch (r || traitRank('shapeshifter') || 1){
                 case 0.1:
-                    return [0.1,0.5];
+                    return [0.5,0.1];
                 case 0.25:
-                    return [0.25,0.5];
+                    return [0.5,0.25];
                 case 0.5:
-                    return [0.25,1];
+                    return [0.5,0.5];
                 case 1:
                     return [0.5,1];
                 case 2:
                     return [0.5,2];
                 case 3:
-                    return [1,2];
+                    return [0.5,3];
                 case 4:
-                    return [1,3];
+                    return [0.5,4];
             }
         }
     },
@@ -7018,7 +7018,7 @@ export function shapeShift(genus,setup,forceClean){
     global.race['ss_traits'] = shifted;
 }
 
-function traitRank(trait){
+export function traitRank(trait){
     if (global.race['empowered'] && trait !== 'empowered'){
         switch (global.race[trait]){
             case 0.1:

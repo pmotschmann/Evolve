@@ -1218,7 +1218,7 @@ if (convertVersion(global['version']) <= 104000){
     }
 }
 
-global['version'] = '1.4.0';
+global['version'] = '1.4.1';
 delete global['revision'];
 delete global['beta'];
 
