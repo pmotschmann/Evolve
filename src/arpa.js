@@ -1760,7 +1760,7 @@ function dragGeneticsList(){
     }
 }
 
-function genetics(){
+export function genetics(){
     let parent = $('#arpaGenetics');
     clearGeneticsDrag();
     clearElement(parent);

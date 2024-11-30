@@ -9,6 +9,7 @@ import { govActive, removeTask, defineGovernor } from './governor.js';
 import { unlockAchieve, unlockFeat, alevel } from './achieve.js';
 import { highPopAdjust, teamster } from './prod.js';
 import { actions, checkTechQualifications, drawCity, drawTech, structName, initStruct } from './actions.js';
+import { genetics } from './arpa.js';
 import { events, eventList } from './events.js';
 import { swissKnife } from './tech.js';
 import { warhead, big_bang } from './resets.js';
@@ -6874,6 +6875,9 @@ export function cleanRemoveTrait(trait,rank){
                     }
                 });
                 delete global.race['iTraits'];
+                if (global.race['shapeshifter']){
+                    shapeShift(false, true, false); //update mimic options
+                }
             }
             break;
         case 'evil':
@@ -6914,15 +6918,29 @@ export function setImitation(mod){
             global.race['iTraits'] = {};
         }
         if (global.race['shapeshifter']){
-            shapeShift(global.race['ss_genus'] === races[global.race['srace']].type ? 'none' : false, true, true);
+            if((races[global.race['srace']].type === 'hybrid' && races[global.race['srace']].hybrid.includes(global.race['ss_genus'])) ||
+                global.race['ss_genus'] === races[global.race['srace']].type){
+                shapeShift('none', true, true);
+            }
         }
 
         let i_traits = [];
-        Object.keys(genus_traits[races[global.race['srace']].type]).forEach(function (trait) {
-            if (!global.race[trait]){
-                i_traits.push(trait);
-            }
-        });
+        if(races[global.race['srace']].type === 'hybrid'){
+            races[global.race['srace']].hybrid.forEach(function(genus) {
+                Object.keys(genus_traits[genus]).forEach(function (trait) {
+                    if (!global.race[trait]){
+                        i_traits.push(trait);
+                    }
+                });
+            })
+        }
+        else{
+            Object.keys(genus_traits[races[global.race['srace']].type]).forEach(function (trait) {
+                if (!global.race[trait]){
+                    i_traits.push(trait);
+                }
+            });
+        }
         if (['custom','hybrid'].includes(global.race['srace'])){
             let list = [races[global.race['srace']].fanaticism,'evil'];
             Object.keys(races[global.race['srace']].traits).forEach(function (trait) {
@@ -6977,6 +6995,9 @@ export function shapeShift(genus,setup,forceClean){
                 }
             });
         }
+        if(global.race['ss_genus'] != genus){
+            setup = true;
+        }
         global.race['ss_genus'] = genus;
     }
 
@@ -7016,6 +7037,9 @@ export function shapeShift(genus,setup,forceClean){
     }
 
     global.race['ss_traits'] = shifted;
+    if(genus || !setup || forceClean){
+        genetics(); //redraw traits
+    }
 }
 
 function traitRank(trait){
