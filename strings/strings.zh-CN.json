@@ -8415,7 +8415,7 @@
   "wiki_trait_effect_elemental_fire": "该种族的属性为%0属性。每位市民使冶炼厂产量 +%1%。士兵战斗评级 +%2%。",
   "wiki_trait_effect_elemental_frost": "该种族的属性为%0属性。每位市民使%3加成 +%1%。士兵战斗评级 +%2%。",
   "wiki_trait_effect_chicken": "地狱维度难度 +%0%，仙女座星云的海盗惩罚 +%1%。不愉快的事件也会发生。",
-  "wiki_trait_effect_tusk": "%0%的战斗评级受矿工加成（而非镐类工具加成），士兵战斗评级随着星球的湿度而 +%1%，但在地狱维度的战斗评级下降。",
+  "wiki_trait_effect_tusk": "%0%的战斗评级受矿工加成（而非镐类工具加成），士兵战斗评级随着星球的湿度而 +%1%，但在地狱维度中，战斗评级加成会减少。",
   "wiki_trait_effect_blubber": "将尸体转化为石油，每个冶炼厂每天消耗%0个尸体。",
   "wiki_trait_effect_ocular_power": "You can use up to %0 powers at a time. Ocular powers scaled to %1% power.",
   "wiki_trait_effect_floating": "有风时，全局产量 -%0%。",
