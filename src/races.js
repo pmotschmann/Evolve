@@ -6653,6 +6653,9 @@ export function cleanAddTrait(trait){
             break;
         case 'imitation':
             setImitation(true);
+            if(global.race['shapeshifter']){
+                shapeShift(false, true, false); //update mimic options
+            }
             break;
         case 'evil':
             setResourceName('Lumber');
@@ -6995,9 +6998,6 @@ export function shapeShift(genus,setup,forceClean){
                 }
             });
         }
-        if(global.race['ss_genus'] != genus){
-            setup = true;
-        }
         global.race['ss_genus'] = genus;
     }
 
@@ -7006,8 +7006,9 @@ export function shapeShift(genus,setup,forceClean){
         global.race['ss_genus'] = global.race.hasOwnProperty('ss_genus') ? global.race.ss_genus : 'none';
 
         let drop = ``;
+        const imitation =  global.race['imitation'] ? (races[global.race['srace']].type === 'hybrid' ? races[global.race['srace']].hybrid : [races[global.race['srace']].type]) : [];
         Object.keys(genus_traits).forEach(function (gen) {
-            if (gen !== 'synthetic' && gen !== 'eldritch' && gen !== races[global.race.species].type && (!global.race['imitation'] || gen !== races[global.race['srace']].type) && global.stats.achieve[`genus_${gen}`] && global.stats.achieve[`genus_${gen}`].l > 0){
+            if(!['synthetic', 'eldritch', ...imitation].includes(gen) && global.stats.achieve[`genus_${gen}`] && global.stats.achieve[`genus_${gen}`].l > 0){
                 drop += `<b-dropdown-item v-on:click="setShape('${gen}')">{{ '${gen}' | genus }}</b-dropdown-item>`;
             }
         });
