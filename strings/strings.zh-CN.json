@@ -9990,7 +9990,7 @@
   "wiki_challenges_scenarios_junker_para1": "%1：%0将强制您使用名为%2的独特种族来进行游戏，该种族有大量来自其他种族的负面特质。",
   "wiki_challenges_scenarios_junker_para2": "该种族的种群根据您进化阶段的选择而定，因此您可以获得相应种群的种群特质。",
   "wiki_challenges_scenarios_junker_para3": "此%0完成条件为：进行%1。",
-  "wiki_challenges_scenarios_junker_para4": "无法与%0挑战模式同时激活。",
+  "wiki_challenges_scenarios_junker_para4": "无法与%0或终极实验失败挑战模式同时激活。",
   "wiki_challenges_scenarios_cataclysm": "大灾变",
   "wiki_challenges_scenarios_cataclysm_para1": "%1：%0中，您将体会到进行%2的恶果。",
   "wiki_challenges_scenarios_cataclysm_para2": "在%0剧情模式中，除了%1还存在于%2以外，母星上的其他所有建筑都不复存在。",
