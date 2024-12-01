@@ -5733,6 +5733,9 @@ export function loneSurvivor(){
                 total: 0,
             };
         }
+        if(global.race.universe === 'evil'){
+            global.tech['reclaimer'] = 1;
+        }
 
         global.settings.showSpace = false;
         global.settings.showTau = true;
