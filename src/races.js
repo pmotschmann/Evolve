@@ -341,22 +341,22 @@ export const traits = {
         type: 'genus',
         val: 4,
         vars(r){
-            // []
+            // [Foraging Strength]
             switch (r || traitRank('forager') || 1){
                 case 0.1:
-                    return [2,10];
+                    return [70];
                 case 0.25:
-                    return [3,15];
+                    return [80];
                 case 0.5:
-                    return [5,25];
+                    return [90];
                 case 1:
-                    return [10,50];
+                    return [100];
                 case 2:
-                    return [15,60];
+                    return [110];
                 case 3:
-                    return [20,65];
+                    return [120];
                 case 4:
-                    return [25,70];
+                    return [130];
             }
         },
     },
@@ -6148,6 +6148,9 @@ export function racialTrait(workers,type){
         let tusk = global.race['tusk'] ? 1 + ((traits.tusk.vars()[0] / 100) * (armyRating(jobScale(1),'army',0) / 100)) : 1;
         let lt = global.race['living_tool'] ? 1 + traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science * 0.12 : 0) : 1;
         modifier *= lt > tusk ? lt : tusk;
+    }
+    if (global.race['forager']){
+        modifier *= traits.forager.vars()[0] / 100;
     }
     if (global.race['high_pop']){
         modifier = highPopAdjust(modifier);

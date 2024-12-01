@@ -8313,7 +8313,7 @@
   "wiki_trait_effect_gnawer": "%0 Lumber chewed per population.",
   "wiki_trait_effect_calm": "Global bonus provided by zen state. %0 meditation spots per chamber.",
   "wiki_trait_effect_herbivore": "Soldiers do not produce food from hunting.",
-  "wiki_trait_effect_forager": "Several basic jobs are combined into one.",
+  "wiki_trait_effect_forager": "Several basic jobs are combined into one. %0% efficency.",
   "wiki_trait_effect_instinct": "%1% dying soldiers are instead wounded. Surveyors %0% less likely to be killed. Losses from Andromeda assault missions is reduced by half. Andromeda ships better avoid pirates, reducing threat.",
   "wiki_trait_effect_instinct_ex1": "Pirate threat reduced by %0% in %1 and by %2% in other regions.",
   "wiki_trait_effect_pack_rat": "+%0% Crate/Container Storage. +%1% General Storage.",
