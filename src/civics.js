@@ -2222,9 +2222,6 @@ export function armyRating(val,type,wound){
         if (global.race['unfathomable']){
             army *= 0.66;
         }
-        if(global.city.banquet && global.city.banquet.on && global.city.banquet.count >= 3){
-            army *= 1 + (global.city.banquet.strength ** 0.65) / 100;
-        }
         if (global.race['ocular_power'] && global.race['ocularPowerConfig'] && global.race.ocularPowerConfig.w){
             let hunt = 60 * (traits.ocular_power.vars()[1] / 100);
             army *= 1 + (hunt / 100);
