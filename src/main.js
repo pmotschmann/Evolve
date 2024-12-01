@@ -7777,8 +7777,8 @@ function fastLoop(){
             global.civic.garrison.rate += traits.brute.vars(1)[1] / 40 * fathom * time_multiplier;
         }
         global.civic.garrison.progress += global.civic.garrison.rate;
-        if (global.civic.garrison.progress >= 100){
-            global.civic.garrison.progress = 0;
+        while (global.civic.garrison.progress >= 100){
+            global.civic.garrison.progress -= 100;
             global.civic.garrison.workers++;
 
             if (global.portal['fortress'] && global.portal.fortress['assigned'] && global.portal.fortress.garrison < global.portal.fortress.assigned){
@@ -11122,7 +11122,7 @@ function longLoop(){
                     healed++;
                     hc -= max_bound;
                 }
-                if (Math.rand(0,hc) > Math.rand(0,max_bound)){
+                if (Math.rand(0,max_bound) < hc){
                     healed++;
                 }
             }
