@@ -4417,7 +4417,7 @@ const techs = {
             Knowledge(){ return 80000000; },
             Omniscience(){ return 12500; },
         },
-        effect(){ return loc('tech_spirit_researcher_effect',[global.civic.scientist.name]); },
+        effect(){ return loc('tech_spirit_researcher_effect',[global.civic.scientist ? global.civic.scientist.name : loc('job_scientist')]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
