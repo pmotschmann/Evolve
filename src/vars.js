@@ -1216,6 +1216,9 @@ if (convertVersion(global['version']) <= 104000){
     if (global.city.hasOwnProperty('shrine') && !global.city.shrine.hasOwnProperty('cycle')){
         global.city.shrine['cycle'] = 0;
     }
+}
+
+if (convertVersion(global['version']) <= 104001){
     if(global.tech['elysium'] && global.tech.elysium >= 18){
         global.tech.elysium--;
         if(global.tech.cement && !global.race['flier']){
