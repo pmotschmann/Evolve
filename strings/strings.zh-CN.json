@@ -5541,7 +5541,7 @@
   "planet_retrograde": "月球逆行",
   "planet_retrograde_desc": "月球轨道在这颗行星上是异常逆行的。",
   "planet_kamikaze": "神风",
-  "planet_kamikaze_desc": "这颗行星会逐渐地靠近母恒星，并且会意外被潮汐之力分裂。",
+  "planet_kamikaze_desc": "这颗行星会逐渐地靠近母恒星，迟早会被潮汐之力分裂。",
   "planet_kamikaze_msg": "您的家园和月球由于太靠近母恒星而被潮汐之力分裂了。",
   "planet_kamikaze_stabilize": "您收到了一则新消息：您的母星%0的公转周期将会稳定在%1天。",
   "wish_for": "为%0许愿",
