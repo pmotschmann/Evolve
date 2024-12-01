@@ -1639,7 +1639,7 @@ const fortressModules = {
             struct(){
                 return {
                     d: { count: 0, on: 0 },
-                    p: ['dish_soul_steeper','portal']
+                    p: ['dish_life_infuser','portal']
                 };
             },
             flair: loc('portal_dish_life_infuser_flair')
