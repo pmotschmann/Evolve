@@ -57,7 +57,7 @@ export function defineIndustry(){
     }
     clearElement($('#industry'));
 
-    if (global.city['smelter'] && (global.city.smelter.count > 0 || global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation'])){
+    if (smelterUnlocked()){
         var smelter = $(`<div id="iSmelter" class="industry"><h2 class="header has-text-advanced">${loc('city_smelter')}</h2></div>`);
         $(`#industry`).append(smelter);
         loadIndustry('smelter',smelter,'#iSmelter');
@@ -521,6 +521,19 @@ function loadSmelter(parent,bind){
                 attach: '#main',
             });
         });
+    }
+}
+
+export function smelterUnlocked(){
+    return global.city['smelter'] && (global.city.smelter.count > 0 || global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation']);
+}
+
+export function addSmelter(num=1, product="Iron", fuel="Oil"){
+    global.city.smelter.cap += num;
+    global.city.smelter[product] += num; // ["Iron", "Steel", "Iridium"]
+    global.city.smelter[fuel] += num; // ["Wood", "Coal", "Oil", "Star", "Inferno"]
+    if (fuel === 'star') {
+        global.city.smelter.StarCap += num;
     }
 }
 

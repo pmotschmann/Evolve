@@ -10,6 +10,7 @@ import { loc } from './locale.js';
 import { armyRating, armorCalc, garrisonSize, mercCost, soldierDeath } from './civics.js';
 import { govActive } from './governor.js';
 import { races, traits, traitCostMod, racialTrait } from './races.js';
+import { addSmelter } from './industry.js'
 
 const edenicModules = {
     eden_asphodel: {
@@ -1267,21 +1268,22 @@ const edenicModules = {
                 Scarletite(offset){ return spaceCostMultiplier('sacred_smelter', offset, 1250000, 1.25, 'eden'); },
             },
             effect(){
-                let desc = `<div>${loc('interstellar_stellar_forge_effect3',[5])}</div>`;
+                let desc = `<div>${loc('interstellar_stellar_forge_effect3',[$(this)[0].smelting()])}</div>`;
                 if (global.tech['elysium'] && global.tech.elysium >= 19){
                     desc += `<div>${loc('city_foundry_effect1',[jobScale(3)])}</div>`;
                 }
                 return `${desc}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             powered(){ return powerCostMod(33); },
+            smelting(){
+                return 5;
+            },
             special: true,
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('sacred_smelter','eden');
                     if (powerOnNewStruct($(this)[0])){
-                        global.city.smelter.cap += 5;
-                        global.city.smelter.Steel += 5;
-                        global.city.smelter.Oil += 5;
+                        addSmelter($(this)[0].smelting(), 'Steel');
                     }
                     return true;
                 }

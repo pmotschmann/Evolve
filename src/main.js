@@ -5,7 +5,7 @@ import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaT
 import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobScale, workerScale, limitCraftsmen, loadServants} from './jobs.js';
-import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, luxGoodPrice } from './industry.js';
+import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, luxGoodPrice, smelterUnlocked } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
 import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes } from './space.js';
@@ -4830,35 +4830,30 @@ function fastLoop(){
         let iron_smelter = 0;
         let star_forge = 0;
         let iridium_smelter = 0;
-        if (global.city['smelter'] && (global.city.smelter.count > 0 || global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation'])){
+        if (smelterUnlocked()){
             let capacity = global.city.smelter.count;
-            if (p_on['stellar_forge'] && global.tech['star_forge'] && global.tech.star_forge >= 2){
-                capacity += p_on['stellar_forge'] * 2;
+            if (p_on['stellar_forge']){
+                star_forge = p_on['stellar_forge'] * actions.interstellar.int_neutron.stellar_forge.smelting();
+                global.city.smelter.Star = Math.max(global.city.smelter.Star, star_forge);
+                capacity += star_forge;
             }
             if (p_on['hell_forge']){
-                capacity += p_on['hell_forge'] * 3;
+                capacity += p_on['hell_forge'] * actions.portal.prtl_ruins.hell_forge.smelting();
             }
             if (p_on['sacred_smelter']){
-                capacity += p_on['sacred_smelter'] * 5;
+                capacity += p_on['sacred_smelter'] * actions.eden.eden_elysium.sacred_smelter.smelting();
             }
             if (p_on['ore_refinery']){
-                capacity += p_on['ore_refinery'] * (global.tech['isolation'] ? 12 : 4);
+                capacity += p_on['ore_refinery'] * actions.tauceti.tau_gas.ore_refinery.smelting();
             }
-            if (global.tech['m_smelting'] && global.space['hell_smelter']){
-                capacity += global.space.hell_smelter.count * 2;
+            if (global.space['hell_smelter']){
+                capacity += global.space.hell_smelter.count * actions.space.spc_hell.hell_smelter.smelting();
             }
-            if ((global.race['cataclysm'] || global.race['orbit_decayed']) && global.space['geothermal']){
-                capacity += global.space.geothermal.on;
+            if (p_on['geothermal']){
+                capacity += p_on['geothermal'] * actions.space.spc_hell.geothermal.smelting();
             }
             global.city.smelter.cap = capacity;
-
-            if (global.tech['star_forge'] >= 2){
-                global.city.smelter.StarCap = p_on['stellar_forge'] * 2;
-                global.city.smelter.Star = global.city.smelter.StarCap;
-            }
-            else {
-                global.city.smelter.StarCap = 0;
-            }
+            global.city.smelter.StarCap = star_forge;
 
             if (global.race['forge']){
                 global.city.smelter.Wood = 0;
@@ -4916,7 +4911,6 @@ function fastLoop(){
             let steel_smelter = global.city.smelter.Steel;
             iridium_smelter = global.city.smelter.Iridium;
             let oil_bonus = global.race['forge'] ? global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil : global.city.smelter.Oil;
-            star_forge = global.city.smelter.Star;
             let inferno_bonus = global.city.smelter.Inferno;
 
             if (global.race['steelen']) {
@@ -11848,19 +11842,7 @@ function longLoop(){
             if (moldFathom >= 0.02 && global.resource.Knowledge.max >= (actions.tech.smelting.cost.Knowledge() * know_adjust) && checkTechRequirements('smelting',false) && !global.tech['smelting']){
                 messageQueue(loc(tech_source,[loc('tech_smelting')]),'info',false,['progress']);
                 global.tech['smelting'] = 1;
-                global.city['smelter'] = {
-                    count: 0,
-                    cap: 0,
-                    Wood: 0,
-                    Coal: 0,
-                    Oil: 0,
-                    Star: 0,
-                    StarCap: 0,
-                    Inferno: 0,
-                    Iron: 0,
-                    Steel: 0,
-                    Iridium: 0
-                };
+                initStruct(actions.city.smelter);
                 if (global.race['steelen']){
                     global.tech['smelting'] = 2;
                 }

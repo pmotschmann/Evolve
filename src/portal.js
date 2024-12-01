@@ -14,6 +14,7 @@ import { descension } from './resets.js';
 import { renderEdenic } from './edenic.js';
 import { loadTab } from './index.js';
 import { loc } from './locale.js';
+import { addSmelter } from './industry.js';
 
 const fortressModules = {
     prtl_fortress: {
@@ -832,20 +833,21 @@ const fortressModules = {
                 Soul_Gem(offset){ return spaceCostMultiplier('hell_forge', offset, 5, 1.22, 'portal'); },
             },
             powered(){ return powerCostMod(12); },
+            smelting(){
+                return 3;
+            },
             special: true,
             effect(wiki){
                 let sup = hellSupression('ruins', 0, wiki);
                 let craft = +(75 * sup.supress).toFixed(1);
                 let reactor = global.tech['inferno_power'] ? `<div>${loc('portal_hell_forge_effect2',[10,loc(`portal_inferno_power_title`)])}</div>` : ``;
-                return `<div>${loc('portal_hell_forge_effect',[jobScale(1)])}</div>${reactor}<div>${loc('interstellar_stellar_forge_effect3',[3])}</div><div>${loc('interstellar_stellar_forge_effect',[craft])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('portal_hell_forge_effect',[jobScale(1)])}</div>${reactor}<div>${loc('interstellar_stellar_forge_effect3',[$(this)[0].smelting()])}</div><div>${loc('interstellar_stellar_forge_effect',[craft])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('hell_forge','portal');
                     if (powerOnNewStruct($(this)[0])){
-                        global.city.smelter.cap += 3;
-                        global.city.smelter.Oil += 3;
-                        global.city.smelter.Iron += 3;
+                        addSmelter($(this)[0].smelting());
                     }
                     return true;
                 }

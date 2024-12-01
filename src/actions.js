@@ -5,7 +5,7 @@ import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from 
 import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill } from './races.js';
 import { defineResources, unlockCrates, unlockContainers, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
-import { loadIndustry, defineIndustry, nf_resources, gridDefs } from './industry.js';
+import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter } from './industry.js';
 import { defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating, garrisonSize } from './civics.js';
 import { spaceTech, interstellarTech, galaxyTech, incrementStruct, universe_affixes, renderSpace, piracy, fuel_adjust, isStargateOn } from './space.js';
 import { renderFortress, fortressTech } from './portal.js';
@@ -2960,24 +2960,20 @@ export const actions = {
                 }
             },
             special: true,
+            smelting(){
+                return 1;
+            },
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('smelter','city');
-                    if (global.race['kindling_kindred'] || global.race['smoldering'] || global.race['artifical']){
-                        if (global.race['artifical']){
-                            global.city['smelter'].Oil++;
-                        }
-                        else if (global.race['evil']) {
-                            global.city['smelter'].Wood++;
-                        }
-                        else {
-                            global.city['smelter'].Coal++;
-                        }
+                    let fuel = 'Wood';
+                    if (global.race['artifical']){
+                        fuel = 'Oil';
                     }
-                    else {
-                        global.city['smelter'].Wood++;
+                    else if ((global.race['kindling_kindred'] || global.race['smoldering']) && !global.race['evil']) {
+                        fuel = 'Coal';
                     }
-                    global.city['smelter'].Iron++;
+                    addSmelter($(this)[0].smelting(), 'Iron', fuel);
                     global.settings.showIndustry = true;
                     defineIndustry();
                     return true;
@@ -8910,7 +8906,7 @@ function aiStart(){
 
         initStruct(actions.city.factory);
         initStruct(actions.city.foundry);
-        initStruct(actions.city.smelter); global.city.smelter.count = 1; global.city.smelter.Oil = 1; global.city.smelter.Iron = 1;
+        initStruct(actions.city.smelter); addSmelter(1, 'Iron');
         initStruct(actions.city.oil_power); global.city.oil_power.count = 1; global.city.oil_power.on = 1; 
         initStruct(actions.city.coal_power);
         initStruct(actions.city.transmitter); global.city.transmitter.count = 1; global.city.transmitter.on = 1;
@@ -9164,7 +9160,7 @@ function cataclysm(){
         }
         initStruct(actions.city.factory);
         initStruct(actions.city.foundry);
-        initStruct(actions.city.smelter); global.city.smelter.cap = 2; global.city.smelter.Oil = 2; global.city.smelter.Iron = 1; global.city.smelter.Steel = 1;
+        initStruct(actions.city.smelter); addSmelter(1, 'Iron'); addSmelter(1, 'Steel');
         initStruct(actions.city.fission_power);
         initStruct(actions.city.oil_power);
         initStruct(actions.city.coal_power);
