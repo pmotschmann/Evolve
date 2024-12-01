@@ -12081,11 +12081,13 @@ function longLoop(){
             global.tech['xeno'] = 1;
             global.galaxy.scout_ship.count--;
             global.galaxy.scout_ship.on--;
-            global.galaxy.scout_ship.crew--;
-            global.galaxy.scout_ship.mil--;
-            global.resource[global.race.species].amount--;
-            global.civic.garrison.workers--;
-            global.civic.garrison.crew--;
+            let civPerShip = actions.galaxy.gxy_gateway.scout_ship.ship.civ();
+            let milPerShip = actions.galaxy.gxy_gateway.scout_ship.ship.mil();
+            global.galaxy.scout_ship.crew -= civPerShip;
+            global.galaxy.scout_ship.mil -= milPerShip;
+            global.resource[global.race.species].amount -= civPerShip;
+            global.civic.garrison.workers -= milPerShip;
+            global.civic.garrison.crew -= milPerShip;
             messageQueue(loc('galaxy_encounter'),'info',false,['progress']);
             drawTech();
         }
