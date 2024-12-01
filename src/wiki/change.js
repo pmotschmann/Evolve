@@ -10,6 +10,8 @@ export const changeList = [
             `Genetics Lab now shows rank adjustments with Empowered.`,
             `Fixed wiki display of the Grand Death Tour progress.`,
             `Normalized Mimic and Imitate ranks.`,
+            `Fliers will no longer be offered a new cement production method in Edenic realm.`,
+            `Fixed issues with powered down Stargate.`,
             `Fixed various minor bugs.`
         ]
     },
