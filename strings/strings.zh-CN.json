@@ -10866,7 +10866,7 @@
   "wiki_events_protest_condition_para1": "该事件只在政府体制为%0时发生。",
   "wiki_events_scandal": "丑闻",
   "wiki_events_scandal_para1": "当总督为%0时可能会发生丑闻事件。",
-  "wiki_events_scandal_para2": "丑闻事件持续时间在 %1 天至 %2 天范围之间随机取值，事件期间全局产量 -%0。",
+  "wiki_events_scandal_para2": "丑闻事件持续时间在 %1 天至 %2 天范围之间随机取值，事件期间全局产量 -%0 （购买CRISPR升级 高效官僚之后，该数值变为 -6%）。",
   "wiki_events_scandal_condition_para1": "该事件只在总督为%0时发生。",
   "wiki_events_spy": "间谍被抓捕",
   "wiki_events_spy_para1": "随机失去一名间谍。",
