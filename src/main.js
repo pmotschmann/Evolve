@@ -2394,15 +2394,20 @@ function fastLoop(){
                     break;
                 }
             }
-            global.galaxy.starbase.s_max = p_on['starbase'] * actions.galaxy.gxy_gateway.starbase.support();
-            if (p_on['gateway_station']){
-                global.galaxy.starbase.s_max += p_on['gateway_station'] * actions.galaxy.gxy_stargate.gateway_station.support();
+            if (p_on['s_gate']){
+                global.galaxy.starbase.s_max = p_on['starbase'] * actions.galaxy.gxy_gateway.starbase.support();
+                if (p_on['gateway_station']){
+                    global.galaxy.starbase.s_max += p_on['gateway_station'] * actions.galaxy.gxy_stargate.gateway_station.support();
+                }
+                if (p_on['telemetry_beacon']){
+                    global.galaxy.starbase.s_max += p_on['telemetry_beacon'] * actions.galaxy.gxy_stargate.telemetry_beacon.support();
+                }
+                if (p_on['ship_dock']){
+                    global.galaxy.starbase.s_max += p_on['ship_dock'] * actions.galaxy.gxy_gateway.ship_dock.support();
+                }
             }
-            if (p_on['telemetry_beacon']){
-                global.galaxy.starbase.s_max += p_on['telemetry_beacon'] * actions.galaxy.gxy_stargate.telemetry_beacon.support();
-            }
-            if (p_on['ship_dock']){
-                global.galaxy.starbase.s_max += p_on['ship_dock'] * actions.galaxy.gxy_gateway.ship_dock.support();
+            else {
+                global.galaxy.starbase.s_max = 0;
             }
         }
 
@@ -2436,31 +2441,7 @@ function fastLoop(){
 
         // Foothold
         if (global.galaxy['foothold'] && global.galaxy.foothold.count > 0){
-            global.galaxy.foothold.s_max = p_on['foothold'] * actions.galaxy.gxy_alien2.foothold.support();
-
-            let used_support = 0;
-            let foothold_structs = global.support.alien2.map(x => x.split(':')[1]);
-            for (var i = 0; i < foothold_structs.length; i++){
-                if (global.galaxy[foothold_structs[i]]){
-                    let operating = global.galaxy[foothold_structs[i]].on;
-                    let id = actions.galaxy.gxy_alien2[foothold_structs[i]].id;
-                    if (used_support + operating > global.galaxy.foothold.s_max){
-                        operating -= (used_support + operating) - global.galaxy.foothold.s_max;
-                        $(`#${id} .on`).addClass('warn');
-                        $(`#${id} .on`).prop('title',`ON ${operating}/${global.galaxy[foothold_structs[i]].on}`);
-                    }
-                    else {
-                        $(`#${id} .on`).removeClass('warn');
-                        $(`#${id} .on`).prop('title',`ON`);
-                    }
-                    used_support += operating * -(actions.galaxy.gxy_alien2[foothold_structs[i]].support());
-                    gal_on[foothold_structs[i]] = operating;
-                }
-                else {
-                    gal_on[foothold_structs[i]] = 0;
-                }
-            }
-            global.galaxy.foothold.support = used_support;
+            global.galaxy.foothold.s_max = p_on['s_gate'] * p_on['foothold'] * actions.galaxy.gxy_alien2.foothold.support();
         }
 
         // Guard Post
@@ -2486,30 +2467,6 @@ function fastLoop(){
         // harbor
         if (global.portal['harbor']){
             global.portal.harbor.s_max = p_on['harbor'] * actions.portal.prtl_lake.harbor.support();
-
-            let used_support = 0;
-            let harbor_structs = global.support.lake.map(x => x.split(':')[1]);
-            for (var i = 0; i < harbor_structs.length; i++){
-                if (global.portal[harbor_structs[i]]){
-                    let operating = global.portal[harbor_structs[i]].on;
-                    let id = actions.portal.prtl_lake[harbor_structs[i]].id;
-                    if (used_support + operating > global.portal.harbor.s_max){
-                        operating -= (used_support + operating) - global.portal.harbor.s_max;
-                        $(`#${id} .on`).addClass('warn');
-                        $(`#${id} .on`).prop('title',`ON ${operating}/${global.portal[harbor_structs[i]].on}`);
-                    }
-                    else {
-                        $(`#${id} .on`).removeClass('warn');
-                        $(`#${id} .on`).prop('title',`ON`);
-                    }
-                    used_support += operating * -(actions.portal.prtl_lake[harbor_structs[i]].support());
-                    gal_on[harbor_structs[i]] = operating;
-                }
-                else {
-                    gal_on[harbor_structs[i]] = 0;
-                }
-            }
-            global.portal.harbor.support = used_support;
         }
 
         // Purifier
@@ -2778,7 +2735,7 @@ function fastLoop(){
             {
                 area: 'galaxy',
                 region: 'gxy_alien2',
-                ships: ['armed_miner','scavenger'],
+                ships: global.support.alien2.map(x => x.split(':')[1]),
                 req: 'foothold'
             },
             {
@@ -2790,7 +2747,7 @@ function fastLoop(){
             {
                 area: 'portal',
                 region: 'prtl_lake',
-                ships: ['bireme','transport'],
+                ships: global.support.lake.map(x => x.split(':')[1]),
                 req: 'harbor'
             }
         ];
@@ -2798,66 +2755,97 @@ function fastLoop(){
         let crew_civ = 0;
         let crew_mil = 0;
         let total = 0;
+
         for (let j=0; j<galaxy_ship_types.length; j++){
-            let area = galaxy_ship_types[j].area;
-            let region = galaxy_ship_types[j].region;
+            const area = galaxy_ship_types[j].area;
+            const region = galaxy_ship_types[j].region;
+            const support_home = actions[area][region].info?.support;
+            let used_support = 0;
             for (let i=0; i<galaxy_ship_types[j].ships.length; i++){
-                let ship = galaxy_ship_types[j].ships[i];
+                const ship = galaxy_ship_types[j].ships[i];
 
                 if (global[area][ship] && global[area][ship].hasOwnProperty('on')){
-                    if (actions[area][region][ship].ship['civ'] && global[area][ship].hasOwnProperty('crew')){
-                        // Civilian ships can only be crewed at a rate of 1 ship (per type) per fast tick
-                        let civPerShip = actions[area][region][ship].ship.civ();
-                        if (global[area][ship].crew < 0){
-                            global[area][ship].crew = 0;
-                        }
-                        if (global[area][ship]['crew'] < global[area][ship].on * civPerShip){
-                            if (total < global.resource[global.race.species].amount){
-                                if (global.civic[global.civic.d_job].workers >= civPerShip){
-                                    global.civic[global.civic.d_job].workers -= civPerShip;
-                                    global.civic.crew.workers += civPerShip;
-                                    global[area][ship]['crew'] += civPerShip;
+                    const id = actions[area][region][ship].id;
+                    const num_on = global[area][ship].on;
+                    let operating = (p_on['s_gate'] || area !== 'galaxy') ? num_on : 0;
+
+                    // Support cost (currently only for gateway ships; others computed later)
+                    const operating_cost = actions[area][region][ship].hasOwnProperty('support') ? -(actions[area][region][ship].support()) : 0;
+                    if (operating_cost > 0){
+                        const max_operating = Math.floor((global[area][support_home].s_max - used_support) / operating_cost);
+                        operating = Math.min(operating, max_operating);
+                    }
+
+                    if (actions[area][region][ship].hasOwnProperty('ship')){
+                        if (actions[area][region][ship].ship.civ && global[area][ship].hasOwnProperty('crew')){
+                            // Civilian ships can only be crewed at a rate of 1 ship (per type) per fast tick
+                            let civPerShip = actions[area][region][ship].ship.civ();
+                            if (civPerShip > 0){
+                                if (global[area][ship].crew < 0){
+                                    global[area][ship].crew = 0;
                                 }
+                                if (global[area][ship].crew < operating * civPerShip){
+                                    if (total < global.resource[global.race.species].amount){
+                                        if (global.civic[global.civic.d_job].workers >= civPerShip){
+                                            global.civic[global.civic.d_job].workers -= civPerShip;
+                                            global.civic.crew.workers += civPerShip;
+                                            global[area][ship].crew += civPerShip;
+                                        }
+                                    }
+                                }
+                                else if (global[area][ship].crew > operating * civPerShip){
+                                    global.civic[global.civic.d_job].workers += civPerShip;
+                                    global.civic.crew.workers -= civPerShip;
+                                    global[area][ship].crew -= civPerShip;
+                                }
+                                global.civic.crew.assigned = global.civic.crew.workers;
+                                crew_civ += global[area][ship].crew;
+                                total += global[area][ship].crew;
+                                operating = Math.min(operating, Math.floor(global[area][ship].crew / civPerShip));
                             }
                         }
-                        else if (global[area][ship]['crew'] > global[area][ship].on * civPerShip){
-                            global.civic[global.civic.d_job].workers += civPerShip;
-                            global.civic.crew.workers -= civPerShip;
-                            global[area][ship]['crew'] -= civPerShip;
+
+                        if (actions[area][region][ship].ship.mil && global[area][ship].hasOwnProperty('mil')){
+                            // All military ships can be crewed instantly
+                            let milPerShip = actions[area][region][ship].ship.mil();
+                            if (milPerShip > 0){
+                                if (global[area][ship].mil !== operating * milPerShip){
+                                    global[area][ship].mil = operating * milPerShip;
+                                }
+                                if (global.civic.garrison.workers - global.portal.fortress.garrison < 0){
+                                    let underflow = global.civic.garrison.workers - global.portal.fortress.garrison;
+                                    global[area][ship].mil -= underflow;
+                                }
+                                if (crew_mil + global[area][ship].mil > global.civic.garrison.workers - global.portal.fortress.garrison){
+                                    global[area][ship].mil = global.civic.garrison.workers - global.portal.fortress.garrison - crew_mil;
+                                }
+                                if (global[area][ship].mil < 0){
+                                    global[area][ship].mil = 0;
+                                }
+                                crew_mil += global[area][ship].mil;
+                                operating = Math.min(operating, Math.floor(global[area][ship].mil / milPerShip));
+                            }
                         }
-                        global.civic.crew.assigned = global.civic.crew.workers;
-                        crew_civ += global[area][ship]['crew'];
-                        total += global[area][ship]['crew'];
                     }
 
-                    if (actions[area][region][ship].ship['mil'] && global[area][ship].hasOwnProperty('mil')){
-                        // All military ships can be crewed instantly
-                        let milPerShip = actions[area][region][ship].ship.mil();
-                        if (global[area][ship]['mil'] !== global[area][ship].on * milPerShip){
-                            global[area][ship]['mil'] = global[area][ship].on * milPerShip;
-                        }
-                        if (global.civic.garrison.workers - global.portal.fortress.garrison < 0){
-                            let underflow = global.civic.garrison.workers - global.portal.fortress.garrison;
-                            global[area][ship]['mil'] -= underflow;
-                        }
-                        if (crew_mil + global[area][ship]['mil'] > global.civic.garrison.workers - global.portal.fortress.garrison){
-                            global[area][ship]['mil'] = global.civic.garrison.workers - global.portal.fortress.garrison - crew_mil;
-                        }
-                        if (global[area][ship]['mil'] < 0){
-                            global[area][ship]['mil'] = 0;
-                        }
-                        crew_mil += global[area][ship]['mil'];
-                    }
-
-                    if (global[area][ship]['crew'] < global[area][ship].on * actions[area][region][ship].ship.civ() || global[area][ship]['mil'] < global[area][ship].on * actions[area][region][ship].ship.mil() || gal_on[ship] < global[area][ship].on){
-                        $(`#galaxy-${ship} .on`).addClass('warn');
-                        $(`#galaxy-${ship} .on`).prop('title',`ON ${gal_on[ship]}/${global[area][ship].on}`);
+                    if (operating < num_on){
+                        $(`#${id} .on`).addClass('warn');
+                        $(`#${id} .on`).prop('title',`ON ${operating}/${num_on}`);
                     }
                     else {
-                        $(`#galaxy-${ship} .on`).removeClass('warn');
-                        $(`#galaxy-${ship} .on`).prop('title',`ON`);
+                        $(`#${id} .on`).removeClass('warn');
+                        $(`#${id} .on`).prop('title',`ON`);
                     }
+
+                    used_support += operating * operating_cost;
+                    gal_on[ship] = operating;
                 }
+                else {
+                    gal_on[ship] = 0;
+                }
+            }
+            if (support_home) {
+                global[area][support_home].support = used_support;
             }
         }
 
@@ -3852,15 +3840,6 @@ function fastLoop(){
 
         let andromeda_helium = 0;
         let andromeda_deuterium = 0;
-
-        if (p_on['s_gate']){
-            let ship_list = ['freighter','super_freighter','minelayer','raider'];
-            for (let i=0; i<ship_list.length; i++){
-                if (p_on['s_gate'] && global.galaxy.hasOwnProperty(ship_list[i])){
-                    gal_on[ship_list[i]] = global.galaxy[ship_list[i]].on;
-                }
-            }
-        }
 
         for (let j=0; j<galaxy_ship_types.length; j++){
             let area = galaxy_ship_types[j].area;
