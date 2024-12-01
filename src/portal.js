@@ -956,6 +956,8 @@ const fortressModules = {
                         spatialReasoning(0,false,true);
                         calcPillar(true);
                         towerSize(true);
+                        fortressModules.prtl_gate.west_tower.post(); //unlock towers if both are complete now
+                        fortressModules.prtl_gate.east_tower.post();
                         unlockAchieve('resonance');
                         vBind({el: `#portal-ancient_pillars`},'update');
                         return true;

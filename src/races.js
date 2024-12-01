@@ -6521,6 +6521,7 @@ export function cleanAddTrait(trait){
             global.civic.cement_worker.assigned = 0;
             setPurgatory('tech','cement');
             setPurgatory('city','cement_plant');
+            setPurgatory('eden','eden_cement');
             break;
         case 'sappy':
             if (global.civic.d_job === 'quarry_worker'){
@@ -6788,6 +6789,7 @@ export function cleanRemoveTrait(trait,rank){
             checkPurgatory('tech','cement');
             if (global.tech['cement']){
                 checkPurgatory('city','cement_plant');
+                checkPurgatory('eden','eden_cement');
                 global.resource.Cement.display = true;
                 global.civic.cement_worker.display = true;
             }

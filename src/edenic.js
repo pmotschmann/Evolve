@@ -1632,7 +1632,7 @@ const edenicModules = {
             desc(){
                 return `<div>${loc('city_cement_plant_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
-            reqs: { elysium: 18 },
+            reqs: { cement:8 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('eden_cement', offset, 5000000000, 1.24, 'eden'); },
                 Stone(offset){ return spaceCostMultiplier('eden_cement', offset, 1000000000, 1.24, 'eden'); },
