@@ -1388,7 +1388,7 @@ const edenicModules = {
                 let food = 250000;
                 let morale = 0;
                 morale += global.eden.hasOwnProperty('pillbox') && p_on['pillbox'] ? 0.35 * p_on['pillbox'] : 0;
-                morale += global.civic.elysium_miner.workers * 0.15;
+                morale += (global.civic?.elysium_miner?.workers ?? 0) * 0.15;
                 morale += global.eden.hasOwnProperty('archive') && p_on['archive'] ? 0.4 * p_on['archive'] : 0;
 
                 let desc =  `<div>${loc('space_red_vr_center_effect1',[morale.toFixed(1)])}</div>`
