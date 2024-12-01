@@ -5047,6 +5047,8 @@
   "trait_small_name": " [矮小] 特质",
   "trait_weak": "该种族不善于进行重体力劳动。",
   "trait_weak_name": " [孱弱] 特质",
+  "trait_drunk": "该种族大多数时候喝醉酒，因此重体力劳动的效率下降了。",
+  "trait_drunk_name": " [酒醉] 特质",
   "trait_large": "该种族体型巨大，建筑材料需求增加。",
   "trait_large_name": " [巨大] 特质",
   "trait_strong": "该种族拥有巨力，从事体力劳动时更快。",
