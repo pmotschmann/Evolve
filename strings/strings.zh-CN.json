@@ -8867,7 +8867,7 @@
   "wiki_tech_quantum_swarm": "使蜂群工厂可以根据量子水平减少更多蜂群卫星的成本。",
   "wiki_tech_perovskite_cell": "使蜂群卫星的基础发电量变为 +%0MW。",
   "wiki_tech_dyson_sphere2": "您可以继续建造 100 段分项工程的戴森球，提供更多电力。",
-  "wiki_tech_elysanite_sphere": "您可以继续建造 100 段分项工程的戴森球，提供更多电力。",
+  "wiki_tech_elysanite_sphere": "您可以继续建造 1000 段分项工程的戴森球，提供更多电力。",
   "wiki_tech_subspace_signal": "导航灯塔还可以使%0支持 +1。",
   "wiki_tech_helium_attractor": "使氦-3收集器的氦-3基础产量由 +0.5 提升到 +0.65。",
   "wiki_tech_ram_scoops": "气体收集器可以生产 氘 了，氘的基础产量为 +0.15。",
