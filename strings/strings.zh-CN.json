@@ -6702,7 +6702,7 @@
   "interstellar_orichalcum_sphere_desc": "奥利哈刚戴森球",
   "interstellar_orichalcum_sphere_effect": "使用奥利哈刚，对戴森球的 1% 部分进行升级",
   "interstellar_elysanite_sphere_desc": "天堂石戴森球",
-  "interstellar_elysanite_sphere_effect": "使用天堂石，对戴森球的 1% 部分进行升级",
+  "interstellar_elysanite_sphere_effect": "使用天堂石，对戴森球的 0.1% 部分进行升级",
   "interstellar_nebula_name": "螺旋星云",
   "interstellar_nebula_desc1": "螺旋星云远在 694.0 光年之外，但很可能富含氦-3，能够帮助你扩张疆域。",
   "interstellar_nebula_desc2": "螺旋星云远在 694.0 光年之外，富含氦-3。",
