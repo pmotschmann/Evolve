@@ -4,8 +4,9 @@ import { clearElement } from './../functions.js';
 export const changeList = [
     {
         version: `1.4.1`,
-        date: `11/30/2024`,
+        date: `12/1/2024`,
         changes: [
+            `Racconar now use the special Forager trait in place of Herbivore and Carnivore.`,
             `Genetics Lab now shows rank adjustments with Empowered.`,
             `Fixed wiki display of the Grand Death Tour progress.`,
             `Normalized Mimic and Imitate ranks.`,

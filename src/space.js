@@ -1412,6 +1412,7 @@ const spaceProjects = {
                 return global.race['wish'] && global.race['wishStats'] && global.space['wonder_statue'] ? true : false;
             },
             trait: ['wish'],
+            wiki: false,
             queue_complete(){ return false; },
             effect(){
                 return loc(`city_wonder_effect`,[5]);
@@ -3265,6 +3266,7 @@ const interstellarProjects = {
                 return global.race['wish'] && global.race['wishStats'] && global.interstellar['wonder_gardens'] ? true : false;
             },
             trait: ['wish'],
+            wiki: false,
             queue_complete(){ return false; },
             effect(){
                 return loc(`city_wonder_effect`,[5]);

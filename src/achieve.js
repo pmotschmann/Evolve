@@ -641,7 +641,7 @@ export function checkAchievements(){
                 equilProgress[global.pillars[race]]++;
             }
         });
-        if (Object.keys(genus).length >= Object.keys(genus_traits).length - 1){
+        if (Object.keys(genus).length >= Object.keys(genus_traits).length - 2){
             let rank = 5;
             Object.keys(genus).forEach(function(g){
                 if (genus[g] < rank && g !== 'hybrid'){

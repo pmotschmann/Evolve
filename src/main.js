@@ -3497,6 +3497,7 @@ function fastLoop(){
                     if (global.race['forager']){
                         let forage = 1 + (global.tech['foraging'] ? 0.75 * global.tech['foraging'] : 0);
                         let foragers = workerScale(global.civic.forager.workers,'forager');
+                        foragers *= racialTrait(foragers,'forager');
                         if (global.race['servants']){
                             let serve = global.race.servants.jobs.forager;
                             serve *= servantTrait(global.race.servants.jobs.forager,'forager');
@@ -4049,7 +4050,7 @@ function fastLoop(){
                 hunters *= racialTrait(hunters,'hunting');
                 if (global.race['servants']){
                     let serve = jobScale(global.race.servants.jobs.hunter);
-                    serve *= servantTrait(global.race.servants.jobs.forager,'hunting');
+                    serve *= servantTrait(global.race.servants.jobs.hunter,'hunting');
                     hunters += serve;
                 }
                 if (global.city.biome === 'oceanic'){
@@ -4104,6 +4105,7 @@ function fastLoop(){
             if (global.race['forager']){
                 let forage = 1 + (global.tech['foraging'] ? 0.5 * global.tech['foraging'] : 0);
                 let foragers = workerScale(global.civic.forager.workers,'forager');
+                foragers *= racialTrait(foragers,'forager');
 
                 if (global.race['servants']){
                     let serve = global.race.servants.jobs.forager;
@@ -5459,7 +5461,7 @@ function fastLoop(){
 
                 breakdown.p['Lumber'][loc('job_reclaimer')] = reclaimers  + 'v';
                 if (reclaimers > 0){
-                    breakdown.p['Lumber'][`ᄂ${loc('city_graveyard')}`] = ((graveyard - 1) * 100) + '%';
+                    breakdown.p['Lumber'][`ᄂ${loc('city_graveyard')}+0`] = ((graveyard - 1) * 100) + '%';
                     breakdown.p['Lumber'][`ᄂ${loc('quarantine')}+0`] = ((q_multiplier - 1) * 100) + '%';
                 }
                 breakdown.p['Lumber'][loc('soldiers')] = soldiers  + 'v';
@@ -5469,6 +5471,7 @@ function fastLoop(){
                 if (global.race['forager']){
                     let forage = 1;
                     let foragers = workerScale(global.civic.forager.workers,'forager');
+                    foragers *= racialTrait(foragers,'forager');
 
                     if (global.race['servants']){
                         let serve = global.race.servants.jobs.forager;
@@ -5479,9 +5482,10 @@ function fastLoop(){
                     let forage_base = foragers * forage * 0.25;
                     breakdown.p['Lumber'][loc('job_forager')] = forage_base  + 'v';
                     if (forage_base > 0){
+                        breakdown.p['Lumber'][`ᄂ${loc('city_graveyard')}+1`] = ((graveyard - 1) * 100) + '%';
                         breakdown.p['Lumber'][`ᄂ${loc('quarantine')}+2`] = ((q_multiplier - 1) * 100) + '%';
                     }
-                    modRes('Lumber', forage_base * hunger * global_multiplier * q_multiplier * time_multiplier);
+                    modRes('Lumber', forage_base * hunger * graveyard * global_multiplier * q_multiplier * time_multiplier);
                 }
                 breakdown.p['Lumber'][loc('hunger')] = ((hunger - 1) * 100) + '%';
                 modRes('Lumber', reclaimers * hunger * graveyard * global_multiplier * q_multiplier * time_multiplier);
@@ -5549,6 +5553,7 @@ function fastLoop(){
                 if (global.race['forager']){
                     let forage = 1;
                     let foragers = workerScale(global.civic.forager.workers,'forager');
+                    foragers *= racialTrait(foragers,'forager');
 
                     if (global.race['servants']){
                         let serve = global.race.servants.jobs.forager;
@@ -5558,7 +5563,14 @@ function fastLoop(){
 
                     let forage_base = foragers * forage * 0.25 * production('psychic_boost','Lumber');
                     breakdown.p['Lumber'][loc('job_forager')] = forage_base  + 'v';
-                    modRes('Lumber', forage_base * hunger * global_multiplier * time_multiplier);
+                    if (lumber_base > 0){
+                        breakdown.p['Lumber'][`ᄂ${loc('city_lumber_yard')}`] = ((lumber_yard - 1) * 100) + '%';
+                        breakdown.p['Lumber'][`ᄂ${loc('city_sawmill')}`] = ((sawmills - 1) * 100) + '%';
+                        breakdown.p['Lumber'][`ᄂ${loc('power')}`] = ((power_mult - 1) * 100) + '%';
+                        breakdown.p['Lumber'][`ᄂ${loc('quarantine')}+0`] = ((q_multiplier - 1) * 100) + '%';
+                    }
+
+                    modRes('Lumber', forage_base * hunger * q_multiplier * sawmills * lumber_yard * power_mult * global_multiplier * time_multiplier);
                 }
 
                 breakdown.p['Lumber'][loc('hunger')] = ((hunger - 1) * 100) + '%';
@@ -5710,6 +5722,7 @@ function fastLoop(){
             if (global.race['forager'] && global.resource.Stone.display){
                 let forage = 1;
                 let foragers = workerScale(global.civic.forager.workers,'forager');
+                foragers *= racialTrait(foragers,'forager');
 
                 if (global.race['servants']){
                     let serve = global.race.servants.jobs.forager;
@@ -5720,9 +5733,11 @@ function fastLoop(){
                 let forage_base = foragers * forage * 0.22 * production('psychic_boost','Stone');
                 breakdown.p['Stone'][loc('job_forager')] = forage_base  + 'v';
                 if (forage_base > 0){
+                    breakdown.p['Stone'][`ᄂ${loc('city_rock_quarry')}`] = ((rock_quarry - 1) * 100) + '%';
+                    breakdown.p['Stone'][`ᄂ${loc('power')}`] = ((power_mult - 1) * 100) + '%';
                     breakdown.p['Stone'][`ᄂ${loc('quarantine')}+1`] = ((q_multiplier - 1) * 100) + '%';
                 }
-                modRes('Stone', forage_base * hunger * global_multiplier * q_multiplier * time_multiplier);
+                modRes('Stone', forage_base * hunger * rock_quarry * power_mult * global_multiplier * q_multiplier * time_multiplier);
             }
 
             breakdown.p['Stone'][loc('hunger')] = ((hunger - 1) * 100) + '%';
@@ -6041,6 +6056,7 @@ function fastLoop(){
                 if (global.race['forager'] && global.tech['dowsing']){
                     let forage = global.tech.dowsing >= 2 ? 5 : 1;
                     let foragers = workerScale(global.civic.forager.workers,'forager');
+                    foragers *= racialTrait(foragers,'forager');
 
                     if (global.race['servants']){
                         let serve = global.race.servants.jobs.forager;
@@ -6163,8 +6179,9 @@ function fastLoop(){
                 breakdown.p['Iron'][loc('city_shrine')] = ((shrineMetal.mult - 1) * 100).toFixed(1) + '%';
 
                 if (global.race['forager'] && global.tech['dowsing']){
-                    let forage = global.tech.dowsing >= 2 ? 5 : 1;
+                    let forage = global.tech.dowsing >= 2 ? 2 : 1;
                     let foragers = workerScale(global.civic.forager.workers,'forager');
+                    foragers *= racialTrait(foragers,'forager');
 
                     if (global.race['servants']){
                         let serve = global.race.servants.jobs.forager;
@@ -6183,7 +6200,10 @@ function fastLoop(){
                         forage_base *= biomes.ashland.vars()[2];
                     }
                     breakdown.p['Iron'][loc('job_forager')] = forage_base  + 'v';
-                    modRes('Iron', forage_base * hunger * global_multiplier * time_multiplier);
+                    if (forage_base > 0){
+                        breakdown.p['Iron'][`ᄂ${loc('quarantine')}+2`] = ((q_multiplier - 1) * 100) + '%';
+                    }
+                    modRes('Iron', forage_base * hunger * global_multiplier * q_multiplier * time_multiplier);
                 }
 
                 breakdown.p['Iron'][loc('hunger')] = ((hunger - 1) * 100) + '%';

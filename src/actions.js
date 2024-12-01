@@ -2732,7 +2732,9 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('rock_quarry','city');
-                    global.civic.quarry_worker.display = true;
+                    if (!global.race['forager']){
+                        global.civic.quarry_worker.display = true;
+                    }
                     let stone = BHStorageMulti(spatialReasoning(100));
                     global['resource']['Stone'].max += stone;
                     if (global.race['smoldering'] && global.resource.Chrysotile.display){
@@ -3526,6 +3528,7 @@ export const actions = {
                 return global.race['wish'] && global.race['wishStats'] && global.city['wonder_lighthouse'] ? true : false;
             },
             trait: ['wish'],
+            wiki: false,
             queue_complete(){ return false; },
             effect(){
                 return loc(`city_wonder_effect`,[5]);
@@ -3548,6 +3551,7 @@ export const actions = {
                 return global.race['wish'] && global.race['wishStats'] && global.city['wonder_pyramid'] ? true : false;
             },
             trait: ['wish'],
+            wiki: false,
             queue_complete(){ return false; },
             effect(){
                 return loc(`city_wonder_effect`,[5]);
@@ -5063,7 +5067,7 @@ const raceList = [
     'synth','nano',
     'ghast','shoggoth',
     'dwarf','raccoon','lichen','wyvern','beholder','djinn','narwhal','bombardier','nephilim',
-    'custom','hybrid'
+    'custom'//,'hybrid'
 ];
 raceList.forEach(function(race){
     if (!['custom','hybrid'].includes(race) || (race === 'custom' && global.custom.hasOwnProperty('race0')) || (race === 'hybrid' && global.custom.hasOwnProperty('race1')) ) {
@@ -8173,6 +8177,11 @@ function sentience(){
             }
         });
     });
+    if (typeList.includes('carnivore') && typeList.includes('herbivore')){
+        setTraitRank('forager',{ set: genus_traits.omnivore.forager });
+        delete global.race['carnivore'];
+        delete global.race['herbivore'];
+    }
 
     Object.keys(races[global.race.species].traits).forEach(function (trait) {
         setTraitRank(trait,{ set: races[global.race.species].traits[trait] });
@@ -8867,7 +8876,9 @@ function aiStart(){
             }
             global.resource.Lumber.display = true;
             global.resource.Plywood.display = true;
-            global.civic.lumberjack.display = true;
+            if (!global.race['forager']){
+                global.civic.lumberjack.display = true;
+            }
         }
         if (global.race['smoldering']){
             global.resource.Chrysotile.display = true;
@@ -8882,7 +8893,7 @@ function aiStart(){
 
         global.civic.miner.display = true;
         global.civic.coal_miner.display = true;
-        if (!global.race['sappy']){
+        if (!global.race['sappy'] && !global.race['forager']){
             global.civic.quarry_worker.display = true;
         }
         global.civic.professor.display = true;

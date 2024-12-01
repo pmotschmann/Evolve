@@ -95,9 +95,12 @@ export const genus_traits = {
         herbivore: 1,
         instinct: 1
     },
-    /*omnivore: {
-        forager: 1
-    },*/
+    omnivore: {
+        forager: 1,
+        beast: 1,
+        cautious: 1,
+        instinct: 1
+    },
     small: {
         small: 1,
         weak: 1
@@ -331,12 +334,31 @@ export const traits = {
             }
         },
     },
-    /*forager: { // Will eat just about anything
+    forager: { // Will eat just about anything
         name: loc('trait_forager_name'),
         desc: loc('trait_forager'),
         type: 'genus',
-        val: 2,
-    },*/
+        val: 4,
+        vars(r){
+            // []
+            switch (r || traitRank('forager') || 1){
+                case 0.1:
+                    return [2,10];
+                case 0.25:
+                    return [3,15];
+                case 0.5:
+                    return [5,25];
+                case 1:
+                    return [10,50];
+                case 2:
+                    return [15,60];
+                case 3:
+                    return [20,65];
+                case 4:
+                    return [25,70];
+            }
+        },
+    },
     small: { // Reduces cost creep multipliers by 0.01
         name: loc('trait_small_name'),
         desc: loc('trait_small'),
@@ -5489,7 +5511,7 @@ export const races = {
         name: loc('race_raccoon'),
         desc: loc('race_raccoon_desc'),
         type: 'hybrid',
-        hybrid: ['carnivore','herbivore'],
+        hybrid: ['carnivore','herbivore'], // ['omnivore'],
         home: loc('race_raccoon_home'),
         entity: loc('race_raccoon_entity'),
         traits: {
@@ -6045,7 +6067,7 @@ export function racialTrait(workers,type){
     if (global.civic.govern.type === 'democracy'){
         modifier *= 1 - (govEffect.democracy()[1] / 100);
     }
-    if (global.tech['cyber_worker'] && (type === 'lumberjack' || type === 'miner')){
+    if (global.tech['cyber_worker'] && (type === 'lumberjack' || type === 'miner' || type === 'forager')){
         modifier *= 1.25;
     }
     if (global.race['ocular_power'] && global.race['ocularPowerConfig'] && global.race.ocularPowerConfig.t 
@@ -6129,7 +6151,7 @@ export function racialTrait(workers,type){
     if (global.race['high_pop']){
         modifier = highPopAdjust(modifier);
     }
-    if (global.race['gravity_well'] && ['farmer', 'miner', 'lumberjack', 'factory', 'hunting'].includes(type)){
+    if (global.race['gravity_well'] && ['farmer', 'miner', 'lumberjack', 'factory', 'hunting', 'forager'].includes(type)){
         modifier = teamster(modifier);
     }
     return modifier;
@@ -6140,7 +6162,7 @@ types: farmer, miner, lumberjack, science, factory, army, hunting, scavenger, fo
 */
 export function servantTrait(workers,type){
     let modifier = 1;
-    if (global.race['gravity_well'] && ['farmer', 'miner', 'lumberjack', 'factory', 'hunting', 'scavenger'].includes(type)){
+    if (global.race['gravity_well'] && ['farmer', 'miner', 'lumberjack', 'factory', 'hunting', 'scavenger', 'forager'].includes(type)){
         modifier = teamster(modifier);
     }
     return modifier;
