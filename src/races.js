@@ -10,6 +10,7 @@ import { unlockAchieve, unlockFeat, alevel } from './achieve.js';
 import { highPopAdjust, teamster } from './prod.js';
 import { actions, checkTechQualifications, drawCity, drawTech, structName, initStruct } from './actions.js';
 import { arpa } from './arpa.js';
+import { renderEdenic } from './edenic.js';
 import { events, eventList } from './events.js';
 import { swissKnife } from './tech.js';
 import { warhead, big_bang } from './resets.js';
@@ -7064,7 +7065,11 @@ export function shapeShift(genus,setup,forceClean){
 
     global.race['ss_traits'] = shifted;
     if(genus || !setup || forceClean){
-        arpa('Genetics'); //redraw traits
+        //redraws for mimic heat or avian removing buildings or techs
+        arpa('Genetics');
+        drawCity();
+        renderEdenic();
+        drawTech();
     }
 }
 
