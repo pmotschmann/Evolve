@@ -9246,7 +9246,7 @@ function midLoop(){
         if (p_on['stellar_forge']){
             lCaps['craftsman'] += jobScale(p_on['stellar_forge'] * 2);
         }
-        if (global.tech['elysium'] && global.tech.elysium >= 19 && p_on['sacred_smelter']){
+        if (global.tech['elysium'] && global.tech.elysium >= 18 && p_on['sacred_smelter']){
             lCaps['craftsman'] += jobScale(p_on['sacred_smelter'] * 3);
         }
         if (global.portal['carport']){

@@ -5294,7 +5294,7 @@ const techs = {
             return global.resource.Demonic_Essence.amount >= 1 ? true : false;
         },
         grant: ['edenic',2],
-        not_trait: ['witch_hunter'],
+        not_trait: ['witch_hunter', 'fasting'],
         cost: {
             Knowledge(){ return 60000000; },
             Artifact(){ return 1; },
@@ -14920,7 +14920,8 @@ const techs = {
         category: 'housing',
         era: 'existential',
         reqs: { elysium: 17, cement: 7 },
-        grant: ['elysium',18],
+        grant: ['cement', 8],
+        not_trait: ['flier'],
         cost: {
             Knowledge(){ return 135000000; },
             Omniscience(){ return 42500; },
@@ -14940,8 +14941,8 @@ const techs = {
         desc(){ return loc('tech_ancient_crafters'); },
         category: 'housing',
         era: 'existential',
-        reqs: { elysium: 18 },
-        grant: ['elysium',19],
+        reqs: { elysium: 17 },
+        grant: ['elysium',18],
         cost: {
             Knowledge(){ return 140000000; },
             Omniscience(){ return 44000; },
