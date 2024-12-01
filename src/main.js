@@ -1930,193 +1930,127 @@ function fastLoop(){
 
         // Power usage
         let p_structs = global.power;
-        if (global.settings.lowPowerBalance){
-            let totalPowerDemand = 0;
-            for (let i=0; i<p_structs.length; i++){
-                let parts = p_structs[i].split(":");
-                let space = convertSpaceSector(parts[0]);
-                let region = parts[0] === 'city' ? parts[0] : space;
-                let c_action = parts[0] === 'city' ? actions.city : actions[space][parts[0]];
-                if (global[region][parts[1]] && global[region][parts[1]]['on']){
-                    let watts = c_action[parts[1]].powered();
-                    totalPowerDemand += global[region][parts[1]].on * watts;
+
+        // Determine total power demand across all structs and get a list of powered structs that support load balancing
+        let totalPowerDemand = 0;
+        let pb_list = [];
+        for (let i=0; i<p_structs.length; i++){
+            const parts = p_structs[i].split(":");
+            const struct = parts[1];
+            const region = parts[0] === 'city' ? parts[0] : convertSpaceSector(parts[0]);
+            const c_action = parts[0] === 'city' ? actions.city[struct] : actions[region][parts[0]][struct];
+            if (global[region][struct]?.on){
+                if (region !== 'galaxy' || p_on['s_gate']){
+                    totalPowerDemand += global[region][struct].on * c_action.powered();
+                    p_on[struct] = global[region][struct].on;
+                } else {
+                    p_on[struct] = 0;
                 }
             }
+            if (global.settings.lowPowerBalance && c_action.hasOwnProperty('powerBalancer')){
+                pb_list.push(p_structs[i]);
+            }
+        }
+
+        // When short of power, proportionally reduce power demanded by supported structures (starting from lowest priority)
+        if (global.settings.lowPowerBalance && totalPowerDemand > power_grid){
             let totalPowerUsage = totalPowerDemand;
-            let pb_list = [];
-            for (var i = p_structs.length-1; i >= 0; i--){
-                let parts = p_structs[i].split(":");
-                let space = convertSpaceSector(parts[0]);
-                let region = parts[0] === 'city' ? parts[0] : space;
-                let c_action = parts[0] === 'city' ? actions.city : actions[space][parts[0]];
+            for (let i=pb_list.length-1; i >= 0; i--){
+                const parts = pb_list[i].split(":");
+                const struct = parts[1];
+                let on = p_on[struct];
 
-                if (global[region][parts[1]] && global[region][parts[1]]['on']){
-                    p_on[parts[1]] = global[region][parts[1]].on;
+                if (totalPowerUsage > power_grid && on > 0){
+                    const region = parts[0] === 'city' ? parts[0] : convertSpaceSector(parts[0]);
+                    const c_action = parts[0] === 'city' ? actions.city[struct] : actions[region][parts[0]][struct];
 
-                    if (c_action[parts[1]].hasOwnProperty('p_fuel')){
-                        let s_fuels = c_action[parts[1]].p_fuel();
-                        if (!Array.isArray(s_fuels)){
-                            s_fuels = [s_fuels];
-                        }
-                        for (let j=0; j<s_fuels.length; j++){
-                            let title = typeof c_action[parts[1]].title === 'string' ? c_action[parts[1]].title : c_action[parts[1]].title();
-                            let fuel = s_fuels[j];
-                            let fuel_cost = ['Oil','Helium_3'].includes(fuel.r) && region === 'space' ? fuel_adjust(fuel.a,true) : fuel.a;
-                            let mb_consume = p_on[parts[1]] * fuel_cost;
-                            breakdown.p.consume[fuel.r][title] = -(mb_consume);
-                            for (let k=0; k<p_on[parts[1]]; k++){
-                                if (!modRes(fuel.r, -(time_multiplier * fuel_cost))){
-                                    mb_consume -= (p_on[parts[1]] * fuel_cost) - (k * fuel_cost);
-                                    p_on[parts[1]] -= k;
-                                    totalPowerUsage -= c_action[parts[1]].powered() * k;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-                if (c_action[parts[1]].hasOwnProperty('powerBalancer')){
-                    pb_list.push(p_structs[i]);
-                }
-            }
-
-            for (let i=0; i<pb_list.length; i++){
-                let parts = pb_list[i].split(":");
-
-                if (totalPowerUsage > power_grid && p_on[parts[1]] > 0){
-                    let sector = parts[0] === 'city' ? 'city' : convertSpaceSector(parts[0]);
-                    let c_action = parts[0] === 'city' ? actions.city : actions[sector][parts[0]];
-
-                    let balValues = c_action[parts[1]].powerBalancer();
+                    let balValues = c_action.powerBalancer();
                     if (balValues){
-                        let on = p_on[parts[1]];
                         balValues.forEach(function(v){
                             let off = 0;
                             if (v.hasOwnProperty('r') && v.hasOwnProperty('k')){
-                                let val = global[sector][parts[1]][v.k] ? global[sector][parts[1]][v.k] : 0;
+                                let val = global[region][struct][v.k] ?? 0;
                                 if (global.resource[v.r]['odif'] && global.resource[v.r]['odif'] < 0) { global.resource[v.r]['odif'] = 0; }
                                 let diff = global.resource[v.r].diff + (global.resource[v.r]['odif'] ? global.resource[v.r]['odif'] : 0);
                                 while (diff - (off * val) > val && on > 0 && totalPowerUsage > power_grid){
                                     on--;
                                     off++;
-                                    totalPowerUsage -= c_action[parts[1]].powered();
+                                    totalPowerUsage -= c_action.powered();
                                 }
                                 global.resource[v.r]['odif'] = val * off;
                             }
                             else if (v.hasOwnProperty('s')){
-                                let sup = c_action[parts[1]].support();
-                                if (global[sector][parts[1]]['soff'] && global[sector][parts[1]]['soff'] < 0) { global[sector][parts[1]]['soff'] = 0; }
-                                let support = v.s + (global[sector][parts[1]]['soff'] ? global[sector][parts[1]]['soff'] : 0);
+                                let sup = c_action.support();
+                                if (global[region][struct]['soff'] && global[region][struct]['soff'] < 0) { global[region][struct]['soff'] = 0; }
+                                let support = v.s + (global[region][struct]['soff'] ? global[region][struct]['soff'] : 0);
                                 while (support - (sup * off) >= sup && on > 0 && totalPowerUsage > power_grid){
                                     on--;
                                     off++;
-                                    totalPowerUsage -= c_action[parts[1]].powered();
+                                    totalPowerUsage -= c_action.powered();
                                 }
-                                global[sector][parts[1]]['soff'] = sup * off;
+                                global[region][struct]['soff'] = sup * off;
                             }
                         });
-                        p_on[parts[1]] = on;
+                        p_on[struct] = on;
                     }
                 }
             }
-
-            for (var i = p_structs.length-1; i >= 0; i--){
-                let parts = p_structs[i].split(":");
-                let space = convertSpaceSector(parts[0]);
-                let region = parts[0] === 'city' ? parts[0] : space;
-                let c_action = parts[0] === 'city' ? actions.city : actions[space][parts[0]];
-                if (global[region][parts[1]] && global[region][parts[1]]['on']){
-                    let watts = c_action[parts[1]].powered();
-
-                    while (totalPowerUsage > power_grid && p_on[parts[1]] > 0){
-                        totalPowerUsage -= watts;
-                        p_on[parts[1]]--;
-                    }
-
-                    if (p_on[parts[1]] !== global[region][parts[1]].on){
-                        $(`#${region}-${parts[1]} .on`).addClass('warn');
-                        $(`#${region}-${parts[1]} .on`).prop('title',`ON ${p_on[parts[1]]}/${global[region][parts[1]].on}`);
-                    }
-                    else {
-                        $(`#${region}-${parts[1]} .on`).removeClass('warn');
-                        $(`#${region}-${parts[1]} .on`).prop('title',`ON`);
-                    }
-                }
-                else {
-                    p_on[parts[1]] = 0;
-                    $(`#${region}-${parts[1]} .on`).removeClass('warn');
-                    $(`#${region}-${parts[1]} .on`).prop('title',`ON`);
-                }
-            }
-            power_grid -= totalPowerDemand;
         }
-        else {
-            for (var i=0; i<p_structs.length; i++){
-                let parts = p_structs[i].split(":");
-                let space = convertSpaceSector(parts[0]);
-                let region = parts[0] === 'city' ? parts[0] : space;
-                let c_action = parts[0] === 'city' ? actions.city : actions[space][parts[0]];
-                if (global[region][parts[1]] && global[region][parts[1]]['on']){
-                    let watts = c_action[parts[1]].powered();
-                    let power = global[region][parts[1]].on * watts;
 
-                    p_on[parts[1]] = global[region][parts[1]].on;
-                    while (power > power_grid && power > 0){
-                        power -= c_action[parts[1]].powered();
-                        p_on[parts[1]]--;
+        // Power structures in priority order
+        let power_grid_temp = power_grid;
+        for (let i=0; i<p_structs.length; i++){
+            const parts = p_structs[i].split(":");
+            const struct = parts[1];
+            const region = parts[0] === 'city' ? parts[0] : convertSpaceSector(parts[0]);
+            const c_action = parts[0] === 'city' ? actions.city[struct] : actions[region][parts[0]][struct];
+            if (global[region][struct]?.on){
+                let power = p_on[struct] * c_action.powered();
+                // Use a loop specifically because of citadel stations, which have variable power cost. Other buildings would accept a closed form.
+                while (power > power_grid_temp && power > 0){
+                    p_on[struct]--;
+                    power = p_on[struct] * c_action.powered();
+                }
+
+                if (c_action.hasOwnProperty('p_fuel')){
+                    let s_fuels = c_action.p_fuel();
+                    if (!Array.isArray(s_fuels)){
+                        s_fuels = [s_fuels];
                     }
-                    power_grid -= global[region][parts[1]].on * watts;
-
-                    if (c_action[parts[1]].hasOwnProperty('p_fuel')){
-                        let s_fuels = c_action[parts[1]].p_fuel();
-                        if (!Array.isArray(s_fuels)){
-                            s_fuels = [s_fuels];
-                        }
-                        for (let j=0; j<s_fuels.length; j++){
-                            let title = typeof c_action[parts[1]].title === 'string' ? c_action[parts[1]].title : c_action[parts[1]].title();
-                            let fuel = s_fuels[j];
-                            let fuel_cost = ['Oil','Helium_3'].includes(fuel.r) && region === 'space' ? fuel_adjust(fuel.a,true) : fuel.a;
-                            let mb_consume = p_on[parts[1]] * fuel_cost;
-                            breakdown.p.consume[fuel.r][title] = -(mb_consume);
-                            for (let k=0; k<p_on[parts[1]]; k++){
-                                if (!modRes(fuel.r, -(time_multiplier * fuel_cost))){
-                                    mb_consume -= (p_on[parts[1]] * fuel_cost) - (k * fuel_cost);
-                                    p_on[parts[1]] -= k;
-                                    break;
-                                }
+                    for (let j=0; j<s_fuels.length; j++){
+                        const title = typeof c_action.title === 'string' ? c_action.title : c_action.title();
+                        const fuel = s_fuels[j];
+                        const fuel_cost = ['Oil','Helium_3'].includes(fuel.r) && region === 'space' ? fuel_adjust(fuel.a,true) : fuel.a;
+                        let mb_consume = p_on[struct] * fuel_cost;
+                        for (let k=0; k<p_on[struct]; k++){
+                            if (!modRes(fuel.r, -(time_multiplier * fuel_cost))){
+                                mb_consume = k * fuel_cost;
+                                p_on[struct] = k;
+                                power = p_on[struct] * c_action.powered();
+                                break;
                             }
                         }
+                        breakdown.p.consume[fuel.r][title] = -(mb_consume);
                     }
+                }
+                power_grid_temp -= power;
 
-                    if (p_on[parts[1]] !== global[region][parts[1]].on){
-                        $(`#${region}-${parts[1]} .on`).addClass('warn');
-                        $(`#${region}-${parts[1]} .on`).prop('title',`ON ${p_on[parts[1]]}/${global[region][parts[1]].on}`);
-                    }
-                    else {
-                        $(`#${region}-${parts[1]} .on`).removeClass('warn');
-                        $(`#${region}-${parts[1]} .on`).prop('title',`ON`);
-                    }
+                if (p_on[struct] !== global[region][struct].on){
+                    $(`#${region}-${struct} .on`).addClass('warn');
+                    $(`#${region}-${struct} .on`).prop('title',`ON ${p_on[struct]}/${global[region][struct].on}`);
                 }
                 else {
-                    p_on[parts[1]] = 0;
-                    $(`#${region}-${parts[1]} .on`).removeClass('warn');
-                    $(`#${region}-${parts[1]} .on`).prop('title',`ON`);
+                    $(`#${region}-${struct} .on`).removeClass('warn');
+                    $(`#${region}-${struct} .on`).prop('title',`ON`);
                 }
             }
-        }
-        //dormitories
-        if (!p_on['s_gate'] || !p_on['embassy']){
-            if(global.galaxy['dormitory']){
-                p_on['dormitory'] = 0;
-                $(`#galaxy-dormitory .on`).addClass('warn');
-                $(`#galaxy-dormitory .on`).prop('title',`ON 0`);
-            }
-            if(global.galaxy['symposium']){
-                p_on['symposium'] = 0;
-                $(`#galaxy-symposium .on`).addClass('warn');
-                $(`#galaxy-symposium .on`).prop('title',`ON 0`);
+            else {
+                p_on[struct] = 0;
+                $(`#${region}-${struct} .on`).removeClass('warn');
+                $(`#${region}-${struct} .on`).prop('title',`ON`);
             }
         }
+        power_grid -= totalPowerDemand;
 
         // Mass Relay charging
         if (global.space['m_relay']){
