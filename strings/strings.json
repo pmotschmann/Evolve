@@ -5057,6 +5057,8 @@
   "trait_small_name": "Small",
   "trait_weak": "Your race is ineffective at tough manual labor.",
   "trait_weak_name": "Weak",
+  "trait_drunk": "Your race is inebriated most of the time and less effective at tough manual labor jobs.",
+  "trait_drunk_name": "Drunk",
   "trait_large": "Your race is large and thus requires extra materials to build things.",
   "trait_large_name": "Large",
   "trait_strong": "Your race has great strength and can do menial labor jobs much faster.",

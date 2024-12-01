@@ -7154,7 +7154,8 @@ export function traitSkin(type, trait, species){
         {
             let name = {
                 hooved: hoovedReskin(false, species),
-                promiscuous: artificial ? loc('trait_promiscuous_synth_name') : traits['promiscuous'].name,
+                promiscuous: artificial ? loc('trait_promiscuous_synth_name') : traits.promiscuous.name,
+                weak: species === 'dwarf' ? loc('trait_drunk_name') : traits.weak.name,
             };
             return trait ? (name[trait] ? name[trait] : traits[trait].name) : name;
         } 
@@ -7163,6 +7164,7 @@ export function traitSkin(type, trait, species){
             let desc = {
                 hooved: hoovedReskin(true, species),
                 promiscuous: artificial ? loc('trait_promiscuous_synth') : traits['promiscuous'].desc,
+                weak: species === 'dwarf' ? loc('trait_drunk') : traits.weak.desc,
             };
             return trait ? (desc[trait] ? desc[trait] : traits[trait].desc) : desc;
         }
