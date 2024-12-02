@@ -2844,7 +2844,7 @@ function fastLoop(){
                     gal_on[ship] = 0;
                 }
             }
-            if (support_home && global?.[area]?.[support_home]?.support){
+            if (support_home && global?.[area]?.[support_home]?.hasOwnProperty('support')){
                 global[area][support_home].support = used_support;
             }
         }

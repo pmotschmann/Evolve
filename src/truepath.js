@@ -1,5 +1,5 @@
 import { global, p_on, support_on, sizeApproximation, keyMap } from './vars.js';
-import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect, adjustCosts, get_qlevel, timeCheck, buildQueue } from './functions.js';
+import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect, adjustCosts, get_qlevel, timeCheck, timeFormat, buildQueue } from './functions.js';
 import { races, traits, orbitLength } from './races.js';
 import { spatialReasoning, unlockContainers } from './resources.js';
 import { armyRating, garrisonSize, soldierDeath } from './civics.js';
@@ -4286,7 +4286,8 @@ export function buildTPShipQueue(action){
     return false;
 }
 
-export function TPShipDesc(ship){
+export function TPShipDesc(parent,obj){
+    let ship = obj.type;
     let raw = shipCosts(ship);
     let costs = {};
     Object.keys(raw).forEach(function(res){
@@ -4295,13 +4296,14 @@ export function TPShipDesc(ship){
 
     var desc = $(`<div class="shipPopper"></div>`);
     var shipPattern = $(`<div class="divider">${loc(`outer_shipyard_class_${ship.class}`)} | ${loc(`outer_shipyard_engine_${ship.engine}`)} | ${loc(`outer_shipyard_weapon_${ship.weapon}`)} | ${loc(`outer_shipyard_power_${ship.power}`)} | ${loc(`outer_shipyard_sensor_${ship.sensor}`)}</div>`);
+    parent.append(desc);
 
     desc.append(shipPattern);
 
     var cost = $('<div class="costList"></div>');
     desc.append(cost);
 
-    let tc = timeCheck({ id: ship.name , cost: costs });
+    let tc = timeCheck({ id: ship.name , cost: costs, doNotAdjustCost: true }, false, true);
     Object.keys(costs).forEach(function (res){
         if (costs[res]() > 0){
             var label = res === 'Money' ? '$' : global.resource[res].name + ': ';
@@ -4309,6 +4311,19 @@ export function TPShipDesc(ship){
             cost.append($(`<div class="${color}" data-${res}="${costs[res]()}">${label}${sizeApproximation(costs[res](),2)}</div>`));
         }
     });
+
+    if (tc && tc['t']){
+        desc.append($(`<div class="divider"></div><div id="popTimer" class="flair has-text-advanced">{{ t | timer }}</div>`));
+        vBind({
+            el: '#popTimer',
+            data: tc,
+            filters: {
+                timer(t){
+                    return loc('action_ready',[timeFormat(t)]);
+                }
+            }
+        });
+    }
     
     return desc;
 }
