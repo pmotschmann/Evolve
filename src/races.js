@@ -9,6 +9,8 @@ import { govActive, removeTask, defineGovernor } from './governor.js';
 import { unlockAchieve, unlockFeat, alevel } from './achieve.js';
 import { highPopAdjust, teamster } from './prod.js';
 import { actions, checkTechQualifications, drawCity, drawTech, structName, initStruct } from './actions.js';
+import { arpa } from './arpa.js';
+import { renderEdenic } from './edenic.js';
 import { events, eventList } from './events.js';
 import { swissKnife } from './tech.js';
 import { warhead, big_bang } from './resets.js';
@@ -94,9 +96,12 @@ export const genus_traits = {
         herbivore: 1,
         instinct: 1
     },
-    /*omnivore: {
-        forager: 1
-    },*/
+    omnivore: {
+        forager: 1,
+        beast: 1,
+        cautious: 1,
+        instinct: 1
+    },
     small: {
         small: 1,
         weak: 1
@@ -330,12 +335,31 @@ export const traits = {
             }
         },
     },
-    /*forager: { // Will eat just about anything
+    forager: { // Will eat just about anything
         name: loc('trait_forager_name'),
         desc: loc('trait_forager'),
         type: 'genus',
-        val: 2,
-    },*/
+        val: 4,
+        vars(r){
+            // [Foraging Strength]
+            switch (r || traitRank('forager') || 1){
+                case 0.1:
+                    return [70];
+                case 0.25:
+                    return [80];
+                case 0.5:
+                    return [90];
+                case 1:
+                    return [100];
+                case 2:
+                    return [110];
+                case 3:
+                    return [120];
+                case 4:
+                    return [130];
+            }
+        },
+    },
     small: { // Reduces cost creep multipliers by 0.01
         name: loc('trait_small_name'),
         desc: loc('trait_small'),
@@ -3516,19 +3540,19 @@ export const traits = {
             // [Postitive Trait Rank, Negative Trait Rank]
             switch (r || traitRank('imitation') || 1){
                 case 0.1:
-                    return [0.1,0.5]
+                    return [0.5,0.1]
                 case 0.25:
-                    return [0.25,0.5];
+                    return [0.5,0.25];
                 case 0.5:
-                    return [0.25,1];
+                    return [0.5,0.5];
                 case 1:
                     return [0.5,1];
                 case 2:
                     return [0.5,2];
                 case 3:
-                    return [1,2];
+                    return [0.5,3];
                 case 4:
-                    return [1,3];
+                    return [0.5,4];
             }
         }
     },
@@ -3591,19 +3615,19 @@ export const traits = {
             // [Postitive Trait Rank, Negative Trait Rank]
             switch (r || traitRank('shapeshifter') || 1){
                 case 0.1:
-                    return [0.1,0.5];
+                    return [0.5,0.1];
                 case 0.25:
-                    return [0.25,0.5];
+                    return [0.5,0.25];
                 case 0.5:
-                    return [0.25,1];
+                    return [0.5,0.5];
                 case 1:
                     return [0.5,1];
                 case 2:
                     return [0.5,2];
                 case 3:
-                    return [1,2];
+                    return [0.5,3];
                 case 4:
-                    return [1,3];
+                    return [0.5,4];
             }
         }
     },
@@ -5488,7 +5512,7 @@ export const races = {
         name: loc('race_raccoon'),
         desc: loc('race_raccoon_desc'),
         type: 'hybrid',
-        hybrid: ['carnivore','herbivore'],
+        hybrid: ['carnivore','herbivore'], // ['omnivore'],
         home: loc('race_raccoon_home'),
         entity: loc('race_raccoon_entity'),
         traits: {
@@ -6044,7 +6068,7 @@ export function racialTrait(workers,type){
     if (global.civic.govern.type === 'democracy'){
         modifier *= 1 - (govEffect.democracy()[1] / 100);
     }
-    if (global.tech['cyber_worker'] && (type === 'lumberjack' || type === 'miner')){
+    if (global.tech['cyber_worker'] && (type === 'lumberjack' || type === 'miner' || type === 'forager')){
         modifier *= 1.25;
     }
     if (global.race['ocular_power'] && global.race['ocularPowerConfig'] && global.race.ocularPowerConfig.t 
@@ -6125,10 +6149,13 @@ export function racialTrait(workers,type){
         let lt = global.race['living_tool'] ? 1 + traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science * 0.12 : 0) : 1;
         modifier *= lt > tusk ? lt : tusk;
     }
+    if (global.race['forager'] && type === 'forager'){
+        modifier *= traits.forager.vars()[0] / 100;
+    }
     if (global.race['high_pop']){
         modifier = highPopAdjust(modifier);
     }
-    if (global.race['gravity_well'] && ['farmer', 'miner', 'lumberjack', 'factory', 'hunting'].includes(type)){
+    if (global.race['gravity_well'] && ['farmer', 'miner', 'lumberjack', 'factory', 'hunting', 'forager'].includes(type)){
         modifier = teamster(modifier);
     }
     return modifier;
@@ -6139,7 +6166,7 @@ types: farmer, miner, lumberjack, science, factory, army, hunting, scavenger, fo
 */
 export function servantTrait(workers,type){
     let modifier = 1;
-    if (global.race['gravity_well'] && ['farmer', 'miner', 'lumberjack', 'factory', 'hunting', 'scavenger'].includes(type)){
+    if (global.race['gravity_well'] && ['farmer', 'miner', 'lumberjack', 'factory', 'hunting', 'scavenger', 'forager'].includes(type)){
         modifier = teamster(modifier);
     }
     return modifier;
@@ -6498,6 +6525,7 @@ export function cleanAddTrait(trait){
             global.civic.cement_worker.assigned = 0;
             setPurgatory('tech','cement');
             setPurgatory('city','cement_plant');
+            setPurgatory('eden','eden_cement');
             break;
         case 'sappy':
             if (global.civic.d_job === 'quarry_worker'){
@@ -6652,6 +6680,9 @@ export function cleanAddTrait(trait){
             break;
         case 'imitation':
             setImitation(true);
+            if(global.race['shapeshifter']){
+                shapeShift(false, true, false); //update mimic options
+            }
             break;
         case 'evil':
             setResourceName('Lumber');
@@ -6762,6 +6793,7 @@ export function cleanRemoveTrait(trait,rank){
             checkPurgatory('tech','cement');
             if (global.tech['cement']){
                 checkPurgatory('city','cement_plant');
+                checkPurgatory('eden','eden_cement');
                 global.resource.Cement.display = true;
                 global.civic.cement_worker.display = true;
             }
@@ -6874,6 +6906,9 @@ export function cleanRemoveTrait(trait,rank){
                     }
                 });
                 delete global.race['iTraits'];
+                if (global.race['shapeshifter']){
+                    shapeShift(false, true, false); //update mimic options
+                }
             }
             break;
         case 'evil':
@@ -6914,15 +6949,31 @@ export function setImitation(mod){
             global.race['iTraits'] = {};
         }
         if (global.race['shapeshifter']){
-            shapeShift(global.race['ss_genus'] === races[global.race['srace']].type ? 'none' : false, true, true);
+            if((races[global.race['srace']].type === 'hybrid' && races[global.race['srace']].hybrid.includes(global.race['ss_genus'])) ||
+                global.race['ss_genus'] === races[global.race['srace']].type){
+                shapeShift('none', true, true);
+            }
         }
 
         let i_traits = [];
-        Object.keys(genus_traits[races[global.race['srace']].type]).forEach(function (trait) {
-            if (!global.race[trait]){
-                i_traits.push(trait);
-            }
-        });
+        if(races[global.race['srace']].type === 'hybrid'){
+            let genusList = races[global.race['srace']].hybrid;
+            if (genusList.includes('carnivore') && genusList.includes('herbivore')){ genusList = ['omnivore']; }
+            races[global.race['srace']].hybrid.forEach(function(genus) {
+                Object.keys(genus_traits[genus]).forEach(function (trait) {
+                    if (!global.race[trait]){
+                        i_traits.push(trait);
+                    }
+                });
+            })
+        }
+        else {
+            Object.keys(genus_traits[races[global.race['srace']].type]).forEach(function (trait) {
+                if (!global.race[trait]){
+                    i_traits.push(trait);
+                }
+            });
+        }
         if (['custom','hybrid'].includes(global.race['srace'])){
             let list = [races[global.race['srace']].fanaticism,'evil'];
             Object.keys(races[global.race['srace']].traits).forEach(function (trait) {
@@ -6985,8 +7036,10 @@ export function shapeShift(genus,setup,forceClean){
         global.race['ss_genus'] = global.race.hasOwnProperty('ss_genus') ? global.race.ss_genus : 'none';
 
         let drop = ``;
+        const imitation =  global.race['imitation'] ? (races[global.race['srace']].type === 'hybrid' ? races[global.race['srace']].hybrid : [races[global.race['srace']].type]) : [];
+        const base = races[global.race.species].type === 'hybrid' ? races[global.race.species].hybrid : [races[global.race.species].type];
         Object.keys(genus_traits).forEach(function (gen) {
-            if (gen !== 'synthetic' && gen !== 'eldritch' && gen !== races[global.race.species].type && (!global.race['imitation'] || gen !== races[global.race['srace']].type) && global.stats.achieve[`genus_${gen}`] && global.stats.achieve[`genus_${gen}`].l > 0){
+            if(!['synthetic', 'eldritch', ...base, ...imitation].includes(gen) && global.stats.achieve[`genus_${gen}`] && global.stats.achieve[`genus_${gen}`].l > 0){
                 drop += `<b-dropdown-item v-on:click="setShape('${gen}')">{{ '${gen}' | genus }}</b-dropdown-item>`;
             }
         });
@@ -7016,9 +7069,16 @@ export function shapeShift(genus,setup,forceClean){
     }
 
     global.race['ss_traits'] = shifted;
+    if(genus || !setup || forceClean){
+        //redraws for mimic heat or avian removing buildings or techs
+        arpa('Genetics');
+        drawCity();
+        renderEdenic();
+        drawTech();
+    }
 }
 
-function traitRank(trait){
+export function traitRank(trait){
     if (global.race['empowered'] && trait !== 'empowered'){
         switch (global.race[trait]){
             case 0.1:
@@ -7096,7 +7156,8 @@ export function traitSkin(type, trait, species){
         {
             let name = {
                 hooved: hoovedReskin(false, species),
-                promiscuous: artificial ? loc('trait_promiscuous_synth_name') : traits['promiscuous'].name,
+                promiscuous: artificial ? loc('trait_promiscuous_synth_name') : traits.promiscuous.name,
+                weak: species === 'dwarf' ? loc('trait_drunk_name') : traits.weak.name,
             };
             return trait ? (name[trait] ? name[trait] : traits[trait].name) : name;
         } 
@@ -7105,6 +7166,7 @@ export function traitSkin(type, trait, species){
             let desc = {
                 hooved: hoovedReskin(true, species),
                 promiscuous: artificial ? loc('trait_promiscuous_synth') : traits['promiscuous'].desc,
+                weak: species === 'dwarf' ? loc('trait_drunk') : traits.weak.desc,
             };
             return trait ? (desc[trait] ? desc[trait] : traits[trait].desc) : desc;
         }

@@ -613,7 +613,7 @@ function attachQueuePopovers(){
                     obj.popper.append(arpaProjectCosts(100,struct.a));
                 }
                 else if (struct.s[0].substring(0,2) === 'tp' && struct.s[1].substring(0,4) === 'ship'){
-                    obj.popper.append(TPShipDesc(deepClone(global.queue.queue[i].type)));
+                    TPShipDesc(obj.popper,deepClone(global.queue.queue[i]));
                 }
                 else {
                     actionDesc(obj.popper,struct.a,global[struct.s[0]][struct.s[1]],false,false,false,b_res);

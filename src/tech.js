@@ -11,7 +11,7 @@ import { renderSpace, planetName, int_fuel_adjust } from './space.js';
 import { drawHellObservations } from './portal.js';
 import { setOrbits, jumpGateShutdown } from './truepath.js';
 import { arpa } from './arpa.js';
-import { setPowerGrid, defineIndustry } from './industry.js';
+import { setPowerGrid, defineIndustry, addSmelter } from './industry.js';
 import { defineGovernor, removeTask } from './governor.js';
 import { big_bang, cataclysm_end, descension, aiApocalypse } from './resets.js';
 
@@ -973,7 +973,7 @@ const techs = {
         grant: ['s_lodge',1],
         condition(){
             return (((global.race.species === 'wendigo' || global.race['detritivore']) && !global.race['carnivore'] && !global.race['herbivore'])
-              || (global.race['carnivore'] && global.race['soul_eater']) || global.race['artifical'] || global.race['unfathomable']) ? true : false;
+              || (global.race['carnivore'] && global.race['soul_eater']) || global.race['artifical'] || global.race['unfathomable'] || global.race['forager']) ? true : false;
         },
         cost: {
             Knowledge(){ return global.race['artifical'] ? 10000 : 180; }
@@ -1101,7 +1101,7 @@ const techs = {
         condition(){
             return (global.race['herbivore'] || (!global.race['carnivore'] && !global.race['detritivore'] && !global.race['soul_eater'])) ? true : false;
         },
-        not_trait: ['cataclysm','artifical','lone_survivor','unfathomable'],
+        not_trait: ['cataclysm','artifical','lone_survivor','unfathomable','forager'],
         grant: ['agriculture',1],
         cost: {
             Knowledge(){ return 10; }
@@ -1240,7 +1240,7 @@ const techs = {
         era: 'globalized',
         reqs: { high_tech: 4 },
         condition(){
-            return (global.race['carnivore'] || global.race['detritivore'] || global.race['artifical'] || global.race['soul_eater'] || global.race['unfathomable']) ? true : false;
+            return (global.race['carnivore'] || global.race['detritivore'] || global.race['artifical'] || global.race['soul_eater'] || global.race['unfathomable'] || global.race['forager']) ? true : false;
         },
         not_trait: ['herbivore'],
         grant: ['wind_plant',1],
@@ -1506,17 +1506,14 @@ const techs = {
         effect: loc('tech_stellar_smelting_effect'),
         action(){
             if (payCosts($(this)[0])){
-                let num_forge_on = p_on['stellar_forge'];
-                let num_new_smelters = num_forge_on * 2;
-                global.city.smelter.cap += num_new_smelters;
-                global.city.smelter.Star += num_new_smelters;
-                global.city.smelter.StarCap += num_new_smelters;
-                global.city.smelter.Iron += num_new_smelters;
                 return true;
             }
             return false;
         },
         post(){
+            let num_forge_on = p_on['stellar_forge'];
+            let num_new_smelters = num_forge_on * actions.interstellar.int_neutron.stellar_forge.smelting();
+            addSmelter(num_new_smelters, 'Iron', 'Star');
             defineIndustry();
         }
     },
@@ -2882,7 +2879,10 @@ const techs = {
             Knowledge(){ return 28000; }
         },
         effect(){
-            return loc('tech_zoning_permits_effect',[global.genes['queue'] && global.genes['queue'] >= 2 ? 4 : 2]);
+            return loc('tech_zoning_permits_effect',[$(this)[0].bQueue()]);
+        },
+        bQueue(){
+            return global.genes?.queue >= 2 ? 4 : 2;
         },
         action(){
             if (payCosts($(this)[0])){
@@ -2906,7 +2906,10 @@ const techs = {
             Knowledge(){ return 95000; }
         },
         effect(){
-            return loc('tech_urbanization_effect',[global.genes['queue'] && global.genes['queue'] >= 2 ? 6 : 3]);
+            return loc('tech_urbanization_effect',[$(this)[0].bQueue()]);
+        },
+        bQueue(){
+            return global.genes?.queue >= 2 ? 6 : 3;
         },
         action(){
             if (payCosts($(this)[0])){
@@ -4411,7 +4414,7 @@ const techs = {
             Knowledge(){ return 80000000; },
             Omniscience(){ return 12500; },
         },
-        effect(){ return loc('tech_spirit_researcher_effect',[global.civic.scientist.name]); },
+        effect(){ return loc('tech_spirit_researcher_effect',[global.civic.scientist ? global.civic.scientist.name : loc('job_scientist')]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -5288,7 +5291,7 @@ const techs = {
             return global.resource.Demonic_Essence.amount >= 1 ? true : false;
         },
         grant: ['edenic',2],
-        not_trait: ['witch_hunter'],
+        not_trait: ['witch_hunter', 'fasting'],
         cost: {
             Knowledge(){ return 60000000; },
             Artifact(){ return 1; },
@@ -6420,7 +6423,9 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.civic.lumberjack.name = loc('job_reclaimer');
-                global.civic.lumberjack.display = true;
+                if (!global.race['forager']){
+                    global.civic.lumberjack.display = true;
+                }
                 initStruct(actions.city.graveyard);
                 return true;
             }
@@ -6436,7 +6441,7 @@ const techs = {
         reqs: { reclaimer: 1, mining: 2 },
         grant: ['reclaimer',2],
         trait: ['evil'],
-        not_trait: ['living_tool'],
+        not_trait: ['living_tool','forager'],
         condition(){
             return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
@@ -6461,7 +6466,7 @@ const techs = {
         reqs: { reclaimer: 2, mining: 3 },
         grant: ['reclaimer',3],
         trait: ['evil'],
-        not_trait: ['living_tool'],
+        not_trait: ['living_tool','forager'],
         condition(){
             return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
@@ -6486,7 +6491,7 @@ const techs = {
         reqs: { reclaimer: 3, smelting: 2 },
         grant: ['reclaimer',4],
         trait: ['evil'],
-        not_trait: ['living_tool'],
+        not_trait: ['living_tool','forager'],
         condition(){
             return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
@@ -6511,7 +6516,7 @@ const techs = {
         reqs: { reclaimer: 4, high_tech: 3 },
         grant: ['reclaimer',5],
         trait: ['evil'],
-        not_trait: ['living_tool'],
+        not_trait: ['living_tool','forager'],
         condition(){
             return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
@@ -6536,7 +6541,7 @@ const techs = {
         reqs: { reclaimer: 5, high_tech: 4 },
         grant: ['reclaimer',6],
         trait: ['evil'],
-        not_trait: ['living_tool'],
+        not_trait: ['living_tool','forager'],
         condition(){
             return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
@@ -6561,7 +6566,7 @@ const techs = {
         reqs: { reclaimer: 6, space: 3 },
         grant: ['reclaimer',7],
         trait: ['evil'],
-        not_trait: ['living_tool'],
+        not_trait: ['living_tool','forager'],
         condition(){
             return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
@@ -6586,6 +6591,7 @@ const techs = {
         reqs: { reclaimer: 7, alpha: 2 },
         grant: ['reclaimer',8],
         trait: ['evil'],
+        not_trait: ['living_tool','forager'],
         condition(){
             return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
@@ -6621,7 +6627,9 @@ const techs = {
         },
         action(){
             if (payCosts($(this)[0])){
-                global.civic.lumberjack.display = true;
+                if (!global.race['forager']){
+                    global.civic.lumberjack.display = true;
+                }
                 initStruct(actions.city.lumber_yard);
                 return true;
             }
@@ -6635,7 +6643,7 @@ const techs = {
         category: 'lumber_gathering',
         era: 'civilized',
         reqs: { axe: 1, mining: 2 },
-        not_trait: ['living_tool'],
+        not_trait: ['living_tool','forager'],
         grant: ['axe',2],
         cost: {
             Knowledge(){ return 540; },
@@ -6698,7 +6706,7 @@ const techs = {
         category: 'lumber_gathering',
         era: 'civilized',
         reqs: { axe: 2, mining: 3 },
-        not_trait: ['living_tool'],
+        not_trait: ['living_tool','forager'],
         grant: ['axe',3],
         cost: {
             Knowledge(){ return global.city.ptrait.includes('unstable') ? 1350 : 2700; },
@@ -6719,7 +6727,7 @@ const techs = {
         category: 'lumber_gathering',
         era: 'discovery',
         reqs: { axe: 3, smelting: 2 },
-        not_trait: ['living_tool'],
+        not_trait: ['living_tool','forager'],
         grant: ['axe',4],
         cost: {
             Knowledge(){ return 9000; },
@@ -6740,7 +6748,7 @@ const techs = {
         category: 'lumber_gathering',
         era: 'industrialized',
         reqs: { axe: 4, high_tech: 3 },
-        not_trait: ['living_tool'],
+        not_trait: ['living_tool','forager'],
         grant: ['axe',5],
         cost: {
             Knowledge(){ return 38000; },
@@ -6761,7 +6769,7 @@ const techs = {
         category: 'lumber_gathering',
         era: 'interstellar',
         reqs: { axe: 5, alpha: 2 },
-        not_trait: ['living_tool'],
+        not_trait: ['living_tool','forager'],
         grant: ['axe',6],
         cost: {
             Knowledge(){ return 560000; },
@@ -6784,7 +6792,7 @@ const techs = {
         category: 'stone_gathering',
         era: 'civilized',
         reqs: { mining: 2 },
-        not_trait: ['cataclysm','sappy','living_tool'],
+        not_trait: ['cataclysm','sappy','living_tool','forager'],
         grant: ['hammer',1],
         cost: {
             Knowledge(){ return 540; },
@@ -6805,7 +6813,7 @@ const techs = {
         category: 'stone_gathering',
         era: 'civilized',
         reqs: { hammer: 1, mining: 3 },
-        not_trait: ['cataclysm','sappy','living_tool'],
+        not_trait: ['cataclysm','sappy','living_tool','forager'],
         grant: ['hammer',2],
         cost: {
             Knowledge(){ return global.city.ptrait.includes('unstable') ? 1350 : 2700; },
@@ -6826,7 +6834,7 @@ const techs = {
         category: 'stone_gathering',
         era: 'discovery',
         reqs: { hammer: 2, smelting: 2 },
-        not_trait: ['cataclysm','sappy','living_tool'],
+        not_trait: ['cataclysm','sappy','living_tool','forager'],
         grant: ['hammer',3],
         cost: {
             Knowledge(){ return 7200; },
@@ -6847,7 +6855,7 @@ const techs = {
         category: 'stone_gathering',
         era: 'industrialized',
         reqs: { hammer: 3, high_tech: 3 },
-        not_trait: ['cataclysm','sappy','living_tool'],
+        not_trait: ['cataclysm','sappy','living_tool','forager'],
         grant: ['hammer',4],
         cost: {
             Knowledge(){ return 40000; },
@@ -14914,7 +14922,8 @@ const techs = {
         category: 'housing',
         era: 'existential',
         reqs: { elysium: 17, cement: 7 },
-        grant: ['elysium',18],
+        grant: ['cement', 8],
+        not_trait: ['flier'],
         cost: {
             Knowledge(){ return 135000000; },
             Omniscience(){ return 42500; },
@@ -14934,8 +14943,8 @@ const techs = {
         desc(){ return loc('tech_ancient_crafters'); },
         category: 'housing',
         era: 'existential',
-        reqs: { elysium: 18 },
-        grant: ['elysium',19],
+        reqs: { elysium: 17 },
+        grant: ['elysium',18],
         cost: {
             Knowledge(){ return 140000000; },
             Omniscience(){ return 44000; },

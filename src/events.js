@@ -597,7 +597,7 @@ export const events = {
             if (dead > global.resource[global.race.species].amount){ dead = global.resource[global.race.species].amount; }
             global.resource[global.race.species].amount -= dead;
             blubberFill(dead);
-            return loc('event_chicken',[loc(`event_chicken_eaten${Math.floor(seededRandom(0,10))}`),dead]);
+            return loc('event_chicken',[loc(`event_chicken_eaten${Math.floor(seededRandom(0,10))}`),dead,loc(`event_chicken_seasoning${Math.floor(seededRandom(0,10))}`)]);
         }
     },
     brawl:{ 
@@ -769,7 +769,7 @@ export const events = {
         effect(){
             global.resource[global.race.species].amount--;
             blubberFill(1);
-            return loc('event_chicken',[loc(`event_chicken_eaten${Math.rand(0,10)}`),1]);
+            return loc('event_chicken',[loc(`event_chicken_eaten${Math.rand(0,10)}`),1,loc(`event_chicken_seasoning${Math.floor(seededRandom(0,10))}`)]);
         }
     },
     fight:{ 

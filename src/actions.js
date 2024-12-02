@@ -5,7 +5,7 @@ import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from 
 import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill } from './races.js';
 import { defineResources, unlockCrates, unlockContainers, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
-import { loadIndustry, defineIndustry, nf_resources, gridDefs } from './industry.js';
+import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter } from './industry.js';
 import { defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating, garrisonSize } from './civics.js';
 import { spaceTech, interstellarTech, galaxyTech, incrementStruct, universe_affixes, renderSpace, piracy, fuel_adjust, isStargateOn } from './space.js';
 import { renderFortress, fortressTech } from './portal.js';
@@ -1651,7 +1651,7 @@ export const actions = {
             reqs: { housing: 1, currency: 1 },
             not_trait: ['cataclysm','lone_survivor'],
             condition(){
-                return ((global.race['soul_eater'] || global.race['detritivore'] || global.race['artifical'] || global.race['unfathomable']) && global.tech['s_lodge']) || (global.tech['hunting'] && global.tech['hunting'] >= 2) ? true : false;
+                return ((global.race['soul_eater'] || global.race['detritivore'] || global.race['artifical'] || global.race['unfathomable'] || global.race['forager']) && global.tech['s_lodge']) || (global.tech['hunting'] && global.tech['hunting'] >= 2) ? true : false;
             },
             cost: {
                 Money(offset){ return costMultiplier('lodge', offset, 50, 1.32); },
@@ -2732,7 +2732,9 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('rock_quarry','city');
-                    global.civic.quarry_worker.display = true;
+                    if (!global.race['forager']){
+                        global.civic.quarry_worker.display = true;
+                    }
                     let stone = BHStorageMulti(spatialReasoning(100));
                     global['resource']['Stone'].max += stone;
                     if (global.race['smoldering'] && global.resource.Chrysotile.display){
@@ -2958,24 +2960,20 @@ export const actions = {
                 }
             },
             special: true,
+            smelting(){
+                return 1;
+            },
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('smelter','city');
-                    if (global.race['kindling_kindred'] || global.race['smoldering'] || global.race['artifical']){
-                        if (global.race['artifical']){
-                            global.city['smelter'].Oil++;
-                        }
-                        else if (global.race['evil']) {
-                            global.city['smelter'].Wood++;
-                        }
-                        else {
-                            global.city['smelter'].Coal++;
-                        }
+                    let fuel = 'Wood';
+                    if (global.race['artifical']){
+                        fuel = 'Oil';
                     }
-                    else {
-                        global.city['smelter'].Wood++;
+                    else if ((global.race['kindling_kindred'] || global.race['smoldering']) && !global.race['evil']) {
+                        fuel = 'Coal';
                     }
-                    global.city['smelter'].Iron++;
+                    addSmelter($(this)[0].smelting(), 'Iron', fuel);
                     global.settings.showIndustry = true;
                     defineIndustry();
                     return true;
@@ -3526,6 +3524,7 @@ export const actions = {
                 return global.race['wish'] && global.race['wishStats'] && global.city['wonder_lighthouse'] ? true : false;
             },
             trait: ['wish'],
+            wiki: false,
             queue_complete(){ return false; },
             effect(){
                 return loc(`city_wonder_effect`,[5]);
@@ -3548,6 +3547,7 @@ export const actions = {
                 return global.race['wish'] && global.race['wishStats'] && global.city['wonder_pyramid'] ? true : false;
             },
             trait: ['wish'],
+            wiki: false,
             queue_complete(){ return false; },
             effect(){
                 return loc(`city_wonder_effect`,[5]);
@@ -5063,7 +5063,7 @@ const raceList = [
     'synth','nano',
     'ghast','shoggoth',
     'dwarf','raccoon','lichen','wyvern','beholder','djinn','narwhal','bombardier','nephilim',
-    'custom','hybrid'
+    'custom'//,'hybrid'
 ];
 raceList.forEach(function(race){
     if (!['custom','hybrid'].includes(race) || (race === 'custom' && global.custom.hasOwnProperty('race0')) || (race === 'hybrid' && global.custom.hasOwnProperty('race1')) ) {
@@ -6819,7 +6819,7 @@ export function powerOnNewStruct(c_action,extra){
 // Return the powered/supported/enabled quantity of a struct.
 // When called from the wiki, assume that "enough" support is available, because this information is not in the save.
 // For structs that cannot be enabled, powered, or supported, always return 0.
-export function getStructNumActive(c_action,isWiki){
+export function getStructNumActive(c_action,wiki){
     let parts = c_action.id.split('-');
     if (!global.hasOwnProperty(parts[0]) || !global[parts[0]].hasOwnProperty(parts[1])){
         return 0;
@@ -6835,7 +6835,7 @@ export function getStructNumActive(c_action,isWiki){
     if (c_action.hasOwnProperty('powered') && c_action.powered() > 0) {
         if (global.city.hasOwnProperty('powered')){
             // The p_on struct is empty in the wiki view
-            if (!isWiki){
+            if (!wiki){
                 num_on = p_on[parts[1]];
             }
         }
@@ -6846,12 +6846,12 @@ export function getStructNumActive(c_action,isWiki){
 
     // Support: production is positive, consumption is negative
     if (c_action.hasOwnProperty('s_type') && c_action.hasOwnProperty('support') && c_action.support() < 0){
-        if (isWiki) {
+        if (wiki) {
             // The support_on and similarly-named structs are empty in the wiki view
             // This means that the wiki can be wrong, but we can at least check "max" support
             let grids = gridDefs();
             let s_r = grids[c_action.s_type].r;
-            if (s_r === 'galaxy' && !isStargateOn(isWiki)){
+            if (s_r === 'galaxy' && !isStargateOn(wiki)){
                 num_on = 0;
             }
             else {
@@ -6872,7 +6872,7 @@ export function getStructNumActive(c_action,isWiki){
             }
             if (gal_on.hasOwnProperty(parts[1])){
                 found_support = true;
-                num_on = isStargateOn(isWiki) ? Math.min(num_on, gal_on[parts[1]]) : 0;
+                num_on = isStargateOn(wiki) ? Math.min(num_on, gal_on[parts[1]]) : 0;
             }
             if (spire_on.hasOwnProperty(parts[1])){
                 found_support = true;
@@ -6951,12 +6951,20 @@ function srDesc(c_action,old){
                 Object.keys(structs).forEach(function (region){
                     Object.keys(structs[region]).forEach(function (struct){
                         let label = '';
+                        const check_on = structs[region][struct].hasOwnProperty('on');
+                        let num_on;
                         if (structs[region][struct].hasOwnProperty('s')){
                             let sector = structs[region][struct].s;
                             label = typeof actions[region][sector][struct].title === 'string' ? actions[region][sector][struct].title : actions[region][sector][struct].title();
+                            if (check_on){
+                                num_on = getStructNumActive(actions[region][sector][struct]);
+                            }
                         }
                         else {
                             label = typeof actions[region][struct].title === 'string' ? actions[region][struct].title : actions[region][struct].title();
+                            if (check_on){
+                                num_on = getStructNumActive(actions[region][struct]);
+                            }
                         }
                         desc = desc + `${label}. `;
 
@@ -6966,7 +6974,7 @@ function srDesc(c_action,old){
                         else if (structs[region][struct].count > global[region][struct].count){
                             desc = desc + `${loc('insufficient')} ${label}. `;
                         }
-                        else if (structs[region][struct].hasOwnProperty('on') && structs[region][struct].on > global[region][struct].on){
+                        else if (check_on && structs[region][struct].on > num_on){
                             desc = desc + `${loc('insufficient')} ${label} enabled. `;
                         }
                     });
@@ -7066,9 +7074,27 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
                 let structs = costs[res]();
                 Object.keys(structs).forEach(function (region){
                     Object.keys(structs[region]).forEach(function (struct){
-                        let res_cost = structs[region][struct].hasOwnProperty('on') ? structs[region][struct].on : structs[region][struct].count;
+                        let label = '';
+                        const check_on = structs[region][struct].hasOwnProperty('on');
+                        let num_on;
+                        let res_cost = check_on ? structs[region][struct].on : structs[region][struct].count;
                         let color = 'has-text-dark';
                         let aria = '';
+
+                        if (structs[region][struct].hasOwnProperty('s')){
+                            const sector = structs[region][struct].s;
+                            label = typeof actions[region][sector][struct].title === 'string' ? actions[region][sector][struct].title : actions[region][sector][struct].title();
+                            if (check_on){
+                                num_on = getStructNumActive(actions[region][sector][struct]);
+                            }
+                        }
+                        else {
+                            label = typeof actions[region][struct].title === 'string' ? actions[region][struct].title : actions[region][struct].title();
+                            if (check_on){
+                                num_on = getStructNumActive(actions[region][struct]);
+                            }
+                        }
+
                         if (!global[region][struct]){
                             color = 'has-text-danger';
                             aria = ' <span class="is-sr-only">(blocking resource)</span>';
@@ -7077,18 +7103,10 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
                             color = 'has-text-danger';
                             aria = ' <span class="is-sr-only">(blocking resource)</span>';
                         }
-                        else if (structs[region][struct].hasOwnProperty('on') && structs[region][struct].on > global[region][struct].on){
+                        else if (check_on && structs[region][struct].on > num_on){
                             color = 'has-text-alert';
                         }
 
-                        let label = '';
-                        if (structs[region][struct].hasOwnProperty('s')){
-                            let sector = structs[region][struct].s;
-                            label = typeof actions[region][sector][struct].title === 'string' ? actions[region][sector][struct].title : actions[region][sector][struct].title();
-                        }
-                        else {
-                            label = typeof actions[region][struct].title === 'string' ? actions[region][struct].title : actions[region][struct].title();
-                        }
                         empty = false;
                         cost.append($(`<div class="${color}">${label}: ${res_cost}${aria}</div>`));
                     });
@@ -7520,9 +7538,18 @@ function checkStructs(structs){
                         test = false;
                         return;
                     }
-                    if (global[region][struct].hasOwnProperty('on') && global[region][struct].on < structs[region][struct].on){
-                        test = false;
-                        return;
+                    if (structs[region][struct].hasOwnProperty('on')){
+                        let num_on;
+                        if (structs[region][struct].hasOwnProperty('s')){
+                            const sector = structs[region][struct].s;
+                            num_on = getStructNumActive(actions[region][sector][struct]);
+                        } else {
+                            num_on = getStructNumActive(actions[region][struct]);
+                        }
+                        if (num_on < structs[region][struct].on){
+                            test = false;
+                            return;
+                        }
                     }
                 }
                 else {
@@ -8146,6 +8173,11 @@ function sentience(){
             }
         });
     });
+    if (typeList.includes('carnivore') && typeList.includes('herbivore')){
+        setTraitRank('forager',{ set: genus_traits.omnivore.forager });
+        delete global.race['carnivore'];
+        delete global.race['herbivore'];
+    }
 
     Object.keys(races[global.race.species].traits).forEach(function (trait) {
         setTraitRank(trait,{ set: races[global.race.species].traits[trait] });
@@ -8348,8 +8380,8 @@ function sentience(){
                 neg_traits++;
             }
         }
-        if (neg_traits > 10 && convertVersion(global['version']) > 104000){
-            let suffering = convertVersion(global['version']) > 104001 ? 2 : 1;
+        if (neg_traits > 10 && convertVersion(global['version']) > 104001){
+            let suffering = convertVersion(global['version']) > 104002 ? 2 : 1;
             global.race['overtapped'] = (neg_traits - 10) * suffering;
         }
     }
@@ -8840,7 +8872,9 @@ function aiStart(){
             }
             global.resource.Lumber.display = true;
             global.resource.Plywood.display = true;
-            global.civic.lumberjack.display = true;
+            if (!global.race['forager']){
+                global.civic.lumberjack.display = true;
+            }
         }
         if (global.race['smoldering']){
             global.resource.Chrysotile.display = true;
@@ -8855,7 +8889,7 @@ function aiStart(){
 
         global.civic.miner.display = true;
         global.civic.coal_miner.display = true;
-        if (!global.race['sappy']){
+        if (!global.race['sappy'] && !global.race['forager']){
             global.civic.quarry_worker.display = true;
         }
         global.civic.professor.display = true;
@@ -8872,7 +8906,7 @@ function aiStart(){
 
         initStruct(actions.city.factory);
         initStruct(actions.city.foundry);
-        initStruct(actions.city.smelter); global.city.smelter.count = 1; global.city.smelter.Oil = 1; global.city.smelter.Iron = 1;
+        initStruct(actions.city.smelter); addSmelter(1, 'Iron');
         initStruct(actions.city.oil_power); global.city.oil_power.count = 1; global.city.oil_power.on = 1; 
         initStruct(actions.city.coal_power);
         initStruct(actions.city.transmitter); global.city.transmitter.count = 1; global.city.transmitter.on = 1;
@@ -9126,7 +9160,7 @@ function cataclysm(){
         }
         initStruct(actions.city.factory);
         initStruct(actions.city.foundry);
-        initStruct(actions.city.smelter); global.city.smelter.cap = 2; global.city.smelter.Oil = 2; global.city.smelter.Iron = 1; global.city.smelter.Steel = 1;
+        initStruct(actions.city.smelter); addSmelter(1, 'Iron'); addSmelter(1, 'Steel');
         initStruct(actions.city.fission_power);
         initStruct(actions.city.oil_power);
         initStruct(actions.city.coal_power);

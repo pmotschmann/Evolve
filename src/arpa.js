@@ -1,7 +1,7 @@
 import { global, keyMultiplier, sizeApproximation, srSpeak, p_on, support_on } from './vars.js';
 import { clearElement, popover, clearPopper, flib, fibonacci, eventActive, timeFormat, vBind, messageQueue, adjustCosts, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, trickOrTreat, getTraitDesc, removeFromQueue, arpaTimeCheck, deepClone } from './functions.js';
 import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts, structName } from './actions.js';
-import { races, traits, cleanAddTrait, cleanRemoveTrait, traitSkin, fathomCheck, planetTraits, setTraitRank } from './races.js';
+import { races, traits, cleanAddTrait, cleanRemoveTrait, traitSkin, fathomCheck, planetTraits, setTraitRank, traitRank } from './races.js';
 import { renderSpace } from './space.js';
 import { drawMechLab } from './portal.js';
 import { govActive, defineGovernor } from './governor.js';
@@ -1979,13 +1979,13 @@ function genetics(){
                     remove_list.push(trait);
 
                     major.append(purge);
-                    major.append($(`<span class="trait has-text-warning" id="raceTrait${trait}">${traitName[trait] ? traitName[trait] : traits[trait].name} (${loc(`arpa_genepool_rank`,[trait_listing[trait]])})</span>`));
+                    major.append($(`<span class="trait has-text-warning" id="raceTrait${trait}">${traitName[trait] ? traitName[trait] : traits[trait].name} (${loc(`arpa_genepool_rank`,[traitRank(trait)])})</span>`));
 
                     traitListing.append(major);
                 }
                 else {
                     null_list.push(trait);
-                    traitListing.append(`<div class="traitRow trait${trait}"><div class="trait has-text-warning${global.genes['mutation'] ? ' indent' : ''}">${traitName[trait] ? traitName[trait] : traits[trait].name} (${loc(`arpa_genepool_rank`,[trait_listing[trait]])})</div></div>`);
+                    traitListing.append(`<div class="traitRow trait${trait}"><div class="trait has-text-warning${global.genes['mutation'] ? ' indent' : ''}">${traitName[trait] ? traitName[trait] : traits[trait].name} (${loc(`arpa_genepool_rank`,[traitRank(trait)])})</div></div>`);
                 }
             }
         });
@@ -2046,7 +2046,7 @@ function genetics(){
                     let add = $(`<span class="add${trait} basic-button has-text-success" role="button" :aria-label="addCost('${trait}')" @click="gain('${trait}')">${loc('arpa_gain_button')}</span>`);
 
                     major.append(add);
-                    major.append($(`<span class="trait has-text-warning" id="raceTrait${trait}">${traitName[trait] ? traitName[trait] : traits[trait].name}</span>`));
+                    major.append($(`<span class="trait has-text-warning" id="raceTrait${trait}">${traitName[trait] ? traitName[trait] : traits[trait].name} (${loc(`arpa_genepool_rank`,[offspec_traits[trait] ? 0.5 : 1])})</span>`));
 
                     addListing.append(major);
                 }

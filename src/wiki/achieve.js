@@ -210,7 +210,7 @@ function achieveDesc(achievement,showFlair,universe){
     else if (achievement === 'creator' || achievement === 'heavyweight'){
         let genus = `<div class="flexed">`;
         Object.keys(genus_traits).sort().forEach(function (key){
-            if (key !== 'hybrid'){
+            if (key !== 'hybrid' && key !== 'omnivore'){
                 let label = ['carnivore','herbivore','omnivore'].includes(key) ? loc(`evo_${key}_title`) : loc(`genelab_genus_${key}`);
                 if (achievement === 'creator' ? global.stats.achieve[`genus_${key}`] && global.stats.achieve[`genus_${key}`][uAffix] >= 0 : global.stats.achieve[`genus_${key}`] && global.stats.achieve[`genus_${key}`].h >= 0){
                     genus = genus + `<span class="wide iclr${achievement === 'creator' ? global.stats.achieve[`genus_${key}`][uAffix] : global.stats.achieve[`genus_${key}`].h}">${label}</span>`;
@@ -236,12 +236,14 @@ function achieveDesc(achievement,showFlair,universe){
         }
         let checked = `<div class="flexed">`;    
         Object.keys(genus_traits).sort().forEach(function (key){
-            let label = ['carnivore','herbivore','omnivore'].includes(key) ? loc(`evo_${key}_title`) : loc(`genelab_genus_${key}`);
-            if (genus[key] && genus[key] >= 1){
-                checked = checked + `<span class="wide iclr${genus[key]}">${label}</span>`;
-            }
-            else if (key !== 'hybrid'){
-                checked = checked + `<span class="wide has-text-danger">${label}</span>`;
+            if (key !== 'omnivore'){
+                let label = ['carnivore','herbivore','omnivore'].includes(key) ? loc(`evo_${key}_title`) : loc(`genelab_genus_${key}`);
+                if (genus[key] && genus[key] >= 1){
+                    checked = checked + `<span class="wide iclr${genus[key]}">${label}</span>`;
+                }
+                else if (key !== 'hybrid'){
+                    checked = checked + `<span class="wide has-text-danger">${label}</span>`;
+                }
             }
         });
         checked = checked + `</div>`;
@@ -421,9 +423,9 @@ function featDesc(feat,showFlair){
         };
         ['ct','bh','di','ai','vc','md'].forEach(function (key){
             let reset = 0;
-            Object.keys(global.stats.death_tour).forEach(function(k){
-                if (global.stats.death_tour[k] > reset){
-                    reset = global.stats.death_tour[k];
+            Object.keys(global.stats.death_tour[key]).forEach(function(k){
+                if (global.stats.death_tour[key][k] > reset){
+                    reset = global.stats.death_tour[key][k];
                 }
             });
 

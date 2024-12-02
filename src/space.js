@@ -4,7 +4,7 @@ import { unlockAchieve, unlockFeat, universeAffix } from './achieve.js';
 import { races, traits, genus_traits, genusVars, planetTraits, biomes, traitCostMod } from './races.js';
 import { spatialReasoning, unlockContainers, drawResourceTab, atomic_mass } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
-import { defineIndustry } from './industry.js';
+import { defineIndustry, addSmelter } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
 import { actions, payCosts, powerOnNewStruct, initStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, casinoEffect, wardenLabel, buildTemplate, structName } from './actions.js';
 import { outerTruthTech, syndicate } from './truepath.js';
@@ -505,7 +505,7 @@ const spaceProjects = {
                     let vault = spatialReasoning(bank_vault() * 4);
                     bank = `<div>${loc('plus_max_resource',[`\$${vault}`,loc('resource_Money_name')])}</div>`;
                 }
-                return `<div>${loc('space_red_spaceport_effect1',[planetName().red,$(this)[0].support()])}</div>${bank}<div class="has-text-caution">${loc('space_red_spaceport_effect2',[helium,$(this)[0].powered()])}</div><div class="has-text-caution">${loc('spend',[global.race['cataclysm'] ? 2 : 25,global.resource.Food.name])}</div>`;
+                return `<div>${loc('space_red_spaceport_effect1',[planetName().red,$(this)[0].support()])}</div>${bank}<div class="has-text-caution">${loc('space_red_spaceport_effect2',[helium,$(this)[0].powered()])}</div><div class="has-text-caution">${loc('spend',[global.race['cataclysm'] || global.race['orbit_decayed'] ? 2 : 25,global.resource.Food.name])}</div>`;
             },
             support(){
                 let support = global.race['cataclysm'] || global.race['orbit_decayed'] ? 4 : 3;
@@ -1412,6 +1412,7 @@ const spaceProjects = {
                 return global.race['wish'] && global.race['wishStats'] && global.space['wonder_statue'] ? true : false;
             },
             trait: ['wish'],
+            wiki: false,
             queue_complete(){ return false; },
             effect(){
                 return loc(`city_wonder_effect`,[5]);
@@ -1474,10 +1475,11 @@ const spaceProjects = {
             },
             effect(wiki){
                 let helium = +(fuel_adjust($(this)[0].p_fuel().a,true,wiki)).toFixed(2);
-                let smelter = global.race['cataclysm'] || global.race['orbit_decayed'] ? `<div>${loc('interstellar_stellar_forge_effect3',[1])}</div>` : ``;
+                let num_smelters = $(this)[0].smelting();
+                let smelter = num_smelters > 0 ? `<div>${loc('interstellar_stellar_forge_effect3',[num_smelters])}</div>` : ``;
                 return `${smelter}<span>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered())])}</span>, <span class="has-text-caution">${loc('space_belt_station_effect3',[helium])}</span>`;
             },
-            special(){ return global.race['cataclysm'] || global.race['orbit_decayed'] ? true : false; },
+            special(){ return $(this)[0].smelting() > 0; },
             powered(){
                 let power = -8;
                 if (global.race['forge']){
@@ -1486,11 +1488,21 @@ const spaceProjects = {
                 if (global.stats.achieve['failed_history'] && global.stats.achieve.failed_history.l >= 5){ power -= 2; }
                 return powerModifier(power);
             },
+            smelting(){
+                if (global.race['cataclysm'] || global.race['orbit_decayed']){
+                    return 1;
+                }
+                return 0;
+            },
             p_fuel(){ return { r: 'Helium_3', a: 0.5 }; },
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('geothermal');
                     global.space['geothermal'].on++;
+                    let num_smelters = $(this)[0].smelting();
+                    if (num_smelters > 0){
+                        addSmelter(num_smelters);
+                    }
                     return true;
                 }
                 return false;
@@ -1517,15 +1529,16 @@ const spaceProjects = {
                 Adamantite(offset){ return spaceCostMultiplier('hell_smelter', offset, 15000, 1.24); }
             },
             effect(){
-                return `<div>${loc('interstellar_stellar_forge_effect3',[2])}</div>`;
+                return `<div>${loc('interstellar_stellar_forge_effect3',[$(this)[0].smelting()])}</div>`;
             },
             special: true,
+            smelting(){
+                return 2;
+            },
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('hell_smelter');
-                    global.city.smelter.cap += 2;
-                    global.city.smelter.Steel += 2;
-                    global.city.smelter.Oil += 2;
+                    addSmelter($(this)[0].smelting(), 'Steel');
                     return true;
                 }
                 return false;
@@ -3265,6 +3278,7 @@ const interstellarProjects = {
                 return global.race['wish'] && global.race['wishStats'] && global.interstellar['wonder_gardens'] ? true : false;
             },
             trait: ['wish'],
+            wiki: false,
             queue_complete(){ return false; },
             effect(){
                 return loc(`city_wonder_effect`,[5]);
@@ -3924,23 +3938,25 @@ const interstellarProjects = {
             },
             effect(){
                 let desc = `<div>${loc('city_foundry_effect1',[jobScale(2)])}</div><div>${loc('interstellar_stellar_forge_effect',[10])}</div><div>${loc('interstellar_stellar_forge_effect2',[5])}</div>`;
-                if (global.tech['star_forge'] && global.tech['star_forge'] >= 2){
-                    desc += `<div>${loc('interstellar_stellar_forge_effect3',[2])}</div>`;
+                let num_smelters = $(this)[0].smelting();
+                if (num_smelters > 0){
+                    desc += `<div>${loc('interstellar_stellar_forge_effect3',[num_smelters])}</div>`;
                 }
                 return `${desc}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             powered(){ return powerCostMod(3); },
             special: true,
+            smelting(){
+                return global.tech?.star_forge >= 2 ? 2 : 0;
+            },
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('stellar_forge','interstellar');
                     if (powerOnNewStruct($(this)[0])){
                         global.civic.craftsman.max += jobScale(2);
-                        if (global.tech['star_forge'] >= 2){
-                            global.city.smelter.cap += 2;
-                            global.city.smelter.Star += 2;
-                            global.city.smelter.StarCap += 2;
-                            global.city.smelter.Iron += 2;
+                        let num_smelters = $(this)[0].smelting();
+                        if (num_smelters > 0){
+                            addSmelter(num_smelters, 'Iron', 'Star');
                         }
                     }
                     return true;
@@ -6373,12 +6389,10 @@ export function piracy(region,rating,raw,wiki){
 
         if (global.race['chicken']){
             pirate *= 1 + (traits.chicken.vars()[1] / 100);
-            pirate = Math.round(pirate);
         }
 
         if (global.race['ocular_power'] && global.race['ocularPowerConfig'] && global.race.ocularPowerConfig.f){
             pirate *= 1 - (traits.ocular_power.vars()[1] / 500);
-            pirate = Math.round(pirate);
         }
 
         let num_def_plat_on = wiki ? global.galaxy.defense_platform.on : p_on['defense_platform'];

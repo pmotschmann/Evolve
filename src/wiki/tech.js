@@ -386,10 +386,10 @@ const extraInformation = {
         loc(`wiki_tech_urban_planning`)
     ],
     zoning_permits: [
-        loc(`wiki_tech_zoning_permits`,[2])
+        loc(`wiki_tech_zoning_permits`,[actions.tech.zoning_permits.bQueue()])
     ],
     urbanization: [
-        loc(`wiki_tech_zoning_permits`,[3])
+        loc(`wiki_tech_zoning_permits`,[actions.tech.urbanization.bQueue()])
     ],
     assistant: [
         loc(`wiki_tech_assistant`)

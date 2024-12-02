@@ -10,6 +10,7 @@ import { loc } from './locale.js';
 import { armyRating, armorCalc, garrisonSize, mercCost, soldierDeath } from './civics.js';
 import { govActive } from './governor.js';
 import { races, traits, traitCostMod, racialTrait } from './races.js';
+import { addSmelter } from './industry.js'
 
 const edenicModules = {
     eden_asphodel: {
@@ -1267,21 +1268,22 @@ const edenicModules = {
                 Scarletite(offset){ return spaceCostMultiplier('sacred_smelter', offset, 1250000, 1.25, 'eden'); },
             },
             effect(){
-                let desc = `<div>${loc('interstellar_stellar_forge_effect3',[5])}</div>`;
+                let desc = `<div>${loc('interstellar_stellar_forge_effect3',[$(this)[0].smelting()])}</div>`;
                 if (global.tech['elysium'] && global.tech.elysium >= 19){
                     desc += `<div>${loc('city_foundry_effect1',[jobScale(3)])}</div>`;
                 }
                 return `${desc}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             powered(){ return powerCostMod(33); },
+            smelting(){
+                return 5;
+            },
             special: true,
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('sacred_smelter','eden');
                     if (powerOnNewStruct($(this)[0])){
-                        global.city.smelter.cap += 5;
-                        global.city.smelter.Steel += 5;
-                        global.city.smelter.Oil += 5;
+                        addSmelter($(this)[0].smelting(), 'Steel');
                     }
                     return true;
                 }
@@ -1388,7 +1390,7 @@ const edenicModules = {
                 let food = 250000;
                 let morale = 0;
                 morale += global.eden.hasOwnProperty('pillbox') && p_on['pillbox'] ? 0.35 * p_on['pillbox'] : 0;
-                morale += global.civic.elysium_miner.workers * 0.15;
+                morale += (global.civic?.elysium_miner?.workers ?? 0) * 0.15;
                 morale += global.eden.hasOwnProperty('archive') && p_on['archive'] ? 0.4 * p_on['archive'] : 0;
 
                 let desc =  `<div>${loc('space_red_vr_center_effect1',[morale.toFixed(1)])}</div>`
@@ -1632,7 +1634,7 @@ const edenicModules = {
             desc(){
                 return `<div>${loc('city_cement_plant_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
-            reqs: { elysium: 18 },
+            reqs: { cement:8 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('eden_cement', offset, 5000000000, 1.24, 'eden'); },
                 Stone(offset){ return spaceCostMultiplier('eden_cement', offset, 1000000000, 1.24, 'eden'); },

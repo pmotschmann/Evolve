@@ -1,11 +1,13 @@
 {
   "name": "evolveidle",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Evolve Idle",
   "private": true,
   "scripts": {
     "build": "npm run evolve && npm run evolve-less && npm run wiki && npm run wiki-less",
+    "build-debug": "npm run evolve-debug && npm run evolve-less && npm run wiki-debug && npm run wiki-less",
     "build-win": "npm run evolve && npm run evolve-less-win && npm run wiki && npm run wiki-less-win",
+    "build-debug-win": "npm run evolve-debug && npm run evolve-less-win && npm run wiki-debug && npm run wiki-less-win",
     "evolve": "node buildEvolve.js",
     "evolve-debug": "node buildEvolveDebug.js",
     "evolve-less": "lessc src/evolve.less evolve/evolve-unminified.css && csso -i evolve/evolve-unminified.css -o evolve/evolve.css && rm evolve/evolve-unminified.css",

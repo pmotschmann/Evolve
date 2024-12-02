@@ -111,7 +111,8 @@ export function racesPage(content){
 
         let genes = $(`<div class="itemlist"></div>`);
 
-        typeList.forEach(function (gType){
+
+        (typeList.includes('carnivore') && typeList.includes('herbivore') ? ['omnivore'] : typeList).forEach(function (gType){
             Object.keys(genus_traits[gType]).sort().forEach(function (trait){
                 let id = `raceTrait${race}${trait}`;
                 let color = races[race].fanaticism === trait ? 'danger' : 'caution';

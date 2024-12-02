@@ -1,5 +1,5 @@
 import { global, p_on, support_on, sizeApproximation, keyMap } from './vars.js';
-import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect, adjustCosts, get_qlevel, timeCheck, buildQueue } from './functions.js';
+import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect, adjustCosts, get_qlevel, timeCheck, timeFormat, buildQueue } from './functions.js';
 import { races, traits, orbitLength } from './races.js';
 import { spatialReasoning, unlockContainers } from './resources.js';
 import { armyRating, garrisonSize, soldierDeath } from './civics.js';
@@ -8,7 +8,7 @@ import { production, highPopAdjust } from './prod.js';
 import { actions, payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, buildTemplate, casinoEffect, housingLabel, structName, initStruct } from './actions.js';
 import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, incrementStruct, planetName } from './space.js';
 import { removeTask, govActive } from './governor.js';
-import { defineIndustry, nf_resources } from './industry.js';
+import { defineIndustry, nf_resources, addSmelter } from './industry.js';
 import { arpa } from './arpa.js';
 import { matrix, retirement, gardenOfEden } from './resets.js';
 import { loc } from './locale.js';
@@ -3335,14 +3335,7 @@ const tauCetiModules = {
                     incrementStruct('ore_refinery','tauceti');
                     if (powerOnNewStruct($(this)[0])){
                         let num_smelters = $(this)[0].smelting();
-                        global.city.smelter.cap += num_smelters;
-                        global.city.smelter.Steel += num_smelters;
-                        if (global.race['evil']) {
-                            global.city['smelter'].Wood += num_smelters;
-                        }
-                        else {
-                            global.city.smelter.Oil += num_smelters;
-                        }
+                        addSmelter(num_smelters, 'Steel', global.race['evil'] ? 'Wood' : 'Oil');
                     }
                     return true;
                 }
@@ -4293,7 +4286,8 @@ export function buildTPShipQueue(action){
     return false;
 }
 
-export function TPShipDesc(ship){
+export function TPShipDesc(parent,obj){
+    let ship = obj.type;
     let raw = shipCosts(ship);
     let costs = {};
     Object.keys(raw).forEach(function(res){
@@ -4302,13 +4296,14 @@ export function TPShipDesc(ship){
 
     var desc = $(`<div class="shipPopper"></div>`);
     var shipPattern = $(`<div class="divider">${loc(`outer_shipyard_class_${ship.class}`)} | ${loc(`outer_shipyard_engine_${ship.engine}`)} | ${loc(`outer_shipyard_weapon_${ship.weapon}`)} | ${loc(`outer_shipyard_power_${ship.power}`)} | ${loc(`outer_shipyard_sensor_${ship.sensor}`)}</div>`);
+    parent.append(desc);
 
     desc.append(shipPattern);
 
     var cost = $('<div class="costList"></div>');
     desc.append(cost);
 
-    let tc = timeCheck({ id: ship.name , cost: costs });
+    let tc = timeCheck({ id: ship.name , cost: costs, doNotAdjustCost: true }, false, true);
     Object.keys(costs).forEach(function (res){
         if (costs[res]() > 0){
             var label = res === 'Money' ? '$' : global.resource[res].name + ': ';
@@ -4316,6 +4311,19 @@ export function TPShipDesc(ship){
             cost.append($(`<div class="${color}" data-${res}="${costs[res]()}">${label}${sizeApproximation(costs[res](),2)}</div>`));
         }
     });
+
+    if (tc && tc['t']){
+        desc.append($(`<div class="divider"></div><div id="popTimer" class="flair has-text-advanced">{{ t | timer }}</div>`));
+        vBind({
+            el: '#popTimer',
+            data: tc,
+            filters: {
+                timer(t){
+                    return loc('action_ready',[timeFormat(t)]);
+                }
+            }
+        });
+    }
     
     return desc;
 }
@@ -5213,11 +5221,11 @@ export function syndicate(region,extra){
         let piracy = global.space.syndicate[region];
         if (global.race['chicken']){
             piracy *= 1 + (traits.chicken.vars()[1] / 100);
-            piracy = Math.round(pirate);
+            piracy = Math.round(piracy);
         }
         if (global.race['ocular_power'] && global.race['ocularPowerConfig'] && global.race.ocularPowerConfig.f){
             piracy *= 1 - (traits.ocular_power.vars()[1] / 500);
-            piracy = Math.round(pirate);
+            piracy = Math.round(piracy);
         }
         let patrol = 0;
         let sensor = 0;
@@ -5740,6 +5748,9 @@ export function loneSurvivor(){
                 total: 0,
             };
         }
+        if(global.race.universe === 'evil'){
+            global.tech['reclaimer'] = 1;
+        }
 
         global.settings.showSpace = false;
         global.settings.showTau = true;
@@ -5955,7 +5966,7 @@ export function loneSurvivor(){
 
         initStruct(actions.city.factory);
         initStruct(actions.city.foundry);
-        initStruct(actions.city.smelter); global.city.smelter.cap = 2; global.city.smelter.Oil = 2; global.city.smelter.Iron = 1; global.city.smelter.Steel = 1;
+        initStruct(actions.city.smelter); addSmelter(1, 'Iron'); addSmelter(1, 'Steel');
 
         initStruct(actions.city.amphitheatre);
         initStruct(actions.city.apartment);

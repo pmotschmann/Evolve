@@ -3,6 +3,19 @@ import { clearElement } from './../functions.js';
 
 export const changeList = [
     {
+        version: `1.4.1`,
+        date: `12/1/2024`,
+        changes: [
+            `Racconar now use the special Forager trait in place of Herbivore and Carnivore.`,
+            `Genetics Lab now shows rank adjustments with Empowered.`,
+            `Fixed wiki display of the Grand Death Tour progress.`,
+            `Normalized Mimic and Imitate ranks.`,
+            `Fliers will no longer be offered a new cement production method in Edenic realm.`,
+            `Fixed issues with powered down Stargate.`,
+            `Fixed various minor bugs.`
+        ]
+    },
+    {
         version: `1.4.0`,
         date: `11/28/2024`,
         changes: [
