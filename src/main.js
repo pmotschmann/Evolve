@@ -2755,21 +2755,25 @@ function fastLoop(){
         let crew_civ = 0;
         let crew_mil = 0;
         let total = 0;
+        let andromeda_helium = 0;
+        let andromeda_deuterium = 0;
 
         for (let j=0; j<galaxy_ship_types.length; j++){
             const area = galaxy_ship_types[j].area;
             const region = galaxy_ship_types[j].region;
+            const req = galaxy_ship_types[j].hasOwnProperty('req') ? p_on[galaxy_ship_types[j].req] > 0 : true;
             const support_home = actions[area][region].info?.support;
             let used_support = 0;
             for (let i=0; i<galaxy_ship_types[j].ships.length; i++){
                 const ship = galaxy_ship_types[j].ships[i];
+                let operating = 0;
 
-                if (global[area][ship] && global[area][ship].hasOwnProperty('on')){
+                if (global[area][ship] && global[area][ship].hasOwnProperty('on') && req && (p_on['s_gate'] || area !== 'galaxy')){
                     const id = actions[area][region][ship].id;
                     const num_on = global[area][ship].on;
-                    let operating = (p_on['s_gate'] || area !== 'galaxy') ? num_on : 0;
+                    operating = num_on;
 
-                    // Support cost (currently only for gateway ships; others computed later)
+                    // Support cost
                     const operating_cost = actions[area][region][ship].hasOwnProperty('support') ? -(actions[area][region][ship].support()) : 0;
                     if (operating_cost > 0){
                         const max_operating = Math.floor((global[area][support_home].s_max - used_support) / operating_cost);
@@ -2826,6 +2830,28 @@ function fastLoop(){
                                 operating = Math.min(operating, Math.floor(global[area][ship].mil / milPerShip));
                             }
                         }
+
+                        if (actions[area][region][ship].ship.hasOwnProperty('helium')){
+                            let increment = +int_fuel_adjust(actions[area][region][ship].ship.helium).toFixed(2);
+                            let consume = operating * increment;
+                            while (consume * time_multiplier > global.resource.Helium_3.amount + (global.resource.Helium_3.diff > 0 ? global.resource.Helium_3.diff * time_multiplier : 0) && operating > 0){
+                                consume -= increment;
+                                operating--;
+                            }
+                            modRes('Helium_3', -(consume * time_multiplier));
+                            andromeda_helium += consume;
+                        }
+
+                        if (actions[area][region][ship].ship.hasOwnProperty('deuterium')){
+                            let increment = +int_fuel_adjust(actions[area][region][ship].ship.deuterium).toFixed(2);
+                            let consume = operating * increment;
+                            while (consume * time_multiplier > global.resource.Deuterium.amount + (global.resource.Deuterium.diff > 0 ? global.resource.Deuterium.diff * time_multiplier : 0) && operating > 0){
+                                consume -= increment;
+                                operating--;
+                            }
+                            modRes('Deuterium', -(consume * time_multiplier));
+                            andromeda_deuterium += consume;
+                        }
                     }
 
                     if (operating < num_on){
@@ -2838,16 +2864,16 @@ function fastLoop(){
                     }
 
                     used_support += operating * operating_cost;
-                    gal_on[ship] = operating;
                 }
-                else {
-                    gal_on[ship] = 0;
-                }
+                gal_on[ship] = operating;
             }
             if (support_home && global?.[area]?.[support_home]?.hasOwnProperty('support')){
                 global[area][support_home].support = used_support;
             }
         }
+
+        breakdown.p.consume.Helium_3[loc('galaxy_fuel_consume')] = -(andromeda_helium);
+        breakdown.p.consume.Deuterium[loc('galaxy_fuel_consume')] = -(andromeda_deuterium);
 
         global.civic.crew.workers = crew_civ;
         if (global.civic.garrison.hasOwnProperty('crew')){
@@ -3837,65 +3863,6 @@ function fastLoop(){
                 }
             }
         }
-
-        let andromeda_helium = 0;
-        let andromeda_deuterium = 0;
-
-        for (let j=0; j<galaxy_ship_types.length; j++){
-            let area = galaxy_ship_types[j].area;
-            let region = galaxy_ship_types[j].region;
-            for (let i=0; i<galaxy_ship_types[j].ships.length; i++){
-                let ship = galaxy_ship_types[j].ships[i];
-                let req = galaxy_ship_types[j].hasOwnProperty('req') ? (p_on[galaxy_ship_types[j].req] > 0 ? true : false) : true;
-                if (p_on['s_gate'] && req && global[area][ship] && (global[area][ship].crew > 0 || global[area][ship].mil > 0)){
-                    let operating = 0;
-                    if (actions[area][region][ship].ship.civ() > 0){
-                        operating = Math.floor(global[area][ship].crew / actions[area][region][ship].ship.civ());
-                    }
-                    if (actions[area][region][ship].ship.mil() > 0){
-                        let mil_operating = Math.floor(global[area][ship].mil / actions[area][region][ship].ship.mil());
-                        if (actions[area][region][ship].ship.civ() === 0 || mil_operating < operating){
-                            operating = mil_operating;
-                        }
-                    }
-
-                    if (actions[area][region][ship].ship.hasOwnProperty('helium')){
-                        let increment = +int_fuel_adjust(actions[area][region][ship].ship.helium).toFixed(2);
-                        let consume = (operating * increment);
-                        while (consume * time_multiplier > global.resource.Helium_3.amount + (global.resource.Helium_3.diff > 0 ? global.resource.Helium_3.diff * time_multiplier : 0) && consume > 0){
-                            consume -= increment;
-                            operating--;
-                        }
-                        modRes('Helium_3', -(consume * time_multiplier));
-                        andromeda_helium += consume;
-                    }
-
-                    if (actions[area][region][ship].ship.hasOwnProperty('deuterium')){
-                        let increment = +int_fuel_adjust(actions[area][region][ship].ship.deuterium).toFixed(2);
-                        let consume = (operating * increment);
-                        while (consume * time_multiplier > global.resource.Deuterium.amount + (global.resource.Deuterium.diff > 0 ? global.resource.Deuterium.diff * time_multiplier : 0) && consume > 0){
-                            consume -= increment;
-                            operating--;
-                        }
-                        modRes('Deuterium', -(consume * time_multiplier));
-                        andromeda_deuterium += consume;
-                    }
-
-                    if (gal_on.hasOwnProperty(ship)){
-                        gal_on[ship] = gal_on[ship] > operating ? operating : gal_on[ship];
-                    }
-                    else {
-                        gal_on[ship] = operating;
-                    }
-                }
-                else {
-                    gal_on[ship] = 0;
-                }
-            }
-        }
-
-        breakdown.p.consume.Helium_3[loc('galaxy_fuel_consume')] = -(andromeda_helium);
-        breakdown.p.consume.Deuterium[loc('galaxy_fuel_consume')] = -(andromeda_deuterium);
 
         if (global.space['shipyard'] && global.space.shipyard['ships']){
             let fuels = {
