@@ -2960,7 +2960,7 @@ function getTraitVals(trait, rank, species){
                 vals = [loc(`element_fire`), traits.elemental.vars(rank)[3], traits.elemental.vars(rank)[5]];
                 break;
             case 'frost':
-                vals = [loc(`element_frost`), traits.elemental.vars(rank)[3], traits.elemental.vars(rank)[5], loc('city_biolab')];
+                vals = [loc(`element_frost`), traits.elemental.vars(rank)[4], traits.elemental.vars(rank)[5], loc('city_biolab')];
                 break;
         }
     }
