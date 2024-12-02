@@ -6149,7 +6149,7 @@ export function racialTrait(workers,type){
         let lt = global.race['living_tool'] ? 1 + traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science * 0.12 : 0) : 1;
         modifier *= lt > tusk ? lt : tusk;
     }
-    if (global.race['forager']){
+    if (global.race['forager'] && type === 'forager'){
         modifier *= traits.forager.vars()[0] / 100;
     }
     if (global.race['high_pop']){
@@ -6957,6 +6957,8 @@ export function setImitation(mod){
 
         let i_traits = [];
         if(races[global.race['srace']].type === 'hybrid'){
+            let genusList = races[global.race['srace']].hybrid;
+            if (genusList.includes('carnivore') && genusList.includes('herbivore')){ genusList = ['omnivore']; }
             races[global.race['srace']].hybrid.forEach(function(genus) {
                 Object.keys(genus_traits[genus]).forEach(function (trait) {
                     if (!global.race[trait]){
@@ -6965,7 +6967,7 @@ export function setImitation(mod){
                 });
             })
         }
-        else{
+        else {
             Object.keys(genus_traits[races[global.race['srace']].type]).forEach(function (trait) {
                 if (!global.race[trait]){
                     i_traits.push(trait);

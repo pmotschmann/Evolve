@@ -5547,22 +5547,19 @@ function fastLoop(){
                 stone_base *= (global.tech['hammer'] && global.tech['hammer'] > 0 ? global.tech['hammer'] * 0.4 : 0) + 1;
             }
 
+            let stone_environment = 1;
+
             if (global.city.biome === 'desert'){
-                stone_base *= biomes.desert.vars()[0];
+                stone_environment *= biomes.desert.vars()[0];
             }
             if (global.city.biome === 'swamp'){
-                stone_base *= biomes.swamp.vars()[3];
+                stone_environment *= biomes.swamp.vars()[3];
             }
             if (global.tech['explosives'] && global.tech.explosives >= 2){
-                stone_base *= 1 + (global.tech.explosives * 0.25);
+                stone_environment *= 1 + (global.tech.explosives * 0.25);
             }
 
-            let asbestos_base = 0;
-            if (global.race['smoldering'] && global.resource.Chrysotile.display && global.city['rock_quarry']){
-                asbestos_base = stone_base * production('psychic_boost','Chrysotile');
-                stone_base *= (100 - global.city.rock_quarry.asbestos) / 100;
-                asbestos_base *= global.city.rock_quarry.asbestos / 100;
-            }
+            stone_base *= stone_environment;
 
             let power_mult = 1;
             let power_single = 1;
@@ -5581,14 +5578,7 @@ function fastLoop(){
                 breakdown.p['Stone'][`ᄂ${loc('power')}`] = ((power_mult - 1) * 100) + '%';
                 breakdown.p['Stone'][`ᄂ${loc('quarantine')}+0`] = ((q_multiplier - 1) * 100) + '%';
             }
-            if (global.race['smoldering'] && global.resource.Chrysotile.display){
-                breakdown.p['Chrysotile'][loc('workers')] = asbestos_base + 'v';
-                if (asbestos_base > 0){
-                    breakdown.p['Chrysotile'][`ᄂ${loc('city_rock_quarry')}`] = ((rock_quarry - 1) * 100) + '%';
-                    breakdown.p['Chrysotile'][`ᄂ${loc('power')}`] = ((power_mult - 1) * 100) + '%';
-                }
-            }
-
+            
             if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['rock_quarry'] > 0){
                 power_mult = (power_mult - 1) * 0.5 + 1;
                 power_single = (power_single - 1) * 0.5 + 1;
@@ -5598,6 +5588,7 @@ function fastLoop(){
                 }
             }
 
+            let asbestos_base = 0;
             if (global.race['cataclysm'] || global.race['orbit_decayed']){
                 if (global.tech['mars'] && support_on['red_mine']){
                     stone_base = support_on['red_mine'] * workerScale(global.civic.colonist.workers,'colonist') * production('red_mine','stone') * production('psychic_boost','Stone');
@@ -5620,16 +5611,11 @@ function fastLoop(){
                 rock_quarry = 1;
             }
 
-            let delta = stone_base * rock_quarry;
-            if (global.city['rock_quarry']){
-                global.city.rock_quarry['cnvay'] = +(delta * hunger * q_multiplier * global_multiplier * (power_single - 1)).toFixed(5);
-            }
-            delta *= power_mult * hunger * q_multiplier * global_multiplier;
-
             if (global.race['forager'] && global.resource.Stone.display){
                 let forage = 1;
                 let foragers = workerScale(global.civic.forager.workers,'forager');
                 foragers *= racialTrait(foragers,'forager');
+                foragers *= stone_environment;
 
                 if (global.race['servants']){
                     let serve = global.race.servants.jobs.forager;
@@ -5644,8 +5630,29 @@ function fastLoop(){
                     breakdown.p['Stone'][`ᄂ${loc('power')}`] = ((power_mult - 1) * 100) + '%';
                     breakdown.p['Stone'][`ᄂ${loc('quarantine')}+1`] = ((q_multiplier - 1) * 100) + '%';
                 }
-                modRes('Stone', forage_base * hunger * rock_quarry * power_mult * global_multiplier * q_multiplier * time_multiplier);
+
+                stone_base += forage_base;
             }
+
+            if (global.race['smoldering'] && global.resource.Chrysotile.display && global.city['rock_quarry']){
+                asbestos_base = stone_base * production('psychic_boost','Chrysotile');
+                stone_base *= (100 - global.city.rock_quarry.asbestos) / 100;
+                asbestos_base *= global.city.rock_quarry.asbestos / 100;
+            }
+            if (global.race['smoldering'] && global.resource.Chrysotile.display){
+                breakdown.p['Chrysotile'][loc('workers')] = asbestos_base + 'v';
+                if (asbestos_base > 0){
+                    breakdown.p['Chrysotile'][`ᄂ${loc('city_rock_quarry')}`] = ((rock_quarry - 1) * 100) + '%';
+                    breakdown.p['Chrysotile'][`ᄂ${loc('power')}`] = ((power_mult - 1) * 100) + '%';
+                }
+            }
+
+
+            let delta = stone_base * rock_quarry;
+            if (global.city['rock_quarry']){
+                global.city.rock_quarry['cnvay'] = +(delta * hunger * q_multiplier * global_multiplier * (power_single - 1)).toFixed(5);
+            }
+            delta *= power_mult * hunger * q_multiplier * global_multiplier;
 
             breakdown.p['Stone'][loc('hunger')] = ((hunger - 1) * 100) + '%';
             modRes('Stone', delta * time_multiplier);
