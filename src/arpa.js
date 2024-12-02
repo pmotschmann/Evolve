@@ -1963,14 +1963,21 @@ function genetics(){
         }
         Object.keys(trait_listing).forEach(function (trait){
             if (traits[trait] && traits[trait].type !== 'minor' && traits[trait].type !== 'special' && trait !== 'evil' && trait !== 'soul_eater' && trait !== 'artifical'){
+                let mimicTraits = [
+                    ...(global.race['ss_traits'] ? global.race['ss_traits'] : []),
+                    ...(global.race['iTraits'] ? Object.keys(global.race['iTraits']) : [])
+                ];
                 let readOnly = false;
-                if ((global.race['ss_traits'] && global.race.ss_traits.includes(trait)) || (global.race['iTraits'] && global.race.iTraits.hasOwnProperty(trait))){
+                if (mimicTraits.includes(trait)){
                     readOnly = true;
                 }
                 else if (['sludge','ultra_sludge'].includes(global.race.species) && (trait === 'ooze' || global.race['modified'])){
                     readOnly = true;
                 }
                 else if (!global.race.hasOwnProperty(trait)){
+                    readOnly = true;
+                }
+                else if(trait === 'forager' && mimicTraits.some(item => ['herbivore', 'carnivore'].includes(item))){
                     readOnly = true;
                 }
                 if (!readOnly && ((traits[trait].type === 'major' && global.genes['mutation']) || (traits[trait].type === 'genus' && global.genes['mutation'] && global.genes['mutation'] >= 2))){

@@ -7104,12 +7104,6 @@ export function combineTraits(){
         global.race.inactive['carnivore'] = global.race['carnivore'];
         delete global.race['herbivore'];
         delete global.race['carnivore'];
-        if(global.race.ss_traits && (global.race.ss_traits.includes('herbivore') || global.race.ss_traits.includes('carnivore')) && !global.race.ss_traits.includes('forager')){
-            global.race.ss_traits.push('forager');
-        }
-        if(global.race.iTraits && (global.race.iTraits.hasOwnProperty('herbivore') || global.race.iTraits.hasOwnProperty('carnivore'))){
-            global.race.iTraits['forager'] = 0;
-        }
         if(global.race['forager'] !== rank){
             setTraitRank('forager',{ set: rank, force:true});
             cleanRemoveTrait('carnivore');
@@ -7119,12 +7113,6 @@ export function combineTraits(){
     }
     else if(global.race['forager']){
         delete global.race['forager'];
-        if(global.race.ss_traits?.includes('forager')){
-            global.race.ss_traits = global.race.ss_traits.filter(trait => trait !== 'forager');
-        }
-        if(global.race.iTraits?.hasOwnProperty('forager')){
-            delete global.race.iTraits['forager'];
-        }
         cleanRemoveTrait('forager');
     }
 }
