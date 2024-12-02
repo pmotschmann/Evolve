@@ -10755,7 +10755,7 @@
   "wiki_universe_micro_para2": "这个宇宙像一个沙盒，您可以更容易地进行游戏，但也因此无法解锁大部分成就和壮举。",
   "wiki_universe_micro_para3": "换句话说，您可以解锁对应成就的微型宇宙图标，但无法解锁基础图标。",
   "wiki_universe_micro_para4": "%0在这个宇宙中减少成本蠕变。",
-  "wiki_universe_micro_para5": "依照您目前%0的数量，将使地面成本蠕变 -%1，太空成本蠕变 -%2。",
+  "wiki_universe_micro_para5": "依照您目前%0的数量，将使地面成本蠕变 -%1，地面之外成本蠕变 -%2。",
   "wiki_universe_micro_para6": "任何建筑的成本蠕变都无法低于 %0。",
   "wiki_universe_magic": "魔法宇宙",
   "wiki_universe_magic_para1": "此宇宙中出现了第五种基本力，法力。",
