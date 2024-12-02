@@ -6895,13 +6895,14 @@ export function cleanRemoveTrait(trait,rank){
             if (global.race['iTraits']){
                 Object.keys(global.race.iTraits).forEach(function (t){
                     if (t !== 'imitation'){
+                        let base = global.race.inactive[t] ? global.race.inactive : global.race;
                         if (global.race.iTraits[t] === 0){
-                            let rank = global.race[t];
-                            delete global.race[t];
+                            let rank = base[t];
+                            delete base[t];
                             cleanRemoveTrait(t,rank);
                         }
                         else {
-                            global.race[t] = global.race.iTraits[t];
+                            base[t] = global.race.iTraits[t];
                         }
                     }
                 });
@@ -6955,10 +6956,13 @@ export function setImitation(mod){
             }
         }
 
+        Object.keys(global.race.inactive).forEach(function (trait){
+            global.race[trait] = global.race.inactive[trait];
+        })
+        global.race.inactive = {};
+
         let i_traits = [];
         if(races[global.race['srace']].type === 'hybrid'){
-            let genusList = races[global.race['srace']].hybrid;
-            if (genusList.includes('carnivore') && genusList.includes('herbivore')){ genusList = ['omnivore']; }
             races[global.race['srace']].hybrid.forEach(function(genus) {
                 Object.keys(genus_traits[genus]).forEach(function (trait) {
                     if (!global.race[trait]){
@@ -6999,11 +7003,18 @@ export function setImitation(mod){
                 if (mod && set){ cleanAddTrait(trait); }
             }
         }
+        combineTraits();
     }
 }
 
 export function shapeShift(genus,setup,forceClean){
     let shifted = global.race.hasOwnProperty('ss_traits') ? global.race.ss_traits : [];
+
+    Object.keys(global.race.inactive).forEach(function (trait){
+        global.race[trait] = global.race.inactive[trait];
+    })
+    global.race.inactive = {};
+
     if (!setup || forceClean){
         shifted.forEach(function(trait){
             let rank = global.race[trait];
@@ -7069,12 +7080,52 @@ export function shapeShift(genus,setup,forceClean){
     }
 
     global.race['ss_traits'] = shifted;
+    combineTraits();
     if(genus || !setup || forceClean){
         //redraws for mimic heat or avian removing buildings or techs
         arpa('Genetics');
         drawCity();
         renderEdenic();
         drawTech();
+    }
+}
+
+export function combineTraits(){
+
+    Object.keys(global.race.inactive).forEach(function (trait){
+        global.race[trait] = global.race.inactive[trait];
+    })
+    global.race.inactive = {};
+
+    if(global.race['herbivore'] && global.race['carnivore']){
+        let rank = Math.min(global.race['herbivore'], global.race['carnivore']); //omnivore has rank equal to lower of carnivore/herbivore
+
+        global.race.inactive['herbivore'] = global.race['herbivore'];
+        global.race.inactive['carnivore'] = global.race['carnivore'];
+        delete global.race['herbivore'];
+        delete global.race['carnivore'];
+        if(global.race.ss_traits && (global.race.ss_traits.includes('herbivore') || global.race.ss_traits.includes('carnivore')) && !global.race.ss_traits.includes('forager')){
+            global.race.ss_traits.push('forager');
+        }
+        if(global.race.iTraits && (global.race.iTraits.hasOwnProperty('herbivore') || global.race.iTraits.hasOwnProperty('carnivore'))){
+            global.race.iTraits['forager'] = 0;
+        }
+        if(global.race['forager'] !== rank){
+            setTraitRank('forager',{ set: rank, force:true});
+            cleanRemoveTrait('carnivore');
+            cleanRemoveTrait('herbivore');
+            cleanAddTrait('forager');
+        }
+    }
+    else if(global.race['forager']){
+        delete global.race['forager'];
+        if(global.race.ss_traits?.includes('forager')){
+            global.race.ss_traits = global.race.ss_traits.filter(trait => trait !== 'forager');
+        }
+        if(global.race.iTraits?.hasOwnProperty('forager')){
+            delete global.race.iTraits['forager'];
+        }
+        cleanRemoveTrait('forager');
     }
 }
 

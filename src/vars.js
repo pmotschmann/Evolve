@@ -1227,6 +1227,15 @@ if (convertVersion(global['version']) < 104001){
     }
 }
 
+if (convertVersion(global['version']) < 104002){
+    if(!global.race.inactive){
+        global.race.inactive = {};
+    }
+    if(global.race['forager']){
+        global.race.inactive = {herbivore:global.race['forager'], carnivore:global.race['forager']};
+    }
+}
+
 global['version'] = '1.4.1';
 delete global['revision'];
 delete global['beta'];

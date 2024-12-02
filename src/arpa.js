@@ -1,7 +1,7 @@
 import { global, keyMultiplier, sizeApproximation, srSpeak, p_on, support_on } from './vars.js';
 import { clearElement, popover, clearPopper, flib, fibonacci, eventActive, timeFormat, vBind, messageQueue, adjustCosts, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, trickOrTreat, getTraitDesc, removeFromQueue, arpaTimeCheck, deepClone } from './functions.js';
 import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts, structName } from './actions.js';
-import { races, traits, cleanAddTrait, cleanRemoveTrait, traitSkin, fathomCheck, planetTraits, setTraitRank, traitRank } from './races.js';
+import { races, traits, cleanAddTrait, cleanRemoveTrait, combineTraits, traitSkin, fathomCheck, planetTraits, setTraitRank, traitRank } from './races.js';
 import { renderSpace } from './space.js';
 import { drawMechLab } from './portal.js';
 import { govActive, defineGovernor } from './governor.js';
@@ -2234,6 +2234,7 @@ function genetics(){
                         genetics();
                         drawTech();
                         drawCity();
+                        combineTraits();
                     }
                 },
                 geneCost(t){
