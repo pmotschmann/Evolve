@@ -4,6 +4,14 @@ import { clearElement } from './../functions.js';
 export const changeList = [
     {
         version: `1.4.1`,
+        revision: `a`,
+        date: `12/2/2024`,
+        changes: [
+            `Fixed Ore Processor.`,
+        ]
+    },
+    {
+        version: `1.4.1`,
         date: `12/1/2024`,
         changes: [
             `Racconar now use the special Forager trait in place of Herbivore and Carnivore.`,
