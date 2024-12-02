@@ -2194,6 +2194,10 @@ function genetics(){
                         else {
                             global.race['modified']++;
                         }
+                        if(t === 'forager'){
+                            delete global.race.inactive['herbivore'];
+                            delete global.race.inactive['carnivore'];
+                        }
                         cleanRemoveTrait(t,rank);
                         genetics();
                         drawTech();
