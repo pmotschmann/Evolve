@@ -3,10 +3,10 @@ import { vBind, clearElement, popover, darkEffect, eventActive, easterEgg, getHa
 import { loc } from './locale.js';
 import { racialTrait, servantTrait, races, traits, biomes, planetTraits, fathomCheck } from './races.js';
 import { armyRating } from './civics.js';
-import { craftingRatio, craftCost, craftingPopover, templeCount } from './resources.js';
+import { craftingRatio, craftCost, craftingPopover } from './resources.js';
 import { planetName } from './space.js';
 import { asphodelResist } from './edenic.js';
-import { actions } from './actions.js';
+import { actions, templeCount } from './actions.js';
 
 export const job_desc = {
     unemployed: function(servant){

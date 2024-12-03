@@ -4066,7 +4066,7 @@ function fastLoop(){
             professors_base *= global.race['pompous'] ? (1 - traits.pompous.vars()[0] / 100) : 1;
             professors_base *= racialTrait(workerScale(global.civic.professor.workers,'professor'),'science');
             if (global.tech['anthropology'] && global.tech['anthropology'] >= 3){
-                professors_base *= 1 + fathTempleCount() * 0.05;
+                professors_base *= 1 + faithTempleCount() * 0.05;
             }
             if (global.civic.govern.type === 'theocracy'){
                 professors_base *= 1 - (govEffect.theocracy()[1] / 100);

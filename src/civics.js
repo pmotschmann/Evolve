@@ -6,7 +6,7 @@ import { races, racialTrait, traits, planetTraits, biomes, fathomCheck, blubberF
 import { defineGovernor, govActive } from './governor.js';
 import { drawTech } from  './actions.js';
 import { jobScale } from './jobs.js';
-import { templeCount } from './resources.js';
+import { templeCount } from './actions.js';
 import { astrologySign, astroVal } from './seasons.js';
 import { warhead } from './resets.js';
 

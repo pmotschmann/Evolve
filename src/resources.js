@@ -3068,7 +3068,7 @@ export const spatialReasoning = (function(){
     }
 })();
 
-function faithTempleCount(){
+export function faithTempleCount(){
     let noEarth = global.race['cataclysm'] || global.race['orbit_decayed'] ? true : false;
     return templeCount(noEarth);
 }
