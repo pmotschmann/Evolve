@@ -3,7 +3,7 @@ import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
 import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill } from './races.js';
-import { defineResources, unlockCrates, unlockContainers, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus } from './resources.js';
+import { defineResources, unlockCrates, unlockContainers, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus, faithTempleCount } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter } from './industry.js';
 import { defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating, garrisonSize } from './civics.js';
@@ -3971,7 +3971,7 @@ export const actions = {
                     gain *= 1.4;
                 }
                 if (global.tech['anthropology'] && global.tech['anthropology'] >= 2){
-                    gain *= 1 + (global.city.temple.count * 0.05);
+                    gain *= 1 + (faithTempleCount() * 0.05);
                 }
                 if (global.tech['science'] && global.tech['science'] >= 5){
                     let sci_val = workerScale(global.civic.scientist.workers,'scientist');
@@ -4013,7 +4013,7 @@ export const actions = {
                         gain *= 1.4;
                     }
                     if (global.tech['anthropology'] && global.tech.anthropology >= 2){
-                        gain *= 1 + (global.city.temple.count * 0.05);
+                        gain *= 1 + (faithTempleCount() * 0.05);
                     }
                     if (global.tech['science'] && global.tech.science >= 5){
                         gain *= 1 + (workerScale(global.civic.scientist.workers,'scientist') * 0.12);
@@ -8521,7 +8521,7 @@ function sentience(){
         global.resource.Steel.display = true;
         global.resource.Steel.amount = 25;
         if (global.stats.achieve.technophobe.l >= 3){
-            if (!global.race['truepath']){
+            if (!global.race['truepath'] && !global.race['lone_survivor']){
                 global.resource.Soul_Gem.display = true;
             }
             let gems = 1;

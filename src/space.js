@@ -1238,7 +1238,7 @@ const spaceProjects = {
                     sci += num_lab_on * 25;
                 }
                 if (global.tech['ancient_study'] && global.tech['ancient_study'] >= 2){
-                    sci += global.space.ziggurat.count * 15;
+                    sci += templeCount(true) * 15;
                 }
                 let num_mass_driver_on = wiki ? (global.city?.mass_driver?.on ?? 0) : p_on['mass_driver'];
                 if (global.tech.mass >= 2 && num_mass_driver_on > 0){
@@ -7206,7 +7206,7 @@ export function int_fuel_adjust(fuel){
 
 export function zigguratBonus(){
     let bonus = 1;
-    if (global.space['ziggurat'] && global.space['ziggurat'].count > 0){
+    if (global.space['ziggurat']){
         let zig = global.tech['ancient_study'] ? 0.006 : 0.004;
         if (global.tech['ancient_deify'] && global.tech['ancient_deify'] >= 2 && support_on['exotic_lab']){
             zig += 0.0001 * support_on['exotic_lab'];
@@ -7224,7 +7224,7 @@ export function zigguratBonus(){
         if (global.race['high_pop']){
             zig = highPopAdjust(zig);
         }
-        bonus += (global.space.ziggurat.count * global.civic.colonist.workers * zig);
+        bonus += (templeCount(true) * global.civic.colonist.workers * zig);
     }
     return bonus;
 }

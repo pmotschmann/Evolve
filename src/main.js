@@ -3,7 +3,7 @@ import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat, checkAdept } from './achieve.js';
 import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone, addATime, exceededATimeThreshold, loopTimers, calcQuantumLevel } from './functions.js';
 import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill } from './races.js';
-import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
+import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobScale, workerScale, limitCraftsmen, loadServants} from './jobs.js';
 import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, luxGoodPrice, smelterUnlocked } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
@@ -831,7 +831,7 @@ function fastLoop(){
         global_multiplier *= (1 + bonus);
     }
     if (global.race['no_plasmid'] || global.race.universe === 'antimatter'){
-        if (((global.race['cataclysm'] || global.race['orbit_decayed']) && global.space['ziggurat'] && templeCount(true)) || (global.city['temple'] && global.city['temple'].count)){
+        if (faithTempleCount()){
             let faith = faithBonus();
             breakdown.p['Global'][loc('faith')] = (faith * 100) + '%';
             global_multiplier *= (1 + faith);
@@ -4066,7 +4066,7 @@ function fastLoop(){
             professors_base *= global.race['pompous'] ? (1 - traits.pompous.vars()[0] / 100) : 1;
             professors_base *= racialTrait(workerScale(global.civic.professor.workers,'professor'),'science');
             if (global.tech['anthropology'] && global.tech['anthropology'] >= 3){
-                professors_base *= 1 + (global.race['cataclysm'] || global.race['orbit_decayed'] ? (global.space['ziggurat'] ? templeCount(true) : 0) : templeCount()) * 0.05;
+                professors_base *= 1 + fathTempleCount() * 0.05;
             }
             if (global.civic.govern.type === 'theocracy'){
                 professors_base *= 1 - (govEffect.theocracy()[1] / 100);
@@ -7261,7 +7261,7 @@ function fastLoop(){
 
             let temple_mult = 1;
             if (global.tech['anthropology'] && global.tech['anthropology'] >= 4 && !global.race['truepath']){
-                temple_mult += (global.race['cataclysm'] || global.race['orbit_decayed'] ? (global.space['ziggurat'] ? templeCount(true) : 0) : templeCount()) * 0.025;
+                temple_mult += faithTempleCount() * 0.025;
             }
 
             let upkeep = 0;
@@ -8705,7 +8705,7 @@ function midLoop(){
                 shelving *= 1 + (sci_val * 0.12);
             }
             if (global.tech['anthropology'] && global.tech['anthropology'] >= 2){
-                shelving *= 1 + (global.race['cataclysm'] || global.race['orbit_decayed'] ? (global.space['ziggurat'] ? templeCount(true) : 0) : templeCount()) * 0.05;
+                shelving *= 1 + faithTempleCount() * 0.05;
             }
             let teachVal = govActive('teacher',0);
             if (teachVal){
@@ -9231,7 +9231,7 @@ function midLoop(){
             global.city.market.mtrade += routes * global.city.trade.count;
             breakdown.t_route[loc('city_trade')] = routes * global.city.trade.count;
             if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 3){
-                let r_count = global.race['cataclysm'] || global.race['orbit_decayed'] ? (global.space['ziggurat'] ? templeCount(true) : 0) : templeCount();
+                let r_count = faithTempleCount();
                 global.city.market.mtrade += r_count;
                 breakdown.t_route[global.race['cataclysm'] ? loc('space_red_ziggurat_title') : structName('temple')] = r_count;
             }

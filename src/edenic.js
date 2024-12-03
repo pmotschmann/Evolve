@@ -1547,6 +1547,7 @@ const edenicModules = {
                     incrementStruct('north_pier','eden');
                     if (global.eden.south_pier.count === 10 && global.eden.north_pier.count === 10 && global.tech.isle === 2){
                         global.tech.isle = 3;
+                        drawTech();
                     }
                     return true;
                 }
@@ -1726,6 +1727,7 @@ const edenicModules = {
                     incrementStruct('south_pier','eden');
                     if (global.eden.south_pier.count === 10 && global.eden.north_pier.count === 10 && global.tech.isle === 2){
                         global.tech.isle = 3;
+                        drawTech();
                     }
                     return true;
                 }
