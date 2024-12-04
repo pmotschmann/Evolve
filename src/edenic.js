@@ -506,7 +506,6 @@ const edenicModules = {
                     return `<div>${loc('eden_rune_gate_title')}</div>`;
                 }
             },
-            wiki: false,
             reqs: { elysium: 1 },
             condition(){
                 return global.eden.rune_gate.count < 100 ? true : false;
