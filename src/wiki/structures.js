@@ -313,6 +313,7 @@ function addCalcInputs(parent,key,section,region,path){
             let low = high - 1;
             let upper = adjustCosts(action,high,inputs.extra);
             let lower = adjustCosts(action,low,inputs.extra);
+            console.log(action.id, low, high, lower['Soul_Gem']?.(high, inputs.extra), upper['Soul_Gem']?.(high, inputs.extra))
             Object.keys(resources).forEach(function (res){
                 if (upper[res]){
                     resources[res].creep = +(upper[res](high,inputs.extra) / lower[res](low,inputs.extra)).toFixed(5);
