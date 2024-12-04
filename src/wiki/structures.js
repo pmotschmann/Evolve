@@ -189,7 +189,9 @@ const calcInfo = {
             swarm_satellite: 200
         },
         eden: {
-            research_station: 1000
+            spirit_vacuum: 2000,
+            research_station: 2000,
+            asphodel_harvester: 2000
         }
     }
 };
