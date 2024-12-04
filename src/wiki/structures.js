@@ -83,6 +83,7 @@ const calcInfo = {
             'home_mission','dismantle','excavate','alien_outpost','red_mission','matrix','roid_mission','alien_station_survey',
             'contact','introduce','subjugate','gas_contest','gas_contest2','ignite_gas_giant','jeff','goe_facility'
         ],
+        eden: ['survery_meadows','rune_gate_open','survey_fields','fortress','siege_fortress','raid_supplies','ambush_patrol','ruined_fortress','scout_elysium','reincarnation','west_tower','isle_garrison','east_tower','soul_compactor','scout_palace','throne']
     },
     excludeCreep: { // Things that aren't one-offs, but also don't have conventional cost creep.
         planetary: ['horseshoe'],
@@ -174,7 +175,10 @@ const calcInfo = {
             sphinx: !global.tech['hell_spire'] || global.tech.hell_spire < 7 ? 0 : global.tech.hell_spire === 7 ? 1 : 2,
             waygate: global.tech['waygate'] && global.tech.waygate >= 2 ? 10 : global.portal['waygate'] ? global.portal.waygate.count : 0
         },
-        tauceti: {}
+        tauceti: {}, 
+        eden: {
+            rune_gate: global.eden.hasOwnProperty('rune_gate') ? global.eden.rune_gate.count : 0
+        }
     },
     creepCalc: { // Because the cost creep is reverse engineered, buildings with very low cost creep can calculation discrepencies by using the base offset of 100. Here you set higher amounts for those specific buildings to use with the calculation to get a more accurate result.
         planetary: {
@@ -183,6 +187,9 @@ const calcInfo = {
         space: {
             assembly: 1000,
             swarm_satellite: 200
+        },
+        eden: {
+            research_station: 1000
         }
     }
 };
@@ -306,6 +313,7 @@ function addCalcInputs(parent,key,section,region,path){
             let low = high - 1;
             let upper = adjustCosts(action,high,inputs.extra);
             let lower = adjustCosts(action,low,inputs.extra);
+            console.log(action.id, low, high, lower['Soul_Gem']?.(high, inputs.extra), upper['Soul_Gem']?.(high, inputs.extra))
             Object.keys(resources).forEach(function (res){
                 if (upper[res]){
                     resources[res].creep = +(upper[res](high,inputs.extra) / lower[res](low,inputs.extra)).toFixed(5);
