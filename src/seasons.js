@@ -234,6 +234,8 @@ export function seasonDesc(type){
             return astrologyDescription();
         case 'astrology':
             return astrologySymbol();
+        case 'season':
+            return seasonDescription();
     }
 }
 
@@ -392,4 +394,17 @@ function astroEffect(sign){
 function astrologySymbol(){
     let sign = astrologySign();
     return loc(`sign_${sign}_symbol`);
+}
+
+function seasonDescription() {
+    switch (global.city.calendar.season) {
+        case 0:
+            return loc('season_spring');
+        case 1:
+            return loc('season_summer');
+        case 2:
+            return loc('season_autumn');
+        case 3:
+            return loc('season_winter');
+    }
 }
