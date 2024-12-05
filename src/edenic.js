@@ -1948,7 +1948,7 @@ const edenicModules = {
             }
         },
         throne: {
-            id: 'eden-scout_palace',
+            id: 'eden-throne',
             title(){ return loc('eden_abandoned_throne_title'); },
             desc(){ return loc('eden_abandoned_throne_title'); },
             reqs: { palace: 2 },
