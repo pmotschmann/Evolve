@@ -7335,7 +7335,7 @@
   "eden_stabilizer_requirement": "需要附加%0",
   "eden_stabilizer_effect1": "%0衰变 -%1%",
   "eden_stabilizer_effect2": "%1的%0存储上限 +%2%",
-  "eden_stabilizer_limit": "%0达到上限",
+  "eden_stabilizer_limit": "上限：%0",
   "eden_soul_engine_title": "灵魂引擎",
   "eden_mech_station_title": "机甲分部",
   "eden_mech_station_effect": "控制机甲行动",
