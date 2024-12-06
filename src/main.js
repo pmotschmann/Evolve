@@ -397,7 +397,7 @@ popover('morale',
         }
 
         if (global.race['artisan'] && global.civic.craftsman.workers > 0){
-            let boost = traits.artisan.vars()[2] * global.civic.craftsman.workers;
+            let boost = +(traits.artisan.vars()[2] * global.civic.craftsman.workers).toFixed(2);
             total += boost;
             obj.popper.append(`<p class="modal_bd"><span>${loc(`trait_artisan_name`)}</span> <span class="has-text-success"> ${boost}%</span></p>`)
         }
