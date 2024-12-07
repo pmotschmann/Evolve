@@ -7408,11 +7408,16 @@ export function payCosts(c_action, costs){
                 let cost = costs[res]();
                 global.portal.purifier.supply -= cost;
             }
+            else if (res === 'Species'){
+                let cost = costs[res]();
+                global.resource[global.race.species].amount -= cost;
+                // If the default job does not have enough workers, then the main game loop will deplete some other job
+                global.civic[global.civic.d_job].workers = Math.max(0, global.civic[global.civic.d_job].workers - cost);
+            }
             else if (res !== 'Morale' && res !== 'Army' && res !== 'HellArmy' && res !== 'Troops' && res !== 'Structs' && res !== 'Bool' && res !== 'Custom'){
                 let cost = costs[res]();
-                let f_res = res === 'Species' ? global.race.species : res;
-                global['resource'][f_res].amount -= cost;
-                if (f_res === 'Knowledge'){
+                global.resource[res].amount -= cost;
+                if (res === 'Knowledge'){
                     global.stats.know += cost;
                 }
             }
