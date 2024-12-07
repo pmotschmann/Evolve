@@ -6495,7 +6495,7 @@ function fastLoop(){
 
         if (p_on['s_gate'] && global.resource.Adamantite.display && global.galaxy['armed_miner'] && gal_on['armed_miner'] > 0){
             let base = gal_on['armed_miner'] * 0.65 * production('psychic_boost','Iridium');
-            let foothold = 1 + (gal_on['ore_processor'] * 0.1);
+            let foothold = 1 + ((gal_on['ore_processor'] ?? 0) * 0.1);
             let pirate = piracy('gxy_alien2');
             let delta = base * global_multiplier * pirate * foothold * hunger * shrineMetal.mult * iridium_smelter * zigVal;
             if (global.race['gravity_well']){ delta = teamster(delta); }
@@ -6803,7 +6803,7 @@ function fastLoop(){
 
         if (p_on['s_gate'] && global.resource.Adamantite.display && global.galaxy['armed_miner'] && gal_on['armed_miner'] > 0){
             let base = gal_on['armed_miner'] * 0.23 * production('psychic_boost','Adamantite');
-            let foothold = 1 + (gal_on['ore_processor'] * 0.1);
+            let foothold = 1 + ((gal_on['ore_processor'] ?? 0) * 0.1);
             let pirate = piracy('gxy_alien2');
             let delta = base * global_multiplier * pirate * foothold * shrineMetal.mult * zigVal;
 
@@ -7067,7 +7067,7 @@ function fastLoop(){
 
         if (p_on['s_gate'] && global.resource.Bolognium.display && global.galaxy['armed_miner'] && gal_on['armed_miner'] > 0){
             let base = gal_on['armed_miner'] * 0.032 * production('psychic_boost','Bolognium');
-            let foothold = 1 + (gal_on['ore_processor'] * 0.1);
+            let foothold = 1 + ((gal_on['ore_processor'] ?? 0)* 0.1);
             let pirate = piracy('gxy_alien2');
             let delta = base * global_multiplier * pirate * foothold * zigVal;
 
