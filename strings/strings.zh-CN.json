@@ -7348,7 +7348,7 @@
   "eden_mech_station_patrol5": "势不可挡",
   "eden_mech_station_mechs": "机甲巡逻数：%0",
   "eden_mech_station_effective": "机甲响应效果：%0%",
-  "eden_mech_station_overkill": "巡逻安全冗余",
+  "eden_mech_station_overkill": "机甲超杀",
   "eden_rune_gate_title": "符文之门",
   "eden_rune_gate_effect": "建造一个连接到某个区域的传送门。",
   "eden_rune_gate_open": "连接%0",
