@@ -7385,7 +7385,7 @@
   "eden_ambush_patrol_effect": "尝试伏击敌方的巡逻队。",
   "eden_ambush_patrol_result": "上次伏击堡垒情况",
   "eden_ambush_patrol_damage": "敌方巡逻队被击败：%0",
-  "eden_ambush_patrol_success": "堡垒伏击计划成功！敌方巡逻队已清除。",
+  "eden_ambush_patrol_success": "堡垒伏击计划成功！已清除一支敌方巡逻队。",
   "eden_ambush_patrol_fail": "堡垒伏击计划失败……",
   "eden_ruined_fortress": "堡垒遗址",
   "eden_ruined_fortress_effect": "堡垒已被破坏。",
