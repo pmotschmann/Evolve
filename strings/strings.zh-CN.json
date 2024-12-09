@@ -7366,7 +7366,7 @@
   "eden_fortress": "天堂堡垒",
   "eden_fortress_rating": "堡垒强度：%0%",
   "eden_fortress_patrols": "巡逻队数量：%0",
-  "eden_fortress_detect": "堡垒探测度：%0.",
+  "eden_fortress_detect": "堡垒探测度：%0",
   "eden_fortress_armory": "堡垒部署进度：%0",
   "eden_siege_fortress": "围攻堡垒",
   "eden_siege_fortress_effect": "尝试围攻堡垒。",
