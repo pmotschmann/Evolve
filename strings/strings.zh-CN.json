@@ -5796,7 +5796,7 @@
   "civics_garrison_tactic_siege": "围城",
   "civics_garrison_tactic_siege_desc": "包围敌人的城市。如果战斗胜利，且至少有 %0 名士兵存活，则可以占领该城市。",
   "civics_garrison_hire_mercenary_cost": "聘请雇佣兵：$%0",
-  "civics_garrison_mercenary_cost": "Mercenary Cost: $%0",
+  "civics_garrison_mercenary_cost": "雇佣兵花费：$%0",
   "civics_garrison_no_spy": "情报不足，无法评估，请派遣更多间谍。",
   "civics_garrison_advantage": "%0% 优势",
   "civics_garrison_disadvantage": "%0% 劣势",
