@@ -7323,7 +7323,7 @@
   "eden_survery_meadows_action": "This place fills you with a feeling that you are being watched and don't belong here. Large numbers of unremarkable souls seem to roam this place aimlessly, you have also picked samples of the ghost flower for analysis.",
   "eden_encampment_title": "水仙花营地",
   "eden_encampment_effect": "水仙花园支持 +%0",
-  "eden_ascension_machine_effect1": "%0 +%1 %2",
+  "eden_ascension_machine_effect1": "%0的%2上限 +%1",
   "eden_ascension_machine_effect2": "%0效率 +%1%",
   "eden_asphodel_harvester_title": "水仙收割机",
   "eden_asphodel_harvester_upgrade": "空气净化器效率 +%0%",
