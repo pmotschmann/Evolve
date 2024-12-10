@@ -7331,7 +7331,7 @@
   "eden_ectoplasm_processor_flair": "你找谁啊？",
   "eden_research_station_title": "伊甸学院",
   "eden_research_station_effect": "每%1使知识上限 +%0",
-  "eden_stabilizer_title": "水仙稳定装置",
+  "eden_stabilizer_title": "稳定装置",
   "eden_stabilizer_requirement": "需要附加%0",
   "eden_stabilizer_effect1": "%0衰变 -%1%",
   "eden_stabilizer_effect2": "%1的%0存储上限 +%2%",
