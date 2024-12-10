@@ -4020,7 +4020,7 @@
   "arpa_projects_railway_desc": "建造新铁路以扩展贸易范围。",
   "arpa_projects_railway_effect1": "每有一条铁路，就使贸易盈利 +%1%，并 +%0 条贸易路线。（该贸易路线数量与货场数量有关，每 %2 个货场 +%3 条。）",
   "arpa_projects_railway_cataclysm1": "每有一条铁路，就使贸易盈利 +%1%，并 +%0 条贸易路线。（该贸易路线数量与GPS卫星数量有关，每 %2 颗GPS卫星 +%3 条。）",
-  "arpa_projects_railway_highway": "每有一条铁路，就使运输船物资补给折算数量 +%0%，并使%2的%1产量 +%3%。",
+  "arpa_projects_railway_highway": "另外，每有一条铁路，就使运输船物资补给折算数量 +%0%，并使%2的%1产量 +%3%。",
   "arpa_projects_roid_eject_title": "%0变轨",
   "arpa_projects_roid_eject_desc": "将一个%0送入黑洞。",
   "arpa_projects_roid_eject_desc2": "将一个%0送入黑洞。",
