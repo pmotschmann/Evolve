@@ -7373,7 +7373,7 @@
   "eden_siege_fortress_result": "上次围攻堡垒情况",
   "eden_siege_fortress_lost": "%0名士兵阵亡",
   "eden_siege_fortress_damage": "堡垒受损：%0%",
-  "eden_siege_fortress_success": "堡垒围攻计划成功！堡垒耐久减少%0%。",
+  "eden_siege_fortress_success": "堡垒围攻计划成功！堡垒强度减少%0%。",
   "eden_siege_fortress_fall": "天堂堡垒已被摧毁。",
   "eden_siege_fortress_fail": "堡垒围攻计划失败，小队全灭……",
   "eden_raid_supplies": "突击堡垒",
