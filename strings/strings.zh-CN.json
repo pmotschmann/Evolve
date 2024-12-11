@@ -7517,7 +7517,7 @@
   "hell_report_log_patrol_casualties": "%0名士兵受伤，%1名士兵阵亡。",
   "hell_report_log_soul_find": "在击杀恶魔时获得%1块%0。",
   "hell_report_log_soul_search": "在搜寻恶魔残骸时获得%1块%0。",
-  "hell_report_log_compactor": "Soul Compactor created %0 %1.",
+  "hell_report_log_compactor": "灵魂压缩器制造了%0块%1。",
   "hell_report_log_revived": "1名士兵复活。",
   "hell_report_log_revived_plural": "%0名士兵复活。",
   "hell_report_log_patrols_lost": "由于缺少士兵，%0支巡逻队被迫解散。",
