@@ -10241,6 +10241,7 @@ function midLoop(){
             if (global.portal.hasOwnProperty('spire') && global.portal.spire.count >= 50 && !global.tech['edenic'] && Object.keys(global.pillars).length >= 10){
                 messageQueue(loc('eden_purify_well_msg',[50]),'info',false,['progress']);
                 global.tech['edenic'] = 1;
+                drawTech();
             }
 
             let progress = 0;
