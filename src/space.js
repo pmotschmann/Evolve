@@ -5573,10 +5573,14 @@ const galaxyProjects = {
             effect(wiki){
                 let pirate = piracy('gxy_gorddon',false,false,wiki);
                 let leave = '';
+                let spirit_box = '';
                 if (global.tech.xeno >= 7){
                     leave = `<div>${loc('galaxy_symposium_effect3',[+highPopAdjust(300 * pirate).toFixed(2)])}</div>`;
                 }
-                return `<div class="has-text-caution">${loc(`requires_res`,[loc('galaxy_embassy')])}</div><div>${loc('galaxy_symposium_effect',[(1750 * pirate).toFixed(0)])}</div><div>${loc('galaxy_symposium_effect2',[(650 * pirate).toFixed(0)])}</div>${leave}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                if(global.tech.science >= 22){
+                    spirit_box = `<div>${loc('galaxy_symposium_effect4',[+(100 * pirate).toFixed(2), loc('eden_research_station_title')])}</div>`;
+                }
+                return `<div class="has-text-caution">${loc(`requires_res`,[loc('galaxy_embassy')])}</div><div>${loc('galaxy_symposium_effect',[(1750 * pirate).toFixed(0)])}</div><div>${loc('galaxy_symposium_effect2',[(650 * pirate).toFixed(0)])}</div>${leave}${spirit_box}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             powered(){ return powerCostMod(4); },
             action(){

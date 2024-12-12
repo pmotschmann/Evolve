@@ -1499,6 +1499,10 @@ export const gov_tasks = {
             }
 
             let rBal = false;
+            let blacklist = ['Asphodel_Powder', 'Elysanite'];
+            if(global.race['fasting']){
+                blacklist.push('Food');
+            }
             for (let idx = 0; global.race.governor.config.replicate.res.que && idx < global.queue.queue.length; idx++){
                 let struct = decodeStructId(global.queue.queue[idx].id);
                 let tc = false;
@@ -1512,7 +1516,7 @@ export const gov_tasks = {
                 }
                 let resSorted = Object.keys(tc.s).sort(function(a,b){return tc.s[b]-tc.s[a]});
                 for (let i=0; i<resSorted.length; i++){
-                    if (global.resource[resSorted[i]] && global.resource[resSorted[i]].display && atomic_mass[resSorted[i]] && !(resSorted[i] === 'Food' && global.race['fasting'])){
+                    if (global.resource[resSorted[i]] && global.resource[resSorted[i]].display && atomic_mass[resSorted[i]] && !blacklist.includes(resSorted[i])){
                         global.race.replicator.res = resSorted[i];
                         rBal = true;
                         break;
