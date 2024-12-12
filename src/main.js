@@ -6916,6 +6916,13 @@ function fastLoop(){
                 if (global.tech['explosives'] && global.tech.explosives >= 2){
                     miner_base *= 0.95 + (global.tech.explosives * 0.15);
                 }
+                if (global.race['tough']){
+                    miner_base *= 1 + (traits.tough.vars()[0] / 100);
+                }
+                let ogreFathom = fathomCheck('ogre');
+                if (ogreFathom > 0){
+                    miner_base *= 1 + (traits.tough.vars(1)[0] / 100 * ogreFathom);
+                }
 
                 breakdown.p['Elysanite'][loc('job_elysium_miner')] = miner_base + 'v';
 
