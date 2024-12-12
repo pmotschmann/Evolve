@@ -3035,7 +3035,7 @@
   "tech_railway_to_hell": "地狱维度专线",
   "tech_railway_to_hell_effect": "Use %0 to ward off evil and extend your railways into hell.",
   "tech_purification": "净化增强",
-  "tech_purification_effect": "Use %0 to amplify the purification effect of the %1 by %2% per %3.",
+  "tech_purification_effect": "利用%0可以提升%1的效果，每个%3可以使%1的效果 +%2%。",
   "tech_asphodel_mech": "水仙机甲安保",
   "tech_asphodel_mech_effect": "Design a substation to operate your spire mechs as security in the Aspodel Meadows.",
   "tech_asphodel_storage": "水仙存储设施",
