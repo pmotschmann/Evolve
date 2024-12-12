@@ -4239,6 +4239,7 @@ function fastLoop(){
             if (global.tech['science'] && global.tech.science >= 23){
                 let scientist = workerScale(global.civic.scientist.workers,'scientist');
                 scientist *= racialTrait(scientist,'science');
+                scientist *= global.race['pompous'] ? (1 - traits.pompous.vars()[0] / 100) : 1;
 
                 let sci_gain = scientist * 0.000707;
                 breakdown.p['Omniscience'][global.civic.scientist.name] = sci_gain + 'v';
