@@ -5645,7 +5645,7 @@
   "wish_temple": "市民们为颂赞您的丰功伟业而建造了%0。",
   "wish_wonder": "为了纪念你的丰功伟业，你立起来了一座纪念碑！",
   "wish_no_wonder": "您感觉到自己已经很伟大了。",
-  "ocular_max": "启用上限：%0/%1",
+  "ocular_max": "已选：%0/%1",
   "ocular_disintegration": "分解",
   "ocular_disintegration_desc": "分解光线，战斗评级 +%0%",
   "ocular_petrification": "石化",
