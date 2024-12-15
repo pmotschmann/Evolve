@@ -9642,7 +9642,7 @@
   "wiki_mechanics_thralls_unicorn_para1": "%0获得不同效果的、级别 %1 的 [神圣] 特质。",
   "wiki_mechanics_wish": "许愿",
   "wiki_mechanics_wish_para1": "许愿是%0种族特有的能力。",
-  "wiki_mechanics_wish_para2": "它拥有%1和%2这%0种级别的法术。",
+  "wiki_mechanics_wish_para2": "愿望级别分为%0种：%1和%2。",
   "wiki_mechanics_wish_para3": "每%1个游戏日可以许一次%0，每%3个游戏日可以许一次%2。",
   "wiki_mechanics_wish_para4": "两种愿望的时间是单独计算的，可以彼此独立使用。",
   "wiki_mechanics_wish_minor_know_para1": "许下%0的愿望，可以：获得灵感、充满%0（%1、%2、%3这三种情况除外），或者完成科技相关研究。",
