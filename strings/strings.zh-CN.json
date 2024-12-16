@@ -842,7 +842,7 @@
   "event_cat_interaction0": "%0蹭了下您的腿，并发出打呼噜的声音。",
   "event_cat_interaction1": "你醒了，但发现%0还在陪着你睡觉。",
   "event_cat_interaction2": "%0踢掉了桌子上的水杯。",
-  "event_cat_interaction3": "%0送给了你一份“礼物”，表达了它对你的喜爱之情；你也要感谢它，作为回报。",
+  "event_cat_interaction3": "%0送给了你一份“礼物”，表达了它对你的喜爱之情；你也要感谢%0，作为回报。",
   "event_cat_interaction4": "%0在附近到处乱跑。",
   "event_cat_interaction5": "%0正在盯着你。",
   "event_cat_interaction6": "%0吐出了毛球。",
