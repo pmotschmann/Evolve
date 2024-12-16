@@ -9521,7 +9521,7 @@
   "wiki_mechanics_custom_para11": "您至少需要剩余 %0 基因点数才能创造自定义种族。",
   "wiki_mechanics_custom_para12": "如果有%0点数剩余，则使用自定义种族时可以获得%1的产量加成。",
   "wiki_mechanics_custom_para13": "自定义种族的负面特质不能超过%0个。",
-  "wiki_mechanics_custom_para14": "在旧版本的游戏中设置的自定义种族，其负面特质超过%0个，在游戏版本%1之后，将会获得一个被称之为%2的产量惩罚。",
+  "wiki_mechanics_custom_para14": "之前版本游戏设置的自定义种族，其负面特质超过%0个，在游戏版本%1之后，将会获得一个被称之为%2的产量惩罚。",
   "wiki_mechanics_pillar": "永恒立柱",
   "wiki_mechanics_pillar_para1": "研究%0后，您就可以花费一块%1和一些%2，使当前种族将%1嵌入永恒立柱。",
   "wiki_mechanics_pillar_para2": "初始花费 %1 %0，且每有 1 个种族将和谐水晶嵌入永恒立柱，该数值就再 +%2。",
