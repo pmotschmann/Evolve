@@ -8420,7 +8420,7 @@
   "wiki_trait_effect_artisan": "您十分热爱制作锻造物；锻造物产量 +%0%，工厂产量 +%1%，每位工匠使士气 +%2%。",
   "wiki_trait_effect_stubborn": "您由于固执而不愿意接受新的事物；科技相关研究的知识成本 +%0%。",
   "wiki_trait_effect_rogue": "随机拾取一种资源，资源数量为%0%的储量上限。",
-  "wiki_trait_effect_untrustworthy": "资金存储类建筑的资源成本 +%0%。",
+  "wiki_trait_effect_untrustworthy": "由于需要更好的安全措施，资金存储类建筑的资源成本 +%0%。",
   "wiki_trait_effect_living_materials": "自我复制的材料可以使%0、%1、%2和%3的资源成本随着时间推移而减少。",
   "wiki_trait_effect_unstable": "每个游戏日有%0%的几率使最多%1%的市民解体死亡。",
   "wiki_trait_effect_elemental_electric": "该种族的亲和属性为%0属性。每位市民使电力 +%1MW。士兵战斗评级 +%2%。",
