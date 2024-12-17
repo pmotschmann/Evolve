@@ -867,7 +867,7 @@
   "event_dog_interaction5": "%0在门旁嚎叫着，这是什么意思呢……",
   "event_dog_interaction6": "%0快乐地在您的后花园内挖掘东西。",
   "event_dog_interaction7": "%0在不停地追逐野生动物。",
-  "event_dog_interaction8": "您意外地在地面上丢弃食物，%0在您能够反应之前吞掉了它。",
+  "event_dog_interaction8": "您不小心地在地面上丢弃食物，%0在您能够反应之前吞掉了它。",
   "event_dog_interaction9": "%0不停地追着自己尾巴打转转。",
   "evo_rna": "点击生成 %0 RNA",
   "evo_dna_title": "DNA",
