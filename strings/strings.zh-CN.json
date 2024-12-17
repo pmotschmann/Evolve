@@ -1664,7 +1664,7 @@
   "tech_windturbine_effect": "在风车上安装涡轮机，可用它来发电，而不是进行碾磨。",
   "tech_wind_plant_effect": "发明使用风力发电的发电装置，解锁风车。",
   "tech_watermill": "水车",
-  "tech_watermill_effect": "设计一款使用地下河作为可持续能源的发电设施。",
+  "tech_watermill_effect": "发明使用地下水流作为能源的发电装置。",
   "tech_gmfood": "转基因食品",
   "tech_gmfood_desc": "改造农作物基因，生产更多食物",
   "tech_gmfood_effect": "农场的食物产量进一步提升。",
