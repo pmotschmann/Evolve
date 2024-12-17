@@ -7289,7 +7289,7 @@
   "portal_mech_scrap_refund": "可回收 %0 补给和 %1 灵魂宝石",
   "portal_oven_title": "灵魂料理机",
   "portal_oven_desc": "生产“食物”",
-  "portal_oven_desc2": "“食物”未完成，可能还需要什么材料才能做好？",
+  "portal_oven_desc2": "“食物”的配方不完整，可能还需要什么材料才能做好？",
   "portal_oven_effect1": "建造灵魂料理机的1%部分",
   "portal_oven_flair": "没什么特别的……",
   "portal_dish_soul_steeper_title": "灵魂浸入器",
