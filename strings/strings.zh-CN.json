@@ -2429,7 +2429,7 @@
   "tech_adamantite_screws": "精金螺旋",
   "tech_adamantite_screws_effect": "改用精金螺纹，使输送机效率 +%0%。",
   "tech_otherworldly_binder": "异世界粘合剂",
-  "tech_otherworldly_binder_effect": "看来使用%0作为粘合剂，可以提升%1质量和产量。",
+  "tech_otherworldly_binder_effect": "看来使用%0作为粘合剂，可以提升%1的质量和产量。",
   "tech_hunter_process": "亨特法",
   "tech_hunter_process_effect": "冶炼钢可以同时生产少量钛。",
   "tech_kroll_process": "克罗尔法",
