@@ -2715,7 +2715,7 @@
   "tech_soul_link": "灵魂连接",
   "tech_soul_link_effect": "连接灵魂引渡器和灵魂锻炉，每为一个灵魂引渡器供能，就使灵魂锻炉锻造灵魂宝石的灵魂数量需求 -3%。",
   "tech_soul_bait": "灵魂诱饵",
-  "tech_soul_bait_effect": "Enhancing your Soul Attractors with %0 calms nearby raging spirits and doubles the effectiveness of %1 on them.",
+  "tech_soul_bait_effect": "使用%0强化灵魂引渡器，能够平息暴怒之灵，使%1对其的效果翻倍。",
   "tech_gun_emplacement_effect": "绘制自动炮台的图纸，可用于防卫灵魂锻炉。",
   "tech_advanced_emplacement": "先进的自动炮台",
   "tech_advanced_emplacement_effect": "使用新技术对自动炮台进行升级，提升其效果。",
