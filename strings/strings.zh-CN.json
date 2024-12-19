@@ -9626,7 +9626,7 @@
   "wiki_mechanics_thralls_para5": "您需要%0个该种族的奴役及%1个施虐者才能使对应的种族加成达到最大值。",
   "wiki_mechanics_thralls_para6": "如果施虐者过少，产量也将随之降低。",
   "wiki_mechanics_thralls_para7": "受施虐者监督的奴役可以提供全局产量加成。",
-  "wiki_mechanics_thralls_para8": "奴役加成最多为该种族主要特质（即通过狂热信仰/神化先祖获得的特质）级别%0的效果，还可以随其他特质一起生效。",
+  "wiki_mechanics_thralls_para8": "奴役加成最多为该种族主要特质（即通过狂热信仰/神化先祖获得的特质）级别%0的效果，还可以随该特质一起生效。",
   "wiki_mechanics_thralls_para9": "下列情况属例外情况：",
   "wiki_mechanics_thralls_cath_para1": "%0获得级别 %1 的 [好奇] 特质，且不会发生好奇事件。",
   "wiki_mechanics_thralls_pterodacti_para1": "%0获得级别 %1 的 [中空骨骼] 特质。",
