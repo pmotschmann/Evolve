@@ -9645,7 +9645,7 @@
   "wiki_mechanics_wish_para2": "愿望级别分为%0种：%1和%2。",
   "wiki_mechanics_wish_para3": "每%1个游戏日可以许一次%0，每%3个游戏日可以许一次%2。",
   "wiki_mechanics_wish_para4": "两种愿望的时间是单独计算的，可以彼此独立使用。",
-  "wiki_mechanics_wish_minor_know_para1": "许下%0的愿望，可以：获得灵感、充满%0（%1、%2、%3这三种情况除外），或者完成科技相关研究。",
+  "wiki_mechanics_wish_minor_know_para1": "许下%0的愿望，可以：获得灵感、充满%0（%1、%2、%3这三种情况除外），或者完成科技树上的相应研究。",
   "wiki_mechanics_wish_minor_know_para2": "可完成的科技研究如下：%0、%1、%2、%3、%4、%5、%6、%7、%8、%9、%10、%11、%12、%13、%14、%15或%16。",
   "wiki_mechanics_wish_minor_money_para1": "%0将会增加，但它不一定是您所期望的。",
   "wiki_mechanics_wish_minor_money_para2": "可能是装着%0的手提箱，也可能是提高税收到离谱的情况，甚至可能是从其他人顺手牵羊而来的。",
