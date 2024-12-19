@@ -10407,7 +10407,7 @@
   "wiki_p_res_blood": "鲜血之石",
   "wiki_p_res_blood_para1": "在地狱维度深处的尖塔内通过楼层以后，您可以获得鲜血之石。",
   "wiki_p_res_blood_para2": "您可以在 %0 面板下使用鲜血之石购买特殊升级。",
-  "wiki_p_res_blood_para3": "每在尖塔内通过一层，就获得 %0 块鲜血之石，且每激活一个挑战基因，获取数量额外 +%0 （%1）。",
+  "wiki_p_res_blood_para3": "每通过一层尖塔，可以获得 %0 块鲜血之石，且每激活一个挑战基因，获取数量额外 +%0 （%1）。",
   "wiki_p_res_blood_para4": "购买CRISPR升级%0以后，鲜血之石获取数量翻倍。",
   "wiki_p_res_blood_para5": "购买CRISPR升级%0以后，才可以使鲜血之石在威望重置后数量不变，否则将被重置为零。",
   "wiki_p_res_artifact": "上古遗物",
