@@ -5416,7 +5416,7 @@
   "trait_living_materials_name": " [活体材料] 特质",
   "trait_unstable": "该种族是多个有机成分合成的，有时候会自然解体。",
   "trait_unstable_name": " [解体] 特质",
-  "trait_elemental": "该种族会根据星球环境决定元素的属性。",
+  "trait_elemental": "该种族会根据星球环境决定元素的亲和属性。",
   "trait_elemental_name": " [元素亲和性] 特质",
   "trait_chicken": "该种族散发着鸡肉味，其他生物会觉得美味。攻击性提升。",
   "trait_chicken_name": " [美味] 特质",
