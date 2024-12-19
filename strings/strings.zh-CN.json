@@ -10344,7 +10344,7 @@
   "wiki_calc_tp_ships_costs_base_costs": "基础成本",
   "wiki_calc_tp_ships_costs_final_costs": "最终成本%0",
   "wiki_calc_tp_ships_costs_final_costs_owned": "：%1为 %0 时",
-  "wiki_calc_tp_ships_costs_final_costs_explorer": "探索者最终成本",
+  "wiki_calc_tp_ships_costs_final_costs_explorer": "探索舰最终成本",
   "wiki_calc_tp_ships_costs_base": "基础成本",
   "wiki_calc_tp_ships_costs_res_base": "%0基础值",
   "wiki_calc_tp_ships_costs_res_exp": "%0指数",
