@@ -10285,7 +10285,7 @@
   "wiki_calc_dark_magic": "法力产量",
   "wiki_calc_sludge_level": "本宇宙柠檬清洁剂成就等级",
   "wiki_calc_home": "地面",
-  "wiki_calc_not_home": "太空",
+  "wiki_calc_not_home": "地面之外",
   "wiki_calc_cap": "上限为 %0",
   "wiki_calc_creep_reduction": "%0成本蠕变减少",
   "wiki_calc_ascended_level": "本宇宙飞升成就",
