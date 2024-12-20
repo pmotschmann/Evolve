@@ -9990,7 +9990,7 @@
   "wiki_challenges_modes_gravity_well_para6": "指派的工人越多，生产设施越多，需要指派的驾驶员也就越多。",
   "wiki_challenges_scenarios_fasting": "禁食",
   "wiki_challenges_scenarios_fasting_para1": "%1：%0中，市民们会因无法吃东西而陷入饥饿之中。",
-  "wiki_challenges_scenarios_fasting_para2": "%0收入会固定在%1中，不受任何加成。",
+  "wiki_challenges_scenarios_fasting_para2": "%0产量会固定在%1中，不受任何加成。",
   "wiki_challenges_scenarios_fasting_para3": "饥饿值随着市民数量变化。指派%0工作可以降低饥饿值并增长人口速率。",
   "wiki_challenges_scenarios_fasting_para4": "大部分消耗食物的建筑（例如%0）无法正常运作。",
   "wiki_challenges_scenarios_fasting_para5": "此%0完成条件为：完成所有的%1目标。",
