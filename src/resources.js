@@ -2944,26 +2944,18 @@ export function loadAlchemy(name,color,basic){
             methods: {
                 addSpell(spell){
                     let keyMult = keyMultiplier();
-                    for (let i=0; i<keyMult; i++){
-                        if (global.resource.Mana.diff >= 1){
-                            global.race.alchemy[spell]++;
-                            global.resource.Mana.diff--;
-                        }
-                        else {
-                            break;
-                        }
+                    let change = Math.min(Math.floor(global.resource.Mana.diff), keyMult);
+                    if (change > 0) {
+                        global.race.alchemy[spell] += change;
+                        global.resource.Mana.diff -= change;
                     }
                 },
                 subSpell(spell){
                     let keyMult = keyMultiplier();
-                    for (let i=0; i<keyMult; i++){
-                        if (global.race.alchemy[spell] > 0){
-                            global.race.alchemy[spell]--;
-                            global.resource.Mana.diff++;
-                        }
-                        else {
-                            break;
-                        }
+                    let change = Math.min(global.race.alchemy[spell], keyMult);
+                    if (change > 0) {
+                        global.race.alchemy[spell] -= change;
+                        global.resource.Mana.diff += change;
                     }
                 },
             }
