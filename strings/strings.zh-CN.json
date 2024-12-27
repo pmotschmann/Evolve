@@ -10996,7 +10996,7 @@
   "wiki_events_rumor": "传言",
   "wiki_events_rumor_para1": "您听到一个传言。",
   "wiki_events_pet": "宠物",
-  "wiki_events_pet_para1": "您发现了猫或狗，想作为宠物领养。",
+  "wiki_events_pet_para1": "您可能随机发现猫或狗，想作为宠物领养。",
   "wiki_events_pet_para2": "领养宠物可以使士气+%0%。",
   "wiki_events_progress_intro": "进度事件",
   "wiki_events_progress_intro_para1": "进度事件的影响比主要事件和次要事件更加深入，通常必须发生相应事件才能使游戏进度继续推进下去。",
