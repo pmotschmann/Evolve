@@ -8686,7 +8686,7 @@ const techs = {
         id: 'tech-astrophysics',
         title: loc('tech_astrophysics'),
         desc: loc('tech_astrophysics_desc'),
-        category: 'storage',
+        category: 'space_exploration',
         era: 'early_space',
         reqs: { space: 2 },
         grant: ['space_explore',1],
