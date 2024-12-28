@@ -8263,7 +8263,7 @@
   "wiki_trait_effect_sky_lover": "挖矿类工作压力 +%0%。",
   "wiki_trait_effect_rigid": "锻造物产量 -%0%。",
   "wiki_trait_effect_high_pop": "市民上限变为 %0 倍，但每个市民的工作效率只有正常的 %1%。人口增长速率变为 %2 倍。",
-  "wiki_trait_effect_high_pop_ex1": "您不可以通过 [拟态] 特质模仿昆虫种群来获得 [人口众多] 特质。",
+  "wiki_trait_effect_high_pop_ex1": "您不可以通过 [拟态] 特质模仿昆虫种群来获得 [人口众多] 特质。获得的特质等级可以受 [天使守护] 特质的加成。",
   "wiki_trait_effect_fast_growth": "人口增长速率增加。特质级别影响人口增长速率。",
   "wiki_trait_effect_high_metabolism": "食物消耗 +%0%。",
   "wiki_trait_effect_photosynth": "晴天时食物消耗 -%0%，多云时食物消耗 -%1%，下雨但非寒冷时食物消耗 -%2%。",
