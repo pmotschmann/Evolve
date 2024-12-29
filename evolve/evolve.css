@@ -1,3 +1,5 @@
+
+
 @keyframes color-change {
 
     0%,
@@ -9451,3 +9453,6 @@ div.bigbang.burn.c::before {
     position: absolute;
     top: 1rem
 }
+
+body {
+background-color: white;}
