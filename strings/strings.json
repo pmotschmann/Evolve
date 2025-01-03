@@ -663,7 +663,7 @@
   "event_chicken_eaten4": "velociraptor",
   "event_chicken_eaten5": "gluttony demon",
   "event_chicken_eaten6": "bloodthirsty feral chicken",
-  "event_chicken_eaten7": "group of hunters",
+  "event_chicken_eaten7": "group of %0 hunters",
   "event_chicken_eaten8": "swarm of ants",
   "event_chicken_eaten9": "cute bunny that's surprisingly fast, deadly, and hungry for meat",
   "event_chicken_seasoning0": "Lemon pepper seasoning",
