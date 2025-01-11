@@ -1649,6 +1649,7 @@ const tauCetiModules = {
             title: loc('tau_star_goe_facility'),
             desc(){ return `<div>${loc('tau_star_goe_facility')}</div>`; },
             reqs: { eden: 2 },
+            path: ['truepath'],
             condition(){
                 return global.tauceti.ringworld.count >= 1000 ? true : false;
             },
@@ -1918,6 +1919,7 @@ const tauCetiModules = {
             },
             category: 'residential',
             reqs: { housing: 1, isolation: 1 },
+            path: ['truepath'],
             condition(){ return global.race['lone_survivor'] ? false : true; },
             cost: {
                 Money(offset){return spaceCostMultiplier('tau_housing', offset, 150000, 1.15, 'tauceti'); },
@@ -1957,6 +1959,7 @@ const tauCetiModules = {
             title: loc('tau_home_pylon'),
             desc: loc('tau_home_pylon'),
             reqs: { magic: 2 },
+            path: ['truepath'],
             condition(){ return global.tech['isolation'] && global.tauceti.hasOwnProperty('pylon') ? true : false; },
             cost: {
                 Money(offset){ return spaceCostMultiplier('pylon', offset, 50, 1.48, 'tauceti'); },
@@ -2556,6 +2559,7 @@ const tauCetiModules = {
             desc: loc('city_casino'),
             category: 'commercial',
             reqs: { gambling: 1, isolation: 1 },
+            path: ['truepath'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('tauceti_casino', offset, 1450000, 1.35, 'tauceti'); },
                 Furs(offset){ return spaceCostMultiplier('tauceti_casino', offset, 95000, 1.35, 'tauceti'); },
