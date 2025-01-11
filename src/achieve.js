@@ -143,6 +143,11 @@ export const feats = {
         desc: loc("feat_equilibrium_desc"),
         flair: loc("feat_equilibrium_flair")
     },
+    planned_obsolescence: {
+        name: loc("feat_planned_obsolescence_name"),
+        desc: loc("feat_planned_obsolescence_desc"),
+        flair: loc("feat_planned_obsolescence_flair")
+    },
     digital_ascension: {
         name: loc("feat_digital_ascension_name"),
         desc: loc("feat_digital_ascension_desc"),
@@ -665,6 +670,10 @@ export function checkAchievements(){
                 }
             }
         }
+    }
+
+    if (global.stats['synth'] && Object.keys(global.stats.synth).length >= 32) {
+        unlockFeat('planned_obsolescence',false,5);
     }
 
     if (global.portal.hasOwnProperty('mechbay') && global.tech.hasOwnProperty('hell_spire') && global.tech.hell_spire >= 9){
