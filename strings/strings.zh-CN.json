@@ -8372,7 +8372,7 @@
   "wiki_trait_effect_environmentalist": "水电站（电力 +4MW）和风力发电厂（电力 +5MW；有风时，电力 +7MW）分别取代煤电厂（或法力引擎；电力 +5MW）和石油发电厂（电力 +6MW）出现，无能源消耗；风车的发电量变为 +1.5MW（特质级别无影响）。",
   "wiki_trait_effect_unorganized": "改革政府体制的冷却时间 +%0%。",
   "wiki_trait_effect_musical": "每位艺人额外使士气 +%0%。",
-  "wiki_trait_effect_revive": "士兵战死后有概率复活，炎热天气概率增加，寒冷天气概率降低。特质级别影响复活概率。",
+  "wiki_trait_effect_revive": "士兵战死后有几率复活，炎热天气概率增加，寒冷天气概率降低。复活概率还受特质级别影响。",
   "wiki_trait_effect_slow_regen": "伤兵治愈速度 -%0%。",
   "wiki_trait_effect_forge": "冶炼厂无需燃料，产量按照石油加成计算；地热发电厂基础发电量 +%0MW。",
   "wiki_trait_effect_autoignition": "图书馆的知识产量加成 -%0%。",
