@@ -1738,7 +1738,7 @@
   "tech_bayer_process": "拜耳法",
   "tech_bayer_process_desc": "学习如何从矿石中提取铝，解锁铝和金属精炼厂",
   "tech_bayer_process_effect": "学习如何从采石场的废料中提取剥离出铝。拜耳法是奥地利工程师卡尔•约瑟夫•拜耳在1887年发明的一种从铝土矿生产氧化铝的化工过程，可进行连续化生产。",
-  "tech_bayer_process_effect_alt": "学习如何从矿井的废料中提取剥离出铝。",
+  "tech_bayer_process_effect_alt": "学习如何从矿井的废料中提取剥离出铝。拜耳法是奥地利工程师卡尔•约瑟夫•拜耳在1887年发明的一种从铝土矿生产氧化铝的化工过程，可进行连续化生产。",
   "tech_elysis_process": "无碳铝冶炼",
   "tech_elysis_process_effect": "使用最新型的提纯工艺来提纯铝，需要供能。为金属精炼厂供能后，铝产量加成由 +6% 提升到 +12%。",
   "tech_smelting": "冶炼",
