@@ -9073,7 +9073,7 @@
   "wiki_tech_special_demon_lord": "当前宇宙中的恶魔领主被强化过。",
   "wiki_tech_geck": "解锁G.E.C.K.（全球生态系统建设套件），可在星际船坞中建造。",
   "wiki_tech_thrall_quarters": "牢狱容量上限 +1。",
-  "wiki_tech_psychic_energy": "解锁灵能强化：根据 [灵能] 特质等级中，灵能效果的相应数值提供强化（+%0%），每个远古梦魇成就等级使强化持续时间+75秒（当前为%1秒）。",
+  "wiki_tech_psychic_energy": "解锁灵能强化：根据 [灵能] 特质等级中，灵能效果的相应数值提供强化（+%0%），持续时间为（75x远古梦魇 成就等级）秒（当前为%1秒）。",
   "wiki_tech_psychic_attack": "灵能强化可以消耗45点能量提升士兵战斗评级。",
   "wiki_tech_psychic_finance": "灵能强化可以消耗65点能量提升资金收入。",
   "wiki_tech_psychic_channeling": "您可以通过减少能量上限来被动强化。",
