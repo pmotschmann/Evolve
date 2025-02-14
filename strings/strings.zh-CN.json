@@ -8428,7 +8428,7 @@
   "wiki_trait_effect_elemental_fire": "该种族拥有%0属性元素亲和（每位市民使冶炼厂产量 +%1%）。士兵战斗评级 +%2%。",
   "wiki_trait_effect_elemental_frost": "该种族拥有%0属性元素亲和（每位市民使%3加成 +%1%）。士兵战斗评级 +%2%。",
   "wiki_trait_effect_chicken": "您很美味，其他种族都想吃一口。地狱维度巡逻队被攻击的概率 +%0%，仙女座星云的海盗惩罚 +%1%。不愉快的事情也会随机发生。",
-  "wiki_trait_effect_tusk": "无法研究镐类工具，采矿加成按照%0%的战斗评级计算；士兵战斗评级随着星球的湿度而 +%1%（在地狱维度中，该加成降低）。",
+  "wiki_trait_effect_tusk": "无法研究镐类和手提钻类工具，采矿加成按照%0%的战斗评级计算；士兵战斗评级随着星球的湿度而 +%1%（在地狱维度中，该加成降低）。",
   "wiki_trait_effect_blubber": "将族人的尸体转化为石油，每个炼油厂每天处理%0具尸体。",
   "wiki_trait_effect_ocular_power": "您可以同时使用%0种眼力，其效果为原来的%1%。",
   "wiki_trait_effect_floating": "有风时，全局产量 -%0%。",
