@@ -2792,9 +2792,9 @@ export function loadEjector(name,color){
         let res = $(`<span class="trade"></span>`);
         ejector.append(res);
 
-        res.append($(`<span role="button" aria-label="eject less ${loc('resource_'+name+'_name')}" class="sub has-text-danger" @click="ejectLess('${name}')"><span>&laquo;</span></span>`));
+        res.append($(`<span role="button" aria-label="eject less ${global.resource[name].name}" class="sub has-text-danger" @click="ejectLess('${name}')"><span>&laquo;</span></span>`));
         res.append($(`<span class="current">{{ e.${name} }}</span>`));
-        res.append($(`<span role="button" aria-label="eject more ${loc('resource_'+name+'_name')}" class="add has-text-success" @click="ejectMore('${name}')"><span>&raquo;</span></span>`));
+        res.append($(`<span role="button" aria-label="eject more ${global.resource[name].name}" class="add has-text-success" @click="ejectMore('${name}')"><span>&raquo;</span></span>`));
 
         res.append($(`<span class="mass">${loc('interstellar_mass_ejector_per')}: <span class="has-text-warning">${atomic_mass[name]}</span> kt</span>`));
 
@@ -2927,9 +2927,9 @@ export function loadAlchemy(name,color,basic){
         let res = $(`<span class="trade"></span>`);
         alchemy.append(res);
 
-        res.append($(`<span role="button" aria-label="transmute less ${loc('resource_'+name+'_name')}" class="sub has-text-danger" @click="subSpell('${name}')"><span>&laquo;</span></span>`));
+        res.append($(`<span role="button" aria-label="transmute less ${global.resource[name].name}" class="sub has-text-danger" @click="subSpell('${name}')"><span>&laquo;</span></span>`));
         res.append($(`<span class="current">{{ a.${name} }}</span>`));
-        res.append($(`<span role="button" aria-label="transmute more ${loc('resource_'+name+'_name')}" class="add has-text-success" @click="addSpell('${name}')"><span>&raquo;</span></span>`));
+        res.append($(`<span role="button" aria-label="transmute more ${global.resource[name].name}" class="add has-text-success" @click="addSpell('${name}')"><span>&raquo;</span></span>`));
 
         if (!global.race.alchemy.hasOwnProperty(name)){
             global.race.alchemy[name] = 0;
