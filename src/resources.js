@@ -872,7 +872,7 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
         methods: {
             resRate(n){
                 let diff = sizeApproximation(global.resource[n].diff,2);
-                return `${n} ${diff} per second`;
+                return `${global.resource[name].name} ${diff} per second`;
             },
             trigModal(){
                 this.$buefy.modal.open({
