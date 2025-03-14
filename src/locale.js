@@ -100,4 +100,5 @@ export const locales = {
     'zh-TW': '繁體中文',
     'ko-KR': '한국어',
     'im-PL': 'Igpay-Atinlay'
+    'ja-JP': '日本語' 
 };
