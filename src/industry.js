@@ -1472,8 +1472,12 @@ function loadReplicator(parent,bind){
         }
         else {
             let scrollMenu = ``;
+            let blacklist = ['Asphodel_Powder', 'Elysanite'];
+            if(global.race['fasting']){
+                blacklist.push('Food');
+            }
             Object.keys(atomic_mass).forEach(function(res){
-                if (global.resource[res].display && res !== 'Asphodel_Powder' && res !== 'Elysanite'){
+                if (global.resource[res].display && !blacklist.includes(res)){
                     scrollMenu += `<b-radio-button v-model="res" native-value="${res}">${global.resource[res].name}</b-radio-button>`;
                 }
             });

@@ -4241,7 +4241,6 @@ function fastLoop(){
                 let ghost_base = workerScale(global.civic.ghost_trapper.workers,'ghost_trapper');
                 ghost_base *= racialTrait(ghost_base,'science');
                 ghost_base *= global.race['pompous'] ? (1 - traits.pompous.vars()[0] / 100) : 1;
-                ghost_base = highPopAdjust(ghost_base);
 
                 let ghost_gain = support_on['research_station'] * ghost_base * 0.0000325;
                 breakdown.p['Omniscience'][loc('eden_research_station_title')] = ghost_gain + 'v';
@@ -4256,7 +4255,6 @@ function fastLoop(){
                 let scientist = workerScale(global.civic.scientist.workers,'scientist');
                 scientist *= racialTrait(scientist,'science');
                 scientist *= global.race['pompous'] ? (1 - traits.pompous.vars()[0] / 100) : 1;
-                scientist = highPopAdjust(scientist);
 
                 let sci_gain = scientist * 0.000707;
                 breakdown.p['Omniscience'][global.civic.scientist.name] = sci_gain + 'v';
@@ -5010,6 +5008,9 @@ function fastLoop(){
                 }
                 if (dirtVal){
                     steel_smelter *= 1 + (dirtVal / 100);
+                }
+                if (global.race['elemental'] && traits.elemental.vars()[0] === 'fire'){
+                    steel_smelter *= 1 + highPopAdjust(traits.elemental.vars()[3] * global.resource[global.race.species].amount / 100);
                 }
                 if (salFathom > 0){
                     steel_smelter *= 1 + (0.2 * salFathom);
@@ -6925,13 +6926,19 @@ function fastLoop(){
             if (global.civic.elysium_miner.display){
                 let miner_base = workerScale(global.civic.elysium_miner.workers,'elysium_miner');
                 miner_base *= racialTrait(miner_base,'miner') * 0.36;
-                miner_base = highPopAdjust(miner_base);
 
                 if (!global.race['living_tool'] && !global.race['tusk']){
                     miner_base *= (global.tech['pickaxe'] && global.tech.pickaxe > 0 ? global.tech.pickaxe * 0.15 : 0) + 1;
                 }
                 if (global.tech['explosives'] && global.tech.explosives >= 2){
                     miner_base *= 0.95 + (global.tech.explosives * 0.15);
+                }
+                if (global.race['tough']){
+                    miner_base *= 1 + (traits.tough.vars()[0] / 100);
+                }
+                let ogreFathom = fathomCheck('ogre');
+                if (ogreFathom > 0){
+                    miner_base *= 1 + (traits.tough.vars(1)[0] / 100 * ogreFathom);
                 }
 
                 breakdown.p['Elysanite'][loc('job_elysium_miner')] = miner_base + 'v';
@@ -7717,6 +7724,8 @@ function fastLoop(){
                 global.portal.carport.repair = 0;
                 global.portal.carport.damaged--;
             }
+            //limit carport damage to account for removing high population
+            global.portal.carport.damaged = Math.min(global.portal.carport.damaged, jobScale(global.portal.carport.count));
         }
         else {
             if ($('#portal-carport .count').hasClass('has-text-alert')){
@@ -9135,9 +9144,6 @@ function midLoop(){
             let sci = 200 + attact;
             if (global.tech['science'] && global.tech.science >= 22 && p_on['embassy'] && p_on['symposium']){
                 sci *= 1 + (p_on['symposium'] * piracy('gxy_gorddon'));
-            }
-            if (global.race['high_pop']){
-                sci = highPopAdjust(sci);
             }
             let gain = support_on['research_station'] * highPopAdjust(global.civic.ghost_trapper.workers) * sci;
             caps['Knowledge'] += gain;

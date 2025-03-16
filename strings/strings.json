@@ -6886,6 +6886,7 @@
   "galaxy_symposium_effect": "+%0 Max Knowledge per Dormitory",
   "galaxy_symposium_effect2": "+%0 Max Knowledge per active Galactic Trade Route",
   "galaxy_symposium_effect3": "+%0 Max Knowledge per crew stationed in system",
+  "galaxy_symposium_effect4": "+%0% %1 Max Knowledge",
   "galaxy_freighter": "Freighter",
   "galaxy_freighter_effect": "+%0 %1 Trade Routes",
   "galaxy_freighter_assign": "Assign a freighter to import %0 and export %1.",
