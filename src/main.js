@@ -6406,38 +6406,40 @@ function fastLoop(){
                 }
             }
 
+            let synd = syndicate('spc_gas_moon');
             let fueled_oil_wells = global.city.oil_well.count;
             let fueled_oil_extractor = p_on['oil_extractor'];
+            let oil_prod = global.city['oil_well'] ? (production('oil_well') * q_multiplier) : 0;
+            let extract_prod = global.space['oil_extractor'] ? (production('oil_extractor') * qs_multiplier * synd * zigVal) : 0;
             if (global.race['blubber']){
                 let tick = traits.blubber.vars()[0] * time_multiplier / 5;
-                if (fueled_oil_wells > 0){
-                    if (global.city.oil_well.dead < fueled_oil_wells * tick){
-                        fueled_oil_wells = Math.floor(global.city.oil_well.dead / tick);
+                let check_dead = function(amount){
+                    if (amount > 0){
+                        if (global.city.oil_well.dead < amount * tick){
+                            amount = Math.floor(global.city.oil_well.dead / tick);
+                        }
+                        global.city.oil_well.dead -= amount * tick;
+                        if (global.city.oil_well.dead < tick){
+                            global.city.oil_well.dead = 0;
+                        }
                     }
-                    global.city.oil_well.dead -= fueled_oil_wells * tick;
-                    if (global.city.oil_well.dead < tick){
-                        global.city.oil_well.dead = 0;
-                    }
+                    return amount;
                 }
-                if (fueled_oil_extractor > 0){
-                    if (global.city.oil_well.dead < fueled_oil_extractor * tick){
-                        fueled_oil_extractor = Math.floor(global.city.oil_well.dead / tick);
-                    }
-                    global.city.oil_well.dead -= fueled_oil_wells * tick;
-                    if (global.city.oil_well.dead < tick){
-                        global.city.oil_well.dead = 0;
-                    }
+                if(oil_prod >= extract_prod){ /* swap order of extractors and wells based on which produces more */
+                    fueled_oil_wells = check_dead(fueled_oil_wells);
+                    fueled_oil_extractor = check_dead(fueled_oil_extractor);
+                }
+                else{
+                    fueled_oil_extractor = check_dead(fueled_oil_extractor);
+                    fueled_oil_wells = check_dead(fueled_oil_wells);
                 }
             }
-
-            let oil_well = global.city['oil_well'] ? production('oil_well') * fueled_oil_wells : 0;
-            let oil_extractor = global.space['oil_extractor'] ? fueled_oil_extractor * production('oil_extractor') : 0;
+            let oil_well = oil_prod * fueled_oil_wells;
+            let oil_extractor = extract_prod * fueled_oil_extractor;
             oil_extractor *= production('psychic_boost','Oil');
             oil_well *= production('psychic_boost','Oil');
 
-            let synd = syndicate('spc_gas_moon');
-
-            let delta = (oil_well * q_multiplier) + (oil_extractor * qs_multiplier * synd * zigVal) + (whale_oil * womling_technician);
+            let delta = oil_well + oil_extractor + (whale_oil * womling_technician);
             delta *= hunger * global_multiplier;
             if (global.race['gravity_well']){ delta = teamster(delta); }
 
