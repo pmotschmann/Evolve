@@ -513,6 +513,9 @@ vBind({
         moon(){
             return seasonDesc('moon');
         },
+        season() {
+            return seasonDesc('season');
+        },
         showUniverse(){
             return global.race.universe === 'standard' || global.race.universe === 'bigbang' ? false : true;
         },
