@@ -3809,7 +3809,7 @@ export const traits = {
         type: 'major',
         val: 8,
         vars(r){
-            // [Auto Crafting Boost, Manufactoring Boost]
+            // [Auto Crafting Boost, Manufacturing Boost, Improved Morale]
             switch (r || traitRank('artisan') || 1){
                 case 0.1:
                     return [15,8,0.15];
