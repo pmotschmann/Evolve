@@ -2241,6 +2241,16 @@ export function armyRating(val,type,wound){
     if (global.civic.govern.type === 'autocracy'){
         army *= 1 + (govEffect.autocracy()[1] / 100);
     }
+    if (global.race.universe === 'evil' && global.resource.Authority.display){
+        let auth = global.resource.Authority.amount / 100;
+        if (auth > 1){ 
+            auth = auth / (auth + 100);
+            army *= 1 + auth;
+        }
+        else {
+            army *= auth;
+        }
+    }
     army = Math.floor(army);
     return army * racialTrait(val,type);
 }

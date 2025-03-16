@@ -834,8 +834,8 @@ export function loadFoundry(servants){
                 resource.append(controls);
                 element.append(resource);
 
-                let sub = $(`<span role="button" aria-label="remove ${res} craftsman" class="sub has-text-danger" @click="sub('${res}')"><span>&laquo;</span></span>`);
-                let add = $(`<span role="button" aria-label="add ${res} craftsman" class="add has-text-success" @click="add('${res}')"><span>&raquo;</span></span>`);
+                let sub = $(`<span role="button" aria-label="remove ${global.resource[res].name} crafter" class="sub has-text-danger" @click="sub('${res}')"><span>&laquo;</span></span>`);
+                let add = $(`<span role="button" aria-label="add ${global.resource[res].name} crafter" class="add has-text-success" @click="add('${res}')"><span>&raquo;</span></span>`);
 
                 controls.append(sub);
                 controls.append(add);

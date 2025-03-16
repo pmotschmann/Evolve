@@ -1371,7 +1371,14 @@ const spaceProjects = {
                 let oil = +fuel_adjust(2,true,wiki).toFixed(2);
                 let soldiers = $(this)[0].soldiers();
                 let food = global.race['cataclysm'] ? `` : `<div class="has-text-caution">${loc('space_red_space_barracks_effect3',[global.resource.Food.name])}</div>`;
-                return `<div>${loc('plus_max_soldiers',[soldiers])}</div>${train}<div class="has-text-caution">${loc('space_red_space_barracks_effect2',[oil])}</div>${food}`;
+
+                let desc = `<div>${loc('plus_max_soldiers',[soldiers])}</div>${train}`;
+                if (global.race.universe === 'evil'){
+                    desc += `<div>${loc('plus_max_resource',[1,global.resource.Authority.name])}</div>`;
+                }
+                desc += `<div class="has-text-caution">${loc('space_red_space_barracks_effect2',[oil])}</div>${food}`
+
+                return desc;
             },
             powered(){ return 0; },
             action(){
@@ -3426,7 +3433,12 @@ const interstellarProjects = {
             effect(){
                 let helium = +int_fuel_adjust(6).toFixed(2);
                 let troops = $(this)[0].soldiers();
-                return `<div>${loc('plus_max_soldiers',[troops])}</div><div class="has-text-caution">${loc('space_belt_station_effect3',[helium])}</div>`;
+                let desc = `<div>${loc('plus_max_soldiers',[troops])}</div>`;
+                if (global.race.universe === 'evil'){
+                    desc += `<div>${loc('plus_max_resource',[1,global.resource.Authority.name])}</div>`;
+                }
+                desc += `<div class="has-text-caution">${loc('space_belt_station_effect3',[helium])}</div>`;
+                return desc;
             },
             action(){
                 if (payCosts($(this)[0])){

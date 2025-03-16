@@ -513,6 +513,9 @@ vBind({
         moon(){
             return seasonDesc('moon');
         },
+        season() {
+            return seasonDesc('season');
+        },
         showUniverse(){
             return global.race.universe === 'standard' || global.race.universe === 'bigbang' ? false : true;
         },
@@ -837,6 +840,18 @@ function fastLoop(){
             global_multiplier *= (1 + faith);
         }
     }
+    if (global.race.universe === 'evil' && global.resource.Authority.display){
+        if (global.resource.Authority.amount < 100){
+            let malus = (100 - global.resource.Authority.amount) * 0.0035;
+            breakdown.p['Global'][global.resource.Authority.name] = -(malus * 100).toFixed(2) + '%';
+            global_multiplier *= (1 - malus);
+        }
+        else if (global.resource.Authority.amount > 100){
+            let bonus = (global.resource.Authority.amount - 100) * 0.0015;
+            breakdown.p['Global'][global.resource.Authority.name] = +(bonus * 100).toFixed(2) + '%';
+            global_multiplier *= (1 + bonus);
+        }
+    }
     if (global.race['untapped']){
         if (global.race['untapped'] > 0){
             let untapped = +(global.race.untapped / (global.race.untapped + 20) / 10 + 0.00024).toFixed(4);
@@ -1111,7 +1126,7 @@ function fastLoop(){
         'Water','Deuterium','Neutronium','Adamantite','Infernite','Elerium','Nano_Tube','Graphene','Stanene',
         'Bolognium','Vitreloy','Orichalcum','Asphodel_Powder','Elysanite','Unobtainium','Quantium',
         'Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril','Aerogel','Nanoweave','Scarletite',
-        'Cipher','Nanite','Mana'
+        'Cipher','Nanite','Mana','Authority'
     ];
 
     breakdown.p['consume'] = {};
@@ -7807,6 +7822,7 @@ function midLoop(){
         var caps = {
             Money: 1000,
             Slave: 0,
+            Authority: 80,
             Mana: 0,
             Energy: 100,
             Sus: 100,
@@ -7929,6 +7945,35 @@ function midLoop(){
                 global.race.psychicPowers.channel.assault = 0;
                 global.race.psychicPowers.channel.cash = 0;
             }
+        }
+
+        if (global.race.universe === 'evil' && global.tech['primitive'] && global.tech.primitive >= 3){
+            global.resource.Authority.display = true;
+
+            if (global.city['garrison']){
+                caps.Authority += global.city.garrison.on;
+            }
+            if (global.space['space_barracks']){
+                caps.Authority += global.space.space_barracks.on;
+            }
+            if (global.interstellar['cruiser'] && int_on['cruiser']){
+                caps.Authority += int_on['cruiser'];
+            }
+
+            global.resource.Authority.amount = 80;
+            if (global.city.morale.current > 100){
+                global.resource.Authority.amount -= (global.city.morale.current - 100);
+            }
+
+            if (global.civic['garrison']){
+                global.resource.Authority.amount += highPopAdjust(garrisonSize());
+            }
+
+            global.resource.Authority.amount = Math.floor(global.resource.Authority.amount);
+            if (global.resource.Authority.amount < 0){ global.resource.Authority.amount = 0; }
+        }
+        else {
+            global.resource.Authority.display = false;
         }
 
         caps[global.race.species] = 0;

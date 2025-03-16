@@ -3,6 +3,7 @@ import { loc } from './locale.js';
 import { races, traits, fathomCheck, blubberFill } from './races.js';
 import { govTitle, garrisonSize, armyRating } from './civics.js';
 import { housingLabel, drawTech, actions } from './actions.js';
+import { flib } from './functions.js';
 import { tradeRatio } from './resources.js';
 import { checkControlling, soldierDeath } from './civics.js';
 import { govActive } from './governor.js';
@@ -594,10 +595,14 @@ export const events = {
         type: 'major',
         effect(){
             let dead = Math.floor(seededRandom(2,jobScale(10)));
+            let type = Math.floor(seededRandom(0,10));
             if (dead > global.resource[global.race.species].amount){ dead = global.resource[global.race.species].amount; }
             global.resource[global.race.species].amount -= dead;
             blubberFill(dead);
-            return loc('event_chicken',[loc(`event_chicken_eaten${Math.floor(seededRandom(0,10))}`),dead,loc(`event_chicken_seasoning${Math.floor(seededRandom(0,10))}`)]);
+            if(type === 7){
+                return loc('event_chicken',[loc(`event_chicken_eaten${type}`, [flib('name')]),dead,loc(`event_chicken_seasoning${Math.floor(seededRandom(0,10))}`)]);
+            }
+            return loc('event_chicken',[loc(`event_chicken_eaten${type}`),dead,loc(`event_chicken_seasoning${Math.floor(seededRandom(0,10))}`)]);
         }
     },
     brawl:{ 
