@@ -1939,14 +1939,13 @@ if (!global.civic['new']){
 }
 
 if (!global.race['purgatory']){
-    global.race['purgatory'] = {
-        city: {},
-        space: {},
-        portal: {},
-        eden: {},
-        tech: {},
-    };
+    global.race['purgatory'] = {};
 }
+['city', 'space', 'portal', 'eden', 'tech'].forEach((item) => {
+    if(!global.race['purgatory'][item]){
+        global.race['purgatory'][item] = {};
+    }
+})
 
 if (!global.civic['d_job']){
     if (global.race['carnivore'] || global.race['soul_eater']){
