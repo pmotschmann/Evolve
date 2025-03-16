@@ -669,6 +669,7 @@ export function defineResources(wiki){
     loadResource('Money',wiki,1000,1,false,false,'success');
     loadResource(global.race.species,wiki,0,0,false,false,'warning');
     loadResource('Slave',wiki,0,0,false,false,'warning');
+    loadResource('Authority',wiki,0,0,false,false,'warning');
     loadResource('Mana',wiki,0,1,false,false,'warning');
     loadResource('Energy',wiki,0,0,false,false,'warning');
     loadResource('Sus',wiki,0,0,false,false,'warning');

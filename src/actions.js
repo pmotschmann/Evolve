@@ -2072,7 +2072,11 @@ export const actions = {
             },
             effect(){
                 let bunks = $(this)[0].soldiers();
-                return loc('plus_max_resource',[bunks,loc('civics_garrison_soldiers')]);
+                let desc = `<div>${loc('plus_max_resource',[bunks,loc('civics_garrison_soldiers')])}</div>`;
+                if (global.race.universe === 'evil'){
+                    desc += `<div>${loc('plus_max_resource',[1,global.resource.Authority.name])}</div>`;
+                }
+                return desc;
             },
             switchable(){ return true; },
             action(){
@@ -3386,10 +3390,16 @@ export const actions = {
         amphitheatre: {
             id: 'city-amphitheatre',
             title(){
+                if (global.race.universe === 'evil'){
+                    return loc('city_colosseum');
+                }
                 let athVal = govActive('athleticism',0);
                 return athVal ? loc('city_stadium') : loc('city_amphitheatre');
             },
             desc(){
+                if (global.race.universe === 'evil'){
+                    return loc('city_colosseum');
+                }
                 let athVal = govActive('athleticism',0);
                 return athVal ? loc('city_stadium') : loc('city_amphitheatre_desc');
             },
@@ -3419,11 +3429,14 @@ export const actions = {
             },
             struct(){
                 return {
-                    d: { count: 0 },
+                    d: { count: 0, evil: 0 },
                     p: ['amphitheatre','city']
                 };
             },
             flair(){
+                if (global.race.universe === 'evil'){
+                    return loc('city_colosseum_flair');
+                }
                 let athVal = govActive('athleticism',0);
                 return athVal ? loc('city_stadium_flair') : loc('city_amphitheatre_flair');
             },

@@ -1227,6 +1227,12 @@ if (convertVersion(global['version']) < 104001){
     }
 }
 
+if (convertVersion(global['version']) < 104002){
+    if(global.city['amphitheatre'] && !global.city.amphitheatre.hasOwnProperty('evil')){
+        global.city.amphitheatre['evil'] = 0;
+    }
+}
+
 global['version'] = '1.4.1';
 global['revision'] = 'a';
 delete global['beta'];
