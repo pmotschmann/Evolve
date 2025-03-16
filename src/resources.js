@@ -819,7 +819,7 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
     }
 
     if (stackable){
-        res_container.append($(`<span><span id="con${name}" v-if="showTrigger()" class="interact has-text-success" @click="trigModal" role="button" aria-label="Open crate management for ${name}">+</span></span>`));
+        res_container.append($(`<span><span id="con${name}" v-if="showTrigger()" class="interact has-text-success" @click="trigModal" role="button" aria-label="Open crate management for ${global.resource[name].name}">+</span></span>`));
     }
     else if (max !== -1 || (max === -1 && rate === 0 && global.race['no_craft']) || name === 'Scarletite' || name === 'Quantium'){
         res_container.append($('<span></span>'));
@@ -835,7 +835,7 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
 
         let inc = [1,5];
         for (let i=0; i<inc.length; i++){
-            craft.append($(`<span id="inc${name}${inc[i]}"><a @click="craft('${name}',${inc[i]})" aria-label="craft ${inc[i]} ${name}">+<span class="craft" data-val="${inc[i]}">${inc[i]}</span></a></span>`));
+            craft.append($(`<span id="inc${name}${inc[i]}"><a @click="craft('${name}',${inc[i]})" aria-label="craft ${inc[i]} ${global.resource[name].name}">+<span class="craft" data-val="${inc[i]}">${inc[i]}</span></a></span>`));
         }
         craft.append($(`<span id="inc${name}A"><a @click="craft('${name}','A')" aria-label="craft max ${name}">+<span class="craft" data-val="${'A'}">A</span></a></span>`));
         infopops = true;
@@ -873,7 +873,7 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
         methods: {
             resRate(n){
                 let diff = sizeApproximation(global.resource[n].diff,2);
-                return `${n} ${diff} per second`;
+                return `${global.resource[name].name} ${diff} per second`;
             },
             trigModal(){
                 this.$buefy.modal.open({
@@ -1375,9 +1375,9 @@ export function marketItem(mount,market_item,name,color,full){
     if (full && ((global.race['banana'] && name === 'Food') || (global.tech['trade'] && !global.race['terrifying']))){
         let trade = $(`<span class="trade" v-show="m.active"><span class="has-text-warning">${loc('resource_market_routes')}</span></span>`);
         market_item.append(trade);
-        trade.append($(`<b-tooltip :label="aSell('${name}')" position="is-bottom" size="is-small" multilined animated><span role="button" aria-label="export ${name}" class="sub has-text-danger" @click="autoSell('${name}')"><span>-</span></span></b-tooltip>`));
+        trade.append($(`<b-tooltip :label="aSell('${name}')" position="is-bottom" size="is-small" multilined animated><span role="button" aria-label="export ${global.resource[name].name}" class="sub has-text-danger" @click="autoSell('${name}')"><span>-</span></span></b-tooltip>`));
         trade.append($(`<span class="current" v-html="$options.filters.trade(r.trade)"></span>`));
-        trade.append($(`<b-tooltip :label="aBuy('${name}')" position="is-bottom" size="is-small" multilined animated><span role="button" aria-label="import ${name}" class="add has-text-success" @click="autoBuy('${name}')"><span>+</span></span></b-tooltip>`));
+        trade.append($(`<b-tooltip :label="aBuy('${name}')" position="is-bottom" size="is-small" multilined animated><span role="button" aria-label="import ${global.resource[name].name}" class="add has-text-success" @click="autoBuy('${name}')"><span>+</span></span></b-tooltip>`));
         trade.append($(`<span role="button" class="zero has-text-advanced" @click="zero('${name}')">${loc('cancel_routes')}</span>`));
         tradeRouteColor(name);
     }
@@ -1862,18 +1862,18 @@ export function containerItem(mount,market_item,name,color){
         let crate = $(`<span class="trade"><span class="has-text-warning">${loc('resource_Crates_name')}</span></span>`);
         market_item.append(crate);
 
-        crate.append($(`<span role="button" aria-label="remove ${name} ${loc('resource_Crates_name')}" class="sub has-text-danger" @click="subCrate('${name}')"><span>&laquo;</span></span>`));
+        crate.append($(`<span role="button" aria-label="remove ${global.resource[name].name} ${loc('resource_Crates_name')}" class="sub has-text-danger" @click="subCrate('${name}')"><span>&laquo;</span></span>`));
         crate.append($(`<span class="current" v-html="$options.filters.cCnt(crates,'${name}')"></span>`));
-        crate.append($(`<span role="button" aria-label="add ${name} ${loc('resource_Crates_name')}" class="add has-text-success" @click="addCrate('${name}')"><span>&raquo;</span></span>`));
+        crate.append($(`<span role="button" aria-label="add ${global.resource[name].name} ${loc('resource_Crates_name')}" class="add has-text-success" @click="addCrate('${name}')"><span>&raquo;</span></span>`));
     }
 
     if (global.resource.Containers.display){
         let container = $(`<span class="trade"><span class="has-text-warning">${loc('resource_Containers_name')}</span></span>`);
         market_item.append(container);
 
-        container.append($(`<span role="button" aria-label="remove ${name} ${loc('resource_Containers_name')}" class="sub has-text-danger" @click="subCon('${name}')"><span>&laquo;</span></span>`));
+        container.append($(`<span role="button" aria-label="remove ${global.resource[name].name} ${loc('resource_Containers_name')}" class="sub has-text-danger" @click="subCon('${name}')"><span>&laquo;</span></span>`));
         container.append($(`<span class="current" v-html="$options.filters.trick(containers)"></span>`));
-        container.append($(`<span role="button" aria-label="add ${name} ${loc('resource_Containers_name')}" class="add has-text-success" @click="addCon('${name}')"><span>&raquo;</span></span>`));
+        container.append($(`<span role="button" aria-label="add ${global.resource[name].name} ${loc('resource_Containers_name')}" class="add has-text-success" @click="addCon('${name}')"><span>&raquo;</span></span>`));
     }
 
     vBind({
@@ -2793,9 +2793,9 @@ export function loadEjector(name,color){
         let res = $(`<span class="trade"></span>`);
         ejector.append(res);
 
-        res.append($(`<span role="button" aria-label="eject less ${loc('resource_'+name+'_name')}" class="sub has-text-danger" @click="ejectLess('${name}')"><span>&laquo;</span></span>`));
+        res.append($(`<span role="button" aria-label="eject less ${global.resource[name].name}" class="sub has-text-danger" @click="ejectLess('${name}')"><span>&laquo;</span></span>`));
         res.append($(`<span class="current">{{ e.${name} }}</span>`));
-        res.append($(`<span role="button" aria-label="eject more ${loc('resource_'+name+'_name')}" class="add has-text-success" @click="ejectMore('${name}')"><span>&raquo;</span></span>`));
+        res.append($(`<span role="button" aria-label="eject more ${global.resource[name].name}" class="add has-text-success" @click="ejectMore('${name}')"><span>&raquo;</span></span>`));
 
         res.append($(`<span class="mass">${loc('interstellar_mass_ejector_per')}: <span class="has-text-warning">${atomic_mass[name]}</span> kt</span>`));
 
@@ -2928,9 +2928,9 @@ export function loadAlchemy(name,color,basic){
         let res = $(`<span class="trade"></span>`);
         alchemy.append(res);
 
-        res.append($(`<span role="button" aria-label="transmute less ${loc('resource_'+name+'_name')}" class="sub has-text-danger" @click="subSpell('${name}')"><span>&laquo;</span></span>`));
+        res.append($(`<span role="button" aria-label="transmute less ${global.resource[name].name}" class="sub has-text-danger" @click="subSpell('${name}')"><span>&laquo;</span></span>`));
         res.append($(`<span class="current">{{ a.${name} }}</span>`));
-        res.append($(`<span role="button" aria-label="transmute more ${loc('resource_'+name+'_name')}" class="add has-text-success" @click="addSpell('${name}')"><span>&raquo;</span></span>`));
+        res.append($(`<span role="button" aria-label="transmute more ${global.resource[name].name}" class="add has-text-success" @click="addSpell('${name}')"><span>&raquo;</span></span>`));
 
         if (!global.race.alchemy.hasOwnProperty(name)){
             global.race.alchemy[name] = 0;
