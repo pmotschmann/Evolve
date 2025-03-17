@@ -345,6 +345,8 @@ popover('morale',
                     value /= democracy;
                 }
 
+                let label = {  }
+
                 obj.popper.append(`<p class="modal_bd"><span>${loc(`morale_${morale}`)}</span> <span class="has-text-${type}"> ${+(value).toFixed(1)}%</span></p>`)
 
                 if (morale === 'entertain' && global.civic.govern.type === 'democracy'){
@@ -7977,7 +7979,12 @@ function midLoop(){
             }
 
             if (global.civic['garrison']){
-                global.resource.Authority.amount += highPopAdjust(garrisonSize());
+                let adjust = 0.7;
+                if (global.tech['evil']){
+                    adjust += 0.1 * global.tech.evil;
+                }
+                let gain = highPopAdjust(garrisonSize()) * adjust;
+                global.resource.Authority.amount += gain;
             }
 
             global.resource.Authority.amount = Math.floor(global.resource.Authority.amount);

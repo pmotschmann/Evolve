@@ -2013,6 +2013,21 @@ const extraInformation = {
     major_wish: [
         loc(`wiki_tech_major_wish`)
     ],
+    might: [
+        loc(`wiki_tech_evil`)
+    ],
+    executions: [
+        loc(`wiki_tech_evil`)
+    ],
+    secret_police: [
+        loc(`wiki_tech_evil`)
+    ],
+    ai_tracking: [
+        loc(`wiki_tech_evil`)
+    ],
+    predictive_arrests: [
+        loc(`wiki_tech_evil`)
+    ],
 };
 
 const extraInformationTP = {
@@ -2905,6 +2920,56 @@ const specialRequirements = {
                 },
                 {
                     name: 'thalassophobia'
+                }
+            ]
+        }
+    ],
+    might: [
+        {
+            category: 'universe',
+            subreqs: [
+                {
+                    name: 'evil'
+                }
+            ]
+        }
+    ],
+    executions: [
+        {
+            category: 'universe',
+            subreqs: [
+                {
+                    name: 'evil'
+                }
+            ]
+        }
+    ],
+    secret_police: [
+        {
+            category: 'universe',
+            subreqs: [
+                {
+                    name: 'evil'
+                }
+            ]
+        }
+    ],
+    ai_tracking: [
+        {
+            category: 'universe',
+            subreqs: [
+                {
+                    name: 'evil'
+                }
+            ]
+        }
+    ],
+    predictive_arrests: [
+        {
+            category: 'universe',
+            subreqs: [
+                {
+                    name: 'evil'
                 }
             ]
         }

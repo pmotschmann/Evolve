@@ -15122,6 +15122,104 @@ const techs = {
             return false;
         }
     },
+    might: {
+        id: 'tech-might',
+        title: loc('tech_might'),
+        desc: loc('tech_might'),
+        category: 'evil',
+        era: 'civilized',
+        reqs: { military: 1 },
+        grant: ['evil',1],
+        cost: {
+            Knowledge(){ return 100; }
+        },
+        effect: loc('tech_might_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        },
+        flair(){
+            return loc('tech_might_flair');
+        }
+    },
+    executions: {
+        id: 'tech-executions',
+        title: loc('tech_executions'),
+        desc: loc('tech_executions'),
+        category: 'evil',
+        era: 'industrialized',
+        reqs: { evil: 1, high_tech: 3 },
+        grant: ['evil',2],
+        cost: {
+            Knowledge(){ return 35000; }
+        },
+        effect: loc('tech_executions_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    secret_police: {
+        id: 'tech-secret_police',
+        title: loc('tech_secret_police'),
+        desc: loc('tech_secret_police'),
+        category: 'evil',
+        era: 'globalized',
+        reqs: { evil: 2, high_tech: 6 },
+        grant: ['evil',3],
+        cost: {
+            Knowledge(){ return 112000; }
+        },
+        effect: loc('tech_secret_police_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    ai_tracking: {
+        id: 'tech-ai_tracking',
+        title: loc('tech_ai_tracking'),
+        desc: loc('tech_ai_tracking'),
+        category: 'evil',
+        era: 'deep_space',
+        reqs: { evil: 3, high_tech: 10 },
+        grant: ['evil',4],
+        cost: {
+            Knowledge(){ return 345000; }
+        },
+        effect: loc('tech_ai_tracking_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    predictive_arrests: {
+        id: 'tech-ai_tracking',
+        title: loc('tech_predictive_arrests'),
+        desc: loc('tech_predictive_arrests'),
+        category: 'evil',
+        era: 'intergalactic',
+        reqs: { evil: 4, high_tech: 16 },
+        grant: ['evil',5],
+        cost: {
+            Knowledge(){ return 5123450; }
+        },
+        effect: loc('tech_predictive_arrests_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    }
 };
 
 function uniteEffect(){
