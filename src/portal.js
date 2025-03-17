@@ -2727,7 +2727,9 @@ function casualties(demons,pat_armor,ambush,report){
 export function bloodwar(){
     let day_report = {
         start: global.portal.fortress.threat,
+        end: 0,
         foundGems: 0,
+        patrol_size: global.portal.fortress.patrol_size,
         stats: {
             wounded: 0, died: 0, revived: 0, surveyors: 0, sieges: 0,
             kills: {
@@ -3044,6 +3046,8 @@ export function bloodwar(){
         day_report.siege = siege_report;
     }
 
+    day_report.end = global.portal.fortress.threat;
+
     if (global.portal.fortress.threat < 10000){
         let influx = ((10000 - global.portal.fortress.threat) / 2500) + 1;
         if (global.tech['portal'] >= 4 && p_on['attractor']){
@@ -3186,14 +3190,12 @@ export function bloodwar(){
         }
 
         if (forgeOperating && global.tech['hell_gun'] && p_on['gun_emplacement']){
-            day_report.gun_emplacements = {};
             let gunKills = 0;
             for (let i=0; i<p_on['gun_emplacement']; i++){
-                day_report.gun_emplacements[i+1] = { kills: 0, gem: false };
                 let kills = global.tech.hell_gun >= 2 ? Math.rand(35,75) : Math.rand(20,40);
                 gunKills += kills;
-                day_report.gun_emplacements[i+1].kills = kills;
             }
+            day_report.gun_emplacements = { kills: gunKills, gems: 0, guns: p_on['gun_emplacement'] };
             day_report.stats.kills.guns = gunKills;
             global.portal.soul_forge.kills += gunKills;
             soulCapacitor(gunKills);
@@ -3204,7 +3206,7 @@ export function bloodwar(){
             }
             for (let i=0; i<p_on['gun_emplacement']; i++){
                 if (Math.rand(0,Math.round(gun_base)) === 0){
-                    day_report.gun_emplacements[i+1].gem = true;
+                    day_report.gun_emplacements.gems++;
                     day_report.stats.gems.guns++;
                     global.resource.Soul_Gem.amount++;
                 }
@@ -3256,16 +3258,14 @@ export function bloodwar(){
 
     if (global.tech['hell_gate'] && global.tech['hell_gate'] >= 3){
         if (p_on['gate_turret']){
-            day_report.gate_turrets = {};
             let gunKills = 0;
             let min = global.tech.hell_gun >= 2 ? 65 : 40;
             let max = global.tech.hell_gun >= 2 ? 100 : 60;
             for (let i=0; i<p_on['gate_turret']; i++){
-                day_report.gate_turrets[i+1] = { kills: 0, gem: false };
                 let kills = Math.rand(min,max);
                 gunKills += kills;
-                day_report.gate_turrets[i+1].kills = kills;
             }
+            day_report.gate_turrets = { kills: gunKills, gems: 0, guns: p_on['gate_turret'] };
             if (forgeOperating){
                 day_report.stats.kills.turrets = gunKills;
                 global.portal.soul_forge.kills += gunKills;
@@ -3275,7 +3275,7 @@ export function bloodwar(){
             let gun_base = global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 5 ? 2700 : 3000;
             for (let i=0; i<p_on['gate_turret']; i++){
                 if (Math.rand(0,Math.round(gun_base)) === 0){
-                    day_report.gate_turrets[i+1].gem = true;
+                    day_report.gate_turrets.gems++;
                     day_report.stats.gems.turrets++;
                     global.resource.Soul_Gem.amount++;
                 }
@@ -5642,23 +5642,24 @@ function drawHellReports(){
 
         let statsBar = $(`<div id="hellReportStats" class="reportStats"></div>`);
         info.append(statsBar);
-        let kills = 0;
+        let fortressDemonKills = curr_report.stats.kills.drones + curr_report.stats.kills.patrols + curr_report.stats.kills.sieges;
+        let otherDemonKills = curr_report.stats.kills.guns + curr_report.stats.kills.soul_forge + curr_report.stats.kills.turrets;
+        let souls = (curr_report.soul_attractors ?? 0) + (curr_report.ghost_trappers ?? 0);
         let gems = 0;
-        Object.keys(curr_report.stats.kills).forEach(function(killType){
-            kills += curr_report.stats.kills[killType];
-        });
         Object.keys(curr_report.stats.gems).forEach(function(gemType){
             gems += curr_report.stats.gems[gemType];
         });
         statsBar.append(`<div><h2 class="has-text-info">${loc('hell_report_log_stats',[year,day])}</h2></div>`);
         statsBar.append(`<div>
-            <h2>${loc('hell_report_log_stats_kills',[kills])}</h2>
+            <h2>${loc('hell_report_log_stats_kills_fortress',[fortressDemonKills])}</h2>
+            <h2>${loc('hell_report_log_stats_kills',[fortressDemonKills+otherDemonKills])}</h2>
+            ${curr_report.soul_forge ? `<h2>${loc('hell_report_log_stats_souls',[fortressDemonKills+otherDemonKills+souls])}</h2>` : ""}
             <h2 v-show="g.display">${loc('hell_report_log_stats_gems',[gems])}</h2>
+            <h2>${loc('hell_report_log_stats_patrol_size',[curr_report.patrol_size])}</h2>
             <h2>${loc('hell_report_log_stats_wounded',[curr_report.stats.wounded])}</h2>
             <h2>${loc('hell_report_log_stats_died',[curr_report.stats.died])}</h2>
         </div>`);
 
-        info.append(`<div><h2 class="has-text-info">${loc('hell_report_log_report',[year,day])}</h2></div>`);
         info.append(`<p class="has-text-danger">${loc('hell_report_log_start',[curr_report.start])}</p>`);
 
         if (curr_report.soul_attractors){
@@ -5674,7 +5675,17 @@ function drawHellReports(){
                 displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_find',[global.resource.Soul_Gem.name,1])}</span>`);
             }
             if (curr_report.soul_forge.gem_craft){
-                displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_craft',[curr_report.soul_forge.corrupt ? loc('resource_Corrupt_Gem_name') : global.resource.Soul_Gem.name])}</span>`);
+                if (curr_report.soul_forge.corrupt) {
+                    displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_craft',[loc('resource_Corrupt_Gem_name')])}</span>`);
+                }
+                else {
+                    if (curr_report.stats.gems.crafted > 1) {
+                        displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_craft_multiple',[curr_report.stats.gems.crafted,global.resource.Soul_Gem.name])}</span>`);
+                    }
+                    else {
+                        displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_craft',[global.resource.Soul_Gem.name])}</span>`);
+                    }
+                }
             }
             info.append(displayText);
         }
@@ -5688,23 +5699,46 @@ function drawHellReports(){
         }
 
         if (curr_report.drones){
+            let noEncounterCount = 0;
             Object.keys(curr_report.drones).forEach(function(num){
                 let drone = curr_report.drones[num];
-                let name = loc('hell_report_log_obj_counter',[loc('portal_war_drone_title'),num]);
                 if (drone.encounter){
+                    if (noEncounterCount > 0) {
+                        let name = noEncounterCount > 1 ?
+                            loc('hell_report_log_obj_counter_multiple',[loc('portal_war_drone_title'), num - noEncounterCount, num - 1])
+                            : loc('hell_report_log_obj_counter',[loc('portal_war_drone_title'), num - 1]);
+                        info.append(`<p class="has-text-warning">${loc('hell_report_log_encounter_fail',[name])}</p>`);
+                        noEncounterCount = 0;
+                    }
+                    let name = loc('hell_report_log_obj_counter',[loc('portal_war_drone_title'),num]);
                     info.append(`<p>${loc('hell_report_log_encounter',[name,drone.kills])}</p>`);
                 }
                 else {
-                    info.append(`<p class="has-text-warning">${loc('hell_report_log_encounter_fail',[name])}</p>`);
+                    ++noEncounterCount;
                 }
             });
+            if (noEncounterCount > 0) {
+                let num = Object.keys(curr_report.drones).length + 1;
+                let name = noEncounterCount > 1 ?
+                    loc('hell_report_log_obj_counter_multiple',[loc('portal_war_drone_title'), num - noEncounterCount, num - 1])
+                    : loc('hell_report_log_obj_counter',[loc('portal_war_drone_title'), num - 1]);
+                info.append(`<p class="has-text-warning">${loc('hell_report_log_encounter_fail',[name])}</p>`);
+            }
         }
         if (curr_report.patrols){
+            let noEncounterCount = 0;
             Object.keys(curr_report.patrols).forEach(function(num){
                 let patrol = curr_report.patrols[num];
-                let name = loc('hell_report_log_obj_counter',[loc('hell_report_log_patrol'),num]);
-                name = patrol.droid ? loc('hell_report_log_patrol_droid',[name]) : name;
                 if (patrol.encounter){
+                    if (noEncounterCount > 0) {
+                        let name = noEncounterCount > 1 ?
+                            loc('hell_report_log_obj_counter_multiple',[loc('hell_report_log_patrol'), num - noEncounterCount, num - 1])
+                            : loc('hell_report_log_obj_counter',[loc('hell_report_log_patrol'), num - 1]);
+                        info.append(`<p class="has-text-warning">${loc('hell_report_log_encounter_fail',[name])}</p>`);
+                        noEncounterCount = 0;
+                    }
+                    let name = loc('hell_report_log_obj_counter',[loc('hell_report_log_patrol'),num]);
+                    name = patrol.droid ? loc('hell_report_log_patrol_droid',[name]) : name;
                     let displayText = $(`<p></p>`);
                     if (patrol.ambush){
                         displayText.append(`<span class="has-text-warning">${loc('hell_report_log_patrol_ambush',[name,patrol.kills])}</span>`);
@@ -5724,9 +5758,16 @@ function drawHellReports(){
                     info.append(displayText);
                 }
                 else {
-                    info.append(`<p class="has-text-warning">${loc('hell_report_log_encounter_fail',[name])}</p>`);
+                    ++noEncounterCount;
                 }
             });
+            if (noEncounterCount > 0) {
+                let num = Object.keys(curr_report.patrols).length + 1;
+                let name = noEncounterCount > 1 ?
+                    loc('hell_report_log_obj_counter_multiple',[loc('hell_report_log_patrol'), num - noEncounterCount, num - 1])
+                    : loc('hell_report_log_obj_counter',[loc('hell_report_log_patrol'), num - 1]);
+                info.append(`<p class="has-text-warning">${loc('hell_report_log_encounter_fail',[name])}</p>`);
+            }
         }
 
         if (curr_report.surveyor_finds){
@@ -5757,6 +5798,9 @@ function drawHellReports(){
                 info.append(`<p class="has-text-warning">${loc('hell_report_log_siege_fail',[curr_report.siege.damage,curr_report.siege.kills])}</p>`);
             }
         }
+        if (curr_report.start != curr_report.end) {
+            info.append(`<p class="has-text-danger">${loc('hell_report_log_start',[curr_report.end])}</p>`);
+        }
         if (curr_report.demons){
             info.append(`<p class="has-text-danger">${loc('hell_report_log_demons',[curr_report.demons])}</p>`);
         }
@@ -5764,28 +5808,28 @@ function drawHellReports(){
             info.append(`<p class="has-text-danger">${curr_report.surveyors > 1 ? loc('hell_report_log_surveyors_plural',[curr_report.surveyors]) : loc('hell_report_log_surveyors')}</p>`);
         }
         if (curr_report.gun_emplacements){
-            Object.keys(curr_report.gun_emplacements).forEach(function(num){
-                let displayText = $(`<p></p>`);
-                let gun = curr_report.gun_emplacements[num];
-                let name = loc('hell_report_log_obj_counter',[loc('portal_gun_emplacement_title'),num]);
-                displayText.append($(`<span>${loc('hell_report_log_misc_kills',[name,gun.kills,loc('portal_pit_name')])}</span>`));
-                if (gun.gem){
-                    displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_find',[global.resource.Soul_Gem.name,1])}</span>`);
-                }
-                info.append(displayText);
-            });
+            let displayText = $(`<p></p>`);
+
+            displayText.append($(`<span>${loc('hell_report_log_misc_kills',
+                [loc('portal_gun_emplacement_title'),curr_report.gun_emplacements.guns,curr_report.gun_emplacements.kills,loc('portal_pit_name')]
+            )}</span>`));
+
+            if (curr_report.gun_emplacements.gems > 0) {
+                displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_find',[global.resource.Soul_Gem.name,curr_report.gun_emplacements.gems])}</span>`);
+            }
+            info.append(displayText);
         }
         if (curr_report.gate_turrets){
-            Object.keys(curr_report.gate_turrets).forEach(function(num){
-                let displayText = $(`<p></p>`);
-                let turret = curr_report.gate_turrets[num];
-                let name = loc('hell_report_log_obj_counter',[loc('portal_gate_turret_title'),num]);
-                displayText.append(`<span>${loc('hell_report_log_misc_kills',[name,turret.kills,loc('portal_gate_name')])}</span>`);
-                if (turret.gem){
-                    displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_find',[global.resource.Soul_Gem.name,1])}</span>`);
-                }
-                info.append(displayText);
-            });
+            let displayText = $(`<p></p>`);
+
+            displayText.append($(`<span>${loc('hell_report_log_misc_kills',
+                [loc('portal_gate_turret_title'),curr_report.gate_turrets.guns,curr_report.gate_turrets.kills,loc('portal_pit_name')]
+            )}</span>`));
+
+            if (curr_report.gate_turrets.gems > 0) {
+                displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_find',[global.resource.Soul_Gem.name,curr_report.gate_turrets.gems])}</span>`);
+            }
+            info.append(displayText);
         }
     
         vBind({
