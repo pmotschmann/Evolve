@@ -1013,10 +1013,23 @@ export const perkList = {
             Object.keys(universe_types).forEach(function(universe){
                 let mastery = masteryType(universe,true,true);
                 if (universe === 'standard'){
-                    desc += `<span class="row"><span class="has-text-caution">${universe_types[universe].name}</span>: <span>${loc('perks_mastery_general',[`<span class="has-text-advanced">${+(mastery.g).toFixed(2)}%</span>`])}</span></span>`;
+                    desc += `
+                    <span class="row">
+                        <span class="has-text-caution">${universe_types[universe].name}</span>:
+                        <span>${loc('perks_mastery_general',[`<span class="has-text-advanced">${+(mastery.g).toFixed(2)}%</span>`])}
+                        </span>
+                    </span>`;
                 }
                 else if (global.stats.achieve['whitehole']){
-                    desc += `<span class="row"><span class="has-text-caution">${universe_types[universe].name}</span>: <span>${loc('perks_mastery_general',[`<span class="has-text-advanced">${+(mastery.g).toFixed(2)}%</span>`])}, ${loc('perks_mastery_universe',[`<span class="has-text-advanced">${+(mastery.u).toFixed(2)}%</span>`])}</span></span>`;
+                    desc += `
+                    <span class="row">
+                        <span class="has-text-caution">${universe_types[universe].name}</span>:
+                        <span>
+                            ${loc('perks_mastery_general',[`<span class="has-text-advanced">${+(mastery.g).toFixed(2)}%</span>`])},
+                            ${loc('perks_mastery_universe',[`<span class="has-text-advanced">${+(mastery.u).toFixed(2)}%</span>`])},
+                            ${loc('perks_mastery_total',[`<span class="has-text-advanced">${+(mastery.g+mastery.u).toFixed(2)}%</span>`])}
+                        </span>
+                    </span>`;
                 }
             });
             return desc;
