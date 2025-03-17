@@ -15202,7 +15202,7 @@ const techs = {
         }
     },
     predictive_arrests: {
-        id: 'tech-ai_tracking',
+        id: 'tech-predictive_arrests',
         title: loc('tech_predictive_arrests'),
         desc: loc('tech_predictive_arrests'),
         category: 'evil',
