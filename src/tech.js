@@ -15129,6 +15129,9 @@ const techs = {
         category: 'evil',
         era: 'civilized',
         reqs: { military: 1 },
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
         grant: ['evil',1],
         cost: {
             Knowledge(){ return 100; }
@@ -15151,6 +15154,9 @@ const techs = {
         category: 'evil',
         era: 'industrialized',
         reqs: { evil: 1, high_tech: 3 },
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
         grant: ['evil',2],
         cost: {
             Knowledge(){ return 35000; }
@@ -15170,6 +15176,9 @@ const techs = {
         category: 'evil',
         era: 'globalized',
         reqs: { evil: 2, high_tech: 6 },
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
         grant: ['evil',3],
         cost: {
             Knowledge(){ return 112000; }
@@ -15189,6 +15198,9 @@ const techs = {
         category: 'evil',
         era: 'deep_space',
         reqs: { evil: 3, high_tech: 10 },
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
         grant: ['evil',4],
         cost: {
             Knowledge(){ return 345000; }
@@ -15208,6 +15220,9 @@ const techs = {
         category: 'evil',
         era: 'intergalactic',
         reqs: { evil: 4, high_tech: 16 },
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
         grant: ['evil',5],
         cost: {
             Knowledge(){ return 5123450; }
