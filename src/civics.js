@@ -147,8 +147,8 @@ export function govTitle(id){
     return loc(`civics_gov${global.civic.foreign[`gov${id}`].name.s0}`,[global.civic.foreign[`gov${id}`].name.s1]);
 }
 
-const government_desc = (function(){
-    return {
+const government_desc = (function(type){
+    let desc = {
         anarchy: loc('govern_anarchy_effect'),
         autocracy: loc('govern_autocracy_effect',govEffect.autocracy()),
         democracy: loc(global.race.universe === 'evil' ? 'govern_managed_democracy_effect' : 'govern_democracy_effect',govEffect.democracy()),
@@ -164,6 +164,21 @@ const government_desc = (function(){
         magocracy: loc('govern_magocracy_effect',govEffect.magocracy()),
         dictator: loc('govern_dictator_effect',govEffect.dictator()),
     };
+    let effect = desc[type];
+    if (global.race.universe === 'evil'){
+        switch (type){
+            case 'autocracy':
+                effect += ` ${loc(`govern_authority`,[8])} ${loc(`govern_authority_cap`,[10])}`;
+                break;
+            case 'dictator':
+                effect +=  ` ${loc(`govern_authority`,[12])}`;
+                break;
+            case 'oligarchy':
+                effect +=  ` ${loc(`govern_authority_cap`,[20])}`;
+                break;
+        }
+    }
+    return effect;
 });
 
 export const govEffect = {
@@ -326,7 +341,7 @@ function government(govern){
             if (effect_type === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
                 effect_type = 'theocracy_alt';
             }
-            return $(`<div>${govDescription(global.civic.govern.type)}</div><div class="has-text-advanced">${government_desc()[effect_type]}</div>`);
+            return $(`<div>${govDescription(global.civic.govern.type)}</div><div class="has-text-advanced">${government_desc(effect_type)}</div>`);
         }
     );
 
@@ -347,12 +362,6 @@ function govDescription(type){
         switch (type){
             case 'democracy':
                 return loc(`govern_managed_democracy_desc`);
-            case 'autocracy':
-                return `${loc(`govern_${type}_desc`)} ${loc(`govern_authority`,[8])} ${loc(`govern_authority_cap`,[10])}`;
-            case 'dictator':
-                return `${loc(`govern_${type}_desc`)} ${loc(`govern_authority`,[12])}`;
-            case 'oligarchy':
-                return `${loc(`govern_${type}_desc`)} ${loc(`govern_authority_cap`,[20])}`;
         }
     }
     return loc(`govern_${type}_desc`);
@@ -464,7 +473,7 @@ function drawGovModal(){
             if (effectType === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
                 effectType = 'theocracy_alt';
             }
-            return $(`<div>${govDescription(govType)}</div><div class="has-text-advanced">${government_desc()[effectType]}</div>`);
+            return $(`<div>${govDescription(govType)}</div><div class="has-text-advanced">${government_desc(effectType)}</div>`);
         },
         {
             elm: `#govModal button`,

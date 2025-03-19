@@ -7966,6 +7966,9 @@ function midLoop(){
             if (global.civic.govern.type === 'autocracy'){
                 caps.Authority += 10;
             }
+            else if (global.civic.govern.type === 'oligarchy'){
+                caps.Authority += 20;
+            }
             if (global.city['garrison']){
                 caps.Authority += global.city.garrison.on;
             }
@@ -7980,7 +7983,7 @@ function midLoop(){
             if (global.city.morale.current > 100){
                 let excess = global.city.morale.current - 100;
                 if (global.civic.govern.type === 'democracy'){
-                    excess = Math.round(excess * 0.9);
+                    excess *= 0.9;
                 }
                 global.resource.Authority.amount -= excess;
             }
