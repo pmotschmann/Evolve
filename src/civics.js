@@ -151,7 +151,7 @@ const government_desc = (function(){
     return {
         anarchy: loc('govern_anarchy_effect'),
         autocracy: loc('govern_autocracy_effect',govEffect.autocracy()),
-        democracy: loc('govern_democracy_effect',govEffect.democracy()),
+        democracy: loc(global.race.universe === 'evil' ? 'govern_managed_democracy_effect' : 'govern_democracy_effect',govEffect.democracy()),
         oligarchy: global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? loc('govern_oligarchy_effect_alt',[govEffect.oligarchy()[1]]) : loc('govern_oligarchy_effect',[govEffect.oligarchy()[0], govEffect.oligarchy()[1]]),
         theocracy: loc('govern_theocracy_effect',govEffect.theocracy()),
         theocracy_alt: loc('govern_theocracy_effect_alt',govEffect.theocracy()),
@@ -343,6 +343,18 @@ function govDescription(type){
     if (global.race['witch_hunter'] && type === 'magocracy'){
         return loc(`witch_hunter_magocracy`);
     }
+    else if (global.race.universe === 'evil'){
+        switch (type){
+            case 'democracy':
+                return loc(`govern_managed_democracy_desc`);
+            case 'autocracy':
+                return `${loc(`govern_${type}_desc`)} ${loc(`govern_authority`,[8])} ${loc(`govern_authority_cap`,[10])}`;
+            case 'dictator':
+                return `${loc(`govern_${type}_desc`)} ${loc(`govern_authority`,[12])}`;
+            case 'oligarchy':
+                return `${loc(`govern_${type}_desc`)} ${loc(`govern_authority_cap`,[20])}`;
+        }
+    }
     return loc(`govern_${type}_desc`);
 }
 
@@ -365,7 +377,7 @@ function drawGovModal(){
             body.append($(`<button class="button gap" data-gov="autocracy" @click="setGov('autocracy')">${loc(`govern_autocracy`)}</button>`));
         }
         if (global.civic.govern.type !== 'democracy'){
-            body.append($(`<button class="button gap" data-gov="democracy" @click="setGov('democracy')">${loc(`govern_democracy`)}</button>`));
+            body.append($(`<button class="button gap" data-gov="democracy" @click="setGov('democracy')">${global.race.universe === 'evil' ? loc(`govern_managed_democracy`) : loc(`govern_democracy`)}</button>`));
         }
         if (global.civic.govern.type !== 'oligarchy'){
             body.append($(`<button class="button gap" data-gov="oligarchy" @click="setGov('oligarchy')">${loc(`govern_oligarchy`)}</button>`));

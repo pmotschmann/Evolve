@@ -7963,6 +7963,9 @@ function midLoop(){
         if (global.race.universe === 'evil' && global.tech['primitive'] && global.tech.primitive >= 3){
             global.resource.Authority.display = true;
 
+            if (global.civic.govern.type === 'autocracy'){
+                caps.Authority += 10;
+            }
             if (global.city['garrison']){
                 caps.Authority += global.city.garrison.on;
             }
@@ -7975,7 +7978,11 @@ function midLoop(){
 
             global.resource.Authority.amount = 80;
             if (global.city.morale.current > 100){
-                global.resource.Authority.amount -= (global.city.morale.current - 100);
+                let excess = global.city.morale.current - 100;
+                if (global.civic.govern.type === 'democracy'){
+                    excess = Math.round(excess * 0.9);
+                }
+                global.resource.Authority.amount -= excess;
             }
 
             if (global.civic['garrison']){
@@ -7984,6 +7991,12 @@ function midLoop(){
                     adjust += 0.1 * global.tech.evil;
                 }
                 let gain = highPopAdjust(garrisonSize()) * adjust;
+                if (global.civic.govern.type === 'autocracy'){
+                    gain *= 1.08;
+                }
+                else if (global.civic.govern.type === 'dictator'){
+                    gain *= 1.12;
+                }
                 global.resource.Authority.amount += gain;
             }
 
