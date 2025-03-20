@@ -2263,13 +2263,11 @@ export function armyRating(val,type,wound){
         army *= 1 + (govEffect.autocracy()[1] / 100);
     }
     if (global.race.universe === 'evil' && global.resource.Authority.display){
-        let auth = global.resource.Authority.amount / 100;
-        if (auth > 1){ 
-            auth = auth / (auth + 100);
-            army *= 1 + auth;
+        if (global.resource.Authority.amount > 100){
+            army *= 1 + ((global.resource.Authority.amount - 100) / global.resource.Authority.amount);
         }
         else {
-            army *= auth;
+            army *= global.resource.Authority.amount / 100;
         }
     }
     army = Math.floor(army);
