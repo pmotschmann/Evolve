@@ -1266,7 +1266,7 @@ export function darkEffect(universe, flag, info, inputs){
                 if (sludge){
                     dark *= 1 + (sludge * 0.03);
                 }
-                return (1 + ((Math.log2(10 + dark) - 3.321928094887362) / 5));
+                return (1 + ((Math.log2(10 + dark) - 3.321928094887362) / (flag ? 10 : 5)));
             }
             return 1;
 

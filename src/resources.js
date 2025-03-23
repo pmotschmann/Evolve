@@ -1271,7 +1271,7 @@ function loadSpecialResource(name,color) {
                             break;
         
                         case 'evil':
-                            desc.append($(`<span>${loc(`resource_${name}_desc_e`,[+((darkEffect('evil') - 1) * 100).toFixed(2)])}</span>`));
+                            desc.append($(`<span>${loc(`resource_${name}_desc_e`,[+((darkEffect('evil') - 1) * 100).toFixed(2),+((darkEffect('evil',true) - 1) * 100).toFixed(2)])}</span>`));
                             break;
         
                         case 'micro':

@@ -2265,7 +2265,9 @@ export function armyRating(val,type,wound){
     }
     if (global.race.universe === 'evil' && global.resource.Authority.display){
         if (global.resource.Authority.amount > 100){
-            army *= 1 + ((global.resource.Authority.amount - 100) / global.resource.Authority.amount);
+            let boost = 1 + ((global.resource.Authority.amount - 100) / global.resource.Authority.amount * 0.75);
+            boost *= darkEffect('evil',true);
+            army *= boost;
         }
         else {
             army *= global.resource.Authority.amount / 100;
