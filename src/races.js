@@ -7158,6 +7158,7 @@ export function traitSkin(type, trait, species){
                 hooved: hoovedReskin(false, species),
                 promiscuous: artificial ? loc('trait_promiscuous_synth_name') : traits.promiscuous.name,
                 weak: species === 'dwarf' ? loc('trait_drunk_name') : traits.weak.name,
+                spiritual: global.race.universe === 'evil' && global.civic.govern.type != 'theocracy' ? loc('trait_manipulator_name') : traits.spiritual.name,
             };
             return trait ? (name[trait] ? name[trait] : traits[trait].name) : name;
         } 
@@ -7167,6 +7168,7 @@ export function traitSkin(type, trait, species){
                 hooved: hoovedReskin(true, species),
                 promiscuous: artificial ? loc('trait_promiscuous_synth') : traits['promiscuous'].desc,
                 weak: species === 'dwarf' ? loc('trait_drunk') : traits.weak.desc,
+                spiritual: global.race.universe === 'evil' && global.civic.govern.type != 'theocracy' ? loc('trait_manipulator') : traits.spiritual.desc,
             };
             return trait ? (desc[trait] ? desc[trait] : traits[trait].desc) : desc;
         }

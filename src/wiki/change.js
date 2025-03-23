@@ -7,7 +7,7 @@ export const changeList = [
         date: `3/??/2024`,
         changes: [
             `New Evil Universe Mechanics.`,
-            `Merged a bunch of community patches but didn't take any notes.`
+            `Various bug fixes.`
         ]
     },
     {

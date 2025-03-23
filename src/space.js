@@ -1410,7 +1410,7 @@ const spaceProjects = {
                 if (global.race['grenadier']){
                     soldiers /= 2;
                 }
-                return jobScale(soldiers);
+                return +(jobScale(soldiers)).toFixed(3);
             },
             struct(){
                 return {

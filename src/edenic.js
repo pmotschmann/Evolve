@@ -718,7 +718,7 @@ const edenicModules = {
                 let desc = `<div>${loc('eden_encampment_effect',[$(this)[0].support()])}</div>`;
                 desc += `<div>${loc('plus_max_citizens',[$(this)[0].citizens()])}</div>`;
                 if (global.genes['ancients'] && global.genes['ancients'] >= 4){
-                    desc += `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_priest`)])}</div>`;
+                    desc += `<div>${loc('plus_max_resource',[jobScale(1),global.civic?.priest?.name || loc(`job_priest`)])}</div>`;
                 }
                 desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;

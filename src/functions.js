@@ -3136,7 +3136,13 @@ export function getTraitDesc(info, trait, opts){
                 trait_desc = loc(`wiki_trait_effect_${trait}_${traits.elemental.vars()[0]}`, getTraitVals(trait, trank, species));
             }
             else {
-                trait_desc = loc(`wiki_trait_effect_${trait}`, getTraitVals(trait, trank, species));
+                if (global?.race?.universe === 'evil' && global?.civic?.govern?.type != 'theocracy' && ['spiritual','blasphemous'].includes(trait)){
+                    let alt_trait = trait === 'spiritual' ? 'manipulator' : 'blasphemous_evil';
+                    trait_desc = loc(`wiki_trait_effect_${alt_trait}`, getTraitVals(trait, trank, species));
+                }
+                else {
+                    trait_desc = loc(`wiki_trait_effect_${trait}`, getTraitVals(trait, trank, species));
+                }
             }
             info.append(`<div class="has-text-${color} effect">${trait_desc}</div>`);
         }
@@ -3159,6 +3165,10 @@ export function getTraitDesc(info, trait, opts){
                 getTraitDesc(rk){
                     if (trait === 'elemental'){
                         return loc(`wiki_trait_effect_${trait}_${traits.elemental.vars()[0]}`, getTraitVals(trait, rk, species));
+                    }
+                    else if (global?.race?.universe === 'evil' && global?.civic?.govern?.type != 'theocracy' && ['spiritual','blasphemous'].includes(trait)){
+                        let alt_trait = trait === 'spiritual' ? 'manipulator' : 'blasphemous_evil';
+                        return loc(`wiki_trait_effect_${alt_trait}`, getTraitVals(trait, trank, species));
                     }
                     return loc(`wiki_trait_effect_${trait}`, getTraitVals(trait, rk, species));
                 },

@@ -1468,7 +1468,7 @@ export function describeSoldier(){
       ? 'civics_garrison_soldier_evil_desc'
       : 'civics_garrison_soldier_desc';
 
-    return loc(soldiers_desc) + loc(loot_string, loot_args);
+    return `${loc(soldiers_desc)} ${loc(loot_string, loot_args)}`;
 }
 
 function battleAssessment(gov){
@@ -2265,9 +2265,9 @@ export function armyRating(val,type,wound){
     }
     if (global.race.universe === 'evil' && global.resource.Authority.display){
         if (global.resource.Authority.amount > 100){
-            let boost = 1 + ((global.resource.Authority.amount - 100) / global.resource.Authority.amount * 0.75);
+            let boost = (global.resource.Authority.amount - 100) / global.resource.Authority.amount * 0.75;
             boost *= darkEffect('evil',true);
-            army *= boost;
+            army *= 1 + boost;
         }
         else {
             army *= global.resource.Authority.amount / 100;

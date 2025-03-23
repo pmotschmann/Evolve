@@ -14556,7 +14556,7 @@ const techs = {
             Knowledge(){ return 95000000; },
             Omniscience(){ return 19500; },
         },
-        effect(){ return loc('tech_hallowed_housing_effect',[loc(`job_priest`),loc('eden_asphodel_name')]); },
+        effect(){ return loc('tech_hallowed_housing_effect',[global.civic?.priest?.name || loc(`job_priest`),loc('eden_asphodel_name')]); },
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.eden.eden_asphodel.rectory);
