@@ -7960,23 +7960,45 @@ function midLoop(){
             }
         }
 
+        caps[global.race.species] = 0;
+
+        breakdown.c = {};
+        Object.keys(caps).forEach(function(res){
+            breakdown.c[res] = { [loc('base')]: caps[res]+'v' };
+        });
+
         if (global.race.universe === 'evil' && global.tech['primitive'] && global.tech.primitive >= 3){
             global.resource.Authority.display = true;
 
             if (global.civic.govern.type === 'autocracy'){
-                caps.Authority += 10;
+                let gain = 10;
+                caps.Authority += gain;
+                breakdown.c.Authority[loc('govern_autocracy')] = gain+'v';
             }
             else if (global.civic.govern.type === 'oligarchy'){
-                caps.Authority += 20;
+                let gain = 20;
+                caps.Authority += gain;
+                breakdown.c.Authority[loc('govern_oligarchy')] = gain+'v';
             }
             if (global.city['garrison']){
-                caps.Authority += global.city.garrison.on;
+                let gain = global.city.garrison.on * 0.5;
+                caps.Authority += gain;
+                breakdown.c.Authority[actions.city.garrison.title()] = gain+'v';
+            }
+            if (global.city['temple']){
+                let gain = templeCount() * 0.5;
+                caps.Authority += gain;
+                breakdown.c.Authority[structName('temple')] = gain+'v';
             }
             if (global.space['space_barracks']){
-                caps.Authority += global.space.space_barracks.on;
+                let gain = global.space.space_barracks.on;
+                caps.Authority += gain;
+                breakdown.c.Authority[loc('space_red_space_barracks_title')] = gain+'v';
             }
             if (global.interstellar['cruiser'] && int_on['cruiser']){
-                caps.Authority += int_on['cruiser'];
+                let gain = int_on['cruiser'];
+                caps.Authority += gain;
+                breakdown.c.Authority[loc('interstellar_cruiser_title')] = gain+'v';
             }
 
             global.resource.Authority.amount = 80;
@@ -7994,6 +8016,7 @@ function midLoop(){
                     adjust += 0.1 * global.tech.evil;
                 }
                 let gain = highPopAdjust(garrisonSize()) * adjust;
+                if (global.race['grenadier']){ gain *= 1.75; }
                 if (global.civic.govern.type === 'autocracy'){
                     gain *= 1.08;
                 }
@@ -8009,13 +8032,6 @@ function midLoop(){
         else {
             global.resource.Authority.display = false;
         }
-
-        caps[global.race.species] = 0;
-
-        breakdown.c = {};
-        Object.keys(caps).forEach(function(res){
-            breakdown.c[res] = { [loc('base')]: caps[res]+'v' };
-        });
 
         if (global.race['unfathomable'] && global.city['captive_housing']){
             let strength = weaponTechModifer();
@@ -8280,7 +8296,7 @@ function midLoop(){
         }
         if (global.space['space_barracks'] && !global.race['fasting']){
             let soldiers = actions.space.spc_red.space_barracks.soldiers();
-            lCaps['garrison'] += global.space.space_barracks.on * soldiers;
+            lCaps['garrison'] += Math.round(global.space.space_barracks.on * soldiers);
         }
         if (global.interstellar['cruiser']){
             let soldiers = actions.interstellar.int_proxima.cruiser.soldiers();

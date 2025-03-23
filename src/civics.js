@@ -303,6 +303,7 @@ function government(govern){
         data: global.civic['govern'],
         filters: {
             govern(type){
+                if (global.race.universe === 'evil' && type === 'democracy'){ return loc(`govern_managed_democracy`); } 
                 return loc(`govern_${type}`);
             },
             set(g){

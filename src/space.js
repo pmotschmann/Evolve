@@ -1147,7 +1147,16 @@ const spaceProjects = {
                 let pop = global.tech.mars >= 6 ? 0.1 : 0.05;
                 let fLabel = global.race['artifical'] ? loc('city_transmitter_effect',[spatialReasoning(500)]) : loc('plus_max_resource',[spatialReasoning(100), loc('resource_Food_name')]);
                 let sig_cap = global.race['artifical'] || global.race['orbit_decayed'] ? `<div>${fLabel}</div` : '';
-                return `<div class="has-text-caution">${loc('space_used_support',[planetName().red])}</div>${cat_fd}<div>${loc('space_red_biodome_effect',[food,global.resource.Food.name])}</div><div>${loc('space_red_biodome_effect2',[+(jobScale(pop)).toFixed(2)])}</div>${cat_wd}${sig_cap}`;
+                
+                let desc = `<div class="has-text-caution">${loc('space_used_support',[planetName().red])}</div>${cat_fd}`;
+                desc += `<div>${loc('space_red_biodome_effect',[food,global.resource.Food.name])}</div>`;
+                desc += `<div>${loc('space_red_biodome_effect2',[+(jobScale(pop)).toFixed(2)])}</div>`;
+                if (global.race.universe === 'evil'){
+                    let soldier = global.race['grenadier'] ? 0.0375 : 0.075;
+                    desc += `<div>${loc('space_red_biodome_effect_evil',[+(jobScale(soldier)).toFixed(3),loc('space_red_space_barracks_title')])}</div>`;
+                }
+                desc += `${cat_wd}${sig_cap}`;
+                return desc;
             },
             s_type: 'red',
             support(){ return -1; },
@@ -1327,7 +1336,7 @@ const spaceProjects = {
                     desc = desc + templeEffect();
                 }
                 if (global.genes['ancients'] && global.genes['ancients'] >= 4){
-                    desc = desc + `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_priest`)])}</div>`;
+                    desc = desc + `<div>${loc('plus_max_resource',[jobScale(1),global.civic?.priest?.name || loc(`job_priest`)])}</div>`;
                 }
                 return desc;
             },
@@ -1369,7 +1378,7 @@ const spaceProjects = {
             effect(wiki){
                 let train = global.race['orbit_decayed'] ? actions.city.boot_camp.effect() : '';
                 let oil = +fuel_adjust(2,true,wiki).toFixed(2);
-                let soldiers = $(this)[0].soldiers();
+                let soldiers = $(this)[0].soldiers(wiki);
                 let food = global.race['cataclysm'] ? `` : `<div class="has-text-caution">${loc('space_red_space_barracks_effect3',[global.resource.Food.name])}</div>`;
 
                 let desc = `<div>${loc('plus_max_soldiers',[soldiers])}</div>${train}`;
@@ -1389,8 +1398,15 @@ const spaceProjects = {
                 }
                 return false;
             },
-            soldiers(){
+            soldiers(wiki){
                 let soldiers = global.tech.marines >= 2 ? 4 : 2;
+                if (global.race.universe === 'evil'){
+                    soldiers--;
+                    let biodome_count = wiki ? (global.space?.biodome?.on ?? 0) : support_on['biodome'];
+                    if (biodome_count){
+                        soldiers += biodome_count * 0.075;
+                    }
+                }
                 if (global.race['grenadier']){
                     soldiers /= 2;
                 }

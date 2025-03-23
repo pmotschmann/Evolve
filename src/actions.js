@@ -2074,7 +2074,7 @@ export const actions = {
                 let bunks = $(this)[0].soldiers();
                 let desc = `<div>${loc('plus_max_resource',[bunks,loc('civics_garrison_soldiers')])}</div>`;
                 if (global.race.universe === 'evil'){
-                    desc += `<div>${loc('plus_max_resource',[1,global.resource.Authority.name])}</div>`;
+                    desc += `<div>${loc('plus_max_resource',[0.5,global.resource.Authority.name])}</div>`;
                 }
                 return desc;
             },
@@ -3486,7 +3486,7 @@ export const actions = {
             title(){ return structName('temple'); },
             desc(){
                 let entity = global.race.gods !== 'none' ? races[global.race.gods.toLowerCase()].entity : races[global.race.species].entity;
-                return loc('city_temple_desc',[entity]);
+                return global.race.universe === 'evil' && global.civic.govern.type != 'theocracy' ? loc('city_temple_desc_evil',[entity]) : loc('city_temple_desc',[entity]);
             },
             category: 'commercial',
             reqs: { theology: 2 },
@@ -3501,7 +3501,10 @@ export const actions = {
             effect(){
                 let desc = templeEffect();
                 if (global.genes['ancients'] && global.genes['ancients'] >= 2){
-                    desc = desc + `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_priest`)])}</div>`;
+                    desc = desc + `<div>${loc('plus_max_resource',[jobScale(1),global.civic?.priest?.name || loc(`job_priest`)])}</div>`;
+                }
+                if (global.race.universe === 'evil'){
+                    desc += `<div>${loc('plus_max_resource',[0.5,global.resource.Authority.name])}</div>`;
                 }
                 return desc;
             },
@@ -8070,7 +8073,7 @@ export function structName(type){
         }
         case 'temple':
         {
-            return halloween.active ? loc(`events_halloween_temple`) : loc('city_temple');
+            return halloween.active ? loc(`events_halloween_temple`) : (global.race.universe === 'evil' && global.civic.govern.type != 'theocracy' ? loc('city_propaganda') : loc('city_temple'));
         }
     }
 }

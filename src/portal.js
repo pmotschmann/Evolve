@@ -2811,13 +2811,6 @@ export function bloodwar(){
 
     let game_base = global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 5 ? 9000 : 10000;
     let gem_chance = game_base - global.portal.fortress.pity;
-    if (global.race.universe === 'evil' && global.prestige.Dark.count > 1){
-        let de = global.prestige.Dark.count;
-        if (global.prestige.Harmony.count > 0){
-            de *= 1 + (global.prestige.Harmony.count * 0.01);
-        }
-        gem_chance -= Math.round(Math.log2(de) * 2);
-    }
     
     if (global.tech['portal'] >= 4 && p_on['attractor']){
         gem_chance = Math.round(gem_chance * (0.948 ** p_on['attractor']));
@@ -3051,6 +3044,9 @@ export function bloodwar(){
         }
         if (global.race['chicken']){
             influx *= 1 + traits.chicken.vars()[0] / 100;
+        }
+        if (global.race.universe === 'evil'){
+            influx *= 1.1;
         }
         let demon_spawn = Math.rand(Math.round(10 * influx),Math.round(50 * influx));
         global.portal.fortress.threat += demon_spawn;
