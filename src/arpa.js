@@ -2308,14 +2308,14 @@ function genetics(){
 
             let id = `raceTrait${t}`;
             let desc = $(`<div></div>`);
-            getTraitDesc(desc, t, { trank: global.race[t] });
+            getTraitDesc(desc, t, { trank: traitRank(t) });
             popover(id,desc,{ wide: true, classes: 'w30' });
         });
 
         null_list.forEach(function (t){
             let id = `raceTrait${t}`;
             let desc = $(`<div></div>`);
-            getTraitDesc(desc, t, { trank: global.race[t] });
+            getTraitDesc(desc, t, { trank: traitRank(t) });
             popover(id, desc, { elm: `#geneticBreakdown .trait${t}`, wide: true, classes: 'w30' });
         });
 

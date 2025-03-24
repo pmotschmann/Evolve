@@ -263,7 +263,7 @@ export const job_desc = {
             desc = loc('job_priest_desc2');
         }
         else {
-            desc = loc('job_priest_desc');
+            desc = global.race.universe === 'evil' ? loc('job_pofficer_desc') : loc('job_priest_desc');
         }
         if (global.tech['cleric']){
             desc = desc + ` ${loc('job_priest_desc3')}`;
@@ -444,6 +444,9 @@ export function setJobName(job){
     }
     else if (job === 'titan_colonist'){
         job_name = loc('job_colonist_tp',[planetName().titan]);
+    }
+    else if (global.race.universe === 'evil' && job === 'priest' && global.civic.govern.type != 'theocracy'){
+        job_name = loc('job_pofficer');
     }
     else {
         job_name = job === 'lumberjack' && global.race['evil'] && (!global.race['soul_eater'] || global.race.species === 'wendigo') ? loc('job_reclaimer') : loc('job_' + job);
@@ -834,8 +837,8 @@ export function loadFoundry(servants){
                 resource.append(controls);
                 element.append(resource);
 
-                let sub = $(`<span role="button" aria-label="remove ${res} craftsman" class="sub has-text-danger" @click="sub('${res}')"><span>&laquo;</span></span>`);
-                let add = $(`<span role="button" aria-label="add ${res} craftsman" class="add has-text-success" @click="add('${res}')"><span>&raquo;</span></span>`);
+                let sub = $(`<span role="button" aria-label="remove ${global.resource[res].name} crafter" class="sub has-text-danger" @click="sub('${res}')"><span>&laquo;</span></span>`);
+                let add = $(`<span role="button" aria-label="add ${global.resource[res].name} crafter" class="add has-text-success" @click="add('${res}')"><span>&raquo;</span></span>`);
 
                 controls.append(sub);
                 controls.append(add);

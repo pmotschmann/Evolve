@@ -122,7 +122,7 @@ export function production(id,val,wiki){
         {
             switch (val){
                 case 'food':
-                    return highPopAdjust(0.25);
+                    return highPopAdjust(global.race.universe === 'evil' ? 0.1 : 0.25);
                 case 'cat_food':
                     return 2;
                 case 'lumber':

@@ -747,6 +747,18 @@ export function mechanicsPage(content){
         sideMenu('add',`mechanics-gameplay`,`dlord`,loc('wiki_mechanics_dlord'));
     }
 
+    { // Evil Authority
+        infoBoxBuilder(mainContent,{ name: 'authority', template: 'mechanics', label: loc('wiki_mechanics_authority'), paragraphs: 5, break:[2,3,5], h_level: 2,
+            para_data: {
+                1: [loc('resource_Authority_name')],
+                2: [loc('resource_Authority_name'),'100%'],
+                3: ['100'],
+                4: ['100']
+            }
+        });
+        sideMenu('add',`mechanics-gameplay`,`authority`,loc('wiki_mechanics_authority'));
+    }
+
     { // Syndicate
         let syndicate = infoBoxBuilder(mainContent,{ name: 'syndicate', template: 'mechanics', label: loc('wiki_mechanics_syndicate'), paragraphs: 2, h_level: 2,
             para_data: {
