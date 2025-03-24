@@ -3,6 +3,19 @@ import { clearElement } from './../functions.js';
 
 export const changeList = [
     {
+        version: `1.4.2`,
+        date: `3/23/2025`,
+        changes: [
+            `New Evil Universe Mechanics.`,
+            `You now must maintain your Evil Authority.`,
+            `Evil Hell now spawns 10% more demons then other universes.`,
+            `Evil Dark Energy effects changed.`,
+            `Evil Biodome produces less food but boosts marine garrison.`,
+            `Various Evil flavor updates.`,
+            `Various bug fixes.`,
+        ]
+    },
+    {
         version: `1.4.1`,
         revision: `a`,
         date: `12/2/2024`,

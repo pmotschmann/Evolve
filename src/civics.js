@@ -147,11 +147,11 @@ export function govTitle(id){
     return loc(`civics_gov${global.civic.foreign[`gov${id}`].name.s0}`,[global.civic.foreign[`gov${id}`].name.s1]);
 }
 
-const government_desc = (function(){
-    return {
+const government_desc = (function(type){
+    let desc = {
         anarchy: loc('govern_anarchy_effect'),
         autocracy: loc('govern_autocracy_effect',govEffect.autocracy()),
-        democracy: loc('govern_democracy_effect',govEffect.democracy()),
+        democracy: loc(global.race.universe === 'evil' ? 'govern_managed_democracy_effect' : 'govern_democracy_effect',govEffect.democracy()),
         oligarchy: global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? loc('govern_oligarchy_effect_alt',[govEffect.oligarchy()[1]]) : loc('govern_oligarchy_effect',[govEffect.oligarchy()[0], govEffect.oligarchy()[1]]),
         theocracy: loc('govern_theocracy_effect',govEffect.theocracy()),
         theocracy_alt: loc('govern_theocracy_effect_alt',govEffect.theocracy()),
@@ -164,6 +164,21 @@ const government_desc = (function(){
         magocracy: loc('govern_magocracy_effect',govEffect.magocracy()),
         dictator: loc('govern_dictator_effect',govEffect.dictator()),
     };
+    let effect = desc[type];
+    if (global.race.universe === 'evil'){
+        switch (type){
+            case 'autocracy':
+                effect += ` ${loc(`govern_authority`,[8])} ${loc(`govern_authority_cap`,[10])}`;
+                break;
+            case 'dictator':
+                effect +=  ` ${loc(`govern_authority`,[12])}`;
+                break;
+            case 'oligarchy':
+                effect +=  ` ${loc(`govern_authority_cap`,[20])}`;
+                break;
+        }
+    }
+    return effect;
 });
 
 export const govEffect = {
@@ -288,6 +303,7 @@ function government(govern){
         data: global.civic['govern'],
         filters: {
             govern(type){
+                if (global.race.universe === 'evil' && type === 'democracy'){ return loc(`govern_managed_democracy`); } 
                 return loc(`govern_${type}`);
             },
             set(g){
@@ -326,7 +342,7 @@ function government(govern){
             if (effect_type === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
                 effect_type = 'theocracy_alt';
             }
-            return $(`<div>${govDescription(global.civic.govern.type)}</div><div class="has-text-advanced">${government_desc()[effect_type]}</div>`);
+            return $(`<div>${govDescription(global.civic.govern.type)}</div><div class="has-text-advanced">${government_desc(effect_type)}</div>`);
         }
     );
 
@@ -342,6 +358,12 @@ function government(govern){
 function govDescription(type){
     if (global.race['witch_hunter'] && type === 'magocracy'){
         return loc(`witch_hunter_magocracy`);
+    }
+    else if (global.race.universe === 'evil'){
+        switch (type){
+            case 'democracy':
+                return loc(`govern_managed_democracy_desc`);
+        }
     }
     return loc(`govern_${type}_desc`);
 }
@@ -365,7 +387,7 @@ function drawGovModal(){
             body.append($(`<button class="button gap" data-gov="autocracy" @click="setGov('autocracy')">${loc(`govern_autocracy`)}</button>`));
         }
         if (global.civic.govern.type !== 'democracy'){
-            body.append($(`<button class="button gap" data-gov="democracy" @click="setGov('democracy')">${loc(`govern_democracy`)}</button>`));
+            body.append($(`<button class="button gap" data-gov="democracy" @click="setGov('democracy')">${global.race.universe === 'evil' ? loc(`govern_managed_democracy`) : loc(`govern_democracy`)}</button>`));
         }
         if (global.civic.govern.type !== 'oligarchy'){
             body.append($(`<button class="button gap" data-gov="oligarchy" @click="setGov('oligarchy')">${loc(`govern_oligarchy`)}</button>`));
@@ -452,7 +474,7 @@ function drawGovModal(){
             if (effectType === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
                 effectType = 'theocracy_alt';
             }
-            return $(`<div>${govDescription(govType)}</div><div class="has-text-advanced">${government_desc()[effectType]}</div>`);
+            return $(`<div>${govDescription(govType)}</div><div class="has-text-advanced">${government_desc(effectType)}</div>`);
         },
         {
             elm: `#govModal button`,
@@ -1446,7 +1468,7 @@ export function describeSoldier(){
       ? 'civics_garrison_soldier_evil_desc'
       : 'civics_garrison_soldier_desc';
 
-    return loc(soldiers_desc) + loc(loot_string, loot_args);
+    return `${loc(soldiers_desc)} ${loc(loot_string, loot_args)}`;
 }
 
 function battleAssessment(gov){
@@ -2240,6 +2262,16 @@ export function armyRating(val,type,wound){
     }
     if (global.civic.govern.type === 'autocracy'){
         army *= 1 + (govEffect.autocracy()[1] / 100);
+    }
+    if (global.race.universe === 'evil' && global.resource.Authority.display){
+        if (global.resource.Authority.amount > 100){
+            let boost = (global.resource.Authority.amount - 100) / global.resource.Authority.amount * 0.75;
+            boost *= darkEffect('evil',true);
+            army *= 1 + boost;
+        }
+        else {
+            army *= global.resource.Authority.amount / 100;
+        }
     }
     army = Math.floor(army);
     return army * racialTrait(val,type);

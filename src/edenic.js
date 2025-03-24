@@ -506,7 +506,6 @@ const edenicModules = {
                     return `<div>${loc('eden_rune_gate_title')}</div>`;
                 }
             },
-            wiki: false,
             reqs: { elysium: 1 },
             condition(){
                 return global.eden.rune_gate.count < 100 ? true : false;
@@ -589,6 +588,7 @@ const edenicModules = {
             desc(){
                 return `<div>${loc('eden_rune_gate_title')}</div>`;
             },
+            wiki: false,
             reqs: { elysium: 1 },
             condition(){
                 return global.eden.rune_gate.count === 100 ? true : false;
@@ -718,7 +718,7 @@ const edenicModules = {
                 let desc = `<div>${loc('eden_encampment_effect',[$(this)[0].support()])}</div>`;
                 desc += `<div>${loc('plus_max_citizens',[$(this)[0].citizens()])}</div>`;
                 if (global.genes['ancients'] && global.genes['ancients'] >= 4){
-                    desc += `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_priest`)])}</div>`;
+                    desc += `<div>${loc('plus_max_resource',[jobScale(1),global.civic?.priest?.name || loc(`job_priest`)])}</div>`;
                 }
                 desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
@@ -1948,7 +1948,7 @@ const edenicModules = {
             }
         },
         throne: {
-            id: 'eden-scout_palace',
+            id: 'eden-throne',
             title(){ return loc('eden_abandoned_throne_title'); },
             desc(){ return loc('eden_abandoned_throne_title'); },
             reqs: { palace: 2 },
