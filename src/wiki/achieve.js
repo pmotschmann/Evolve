@@ -411,6 +411,30 @@ function featDesc(feat,showFlair){
             wide: true
         });
     }
+    else if (feat === 'planned_obsolescence') {
+        let checked = `<div class="flexed wide">`;    
+        Object.keys(races).filter(r => !['junker','sludge','ultra_sludge','nano','synth'].includes(r)).sort(function(a,b){
+            if (races[a].hasOwnProperty('name') && races[b].hasOwnProperty('name')){
+                return (races[a].name || 'Zombie').localeCompare(races[b].name);
+            }
+            else {
+                return 0;
+            }
+        }).forEach(function (key){
+            if (key !== 'protoplasm' && (key !== 'custom' || (key === 'custom' && global.stats.achieve['ascended'])) && (key !== 'hybrid' || (key === 'hybrid' && global.stats.achieve['what_is_best']))){
+                if (global.stats['synth'] && global.stats.synth[key]){
+                    checked = checked + `<span class="wide iclr5">${races[key].name}</span>`;
+                }
+                else {
+                    checked = checked + `<span class="wide has-text-danger">${races[key].name}</span>`;
+                }
+            }
+        });
+        checked = checked + `</div>`;
+        popover(`f-${feat}`,$(`<div class="wide has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${checked}${flair}`),{
+            wide: true
+        });
+    }
     else if (feat === 'grand_death_tour'){
         let path = `<div class="flexed">`;
         let map = {
