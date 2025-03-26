@@ -8,7 +8,7 @@ export const changeList = [
         changes: [
             `New Evil Universe Mechanics.`,
             `You now must maintain your Evil Authority.`,
-            `Evil Hell now spawns 10% more demons then other universes.`,
+            `Evil Hell now spawns 10% more demons than other universes.`,
             `Evil Dark Energy effects changed.`,
             `Evil Biodome produces less food but boosts marine garrison.`,
             `Various Evil flavor updates.`,
@@ -712,7 +712,7 @@ export const changeList = [
         date: `1/19/2022`,
         changes: [
             `Insectoid genus redesigned with High Population trait.`,
-            `Fixed bug that caused incorrect timer calculations when using Slow or Hyper trait at any rank other then 1.`
+            `Fixed bug that caused incorrect timer calculations when using Slow or Hyper trait at any rank other than 1.`
         ]
     },
     {
@@ -1737,7 +1737,7 @@ export const changeList = [
             `Corpocracy factory bonus now applies to Cement, Graphene, and Vitreloy.`,
             `Republic now increases morale by 20%.`,
             `Oligarchy tax revenue penalty is now 5% (lowered from 10%).`,
-            `Oligarchy can now set taxes 20% higher then other governments (raised from 10%).`,
+            `Oligarchy can now set taxes 20% higher than other governments (raised from 10%).`,
             `Technocracy now adds a 10% Knowledge gain bonus.`,
             `Autocracy governments are now immune to the warmonger penalty.`,
             `Priests now apply a bonus to Ziggurats under Theocracy.`,
@@ -1777,7 +1777,7 @@ export const changeList = [
             `Ascension reset no longer offers planet choices, instead your next race is created on the old planet with bonuses added to that planet.`,
             `Ascended planets now gain +2% to all geology deposits, +5% production, +10% storage, and +2 Sundial base Knowledge gain.`,
             `Unspent gene points in the Ascension Lab will be converted into Untapped Potential.`,
-            `Ascension lab now has a complexity gene tax for adding more then 4 traits.`,
+            `Ascension lab now has a complexity gene tax for adding more than 4 traits.`,
             `Technophobe perk now applies an additional bonus to custom race complexity.`,
             `Paranoid and Hoarder can now be combined.`,
             `Over capped slaves will now be released.`,
@@ -2076,7 +2076,7 @@ export const changeList = [
         version: `0.7.11`,
         date: `12/15/2019`,
         changes: [
-            `Decaying resources will now use a warning color if you are losing that resource but at a slower rate then the decay rate.`,
+            `Decaying resources will now use a warning color if you are losing that resource but at a slower rate than the decay rate.`,
             `The most bottlenecked resource will now display in red while other trouble resources will be marked with an alert color.`,
             `CRISPR upgrades are now darkened when unaffordable.`,
             `Transfer Station now lists its uranium storage.`,
@@ -2534,7 +2534,7 @@ export const changeList = [
         date: `8/28/2019`,
         changes: [
             `Fixed bug with some construction projects not refreshing the page after being built with the queue.`,
-            `Space exploration missions can no longer be queued more then once at a time.`,
+            `Space exploration missions can no longer be queued more than once at a time.`,
             `One off projects are now removed from the queue if completed manually.`,
             `Queue timers now track crafted resources.`,
             `Demonic attractor soul gem drop rate increase buffed from 5% to 8%.`,
@@ -3200,7 +3200,7 @@ export const changeList = [
             `Sawmill powered on bonus reduced from 5% to 4%.`,
             `Rock Quarry powered on bonus reduced from 5% to 4%.`,
             `Stock Exchanges no longer cost Knowledge.`,
-            `Fixed a display bug that could cause farmers to falsely show they produced more food then they actual did.`,
+            `Fixed a display bug that could cause farmers to falsely show they produced more food than they actual did.`,
         ]
     },
     {
@@ -3365,8 +3365,8 @@ export const changeList = [
         version: `0.2.48`,
         date: `5/8/2019`,
         changes: [
-            `Resources that are at greater then 99% capacity now change color to indicate they are at cap.`,
-            `Attacks from rival cities should no longer cause more wounded soldiers then you have.`,
+            `Resources that are at greater than 99% capacity now change color to indicate they are at cap.`,
+            `Attacks from rival cities should no longer cause more wounded soldiers than you have.`,
             `Assigning craftsman when no citizens are free will no longer take the labor from another job.`,
         ]
     },
@@ -3413,7 +3413,7 @@ export const changeList = [
         date: `5/7/2019`,
         changes: [
             `Fixed a bug that was causing soldiers to become immortal.`,
-            `Fixed some bugs with morale that caused some weather patterns to apply a different value then was reported.`,
+            `Fixed some bugs with morale that caused some weather patterns to apply a different value than was reported.`,
             `Added weather to Food breakdown.`,
         ]
     },
