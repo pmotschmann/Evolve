@@ -9590,7 +9590,7 @@
   "wiki_mechanics_authority_para2": "%0和士气相冲突，高士气（大于%1）会降低权威",
   "wiki_mechanics_authority_para3": "权威低于%0时，全局产量和士兵战斗评级减少。",
   "wiki_mechanics_authority_para4": "权威高于%0时，全局产量和士兵战斗评级增加。",
-  "wiki_mechanics_authority_para5": "指派空闲士兵可以提升权威。",
+  "wiki_mechanics_authority_para5": "空闲的士兵可以提升权威。",
   "wiki_mechanics_syndicate": "辛迪加",
   "wiki_mechanics_syndicate_para1": "%0出现在%1剧情模式中，在研究%3后一段时间内%2。",
   "wiki_mechanics_syndicate_para1_note1": "解锁",
