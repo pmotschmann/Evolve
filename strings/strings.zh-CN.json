@@ -6530,7 +6530,7 @@
   "space_red_asphodel_desc": "种植水仙花用来吸引凡人的灵魂",
   "space_red_biodome_effect": "每行星居民使%1 +%0/s",
   "space_red_biodome_effect2": "每生活区使市民上限 +%0",
-  "space_red_biodome_effect_evil": "每+%1的平均士兵上限 +%0",
+  "space_red_biodome_effect_evil": "每%1的平均士兵上限 +%0",
   "space_red_biodome_flair": "只需要种一个土豆",
   "space_red_biodome_flair_carn": "美味的牛在38%的重力下吃草",
   "space_red_signal_tower_flair": "校准信号增益",
