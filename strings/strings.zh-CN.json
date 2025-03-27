@@ -1716,7 +1716,7 @@
   "tech_playwright": "剧作家",
   "tech_playwright_effect": "剧作家提升演出质量，从而使艺人的效果变得更好，艺人的士气加成由 +1% 提升到 +2%。",
   "tech_gladiators": "角斗士",
-  "tech_gladiators_effect": "角斗士可以在%0提升演出质量，从而使艺人的效果变得更好。",
+  "tech_gladiators_effect": "角斗士可以提升%0的娱乐效果；与直接将人们喂狮子相比，角斗士的效果更好。",
   "tech_magic": "高科技法师",
   "tech_magic_effect": "高科技法师是新型的舞台演员，他们使用科技来表演“魔术”，艺人的士气加成由 +2% 提升到 +3%。",
   "tech_illusionist": "魔术师",
