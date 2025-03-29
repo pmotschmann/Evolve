@@ -1,6 +1,6 @@
 {
   "name": "evolveidle",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "Evolve Idle",
   "private": true,
   "scripts": {
@@ -41,7 +41,7 @@
     "gh-pages": "^6.1.1"
   },
   "dependencies": {
-    "esbuild": "0.17.19",
+    "esbuild": "0.25.0",
     "node": "^16.1.0",
     "npmcli": "^1.2.2"
   }

@@ -900,6 +900,7 @@ export function index(){
                 <b-tooltip :label="moon()" :aria-label="moon()" position="is-bottom" size="is-small" multilined animated><i id="moon" class="moon wi"></i></b-tooltip>
                 <span class="year">${loc('year')} <span class="has-text-warning">{{ city.calendar.year }}</span></span>
                 <span class="day">${loc('day')} <span class="has-text-warning">{{ city.calendar.day }}</span></span>
+                <span class="season">{{ season() }}</span>
                 <b-tooltip :label="weather()" :aria-label="weather()" position="is-bottom" size="is-small" multilined animated><i id="weather" class="weather wi"></i></b-tooltip>
                 <b-tooltip :label="temp()" :aria-label="temp()" position="is-bottom" size="is-small" multilined animated><i id="temp" class="temp wi"></i></b-tooltip>
                 <b-tooltip :label="atRemain()" v-show="s.at" :aria-label="atRemain()" position="is-bottom" size="is-small" multilined animated><span class="atime has-text-caution">{{ s.at | remain }}</span></b-tooltip>

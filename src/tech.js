@@ -1621,8 +1621,8 @@ const techs = {
     },
     theatre: {
         id: 'tech-theatre',
-        title: loc('tech_theatre'),
-        desc: loc('tech_theatre'),
+        title(){ return global.race.universe === 'evil' ? loc('tech_theatre_evil') : loc('tech_theatre'); },
+        desc(){ return global.race.universe === 'evil' ? loc('tech_theatre_evil') : loc('tech_theatre'); },
         category: 'entertainment',
         era: 'civilized',
         reqs: { housing: 1, currency: 1, cement: 1 },
@@ -1631,7 +1631,7 @@ const techs = {
         cost: {
             Knowledge(){ return 750; }
         },
-        effect: loc('tech_theatre_effect'),
+        effect(){ return global.race.universe === 'evil' ? loc('tech_theatre_evil_effect') : loc('tech_theatre_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.city.amphitheatre);
@@ -1642,7 +1642,7 @@ const techs = {
     },
     playwright: {
         id: 'tech-playwright',
-        title: loc('tech_playwright'),
+        title(){ return global.race.universe === 'evil' ? loc('tech_gladiators') : loc('tech_playwright'); },
         desc: loc('tech_playwright'),
         category: 'entertainment',
         era: 'civilized',
@@ -1651,7 +1651,7 @@ const techs = {
         cost: {
             Knowledge(){ return 1080; }
         },
-        effect: loc('tech_playwright_effect'),
+        effect(){ return global.race.universe === 'evil' ? loc('tech_gladiators_effect') : loc('tech_playwright_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -1661,8 +1661,17 @@ const techs = {
     },
     magic: {
         id: 'tech-magic',
-        title(){ return global.race.universe === 'magic' ? loc('tech_illusionist') : loc('tech_magic'); },
-        desc(){ return global.race.universe === 'magic' ? loc('tech_illusionist') : loc('tech_magic'); },
+        title(){ 
+            switch(global.race.universe){
+                case 'magic':
+                    return loc('tech_illusionist');
+                case 'evil':
+                    return loc('tech_mock_battles');
+                default:
+                    return loc('tech_magic');
+            }
+        },
+        desc(){ return $(this)[0].title(); },
         category: 'entertainment',
         era: 'discovery',
         reqs: { theatre: 2, high_tech: 1 },
@@ -1670,7 +1679,16 @@ const techs = {
         cost: {
             Knowledge(){ return 7920; }
         },
-        effect(){ return global.race.universe === 'magic' ? loc('tech_illusionist_effect') : loc('tech_magic_effect'); },
+        effect(){ 
+            switch(global.race.universe){
+                case 'magic':
+                    return loc('tech_illusionist_effect');
+                case 'evil':
+                    return loc('tech_mock_battles_effect');
+                default:
+                    return loc('tech_magic_effect');
+            }
+        },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -1680,8 +1698,8 @@ const techs = {
     },
     superstars: {
         id: 'tech-superstars',
-        title: loc('tech_superstars'),
-        desc: loc('tech_superstars'),
+        title(){ return global.race.universe === 'evil' ? loc('tech_champions') : loc('tech_superstars'); },
+        desc(){ return global.race.universe === 'evil' ? loc('tech_champions') : loc('tech_superstars'); },
         category: 'entertainment',
         era: 'interstellar',
         reqs: { theatre: 3, high_tech: 12 },
@@ -1689,7 +1707,7 @@ const techs = {
         cost: {
             Knowledge(){ return 660000; }
         },
-        effect: loc('tech_superstars_effect'),
+        effect(){ return global.race.universe === 'evil' ? loc('tech_champions_effect') : loc('tech_superstars_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -8686,7 +8704,7 @@ const techs = {
         id: 'tech-astrophysics',
         title: loc('tech_astrophysics'),
         desc: loc('tech_astrophysics_desc'),
-        category: 'storage',
+        category: 'space_exploration',
         era: 'early_space',
         reqs: { space: 2 },
         grant: ['space_explore',1],
@@ -14538,7 +14556,7 @@ const techs = {
             Knowledge(){ return 95000000; },
             Omniscience(){ return 19500; },
         },
-        effect(){ return loc('tech_hallowed_housing_effect',[loc(`job_priest`),loc('eden_asphodel_name')]); },
+        effect(){ return loc('tech_hallowed_housing_effect',[global.civic?.priest?.name || loc(`job_priest`),loc('eden_asphodel_name')]); },
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.eden.eden_asphodel.rectory);
@@ -15104,6 +15122,119 @@ const techs = {
             return false;
         }
     },
+    might: {
+        id: 'tech-might',
+        title: loc('tech_might'),
+        desc: loc('tech_might'),
+        category: 'evil',
+        era: 'civilized',
+        reqs: { military: 1 },
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        grant: ['evil',1],
+        cost: {
+            Knowledge(){ return 100; }
+        },
+        effect: loc('tech_might_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        },
+        flair(){
+            return loc('tech_might_flair');
+        }
+    },
+    executions: {
+        id: 'tech-executions',
+        title: loc('tech_executions'),
+        desc: loc('tech_executions'),
+        category: 'evil',
+        era: 'industrialized',
+        reqs: { evil: 1, high_tech: 3 },
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        grant: ['evil',2],
+        cost: {
+            Knowledge(){ return 35000; }
+        },
+        effect: loc('tech_executions_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    secret_police: {
+        id: 'tech-secret_police',
+        title: loc('tech_secret_police'),
+        desc: loc('tech_secret_police'),
+        category: 'evil',
+        era: 'globalized',
+        reqs: { evil: 2, high_tech: 6 },
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        grant: ['evil',3],
+        cost: {
+            Knowledge(){ return 112000; }
+        },
+        effect: loc('tech_secret_police_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    ai_tracking: {
+        id: 'tech-ai_tracking',
+        title: loc('tech_ai_tracking'),
+        desc: loc('tech_ai_tracking'),
+        category: 'evil',
+        era: 'deep_space',
+        reqs: { evil: 3, high_tech: 10 },
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        grant: ['evil',4],
+        cost: {
+            Knowledge(){ return 345000; }
+        },
+        effect: loc('tech_ai_tracking_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    predictive_arrests: {
+        id: 'tech-predictive_arrests',
+        title: loc('tech_predictive_arrests'),
+        desc: loc('tech_predictive_arrests'),
+        category: 'evil',
+        era: 'intergalactic',
+        reqs: { evil: 4, high_tech: 16 },
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        grant: ['evil',5],
+        cost: {
+            Knowledge(){ return 5123450; }
+        },
+        effect: loc('tech_predictive_arrests_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    }
 };
 
 function uniteEffect(){

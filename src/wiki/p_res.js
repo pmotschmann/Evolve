@@ -111,6 +111,8 @@ export function pResPage(content){
     });
     subSection = createCalcSection(section,'supercoiled','gain');
     prestigeCalc(subSection,'supercoiled');
+    subSection = createCalcSection(section,'supercoiled','bonus');
+    supercoiledCalc(subSection);
     sideMenu('add',`resources-prestige`,'supercoiled',loc('wiki_p_res_supercoiled'));
 
     //AI Core
@@ -1486,6 +1488,87 @@ function coresQuantumCalc(info){
                 
                 if (show.result.vis){
                     show.result.val = +(1 - (0.99 ** inputs.cores.val)).toFixed(4);
+                    
+                    return show.result.val;
+                }
+            }
+        }
+    });
+}
+
+
+function supercoiledCalc(info){
+    let calc = $(`<div class="calc" id="supercoiledBonusCalc"></div>`);
+    info.append(calc);
+    
+    calc.append(`<h2 class="has-text-caution">${loc('wiki_calc_bonuses',[loc('wiki_calc_prod',[loc('resource_Supercoiled_name')])])}</h2>`);
+    
+    let formula = $(`<div></div>`);
+    let variables = $(`<div></div>`);
+    
+    calc.append(formula);
+    calc.append(variables);
+    
+    let inputs = {
+        supercoiled: { val: undefined }
+    }
+    
+    let show = {
+        result: { vis: false, val: 0 }
+    }
+    formula.append(`
+        <div>
+            <span>{{ i.supercoiled.val, 'supercoiled' | generic }} / ({{ i.supercoiled.val, 'supercoiled' | generic }} + 5000)</span><span v-show="s.result.vis"> = {{ false | calc }} = +{{ true | calc }}%</span>
+        </div>
+    `);
+    
+    variables.append(`
+        <div>
+            <div class="calcInput"><span>${loc('resource_Supercoiled_plural_name')}</span> <b-numberinput :input="val('supercoiled')" min="0" v-model="i.supercoiled.val" :controls="false"></b-numberinput></div>
+        </div>
+        <div class="calcButton">
+            <button class="button" @click="resetInputs()">${loc('wiki_calc_reset')}</button>
+            <button class="button" @click="importInputs()">${loc('wiki_calc_import')}</button>
+        </div>
+    `);
+    
+    vBind({
+        el: `#supercoiledBonusCalc`,
+        data: {
+            i: inputs,
+            s: show
+        },
+        methods: {
+            val(type){
+                if (inputs[type].val && inputs[type].val < 0){
+                    inputs[type].val = 0;
+                }
+            },
+            resetInputs(){
+                inputs.supercoiled.val = undefined;
+            },
+            importInputs(){
+                inputs.supercoiled.val = global.prestige.Supercoiled.count;
+            }
+        },
+        filters: {
+            generic(num, type){
+                if (num !== undefined){
+                    return num;
+                }
+                switch (type){
+                    case 'supercoiled':
+                        return loc('resource_Supercoiled_plural_name');
+                }
+            },
+            calc(percent){
+                if (percent){
+                    return +(show.result.val * 100).toFixed(2);
+                }
+                show.result.vis = inputs.supercoiled.val !== undefined;
+                
+                if (show.result.vis){
+                    show.result.val = +(inputs.supercoiled.val / (inputs.supercoiled.val + 5000)).toFixed(4);
                     
                     return show.result.val;
                 }
