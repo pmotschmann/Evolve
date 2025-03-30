@@ -8,7 +8,7 @@ import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs
 import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter } from './industry.js';
 import { defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating, garrisonSize } from './civics.js';
 import { spaceTech, interstellarTech, galaxyTech, incrementStruct, universe_affixes, renderSpace, piracy, fuel_adjust, isStargateOn } from './space.js';
-import { renderFortress, fortressTech } from './portal.js';
+import { renderFortress, fortressTech, warlordSetup } from './portal.js';
 import { edenicTech, renderEdenic } from './edenic.js';
 import { tauCetiTech, renderTauCeti, loneSurvivor } from './truepath.js';
 import { arpa, gainGene, gainBlood } from './arpa.js';
@@ -4649,7 +4649,7 @@ export function setChallengeScreen(){
         global.evolution['witch_hunter'] = { count: 0 };
     }
     if (global.race.universe === 'evil' && ((global.stats.achieve['godslayer'] && global.stats.achieve.godslayer['e']) || global['sim'])){
-        //global.evolution['warlord'] = { count: 0 };
+        global.evolution['warlord'] = { count: 0 };
     }
     if (global.stats.achieve['ascended'] || global.stats.achieve['corrupted'] || global['sim']){
         global.evolution['truepath'] = { count: 0 };
@@ -4719,9 +4719,6 @@ export function setChallengeScreen(){
     if (global.race.universe === 'magic' && ((global.stats.achieve['ascended'] && global.stats.achieve.ascended['mg']) || global['sim'])){
         addAction('evolution','witch_hunter');
     }
-    if (global.race.universe === 'evil' && ((global.stats.achieve['godslayer'] && global.stats.achieve.godslayer['e']) || global['sim'])){
-        //addAction('evolution','warlord');
-    }
     if (global.hasOwnProperty('beta') && !global['sim']){
         addAction('evolution','simulation');
     }
@@ -4742,11 +4739,31 @@ export function setChallengeScreen(){
     if(global.stats.achieve['corrupted'] || global['sim']){
         addAction('evolution','fasting');
     }
+    if (global.race.universe === 'evil' && ((global.stats.achieve['godslayer'] && global.stats.achieve.godslayer['e']) || global['sim'])){
+        addAction('evolution','warlord');
+    }
     if (global['sim']){
         exitSimulation();
     }
     else if (global.race['simulation']){
         configSimulation();
+    }
+
+    if (global.race['warlord']){
+        if ($(`#evolution-custom`).length > 0){
+            $(`#evolution-custom`).addClass('disabled');
+        }
+        if ($(`#evolution-hybrid`).length > 0){
+            $(`#evolution-hybrid`).addClass('disabled');
+        }
+    }
+    else {
+        if ($(`#evolution-custom`).length > 0 && $(`#evolution-custom`).hasClass('disabled')){
+            $(`#evolution-custom`).removeClass('disabled');
+        }
+        if ($(`#evolution-hybrid`).length > 0 && $(`#evolution-hybrid`).hasClass('disabled')){
+            $(`#evolution-hybrid`).removeClass('disabled');
+        }
     }
 }
 
@@ -5089,7 +5106,7 @@ raceList.forEach(function(race){
             desc(){ return `${loc("evo_evolve")} ${races[race].name}`; },
             reqs: { evo: 7 },
             grant: ['evo',8],
-            condition(){ 
+            condition(){
                 let typeList = global.stats.achieve['godslayer'] && races[race].type === 'hybrid' ? races[race].hybrid : [races[race].type];
                 let typeCheck = false;
                 typeList.forEach(function(t){
@@ -5112,6 +5129,7 @@ raceList.forEach(function(race){
                 return `${raceDesc} ${loc(`evo_complete`)}`;
             },
             action(){
+                if (global.race['warlord'] && ['custom','hybrid'].includes(race)){ return false; }
                 if (payCosts($(this)[0])){
                     if (['synth','custom'].includes(race)){
                         return evoExtraState(race);
@@ -5217,7 +5235,6 @@ const advancedChallengeList = {
     //'nonstandard': {t: 'c', e: 'anathema' },
     'gravity_well': {t: 'c', e: 'escape_velocity' },
     'witch_hunter': {t: 'c', e: 'soul_sponge' },
-    //'warlord': {t: 'c', e: 'what_is_best' },
     //'storage_wars': {t: 'c', e: '???' },
     'simulation': {t: 'c', e: 'thereisnospoon' },
     'junker': {t: 's', e: 'extinct_junker' },
@@ -5226,6 +5243,7 @@ const advancedChallengeList = {
     'truepath': {t: 's', e: 'pathfinder' },
     'lone_survivor': {t: 's', e: 'adam_eve' },
     'fasting': {t: 's', e: 'endless_hunger' },
+    'warlord': {t: 's', e: 'what_is_best' },
 };
 Object.keys(advancedChallengeList).forEach(challenge => actions.evolution[challenge] = {
     id: `evolution-${challenge}`,
@@ -5493,6 +5511,7 @@ function setChallenge(challenge){
         }
         if (challenge === 'orbit_decay'){
             delete global.race['cataclysm'];
+            delete global.race['warlord'];
             if (global.race['lone_survivor']){
                 delete global.race['lone_survivor'];
                 ['nerfed','badgenes'].forEach(function(gene){
@@ -5521,7 +5540,7 @@ function setScenario(scenario){
         });
     }
     else {
-        ['junker','cataclysm','banana','truepath','lone_survivor','fasting'].forEach(function(s){
+        ['junker','cataclysm','banana','truepath','lone_survivor','fasting','warlord'].forEach(function(s){
             delete global.race[s];
             $(`#evolution-${s}`).removeClass('hl');
         });
@@ -5542,7 +5561,7 @@ function setScenario(scenario){
             }
         }
 
-        if (scenario === 'cataclysm' || scenario === 'lone_survivor'){
+        if (scenario === 'cataclysm' || scenario === 'lone_survivor' || scenario === 'warlord'){
             delete global.race['orbit_decay'];
         }
 
@@ -8172,39 +8191,47 @@ function sentience(){
         }
     }
 
-    let typeList = global.stats.achieve['godslayer'] && races[global.race.species].type === 'hybrid' ? races[global.race.species].hybrid : [races[global.race.species].type];
-    typeList.forEach(function(type){
-        Object.keys(genus_traits[type]).forEach(function (trait) {
-            let mainspec = global.tech[`evo_${type}`] >= 2 ? true : false;
-            if (mainspec){
-                global.race['maintype'] = type;
-                setTraitRank(trait,{ set: genus_traits[type][trait] });
-                if (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 4){
-                    setTraitRank(trait);
+    if (global.race['warlord']){
+        let trait = races[global.race.species].fanaticism;
+        global.race['absorbed'] = [global.race.species];
+        global.race.species = 'hellspawn';
+        setTraitRank(trait, { set: 0.5 });
+    }
+    else {
+        let typeList = global.stats.achieve['godslayer'] && races[global.race.species].type === 'hybrid' ? races[global.race.species].hybrid : [races[global.race.species].type];
+        typeList.forEach(function(type){
+            Object.keys(genus_traits[type]).forEach(function (trait) {
+                let mainspec = global.tech[`evo_${type}`] >= 2 ? true : false;
+                if (mainspec){
+                    global.race['maintype'] = type;
+                    setTraitRank(trait,{ set: genus_traits[type][trait] });
+                    if (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 4){
+                        setTraitRank(trait);
+                    }
                 }
-            }
-            else {
-                setTraitRank(trait,{ set: genus_traits[type][trait] });
-                setTraitRank(trait, {down:true});
-            }
+                else {
+                    setTraitRank(trait,{ set: genus_traits[type][trait] });
+                    setTraitRank(trait, {down:true});
+                }
+            });
         });
-    });
-    if (typeList.includes('carnivore') && typeList.includes('herbivore')){
-        setTraitRank('forager',{ set: genus_traits.omnivore.forager });
-        delete global.race['carnivore'];
-        delete global.race['herbivore'];
-    }
+        if (typeList.includes('carnivore') && typeList.includes('herbivore')){
+            setTraitRank('forager',{ set: genus_traits.omnivore.forager });
+            delete global.race['carnivore'];
+            delete global.race['herbivore'];
+        }
 
-    Object.keys(races[global.race.species].traits).forEach(function (trait) {
-        setTraitRank(trait,{ set: races[global.race.species].traits[trait] });
-    });
+        Object.keys(races[global.race.species].traits).forEach(function (trait) {
+            setTraitRank(trait,{ set: races[global.race.species].traits[trait] });
+        });
 
-    if (global.race['evil'] && global.race['maintype'] && global.race.maintype === 'angelic'){
-        delete global.race['evil'];
-    }
+        if (global.race['evil'] && global.race['maintype'] && global.race.maintype === 'angelic'){
+            delete global.race['evil'];
+        }
 
-    if (global.race['imitation'] && global.race['srace']){
-        setImitation(false);
+        if (global.race['imitation'] && global.race['srace']){
+            setImitation(false);
+        }
     }
 
     Object.keys(global.tech).forEach(function (tech){
@@ -8530,7 +8557,7 @@ function sentience(){
         messageQueue(loc('cataclysm_sentience',[races[global.race.species].home,flib('name')]),'info',false,['progress']);
     }
     else {
-        messageQueue(loc('sentience',[loc('genelab_genus_' + global.race.maintype),races[global.race.species].entity,flib('name')]),'info',false,['progress']);
+        messageQueue(loc('sentience',[loc('genelab_genus_' + (global.race.maintype || races[global.race.species].type)),races[global.race.species].entity,flib('name')]),'info',false,['progress']);
     }
 
     if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){
@@ -8684,6 +8711,9 @@ function sentience(){
     }
     else if (global.race['lone_survivor']){
         loneSurvivor();
+    }
+    else if (global.race['warlord']){
+        warlordSetup();
     }
     else if (global.race['artifical']){
         aiStart();

@@ -1857,6 +1857,14 @@ function fastLoop(){
             power_generated[loc('space_hydrogen_plant_title')] = -(power);
         }
 
+        if (global.portal['incinerator']){
+            let output = actions.portal.prtl_wasteland.incinerator.powered();
+            let power = global.portal.incinerator.on * output;
+            max_power += power;
+            power_grid -= power;
+            power_generated[loc('portal_incinerator_title')] = -(power);
+        }
+
         if (global.portal['inferno_power']){
             let fuels = actions.portal.prtl_ruins.inferno_power.fuel;
             let operating = global.portal.inferno_power.on;
@@ -7985,7 +7993,7 @@ function midLoop(){
                 caps.Authority += gain;
                 breakdown.c.Authority[actions.city.garrison.title()] = gain+'v';
             }
-            if (global.city['temple']){
+            if (global.city['temple'] && !global.race['warlord']){
                 let gain = templeCount() * 0.5;
                 caps.Authority += gain;
                 breakdown.c.Authority[structName('temple')] = gain+'v';
@@ -11603,7 +11611,7 @@ function longLoop(){
             }
         }
 
-        if ((global.stats.matrix > 0 || global.stats.retire > 0) && !global.race['servants'] && Math.rand(0,25) === 0){
+        if (!global.race['warlord'] && (global.stats.matrix > 0 || global.stats.retire > 0) && !global.race['servants'] && Math.rand(0,25) === 0){
             let womlings = global.stats.matrix + global.stats.retire + global.stats.eden;
             let skilled = global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 5 ? 2 : 0;
             skilled += Math.min(global.stats.matrix, global.stats.retire);

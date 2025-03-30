@@ -5676,6 +5676,23 @@ export const races = {
         fanaticism: 'empowered',
         basic(){ return false; }
     },
+    hellspawn: {
+        name: loc('race_hellspawn'),
+        desc: loc('race_hellspawn_desc'),
+        type: 'demonic',
+        home: loc('race_hellspawn_home'),
+        entity: loc('race_hellspawn_entity'),
+        traits: {},
+        solar: {
+            red: loc('race_hellspawn_solar_red'),
+            hell: loc('race_hellspawn_solar_hell'),
+            gas: loc('race_hellspawn_solar_gas'),
+            gas_moon: loc('race_hellspawn_solar_gas_moon'),
+            dwarf: loc('race_hellspawn_solar_dwarf'),
+        },
+        fanaticism: 'immoral',
+        basic(){ return false; }
+    },
     junker: {
         name: altRace('junker') ? loc('race_ghoul') : loc('race_junker'),
         desc: altRace('junker') ? loc('race_ghoul_desc') : loc('race_junker_desc'),

@@ -386,28 +386,28 @@ function drawGovModal(){
         if (global.civic.govern.type !== 'autocracy'){
             body.append($(`<button class="button gap" data-gov="autocracy" @click="setGov('autocracy')">${loc(`govern_autocracy`)}</button>`));
         }
-        if (global.civic.govern.type !== 'democracy'){
+        if (global.civic.govern.type !== 'democracy' && !global.race['warlord']){
             body.append($(`<button class="button gap" data-gov="democracy" @click="setGov('democracy')">${global.race.universe === 'evil' ? loc(`govern_managed_democracy`) : loc(`govern_democracy`)}</button>`));
         }
-        if (global.civic.govern.type !== 'oligarchy'){
+        if (global.civic.govern.type !== 'oligarchy' && !global.race['warlord']){
             body.append($(`<button class="button gap" data-gov="oligarchy" @click="setGov('oligarchy')">${loc(`govern_oligarchy`)}</button>`));
         }
-        if (global.tech['gov_theo'] && global.civic.govern.type !== 'theocracy'){
+        if (global.tech['gov_theo'] && global.civic.govern.type !== 'theocracy' && !global.race['warlord']){
             body.append($(`<button class="button gap" data-gov="theocracy" @click="setGov('theocracy')">${loc(`govern_theocracy`)}</button>`));
         }
-        if (global.tech['govern'] >= 2 && global.civic.govern.type !== 'republic'){
+        if (global.tech['govern'] >= 2 && global.civic.govern.type !== 'republic' && !global.race['warlord']){
             body.append($(`<button class="button gap" data-gov="republic" @click="setGov('republic')">${loc(`govern_republic`)}</button>`));
         }
-        if (global.tech['gov_soc'] && global.civic.govern.type !== 'socialist'){
+        if (global.tech['gov_soc'] && global.civic.govern.type !== 'socialist' && !global.race['warlord']){
             body.append($(`<button class="button gap" data-gov="socialist" @click="setGov('socialist')">${loc(`govern_socialist`)}</button>`));
         }
-        if (global.tech['gov_corp'] && global.civic.govern.type !== 'corpocracy'){
+        if (global.tech['gov_corp'] && global.civic.govern.type !== 'corpocracy' && !global.race['warlord']){
             body.append($(`<button class="button gap" data-gov="corpocracy" @click="setGov('corpocracy')">${loc(`govern_corpocracy`)}</button>`));
         }
-        if (global.tech['govern'] >= 3 && global.civic.govern.type !== 'technocracy'){
+        if (global.tech['govern'] >= 3 && global.civic.govern.type !== 'technocracy' && !global.race['warlord']){
             body.append($(`<button class="button gap" data-gov="technocracy" @click="setGov('technocracy')">${loc(`govern_technocracy`)}</button>`));
         }
-        if (global.tech['gov_fed'] && global.civic.govern.type !== 'federation'){
+        if (global.tech['gov_fed'] && global.civic.govern.type !== 'federation' && !global.race['warlord']){
             body.append($(`<button class="button gap" data-gov="federation" @click="setGov('federation')">${loc(`govern_federation`)}</button>`));
         }
         if (global.tech['gov_mage'] && global.civic.govern.type !== 'magocracy'){

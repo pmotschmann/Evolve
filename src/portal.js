@@ -15,6 +15,7 @@ import { renderEdenic } from './edenic.js';
 import { loadTab } from './index.js';
 import { loc } from './locale.js';
 import { addSmelter } from './industry.js';
+import { arpa } from './arpa.js';
 
 const fortressModules = {
     prtl_fortress: {
@@ -205,6 +206,7 @@ const fortressModules = {
                 return `<div>${loc('portal_war_drone_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { portal: 3 },
+            not_trait: ['warlord'],
             powered(){ return powerCostMod(5); },
             cost: {
                 Money(offset){ return spaceCostMultiplier('war_drone', offset, 650000, 1.28, 'portal'); },
@@ -239,6 +241,7 @@ const fortressModules = {
                 return `<div>${loc('portal_sensor_drone_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { infernite: 2 },
+            not_trait: ['warlord'],
             powered(){ return powerCostMod(3); },
             cost: {
                 Money(offset){ return spaceCostMultiplier('sensor_drone', offset, 500000, 1.25, 'portal'); },
@@ -275,6 +278,7 @@ const fortressModules = {
                 return `<div>${loc('portal_attractor_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { portal: 4 },
+            not_trait: ['warlord'],
             powered(){ return powerCostMod(3); },
             cost: {
                 Money(offset){ return spaceCostMultiplier('attractor', offset, 350000, 1.25, 'portal'); },
@@ -582,6 +586,95 @@ const fortressModules = {
                 return {
                     d: { count: 0 },
                     p: ['absorption_chamber','portal']
+                };
+            }
+        },
+    },
+    prtl_wasteland: {
+        info: {
+            name: loc('portal_wasteland_name'),
+            desc: loc('portal_wasteland_desc'),
+        },
+        throne_of_evil: {
+            id: 'portal-throne_of_evil',
+            title: loc('portal_throne_of_evil_title'),
+            desc: loc('portal_throne_of_evil_desc'),
+            reqs: { hellspawn: 1 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {},
+            queue_complete(){ return 0; },
+            effect(wiki){
+                let essense = '';
+                if (global.race['absorbed']){
+                    essense = global.race.absorbed.map(r => races[r].name).join(', ');
+                }
+                return `<div>${loc('portal_throne_of_evil_effect',[essense])}</div>`;
+            },
+            action(){
+                return false;
+            }
+        },
+        incinerator: {
+            id: 'portal-incinerator',
+            title: loc('portal_incinerator_title'),
+            desc: loc('portal_incinerator_desc'),
+            reqs: { hellspawn: 1 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('incinerator', offset, 350000, 1.25, 'portal'); },
+            },
+            powered(wiki){
+                let power = 25;
+                if (global.race['forge']){
+                    power += traits.forge.vars()[0] * 5;
+                }
+                return powerModifier(-(power));
+            },
+            effect(wiki){
+                return `<div>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered(wiki))])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('incinerator','portal');
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['incinerator','portal']
+                };
+            },
+            flair: loc('portal_incinerator_flair')
+        },
+        dig_demon: {
+            id: 'portal-dig_demon',
+            title: loc('portal_dig_demon_title'),
+            desc: loc('portal_dig_demon_title'),
+            reqs: { hellspawn: 1 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('dig_demon', offset, 350000, 1.25, 'portal'); },
+            },
+            effect(wiki){
+                return `<div>${loc('portal_dig_demon_effect')}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('dig_demon','portal');
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['dig_demon','portal']
                 };
             }
         },
@@ -5848,5 +5941,520 @@ function purgeReports(refresh){
             }
         }
         return removed;
+    }
+}
+
+export function warlordSetup(){
+    if (global.race['warlord'] && global.race.universe === 'evil'){
+        global.tech['alloy'] = 1;
+        global.tech['alumina'] = 2;
+        global.tech['asteroid'] = 7;
+        global.tech['banking'] = 11;
+        global.tech['biotech'] = 1;
+        global.tech['boot_camp'] = 2;
+        global.tech['broadcast'] = 2;
+        global.tech['container'] = 7;
+        global.tech['copper'] = 1;
+        global.tech['currency'] = 6;
+        global.tech['disease'] = 2;
+        global.tech['drone'] = 1;
+        global.tech['elerium'] = 2;
+        global.tech['explosives'] = 3;
+        global.tech['factory'] = 3;
+        global.tech['foundry'] = 8;
+        global.tech['gambling'] = 4;
+        global.tech['gas_giant'] = 1;
+        global.tech['gas_moon'] = 2;
+        global.tech['genesis'] = 2;
+        global.tech['genetics'] = 2;
+        global.tech['gov_corp'] = 1;
+        global.tech['gov_fed'] = 1;
+        global.tech['gov_soc'] = 1;
+        global.tech['gov_theo'] = 1;
+        global.tech['govern'] = 3;
+        global.tech['graphene'] = 1;
+        global.tech['helium'] = 1;
+        global.tech['hell'] = 1;
+        global.tech['high_tech'] = 13;
+        global.tech['home_safe'] = 2;
+        global.tech['housing'] = 3;
+        global.tech['housing_reduction'] = 3;
+        global.tech['kuiper'] = 2;
+        global.tech['launch_facility'] = 1;
+        global.tech['luna'] = 2;
+        global.tech['m_smelting'] = 2;
+        global.tech['marines'] = 2;
+        global.tech['mars'] = 5;
+        global.tech['mass'] = 1;
+        global.tech['medic'] = 3;
+        global.tech['military'] = 8;
+        global.tech['mine_conveyor'] = 1;
+        global.tech['mining'] = 4;
+        global.tech['monument'] = 1;
+        global.tech['nano'] = 1;
+        global.tech['oil'] = 7;
+        global.tech['outer'] = 8;
+        global.tech['pickaxe'] = 5;
+        global.tech['polymer'] = 2;
+        global.tech['primitive'] = 3;
+        global.tech['q_factory'] = 1;
+        global.tech['quantium'] = 1;
+        global.tech['queue'] = 3;
+        global.tech['r_queue'] = 1;
+        global.tech['reproduction'] = 1;
+        global.tech['rival'] = 1;
+        global.tech['satellite'] = 1;
+        global.tech['science'] = 9;
+        global.tech['shelving'] = 3;
+        global.tech['shipyard'] = 1;
+        global.tech['smelting'] = 6;
+        global.tech['solar'] = 5;
+        global.tech['space'] = 6;
+        global.tech['space_explore'] = 4;
+        global.tech['space_housing'] = 1;
+        global.tech['spy'] = 5;
+        global.tech['stanene'] = 1;
+        global.tech['steel_container'] = 6;
+        global.tech['storage'] = 5;
+        global.tech['swarm'] = 6;
+        global.tech['syndicate'] = 0;
+        global.tech['synthetic_fur'] = 1;
+        global.tech['tau_home'] = 6;
+        global.tech['theatre'] = 3;
+        global.tech['theology'] = 2;
+        global.tech['titanium'] = 3;
+        global.tech['trade'] = 3;
+        global.tech['unify'] = 2;
+        global.tech['uranium'] = 4;
+        global.tech['v_train'] = 1;
+        global.tech['vault'] = 4;
+        global.tech['wharf'] = 1;
+        global.tech['world_control'] = 1;
+        global.tech['wsc'] = 0;
+        global.tech['portal'] = 3;
+        global.tech['hell_pit'] = 1;
+        global.tech['hell_ruins'] = 1;
+        global.tech['hell_lake'] = 1;
+        global.tech['hell_spire'] = 1;
+        global.tech['hellspawn'] = 1;
+
+        if (!global.race['flier']){
+            global.tech['cement'] = 5;
+            global.resource.Cement.display = true;
+        }
+        
+        global.tech['reclaimer'] = 1;
+
+        global.settings.showSpace = false;
+        global.settings.showPortal = true;
+
+        global.settings.showCity = false;
+        global.settings.showIndustry = true;
+        global.settings.showPowerGrid = true;
+        global.settings.showResearch = true;
+        global.settings.showCivic = true;
+        global.settings.showMil = true;
+        global.settings.showResources = true;
+        global.settings.showMarket = true;
+        global.settings.showStorage = true;
+        global.settings.civTabs = 1;
+        global.settings.spaceTabs = 6;
+        global.settings.showGenetics = true;
+        global.settings.arpa.physics = true;
+        global.settings.arpa.genetics = true
+
+        //global.civic.garrison.display = true;
+        global.resource[global.race.species].display = true;
+        global.resource.Knowledge.display = true;
+        global.resource.Money.display = true;
+        global.resource.Crates.display = true;
+        global.resource.Containers.display = true;
+
+        global.resource.Food.display = true;
+        global.resource.Stone.display = true;
+        global.resource.Furs.display = true;
+        global.resource.Copper.display = true;
+        global.resource.Iron.display = true;
+        global.resource.Aluminium.display = true;
+        global.resource.Coal.display = true;
+        global.resource.Oil.display = true;
+        global.resource.Uranium.display = true;
+        global.resource.Steel.display = true;
+        global.resource.Titanium.display = true;
+        global.resource.Alloy.display = true;
+        global.resource.Polymer.display = true;
+        global.resource.Iridium.display = true;
+        global.resource.Helium_3.display = true;
+
+        global.resource.Neutronium.display = true;
+        global.resource.Adamantite.display = true;
+        global.resource.Elerium.display = true;
+        global.resource.Nano_Tube.display = true;
+        global.resource.Graphene.display = true;
+        global.resource.Stanene.display = true;
+        global.resource.Orichalcum.display = true;
+        global.resource.Bolognium.display = true;
+
+        global.resource.Brick.display = true;
+        global.resource.Wrought_Iron.display = true;
+        global.resource.Sheet_Metal.display = true;
+        global.resource.Mythril.display = true;
+
+        if (!global.race['kindling_kindred'] && !global.race['smoldering']){
+            global.civic.lumberjack.display = true;
+            global.resource.Lumber.display = true;
+            global.resource.Plywood.display = true;
+            global.resource.Lumber.max = 10000000;
+            global.resource.Lumber.amount = 10000000;
+            global.resource.Plywood.amount = 2500000;
+            global.resource.Lumber.crates = 25;
+            global.resource.Lumber.containers = 25;
+            global.tech['axe'] = 5;
+        }
+        if (global.race['smoldering']){
+            global.resource.Chrysotile.display = true;
+            global.resource.Chrysotile.max = 5000000;
+            global.resource.Chrysotile.amount = 5000000;
+        }
+        if (!global.race['sappy']){
+            global.tech['hammer'] = 4;
+        }
+        if (!global.race['apex_predator']){
+            global.tech['armor'] = 3;
+        }
+
+        //global.resource[global.race.species].max = 1;
+        //global.resource[global.race.species].amount = 1;
+        global.resource.Crates.amount = 1000;
+        global.resource.Containers.amount = 1000;
+        global.resource.Money.max = 1000000000;
+        global.resource.Money.amount = 1000000000;
+        global.resource.Knowledge.max = 4321200;
+        global.resource.Knowledge.amount = 4321200;
+        global.resource.Food.max = 10000;
+        global.resource.Food.amount = 10000;
+        global.resource.Oil.max = 500000;
+        global.resource.Oil.amount = 500000;
+        global.resource.Helium_3.max = 500000;
+        global.resource.Helium_3.amount = 500000;
+        global.resource.Uranium.max = 500000;
+        global.resource.Uranium.amount = 500000;
+        global.resource.Stone.max = 10000000;
+        global.resource.Stone.amount = 10000000;
+        global.resource.Furs.max = 5000000;
+        global.resource.Furs.amount = 5000000;
+        global.resource.Copper.max = 5000000;
+        global.resource.Copper.amount = 5000000;
+        global.resource.Iron.max = 5000000;
+        global.resource.Iron.amount = 5000000;
+        global.resource.Steel.max = 5000000;
+        global.resource.Steel.amount = 5000000;
+        global.resource.Aluminium.max = 5000000;
+        global.resource.Aluminium.amount = 5000000;
+        global.resource.Cement.max = 5000000;
+        global.resource.Cement.amount = 5000000;
+        global.resource.Titanium.max = 5000000;
+        global.resource.Titanium.amount = 5000000;
+        global.resource.Coal.max = 5000000;
+        global.resource.Coal.amount = 5000000;
+        global.resource.Alloy.max = 5000000;
+        global.resource.Alloy.amount = 5000000;
+        global.resource.Polymer.max = 5000000;
+        global.resource.Polymer.amount = 5000000;
+        global.resource.Iridium.max = 5000000;
+        global.resource.Iridium.amount = 5000000;
+        global.resource.Neutronium.max = 500000;
+        global.resource.Neutronium.amount = 500000;
+        global.resource.Adamantite.max = 5000000;
+        global.resource.Adamantite.amount = 5000000;
+        global.resource.Elerium.max = 1000;
+        global.resource.Elerium.amount = 1000;
+        global.resource.Nano_Tube.max = 5000000;
+        global.resource.Nano_Tube.amount = 5000000;
+        global.resource.Graphene.max = 5000000;
+        global.resource.Graphene.amount = 5000000;
+        global.resource.Stanene.max = 5000000;
+        global.resource.Stanene.amount = 5000000;
+        global.resource.Bolognium.max = 5000000;
+        global.resource.Bolognium.amount = 5000000;
+        global.resource.Orichalcum.max = 5000000;
+        global.resource.Orichalcum.amount = 5000000;
+        global.resource.Brick.amount = 2500000;
+        global.resource.Wrought_Iron.amount = 2500000;
+        global.resource.Sheet_Metal.amount = 2500000;
+        global.resource.Mythril.amount = 2500000;
+        global.resource.Authority.amount = 80;
+
+        if (!global.race['artifical']){
+            global.resource.Food.crates = 10;
+            global.resource.Food.containers = 10;
+        }
+
+        global.resource.Stone.crates = 25;
+        global.resource.Stone.containers = 25;
+        global.resource.Furs.crates = 25;
+        global.resource.Furs.containers = 25;
+        global.resource.Coal.crates = 10;
+        global.resource.Coal.containers = 10;
+        global.resource.Copper.crates = 25;
+        global.resource.Copper.containers = 25;
+        global.resource.Iron.crates = 25;
+        global.resource.Iron.containers = 25;
+        global.resource.Aluminium.crates = 25;
+        global.resource.Aluminium.containers = 25;
+        global.resource.Steel.crates = 25;
+        global.resource.Steel.containers = 25;
+        global.resource.Titanium.crates = 25;
+        global.resource.Titanium.containers = 25;
+        global.resource.Alloy.crates = 25;
+        global.resource.Alloy.containers = 25;
+        global.resource.Polymer.crates = 25;
+        global.resource.Polymer.containers = 25;
+        global.resource.Iridium.crates = 25;
+        global.resource.Iridium.containers = 25;
+        global.resource.Adamantite.crates = 25;
+        global.resource.Adamantite.containers = 25;
+        global.resource.Graphene.crates = 25;
+        global.resource.Graphene.containers = 25;
+        global.resource.Stanene.crates = 25;
+        global.resource.Stanene.containers = 25;
+        global.resource.Bolognium.crates = 25;
+        global.resource.Bolognium.containers = 25;
+        global.resource.Orichalcum.crates = 25;
+        global.resource.Orichalcum.containers = 25;
+
+        global.civic.taxes.display = true;
+
+        if (!global.race['flier']){
+            global.civic.cement_worker.display = true;
+            global.resource.Cement.crates = 25;
+            global.resource.Cement.containers = 25;
+        }
+
+        if (!global.race['sappy']){
+            global.civic.quarry_worker.display = true
+        }
+        global.civic.professor.display = true;
+        global.civic.scientist.display = true;
+        global.civic.banker.display = true;
+
+        global.civic.professor.max = 1;
+        global.civic.professor.workers = 1;
+
+        global.city.calendar.day++;
+        global.city.market.active = true;
+        global.city['power'] = 0;
+        global.city['powered'] = true;
+
+        if (global.race['artifical']){
+            global.city['transmitter'] = { count: 0, on: 0 };
+        }
+
+        initStruct(actions.city.factory);
+        initStruct(actions.city.foundry);
+        initStruct(actions.city.smelter); addSmelter(1, 'Iron'); addSmelter(1, 'Steel');
+
+        initStruct(actions.city.amphitheatre);
+        initStruct(actions.city.apartment);
+        initStruct(actions.city.bank);
+        initStruct(actions.city.basic_housing);
+        initStruct(actions.city.biolab);
+        initStruct(actions.city.boot_camp);
+        initStruct(actions.city.casino);
+        initStruct(actions.city.cement_plant);
+        initStruct(actions.city.coal_mine);
+        initStruct(actions.city.coal_power);
+        initStruct(actions.city.cottage);
+        initStruct(actions.city.fission_power);
+        initStruct(actions.city.garrison);
+        initStruct(actions.city.hospital);
+        initStruct(actions.city.library);
+        initStruct(actions.city.lumber_yard);
+        initStruct(actions.city.mass_driver);
+        initStruct(actions.city.metal_refinery);
+        initStruct(actions.city.mine);
+        initStruct(actions.city.oil_depot);
+        initStruct(actions.city.oil_power);
+        initStruct(actions.city.oil_well);
+        initStruct(actions.city.rock_quarry);
+        initStruct(actions.city.sawmill);
+        initStruct(actions.city.shed);
+        initStruct(actions.city.storage_yard);
+        initStruct(actions.city.temple);
+        initStruct(actions.city.tourist_center);
+        initStruct(actions.city.trade);
+        initStruct(actions.city.university);
+        initStruct(actions.city.wardenclyffe);
+        initStruct(actions.city.warehouse);
+        initStruct(actions.city.wharf);
+
+        initStruct(actions.space.spc_belt.elerium_ship);
+        initStruct(actions.space.spc_belt.iridium_ship);
+        initStruct(actions.space.spc_belt.iron_ship);
+        initStruct(actions.space.spc_belt.space_station);
+        initStruct(actions.space.spc_dwarf.e_reactor);
+        initStruct(actions.space.spc_dwarf.elerium_contain);
+        initStruct(actions.space.spc_dwarf.shipyard);
+        initStruct(actions.space.spc_gas.gas_mining);
+        initStruct(actions.space.spc_gas.gas_storage);
+        initStruct(actions.space.spc_gas_moon.drone);
+        initStruct(actions.space.spc_gas_moon.oil_extractor);
+        initStruct(actions.space.spc_gas_moon.outpost);
+        initStruct(actions.space.spc_hell.geothermal);
+        initStruct(actions.space.spc_hell.hell_smelter);
+        initStruct(actions.space.spc_hell.spc_casino);
+        initStruct(actions.space.spc_hell.swarm_plant);
+        initStruct(actions.space.spc_home.gps);
+        initStruct(actions.space.spc_home.nav_beacon);
+        initStruct(actions.space.spc_home.propellant_depot);
+        initStruct(actions.space.spc_home.satellite);
+        initStruct(actions.space.spc_moon.helium_mine);
+        initStruct(actions.space.spc_moon.iridium_mine);
+        initStruct(actions.space.spc_moon.moon_base);
+        initStruct(actions.space.spc_moon.observatory);
+        initStruct(actions.space.spc_red.biodome);
+        initStruct(actions.space.spc_red.exotic_lab);
+        initStruct(actions.space.spc_red.fabrication);
+        initStruct(actions.space.spc_red.garage);
+        initStruct(actions.space.spc_red.living_quarters);
+        initStruct(actions.space.spc_red.red_factory);
+        initStruct(actions.space.spc_red.red_mine);
+        initStruct(actions.space.spc_red.red_tower);
+        initStruct(actions.space.spc_red.space_barracks);
+        initStruct(actions.space.spc_red.spaceport);
+        initStruct(actions.space.spc_red.vr_center);
+        initStruct(actions.space.spc_red.ziggurat);
+        initStruct(actions.space.spc_sun.swarm_control);
+        initStruct(actions.space.spc_sun.swarm_satellite);
+        
+        global.civic['garrison'] = {
+            display: true,
+            disabled: false,
+            progress: 0,
+            tactic: 0,
+            workers: 2,
+            wounded: 0,
+            raid: 0,
+            max: 2
+        };
+
+        global.arpa['sequence'] = {
+            max: 50000,
+            progress: 0,
+            time: 50000,
+            on: true,
+            boost: false,
+            auto: false,
+            labs: 0,
+        };
+
+        global.tech['stock_exchange'] = 0;
+        global.tech['monuments'] = 0;
+        global.tech['supercollider'] = 0;
+        global.tech['railway'] = 0;
+        global.arpa['m_type'] = arpa('Monument');
+
+        if (!global.settings.msgFilters.hell.unlocked){
+            global.settings.msgFilters.hell.unlocked = true;
+            global.settings.msgFilters.hell.vis = true;
+        }
+
+        global.settings.showPortal = true;
+        global.settings.portal.fortress = false;
+        global.settings.portal.badlands = true;
+        global.settings.portal.pit = false;
+        global.settings.portal.wasteland = true;
+        global.settings.portal.ruins = false;
+        global.settings.portal.gate = false;
+        global.settings.portal.lake = false;
+        global.settings.portal.spire = false;
+        global.settings.showCargo = false;
+        global.settings.spaceTabs = 4;
+
+        initStruct(fortressModules.prtl_fortress.turret);
+        initStruct(fortressModules.prtl_fortress.carport);
+        initStruct(fortressModules.prtl_badlands.war_drone);
+        initStruct(fortressModules.prtl_lake.harbor);
+        initStruct(fortressModules.prtl_spire.purifier);
+        initStruct(fortressModules.prtl_spire.port);
+
+        initStruct(fortressModules.prtl_wasteland.incinerator); global.portal.incinerator.count = 1; global.portal.incinerator.on = 1;
+        initStruct(fortressModules.prtl_wasteland.dig_demon);
+
+        global.civic.govern.type = 'autocracy';
+
+        global.portal['fortress'] = {
+            threat: 10000,
+            garrison: 0,
+            walls: 100,
+            repair: 0,
+            patrols: 0,
+            patrol_size: 10,
+            siege: 999,
+            notify: 'Yes',
+            s_ntfy: 'Yes',
+            nocrew: false,
+        };
+        global.portal.observe = {
+            settings: {
+                expanded: false,
+                average: false,
+                hyperSlow: false,
+                display: 'game_days',
+                dropKills: true,
+                dropGems: true
+            },
+            stats: {
+                total: {
+                    start: { year: global.city.calendar.year, day: global.city.calendar.day },
+                    days: 0,
+                    wounded: 0, died: 0, revived: 0, surveyors: 0, sieges: 0,
+                    kills: {
+                        drones: 0,
+                        patrols: 0,
+                        sieges: 0,
+                        guns: 0,
+                        soul_forge: 0,
+                        turrets: 0
+                    },
+                    gems: {
+                        patrols: 0,
+                        guns: 0,
+                        soul_forge: 0,
+                        crafted: 0,
+                        turrets: 0,
+                        surveyors: 0
+                    },
+                },
+                period: {
+                    start: { year: global.city.calendar.year, day: global.city.calendar.day },
+                    days: 0,
+                    wounded: 0, died: 0, revived: 0, surveyors: 0, sieges: 0,
+                    kills: {
+                        drones: 0,
+                        patrols: 0,
+                        sieges: 0,
+                        guns: 0,
+                        soul_forge: 0,
+                        turrets: 0
+                    },
+                    gems: {
+                        patrols: 0,
+                        guns: 0,
+                        soul_forge: 0,
+                        crafted: 0,
+                        turrets: 0,
+                        surveyors: 0
+                    },
+                }
+            },
+            graphID: 0,
+            graphs: {}
+        };
+
+        drawTech();
+        arpa('Physics');
+        loadFoundry();
+        renderFortress();
     }
 }
