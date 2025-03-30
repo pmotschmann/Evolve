@@ -225,6 +225,9 @@ if (global.interstellar['fusion']){
 if (global.portal['hell_forge']){
     p_on['hell_forge'] = global.portal.hell_forge.on;
 }
+if (global.portal['demon_forge']){
+    p_on['demon_forge'] = global.portal.demon_forge.on;
+}
 if (global.space['sam']){
     p_on['sam'] = global.space.sam.on;
 }
@@ -3097,6 +3100,7 @@ function fastLoop(){
         mBaseCap += global.city['casino'] ? p_on['casino'] : 0;
         mBaseCap += global.space['spc_casino'] ? p_on['spc_casino'] : 0;
         mBaseCap += global.tauceti['tauceti_casino'] ? p_on['tauceti_casino'] : 0;
+        mBaseCap += global.portal['hell_casino'] ? p_on['hell_casino'] : 0;
 
         if (global.city['amphitheatre']){
             let athVal = govActive('athleticism',0);
@@ -4749,6 +4753,9 @@ function fastLoop(){
             }
             if (p_on['hell_forge']){
                 capacity += p_on['hell_forge'] * actions.portal.prtl_ruins.hell_forge.smelting();
+            }
+            if (p_on['demon_forge']){
+                capacity += p_on['demon_forge'] * actions.portal.prtl_wasteland.demon_forge.smelting();
             }
             if (p_on['sacred_smelter']){
                 capacity += p_on['sacred_smelter'] * actions.eden.eden_elysium.sacred_smelter.smelting();
@@ -7334,11 +7341,12 @@ function fastLoop(){
             rawCash += delta;
         }
 
-        if (global.tech['gambling'] && (p_on['casino'] || p_on['spc_casino'] || p_on['tauceti_casino'])){
+        if (global.tech['gambling'] && (p_on['casino'] || p_on['spc_casino'] || p_on['tauceti_casino'] || p_on['hell_casino'])){
             let casinos = 0;
             if (p_on['casino']){ casinos += p_on['casino']; }
             if (p_on['spc_casino']){ casinos += p_on['spc_casino']; }
             if (p_on['tauceti_casino']){ casinos += p_on['tauceti_casino']; }
+            if (p_on['hell_casino']){ casinos += p_on['hell_casino']; }
 
             let cash = Math.log2(1 + global.resource[global.race.species].amount);
             let revenue = 2.5;
@@ -7376,12 +7384,12 @@ function fastLoop(){
                 cash *= 1.35;
             }
             cash *= casinos;
-            breakdown.p['Money'][loc('city_casino')] = cash + 'v';
+            breakdown.p['Money'][structName('casino')] = cash + 'v';
             modRes('Money', +(cash * time_multiplier * global_multiplier * hunger).toFixed(2));
             rawCash += cash * global_multiplier * hunger;
         }
 
-        if (global.city['tourist_center'] && global.city['tourist_center'].on && !global.race['fasting']){
+        if (global.city['tourist_center'] && global.city['tourist_center'].on && !global.race['fasting'] && !global.race['warlord']){
             let tourism = 0;
             let amp = global.tech['monument'] && global.tech.monument >= 3 && p_on['s_gate'] ? 3 : 1;
             if (global.city['amphitheatre']){
@@ -8031,7 +8039,8 @@ function midLoop(){
                 if (global.tech['evil']){
                     adjust += 0.1 * global.tech.evil;
                 }
-                let gain = highPopAdjust(garrisonSize()) * adjust;
+                let garrison = garrisonSize() || 0;
+                let gain = highPopAdjust(garrison) * adjust;
                 if (global.race['grenadier']){ gain *= 1.75; }
                 if (global.civic.govern.type === 'autocracy'){
                     gain *= 1.08;
@@ -8290,6 +8299,10 @@ function midLoop(){
                 lCaps['banker'] += jobScale(global.space.spc_casino.count);
             }
         }
+        if (global.portal['hell_casino']){
+            lCaps['entertainer'] += jobScale(global.portal.hell_casino.count * 2);
+            lCaps['banker'] += jobScale(global.portal.hell_casino.count);
+        }
         if (global.tauceti['tauceti_casino']){
             lCaps['entertainer'] += jobScale(global.tauceti.tauceti_casino.count);
             if (global.tech['isolation']){
@@ -8297,7 +8310,7 @@ function midLoop(){
 
                 let pop = p_on['tauceti_casino'] * actions.tauceti.tau_home.tauceti_casino.citizens();
                 caps[global.race.species] += pop;
-                breakdown.c[global.race.species][loc('city_casino')] = pop + 'v';
+                breakdown.c[global.race.species][structName('casino')] = pop + 'v';
             }
         }
         if (global.galaxy['resort']){
@@ -8989,6 +9002,11 @@ function midLoop(){
                 breakdown.c.Cipher[loc('tech_zero_g_lab')] = cipher+'v';
             }
         }
+        if (global.race['warlord']){
+            let gain = 1000000;
+            caps['Knowledge'] += gain;
+            breakdown.c.Knowledge[loc('portal_throne_of_evil_title')] = gain+'v';
+        }
 
         //Omniscience
         if (global.resource.Omniscience.display){
@@ -9111,7 +9129,7 @@ function midLoop(){
             breakdown.c.Money[loc('tau_home_colony')] = gain+'v';
         }
 
-        if (global.city['casino'] || global.space['spc_casino'] || global.tauceti['tauceti_casino']){
+        if (global.city['casino'] || global.space['spc_casino'] || global.tauceti['tauceti_casino'] || global.portal['hell_casino']){
             let casinos = 0;
             if (global.city['casino'] && global.city.casino.count > 0){
                 casinos += global.city.casino.count;
@@ -9121,6 +9139,9 @@ function midLoop(){
             }
             if (global.tauceti['tauceti_casino'] && global.tauceti.tauceti_casino.count > 0){
                 casinos += global.tauceti.tauceti_casino.count;
+            }
+            if (global.portal['hell_casino'] && global.portal.hell_casino.count > 0){
+                casinos += global.portal.hell_casino.count;
             }
             let casino_capacity = global.tech['gambling'] >= 3 ? 60000 : 40000;
             if (global.tech['gambling'] >= 5){
@@ -9143,7 +9164,7 @@ function midLoop(){
                 vault *= 5.5;
             }
             caps['Money'] += vault;
-            breakdown.c.Money[loc('city_casino')] = vault+'v';
+            breakdown.c.Money[structName('casino')] = vault+'v';
         }
         if (global.galaxy['resort']){
             let vault = p_on['resort'] * spatialReasoning(global.tech['world_control'] ? 1875000 : 1500000);
@@ -9281,6 +9302,9 @@ function midLoop(){
         }
         if (p_on['stellar_forge']){
             lCaps['craftsman'] += jobScale(p_on['stellar_forge'] * 2);
+        }
+        if (p_on['demon_forge']){
+            lCaps['craftsman'] += jobScale(p_on['demon_forge'] * 10);
         }
         if (global.tech['elysium'] && global.tech.elysium >= 18 && p_on['sacred_smelter']){
             lCaps['craftsman'] += jobScale(p_on['sacred_smelter'] * 3);

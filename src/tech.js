@@ -1761,6 +1761,7 @@ const techs = {
         era: 'interstellar',
         reqs: { broadcast: 2, high_tech: 12, stanene: 1 },
         grant: ['broadcast',3],
+        not_trait: ['warlord'],
         cost: {
             Knowledge(){ return 620000; }
         },
@@ -4188,6 +4189,7 @@ const techs = {
         path: ['standard'],
         reqs: { science: 9, elerium: 2 },
         grant: ['science',10],
+        not_trait: ['warlord'],
         cost: {
             Knowledge(){ return traitCostMod('stubborn',350000); }
         },
@@ -7839,6 +7841,7 @@ const techs = {
         category: 'hell_dimension',
         era: 'interstellar',
         reqs: { high_tech: 9, portal: 2 },
+        not_trait: ['warlord'],
         grant: ['turret',1],
         cost: {
             Knowledge(){ return 600000; },
@@ -7970,7 +7973,7 @@ const techs = {
         category: 'special',
         era: 'globalized',
         reqs: { uranium: 1, explosives: 3, high_tech: 7 },
-        not_trait: ['cataclysm','lone_survivor'],
+        not_trait: ['cataclysm','lone_survivor','warlord'],
         grant: ['mad',1],
         condition(){
             if (global.race['sludge'] || global.race['ultra_sludge']){ return false; }
@@ -9612,7 +9615,7 @@ const techs = {
         era: 'deep_space',
         reqs: { genesis: 2, space: 5, high_tech: 10 },
         grant: ['genesis',3],
-        not_trait: ['lone_survivor'],
+        not_trait: ['lone_survivor','warlord'],
         cost: {
             Knowledge(){ return 380000; },
         },

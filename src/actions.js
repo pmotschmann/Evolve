@@ -5440,8 +5440,8 @@ export function casinoEffect(){
     }
     money = Math.round(money);
 
-    let joy = global.race['joyless'] ? '' : `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_entertainer`)])}</div>`;
-    let banker = global.race['orbit_decayed'] || global.tech['isolation'] ? `<div>${loc('plus_max_resource',[jobScale(1),loc('banker_name')])}</div>` : '';
+    let joy = global.race['joyless'] ? '' : `<div>${loc('plus_max_resource',[jobScale(global.race['warlord'] ? 2 : 1),loc(`job_entertainer`)])}</div>`;
+    let banker = global.race['orbit_decayed'] || global.tech['isolation'] || global.race['warlord'] ? `<div>${loc('plus_max_resource',[jobScale(1),loc('banker_name')])}</div>` : '';
     let desc = `<div>${loc('plus_max_resource',[`\$${money.toLocaleString()}`,loc('resource_Money_name')])}</div>${joy}${banker}<div>${loc('city_max_morale',[1])}</div>`;
     let cash = Math.log2(1 + global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5);
     if (global.tech['gambling'] && global.tech['gambling'] >= 2){
@@ -5469,7 +5469,7 @@ export function casinoEffect(){
         cash *= 1.35;
     }
     cash = +(cash).toFixed(2);
-    desc = desc + `<div>${loc('tech_casino_effect2',[cash])}</div>`;
+    desc += `<div>${loc('tech_casino_effect2',[cash])}</div>`;
     return desc;
 }
 
@@ -6232,7 +6232,8 @@ export function setAction(c_action,action,type,old,prediction){
                 if (
                     (id === 'city-casino' && !global.race['cataclysm'] && !global.race['orbit_decayed']) || 
                     (id === 'space-spc_casino' && (global.race['cataclysm'] || global.race['orbit_decayed'])) || 
-                    (id === 'tauceti-tauceti_casino' && global.tech['isolation'])
+                    (id === 'tauceti-tauceti_casino' && global.tech['isolation']) ||
+                    (id === 'portal-hell_casino' && global.race['warlord'])
                 ){
                     let egg = easterEgg(5,12);
                     if (value === 0 && egg.length > 0){
@@ -7693,6 +7694,7 @@ function drawModal(c_action,type){
         case 'hell_smelter':
         case 'stellar_forge':
         case 'hell_forge':
+        case 'demon_forge':
         case 'sacred_smelter':
         case 'geothermal':
         case 'ore_refinery':
@@ -8048,7 +8050,7 @@ export function structName(type){
     switch (type){
         case 'casino':
         {
-            return halloween.active ? loc(`events_halloween_casino`) : loc(`city_casino`);
+            return halloween.active ? loc(`events_halloween_casino`) : (global.race['warlord'] ? loc(`portal_casino`) : loc(`city_casino`));
         }
         case 'farm':
         {
@@ -9323,6 +9325,9 @@ export function fanaticism(god){
             fanaticTrait(races[god].fanaticism);
             break;
     }
+    if (global.race['warlord']){
+        global.race.absorbed.push(god);
+    }
 }
 
 function fanaticTrait(trait){
@@ -9339,7 +9344,12 @@ function fanaticTrait(trait){
         }
     }
     else {
-        global.race[trait] = 1;
+        if (global.race['warlord']){
+            global.race[trait] = 0.5;
+        }
+        else {
+            global.race[trait] = 1;
+        }
         cleanAddTrait(trait);
     }
 }

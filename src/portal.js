@@ -5,7 +5,7 @@ import { traits, races, fathomCheck, traitCostMod, orbitLength } from './races.j
 import { spatialReasoning, unlockContainers } from './resources.js';
 import { loadFoundry, jobScale, limitCraftsmen } from './jobs.js';
 import { armyRating, govCivics, garrisonSize, mercCost, soldierDeath } from './civics.js';
-import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc, actions, initStruct, storageMultipler } from './actions.js';
+import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc, actions, initStruct, storageMultipler, casinoEffect, structName } from './actions.js';
 import { checkRequirements, incrementStruct, astrialProjection, ascendLab } from './space.js';
 import { asphodelResist } from './edenic.js';
 import { production, highPopAdjust } from './prod.js';
@@ -609,7 +609,7 @@ const fortressModules = {
                 if (global.race['absorbed']){
                     essense = global.race.absorbed.map(r => races[r].name).join(', ');
                 }
-                return `<div>${loc('portal_throne_of_evil_effect',[essense])}</div>`;
+                return `<div>${loc('plus_max_resource',[sizeApproximation(1000000),global.resource.Knowledge.name])}</div><div>${loc('portal_throne_of_evil_effect',[essense])}</div>`;
             },
             action(){
                 return false;
@@ -673,7 +673,7 @@ const fortressModules = {
                 let r_list = [
                     'Lumber','Stone','Chrysotile','Furs','Copper','Iron','Aluminium','Steel','Titanium',
                     'Cement','Coal','Uranium','Alloy','Polymer','Iridium','Nano_Tube','Neutronium',
-                    'Adamantite','Infernite'
+                    'Adamantite','Infernite','Bolognium','Orichalcum','Graphene','Stanene'
                 ];
                 return r_list;
             },
@@ -717,6 +717,14 @@ const fortressModules = {
                         return 18;
                     case 'Infernite':
                         return 4;
+                    case 'Bolognium':
+                        return 8;
+                    case 'Orichalcum':
+                        return 10;
+                    case 'Graphene':
+                        return 16;
+                    case 'Stanene':
+                        return 16;
                     default:
                         return 0;
                 }
@@ -789,6 +797,92 @@ const fortressModules = {
                 return pop;
             }
         },
+        hell_casino: {
+            id: 'portal-hell_casino',
+            title(){ return structName('casino'); },
+            desc(){ return structName('casino'); },
+            reqs: { hellspawn: 1, gambling: 1 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('hell_casino', offset, traitCostMod('untrustworthy',400000), 1.35); },
+                Furs(offset){ return spaceCostMultiplier('hell_casino', offset, traitCostMod('untrustworthy',75000), 1.35); },
+                Cement(offset){ return spaceCostMultiplier('hell_casino', offset, traitCostMod('untrustworthy',100000), 1.35); },
+                Plywood(offset){ return spaceCostMultiplier('hell_casino', offset, traitCostMod('untrustworthy',20000), 1.35); }
+            },
+            effect(){
+                let desc = casinoEffect();
+                desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            powered(){ return powerCostMod(global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 2 ? 2 : 3); },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('hell_casino','portal');
+                    if (!global.race['joyless']){
+                        global.civic.entertainer.max += jobScale(2);
+                    }
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['hell_casino','portal']
+                };
+            },
+            flair: loc('city_casino_flair')
+        },
+        demon_forge: {
+            id: 'portal-demon_forge',
+            title: loc('portal_demon_forge_title'),
+            desc: `<div>${loc('portal_demon_forge_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            reqs: { hellspawn: 1 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('demon_forge', offset, 1200000, 1.25, 'portal'); },
+                Iridium(offset){ return spaceCostMultiplier('demon_forge', offset, 250000, 1.25, 'portal'); },
+                Bolognium(offset){ return spaceCostMultiplier('demon_forge', offset, 35000, 1.25, 'portal'); },
+                Aerogel(offset){ return spaceCostMultiplier('demon_forge', offset, 75000, 1.25, 'portal'); },
+            },
+            effect(){
+                let desc = `<div>${loc('city_foundry_effect1',[jobScale(10)])}</div><div>${loc('interstellar_stellar_forge_effect',[12])}</div>`;
+                let num_smelters = $(this)[0].smelting();
+                if (num_smelters > 0){
+                    desc += `<div>${loc('interstellar_stellar_forge_effect3',[num_smelters])}</div>`;
+                }
+                return `${desc}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            powered(){ return powerCostMod(3); },
+            special: true,
+            smelting(){
+                return 20;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('demon_forge','portal');
+                    if (powerOnNewStruct($(this)[0])){
+                        global.civic.craftsman.max += jobScale(10);
+                        let num_smelters = $(this)[0].smelting();
+                        if (num_smelters > 0){
+                            addSmelter(Math.floor(num_smelters / 2), 'Iron', 'Coal');
+                            addSmelter(Math.floor(num_smelters / 2), 'Steel', 'Coal');
+                        }
+                    }
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['demon_forge','portal']
+                };
+            }
+        },
         dig_demon: {
             id: 'portal-dig_demon',
             title: loc('portal_dig_demon_title'),
@@ -799,7 +893,7 @@ const fortressModules = {
             cost: {
                 Money(offset){ return spaceCostMultiplier('dig_demon', offset, 350000, 1.25, 'portal'); },
             },
-            powered: true,
+            powered(){ return true; },
             effect(wiki){
                 let pop = $(this)[0].citizens();
                 return loc('plus_resource',[pop,loc(`job_miner`)]);
@@ -807,9 +901,29 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('dig_demon','portal');
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
+            },
+            postPower(o){
+                let count = $(this)[0].citizens();
+                if (o){
+                    global.resource[global.race.species].max += count;
+                    global.resource[global.race.species].amount += count;
+                    global.civic.miner.max += count;
+                    global.civic.miner.workers += count;
+                    global.civic.miner.assigned += count;
+                }
+                else {
+                    global.resource[global.race.species].max -= count;
+                    global.resource[global.race.species].amount -= count;
+                    if (global.resource[global.race.species].amount < 0){ global.resource[global.race.species].amount = 0; }
+                    if (global.resource[global.race.species].max < 0){ global.resource[global.race.species].max = 0; }
+                    global.civic.miner.max -= count;
+                    global.civic.miner.workers -= count;
+                    global.civic.miner.assigned -= count;
+                }
             },
             struct(){
                 return {
@@ -6124,7 +6238,7 @@ export function warlordSetup(){
         global.tech['graphene'] = 1;
         global.tech['helium'] = 1;
         global.tech['hell'] = 1;
-        global.tech['high_tech'] = 13;
+        global.tech['high_tech'] = 14;
         global.tech['hoe'] = 5;
         global.tech['home_safe'] = 2;
         global.tech['housing'] = 3;
@@ -6143,7 +6257,6 @@ export function warlordSetup(){
         global.tech['monument'] = 1;
         global.tech['nano'] = 1;
         global.tech['oil'] = 7;
-        global.tech['outer'] = 8;
         global.tech['pickaxe'] = 5;
         global.tech['polymer'] = 2;
         global.tech['primitive'] = 3;
@@ -6379,9 +6492,6 @@ export function warlordSetup(){
             global.resource.Cement.containers = 25;
         }
 
-        if (!global.race['sappy']){
-            //global.civic.quarry_worker.display = true;
-        }
         global.civic.professor.display = true;
         global.civic.scientist.display = true;
         global.civic.banker.display = true;
@@ -6400,7 +6510,7 @@ export function warlordSetup(){
 
         initStruct(actions.city.factory);
         initStruct(actions.city.foundry);
-        initStruct(actions.city.smelter); addSmelter(1, 'Iron'); addSmelter(1, 'Steel');
+        initStruct(actions.city.smelter);
 
         initStruct(actions.city.amphitheatre);
         initStruct(actions.city.apartment);
@@ -6530,9 +6640,14 @@ export function warlordSetup(){
         initStruct(fortressModules.prtl_wasteland.warehouse); global.portal.warehouse.count = 1;
         initStruct(fortressModules.prtl_wasteland.hovel); global.portal.hovel.count = 1;
         initStruct(fortressModules.prtl_wasteland.dig_demon); global.portal.dig_demon.count = 1; global.portal.dig_demon.on = 1;
+        initStruct(fortressModules.prtl_wasteland.hell_casino); global.portal.hell_casino.count = 1; global.portal.hell_casino.on = 1;
+        initStruct(fortressModules.prtl_wasteland.demon_forge); global.portal.demon_forge.count = 1; global.portal.demon_forge.on = 1; 
+        addSmelter(10, 'Iron', 'Coal'); addSmelter(10, 'Steel', 'Coal');
 
         global.civic.d_job = 'lumberjack';
         global.civic.miner.display = true;
+        global.civic.entertainer.display = true;
+        global.civic.craftsman.display = true;
 
         let citizens = actions.portal.prtl_wasteland.dig_demon.citizens() + actions.portal.prtl_wasteland.hovel.citizens();
 

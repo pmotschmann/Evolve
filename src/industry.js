@@ -525,7 +525,7 @@ function loadSmelter(parent,bind){
 }
 
 export function smelterUnlocked(){
-    return global.city['smelter'] && (global.city.smelter.count > 0 || global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation']);
+    return global.city['smelter'] && (global.city.smelter.count > 0 || global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation'] || global.race['warlord']);
 }
 
 export function addSmelter(num=1, product="Iron", fuel="Oil"){

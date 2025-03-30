@@ -7370,6 +7370,8 @@
   "portal_incinerator_desc": "Burn things for power: plants, debris, bodies, anything.",
   "portal_incinerator_flair": "Burn it all",
   "portal_hovel_title": "Hellspawn Hovel",
+  "portal_casino": "Den of Sin",
+  "portal_demon_forge_title": "Demon Forge",
   "portal_dig_demon_title": "Dig Demon Burrow",
   "portal_dig_demon_effect": "+%0 Miner Demon",
   "eden_purify_well_msg": "You've discovered a well of pure water on floor %0. It radiates holy energy.",
