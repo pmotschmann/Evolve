@@ -187,7 +187,10 @@ export const job_desc = {
         return loc('job_torturer_desc');
     },
     miner: function(){
-        if (global.tech['mining'] >= 3){
+        if (global.race['warlord']){
+            return loc('job_dig_demon_desc');
+        }
+        else if (global.tech['mining'] >= 3){
             return global.race['sappy'] && global.tech['alumina'] ? loc('job_miner_desc2_amber') : loc('job_miner_desc2');
         }
         else {
@@ -470,6 +473,11 @@ function loadJob(job, define, impact, stress, color){
         };
     }
 
+    let noControl = {};
+    if (global.race['warlord']){
+        noControl['miner'] = true;
+    }
+
     setJobName(job);
 
     if (!global.civic[job]['assigned']){
@@ -503,7 +511,7 @@ function loadJob(job, define, impact, stress, color){
     civ_container.append(controls);
     $(servant ? '#servants' : '#jobs').append(civ_container);
 
-    if (job !== 'crew'){
+    if (job !== 'crew' && !noControl[job]){
         var sub = $(`<span role="button" aria-label="${loc('remove')} ${global['civic'][job].name}" class="sub has-text-danger" @click="sub"><span>&laquo;</span></span>`);
         var add = $(`<span role="button" aria-label="${loc('add')} ${global['civic'][job].name}" class="add has-text-success" @click="add"><span>&raquo;</span></span>`);
         controls.append(sub);

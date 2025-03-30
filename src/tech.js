@@ -1604,7 +1604,7 @@ const techs = {
         category: 'special',
         era: 'discovery',
         reqs: { high_tech: 2 },
-        not_trait: ['fasting','cataclysm','lone_survivor'],
+        not_trait: ['fasting','cataclysm','lone_survivor','warlord'],
         grant: ['banquet',1],
         condition(){ return global.stats.achieve['endless_hunger'] && global.stats.achieve['endless_hunger'].l >= 1 ? true : false; },
         cost: {
@@ -6683,7 +6683,7 @@ const techs = {
         era: 'civilized',
         reqs: { axe: 1, mining: 3 },
         grant: ['saw',1],
-        not_trait: ['lone_survivor'],
+        not_trait: ['lone_survivor','warlord'],
         cost: {
             Knowledge(){ return 3375; },
             Iron(){ return 400; }

@@ -8068,11 +8068,13 @@ function majorWish(parent){
                     global.race.wishStats.major = traits.wish.vars()[0];
 
                     let options = ['fake','future'];
-                    if (global.tech['blackhole'] && global.tech.blackhole >= 5 && global.interstellar['mass_ejector'] && global.interstellar.mass_ejector.count >= 1){
-                        options.push('blackhole');
-                    }
-                    else if (!global.race['cataclysm'] && !global.race['lone_survivor'] && global.race.species !== 'sludge'){
-                        options.push('mad');
+                    if (!global.race['warlord']){
+                        if (global.tech['blackhole'] && global.tech.blackhole >= 5 && global.interstellar['mass_ejector'] && global.interstellar.mass_ejector.count >= 1){
+                            options.push('blackhole');
+                        }
+                        else if (!global.race['cataclysm'] && !global.race['lone_survivor'] && global.race.species !== 'sludge'){
+                            options.push('mad');
+                        }
                     }
 
                     let spell = options[Math.floor(seededRandom(0,options.length))];

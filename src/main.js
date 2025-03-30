@@ -3452,7 +3452,7 @@ function fastLoop(){
                         }
                     }
                 }
-                else if (global.city['farm'] || global.race['forager']) {
+                else if (global.city['farm'] || global.race['forager'] || global.race['warlord']) {
                     let weather_multiplier = 1;
                     if (!global.race['submerged']){
                         if (global.city.calendar.temp === 0){
@@ -3480,6 +3480,12 @@ function fastLoop(){
                         let food_forage = foragers * forage * 0.35;
                         breakdown.p['Food'][loc('job_forager')] = food_forage + 'v';
                         food_base += food_forage;
+                    }
+
+                    if (global.race['warlord']){
+                        let food = workerScale(global.civic.lumberjack.workers,'farmer') * farmerValue(true);
+                        breakdown.p['Food'][loc('job_reclaimer')] = food + 'v';
+                        food_base += food;
                     }
 
                     if (global.city['farm']){
@@ -5516,7 +5522,7 @@ function fastLoop(){
             }
         }
         else {
-            let stone_base = workerScale(global.civic.quarry_worker.workers,'quarry_worker');
+            let stone_base = workerScale(global.race['warlord'] ? global.civic.miner.workers : global.civic.quarry_worker.workers,'quarry_worker');
             stone_base *= racialTrait(stone_base,'miner');
             let cactiFathom = fathomCheck('cacti');
             if (cactiFathom > 0){
@@ -5566,7 +5572,7 @@ function fastLoop(){
                 rock_quarry += global.city['rock_quarry'].count * 0.02;
             }
 
-            breakdown.p['Stone'][loc('workers')] = stone_base + 'v';
+            breakdown.p['Stone'][global.race['warlord'] ? loc('job_miner') : loc('workers')] = stone_base + 'v';
             if (stone_base > 0){
                 breakdown.p['Stone'][`ᄂ${loc('city_rock_quarry')}`] = ((rock_quarry - 1) * 100) + '%';
                 breakdown.p['Stone'][`ᄂ${loc('power')}`] = ((power_mult - 1) * 100) + '%';
@@ -5660,7 +5666,7 @@ function fastLoop(){
             }
 
             // Aluminium
-            if (global.city['metal_refinery'] && (global.city['metal_refinery'].count > 0 || global.race['cataclysm'] || global.race['orbit_decayed'])){
+            if (global.city['metal_refinery'] && (global.city['metal_refinery'].count > 0 || global.race['cataclysm'] || global.race['orbit_decayed'] || global.race['warlord'])){
                 let base = stone_base * rock_quarry * (global.race['cataclysm'] ? 0.16 : 0.08);
                 if (global.city.geology['Aluminium']){
                     base *= global.city.geology['Aluminium'] + 1;
@@ -5680,7 +5686,7 @@ function fastLoop(){
 
                 delta *= 1 + (refinery / 100);
 
-                breakdown.p['Aluminium'][`${global.race['cataclysm'] || global.race['orbit_decayed'] ? structName('mine') : loc('workers')}+1`] = base + 'v';
+                breakdown.p['Aluminium'][`${global.race['cataclysm'] || global.race['orbit_decayed'] ? structName('mine') : (global.race['warlord'] ? loc('job_miner') : loc('workers'))}+1`] = base + 'v';
                 if (base > 0){
                     breakdown.p['Aluminium'][`ᄂ${loc('quarantine')}+0`] = ((q_multiplier - 1) * 100) + '%';
                 }
@@ -6282,7 +6288,7 @@ function fastLoop(){
 
         // Coal
         if (global.resource.Coal.display){
-            let coal_base = workerScale(global.civic.coal_miner.workers,'coal_miner');
+            let coal_base = workerScale(global.race['warlord'] ? global.civic.miner.workers : global.civic.coal_miner.workers,'coal_miner');
             coal_base *= racialTrait(coal_base,'miner');
             if (global.race['tough']){
                 coal_base *= 1 + (traits.tough.vars()[0] / 100);
@@ -6313,7 +6319,7 @@ function fastLoop(){
             }
 
             coal_base *= global.civic.coal_miner.impact * production('psychic_boost','Coal');
-            breakdown.p['Coal'][loc('job_coal_miner')] = coal_base + 'v';
+            breakdown.p['Coal'][global.race['warlord'] ? loc('job_miner') : loc('job_coal_miner')] = coal_base + 'v';
             if (coal_base > 0){
                 breakdown.p['Coal'][`ᄂ${loc('power')}`] = ((power_mult - 1) * 100) + '%';
                 breakdown.p['Coal'][`ᄂ${loc('quarantine')}+0`] = ((q_multiplier - 1) * 100) + '%';
@@ -6362,7 +6368,7 @@ function fastLoop(){
                     uranium *= global.city.geology['Uranium'] + 1;
                 }
                 modRes('Uranium', uranium * time_multiplier);
-                breakdown.p['Uranium'][global.race['cataclysm'] ? loc('space_moon_iridium_mine_title') : loc('job_coal_miner')] = uranium / global_multiplier + 'v';
+                breakdown.p['Uranium'][global.race['cataclysm'] ? loc('space_moon_iridium_mine_title') : (global.race['warlord'] ? loc('job_miner') : loc('job_coal_miner'))] = uranium / global_multiplier + 'v';
             }
         }
 
@@ -6861,9 +6867,11 @@ function fastLoop(){
         // Infernite
         if (global.resource.Infernite.display){
 
-            if (global.civic.hell_surveyor.workers > 0){
+            let workers = global.race['warlord'] ? global.civic.miner.workers : global.civic.hell_surveyor.workers;
+            if (workers > 0){
                 let rate = global.tech.infernite >= 3 ? 0.015 : 0.01;
-                let surveyor_base = workerScale(highPopAdjust(global.civic.hell_surveyor.workers),'hell_surveyor') * rate * production('psychic_boost','Infernite');
+                if (global.race['warlord']){ rate = 0.0075; }
+                let surveyor_base = workerScale(highPopAdjust(workers),'hell_surveyor') * rate * production('psychic_boost','Infernite');
 
                 let sensors = 1;
                 if (global.tech['infernite'] >= 2 && p_on['sensor_drone']){
@@ -6873,7 +6881,7 @@ function fastLoop(){
 
                 let surveyor_delta = surveyor_base * sensors * global_multiplier;
 
-                breakdown.p['Infernite'][loc('job_hell_surveyor')] = surveyor_base + 'v';
+                breakdown.p['Infernite'][global.race['warlord'] ? loc('job_miner') : loc('job_hell_surveyor')] = surveyor_base + 'v';
                 breakdown.p['Infernite'][`ᄂ${loc('portal_sensor_drone_title')}`] = ((sensors - 1) * 100) + '%';
                 modRes('Infernite', surveyor_delta * time_multiplier);
             }
@@ -8254,6 +8262,15 @@ function midLoop(){
         if (global.city['mine']){
             lCaps['miner'] += jobScale(global.city.mine.count);
         }
+        if (global.portal['dig_demon'] && global.race['warlord']){
+            let demons = global.portal.dig_demon.on * actions.portal.prtl_wasteland.dig_demon.citizens();
+            caps[global.race.species] += demons;
+            breakdown.c[global.race.species][loc('portal_dig_demon_title')] = demons + 'v';
+            lCaps['miner'] += demons;
+            global.civic.miner.max = demons;
+            global.civic.miner.workers = demons;
+            global.civic.miner.assigned = demons;
+        }
         if (global.city['coal_mine']){
             lCaps['coal_miner'] += jobScale(global.city.coal_mine.count);
         }
@@ -8485,6 +8502,11 @@ function midLoop(){
             caps[global.race.species] += cit;
             breakdown.c[global.race.species][loc('city_lodge')] = cit + 'v';
         }
+        if (global.portal['hovel']){
+            let cit = global.portal.hovel.count * actions.portal.prtl_wasteland.hovel.citizens();
+            caps[global.race.species] += cit;
+            breakdown.c[global.race.species][loc('portal_hovel_title')] = cit + 'v';
+        }
         if (global.space['outpost']){
             let gain = global.space['outpost'].count * spatialReasoning(500);
             caps['Neutronium'] += gain;
@@ -8525,6 +8547,18 @@ function midLoop(){
             for (const res of actions.eden.eden_asphodel.warehouse.res()){
                 if (global.resource[res].display){
                     let gain = global.eden.warehouse.count * spatialReasoning(actions.eden.eden_asphodel.warehouse.val(res) * multiplier);
+                    caps[res] += gain;
+                    breakdown.c[res][label] = gain+'v';
+                }
+            };
+        }
+
+        if (global.portal['warehouse']){
+            var multiplier = storageMultipler();
+            let label = global.tech['storage'] <= 2 ? loc('city_shed_title1') : (global.tech['storage'] >= 4 ? loc('city_shed_title3') : loc('city_shed_title2'));
+            for (const res of actions.portal.prtl_wasteland.warehouse.res()){
+                if (global.resource[res].display){
+                    let gain = global.portal.warehouse.count * spatialReasoning(actions.portal.prtl_wasteland.warehouse.val(res) * multiplier);
                     caps[res] += gain;
                     breakdown.c[res][label] = gain+'v';
                 }

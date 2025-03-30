@@ -5,7 +5,7 @@ import { traits, races, fathomCheck, traitCostMod, orbitLength } from './races.j
 import { spatialReasoning, unlockContainers } from './resources.js';
 import { loadFoundry, jobScale, limitCraftsmen } from './jobs.js';
 import { armyRating, govCivics, garrisonSize, mercCost, soldierDeath } from './civics.js';
-import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc, actions, initStruct } from './actions.js';
+import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc, actions, initStruct, storageMultipler } from './actions.js';
 import { checkRequirements, incrementStruct, astrialProjection, ascendLab } from './space.js';
 import { asphodelResist } from './edenic.js';
 import { production, highPopAdjust } from './prod.js';
@@ -651,6 +651,144 @@ const fortressModules = {
             },
             flair: loc('portal_incinerator_flair')
         },
+        warehouse: {
+            id: 'portal-warehouse',
+            title(){
+                return global.tech['storage'] <= 2 ? loc('city_shed_title1') : (global.tech['storage'] >= 4 ? loc('city_shed_title3') : loc('city_shed_title2'));
+            },
+            desc(){
+                let storage = global.tech['storage'] >= 3 ? (global.tech['storage'] >= 4 ? loc('city_shed_desc_size3') : loc('city_shed_desc_size2')) : loc('city_shed_desc_size1');
+                return loc('city_shed_desc',[storage]);
+            },
+            reqs: { hellspawn: 1 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('warehouse', offset, 175000, 1.28, 'portal'); },
+                Lumber(offset){ return spaceCostMultiplier('warehouse', offset, 100000, 1.28, 'portal'); },
+                Aluminium(offset){ return spaceCostMultiplier('warehouse', offset, 120000, 1.28, 'portal'); },
+                Cement(offset){ return spaceCostMultiplier('warehouse', offset, 45000, 1.28, 'portal'); }
+            },
+            res(){
+                let r_list = [
+                    'Lumber','Stone','Chrysotile','Furs','Copper','Iron','Aluminium','Steel','Titanium',
+                    'Cement','Coal','Uranium','Alloy','Polymer','Iridium','Nano_Tube','Neutronium',
+                    'Adamantite','Infernite'
+                ];
+                return r_list;
+            },
+            val(res){
+                switch (res){
+                    case 'Lumber':
+                        return 750;
+                    case 'Stone':
+                        return 750;
+                    case 'Chrysotile':
+                        return 750;
+                    case 'Furs':
+                        return 425;
+                    case 'Copper':
+                        return 380;
+                    case 'Iron':
+                        return 350;
+                    case 'Aluminium':
+                        return 320;
+                    case 'Cement':
+                        return 280;
+                    case 'Coal':
+                        return 120;
+                    case 'Steel':
+                        return 60;
+                    case 'Titanium':
+                        return 40;
+                    case 'Uranium':
+                        return 1;
+                    case 'Alloy':
+                        return 35;
+                    case 'Polymer':
+                        return 35;
+                    case 'Iridium':
+                        return 32;
+                    case 'Nano_Tube':
+                        return 38;
+                    case 'Neutronium':
+                        return 8;
+                    case 'Adamantite':
+                        return 18;
+                    case 'Infernite':
+                        return 4;
+                    default:
+                        return 0;
+                }
+            },
+            wide: true,
+            effect(wiki){
+                let storage = '<div class="aTable">';
+                let multiplier = storageMultipler(wiki);
+                for (const res of $(this)[0].res()){
+                    if (global.resource[res].display){
+                        let val = sizeApproximation(+(spatialReasoning($(this)[0].val(res)) * multiplier).toFixed(0),1);
+                        storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
+                    }
+                };
+                storage = storage + '</div>';
+                return storage;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('warehouse','portal');
+                    let multiplier = storageMultipler();
+                    for (const res of $(this)[0].res()){
+                        if (global.resource[res].display){
+                            global.resource[res].max += (spatialReasoning($(this)[0].val(res) * multiplier));
+                        }
+                    };
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['warehouse','portal']
+                };
+            }
+        },
+        hovel: {
+            id: 'portal-hovel',
+            title: loc('portal_hovel_title'),
+            desc: loc('portal_hovel_title'),
+            reqs: { hellspawn: 1 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('hovel', offset, 350000, 1.25, 'portal'); },
+            },
+            effect(){
+                let pop = $(this)[0].citizens();
+                return global.race['sappy'] ? `<div>${loc('plus_max_resource',[pop,loc('citizen')])}</div><div>${loc('city_grove_effect',[2.5])}</div>` : loc('plus_max_resource',[pop,loc('citizen')]);
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('hovel','portal');
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['hovel','portal']
+                };
+            },
+            citizens(){
+                let pop = 22;
+                if (global.race['high_pop']){
+                    pop *= traits.high_pop.vars()[0];
+                }
+                return pop;
+            }
+        },
         dig_demon: {
             id: 'portal-dig_demon',
             title: loc('portal_dig_demon_title'),
@@ -661,8 +799,10 @@ const fortressModules = {
             cost: {
                 Money(offset){ return spaceCostMultiplier('dig_demon', offset, 350000, 1.25, 'portal'); },
             },
+            powered: true,
             effect(wiki){
-                return `<div>${loc('portal_dig_demon_effect')}</div>`;
+                let pop = $(this)[0].citizens();
+                return loc('plus_resource',[pop,loc(`job_miner`)]);
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -676,6 +816,13 @@ const fortressModules = {
                     d: { count: 0, on: 0 },
                     p: ['dig_demon','portal']
                 };
+            },
+            citizens(){
+                let pop = 18;
+                if (global.race['high_pop']){
+                    pop *= traits.high_pop.vars()[0];
+                }
+                return pop;
             }
         },
     },
@@ -5946,6 +6093,7 @@ function purgeReports(refresh){
 
 export function warlordSetup(){
     if (global.race['warlord'] && global.race.universe === 'evil'){
+        global.tech['agriculture'] = 7;
         global.tech['alloy'] = 1;
         global.tech['alumina'] = 2;
         global.tech['asteroid'] = 7;
@@ -5961,6 +6109,7 @@ export function warlordSetup(){
         global.tech['elerium'] = 2;
         global.tech['explosives'] = 3;
         global.tech['factory'] = 3;
+        global.tech['farm'] = 1;
         global.tech['foundry'] = 8;
         global.tech['gambling'] = 4;
         global.tech['gas_giant'] = 1;
@@ -5976,6 +6125,7 @@ export function warlordSetup(){
         global.tech['helium'] = 1;
         global.tech['hell'] = 1;
         global.tech['high_tech'] = 13;
+        global.tech['hoe'] = 5;
         global.tech['home_safe'] = 2;
         global.tech['housing'] = 3;
         global.tech['housing_reduction'] = 3;
@@ -6000,6 +6150,7 @@ export function warlordSetup(){
         global.tech['q_factory'] = 1;
         global.tech['quantium'] = 1;
         global.tech['queue'] = 3;
+        global.tech['reclaimer'] = 8;
         global.tech['r_queue'] = 1;
         global.tech['reproduction'] = 1;
         global.tech['rival'] = 1;
@@ -6042,8 +6193,6 @@ export function warlordSetup(){
             global.tech['cement'] = 5;
             global.resource.Cement.display = true;
         }
-        
-        global.tech['reclaimer'] = 1;
 
         global.settings.showSpace = false;
         global.settings.showPortal = true;
@@ -6094,6 +6243,7 @@ export function warlordSetup(){
         global.resource.Stanene.display = true;
         global.resource.Orichalcum.display = true;
         global.resource.Bolognium.display = true;
+        global.resource.Infernite.display = true;
 
         global.resource.Brick.display = true;
         global.resource.Wrought_Iron.display = true;
@@ -6123,8 +6273,6 @@ export function warlordSetup(){
             global.tech['armor'] = 3;
         }
 
-        //global.resource[global.race.species].max = 1;
-        //global.resource[global.race.species].amount = 1;
         global.resource.Crates.amount = 1000;
         global.resource.Containers.amount = 1000;
         global.resource.Money.max = 1000000000;
@@ -6232,7 +6380,7 @@ export function warlordSetup(){
         }
 
         if (!global.race['sappy']){
-            global.civic.quarry_worker.display = true
+            //global.civic.quarry_worker.display = true;
         }
         global.civic.professor.display = true;
         global.civic.scientist.display = true;
@@ -6379,7 +6527,20 @@ export function warlordSetup(){
         initStruct(fortressModules.prtl_spire.port);
 
         initStruct(fortressModules.prtl_wasteland.incinerator); global.portal.incinerator.count = 1; global.portal.incinerator.on = 1;
-        initStruct(fortressModules.prtl_wasteland.dig_demon);
+        initStruct(fortressModules.prtl_wasteland.warehouse); global.portal.warehouse.count = 1;
+        initStruct(fortressModules.prtl_wasteland.hovel); global.portal.hovel.count = 1;
+        initStruct(fortressModules.prtl_wasteland.dig_demon); global.portal.dig_demon.count = 1; global.portal.dig_demon.on = 1;
+
+        global.civic.d_job = 'lumberjack';
+        global.civic.miner.display = true;
+
+        let citizens = actions.portal.prtl_wasteland.dig_demon.citizens() + actions.portal.prtl_wasteland.hovel.citizens();
+
+        global.resource[global.race.species].max = citizens;
+        global.resource[global.race.species].amount = citizens;
+        global.civic.miner.max = actions.portal.prtl_wasteland.dig_demon.citizens();
+        global.civic.miner.workers = actions.portal.prtl_wasteland.dig_demon.citizens();
+        global.civic.miner.assigned = actions.portal.prtl_wasteland.dig_demon.citizens();
 
         global.civic.govern.type = 'autocracy';
 
