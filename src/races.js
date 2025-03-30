@@ -6166,6 +6166,14 @@ export function racialTrait(workers,type){
         let lt = global.race['living_tool'] ? 1 + traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science * 0.12 : 0) : 1;
         modifier *= lt > tusk ? lt : tusk;
     }
+    if (global.race['warlord']){
+        if (type === 'miner'){
+            modifier *= 1.82;
+        }
+        else if (type === 'lumberjack'){
+            modifier *= 1.25;
+        }
+    }
     if (global.race['forager'] && type === 'forager'){
         modifier *= traits.forager.vars()[0] / 100;
     }

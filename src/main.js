@@ -4292,10 +4292,12 @@ function fastLoop(){
             let on_factories = (p_on['factory'] || 0)
                 + (p_on['red_factory'] || 0)
                 + ((p_on['int_factory'] || 0) * 2)
+                + ((p_on['hell_factory'] || 0) * 4)
                 + ((support_on['tau_factory'] || 0) * (global.tech['isolation'] ? 5 : 3));
             let max_factories = global.city['factory'].on
                 + (global.space['red_factory'] ? global.space['red_factory'].on : 0)
                 + (global.interstellar['int_factory'] ? global.interstellar['int_factory'].on * 2 : 0)
+                + (global.portal['hell_factory'] ? global.portal['hell_factory'].on * 4 : 0)
                 + (global.tauceti['tau_factory'] ? global.tauceti['tau_factory'].on * (global.tech['isolation'] ? 5 : 3) : 0);
             let eff = max_factories > 0 ? on_factories / max_factories : 0;
             let remaining = max_factories;
@@ -6494,14 +6496,24 @@ function fastLoop(){
         }
 
         // Iridium
-        if (support_on['iridium_mine']){
-            let iridium_base = support_on['iridium_mine'] * production('iridium_mine','iridium').f;
+        if (support_on['iridium_mine'] || global.race['warlord']){
+            let iridium_base = 0;
+
+            if (global.race['warlord']){
+                iridium_base = workerScale(global.civic.miner.workers,'miner');
+                iridium_base *= racialTrait(iridium_base,'miner');
+                iridium_base *= 0.45;
+            }
+            else {
+                iridium_base = support_on['iridium_mine'] * production('iridium_mine','iridium').f;
+            }
+
             iridium_base *= production('psychic_boost','Iridium');
             let synd = syndicate('spc_moon');
             let delta = iridium_base * hunger * shrineMetal.mult * global_multiplier * synd * qs_multiplier * iridium_smelter * zigVal;
             if (global.race['gravity_well']){ delta = teamster(delta); }
 
-            breakdown.p['Iridium'][loc('space_moon_iridium_mine_title')] = iridium_base + 'v';
+            breakdown.p['Iridium'][global.race['warlord'] ? loc('job_miner') : loc('space_moon_iridium_mine_title')] = iridium_base + 'v';
             if (iridium_base > 0){
                 breakdown.p['Iridium'][`ᄂ${loc('city_smelter')}+0`] = ((iridium_smelter - 1) * 100) + '%';
                 breakdown.p['Iridium'][`ᄂ${loc('space_syndicate')}+0`] = -((1 - synd) * 100) + '%';
@@ -9295,6 +9307,9 @@ function midLoop(){
         if (global.tech['isolation'] && support_on['tau_factory']){
             lCaps['craftsman'] += jobScale(support_on['tau_factory'] * 5);
             lCaps['cement_worker'] += jobScale(support_on['tau_factory'] * 2);
+        }
+        if (global.race['warlord'] && p_on['hell_factory']){
+            lCaps['cement_worker'] += jobScale(p_on['hell_factory'] * 5);
         }
         if (p_on['womling_station']){
             lCaps['craftsman'] += jobScale(p_on['womling_station'] * 1);

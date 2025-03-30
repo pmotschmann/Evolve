@@ -673,7 +673,7 @@ const fortressModules = {
                 let r_list = [
                     'Lumber','Stone','Chrysotile','Furs','Copper','Iron','Aluminium','Steel','Titanium',
                     'Cement','Coal','Uranium','Alloy','Polymer','Iridium','Nano_Tube','Neutronium',
-                    'Adamantite','Infernite','Bolognium','Orichalcum','Graphene','Stanene'
+                    'Adamantite','Infernite','Bolognium','Orichalcum','Graphene','Stanene','Oil','Helium_3'
                 ];
                 return r_list;
             },
@@ -725,6 +725,10 @@ const fortressModules = {
                         return 16;
                     case 'Stanene':
                         return 16;
+                    case 'Oil':
+                        return 20;
+                    case 'Helium_3':
+                        return 19;
                     default:
                         return 0;
                 }
@@ -882,6 +886,46 @@ const fortressModules = {
                     p: ['demon_forge','portal']
                 };
             }
+        },
+        hell_factory: {
+            id: 'portal-hell_factory',
+            title: loc('portal_factory_title'),
+            desc(){ return `<div>${loc('portal_factory_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            reqs: { hellspawn: 1 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('hell_factory', offset, 25000000, 1.26, 'portal'); },
+                Coal(offset){ return spaceCostMultiplier('hell_factory', offset, 10000000, 1.26, 'portal'); },
+                Brick(offset){ return spaceCostMultiplier('hell_factory', offset, 750000, 1.26, 'portal'); },
+                Bolognium(offset){ return spaceCostMultiplier('hell_factory', offset, 50000, 1.26, 'portal'); }
+            },
+            effect(){
+                let desc = `<div>${loc('portal_factory_effect',[4])}</div><div>${loc('city_crafted_mats',[10])}</div>`;
+                desc += `<div>${loc('plus_max_resource',[jobScale(5),loc(`job_cement_worker`)])}</div>`;
+                desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            powered(){ return powerCostMod(5); },
+            special: true,
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('hell_factory','portal');
+                    if (powerOnNewStruct($(this)[0])){
+                        global.city.factory.Alloy += 4;
+                        defineIndustry();
+                    }
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['hell_factory','portal']
+                };
+            },
+            flair(){ return loc(`portal_factory_flair`); }
         },
         dig_demon: {
             id: 'portal-dig_demon',
@@ -6641,8 +6685,11 @@ export function warlordSetup(){
         initStruct(fortressModules.prtl_wasteland.hovel); global.portal.hovel.count = 1;
         initStruct(fortressModules.prtl_wasteland.dig_demon); global.portal.dig_demon.count = 1; global.portal.dig_demon.on = 1;
         initStruct(fortressModules.prtl_wasteland.hell_casino); global.portal.hell_casino.count = 1; global.portal.hell_casino.on = 1;
-        initStruct(fortressModules.prtl_wasteland.demon_forge); global.portal.demon_forge.count = 1; global.portal.demon_forge.on = 1; 
+        initStruct(fortressModules.prtl_wasteland.demon_forge); global.portal.demon_forge.count = 1; global.portal.demon_forge.on = 1;
+        initStruct(fortressModules.prtl_wasteland.hell_factory); global.portal.hell_factory.count = 1; global.portal.hell_factory.on = 1;
         addSmelter(10, 'Iron', 'Coal'); addSmelter(10, 'Steel', 'Coal');
+        global.city.factory.Alloy = 2;
+        global.city.factory.Polymer = 2;
 
         global.civic.d_job = 'lumberjack';
         global.civic.miner.display = true;
@@ -6653,9 +6700,22 @@ export function warlordSetup(){
 
         global.resource[global.race.species].max = citizens;
         global.resource[global.race.species].amount = citizens;
+
         global.civic.miner.max = actions.portal.prtl_wasteland.dig_demon.citizens();
         global.civic.miner.workers = actions.portal.prtl_wasteland.dig_demon.citizens();
         global.civic.miner.assigned = actions.portal.prtl_wasteland.dig_demon.citizens();
+
+        global.civic.cement_worker.max = 5;
+        global.civic.cement_worker.workers = 5;
+        global.civic.cement_worker.assigned = 5;
+
+        global.civic.entertainer.max = 2;
+        global.civic.entertainer.workers = 2;
+        global.civic.entertainer.assigned = 2;
+
+        global.civic.banker.max = 1;
+        global.civic.banker.workers = 1;
+        global.civic.banker.assigned = 1;
 
         global.civic.govern.type = 'autocracy';
 

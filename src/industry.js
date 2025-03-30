@@ -62,7 +62,7 @@ export function defineIndustry(){
         $(`#industry`).append(smelter);
         loadIndustry('smelter',smelter,'#iSmelter');
     }
-    if ((global.city['factory'] && global.city.factory.count > 0) || (global.space['red_factory'] && global.space.red_factory.count > 0) || (global.tauceti['tau_factory'] && global.tauceti.tau_factory.count > 0)){
+    if ((global.city['factory'] && global.city.factory.count > 0) || (global.space['red_factory'] && global.space.red_factory.count > 0) || (global.tauceti['tau_factory'] && global.tauceti.tau_factory.count > 0) || (global.portal['hell_factory'] && global.portal.hell_factory.count > 0)){
         var factory = $(`<div id="iFactory" class="industry"><h2 class="header has-text-advanced">${loc('city_factory')}</h2></div>`);
         $(`#industry`).append(factory);
         loadIndustry('factory',factory,'#iFactory');
@@ -632,6 +632,9 @@ function loadFactory(parent,bind){
                 if (global.tauceti['tau_factory'] && support_on['tau_factory']){
                     max += support_on['tau_factory'] * (global.tech['isolation'] ? 5 : 3);
                 }
+                if (global.portal['hell_factory'] && p_on['hell_factory']){
+                    max += p_on['hell_factory'] * 4;
+                }
                 let keyMult = keyMultiplier();
                 for (var i=0; i<keyMult; i++){
                     let used = global.city.factory.Lux + global.city.factory.Furs + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano + global.city.factory.Stanene;
@@ -662,6 +665,9 @@ function loadFactory(parent,bind){
                 if (global.tauceti['tau_factory'] && support_on['tau_factory']){
                     max += support_on['tau_factory'] * (global.tech['isolation'] ? 5 : 3);
                 }
+                if (global.portal['hell_factory'] && p_on['hell_factory']){
+                    max += p_on['hell_factory'] * 4;
+                }
                 return colorRange(on,max);
             }
         },
@@ -676,6 +682,9 @@ function loadFactory(parent,bind){
                 }
                 if (global.tauceti['tau_factory'] && support_on['tau_factory']){
                     max += support_on['tau_factory'] * (global.tech['isolation'] ? 5 : 3);
+                }
+                if (global.portal['hell_factory'] && p_on['hell_factory']){
+                    max += p_on['hell_factory'] * 4;
                 }
                 return max;
             },

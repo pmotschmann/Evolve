@@ -7704,6 +7704,7 @@ function drawModal(c_action,type){
         case 'red_factory':
         case 'int_factory':
         case 'tau_factory':
+        case 'hell_factory':
             loadIndustry('factory',body);
             break;
         case 'star_dock':
