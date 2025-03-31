@@ -28,14 +28,14 @@ export const job_desc = {
             desc = loc(global.race['evil'] ? 'job_evil_hunter_desc' : 'job_not_evil_hunter_desc',[global.resource.Food.name,global.resource.Lumber.name,global.resource.Furs.name]);
         }
         if (global.civic.d_job === 'hunter' && !servant){
-            desc = desc + ' ' + loc('job_default',[global.race['unfathomable'] ? loc('job_raider') : loc('job_hunter')]);
+            desc = desc + ' ' + loc('job_default',[global.race['unfathomable'] ? loc('job_raider') : jobName('hunter')]);
         }
         return desc;
     },
     forager: function(servant){
         let desc = loc(`job_forager_desc`);
         if (global.civic.d_job === 'forager' && !servant){
-            desc = desc + ' ' + loc('job_default',[loc('job_forager')]);
+            desc = desc + ' ' + loc('job_default',[jobName('forager')]);
         }
         return desc;
     },
@@ -50,7 +50,7 @@ export const job_desc = {
             ? loc('job_farmer_desc_hp',[farmer,global.resource.Food.name,jobScale(1),farmhand,jobScale(1) * global.city.farm.count])
             : loc('job_farmer_desc',[farmer,global.resource.Food.name,global.city.farm.count,farmhand]);
         if (global.civic.d_job === 'farmer' && !servant){
-            desc = desc + ' ' + loc('job_default',[loc('job_farmer')]);
+            desc = desc + ' ' + loc('job_default',[jobName('farmer')]);
         }
         return desc;
     },
@@ -70,7 +70,7 @@ export const job_desc = {
             let flesh = +(impact / 4 * multiplier).toFixed(2);
             let desc = global.race.species === 'wendigo' ? loc('job_reclaimer_desc2',[bone]) : loc('job_reclaimer_desc',[bone,flesh]);
             if (global.civic.d_job === 'lumberjack' && !servant){
-                desc = desc + ' ' + loc('job_default',[loc('job_reclaimer')]);
+                desc = desc + ' ' + loc('job_default',[jobName('reclaimer')]);
             }
             return desc;
         }
@@ -97,7 +97,7 @@ export const job_desc = {
             let gain = +(impact * multiplier).toFixed(2);
             let desc = loc('job_lumberjack_desc',[gain,global.resource.Lumber.name]);
             if (global.civic.d_job === 'lumberjack' && !servant){
-                desc = desc + ' ' + loc('job_default',[loc('job_lumberjack')]);
+                desc = desc + ' ' + loc('job_default',[jobName('lumberjack')]);
             }
             let hallowed = getHalloween();
             if (hallowed.active){
@@ -132,7 +132,7 @@ export const job_desc = {
             desc = desc + ' ' + loc('job_quarry_worker_smoldering',[global.resource.Chrysotile.name]);
         }
         if (global.civic.d_job === 'quarry_worker' && !servant){
-            desc = desc + ' ' + loc('job_default',[loc('job_quarry_worker')]);
+            desc = desc + ' ' + loc('job_default',[jobName('quarry_worker')]);
         }
         return desc;
     },
@@ -148,7 +148,7 @@ export const job_desc = {
         let gain = +(impact * multiplier).toFixed(2);
         let desc = loc('job_crystal_miner_desc',[gain,global.resource.Crystal.name]);
         if (global.civic.d_job === 'crystal_miner' && !servant){
-            desc = desc + ' ' + loc('job_default',[loc('job_crystal_miner')]);
+            desc = desc + ' ' + loc('job_default',[jobName('crystal_miner')]);
         }
         return desc;
     },
@@ -165,21 +165,21 @@ export const job_desc = {
         }
         let desc = loc('job_scavenger_desc',[races[global.race.species].home,scavenger]);
         if (global.civic.d_job === 'scavenger' && !servant){
-            desc = desc + ' ' + loc('job_default',[loc('job_scavenger')]);
+            desc = desc + ' ' + loc('job_default',[jobName('scavenger')]);
         }
         return desc;
     },
     teamster: function(servant){
         let desc = loc('job_teamster_desc',[teamsterCap()]);
         if (global.civic.d_job === 'teamster' && !servant){
-            desc = desc + ' ' + loc('job_default',[loc('job_teamster')]);
+            desc = desc + ' ' + loc('job_default',[jobName('teamster')]);
         }
         return desc;
     },
     meditator: function(servant){
         let desc = loc('job_meditator_desc');
         if (global.civic.d_job === 'meditator' && !servant){
-            desc = desc + ' ' + loc('job_default',[loc('job_meditator')]);
+            desc = desc + ' ' + loc('job_default',[jobName('meditator')]);
         }
         return desc;
     },
@@ -451,10 +451,18 @@ export function setJobName(job){
     else if (global.race.universe === 'evil' && job === 'priest' && global.civic.govern.type != 'theocracy'){
         job_name = loc('job_pofficer');
     }
+    else if (job === 'lumberjack' && global.race['evil'] && (!global.race['soul_eater'] || global.race.species === 'wendigo')){
+        job_name = loc('job_reclaimer');
+    }
     else {
-        job_name = job === 'lumberjack' && global.race['evil'] && (!global.race['soul_eater'] || global.race.species === 'wendigo') ? loc('job_reclaimer') : loc('job_' + job);
+        job_name = loc('job_' + job);
     }
     global['civic'][job].name = job_name;
+}
+
+export function jobName(job){
+    let name = global.civic[job]?.name || loc(`job_${job}`);
+    return name;
 }
 
 function loadJob(job, define, impact, stress, color){

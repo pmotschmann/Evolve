@@ -7715,6 +7715,7 @@ function drawModal(c_action,type){
             break;
         case 'g_factory':
         case 'refueling_station':
+        case 'twisted_lab':
             loadIndustry('graphene',body);
             break;
         case 'freighter':

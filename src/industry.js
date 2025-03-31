@@ -72,8 +72,8 @@ export function defineIndustry(){
         $(`#industry`).append(droid);
         loadIndustry('droid',droid,'#iDroid');
     }
-    if ((global.interstellar['g_factory'] && global.interstellar.g_factory.count > 0) || (global.space['g_factory'] && (global.space.g_factory.count > 0 || (global.tauceti['refueling_station'] && global.tauceti.refueling_station.count > 0)))){
-        var graphene = $(`<div id="iGraphene" class="industry"><h2 class="header has-text-advanced">${loc('interstellar_g_factory_title')}</h2></div>`);
+    if ((global.interstellar['g_factory'] && global.interstellar.g_factory.count > 0) || (global.portal['twisted_lab'] && global.portal.twisted_lab.count > 0)  || (global.space['g_factory'] && (global.space.g_factory.count > 0 || (global.tauceti['refueling_station'] && global.tauceti.refueling_station.count > 0)))){
+        var graphene = $(`<div id="iGraphene" class="industry"><h2 class="header has-text-advanced">${global.race['warlord'] ? loc('portal_twisted_lab_title') : loc('interstellar_g_factory_title')}</h2></div>`);
         $(`#industry`).append(graphene);
         loadIndustry('graphene',graphene,'#iGraphene');
     }
@@ -991,6 +991,11 @@ function loadDroid(parent,bind){
 
 function loadGraphene(parent,bind){
     let graph_source = global.race['truepath'] ? 'space' : 'interstellar';
+    let graph_struct = 'g_factory';
+    if (global.race['warlord']){
+        graph_source = 'portal';
+        graph_struct = 'twisted_lab';
+    }
 
     let fuel = $(`<div><span class="has-text-warning">${loc('modal_smelter_fuel')}:</span> <span :class="level()">{{count | on}}/{{ on | max }}</span></div>`);
     parent.append(fuel);
@@ -1028,13 +1033,13 @@ function loadGraphene(parent,bind){
 
     vBind({
         el: bind ? bind : '#specialModal',
-        data: global[graph_source]['g_factory'],
+        data: global[graph_source][graph_struct],
         methods: {
             subWood(){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
-                    if (global[graph_source].g_factory.Lumber > 0){
-                        global[graph_source].g_factory.Lumber--;
+                    if (global[graph_source][graph_struct].Lumber > 0){
+                        global[graph_source][graph_struct].Lumber--;
                     }
                     else {
                         break;
@@ -1044,17 +1049,17 @@ function loadGraphene(parent,bind){
             addWood(){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
-                    if (global[graph_source].g_factory.Lumber + global[graph_source].g_factory.Coal + global[graph_source].g_factory.Oil < global[graph_source].g_factory.on){
-                        global[graph_source].g_factory.Lumber++;
+                    if (global[graph_source][graph_struct].Lumber + global[graph_source][graph_struct].Coal + global[graph_source][graph_struct].Oil < global[graph_source][graph_struct].on){
+                        global[graph_source][graph_struct].Lumber++;
                     }
-                    else if (global[graph_source].g_factory.Coal + global[graph_source].g_factory.Oil > 0){
-                        if (global[graph_source].g_factory.Oil > global[graph_source].g_factory.Coal){
-                            global[graph_source].g_factory.Coal > 0 ? global[graph_source].g_factory.Coal-- : global[graph_source].g_factory.Oil--;
+                    else if (global[graph_source][graph_struct].Coal + global[graph_source][graph_struct].Oil > 0){
+                        if (global[graph_source][graph_struct].Oil > global[graph_source][graph_struct].Coal){
+                            global[graph_source][graph_struct].Coal > 0 ? global[graph_source][graph_struct].Coal-- : global[graph_source][graph_struct].Oil--;
                         }
                         else {
-                            global[graph_source].g_factory.Oil > 0 ? global[graph_source].g_factory.Oil-- : global[graph_source].g_factory.Coal--;
+                            global[graph_source][graph_struct].Oil > 0 ? global[graph_source][graph_struct].Oil-- : global[graph_source][graph_struct].Coal--;
                         }
-                        global[graph_source].g_factory.Lumber++;
+                        global[graph_source][graph_struct].Lumber++;
                     }
                     else {
                         break;
@@ -1064,8 +1069,8 @@ function loadGraphene(parent,bind){
             subCoal(){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
-                    if (global[graph_source].g_factory.Coal > 0){
-                        global[graph_source].g_factory.Coal--;
+                    if (global[graph_source][graph_struct].Coal > 0){
+                        global[graph_source][graph_struct].Coal--;
                     }
                     else {
                         break;
@@ -1075,17 +1080,17 @@ function loadGraphene(parent,bind){
             addCoal(){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
-                    if (global[graph_source].g_factory.Lumber + global[graph_source].g_factory.Coal + global[graph_source].g_factory.Oil < global[graph_source].g_factory.on){
-                        global[graph_source].g_factory.Coal++;
+                    if (global[graph_source][graph_struct].Lumber + global[graph_source][graph_struct].Coal + global[graph_source][graph_struct].Oil < global[graph_source][graph_struct].on){
+                        global[graph_source][graph_struct].Coal++;
                     }
-                    else if (global[graph_source].g_factory.Lumber + global[graph_source].g_factory.Oil > 0){
-                        if (global[graph_source].g_factory.Lumber > 0){
-                            global[graph_source].g_factory.Lumber--;
+                    else if (global[graph_source][graph_struct].Lumber + global[graph_source][graph_struct].Oil > 0){
+                        if (global[graph_source][graph_struct].Lumber > 0){
+                            global[graph_source][graph_struct].Lumber--;
                         }
                         else {
-                            global[graph_source].g_factory.Oil--;
+                            global[graph_source][graph_struct].Oil--;
                         }
-                        global[graph_source].g_factory.Coal++;
+                        global[graph_source][graph_struct].Coal++;
                     }
                     else {
                         break;
@@ -1095,8 +1100,8 @@ function loadGraphene(parent,bind){
             subOil(){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
-                    if (global[graph_source].g_factory.Oil > 0){
-                        global[graph_source].g_factory.Oil--;
+                    if (global[graph_source][graph_struct].Oil > 0){
+                        global[graph_source][graph_struct].Oil--;
                     }
                     else {
                         break;
@@ -1106,17 +1111,17 @@ function loadGraphene(parent,bind){
             addOil(){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
-                    if (global[graph_source].g_factory.Lumber + global[graph_source].g_factory.Coal + global[graph_source].g_factory.Oil < global[graph_source].g_factory.on){
-                        global[graph_source].g_factory.Oil++;
+                    if (global[graph_source][graph_struct].Lumber + global[graph_source][graph_struct].Coal + global[graph_source][graph_struct].Oil < global[graph_source][graph_struct].on){
+                        global[graph_source][graph_struct].Oil++;
                     }
-                    else if (global[graph_source].g_factory.Lumber + global[graph_source].g_factory.Coal > 0){
-                        if (global[graph_source].g_factory.Lumber > 0){
-                            global[graph_source].g_factory.Lumber--;
+                    else if (global[graph_source][graph_struct].Lumber + global[graph_source][graph_struct].Coal > 0){
+                        if (global[graph_source][graph_struct].Lumber > 0){
+                            global[graph_source][graph_struct].Lumber--;
                         }
                         else {
-                            global[graph_source].g_factory.Coal--;
+                            global[graph_source][graph_struct].Coal--;
                         }
-                        global[graph_source].g_factory.Oil++;
+                        global[graph_source][graph_struct].Oil++;
                     }
                     else {
                         break;
@@ -1127,20 +1132,20 @@ function loadGraphene(parent,bind){
                 return tooltip(type);
             },
             ariaCount(fuel){
-                return ` ${global[graph_source].g_factory[fuel]} ${fuel} fueled.`;
+                return ` ${global[graph_source][graph_struct][fuel]} ${fuel} fueled.`;
             },
             ariaProd(res){
-                return `. ${global[graph_source].g_factory[res]} producing ${res}.`;
+                return `. ${global[graph_source][graph_struct][res]} producing ${res}.`;
             },
             level(){
-                let on = global[graph_source].g_factory.Lumber + global[graph_source].g_factory.Coal + global[graph_source].g_factory.Oil;
-                let max = global[graph_source].g_factory.on;
+                let on = global[graph_source][graph_struct].Lumber + global[graph_source][graph_struct].Coal + global[graph_source][graph_struct].Oil;
+                let max = global[graph_source][graph_struct].on;
                 return colorRange(on,max);
             }
         },
         filters: {
             on: function(c){
-                return global[graph_source].g_factory.Lumber + global[graph_source].g_factory.Coal + global[graph_source].g_factory.Oil;
+                return global[graph_source][graph_struct].Lumber + global[graph_source][graph_struct].Coal + global[graph_source][graph_struct].Oil;
             }
         }
     });

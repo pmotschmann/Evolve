@@ -16,6 +16,7 @@ import { loadTab } from './index.js';
 import { loc } from './locale.js';
 import { addSmelter } from './industry.js';
 import { arpa } from './arpa.js';
+import { jobName } from './jobs.js';
 
 const fortressModules = {
     prtl_fortress: {
@@ -902,7 +903,7 @@ const fortressModules = {
             },
             effect(){
                 let desc = `<div>${loc('portal_factory_effect',[4])}</div><div>${loc('city_crafted_mats',[10])}</div>`;
-                desc += `<div>${loc('plus_max_resource',[jobScale(5),loc(`job_cement_worker`)])}</div>`;
+                desc += `<div>${loc('plus_max_resource',[jobScale(5),jobName('cement_worker')])}</div>`;
                 desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
             },
@@ -940,7 +941,7 @@ const fortressModules = {
             powered(){ return true; },
             effect(wiki){
                 let pop = $(this)[0].citizens();
-                return loc('plus_resource',[pop,loc(`job_miner`)]);
+                return loc('plus_resource',[pop,jobName('miner')]);
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -982,6 +983,46 @@ const fortressModules = {
                 }
                 return pop;
             }
+        },
+        twisted_lab: {
+            id: 'portal-twisted_lab',
+            title: loc('portal_twisted_lab_title'),
+            desc: `<div>${loc('portal_twisted_lab_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            reqs: { hellspawn: 1, science: 9 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('twisted_lab', offset, 200000, 1.28, 'portal'); },
+                Knowledge(offset){ return spaceCostMultiplier('twisted_lab', offset, 69000, 1.28, 'portal'); },
+                Stone(offset){ return spaceCostMultiplier('twisted_lab', offset, 125000, 1.28, 'portal'); },
+                Iron(offset){ return spaceCostMultiplier('twisted_lab', offset, 65000, 1.28, 'portal'); },
+                Iridium(offset){ return spaceCostMultiplier('twisted_lab', offset, 1250, 1.28, 'portal'); }
+            },
+            effect(){
+                let desc = `<div>${loc('plus_max_resource',[50000,loc('resource_Knowledge_name')])}</div>`;
+                desc += `<div>${loc('city_university_effect',[jobScale(1)])}</div>`;
+                desc += `<div>${loc('plus_max_resource',[jobScale(1),jobName('scientist')])}</div>`;
+                desc += `<div>${loc('interstellar_g_factory_effect')}</div>`;
+                desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            powered(){ return 4; },
+            special: true,
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('twisted_lab','portal');
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, Lumber: 0, Coal: 0, Oil: 0 },
+                    p: ['twisted_lab','portal']
+                };
+            },
+            flair(){ return loc('portal_twisted_lab_flair'); }
         },
         pumpjack: {
             id: 'portal-pumpjack',
@@ -6253,7 +6294,7 @@ function drawHellReports(){
         if (curr_report.surveyor_finds){
             Object.keys(curr_report.surveyor_finds).forEach(function(num){
                 let surveyor = curr_report.surveyor_finds[num];
-                let name = loc('hell_report_log_obj_counter',[loc('job_hell_surveyor'),num]);
+                let name = loc('hell_report_log_obj_counter',[jobName('hell_surveyor'),num]);
 
                 let displayText = $(`<p></p>`);
                 displayText.append(`<span>${loc('hell_report_log_search',[name,surveyor.bodies])}</span>`);
@@ -6814,6 +6855,7 @@ export function warlordSetup(){
         initStruct(fortressModules.prtl_wasteland.hell_casino); global.portal.hell_casino.count = 1; global.portal.hell_casino.on = 1;
         initStruct(fortressModules.prtl_wasteland.demon_forge); global.portal.demon_forge.count = 1; global.portal.demon_forge.on = 1;
         initStruct(fortressModules.prtl_wasteland.hell_factory); global.portal.hell_factory.count = 1; global.portal.hell_factory.on = 1;
+        initStruct(fortressModules.prtl_wasteland.twisted_lab); global.portal.twisted_lab.count = 1; global.portal.twisted_lab.on = 1;
         initStruct(fortressModules.prtl_wasteland.pumpjack); global.portal.pumpjack.count = 1;
         initStruct(fortressModules.prtl_wasteland.brute); global.portal.brute.count = 1; global.portal.brute.on = 1;
 
@@ -6846,6 +6888,14 @@ export function warlordSetup(){
         global.civic.banker.max = 1;
         global.civic.banker.workers = 1;
         global.civic.banker.assigned = 1;
+
+        global.civic.professor.max = 1;
+        global.civic.professor.workers = 1;
+        global.civic.professor.assigned = 1;
+
+        global.civic.scientist.max = 1;
+        global.civic.scientist.workers = 1;
+        global.civic.scientist.assigned = 1;
 
         global.civic.govern.type = 'autocracy';
 
