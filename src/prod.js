@@ -79,7 +79,7 @@ export function production(id,val,wiki){
         }
         case 'helium_mine':
         {
-            let base = 0.18;
+            let base = global.race['warlord'] ? 0.35 : 0.18;
             let gov = govRelationFactor(3);
             return {
                 b: base,

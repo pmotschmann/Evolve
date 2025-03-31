@@ -794,7 +794,7 @@ const fortressModules = {
                 };
             },
             citizens(){
-                let pop = 22;
+                let pop = 24;
                 if (global.race['high_pop']){
                     pop *= traits.high_pop.vars()[0];
                 }
@@ -824,7 +824,7 @@ const fortressModules = {
                 if (payCosts($(this)[0])){
                     incrementStruct('hell_casino','portal');
                     if (!global.race['joyless']){
-                        global.civic.entertainer.max += jobScale(2);
+                        global.civic.entertainer.max += jobScale(3);
                     }
                     powerOnNewStruct($(this)[0]);
                     return true;
@@ -837,7 +837,7 @@ const fortressModules = {
                     p: ['hell_casino','portal']
                 };
             },
-            flair: loc('city_casino_flair')
+            flair: loc('portal_casino_flair')
         },
         demon_forge: {
             id: 'portal-demon_forge',
@@ -982,6 +982,133 @@ const fortressModules = {
                 }
                 return pop;
             }
+        },
+        pumpjack: {
+            id: 'portal-pumpjack',
+            title(){ return global.race['blubber'] ? loc('tech_oil_refinery') : loc('portal_pumpjack_title'); },
+            desc(){ return global.race['blubber'] ? loc('city_oil_well_blubber') : loc('portal_pumpjack_title'); },
+            reqs: { hellspawn: 1, oil: 1 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('pumpjack', offset, 5000, 1.5, 'portal'); },
+                Cement(offset){ return spaceCostMultiplier('pumpjack', offset, 5250, 1.5, 'portal'); },
+                Steel(offset){ return spaceCostMultiplier('pumpjack', offset, 6000, 1.5, 'portal'); }
+            },
+            effect(){
+                let oil = +(production('oil_well')).toFixed(2);
+                let oc = spatialReasoning(500);
+                let desc = `<div>${loc('plus_res_combo',[oil,oc,global.resource.Oil.name])}</div>`;
+
+                let storage = spatialReasoning(250);
+                let values = production('helium_mine');
+                let helium = +(values.b).toFixed(3);
+                desc += `<div>${loc('plus_res_combo',[helium,storage,global.resource.Helium_3.name])}</div>`;
+
+                if (global.race['blubber'] && global.portal.hasOwnProperty('pumpjack')){
+                    let maxDead = global.portal.pumpjack.count;
+                    desc += `<div>${loc('city_oil_well_bodies',[+(global.city.oil_well.dead).toFixed(1),50 * maxDead])}</div>`;
+                    desc += `<div>${loc('city_oil_well_consume',[traits.blubber.vars()[0]])}</div>`;
+                }
+                return desc;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('pumpjack','portal');
+                    global['resource']['Oil'].max += spatialReasoning(500);
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, dead: 0 },
+                    p: ['pumpjack','portal']
+                };
+            },
+            flair: loc('portal_pumpjack_flair')
+        },
+        brute: {
+            id: 'portal-brute',
+            title: loc('portal_brute_title'),
+            desc: loc('portal_brute_title'),
+            reqs: { hellspawn: 1 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('brute', offset, 875000, 1.28, 'portal'); },
+                Aluminium(offset){ return spaceCostMultiplier('brute', offset, 195000, 1.28, 'portal'); },
+                Neutronium(offset){ return spaceCostMultiplier('brute', offset, 2000, 1.28, 'portal'); },
+                Aerogel(offset){ return spaceCostMultiplier('brute', offset, 250, 1.28, 'portal'); },
+            },
+            powered(){ return 0; },
+            effect(){
+                let troops = $(this)[0].soldiers();
+                let desc = `<div>${loc('plus_max_soldiers',[troops])}</div>`;
+                desc += `<div>${loc('plus_max_resource',[1,global.resource.Authority.name])}</div>`;
+                return desc;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('brute','portal');
+                    global.portal.brute.on++;
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['brute','portal']
+                };
+            },
+            soldiers(){
+                let soldiers = 10;
+                if (global.race['grenadier']){
+                    soldiers -= 4;
+                }
+                return jobScale(soldiers);
+            },
+            flair(){ return loc('portal_pumpjack_flair'); }
+        },
+        minions: {
+            id: 'portal-minions',
+            title: loc('portal_minions_title'),
+            desc: loc('portal_minions_title'),
+            reqs: { hellspawn: 2 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('minions', offset, 875000, 1.28, 'portal'); },
+                Aluminium(offset){ return spaceCostMultiplier('minions', offset, 195000, 1.28, 'portal'); },
+                Neutronium(offset){ return spaceCostMultiplier('minions', offset, 2000, 1.28, 'portal'); },
+                Aerogel(offset){ return spaceCostMultiplier('minions', offset, 250, 1.28, 'portal'); },
+            },
+            powered(){ return 0; },
+            effect(){
+                let troops = $(this)[0].soldiers();
+                let desc = `<div>${loc('portal_minions_effect',[troops])}</div>`;
+                desc += `<div>${loc('plus_max_resource',[1,global.resource.Authority.name])}</div>`;
+                return desc;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('minions','portal');
+                    global.portal.minions.on++;
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['minions','portal']
+                };
+            },
+            soldiers(){
+                return 25;
+            },
+            flair(){ return loc('portal_minions_flair'); }
         },
     },
     prtl_ruins: {
@@ -6687,6 +6814,9 @@ export function warlordSetup(){
         initStruct(fortressModules.prtl_wasteland.hell_casino); global.portal.hell_casino.count = 1; global.portal.hell_casino.on = 1;
         initStruct(fortressModules.prtl_wasteland.demon_forge); global.portal.demon_forge.count = 1; global.portal.demon_forge.on = 1;
         initStruct(fortressModules.prtl_wasteland.hell_factory); global.portal.hell_factory.count = 1; global.portal.hell_factory.on = 1;
+        initStruct(fortressModules.prtl_wasteland.pumpjack); global.portal.pumpjack.count = 1;
+        initStruct(fortressModules.prtl_wasteland.brute); global.portal.brute.count = 1; global.portal.brute.on = 1;
+
         addSmelter(10, 'Iron', 'Coal'); addSmelter(10, 'Steel', 'Coal');
         global.city.factory.Alloy = 2;
         global.city.factory.Polymer = 2;

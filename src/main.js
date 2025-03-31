@@ -6433,7 +6433,7 @@ function fastLoop(){
             }
 
             let synd = syndicate('spc_gas_moon');
-            let fueled_oil_wells = global.city.oil_well.count;
+            let fueled_oil_wells = global.race['warlord'] ? global.portal.pumpjack.count : global.city.oil_well.count;
             let fueled_oil_extractor = p_on['oil_extractor'];
             let oil_prod = global.city['oil_well'] ? (production('oil_well') * q_multiplier) : 0;
             let extract_prod = global.space['oil_extractor'] ? (production('oil_extractor') * qs_multiplier * synd * zigVal) : 0;
@@ -6473,7 +6473,7 @@ function fastLoop(){
                 global.space.oil_extractor['lpmod'] = production('oil_extractor') * qs_multiplier * synd * zigVal;
             }
 
-            breakdown.p['Oil'][loc('city_oil_well')] = oil_well + 'v';
+            breakdown.p['Oil'][global.race['warlord'] ? loc('portal_pumpjack_title') : loc('city_oil_well')] = oil_well + 'v';
             if (oil_well > 0){
                 breakdown.p['Oil'][`ᄂ${loc('quarantine')}+0`] = ((q_multiplier - 1) * 100) + '%';
             }
@@ -6584,14 +6584,14 @@ function fastLoop(){
         }
 
         // Helium 3
-        if (global.space['moon_base'] && support_on['helium_mine']){
-            let helium_base = support_on['helium_mine'] * production('helium_mine').f;
+        if ((global.space['moon_base'] && support_on['helium_mine']) || global.race['warlord']){
+            let helium_base = (global.race['warlord'] ? global.portal.pumpjack.count : support_on['helium_mine']) * production('helium_mine').f;
             helium_base *= production('psychic_boost','Helium_3');
             let synd = syndicate('spc_moon');
             let delta = helium_base * hunger * global_multiplier * synd * qs_multiplier * zigVal;
             if (global.race['gravity_well']){ delta = teamster(delta); }
 
-            breakdown.p['Helium_3'][loc('space_moon_helium_mine_title')] = helium_base + 'v';
+            breakdown.p['Helium_3'][global.race['warlord'] ? loc('portal_pumpjack_title') : loc('space_moon_helium_mine_title')] = helium_base + 'v';
             if (helium_base > 0){
                 breakdown.p['Helium_3'][`ᄂ${loc('space_syndicate')}+0`] = -((1 - synd) * 100) + '%';
                 breakdown.p['Helium_3'][`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
@@ -8036,6 +8036,16 @@ function midLoop(){
                 caps.Authority += gain;
                 breakdown.c.Authority[loc('interstellar_cruiser_title')] = gain+'v';
             }
+            if (global.portal['brute']){
+                let gain = global.portal.brute.on;
+                caps.Authority += gain;
+                breakdown.c.Authority[loc('portal_brute_bd')] = gain+'v';
+            }
+            if (global.portal['minions']){
+                let gain = global.portal.minions.on;
+                caps.Authority += gain;
+                breakdown.c.Authority[loc('portal_minions_bd')] = gain+'v';
+            }
 
             global.resource.Authority.amount = 80;
             if (global.city.morale.current > 100){
@@ -8312,7 +8322,7 @@ function midLoop(){
             }
         }
         if (global.portal['hell_casino']){
-            lCaps['entertainer'] += jobScale(global.portal.hell_casino.count * 2);
+            lCaps['entertainer'] += jobScale(global.portal.hell_casino.count * 3);
             lCaps['banker'] += jobScale(global.portal.hell_casino.count);
         }
         if (global.tauceti['tauceti_casino']){
@@ -8352,6 +8362,12 @@ function midLoop(){
             let soldiers = actions.interstellar.int_proxima.cruiser.soldiers();
             lCaps['garrison'] += int_on['cruiser'] * soldiers;
         }
+        if (global.portal['brute']){
+            let soldiers = actions.portal.prtl_wasteland.brute.soldiers();
+            lCaps['garrison'] += global.portal.brute.on * soldiers;
+        }
+
+        global.portal.brute.on
         if (global.race['wish'] && global.race['wishStats']){
             lCaps['garrison'] += jobScale(global.race.wishStats.troop);
         }
@@ -8816,6 +8832,16 @@ function midLoop(){
             let gain = (global.space['helium_mine'].count * spatialReasoning(100));
             caps['Helium_3'] += gain;
             breakdown.c.Helium_3[loc('space_moon_helium_mine_title')] = gain+'v';
+        }
+        if (global.portal['pumpjack']){
+            let gain = (global.portal.pumpjack.count * spatialReasoning(500));
+            caps['Oil'] += gain;
+            breakdown.c.Oil[loc('portal_pumpjack_title')] = gain+'v';
+        }
+        if (global.portal['pumpjack']){
+            let gain = (global.portal.pumpjack.count * spatialReasoning(250));
+            caps['Helium_3'] += gain;
+            breakdown.c.Helium_3[loc('portal_pumpjack_title')] = gain+'v';
         }
         if (shrineBonusActive()){
             let getShrineResult = getShrineBonus('know');
