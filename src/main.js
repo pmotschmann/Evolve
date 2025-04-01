@@ -9305,7 +9305,7 @@ function midLoop(){
         }
 
         if (global.race['warlord'] && p_on['twisted_lab']){
-            lCaps['professor'] += jobScale(p_on['twisted_lab']);
+            lCaps['professor'] += jobScale(p_on['twisted_lab'] * 2);
             lCaps['scientist'] += jobScale(p_on['twisted_lab']);
         }
 

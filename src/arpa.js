@@ -1973,6 +1973,9 @@ function genetics(){
                 else if (!global.race.hasOwnProperty(trait)){
                     readOnly = true;
                 }
+                else if (global.race.hasOwnProperty('absorbed') && global.race.absorbed.map(r => races[r].fanaticism).includes(trait)){
+                    readOnly = true;
+                }
                 if (!readOnly && ((traits[trait].type === 'major' && global.genes['mutation']) || (traits[trait].type === 'genus' && global.genes['mutation'] && global.genes['mutation'] >= 2))){
                     let major = $(`<div class="traitRow"></div>`);
                     let purge = $(`<span class="remove${trait} basic-button has-text-danger" role="button" :aria-label="removeCost('${trait}')" @click="purge('${trait}')">${loc('arpa_remove_button')}</span>`);
@@ -1993,7 +1996,7 @@ function genetics(){
         let offspec_traits = [];
         let trait_list = [];
         if (global.genes['mutation'] && global.genes['mutation'] >= 3){
-            if ((global.race.species !== 'sludge' && global.race.species !== 'ultra_sludge') || !global.race['modified']){
+            if (global.race.species !== 'hellspawn' && ((global.race.species !== 'sludge' && global.race.species !== 'ultra_sludge') || !global.race['modified'])){
                 breakdown.append(`<div class="trait major has-text-success">${loc('arpa_race_genetic_gain')}</div>`);
 
                 let conflict_traits = ['dumb','smart']; //Conflicting traits are paired together
@@ -2204,7 +2207,8 @@ function genetics(){
                     }
                 },
                 gain(t){
-                    if (['sludge','ultra_sludge'].includes(global.race.species) && global.race['modified']){
+                    if (['hellspawn'].includes(global.race.species)){ return; }
+                    else if (['sludge','ultra_sludge'].includes(global.race.species) && global.race['modified']){
                         return;
                     }
                     let cost = traits[t].val * 5;
@@ -2339,7 +2343,7 @@ function genetics(){
 }
 
 export function sequenceLabs(){
-    let labs = global.race['cataclysm'] || global.race['orbit_decayed'] ? support_on['exotic_lab'] : p_on['biolab'];
+    let labs = global.race['cataclysm'] || global.race['orbit_decayed'] ? support_on['exotic_lab'] : (global.race['warlord'] ? p_on['twisted_lab'] : p_on['biolab']);
     if (global.tech['isolation']){ labs = support_on['infectious_disease_lab'] * 5; }
     if (global.race['lone_survivor']){ labs += 2; }
     if (labs > 0 && global.city.ptrait.includes('toxic')){

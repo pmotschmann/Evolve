@@ -571,7 +571,7 @@ export const events = {
             }
 
             let gain = Math.floor(seededRandom(1,maxRoll));
-            if (global.resource[res].amount + gain > global.resource[res].max){
+            if (global.resource[res].max !== -1 && global.resource[res].amount + gain > global.resource[res].max){
                 global.resource[res].amount = global.resource[res].max;
             }
             else {

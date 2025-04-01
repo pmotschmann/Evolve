@@ -6,7 +6,8 @@ export const changeList = [
         version: `1.4.3`,
         date: `4/??/2025`,
         changes: [
-            `Demonic Things.`,
+            `Evil Universe Scenario: Warlord.`,
+            `Fixed bug with Rogue trait that set crafted resources to 0.`
         ]
     },
     {

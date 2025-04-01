@@ -1000,7 +1000,7 @@ const fortressModules = {
             },
             effect(){
                 let desc = `<div>${loc('plus_max_resource',[50000,loc('resource_Knowledge_name')])}</div>`;
-                desc += `<div>${loc('city_university_effect',[jobScale(1)])}</div>`;
+                desc += `<div>${loc('city_university_effect',[jobScale(2)])}</div>`;
                 desc += `<div>${loc('plus_max_resource',[jobScale(1),jobName('scientist')])}</div>`;
                 desc += `<div>${loc('interstellar_g_factory_effect')}</div>`;
                 desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
@@ -1110,7 +1110,7 @@ const fortressModules = {
                 }
                 return jobScale(soldiers);
             },
-            flair(){ return loc('portal_pumpjack_flair'); }
+            flair(){ return loc('portal_brute_flair'); }
         },
         minions: {
             id: 'portal-minions',
@@ -6889,9 +6889,9 @@ export function warlordSetup(){
         global.civic.banker.workers = 1;
         global.civic.banker.assigned = 1;
 
-        global.civic.professor.max = 1;
-        global.civic.professor.workers = 1;
-        global.civic.professor.assigned = 1;
+        global.civic.professor.max = 2;
+        global.civic.professor.workers = 2;
+        global.civic.professor.assigned = 2;
 
         global.civic.scientist.max = 1;
         global.civic.scientist.workers = 1;
