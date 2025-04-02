@@ -15237,7 +15237,31 @@ const techs = {
             }
             return false;
         }
-    }
+    },
+    hellspawn_tunnelers: {
+        id: 'tech-hellspawn_tunnelers',
+        title: loc('tech_hellspawn_tunnelers'),
+        desc: loc('tech_hellspawn_tunnelers'),
+        category: 'evil',
+        era: 'deep_space',
+        reqs: { evil: 1, hellspawn: 1 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        grant: ['hellspawn',2],
+        cost: {
+            Knowledge(){ return 300000; }
+        },
+        effect: loc('tech_hellspawn_tunnelers_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.portal.prtl_wasteland.tunneler);
+                return true;
+            }
+            return false;
+        }
+    },
 };
 
 function uniteEffect(){

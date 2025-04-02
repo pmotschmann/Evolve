@@ -606,11 +606,25 @@ const fortressModules = {
             cost: {},
             queue_complete(){ return 0; },
             effect(wiki){
+                let desc = `<div>${loc('plus_max_resource',[sizeApproximation((global.race?.absorbed?.length || 1) * 500000),global.resource.Knowledge.name])}</div>`;
+
+                let muckVal2 = govActive('muckraker',2);
+                let know = muckVal2 ? (5 - muckVal2) : 5;
+                if (global.race['autoignition']){
+                    know -= traits.autoignition.vars()[0];
+                    if (know < 0){
+                        know = 0;
+                    }
+                }
+                desc += `<div>${loc('city_library_effect',[know * 20])}</div>`;
+
                 let essense = '';
                 if (global.race['absorbed']){
                     essense = global.race.absorbed.map(r => races[r].name).join(', ');
                 }
-                return `<div>${loc('plus_max_resource',[sizeApproximation(1000000),global.resource.Knowledge.name])}</div><div>${loc('portal_throne_of_evil_effect',[essense])}</div>`;
+                desc += `<div>${loc('portal_throne_of_evil_effect',[essense])}</div>`;
+
+                return desc;
             },
             action(){
                 return false;
@@ -840,6 +854,46 @@ const fortressModules = {
             },
             flair: loc('portal_casino_flair')
         },
+        twisted_lab: {
+            id: 'portal-twisted_lab',
+            title: loc('portal_twisted_lab_title'),
+            desc: `<div>${loc('portal_twisted_lab_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            reqs: { hellspawn: 1, science: 9 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('twisted_lab', offset, 200000, 1.28, 'portal'); },
+                Knowledge(offset){ return spaceCostMultiplier('twisted_lab', offset, 69000, 1.28, 'portal'); },
+                Stone(offset){ return spaceCostMultiplier('twisted_lab', offset, 125000, 1.28, 'portal'); },
+                Iron(offset){ return spaceCostMultiplier('twisted_lab', offset, 65000, 1.28, 'portal'); },
+                Iridium(offset){ return spaceCostMultiplier('twisted_lab', offset, 1250, 1.28, 'portal'); }
+            },
+            effect(){
+                let desc = `<div>${loc('plus_max_resource',[50000,loc('resource_Knowledge_name')])}</div>`;
+                desc += `<div>${loc('city_university_effect',[jobScale(3)])}</div>`;
+                desc += `<div>${loc('plus_max_resource',[jobScale(2),jobName('scientist')])}</div>`;
+                desc += `<div>${loc('interstellar_g_factory_effect')}</div>`;
+                desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            powered(){ return 4; },
+            special: true,
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('twisted_lab','portal');
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, Lumber: 0, Coal: 0, Oil: 0 },
+                    p: ['twisted_lab','portal']
+                };
+            },
+            flair(){ return loc('portal_twisted_lab_flair'); }
+        },
         demon_forge: {
             id: 'portal-demon_forge',
             title: loc('portal_demon_forge_title'),
@@ -928,6 +982,51 @@ const fortressModules = {
             },
             flair(){ return loc(`portal_factory_flair`); }
         },
+        pumpjack: {
+            id: 'portal-pumpjack',
+            title(){ return global.race['blubber'] ? loc('tech_oil_refinery') : loc('portal_pumpjack_title'); },
+            desc(){ return global.race['blubber'] ? loc('city_oil_well_blubber') : loc('portal_pumpjack_title'); },
+            reqs: { hellspawn: 1, oil: 1 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('pumpjack', offset, 5000, 1.5, 'portal'); },
+                Cement(offset){ return spaceCostMultiplier('pumpjack', offset, 5250, 1.5, 'portal'); },
+                Steel(offset){ return spaceCostMultiplier('pumpjack', offset, 6000, 1.5, 'portal'); }
+            },
+            effect(){
+                let oil = +(production('oil_well')).toFixed(2);
+                let oc = spatialReasoning(500);
+                let desc = `<div>${loc('plus_res_combo',[oil,oc,global.resource.Oil.name])}</div>`;
+
+                let storage = spatialReasoning(250);
+                let values = production('helium_mine');
+                let helium = +(values.b).toFixed(3);
+                desc += `<div>${loc('plus_res_combo',[helium,storage,global.resource.Helium_3.name])}</div>`;
+
+                if (global.race['blubber'] && global.portal.hasOwnProperty('pumpjack')){
+                    let maxDead = global.portal.pumpjack.count;
+                    desc += `<div>${loc('city_oil_well_bodies',[+(global.city.oil_well.dead).toFixed(1),50 * maxDead])}</div>`;
+                    desc += `<div>${loc('city_oil_well_consume',[traits.blubber.vars()[0]])}</div>`;
+                }
+                return desc;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('pumpjack','portal');
+                    global['resource']['Oil'].max += spatialReasoning(500);
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, dead: 0 },
+                    p: ['pumpjack','portal']
+                };
+            },
+            flair: loc('portal_pumpjack_flair')
+        },
         dig_demon: {
             id: 'portal-dig_demon',
             title: loc('portal_dig_demon_title'),
@@ -984,33 +1083,24 @@ const fortressModules = {
                 return pop;
             }
         },
-        twisted_lab: {
-            id: 'portal-twisted_lab',
-            title: loc('portal_twisted_lab_title'),
-            desc: `<div>${loc('portal_twisted_lab_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
-            reqs: { hellspawn: 1, science: 9 },
+        tunneler: {
+            id: 'portal-tunneler',
+            title: loc('portal_tunneler_title'),
+            desc: loc('portal_tunneler_desc'),
+            reqs: { hellspawn: 2 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
             cost: {
-                Money(offset){ return spaceCostMultiplier('twisted_lab', offset, 200000, 1.28, 'portal'); },
-                Knowledge(offset){ return spaceCostMultiplier('twisted_lab', offset, 69000, 1.28, 'portal'); },
-                Stone(offset){ return spaceCostMultiplier('twisted_lab', offset, 125000, 1.28, 'portal'); },
-                Iron(offset){ return spaceCostMultiplier('twisted_lab', offset, 65000, 1.28, 'portal'); },
-                Iridium(offset){ return spaceCostMultiplier('twisted_lab', offset, 1250, 1.28, 'portal'); }
+                Money(offset){ return spaceCostMultiplier('tunneler', offset, 350000, 1.25, 'portal'); },
             },
-            effect(){
-                let desc = `<div>${loc('plus_max_resource',[50000,loc('resource_Knowledge_name')])}</div>`;
-                desc += `<div>${loc('city_university_effect',[jobScale(2)])}</div>`;
-                desc += `<div>${loc('plus_max_resource',[jobScale(1),jobName('scientist')])}</div>`;
-                desc += `<div>${loc('interstellar_g_factory_effect')}</div>`;
-                desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            effect(wiki){
+                let desc = `<div>${loc('portal_tunneler_effect',[5])}</div>`;
+                desc += `<div>${loc('portal_tunneler_effect2')}</div>`;
                 return desc;
             },
-            powered(){ return 4; },
-            special: true,
             action(){
                 if (payCosts($(this)[0])){
-                    incrementStruct('twisted_lab','portal');
+                    incrementStruct('tunneler','portal');
                     powerOnNewStruct($(this)[0]);
                     return true;
                 }
@@ -1018,56 +1108,10 @@ const fortressModules = {
             },
             struct(){
                 return {
-                    d: { count: 0, on: 0, Lumber: 0, Coal: 0, Oil: 0 },
-                    p: ['twisted_lab','portal']
+                    d: { count: 0, on: 0 },
+                    p: ['tunneler','portal']
                 };
-            },
-            flair(){ return loc('portal_twisted_lab_flair'); }
-        },
-        pumpjack: {
-            id: 'portal-pumpjack',
-            title(){ return global.race['blubber'] ? loc('tech_oil_refinery') : loc('portal_pumpjack_title'); },
-            desc(){ return global.race['blubber'] ? loc('city_oil_well_blubber') : loc('portal_pumpjack_title'); },
-            reqs: { hellspawn: 1, oil: 1 },
-            trait: ['warlord'],
-            wiki: global.race['warlord'] ? true : false,
-            cost: {
-                Money(offset){ return spaceCostMultiplier('pumpjack', offset, 5000, 1.5, 'portal'); },
-                Cement(offset){ return spaceCostMultiplier('pumpjack', offset, 5250, 1.5, 'portal'); },
-                Steel(offset){ return spaceCostMultiplier('pumpjack', offset, 6000, 1.5, 'portal'); }
-            },
-            effect(){
-                let oil = +(production('oil_well')).toFixed(2);
-                let oc = spatialReasoning(500);
-                let desc = `<div>${loc('plus_res_combo',[oil,oc,global.resource.Oil.name])}</div>`;
-
-                let storage = spatialReasoning(250);
-                let values = production('helium_mine');
-                let helium = +(values.b).toFixed(3);
-                desc += `<div>${loc('plus_res_combo',[helium,storage,global.resource.Helium_3.name])}</div>`;
-
-                if (global.race['blubber'] && global.portal.hasOwnProperty('pumpjack')){
-                    let maxDead = global.portal.pumpjack.count;
-                    desc += `<div>${loc('city_oil_well_bodies',[+(global.city.oil_well.dead).toFixed(1),50 * maxDead])}</div>`;
-                    desc += `<div>${loc('city_oil_well_consume',[traits.blubber.vars()[0]])}</div>`;
-                }
-                return desc;
-            },
-            action(){
-                if (payCosts($(this)[0])){
-                    incrementStruct('pumpjack','portal');
-                    global['resource']['Oil'].max += spatialReasoning(500);
-                    return true;
-                }
-                return false;
-            },
-            struct(){
-                return {
-                    d: { count: 0, dead: 0 },
-                    p: ['pumpjack','portal']
-                };
-            },
-            flair: loc('portal_pumpjack_flair')
+            }
         },
         brute: {
             id: 'portal-brute',
@@ -1116,7 +1160,7 @@ const fortressModules = {
             id: 'portal-minions',
             title: loc('portal_minions_title'),
             desc: loc('portal_minions_title'),
-            reqs: { hellspawn: 2 },
+            reqs: { hellspawn: 3 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
             cost: {
@@ -6574,6 +6618,7 @@ export function warlordSetup(){
         global.resource.Wrought_Iron.display = true;
         global.resource.Sheet_Metal.display = true;
         global.resource.Mythril.display = true;
+        global.resource.Aerogel.display = true;
 
         if (!global.race['kindling_kindred'] && !global.race['smoldering']){
             global.civic.lumberjack.display = true;
@@ -6656,6 +6701,7 @@ export function warlordSetup(){
         global.resource.Wrought_Iron.amount = 2500000;
         global.resource.Sheet_Metal.amount = 2500000;
         global.resource.Mythril.amount = 2500000;
+        global.resource.Aerogel.amount = 2500000;
         global.resource.Authority.amount = 80;
 
         if (!global.race['artifical']){
@@ -6889,13 +6935,13 @@ export function warlordSetup(){
         global.civic.banker.workers = 1;
         global.civic.banker.assigned = 1;
 
-        global.civic.professor.max = 2;
-        global.civic.professor.workers = 2;
-        global.civic.professor.assigned = 2;
+        global.civic.professor.max = 3;
+        global.civic.professor.workers = 3;
+        global.civic.professor.assigned = 3;
 
-        global.civic.scientist.max = 1;
-        global.civic.scientist.workers = 1;
-        global.civic.scientist.assigned = 1;
+        global.civic.scientist.max = 2;
+        global.civic.scientist.workers = 2;
+        global.civic.scientist.assigned = 2;
 
         global.civic.govern.type = 'autocracy';
 
