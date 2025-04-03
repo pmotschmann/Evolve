@@ -8704,7 +8704,7 @@ const techs = {
         id: 'tech-astrophysics',
         title: loc('tech_astrophysics'),
         desc: loc('tech_astrophysics_desc'),
-        category: 'storage',
+        category: 'space_exploration',
         era: 'early_space',
         reqs: { space: 2 },
         grant: ['space_explore',1],
@@ -14556,7 +14556,7 @@ const techs = {
             Knowledge(){ return 95000000; },
             Omniscience(){ return 19500; },
         },
-        effect(){ return loc('tech_hallowed_housing_effect',[loc(`job_priest`),loc('eden_asphodel_name')]); },
+        effect(){ return loc('tech_hallowed_housing_effect',[global.civic?.priest?.name || loc(`job_priest`),loc('eden_asphodel_name')]); },
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.eden.eden_asphodel.rectory);
@@ -15122,6 +15122,119 @@ const techs = {
             return false;
         }
     },
+    might: {
+        id: 'tech-might',
+        title: loc('tech_might'),
+        desc: loc('tech_might'),
+        category: 'evil',
+        era: 'civilized',
+        reqs: { military: 1 },
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        grant: ['evil',1],
+        cost: {
+            Knowledge(){ return 100; }
+        },
+        effect: loc('tech_might_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        },
+        flair(){
+            return loc('tech_might_flair');
+        }
+    },
+    executions: {
+        id: 'tech-executions',
+        title: loc('tech_executions'),
+        desc: loc('tech_executions'),
+        category: 'evil',
+        era: 'industrialized',
+        reqs: { evil: 1, high_tech: 3 },
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        grant: ['evil',2],
+        cost: {
+            Knowledge(){ return 35000; }
+        },
+        effect: loc('tech_executions_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    secret_police: {
+        id: 'tech-secret_police',
+        title: loc('tech_secret_police'),
+        desc: loc('tech_secret_police'),
+        category: 'evil',
+        era: 'globalized',
+        reqs: { evil: 2, high_tech: 6 },
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        grant: ['evil',3],
+        cost: {
+            Knowledge(){ return 112000; }
+        },
+        effect: loc('tech_secret_police_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    ai_tracking: {
+        id: 'tech-ai_tracking',
+        title: loc('tech_ai_tracking'),
+        desc: loc('tech_ai_tracking'),
+        category: 'evil',
+        era: 'deep_space',
+        reqs: { evil: 3, high_tech: 10 },
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        grant: ['evil',4],
+        cost: {
+            Knowledge(){ return 345000; }
+        },
+        effect: loc('tech_ai_tracking_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    predictive_arrests: {
+        id: 'tech-predictive_arrests',
+        title: loc('tech_predictive_arrests'),
+        desc: loc('tech_predictive_arrests'),
+        category: 'evil',
+        era: 'intergalactic',
+        reqs: { evil: 4, high_tech: 16 },
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        grant: ['evil',5],
+        cost: {
+            Knowledge(){ return 5123450; }
+        },
+        effect: loc('tech_predictive_arrests_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    }
 };
 
 function uniteEffect(){

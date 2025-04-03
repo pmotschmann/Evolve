@@ -1962,7 +1962,7 @@ export const actions = {
                 Iron(offset){ return costMultiplier('mill', offset, 150, 1.33); },
                 Cement(offset){ return costMultiplier('mill', offset, 125, 1.33); },
             },
-            powered(){ return global.race['environmentalist'] ? -1.5 : -1; },
+            powered(){ return powerModifier(global.race['environmentalist'] ? -1.5 : -1); },
             power_reqs: { agriculture: 6 },
             effect(){
                 if (global.tech['agriculture'] >= 6){
@@ -1998,7 +1998,7 @@ export const actions = {
             category: 'utility',
             reqs: { wind_plant: 1 },
             not_trait: ['cataclysm','lone_survivor'],
-            powered(){ return global.race['environmentalist'] ? -1.5 : -1; },
+            powered(){ return powerModifier(global.race['environmentalist'] ? -1.5 : -1); },
             power_reqs: { false: 1 },
             cost: {
                 Money(offset){ return costMultiplier('windmill', offset, 1000, 1.31); },
@@ -2074,7 +2074,7 @@ export const actions = {
                 let bunks = $(this)[0].soldiers();
                 let desc = `<div>${loc('plus_max_resource',[bunks,loc('civics_garrison_soldiers')])}</div>`;
                 if (global.race.universe === 'evil'){
-                    desc += `<div>${loc('plus_max_resource',[1,global.resource.Authority.name])}</div>`;
+                    desc += `<div>${loc('plus_max_resource',[0.5,global.resource.Authority.name])}</div>`;
                 }
                 return desc;
             },
@@ -3486,7 +3486,7 @@ export const actions = {
             title(){ return structName('temple'); },
             desc(){
                 let entity = global.race.gods !== 'none' ? races[global.race.gods.toLowerCase()].entity : races[global.race.species].entity;
-                return loc('city_temple_desc',[entity]);
+                return global.race.universe === 'evil' && global.civic.govern.type != 'theocracy' ? loc('city_temple_desc_evil',[entity]) : loc('city_temple_desc',[entity]);
             },
             category: 'commercial',
             reqs: { theology: 2 },
@@ -3501,7 +3501,10 @@ export const actions = {
             effect(){
                 let desc = templeEffect();
                 if (global.genes['ancients'] && global.genes['ancients'] >= 2){
-                    desc = desc + `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_priest`)])}</div>`;
+                    desc = desc + `<div>${loc('plus_max_resource',[jobScale(1),global.civic?.priest?.name || loc(`job_priest`)])}</div>`;
+                }
+                if (global.race.universe === 'evil'){
+                    desc += `<div>${loc('plus_max_resource',[0.5,global.resource.Authority.name])}</div>`;
                 }
                 return desc;
             },
@@ -8070,7 +8073,7 @@ export function structName(type){
         }
         case 'temple':
         {
-            return halloween.active ? loc(`events_halloween_temple`) : loc('city_temple');
+            return halloween.active ? loc(`events_halloween_temple`) : (global.race.universe === 'evil' && global.civic.govern.type != 'theocracy' ? loc('city_propaganda') : loc('city_temple'));
         }
     }
 }
