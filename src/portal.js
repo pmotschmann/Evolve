@@ -616,7 +616,8 @@ const fortressModules = {
                         know = 0;
                     }
                 }
-                desc += `<div>${loc('city_library_effect',[know * 20])}</div>`;
+                desc += `<div>${loc('city_library_effect',[Math.round((global.race?.absorbed?.length || 1) * 10 * know)])}</div>`;
+                desc += `<div>${loc('plus_res_duo',[500,global.resource.Crates.name,global.resource.Containers.name])}</div>`;
 
                 let essense = '';
                 if (global.race['absorbed']){
@@ -638,7 +639,10 @@ const fortressModules = {
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
             cost: {
-                Money(offset){ return spaceCostMultiplier('incinerator', offset, 350000, 1.25, 'portal'); },
+                Money(offset){ return spaceCostMultiplier('incinerator', offset, 220000, 1.25, 'portal'); },
+                Coal(offset){ return spaceCostMultiplier('incinerator', offset, 80000, 1.25, 'portal'); },
+                Neutronium(offset){ return spaceCostMultiplier('incinerator', offset, 5000, 1.25, 'portal'); },
+                Infernite(offset){ return spaceCostMultiplier('incinerator', offset, 4000, 1.25, 'portal'); },
             },
             powered(wiki){
                 let power = 25;
@@ -680,9 +684,9 @@ const fortressModules = {
             wiki: global.race['warlord'] ? true : false,
             cost: {
                 Money(offset){ return spaceCostMultiplier('warehouse', offset, 175000, 1.28, 'portal'); },
-                Lumber(offset){ return spaceCostMultiplier('warehouse', offset, 100000, 1.28, 'portal'); },
-                Aluminium(offset){ return spaceCostMultiplier('warehouse', offset, 120000, 1.28, 'portal'); },
-                Cement(offset){ return spaceCostMultiplier('warehouse', offset, 45000, 1.28, 'portal'); }
+                Lumber(offset){ return spaceCostMultiplier('warehouse', offset, 300000, 1.28, 'portal'); },
+                Aluminium(offset){ return spaceCostMultiplier('warehouse', offset, 180000, 1.28, 'portal'); },
+                Cement(offset){ return spaceCostMultiplier('warehouse', offset, 95000, 1.28, 'portal'); }
             },
             res(){
                 let r_list = [
@@ -755,10 +759,12 @@ const fortressModules = {
                 for (const res of $(this)[0].res()){
                     if (global.resource[res].display){
                         let val = sizeApproximation(+(spatialReasoning($(this)[0].val(res)) * multiplier).toFixed(0),1);
-                        storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
+                        storage += `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
-                storage = storage + '</div>';
+                storage += `<span>${loc('plus_max_resource',[100,global.resource.Crates.name])}</span>`;
+                storage += `<span>${loc('plus_max_resource',[100,global.resource.Containers.name])}</span>`;
+                storage += '</div>';
                 return storage;
             },
             action(){
@@ -789,7 +795,9 @@ const fortressModules = {
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
             cost: {
-                Money(offset){ return spaceCostMultiplier('hovel', offset, 350000, 1.25, 'portal'); },
+                Money(offset){ return spaceCostMultiplier('hovel', offset, 145000, 1.25, 'portal'); },
+                Stone(offset){ return spaceCostMultiplier('hovel', offset, 185000, 1.25, 'portal'); },
+                Furs(offset){ return spaceCostMultiplier('hovel', offset, 66600, 1.25, 'portal'); },
             },
             effect(){
                 let pop = $(this)[0].citizens();
@@ -824,10 +832,10 @@ const fortressModules = {
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
             cost: {
-                Money(offset){ return spaceCostMultiplier('hell_casino', offset, traitCostMod('untrustworthy',400000), 1.35); },
-                Furs(offset){ return spaceCostMultiplier('hell_casino', offset, traitCostMod('untrustworthy',75000), 1.35); },
-                Cement(offset){ return spaceCostMultiplier('hell_casino', offset, traitCostMod('untrustworthy',100000), 1.35); },
-                Plywood(offset){ return spaceCostMultiplier('hell_casino', offset, traitCostMod('untrustworthy',20000), 1.35); }
+                Money(offset){ return spaceCostMultiplier('hell_casino', offset, traitCostMod('untrustworthy',400000), 1.3, 'portal'); },
+                Furs(offset){ return spaceCostMultiplier('hell_casino', offset, traitCostMod('untrustworthy',175000), 1.3, 'portal'); },
+                Stone(offset){ return spaceCostMultiplier('hell_casino', offset, traitCostMod('untrustworthy',350000), 1.3, 'portal'); },
+                Plywood(offset){ return spaceCostMultiplier('hell_casino', offset, traitCostMod('untrustworthy',65000), 1.3, 'portal'); }
             },
             effect(){
                 let desc = casinoEffect();
@@ -862,11 +870,11 @@ const fortressModules = {
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
             cost: {
-                Money(offset){ return spaceCostMultiplier('twisted_lab', offset, 200000, 1.28, 'portal'); },
-                Knowledge(offset){ return spaceCostMultiplier('twisted_lab', offset, 69000, 1.28, 'portal'); },
-                Stone(offset){ return spaceCostMultiplier('twisted_lab', offset, 125000, 1.28, 'portal'); },
-                Iron(offset){ return spaceCostMultiplier('twisted_lab', offset, 65000, 1.28, 'portal'); },
-                Iridium(offset){ return spaceCostMultiplier('twisted_lab', offset, 1250, 1.28, 'portal'); }
+                Money(offset){ return spaceCostMultiplier('twisted_lab', offset, 350000, 1.26, 'portal'); },
+                Knowledge(offset){ return spaceCostMultiplier('twisted_lab', offset, 69000, 1.26, 'portal'); },
+                Copper(offset){ return spaceCostMultiplier('twisted_lab', offset, 375000, 1.26, 'portal'); },
+                Polymer(offset){ return spaceCostMultiplier('twisted_lab', offset, 289000, 1.26, 'portal'); },
+                Graphene(offset){ return spaceCostMultiplier('twisted_lab', offset, 230000, 1.26, 'portal'); }
             },
             effect(){
                 let desc = `<div>${loc('plus_max_resource',[50000,loc('resource_Knowledge_name')])}</div>`;
@@ -902,10 +910,10 @@ const fortressModules = {
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
             cost: {
-                Money(offset){ return spaceCostMultiplier('demon_forge', offset, 1200000, 1.25, 'portal'); },
+                Money(offset){ return spaceCostMultiplier('demon_forge', offset, 380000, 1.25, 'portal'); },
                 Iridium(offset){ return spaceCostMultiplier('demon_forge', offset, 250000, 1.25, 'portal'); },
-                Bolognium(offset){ return spaceCostMultiplier('demon_forge', offset, 35000, 1.25, 'portal'); },
-                Aerogel(offset){ return spaceCostMultiplier('demon_forge', offset, 75000, 1.25, 'portal'); },
+                Iron(offset){ return spaceCostMultiplier('demon_forge', offset, 435000, 1.25, 'portal'); },
+                Brick(offset){ return spaceCostMultiplier('demon_forge', offset, 155000, 1.25, 'portal'); },
             },
             effect(){
                 let desc = `<div>${loc('city_foundry_effect1',[jobScale(10)])}</div><div>${loc('interstellar_stellar_forge_effect',[12])}</div>`;
@@ -950,10 +958,10 @@ const fortressModules = {
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
             cost: {
-                Money(offset){ return spaceCostMultiplier('hell_factory', offset, 25000000, 1.26, 'portal'); },
-                Coal(offset){ return spaceCostMultiplier('hell_factory', offset, 10000000, 1.26, 'portal'); },
-                Brick(offset){ return spaceCostMultiplier('hell_factory', offset, 750000, 1.26, 'portal'); },
-                Bolognium(offset){ return spaceCostMultiplier('hell_factory', offset, 50000, 1.26, 'portal'); }
+                Money(offset){ return spaceCostMultiplier('hell_factory', offset, 600000, 1.26, 'portal'); },
+                Titanium(offset){ return spaceCostMultiplier('hell_factory', offset, 550000, 1.26, 'portal'); },
+                Nano_Tube(offset){ return spaceCostMultiplier('hell_factory', offset, 35000, 1.26, 'portal'); },
+                Stanene(offset){ return spaceCostMultiplier('hell_factory', offset, 375000, 1.26, 'portal'); }
             },
             effect(){
                 let desc = `<div>${loc('portal_factory_effect',[4])}</div><div>${loc('city_crafted_mats',[10])}</div>`;
@@ -990,9 +998,9 @@ const fortressModules = {
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
             cost: {
-                Money(offset){ return spaceCostMultiplier('pumpjack', offset, 5000, 1.5, 'portal'); },
-                Cement(offset){ return spaceCostMultiplier('pumpjack', offset, 5250, 1.5, 'portal'); },
-                Steel(offset){ return spaceCostMultiplier('pumpjack', offset, 6000, 1.5, 'portal'); }
+                Money(offset){ return spaceCostMultiplier('pumpjack', offset, 295000, 1.25, 'portal'); },
+                Cement(offset){ return spaceCostMultiplier('pumpjack', offset, 185000, 1.25, 'portal'); },
+                Steel(offset){ return spaceCostMultiplier('pumpjack', offset, 275000, 1.25, 'portal'); }
             },
             effect(){
                 let oil = +(production('oil_well')).toFixed(2);
@@ -1035,7 +1043,9 @@ const fortressModules = {
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
             cost: {
-                Money(offset){ return spaceCostMultiplier('dig_demon', offset, 350000, 1.25, 'portal'); },
+                Money(offset){ return spaceCostMultiplier('dig_demon', offset, 315000, 1.25, 'portal'); },
+                Adamantite(offset){ return spaceCostMultiplier('dig_demon', offset, 188000, 1.25, 'portal'); },
+                Wrought_Iron(offset){ return spaceCostMultiplier('dig_demon', offset, 150000, 1.25, 'portal'); },
             },
             powered(){ return true; },
             effect(wiki){
@@ -1091,7 +1101,9 @@ const fortressModules = {
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
             cost: {
-                Money(offset){ return spaceCostMultiplier('tunneler', offset, 350000, 1.25, 'portal'); },
+                Money(offset){ return spaceCostMultiplier('tunneler', offset, 275000, 1.25, 'portal'); },
+                Food(offset){ return spaceCostMultiplier('tunneler', offset, 135000, 1.25, 'portal'); },
+                Uranium(offset){ return spaceCostMultiplier('tunneler', offset, 135, 1.25, 'portal'); },
             },
             effect(wiki){
                 let desc = `<div>${loc('portal_tunneler_effect',[5])}</div>`;
@@ -1121,10 +1133,10 @@ const fortressModules = {
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
             cost: {
-                Money(offset){ return spaceCostMultiplier('brute', offset, 875000, 1.28, 'portal'); },
-                Aluminium(offset){ return spaceCostMultiplier('brute', offset, 195000, 1.28, 'portal'); },
-                Neutronium(offset){ return spaceCostMultiplier('brute', offset, 2000, 1.28, 'portal'); },
-                Aerogel(offset){ return spaceCostMultiplier('brute', offset, 250, 1.28, 'portal'); },
+                Money(offset){ return spaceCostMultiplier('brute', offset, 300000, 1.25, 'portal'); },
+                Alloy(offset){ return spaceCostMultiplier('brute', offset, 238000, 1.25, 'portal'); },
+                Bolognium(offset){ return spaceCostMultiplier('brute', offset, 65000, 1.25, 'portal'); },
+                Mythril(offset){ return spaceCostMultiplier('brute', offset, 178000, 1.25, 'portal'); },
             },
             powered(){ return 0; },
             effect(){
@@ -1164,10 +1176,10 @@ const fortressModules = {
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
             cost: {
-                Money(offset){ return spaceCostMultiplier('minions', offset, 875000, 1.28, 'portal'); },
-                Aluminium(offset){ return spaceCostMultiplier('minions', offset, 195000, 1.28, 'portal'); },
-                Neutronium(offset){ return spaceCostMultiplier('minions', offset, 2000, 1.28, 'portal'); },
-                Aerogel(offset){ return spaceCostMultiplier('minions', offset, 250, 1.28, 'portal'); },
+                Money(offset){ return spaceCostMultiplier('minions', offset, 150000, 1.22, 'portal'); },
+                Furs(offset){ return spaceCostMultiplier('minions', offset, 10000, 1.22, 'portal'); },
+                Infernite(offset){ return spaceCostMultiplier('minions', offset, 200, 1.22, 'portal'); },
+                Orichalcum(offset){ return spaceCostMultiplier('minions', offset, 25000, 1.22, 'portal'); },
             },
             powered(){ return 0; },
             effect(){
@@ -6627,8 +6639,8 @@ export function warlordSetup(){
             global.resource.Lumber.max = 10000000;
             global.resource.Lumber.amount = 10000000;
             global.resource.Plywood.amount = 2500000;
-            global.resource.Lumber.crates = 25;
-            global.resource.Lumber.containers = 25;
+            global.resource.Lumber.crates = 30;
+            global.resource.Lumber.containers = 30;
             global.tech['axe'] = 5;
         }
         if (global.race['smoldering']){
@@ -6709,45 +6721,45 @@ export function warlordSetup(){
             global.resource.Food.containers = 10;
         }
 
-        global.resource.Stone.crates = 25;
-        global.resource.Stone.containers = 25;
-        global.resource.Furs.crates = 25;
-        global.resource.Furs.containers = 25;
+        global.resource.Stone.crates = 30;
+        global.resource.Stone.containers = 30;
+        global.resource.Furs.crates = 30;
+        global.resource.Furs.containers = 30;
         global.resource.Coal.crates = 10;
         global.resource.Coal.containers = 10;
-        global.resource.Copper.crates = 25;
-        global.resource.Copper.containers = 25;
-        global.resource.Iron.crates = 25;
-        global.resource.Iron.containers = 25;
-        global.resource.Aluminium.crates = 25;
-        global.resource.Aluminium.containers = 25;
-        global.resource.Steel.crates = 25;
-        global.resource.Steel.containers = 25;
-        global.resource.Titanium.crates = 25;
-        global.resource.Titanium.containers = 25;
-        global.resource.Alloy.crates = 25;
-        global.resource.Alloy.containers = 25;
-        global.resource.Polymer.crates = 25;
-        global.resource.Polymer.containers = 25;
-        global.resource.Iridium.crates = 25;
-        global.resource.Iridium.containers = 25;
-        global.resource.Adamantite.crates = 25;
-        global.resource.Adamantite.containers = 25;
-        global.resource.Graphene.crates = 25;
-        global.resource.Graphene.containers = 25;
-        global.resource.Stanene.crates = 25;
-        global.resource.Stanene.containers = 25;
-        global.resource.Bolognium.crates = 25;
-        global.resource.Bolognium.containers = 25;
-        global.resource.Orichalcum.crates = 25;
-        global.resource.Orichalcum.containers = 25;
+        global.resource.Copper.crates = 30;
+        global.resource.Copper.containers = 30;
+        global.resource.Iron.crates = 30;
+        global.resource.Iron.containers = 30;
+        global.resource.Aluminium.crates = 30;
+        global.resource.Aluminium.containers = 30;
+        global.resource.Steel.crates = 30;
+        global.resource.Steel.containers = 30;
+        global.resource.Titanium.crates = 30;
+        global.resource.Titanium.containers = 30;
+        global.resource.Alloy.crates = 30;
+        global.resource.Alloy.containers = 30;
+        global.resource.Polymer.crates = 30;
+        global.resource.Polymer.containers = 30;
+        global.resource.Iridium.crates = 30;
+        global.resource.Iridium.containers = 30;
+        global.resource.Adamantite.crates = 30;
+        global.resource.Adamantite.containers = 30;
+        global.resource.Graphene.crates = 30;
+        global.resource.Graphene.containers = 30;
+        global.resource.Stanene.crates = 30;
+        global.resource.Stanene.containers = 30;
+        global.resource.Bolognium.crates = 30;
+        global.resource.Bolognium.containers = 30;
+        global.resource.Orichalcum.crates = 30;
+        global.resource.Orichalcum.containers = 30;
 
         global.civic.taxes.display = true;
 
         if (!global.race['flier']){
             global.civic.cement_worker.display = true;
-            global.resource.Cement.crates = 25;
-            global.resource.Cement.containers = 25;
+            global.resource.Cement.crates = 30;
+            global.resource.Cement.containers = 30;
         }
 
         global.civic.professor.display = true;
@@ -6901,7 +6913,7 @@ export function warlordSetup(){
         initStruct(fortressModules.prtl_wasteland.hell_casino); global.portal.hell_casino.count = 1; global.portal.hell_casino.on = 1;
         initStruct(fortressModules.prtl_wasteland.demon_forge); global.portal.demon_forge.count = 1; global.portal.demon_forge.on = 1;
         initStruct(fortressModules.prtl_wasteland.hell_factory); global.portal.hell_factory.count = 1; global.portal.hell_factory.on = 1;
-        initStruct(fortressModules.prtl_wasteland.twisted_lab); global.portal.twisted_lab.count = 1; global.portal.twisted_lab.on = 1;
+        initStruct(fortressModules.prtl_wasteland.twisted_lab); global.portal.twisted_lab.count = 1; global.portal.twisted_lab.on = 1; global.portal.twisted_lab.Coal = 1;
         initStruct(fortressModules.prtl_wasteland.pumpjack); global.portal.pumpjack.count = 1;
         initStruct(fortressModules.prtl_wasteland.brute); global.portal.brute.count = 1; global.portal.brute.on = 1;
 
@@ -6927,9 +6939,9 @@ export function warlordSetup(){
         global.civic.cement_worker.workers = 5;
         global.civic.cement_worker.assigned = 5;
 
-        global.civic.entertainer.max = 2;
-        global.civic.entertainer.workers = 2;
-        global.civic.entertainer.assigned = 2;
+        global.civic.entertainer.max = 3;
+        global.civic.entertainer.workers = 3;
+        global.civic.entertainer.assigned = 3;
 
         global.civic.banker.max = 1;
         global.civic.banker.workers = 1;

@@ -4178,7 +4178,7 @@ function fastLoop(){
                         lib_multiplier = 0;
                     }
                 }
-                let lib_count = global.race['warlord'] ? 20 : global.city.library.count;
+                let lib_count = global.race['warlord'] ? ((global.race?.absorbed?.length || 1) * 10) : global.city.library.count;
                 let library_mult = 1 + (lib_count * lib_multiplier);
                 breakdown.p['Knowledge'][global.race['warlord'] ? loc('portal_throne_of_evil_title') : loc('city_library')] = ((library_mult - 1) * 100) + '%';
                 delta *= library_mult;
@@ -6412,7 +6412,7 @@ function fastLoop(){
         }
 
         // Warlord Supplimental Resources
-        if (global.race['warlord'] && global.portal['tunneler']){
+        if (global.race['warlord'] && global.portal['tunneler'] && global.portal.tunneler.count > 0){
             let res_base = workerScale(global.civic.miner.workers,'miner');
             res_base *= racialTrait(res_base,'miner');
             if (global.race['tough']){
@@ -8704,6 +8704,11 @@ function midLoop(){
                     breakdown.c[res][label] = gain+'v';
                 }
             };
+            let cc_gain = global.portal.warehouse.count * 100;
+            caps['Crates'] += cc_gain;
+            breakdown.c['Crates'][label] = cc_gain+'v';
+            caps['Containers'] += cc_gain;
+            breakdown.c['Containers'][label] = cc_gain+'v';
         }
 
         if (global.space['storehouse']){
@@ -9144,6 +9149,11 @@ function midLoop(){
             let gain = (global.race?.absorbed?.length || 1) * 500000;
             caps['Knowledge'] += gain;
             breakdown.c.Knowledge[loc('portal_throne_of_evil_title')] = gain+'v';
+
+            caps['Crates'] += 500;
+            breakdown.c.Crates[loc('portal_throne_of_evil_title')] = 500 + 'v';
+            caps['Containers'] += 500;
+            breakdown.c.Containers[loc('portal_throne_of_evil_title')] = 500 + 'v';
         }
         if (global.portal['twisted_lab'] && global.portal.twisted_lab.count > 0){
             let gain = (p_on['twisted_lab'] * 50000);

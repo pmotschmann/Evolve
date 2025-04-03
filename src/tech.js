@@ -15251,7 +15251,7 @@ const techs = {
         },
         grant: ['hellspawn',2],
         cost: {
-            Knowledge(){ return 300000; }
+            Knowledge(){ return 250000; }
         },
         effect: loc('tech_hellspawn_tunnelers_effect'),
         action(){

@@ -76,6 +76,7 @@
   "plus_max_citizens": "+%0 Max Citizens",
   "plus_max_soldiers": "+%0 Max Soldiers",
   "plus_res_combo": "+%0 %2 Production, +%1 Max %2",
+  "plus_res_duo": "+%0 Max %1/%2",
   "minus_power": "-%0MW",
   "theme": "Theme",
   "theme_dark": "Dark",

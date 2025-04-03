@@ -6171,7 +6171,10 @@ export function racialTrait(workers,type){
             modifier *= 1.82;
         }
         else if (type === 'lumberjack'){
-            modifier *= 1.25;
+            modifier *= 1.3;
+        }
+        else if (type === 'science'){
+            modifier *= 1.5;
         }
     }
     if (global.race['forager'] && type === 'forager'){

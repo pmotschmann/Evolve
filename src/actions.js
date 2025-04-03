@@ -5440,7 +5440,7 @@ export function casinoEffect(){
     }
     money = Math.round(money);
 
-    let joy = global.race['joyless'] ? '' : `<div>${loc('plus_max_resource',[jobScale(global.race['warlord'] ? 2 : 1),loc(`job_entertainer`)])}</div>`;
+    let joy = global.race['joyless'] ? '' : `<div>${loc('plus_max_resource',[jobScale(global.race['warlord'] ? 3 : 1),loc(`job_entertainer`)])}</div>`;
     let banker = global.race['orbit_decayed'] || global.tech['isolation'] || global.race['warlord'] ? `<div>${loc('plus_max_resource',[jobScale(1),loc('banker_name')])}</div>` : '';
     let desc = `<div>${loc('plus_max_resource',[`\$${money.toLocaleString()}`,loc('resource_Money_name')])}</div>${joy}${banker}<div>${loc('city_max_morale',[1])}</div>`;
     let cash = Math.log2(1 + global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5);
