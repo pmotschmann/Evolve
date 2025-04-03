@@ -1998,6 +1998,9 @@ const extraInformation = {
     otherworldly_cement: [
         loc(`wiki_tech_otherworldly_cement`)
     ],
+    ancient_crafters: [
+        loc(`wiki_tech_ancient_crafters`)
+    ],
     tomb: [
         loc(`wiki_tech_tomb`)
     ],
