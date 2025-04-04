@@ -952,7 +952,7 @@ export function index(){
     </div>`);
     message_filters.forEach(function (filter){
         $(`#msgQueueFilters`).append(`
-            <span id="msgQueueFilter-${filter}" class="${filter === 'all' ? 'is-active' : ''}" @click="swapFilter('${filter}')" v-show="s.${filter}.vis">${loc('message_log_' + filter)}</span>
+            <span id="msgQueueFilter-${filter}" class="${filter === 'all' ? 'is-active' : ''}" @click="swapFilter('${filter}')" v-show="s.${filter}.vis" role="button">${loc('message_log_' + filter)}</span>
         `);
     });
     vBind({
