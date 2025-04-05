@@ -9,7 +9,7 @@ import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, 
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
 import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes } from './space.js';
-import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay } from './portal.js';
+import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
 import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue } from './truepath.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
@@ -2992,7 +2992,7 @@ function fastLoop(){
         global.city.morale.entertain = entertainment;
         morale += entertainment;
 
-        if (global.tech['broadcast']){
+        if (global.tech['broadcast'] && !global.race['joyless']){
             let gasVal = govActive('gaslighter',0);
             let signalVal = global.race['orbit_decayed'] ? (p_on['nav_beacon'] || 0) : (global.tech['isolation'] && global.race['truepath'] ? support_on['colony'] : p_on['wardenclyffe']);
             if (global.race['orbit_decayed']){ signalVal /= 2; }
@@ -3001,7 +3001,10 @@ function fastLoop(){
             global.city.morale.broadcast = signalVal * mVal;
             morale += signalVal * mVal;
         }
-        if (support_on['vr_center']){
+        else {
+            global.city.morale.broadcast = 0;
+        }
+        if (support_on['vr_center'] && !global.race['joyless']){
             let gasVal = govActive('gaslighter',1);
             let vr_morale = gasVal ? gasVal + 1 : 1;
             if (global.race['orbit_decayed']){
@@ -3020,14 +3023,14 @@ function fastLoop(){
         else {
             global.city.morale.zoo = 0;
         }
-        if (support_on['bliss_den']){
+        if (support_on['bliss_den'] && !global.race['joyless']){
             global.city.morale.bliss_den = support_on['bliss_den'] * 8;
             morale += support_on['bliss_den'] * 8;
         }
         else {
             global.city.morale.bliss_den = 0;
         }
-        if (p_on['restaurant'] && !global.race['fasting']){
+        if (p_on['restaurant'] && !global.race['fasting'] && !global.race['joyless']){
             let val = 0;
             val += global.eden.hasOwnProperty('pillbox') && p_on['pillbox'] ? 0.35 * p_on['pillbox'] : 0;
             val += global.civic.elysium_miner.workers * 0.15;
@@ -4292,12 +4295,12 @@ function fastLoop(){
             let on_factories = (p_on['factory'] || 0)
                 + (p_on['red_factory'] || 0)
                 + ((p_on['int_factory'] || 0) * 2)
-                + ((p_on['hell_factory'] || 0) * 4)
+                + ((p_on['hell_factory'] || 0) * 6)
                 + ((support_on['tau_factory'] || 0) * (global.tech['isolation'] ? 5 : 3));
             let max_factories = global.city['factory'].on
                 + (global.space['red_factory'] ? global.space['red_factory'].on : 0)
                 + (global.interstellar['int_factory'] ? global.interstellar['int_factory'].on * 2 : 0)
-                + (global.portal['hell_factory'] ? global.portal['hell_factory'].on * 4 : 0)
+                + (global.portal['hell_factory'] ? global.portal['hell_factory'].on * 6 : 0)
                 + (global.tauceti['tau_factory'] ? global.tauceti['tau_factory'].on * (global.tech['isolation'] ? 5 : 3) : 0);
             let eff = max_factories > 0 ? on_factories / max_factories : 0;
             let remaining = max_factories;
@@ -8136,6 +8139,11 @@ function midLoop(){
                 caps.Authority += gain;
                 breakdown.c.Authority[loc('interstellar_cruiser_title')] = gain+'v';
             }
+            if (global.race['warlord']){
+                let gain = global.race?.absorbed?.length || 1;
+                caps.Authority += gain;
+                breakdown.c.Authority[loc('portal_throne_of_evil_title')] = gain+'v';
+            }
             if (global.portal['brute']){
                 let gain = global.portal.brute.on;
                 caps.Authority += gain;
@@ -8791,7 +8799,7 @@ function midLoop(){
             }
         }
 
-        if (global.resource.Infernite.display && global.portal['fortress']){
+        if (global.resource.Infernite.display && global.portal['fortress'] && !global.race['warlord']){
             let gain = spatialReasoning(1000);
             caps['Infernite'] += gain;
             breakdown.c.Infernite[loc('portal_fortress_name')] = gain+'v';
@@ -11194,8 +11202,11 @@ function longLoop(){
             }, 4000);
         }
 
-        if (global.portal['fortress']){
+        if (global.portal['fortress'] && !global.race['warlord']){
             bloodwar();
+        }
+        else if (global.race['warlord'] && global.portal['minions'] && global.portal.minions.count > 0){
+            hellguard();
         }
 
         if (global.civic.govern.rev > 0){

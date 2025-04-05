@@ -1391,6 +1391,10 @@ Misc ---------> Main template
                     }
                 }
 
+                .enemyFortress {
+                    background-color: @button-background;
+                }
+
                 .divider h2 {
                     background: @html-background;
                 }
@@ -2855,6 +2859,37 @@ a {
 
         .action.disabled {
             display: none;
+        }
+
+        .enemyFortress {
+            display: inline-block;
+            position: relative;
+            width: 18rem;
+            height: 3.125rem;
+            margin: .375rem .375rem 0 0;
+            border-radius: .25rem;
+
+            .fortRow {
+                > span {
+                    display: inline-block;
+                }
+                :first-child {
+                    margin-left: 0.5rem;
+                    float: left;
+                }
+                :last-child {
+                    margin-right: 0.5rem;
+                    float: right;
+                }
+            }
+
+            .second {
+                line-height: 2rem;
+                a.button {
+                    height: 1.5rem;
+                    margin-top: 0.25rem;
+                }
+            }
         }
 
         .geck {

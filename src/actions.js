@@ -8198,6 +8198,7 @@ function sentience(){
     if (global.race['warlord']){
         let trait = races[global.race.species].fanaticism;
         global.race['absorbed'] = [global.race.species];
+        global.race['origin'] = global.race.species;
         global.race.species = 'hellspawn';
         setTraitRank(trait, { set: 0.5 });
     }

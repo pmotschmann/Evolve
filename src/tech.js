@@ -10316,6 +10316,7 @@ const techs = {
         category: 'hell_dimension',
         era: 'interstellar',
         reqs: { portal: 3, stanene: 1 },
+        not_trait: ['warlord'],
         grant: ['portal',4],
         cost: {
             Knowledge(){ return 745000; },
@@ -15243,7 +15244,7 @@ const techs = {
         title: loc('tech_hellspawn_tunnelers'),
         desc: loc('tech_hellspawn_tunnelers'),
         category: 'evil',
-        era: 'deep_space',
+        era: 'dimensional',
         reqs: { evil: 1, hellspawn: 1 },
         trait: ['warlord'],
         condition(){
@@ -15257,6 +15258,30 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.portal.prtl_wasteland.tunneler);
+                return true;
+            }
+            return false;
+        }
+    },
+    hell_minions: {
+        id: 'tech-hell_minions',
+        title: loc('tech_minion_spawn'),
+        desc: loc('tech_minion_spawn'),
+        category: 'evil',
+        era: 'dimensional',
+        reqs: { evil: 1, hellspawn: 2 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        grant: ['hellspawn',3],
+        cost: {
+            Knowledge(){ return 500000; }
+        },
+        effect: loc('tech_minion_spawn_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.portal.prtl_badlands.minions);
                 return true;
             }
             return false;
