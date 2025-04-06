@@ -1399,13 +1399,43 @@ Misc ---------> Main template
                     background: @html-background;
                 }
 
+                .green,
                 .synth {
                     box-shadow: 0 0 6px @has-text-success;
                     > span {
                         text-shadow: 1px 1px @has-text-success;
                     }
                 }
+
+                .red {
+                    box-shadow: 0 0 6px @has-text-danger;
+                    > span {
+                        text-shadow: 1px 1px @has-text-danger;
+                    }
+                }
+
+                .yellow {
+                    box-shadow: 0 0 6px @has-text-warning;
+                    > span {
+                        text-shadow: 1px 1px @has-text-warning;
+                    }
+                }
+
+                .orange {
+                    box-shadow: 0 0 6px @has-text-caution;
+                    > span {
+                        text-shadow: 1px 1px @has-text-caution;
+                    }
+                }
+
+                .purple {
+                    box-shadow: 0 0 6px @has-text-special;
+                    > span {
+                        text-shadow: 1px 1px @has-text-special;
+                    }
+                }
                 
+                .blue,
                 .precog {
                     box-shadow: 0 0 6px @has-text-info;
                     > span {
@@ -2864,7 +2894,7 @@ a {
         .enemyFortress {
             display: inline-block;
             position: relative;
-            width: 18rem;
+            width: 17.375rem;
             height: 3.125rem;
             margin: .375rem .375rem 0 0;
             border-radius: .25rem;
@@ -2875,9 +2905,11 @@ a {
                 }
                 :first-child {
                     margin-left: 0.5rem;
+                    margin-right: 0;
                     float: left;
                 }
                 :last-child {
+                    margin-left: 0;
                     margin-right: 0.5rem;
                     float: right;
                 }
@@ -2888,6 +2920,9 @@ a {
                 a.button {
                     height: 1.5rem;
                     margin-top: 0.25rem;
+                    padding-left: 0.25rem;
+                    padding-right: 0.25rem;
+                    min-width: 4.5rem;
                 }
             }
         }

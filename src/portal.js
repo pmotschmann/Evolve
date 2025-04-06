@@ -402,8 +402,8 @@ const fortressModules = {
                 
                 if (global.portal['throne'] && global.portal.throne.hearts.length > 0){
                     let hearts = global.portal.throne.hearts.map(r => races[r].name).join(', ');
-                    desc += `<div>${loc('portal_throne_of_evil_capture',[hearts])}</div>`;
-                    desc += `<div>${loc('portal_throne_of_evil_capture2',[races[global.portal.throne.hearts[0]].name])}</div>`;
+                    desc += `<div class="has-text-success">${loc('portal_throne_of_evil_capture',[hearts])}</div>`;
+                    desc += `<div class="has-text-danger">${loc('portal_throne_of_evil_capture2',[races[global.portal.throne.hearts[0]].name])}</div>`;
                 }
 
                 return desc;
@@ -413,8 +413,9 @@ const fortressModules = {
                     let heart = global.portal.throne.hearts[0];
                     absorbRace(heart);
                     global.portal.throne.hearts.splice(0);
+                    global.portal.throne.points++;
                     if (global.portal.throne.hearts.length === 0){
-                        $(`#portal-throne_of_evil .precog`).removeClass('precog');
+                        $(`#portal-throne_of_evil .orange`).removeClass('orange');
                     }
                     return true;
                 }
@@ -422,7 +423,7 @@ const fortressModules = {
             },
             aura(){
                 if (global.portal['throne'] && global.portal.throne.hearts.length > 0){
-                    return true;
+                    return 'orange';
                 }
                 return false;
             }
@@ -673,7 +674,7 @@ const fortressModules = {
                 Graphene(offset){ return spaceCostMultiplier('twisted_lab', offset, 230000, 1.26, 'portal'); }
             },
             effect(){
-                let desc = `<div>${loc('plus_max_resource',[50000,loc('resource_Knowledge_name')])}</div>`;
+                let desc = `<div>${loc('plus_max_resource',[global.race['absorbed'] ? global.race.absorbed.length * 10000 : 10000,loc('resource_Knowledge_name')])}</div>`;
                 desc += `<div>${loc('city_university_effect',[jobScale(3)])}</div>`;
                 desc += `<div>${loc('plus_max_resource',[jobScale(2),jobName('scientist')])}</div>`;
                 desc += `<div>${loc('interstellar_g_factory_effect')}</div>`;
@@ -7170,7 +7171,8 @@ export function warlordSetup(){
         global.portal['throne'] = {
             enemy: [],
             hearts: [],
-            spawned: []
+            spawned: [],
+            points: 0
         };
 
         global.portal['fortress'] = {

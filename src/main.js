@@ -9163,8 +9163,8 @@ function midLoop(){
             caps['Containers'] += 500;
             breakdown.c.Containers[loc('portal_throne_of_evil_title')] = 500 + 'v';
         }
-        if (global.portal['twisted_lab'] && global.portal.twisted_lab.count > 0){
-            let gain = (p_on['twisted_lab'] * 50000);
+        if (global.portal['twisted_lab'] && global.portal.twisted_lab.count > 0 && global.race['absorbed']){
+            let gain = (p_on['twisted_lab'] * 10000 * global.race.absorbed.length);
             caps['Knowledge'] += gain;
             breakdown.c.Knowledge[loc('portal_twisted_lab_title')] = gain+'v';
         }
