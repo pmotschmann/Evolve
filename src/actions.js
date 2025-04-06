@@ -6059,7 +6059,7 @@ export function setAction(c_action,action,type,old,prediction){
         if (c_action['class']){
             clss = typeof c_action['class'] === 'function' ? ` ${c_action.class()}`: ` ${c_action['class']}`;
         }
-        if (prediction){ clss = ' precog'; }
+        if (prediction || (c_action['aura'] && c_action.aura())){ clss = ' precog'; }
         let active = c_action['highlight'] ? (c_action.highlight() ? `<span class="is-sr-only">${loc('active')}</span>` : `<span class="is-sr-only">${loc('not_active')}</span>`) : '';
         element = $(`<a class="button is-dark${cst}${clss}"${data} v-on:click="action"><span class="aTitle" v-html="$options.filters.title(title)"></span>${active}</a><a role="button" v-on:click="describe" class="is-sr-only">{{ title }} description</a>`);
     }
@@ -9333,7 +9333,14 @@ export function fanaticism(god){
     }
 }
 
-function fanaticTrait(trait){
+export function absorbRace(race){
+    if (global.race['warlord']){
+        fanaticTrait(races[race].fanaticism, 0.25);
+        global.race.absorbed.push(race);
+    }
+}
+
+function fanaticTrait(trait,rank){
     if (global.race[trait]){
         if (!setTraitRank(trait)){
             randomMinorTrait(5);
@@ -9348,7 +9355,7 @@ function fanaticTrait(trait){
     }
     else {
         if (global.race['warlord']){
-            global.race[trait] = 0.5;
+            global.race[trait] = rank ?? 0.5;
         }
         else {
             global.race[trait] = 1;

@@ -5,7 +5,7 @@ import { traits, races, fathomCheck, traitCostMod, orbitLength } from './races.j
 import { spatialReasoning, unlockContainers } from './resources.js';
 import { loadFoundry, jobScale, limitCraftsmen } from './jobs.js';
 import { armyRating, govCivics, garrisonSize, mercCost, soldierDeath } from './civics.js';
-import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc, actions, initStruct, storageMultipler, casinoEffect, structName } from './actions.js';
+import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc, actions, initStruct, storageMultipler, casinoEffect, structName, absorbRace } from './actions.js';
 import { checkRequirements, incrementStruct, astrialProjection, ascendLab } from './space.js';
 import { asphodelResist } from './edenic.js';
 import { production, highPopAdjust } from './prod.js';
@@ -395,15 +395,35 @@ const fortressModules = {
                 desc += `<div>${loc('plus_res_duo',[500,global.resource.Crates.name,global.resource.Containers.name])}</div>`;
                 desc += `<div>${loc('plus_max_resource',[(global.race?.absorbed?.length || 1),global.resource.Authority.name])}</div>`;
 
-                let essense = '';
                 if (global.race['absorbed']){
-                    essense = global.race.absorbed.map(r => races[r].name).join(', ');
+                    let essense = global.race.absorbed.map(r => races[r].name).join(', ');
+                    desc += `<div>${loc('portal_throne_of_evil_effect',[essense])}</div>`;
                 }
-                desc += `<div>${loc('portal_throne_of_evil_effect',[essense])}</div>`;
+                
+                if (global.portal['throne'] && global.portal.throne.hearts.length > 0){
+                    let hearts = global.portal.throne.hearts.map(r => races[r].name).join(', ');
+                    desc += `<div>${loc('portal_throne_of_evil_capture',[hearts])}</div>`;
+                    desc += `<div>${loc('portal_throne_of_evil_capture2',[races[global.portal.throne.hearts[0]].name])}</div>`;
+                }
 
                 return desc;
             },
             action(){
+                if (global.portal['throne'] && global.portal.throne.hearts.length > 0){
+                    let heart = global.portal.throne.hearts[0];
+                    absorbRace(heart);
+                    global.portal.throne.hearts.splice(0);
+                    if (global.portal.throne.hearts.length === 0){
+                        $(`#portal-throne_of_evil .precog`).removeClass('precog');
+                    }
+                    return true;
+                }
+                return false;
+            },
+            aura(){
+                if (global.portal['throne'] && global.portal.throne.hearts.length > 0){
+                    return true;
+                }
                 return false;
             }
         },
@@ -2997,34 +3017,51 @@ function buildEnemyFortress(parent){
     let fort = $(`<div id="${id}" class="fort"></div>`);
     parent.append(fort);
 
-    global.portal.throne.enemy.forEach(function(e){
-        let enemy = $(`<div id="${id}${e.r}${e.s}" class="enemyFortress"></div>`);
-        fort.append(enemy);
+    let enemy = $(`<div v-for="(e, index) of enemy" :key="index" class="enemyFortress">
+        <div class="fortRow"><span class="has-text-success">{{ e.r | species }}</span><span class="has-text-warning">${loc(`fortress_wall`)} {{ e.f }}%</span></div>
+        <div class="fortRow second"><span class="has-text-caution">${loc(`fortress_demon_kills`)} {{ e.k | kills }}</span><a class="button" v-on:click="action(index)">${loc(`civics_garrison_attack`)}</a></div>
+    </div>`);
+    fort.append(enemy);
 
-        let header = $(`<div class="fortRow"><span class="has-text-success">{{ r | species }}</span><span class="has-text-warning">${loc(`fortress_wall`)} {{ f }}%</span></div>`);
-        enemy.append(header);
-
-        let stats = $(`<div class="fortRow second"><span class="has-text-caution">${loc(`fortress_demon_kills`)} {{ k | kills }}</span><a class="button" v-on:click="action">${loc(`civics_garrison_attack`)}</a></div>`);
-        enemy.append(stats);
-
-        vBind({
-            el: `#${id}${e.r}${e.s}`,
-            data: e,
-            methods: {
-                action(){
-                    
+    vBind({
+        el: `#${id}`,
+        data: global.portal.throne,
+        methods: {
+            action(idx){
+                let horde = Math.floor(global.portal.minions.spawns * seededRandom(6, 10, true) / 10);
+                let died = seededRandom(250 + global.portal.throne.enemy[idx].s * 10, 500 + global.portal.throne.enemy[idx].s * 50, true);
+                let range = global.portal.throne.enemy[idx].f;
+                for (let i=0; i<range; i++){
+                    died += seededRandom(global.portal.throne.enemy[idx].s * 10, global.portal.throne.enemy[idx].s * 100, true);
+                    if (horde > died){
+                        global.portal.throne.enemy[idx].f--;
+                    }
+                    else {
+                        break;
+                    }
                 }
-            },
-            filters: {
-                species(v){
-                    return races[v].name;
-                },
-                kills(v){
-                    return sizeApproximation(v);
+                died = Math.round(died);
+                if (global.portal.minions.spawns < died){ died = global.portal.minions.spawns; }
+                global.portal.minions.spawns -= died;
+                global.portal.throne.enemy[idx].k += died;
+
+                if (global.portal.throne.enemy[idx].f <= 0){
+                    messageQueue(loc('fortress_enemy_defeat',[races[global.portal.throne.enemy[idx].r].name]),'info',false,['progress']);
+                    global.portal.throne.hearts.push(global.portal.throne.enemy[idx].r);
+                    global.portal.throne.enemy.splice(idx);
+                    renderFortress();
                 }
             }
-        });
-    })
+        },
+        filters: {
+            species(v){
+                return races[v].name;
+            },
+            kills(v){
+                return sizeApproximation(v);
+            }
+        }
+    });
 }
 
 export function buildFortress(parent,full){
@@ -4032,13 +4069,13 @@ export function hellguard(){
                 addHellEnemy(['basic']);
             }
             else {
-                if (global.throne.spawned.length % 3 === 0 && global.throne.spawned.length % 5 === 0){
+                if (global.portal.throne.spawned.length % 3 === 0 && global.portal.throne.spawned.length % 5 === 0){
                     addHellEnemy(['advanced','rare']);
                 }
-                else if (global.throne.spawned.length % 3 === 0){
+                else if (global.portal.throne.spawned.length % 3 === 0){
                     addHellEnemy(['advanced']);
                 }
-                else if (global.throne.spawned.length % 5 === 0){
+                else if (global.portal.throne.spawned.length % 5 === 0){
                     addHellEnemy(['rare']);
                 }
                 else {
