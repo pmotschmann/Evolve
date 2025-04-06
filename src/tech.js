@@ -11044,6 +11044,7 @@ const techs = {
         category: 'hell_dimension',
         era: 'intergalactic',
         reqs: { hell_pit: 4 },
+        not_trait: ['warlord'],
         grant: ['hell_gun',1],
         cost: {
             Knowledge(){ return 3000000; }
@@ -15282,6 +15283,30 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.portal.prtl_badlands.minions);
+                return true;
+            }
+            return false;
+        }
+    },
+    reapers: {
+        id: 'tech-reapers',
+        title: loc('tech_reapers'),
+        desc: loc('tech_reapers'),
+        category: 'evil',
+        era: 'dimensional',
+        reqs: { evil: 1, hellspawn: 3 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' && global.race?.absorbed?.length >= 4 ? true : false;
+        },
+        grant: ['hellspawn',4],
+        cost: {
+            Knowledge(){ return 1750000; }
+        },
+        effect: loc('tech_reapers_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.portal.prtl_badlands.reaper);
                 return true;
             }
             return false;

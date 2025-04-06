@@ -365,6 +365,37 @@ const fortressModules = {
             },
             flair(){ return loc('portal_minions_flair'); }
         },
+        reaper: {
+            id: 'portal-reapers',
+            title: loc('portal_reaper_title'),
+            desc: loc('portal_reaper_title'),
+            reqs: { hellspawn: 4 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('reaper', offset, 1000000, 1.2, 'portal'); },
+                Furs(offset){ return spaceCostMultiplier('reaper', offset, 118000, 1.2, 'portal'); },
+                Iron(offset){ return spaceCostMultiplier('reaper', offset, 240000, 1.2, 'portal'); },
+                Soul_Gem(offset){ return spaceCostMultiplier('reaper', offset, 1, 1.05, 'portal'); },
+            },
+            effect(){
+                let desc = `<div>${loc('portal_reaper_effect')}</div>`;
+                return desc;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('reaper','portal');
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, rank: 1 },
+                    p: ['reaper','portal']
+                };
+            }
+        },
     },
     prtl_wasteland: {
         info: {
@@ -387,9 +418,7 @@ const fortressModules = {
                 let know = muckVal2 ? (5 - muckVal2) : 5;
                 if (global.race['autoignition']){
                     know -= traits.autoignition.vars()[0];
-                    if (know < 0){
-                        know = 0;
-                    }
+                    if (know < 0){ know = 0; }
                 }
                 desc += `<div>${loc('city_library_effect',[Math.round((global.race?.absorbed?.length || 1) * 10 * know)])}</div>`;
                 desc += `<div>${loc('plus_res_duo',[500,global.resource.Crates.name,global.resource.Containers.name])}</div>`;
@@ -416,6 +445,12 @@ const fortressModules = {
                     global.portal.throne.points++;
                     if (global.portal.throne.hearts.length === 0){
                         $(`#portal-throne_of_evil .orange`).removeClass('orange');
+                    }
+                    if (!global.settings.portal.pit){
+                        global.settings.portal.pit = true;
+                        global.tech['hell_pit'] = 5;
+                        renderFortress();
+                        drawTech();
                     }
                     return true;
                 }
@@ -1034,10 +1069,10 @@ const fortressModules = {
                 Money(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('soul_forge') ? global.portal.soul_forge.count : 0)) < 1 ? 25000000 : 0; },
                 Graphene(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('soul_forge') ? global.portal.soul_forge.count : 0)) < 1 ? 1500000 : 0; },
                 Infernite(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('soul_forge') ? global.portal.soul_forge.count : 0)) < 1 ? 25000 : 0; },
-                Bolognium(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('soul_forge') ? global.portal.soul_forge.count : 0)) < 1 ? 100000 : 0; },
+                Bolognium(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('soul_forge') ? global.portal.soul_forge.count : 0)) < 1 ? (global.race['warlord'] ? 500000 : 100000) : 0; },
             },
             effect(wiki){
-                let desc = `<div>${loc('portal_soul_forge_effect',[global.resource.Soul_Gem.name])}</div>`;
+                let desc = `<div>${loc(global.race['warlord'] ? 'portal_soul_forge_warlord' : 'portal_soul_forge_effect',[global.resource.Soul_Gem.name])}</div>`;
                 let count = (wiki?.count ?? 0) + (global.portal.hasOwnProperty('soul_forge') ? global.portal.soul_forge.count : 0);
                 if (count >= 1){
                     let cap = global.tech.hell_pit >= 6 ? 750000 : 1000000;
@@ -4065,7 +4100,10 @@ export function bloodwar(){
 
 export function hellguard(){
     if (global.race['warlord'] && global.portal['minions'] && global.portal.minions.count > 0){
-        if (global.portal.throne.enemy.length === 0 && Math.rand(0,10) === 0 && global.portal.minions.spawns > 0){
+        if ((global.portal.throne.enemy.length === 0 || 
+            (global.portal.throne.spawned.length >= 3 && global.portal.throne.enemy.length <= 1) ||
+            (global.portal.throne.spawned.length >= 8 && global.portal.throne.enemy.length <= 2)
+        ) && Math.rand(0,10) === 0 && global.portal.minions.spawns > 0){
             if (global.portal.throne.spawned.length === 0){
                 addHellEnemy(['basic']);
             }
@@ -4091,12 +4129,35 @@ export function hellguard(){
 
         if (global.portal.throne.enemy.length > 0){
             global.portal.throne.enemy.forEach(function(e){
-                let bound = global.portal.minions.spawns * 0.1 * (e.s ** 0.5);
+                let reaper = 0.25 - ((global.portal?.reaper?.count || 0) / 100) + (e.s * 0.01);
+                if (reaper < 0.01){ reaper = 0.01; }
+                let bound = global.portal.minions.spawns * 0.1 * (e.s ** reaper);
                 let kills = Math.rand(e.s, bound);
                 if (kills > global.portal.minions.spawns){ kills = global.portal.minions.spawns; }
                 global.portal.minions.spawns -= kills;
                 e.k += kills;
+
+                if (e.f < 100 && Math.rand(0, 10) === 0){
+                    e.f++;
+                }
             });
+        }
+
+        let forgeOperating = false;                    
+        if (p_on['soul_forge']){
+            let troops = global.portal.fortress.garrison;
+            let forge = soulForgeSoldiers();
+            if (forge <= troops){
+                forgeOperating = true;
+                $(`#portal-soul_forge .on`).removeClass('altwarn');
+            }
+            else {
+                forgeOperating = false;
+                $(`#portal-soul_forge .on`).addClass('altwarn');
+            }
+        }
+        else {
+            $(`#portal-soul_forge .on`).addClass('altwarn');
         }
     }
 }
@@ -7111,6 +7172,8 @@ export function warlordSetup(){
         initStruct(fortressModules.prtl_fortress.turret);
         initStruct(fortressModules.prtl_fortress.carport);
         initStruct(fortressModules.prtl_badlands.war_drone);
+        initStruct(fortressModules.prtl_pit.soul_forge);
+        initStruct(fortressModules.prtl_pit.soul_attractor);
         initStruct(fortressModules.prtl_lake.harbor);
         initStruct(fortressModules.prtl_spire.purifier);
         initStruct(fortressModules.prtl_spire.port);

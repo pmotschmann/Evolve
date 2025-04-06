@@ -3807,7 +3807,7 @@ export const traits = {
         name: loc('trait_artisan_name'),
         desc: loc('trait_artisan'),
         type: 'major',
-        val: 8,
+        val: 9,
         vars(r){
             // [Auto Crafting Boost, Manufacturing Boost, Improved Morale]
             switch (r || traitRank('artisan') || 1){
@@ -3820,11 +3820,11 @@ export const traits = {
                 case 1:
                     return [50,20,0.5];
                 case 2:
-                    return [65,25,0.6];
+                    return [60,25,0.55];
                 case 3:
-                    return [80,30,0.7];
+                    return [70,30,0.6];
                 case 4:
-                    return [95,35,0.8];
+                    return [80,35,0.65];
             }
         }
     },
@@ -4266,19 +4266,19 @@ export const traits = {
             // [Boosts Other Traits]
             switch (r || traitRank('empowered') || 1){
                 case 0.1:
-                    return [0];
+                    return [-1,2];
                 case 0.25:
-                    return [0];
+                    return [-2,3];
                 case 0.5:
-                    return [0];
+                    return [-3,4];
                 case 1:
-                    return [1];
+                    return [-4,6];
                 case 2:
-                    return [1];
+                    return [-6,9];
                 case 3:
-                    return [2];
+                    return [-8,12];
                 case 4:
-                    return [2];
+                    return [-99,99];
             }
         }
     },
@@ -7108,21 +7108,24 @@ export function shapeShift(genus,setup,forceClean){
 
 export function traitRank(trait){
     if (global.race['empowered'] && trait !== 'empowered'){
-        switch (global.race[trait]){
-            case 0.1:
-                return traits.empowered.vars()[0] >= 2 ? 0.5 : 0.25;
-            case 0.25:
-                return traits.empowered.vars()[0] >= 2 ? 1 : 0.5;
-            case 0.5:
-                return traits.empowered.vars()[0] >= 2 ? 2 : 1;
-            case 1:
-                return traits.empowered.vars()[0] >= 1 ? (traits.empowered.vars()[0] >= 2 ? 3 : 2) : 1;
-            case 2:
-                return traits.empowered.vars()[0] >= 1 ? (traits.empowered.vars()[0] >= 2 ? 4 : 3) : 2;
-            case 3:
-                return traits.empowered.vars()[0] >= 1 ? 4 : 3;
-            case 4:
-                return 4;
+        let val = traits[trait].val;
+        if (val >= traits.empowered.vars()[0] && val <= traits.empowered.vars()[1]){
+            switch (global.race[trait]){
+                case 0.1:
+                    return 0.25;
+                case 0.25:
+                    return 0.5;
+                case 0.5:
+                    return 1;
+                case 1:
+                    return 2;
+                case 2:
+                    return 3;
+                case 3:
+                    return 4;
+                case 4:
+                    return 4;
+            }
         }
     }
     return global.race[trait];

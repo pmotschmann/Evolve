@@ -1099,19 +1099,21 @@ function fastLoop(){
         (races[global.race.species].type === 'demonic' && global.city.biome !== 'hellscape') ||
         (races[global.race.species].type === 'angelic' && global.city.biome !== 'eden')
     ){
-        let unsuited = 1;
-        if (global.blood['unbound'] && global.blood.unbound >= 4){
-            unsuited = global.race['rejuvenated'] ? 0.975 : 0.95;
+        if (!global.race['warlord']){
+            let unsuited = 1;
+            if (global.blood['unbound'] && global.blood.unbound >= 4){
+                unsuited = global.race['rejuvenated'] ? 0.975 : 0.95;
+            }
+            else if (global.blood['unbound'] && global.blood.unbound >= 2){
+                unsuited = global.race['rejuvenated'] ? 0.95 : 0.9;
+            }
+            else {
+                unsuited = global.race['rejuvenated'] ? 0.9 : 0.8;
+            }
+        
+            breakdown.p['Global'][loc('unsuited')] = `-${Math.round((1 - unsuited) * 100)}%`;
+            global_multiplier *= unsuited;
         }
-        else if (global.blood['unbound'] && global.blood.unbound >= 2){
-            unsuited = global.race['rejuvenated'] ? 0.95 : 0.9;
-        }
-        else {
-            unsuited = global.race['rejuvenated'] ? 0.9 : 0.8;
-        }
-
-        breakdown.p['Global'][loc('unsuited')] = `-${Math.round((1 - unsuited) * 100)}%`;
-        global_multiplier *= unsuited;
     }
 
     if (global.race['hibernator'] && global.city.calendar.season === 3){
