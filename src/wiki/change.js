@@ -9,7 +9,8 @@ export const changeList = [
             `Evil Universe Scenario: Warlord.`,
             `Fixed bug with Rogue trait that set crafted resources to 0.`,
             `Updated Empowered trait mechanics.`,
-            `Adjusted values for Master Artisan.`
+            `Adjusted values for Master Artisan.`,
+            `Symposium now gain Knowledge for all crew in Andromeda.`
         ]
     },
     {
@@ -22,7 +23,7 @@ export const changeList = [
             `Evil Dark Energy effects changed.`,
             `Evil Biodome produces less food but boosts marine garrison.`,
             `Various Evil flavor updates.`,
-            `Various bug fixes.`,
+            `Various bug fixes.`
         ]
     },
     {

@@ -748,7 +748,7 @@ const fortressModules = {
                 Brick(offset){ return spaceCostMultiplier('demon_forge', offset, 155000, 1.25, 'portal'); },
             },
             effect(){
-                let desc = `<div>${loc('city_foundry_effect1',[jobScale(10)])}</div><div>${loc('interstellar_stellar_forge_effect',[12])}</div>`;
+                let desc = `<div>${loc('city_foundry_effect1',[jobScale(10)])}</div><div>${loc('interstellar_stellar_forge_effect',[40])}</div>`;
                 let num_smelters = $(this)[0].smelting();
                 if (num_smelters > 0){
                     desc += `<div>${loc('interstellar_stellar_forge_effect3',[num_smelters])}</div>`;
@@ -796,7 +796,7 @@ const fortressModules = {
                 Stanene(offset){ return spaceCostMultiplier('hell_factory', offset, 375000, 1.26, 'portal'); }
             },
             effect(){
-                let desc = `<div>${loc('portal_factory_effect',[6])}</div><div>${loc('city_crafted_mats',[10])}</div>`;
+                let desc = `<div>${loc('portal_factory_effect',[6])}</div><div>${loc('city_crafted_mats',[25])}</div>`;
                 desc += `<div>${loc('plus_max_resource',[jobScale(5),jobName('cement_worker')])}</div>`;
                 desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
@@ -2938,7 +2938,8 @@ function towerPrice(cost, wiki){
 }
 
 export function soulForgeSoldiers(wiki){
-    let soldiers = Math.round(650 / armyRating(1,'hellArmy'));
+    let base = global.race['warlord'] ? 400 : 650;
+    let soldiers = Math.round(base / armyRating(1,'hellArmy'));
     let num_gun_emplacement = wiki ? (global.portal?.gun_emplacement?.on ?? 0) : p_on['gun_emplacement'];
     if (num_gun_emplacement){
         soldiers -= num_gun_emplacement * (global.tech.hell_gun >= 2 ? jobScale(2) : jobScale(1));
@@ -3065,10 +3066,11 @@ function buildEnemyFortress(parent){
         methods: {
             action(idx){
                 let horde = Math.floor(global.portal.minions.spawns * seededRandom(6, 10, true) / 10);
-                let died = seededRandom(250 + global.portal.throne.enemy[idx].s * 10, 500 + global.portal.throne.enemy[idx].s * 50, true);
+                let rating = armyRating(1,'hellArmy',0);
+                let died = seededRandom((250 + global.portal.throne.enemy[idx].s * 250) / rating, (500 + global.portal.throne.enemy[idx].s * 1250) / rating, true);
                 let range = global.portal.throne.enemy[idx].f;
                 for (let i=0; i<range; i++){
-                    died += seededRandom(global.portal.throne.enemy[idx].s * 10, global.portal.throne.enemy[idx].s * 100, true);
+                    died += seededRandom(global.portal.throne.enemy[idx].s * 250 / rating, global.portal.throne.enemy[idx].s * 1250 / rating, true);
                     if (horde > died){
                         global.portal.throne.enemy[idx].f--;
                     }
@@ -3080,6 +3082,14 @@ function buildEnemyFortress(parent){
                 if (global.portal.minions.spawns < died){ died = global.portal.minions.spawns; }
                 global.portal.minions.spawns -= died;
                 global.portal.throne.enemy[idx].k += died;
+                   
+                if (p_on['soul_forge']){
+                    let troops = garrisonSize(false,{no_forge: true});
+                    let forge = soulForgeSoldiers();
+                    if (forge <= troops){
+                        global.portal.soul_forge.kills += died;
+                    }
+                }
 
                 if (global.portal.throne.enemy[idx].f <= 0){
                     messageQueue(loc('fortress_enemy_defeat',[races[global.portal.throne.enemy[idx].r].name]),'info',false,['progress']);
@@ -4127,25 +4137,9 @@ export function hellguard(){
             global.portal.minions.spawns += Math.rand(global.portal.minions.on * 15, global.portal.minions.on * 25);
         }
 
-        if (global.portal.throne.enemy.length > 0){
-            global.portal.throne.enemy.forEach(function(e){
-                let reaper = 0.25 - ((global.portal?.reaper?.count || 0) / 100) + (e.s * 0.01);
-                if (reaper < 0.01){ reaper = 0.01; }
-                let bound = global.portal.minions.spawns * 0.1 * (e.s ** reaper);
-                let kills = Math.rand(e.s, bound);
-                if (kills > global.portal.minions.spawns){ kills = global.portal.minions.spawns; }
-                global.portal.minions.spawns -= kills;
-                e.k += kills;
-
-                if (e.f < 100 && Math.rand(0, 10) === 0){
-                    e.f++;
-                }
-            });
-        }
-
-        let forgeOperating = false;                    
+        let forgeOperating = false;
         if (p_on['soul_forge']){
-            let troops = global.portal.fortress.garrison;
+            let troops = garrisonSize(false,{no_forge: true});
             let forge = soulForgeSoldiers();
             if (forge <= troops){
                 forgeOperating = true;
@@ -4158,6 +4152,36 @@ export function hellguard(){
         }
         else {
             $(`#portal-soul_forge .on`).addClass('altwarn');
+        }
+
+        if (global.portal.throne.enemy.length > 0){
+            let rating = armyRating(1,'hellArmy',0);
+            global.portal.throne.enemy.forEach(function(e){
+                let reaper = 0.25 - ((global.portal?.reaper?.count || 0) / 100) + (e.s * 0.01);
+                if (reaper < 0.01){ reaper = 0.01; }
+                let bound = Math.round(global.portal.minions.spawns * (0.5 * e.s) * (e.s ** reaper) / rating);
+                let kills = Math.rand(e.s, bound);
+                if (kills > global.portal.minions.spawns){ kills = global.portal.minions.spawns; }
+                global.portal.minions.spawns -= kills;
+                e.k += kills;
+                if (forgeOperating){
+                    global.portal.soul_forge.kills += kills;
+                }
+
+                if (e.f < 100 && Math.rand(0, 10) === 0){
+                    e.f++;
+                }
+            });
+        }
+
+        let cap = global.tech.hell_pit >= 6 ? 750000 : 1000000;
+        if (global.tech.hell_pit >= 7 && p_on['soul_attractor'] > 0){
+            cap *= 0.97 ** p_on['soul_attractor'];
+        }
+        if (forgeOperating && global.portal.soul_forge.kills >= Math.round(cap)){
+            let gems = Math.floor(global.portal.soul_forge.kills / Math.round(cap));
+            global.portal.soul_forge.kills -= Math.round(cap) * gems;
+            global.resource.Soul_Gem.amount += gems;
         }
     }
 }

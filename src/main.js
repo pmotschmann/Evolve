@@ -8476,8 +8476,6 @@ function midLoop(){
             let soldiers = actions.portal.prtl_wasteland.brute.soldiers();
             lCaps['garrison'] += global.portal.brute.on * soldiers;
         }
-
-        global.portal.brute.on
         if (global.race['wish'] && global.race['wishStats']){
             lCaps['garrison'] += jobScale(global.race.wishStats.troop);
         }
@@ -9229,6 +9227,20 @@ function midLoop(){
                     crew += gal_on['freighter'] * (actions.galaxy.gxy_gorddon.freighter.ship.civ() + actions.galaxy.gxy_gorddon.freighter.ship.mil());
                 }
                 leave = +highPopAdjust(crew).toFixed(2) * 300 * pirate;
+
+                ['gxy_gateway','gxy_stargate','gxy_alien1','gxy_alien2','gxy_chthonian'].forEach(function(area){
+                    let crew = global.galaxy.defense[area].scout_ship * (actions.galaxy.gxy_gateway.scout_ship.ship.civ() + actions.galaxy.gxy_gateway.scout_ship.ship.mil());
+                    crew += global.galaxy.defense[area].corvette_ship * (actions.galaxy.gxy_gateway.corvette_ship.ship.civ() + actions.galaxy.gxy_gateway.corvette_ship.ship.mil());
+                    crew += global.galaxy.defense[area].frigate_ship * (actions.galaxy.gxy_gateway.frigate_ship.ship.civ() + actions.galaxy.gxy_gateway.frigate_ship.ship.mil());
+                    crew += global.galaxy.defense[area].cruiser_ship * (actions.galaxy.gxy_gateway.cruiser_ship.ship.civ() + actions.galaxy.gxy_gateway.cruiser_ship.ship.mil());
+                    crew += global.galaxy.defense[area].dreadnought * (actions.galaxy.gxy_gateway.dreadnought.ship.civ() + actions.galaxy.gxy_gateway.dreadnought.ship.mil());
+
+                    if (gal_on['super_freighter'] && area === 'gxy_alien1'){
+                        crew += gal_on['super_freighter'] * (actions.galaxy.gxy_alien1.super_freighter.ship.civ() + actions.galaxy.gxy_alien1.super_freighter.ship.mil());
+                    }
+
+                    leave += +highPopAdjust(crew).toFixed(2) * 150 * pirate * piracy(area);
+                });
             }
             let know = (dorm + gtrade + leave) * p_on['symposium'];
             caps['Knowledge'] += know;
@@ -9325,6 +9337,10 @@ function midLoop(){
             }
             if (global.tech['isolation']){
                 vault *= 5.5;
+            }
+            if (global.race['warlord']){
+                let absorb = global.race?.absorbed?.length || 1;
+                vault *= 1 + (absorb / 10);
             }
             caps['Money'] += vault;
             breakdown.c.Money[structName('casino')] = vault+'v';

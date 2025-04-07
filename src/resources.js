@@ -316,14 +316,14 @@ export const craftingRatio = (function(){
                 crafting.general.add.push({
                     name: loc(`portal_demon_forge_title`),
                     manual: 0,
-                    auto: p_on['demon_forge'] * 0.12
+                    auto: p_on['demon_forge'] * 0.4
                 });
             }
             if (global.portal['hell_factory'] && p_on['hell_factory']){
                 crafting.general.add.push({
                     name: loc(`portal_factory_title`),
-                    manual: p_on['hell_factory'] * 0.1,
-                    auto: p_on['hell_factory'] * 0.1
+                    manual: p_on['hell_factory'] * 0.25,
+                    auto: p_on['hell_factory'] * 0.25
                 });
             }
             if (global.space['fabrication'] && support_on['fabrication']){

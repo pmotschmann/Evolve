@@ -5,6 +5,7 @@ import { universeAffix } from './achieve.js';
 import { races, racialTrait, traits, planetTraits, biomes, fathomCheck, blubberFill } from './races.js';
 import { defineGovernor, govActive } from './governor.js';
 import { drawTech } from  './actions.js';
+import { soulForgeSoldiers } from './portal.js';
 import { jobScale } from './jobs.js';
 import { astrologySign, astroVal } from './seasons.js';
 import { warhead } from './resets.js';
@@ -2277,7 +2278,7 @@ export function armyRating(val,type,wound){
     return army * racialTrait(val,type);
 }
 
-export function garrisonSize(max, args = {} ){
+export function garrisonSize(max, args = {}){
     if (!global.civic.garrison){
         return 0;
     }
@@ -2285,7 +2286,12 @@ export function garrisonSize(max, args = {} ){
     let fortress = global.portal['fortress'] ? global.portal.fortress.garrison : 0;
     let fob = global.space['fob'] && !args['nofob'] ? global.space.fob.troops : 0;
     let pillbox = global.eden['pillbox'] && !args['nopill'] ? global.eden.pillbox.staffed : 0;
-    return global.civic.garrison[type] - global.civic.garrison.crew - fortress - fob - pillbox;
+    let troops = global.civic.garrison[type] - global.civic.garrison.crew - fortress - fob - pillbox;
+    if (global.race['warlord'] && p_on['soul_forge'] && !args['no_forge']){
+        let forge = soulForgeSoldiers();
+        if (troops >= forge){ troops -= forge; }
+    }
+    return troops;
 }
 
 function defineMad(){

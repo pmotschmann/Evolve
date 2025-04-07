@@ -5438,6 +5438,10 @@ export function casinoEffect(){
     if (global.tech['isolation']){
         money *= 5.5;
     }
+    if (global.race['warlord']){
+        let absorb = global.race?.absorbed?.length || 1;
+        money *= 1 + (absorb / 10);
+    }
     money = Math.round(money);
 
     let joy = global.race['joyless'] ? '' : `<div>${loc('plus_max_resource',[jobScale(global.race['warlord'] ? 3 : 1),loc(`job_entertainer`)])}</div>`;
