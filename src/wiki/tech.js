@@ -2028,6 +2028,21 @@ const extraInformation = {
     predictive_arrests: [
         loc(`wiki_tech_evil`)
     ],
+    hellspawn_tunnelers: [
+        loc(`wiki_tech_hellspawn_tunnelers`)
+    ],
+    hell_minions: [
+        loc(`wiki_tech_hell_minions`)
+    ],
+    reapers: [
+        loc(`wiki_tech_reapers`)
+    ],
+    ghost_miners: [
+        loc(`wiki_tech_ghost_miners`)
+    ],
+    tavern: [
+        loc(`wiki_tech_tavern`)
+    ],
 };
 
 const extraInformationTP = {

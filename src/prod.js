@@ -526,6 +526,19 @@ export function production(id,val,wiki){
             }
             return base;
         }
+        case 'shadow_mine':
+        {
+            switch (val){
+                case 'elerium':
+                {
+                    return 0.02;
+                }
+                case 'vitreloy':
+                {
+                    return 0.08;
+                }
+            }
+        }
     }
 }
 

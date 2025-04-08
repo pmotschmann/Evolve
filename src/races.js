@@ -3034,7 +3034,7 @@ export const traits = {
             }
         }
     },
-    blurry: { // Increased success chance of spies
+    blurry: { // Increased success chance of spies // Warlord improves Reapers
         name: loc('trait_blurry_name'),
         desc: loc('trait_blurry'),
         type: 'major',
@@ -7200,6 +7200,7 @@ export function traitSkin(type, trait, species){
                 promiscuous: artificial ? loc('trait_promiscuous_synth') : traits['promiscuous'].desc,
                 weak: species === 'dwarf' ? loc('trait_drunk') : traits.weak.desc,
                 spiritual: global.race.universe === 'evil' && global.civic.govern.type != 'theocracy' ? loc('trait_manipulator') : traits.spiritual.desc,
+                blurry: global.race['warlord'] ? loc('trait_blurry_warlord') : traits.blurry.desc,
             };
             return trait ? (desc[trait] ? desc[trait] : traits[trait].desc) : desc;
         }

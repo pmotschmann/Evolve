@@ -15270,7 +15270,7 @@ const techs = {
         desc: loc('tech_minion_spawn'),
         category: 'evil',
         era: 'dimensional',
-        reqs: { evil: 1, hellspawn: 2 },
+        reqs: { hellspawn: 2 },
         trait: ['warlord'],
         condition(){
             return global.race['universe'] === 'evil' ? true : false;
@@ -15294,7 +15294,7 @@ const techs = {
         desc: loc('tech_reapers'),
         category: 'evil',
         era: 'dimensional',
-        reqs: { evil: 1, hellspawn: 3 },
+        reqs: { hellspawn: 3 },
         trait: ['warlord'],
         condition(){
             return global.race['universe'] === 'evil' && global.race?.absorbed?.length >= 4 ? true : false;
@@ -15307,6 +15307,54 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.portal.prtl_badlands.reaper);
+                return true;
+            }
+            return false;
+        }
+    },
+    ghost_miners: {
+        id: 'tech-ghost_miners',
+        title: loc('tech_ghost_miners'),
+        desc: loc('tech_ghost_miners'),
+        category: 'evil',
+        era: 'dimensional',
+        reqs: { hellspawn: 2, hell_pit: 5 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        grant: ['pitspawn',1],
+        cost: {
+            Knowledge(){ return 1900000; }
+        },
+        effect: loc('tech_ghost_miners_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.portal.prtl_pit.shadow_mine);
+                return true;
+            }
+            return false;
+        }
+    },
+    tavern: {
+        id: 'tech-tavern',
+        title: loc('tech_tavern'),
+        desc: loc('tech_tavern'),
+        category: 'evil',
+        era: 'dimensional',
+        reqs: { pitspawn: 1 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        grant: ['pitspawn',2],
+        cost: {
+            Knowledge(){ return 2500000; }
+        },
+        effect: loc('tech_tavern_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.portal.prtl_pit.tavern);
                 return true;
             }
             return false;

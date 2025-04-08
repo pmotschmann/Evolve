@@ -361,7 +361,8 @@ const fortressModules = {
                 };
             },
             soldiers(){
-                return 25;
+                let absorb = (global.race?.absorbed?.length || 1);
+                return 22 + absorb;
             },
             flair(){ return loc('portal_minions_flair'); }
         },
@@ -373,10 +374,10 @@ const fortressModules = {
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
             cost: {
-                Money(offset){ return spaceCostMultiplier('reaper', offset, 1000000, 1.2, 'portal'); },
+                Money(offset){ return spaceCostMultiplier('reaper', offset, 1200000, 1.2, 'portal'); },
                 Furs(offset){ return spaceCostMultiplier('reaper', offset, 118000, 1.2, 'portal'); },
-                Iron(offset){ return spaceCostMultiplier('reaper', offset, 240000, 1.2, 'portal'); },
-                Soul_Gem(offset){ return spaceCostMultiplier('reaper', offset, 1, 1.05, 'portal'); },
+                Iron(offset){ return spaceCostMultiplier('reaper', offset, 340000, 1.2, 'portal'); },
+                Soul_Gem(offset){ return spaceCostMultiplier('reaper', offset, 1, 1.1, 'portal'); },
             },
             effect(){
                 let desc = `<div>${loc('portal_reaper_effect')}</div>`;
@@ -441,7 +442,7 @@ const fortressModules = {
                 if (global.portal['throne'] && global.portal.throne.hearts.length > 0){
                     let heart = global.portal.throne.hearts[0];
                     absorbRace(heart);
-                    global.portal.throne.hearts.splice(0);
+                    global.portal.throne.hearts.splice(0,1);
                     global.portal.throne.points++;
                     if (global.portal.throne.hearts.length === 0){
                         $(`#portal-throne_of_evil .orange`).removeClass('orange');
@@ -451,6 +452,13 @@ const fortressModules = {
                         global.tech['hell_pit'] = 5;
                         renderFortress();
                         drawTech();
+                    }
+                    if (p_on['soul_forge']){
+                        let troops = garrisonSize(false,{no_forge: true});
+                        let forge = soulForgeSoldiers();
+                        if (forge <= troops){
+                            global.portal.soul_forge.kills += 250000;
+                        }
                     }
                     return true;
                 }
@@ -709,7 +717,7 @@ const fortressModules = {
                 Graphene(offset){ return spaceCostMultiplier('twisted_lab', offset, 230000, 1.26, 'portal'); }
             },
             effect(){
-                let desc = `<div>${loc('plus_max_resource',[global.race['absorbed'] ? global.race.absorbed.length * 10000 : 10000,loc('resource_Knowledge_name')])}</div>`;
+                let desc = `<div>${loc('plus_max_resource',[global.race['absorbed'] ? global.race.absorbed.length * 10000 : 10000,global.resource.Knowledge.name])}</div>`;
                 desc += `<div>${loc('city_university_effect',[jobScale(3)])}</div>`;
                 desc += `<div>${loc('plus_max_resource',[jobScale(2),jobName('scientist')])}</div>`;
                 desc += `<div>${loc('interstellar_g_factory_effect')}</div>`;
@@ -742,10 +750,10 @@ const fortressModules = {
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
             cost: {
-                Money(offset){ return spaceCostMultiplier('demon_forge', offset, 380000, 1.25, 'portal'); },
-                Iridium(offset){ return spaceCostMultiplier('demon_forge', offset, 250000, 1.25, 'portal'); },
-                Iron(offset){ return spaceCostMultiplier('demon_forge', offset, 435000, 1.25, 'portal'); },
-                Brick(offset){ return spaceCostMultiplier('demon_forge', offset, 155000, 1.25, 'portal'); },
+                Money(offset){ return spaceCostMultiplier('demon_forge', offset, 480000, 1.25, 'portal'); },
+                Iridium(offset){ return spaceCostMultiplier('demon_forge', offset, 265000, 1.25, 'portal'); },
+                Iron(offset){ return spaceCostMultiplier('demon_forge', offset, 535000, 1.25, 'portal'); },
+                Sheet_Metal(offset){ return spaceCostMultiplier('demon_forge', offset, 155000, 1.25, 'portal'); },
             },
             effect(){
                 let desc = `<div>${loc('city_foundry_effect1',[jobScale(10)])}</div><div>${loc('interstellar_stellar_forge_effect',[40])}</div>`;
@@ -790,9 +798,9 @@ const fortressModules = {
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
             cost: {
-                Money(offset){ return spaceCostMultiplier('hell_factory', offset, 600000, 1.26, 'portal'); },
+                Money(offset){ return spaceCostMultiplier('hell_factory', offset, 720000, 1.26, 'portal'); },
                 Titanium(offset){ return spaceCostMultiplier('hell_factory', offset, 550000, 1.26, 'portal'); },
-                Nano_Tube(offset){ return spaceCostMultiplier('hell_factory', offset, 35000, 1.26, 'portal'); },
+                Nano_Tube(offset){ return spaceCostMultiplier('hell_factory', offset, 55000, 1.26, 'portal'); },
                 Stanene(offset){ return spaceCostMultiplier('hell_factory', offset, 375000, 1.26, 'portal'); }
             },
             effect(){
@@ -1153,10 +1161,19 @@ const fortressModules = {
                 Aerogel(offset){ return spaceCostMultiplier('soul_attractor', offset, 180000, 1.25, 'portal'); },
             },
             effect(){
-                let link = global.tech.hell_pit >= 7 ? `<div>${loc('portal_soul_attractor_effect2',[3])}</div>` : ``;
                 let attract = global.blood['attract'] ? global.blood.attract * 5 : 0;
                 if (global.tech['hell_pit'] && global.tech.hell_pit >= 8){ attract *= 2; }
-                return `<div>${loc('portal_soul_attractor_effect',[40 + attract, 120 + attract])}</div>${link}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+
+                let desc = `<div>${loc('portal_soul_attractor_effect',[40 + attract, 120 + attract])}</div>`;
+                if (global.tech.hell_pit >= 7){
+                    desc += `<div>${loc('portal_soul_attractor_effect2',[3])}</div>`;
+                }
+                if (global.tech['pitspawn']){
+                    desc += `<div>${loc('production',[5,loc('portal_shadow_mine_title')])}</div>`;
+                }
+                desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+
+                return desc;
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -1285,6 +1302,91 @@ const fortressModules = {
                     p: ['absorption_chamber','portal']
                 };
             }
+        },
+        shadow_mine: {
+            id: 'portal-shadow_mine',
+            title: loc('portal_shadow_mine_title'),
+            desc(){
+                return `<div>${loc('portal_shadow_mine_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { pitspawn: 1 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            powered(){ return powerCostMod(5); },
+            powerBalancer(){
+                return [{ r: 'Infernite', k: 'lpmod' }];
+            },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('shadow_mine', offset, 10000000, 1.25, 'portal'); },
+                Lumber(offset){ return spaceCostMultiplier('shadow_mine', offset, 4650000, 1.25, 'portal'); },
+                Adamantite(offset){ return spaceCostMultiplier('shadow_mine', offset, 2350000, 1.25, 'portal'); },
+            },
+            effect(wiki){
+                let elerium_cap = spatialReasoning(225);
+                let elerium = production('shadow_mine', 'elerium', wiki);
+                let vitreloy = production('shadow_mine', 'vitreloy', wiki);
+                let desc = `<div>${loc('gain',[+(elerium).toFixed(3), global.resource.Elerium.name])}</div>`;
+                desc += `<div>${loc('gain',[+(vitreloy).toFixed(3), global.resource.Vitreloy.name])}</div>`;
+                desc += `<div>${loc('plus_max_resource',[elerium_cap, global.resource.Elerium.name])}</div>`;
+                desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('shadow_mine','portal');
+                    powerOnNewStruct($(this)[0]);
+                    global.resource.Vitreloy.display = true;
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['shadow_mine','portal']
+                };
+            },
+            flair(){ return loc('portal_shadow_mine_flair'); }
+        },
+        tavern: {
+            id: 'portal-tavern',
+            title: loc('portal_tavern_title'),
+            desc(){
+                return `<div>${loc('portal_tavern_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { pitspawn: 2 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            powered(){ return powerCostMod(3); },
+            powerBalancer(){
+                return [{ r: 'Infernite', k: 'lpmod' }];
+            },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('tavern', offset, 12500000, 1.25, 'portal'); },
+                Food(offset){ return spaceCostMultiplier('tavern', offset, 250000, 1.25, 'portal'); },
+                Oil(offset){ return spaceCostMultiplier('tavern', offset, 125000, 1.25, 'portal'); },
+                Brick(offset){ return spaceCostMultiplier('tavern', offset, 138000, 1.25, 'portal'); },
+            },
+            effect(wiki){
+                let desc = `<div>${loc('plus_resource_per',[0.35,loc('morale'),loc('portal_shadow_mine_title')])}</div>`;
+                desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('tavern','portal');
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['tavern','portal']
+                };
+            },
+            flair(){ return loc('portal_tavern_flair'); }
         },
     },
     prtl_ruins: {
@@ -1479,7 +1581,7 @@ const fortressModules = {
                 let vault = spatialReasoning(bank_vault() * 8 * sup.supress);
                 vault = +(vault).toFixed(0);
                 let containers = Math.round(get_qlevel(wiki)) * 10;
-                let container_string = `<div>${loc('plus_max_resource',[containers,loc('resource_Crates_name')])}</div><div>${loc('plus_max_resource',[containers,loc('resource_Containers_name')])}</div>`;
+                let container_string = `<div>${loc('plus_max_resource',[containers,global.resource.Crates.name])}</div><div>${loc('plus_max_resource',[containers,global.resource.Containers.name])}</div>`;
                 return `<div>${loc('plus_max_resource',[`\$${vault.toLocaleString()}`,loc('resource_Money_name')])}</div><div>${loc('plus_max_citizens',[$(this)[0].citizens()])}</div><div>${loc('plus_max_resource',[jobScale(5),loc('civics_garrison_soldiers')])}</div><div>${loc('portal_guard_post_effect1',[75])}</div>${container_string}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
@@ -3094,7 +3196,7 @@ function buildEnemyFortress(parent){
                 if (global.portal.throne.enemy[idx].f <= 0){
                     messageQueue(loc('fortress_enemy_defeat',[races[global.portal.throne.enemy[idx].r].name]),'info',false,['progress']);
                     global.portal.throne.hearts.push(global.portal.throne.enemy[idx].r);
-                    global.portal.throne.enemy.splice(idx);
+                    global.portal.throne.enemy.splice(idx,1);
                     renderFortress();
                 }
             }
@@ -4134,7 +4236,8 @@ export function hellguard(){
         }
 
         if (global.portal.minions.on > 0){
-            global.portal.minions.spawns += Math.rand(global.portal.minions.on * 15, global.portal.minions.on * 25);
+            let spawn = fortressModules.prtl_badlands.minions.soldiers();
+            global.portal.minions.spawns += Math.rand(global.portal.minions.on * (spawn - 10), global.portal.minions.on * spawn);
         }
 
         let forgeOperating = false;
@@ -4157,7 +4260,8 @@ export function hellguard(){
         if (global.portal.throne.enemy.length > 0){
             let rating = armyRating(1,'hellArmy',0);
             global.portal.throne.enemy.forEach(function(e){
-                let reaper = 0.25 - ((global.portal?.reaper?.count || 0) / 100) + (e.s * 0.01);
+                let reapEffect = global.race['blurry'] ? 100 - traits.blurry.vars()[0] : 100;
+                let reaper = 0.25 + (e.s * 0.01) - ((global.portal?.reaper?.count || 0) / reapEffect);
                 if (reaper < 0.01){ reaper = 0.01; }
                 let bound = Math.round(global.portal.minions.spawns * (0.5 * e.s) * (e.s ** reaper) / rating);
                 let kills = Math.rand(e.s, bound);
@@ -6112,7 +6216,7 @@ function drawHellAnalysis(){
                 <div v-show="p.soul_forge"><h2>{{ st.${type}.kills.soul_forge, 'kills_soul_forge', s.average | genericSub }}</h2></div>
                 <div v-show="p.gate_turret"><h2>{{ st.${type}.kills.turrets, 'kills_turrets', s.average | genericSub }}</h2></div>
             </div>
-            <div v-show="sg.display"><h2>{{ st.${type}.gems, 'gems', s.average | genericMulti }}</h2><h2 class="text-button has-text-advanced" aria-label="${loc('hell_analysis_toggle_bd',[loc('resource_Soul_Gem_name')])}" @click="toggleDropdown('dropGems')">{{ s.dropGems | dropdownLabel }}</h2></div>
+            <div v-show="sg.display"><h2>{{ st.${type}.gems, 'gems', s.average | genericMulti }}</h2><h2 class="text-button has-text-advanced" aria-label="${loc('hell_analysis_toggle_bd',[global.resource.Soul_Gem.name])}" @click="toggleDropdown('dropGems')">{{ s.dropGems | dropdownLabel }}</h2></div>
             <div v-show="sg.display && s.dropGems">
                 <div><h2>{{ st.${type}.gems.patrols, 'gems_patrols', s.average | genericSub }}</h2></div>
                 <div v-show="p.gun_emplacement"><h2>{{ st.${type}.gems.guns, 'gems_guns', s.average | genericSub }}</h2></div>

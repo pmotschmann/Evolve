@@ -1873,21 +1873,21 @@ export function containerItem(mount,market_item,name,color){
     market_item.append($(`<h3 class="res has-text-${color}">{{ name }}</h3>`));
 
     if (global.resource.Crates.display){
-        let crate = $(`<span class="trade"><span class="has-text-warning">${loc('resource_Crates_name')}</span></span>`);
+        let crate = $(`<span class="trade"><span class="has-text-warning">${global.resource.Crates.name}</span></span>`);
         market_item.append(crate);
 
-        crate.append($(`<span role="button" aria-label="remove ${global.resource[name].name} ${loc('resource_Crates_name')}" class="sub has-text-danger" @click="subCrate('${name}')"><span>&laquo;</span></span>`));
+        crate.append($(`<span role="button" aria-label="remove ${global.resource[name].name} ${global.resource.Crates.name}" class="sub has-text-danger" @click="subCrate('${name}')"><span>&laquo;</span></span>`));
         crate.append($(`<span class="current" v-html="$options.filters.cCnt(crates,'${name}')"></span>`));
-        crate.append($(`<span role="button" aria-label="add ${global.resource[name].name} ${loc('resource_Crates_name')}" class="add has-text-success" @click="addCrate('${name}')"><span>&raquo;</span></span>`));
+        crate.append($(`<span role="button" aria-label="add ${global.resource[name].name} ${global.resource.Crates.name}" class="add has-text-success" @click="addCrate('${name}')"><span>&raquo;</span></span>`));
     }
 
     if (global.resource.Containers.display){
-        let container = $(`<span class="trade"><span class="has-text-warning">${loc('resource_Containers_name')}</span></span>`);
+        let container = $(`<span class="trade"><span class="has-text-warning">${global.resource.Containers.name}</span></span>`);
         market_item.append(container);
 
-        container.append($(`<span role="button" aria-label="remove ${global.resource[name].name} ${loc('resource_Containers_name')}" class="sub has-text-danger" @click="subCon('${name}')"><span>&laquo;</span></span>`));
+        container.append($(`<span role="button" aria-label="remove ${global.resource[name].name} ${global.resource.Containers.name}" class="sub has-text-danger" @click="subCon('${name}')"><span>&laquo;</span></span>`));
         container.append($(`<span class="current" v-html="$options.filters.trick(containers)"></span>`));
-        container.append($(`<span role="button" aria-label="add ${global.resource[name].name} ${loc('resource_Containers_name')}" class="add has-text-success" @click="addCon('${name}')"><span>&raquo;</span></span>`));
+        container.append($(`<span role="button" aria-label="add ${global.resource[name].name} ${global.resource.Containers.name}" class="add has-text-success" @click="addCon('${name}')"><span>&raquo;</span></span>`));
     }
 
     vBind({
@@ -2353,7 +2353,7 @@ function loadContainerCounter(){
         return;
     }
 
-    var market_item = $(`<div id="crateTotal" class="market-item"><span v-show="cr.display" class="crtTotal"><span class="has-text-warning">${loc('resource_Crates_name')}</span><span>{{ cr.amount }} / {{ cr.max }}</span></span><span v-show="cn.display" class="cntTotal"><span class="has-text-warning">${loc('resource_Containers_name')}</span><span>{{ cn.amount }} / {{ cn.max }}</span></span></div>`);
+    var market_item = $(`<div id="crateTotal" class="market-item"><span v-show="cr.display" class="crtTotal"><span class="has-text-warning">${global.resource.Crates.name}</span><span>{{ cr.amount }} / {{ cr.max }}</span></span><span v-show="cn.display" class="cntTotal"><span class="has-text-warning">${global.resource.Containers.name}</span><span>{{ cn.amount }} / {{ cn.max }}</span></span></div>`);
     $('#resStorage').append(market_item);
 
     vBind({
@@ -2381,7 +2381,7 @@ function tradeRouteColor(res){
 }
 
 function buildCrateLabel(){
-    let material = global.race['kindling_kindred'] || global.race['smoldering'] ? (global.race['smoldering'] ? global.resource.Chrysotile.name : global.resource.Stone.name) : (global.resource['Plywood'] ? global.resource.Plywood.name : loc('resource_Plywood_name'));
+    let material = global.race['kindling_kindred'] || global.race['smoldering'] ? (global.race['smoldering'] ? global.resource.Chrysotile.name : global.resource.Stone.name) : (global.resource['Plywood'] ? global.resource.Plywood.name : global.resource.Plywood.name);
     let cost = global.race['kindling_kindred'] || global.race['smoldering'] ? 200 : 10
     return loc('resource_modal_crate_construct_desc',[cost,material,crateValue()]);
 }

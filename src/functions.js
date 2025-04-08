@@ -279,7 +279,7 @@ export function powerGrid(type,reset){
                 'city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','gxy_stargate:telemetry_beacon','int_nebula:nexus','gxy_stargate:gateway_depot',
                 'spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','gxy_gorddon:embassy','gxy_gorddon:dormitory','gxy_alien1:resort','spc_gas_moon:oil_extractor',
                 'prtl_wasteland:hell_factory','int_alpha:int_factory','city:factory','spc_red:red_factory','spc_dwarf:world_controller','prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine',
-                'city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','prtl_pit:soul_forge','gxy_chthonian:excavator',
+                'city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','prtl_pit:soul_forge','gxy_chthonian:excavator','prtl_pit:shadow_mine','prtl_pit:tavern',
                 'int_blackhole:far_reach','prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','gxy_stargate:gateway_station','gxy_alien1:vitreloy_plant','gxy_alien2:foothold',
                 'gxy_gorddon:symposium','int_blackhole:mass_ejector','city:casino','spc_hell:spc_casino','tau_home:tauceti_casino','prtl_wasteland:hell_casino','prtl_fortress:repair_droid','gxy_stargate:defense_platform','prtl_ruins:guard_post',
                 'prtl_lake:cooling_tower','prtl_lake:harbor','prtl_spire:purifier','prtl_ruins:archaeology','prtl_pit:gun_emplacement','prtl_gate:gate_turret','prtl_pit:soul_attractor',
@@ -2909,6 +2909,7 @@ const valAdjust = {
     living_tool: false,
     empowered: false,
     living_materials: true,
+    blurry: true
 };
 
 function getTraitVals(trait, rank, species){
@@ -2943,6 +2944,9 @@ function getTraitVals(trait, rank, species){
         }
         else if (trait === 'living_materials'){
             vals = [global.resource.Lumber.name, global.resource.Plywood.name, global.resource.Furs.name, loc('resource_Amber_name')];
+        }
+        else if (trait === 'blurry' && global.race['warlord']){
+            vals = [+((100/(100-vals[0])-1)*100).toFixed(1)];
         }
         else if (!valAdjust[trait]){
             vals = [];
@@ -3090,6 +3094,10 @@ function rName(r){
     return `<span class="has-text-warning">${res}</span>`;
 }
 
+const altTraitDesc = {
+    blurry: 'warlord'
+};
+
 export function getTraitDesc(info, trait, opts){
     let fanatic = opts['fanatic'] || false;
     let tpage = opts['tpage'] || false;
@@ -3141,7 +3149,8 @@ export function getTraitDesc(info, trait, opts){
                     trait_desc = loc(`wiki_trait_effect_${alt_trait}`, getTraitVals(trait, trank, species));
                 }
                 else {
-                    trait_desc = loc(`wiki_trait_effect_${trait}`, getTraitVals(trait, trank, species));
+                    let key = altTraitDesc[trait] && global.race.hasOwnProperty(altTraitDesc[trait]) ? altTraitDesc[trait] : 'effect';
+                    trait_desc = loc(`wiki_trait_${key}_${trait}`, getTraitVals(trait, trank, species));
                 }
             }
             info.append(`<div class="has-text-${color} effect">${trait_desc}</div>`);
@@ -3170,7 +3179,8 @@ export function getTraitDesc(info, trait, opts){
                         let alt_trait = trait === 'spiritual' ? 'manipulator' : 'blasphemous_evil';
                         return loc(`wiki_trait_effect_${alt_trait}`, getTraitVals(trait, trank, species));
                     }
-                    return loc(`wiki_trait_effect_${trait}`, getTraitVals(trait, rk, species));
+                    let key = altTraitDesc[trait] && global.race.hasOwnProperty(altTraitDesc[trait]) ? altTraitDesc[trait] : 'effect';
+                    return loc(`wiki_trait_${key}_${trait}`, getTraitVals(trait, rk, species));
                 },
                 up(){
                     switch (data.rank){

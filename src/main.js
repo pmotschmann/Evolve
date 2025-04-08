@@ -3025,6 +3025,13 @@ function fastLoop(){
         else {
             global.city.morale.zoo = 0;
         }
+        if (p_on['tavern'] && !global.race['joyless']){
+            global.city.morale.tavern = p_on['tavern'] * p_on['shadow_mine'] * 0.35;
+            morale += p_on['tavern'] * p_on['shadow_mine'] * 0.35;
+        }
+        else {
+            global.city.morale.tavern = 0;
+        }
         if (support_on['bliss_den'] && !global.race['joyless']){
             global.city.morale.bliss_den = support_on['bliss_den'] * 8;
             morale += support_on['bliss_den'] * 8;
@@ -5219,6 +5226,35 @@ function fastLoop(){
             }
         }
 
+        if (p_on['shadow_mine']){
+            let attract = p_on['soul_attractor'] ? 1 + (p_on['soul_attractor'] * 0.05) : 1;
+
+            if (global.resource.Vitreloy.display){ // Vitreloy
+                let rate = production('shadow_mine','vitreloy');
+                let mine_base = p_on['shadow_mine'] * rate * production('psychic_boost','Vitreloy');
+                let mine_delta = mine_base * attract * global_multiplier;
+
+                if (mine_base > 0){
+                    breakdown.p['Vitreloy'][loc('portal_shadow_mine_title')] = mine_base + 'v';
+                    breakdown.p['Vitreloy'][`ᄂ${loc('portal_soul_attractor_title')}+0`] = ((attract - 1) * 100) + '%';
+                }
+                modRes('Vitreloy', mine_delta * time_multiplier);
+            }
+            
+            if (global.resource.Elerium.display){ // Elerium
+                let rate = production('shadow_mine','elerium');
+                let mine_base = p_on['shadow_mine'] * rate * production('psychic_boost','Elerium');
+
+                let mine_delta = mine_base * attract * global_multiplier;
+
+                if (mine_base > 0){
+                    breakdown.p['Elerium'][loc('portal_shadow_mine_title')] = mine_base + 'v';
+                    breakdown.p['Elerium'][`ᄂ${loc('portal_soul_attractor_title')}+0`] = ((attract - 1) * 100) + '%';
+                }
+                modRes('Elerium', mine_delta * time_multiplier);
+            }
+        }
+
         if (p_on['s_gate'] && global.galaxy['raider'] && gal_on['raider'] > 0){
             let base = gal_on['raider'] * 0.05 * production('psychic_boost','Vitreloy');
             let pirate = piracy('gxy_chthonian');
@@ -7020,7 +7056,6 @@ function fastLoop(){
                 breakdown.p['Infernite'][loc('city_mine')] = mine_base + 'v';
                 modRes('Infernite', mine_delta * time_multiplier);
             }
-
         }
 
         // Bolognium
@@ -9466,6 +9501,11 @@ function midLoop(){
             let el_gain = p_on['elerium_containment'] * spatialReasoning(1000);
             caps['Elerium'] += el_gain;
             breakdown.c.Elerium[loc('eden_elerium_containment',[global.resource.Elerium.name])] = el_gain+'v';
+        }
+        if (p_on['shadow_mine']){
+            let el_gain = p_on['shadow_mine'] * spatialReasoning(200);
+            caps['Elerium'] += el_gain;
+            breakdown.c.Elerium[loc('portal_shadow_mine_title')] = el_gain+'v';
         }
         if (global.city['foundry']){
             lCaps['craftsman'] += jobScale(global.city['foundry'].count);
