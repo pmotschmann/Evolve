@@ -213,6 +213,11 @@ export const feats = {
         desc: loc("feat_wish_desc"),
         flair: loc("feat_wish_flair")
     },
+    existential_risk: {
+        name: loc("feat_existential_risk_name"),
+        desc: loc("feat_existential_risk_desc"),
+        flair: loc("feat_existential_risk_flair")
+    },
     friday: {
         name: loc("feat_friday_name"),
         desc: loc("feat_friday_desc"),
@@ -665,6 +670,18 @@ export function checkAchievements(){
                 }
             }
         }
+    }
+
+    if (global.stats.aiappoc > 0) {
+      let aiApocRaceCount = 0;
+      
+      Object.keys(global.stats.synth).forEach(race => {
+        aiApocRaceCount++;  
+      });
+
+      if (aiApocRaceCount >= 10) {
+        unlockFeat('existential_risk', false);
+      }
     }
 
     if (global.portal.hasOwnProperty('mechbay') && global.tech.hasOwnProperty('hell_spire') && global.tech.hell_spire >= 9){

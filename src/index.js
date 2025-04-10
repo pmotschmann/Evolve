@@ -1232,6 +1232,7 @@ export function index(){
         {i: 'sludge',       f: 'grand_death_tour',  r: 2 },
         {i: 'lightning',    f: 'annihilation',      r: 2 },
         {i: 'trophy',       f: 'wish',              r: 2 },
+        {i: 'robot',        f: 'existential_risk',  r: 2 },
         {i: 'heart',        f: 'valentine',         r: 1 },
         {i: 'clover',       f: 'leprechaun',        r: 1 },
         {i: 'bunny',        f: 'easter',            r: 1 },

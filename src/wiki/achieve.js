@@ -440,6 +440,25 @@ function featDesc(feat,showFlair){
         path += `</div>`;
         popover(`f-${feat}`,$(`<div class="wide has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${path}${flair}`),{ wide: true, classes: 'w25' });
     }
+    else if (feat === 'existential_risk') {
+        let checked = `<div class="flexed wide">`;    
+        let avcounter = 0;
+        Object.keys(races).sort((a,b) => races[a].name.localeCompare(races[b].name)).forEach(function (key){
+            if (key !== 'protoplasm' && key !== 'nano' && key !== 'synth' && key !== 'junker'){
+                avcounter++;
+                if (global.stats.synth[key]){
+                    checked = checked + `<span class="wide iclr${global.stats.synth[key]}">${races[key].name}</span>`;
+                }
+                else {
+                    checked = checked + `<span class="wide has-text-danger">${races[key].name}</span>`;
+                }
+            }
+        });
+        checked = checked + `</div>`;
+        popover(`f-${feat}`,$(`<div class="wide has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${checked}${flair}`),{
+            wide: true
+        });
+    }
     else {
         popover(`f-${feat}`,$(`<div class="has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${flair}`));
     }
