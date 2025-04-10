@@ -1233,12 +1233,12 @@ if (convertVersion(global['version']) < 104002){
     }
 }
 
-if (convertVersion(global['version']) < 104003){
-    if(!global.race.inactive){
-        global.race.inactive = {};
-    }
+if(!global.race.hasOwnProperty('inactiveTraits')){
     if(global.race['forager']){
-        global.race.inactive = {herbivore:global.race['forager'], carnivore:global.race['forager']};
+        global.race.inactiveTraits = {herbivore:global.race['forager'], carnivore:global.race['forager']};
+    }
+    else{
+        global.race.inactiveTraits = {};
     }
 }
 
