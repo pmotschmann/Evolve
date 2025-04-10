@@ -8011,7 +8011,7 @@ function midLoop(){
         var caps = {
             Money: 1000,
             Slave: 0,
-            Authority: 80,
+            Authority: global.race['cataclysm'] || global.race['orbit_decayed'] || global.race['lone_survivor'] ? 90 : 80,
             Mana: 0,
             Energy: 100,
             Sus: 100,
@@ -8167,7 +8167,7 @@ function midLoop(){
                 breakdown.c.Authority[structName('temple')] = gain+'v';
             }
             if (global.space['space_barracks']){
-                let gain = global.space.space_barracks.on;
+                let gain = global.space.space_barracks.on * (global.race['cataclysm'] ? 2 : 1);
                 caps.Authority += gain;
                 breakdown.c.Authority[loc('space_red_space_barracks_title')] = gain+'v';
             }
@@ -8192,7 +8192,7 @@ function midLoop(){
                 breakdown.c.Authority[loc('portal_minions_bd')] = gain+'v';
             }
 
-            global.resource.Authority.amount = 80;
+            global.resource.Authority.amount = global.race['cataclysm'] || global.race['orbit_decayed'] || global.race['lone_survivor'] ? 90 : 80;
             if (global.city.morale.current > 100){
                 let excess = global.city.morale.current - 100;
                 if (global.civic.govern.type === 'democracy'){

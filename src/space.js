@@ -1383,7 +1383,7 @@ const spaceProjects = {
 
                 let desc = `<div>${loc('plus_max_soldiers',[soldiers])}</div>${train}`;
                 if (global.race.universe === 'evil'){
-                    desc += `<div>${loc('plus_max_resource',[1,global.resource.Authority.name])}</div>`;
+                    desc += `<div>${loc('plus_max_resource',[global.race['cataclysm'] ? 2 : 1, global.resource.Authority.name])}</div>`;
                 }
                 desc += `<div class="has-text-caution">${loc('space_red_space_barracks_effect2',[oil])}</div>${food}`
 
@@ -1401,7 +1401,7 @@ const spaceProjects = {
             soldiers(wiki){
                 let soldiers = global.tech.marines >= 2 ? 4 : 2;
                 if (global.race.universe === 'evil'){
-                    soldiers--;
+                    if (!global.race['cataclysm'] && !global.race['orbit_decayed']){ soldiers--; }
                     let biodome_count = wiki ? (global.space?.biodome?.on ?? 0) : support_on['biodome'];
                     if (biodome_count){
                         soldiers += biodome_count * 0.075;

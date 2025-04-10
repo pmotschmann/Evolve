@@ -2171,6 +2171,9 @@ export function armyRating(val,type,wound){
         if (global.race['swift']){
             army *= 1 + (traits.swift.vars()[0] / 100);
         }
+        if (global.race['iron_wood']){
+            army *= 1 + (traits.iron_wood.vars()[0] / 100);
+        }
         if (global.race['fiery']){
             army *= 1 + (traits.fiery.vars()[0] / 100);
         }

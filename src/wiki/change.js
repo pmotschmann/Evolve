@@ -10,7 +10,9 @@ export const changeList = [
             `Fixed bug with Rogue trait that set crafted resources to 0.`,
             `Updated Empowered trait mechanics.`,
             `Adjusted values for Master Artisan.`,
-            `Symposium now gain Knowledge for all crew in Andromeda.`
+            `Symposium now gain Knowledge for all crew in Andromeda.`,
+            `Fixed bug that caused Hybrid species to throw an error when triggering greatness resets.`,
+            `Evil Authority adjustments for Cataclysm, Lone Survivor, and Orbit Decay`
         ]
     },
     {

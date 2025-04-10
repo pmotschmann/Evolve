@@ -2341,6 +2341,30 @@ export const traits = {
             }
         },
     },
+    iron_wood: { // Removes Plywood as a resource, adds attack bonus
+        name: loc('trait_iron_wood_name'),
+        desc: loc('trait_iron_wood'),
+        type: 'major',
+        val: 4,
+        vars(r){
+            switch (r || traitRank('iron_wood') || 1){
+                case 0.1:
+                    return [3];
+                case 0.25:
+                    return [6];
+                case 0.5:
+                    return [9];
+                case 1:
+                    return [12];
+                case 2:
+                    return [15];
+                case 3:
+                    return [18];
+                case 4:
+                    return [21];
+            }
+        },
+    },
     pyrophobia: { // Smelter productivity is reduced
         name: loc('trait_pyrophobia_name'),
         desc: loc('trait_pyrophobia'),
@@ -6519,6 +6543,12 @@ export function cleanAddTrait(trait){
             }
             purgeLumber();
             break;
+        case 'iron_wood':
+            if (global.race['smoldering']){
+                break;
+            }
+            releaseResource('Plywood');
+            break;
         case 'forge':
             defineIndustry();
             break;
@@ -6799,6 +6829,11 @@ export function cleanRemoveTrait(trait,rank){
             checkPurgatory('tech','saw');
             if ((global.tech['axe'] || global.tech['reclaimer']) && !global.race['orbit_decayed']){
                 global.civic.lumberjack.display = true;
+            }
+            break;
+        case 'iron_wood':
+            if (global.tech['foundry']){
+                global.resource.Plywood.display = true;
             }
             break;
         case 'forge':
@@ -8160,7 +8195,7 @@ function majorWish(parent){
                     global.race.wishStats.major = traits.wish.vars()[0];
 
                     let options = ['potato'];
-                    if (!global.race.wishStats.ship && (global.tech['shipyard'] || (global.tech['science'] && global.tech.science >= 16))){
+                    if (!global.race['warlord'] && !global.race.wishStats.ship && (global.tech['shipyard'] || (global.tech['science'] && global.tech.science >= 16))){
                         options.push('ship');
                     }
                     if (!global.race.wishStats.gov){
@@ -8195,10 +8230,10 @@ function majorWish(parent){
                     global.race.wishStats.major = traits.wish.vars()[0];
 
                     let options = ['priest'];
-                    if (!global.race.wishStats.temple){
+                    if (!global.race.wishStats.temple && !global.race['cataclysm'] && !global.race['lone_survivor'] && !global.race['warlord']){
                         options.push('temple');
                     }
-                    if (!global.race.wishStats.zigg){
+                    if (!global.race.wishStats.zigg && !global.race['lone_survivor'] && !global.race['warlord']){
                         options.push('zigg');
                     }
 
@@ -8303,7 +8338,7 @@ function majorWish(parent){
                     let options = ['wonder'];
 
                     let a_level = alevel();
-                    if (!global.race['lone_survivor'] && !global.stats.feat['wish'] || (global.stats.feat['wish'] && global.stats.feat['wish'] < a_level)){
+                    if (!global.race['lone_survivor'] && !global.race['warlord'] && !global.stats.feat['wish'] || (global.stats.feat['wish'] && global.stats.feat['wish'] < a_level)){
                         options.push('feat');
                     }
 

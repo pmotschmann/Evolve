@@ -1973,7 +1973,7 @@ function genetics(){
                 else if (!global.race.hasOwnProperty(trait)){
                     readOnly = true;
                 }
-                else if (global.race.hasOwnProperty('absorbed') && global.race.absorbed.map(r => races[r].fanaticism).includes(trait)){
+                else if (global.race.hasOwnProperty('absorbed') && global.race.absorbed.map(r => races[r].fanaticism).includes(trait) || global.race['warlord'] && trait === 'iron_wood'){
                     readOnly = true;
                 }
                 if (!readOnly && ((traits[trait].type === 'major' && global.genes['mutation']) || (traits[trait].type === 'genus' && global.genes['mutation'] && global.genes['mutation'] >= 2))){

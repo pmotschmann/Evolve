@@ -367,7 +367,7 @@ const fortressModules = {
             flair(){ return loc('portal_minions_flair'); }
         },
         reaper: {
-            id: 'portal-reapers',
+            id: 'portal-reaper',
             title: loc('portal_reaper_title'),
             desc: loc('portal_reaper_title'),
             reqs: { hellspawn: 4 },
@@ -6884,7 +6884,6 @@ export function warlordSetup(){
         global.tech['container'] = 7;
         global.tech['copper'] = 1;
         global.tech['currency'] = 6;
-        global.tech['disease'] = 2;
         global.tech['drone'] = 1;
         global.tech['elerium'] = 2;
         global.tech['explosives'] = 3;
@@ -6949,7 +6948,6 @@ export function warlordSetup(){
         global.tech['swarm'] = 6;
         global.tech['syndicate'] = 0;
         global.tech['synthetic_fur'] = 1;
-        global.tech['tau_home'] = 6;
         global.tech['theatre'] = 3;
         global.tech['theology'] = 2;
         global.tech['titanium'] = 3;

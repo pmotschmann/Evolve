@@ -7400,21 +7400,25 @@ export function checkAffordable(c_action,max,raw){
 export function templeCount(zig){
     if (!zig && global.city['temple']){
         let count = global.city.temple.count;
-        if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.temple){
-            count++;
-        }
-        if (global.genes.hasOwnProperty('ancients') && global.genes.ancients >= 6){
-            count++;
+        if (!global.race['cataclysm'] && !global.race['orbit_decayed'] && !global.race['lone_survivor'] && !global.race['warlord']){
+            if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.temple){
+                count++;
+            }
+            if (global.genes.hasOwnProperty('ancients') && global.genes.ancients >= 6){
+                count++;
+            }
         }
         return count;
     }
     else if (zig && global.space['ziggurat']){
         let count = global.space.ziggurat.count;
-        if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.zigg){
-            count++;
-        }
-        if (global.genes.hasOwnProperty('ancients') && global.genes.ancients >= 7){
-            count++;
+        if (!global.race['lone_survivor'] && !global.race['warlord']){
+            if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.zigg){
+                count++;
+            }
+            if (global.genes.hasOwnProperty('ancients') && global.genes.ancients >= 7){
+                count++;
+            }
         }
         return count;
     }
@@ -8205,6 +8209,7 @@ function sentience(){
         global.race['absorbed'] = [global.race.species];
         global.race['origin'] = global.race.species;
         global.race.species = 'hellspawn';
+        if (trait === 'kindling_kindred'){ trait = 'iron_wood'; }
         setTraitRank(trait, { set: 0.5 });
     }
     else {
@@ -9303,35 +9308,44 @@ function cataclysm(){
 }
 
 export function fanaticism(god){
-    switch (races[god].fanaticism){
-        case 'smart':
-            if (global.race['dumb']){
+    if (['custom','hybrid'].includes(god) && global.race['warlord']){
+        randomMinorTrait(5);
+        arpa('Genetics');
+    }
+    else {
+        switch (races[god].fanaticism){
+            case 'smart':
+                if (global.race['dumb']){
+                    randomMinorTrait(5);
+                    arpa('Genetics');
+                }
+                else {
+                    fanaticTrait('smart');
+                }
+                break;
+            case 'infectious':
+                fanaticTrait('infectious');
+                if (global.race.species === 'human'){
+                    unlockAchieve(`infested`);
+                }
+                break;
+            case 'blood_thirst':
+                fanaticTrait('blood_thirst');
+                if (global.race.species === 'entish'){
+                    unlockAchieve(`madagascar_tree`);
+                }
+                break;
+            case 'none':
                 randomMinorTrait(5);
                 arpa('Genetics');
-            }
-            else {
-                fanaticTrait('smart');
-            }
-            break;
-        case 'infectious':
-            fanaticTrait('infectious');
-            if (global.race.species === 'human'){
-                unlockAchieve(`infested`);
-            }
-            break;
-        case 'blood_thirst':
-            fanaticTrait('blood_thirst');
-            if (global.race.species === 'entish'){
-                unlockAchieve(`madagascar_tree`);
-            }
-            break;
-        case 'none':
-            randomMinorTrait(5);
-            arpa('Genetics')
-            break;
-        default:
-            fanaticTrait(races[god].fanaticism);
-            break;
+                break;
+            case 'kindling_kindred':
+                fanaticTrait(races[god].fanaticism);
+                break;
+            default:
+                fanaticTrait(races[god].fanaticism);
+                break;
+        }
     }
     if (global.race['warlord']){
         global.race.absorbed.push(god);
@@ -9346,6 +9360,7 @@ export function absorbRace(race){
 }
 
 function fanaticTrait(trait,rank){
+    if (global.race['warlord'] && trait === 'kindling_kindred'){ trait = 'iron_wood'; }
     if (global.race[trait]){
         if (!setTraitRank(trait)){
             randomMinorTrait(5);

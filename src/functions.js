@@ -1940,12 +1940,15 @@ function smolderAdjust(costs, offset, wiki){
 }
 
 function kindlingAdjust(costs, offset, wiki){
-    if (global.race['kindling_kindred'] && (costs['Lumber'] || costs['Plywood'])){
+    if ((global.race['kindling_kindred'] || global.race['iron_wood']) && (costs['Lumber'] || costs['Plywood'])){
         var newCosts = {};
         let adjustRate = 1 + (traits.kindling_kindred.vars()[0] / 100);
         Object.keys(costs).forEach(function (res){
-            if (res !== 'Lumber' && res !== 'Plywood' && res !== 'Structs'){
+            if (global.race['kindling_kindred'] && res !== 'Lumber' && res !== 'Plywood' && res !== 'Structs'){
                 newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * adjustRate) || 0; }
+            }
+            else if (global.race['iron_wood'] && res !== 'Plywood'){
+                newCosts[res] = function(){ return costs[res](offset, wiki); }
             }
             else if (res === 'Structs'){
                 newCosts[res] = function(){ return costs[res](offset, wiki); }
