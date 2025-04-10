@@ -363,8 +363,8 @@ export function initMessageQueue(filters){
     filters.forEach(function (filter){
         message_logs[filter] = [];
         if (!global.settings.msgFilters[message_logs.view].vis){
-            $(`#msgQueueFilter-${message_logs.view}`).removeClass('is-active');
-            $(`#msgQueueFilter-${filter}`).addClass('is-active');
+            $(`#msgQueueFilter-${message_logs.view}`).removeClass('is-active').attr('aria-disabled', 'false');
+            $(`#msgQueueFilter-${filter}`).addClass('is-active').attr('aria-disabled', 'true');
             message_logs.view = filter;
         }
     });

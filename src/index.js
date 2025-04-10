@@ -952,7 +952,7 @@ export function index(){
     </div>`);
     message_filters.forEach(function (filter){
         $(`#msgQueueFilters`).append(`
-            <span id="msgQueueFilter-${filter}" class="${filter === 'all' ? 'is-active' : ''}" @click="swapFilter('${filter}')" v-show="s.${filter}.vis">${loc('message_log_' + filter)}</span>
+            <span id="msgQueueFilter-${filter}" class="${filter === 'all' ? 'is-active' : ''}" aria-disabled="${filter === 'all' ? 'true' : 'false'}" @click="swapFilter('${filter}')" v-show="s.${filter}.vis" role="button">${loc('message_log_' + filter)}</span>
         `);
     });
     vBind({
@@ -964,8 +964,8 @@ export function index(){
         methods: {
             swapFilter(filter){
                 if (message_logs.view !== filter){
-                    $(`#msgQueueFilter-${message_logs.view}`).removeClass('is-active');
-                    $(`#msgQueueFilter-${filter}`).addClass('is-active');
+                    $(`#msgQueueFilter-${message_logs.view}`).removeClass('is-active').attr('aria-disabled', 'false');
+                    $(`#msgQueueFilter-${filter}`).addClass('is-active').attr('aria-disabled', 'true');
                     message_logs.view = filter;
                     let queue = $(`#msgQueueLog`);
                     clearElement(queue);
