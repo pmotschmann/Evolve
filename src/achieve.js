@@ -143,6 +143,11 @@ export const feats = {
         desc: loc("feat_equilibrium_desc"),
         flair: loc("feat_equilibrium_flair")
     },
+    planned_obsolescence: {
+        name: loc("feat_planned_obsolescence_name"),
+        desc: loc("feat_planned_obsolescence_desc"),
+        flair: loc("feat_planned_obsolescence_flair")
+    },
     digital_ascension: {
         name: loc("feat_digital_ascension_name"),
         desc: loc("feat_digital_ascension_desc"),
@@ -212,11 +217,6 @@ export const feats = {
         name: loc("feat_wish_name"),
         desc: loc("feat_wish_desc"),
         flair: loc("feat_wish_flair")
-    },
-    existential_risk: {
-        name: loc("feat_existential_risk_name"),
-        desc: loc("feat_existential_risk_desc"),
-        flair: loc("feat_existential_risk_flair")
     },
     friday: {
         name: loc("feat_friday_name"),
@@ -672,16 +672,8 @@ export function checkAchievements(){
         }
     }
 
-    if (global.stats.aiappoc > 0) {
-      let aiApocRaceCount = 0;
-      
-      Object.keys(global.stats.synth).forEach(race => {
-        aiApocRaceCount++;  
-      });
-
-      if (aiApocRaceCount >= 10) {
-        unlockFeat('existential_risk', false);
-      }
+    if (global.stats['synth'] && Object.keys(global.stats.synth).length >= 32) {
+        unlockFeat('planned_obsolescence',false,5);
     }
 
     if (global.portal.hasOwnProperty('mechbay') && global.tech.hasOwnProperty('hell_spire') && global.tech.hell_spire >= 9){
