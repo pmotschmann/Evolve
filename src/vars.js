@@ -1233,7 +1233,7 @@ if (convertVersion(global['version']) < 104002){
     }
 }
 
-if(!global.race.hasOwnProprty('inactiveTraits')){
+if(!global.race.hasOwnProperty('inactiveTraits')){
     if(global.race['forager']){
         global.race.inactiveTraits = {herbivore:global.race['forager'], carnivore:global.race['forager']};
     }
