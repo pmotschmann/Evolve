@@ -7,7 +7,7 @@ import { defineResources, resource_values, spatialReasoning, craftCost, plasmidB
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobName, jobScale, workerScale, limitCraftsmen, loadServants} from './jobs.js';
 import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, luxGoodPrice, smelterUnlocked } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
-import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct } from './actions.js';
+import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct, casino_vault, casinoEarn } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
@@ -7500,43 +7500,8 @@ function fastLoop(){
             if (p_on['tauceti_casino']){ casinos += p_on['tauceti_casino']; }
             if (p_on['hell_casino']){ casinos += p_on['hell_casino']; }
 
-            let cash = Math.log2(1 + global.resource[global.race.species].amount);
-            let revenue = 2.5;
-            if (global.race['gambler']){
-                revenue *= 1 + (traits.gambler.vars()[0] * global.race['gambler'] / 100);
-            }
-            cash *= revenue;
-            if (global.tech.gambling >= 2){
-                cash *= global.tech.gambling >= 5 ? 2 : 1.5;
-            }
-            if (global.tech['stock_exchange'] && global.tech['gambling'] >= 4){
-                cash *= 1 + (global.tech['stock_exchange'] * 0.01);
-            }
-            if (global.civic.govern.type === 'corpocracy'){
-                cash *= 1 + (govEffect.corpocracy()[0] / 100);
-            }
-            if (global.civic.govern.type === 'socialist'){
-                cash *= 1 - (govEffect.socialist()[3] / 100);
-            }
-            if (global.race['inflation']){
-                cash *= 1 + (global.race.inflation / 1250);
-            }
-            if (global.tech['isolation']){
-                cash *= 1.25;
-                if (global.tech['iso_gambling']){
-                    cash *= 1 + (workerScale(global.civic.banker.workers,'banker') * 0.05)
-                }
-            }
-            cash *= production('psychic_cash');
-            let racVal = govActive('racketeer',1);
-            if (racVal){
-                cash *= 1 + (racVal / 100);
-            }
-            if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.casino){
-                cash *= 1.35;
-            }
-            cash *= casinos;
-            breakdown.p['Money'][structName('casino')] = cash + 'v';
+            let cash = casinos * casinoEarn();
+            breakdown.p['Money'][loc('city_casino')] = cash + 'v';
             modRes('Money', +(cash * time_multiplier * global_multiplier * hunger).toFixed(2));
             rawCash += cash * global_multiplier * hunger;
         }
@@ -9350,33 +9315,8 @@ function midLoop(){
             if (global.tauceti['tauceti_casino'] && global.tauceti.tauceti_casino.count > 0){
                 casinos += global.tauceti.tauceti_casino.count;
             }
-            if (global.portal['hell_casino'] && global.portal.hell_casino.count > 0){
-                casinos += global.portal.hell_casino.count;
-            }
-            let casino_capacity = global.tech['gambling'] >= 3 ? 60000 : 40000;
-            if (global.tech['gambling'] >= 5){
-                casino_capacity += global.tech['gambling'] >= 6 ? 240000 : 60000;
-            }
-            let vault = casinos * spatialReasoning(casino_capacity);
-            if (global.race['gambler']){
-                vault *= 1 + (traits.gambler.vars()[0] * global.race['gambler'] / 100);
-            }
-            if (global.tech['world_control']){
-                vault = Math.round(vault * 1.25);
-            }
-            if (global.tech['stock_exchange'] && global.tech['gambling'] >= 4){
-                vault *= 1 + (global.tech['stock_exchange'] * 0.05);
-            }
-            if (global.race['inflation']){
-                vault *= 1 + (global.race.inflation / 100);
-            }
-            if (global.tech['isolation']){
-                vault *= 5.5;
-            }
-            if (global.race['warlord']){
-                let absorb = global.race?.absorbed?.length || 1;
-                vault *= 1 + (absorb / 10);
-            }
+
+            let vault = casinos * casino_vault();
             caps['Money'] += vault;
             breakdown.c.Money[structName('casino')] = vault+'v';
         }

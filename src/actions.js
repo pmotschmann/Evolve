@@ -5414,51 +5414,53 @@ export function templeEffect(){
     return desc;
 }
 
-export function casinoEffect(){
-    let money = global.tech['gambling'] >= 3 ? 60000 : 40000;
+export function casino_vault(){
+    let vault = global.tech['gambling'] >= 3 ? 60000 : 40000;
     if (global.tech['gambling'] >= 5){
-        money += global.tech['gambling'] >= 6 ? 240000 : 60000;
+        vault += global.tech['gambling'] >= 6 ? 240000 : 60000;
     }
-    money = spatialReasoning(money);
+    vault = spatialReasoning(vault);
     if (global.race['gambler']){
-        money *= 1 + (global.race['gambler'] * 0.04);
+        vault *= 1 + (traits.gambler.vars()[0] * global.race['gambler'] / 100);
     }
     if (global.tech['world_control']){
-        money = money * 1.25;
+        vault *= 1.25;
     }
     if (global.race['truepath']){
-        money = money * 1.5;
+        vault *= 1.5;
     }
     if (global.tech['stock_exchange'] && global.tech['gambling'] >= 4){
-        money *= 1 + (global.tech['stock_exchange'] * 0.05);
+        vault *= 1 + (global.tech['stock_exchange'] * 0.05);
     }
     if (global.race['inflation']){
-        money *= 1 + (global.race.inflation / 100);
+        vault *= 1 + (global.race.inflation / 100);
     }
     if (global.tech['isolation']){
-        money *= 5.5;
+        vault *= 5.5;
     }
     if (global.race['warlord']){
         let absorb = global.race?.absorbed?.length || 1;
-        money *= 1 + (absorb / 10);
+        vault *= 1 + (absorb / 10);
     }
-    money = Math.round(money);
+    return vault;
+}
 
-    let joy = global.race['joyless'] ? '' : `<div>${loc('plus_max_resource',[jobScale(global.race['warlord'] ? 3 : 1),loc(`job_entertainer`)])}</div>`;
-    let banker = global.race['orbit_decayed'] || global.tech['isolation'] || global.race['warlord'] ? `<div>${loc('plus_max_resource',[jobScale(1),loc('banker_name')])}</div>` : '';
-    let desc = `<div>${loc('plus_max_resource',[`\$${money.toLocaleString()}`,loc('resource_Money_name')])}</div>${joy}${banker}<div>${loc('city_max_morale',[1])}</div>`;
-    let cash = Math.log2(1 + global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5);
+export function casinoEarn(){
+    let cash = Math.log2(1 + global.resource[global.race.species].amount) * 2.5;
+    if (global.race['gambler']){
+        cash *= 1 + (traits.gambler.vars()[0] * global.race['gambler'] / 100);
+    }
     if (global.tech['gambling'] && global.tech['gambling'] >= 2){
         cash *= global.tech.gambling >= 5 ? 2 : 1.5;
-    }
-    if (global.tech['stock_exchange'] && global.tech['gambling'] >= 4){
-        cash *= 1 + (global.tech['stock_exchange'] * 0.01);
+        if (global.tech['stock_exchange'] && global.tech['gambling'] >= 4){
+            cash *= 1 + (global.tech['stock_exchange'] * 0.01);
+        }
     }
     if (global.civic.govern.type === 'corpocracy'){
-        cash *= 3;
+        cash *= 1 + (govEffect.corpocracy()[0] / 100);
     }
     if (global.civic.govern.type === 'socialist'){
-        cash *= 0.8;
+        cash *= 1 - (govEffect.socialist()[3] / 100);
     }
     if (global.race['inflation']){
         cash *= 1 + (global.race.inflation / 1250);
@@ -5469,11 +5471,25 @@ export function casinoEffect(){
             cash *= 1 + (workerScale(global.civic.banker.workers,'banker') * 0.05)
         }
     }
+    cash *= production('psychic_cash');
+    let racVal = govActive('racketeer', 1);
+    if (racVal){
+        cash *= 1 + (racVal / 100);
+    }
     if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.casino){
         cash *= 1.35;
     }
-    cash = +(cash).toFixed(2);
-    desc += `<div>${loc('tech_casino_effect2',[cash])}</div>`;
+    return cash;
+}
+
+export function casinoEffect(){
+    let money = Math.round(casino_vault());
+
+    let joy = global.race['joyless'] ? '' : `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_entertainer`)])}</div>`;
+    let banker = global.race['orbit_decayed'] || global.tech['isolation'] ? `<div>${loc('plus_max_resource',[jobScale(1),loc('banker_name')])}</div>` : '';
+    let desc = `<div>${loc('plus_max_resource',[`\$${money.toLocaleString()}`,loc('resource_Money_name')])}</div>${joy}${banker}<div>${loc('city_max_morale',[1])}</div>`;
+    let cash = +(casinoEarn()).toFixed(2);
+    desc = desc + `<div>${loc('tech_casino_effect2',[cash])}</div>`;
     return desc;
 }
 
