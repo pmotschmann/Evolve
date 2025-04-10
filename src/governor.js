@@ -414,7 +414,7 @@ export function drawnGovernOffice(){
     govern.append(govHeader);
 
     let governorTitle = $(`<div></div>`);
-    governorTitle.append($(`<div class="has-text-caution">${loc(`governor_office`,[global.race.governor.g.n])}</div>`));
+    governorTitle.append($(`<div class="has-text-caution" role="heading" aria-level="2">${loc(`governor_office`,[global.race.governor.g.n])}</div>`));
     governorTitle.append($(`<div><span class="has-text-warning">${loc(`governor_background`)}:</span> <span class="bg">${gmen[global.race.governor.g.bg].name}</span></div>`));
 
     govHeader.append(governorTitle);
@@ -459,7 +459,7 @@ export function drawnGovernOffice(){
             };
         }
 
-        let storeContain = $(`<div class="tConfig" v-show="showTask('storage')"><div class="has-text-warning">${loc(`gov_task_storage`)}</div></div>`);
+        let storeContain = $(`<div class="tConfig" v-show="showTask('storage')"><div class="has-text-warning" role="heading" aria-level="3">${loc(`gov_task_storage`)}</div></div>`);
         options.append(storeContain);
         let storage = $(`<div class="storage"></div>`);
         storeContain.append(storage);
@@ -479,7 +479,7 @@ export function drawnGovernOffice(){
             global.race.governor.config.bal_storage['adv'] = false;
         }
 
-        let storeContain = $(`<div class="tConfig" v-show="showTask('bal_storage')"><div class="hRow"><div class="has-text-warning">${loc(`gov_task_bal_storage`)}</div><div class="chk"><b-checkbox v-model="c.bal_storage.adv">${loc(`advanced`)}</b-checkbox></div></div></div>`);
+        let storeContain = $(`<div class="tConfig" v-show="showTask('bal_storage')"><div class="hRow"><div class="has-text-warning" role="heading" aria-level="3">${loc(`gov_task_bal_storage`)}</div><div class="chk"><b-checkbox v-model="c.bal_storage.adv">${loc(`advanced`)}</b-checkbox></div></div></div>`);
         options.append(storeContain);
         let storage = $(`<div class="bal_storage"></div>`);
         storeContain.append(storage);
@@ -490,7 +490,7 @@ export function drawnGovernOffice(){
                     global.race.governor.config.bal_storage[res] = "2";
                 }
 
-                storage.append($(`<div class="ccmOption" :class="bStrEx()" v-show="showStrRes('${res}')"><span>${global.resource[res].name}</span>
+                storage.append($(`<div class="ccmOption" :class="bStrEx()" v-show="showStrRes('${res}')"><span role="heading" aria-level="4">${global.resource[res].name}</span>
                 <b-field>
                     <b-radio-button class="b1" v-show="c.bal_storage.adv" v-model="c.bal_storage.${res}" native-value="0" type="is-danger is-light">0x</b-radio-button>
                     <b-radio-button class="b2" v-show="c.bal_storage.adv" v-model="c.bal_storage.${res}" native-value="1" type="is-danger is-light">1/2</b-radio-button>
@@ -515,7 +515,7 @@ export function drawnGovernOffice(){
             };
         }
 
-        let contain = $(`<div class="tConfig" v-show="showTask('merc')"><div class="has-text-warning">${loc(`gov_task_merc`)}</div></div>`);
+        let contain = $(`<div class="tConfig" v-show="showTask('merc')"><div class="has-text-warning" role="heading" aria-level="3">${loc(`gov_task_merc`)}</div></div>`);
         options.append(contain);
         let merc = $(`<div class="storage"></div>`);
         contain.append(merc);
@@ -531,7 +531,7 @@ export function drawnGovernOffice(){
             };
         }
 
-        let contain = $(`<div class="tConfig" v-show="showTask('spy')"><div class="has-text-warning">${loc(`gov_task_spy`)}</div></div>`);
+        let contain = $(`<div class="tConfig" v-show="showTask('spy')"><div class="has-text-warning" role="heading" aria-level="3">${loc(`gov_task_spy`)}</div></div>`);
         options.append(contain);
         let spy = $(`<div class="storage"></div>`);
         contain.append(spy);
@@ -547,14 +547,14 @@ export function drawnGovernOffice(){
             });
         }
         
-        let contain = $(`<div class="tConfig" v-show="showTask('spyop')"><div class="has-text-warning">${loc(`gov_task_spyop`)}</div></div>`);
+        let contain = $(`<div class="tConfig" v-show="showTask('spyop')"><div class="has-text-warning" role="heading" aria-level="3">${loc(`gov_task_spyop`)}</div></div>`);
         options.append(contain);
         Object.keys(global.civic.foreign).forEach(function (gov){
             if ((gov.substr(3,1) < 3 && !global.tech['world_control']) || (gov === 'gov3' && global.tech['rival'])){
                 let spyop = $(`<div></div>`);
                 contain.append(spyop);
                 spyop.append(`
-                    <h2 class="has-text-caution">${loc('gov_task_spyop_priority',[govTitle(gov.substring(3))])}</h2>
+                    <h2 class="has-text-caution" aria-level="4">${loc('gov_task_spyop_priority',[govTitle(gov.substring(3))])}</h2>
                     <ul id="spyopConfig${gov}" class="spyopConfig"></ul>
                 `);
                 let missions = $(`#spyopConfig${gov}`);
@@ -574,7 +574,7 @@ export function drawnGovernOffice(){
             };
         }
 
-        let contain = $(`<div class="tConfig" v-show="showTask('tax')"><div class="has-text-warning">${loc(`gov_task_tax`)}</div></div>`);
+        let contain = $(`<div class="tConfig" v-show="showTask('tax')"><div class="has-text-warning" role="heading" aria-level="3">${loc(`gov_task_tax`)}</div></div>`);
         options.append(contain);
         let tax = $(`<div class="storage"></div>`);
         contain.append(tax);
@@ -589,7 +589,7 @@ export function drawnGovernOffice(){
             };
         }
 
-        let contain = $(`<div class="tConfig" v-show="showTask('slave')"><div class="has-text-warning">${loc(`gov_task_slave`,[global.resource.Slave.name])}</div></div>`);
+        let contain = $(`<div class="tConfig" v-show="showTask('slave')"><div class="has-text-warning" role="heading" aria-level="3">${loc(`gov_task_slave`,[global.resource.Slave.name])}</div></div>`);
         options.append(contain);
         let slave = $(`<div class="storage"></div>`);
         contain.append(slave);
@@ -612,7 +612,7 @@ export function drawnGovernOffice(){
 
         let advanced = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? `<div class="chk"><b-checkbox v-model="c.trash.stab">${loc(`gov_task_auto_stabilize`)}</b-checkbox></div>` : ``;
 
-        let contain = $(`<div class="tConfig" v-show="showTask('trash')"><div class="hRow"><div class="has-text-warning">${loc(`gov_task_trash`)}</div>${advanced}</div></div>`);
+        let contain = $(`<div class="tConfig" v-show="showTask('trash')"><div class="hRow"><div class="has-text-warning" role="heading" aria-level="3">${loc(`gov_task_trash`)}</div>${advanced}</div></div>`);
         options.append(contain);
         let trash = $(`<div class="storage"></div>`);
         contain.append(trash);
@@ -633,7 +633,7 @@ export function drawnGovernOffice(){
             global.race.governor.config.replicate['res'] = { que: true, neg: true, cap: true };
         }
 
-        let contain = $(`<div class="tConfig" v-show="showTask('replicate')"><div class="has-text-warning">${loc(`gov_task_replicate`)}</div></div>`);
+        let contain = $(`<div class="tConfig" v-show="showTask('replicate')"><div class="has-text-warning" role="heading" aria-level="3">${loc(`gov_task_replicate`)}</div></div>`);
         options.append(contain);
         let replicate = $(`<div class="storage"></div>`);
         contain.append(replicate);
@@ -785,7 +785,7 @@ function appointGovernor(){
     for (let i=0; i<global.race.governor.candidates.length; i++){
         let gov = global.race.governor.candidates[i];
         if ((global.race['warlord'] && gov.bg === 'soldier') || !global.race['warlord']){
-            govern.append($(`<div class="appoint ${gov.bg}"><span class="has-text-warning">${gov.t} ${gov.n}</span><span class="bg">${gmen[gov.bg].name}</span><span><button class="button" v-on:click="appoint(${i})">${loc(`governor_appoint`)}</button></span><div>`));
+            govern.append($(`<div class="appoint ${gov.bg}"><span class="has-text-warning" role="heading" aria-level="3">${gov.t} ${gov.n}</span><span class="bg">${gmen[gov.bg].name}</span><span><button class="button" v-on:click="appoint(${i})">${loc(`governor_appoint`)}</button></span><div>`));
         }
     }
 
