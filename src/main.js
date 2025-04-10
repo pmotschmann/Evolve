@@ -7501,7 +7501,7 @@ function fastLoop(){
             if (p_on['hell_casino']){ casinos += p_on['hell_casino']; }
 
             let cash = casinos * casinoEarn();
-            breakdown.p['Money'][loc('city_casino')] = cash + 'v';
+            breakdown.p['Money'][structName('casino')] = cash + 'v';
             modRes('Money', +(cash * time_multiplier * global_multiplier * hunger).toFixed(2));
             rawCash += cash * global_multiplier * hunger;
         }
