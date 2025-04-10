@@ -6,7 +6,7 @@ import { armyRating } from './civics.js';
 import { craftingRatio, craftCost, craftingPopover } from './resources.js';
 import { planetName } from './space.js';
 import { asphodelResist } from './edenic.js';
-import { actions } from './actions.js';
+import { actions, templeCount } from './actions.js';
 
 export const job_desc = {
     unemployed: function(servant){
@@ -284,7 +284,7 @@ export const job_desc = {
         professor *= global.race['pompous'] ? (1 - traits.pompous.vars()[0] / 100) : 1;
         professor *= racialTrait(global.civic.professor.workers,'science');
         if (global.tech['anthropology'] && global.tech['anthropology'] >= 3){
-            professor *= 1 + (global.city.temple.count * 0.05);
+            professor *= 1 + (templeCount() * 0.05);
         }
         if (global.civic.govern.type === 'theocracy'){
             professor *= 0.75;

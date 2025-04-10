@@ -1269,7 +1269,7 @@ const edenicModules = {
             },
             effect(){
                 let desc = `<div>${loc('interstellar_stellar_forge_effect3',[$(this)[0].smelting()])}</div>`;
-                if (global.tech['elysium'] && global.tech.elysium >= 19){
+                if (global.tech['elysium'] && global.tech.elysium >= 18){
                     desc += `<div>${loc('city_foundry_effect1',[jobScale(3)])}</div>`;
                 }
                 return `${desc}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
@@ -1547,6 +1547,7 @@ const edenicModules = {
                     incrementStruct('north_pier','eden');
                     if (global.eden.south_pier.count === 10 && global.eden.north_pier.count === 10 && global.tech.isle === 2){
                         global.tech.isle = 3;
+                        drawTech();
                     }
                     return true;
                 }
@@ -1726,6 +1727,7 @@ const edenicModules = {
                     incrementStruct('south_pier','eden');
                     if (global.eden.south_pier.count === 10 && global.eden.north_pier.count === 10 && global.tech.isle === 2){
                         global.tech.isle = 3;
+                        drawTech();
                     }
                     return true;
                 }

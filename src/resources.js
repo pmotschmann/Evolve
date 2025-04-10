@@ -3004,8 +3004,8 @@ export const spatialReasoning = (function(){
             global.race['nerfed'] || '0',
             global.genes['store'] || '0',
             global.genes['bleed'] || '0',
-            global.city['temple'] ? global.city.temple.count : '0',
-            global.space['ziggurat'] ? global.space.ziggurat.count : '0',
+            templeCount(false) || '0',
+            templeCount(true) || '0',
             global.race['cataclysm'] ? global.race.cataclysm : '0',
             global.race['orbit_decayed'] ? global.race.orbit_decayed : '0',
             global.genes['ancients'] || '0',
@@ -3017,7 +3017,6 @@ export const spatialReasoning = (function(){
         }
         if (!spatial[tkey][key] || recalc){            
             let modifier = 1;
-            let noEarth = global.race['cataclysm'] || global.race['orbit_decayed'] ? true : false;
             if (global.genes['store']){
                 let plasmids = 0;
                 if (!type || (type && ((type === 'plasmid' && global.race.universe !== 'antimatter') || (type === 'anti' && global.race.universe === 'antimatter')))){
@@ -3052,7 +3051,7 @@ export const spatialReasoning = (function(){
             if (global.race.universe === 'standard'){
                 modifier *= darkEffect('standard');
             }
-            if (global.race.universe === 'antimatter' && ((!noEarth && global.city['temple'] && global.city['temple'].count) || (noEarth && global.space['ziggurat'] && global.space['ziggurat'].count))){
+            if (global.race.universe === 'antimatter' && faithTempleCount()){
                 let temple = 0.06;
                 if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
                     let priest = global.genes['ancients'] >= 5 ? 0.0012 : (global.genes['ancients'] >= 3 ? 0.001 : 0.0008);
@@ -3061,7 +3060,7 @@ export const spatialReasoning = (function(){
                     }
                     temple += priest * global.civic.priest.workers;
                 }
-                modifier *= 1 + ((noEarth ? global.space.ziggurat.count : global.city.temple.count) * temple);
+                modifier *= 1 + (faithTempleCount() * temple);
             }
             if (!type){
                 if (global['pillars']){
@@ -3076,16 +3075,9 @@ export const spatialReasoning = (function(){
     }
 })();
 
-function faithTempleCount(){
-    let num_temples = 0;
+export function faithTempleCount(){
     let noEarth = global.race['cataclysm'] || global.race['orbit_decayed'] ? true : false;
-    if (noEarth && global.space['ziggurat']){
-        num_temples = templeCount(true);
-    }
-    else if (global.city['temple']){
-        num_temples = templeCount(false);
-    }
-    return num_temples;
+    return templeCount(noEarth);
 }
 
 export function faithBonus(num_temples = -1){
@@ -3193,8 +3185,8 @@ export const plasmidBonus = (function (){
             global.race['nerfed'] || '0',
             global.race['no_plasmid'] || '0',
             global.genes['ancients'] || '0',
-            global.city['temple'] ? global.city.temple.count : '0',
-            global.space['ziggurat'] ? global.space.ziggurat.count : '0',
+            templeCount(false) || '0',
+            templeCount(true) || '0',
             global.civic['priest'] ? global.civic.priest.workers : '0',
             global.race['orbit_decayed'] ? global.race.orbit_decayed : '0',
             global.race['spiritual'] || '0',

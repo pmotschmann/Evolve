@@ -122,7 +122,7 @@ export function racesPage(content){
         });
         
         Object.keys(races[race].traits).sort().forEach(function (trait){
-            if (hallowed.active && (race === 'tortoisan' && trait === 'slow') || (race === 'unicorn' && trait === 'rainbow')){
+            if (hallowed.active && ((race === 'tortoisan' && trait === 'slow') || (race === 'unicorn' && trait === 'rainbow'))){
                 return;
             }
             let id = `raceTrait${race}${trait}`;

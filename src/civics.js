@@ -7,6 +7,7 @@ import { defineGovernor, govActive } from './governor.js';
 import { drawTech } from  './actions.js';
 import { soulForgeSoldiers } from './portal.js';
 import { jobScale } from './jobs.js';
+import { templeCount } from './actions.js';
 import { astrologySign, astroVal } from './seasons.js';
 import { warhead } from './resets.js';
 
@@ -2195,7 +2196,7 @@ export function armyRating(val,type,wound){
             army *= 1 + (traits.tactical.vars()[0] * global.race['tactical'] / 100);
         }
         if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 4){
-            army *= 1 + (global.city.temple.count * 0.01);
+            army *= 1 + (templeCount() * 0.01);
         }
         if (global.race['holy'] && type === 'hellArmy'){
             army *= 1 + (traits.holy.vars()[0] / 100);
