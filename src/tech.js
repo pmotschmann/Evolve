@@ -1651,7 +1651,7 @@ const techs = {
         cost: {
             Knowledge(){ return 1080; }
         },
-        effect(){ return global.race.universe === 'evil' ? loc('tech_gladiators_effect') : loc('tech_playwright_effect'); },
+        effect(){ return global.race.universe === 'evil' ? loc('tech_gladiators_effect',[loc('city_colosseum')]) : loc('tech_playwright_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
