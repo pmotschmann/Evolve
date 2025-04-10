@@ -2198,8 +2198,8 @@ function genetics(){
                             global.race['modified']++;
                         }
                         if(t === 'forager'){
-                            delete global.race.inactive['herbivore'];
-                            delete global.race.inactive['carnivore'];
+                            delete global.race.inactiveTraits['herbivore'];
+                            delete global.race.inactiveTraits['carnivore'];
                         }
                         cleanRemoveTrait(t,rank);
                         genetics();
