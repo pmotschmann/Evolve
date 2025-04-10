@@ -9315,6 +9315,9 @@ function midLoop(){
             if (global.tauceti['tauceti_casino'] && global.tauceti.tauceti_casino.count > 0){
                 casinos += global.tauceti.tauceti_casino.count;
             }
+            if (global.portal['hell_casino'] && global.portal.hell_casino.count > 0){
+                casinos += global.portal.hell_casino.count;
+            }
 
             let vault = casinos * casino_vault();
             caps['Money'] += vault;
