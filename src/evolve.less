@@ -2667,16 +2667,13 @@ a {
             display: flex;
             cursor: default;
 
-            :first-child {
-                width: 34%;
+            div {
+                width: 70%;
+                display: flex;
+                justify-content: space-between;
             }
 
-            :nth-child(2) {
-                text-align: right;
-                width: 36%;
-            }
-
-            :nth-child(3) {
+            > :nth-child(2) {
                 text-align: center;
                 width: 4%;
             }
@@ -2685,7 +2682,7 @@ a {
                 cursor: pointer;
             }
 
-            :nth-child(4) {
+            > :nth-child(3) {
                 text-align: right;
                 width: 26%;
             }
