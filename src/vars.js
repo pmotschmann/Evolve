@@ -1234,7 +1234,6 @@ if (convertVersion(global['version']) < 104002){
 }
 
 if (convertVersion(global['version']) < 104003){
-    console.log("!");
     if(!global.race.inactive){
         global.race.inactive = {};
     }
