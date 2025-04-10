@@ -7,6 +7,7 @@ export const changeList = [
         date: `4/??/2025`,
         changes: [
             `Evil Universe Scenario: Warlord.`,
+            `Added Planned Obsolescence Feat.`,
             `Fixed bug with Rogue trait that set crafted resources to 0.`,
             `Updated Empowered trait mechanics.`,
             `Adjusted values for Master Artisan.`,
