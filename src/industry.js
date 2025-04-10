@@ -62,7 +62,7 @@ export function defineIndustry(){
         $(`#industry`).append(smelter);
         loadIndustry('smelter',smelter,'#iSmelter');
     }
-    if ((global.city['factory'] && global.city.factory.count > 0) || (global.space['red_factory'] && global.space.red_factory.count > 0) || (global.tauceti['tau_factory'] && global.tauceti.tau_factory.count > 0)){
+    if ((global.city['factory'] && global.city.factory.count > 0) || (global.space['red_factory'] && global.space.red_factory.count > 0) || (global.tauceti['tau_factory'] && global.tauceti.tau_factory.count > 0) || (global.portal['hell_factory'] && global.portal.hell_factory.count > 0)){
         var factory = $(`<div id="iFactory" class="industry"><h2 class="header has-text-advanced">${loc('city_factory')}</h2></div>`);
         $(`#industry`).append(factory);
         loadIndustry('factory',factory,'#iFactory');
@@ -72,8 +72,8 @@ export function defineIndustry(){
         $(`#industry`).append(droid);
         loadIndustry('droid',droid,'#iDroid');
     }
-    if ((global.interstellar['g_factory'] && global.interstellar.g_factory.count > 0) || (global.space['g_factory'] && (global.space.g_factory.count > 0 || (global.tauceti['refueling_station'] && global.tauceti.refueling_station.count > 0)))){
-        var graphene = $(`<div id="iGraphene" class="industry"><h2 class="header has-text-advanced">${loc('interstellar_g_factory_title')}</h2></div>`);
+    if ((global.interstellar['g_factory'] && global.interstellar.g_factory.count > 0) || (global.portal['twisted_lab'] && global.portal.twisted_lab.count > 0)  || (global.space['g_factory'] && (global.space.g_factory.count > 0 || (global.tauceti['refueling_station'] && global.tauceti.refueling_station.count > 0)))){
+        var graphene = $(`<div id="iGraphene" class="industry"><h2 class="header has-text-advanced">${global.race['warlord'] ? loc('portal_twisted_lab_title') : loc('interstellar_g_factory_title')}</h2></div>`);
         $(`#industry`).append(graphene);
         loadIndustry('graphene',graphene,'#iGraphene');
     }
@@ -442,22 +442,22 @@ function loadSmelter(parent,bind){
                 {
                     let coal_fuel = global.race['kindling_kindred'] ? 0.15 : 0.25;
                     if (global.tech['uranium'] && global.tech['uranium'] >= 3){
-                        return loc('modal_build_coal2',[coal_fuel,loc('resource_Coal_name'),loc('resource_Uranium_name')]);
+                        return loc('modal_build_coal2',[coal_fuel,global.resource.Coal.name,global.resource.Uranium.name]);
                     }
                     else {
-                        return loc('modal_build_coal1',[coal_fuel,loc('resource_Coal_name')]);
+                        return loc('modal_build_coal1',[coal_fuel,global.resource.Coal.name]);
                     }
                 }
             case 'oil':
-                return global.race['forge'] ? loc('modal_build_forge') : loc('modal_build_oil',['0.35',loc('resource_Oil_name')]);
+                return global.race['forge'] ? loc('modal_build_forge') : loc('modal_build_oil',['0.35',global.resource.Oil.name]);
             case 'star':
-                return global.tech['irid_smelting'] ? loc('modal_build_star2',[loc('resource_Titanium_name'),loc('resource_Iridium_name')]) : loc('modal_build_star',[loc('resource_Titanium_name')]);
+                return global.tech['irid_smelting'] ? loc('modal_build_star2',[global.resource.Titanium.name,global.resource.Iridium.name]) : loc('modal_build_star',[global.resource.Titanium.name]);
             case 'inferno':
                 {
                     let coal = 50;
                     let oil = 35;
                     let infernite = 0.5;
-                    return loc('modal_build_inferno',[coal,loc('resource_Coal_name'),oil,loc('resource_Oil_name'),infernite,loc('resource_Infernite_name')]);
+                    return loc('modal_build_inferno',[coal,global.resource.Coal.name,oil,global.resource.Oil.name,infernite,global.resource.Infernite.name]);
                 }
         }
     }
@@ -477,21 +477,21 @@ function loadSmelter(parent,bind){
             if (global.race['pyrophobia']){
                 boost *= 0.9;
             }
-            return loc('modal_smelter_steel',[+(boost).toFixed(3),loc('resource_Steel_name'),loc('resource_Coal_name'),loc('resource_Iron_name')]);
+            return loc('modal_smelter_steel',[+(boost).toFixed(3),global.resource.Steel.name,global.resource.Coal.name,global.resource.Iron.name]);
         }
         else if (type === 'iridium'){
             let boost = global.tech['smelting'] >= 7 ? 6.25 : 5;
             if (global.race['pyrophobia']){
                 boost *= 0.9;
             }
-            return loc('modal_smelter_iron',[+(boost).toFixed(3),loc('resource_Iridium_name')]);
+            return loc('modal_smelter_iron',[+(boost).toFixed(3),global.resource.Iridium.name]);
         }
         else {
             let boost = global.tech['smelting'] >= 3 ? (global.tech['smelting'] >= 7 ? 15 : 12) : 10;
             if (global.race['pyrophobia']){
                 boost *= 0.9;
             }
-            return loc('modal_smelter_iron',[+(boost).toFixed(3),loc('resource_Iron_name')]);
+            return loc('modal_smelter_iron',[+(boost).toFixed(3),global.resource.Iron.name]);
         }
     }
 
@@ -525,7 +525,7 @@ function loadSmelter(parent,bind){
 }
 
 export function smelterUnlocked(){
-    return global.city['smelter'] && (global.city.smelter.count > 0 || global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation']);
+    return global.city['smelter'] && (global.city.smelter.count > 0 || global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation'] || global.race['warlord']);
 }
 
 export function addSmelter(num=1, product="Iron", fuel="Oil"){
@@ -552,7 +552,7 @@ function loadFactory(parent,bind){
     lux.append(addLux);
 
     if (global.tech['synthetic_fur']){
-        let fur = $(`<div class="factory"><span class="Furs" :aria-label="buildLabel('Furs') + ariaProd('Furs')">${global.race['evil'] ? loc('resource_Flesh_name') : loc('resource_Furs_name')}</span></div>`);
+        let fur = $(`<div class="factory"><span class="Furs" :aria-label="buildLabel('Furs') + ariaProd('Furs')">${global.race['evil'] ? loc('resource_Flesh_name') : global.resource.Furs.name}</span></div>`);
         parent.append(fur);
 
         let furCount = $(`<span class="current">{{ Furs }}</span>`);
@@ -563,7 +563,7 @@ function loadFactory(parent,bind){
         fur.append(addFurs);
     }
 
-    let alloy = $(`<div class="factory"><span class="Alloy" :aria-label="buildLabel('Alloy') + ariaProd('Alloy')">${loc('resource_Alloy_name')}</span></div>`);
+    let alloy = $(`<div class="factory"><span class="Alloy" :aria-label="buildLabel('Alloy') + ariaProd('Alloy')">${global.resource.Alloy.name}</span></div>`);
     parent.append(alloy);
 
     let alloyCount = $(`<span class="current">{{ Alloy }}</span>`);
@@ -574,7 +574,7 @@ function loadFactory(parent,bind){
     alloy.append(addAlloy);
 
     if (global.tech['polymer']){
-        let polymer = $(`<div class="factory"><span class="Polymer" :aria-label="buildLabel('Polymer') + ariaProd('Polymer')">${loc('resource_Polymer_name')}</span></div>`);
+        let polymer = $(`<div class="factory"><span class="Polymer" :aria-label="buildLabel('Polymer') + ariaProd('Polymer')">${global.resource.Polymer.name}</span></div>`);
         parent.append(polymer);
 
         let polymerCount = $(`<span class="current">{{ Polymer }}</span>`);
@@ -586,7 +586,7 @@ function loadFactory(parent,bind){
     }
 
     if (global.tech['nano']){
-        let nano = $(`<div class="factory"><span class="Nano" :aria-label="buildLabel('Nano') + ariaProd('Nano')">${loc('resource_Nano_Tube_name')}</span></div>`);
+        let nano = $(`<div class="factory"><span class="Nano" :aria-label="buildLabel('Nano') + ariaProd('Nano')">${global.resource.Nano_Tube.name}</span></div>`);
         parent.append(nano);
 
         let nanoCount = $(`<span class="current">{{ Nano }}</span>`);
@@ -598,7 +598,7 @@ function loadFactory(parent,bind){
     }
 
     if (global.tech['stanene']){
-        let stanene = $(`<div class="factory"><span class="Stanene" :aria-label="buildLabel('Stanene') + ariaProd('Stanene')">${loc('resource_Stanene_name')}</span></div>`);
+        let stanene = $(`<div class="factory"><span class="Stanene" :aria-label="buildLabel('Stanene') + ariaProd('Stanene')">${global.resource.Stanene.name}</span></div>`);
         parent.append(stanene);
 
         let staneneCount = $(`<span class="current">{{ Stanene }}</span>`);
@@ -632,6 +632,9 @@ function loadFactory(parent,bind){
                 if (global.tauceti['tau_factory'] && support_on['tau_factory']){
                     max += support_on['tau_factory'] * (global.tech['isolation'] ? 5 : 3);
                 }
+                if (global.portal['hell_factory'] && p_on['hell_factory']){
+                    max += p_on['hell_factory'] * 6;
+                }
                 let keyMult = keyMultiplier();
                 for (var i=0; i<keyMult; i++){
                     let used = global.city.factory.Lux + global.city.factory.Furs + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano + global.city.factory.Stanene;
@@ -662,6 +665,9 @@ function loadFactory(parent,bind){
                 if (global.tauceti['tau_factory'] && support_on['tau_factory']){
                     max += support_on['tau_factory'] * (global.tech['isolation'] ? 5 : 3);
                 }
+                if (global.portal['hell_factory'] && p_on['hell_factory']){
+                    max += p_on['hell_factory'] * 6;
+                }
                 return colorRange(on,max);
             }
         },
@@ -676,6 +682,9 @@ function loadFactory(parent,bind){
                 }
                 if (global.tauceti['tau_factory'] && support_on['tau_factory']){
                     max += support_on['tau_factory'] * (global.tech['isolation'] ? 5 : 3);
+                }
+                if (global.portal['hell_factory'] && p_on['hell_factory']){
+                    max += p_on['hell_factory'] * 6;
                 }
                 return max;
             },
@@ -703,33 +712,33 @@ function loadFactory(parent,bind){
             case 'Furs':{
                 let money = assembly ? f_rate.Furs.money[global.tech['factory']] : f_rate.Furs.money[0];
                 let polymer = assembly ? f_rate.Furs.polymer[global.tech['factory']] : f_rate.Furs.polymer[0];
-                return loc('modal_factory_alloy_label',[money,loc('resource_Money_name'),polymer,loc('resource_Polymer_name'),global.race['evil'] ? loc('resource_Flesh_name') : loc('resource_Furs_name')]);
+                return loc('modal_factory_alloy_label',[money,global.resource.Money.name,polymer,global.resource.Polymer.name,global.race['evil'] ? loc('resource_Flesh_name') : global.resource.Furs.name]);
             }
             case 'Alloy':{
                 let copper = assembly ? f_rate.Alloy.copper[global.tech['factory']] : f_rate.Alloy.copper[0];
                 let aluminium = assembly ? f_rate.Alloy.aluminium[global.tech['factory']] : f_rate.Alloy.aluminium[0];
-                return loc('modal_factory_alloy_label',[copper,loc('resource_Copper_name'),aluminium,loc('resource_Aluminium_name'),loc('resource_Alloy_name')]);
+                return loc('modal_factory_alloy_label',[copper,global.resource.Copper.name,aluminium,global.resource.Aluminium.name,global.resource.Alloy.name]);
             }
             case 'Polymer':{
                 if (global.race['kindling_kindred'] || global.race['smoldering']){
                     let oil = assembly ? f_rate.Polymer.oil_kk[global.tech['factory']] : f_rate.Polymer.oil_kk[0];
-                    return loc('modal_factory_polymer_label2',[oil,loc('resource_Oil_name'),loc('resource_Polymer_name')]);
+                    return loc('modal_factory_polymer_label2',[oil,global.resource.Oil.name,global.resource.Polymer.name]);
                 }
                 else {
                     let oil = assembly ? f_rate.Polymer.oil[global.tech['factory']] : f_rate.Polymer.oil[0];
                     let lumber = assembly ? f_rate.Polymer.lumber[global.tech['factory']] : f_rate.Polymer.lumber[0];
-                    return loc('modal_factory_polymer_label1',[oil,loc('resource_Oil_name'),lumber,global.resource.Lumber.name,loc('resource_Polymer_name')]);
+                    return loc('modal_factory_polymer_label1',[oil,global.resource.Oil.name,lumber,global.resource.Lumber.name,global.resource.Polymer.name]);
                 }
             }
             case 'Nano':{
                 let coal = assembly ? f_rate.Nano_Tube.coal[global.tech['factory']] : f_rate.Nano_Tube.coal[0];
                 let neutronium = assembly ? f_rate.Nano_Tube.neutronium[global.tech['factory']] : f_rate.Nano_Tube.neutronium[0];
-                return loc('modal_factory_nano_label',[coal,loc('resource_Coal_name'),neutronium,loc('resource_Neutronium_name'),loc('resource_Nano_Tube_name')]);
+                return loc('modal_factory_nano_label',[coal,global.resource.Coal.name,neutronium,global.resource.Neutronium.name,global.resource.Nano_Tube.name]);
             }
             case 'Stanene':{
                 let aluminium = assembly ? f_rate.Stanene.aluminium[global.tech['factory']] : f_rate.Stanene.aluminium[0];
                 let nano = assembly ? f_rate.Stanene.nano[global.tech['factory']] : f_rate.Stanene.nano[0];
-                return loc('modal_factory_stanene_label',[aluminium,loc('resource_Aluminium_name'),nano,loc('resource_Nano_Tube_name'),loc('resource_Stanene_name')]);
+                return loc('modal_factory_stanene_label',[aluminium,global.resource.Aluminium.name,nano,global.resource.Nano_Tube.name,global.resource.Stanene.name]);
             }
         }
     }
@@ -872,7 +881,7 @@ function loadDroid(parent,bind){
     let fuel = $(`<div><span class="has-text-warning">${loc('modal_factory_operate')}:</span> <span :class="level()">{{count | on}}/{{ on | max }}</span></div>`);
     parent.append(fuel);
 
-    let adam = $(`<div class="factory"><span class="adam" :aria-label="buildLabel('adam') + ariaProd('adam')">${loc('resource_Adamantite_name')}</span></div>`);
+    let adam = $(`<div class="factory"><span class="adam" :aria-label="buildLabel('adam') + ariaProd('adam')">${global.resource.Adamantite.name}</span></div>`);
     parent.append(adam);
     let adamCount = $(`<span class="current">{{ adam }}</span>`);
     let adamSub = $(`<span class="sub" @click="subItem('adam')" role="button" aria-label="Decrease Adamantite production">&laquo;</span>`);
@@ -881,7 +890,7 @@ function loadDroid(parent,bind){
     adam.append(adamCount);
     adam.append(adamAdd);
 
-    let uran = $(`<div class="factory"><span class="uran" :aria-label="buildLabel('uran') + ariaProd('uran')">${loc('resource_Uranium_name')}</span></div>`);
+    let uran = $(`<div class="factory"><span class="uran" :aria-label="buildLabel('uran') + ariaProd('uran')">${global.resource.Uranium.name}</span></div>`);
     parent.append(uran);
     let uranCount = $(`<span class="current">{{ uran }}</span>`);
     let uranSub = $(`<span class="sub" @click="subItem('uran')" role="button" aria-label="Decrease Uranium production">&laquo;</span>`);
@@ -890,7 +899,7 @@ function loadDroid(parent,bind){
     uran.append(uranCount);
     uran.append(uranAdd);
 
-    let coal = $(`<div class="factory"><span class="coal" :aria-label="buildLabel('coal') + ariaProd('coal')">${loc('resource_Coal_name')}</span></div>`);
+    let coal = $(`<div class="factory"><span class="coal" :aria-label="buildLabel('coal') + ariaProd('coal')">${global.resource.Coal.name}</span></div>`);
     parent.append(coal);
     let coalCount = $(`<span class="current">{{ coal }}</span>`);
     let coalSub = $(`<span class="sub" @click="subItem('coal')" role="button" aria-label="Decrease Coal production">&laquo;</span>`);
@@ -899,7 +908,7 @@ function loadDroid(parent,bind){
     coal.append(coalCount);
     coal.append(coalAdd);
 
-    let alum = $(`<div class="factory"><span class="alum" :aria-label="buildLabel('alum') + ariaProd('alum')">${loc('resource_Aluminium_name')}</span></div>`);
+    let alum = $(`<div class="factory"><span class="alum" :aria-label="buildLabel('alum') + ariaProd('alum')">${global.resource.Aluminium.name}</span></div>`);
     parent.append(alum);
     let alumCount = $(`<span class="current">{{ alum }}</span>`);
     let alumSub = $(`<span class="sub" @click="subItem('alum')" role="button" aria-label="Decrease Aluminium production">&laquo;</span>`);
@@ -959,13 +968,13 @@ function loadDroid(parent,bind){
     function tooltip(type){
         switch(type){
             case 'adam':
-                return loc('modal_droid_res_label',[loc('resource_Adamantite_name')]);
+                return loc('modal_droid_res_label',[global.resource.Adamantite.name]);
             case 'uran':
-                return loc('modal_droid_res_label',[loc('resource_Uranium_name')]);
+                return loc('modal_droid_res_label',[global.resource.Uranium.name]);
             case 'coal':
-                return loc('modal_droid_res_label',[loc('resource_Coal_name')]);
+                return loc('modal_droid_res_label',[global.resource.Coal.name]);
             case 'alum':
-                return loc('modal_droid_res_label',[loc('resource_Aluminium_name')]);
+                return loc('modal_droid_res_label',[global.resource.Aluminium.name]);
         }
     }
 
@@ -982,6 +991,11 @@ function loadDroid(parent,bind){
 
 function loadGraphene(parent,bind){
     let graph_source = global.race['truepath'] ? 'space' : 'interstellar';
+    let graph_struct = 'g_factory';
+    if (global.race['warlord']){
+        graph_source = 'portal';
+        graph_struct = 'twisted_lab';
+    }
 
     let fuel = $(`<div><span class="has-text-warning">${loc('modal_smelter_fuel')}:</span> <span :class="level()">{{count | on}}/{{ on | max }}</span></div>`);
     parent.append(fuel);
@@ -1019,13 +1033,13 @@ function loadGraphene(parent,bind){
 
     vBind({
         el: bind ? bind : '#specialModal',
-        data: global[graph_source]['g_factory'],
+        data: global[graph_source][graph_struct],
         methods: {
             subWood(){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
-                    if (global[graph_source].g_factory.Lumber > 0){
-                        global[graph_source].g_factory.Lumber--;
+                    if (global[graph_source][graph_struct].Lumber > 0){
+                        global[graph_source][graph_struct].Lumber--;
                     }
                     else {
                         break;
@@ -1035,17 +1049,17 @@ function loadGraphene(parent,bind){
             addWood(){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
-                    if (global[graph_source].g_factory.Lumber + global[graph_source].g_factory.Coal + global[graph_source].g_factory.Oil < global[graph_source].g_factory.on){
-                        global[graph_source].g_factory.Lumber++;
+                    if (global[graph_source][graph_struct].Lumber + global[graph_source][graph_struct].Coal + global[graph_source][graph_struct].Oil < global[graph_source][graph_struct].on){
+                        global[graph_source][graph_struct].Lumber++;
                     }
-                    else if (global[graph_source].g_factory.Coal + global[graph_source].g_factory.Oil > 0){
-                        if (global[graph_source].g_factory.Oil > global[graph_source].g_factory.Coal){
-                            global[graph_source].g_factory.Coal > 0 ? global[graph_source].g_factory.Coal-- : global[graph_source].g_factory.Oil--;
+                    else if (global[graph_source][graph_struct].Coal + global[graph_source][graph_struct].Oil > 0){
+                        if (global[graph_source][graph_struct].Oil > global[graph_source][graph_struct].Coal){
+                            global[graph_source][graph_struct].Coal > 0 ? global[graph_source][graph_struct].Coal-- : global[graph_source][graph_struct].Oil--;
                         }
                         else {
-                            global[graph_source].g_factory.Oil > 0 ? global[graph_source].g_factory.Oil-- : global[graph_source].g_factory.Coal--;
+                            global[graph_source][graph_struct].Oil > 0 ? global[graph_source][graph_struct].Oil-- : global[graph_source][graph_struct].Coal--;
                         }
-                        global[graph_source].g_factory.Lumber++;
+                        global[graph_source][graph_struct].Lumber++;
                     }
                     else {
                         break;
@@ -1055,8 +1069,8 @@ function loadGraphene(parent,bind){
             subCoal(){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
-                    if (global[graph_source].g_factory.Coal > 0){
-                        global[graph_source].g_factory.Coal--;
+                    if (global[graph_source][graph_struct].Coal > 0){
+                        global[graph_source][graph_struct].Coal--;
                     }
                     else {
                         break;
@@ -1066,17 +1080,17 @@ function loadGraphene(parent,bind){
             addCoal(){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
-                    if (global[graph_source].g_factory.Lumber + global[graph_source].g_factory.Coal + global[graph_source].g_factory.Oil < global[graph_source].g_factory.on){
-                        global[graph_source].g_factory.Coal++;
+                    if (global[graph_source][graph_struct].Lumber + global[graph_source][graph_struct].Coal + global[graph_source][graph_struct].Oil < global[graph_source][graph_struct].on){
+                        global[graph_source][graph_struct].Coal++;
                     }
-                    else if (global[graph_source].g_factory.Lumber + global[graph_source].g_factory.Oil > 0){
-                        if (global[graph_source].g_factory.Lumber > 0){
-                            global[graph_source].g_factory.Lumber--;
+                    else if (global[graph_source][graph_struct].Lumber + global[graph_source][graph_struct].Oil > 0){
+                        if (global[graph_source][graph_struct].Lumber > 0){
+                            global[graph_source][graph_struct].Lumber--;
                         }
                         else {
-                            global[graph_source].g_factory.Oil--;
+                            global[graph_source][graph_struct].Oil--;
                         }
-                        global[graph_source].g_factory.Coal++;
+                        global[graph_source][graph_struct].Coal++;
                     }
                     else {
                         break;
@@ -1086,8 +1100,8 @@ function loadGraphene(parent,bind){
             subOil(){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
-                    if (global[graph_source].g_factory.Oil > 0){
-                        global[graph_source].g_factory.Oil--;
+                    if (global[graph_source][graph_struct].Oil > 0){
+                        global[graph_source][graph_struct].Oil--;
                     }
                     else {
                         break;
@@ -1097,17 +1111,17 @@ function loadGraphene(parent,bind){
             addOil(){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
-                    if (global[graph_source].g_factory.Lumber + global[graph_source].g_factory.Coal + global[graph_source].g_factory.Oil < global[graph_source].g_factory.on){
-                        global[graph_source].g_factory.Oil++;
+                    if (global[graph_source][graph_struct].Lumber + global[graph_source][graph_struct].Coal + global[graph_source][graph_struct].Oil < global[graph_source][graph_struct].on){
+                        global[graph_source][graph_struct].Oil++;
                     }
-                    else if (global[graph_source].g_factory.Lumber + global[graph_source].g_factory.Coal > 0){
-                        if (global[graph_source].g_factory.Lumber > 0){
-                            global[graph_source].g_factory.Lumber--;
+                    else if (global[graph_source][graph_struct].Lumber + global[graph_source][graph_struct].Coal > 0){
+                        if (global[graph_source][graph_struct].Lumber > 0){
+                            global[graph_source][graph_struct].Lumber--;
                         }
                         else {
-                            global[graph_source].g_factory.Coal--;
+                            global[graph_source][graph_struct].Coal--;
                         }
-                        global[graph_source].g_factory.Oil++;
+                        global[graph_source][graph_struct].Oil++;
                     }
                     else {
                         break;
@@ -1118,20 +1132,20 @@ function loadGraphene(parent,bind){
                 return tooltip(type);
             },
             ariaCount(fuel){
-                return ` ${global[graph_source].g_factory[fuel]} ${fuel} fueled.`;
+                return ` ${global[graph_source][graph_struct][fuel]} ${fuel} fueled.`;
             },
             ariaProd(res){
-                return `. ${global[graph_source].g_factory[res]} producing ${res}.`;
+                return `. ${global[graph_source][graph_struct][res]} producing ${res}.`;
             },
             level(){
-                let on = global[graph_source].g_factory.Lumber + global[graph_source].g_factory.Coal + global[graph_source].g_factory.Oil;
-                let max = global[graph_source].g_factory.on;
+                let on = global[graph_source][graph_struct].Lumber + global[graph_source][graph_struct].Coal + global[graph_source][graph_struct].Oil;
+                let max = global[graph_source][graph_struct].on;
                 return colorRange(on,max);
             }
         },
         filters: {
             on: function(c){
-                return global[graph_source].g_factory.Lumber + global[graph_source].g_factory.Coal + global[graph_source].g_factory.Oil;
+                return global[graph_source][graph_struct].Lumber + global[graph_source][graph_struct].Coal + global[graph_source][graph_struct].Oil;
             }
         }
     });
@@ -1139,11 +1153,11 @@ function loadGraphene(parent,bind){
     function tooltip(type){
         switch(type){
             case 'wood':
-                return loc('modal_graphene_produce',[350,global.race['evil'] ? loc('resource_Bones_name') : loc('resource_Lumber_name'),loc('resource_Graphene_name')]);
+                return loc('modal_graphene_produce',[350,global.race['evil'] ? loc('resource_Bones_name') : global.resource.Lumber.name,global.resource.Graphene.name]);
             case 'coal':
-                return loc('modal_graphene_produce',[25,loc('resource_Coal_name'),loc('resource_Graphene_name')]);
+                return loc('modal_graphene_produce',[25,global.resource.Coal.name,global.resource.Graphene.name]);
             case 'oil':
-                return loc('modal_graphene_produce',[15,loc('resource_Oil_name'),loc('resource_Graphene_name')]);
+                return loc('modal_graphene_produce',[15,global.resource.Oil.name,global.resource.Graphene.name]);
         }
     }
 

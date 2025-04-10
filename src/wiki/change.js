@@ -3,6 +3,19 @@ import { clearElement } from './../functions.js';
 
 export const changeList = [
     {
+        version: `1.4.3`,
+        date: `4/??/2025`,
+        changes: [
+            `Evil Universe Scenario: Warlord.`,
+            `Fixed bug with Rogue trait that set crafted resources to 0.`,
+            `Updated Empowered trait mechanics.`,
+            `Adjusted values for Master Artisan.`,
+            `Symposium now gain Knowledge for all crew in Andromeda.`,
+            `Fixed bug that caused Hybrid species to throw an error when triggering greatness resets.`,
+            `Evil Authority adjustments for Cataclysm, Lone Survivor, and Orbit Decay`
+        ]
+    },
+    {
         version: `1.4.2`,
         date: `3/23/2025`,
         changes: [
@@ -12,7 +25,7 @@ export const changeList = [
             `Evil Dark Energy effects changed.`,
             `Evil Biodome produces less food but boosts marine garrison.`,
             `Various Evil flavor updates.`,
-            `Various bug fixes.`,
+            `Various bug fixes.`
         ]
     },
     {

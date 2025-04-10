@@ -96,7 +96,7 @@ export function bioseed(){
 
     let god = global.race.species;
     let old_god = global.race.gods;
-    let genus = races[god].type;
+    let genus = races[god].type === 'hybrid' ? global.race.maintype : races[god].type;
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
     let atmo = global.city.ptrait;
@@ -1017,7 +1017,7 @@ export function matrix(){
 
     let god = global.race.species;
     let old_god = global.race.gods;
-    let genus = races[god].type;
+    let genus = races[god].type === 'hybrid' ? global.race.maintype : races[god].type;
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
     let atmo = global.city.ptrait;
@@ -1102,7 +1102,7 @@ export function retirement(){
 
     let god = global.race.species;
     let old_god = global.race.gods;
-    let genus = races[god].type;
+    let genus = races[god].type === 'hybrid' ? global.race.maintype : races[god].type;
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
     let atmo = global.city.ptrait;
@@ -1187,7 +1187,7 @@ export function gardenOfEden(){
 
     let god = global.race.species;
     let old_god = global.race.gods;
-    let genus = races[god].type;
+    let genus = races[god].type === 'hybrid' ? global.race.maintype : races[god].type;
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
     let atmo = global.city.ptrait;

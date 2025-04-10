@@ -67,7 +67,7 @@ const edenicModules = {
                 
                 if (global.tech.hasOwnProperty('asphodel') && global.tech.asphodel >= 1){
                     let powder = spatialReasoning(250);
-                    desc += `<div>${loc('plus_max_resource',[powder,loc('resource_Asphodel_Powder_name')])}</div>`;
+                    desc += `<div>${loc('plus_max_resource',[powder,global.resource.Asphodel_Powder.name])}</div>`;
                 }
                 if (p_on['ascension_trigger'] && global.eden.hasOwnProperty('encampment') && global.eden.encampment.asc){
                     let heatSink = actions.interstellar.int_sirius.ascension_trigger.heatSink();
@@ -1311,7 +1311,7 @@ const edenicModules = {
             },
             effect(){
                 let elerium = sizeApproximation(spatialReasoning(1000));
-                return `<div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('plus_max_resource',[elerium,global.resource.Elerium.name])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             powered(){ return powerCostMod(50); },
             action(){
@@ -1430,7 +1430,7 @@ const edenicModules = {
             effect(){
                 let vault = spatialReasoning(bank_vault() * 10);
                 vault = (+(vault).toFixed(0)).toLocaleString();
-                return loc('plus_max_resource',[`\$${vault}`,loc('resource_Money_name')]);
+                return loc('plus_max_resource',[`\$${vault}`,global.resource.Money.name]);
             },
             action(){
                 if (payCosts($(this)[0])){

@@ -1233,9 +1233,9 @@ if (convertVersion(global['version']) < 104002){
     }
 }
 
-global['version'] = '1.4.2';
+global['version'] = '1.4.3';
 delete global['revision'];
-delete global['beta'];
+global['beta'] = 1;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
@@ -2255,7 +2255,7 @@ function setRegionStates(reset){
             'nebula','neutron','blackhole','sirius','stargate','gateway','gorddon',
             'alien1','alien2','chthonian','titan','enceladus','triton','eris','kuiper'
         ],
-        portal: ['fortress','badlands','pit','ruins','gate','lake','spire'],
+        portal: ['fortress','badlands','pit','ruins','gate','lake','spire','wasteland'],
         eden: ['asphodel','elysium','isle','palace'],
         tau: ['home','red','roid','gas','gas2','star']
     };

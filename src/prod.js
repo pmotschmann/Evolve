@@ -79,7 +79,7 @@ export function production(id,val,wiki){
         }
         case 'helium_mine':
         {
-            let base = 0.18;
+            let base = global.race['warlord'] ? 0.35 : 0.18;
             let gov = govRelationFactor(3);
             return {
                 b: base,
@@ -525,6 +525,19 @@ export function production(id,val,wiki){
                 base *= 1 + (global.tech.railway / 100);
             }
             return base;
+        }
+        case 'shadow_mine':
+        {
+            switch (val){
+                case 'elerium':
+                {
+                    return 0.02;
+                }
+                case 'vitreloy':
+                {
+                    return 0.08;
+                }
+            }
         }
     }
 }

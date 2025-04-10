@@ -2341,6 +2341,30 @@ export const traits = {
             }
         },
     },
+    iron_wood: { // Removes Plywood as a resource, adds attack bonus
+        name: loc('trait_iron_wood_name'),
+        desc: loc('trait_iron_wood'),
+        type: 'major',
+        val: 4,
+        vars(r){
+            switch (r || traitRank('iron_wood') || 1){
+                case 0.1:
+                    return [3];
+                case 0.25:
+                    return [6];
+                case 0.5:
+                    return [9];
+                case 1:
+                    return [12];
+                case 2:
+                    return [15];
+                case 3:
+                    return [18];
+                case 4:
+                    return [21];
+            }
+        },
+    },
     pyrophobia: { // Smelter productivity is reduced
         name: loc('trait_pyrophobia_name'),
         desc: loc('trait_pyrophobia'),
@@ -3034,7 +3058,7 @@ export const traits = {
             }
         }
     },
-    blurry: { // Increased success chance of spies
+    blurry: { // Increased success chance of spies // Warlord improves Reapers
         name: loc('trait_blurry_name'),
         desc: loc('trait_blurry'),
         type: 'major',
@@ -3807,7 +3831,7 @@ export const traits = {
         name: loc('trait_artisan_name'),
         desc: loc('trait_artisan'),
         type: 'major',
-        val: 8,
+        val: 9,
         vars(r){
             // [Auto Crafting Boost, Manufacturing Boost, Improved Morale]
             switch (r || traitRank('artisan') || 1){
@@ -3820,11 +3844,11 @@ export const traits = {
                 case 1:
                     return [50,20,0.5];
                 case 2:
-                    return [65,25,0.6];
+                    return [60,25,0.55];
                 case 3:
-                    return [80,30,0.7];
+                    return [70,30,0.6];
                 case 4:
-                    return [95,35,0.8];
+                    return [80,35,0.65];
             }
         }
     },
@@ -4266,19 +4290,19 @@ export const traits = {
             // [Boosts Other Traits]
             switch (r || traitRank('empowered') || 1){
                 case 0.1:
-                    return [0];
+                    return [-1,2];
                 case 0.25:
-                    return [0];
+                    return [-2,3];
                 case 0.5:
-                    return [0];
+                    return [-3,4];
                 case 1:
-                    return [1];
+                    return [-4,6];
                 case 2:
-                    return [1];
+                    return [-6,9];
                 case 3:
-                    return [2];
+                    return [-8,12];
                 case 4:
-                    return [2];
+                    return [-99,99];
             }
         }
     },
@@ -5676,6 +5700,23 @@ export const races = {
         fanaticism: 'empowered',
         basic(){ return false; }
     },
+    hellspawn: {
+        name: loc('race_hellspawn'),
+        desc: loc('race_hellspawn_desc'),
+        type: 'demonic',
+        home: loc('race_hellspawn_home'),
+        entity: loc('race_hellspawn_entity'),
+        traits: {},
+        solar: {
+            red: loc('race_hellspawn_solar_red'),
+            hell: loc('race_hellspawn_solar_hell'),
+            gas: loc('race_hellspawn_solar_gas'),
+            gas_moon: loc('race_hellspawn_solar_gas_moon'),
+            dwarf: loc('race_hellspawn_solar_dwarf'),
+        },
+        fanaticism: 'immoral',
+        basic(){ return false; }
+    },
     junker: {
         name: altRace('junker') ? loc('race_ghoul') : loc('race_junker'),
         desc: altRace('junker') ? loc('race_ghoul_desc') : loc('race_junker_desc'),
@@ -6149,6 +6190,17 @@ export function racialTrait(workers,type){
         let lt = global.race['living_tool'] ? 1 + traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science * 0.12 : 0) : 1;
         modifier *= lt > tusk ? lt : tusk;
     }
+    if (global.race['warlord']){
+        if (type === 'miner'){
+            modifier *= 1.82;
+        }
+        else if (type === 'lumberjack'){
+            modifier *= 1.3;
+        }
+        else if (type === 'science'){
+            modifier *= 1.5;
+        }
+    }
     if (global.race['forager'] && type === 'forager'){
         modifier *= traits.forager.vars()[0] / 100;
     }
@@ -6491,6 +6543,12 @@ export function cleanAddTrait(trait){
             }
             purgeLumber();
             break;
+        case 'iron_wood':
+            if (global.race['smoldering']){
+                break;
+            }
+            releaseResource('Plywood');
+            break;
         case 'forge':
             defineIndustry();
             break;
@@ -6771,6 +6829,11 @@ export function cleanRemoveTrait(trait,rank){
             checkPurgatory('tech','saw');
             if ((global.tech['axe'] || global.tech['reclaimer']) && !global.race['orbit_decayed']){
                 global.civic.lumberjack.display = true;
+            }
+            break;
+        case 'iron_wood':
+            if (global.tech['foundry']){
+                global.resource.Plywood.display = true;
             }
             break;
         case 'forge':
@@ -7080,21 +7143,24 @@ export function shapeShift(genus,setup,forceClean){
 
 export function traitRank(trait){
     if (global.race['empowered'] && trait !== 'empowered'){
-        switch (global.race[trait]){
-            case 0.1:
-                return traits.empowered.vars()[0] >= 2 ? 0.5 : 0.25;
-            case 0.25:
-                return traits.empowered.vars()[0] >= 2 ? 1 : 0.5;
-            case 0.5:
-                return traits.empowered.vars()[0] >= 2 ? 2 : 1;
-            case 1:
-                return traits.empowered.vars()[0] >= 1 ? (traits.empowered.vars()[0] >= 2 ? 3 : 2) : 1;
-            case 2:
-                return traits.empowered.vars()[0] >= 1 ? (traits.empowered.vars()[0] >= 2 ? 4 : 3) : 2;
-            case 3:
-                return traits.empowered.vars()[0] >= 1 ? 4 : 3;
-            case 4:
-                return 4;
+        let val = traits[trait].val;
+        if (val >= traits.empowered.vars()[0] && val <= traits.empowered.vars()[1]){
+            switch (global.race[trait]){
+                case 0.1:
+                    return 0.25;
+                case 0.25:
+                    return 0.5;
+                case 0.5:
+                    return 1;
+                case 1:
+                    return 2;
+                case 2:
+                    return 3;
+                case 3:
+                    return 4;
+                case 4:
+                    return 4;
+            }
         }
     }
     return global.race[trait];
@@ -7169,6 +7235,7 @@ export function traitSkin(type, trait, species){
                 promiscuous: artificial ? loc('trait_promiscuous_synth') : traits['promiscuous'].desc,
                 weak: species === 'dwarf' ? loc('trait_drunk') : traits.weak.desc,
                 spiritual: global.race.universe === 'evil' && global.civic.govern.type != 'theocracy' ? loc('trait_manipulator') : traits.spiritual.desc,
+                blurry: global.race['warlord'] ? loc('trait_blurry_warlord') : traits.blurry.desc,
             };
             return trait ? (desc[trait] ? desc[trait] : traits[trait].desc) : desc;
         }
@@ -8051,11 +8118,13 @@ function majorWish(parent){
                     global.race.wishStats.major = traits.wish.vars()[0];
 
                     let options = ['fake','future'];
-                    if (global.tech['blackhole'] && global.tech.blackhole >= 5 && global.interstellar['mass_ejector'] && global.interstellar.mass_ejector.count >= 1){
-                        options.push('blackhole');
-                    }
-                    else if (!global.race['cataclysm'] && !global.race['lone_survivor'] && global.race.species !== 'sludge'){
-                        options.push('mad');
+                    if (!global.race['warlord']){
+                        if (global.tech['blackhole'] && global.tech.blackhole >= 5 && global.interstellar['mass_ejector'] && global.interstellar.mass_ejector.count >= 1){
+                            options.push('blackhole');
+                        }
+                        else if (!global.race['cataclysm'] && !global.race['lone_survivor'] && global.race.species !== 'sludge'){
+                            options.push('mad');
+                        }
                     }
 
                     let spell = options[Math.floor(seededRandom(0,options.length))];
@@ -8126,7 +8195,7 @@ function majorWish(parent){
                     global.race.wishStats.major = traits.wish.vars()[0];
 
                     let options = ['potato'];
-                    if (!global.race.wishStats.ship && (global.tech['shipyard'] || (global.tech['science'] && global.tech.science >= 16))){
+                    if (!global.race['warlord'] && !global.race.wishStats.ship && (global.tech['shipyard'] || (global.tech['science'] && global.tech.science >= 16))){
                         options.push('ship');
                     }
                     if (!global.race.wishStats.gov){
@@ -8161,10 +8230,10 @@ function majorWish(parent){
                     global.race.wishStats.major = traits.wish.vars()[0];
 
                     let options = ['priest'];
-                    if (!global.race.wishStats.temple){
+                    if (!global.race.wishStats.temple && !global.race['cataclysm'] && !global.race['lone_survivor'] && !global.race['warlord']){
                         options.push('temple');
                     }
-                    if (!global.race.wishStats.zigg){
+                    if (!global.race.wishStats.zigg && !global.race['lone_survivor'] && !global.race['warlord']){
                         options.push('zigg');
                     }
 
@@ -8269,7 +8338,7 @@ function majorWish(parent){
                     let options = ['wonder'];
 
                     let a_level = alevel();
-                    if (!global.race['lone_survivor'] && !global.stats.feat['wish'] || (global.stats.feat['wish'] && global.stats.feat['wish'] < a_level)){
+                    if (!global.race['lone_survivor'] && !global.race['warlord'] && !global.stats.feat['wish'] || (global.stats.feat['wish'] && global.stats.feat['wish'] < a_level)){
                         options.push('feat');
                     }
 

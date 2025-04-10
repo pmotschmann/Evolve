@@ -5,6 +5,7 @@ import { universeAffix } from './achieve.js';
 import { races, racialTrait, traits, planetTraits, biomes, fathomCheck, blubberFill } from './races.js';
 import { defineGovernor, govActive } from './governor.js';
 import { drawTech } from  './actions.js';
+import { soulForgeSoldiers } from './portal.js';
 import { jobScale } from './jobs.js';
 import { astrologySign, astroVal } from './seasons.js';
 import { warhead } from './resets.js';
@@ -386,28 +387,28 @@ function drawGovModal(){
         if (global.civic.govern.type !== 'autocracy'){
             body.append($(`<button class="button gap" data-gov="autocracy" @click="setGov('autocracy')">${loc(`govern_autocracy`)}</button>`));
         }
-        if (global.civic.govern.type !== 'democracy'){
+        if (global.civic.govern.type !== 'democracy' && !global.race['warlord']){
             body.append($(`<button class="button gap" data-gov="democracy" @click="setGov('democracy')">${global.race.universe === 'evil' ? loc(`govern_managed_democracy`) : loc(`govern_democracy`)}</button>`));
         }
-        if (global.civic.govern.type !== 'oligarchy'){
+        if (global.civic.govern.type !== 'oligarchy' && !global.race['warlord']){
             body.append($(`<button class="button gap" data-gov="oligarchy" @click="setGov('oligarchy')">${loc(`govern_oligarchy`)}</button>`));
         }
-        if (global.tech['gov_theo'] && global.civic.govern.type !== 'theocracy'){
+        if (global.tech['gov_theo'] && global.civic.govern.type !== 'theocracy' && !global.race['warlord']){
             body.append($(`<button class="button gap" data-gov="theocracy" @click="setGov('theocracy')">${loc(`govern_theocracy`)}</button>`));
         }
-        if (global.tech['govern'] >= 2 && global.civic.govern.type !== 'republic'){
+        if (global.tech['govern'] >= 2 && global.civic.govern.type !== 'republic' && !global.race['warlord']){
             body.append($(`<button class="button gap" data-gov="republic" @click="setGov('republic')">${loc(`govern_republic`)}</button>`));
         }
-        if (global.tech['gov_soc'] && global.civic.govern.type !== 'socialist'){
+        if (global.tech['gov_soc'] && global.civic.govern.type !== 'socialist' && !global.race['warlord']){
             body.append($(`<button class="button gap" data-gov="socialist" @click="setGov('socialist')">${loc(`govern_socialist`)}</button>`));
         }
-        if (global.tech['gov_corp'] && global.civic.govern.type !== 'corpocracy'){
+        if (global.tech['gov_corp'] && global.civic.govern.type !== 'corpocracy' && !global.race['warlord']){
             body.append($(`<button class="button gap" data-gov="corpocracy" @click="setGov('corpocracy')">${loc(`govern_corpocracy`)}</button>`));
         }
-        if (global.tech['govern'] >= 3 && global.civic.govern.type !== 'technocracy'){
+        if (global.tech['govern'] >= 3 && global.civic.govern.type !== 'technocracy' && !global.race['warlord']){
             body.append($(`<button class="button gap" data-gov="technocracy" @click="setGov('technocracy')">${loc(`govern_technocracy`)}</button>`));
         }
-        if (global.tech['gov_fed'] && global.civic.govern.type !== 'federation'){
+        if (global.tech['gov_fed'] && global.civic.govern.type !== 'federation' && !global.race['warlord']){
             body.append($(`<button class="button gap" data-gov="federation" @click="setGov('federation')">${loc(`govern_federation`)}</button>`));
         }
         if (global.tech['gov_mage'] && global.civic.govern.type !== 'magocracy'){
@@ -2170,6 +2171,9 @@ export function armyRating(val,type,wound){
         if (global.race['swift']){
             army *= 1 + (traits.swift.vars()[0] / 100);
         }
+        if (global.race['iron_wood']){
+            army *= 1 + (traits.iron_wood.vars()[0] / 100);
+        }
         if (global.race['fiery']){
             army *= 1 + (traits.fiery.vars()[0] / 100);
         }
@@ -2277,7 +2281,7 @@ export function armyRating(val,type,wound){
     return army * racialTrait(val,type);
 }
 
-export function garrisonSize(max, args = {} ){
+export function garrisonSize(max, args = {}){
     if (!global.civic.garrison){
         return 0;
     }
@@ -2285,7 +2289,12 @@ export function garrisonSize(max, args = {} ){
     let fortress = global.portal['fortress'] ? global.portal.fortress.garrison : 0;
     let fob = global.space['fob'] && !args['nofob'] ? global.space.fob.troops : 0;
     let pillbox = global.eden['pillbox'] && !args['nopill'] ? global.eden.pillbox.staffed : 0;
-    return global.civic.garrison[type] - global.civic.garrison.crew - fortress - fob - pillbox;
+    let troops = global.civic.garrison[type] - global.civic.garrison.crew - fortress - fob - pillbox;
+    if (global.race['warlord'] && p_on['soul_forge'] && !args['no_forge']){
+        let forge = soulForgeSoldiers();
+        if (troops >= forge){ troops -= forge; }
+    }
+    return troops;
 }
 
 function defineMad(){

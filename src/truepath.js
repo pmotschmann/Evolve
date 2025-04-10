@@ -388,7 +388,7 @@ const outerTruth = {
                 let vault = bank_vault() * 2;
                 vault = spatialReasoning(vault);
                 vault = (+(vault).toFixed(0)).toLocaleString();
-                return loc('plus_max_resource',[`\$${vault}`,loc('resource_Money_name')]);
+                return loc('plus_max_resource',[`\$${vault}`,global.resource.Money.name]);
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -1162,7 +1162,7 @@ const outerTruth = {
             effect(wiki){
                 let mineral = +(production('orichalcum_mine')).toFixed(3);
                 let fuel = +fuel_adjust($(this)[0].p_fuel().a,true,wiki).toFixed(1);
-                let desc = `<div>${loc('gain',[mineral,loc('resource_Orichalcum_name')])}</div>`;
+                let desc = `<div>${loc('gain',[mineral,global.resource.Orichalcum.name])}</div>`;
                 return desc + `<div class="has-text-caution">${loc('requires_power_combo_effect',[$(this)[0].powered(),fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
             },
             powered(){ return powerCostMod(10); },
@@ -1199,7 +1199,7 @@ const outerTruth = {
             effect(wiki){
                 let mineral = +(production('uranium_mine')).toFixed(3);
                 let fuel = +fuel_adjust($(this)[0].p_fuel().a,true,wiki).toFixed(1);
-                let desc = `<div>${loc('gain',[mineral,loc('resource_Uranium_name')])}</div>`;
+                let desc = `<div>${loc('gain',[mineral,global.resource.Uranium.name])}</div>`;
                 return desc + `<div class="has-text-caution">${loc('requires_power_combo_effect',[$(this)[0].powered(),fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
             },
             powered(){ return powerCostMod(5); },
@@ -1235,7 +1235,7 @@ const outerTruth = {
             effect(wiki){
                 let mineral = +(production('neutronium_mine')).toFixed(3);
                 let fuel = +fuel_adjust($(this)[0].p_fuel().a,true,wiki).toFixed(1);
-                let desc = `<div>${loc('gain',[mineral,loc('resource_Neutronium_name')])}</div>`;
+                let desc = `<div>${loc('gain',[mineral,global.resource.Neutronium.name])}</div>`;
                 return desc + `<div class="has-text-caution">${loc('requires_power_combo_effect',[$(this)[0].powered(),fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
             },
             powered(){ return powerCostMod(8); },
@@ -1272,7 +1272,7 @@ const outerTruth = {
             effect(wiki){
                 let mineral = +(production('elerium_mine')).toFixed(3);
                 let fuel = +fuel_adjust($(this)[0].p_fuel().a,true,wiki).toFixed(1);
-                let desc = `<div>${loc('gain',[mineral,loc('resource_Elerium_name')])}</div>`;
+                let desc = `<div>${loc('gain',[mineral,global.resource.Elerium.name])}</div>`;
                 return desc + `<div class="has-text-caution">${loc('requires_power_combo_effect',[$(this)[0].powered(),fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
             },
             powered(){ return powerCostMod(12); },
@@ -1858,7 +1858,7 @@ const tauCetiModules = {
                     let vault = bank_vault() * 25;
                     vault = spatialReasoning(vault);
                     vault = (+(vault).toFixed(0)).toLocaleString();
-                    desc = desc + `<div>${loc('plus_max_resource',[`\$${vault}`,loc('resource_Money_name')])}</div>`;
+                    desc = desc + `<div>${loc('plus_max_resource',[`\$${vault}`,global.resource.Money.name])}</div>`;
                 }
 
                 desc = desc + `<div>${loc('tau_home_colony_effect',[50,races[global.race.species].home])}</div>`;
@@ -1869,7 +1869,7 @@ const tauCetiModules = {
                     desc = desc + `<div>${loc('space_red_vr_center_effect1',[mVal])}</div>`;
                 }
                 
-                desc = desc + `<div>${loc('plus_max_resource',[containers,loc('resource_Crates_name')])}</div><div>${loc('plus_max_resource',[containers,loc('resource_Containers_name')])}</div>`;
+                desc = desc + `<div>${loc('plus_max_resource',[containers,global.resource.Crates.name])}</div><div>${loc('plus_max_resource',[containers,global.resource.Containers.name])}</div>`;
 
                 if (global.race['lone_survivor']){
                     desc = desc + `<div>${loc('gain',[-(fuel),global.resource[$(this)[0].support_fuel().r].name])}</div>`;
@@ -2184,9 +2184,9 @@ const tauCetiModules = {
             cost: {},
             queue_complete(){ return 0; },
             effect(){
-                let desc = `<div>${loc('plus_max_resource',[20+'%',loc('resource_Knowledge_name')])}</div>`;
+                let desc = `<div>${loc('plus_max_resource',[20+'%',global.resource.Knowledge.name])}</div>`;
                 if (global.tech['isolation']){
-                    desc = desc + `<div>${loc('plus_max_resource',[(global.race['lone_survivor'] ? 3500000 : 6500000).toLocaleString(),loc('resource_Knowledge_name')])}</div>`;
+                    desc = desc + `<div>${loc('plus_max_resource',[(global.race['lone_survivor'] ? 3500000 : 6500000).toLocaleString(),global.resource.Knowledge.name])}</div>`;
                     desc = desc + `<div>${loc('plus_max_resource',[(200000).toLocaleString(),global.resource.Cipher.name])}</div>`;
                     desc = desc + `<div>${loc(`space_lander_effect3`,[production('alien_outpost'),global.resource.Cipher.name])}</div>`;
                 }
@@ -2393,7 +2393,7 @@ const tauCetiModules = {
                     }
                 };
                 if (global.tech['isolation']){
-                    storage = storage + `<span>${loc('plus_max_resource',[containers,loc('resource_Crates_name')])}</span><span>${loc('plus_max_resource',[containers,loc('resource_Containers_name')])}</span>`;
+                    storage = storage + `<span>${loc('plus_max_resource',[containers,global.resource.Crates.name])}</span><span>${loc('plus_max_resource',[containers,global.resource.Containers.name])}</span>`;
                 }
                 storage = storage + '</div>';
                 return storage;
@@ -2503,7 +2503,7 @@ const tauCetiModules = {
                 desc = desc + `<div>${loc('city_max_knowledge',[Math.round(sci).toLocaleString()])}</div>`;
                 if (global.tech['isolation']){
                     let elerium = spatialReasoning(375);
-                    desc = desc + `<div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div>`;
+                    desc = desc + `<div>${loc('plus_max_resource',[elerium,global.resource.Elerium.name])}</div>`;
                     desc = desc + `<div>${loc('city_wardenclyffe_effect1',[jobScale(2), global.civic.professor.name])}</div>`;
                     desc = desc + `<div>${loc('city_wardenclyffe_effect1',[jobScale(1), global.civic.scientist.name])}</div>`;
                     desc = desc + `<div>${loc('space_zero_g_lab_effect',[jobScale(1)])}</div>`;

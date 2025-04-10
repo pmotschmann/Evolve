@@ -5,7 +5,7 @@ import { unlockAchieve, alevel, universeAffix, unlockFeat } from './achieve.js';
 import { payCosts, housingLabel, wardenLabel, structName, updateQueueNames, drawTech, fanaticism, checkAffordable, actions, initStruct } from './actions.js';
 import { races, checkAltPurgatory, renderPsychicPowers, renderSupernatural, traitCostMod } from './races.js';
 import { drawResourceTab, resource_values, atomic_mass } from './resources.js';
-import { loadFoundry, jobScale } from './jobs.js';
+import { loadFoundry, jobScale, jobName } from './jobs.js';
 import { buildGarrison, checkControlling, govTitle } from './civics.js';
 import { renderSpace, planetName, int_fuel_adjust } from './space.js';
 import { drawHellObservations } from './portal.js';
@@ -1604,7 +1604,7 @@ const techs = {
         category: 'special',
         era: 'discovery',
         reqs: { high_tech: 2 },
-        not_trait: ['fasting','cataclysm','lone_survivor'],
+        not_trait: ['fasting','cataclysm','lone_survivor','warlord'],
         grant: ['banquet',1],
         condition(){ return global.stats.achieve['endless_hunger'] && global.stats.achieve['endless_hunger'].l >= 1 ? true : false; },
         cost: {
@@ -1761,6 +1761,7 @@ const techs = {
         era: 'interstellar',
         reqs: { broadcast: 2, high_tech: 12, stanene: 1 },
         grant: ['broadcast',3],
+        not_trait: ['warlord'],
         cost: {
             Knowledge(){ return 620000; }
         },
@@ -4110,7 +4111,7 @@ const techs = {
         cost: {
             Knowledge(){ return traitCostMod('stubborn',36000); }
         },
-        effect(){ return loc('tech_adjunct_professor_effect',[wardenLabel(),global.civic.scientist ? global.civic.scientist.name : loc('job_scientist')]); },
+        effect(){ return loc('tech_adjunct_professor_effect',[wardenLabel(),global.civic.scientist ? global.civic.scientist.name : jobName('scientist')]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -4188,6 +4189,7 @@ const techs = {
         path: ['standard'],
         reqs: { science: 9, elerium: 2 },
         grant: ['science',10],
+        not_trait: ['warlord'],
         cost: {
             Knowledge(){ return traitCostMod('stubborn',350000); }
         },
@@ -4432,7 +4434,7 @@ const techs = {
             Knowledge(){ return 80000000; },
             Omniscience(){ return 12500; },
         },
-        effect(){ return loc('tech_spirit_researcher_effect',[global.civic.scientist ? global.civic.scientist.name : loc('job_scientist')]); },
+        effect(){ return loc('tech_spirit_researcher_effect',[global.civic.scientist ? global.civic.scientist.name : jobName('scientist')]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -6683,7 +6685,7 @@ const techs = {
         era: 'civilized',
         reqs: { axe: 1, mining: 3 },
         grant: ['saw',1],
-        not_trait: ['lone_survivor'],
+        not_trait: ['lone_survivor','warlord'],
         cost: {
             Knowledge(){ return 3375; },
             Iron(){ return 400; }
@@ -7839,6 +7841,7 @@ const techs = {
         category: 'hell_dimension',
         era: 'interstellar',
         reqs: { high_tech: 9, portal: 2 },
+        not_trait: ['warlord'],
         grant: ['turret',1],
         cost: {
             Knowledge(){ return 600000; },
@@ -7970,7 +7973,7 @@ const techs = {
         category: 'special',
         era: 'globalized',
         reqs: { uranium: 1, explosives: 3, high_tech: 7 },
-        not_trait: ['cataclysm','lone_survivor'],
+        not_trait: ['cataclysm','lone_survivor','warlord'],
         grant: ['mad',1],
         condition(){
             if (global.race['sludge'] || global.race['ultra_sludge']){ return false; }
@@ -9612,7 +9615,7 @@ const techs = {
         era: 'deep_space',
         reqs: { genesis: 2, space: 5, high_tech: 10 },
         grant: ['genesis',3],
-        not_trait: ['lone_survivor'],
+        not_trait: ['lone_survivor','warlord'],
         cost: {
             Knowledge(){ return 380000; },
         },
@@ -10313,6 +10316,7 @@ const techs = {
         category: 'hell_dimension',
         era: 'interstellar',
         reqs: { portal: 3, stanene: 1 },
+        not_trait: ['warlord'],
         grant: ['portal',4],
         cost: {
             Knowledge(){ return 745000; },
@@ -11040,6 +11044,7 @@ const techs = {
         category: 'hell_dimension',
         era: 'intergalactic',
         reqs: { hell_pit: 4 },
+        not_trait: ['warlord'],
         grant: ['hell_gun',1],
         cost: {
             Knowledge(){ return 3000000; }
@@ -14556,7 +14561,7 @@ const techs = {
             Knowledge(){ return 95000000; },
             Omniscience(){ return 19500; },
         },
-        effect(){ return loc('tech_hallowed_housing_effect',[global.civic?.priest?.name || loc(`job_priest`),loc('eden_asphodel_name')]); },
+        effect(){ return loc('tech_hallowed_housing_effect',[jobName('priest'),loc('eden_asphodel_name')]); },
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.eden.eden_asphodel.rectory);
@@ -15234,7 +15239,127 @@ const techs = {
             }
             return false;
         }
-    }
+    },
+    hellspawn_tunnelers: {
+        id: 'tech-hellspawn_tunnelers',
+        title: loc('tech_hellspawn_tunnelers'),
+        desc: loc('tech_hellspawn_tunnelers'),
+        category: 'evil',
+        era: 'dimensional',
+        reqs: { evil: 1, hellspawn: 1 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        grant: ['hellspawn',2],
+        cost: {
+            Knowledge(){ return 250000; }
+        },
+        effect: loc('tech_hellspawn_tunnelers_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.portal.prtl_wasteland.tunneler);
+                return true;
+            }
+            return false;
+        }
+    },
+    hell_minions: {
+        id: 'tech-hell_minions',
+        title: loc('tech_minion_spawn'),
+        desc: loc('tech_minion_spawn'),
+        category: 'evil',
+        era: 'dimensional',
+        reqs: { hellspawn: 2 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        grant: ['hellspawn',3],
+        cost: {
+            Knowledge(){ return 500000; }
+        },
+        effect: loc('tech_minion_spawn_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.portal.prtl_badlands.minions);
+                return true;
+            }
+            return false;
+        }
+    },
+    reapers: {
+        id: 'tech-reapers',
+        title: loc('tech_reapers'),
+        desc: loc('tech_reapers'),
+        category: 'evil',
+        era: 'dimensional',
+        reqs: { hellspawn: 3 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' && global.race?.absorbed?.length >= 4 ? true : false;
+        },
+        grant: ['hellspawn',4],
+        cost: {
+            Knowledge(){ return 1750000; }
+        },
+        effect: loc('tech_reapers_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.portal.prtl_badlands.reaper);
+                return true;
+            }
+            return false;
+        }
+    },
+    ghost_miners: {
+        id: 'tech-ghost_miners',
+        title: loc('tech_ghost_miners'),
+        desc: loc('tech_ghost_miners'),
+        category: 'evil',
+        era: 'dimensional',
+        reqs: { hellspawn: 2, hell_pit: 5 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        grant: ['pitspawn',1],
+        cost: {
+            Knowledge(){ return 1900000; }
+        },
+        effect: loc('tech_ghost_miners_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.portal.prtl_pit.shadow_mine);
+                return true;
+            }
+            return false;
+        }
+    },
+    tavern: {
+        id: 'tech-tavern',
+        title: loc('tech_tavern'),
+        desc: loc('tech_tavern'),
+        category: 'evil',
+        era: 'dimensional',
+        reqs: { pitspawn: 1 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        grant: ['pitspawn',2],
+        cost: {
+            Knowledge(){ return 2500000; }
+        },
+        effect: loc('tech_tavern_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.portal.prtl_pit.tavern);
+                return true;
+            }
+            return false;
+        }
+    },
 };
 
 function uniteEffect(){

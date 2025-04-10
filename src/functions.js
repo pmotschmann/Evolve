@@ -274,14 +274,14 @@ export function powerGrid(type,reset){
             power_structs = [
                 'city:transmitter','prtl_ruins:arcology','city:apartment','eden_asphodel:rectory','int_alpha:habitat','int_alpha:luxury_condo','spc_red:spaceport','spc_titan:titan_spaceport','spc_titan:electrolysis','int_alpha:starport',
                 'eden_asphodel:encampment','spc_dwarf:shipyard','spc_titan:ai_core2','spc_eris:drone_control','spc_titan:ai_colonist','int_blackhole:s_gate','gxy_gateway:starbase','spc_triton:fob',
-                'spc_enceladus:operating_base','spc_enceladus:zero_g_lab','spc_titan:sam','gxy_gateway:ship_dock','prtl_ruins:hell_forge','int_neutron:stellar_forge','int_neutron:citadel',
+                'prtl_wasteland:demon_forge','prtl_wasteland:twisted_lab','spc_enceladus:operating_base','spc_enceladus:zero_g_lab','spc_titan:sam','gxy_gateway:ship_dock','prtl_ruins:hell_forge','int_neutron:stellar_forge','int_neutron:citadel',
                 'tau_home:orbital_station','tau_red:orbital_platform','tau_gas:refueling_station','tau_home:tau_farm','tau_gas:ore_refinery','tau_gas:whaling_station',
                 'city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','gxy_stargate:telemetry_beacon','int_nebula:nexus','gxy_stargate:gateway_depot',
                 'spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','gxy_gorddon:embassy','gxy_gorddon:dormitory','gxy_alien1:resort','spc_gas_moon:oil_extractor',
-                'int_alpha:int_factory','city:factory','spc_red:red_factory','spc_dwarf:world_controller','prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine',
-                'city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','prtl_pit:soul_forge','gxy_chthonian:excavator',
+                'prtl_wasteland:hell_factory','int_alpha:int_factory','city:factory','spc_red:red_factory','spc_dwarf:world_controller','prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine',
+                'city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','prtl_pit:soul_forge','gxy_chthonian:excavator','prtl_pit:shadow_mine','prtl_pit:tavern',
                 'int_blackhole:far_reach','prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','gxy_stargate:gateway_station','gxy_alien1:vitreloy_plant','gxy_alien2:foothold',
-                'gxy_gorddon:symposium','int_blackhole:mass_ejector','city:casino','spc_hell:spc_casino','tau_home:tauceti_casino','prtl_fortress:repair_droid','gxy_stargate:defense_platform','prtl_ruins:guard_post',
+                'gxy_gorddon:symposium','int_blackhole:mass_ejector','city:casino','spc_hell:spc_casino','tau_home:tauceti_casino','prtl_wasteland:hell_casino','prtl_fortress:repair_droid','gxy_stargate:defense_platform','prtl_ruins:guard_post',
                 'prtl_lake:cooling_tower','prtl_lake:harbor','prtl_spire:purifier','prtl_ruins:archaeology','prtl_pit:gun_emplacement','prtl_gate:gate_turret','prtl_pit:soul_attractor',
                 'prtl_gate:infernite_mine','int_sirius:ascension_trigger','spc_kuiper:orichalcum_mine','spc_kuiper:elerium_mine','spc_kuiper:uranium_mine','spc_kuiper:neutronium_mine','spc_dwarf:m_relay',
                 'tau_home:tau_factory','tau_home:infectious_disease_lab','tau_home:alien_outpost','tau_gas:womling_station','spc_red:atmo_terraformer','tau_star:matrix','tau_home:tau_cultural_center',
@@ -1940,12 +1940,15 @@ function smolderAdjust(costs, offset, wiki){
 }
 
 function kindlingAdjust(costs, offset, wiki){
-    if (global.race['kindling_kindred'] && (costs['Lumber'] || costs['Plywood'])){
+    if ((global.race['kindling_kindred'] || global.race['iron_wood']) && (costs['Lumber'] || costs['Plywood'])){
         var newCosts = {};
         let adjustRate = 1 + (traits.kindling_kindred.vars()[0] / 100);
         Object.keys(costs).forEach(function (res){
-            if (res !== 'Lumber' && res !== 'Plywood' && res !== 'Structs'){
+            if (global.race['kindling_kindred'] && res !== 'Lumber' && res !== 'Plywood' && res !== 'Structs'){
                 newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * adjustRate) || 0; }
+            }
+            else if (global.race['iron_wood'] && res !== 'Plywood'){
+                newCosts[res] = function(){ return costs[res](offset, wiki); }
             }
             else if (res === 'Structs'){
                 newCosts[res] = function(){ return costs[res](offset, wiki); }
@@ -2909,6 +2912,7 @@ const valAdjust = {
     living_tool: false,
     empowered: false,
     living_materials: true,
+    blurry: true
 };
 
 function getTraitVals(trait, rank, species){
@@ -2943,6 +2947,9 @@ function getTraitVals(trait, rank, species){
         }
         else if (trait === 'living_materials'){
             vals = [global.resource.Lumber.name, global.resource.Plywood.name, global.resource.Furs.name, loc('resource_Amber_name')];
+        }
+        else if (trait === 'blurry' && global.race['warlord']){
+            vals = [+((100/(100-vals[0])-1)*100).toFixed(1)];
         }
         else if (!valAdjust[trait]){
             vals = [];
@@ -3090,6 +3097,10 @@ function rName(r){
     return `<span class="has-text-warning">${res}</span>`;
 }
 
+const altTraitDesc = {
+    blurry: 'warlord'
+};
+
 export function getTraitDesc(info, trait, opts){
     let fanatic = opts['fanatic'] || false;
     let tpage = opts['tpage'] || false;
@@ -3141,7 +3152,8 @@ export function getTraitDesc(info, trait, opts){
                     trait_desc = loc(`wiki_trait_effect_${alt_trait}`, getTraitVals(trait, trank, species));
                 }
                 else {
-                    trait_desc = loc(`wiki_trait_effect_${trait}`, getTraitVals(trait, trank, species));
+                    let key = altTraitDesc[trait] && global.race.hasOwnProperty(altTraitDesc[trait]) ? altTraitDesc[trait] : 'effect';
+                    trait_desc = loc(`wiki_trait_${key}_${trait}`, getTraitVals(trait, trank, species));
                 }
             }
             info.append(`<div class="has-text-${color} effect">${trait_desc}</div>`);
@@ -3170,7 +3182,8 @@ export function getTraitDesc(info, trait, opts){
                         let alt_trait = trait === 'spiritual' ? 'manipulator' : 'blasphemous_evil';
                         return loc(`wiki_trait_effect_${alt_trait}`, getTraitVals(trait, trank, species));
                     }
-                    return loc(`wiki_trait_effect_${trait}`, getTraitVals(trait, rk, species));
+                    let key = altTraitDesc[trait] && global.race.hasOwnProperty(altTraitDesc[trait]) ? altTraitDesc[trait] : 'effect';
+                    return loc(`wiki_trait_${key}_${trait}`, getTraitVals(trait, rk, species));
                 },
                 up(){
                     switch (data.rank){
