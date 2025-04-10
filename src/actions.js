@@ -8265,6 +8265,9 @@ function sentience(){
             setImitation(false);
         }
     }
+    if(!global.race.inactiveTraits){
+        global.race.inactiveTraits = {};
+    }
     combineTraits();
 
     Object.keys(global.tech).forEach(function (tech){

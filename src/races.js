@@ -6958,7 +6958,7 @@ export function cleanRemoveTrait(trait,rank){
             if (global.race['iTraits']){
                 Object.keys(global.race.iTraits).forEach(function (t){
                     if (t !== 'imitation'){
-                        let base = global.race.inactive[t] ? global.race.inactive : global.race;
+                        let base = global.race.inactiveTraits[t] ? global.race.inactiveTraits : global.race;
                         if (global.race.iTraits[t] === 0){
                             let rank = base[t];
                             delete base[t];
@@ -7019,10 +7019,10 @@ export function setImitation(mod){
             }
         }
 
-        Object.keys(global.race.inactive).forEach(function (trait){
-            global.race[trait] = global.race.inactive[trait];
+        Object.keys(global.race.inactiveTraits).forEach(function (trait){
+            global.race[trait] = global.race.inactiveTraits[trait];
         })
-        global.race.inactive = {};
+        global.race.inactiveTraits = {};
 
         let i_traits = [];
         if(races[global.race['srace']].type === 'hybrid'){
@@ -7073,10 +7073,10 @@ export function setImitation(mod){
 export function shapeShift(genus,setup,forceClean){
     let shifted = global.race.hasOwnProperty('ss_traits') ? global.race.ss_traits : [];
 
-    Object.keys(global.race.inactive).forEach(function (trait){
-        global.race[trait] = global.race.inactive[trait];
+    Object.keys(global.race.inactiveTraits).forEach(function (trait){
+        global.race[trait] = global.race.inactiveTraits[trait];
     })
-    global.race.inactive = {};
+    global.race.inactiveTraits = {};
 
     if (!setup || forceClean){
         shifted.forEach(function(trait){
@@ -7155,16 +7155,16 @@ export function shapeShift(genus,setup,forceClean){
 
 export function combineTraits(){
 
-    Object.keys(global.race.inactive).forEach(function (trait){
-        global.race[trait] = global.race.inactive[trait];
+    Object.keys(global.race.inactiveTraits).forEach(function (trait){
+        global.race[trait] = global.race.inactiveTraits[trait];
     })
-    global.race.inactive = {};
+    global.race.inactiveTraits = {};
 
-    if(global.race['herbivore'] && global.race['carnivore']){
-        let rank = Math.min(global.race['herbivore'], global.race['carnivore']); //omnivore has rank equal to lower of carnivore/herbivore
+    if(global.race['herbivore'] && global.race['carnivore']){ //herbivore and carnivore found. Add forager
+        let rank = Math.min(global.race['herbivore'], global.race['carnivore']); //forager has rank equal to lower of carnivore/herbivore
 
-        global.race.inactive['herbivore'] = global.race['herbivore'];
-        global.race.inactive['carnivore'] = global.race['carnivore'];
+        global.race.inactiveTraits['herbivore'] = global.race['herbivore'];
+        global.race.inactiveTraits['carnivore'] = global.race['carnivore'];
         delete global.race['herbivore'];
         delete global.race['carnivore'];
         if(global.race['forager'] !== rank){
