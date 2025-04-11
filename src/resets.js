@@ -611,7 +611,7 @@ export function ascend(){
     }
 
     Object.keys(geo).forEach(function (g){
-        geo[g] += 0.02;
+        geo[g] = +(geo[g] + 0.02).toFixed(2);
     });
 
     resetCommon({
@@ -821,7 +821,7 @@ export function apotheosis(){
     }
 
     Object.keys(geo).forEach(function (g){
-        geo[g] += 0.02;
+        geo[g] = +(geo[g] + 0.02).toFixed(2);
     });
 
     resetCommon({
