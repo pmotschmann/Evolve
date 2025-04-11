@@ -4114,27 +4114,38 @@ const interstellarProjects = {
                     return `<div>${loc('interstellar_stellar_engine_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
                 else {
-                    let waves = global.tech['gravity'] && global.tech['gravity'] >= 2 ? 13.5 : 7.5;
-                    let r_mass = global.interstellar['stellar_engine'] ? global.interstellar.stellar_engine.mass : 8;
-                    if (global.tech['roid_eject']){
-                        r_mass += 0.225 * global.tech['roid_eject'] * (1 + (global.tech['roid_eject'] / 12));
-                    }
-                    let gWell = 1 + (global.stats.achieve['escape_velocity'] && global.stats.achieve.escape_velocity['h'] ? global.stats.achieve.escape_velocity['h'] * 0.02 : 0);
-                    let output = powerModifier((20 + ((r_mass - 8) * waves) + ((global.interstellar['stellar_engine'] ? global.interstellar.stellar_engine.exotic : 0) * waves * 10)).toFixed(2)) * gWell;
-                    if (output > 10000){
-                        output = 10000 + (output - 10000) ** 0.975;
-                        if (output > 20000){ output = 20000 + (output - 20000) ** 0.95; }
-                        if (output > 30000){ output = 30000 + (output - 30000) ** 0.925; }
-                    }
+                    let output = -$(this)[0].powered();
                     if (global.tech['blackhole'] >= 5){
-                        let exotic = +(global.interstellar.stellar_engine.exotic).toFixed(10);
-                        let blackhole = global.interstellar.stellar_engine.exotic > 0 ? loc('interstellar_stellar_engine_effect3',[r_mass,exotic]) : loc('interstellar_stellar_engine_effect2',[r_mass]);
+                        let r_mass = global.interstellar.stellar_engine.mass;
+                        let exotic = global.interstellar.stellar_engine.exotic;
+                        if (global.tech['roid_eject']){
+                            r_mass += 0.225 * global.tech['roid_eject'] * (1 + (global.tech['roid_eject'] / 12));
+                        }
+                        let blackhole = exotic > 0 ? loc('interstellar_stellar_engine_effect3',[+r_mass.toFixed(10),+exotic.toFixed(10)]) : loc('interstellar_stellar_engine_effect2',[r_mass]);
                         return `<div>${loc('interstellar_stellar_engine_complete',[+output.toFixed(2)])}</div><div>${blackhole}</div>`;
                     }
                     else {
                         return loc('interstellar_stellar_engine_complete',[+output.toFixed(2)]);
                     }
                 }
+            },
+            switchable(){ return false; },
+            powered(){
+                let waves = global.tech['gravity'] && global.tech['gravity'] >= 2 ? 13.5 : 7.5;
+                let r_mass = global.interstellar?.stellar_engine?.mass ?? 8;
+                let exotic = global.interstellar?.stellar_engine?.exotic ?? 0;
+                if (global.tech['roid_eject']){
+                    r_mass += 0.225 * global.tech['roid_eject'] * (1 + (global.tech['roid_eject'] / 12));
+                }
+                let gWell = 1 + (global.stats.achieve['escape_velocity'] && global.stats.achieve.escape_velocity['h'] ? global.stats.achieve.escape_velocity['h'] * 0.02 : 0);
+                let output = powerModifier(20 + (r_mass - 8 + exotic * 10) * waves * gWell);
+                if (output > 10000){
+                    output = 10000 + (output - 10000) ** 0.975;
+                    if (output > 20000){ output = 20000 + (output - 20000) ** 0.95; }
+                    if (output > 30000){ output = 30000 + (output - 30000) ** 0.925; }
+                }
+                output = +output.toFixed(2);
+                return -output;
             },
             action(){
                 if (payCosts($(this)[0])){
