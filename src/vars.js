@@ -1244,7 +1244,7 @@ if(!global.race.hasOwnProperty('inactiveTraits')){
 
 global['version'] = '1.4.3';
 delete global['revision'];
-global['beta'] = 2;
+global['beta'] = 3;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};

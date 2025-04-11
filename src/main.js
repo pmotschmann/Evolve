@@ -9165,6 +9165,10 @@ function midLoop(){
         }
         if (global.portal['twisted_lab'] && global.portal.twisted_lab.count > 0 && global.race['absorbed']){
             let gain = (p_on['twisted_lab'] * 10000 * global.race.absorbed.length);
+            if (global.tech['supercollider'] && global.race['warlord']){
+                let ratio = global.tech['tp_particles'] || (global.tech['particles'] && global.tech['particles'] >= 3) ? 12.5: 25;
+                gain *= (global.tech['supercollider'] / ratio) + 1;
+            }
             caps['Knowledge'] += gain;
             breakdown.c.Knowledge[loc('portal_twisted_lab_title')] = gain+'v';
         }

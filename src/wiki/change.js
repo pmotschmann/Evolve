@@ -8,12 +8,12 @@ export const changeList = [
         changes: [
             `Evil Universe Scenario: Warlord.`,
             `Added Planned Obsolescence Feat.`,
-            `Fixed bug with Rogue trait that set crafted resources to 0.`,
+            `Symposium now gain Knowledge for all crew in Andromeda.`,
+            `Evil Authority adjustments for Cataclysm, Lone Survivor, and Orbit Decay`,
             `Updated Empowered trait mechanics.`,
             `Adjusted values for Master Artisan.`,
-            `Symposium now gain Knowledge for all crew in Andromeda.`,
-            `Fixed bug that caused Hybrid species to throw an error when triggering greatness resets.`,
-            `Evil Authority adjustments for Cataclysm, Lone Survivor, and Orbit Decay`
+            `Fixed bug with Rogue trait that set crafted resources to 0.`,
+            `Fixed bug that caused Hybrid species to throw an error when triggering greatness resets.`
         ]
     },
     {
