@@ -1555,7 +1555,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('guard_post','portal');
-                    global.portal.guard_post.on++;
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -2480,8 +2480,11 @@ const fortressModules = {
                     global.portal['oven'].count++;
                     if (global.portal.oven.count >= 100){
                         global.tech['dish'] = 3;
-                        global.portal['oven_complete'] = { count: 1, on: 0 };
-                        global.portal['devilish_dish'] = { count: 0, done: 0, time: 0 };
+                        initStruct(fortressModules.prtl_lake.oven_complete);
+                        if (global.settings.alwaysPower){
+                            powerOnNewStruct(fortressModules.prtl_lake.oven_complete);
+                        }
+                        initStruct(fortressModules.prtl_lake.devilish_dish);
                         renderFortress();
                         clearPopper();
                     }
@@ -2517,6 +2520,12 @@ const fortressModules = {
             p_fuel(){ return { r: 'Infernite', a: 225 }},
             action(){
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['oven_complete','portal']
+                };
             }
         },
         devilish_dish: {
@@ -2532,6 +2541,12 @@ const fortressModules = {
             },
             action(){
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, done: 0, time: 0 },
+                    p: ['devilish_dish','portal']
+                };
             }
         },
         dish_soul_steeper: {
@@ -3092,6 +3107,9 @@ const fortressModules = {
                     if (global.portal.waygate.count >= 10){
                         global.tech.waygate = 2;
                         global.portal.waygate.count = 1;
+                        if (global.settings.alwaysPower){
+                            global.portal.waygate.on = 1;
+                        }
                         renderFortress();
                         drawTech();
                     }

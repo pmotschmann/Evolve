@@ -2470,7 +2470,12 @@ const spaceProjects = {
                     incrementStruct('world_collider');
                     if (global.space.world_collider.count >= 1859){
                         global.tech['science'] = 11;
-                        global.space['world_controller'] = { count: 1, on: 0 };
+                        initStruct(spaceProjects.spc_dwarf.world_controller);
+                        incrementStruct('world_controller');
+                        // Require the force power-on setting to automatically power end-of-era structs, even when power is abundant
+                        if (global.settings.alwaysPower){
+                            powerOnNewStruct(spaceProjects.spc_dwarf.world_controller);
+                        }
                         drawTech();
                         renderSpace();
                         if (global.race['banana']){
@@ -2626,7 +2631,8 @@ const spaceProjects = {
                     global.space.mass_relay.count++;
                     if (global.space.mass_relay.count >= 100){
                         global.tech['outer'] = 6;
-                        global.space['m_relay'] = { count: 1, on: 1, charged: 0 };
+                        initStruct(spaceProjects.spc_dwarf.m_relay);
+                        powerOnNewStruct(spaceProjects.spc_dwarf.m_relay);
                         drawTech();
                         renderSpace();
                         clearPopper();
@@ -2665,6 +2671,12 @@ const spaceProjects = {
             },
             action(){
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, charged: 0 },
+                    p: ['m_relay','space']
+                };
             }
         },
     },
@@ -4334,8 +4346,12 @@ const interstellarProjects = {
                         incrementStruct('stargate','interstellar');
                         if (global.interstellar.stargate.count >= 200){
                             global.tech['stargate'] = 4;
-                            global.interstellar['s_gate'] = { count: 1, on: 0 };
-                            powerOnNewStruct($(interstellarProjects.int_blackhole.s_gate)[0]);
+                            initStruct(interstellarProjects.int_blackhole.s_gate);
+                            incrementStruct('s_gate','interstellar');
+                            // Require the force power-on setting to automatically power end-of-era structs, even when power is abundant
+                            if (global.settings.alwaysPower){
+                                powerOnNewStruct(interstellarProjects.int_blackhole.s_gate);
+                            }
                             deepSpace();
                             clearPopper();
                         }
@@ -4568,7 +4584,10 @@ const interstellarProjects = {
                         incrementStruct('ascension_machine','interstellar');
                         if (global.interstellar.ascension_machine.count >= 100){
                             global.tech['ascension'] = 7;
-                            global.interstellar['ascension_trigger'] = { count: 1, on: 0 };
+                            initStruct(interstellarProjects.int_sirius.ascension_trigger);
+                            if (global.settings.alwaysPower){
+                                powerOnNewStruct(interstellarProjects.int_sirius.ascension_trigger);
+                            }
                             deepSpace();
                             clearPopper();
                         }
@@ -4658,6 +4677,12 @@ const interstellarProjects = {
             },
             action(){
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['ascension_trigger','interstellar']
+                };
             }
         },
         ascend: {
