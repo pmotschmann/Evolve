@@ -5727,13 +5727,13 @@ function fastLoop(){
 
             // Aluminium
             if (global.city['metal_refinery'] && (global.city['metal_refinery'].count > 0 || global.race['cataclysm'] || global.race['orbit_decayed'] || global.race['warlord'])){
-                let base = stone_base * rock_quarry * (global.race['cataclysm'] ? 0.16 : 0.08);
+                let base = stone_base * (global.race['cataclysm'] ? 0.16 : 0.08);
                 if (global.city.geology['Aluminium']){
                     base *= global.city.geology['Aluminium'] + 1;
                 }
                 base *= production('psychic_boost','Aluminium');
 
-                let delta = base * tunneler * shrineMetal.mult * hunger * q_multiplier * global_multiplier;
+                let delta = base * rock_quarry * tunneler * shrineMetal.mult * hunger * q_multiplier * global_multiplier;
                 global.city.metal_refinery['cnvay'] = +(delta * (power_single - 1)).toFixed(5);
                 global.city.rock_quarry['almcvy'] = global.city.metal_refinery['cnvay'];
                 delta *= power_mult;
@@ -5748,6 +5748,8 @@ function fastLoop(){
 
                 breakdown.p['Aluminium'][`${global.race['cataclysm'] || global.race['orbit_decayed'] ? structName('mine') : (global.race['warlord'] ? jobName('miner') : loc('workers'))}+1`] = base + 'v';
                 if (base > 0){
+                    breakdown.p['Aluminium'][`ᄂ${loc('city_rock_quarry')}`] = ((rock_quarry - 1) * 100) + '%';
+                    breakdown.p['Aluminium'][`ᄂ${loc('power')}`] = ((power_mult - 1) * 100) + '%';
                     breakdown.p['Aluminium'][`ᄂ${loc('portal_tunneler_bd')}`] = ((tunneler - 1) * 100) + '%';
                     breakdown.p['Aluminium'][`ᄂ${loc('quarantine')}+0`] = ((q_multiplier - 1) * 100) + '%';
                 }
