@@ -6,7 +6,7 @@ import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAd
 import { defineResources, unlockCrates, unlockContainers, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus, faithTempleCount } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter } from './industry.js';
-import { defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating, garrisonSize } from './civics.js';
+import { defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating, garrisonSize, govEffect } from './civics.js';
 import { spaceTech, interstellarTech, galaxyTech, incrementStruct, universe_affixes, renderSpace, piracy, fuel_adjust, isStargateOn } from './space.js';
 import { renderFortress, fortressTech, warlordSetup } from './portal.js';
 import { edenicTech, renderEdenic } from './edenic.js';
@@ -9376,7 +9376,9 @@ export function fanaticism(god){
 export function absorbRace(race){
     if (global.race['warlord']){
         fanaticTrait(races[race].fanaticism, 0.25);
-        global.race.absorbed.push(race);
+        if (!global.race.absorbed.includes(race)){
+            global.race.absorbed.push(race);
+        }
     }
 }
 
@@ -9399,7 +9401,7 @@ function fanaticTrait(trait,rank){
             global.race[trait] = rank ?? 0.5;
         }
         else {
-            global.race[trait] = 1;
+            global.race[trait] = rank ?? 1;
         }
         cleanAddTrait(trait);
     }

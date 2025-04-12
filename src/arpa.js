@@ -46,7 +46,10 @@ export const arpaProjects = {
             }
             let sc = global.tech['tp_particles'] || (global.tech['particles'] && global.tech['particles'] >= 3) ? (global.race['cataclysm'] ? 20 : 8) : (global.race['cataclysm'] ? 10 : 4);
             if (global.tech['storage'] >= 6){
-                if (global.tech['particles'] && global.tech['particles'] >= 4){
+                if (global.race['warlord']){
+                    return loc('arpa_projects_lhc_warlord2',[loc('portal_twisted_lab_title'),sc,5]);
+                }
+                else if (global.tech['particles'] && global.tech['particles'] >= 4){
                     return global.race['cataclysm'] ? loc('arpa_projects_lhc_cataclysm3',[sc]) : loc('arpa_projects_lhc_effect3',[sc,global.race['orbit_decayed'] ? loc('space_home_satellite_title') : wardenLabel()]);
                 }
                 else {
@@ -54,7 +57,12 @@ export const arpaProjects = {
                 }
             }
             else {
-                return global.race['cataclysm'] ? loc('arpa_projects_lhc_cataclysm1',[sc]) : global.tech['isolation'] ? loc('arpa_projects_lhc_iso1',[sc,loc('tech_infectious_disease_lab_alt')]) : (loc('arpa_projects_lhc_effect1',[sc,global.race['orbit_decayed'] ? loc('space_home_satellite_title') : wardenLabel()]));
+                if (global.race['warlord']){
+                    return loc('arpa_projects_lhc_warlord1',[loc('portal_twisted_lab_title'),sc]);
+                }
+                else {
+                    return global.race['cataclysm'] ? loc('arpa_projects_lhc_cataclysm1',[sc]) : global.tech['isolation'] ? loc('arpa_projects_lhc_iso1',[sc,loc('tech_infectious_disease_lab_alt')]) : (loc('arpa_projects_lhc_effect1',[sc,global.race['orbit_decayed'] ? loc('space_home_satellite_title') : wardenLabel()]));
+                }
             }
         },
         cost: {
@@ -73,7 +81,10 @@ export const arpaProjects = {
         reqs: { banking: 9 },
         grant: 'stock_exchange',
         effect(){
-            if (global.tech['banking'] >= 10){
+            if (global.race['warlord']){
+                return loc('arpa_projects_stock_exchange_warlord',[structName('casino'),5,1]);
+            }
+            else if (global.tech['banking'] >= 10){
                 if (global.race['cataclysm']){
                     return global.tech['gambling'] && global.tech['gambling'] >= 4 
                     ? loc('arpa_projects_stock_exchange_cataclysm2',[loc('space_red_spaceport_title'),10,structName('casino'),5,1]) 
