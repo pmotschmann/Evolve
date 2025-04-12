@@ -10252,7 +10252,8 @@ const techs = {
                                 soul_forge: 0,
                                 crafted: 0,
                                 turrets: 0,
-                                surveyors: 0
+                                surveyors: 0,
+                                compactor: 0
                             },
                         },
                         period: {
@@ -10273,7 +10274,8 @@ const techs = {
                                 soul_forge: 0,
                                 crafted: 0,
                                 turrets: 0,
-                                surveyors: 0
+                                surveyors: 0,
+                                compactor: 0
                             },
                         }
                     },

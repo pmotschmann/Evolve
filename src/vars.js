@@ -1233,6 +1233,13 @@ if (convertVersion(global['version']) < 104002){
     }
 }
 
+if (convertVersion(global['version']) < 104003){
+    if (global.portal.hasOwnProperty('observe') && global.portal.observe.hasOwnProperty('stats')){
+        global.portal.observe.stats.period.gems['compactor'] ??= 0;
+        global.portal.observe.stats.total.gems['compactor'] ??= 0;
+    }
+}
+
 if(!global.race.hasOwnProperty('inactiveTraits')){
     if(global.race['forager']){
         global.race.inactiveTraits = {herbivore:global.race['forager'], carnivore:global.race['forager']};
