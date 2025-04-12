@@ -9168,6 +9168,9 @@ const techs = {
         category: 'power_generation',
         era: 'existential',
         reqs: { high_tech: 19, dyson: 2 },
+        condition(){
+            return global.interstellar?.orichalcum_sphere?.count >= 100;
+        },
         grant: ['dyson',3],
         cost: {
             Knowledge(){ return 122500000; },
