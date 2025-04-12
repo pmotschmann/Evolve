@@ -255,9 +255,18 @@ window.importGame = function importGame(data,utf16){
             }
         }
         // prevent invalid message colors from escaping class attribute
-        for (const msgQueue in saveState.lastMsg) {
-            for (const msg of saveState.lastMsg[msgQueue]) {
-                msg.c = msg.c.replaceAll('"', '')
+        if (Array.isArray(saveState.lastMsg)){
+            // Legacy save file: prior to v1.1.4
+            for (let i = 0; i < saveState.lastMsg.length; i++){
+                saveState.lastMsg[i].c = saveState.lastMsg[i].c.replaceAll('"', '');
+            }
+        }
+        else {
+            // Save file from v1.1.4 or newer
+            for (const msgQueue in saveState.lastMsg){
+                for (const msg of saveState.lastMsg[msgQueue]){
+                    msg.c = msg.c.replaceAll('"', '');
+                }
             }
         }
         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(saveState)));
