@@ -3,7 +3,7 @@ import { loc } from './locale.js';
 import { races, traits, fathomCheck, blubberFill } from './races.js';
 import { govTitle, garrisonSize, armyRating } from './civics.js';
 import { housingLabel, drawTech, actions } from './actions.js';
-import { flib } from './functions.js';
+import { flib, drawPet } from './functions.js';
 import { tradeRatio } from './resources.js';
 import { checkControlling, soldierDeath } from './civics.js';
 import { govActive } from './governor.js';
@@ -986,6 +986,7 @@ export const events = {
         type: 'minor',
         effect(){
             if (global.race['pet']){
+                global.race.pet.event += Math.rand(300,600);
                 let interaction = Math.rand(0,10);
                 return loc(`event_${global.race.pet.type}_interaction${interaction}`,[loc(`event_${global.race.pet.type}_name${global.race.pet.name}`)]);
             }
@@ -993,8 +994,11 @@ export const events = {
                 let pet = Math.rand(0,2) === 0 ? 'cat' : 'dog';
                 global.race['pet'] = {
                     type: pet,
-                    name: pet === 'cat' ? Math.rand(0,11) : Math.rand(0,10)
+                    name: pet === 'cat' ? Math.rand(0,12) : Math.rand(0,10),
+                    event: 0,
+                    pet: 0
                 };
+                drawPet();
                 return loc(`event_pet_${global.race.pet.type}`,[loc(`event_${global.race.pet.type}_name${global.race.pet.name}`)]);
             }
         }

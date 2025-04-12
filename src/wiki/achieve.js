@@ -397,7 +397,7 @@ function featDesc(feat,showFlair){
                 return 0;
             }
         }).forEach(function (key){
-            if (key !== 'hellspawn' && key !== 'protoplasm' && (key !== 'custom' || (key === 'custom' && global.stats.achieve['ascended'])) && (key !== 'hybrid' || (key === 'hybrid' && global.stats.achieve['what_is_best']))){
+            if (key !== 'protoplasm' && (key !== 'custom' || (key === 'custom' && global.stats.achieve['ascended'])) && (key !== 'hybrid' || (key === 'hybrid' && global.stats.achieve['what_is_best']))){
                 if (species[key] && species[key] >= 1){
                     checked = checked + `<span class="wide iclr${species[key]}">${races[key].name}</span>`;
                 }
@@ -442,7 +442,7 @@ function featDesc(feat,showFlair){
     }
     else if (feat === 'planned_obsolescence') {
         let checked = `<div class="flexed wide">`;    
-        Object.keys(races).filter(r => !['junker','sludge','ultra_sludge','nano','synth'].includes(r)).sort(function(a,b){
+        Object.keys(races).filter(r => !['junker','sludge','ultra_sludge','nano','synth','hellspawn'].includes(r)).sort(function(a,b){
             if (races[a].hasOwnProperty('name') && races[b].hasOwnProperty('name')){
                 return (races[a].name || 'Zombie').localeCompare(races[b].name);
             }

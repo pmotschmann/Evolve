@@ -1240,18 +1240,16 @@ if (convertVersion(global['version']) < 104003){
     }
 }
 
-if(!global.race.hasOwnProperty('inactiveTraits')){
-    if(global.race['forager']){
-        global.race.inactiveTraits = {herbivore:global.race['forager'], carnivore:global.race['forager']};
-    }
-    else{
-        global.race.inactiveTraits = {};
+if (convertVersion(global['version']) <= 104003){
+    if(global.race['pet'] && !global.race.pet.hasOwnProperty('event')){
+        global.race.pet['event'] = 0;
+        global.race.pet['pet'] = 0;
     }
 }
 
 global['version'] = '1.4.3';
 delete global['revision'];
-global['beta'] = 3;
+global['beta'] = 4;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
@@ -1307,6 +1305,15 @@ if (!global.settings.space.hasOwnProperty('home')){
 }
 
 setRegionStates(false);
+
+if(!global.race.hasOwnProperty('inactiveTraits')){
+    if(global.race['forager']){
+        global.race.inactiveTraits = {herbivore:global.race['forager'], carnivore:global.race['forager']};
+    }
+    else{
+        global.race.inactiveTraits = {};
+    }
+}
 
 if (!global.settings['icon']){
     global.settings['icon'] = 'star';
@@ -1578,6 +1585,9 @@ export function setupStats(){
     }
     if (global.stats['death_tour'] && !global.stats.death_tour.hasOwnProperty('md')){
         global.stats.death_tour['md'] = { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 };
+    }
+    if (global.stats['warlord']){
+        global.stats['warlord'] = { k: false, v: false, p: false, a: false, g: false };
     }
 }
 

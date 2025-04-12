@@ -222,6 +222,9 @@ if (global.interstellar['starport']){
 if (global.interstellar['fusion']){
     int_on['fusion'] = global.interstellar.fusion.on;
 }
+if (global.interstellar['s_gate']){
+    p_on['s_gate'] = global.interstellar.s_gate.on;
+}
 if (global.portal['hell_forge']){
     p_on['hell_forge'] = global.portal.hell_forge.on;
 }
@@ -408,8 +411,23 @@ popover('morale',
         }
 
         if (global.race['pet']){
-            total += 1;
-            obj.popper.append(`<p class="modal_bd"><span>${loc(`event_pet_${global.race.pet.type}_owner`)}</span> <span class="has-text-success"> ${1}%</span></p>`);
+            let change = 1;
+            if (global.race['pet']){
+                if (global.race.pet.event > 0){
+                    change++;
+                }
+                if (global.race.pet.pet > 0){
+                    change += global.race.pet.type === 'cat' ? 2 : 1;
+                }
+                else if (global.race.pet.pet < 0){
+                    change -= global.race.pet.type === 'cat' ? 2 : 1
+                }
+            }
+            if (change !== 0){
+                total += change;
+                let style = change > 0 ? 'success' : 'danger';
+                obj.popper.append(`<p class="modal_bd"><span>${loc(`event_pet_${global.race.pet.type}_owner`)}</span> <span class="has-text-${style}"> ${change}%</span></p>`);
+            }
         }
 
         if (global.race['wishStats'] && global.race.wishStats.fame !== 0){
@@ -550,6 +568,19 @@ vBind({
         },
         showPet(){
             return global.race['pet'] ? true : false;
+        },
+        petPet(){
+            if (global.race['pet'] && global.race.pet.pet === 0){
+                let outcome = Math.rand(0,3);
+                if (outcome === 0){
+                    global.race.pet.pet = -300;
+                    messageQueue(loc(`event_${global.race.pet.type}_pet_failure`,[loc(`event_${global.race.pet.type}_name${global.race.pet.name}`)]),false,false,['events','minor_events']);
+                }
+                else {
+                    global.race.pet.pet = 300;
+                    messageQueue(loc(`event_${global.race.pet.type}_pet_success`,[loc(`event_${global.race.pet.type}_name${global.race.pet.name}`)]),false,false,['events','minor_events']);
+                }
+            }
         }
     },
     filters: {
@@ -1382,7 +1413,16 @@ function fastLoop(){
         }
 
         if (global.race['pet']){
-            morale += 1;
+            morale++;
+            if (global.race.pet.event > 0){
+                morale++;
+            }
+            if (global.race.pet.pet > 0){
+                morale += global.race.pet.type === 'cat' ? 2 : 1
+            }
+            else if (global.race.pet.pet < 0){
+                morale -= global.race.pet.type === 'cat' ? 2 : 1;
+            }
         }
 
         if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.fame !== 0){
@@ -4002,6 +4042,9 @@ function fastLoop(){
                 if (!global.race['soul_eater'] && global.race['evil']){
                     let reclaimers = workerScale(global.civic.lumberjack.workers,'lumberjack');
                     reclaimers *= racialTrait(reclaimers,'lumberjack');
+                    if (global.race['warlord'] && global.race['playful']){
+                        reclaimers *= 1 + traits.playful.vars()[0];
+                    }
 
                     if (global.race['servants']){
                         let serve = global.race.servants.jobs.lumberjack;
@@ -8161,6 +8204,24 @@ function midLoop(){
                 breakdown.c.Authority[loc('portal_minions_bd')] = gain+'v';
             }
 
+            let pet = 0;
+            if (global.race['pet']){
+                pet = 1;
+                if (global.race['pet']){
+                    if (global.race.pet.event > 0){
+                        pet++;
+                    }
+                    if (global.race.pet.pet > 0){
+                        pet += global.race.pet.type === 'cat' ? 2 : 1;
+                    }
+                    else if (global.race.pet.pet < 0){
+                        pet -= global.race.pet.type === 'cat' ? 2 : 1
+                    }
+                }
+                caps.Authority += pet;
+                breakdown.c.Authority[loc(`event_pet_${global.race.pet.type}_owner`)] = pet+'v';
+            }
+
             global.resource.Authority.amount = global.race['cataclysm'] || global.race['orbit_decayed'] || global.race['lone_survivor'] ? 90 : 80;
             if (global.city.morale.current > 100){
                 let excess = global.city.morale.current - 100;
@@ -8185,6 +8246,10 @@ function midLoop(){
                     gain *= 1.12;
                 }
                 global.resource.Authority.amount += gain;
+            }
+
+            if (pet !== 0){
+                global.resource.Authority.amount += pet;
             }
 
             global.resource.Authority.amount = Math.floor(global.resource.Authority.amount);
@@ -11305,6 +11370,18 @@ function longLoop(){
         if (global.race['truepath'] && global.civic.foreign.gov3.mil < 500){
             if (Math.rand(0, 50) === 0){
                 global.civic.foreign.gov3.mil++;
+            }
+        }
+
+        if (global.race['pet']){
+            if (global.race.pet.event > 0){
+                global.race.pet.event--;
+            }
+            if (global.race.pet.pet > 0){
+                global.race.pet.pet--;
+            }
+            else if (global.race.pet.pet < 0){
+                global.race.pet.pet++;
             }
         }
 
