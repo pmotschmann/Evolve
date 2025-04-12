@@ -2360,31 +2360,82 @@ export function drawPet(){
 
     if ($('#playerPet .flair').length === 0 && global.race['pet']){
         let color = 'black';
-        if (global.race.pet.type === 'cat'){
-            switch (global.race.pet.name){
-                case 0:
-                    color = 'gray';
-                    break;
-                case 1:
-                case 4:
-                case 8:
-                    color = 'orange';
-                    break;
-                case 10:
-                    color = 'black';
-                    break;
-                default:
-                    let colors = ['black','white','gray','orange','brown'];
-                    color = colors[Math.rand(0,colors.length)];
-                    break;
-            }
+        if (global.race.pet['color']){
+            color = global.race.pet.color;
         }
         else {
-            let colors = ['black','white','gray','brown'];
-            color = colors[Math.rand(0,colors.length)];
+            if (global.race.pet.type === 'cat'){
+                switch (global.race.pet.name){
+                    case 0:
+                        color = 'gray';
+                        break;
+                    case 1:
+                    case 4:
+                    case 8:
+                        color = 'orange';
+                        break;
+                    case 10:
+                        color = 'black';
+                        global.race.pet['pattern'] = 'solid';
+                        break;
+                    default:
+                        let colors = ['black','white','gray','orange','cream'];
+                        color = colors[Math.rand(0,colors.length)];
+                        break;
+                }
+            }
+            else {
+                let colors = ['black','white','gray','brown'];
+                color = colors[Math.rand(0,colors.length)];
+            }
+            global.race.pet['color'] = color;
         }
 
-        $('#playerPet').append(`<span class="flair" aria-label="${loc(`event_${global.race.pet.type}_name${global.race.pet.name}`)} (${global.race.pet.type})"><svg class="${color}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(global.race.pet.type)}" xml:space="preserve">${svgIcons(global.race.pet.type)}</svg></span>`);
+        let pattern = 'solid';
+        if (global.race.pet['pattern']){
+            pattern = global.race.pet.pattern;
+        }
+        else {
+            let patterns = ['solid'];
+            if (global.race.pet.type === 'cat'){
+                patterns.push('stripe');
+            }
+            else {
+                patterns.push('patched');
+            }
+            pattern = patterns[Math.rand(0,patterns.length)];
+            global.race.pet['pattern'] = pattern;
+        }
+
+        let coat = ``;
+        if (pattern === 'patched'){
+            coat = `<defs>
+            <radialGradient id="PetGradient">
+                <stop class="stop1" offset="0%" />
+                <stop class="stop2" offset="50%" />
+                <stop class="stop1" offset="100%" />
+            </radialGradient>
+            </defs>`;
+        }
+        else if (pattern === 'stripe'){
+            coat = `<defs>
+            <linearGradient id="PetGradient" gradientTransform="rotate(135 0.45 0.5)">
+                <stop class="stop1" offset="0%" />
+                <stop class="stop2" offset="10%" />
+                <stop class="stop1" offset="20%" />
+                <stop class="stop2" offset="30%" />
+                <stop class="stop1" offset="40%" />
+                <stop class="stop2" offset="50%" />
+                <stop class="stop1" offset="60%" />
+                <stop class="stop2" offset="70%" />
+                <stop class="stop1" offset="80%" />
+                <stop class="stop2" offset="90%" />
+                <stop class="stop1" offset="100%" />
+            </linearGradient>
+            </defs>`;
+        }
+
+        $('#playerPet').append(`<span class="flair" aria-label="${loc(`event_${global.race.pet.type}_name${global.race.pet.name}`)} (${global.race.pet.type})"><svg class="${color} ${pattern}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(global.race.pet.type)}" xml:space="preserve">${coat}${svgIcons(global.race.pet.type)}</svg></span>`);
 
         popover('playerPet',
             function(obj){

@@ -13,7 +13,8 @@ export const changeList = [
             `Updated Empowered trait mechanics.`,
             `Adjusted values for Master Artisan.`,
             `Fixed bug with Rogue trait that set crafted resources to 0.`,
-            `Fixed bug that caused Hybrid species to throw an error when triggering greatness resets.`
+            `Fixed bug that caused Hybrid species to throw an error when triggering greatness resets.`,
+            `You can now pet your cat or dog once every 5 minutes.`
         ]
     },
     {

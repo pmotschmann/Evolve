@@ -408,8 +408,22 @@ popover('morale',
         }
 
         if (global.race['pet']){
-            total += 1;
-            obj.popper.append(`<p class="modal_bd"><span>${loc(`event_pet_${global.race.pet.type}_owner`)}</span> <span class="has-text-success"> ${1}%</span></p>`);
+            let change = 1;
+            if (global.race['pet']){
+                if (global.race.pet.event > 0){
+                    change++;
+                }
+                if (global.race.pet.pet > 0){
+                    change++;
+                }
+                else if (global.race.pet.pet < 0){
+                    change--;
+                }
+            }
+            if (change > 0){
+                total += change;
+                obj.popper.append(`<p class="modal_bd"><span>${loc(`event_pet_${global.race.pet.type}_owner`)}</span> <span class="has-text-success"> ${change}%</span></p>`);
+            }
         }
 
         if (global.race['wishStats'] && global.race.wishStats.fame !== 0){
@@ -550,6 +564,19 @@ vBind({
         },
         showPet(){
             return global.race['pet'] ? true : false;
+        },
+        petPet(){
+            if (global.race['pet'] && global.race.pet.pet === 0){
+                let outcome = Math.rand(0,3);
+                if (outcome === 0){
+                    global.race.pet.pet = -300;
+                    messageQueue(loc(`event_${global.race.pet.type}_pet_failure`,[loc(`event_${global.race.pet.type}_name${global.race.pet.name}`)]),false,false,['events','minor_events']);
+                }
+                else {
+                    global.race.pet.pet = 300;
+                    messageQueue(loc(`event_${global.race.pet.type}_pet_success`,[loc(`event_${global.race.pet.type}_name${global.race.pet.name}`)]),false,false,['events','minor_events']);
+                }
+            }
         }
     },
     filters: {
@@ -1382,7 +1409,16 @@ function fastLoop(){
         }
 
         if (global.race['pet']){
-            morale += 1;
+            morale++;
+            if (global.race.pet.event > 0){
+                morale++;
+            }
+            if (global.race.pet.pet > 0){
+                morale++;
+            }
+            else if (global.race.pet.pet < 0){
+                morale--;
+            }
         }
 
         if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.fame !== 0){
@@ -11305,6 +11341,18 @@ function longLoop(){
         if (global.race['truepath'] && global.civic.foreign.gov3.mil < 500){
             if (Math.rand(0, 50) === 0){
                 global.civic.foreign.gov3.mil++;
+            }
+        }
+
+        if (global.race['pet']){
+            if (global.race.pet.event > 0){
+                global.race.pet.event--;
+            }
+            if (global.race.pet.pet > 0){
+                global.race.pet.pet--;
+            }
+            else if (global.race.pet.pet < 0){
+                global.race.pet.pet++;
             }
         }
 
