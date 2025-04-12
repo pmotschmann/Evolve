@@ -3203,14 +3203,26 @@ function towerPrice(cost, wiki){
 
 export function soulForgeSoldiers(wiki){
     let base = global.race['warlord'] ? 400 : 650;
-    let soldiers = Math.round(base / armyRating(1,'hellArmy'));
     let num_gun_emplacement = wiki ? (global.portal?.gun_emplacement?.on ?? 0) : p_on['gun_emplacement'];
-    if (num_gun_emplacement){
-        soldiers -= num_gun_emplacement * (global.tech.hell_gun >= 2 ? jobScale(2) : jobScale(1));
-        if (soldiers < 0){
-            soldiers = 0;
+    let num_soldiers_saved = num_gun_emplacement * (global.tech.hell_gun >= 2 ? jobScale(2) : jobScale(1));
+
+    // To avoid divide-by-0 type issues, force the average soldier combat rating to be at least 1
+    let avg_rating = Math.max(armyRating(1, 'hellArmy'), highPopAdjust(1));
+    let soldiers = Math.ceil(base / avg_rating);
+    soldiers = Math.max(0, soldiers - num_soldiers_saved);
+
+    if (global.race['hivemind']){
+        // Permit actual soldiers to count as a group for combat rating adjustment
+        // Gun emplacements use the combat rating of the remaining soldiers
+        // Both soldiers=0 and soldiers=1 cases use the combat rating of 1 soldier alone
+        soldiers = 0;
+        while ((soldiers + num_soldiers_saved) * avg_rating < base){
+            soldiers++;
+            avg_rating = armyRating(soldiers, 'hellArmy') / soldiers;
+            avg_rating = Math.max(avg_rating, highPopAdjust(1));
         }
     }
+
     return soldiers;
 }
 
