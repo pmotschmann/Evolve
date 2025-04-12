@@ -9376,7 +9376,9 @@ export function fanaticism(god){
 export function absorbRace(race){
     if (global.race['warlord']){
         fanaticTrait(races[race].fanaticism, 0.25);
-        global.race.absorbed.push(race);
+        if (!global.race.absorbed.includes(race)){
+            global.race.absorbed.push(race);
+        }
     }
 }
 
@@ -9399,7 +9401,7 @@ function fanaticTrait(trait,rank){
             global.race[trait] = rank ?? 0.5;
         }
         else {
-            global.race[trait] = 1;
+            global.race[trait] = rank ?? 1;
         }
         cleanAddTrait(trait);
     }

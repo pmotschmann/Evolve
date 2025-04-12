@@ -453,6 +453,14 @@ const fortressModules = {
                         renderFortress();
                         drawTech();
                     }
+                    else if (!global.race['war_vault'] && global.race?.absorbed?.length >= 13){
+                        global.tech['hell_ruins'] = 2;
+                        global.tech['war_vault'] = 1;
+                        global.settings.portal.ruins = true;
+                        initStruct(fortressModules.prtl_ruins.war_vault);
+                        renderFortress();
+                        drawTech();
+                    }
                     if (p_on['soul_forge']){
                         let troops = garrisonSize(false,{no_forge: true});
                         let forge = soulForgeSoldiers();
@@ -1400,6 +1408,7 @@ const fortressModules = {
             desc: loc('portal_ruins_desc'),
             support: 'guard_post',
             prop(){
+                if (global.race['warlord']){ return ''; }
                 let desc = ` - <span class="has-text-advanced">${loc('portal_ruins_security')}:</span> <span class="has-text-caution">{{ on | filter('army') }}</span>`;
                 desc = desc + ` - <span class="has-text-advanced">${loc('portal_ruins_supressed')}:</span> <span class="has-text-caution">{{ on | filter('sup') }}</span>`;
                 return desc;
@@ -1446,6 +1455,7 @@ const fortressModules = {
                 return `<div>${loc('portal_guard_post_title')}</div><div class="has-text-special">${loc('requires_soldiers')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { hell_ruins: 2 },
+            not_trait: ['warlord'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('guard_post', offset, 8000000, 1.06, 'portal'); },
                 Lumber(offset){ return spaceCostMultiplier('guard_post', offset, 6500000, 1.06, 'portal'); },
@@ -1486,6 +1496,8 @@ const fortressModules = {
             title: loc('portal_vault_title'),
             desc: loc('portal_vault_title'),
             reqs: { hell_ruins: 2, hell_vault: 1 },
+            not_trait: ['warlord'],
+            wiki: global.race['warlord'] ? false : true,
             condition(){
                 return global.portal.vault.count >= 2 ? false : true;
             },
@@ -1526,6 +1538,52 @@ const fortressModules = {
                 }
             }
         },
+        war_vault: {
+            id: 'portal-war_vault',
+            title: loc('portal_vault_title'),
+            desc: loc('portal_vault_title'),
+            reqs: { hell_ruins: 2, war_vault: 1 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            queue_complete(){ return 1 - global.portal.vault.count; },
+            cost: {
+                Codex(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('war_vault') ? global.portal.war_vault.count : 0)) === 0 ? 1 : 0; },
+            },
+            effect(wiki){
+                let count = (wiki?.count ?? 0) + (global.portal.hasOwnProperty('war_vault') ? global.portal.war_vault.count : 0);
+                return count < 1 ? loc('portal_war_vault_effect',[100,global.resource.Soul_Gem.name]) : loc('portal_war_vault_effect2'); },
+            action(){
+                if (global.portal.war_vault.count < 1){
+                    if (payCosts($(this)[0])){
+                        incrementStruct('war_vault','portal');
+                        if (global.portal.war_vault.count === 1){
+                            global.tech.hell_ruins = 3;
+                            global.resource.Codex.display = false;
+                            global.resource.Soul_Gem.amount += 100;
+                            messageQueue(loc('portal_war_vault_result',[loc('tech_codex_infinium'),global.resource.Soul_Gem.name]),'info',false,['progress','hell']);
+                        }
+                        return true;
+                    }
+                    else {
+                        messageQueue(loc('portal_war_vault_fail',[global.resource.Soul_Gem.name]),'info',false,['progress','hell']);
+                    }
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['war_vault','portal']
+                };
+            },
+            post(){
+                if (global.portal.war_vault.count === 2){
+                    drawTech();
+                    renderFortress();
+                    clearPopper();
+                }
+            }
+        },
         archaeology: {
             id: 'portal-archaeology',
             title: loc('portal_archaeology_title'),
@@ -1533,6 +1591,7 @@ const fortressModules = {
                 return `<div>${loc('portal_archaeology_title')}</div><div class="has-text-special">${loc('requires_security')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { hell_ruins: 2 },
+            not_trait: ['warlord'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('archaeology', offset, 100000000, 1.25, 'portal'); },
                 Titanium(offset){ return spaceCostMultiplier('archaeology', offset, 3750000, 1.25, 'portal'); },
@@ -1572,6 +1631,7 @@ const fortressModules = {
                 return `<div>${loc('portal_arcology_title')}</div><div class="has-text-special">${loc('requires_security')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { housing: 4 },
+            not_trait: ['warlord'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('arcology', offset, traitCostMod('untrustworthy',180000000), 1.22, 'portal'); },
                 Graphene(offset){ return spaceCostMultiplier('arcology', offset, traitCostMod('untrustworthy',7500000), 1.22, 'portal'); },
@@ -7305,6 +7365,7 @@ export function warlordSetup(){
         initStruct(fortressModules.prtl_badlands.war_drone);
         initStruct(fortressModules.prtl_pit.soul_forge);
         initStruct(fortressModules.prtl_pit.soul_attractor);
+        initStruct(fortressModules.prtl_ruins.guard_post);
         initStruct(fortressModules.prtl_lake.harbor);
         initStruct(fortressModules.prtl_spire.purifier);
         initStruct(fortressModules.prtl_spire.port);
