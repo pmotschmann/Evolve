@@ -1976,7 +1976,7 @@ export const actions = {
                 if (payCosts($(this)[0])){
                     incrementStruct('mill','city');
                     // Prevent alwaysPower from enabling mills that were built before researching Wind Turbines
-                    if (checkPowerRequirements($(this)[0]){
+                    if (checkPowerRequirements($(this)[0])){
                         powerOnNewStruct($(this)[0]);
                     }
                     return true;
