@@ -4977,9 +4977,7 @@ function fastLoop(){
             }
 
             iron_smelter *= global.tech['smelting'] >= 3 ? 1.2 : 1;
-            if (iridium_smelter > 0){
-                iridium_smelter = 1 + (iridium_smelter * 0.05);
-            }
+            iridium_smelter *= 0.05;
 
             let dirtVal = govActive('dirty_jobs',2);
             if (dirtVal){
@@ -5016,8 +5014,6 @@ function fastLoop(){
                 iron_smelter *= 1 + (0.2 * salFathom);
                 iridium_smelter *= 1 + (0.2 * salFathom);
             }
-
-            if (iridium_smelter < 1){ iridium_smelter = 1; }
 
             if (global.race['evil']){
                 if (global.race['soul_eater'] && global.race.species !== 'wendigo' && !global.race['artifical']){
@@ -6672,6 +6668,7 @@ function fastLoop(){
         }
 
         // Iridium
+        let iridium_smelter_mult = 1 + iridium_smelter;
         if (support_on['iridium_mine'] || global.race['warlord']){
             let iridium_base = 0;
 
@@ -6691,12 +6688,12 @@ function fastLoop(){
 
             iridium_base *= production('psychic_boost','Iridium');
             let synd = syndicate('spc_moon');
-            let delta = iridium_base * tunneler * hunger * shrineMetal.mult * global_multiplier * synd * qs_multiplier * iridium_smelter * zigVal;
+            let delta = iridium_base * tunneler * hunger * shrineMetal.mult * global_multiplier * synd * qs_multiplier * iridium_smelter_mult * zigVal;
             if (global.race['gravity_well']){ delta = teamster(delta); }
 
             breakdown.p['Iridium'][global.race['warlord'] ? jobName('miner') : loc('space_moon_iridium_mine_title')] = iridium_base + 'v';
             if (iridium_base > 0){
-                breakdown.p['Iridium'][`ᄂ${loc('city_smelter')}+0`] = ((iridium_smelter - 1) * 100) + '%';
+                breakdown.p['Iridium'][`ᄂ${loc('city_smelter')}+0`] = (iridium_smelter * 100) + '%';
                 breakdown.p['Iridium'][`ᄂ${loc('portal_tunneler_bd')}+0`] = ((tunneler - 1) * 100) + '%';
                 breakdown.p['Iridium'][`ᄂ${loc('space_syndicate')}+0`] = -((1 - synd) * 100) + '%';
                 breakdown.p['Iridium'][`ᄂ${loc('space_red_ziggurat_title')}+0`] = ((zigVal - 1) * 100) + '%';
@@ -6712,12 +6709,12 @@ function fastLoop(){
             let iridium_base = support_on['iridium_ship'] * production('iridium_ship');
             iridium_base *= production('psychic_boost','Iridium');
             let synd = syndicate('spc_belt');
-            let delta = iridium_base * hunger * shrineMetal.mult * global_multiplier * synd * qs_multiplier * iridium_smelter * zigVal;
+            let delta = iridium_base * hunger * shrineMetal.mult * global_multiplier * synd * qs_multiplier * iridium_smelter_mult * zigVal;
             if (global.race['gravity_well']){ delta = teamster(delta); }
 
             breakdown.p['Iridium'][jobName('space_miner')] = iridium_base + 'v';
             if (iridium_base > 0){
-                breakdown.p['Iridium'][`ᄂ${loc('city_smelter')}+1`] = ((iridium_smelter - 1) * 100) + '%';
+                breakdown.p['Iridium'][`ᄂ${loc('city_smelter')}+1`] = (iridium_smelter * 100) + '%';
                 breakdown.p['Iridium'][`ᄂ${loc('space_syndicate')}+1`] = -((1 - synd) * 100) + '%';
                 breakdown.p['Iridium'][`ᄂ${loc('space_red_ziggurat_title')}+1`] = ((zigVal - 1) * 100) + '%';
                 breakdown.p['Iridium'][`ᄂ${loc('quarantine')}+1`] = ((qs_multiplier - 1) * 100) + '%';
@@ -6732,13 +6729,13 @@ function fastLoop(){
             let base = gal_on['armed_miner'] * 0.65 * production('psychic_boost','Iridium');
             let foothold = 1 + ((gal_on['ore_processor'] ?? 0) * 0.1);
             let pirate = piracy('gxy_alien2');
-            let delta = base * global_multiplier * pirate * foothold * hunger * shrineMetal.mult * iridium_smelter * zigVal;
+            let delta = base * global_multiplier * pirate * foothold * hunger * shrineMetal.mult * iridium_smelter_mult * zigVal;
             if (global.race['gravity_well']){ delta = teamster(delta); }
 
             breakdown.p['Iridium'][loc('galaxy_armed_miner_bd')] = base + 'v';
             if (base > 0){
                 breakdown.p['Iridium'][`ᄂ${loc('galaxy_ore_processor')}`] = -((1 - foothold) * 100) + '%';
-                breakdown.p['Iridium'][`ᄂ${loc('city_smelter')}+2`] = ((iridium_smelter - 1) * 100) + '%';
+                breakdown.p['Iridium'][`ᄂ${loc('city_smelter')}+2`] = (iridium_smelter * 100) + '%';
                 breakdown.p['Iridium'][`ᄂ${loc('galaxy_piracy')}`] = -((1 - pirate) * 100) + '%';
                 breakdown.p['Iridium'][`ᄂ${loc('space_red_ziggurat_title')}+2`] = ((zigVal - 1) * 100) + '%';
                 if (global.race['gravity_well']){
@@ -6750,12 +6747,12 @@ function fastLoop(){
 
         // Iridium Extractor Ship
         if (global.resource.Iridium.display && e_ship['iridium'] && e_ship.iridium > 0){
-            let iridium_delta = e_ship.iridium * shrineMetal.mult * global_multiplier * iridium_smelter * hunger * womling_technician;
+            let iridium_delta = e_ship.iridium * shrineMetal.mult * global_multiplier * iridium_smelter_mult * hunger * womling_technician;
             if (global.race['gravity_well']){
                 iridium_delta = teamster(iridium_delta);
             }
             breakdown.p['Iridium'][loc('tau_roid_mining_ship')] = e_ship.iridium + 'v';
-            breakdown.p['Iridium'][`ᄂ${loc('city_smelter')}+3`] = ((iridium_smelter - 1) * 100) + '%';
+            breakdown.p['Iridium'][`ᄂ${loc('city_smelter')}+3`] = (iridium_smelter * 100) + '%';
             if (womling_technician > 1){
                 breakdown.p['Iridium'][`ᄂ${loc('tau_red_womlings')}+0`] = ((womling_technician - 1) * 100) + '%';
             }
