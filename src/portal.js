@@ -397,6 +397,70 @@ const fortressModules = {
                 };
             }
         },
+        codex: {
+            id: 'portal-codex',
+            title: loc('portal_codex_title'),
+            desc: loc('portal_codex_title'),
+            reqs: { war_vault: 1 },
+            trait: ['warlord'],
+            condition(){ return global.portal?.codex?.count === 0 ? true : false; },
+            wiki: global.race['warlord'] ? true : false,
+            queue_complete(){ 
+                if (global.portal.codex.s >= 10 && global.portal.minions.spawns >= 2500){
+                    return 1 - global.portal.codex.count; 
+                }
+                else {
+                    return 0;
+                }
+            },
+            cost: {
+                Money(o){ return 100000000; },
+                Furs(o){ return 25000000; },
+            },
+            effect(){
+                let desc = `<div>${loc('portal_codex_effect',[])}</div>`;
+                desc += `<div class="has-text-${global.resource.Money.amount >= $(this)[0].cost.Money() ? 'success' : 'danger'}">${loc('portal_codex_money',[sizeApproximation(global.resource.Money.amount),sizeApproximation($(this)[0].cost.Money())])}</div>`;
+                desc += `<div class="has-text-${global.resource.Furs.amount >= $(this)[0].cost.Furs() ? 'success' : 'danger'}">${loc('portal_codex_res',[sizeApproximation(global.resource.Furs.amount),sizeApproximation($(this)[0].cost.Furs()),global.resource.Furs.name])}</div>`;
+                desc += `<div class="has-text-${global.portal.minions.spawns >= 2500 ? 'success' : 'danger'}">${loc('portal_codex_res',[global.portal.minions.spawns,2500,loc('portal_codex_demon')])}</div>`;
+                desc += `<div class="has-text-${global.portal.codex.s >= 10 ? 'success' : 'danger'}">${loc('portal_codex_res',[global.portal.codex.s,10,loc('portal_codex_sac')])}</div>`;
+                return desc;
+            },
+            action(){
+                if (global.portal.minions.spawns >= 2500 && global.portal.codex.s >= 10 && global.portal.codex.count === 0 && payCosts($(this)[0])){
+                    global.portal.minions.spawns -= 2500;
+                    global.resource.Codex.amount = 1;
+                    global.resource.Codex.display = true;
+                    global.tech['scarletite'] = 1;
+                    global.tech['hell_ruins'] = 4;
+                    global.resource.Scarletite.display = true;
+                    initStruct(actions.portal.prtl_ruins.hell_forge);
+                    if (global.race.universe !== 'micro' && !global.pillars[global.race.species]){
+                        global.tech['fusable'] = 1;
+                    }
+                    else {
+                        if (global.race.universe !== 'micro'){
+                            let rank = alevel();
+                            if (rank > global.pillars[global.race.species]){
+                                global.pillars[global.race.species] = rank;
+                            }
+                        }
+                        global.tech['pillars'] = 2;
+                    }
+                    incrementStruct('codex','portal');
+                    loadFoundry();
+                    drawTech();
+                    renderFortress();
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, s: 0 },
+                    p: ['codex','portal']
+                };
+            }
+        },
     },
     prtl_wasteland: {
         info: {
@@ -453,13 +517,17 @@ const fortressModules = {
                         renderFortress();
                         drawTech();
                     }
-                    else if (!global.race['war_vault'] && global.race?.absorbed?.length >= 13){
+                    else if (!global.tech['war_vault'] && global.race?.absorbed?.length >= 13){
                         global.tech['hell_ruins'] = 2;
                         global.tech['war_vault'] = 1;
                         global.settings.portal.ruins = true;
                         initStruct(fortressModules.prtl_ruins.war_vault);
+                        initStruct(fortressModules.prtl_badlands.codex);
                         renderFortress();
                         drawTech();
+                    }
+                    else if (global.tech['war_vault'] && global.portal['codex']){
+                        global.portal.codex.s++;
                     }
                     if (p_on['soul_forge']){
                         let troops = garrisonSize(false,{no_forge: true});
@@ -1101,6 +1169,9 @@ const fortressModules = {
                     if (global.tech.hell_pit >= 7 && num_s_attractor_on > 0){
                         cap *= 0.97 ** num_s_attractor_on;
                     }
+                    if (global.race['ghostly'] && global.race['warlord']){
+                        cap *= 2 - traits.ghostly.vars()[1];
+                    }
                     desc = desc + `<div>${loc('portal_soul_forge_effect2',[global.portal['soul_forge'] ? global.portal.soul_forge.kills.toLocaleString() : 0,Math.round(cap).toLocaleString()])}</div>`;
                 }
                 let soldiers = soulForgeSoldiers(wiki);
@@ -1176,8 +1247,17 @@ const fortressModules = {
             effect(){
                 let attract = global.blood['attract'] ? global.blood.attract * 5 : 0;
                 if (global.tech['hell_pit'] && global.tech.hell_pit >= 8){ attract *= 2; }
+                let low = 40 + attract;
+                let high = 120 + attract;
 
-                let desc = `<div>${loc('portal_soul_attractor_effect',[40 + attract, 120 + attract])}</div>`;
+                if (global.race['ghostly'] && global.race['warlord']){
+                    low *= 1 + (traits.ghostly.vars()[0] / 100);
+                    low = Math.round(low);
+                    high *= 1 + (traits.ghostly.vars()[0] / 100);
+                    high = Math.round(high);
+                }
+
+                let desc = `<div>${loc('portal_soul_attractor_effect',[low, high])}</div>`;
                 if (global.tech.hell_pit >= 7){
                     desc += `<div>${loc('portal_soul_attractor_effect2',[3])}</div>`;
                 }
@@ -1545,7 +1625,7 @@ const fortressModules = {
             reqs: { hell_ruins: 2, war_vault: 1 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
-            queue_complete(){ return 1 - global.portal.vault.count; },
+            queue_complete(){ return 1 - global.portal.war_vault.count; },
             cost: {
                 Codex(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('war_vault') ? global.portal.war_vault.count : 0)) === 0 ? 1 : 0; },
             },
@@ -1557,7 +1637,6 @@ const fortressModules = {
                     if (payCosts($(this)[0])){
                         incrementStruct('war_vault','portal');
                         if (global.portal.war_vault.count === 1){
-                            global.tech.hell_ruins = 3;
                             global.resource.Codex.display = false;
                             global.resource.Soul_Gem.amount += 100;
                             messageQueue(loc('portal_war_vault_result',[loc('tech_codex_infinium'),global.resource.Soul_Gem.name]),'info',false,['progress','hell']);
@@ -4343,9 +4422,23 @@ export function hellguard(){
             });
         }
 
+        if (forgeOperating && global.tech.hell_pit >= 5 && p_on['soul_attractor']){
+            let attract = global.blood['attract'] ? global.blood.attract * 5 : 0;
+            if (global.tech['hell_pit'] && global.tech.hell_pit >= 8){ attract *= 2; }
+            let souls = p_on['soul_attractor'] * Math.rand(40 + attract, 120 + attract);
+            if (global.race['ghostly']){
+                souls *= 1 + (traits.ghostly.vars()[0] / 100);
+                souls = Math.round(souls);
+            }
+            global.portal.soul_forge.kills += souls;
+        }
+
         let cap = global.tech.hell_pit >= 6 ? 750000 : 1000000;
         if (global.tech.hell_pit >= 7 && p_on['soul_attractor'] > 0){
             cap *= 0.97 ** p_on['soul_attractor'];
+        }
+        if (global.race['ghostly']){
+            cap *= 2 - traits.ghostly.vars()[1];
         }
         if (forgeOperating && global.portal.soul_forge.kills >= Math.round(cap)){
             let gems = Math.floor(global.portal.soul_forge.kills / Math.round(cap));
@@ -6973,6 +7066,7 @@ export function warlordSetup(){
         global.tech['home_safe'] = 2;
         global.tech['housing'] = 3;
         global.tech['housing_reduction'] = 3;
+        global.tech['infernite'] = 6;
         global.tech['kuiper'] = 2;
         global.tech['launch_facility'] = 1;
         global.tech['luna'] = 2;

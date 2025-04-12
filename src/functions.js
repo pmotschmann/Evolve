@@ -3025,7 +3025,9 @@ const valAdjust = {
     living_tool: false,
     empowered: false,
     living_materials: true,
-    blurry: true
+    blurry: true,
+    playful: true,
+    ghostly: true,
 };
 
 function getTraitVals(trait, rank, species){
@@ -3061,8 +3063,20 @@ function getTraitVals(trait, rank, species){
         else if (trait === 'living_materials'){
             vals = [global.resource.Lumber.name, global.resource.Plywood.name, global.resource.Furs.name, loc('resource_Amber_name')];
         }
-        else if (trait === 'blurry' && global.race['warlord']){
-            vals = [+((100/(100-vals[0])-1)*100).toFixed(1)];
+        else if (trait === 'blurry'){
+            if (global.race['warlord']){
+                vals = [+((100/(100-vals[0])-1)*100).toFixed(1)];
+            }
+        }
+        else if (trait === 'playful'){
+            if (global.race['warlord']){
+                vals = [vals[0] * 100, global.resource.Furs.name];
+            }
+        }
+        else if (trait === 'ghostly'){
+            if (global.race['warlord']){
+                vals = [vals[0], (vals[1] - 1) * 100, global.resource.Soul_Gem.name];
+            }
         }
         else if (!valAdjust[trait]){
             vals = [];
@@ -3211,7 +3225,9 @@ function rName(r){
 }
 
 const altTraitDesc = {
-    blurry: 'warlord'
+    blurry: 'warlord',
+    playful: 'warlord',
+    ghostly: 'warlord'
 };
 
 export function getTraitDesc(info, trait, opts){

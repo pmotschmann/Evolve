@@ -1781,6 +1781,7 @@ const techs = {
         category: 'entertainment',
         era: 'dimensional',
         reqs: { hell_ruins: 2 },
+        not_trait: ['warlord'],
         grant: ['zoo',1],
         cost: {
             Knowledge(){ return 22500000; }
@@ -3925,6 +3926,7 @@ const techs = {
         category: 'banking',
         era: 'interstellar',
         reqs: { home_safe: 2, infernite: 1 },
+        not_trait: ['warlord'],
         grant: ['home_safe',3],
         cost: {
             Money(){ return 2500000; },

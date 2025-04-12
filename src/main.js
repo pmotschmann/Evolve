@@ -414,15 +414,16 @@ popover('morale',
                     change++;
                 }
                 if (global.race.pet.pet > 0){
-                    change++;
+                    change += global.race.pet.type === 'cat' ? 2 : 1;
                 }
                 else if (global.race.pet.pet < 0){
-                    change--;
+                    change -= global.race.pet.type === 'cat' ? 2 : 1
                 }
             }
-            if (change > 0){
+            if (change !== 0){
                 total += change;
-                obj.popper.append(`<p class="modal_bd"><span>${loc(`event_pet_${global.race.pet.type}_owner`)}</span> <span class="has-text-success"> ${change}%</span></p>`);
+                let style = change > 0 ? 'success' : 'danger';
+                obj.popper.append(`<p class="modal_bd"><span>${loc(`event_pet_${global.race.pet.type}_owner`)}</span> <span class="has-text-${style}"> ${change}%</span></p>`);
             }
         }
 
@@ -1414,10 +1415,10 @@ function fastLoop(){
                 morale++;
             }
             if (global.race.pet.pet > 0){
-                morale++;
+                morale += global.race.pet.type === 'cat' ? 2 : 1
             }
             else if (global.race.pet.pet < 0){
-                morale--;
+                morale -= global.race.pet.type === 'cat' ? 2 : 1;
             }
         }
 
@@ -4038,6 +4039,9 @@ function fastLoop(){
                 if (!global.race['soul_eater'] && global.race['evil']){
                     let reclaimers = workerScale(global.civic.lumberjack.workers,'lumberjack');
                     reclaimers *= racialTrait(reclaimers,'lumberjack');
+                    if (global.race['warlord'] && global.race['playful']){
+                        reclaimers *= 1 + traits.playful.vars()[0];
+                    }
 
                     if (global.race['servants']){
                         let serve = global.race.servants.jobs.lumberjack;
@@ -8197,6 +8201,24 @@ function midLoop(){
                 breakdown.c.Authority[loc('portal_minions_bd')] = gain+'v';
             }
 
+            let pet = 0;
+            if (global.race['pet']){
+                pet = 1;
+                if (global.race['pet']){
+                    if (global.race.pet.event > 0){
+                        pet++;
+                    }
+                    if (global.race.pet.pet > 0){
+                        pet += global.race.pet.type === 'cat' ? 2 : 1;
+                    }
+                    else if (global.race.pet.pet < 0){
+                        pet -= global.race.pet.type === 'cat' ? 2 : 1
+                    }
+                }
+                caps.Authority += pet;
+                breakdown.c.Authority[loc(`event_pet_${global.race.pet.type}_owner`)] = pet+'v';
+            }
+
             global.resource.Authority.amount = global.race['cataclysm'] || global.race['orbit_decayed'] || global.race['lone_survivor'] ? 90 : 80;
             if (global.city.morale.current > 100){
                 let excess = global.city.morale.current - 100;
@@ -8221,6 +8243,10 @@ function midLoop(){
                     gain *= 1.12;
                 }
                 global.resource.Authority.amount += gain;
+            }
+
+            if (pet !== 0){
+                global.resource.Authority.amount += pet;
             }
 
             global.resource.Authority.amount = Math.floor(global.resource.Authority.amount);
