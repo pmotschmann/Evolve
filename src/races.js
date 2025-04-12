@@ -5986,7 +5986,7 @@ export function racialTrait(workers,type){
     if (global.race['rejuvenated'] && ['lumberjack','miner','factory'].includes(type)){
         modifier *= 1.1;
     }
-    if (type === 'lumberjack' && global.race['evil'] && !global.race['soul_eater']){
+    if (type === 'lumberjack' && global.race['evil'] && (global.race.universe === 'evil' || !global.race['soul_eater'])){
         if (global.race['living_tool']){
             modifier *= 1 + traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science * 0.3 : 0);
         }
