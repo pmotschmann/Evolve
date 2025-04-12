@@ -1812,21 +1812,10 @@ function fastLoop(){
         }
 
         if (global.interstellar['stellar_engine'] && global.interstellar.stellar_engine.count >= 100){
-            let waves = global.tech['gravity'] && global.tech['gravity'] >= 2 ? 13.5 : 7.5;
-            let r_mass = global.interstellar.stellar_engine.mass;
-            if (global.tech['roid_eject']){
-                r_mass += 0.225 * global.tech['roid_eject'] * (1 + (global.tech['roid_eject'] / 12));
-            }
-            let gWell = 1 + (global.stats.achieve['escape_velocity'] && global.stats.achieve.escape_velocity['h'] ? global.stats.achieve.escape_velocity['h'] * 0.02 : 0);
-            let power = powerModifier(20 + ((r_mass - 8) * waves) + (global.interstellar.stellar_engine.exotic * waves * 10)) * gWell;
-            if (power > 10000){
-                power = 10000 + (power - 10000) ** 0.975;
-                if (power > 20000){ power = 20000 + (power - 20000) ** 0.95; }
-                if (power > 30000){ power = 30000 + (power - 30000) ** 0.925; }
-            }
-            max_power -= power;
-            power_grid += power;
-            power_generated[loc('tech_stellar_engine')] = power;
+            let output = actions.interstellar.int_blackhole.stellar_engine.powered();
+            max_power += output;
+            power_grid -= output;
+            power_generated[loc('tech_stellar_engine')] = -output;
         }
 
         [
