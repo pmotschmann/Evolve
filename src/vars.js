@@ -1233,14 +1233,6 @@ if (convertVersion(global['version']) < 104002){
     }
 }
 
-if(!global.race.hasOwnProperty('inactiveTraits')){
-    if(global.race['forager']){
-        global.race.inactiveTraits = {herbivore:global.race['forager'], carnivore:global.race['forager']};
-    }
-    else{
-        global.race.inactiveTraits = {};
-    }
-}
 global['version'] = '1.4.3';
 delete global['revision'];
 global['beta'] = 3;
@@ -1249,7 +1241,12 @@ if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
 }
 if(!global.race.hasOwnProperty('inactiveTraits')){
-    global.race.inactiveTraits = {};
+    if(global.race['forager']){
+        global.race.inactiveTraits = {herbivore:global.race['forager'], carnivore:global.race['forager']};
+    }
+    else{
+        global.race.inactiveTraits = {};
+    }
 }
 ['Plasmid','AntiPlasmid','Phage','Dark','Harmony','AICore','Artifact','Blood_Stone','Supercoiled'].forEach(function (res){
     if (!global.prestige.hasOwnProperty(res)){
