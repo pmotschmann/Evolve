@@ -3599,7 +3599,10 @@ const interstellarProjects = {
             queue_size: 10,
             queue_complete(){ return 100 - global.interstellar.orichalcum_sphere.count; },
             condition(){
-                return global.interstellar.dyson_sphere.count >= 100 && global.tech['dyson'] && global.tech.dyson === 2 ? true : false;
+                if ((global.tech['dyson'] ?? 0) < 2){
+                    return false;
+                }
+                return global.interstellar.dyson_sphere.count >= 100 && (global.tech.dyson === 2 || global.interstellar.orichalcum_sphere.count < 100);
             },
             cost: {
                 Money(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('orichalcum_sphere') ? global.interstellar.orichalcum_sphere.count : 0)) < 100 ? 25000000 : 0; },
