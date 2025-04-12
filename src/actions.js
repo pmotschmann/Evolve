@@ -8246,12 +8246,6 @@ function sentience(){
                 }
             });
         });
-        
-        if (typeList.includes('carnivore') && typeList.includes('herbivore')){
-            setTraitRank('forager',{ set: genus_traits.omnivore.forager });
-            delete global.race['carnivore'];
-            delete global.race['herbivore'];
-        }
 
         Object.keys(races[global.race.species].traits).forEach(function (trait) {
             setTraitRank(trait,{ set: races[global.race.species].traits[trait] });
