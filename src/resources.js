@@ -837,7 +837,7 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
         for (let i=0; i<inc.length; i++){
             craft.append($(`<span id="inc${name}${inc[i]}"><a @click="craft('${name}',${inc[i]})" aria-label="craft ${inc[i]} ${global.resource[name].name}" role="button">+<span class="craft" data-val="${inc[i]}">${inc[i]}</span></a></span>`));
         }
-        craft.append($(`<span id="inc${name}A"><a @click="craft('${name}','A')" aria-label="craft max ${name}" role="button">+<span class="craft" data-val="${'A'}">A</span></a></span>`));
+        craft.append($(`<span id="inc${name}A"><a @click="craft('${name}','A')" aria-label="craft max ${global.resource[name].name}" role="button">+<span class="craft" data-val="${'A'}">A</span></a></span>`));
         infopops = true;
     }
     else if(global.race['fasting'] && name === global.race.species){
