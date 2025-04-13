@@ -1988,7 +1988,7 @@ function genetics(){
                 else if (!global.race.hasOwnProperty(trait)){
                     readOnly = true;
                 }
-                else if (global.race.hasOwnProperty('absorbed') && global.race.absorbed.map(r => races[r].fanaticism).includes(trait) || global.race['warlord'] && trait === 'iron_wood'){
+                else if (global.race.hasOwnProperty('absorbed') && global.race.absorbed.map(r => races[r].fanaticism).includes(trait) || global.race['warlord'] && ['iron_wood','unified'].includes(trait)){
                     readOnly = true;
                 }
                 else if(trait === 'forager' && mimicTraits.some(item => ['herbivore', 'carnivore'].includes(item))){

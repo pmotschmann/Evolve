@@ -415,19 +415,19 @@ const fortressModules = {
             },
             cost: {
                 Money(o){ return 100000000; },
-                Furs(o){ return 25000000; },
+                Furs(o){ return 35000000; },
             },
             effect(){
                 let desc = `<div>${loc('portal_codex_effect',[])}</div>`;
                 desc += `<div class="has-text-${global.resource.Money.amount >= $(this)[0].cost.Money() ? 'success' : 'danger'}">${loc('portal_codex_money',[sizeApproximation(global.resource.Money.amount),sizeApproximation($(this)[0].cost.Money())])}</div>`;
                 desc += `<div class="has-text-${global.resource.Furs.amount >= $(this)[0].cost.Furs() ? 'success' : 'danger'}">${loc('portal_codex_res',[sizeApproximation(global.resource.Furs.amount),sizeApproximation($(this)[0].cost.Furs()),global.resource.Furs.name])}</div>`;
-                desc += `<div class="has-text-${global.portal.minions.spawns >= 2500 ? 'success' : 'danger'}">${loc('portal_codex_res',[global.portal.minions.spawns,2500,loc('portal_codex_demon')])}</div>`;
+                desc += `<div class="has-text-${global.portal.minions.spawns >= 3000 ? 'success' : 'danger'}">${loc('portal_codex_res',[global.portal.minions.spawns,3000,loc('portal_codex_demon')])}</div>`;
                 desc += `<div class="has-text-${global.portal.codex.s >= 10 ? 'success' : 'danger'}">${loc('portal_codex_res',[global.portal.codex.s,10,loc('portal_codex_sac')])}</div>`;
                 return desc;
             },
             action(){
-                if (global.portal.minions.spawns >= 2500 && global.portal.codex.s >= 10 && global.portal.codex.count === 0 && payCosts($(this)[0])){
-                    global.portal.minions.spawns -= 2500;
+                if (global.portal.minions.spawns >= 3000 && global.portal.codex.s >= 10 && global.portal.codex.count === 0 && payCosts($(this)[0])){
+                    global.portal.minions.spawns -= 3000;
                     global.resource.Codex.amount = 1;
                     global.resource.Codex.display = true;
                     global.tech['scarletite'] = 1;
@@ -1639,7 +1639,7 @@ const fortressModules = {
                         if (global.portal.war_vault.count === 1){
                             global.resource.Codex.display = false;
                             global.resource.Soul_Gem.amount += 100;
-                            messageQueue(loc('portal_war_vault_result',[loc('tech_codex_infinium'),global.resource.Soul_Gem.name]),'info',false,['progress','hell']);
+                            messageQueue(loc('portal_war_vault_result',[global.resource.Soul_Gem.name]),'info',false,['progress','hell']);
                         }
                         return true;
                     }
@@ -4553,7 +4553,7 @@ export function hellSupression(area, val, wiki){
                 if (unicornFathom > 0){
                     aRating *= 1 + (traits.holy.vars(1)[1] / 100 * unicornFathom);
                 }
-                let supress = (aRating + arc) / 5000;
+                let supress = global.race['warlord'] ? 1 : (aRating + arc) / 5000;
                 return {
                     supress: supress > 1 ? 1 : supress,
                     rating: aRating + arc
@@ -4570,7 +4570,7 @@ export function hellSupression(area, val, wiki){
                 if (unicornFathom > 0){
                     turret *= 1 + (traits.holy.vars(1)[1] / 100 * unicornFathom);
                 }
-                let supress = (gSup.rating + turret) / 7500;
+                let supress = global.race['warlord'] ? 1 : (gSup.rating + turret) / 7500;
                 return {
                     supress: supress > 1 ? 1 : supress,
                     rating: gSup.rating + turret

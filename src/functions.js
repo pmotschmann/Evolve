@@ -3084,7 +3084,7 @@ function getTraitVals(trait, rank, species){
         }
         else if (trait === 'ghostly'){
             if (global.race['warlord']){
-                vals = [vals[0], (vals[1] - 1) * 100, global.resource.Soul_Gem.name];
+                vals = [vals[0], +((vals[1] - 1) * 100).toFixed(0), global.resource.Soul_Gem.name];
             }
         }
         else if (!valAdjust[trait]){
@@ -3234,9 +3234,10 @@ function rName(r){
 }
 
 const altTraitDesc = {
+    befuddle: 'warlord',
     blurry: 'warlord',
+    ghostly: 'warlord',
     playful: 'warlord',
-    ghostly: 'warlord'
 };
 
 export function getTraitDesc(info, trait, opts){

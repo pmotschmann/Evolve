@@ -5465,6 +5465,9 @@ export function casinoEarn(){
             cash *= 1 + (workerScale(global.civic.banker.workers,'banker') * 0.05)
         }
     }
+    if (global.race['warlord'] && global.race['befuddle']){
+        cash *= 1 + (traits.befuddle.vars()[0] / 100);
+    }
     cash *= production('psychic_cash');
     let racVal = govActive('racketeer', 1);
     if (racVal){
@@ -9373,6 +9376,7 @@ export function absorbRace(race){
 
 function fanaticTrait(trait,rank){
     if (global.race['warlord'] && trait === 'kindling_kindred'){ trait = 'iron_wood'; }
+    else if (global.race['warlord'] && trait === 'spiritual'){ trait = 'unified'; }
     if (global.race[trait]){
         if (!setTraitRank(trait)){
             randomMinorTrait(5);

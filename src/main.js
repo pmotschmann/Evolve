@@ -8225,6 +8225,9 @@ function midLoop(){
                     adjust += 0.1 * global.tech.evil;
                 }
                 let garrison = garrisonSize() || 0;
+                if (global.portal['fortress']){
+                    garrison += global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size);
+                }
                 let gain = highPopAdjust(garrison) * adjust;
                 if (global.race['grenadier']){ gain *= 1.75; }
                 if (global.civic.govern.type === 'autocracy'){
