@@ -8,7 +8,7 @@ import { defineJobs, job_desc, loadFoundry, farmerValue, jobName, jobScale, work
 import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, luxGoodPrice, smelterUnlocked } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
 import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct, casino_vault, casinoEarn } from './actions.js';
-import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes } from './space.js';
+import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
 import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue } from './truepath.js';
@@ -9273,37 +9273,32 @@ function midLoop(){
         }
 
         if (p_on['embassy'] && global.galaxy['symposium']){
-            let pirate = piracy('gxy_gorddon');
-            let dorm = 1750 * p_on['dormitory'] * pirate;
-            let gtrade = 650 * global.galaxy.trade.cur * pirate;
+            let dorm = 1750 * p_on['dormitory'];
+            let gtrade = 650 * global.galaxy.trade.cur;
             let leave = 0;
             if (global.tech.xeno >= 7){
-                let crew = global.galaxy.defense.gxy_gorddon.scout_ship * (actions.galaxy.gxy_gateway.scout_ship.ship.civ() + actions.galaxy.gxy_gateway.scout_ship.ship.mil());
-                crew += global.galaxy.defense.gxy_gorddon.corvette_ship * (actions.galaxy.gxy_gateway.corvette_ship.ship.civ() + actions.galaxy.gxy_gateway.corvette_ship.ship.mil());
-                crew += global.galaxy.defense.gxy_gorddon.frigate_ship * (actions.galaxy.gxy_gateway.frigate_ship.ship.civ() + actions.galaxy.gxy_gateway.frigate_ship.ship.mil());
-                crew += global.galaxy.defense.gxy_gorddon.cruiser_ship * (actions.galaxy.gxy_gateway.cruiser_ship.ship.civ() + actions.galaxy.gxy_gateway.cruiser_ship.ship.mil());
-                crew += global.galaxy.defense.gxy_gorddon.dreadnought * (actions.galaxy.gxy_gateway.dreadnought.ship.civ() + actions.galaxy.gxy_gateway.dreadnought.ship.mil());
-
-                if (gal_on['freighter']){
-                    crew += gal_on['freighter'] * (actions.galaxy.gxy_gorddon.freighter.ship.civ() + actions.galaxy.gxy_gorddon.freighter.ship.mil());
-                }
-                leave = +highPopAdjust(crew).toFixed(2) * 300 * pirate;
-
-                ['gxy_gateway','gxy_stargate','gxy_alien1','gxy_alien2','gxy_chthonian'].forEach(function(area){
-                    let crew = global.galaxy.defense[area].scout_ship * (actions.galaxy.gxy_gateway.scout_ship.ship.civ() + actions.galaxy.gxy_gateway.scout_ship.ship.mil());
-                    crew += global.galaxy.defense[area].corvette_ship * (actions.galaxy.gxy_gateway.corvette_ship.ship.civ() + actions.galaxy.gxy_gateway.corvette_ship.ship.mil());
-                    crew += global.galaxy.defense[area].frigate_ship * (actions.galaxy.gxy_gateway.frigate_ship.ship.civ() + actions.galaxy.gxy_gateway.frigate_ship.ship.mil());
-                    crew += global.galaxy.defense[area].cruiser_ship * (actions.galaxy.gxy_gateway.cruiser_ship.ship.civ() + actions.galaxy.gxy_gateway.cruiser_ship.ship.mil());
-                    crew += global.galaxy.defense[area].dreadnought * (actions.galaxy.gxy_gateway.dreadnought.ship.civ() + actions.galaxy.gxy_gateway.dreadnought.ship.mil());
-
-                    if (gal_on['super_freighter'] && area === 'gxy_alien1'){
-                        crew += gal_on['super_freighter'] * (actions.galaxy.gxy_alien1.super_freighter.ship.civ() + actions.galaxy.gxy_alien1.super_freighter.ship.mil());
+                for (const region of galaxyRegions){
+                    let crew = 0;
+                    for (const ship of gatewayArmada){
+                        crew += global.galaxy.defense[region][ship] * (actions.galaxy.gxy_gateway[ship].ship.civ() + actions.galaxy.gxy_gateway[ship].ship.mil());
                     }
 
-                    leave += +highPopAdjust(crew).toFixed(2) * 150 * pirate * piracy(area);
-                });
+                    if (region === 'gxy_gorddon'){
+                        if (gal_on['freighter']){
+                            crew += gal_on['freighter'] * (actions.galaxy.gxy_gorddon.freighter.ship.civ() + actions.galaxy.gxy_gorddon.freighter.ship.mil());
+                        }
+                        leave += +highPopAdjust(crew).toFixed(2) * 300;
+                    }
+                    else {
+                        if (region === 'gxy_alien1' && gal_on['super_freighter']){
+                            crew += gal_on['super_freighter'] * (actions.galaxy.gxy_alien1.super_freighter.ship.civ() + actions.galaxy.gxy_alien1.super_freighter.ship.mil());
+                        }
+                        leave += +highPopAdjust(crew).toFixed(2) * 150 * piracy(region);
+                    }
+                }
             }
-            let know = (dorm + gtrade + leave) * p_on['symposium'];
+            let pirate = piracy('gxy_gorddon');
+            let know = (dorm + gtrade + leave) * pirate * p_on['symposium'];
             caps['Knowledge'] += know;
             breakdown.c.Knowledge[loc('galaxy_symposium')] = know +'v';
         }
@@ -10377,27 +10372,29 @@ function midLoop(){
         }
 
         if (global.galaxy['defense']){
-            let armada_ships = ['dreadnought','cruiser_ship','frigate_ship','corvette_ship','scout_ship']
-            for (let i=0; i<armada_ships.length; i++){
+            // Check both ships and regions in reverse order to prioritize bigger ships and later systems above smaller ships and earlier systems
+            for (let i = gatewayArmada.length - 1; i >= 0; i--){
+                let ship = gatewayArmada[i];
                 let count = 0;
-                Object.keys(global.galaxy.defense).forEach(function (region){
+                for (let j = galaxyRegions.length - 1; j >= 0; j--){
+                    let region = galaxyRegions[j];
                     if (global.galaxy.defense.hasOwnProperty(region)){
-                        count += global.galaxy.defense[region][armada_ships[i]];
-                        if (isNaN(global.galaxy.defense[region][armada_ships[i]])){
-                            global.galaxy.defense[region][armada_ships[i]] = 0;
+                        count += global.galaxy.defense[region][ship];
+                        if (isNaN(global.galaxy.defense[region][ship])){
+                            global.galaxy.defense[region][ship] = 0;
                         }
-                        if (count > gal_on[armada_ships[i]]){
-                            let overflow = count - gal_on[armada_ships[i]];
-                            global.galaxy.defense[region][armada_ships[i]] -= overflow;
+                        if (count > gal_on[ship]){
+                            let overflow = count - gal_on[ship];
+                            global.galaxy.defense[region][ship] -= overflow;
                         }
-                        if (global.galaxy.defense[region][armada_ships[i]] < 0){
-                            global.galaxy.defense[region][armada_ships[i]] = 0;
+                        if (global.galaxy.defense[region][ship] < 0){
+                            global.galaxy.defense[region][ship] = 0;
                         }
                     }
-                });
-                if (count < gal_on[armada_ships[i]]){
-                    let underflow = gal_on[armada_ships[i]] - count;
-                    global.galaxy.defense.gxy_gateway[armada_ships[i]] += underflow;
+                }
+                if (count < gal_on[ship]){
+                    let underflow = gal_on[ship] - count;
+                    global.galaxy.defense.gxy_gateway[ship] += underflow;
                 }
             }
         }

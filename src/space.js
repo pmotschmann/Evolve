@@ -6402,6 +6402,9 @@ const galaxyProjects = {
     },
 };
 
+export const galaxyRegions = ['gxy_gateway', 'gxy_stargate', 'gxy_gorddon', 'gxy_alien1', 'gxy_alien2', 'gxy_chthonian'];
+export const gatewayArmada = ['scout_ship', 'corvette_ship', 'frigate_ship', 'cruiser_ship', 'dreadnought'];
+
 export function convertSpaceSector(part){
     let space = 'space';
     if (part.substr(0,4) === 'int_'){
@@ -6425,13 +6428,13 @@ export function convertSpaceSector(part){
 export function piracy(region,rating,raw,wiki){
     if (global.tech['piracy'] && !global.race['truepath']){
         let armada = 0;
-        let ships = ['dreadnought','cruiser_ship','frigate_ship','corvette_ship','scout_ship'];
-        for (let i=0; i<ships.length; i++){
-            if (!global.galaxy.defense[region].hasOwnProperty(ships[i])){
-                global.galaxy.defense[region][ships[i]] = 0;
+        for (let i = gatewayArmada.length - 1; i >= 0; i--){
+            let ship = gatewayArmada[i];
+            if (!global.galaxy.defense[region].hasOwnProperty(ship)){
+                global.galaxy.defense[region][ship] = 0;
             }
-            let count = global.galaxy.defense[region][ships[i]];
-            armada += count * galaxyProjects.gxy_gateway[ships[i]].ship.rating();
+            let count = global.galaxy.defense[region][ship];
+            armada += count * galaxyProjects.gxy_gateway[ship].ship.rating();
         }
 
         let pirate = 0;
@@ -7096,29 +7099,22 @@ function armada(parent,id){
         let fleet = $(`<div id="${id}" class="fleet"></div>`);
         parent.append(fleet);
 
-        let ships = ['scout_ship','corvette_ship','frigate_ship','cruiser_ship','dreadnought'];
-
         let cols = [];
-        for (let i=0; i<6; i++){
+        // One column per ship type plus an extra column for labels
+        for (let i = 0; i < gatewayArmada.length + 1; i++){
             let col = $(`<div class="area"></div>`);
             cols.push(col);
             fleet.append(col);
         }
 
-        for (let i=0; i<ships.length; i++){
-            if (global.galaxy.hasOwnProperty(ships[i])){
-                let ship = $(`<span id="armada${ships[i]}" class="ship has-text-advanced">${galaxyProjects.gxy_gateway[ships[i]].title}</span>`);
-                cols[i+1].append(ship);
-            }
-        }
-
         cols[0].append($(`<span></span>`));
         cols[0].append($(`<span id="armadagateway" class="has-text-danger">${galaxyProjects.gxy_gateway.info.name}</span>`));
 
-        for (let i=0; i<ships.length; i++){
-            if (global.galaxy.hasOwnProperty(ships[i])){
-                let ship = $(`<span class="ship">{{ gateway.${ships[i]} }}</span>`);
-                cols[i+1].append(ship);
+        for (let i = 0; i < gatewayArmada.length; i++){
+            const ship = gatewayArmada[i];
+            if (global.galaxy.hasOwnProperty(ship)){
+                cols[i+1].append($(`<span id="armada${ship}" class="ship has-text-advanced">${galaxyProjects.gxy_gateway[ship].title}</span>`));
+                cols[i+1].append($(`<span class="ship">{{ gateway.${ship} }}</span>`));
             }
         }
 
@@ -7129,16 +7125,17 @@ function armada(parent,id){
                 let region = $(`<span id="armada${r}" class="has-text-caution">${typeof galaxyProjects[area].info.name === 'string' ? galaxyProjects[area].info.name : galaxyProjects[area].info.name()}</span>`);
                 cols[0].append(region);
 
-                for (let i=0; i<ships.length; i++){
-                    if (global.galaxy.hasOwnProperty(ships[i])){
-                        let ship = $(`<span class="ship"></span>`);
-                        let sub = $(`<span role="button" aria-label="remove ${ships[i]}" class="sub has-text-danger" @click="sub('${area}','${ships[i]}')"><span>&laquo;</span></span>`);
-                        let count = $(`<span class="current">{{ ${r}.${ships[i]} }}</span>`);
-                        let add = $(`<span role="button" aria-label="add ${ships[i]}" class="add has-text-success" @click="add('${area}','${ships[i]}')"><span>&raquo;</span></span>`);
-                        cols[i+1].append(ship);
-                        ship.append(sub);
-                        ship.append(count);
-                        ship.append(add);
+                for (let i = 0; i < gatewayArmada.length; i++){
+                    const ship = gatewayArmada[i];
+                    if (global.galaxy.hasOwnProperty(ship)){
+                        let shipSpan = $(`<span class="ship"></span>`);
+                        let sub = $(`<span role="button" aria-label="remove ${ship}" class="sub has-text-danger" @click="sub('${area}','${ship}')"><span>&laquo;</span></span>`);
+                        let count = $(`<span class="current">{{ ${r}.${ship} }}</span>`);
+                        let add = $(`<span role="button" aria-label="add ${ship}" class="add has-text-success" @click="add('${area}','${ship}')"><span>&raquo;</span></span>`);
+                        cols[i+1].append(shipSpan);
+                        shipSpan.append(sub);
+                        shipSpan.append(count);
+                        shipSpan.append(add);
                     }
                 }
 
@@ -7189,10 +7186,11 @@ function armada(parent,id){
             }
         });
 
-        for (let i=0; i<ships.length; i++){
-            if (global.galaxy.hasOwnProperty(ships[i])){
-                popover(`armada${ships[i]}`,function(obj){
-                    actionDesc(obj.popper,galaxyProjects.gxy_gateway[ships[i]],global.galaxy[ships[i]]);
+        for (let i = 0; i < gatewayArmada.length; i++){
+            const ship = gatewayArmada[i];
+            if (global.galaxy.hasOwnProperty(ship)){
+                popover(`armada${ship}`,function(obj){
+                    actionDesc(obj.popper, galaxyProjects.gxy_gateway[ship], global.galaxy[ship]);
                     return undefined;
                 });
             }
