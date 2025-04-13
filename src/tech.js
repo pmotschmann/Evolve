@@ -1651,7 +1651,7 @@ const techs = {
         cost: {
             Knowledge(){ return 1080; }
         },
-        effect(){ return global.race.universe === 'evil' ? loc('tech_gladiators_effect') : loc('tech_playwright_effect'); },
+        effect(){ return global.race.universe === 'evil' ? loc('tech_gladiators_effect',[loc('city_colosseum')]) : loc('tech_playwright_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -1781,6 +1781,7 @@ const techs = {
         category: 'entertainment',
         era: 'dimensional',
         reqs: { hell_ruins: 2 },
+        not_trait: ['warlord'],
         grant: ['zoo',1],
         cost: {
             Knowledge(){ return 22500000; }
@@ -3925,6 +3926,7 @@ const techs = {
         category: 'banking',
         era: 'interstellar',
         reqs: { home_safe: 2, infernite: 1 },
+        not_trait: ['warlord'],
         grant: ['home_safe',3],
         cost: {
             Money(){ return 2500000; },
@@ -9166,6 +9168,9 @@ const techs = {
         category: 'power_generation',
         era: 'existential',
         reqs: { high_tech: 19, dyson: 2 },
+        condition(){
+            return global.interstellar?.orichalcum_sphere?.count >= 100;
+        },
         grant: ['dyson',3],
         cost: {
             Knowledge(){ return 122500000; },
@@ -10252,7 +10257,8 @@ const techs = {
                                 soul_forge: 0,
                                 crafted: 0,
                                 turrets: 0,
-                                surveyors: 0
+                                surveyors: 0,
+                                compactor: 0
                             },
                         },
                         period: {
@@ -10273,7 +10279,8 @@ const techs = {
                                 soul_forge: 0,
                                 crafted: 0,
                                 turrets: 0,
-                                surveyors: 0
+                                surveyors: 0,
+                                compactor: 0
                             },
                         }
                     },

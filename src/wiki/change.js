@@ -8,12 +8,16 @@ export const changeList = [
         changes: [
             `Evil Universe Scenario: Warlord.`,
             `Added Planned Obsolescence Feat.`,
+            `You can now pet your cat or dog once every 5 minutes.`,
             `Symposium now gain Knowledge for all crew in Andromeda.`,
             `Evil Authority adjustments for Cataclysm, Lone Survivor, and Orbit Decay`,
+            `Soldiers assigned to Fortress guard duty now contribute Authority.`,
             `Updated Empowered trait mechanics.`,
             `Adjusted values for Master Artisan.`,
             `Fixed bug with Rogue trait that set crafted resources to 0.`,
-            `Fixed bug that caused Hybrid species to throw an error when triggering greatness resets.`
+            `Fixed bug that caused Hybrid species to throw an error when triggering greatness resets.`,
+            `Fixed issue with Iridium Smelters miscalculating result.`,
+            `Evil Wendigo can now use Shovels.`
         ]
     },
     {

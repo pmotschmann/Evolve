@@ -1,10 +1,12 @@
 import { global, keyMultiplier, p_on, support_on, tmp_vars } from './vars.js';
 import { vBind, clearElement, popover, darkEffect, eventActive, easterEgg, getHalloween } from './functions.js';
 import { loc } from './locale.js';
+import { highPopAdjust } from './prod.js';
 import { racialTrait, servantTrait, races, traits, biomes, planetTraits, fathomCheck } from './races.js';
 import { armyRating } from './civics.js';
 import { craftingRatio, craftCost, craftingPopover } from './resources.js';
 import { planetName } from './space.js';
+import { hellSupression } from './portal.js';
 import { asphodelResist } from './edenic.js';
 import { actions, templeCount } from './actions.js';
 
@@ -320,14 +322,9 @@ export const job_desc = {
         return loc('job_hell_surveyor_desc');
     },
     archaeologist(){
-        let arc = (p_on['arcology'] || 0) * 75;
-        let supress = (armyRating(global.portal.guard_post.on,'hellArmy',0) + arc) / 5000;
-        supress = supress > 1 ? 1 : supress;
-        let value = 250000;
-        if (global.race['high_pop']){
-            value *= traits.high_pop.vars()[1] / 100;
-        }
-        let know = Math.round(value * supress);
+        let value = highPopAdjust(250000);
+        let sup = hellSupression('ruins');
+        let know = Math.round(value * sup.supress);
         return loc('job_archaeologist_desc',[know.toLocaleString()]);
     },
     ghost_trapper(){

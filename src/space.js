@@ -2470,7 +2470,12 @@ const spaceProjects = {
                     incrementStruct('world_collider');
                     if (global.space.world_collider.count >= 1859){
                         global.tech['science'] = 11;
-                        global.space['world_controller'] = { count: 1, on: 0 };
+                        initStruct(spaceProjects.spc_dwarf.world_controller);
+                        incrementStruct('world_controller');
+                        // Require the force power-on setting to automatically power end-of-era structs, even when power is abundant
+                        if (global.settings.alwaysPower){
+                            powerOnNewStruct(spaceProjects.spc_dwarf.world_controller);
+                        }
                         drawTech();
                         renderSpace();
                         if (global.race['banana']){
@@ -2626,7 +2631,8 @@ const spaceProjects = {
                     global.space.mass_relay.count++;
                     if (global.space.mass_relay.count >= 100){
                         global.tech['outer'] = 6;
-                        global.space['m_relay'] = { count: 1, on: 1, charged: 0 };
+                        initStruct(spaceProjects.spc_dwarf.m_relay);
+                        powerOnNewStruct(spaceProjects.spc_dwarf.m_relay);
                         drawTech();
                         renderSpace();
                         clearPopper();
@@ -2665,6 +2671,12 @@ const spaceProjects = {
             },
             action(){
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, charged: 0 },
+                    p: ['m_relay','space']
+                };
             }
         },
     },
@@ -3599,7 +3611,10 @@ const interstellarProjects = {
             queue_size: 10,
             queue_complete(){ return 100 - global.interstellar.orichalcum_sphere.count; },
             condition(){
-                return global.interstellar.dyson_sphere.count >= 100 && global.tech['dyson'] && global.tech.dyson === 2 ? true : false;
+                if ((global.tech['dyson'] ?? 0) < 2){
+                    return false;
+                }
+                return global.interstellar.dyson_sphere.count >= 100 && (global.tech.dyson === 2 || global.interstellar.orichalcum_sphere.count < 100);
             },
             cost: {
                 Money(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('orichalcum_sphere') ? global.interstellar.orichalcum_sphere.count : 0)) < 100 ? 25000000 : 0; },
@@ -4114,27 +4129,38 @@ const interstellarProjects = {
                     return `<div>${loc('interstellar_stellar_engine_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
                 else {
-                    let waves = global.tech['gravity'] && global.tech['gravity'] >= 2 ? 13.5 : 7.5;
-                    let r_mass = global.interstellar['stellar_engine'] ? global.interstellar.stellar_engine.mass : 8;
-                    if (global.tech['roid_eject']){
-                        r_mass += 0.225 * global.tech['roid_eject'] * (1 + (global.tech['roid_eject'] / 12));
-                    }
-                    let gWell = 1 + (global.stats.achieve['escape_velocity'] && global.stats.achieve.escape_velocity['h'] ? global.stats.achieve.escape_velocity['h'] * 0.02 : 0);
-                    let output = powerModifier((20 + ((r_mass - 8) * waves) + ((global.interstellar['stellar_engine'] ? global.interstellar.stellar_engine.exotic : 0) * waves * 10)).toFixed(2)) * gWell;
-                    if (output > 10000){
-                        output = 10000 + (output - 10000) ** 0.975;
-                        if (output > 20000){ output = 20000 + (output - 20000) ** 0.95; }
-                        if (output > 30000){ output = 30000 + (output - 30000) ** 0.925; }
-                    }
+                    let output = -$(this)[0].powered();
                     if (global.tech['blackhole'] >= 5){
-                        let exotic = +(global.interstellar.stellar_engine.exotic).toFixed(10);
-                        let blackhole = global.interstellar.stellar_engine.exotic > 0 ? loc('interstellar_stellar_engine_effect3',[r_mass,exotic]) : loc('interstellar_stellar_engine_effect2',[r_mass]);
+                        let r_mass = global.interstellar.stellar_engine.mass;
+                        let exotic = global.interstellar.stellar_engine.exotic;
+                        if (global.tech['roid_eject']){
+                            r_mass += 0.225 * global.tech['roid_eject'] * (1 + (global.tech['roid_eject'] / 12));
+                        }
+                        let blackhole = exotic > 0 ? loc('interstellar_stellar_engine_effect3',[+r_mass.toFixed(10),+exotic.toFixed(10)]) : loc('interstellar_stellar_engine_effect2',[r_mass]);
                         return `<div>${loc('interstellar_stellar_engine_complete',[+output.toFixed(2)])}</div><div>${blackhole}</div>`;
                     }
                     else {
                         return loc('interstellar_stellar_engine_complete',[+output.toFixed(2)]);
                     }
                 }
+            },
+            switchable(){ return false; },
+            powered(){
+                let waves = global.tech['gravity'] && global.tech['gravity'] >= 2 ? 13.5 : 7.5;
+                let r_mass = global.interstellar?.stellar_engine?.mass ?? 8;
+                let exotic = global.interstellar?.stellar_engine?.exotic ?? 0;
+                if (global.tech['roid_eject']){
+                    r_mass += 0.225 * global.tech['roid_eject'] * (1 + (global.tech['roid_eject'] / 12));
+                }
+                let gWell = 1 + (global.stats.achieve['escape_velocity'] && global.stats.achieve.escape_velocity['h'] ? global.stats.achieve.escape_velocity['h'] * 0.02 : 0);
+                let output = powerModifier(20 + (r_mass - 8 + exotic * 10) * waves * gWell);
+                if (output > 10000){
+                    output = 10000 + (output - 10000) ** 0.975;
+                    if (output > 20000){ output = 20000 + (output - 20000) ** 0.95; }
+                    if (output > 30000){ output = 30000 + (output - 30000) ** 0.925; }
+                }
+                output = +output.toFixed(2);
+                return -output;
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -4334,8 +4360,12 @@ const interstellarProjects = {
                         incrementStruct('stargate','interstellar');
                         if (global.interstellar.stargate.count >= 200){
                             global.tech['stargate'] = 4;
-                            global.interstellar['s_gate'] = { count: 1, on: 0 };
-                            powerOnNewStruct($(interstellarProjects.int_blackhole.s_gate)[0]);
+                            initStruct(interstellarProjects.int_blackhole.s_gate);
+                            incrementStruct('s_gate','interstellar');
+                            // Require the force power-on setting to automatically power end-of-era structs, even when power is abundant
+                            if (global.settings.alwaysPower){
+                                powerOnNewStruct(interstellarProjects.int_blackhole.s_gate);
+                            }
                             deepSpace();
                             clearPopper();
                         }
@@ -4568,7 +4598,10 @@ const interstellarProjects = {
                         incrementStruct('ascension_machine','interstellar');
                         if (global.interstellar.ascension_machine.count >= 100){
                             global.tech['ascension'] = 7;
-                            global.interstellar['ascension_trigger'] = { count: 1, on: 0 };
+                            initStruct(interstellarProjects.int_sirius.ascension_trigger);
+                            if (global.settings.alwaysPower){
+                                powerOnNewStruct(interstellarProjects.int_sirius.ascension_trigger);
+                            }
                             deepSpace();
                             clearPopper();
                         }
@@ -4658,6 +4691,12 @@ const interstellarProjects = {
             },
             action(){
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['ascension_trigger','interstellar']
+                };
             }
         },
         ascend: {

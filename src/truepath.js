@@ -582,8 +582,8 @@ const outerTruth = {
                         incrementStruct('ai_core');
                         if (global.space.ai_core.count >= 100){
                             global.tech['titan_ai_core'] = 1;
-                            global.space['ai_core2'] = { count: 1, on: 0 };
-                            powerOnNewStruct($(outerTruth.spc_titan.ai_core2)[0]);
+                            initStruct(outerTruth.spc_titan.ai_core2);
+                            powerOnNewStruct(outerTruth.spc_titan.ai_core2);
                             renderSpace();
                             drawTech();
                             if (global.city.ptrait.includes('kamikaze') && !global.race['tidal_decay']){
@@ -639,6 +639,12 @@ const outerTruth = {
             },
             flair(){
                 return global.space.hasOwnProperty('ai_core2') && global.space.ai_core2.on >= 1 ? loc(`space_ai_core_flair`) : loc(`space_ai_core_flair2`);
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['ai_core2','space']
+                };
             }
         },
         ai_colonist: {
@@ -2641,7 +2647,7 @@ const tauCetiModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('tau_cultural_center','tauceti');
-                    global.tauceti.tau_cultural_center.on++;
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;

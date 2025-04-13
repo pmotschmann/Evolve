@@ -895,7 +895,7 @@ export function index(){
         <span class="planetWrap">
             <span class="planet">{{ race.species | planet }}</span>
             <span class="universe" v-show="showUniverse()">{{ race.universe | universe }}</span>
-            <span class="pet" id="playerPet" v-show="showPet()"></span>
+            <span class="pet" id="playerPet" v-show="showPet()" @click="petPet()"></span>
             <span class="simulation" v-show="showSim()">${loc(`evo_challenge_simulation`)}</span>
         </span>
         <span class="calendar">

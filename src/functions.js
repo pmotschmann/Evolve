@@ -255,9 +255,18 @@ window.importGame = function importGame(data,utf16){
             }
         }
         // prevent invalid message colors from escaping class attribute
-        for (const msgQueue in saveState.lastMsg) {
-            for (const msg of saveState.lastMsg[msgQueue]) {
-                msg.c = msg.c.replaceAll('"', '')
+        if (Array.isArray(saveState.lastMsg)){
+            // Legacy save file: prior to v1.1.4
+            for (let i = 0; i < saveState.lastMsg.length; i++){
+                saveState.lastMsg[i].c = saveState.lastMsg[i].c.replaceAll('"', '');
+            }
+        }
+        else {
+            // Save file from v1.1.4 or newer
+            for (const msgQueue in saveState.lastMsg){
+                for (const msg of saveState.lastMsg[msgQueue]){
+                    msg.c = msg.c.replaceAll('"', '');
+                }
             }
         }
         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(saveState)));
@@ -2360,31 +2369,82 @@ export function drawPet(){
 
     if ($('#playerPet .flair').length === 0 && global.race['pet']){
         let color = 'black';
-        if (global.race.pet.type === 'cat'){
-            switch (global.race.pet.name){
-                case 0:
-                    color = 'gray';
-                    break;
-                case 1:
-                case 4:
-                case 8:
-                    color = 'orange';
-                    break;
-                case 10:
-                    color = 'black';
-                    break;
-                default:
-                    let colors = ['black','white','gray','orange','brown'];
-                    color = colors[Math.rand(0,colors.length)];
-                    break;
-            }
+        if (global.race.pet['color']){
+            color = global.race.pet.color;
         }
         else {
-            let colors = ['black','white','gray','brown'];
-            color = colors[Math.rand(0,colors.length)];
+            if (global.race.pet.type === 'cat'){
+                switch (global.race.pet.name){
+                    case 0:
+                        color = 'gray';
+                        break;
+                    case 1:
+                    case 4:
+                    case 8:
+                        color = 'orange';
+                        break;
+                    case 10:
+                        color = 'black';
+                        global.race.pet['pattern'] = 'solid';
+                        break;
+                    default:
+                        let colors = ['black','white','gray','orange','cream'];
+                        color = colors[Math.rand(0,colors.length)];
+                        break;
+                }
+            }
+            else {
+                let colors = ['black','white','gray','brown'];
+                color = colors[Math.rand(0,colors.length)];
+            }
+            global.race.pet['color'] = color;
         }
 
-        $('#playerPet').append(`<span class="flair" aria-label="${loc(`event_${global.race.pet.type}_name${global.race.pet.name}`)} (${global.race.pet.type})"><svg class="${color}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(global.race.pet.type)}" xml:space="preserve">${svgIcons(global.race.pet.type)}</svg></span>`);
+        let pattern = 'solid';
+        if (global.race.pet['pattern']){
+            pattern = global.race.pet.pattern;
+        }
+        else {
+            let patterns = ['solid'];
+            if (global.race.pet.type === 'cat'){
+                patterns.push('stripe');
+            }
+            else {
+                patterns.push('patched');
+            }
+            pattern = patterns[Math.rand(0,patterns.length)];
+            global.race.pet['pattern'] = pattern;
+        }
+
+        let coat = ``;
+        if (pattern === 'patched'){
+            coat = `<defs>
+            <radialGradient id="PetGradient">
+                <stop class="stop1" offset="0%" />
+                <stop class="stop2" offset="50%" />
+                <stop class="stop1" offset="100%" />
+            </radialGradient>
+            </defs>`;
+        }
+        else if (pattern === 'stripe'){
+            coat = `<defs>
+            <linearGradient id="PetGradient" gradientTransform="rotate(135 0.45 0.5)">
+                <stop class="stop1" offset="0%" />
+                <stop class="stop2" offset="10%" />
+                <stop class="stop1" offset="20%" />
+                <stop class="stop2" offset="30%" />
+                <stop class="stop1" offset="40%" />
+                <stop class="stop2" offset="50%" />
+                <stop class="stop1" offset="60%" />
+                <stop class="stop2" offset="70%" />
+                <stop class="stop1" offset="80%" />
+                <stop class="stop2" offset="90%" />
+                <stop class="stop1" offset="100%" />
+            </linearGradient>
+            </defs>`;
+        }
+
+        $('#playerPet').append(`<span class="flair" aria-label="${loc(`event_${global.race.pet.type}_name${global.race.pet.name}`)} (${global.race.pet.type})"><svg class="${color} ${pattern}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(global.race.pet.type)}" xml:space="preserve">${coat}${svgIcons(global.race.pet.type)}</svg></span>`);
 
         popover('playerPet',
             function(obj){
@@ -2974,7 +3034,9 @@ const valAdjust = {
     living_tool: false,
     empowered: false,
     living_materials: true,
-    blurry: true
+    blurry: true,
+    playful: true,
+    ghostly: true,
 };
 
 function getTraitVals(trait, rank, species){
@@ -3010,8 +3072,20 @@ function getTraitVals(trait, rank, species){
         else if (trait === 'living_materials'){
             vals = [global.resource.Lumber.name, global.resource.Plywood.name, global.resource.Furs.name, loc('resource_Amber_name')];
         }
-        else if (trait === 'blurry' && global.race['warlord']){
-            vals = [+((100/(100-vals[0])-1)*100).toFixed(1)];
+        else if (trait === 'blurry'){
+            if (global.race['warlord']){
+                vals = [+((100/(100-vals[0])-1)*100).toFixed(1)];
+            }
+        }
+        else if (trait === 'playful'){
+            if (global.race['warlord']){
+                vals = [vals[0] * 100, global.resource.Furs.name];
+            }
+        }
+        else if (trait === 'ghostly'){
+            if (global.race['warlord']){
+                vals = [vals[0], +((vals[1] - 1) * 100).toFixed(0), global.resource.Soul_Gem.name];
+            }
         }
         else if (!valAdjust[trait]){
             vals = [];
@@ -3160,7 +3234,10 @@ function rName(r){
 }
 
 const altTraitDesc = {
-    blurry: 'warlord'
+    befuddle: 'warlord',
+    blurry: 'warlord',
+    ghostly: 'warlord',
+    playful: 'warlord',
 };
 
 export function getTraitDesc(info, trait, opts){

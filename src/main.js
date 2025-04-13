@@ -222,6 +222,9 @@ if (global.interstellar['starport']){
 if (global.interstellar['fusion']){
     int_on['fusion'] = global.interstellar.fusion.on;
 }
+if (global.interstellar['s_gate']){
+    p_on['s_gate'] = global.interstellar.s_gate.on;
+}
 if (global.portal['hell_forge']){
     p_on['hell_forge'] = global.portal.hell_forge.on;
 }
@@ -408,8 +411,23 @@ popover('morale',
         }
 
         if (global.race['pet']){
-            total += 1;
-            obj.popper.append(`<p class="modal_bd"><span>${loc(`event_pet_${global.race.pet.type}_owner`)}</span> <span class="has-text-success"> ${1}%</span></p>`);
+            let change = 1;
+            if (global.race['pet']){
+                if (global.race.pet.event > 0){
+                    change++;
+                }
+                if (global.race.pet.pet > 0){
+                    change += global.race.pet.type === 'cat' ? 2 : 1;
+                }
+                else if (global.race.pet.pet < 0){
+                    change -= global.race.pet.type === 'cat' ? 2 : 1
+                }
+            }
+            if (change !== 0){
+                total += change;
+                let style = change > 0 ? 'success' : 'danger';
+                obj.popper.append(`<p class="modal_bd"><span>${loc(`event_pet_${global.race.pet.type}_owner`)}</span> <span class="has-text-${style}"> ${change}%</span></p>`);
+            }
         }
 
         if (global.race['wishStats'] && global.race.wishStats.fame !== 0){
@@ -550,6 +568,19 @@ vBind({
         },
         showPet(){
             return global.race['pet'] ? true : false;
+        },
+        petPet(){
+            if (global.race['pet'] && global.race.pet.pet === 0){
+                let outcome = Math.rand(0,3);
+                if (outcome === 0){
+                    global.race.pet.pet = -300;
+                    messageQueue(loc(`event_${global.race.pet.type}_pet_failure`,[loc(`event_${global.race.pet.type}_name${global.race.pet.name}`)]),false,false,['events','minor_events']);
+                }
+                else {
+                    global.race.pet.pet = 300;
+                    messageQueue(loc(`event_${global.race.pet.type}_pet_success`,[loc(`event_${global.race.pet.type}_name${global.race.pet.name}`)]),false,false,['events','minor_events']);
+                }
+            }
         }
     },
     filters: {
@@ -1382,7 +1413,16 @@ function fastLoop(){
         }
 
         if (global.race['pet']){
-            morale += 1;
+            morale++;
+            if (global.race.pet.event > 0){
+                morale++;
+            }
+            if (global.race.pet.pet > 0){
+                morale += global.race.pet.type === 'cat' ? 2 : 1
+            }
+            else if (global.race.pet.pet < 0){
+                morale -= global.race.pet.type === 'cat' ? 2 : 1;
+            }
         }
 
         if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.fame !== 0){
@@ -1772,21 +1812,10 @@ function fastLoop(){
         }
 
         if (global.interstellar['stellar_engine'] && global.interstellar.stellar_engine.count >= 100){
-            let waves = global.tech['gravity'] && global.tech['gravity'] >= 2 ? 13.5 : 7.5;
-            let r_mass = global.interstellar.stellar_engine.mass;
-            if (global.tech['roid_eject']){
-                r_mass += 0.225 * global.tech['roid_eject'] * (1 + (global.tech['roid_eject'] / 12));
-            }
-            let gWell = 1 + (global.stats.achieve['escape_velocity'] && global.stats.achieve.escape_velocity['h'] ? global.stats.achieve.escape_velocity['h'] * 0.02 : 0);
-            let power = powerModifier(20 + ((r_mass - 8) * waves) + (global.interstellar.stellar_engine.exotic * waves * 10)) * gWell;
-            if (power > 10000){
-                power = 10000 + (power - 10000) ** 0.975;
-                if (power > 20000){ power = 20000 + (power - 20000) ** 0.95; }
-                if (power > 30000){ power = 30000 + (power - 30000) ** 0.925; }
-            }
-            max_power -= power;
-            power_grid += power;
-            power_generated[loc('tech_stellar_engine')] = power;
+            let output = actions.interstellar.int_blackhole.stellar_engine.powered();
+            max_power += output;
+            power_grid -= output;
+            power_generated[loc('tech_stellar_engine')] = -output;
         }
 
         [
@@ -4002,6 +4031,9 @@ function fastLoop(){
                 if (!global.race['soul_eater'] && global.race['evil']){
                     let reclaimers = workerScale(global.civic.lumberjack.workers,'lumberjack');
                     reclaimers *= racialTrait(reclaimers,'lumberjack');
+                    if (global.race['warlord'] && global.race['playful']){
+                        reclaimers *= 1 + traits.playful.vars()[0];
+                    }
 
                     if (global.race['servants']){
                         let serve = global.race.servants.jobs.lumberjack;
@@ -4934,9 +4966,7 @@ function fastLoop(){
             }
 
             iron_smelter *= global.tech['smelting'] >= 3 ? 1.2 : 1;
-            if (iridium_smelter > 0){
-                iridium_smelter = 1 + (iridium_smelter * 0.05);
-            }
+            iridium_smelter *= 0.05;
 
             let dirtVal = govActive('dirty_jobs',2);
             if (dirtVal){
@@ -4973,8 +5003,6 @@ function fastLoop(){
                 iron_smelter *= 1 + (0.2 * salFathom);
                 iridium_smelter *= 1 + (0.2 * salFathom);
             }
-
-            if (iridium_smelter < 1){ iridium_smelter = 1; }
 
             if (global.race['evil']){
                 if (global.race['soul_eater'] && global.race.species !== 'wendigo' && !global.race['artifical']){
@@ -5731,13 +5759,13 @@ function fastLoop(){
 
             // Aluminium
             if (global.city['metal_refinery'] && (global.city['metal_refinery'].count > 0 || global.race['cataclysm'] || global.race['orbit_decayed'] || global.race['warlord'])){
-                let base = stone_base * rock_quarry * (global.race['cataclysm'] ? 0.16 : 0.08);
+                let base = stone_base * (global.race['cataclysm'] ? 0.16 : 0.08);
                 if (global.city.geology['Aluminium']){
                     base *= global.city.geology['Aluminium'] + 1;
                 }
                 base *= production('psychic_boost','Aluminium');
 
-                let delta = base * tunneler * shrineMetal.mult * hunger * q_multiplier * global_multiplier;
+                let delta = base * rock_quarry * tunneler * shrineMetal.mult * hunger * q_multiplier * global_multiplier;
                 global.city.metal_refinery['cnvay'] = +(delta * (power_single - 1)).toFixed(5);
                 global.city.rock_quarry['almcvy'] = global.city.metal_refinery['cnvay'];
                 delta *= power_mult;
@@ -5752,6 +5780,8 @@ function fastLoop(){
 
                 breakdown.p['Aluminium'][`${global.race['cataclysm'] || global.race['orbit_decayed'] ? structName('mine') : (global.race['warlord'] ? jobName('miner') : loc('workers'))}+1`] = base + 'v';
                 if (base > 0){
+                    breakdown.p['Aluminium'][`ᄂ${loc('city_rock_quarry')}`] = ((rock_quarry - 1) * 100) + '%';
+                    breakdown.p['Aluminium'][`ᄂ${loc('power')}`] = ((power_mult - 1) * 100) + '%';
                     breakdown.p['Aluminium'][`ᄂ${loc('portal_tunneler_bd')}`] = ((tunneler - 1) * 100) + '%';
                     breakdown.p['Aluminium'][`ᄂ${loc('quarantine')}+0`] = ((q_multiplier - 1) * 100) + '%';
                 }
@@ -6629,6 +6659,7 @@ function fastLoop(){
         }
 
         // Iridium
+        let iridium_smelter_mult = 1 + iridium_smelter;
         if (support_on['iridium_mine'] || global.race['warlord']){
             let iridium_base = 0;
 
@@ -6648,12 +6679,12 @@ function fastLoop(){
 
             iridium_base *= production('psychic_boost','Iridium');
             let synd = syndicate('spc_moon');
-            let delta = iridium_base * tunneler * hunger * shrineMetal.mult * global_multiplier * synd * qs_multiplier * iridium_smelter * zigVal;
+            let delta = iridium_base * tunneler * hunger * shrineMetal.mult * global_multiplier * synd * qs_multiplier * iridium_smelter_mult * zigVal;
             if (global.race['gravity_well']){ delta = teamster(delta); }
 
             breakdown.p['Iridium'][global.race['warlord'] ? jobName('miner') : loc('space_moon_iridium_mine_title')] = iridium_base + 'v';
             if (iridium_base > 0){
-                breakdown.p['Iridium'][`ᄂ${loc('city_smelter')}+0`] = ((iridium_smelter - 1) * 100) + '%';
+                breakdown.p['Iridium'][`ᄂ${loc('city_smelter')}+0`] = (iridium_smelter * 100) + '%';
                 breakdown.p['Iridium'][`ᄂ${loc('portal_tunneler_bd')}+0`] = ((tunneler - 1) * 100) + '%';
                 breakdown.p['Iridium'][`ᄂ${loc('space_syndicate')}+0`] = -((1 - synd) * 100) + '%';
                 breakdown.p['Iridium'][`ᄂ${loc('space_red_ziggurat_title')}+0`] = ((zigVal - 1) * 100) + '%';
@@ -6669,12 +6700,12 @@ function fastLoop(){
             let iridium_base = support_on['iridium_ship'] * production('iridium_ship');
             iridium_base *= production('psychic_boost','Iridium');
             let synd = syndicate('spc_belt');
-            let delta = iridium_base * hunger * shrineMetal.mult * global_multiplier * synd * qs_multiplier * iridium_smelter * zigVal;
+            let delta = iridium_base * hunger * shrineMetal.mult * global_multiplier * synd * qs_multiplier * iridium_smelter_mult * zigVal;
             if (global.race['gravity_well']){ delta = teamster(delta); }
 
             breakdown.p['Iridium'][jobName('space_miner')] = iridium_base + 'v';
             if (iridium_base > 0){
-                breakdown.p['Iridium'][`ᄂ${loc('city_smelter')}+1`] = ((iridium_smelter - 1) * 100) + '%';
+                breakdown.p['Iridium'][`ᄂ${loc('city_smelter')}+1`] = (iridium_smelter * 100) + '%';
                 breakdown.p['Iridium'][`ᄂ${loc('space_syndicate')}+1`] = -((1 - synd) * 100) + '%';
                 breakdown.p['Iridium'][`ᄂ${loc('space_red_ziggurat_title')}+1`] = ((zigVal - 1) * 100) + '%';
                 breakdown.p['Iridium'][`ᄂ${loc('quarantine')}+1`] = ((qs_multiplier - 1) * 100) + '%';
@@ -6689,13 +6720,13 @@ function fastLoop(){
             let base = gal_on['armed_miner'] * 0.65 * production('psychic_boost','Iridium');
             let foothold = 1 + ((gal_on['ore_processor'] ?? 0) * 0.1);
             let pirate = piracy('gxy_alien2');
-            let delta = base * global_multiplier * pirate * foothold * hunger * shrineMetal.mult * iridium_smelter * zigVal;
+            let delta = base * global_multiplier * pirate * foothold * hunger * shrineMetal.mult * iridium_smelter_mult * zigVal;
             if (global.race['gravity_well']){ delta = teamster(delta); }
 
             breakdown.p['Iridium'][loc('galaxy_armed_miner_bd')] = base + 'v';
             if (base > 0){
                 breakdown.p['Iridium'][`ᄂ${loc('galaxy_ore_processor')}`] = -((1 - foothold) * 100) + '%';
-                breakdown.p['Iridium'][`ᄂ${loc('city_smelter')}+2`] = ((iridium_smelter - 1) * 100) + '%';
+                breakdown.p['Iridium'][`ᄂ${loc('city_smelter')}+2`] = (iridium_smelter * 100) + '%';
                 breakdown.p['Iridium'][`ᄂ${loc('galaxy_piracy')}`] = -((1 - pirate) * 100) + '%';
                 breakdown.p['Iridium'][`ᄂ${loc('space_red_ziggurat_title')}+2`] = ((zigVal - 1) * 100) + '%';
                 if (global.race['gravity_well']){
@@ -6707,12 +6738,12 @@ function fastLoop(){
 
         // Iridium Extractor Ship
         if (global.resource.Iridium.display && e_ship['iridium'] && e_ship.iridium > 0){
-            let iridium_delta = e_ship.iridium * shrineMetal.mult * global_multiplier * iridium_smelter * hunger * womling_technician;
+            let iridium_delta = e_ship.iridium * shrineMetal.mult * global_multiplier * iridium_smelter_mult * hunger * womling_technician;
             if (global.race['gravity_well']){
                 iridium_delta = teamster(iridium_delta);
             }
             breakdown.p['Iridium'][loc('tau_roid_mining_ship')] = e_ship.iridium + 'v';
-            breakdown.p['Iridium'][`ᄂ${loc('city_smelter')}+3`] = ((iridium_smelter - 1) * 100) + '%';
+            breakdown.p['Iridium'][`ᄂ${loc('city_smelter')}+3`] = (iridium_smelter * 100) + '%';
             if (womling_technician > 1){
                 breakdown.p['Iridium'][`ᄂ${loc('tau_red_womlings')}+0`] = ((womling_technician - 1) * 100) + '%';
             }
@@ -8161,6 +8192,24 @@ function midLoop(){
                 breakdown.c.Authority[loc('portal_minions_bd')] = gain+'v';
             }
 
+            let pet = 0;
+            if (global.race['pet']){
+                pet = 1;
+                if (global.race['pet']){
+                    if (global.race.pet.event > 0){
+                        pet++;
+                    }
+                    if (global.race.pet.pet > 0){
+                        pet += global.race.pet.type === 'cat' ? 2 : 1;
+                    }
+                    else if (global.race.pet.pet < 0){
+                        pet -= global.race.pet.type === 'cat' ? 2 : 1
+                    }
+                }
+                caps.Authority += pet;
+                breakdown.c.Authority[loc(`event_pet_${global.race.pet.type}_owner`)] = pet+'v';
+            }
+
             global.resource.Authority.amount = global.race['cataclysm'] || global.race['orbit_decayed'] || global.race['lone_survivor'] ? 90 : 80;
             if (global.city.morale.current > 100){
                 let excess = global.city.morale.current - 100;
@@ -8176,6 +8225,9 @@ function midLoop(){
                     adjust += 0.1 * global.tech.evil;
                 }
                 let garrison = garrisonSize() || 0;
+                if (global.portal['fortress']){
+                    garrison += global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size);
+                }
                 let gain = highPopAdjust(garrison) * adjust;
                 if (global.race['grenadier']){ gain *= 1.75; }
                 if (global.civic.govern.type === 'autocracy'){
@@ -8185,6 +8237,10 @@ function midLoop(){
                     gain *= 1.12;
                 }
                 global.resource.Authority.amount += gain;
+            }
+
+            if (pet !== 0){
+                global.resource.Authority.amount += pet;
             }
 
             global.resource.Authority.amount = Math.floor(global.resource.Authority.amount);
@@ -11305,6 +11361,18 @@ function longLoop(){
         if (global.race['truepath'] && global.civic.foreign.gov3.mil < 500){
             if (Math.rand(0, 50) === 0){
                 global.civic.foreign.gov3.mil++;
+            }
+        }
+
+        if (global.race['pet']){
+            if (global.race.pet.event > 0){
+                global.race.pet.event--;
+            }
+            if (global.race.pet.pet > 0){
+                global.race.pet.pet--;
+            }
+            else if (global.race.pet.pet < 0){
+                global.race.pet.pet++;
             }
         }
 

@@ -1975,6 +1975,10 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('mill','city');
+                    // Prevent alwaysPower from enabling mills that were built before researching Wind Turbines
+                    if (checkPowerRequirements($(this)[0])){
+                        powerOnNewStruct($(this)[0]);
+                    }
                     return true;
                 }
                 return false;
@@ -2746,9 +2750,7 @@ export const actions = {
                         global.settings.showIndustry = true;
                         global['resource']['Chrysotile'].max += stone;
                     }
-                    if (global.tech['mine_conveyor']){
-                        powerOnNewStruct($(this)[0]);
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -2799,9 +2801,7 @@ export const actions = {
                     incrementStruct('cement_plant','city');
                     global.civic.cement_worker.display = true;
                     global.civic.cement_worker.max = global.city.cement_plant.count * jobScale(2);
-                    if (global.tech['cement'] && global.tech['cement'] >= 5){
-                        powerOnNewStruct($(this)[0]);
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -3040,9 +3040,7 @@ export const actions = {
                         global.resource.Sheet_Metal.display = true;
                         loadFoundry();
                     }
-                    if (global.tech['alumina'] >= 2){
-                        powerOnNewStruct($(this)[0]);
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -3089,9 +3087,7 @@ export const actions = {
                     global.resource.Copper.display = true;
                     global.civic.miner.display = true;
                     global.civic.miner.max = jobScale(global.city.mine.count);
-                    if (global.tech['mine_conveyor']){
-                        powerOnNewStruct($(this)[0]);
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -3140,9 +3136,7 @@ export const actions = {
                     global.resource.Coal.display = true;
                     global.civic.coal_miner.display = true;
                     global.civic.coal_miner.max = jobScale(global.city.coal_mine.count);
-                    if (global.tech['mine_conveyor']){
-                        powerOnNewStruct($(this)[0]);
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -5471,6 +5465,9 @@ export function casinoEarn(){
             cash *= 1 + (workerScale(global.civic.banker.workers,'banker') * 0.05)
         }
     }
+    if (global.race['warlord'] && global.race['befuddle']){
+        cash *= 1 + (traits.befuddle.vars()[0] / 100);
+    }
     cash *= production('psychic_cash');
     let racVal = govActive('racketeer', 1);
     if (racVal){
@@ -6109,7 +6106,8 @@ export function setAction(c_action,action,type,old,prediction){
         }
     }
     else {
-        if ((c_action['powered'] && global.tech['high_tech'] && global.tech['high_tech'] >= 2 && checkPowerRequirements(c_action)) || (c_action['switchable'] && c_action.switchable())){
+        let switchable = c_action['switchable'] ? c_action.switchable() : (c_action['powered'] && global.tech['high_tech'] && global.tech['high_tech'] >= 2 && checkPowerRequirements(c_action));
+        if (switchable){
             let powerOn = $(`<span role="button" :aria-label="on_label()" class="on" @click="power_on" title="ON" v-html="$options.filters.p_on(act.on,'${c_action.id}')"></span>`);
             let powerOff = $(`<span role="button" :aria-label="off_label()" class="off" @click="power_off" title="OFF" v-html="$options.filters.p_off(act.on,'${c_action.id}')"></span>`);
             parent.append(powerOn);
@@ -6839,7 +6837,7 @@ export function powerOnNewStruct(c_action,extra){
     let need_p = c_action.hasOwnProperty('powered') && c_action.powered() > 0;
     let can_p = !need_p;
     let gov_replicator = global.race.hasOwnProperty('governor') && global.race.governor.hasOwnProperty('tasks') && global.race.hasOwnProperty('replicator') && Object.values(global.race.governor.tasks).includes('replicate') && global.race.governor.config.replicate.pow.on && global.race.replicator.pow > 0;
-    if (need_p && global.city.hasOwnProperty('powered')){
+    if (need_p && global.city.hasOwnProperty('powered') && checkPowerRequirements(c_action)){
         let power = global.city.power;
         if (gov_replicator){
             power += global.race.replicator.pow;
@@ -8246,12 +8244,6 @@ function sentience(){
                 }
             });
         });
-        
-        if (typeList.includes('carnivore') && typeList.includes('herbivore')){
-            setTraitRank('forager',{ set: genus_traits.omnivore.forager });
-            delete global.race['carnivore'];
-            delete global.race['herbivore'];
-        }
 
         Object.keys(races[global.race.species].traits).forEach(function (trait) {
             setTraitRank(trait,{ set: races[global.race.species].traits[trait] });
@@ -9384,6 +9376,7 @@ export function absorbRace(race){
 
 function fanaticTrait(trait,rank){
     if (global.race['warlord'] && trait === 'kindling_kindred'){ trait = 'iron_wood'; }
+    else if (global.race['warlord'] && trait === 'spiritual'){ trait = 'unified'; }
     if (global.race[trait]){
         if (!setTraitRank(trait)){
             randomMinorTrait(5);
