@@ -1466,7 +1466,7 @@ function soldierBreakdown(type){
             }
             else {
                 let val = typeof d.v === 'string' ? parseInt(d.v) : +(d.v * 100).toFixed(1);
-                desc += `<div><span>${loc(d.k)}</span> <span class="has-text-${d.v >= 0 ? 'success' : 'danger'}">${d.v < 0 ? '-' : '+'}${val}${typeof d.v === 'string' ? '' : '%'}</span></div>`;
+                desc += `<div><span>${loc(d.k)}</span> <span class="has-text-${d.v >= 0 ? 'success' : 'danger'}">${d.v < 0 ? '' : '+'}${val}${typeof d.v === 'string' ? '' : '%'}</span></div>`;
             }
         }
     });
