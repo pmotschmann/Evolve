@@ -5644,7 +5644,7 @@ const galaxyProjects = {
                 desc += `<div>${loc('galaxy_symposium_effect2',[(650 * pirate).toFixed(0)])}</div>`;
                 if (global.tech.xeno >= 7){
                     desc += `<div>${loc('galaxy_symposium_effect3',[+highPopAdjust(300 * pirate).toFixed(2)])}</div>`;
-                    desc += `<div>${loc('galaxy_symposium_effect3b',[+highPopAdjust(150 * pirate).toFixed(2)])}</div>`;
+                    desc += `<div>${loc('galaxy_symposium_effect3b',[+highPopAdjust(100 * pirate).toFixed(2)])}</div>`;
                 }
                 if(global.tech.science >= 22){
                     desc += `<div>${loc('galaxy_symposium_effect4',[+(100 * pirate).toFixed(2), loc('eden_research_station_title')])}</div>`;
@@ -6404,6 +6404,44 @@ const galaxyProjects = {
 
 export const galaxyRegions = ['gxy_gateway', 'gxy_stargate', 'gxy_gorddon', 'gxy_alien1', 'gxy_alien2', 'gxy_chthonian'];
 export const gatewayArmada = ['scout_ship', 'corvette_ship', 'frigate_ship', 'cruiser_ship', 'dreadnought'];
+
+export const galaxy_ship_types = [
+    {
+        area: 'galaxy',
+        region: 'gxy_gateway',
+        ships: global.support.gateway.map(x => x.split(':')[1])
+    },
+    {
+        area: 'galaxy',
+        region: 'gxy_gorddon',
+        ships: ['freighter'],
+        req: 'embassy'
+    },
+    {
+        area: 'galaxy',
+        region: 'gxy_alien1',
+        ships: ['super_freighter'],
+        req: 'embassy'
+    },
+    {
+        area: 'galaxy',
+        region: 'gxy_alien2',
+        ships: global.support.alien2.map(x => x.split(':')[1]),
+        req: 'foothold'
+    },
+    {
+        area: 'galaxy',
+        region: 'gxy_chthonian',
+        ships: ['minelayer','raider'],
+        req: 'starbase'
+    },
+    {
+        area: 'portal',
+        region: 'prtl_lake',
+        ships: global.support.lake.map(x => x.split(':')[1]),
+        req: 'harbor'
+    }
+];
 
 export function convertSpaceSector(part){
     let space = 'space';
