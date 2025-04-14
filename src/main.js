@@ -1072,7 +1072,7 @@ function fastLoop(){
         global_multiplier *= 1 + (heat / 100);
     }
     if (global.race['heat_intolerance'] && global.city['hot']){
-        let heat = global.city['hot'] * traits.heat_intolerance.vars()[0];
+        let heat = Math.min(100, global.city['hot'] * traits.heat_intolerance.vars()[0]);
         breakdown.p['Global'][loc('hot')] = `-${heat}%`;
         global_multiplier *= 1 - (heat / 100);
     }
@@ -1089,12 +1089,12 @@ function fastLoop(){
         global_multiplier *= 1 + (cold / 100);
     }
     if (global.race['cold_intolerance'] && global.city['cold']){
-        let cold = global.city['cold'] * traits.cold_intolerance.vars()[0];
+        let cold = Math.min(100, global.city['cold'] * traits.cold_intolerance.vars()[0]);
         breakdown.p['Global'][loc('cold')] = `-${cold}%`;
         global_multiplier *= 1 - (cold / 100);
     }
-    if (global.civic.govern.type === 'anarchy' && global.resource[global.race.species].amount >= jobScale(10)){
-        let chaos = (global.resource[global.race.species].amount - (jobScale(10) - 1)) * (global.race['high_pop'] ? (0.25 / traits.high_pop.vars()[0]) : 0.25);
+    if (global.civic.govern.type === 'anarchy' && global.resource[global.race.species].amount > jobScale(10)){
+        let chaos = (global.resource[global.race.species].amount - jobScale(10)) * (global.race['high_pop'] ? (0.25 / traits.high_pop.vars()[0]) : 0.25);
         breakdown.p['Global'][loc('govern_anarchy')] = `-${chaos}%`;
         global_multiplier *= 1 - (chaos / 100);
     }
@@ -3257,12 +3257,12 @@ function fastLoop(){
             }
             else {
                 global_multiplier *= global.city.morale.current / 100;
-                breakdown.p['Global'][loc('morale')] = (global.city.morale.current - 100) + '%';
+                breakdown.p['Global'][loc('morale')] = sizeApproximation(global.city.morale.current - 100, 2) + '%';
             }
         }
         else {
             global_multiplier *= 1 + ((global.city.morale.current - 100) / 200);
-            breakdown.p['Global'][loc('morale')] = ((global.city.morale.current - 100) / 2) + '%';
+            breakdown.p['Global'][loc('morale')] = sizeApproximation((global.city.morale.current - 100) / 2, 2) + '%';
         }
 
         if (global.race['lazy'] && global.city.calendar.temp === 2){
@@ -5029,7 +5029,7 @@ function fastLoop(){
                 if (global.city.geology['Uranium']){
                     ash_base *= global.city.geology['Uranium'] + 1;
                 }
-                let ash = (ash_base / 65 / global_multiplier) * production('psychic_boost','Uranium');
+                let ash = (ash_base / 65) * production('psychic_boost','Uranium');
                 breakdown.p['Uranium'][loc('city_coal_ash')] = breakdown.p['Uranium'][loc('city_coal_ash')] ? breakdown.p['Uranium'][loc('city_coal_ash')] + ash : ash;
                 modRes('Uranium', (ash_base * time_multiplier) / 65);
             }
@@ -6853,7 +6853,7 @@ function fastLoop(){
 
         // Neutronium
         if (p_on['outpost']){
-            let p_values = production('outpost',true);
+            let p_values = production('outpost');
             let psy = production('psychic_boost','Neutronium');
 
             breakdown.p['Neutronium'][loc('space_gas_moon_outpost_bd')] = (p_values.b * psy * p_on['outpost']) + 'v';
@@ -7636,8 +7636,9 @@ function fastLoop(){
             let teamsters = global.civic.teamster.workers;
             let revenue = teamsters * rawCash * 0.00045;
             breakdown.p['Money'][jobName('teamster')] = Math.round(revenue) + 'v';
-            modRes('Money', +(revenue * time_multiplier * global_multiplier * hunger).toFixed(2));
-            rawCash += revenue * global_multiplier * hunger;
+            // Allow quadratic hunger penalty, but remove quadratic global production bonus
+            modRes('Money', +(revenue * time_multiplier * hunger).toFixed(2));
+            rawCash += revenue * hunger;
         }
         breakdown.p['Money'][loc('hunger')] = ((hunger - 1) * 100) + '%';
 

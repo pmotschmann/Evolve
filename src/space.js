@@ -2013,7 +2013,8 @@ const spaceProjects = {
                 Mythril(offset){ return spaceCostMultiplier('outpost', offset, 300, 1.3); }
             },
             effect(wiki){
-                let neutronium = +(production('outpost')).toFixed(3);
+                let p_values = production('outpost');
+                let neutronium = p_values.b;
                 let max = spatialReasoning(500);
                 let oil = +(fuel_adjust(2,true,wiki)).toFixed(2);
                 return `<div>${loc('space_gas_moon_outpost_effect1',[neutronium])}</div><div>${loc('plus_max_resource',[max,global.resource.Neutronium.name])}</div><div class="has-text-caution">${loc('space_gas_moon_outpost_effect3',[oil,$(this)[0].powered()])}</div>`;
@@ -3270,7 +3271,7 @@ const interstellarProjects = {
             wide: true,
             effect(wiki){
                 let storage = '<div class="aTable">';
-                let multiplier = storageMultipler(wiki);
+                let multiplier = storageMultipler(1, wiki);
                 for (const res of $(this)[0].res()){
                     if (global.resource[res].display){
                         let val = sizeApproximation(+(spatialReasoning($(this)[0].val(res)) * multiplier).toFixed(0),1);
@@ -6469,17 +6470,17 @@ export function piracy(region,rating,raw,wiki){
             pirate *= 1 - (traits.ocular_power.vars()[1] / 500);
         }
 
-        let num_def_plat_on = wiki ? global.galaxy.defense_platform.on : p_on['defense_platform'];
+        let num_def_plat_on = wiki ? (global.galaxy?.defense_platform?.on ?? 0) : p_on['defense_platform'];
         if (region === 'gxy_stargate' && num_def_plat_on){
             armada += num_def_plat_on * 20;
         }
 
-        let num_starbase_on = wiki ? global.galaxy.starbase.on : p_on['starbase'];
+        let num_starbase_on = wiki ? (global.galaxy?.starbase?.on ?? 0) : p_on['starbase'];
         if (region === 'gxy_gateway' && num_starbase_on){
             armada += num_starbase_on * 25;
         }
 
-        let num_foothold_on = wiki ? global.galaxy.foothold.on : p_on['foothold'];
+        let num_foothold_on = wiki ? (global.galaxy?.foothold?.on ?? 0) : p_on['foothold'];
         if (region === 'gxy_alien2' && num_foothold_on){
             armada += num_foothold_on * 50;
             let num_armed_miner_on = wiki ? global.galaxy.armed_miner.on : gal_on['armed_miner'];
@@ -6489,11 +6490,11 @@ export function piracy(region,rating,raw,wiki){
         }
 
         if (region === 'gxy_chthonian'){
-            let num_minelayer_on = wiki ? global.galaxy.minelayer.on : gal_on['minelayer'];
+            let num_minelayer_on = wiki ? (global.galaxy?.minelayer?.on ?? 0) : gal_on['minelayer'];
             if (num_minelayer_on){
                 armada += num_minelayer_on * galaxyProjects.gxy_chthonian.minelayer.ship.rating();
             }
-            let num_raider_on = wiki ? global.galaxy.raider.on : gal_on['raider'];
+            let num_raider_on = wiki ? (global.galaxy?.raider?.on ?? 0) : gal_on['raider'];
             if (num_raider_on){
                 armada += num_raider_on * galaxyProjects.gxy_chthonian.raider.ship.rating();
             }
