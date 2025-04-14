@@ -634,7 +634,7 @@ const edenicModules = {
                     if (milVal){
                         rate *= 1 + (milVal / 100);
                     }
-                    desc += `<div>${loc('city_boot_camp_effect',[rate])}</div>`;
+                    desc += `<div>${loc('city_boot_camp_effect',[+rate.toFixed(2)])}</div>`;
                 }
                 return desc;
             },
