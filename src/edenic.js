@@ -3,7 +3,7 @@ import { vBind, clearElement, popover, powerCostMod, spaceCostMultiplier, messag
 import { spatialReasoning } from './resources.js';
 import { actions, payCosts, initStruct, powerOnNewStruct, setAction, storageMultipler, drawTech, bank_vault } from './actions.js';
 import { checkRequirements, incrementStruct, piracy, ascendLab} from './space.js';
-import { mechRating } from './portal.js';
+import { mechRating, checkWarlordAchieve } from './portal.js';
 import { jobScale, workerScale } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
 import { loc } from './locale.js';
@@ -1615,6 +1615,10 @@ const edenicModules = {
                 }
                 else if (global.eden.reincarnation.count === 1 && global['resource'][global.race.species].max > global['resource'][global.race.species].amount && payCosts($(this)[0])){
                     global['resource'][global.race.species].amount++;
+                    if (global.race['warlord']){
+                        global.stats.warlord.r = true;
+                        checkWarlordAchieve();
+                    }
                     return true;
                 }
                 return false;
@@ -2050,6 +2054,10 @@ const edenicModules = {
             },
             action(){
                 if (payCosts($(this)[0])){
+                    if (global.race['warlord']){
+                        global.stats.warlord.g = true;
+                        checkWarlordAchieve();
+                    }
                     ascendLab(true);
                     return true;
                 }

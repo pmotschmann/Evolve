@@ -2160,7 +2160,7 @@ const techs = {
         grant: ['smelting',8],
         cost: {
             Knowledge(){ return 27500000; },
-            Coal(){ return 45000000; },
+            Coal(){ return global.race['warlord'] ? 35000000 : 45000000; },
             Oil(){ return 500000; },
             Infernite(){ return 750000; }
         },

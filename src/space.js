@@ -7458,7 +7458,7 @@ export function ascendLab(hybrid,wiki){
             if (['unicorn','seraph'].includes(global.race.species)){
                 unlockAchieve(`traitor`);
             }
-            if (global.stats.achieve['what_is_best'] && global.stats.achieve.what_is_best['e']){
+            if (global.stats.achieve['what_is_best'] && global.stats.achieve.what_is_best.e >= 5){
                 global.race['noexport'] = `Hybrid`;
             }
             else {

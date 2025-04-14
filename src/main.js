@@ -9538,7 +9538,7 @@ function midLoop(){
             lCaps['craftsman'] += jobScale(p_on['stellar_forge'] * 2);
         }
         if (p_on['demon_forge']){
-            lCaps['craftsman'] += jobScale(p_on['demon_forge'] * 10);
+            lCaps['craftsman'] += jobScale(p_on['demon_forge'] * 8);
         }
         if (global.tech['elysium'] && global.tech.elysium >= 18 && p_on['sacred_smelter']){
             lCaps['craftsman'] += jobScale(p_on['sacred_smelter'] * 3);

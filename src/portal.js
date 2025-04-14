@@ -14,7 +14,7 @@ import { descension } from './resets.js';
 import { renderEdenic } from './edenic.js';
 import { loadTab } from './index.js';
 import { loc } from './locale.js';
-import { addSmelter } from './industry.js';
+import { defineIndustry, addSmelter } from './industry.js';
 import { arpa } from './arpa.js';
 import { jobName } from './jobs.js';
 
@@ -529,6 +529,10 @@ const fortressModules = {
                     else if (global.tech['war_vault'] && global.portal['codex']){
                         global.portal.codex.s++;
                     }
+                    if (global.race?.absorbed?.length >= 53){
+                        global.stats.warlord.k = true;
+                        checkWarlordAchieve();
+                    }
                     if (p_on['soul_forge']){
                         let troops = garrisonSize(false,{no_forge: true});
                         let forge = soulForgeSoldiers();
@@ -631,7 +635,7 @@ const fortressModules = {
                     case 'Cement':
                         return 280;
                     case 'Coal':
-                        return 120;
+                        return 150;
                     case 'Steel':
                         return 60;
                     case 'Titanium':
@@ -647,7 +651,7 @@ const fortressModules = {
                     case 'Nano_Tube':
                         return 38;
                     case 'Neutronium':
-                        return 8;
+                        return 15;
                     case 'Adamantite':
                         return 18;
                     case 'Infernite':
@@ -837,7 +841,7 @@ const fortressModules = {
                 Sheet_Metal(offset){ return spaceCostMultiplier('demon_forge', offset, 155000, 1.3, 'portal'); },
             },
             effect(){
-                let desc = `<div>${loc('city_foundry_effect1',[jobScale(10)])}</div><div>${loc('interstellar_stellar_forge_effect',[40])}</div>`;
+                let desc = `<div>${loc('city_foundry_effect1',[jobScale(8)])}</div><div>${loc('interstellar_stellar_forge_effect',[40])}</div>`;
                 let num_smelters = $(this)[0].smelting();
                 if (num_smelters > 0){
                     desc += `<div>${loc('interstellar_stellar_forge_effect3',[num_smelters])}</div>`;
@@ -1904,9 +1908,15 @@ const fortressModules = {
                         global.tech.pillars = 2;
                         spatialReasoning(0,false,true);
                         calcPillar(true);
-                        towerSize(true);
-                        fortressModules.prtl_gate.west_tower.post(); //unlock towers if both are complete now
-                        fortressModules.prtl_gate.east_tower.post();
+                        if (global.race['warlord']){
+                            global.stats.warlord.p = true;
+                            checkWarlordAchieve();
+                        }
+                        else {
+                            towerSize(true);
+                            fortressModules.prtl_gate.west_tower.post(); //unlock towers if both are complete now
+                            fortressModules.prtl_gate.east_tower.post();
+                        }
                         unlockAchieve('resonance');
                         vBind({el: `#portal-ancient_pillars`},'update');
                         return true;
@@ -3344,6 +3354,10 @@ function buildEnemyFortress(parent){
                 let horde = Math.floor(global.portal.minions.spawns * seededRandom(6, 10, true) / 10);
                 let rating = armyRating(1,'hellArmy',0);
                 let died = seededRandom((250 + global.portal.throne.enemy[idx].s * 250) / rating, (500 + global.portal.throne.enemy[idx].s * 1250) / rating, true);
+                if (global.race['armored']){
+                    died *= 1 - (traits.armored.vars()[0] / 100);
+                    died = Math.round(died);
+                }
                 let range = global.portal.throne.enemy[idx].f;
                 for (let i=0; i<range; i++){
                     died += seededRandom(global.portal.throne.enemy[idx].s * 250 / rating, global.portal.throne.enemy[idx].s * 1250 / rating, true);
@@ -4475,6 +4489,11 @@ export function hellguard(){
             global.portal.soul_forge.kills -= Math.round(cap) * gems;
             global.resource.Soul_Gem.amount += gems;
         }
+    }
+
+    if (global.race['warlord'] && global.resource.Authority.amount >= 999 && global.resource.Authority.max >= 999){
+        global.stats.warlord.a = true;
+        checkWarlordAchieve();
     }
 }
 
@@ -7056,6 +7075,20 @@ function purgeReports(refresh){
             }
         }
         return removed;
+    }
+}
+
+export function checkWarlordAchieve(){
+    if (global.race['warlord']){
+        let tasks = 0;
+        Object.keys(global.stats.warlord).forEach(function(k){
+            if (global.stats.warlord[k]){
+                tasks++;
+            }
+        });
+        if (tasks > 0){
+            unlockAchieve('what_is_best',false,tasks);
+        }
     }
 }
 

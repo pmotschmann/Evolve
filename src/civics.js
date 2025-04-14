@@ -1183,10 +1183,10 @@ function hireMerc(num){
 export function buildGarrison(garrison,full){
     clearElement(garrison);
     if (global.tech['world_control'] && !global.race['truepath']){
-        garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success">${loc('rating')} <span class="defenseRating">{{ g.workers | hell | rating }}</span> - <span class="soldierRating"><span class="has-text-warning">${loc(`civics_garrison_soldier_rating`)}</span> {{ g.workers | single | rating }}</span></div>`));
+        garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success"><span class="defenseRating">${loc('rating')} {{ g.workers | hell | rating }}</span> - <span class="soldierRating"><span class="has-text-warning">${loc(`civics_garrison_soldier_rating`)}</span> {{ g.workers | single | rating }}</span></div>`));
     }
     else {
-        garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success">${loc('rating')} <span class="defenseRating">{{ g.workers | hell | rating }}</span> / <span class="offenseRating">{{ g.raid | rating }}</span></span> - <span class="soldierRating"><span class="has-text-warning">${loc(`civics_garrison_soldier_rating`)}</span> {{ g.workers | single | rating }}</span></div>`));
+        garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success"><span class="defenseRating">${loc('rating')} {{ g.workers | hell | rating }}</span> / <span class="offenseRating">{{ g.raid | rating }}</span></span> - <span class="soldierRating"><span class="has-text-warning">${loc(`civics_garrison_soldier_rating`)}</span> {{ g.workers | single | rating }}</span></div>`));
     }
 
     var soliders = $(`<div></div>`);
@@ -2165,7 +2165,7 @@ export function armyRating(val,type,wound,analysis){
         adjusted_val = val + rageVal + fathomVal;
     }
     data.push({ k: 'base', v: adjusted_val });
-    if (global.tech.military){ data.push({ k: 'civics_garrison_weaponry', v: weapon_tech }); }
+    if (global.tech.military){ data.push({ k: 'civics_garrison_weaponry', v: weapon_tech - 1 }); }
     let army = global.tech['military'] ? adjusted_val * weapon_tech : adjusted_val;
     if (type === 'army' || type === 'hellArmy' || type === 'Troops'){
         if (global.race['tactical']){
@@ -2342,7 +2342,7 @@ export function armyRating(val,type,wound,analysis){
     }
     if (global.race['rejuvenated']){
         army *= 1.05;
-        data.push({ k: 'rejuvenated', v: 5 });
+        data.push({ k: 'rejuvenated', v: 0.05 });
     }
     if (global.civic.govern.type === 'autocracy'){
         let auto = (govEffect.autocracy()[1] / 100);
@@ -2367,7 +2367,7 @@ export function armyRating(val,type,wound,analysis){
     army *= racial;
 
     if (racial > 1){
-        data.push({ k: 'misc', v: 1 - racial });
+        data.push({ k: 'misc', v: racial - 1 });
     }
     else if (racial < 1){
         data.push({ k: 'misc', v: -(1 - racial) });
