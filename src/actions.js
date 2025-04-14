@@ -6896,7 +6896,7 @@ export function getStructNumActive(c_action,wiki){
 
     // Electricity: production is negative, consumption is positive
     if (c_action.hasOwnProperty('powered') && c_action.powered() > 0) {
-        if (global.city.hasOwnProperty('powered')){
+        if (global.city.hasOwnProperty('powered') && checkPowerRequirements(c_action)){
             // The p_on struct is empty in the wiki view
             if (!wiki){
                 num_on = p_on[parts[1]];

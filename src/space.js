@@ -4599,6 +4599,7 @@ const interstellarProjects = {
                         if (global.interstellar.ascension_machine.count >= 100){
                             global.tech['ascension'] = 7;
                             initStruct(interstellarProjects.int_sirius.ascension_trigger);
+                            incrementStruct('ascension_trigger','interstellar');
                             if (global.settings.alwaysPower){
                                 powerOnNewStruct(interstellarProjects.int_sirius.ascension_trigger);
                             }
