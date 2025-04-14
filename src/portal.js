@@ -326,7 +326,7 @@ const fortressModules = {
         minions: {
             id: 'portal-minions',
             title: loc('portal_minions_title'),
-            desc: loc('portal_minions_title'),
+            desc(){ return rankDesc(loc('portal_minions_title'),'minions'); },
             reqs: { hellspawn: 3 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -344,7 +344,13 @@ const fortressModules = {
                 return desc;
             },
             action(){
-                if (payCosts($(this)[0])){
+                if (global.portal['throne'] && global.portal.throne.skill && global.portal.throne.points > 0 && global.portal.minions.rank < 5){
+                    global.portal.throne.points--;
+                    global.portal.minions.rank++;
+                    checkSkillPointAssignments();
+                    return true;
+                }
+                else if (payCosts($(this)[0])){
                     incrementStruct('minions','portal');
                     global.portal.minions.on++;
                     if (global.portal.minions.count === 1){
@@ -362,14 +368,20 @@ const fortressModules = {
             },
             soldiers(){
                 let absorb = (global.race?.absorbed?.length || 1);
-                return 22 + absorb;
+                return 20 + absorb + global.portal.minions.rank;
+            },
+            aura(){
+                if (global.portal?.throne?.skill && global.portal?.minions?.rank < 5){
+                    return 'blue';
+                }
+                return false;
             },
             flair(){ return loc('portal_minions_flair'); }
         },
         reaper: {
             id: 'portal-reaper',
             title: loc('portal_reaper_title'),
-            desc: loc('portal_reaper_title'),
+            desc(){ return rankDesc(loc('portal_reaper_title'),'reaper'); },
             reqs: { hellspawn: 4 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -384,7 +396,13 @@ const fortressModules = {
                 return desc;
             },
             action(){
-                if (payCosts($(this)[0])){
+                if (global.portal['throne'] && global.portal.throne.skill && global.portal.throne.points > 0 && global.portal.reaper.rank < 5){
+                    global.portal.throne.points--;
+                    global.portal.reaper.rank++;
+                    checkSkillPointAssignments();
+                    return true;
+                }
+                else if (payCosts($(this)[0])){
                     incrementStruct('reaper','portal');
                     return true;
                 }
@@ -395,6 +413,12 @@ const fortressModules = {
                     d: { count: 0, on: 0, rank: 1 },
                     p: ['reaper','portal']
                 };
+            },
+            aura(){
+                if (global.portal?.throne?.skill && global.portal?.reaper?.rank < 5){
+                    return 'blue';
+                }
+                return false;
             }
         },
         codex: {
@@ -467,8 +491,8 @@ const fortressModules = {
             name: loc('portal_wasteland_name'),
             desc: loc('portal_wasteland_desc'),
         },
-        throne_of_evil: {
-            id: 'portal-throne_of_evil',
+        throne: {
+            id: 'portal-throne',
             title: loc('portal_throne_of_evil_title'),
             desc: loc('portal_throne_of_evil_desc'),
             reqs: { hellspawn: 1 },
@@ -499,17 +523,32 @@ const fortressModules = {
                     desc += `<div class="has-text-success">${loc('portal_throne_of_evil_capture',[hearts])}</div>`;
                     desc += `<div class="has-text-danger">${loc('portal_throne_of_evil_capture2',[races[global.portal.throne.hearts[0]].name])}</div>`;
                 }
+                else if (global.portal.throne.points > 0){
+                    if (global.portal.throne.skill){
+                        desc += `<div class="has-text-info">${loc('portal_throne_of_evil_skill2')} ${loc('portal_throne_of_evil_skill',[global.portal.throne.points])}</div>`;
+                    }
+                    else {
+                        desc += `<div class="has-text-info">${loc('portal_throne_of_evil_skill1')} ${loc('portal_throne_of_evil_skill',[global.portal.throne.points])}</div>`;
+                    }
+                }
 
                 return desc;
             },
             action(){
-                if (global.portal['throne'] && global.portal.throne.hearts.length > 0){
+                if (global.portal['throne'] && global.portal.throne.hearts.length === 0 && global.portal.throne.points > 0){
+                    global.portal.throne.skill = global.portal.throne.skill ? false : true;
+                    checkSkillPointAssignments();
+                    return true;
+                }
+                else if (global.portal['throne'] && global.portal.throne.hearts.length > 0){
                     let heart = global.portal.throne.hearts[0];
+                    if (!global.race.absorbed.includes(heart)){
+                        global.portal.throne.points++;
+                    }
                     absorbRace(heart);
                     global.portal.throne.hearts.splice(0,1);
-                    global.portal.throne.points++;
                     if (global.portal.throne.hearts.length === 0){
-                        $(`#portal-throne_of_evil .orange`).removeClass('orange');
+                        $(`#portal-throne .orange`).removeClass('orange');
                     }
                     if (!global.settings.portal.pit){
                         global.settings.portal.pit = true;
@@ -548,8 +587,17 @@ const fortressModules = {
                 if (global.portal['throne'] && global.portal.throne.hearts.length > 0){
                     return 'orange';
                 }
+                else if (global.portal['throne'] && global.portal.throne.skill){
+                    return 'green';
+                }
                 return false;
-            }
+            },
+            struct(){
+                return {
+                    d: { enemy: [], hearts: [], spawned: [], points: 0, skill: false },
+                    p: ['throne','portal']
+                };
+            },
         },
         incinerator: {
             id: 'portal-incinerator',
@@ -584,7 +632,7 @@ const fortressModules = {
             },
             struct(){
                 return {
-                    d: { count: 0, on: 0 },
+                    d: { count: 0, on: 0, rank: 1 },
                     p: ['incinerator','portal']
                 };
             },
@@ -702,7 +750,7 @@ const fortressModules = {
             },
             struct(){
                 return {
-                    d: { count: 0 },
+                    d: { count: 0, rank: 1 },
                     p: ['warehouse','portal']
                 };
             }
@@ -732,7 +780,7 @@ const fortressModules = {
             },
             struct(){
                 return {
-                    d: { count: 0, on: 0 },
+                    d: { count: 0, on: 0, rank: 1 },
                     p: ['hovel','portal']
                 };
             },
@@ -776,7 +824,7 @@ const fortressModules = {
             },
             struct(){
                 return {
-                    d: { count: 0, on: 0 },
+                    d: { count: 0, on: 0, rank: 1 },
                     p: ['hell_casino','portal']
                 };
             },
@@ -821,7 +869,7 @@ const fortressModules = {
             },
             struct(){
                 return {
-                    d: { count: 0, on: 0, Lumber: 0, Coal: 0, Oil: 0 },
+                    d: { count: 0, on: 0, Lumber: 0, Coal: 0, Oil: 0, rank: 1 },
                     p: ['twisted_lab','portal']
                 };
             },
@@ -870,7 +918,7 @@ const fortressModules = {
             },
             struct(){
                 return {
-                    d: { count: 0, on: 0 },
+                    d: { count: 0, on: 0, rank: 1 },
                     p: ['demon_forge','portal']
                 };
             }
@@ -909,7 +957,7 @@ const fortressModules = {
             },
             struct(){
                 return {
-                    d: { count: 0, on: 0 },
+                    d: { count: 0, on: 0, rank: 1 },
                     p: ['hell_factory','portal']
                 };
             },
@@ -954,7 +1002,7 @@ const fortressModules = {
             },
             struct(){
                 return {
-                    d: { count: 0, dead: 0 },
+                    d: { count: 0, dead: 0, rank: 1 },
                     p: ['pumpjack','portal']
                 };
             },
@@ -1006,7 +1054,7 @@ const fortressModules = {
             },
             struct(){
                 return {
-                    d: { count: 0, on: 0 },
+                    d: { count: 0, on: 0, rank: 1 },
                     p: ['dig_demon','portal']
                 };
             },
@@ -1045,7 +1093,7 @@ const fortressModules = {
             },
             struct(){
                 return {
-                    d: { count: 0, on: 0 },
+                    d: { count: 0, on: 0, rank: 1 },
                     p: ['tunneler','portal']
                 };
             }
@@ -1080,7 +1128,7 @@ const fortressModules = {
             },
             struct(){
                 return {
-                    d: { count: 0, on: 0 },
+                    d: { count: 0, on: 0, rank: 1 },
                     p: ['brute','portal']
                 };
             },
@@ -4495,6 +4543,34 @@ export function hellguard(){
         global.stats.warlord.a = true;
         checkWarlordAchieve();
     }
+
+    ['incinerator','warehouse','hovel','hell_casino','twisted_lab','demon_forge','hell_factory','pumpjack','dig_demon','tunneler','brute','minions','reaper'].forEach(function(s){
+        if (!global.portal[s]['rank'] || global.portal[s].rank > 5){
+            global.portal[s]['rank'] = 1;
+        }
+    });
+}
+
+function checkSkillPointAssignments(){
+    ['incinerator','warehouse','hovel','hell_casino','twisted_lab','demon_forge','hell_factory','pumpjack','dig_demon','tunneler','brute','minions','reaper'].forEach(function(s){
+        if (global.portal[s] && global.portal[s].rank >= 5 || !global.portal.throne.skill || global.portal.throne.points <= 0){
+            $(`#portal-${s}`).removeClass('blue');
+        }
+        else if (global.portal[s] && global.portal[s].rank < 5 && global.portal.throne.skill && global.portal.throne.points > 0){
+            $(`#portal-${s}`).addClass('blue');
+        }
+    });
+    if (!global.portal.throne.skill || global.portal.throne.points <= 0){
+        global.portal.throne.skill = false;
+        $(`#portal-throne`).removeClass('green');
+    }
+    else if (global.portal.throne.skill && global.portal.throne.points > 0){
+        $(`#portal-throne`).addClass('green');
+    }
+}
+
+function rankDesc(label, struct){
+    return global.portal[struct].rank <= 1 ? label : `${label} (<span class="has-text-info">${loc('wiki_trait_rank')} ${global.portal[struct].rank}</span>)`;
 }
 
 function addHellEnemy(type = [], allowRecursion = true, allowRepeat = false){
@@ -7527,6 +7603,7 @@ export function warlordSetup(){
         initStruct(fortressModules.prtl_spire.purifier);
         initStruct(fortressModules.prtl_spire.port);
 
+        initStruct(fortressModules.prtl_wasteland.throne);
         initStruct(fortressModules.prtl_wasteland.incinerator); global.portal.incinerator.count = 1; global.portal.incinerator.on = 1;
         initStruct(fortressModules.prtl_wasteland.warehouse); global.portal.warehouse.count = 1;
         initStruct(fortressModules.prtl_wasteland.hovel); global.portal.hovel.count = 1;
@@ -7579,13 +7656,6 @@ export function warlordSetup(){
         global.civic.scientist.assigned = 2;
 
         global.civic.govern.type = 'autocracy';
-
-        global.portal['throne'] = {
-            enemy: [],
-            hearts: [],
-            spawned: [],
-            points: 0
-        };
 
         global.portal['fortress'] = {
             threat: 10000,
