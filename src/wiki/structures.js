@@ -149,7 +149,7 @@ const calcInfo = {
             throne: 1,
             mech_station: 10,
             rune_gate: 100,
-            fire_support_base: 10,
+            fire_support_base: 100,
             rushmore: 1,
             reincarnation: 1,
             north_pier: 10,

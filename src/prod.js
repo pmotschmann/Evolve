@@ -152,7 +152,7 @@ export function production(id,val,wiki){
                 vals.n = vals.b;
             }
 
-            return val ? vals : vals.n;
+            return vals;
         }
         case 'oil_extractor':
         {

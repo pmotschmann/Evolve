@@ -2308,7 +2308,7 @@ export const actions = {
             },
             effect(wiki){
                 let storage = '<div class="aTable">';
-                let multiplier = storageMultipler(wiki);
+                let multiplier = storageMultipler(1, wiki);
                 for (const res of $(this)[0].res()){
                     if (global.resource[res].display){
                         let val = sizeApproximation(+(spatialReasoning($(this)[0].val(res)) * multiplier).toFixed(0),1);

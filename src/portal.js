@@ -730,7 +730,7 @@ const fortressModules = {
             wide: true,
             effect(wiki){
                 let storage = '<div class="aTable">';
-                let multiplier = storageMultipler(wiki);
+                let multiplier = storageMultipler(1, wiki);
                 for (const res of $(this)[0].res()){
                     if (global.resource[res].display){
                         let val = sizeApproximation(+(spatialReasoning($(this)[0].val(res)) * multiplier).toFixed(0),1);
@@ -6403,13 +6403,13 @@ export function mechRating(mech,boss){
     if (mech.hasOwnProperty('infernal') && mech.infernal && global.blood['prepared'] && global.blood.prepared >= 3){
         rating *= 1.25;
     }
+    if (global.blood['wrath']){
+        rating *= 1 + (global.blood.wrath / 20);
+    }
 
     if (boss){
         if (global.stats.achieve['gladiator'] && global.stats.achieve.gladiator.l > 0){
             rating *= 1 + global.stats.achieve.gladiator.l * 0.1;
-        }
-        if (global.blood['wrath']){
-            rating *= 1 + (global.blood.wrath / 20);
         }
         if (mech.size === 'titan'){
             rating *= 1.1;
@@ -6425,16 +6425,13 @@ export function mechRating(mech,boss){
 
         let damage = 0;
         for (let i=0; i<mech.hardpoint.length; i++){
-            damage += rating;
+            damage += rating * weaponPower(mech,1);
         }
         return damage;
     }
     else {
         if (global.stats.achieve['gladiator'] && global.stats.achieve.gladiator.l > 0){
             rating *= 1 + global.stats.achieve.gladiator.l * 0.2;
-        }
-        if (global.blood['wrath']){
-            rating *= 1 + (global.blood.wrath / 20);
         }
 
         if (global.portal.spire.type === 'concrete'){
