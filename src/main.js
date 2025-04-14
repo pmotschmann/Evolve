@@ -5660,7 +5660,8 @@ function fastLoop(){
 
             let tunneler = 1;
             if (global.race['warlord'] && global.portal['tunneler']){
-                tunneler = 1 + (global.portal.tunneler.count / 20);
+                let boost = (global.portal.tunneler.rank + 3) / 100 * global.portal.tunneler.count;
+                tunneler = 1 + boost;
             }
 
             breakdown.p['Stone'][global.race['warlord'] ? jobName('miner') : loc('workers')] = stone_base + 'v';
