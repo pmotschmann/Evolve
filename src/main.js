@@ -4340,12 +4340,12 @@ function fastLoop(){
             let on_factories = (p_on['factory'] || 0)
                 + (p_on['red_factory'] || 0)
                 + ((p_on['int_factory'] || 0) * 2)
-                + ((p_on['hell_factory'] || 0) * 6)
+                + ((p_on['hell_factory'] || 0) * actions.portal.prtl_wasteland.hell_factory.lines())
                 + ((support_on['tau_factory'] || 0) * (global.tech['isolation'] ? 5 : 3));
             let max_factories = global.city['factory'].on
                 + (global.space['red_factory'] ? global.space['red_factory'].on : 0)
                 + (global.interstellar['int_factory'] ? global.interstellar['int_factory'].on * 2 : 0)
-                + (global.portal['hell_factory'] ? global.portal['hell_factory'].on * 6 : 0)
+                + (global.portal['hell_factory'] ? global.portal['hell_factory'].on * actions.portal.prtl_wasteland.hell_factory.lines() : 0)
                 + (global.tauceti['tau_factory'] ? global.tauceti['tau_factory'].on * (global.tech['isolation'] ? 5 : 3) : 0);
             let eff = max_factories > 0 ? on_factories / max_factories : 0;
             let remaining = max_factories;
@@ -8773,7 +8773,7 @@ function midLoop(){
                     breakdown.c[res][label] = gain+'v';
                 }
             };
-            let cc_gain = global.portal.warehouse.count * 100;
+            let cc_gain = global.portal.warehouse.count * (75 + global.portal.warehouse.rank * 25);
             caps['Crates'] += cc_gain;
             breakdown.c['Crates'][label] = cc_gain+'v';
             caps['Containers'] += cc_gain;
@@ -9225,7 +9225,8 @@ function midLoop(){
             breakdown.c.Containers[loc('portal_throne_of_evil_title')] = 500 + 'v';
         }
         if (global.portal['twisted_lab'] && global.portal.twisted_lab.count > 0 && global.race['absorbed']){
-            let gain = (p_on['twisted_lab'] * 10000 * global.race.absorbed.length);
+            let baseVal = 6000 + global.portal.twisted_lab.rank * 2000;
+            let gain = (p_on['twisted_lab'] * baseVal * global.race.absorbed.length);
             if (global.tech['supercollider'] && global.race['warlord']){
                 let ratio = global.tech['tp_particles'] || (global.tech['particles'] && global.tech['particles'] >= 3) ? 12.5: 25;
                 gain *= (global.tech['supercollider'] / ratio) + 1;

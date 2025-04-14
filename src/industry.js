@@ -633,7 +633,7 @@ function loadFactory(parent,bind){
                     max += support_on['tau_factory'] * (global.tech['isolation'] ? 5 : 3);
                 }
                 if (global.portal['hell_factory'] && p_on['hell_factory']){
-                    max += p_on['hell_factory'] * 6;
+                    max += p_on['hell_factory'] * actions.portal.prtl_wasteland.hell_factory.lines();
                 }
                 let keyMult = keyMultiplier();
                 for (var i=0; i<keyMult; i++){
@@ -666,7 +666,7 @@ function loadFactory(parent,bind){
                     max += support_on['tau_factory'] * (global.tech['isolation'] ? 5 : 3);
                 }
                 if (global.portal['hell_factory'] && p_on['hell_factory']){
-                    max += p_on['hell_factory'] * 6;
+                    max += p_on['hell_factory'] * actions.portal.prtl_wasteland.hell_factory.lines();
                 }
                 return colorRange(on,max);
             }
@@ -684,7 +684,7 @@ function loadFactory(parent,bind){
                     max += support_on['tau_factory'] * (global.tech['isolation'] ? 5 : 3);
                 }
                 if (global.portal['hell_factory'] && p_on['hell_factory']){
-                    max += p_on['hell_factory'] * 6;
+                    max += p_on['hell_factory'] * actions.portal.prtl_wasteland.hell_factory.lines();
                 }
                 return max;
             },

@@ -1249,7 +1249,7 @@ if (convertVersion(global['version']) <= 104003){
 
 global['version'] = '1.4.3';
 delete global['revision'];
-global['beta'] = 7;
+global['beta'] = 8;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};

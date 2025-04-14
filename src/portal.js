@@ -613,7 +613,7 @@ const fortressModules = {
                 Infernite(offset){ return spaceCostMultiplier('incinerator', offset, 4000, 1.3, 'portal'); },
             },
             powered(wiki){
-                let power = 25;
+                let power = 22.5 + (global.portal?.incinerator?.rank || 1) * 2.5;
                 if (global.race['forge']){
                     power += traits.forge.vars()[0] * 5;
                 }
@@ -653,7 +653,7 @@ const fortressModules = {
         warehouse: {
             id: 'portal-warehouse',
             title(){ return loc('city_shed_title3'); },
-            desc(){ return rankDesc(loc('city_shed_title3'),'incinerator'); },
+            desc(){ return rankDesc(loc('city_shed_title3'),'warehouse'); },
             reqs: { hellspawn: 1 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -674,55 +674,55 @@ const fortressModules = {
             val(res){
                 switch (res){
                     case 'Lumber':
-                        return 750;
+                        return 725 + (global.portal?.warehouse?.rank || 1) * 25;
                     case 'Stone':
-                        return 750;
+                        return 725 + (global.portal?.warehouse?.rank || 1) * 25;
                     case 'Chrysotile':
-                        return 750;
+                        return 725 + (global.portal?.warehouse?.rank || 1) * 25;
                     case 'Furs':
-                        return 425;
+                        return 400 + (global.portal?.warehouse?.rank || 1) * 25;
                     case 'Copper':
-                        return 380;
+                        return 360 + (global.portal?.warehouse?.rank || 1) * 20;
                     case 'Iron':
-                        return 350;
+                        return 335 + (global.portal?.warehouse?.rank || 1) * 15;
                     case 'Aluminium':
-                        return 320;
+                        return 300 + (global.portal?.warehouse?.rank || 1) * 20;
                     case 'Cement':
-                        return 280;
+                        return 260 + (global.portal?.warehouse?.rank || 1) * 20;
                     case 'Coal':
-                        return 150;
+                        return 140 + (global.portal?.warehouse?.rank || 1) * 10;
                     case 'Steel':
-                        return 60;
+                        return 55 + (global.portal?.warehouse?.rank || 1) * 5;
                     case 'Titanium':
-                        return 40;
+                        return 35 + (global.portal?.warehouse?.rank || 1) * 5;
                     case 'Uranium':
-                        return 1;
+                        return global.portal?.warehouse?.rank || 1;
                     case 'Alloy':
-                        return 35;
+                        return 31 + (global.portal?.warehouse?.rank || 1) * 4;
                     case 'Polymer':
-                        return 35;
+                        return 31 + (global.portal?.warehouse?.rank || 1) * 4;
                     case 'Iridium':
-                        return 32;
+                        return 28 + (global.portal?.warehouse?.rank || 1) * 4;
                     case 'Nano_Tube':
-                        return 38;
+                        return 34 + (global.portal?.warehouse?.rank || 1) * 4;
                     case 'Neutronium':
-                        return 15;
+                        return 13 + (global.portal?.warehouse?.rank || 1) * 2;
                     case 'Adamantite':
-                        return 18;
+                        return 15 + (global.portal?.warehouse?.rank || 1) * 3;
                     case 'Infernite':
-                        return 4;
+                        return 3 + global.portal?.warehouse?.rank || 1;
                     case 'Bolognium':
-                        return 8;
+                        return 6 + global.portal?.warehouse?.rank || 2;
                     case 'Orichalcum':
-                        return 10;
+                        return 8 + global.portal?.warehouse?.rank || 2;
                     case 'Graphene':
-                        return 16;
+                        return 14 + global.portal?.warehouse?.rank || 2;
                     case 'Stanene':
-                        return 16;
+                        return 14 + global.portal?.warehouse?.rank || 2;
                     case 'Oil':
-                        return 20;
+                        return 18 + global.portal?.warehouse?.rank || 2;
                     case 'Helium_3':
-                        return 19;
+                        return 17 + global.portal?.warehouse?.rank || 2;
                     default:
                         return 0;
                 }
@@ -737,8 +737,8 @@ const fortressModules = {
                         storage += `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
-                storage += `<span>${loc('plus_max_resource',[100,global.resource.Crates.name])}</span>`;
-                storage += `<span>${loc('plus_max_resource',[100,global.resource.Containers.name])}</span>`;
+                storage += `<span>${loc('plus_max_resource',[75 + (global.portal?.warehouse?.rank || 1) * 25, global.resource.Crates.name])}</span>`;
+                storage += `<span>${loc('plus_max_resource',[75 + (global.portal?.warehouse?.rank || 1) * 25, global.resource.Containers.name])}</span>`;
                 storage += '</div>';
                 return storage;
             },
@@ -810,7 +810,7 @@ const fortressModules = {
                 };
             },
             citizens(){
-                let pop = 24;
+                let pop = 18 + (global.portal?.hovel?.rank || 1) * 2;
                 if (global.race['high_pop']){
                     pop *= traits.high_pop.vars()[0];
                 }
@@ -888,12 +888,13 @@ const fortressModules = {
                 Graphene(offset){ return spaceCostMultiplier('twisted_lab', offset, 230000, 1.3, 'portal'); }
             },
             effect(){
-                let know = global.race['absorbed'] ? global.race.absorbed.length * 10000 : 10000;
+                let baseVal = 6000 + (global.portal?.twisted_lab?.rank || 1) * 2000;
+                let know = global.race['absorbed'] ? global.race.absorbed.length * baseVal : baseVal;
                 if (global.tech['supercollider']){
                     let ratio = global.tech['tp_particles'] || (global.tech['particles'] && global.tech['particles'] >= 3) ? 12.5: 25;
                     know *= (global.tech['supercollider'] / ratio) + 1;
                 }
-                let desc = `<div>${loc('plus_max_resource',[know,global.resource.Knowledge.name])}</div>`;
+                let desc = `<div>${loc('plus_max_resource',[(+know.toFixed(0)).toLocaleString(),global.resource.Knowledge.name])}</div>`;
                 desc += `<div>${loc('city_university_effect',[jobScale(3)])}</div>`;
                 desc += `<div>${loc('plus_max_resource',[jobScale(2),jobName('scientist')])}</div>`;
                 desc += `<div>${loc('interstellar_g_factory_effect')}</div>`;
@@ -954,7 +955,7 @@ const fortressModules = {
             powered(){ return powerCostMod(3); },
             special: true,
             smelting(){
-                return 20;
+                return 18 + (global.portal?.demon_forge?.rank || 1) * 2;
             },
             action(){
                 if (global.portal['throne'] && global.portal.throne.skill && global.portal.throne.points > 0 && global.portal.demon_forge.rank < 5){
@@ -1004,7 +1005,7 @@ const fortressModules = {
                 Stanene(offset){ return spaceCostMultiplier('hell_factory', offset, 375000, 1.3, 'portal'); }
             },
             effect(){
-                let desc = `<div>${loc('portal_factory_effect',[6])}</div><div>${loc('city_crafted_mats',[25])}</div>`;
+                let desc = `<div>${loc('portal_factory_effect',[$(this)[0].lines()])}</div><div>${loc('city_crafted_mats',[25])}</div>`;
                 desc += `<div>${loc('plus_max_resource',[jobScale(5),jobName('cement_worker')])}</div>`;
                 desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
@@ -1021,12 +1022,15 @@ const fortressModules = {
                 else if (payCosts($(this)[0])){
                     incrementStruct('hell_factory','portal');
                     if (powerOnNewStruct($(this)[0])){
-                        global.city.factory.Alloy += 4;
+                        global.city.factory.Alloy += $(this)[0].lines();
                         defineIndustry();
                     }
                     return true;
                 }
                 return false;
+            },
+            lines(){
+                return 3 + (global.portal?.hell_factory?.rank || 1);
             },
             struct(){
                 return {
@@ -1255,7 +1259,7 @@ const fortressModules = {
                 };
             },
             soldiers(){
-                let soldiers = 10;
+                let soldiers = 7 + (global.portal?.brute?.rank || 1);
                 if (global.race['grenadier']){
                     soldiers -= 4;
                 }
@@ -4624,7 +4628,8 @@ export function hellguard(){
         if (global.portal.throne.enemy.length > 0){
             let rating = armyRating(1,'hellArmy',0);
             global.portal.throne.enemy.forEach(function(e){
-                let reapEffect = global.race['blurry'] ? 100 - traits.blurry.vars()[0] : 100;
+                let reapEffect = global.race['blurry'] ? 102 - traits.blurry.vars()[0] : 102;
+                reapEffect -= (global.portal?.reaper?.count || 1) * 2;
                 let reaper = 0.25 + (e.s * 0.01) - ((global.portal?.reaper?.count || 0) / reapEffect);
                 if (reaper < 0.01){ reaper = 0.01; }
                 let bound = Math.round(global.portal.minions.spawns * (0.5 * e.s) * (e.s ** reaper) / rating);

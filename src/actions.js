@@ -5435,6 +5435,10 @@ export function casino_vault(){
     if (global.race['warlord']){
         let absorb = global.race?.absorbed?.length || 1;
         vault *= 1 + (absorb / 10);
+        if (global.portal['hell_casino'] && global.portal.hell_casino.rank > 1){
+            let rank = global.portal.hell_casino.rank - 1;
+            vault *= 1 + rank * 0.05;
+        }
     }
     return vault;
 }
@@ -5475,6 +5479,10 @@ export function casinoEarn(){
     }
     if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.casino){
         cash *= 1.35;
+    }
+    if (global.race['warlord'] && global.portal['hell_casino'] && global.portal.hell_casino.rank > 1){
+        let rank = global.portal.hell_casino.rank - 1;
+        cash *= 1 + rank * 0.12;
     }
     return cash;
 }
