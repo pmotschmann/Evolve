@@ -851,8 +851,9 @@ const fortressModules = {
                 }
                 else if (payCosts($(this)[0])){
                     incrementStruct('hell_casino','portal');
-                    if (!global.race['joyless']){
+                    if (global.tech['theatre'] && !global.race['joyless']){
                         global.civic.entertainer.max += jobScale(3);
+                        global.civic.entertainer.display = true;
                     }
                     powerOnNewStruct($(this)[0]);
                     return true;
@@ -1645,7 +1646,10 @@ const fortressModules = {
                 Brick(offset){ return spaceCostMultiplier('tavern', offset, 138000, 1.25, 'portal'); },
             },
             effect(wiki){
-                let desc = `<div>${loc('plus_resource_per',[0.35,loc('morale'),loc('portal_shadow_mine_title')])}</div>`;
+                let desc = '';
+                if (!global.race['joyless']){
+                    desc += `<div>${loc('plus_resource_per',[0.35,loc('morale'),loc('portal_shadow_mine_title')])}</div>`;
+                }
                 desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
             },
@@ -7307,7 +7311,6 @@ export function warlordSetup(){
         global.tech['banking'] = 11;
         global.tech['biotech'] = 1;
         global.tech['boot_camp'] = 2;
-        global.tech['broadcast'] = 2;
         global.tech['container'] = 7;
         global.tech['copper'] = 1;
         global.tech['currency'] = 6;
@@ -7376,7 +7379,6 @@ export function warlordSetup(){
         global.tech['swarm'] = 6;
         global.tech['syndicate'] = 0;
         global.tech['synthetic_fur'] = 1;
-        global.tech['theatre'] = 3;
         global.tech['theology'] = 2;
         global.tech['titanium'] = 3;
         global.tech['trade'] = 3;
@@ -7393,6 +7395,11 @@ export function warlordSetup(){
         global.tech['hell_lake'] = 1;
         global.tech['hell_spire'] = 1;
         global.tech['hellspawn'] = 1;
+
+        if (!global.race['joyless']){
+            global.tech['theatre'] = 3;
+            global.tech['broadcast'] = 2;
+        }
 
         if (!global.race['flier']){
             global.tech['cement'] = 5;
@@ -7678,7 +7685,7 @@ export function warlordSetup(){
         initStruct(actions.space.spc_red.ziggurat);
         initStruct(actions.space.spc_sun.swarm_control);
         initStruct(actions.space.spc_sun.swarm_satellite);
-        
+
         global.civic['garrison'] = {
             display: true,
             disabled: false,
@@ -7753,7 +7760,9 @@ export function warlordSetup(){
 
         global.civic.d_job = 'lumberjack';
         global.civic.miner.display = true;
-        global.civic.entertainer.display = true;
+        if (!global.race['joyless']){
+            global.civic.entertainer.display = true;
+        }
         global.civic.craftsman.display = true;
 
         let citizens = actions.portal.prtl_wasteland.dig_demon.citizens() + actions.portal.prtl_wasteland.hovel.citizens();
@@ -7769,9 +7778,11 @@ export function warlordSetup(){
         global.civic.cement_worker.workers = 5;
         global.civic.cement_worker.assigned = 5;
 
-        global.civic.entertainer.max = 3;
-        global.civic.entertainer.workers = 3;
-        global.civic.entertainer.assigned = 3;
+        if (!global.race['joyless']){
+            global.civic.entertainer.max = 3;
+            global.civic.entertainer.workers = 3;
+            global.civic.entertainer.assigned = 3;
+        }
 
         global.civic.banker.max = 1;
         global.civic.banker.workers = 1;

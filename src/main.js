@@ -2976,7 +2976,7 @@ function fastLoop(){
         });
 
         let entertainment = 0;
-        if (global.tech['theatre']){
+        if (global.tech['theatre'] && !global.race['joyless']){
             entertainment += workerScale(global.civic.entertainer.workers,'entertainer') * global.tech.theatre;
             if (global.race['musical']){
                 entertainment += workerScale(global.civic.entertainer.workers,'entertainer') * traits.musical.vars()[0];
@@ -2999,11 +2999,20 @@ function fastLoop(){
         morale += entertainment;
 
         if (global.tech['broadcast'] && !global.race['joyless']){
-            let gasVal = govActive('gaslighter',0);
-            let signalVal = global.race['orbit_decayed'] ? (p_on['nav_beacon'] || 0) : (global.tech['isolation'] && global.race['truepath'] ? support_on['colony'] : p_on['wardenclyffe']);
-            if (global.race['orbit_decayed']){ signalVal /= 2; }
-            let mVal = gasVal ? gasVal + global.tech.broadcast : global.tech.broadcast;
-            if (global.tech['isolation']){ mVal *= 2; }
+            let gasVal = govActive('gaslighter',0) || 0;
+            let signalVal;
+            let mVal = gasVal + global.tech.broadcast;
+            if (global.race['orbit_decayed']) {
+                signalVal = p_on['nav_beacon'] || 0;
+                mVal /= 2; // 50% effectiveness also applies to Media governor
+            }
+            else if (global.tech['isolation'] && global.race['truepath']){
+                signalVal = support_on['colony'];
+                mVal *= 2;
+            }
+            else {
+                signalVal = p_on['wardenclyffe'];
+            }
             global.city.morale.broadcast = signalVal * mVal;
             morale += signalVal * mVal;
         }
@@ -3011,8 +3020,8 @@ function fastLoop(){
             global.city.morale.broadcast = 0;
         }
         if (support_on['vr_center'] && !global.race['joyless']){
-            let gasVal = govActive('gaslighter',1);
-            let vr_morale = gasVal ? gasVal + 1 : 1;
+            let gasVal = govActive('gaslighter',1) || 0;
+            let vr_morale = gasVal + 1;
             if (global.race['orbit_decayed']){
                 vr_morale += 2;
             }
@@ -8458,20 +8467,28 @@ function midLoop(){
             lCaps['entertainer'] += jobScale(athVal ? (global.city.amphitheatre.count * athVal) : global.city.amphitheatre.count);
         }
         if (global.city['casino']){
-            lCaps['entertainer'] += jobScale(global.city.casino.count);
+            if (global.tech['theatre'] && !global.race['joyless']){
+                lCaps['entertainer'] += jobScale(global.city.casino.count);
+            }
         }
         if (global.space['spc_casino']){
-            lCaps['entertainer'] += jobScale(global.space.spc_casino.count);
+            if (global.tech['theatre'] && !global.race['joyless']){
+                lCaps['entertainer'] += jobScale(global.space.spc_casino.count);
+            }
             if (global.race['orbit_decayed']){
                 lCaps['banker'] += jobScale(global.space.spc_casino.count);
             }
         }
         if (global.portal['hell_casino']){
-            lCaps['entertainer'] += jobScale(global.portal.hell_casino.count * 3);
+            if (global.tech['theatre'] && !global.race['joyless']){
+                lCaps['entertainer'] += jobScale(global.portal.hell_casino.count * 3);
+            }
             lCaps['banker'] += jobScale(global.portal.hell_casino.count);
         }
         if (global.tauceti['tauceti_casino']){
-            lCaps['entertainer'] += jobScale(global.tauceti.tauceti_casino.count);
+            if (global.tech['theatre'] && !global.race['joyless']){
+                lCaps['entertainer'] += jobScale(global.tauceti.tauceti_casino.count);
+            }
             if (global.tech['isolation']){
                 lCaps['banker'] += jobScale(global.tauceti.tauceti_casino.count);
 
@@ -8481,7 +8498,9 @@ function midLoop(){
             }
         }
         if (global.galaxy['resort']){
-            lCaps['entertainer'] += jobScale(p_on['resort'] * 2);
+            if (global.tech['theatre'] && !global.race['joyless']){
+                lCaps['entertainer'] += jobScale(p_on['resort'] * 2);
+            }
         }
         if (global.city['cement_plant']){
             lCaps['cement_worker'] += jobScale(global.city.cement_plant.count * 2);
@@ -11990,10 +12009,7 @@ function longLoop(){
                 global.tech.high_tech = 2;
                 global.city['power'] = 0;
                 global.city['powered'] = true;
-                global.city['coal_power'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.city.coal_power);
                 global.settings.showPowerGrid = true;
                 setPowerGrid();
                 drawTech();
@@ -12004,8 +12020,8 @@ function longLoop(){
                 global.tech.high_tech = 4;
                 if (global.race['terrifying']){
                     global.tech['gambling'] = 1;
-                    global.city['casino'] = { count: 0 };
-                    global.space['spc_casino'] = { count: 0 };
+                    initStruct(actions.city.casino);
+                    initStruct(actions.space.spc_hell.spc_casino);
                 }
                 drawTech();
                 drawCity();
@@ -12013,10 +12029,7 @@ function longLoop(){
             if (global.resource.Knowledge.max >= (actions.tech.fission.cost.Knowledge() * know_adjust) && global.tech['high_tech'] && global.tech.high_tech === 4 && global.tech['uranium']){
                 messageQueue(loc(tech_source,[loc('tech_fission')]),'info',false,['progress']);
                 global.tech.high_tech = 5;
-                global.city['fission_power'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.city.fission_power);
                 drawTech();
                 drawCity();
             }
@@ -12078,7 +12091,7 @@ function longLoop(){
                 if (global.resource.Knowledge.max >= (actions.tech.ai_core.cost.Knowledge() * know_adjust) && global.tech['high_tech'] && global.tech.high_tech === 14 && global.tech['blackhole'] && global.tech['blackhole'] >= 3){
                     messageQueue(loc(tech_source,[loc('tech_ai_core')]),'info',false,['progress']);
                     global.tech.high_tech = 15;
-                    global.interstellar['citadel'] = { count: 0, on: 0 };
+                    initStruct(actions.interstellar.int_neutron.citadel);
                     drawTech();
                     drawCity();
                 }

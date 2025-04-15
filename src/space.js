@@ -192,7 +192,7 @@ const spaceProjects = {
             support(){ return 1; },
             effect(){
                 let orbitEffect = '';
-                if (global.race['orbit_decayed'] && global.tech['broadcast']){
+                if (global.race['orbit_decayed'] && global.tech['broadcast'] && !global.race['joyless']){
                     orbitEffect = `<div class="has-text-caution">${loc('space_red_vr_center_effect1',[global.tech['broadcast'] / 2])}</div>`;
                 }
                 let effect1 = global.race['orbit_decayed'] ? '' : `<div>${loc('space_home_nav_beacon_effect1')}</div>`;
@@ -811,8 +811,8 @@ const spaceProjects = {
                 Soul_Gem(offset){ return spaceCostMultiplier('vr_center', offset, 1, 1.25); }
             },
             effect(){
-                let gasVal = govActive('gaslighter',1);
-                let morale = gasVal ? gasVal + 1 : 1;
+                let gasVal = govActive('gaslighter',1) || 0;
+                let morale = gasVal + 1;
                 if (global.race['orbit_decayed']){
                     morale += 2;
                 }
@@ -1597,7 +1597,7 @@ const spaceProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     global.space.spc_casino.count++;
-                    if (!global.race['joyless']){
+                    if (global.tech['theatre'] && !global.race['joyless']){
                         global.civic.entertainer.max += jobScale(1);
                         global.civic.entertainer.display = true;
                     }
@@ -5790,7 +5790,7 @@ const galaxyProjects = {
             },
             effect(){
                 let money = spatialReasoning(global.tech['world_control'] ? 1875000 : 1500000);
-                let joy = global.race['joyless'] ? '' : `<div>${loc('plus_max_resource',[jobScale(2),loc(`job_entertainer`)])}</div>`;
+                let joy = (global.race['theatre'] && !global.race['joyless']) ? `<div>${loc('plus_max_resource',[jobScale(2),loc(`job_entertainer`)])}</div>` : '';
                 let desc = `<div>${loc('plus_max_resource',[`\$${money.toLocaleString()}`,loc('resource_Money_name')])}</div>${joy}<div>${loc('space_red_vr_center_effect2',[2])}</div>`;
                 return desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
@@ -5799,7 +5799,7 @@ const galaxyProjects = {
                 if (payCosts($(this)[0])){
                     incrementStruct('resort','galaxy');
                     if (powerOnNewStruct($(this)[0])){
-                        if (!global.race['joyless']){
+                        if (global.race['theatre'] && !global.race['joyless']){
                             global.civic.entertainer.max += jobScale(2);
                             global.civic.entertainer.display = true;
                         }
