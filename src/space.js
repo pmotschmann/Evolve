@@ -7874,6 +7874,9 @@ export function ascendLab(hybrid,wiki){
                         }
                         let formatError = false;
                         Object.keys(genome).forEach(function (type){
+                            if (type === 'fanaticism' && genome[type] === false){
+                                return;
+                            }
                             if (importCustom[type] && typeof genome[type] !== typeof importCustom[type]){
                                 formatError = true;
                                 return;
