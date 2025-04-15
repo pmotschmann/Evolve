@@ -1877,11 +1877,20 @@ function fastLoop(){
             }
         });
 
-        // Uranium
-        if (!global.race['environmentalist'] && global.race.universe !== 'magic' && global.tech['uranium'] && global.tech['uranium'] >= 3 && p_on['coal_power']){
-            let coal = p_on['coal_power'] * 0.35 * production('psychic_boost','Uranium');
-            breakdown.p['Uranium'][loc('city_coal_ash')] = (coal / 65 / global_multiplier);
-            modRes('Uranium', (coal * time_multiplier) / 65);
+        // Uranium Ash (from coal powerplants)
+        if (global.tech['uranium'] && global.tech['uranium'] >= 3 && p_on['coal_power']){
+            const fuel = actions.city.coal_power.p_fuel();
+            if (fuel.r === 'Coal' && fuel.a > 0){
+                let coal = p_on['coal_power'] * fuel.a;
+                let ash = coal / 65;
+                if (global.city.geology['Uranium']){
+                    ash *= global.city.geology['Uranium'] + 1;
+                }
+                ash *= production('psychic_boost','Uranium');
+                modRes('Uranium', ash * time_multiplier);
+                // Display on the right side of the breakdown to demonstrate that there is no global production scaling
+                breakdown.p.consume['Uranium'][loc('city_coal_ash')] = ash;
+            }
         }
 
         if (global.space['hydrogen_plant']){
@@ -4985,15 +4994,16 @@ function fastLoop(){
             modRes('Coal', -(consume_coal * time_multiplier));
             modRes('Oil', -(consume_oil * time_multiplier));
 
-            // Uranium
+            // Uranium Ash (from coal smelters)
             if (consume_coal > 0 && global.tech['uranium'] && global.tech['uranium'] >= 3){
-                let ash_base = consume_coal;
+                let ash = consume_coal / 65;
                 if (global.city.geology['Uranium']){
-                    ash_base *= global.city.geology['Uranium'] + 1;
+                    ash *= global.city.geology['Uranium'] + 1;
                 }
-                let ash = (ash_base / 65) * production('psychic_boost','Uranium');
-                breakdown.p['Uranium'][loc('city_coal_ash')] = breakdown.p['Uranium'][loc('city_coal_ash')] ? breakdown.p['Uranium'][loc('city_coal_ash')] + ash : ash;
-                modRes('Uranium', (ash_base * time_multiplier) / 65);
+                ash *= production('psychic_boost','Uranium');
+                modRes('Uranium', ash * time_multiplier);
+                // Display on the right side of the breakdown to demonstrate that there is no global production scaling
+                breakdown.p.consume['Uranium'][loc('city_coal_ash')] = (breakdown.p.consume['Uranium'][loc('city_coal_ash')] ?? 0) + ash;
             }
 
             //Steel Production
@@ -6025,9 +6035,9 @@ function fastLoop(){
                         breakdown.p['Copper'][`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
                     }
                 }
-                let delta = copper_base * shrineMetal.mult * tunneler;
-                global.city.mine['cpow'] = +(delta * hunger * q_multiplier * global_multiplier * (cop_single - 1)).toFixed(5);
-                delta *= copper_power * hunger * q_multiplier * global_multiplier;
+                let delta = copper_base * shrineMetal.mult * tunneler * hunger * q_multiplier * global_multiplier;
+                global.city.mine['cpow'] = +(delta * (cop_single - 1)).toFixed(5);
+                delta *= copper_power;
 
                 modRes('Copper', delta * time_multiplier);
 
@@ -6413,9 +6423,9 @@ function fastLoop(){
                 power_mult = 1 * zigVal;
             }
 
-            let delta = coal_base * tunneler;
-            global.city.coal_mine['cpow'] = +(delta * hunger * q_multiplier * global_multiplier * (coal_single - 1)).toFixed(5);
-            delta *= power_mult * hunger * q_multiplier * global_multiplier;
+            let delta = coal_base * tunneler * hunger * q_multiplier * global_multiplier;
+            global.city.coal_mine['cpow'] = +(delta * (coal_single - 1)).toFixed(5);
+            delta *= power_mult;
 
             breakdown.p['Coal'][loc('hunger')] = ((hunger - 1) * 100) + '%';
 
@@ -6431,16 +6441,17 @@ function fastLoop(){
 
             modRes('Coal', delta * time_multiplier);
 
-            // Uranium
+            // Uranium (from coal miners)
             if (global.resource.Uranium.display){
                 let uranium = delta / (global.race['cataclysm'] ? 48 : 115) * production('psychic_boost','Uranium');
                 global.city.coal_mine['upow'] = +(global.city.coal_mine['cpow'] / (global.race['cataclysm'] ? 48 : 115)).toFixed(5);
                 if (global.city.geology['Uranium']){
                     uranium *= global.city.geology['Uranium'] + 1;
                 }
-                let u_delta = uranium * tunneler;
-                
+                // Exclude global multiplier to get the base value for display purpose
                 breakdown.p['Uranium'][global.race['cataclysm'] ? loc('space_moon_iridium_mine_title') : (global.race['warlord'] ? jobName('miner') : jobName('coal_miner'))] = uranium / global_multiplier + 'v';
+
+                let u_delta = uranium * tunneler;
                 if (u_delta > 0){
                     breakdown.p['Uranium'][`ᄂ${loc('portal_tunneler_bd')}`] = ((tunneler - 1) * 100) + '%';
                 }
