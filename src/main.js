@@ -5,7 +5,7 @@ import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaT
 import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobName, jobScale, workerScale, limitCraftsmen, loadServants} from './jobs.js';
-import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, luxGoodPrice, smelterUnlocked } from './industry.js';
+import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, luxGoodPrice, smelterUnlocked, smelterFuelConfig } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
 import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, checkPowerRequirements, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct, casino_vault, casinoEarn } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types } from './space.js';
@@ -4811,7 +4811,6 @@ function fastLoop(){
             if ((global.race['kindling_kindred'] || global.race['smoldering']) && !global.race['evil']){
                 global.city.smelter.Wood = 0;
             }
-            let coal_fuel = global.race['kindling_kindred'] || global.race['smoldering'] ? 0.15 : 0.25;
 
             let total_fuel = 0;
             ['Wood', 'Coal', 'Oil', 'Star', 'Inferno'].forEach(function(fuel){
@@ -4820,9 +4819,9 @@ function fastLoop(){
                 }
                 total_fuel += global.city.smelter[fuel]
             });
-            if (global.city.smelter.Iron + global.city.smelter.Steel + global.city.smelter.Iridium > global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno){
-                let fueled = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno;
-                let overflow = global.city.smelter.Iron + global.city.smelter.Steel + global.city.smelter.Iridium - fueled;
+
+            if (global.city.smelter.Iron + global.city.smelter.Steel + global.city.smelter.Iridium > total_fuel){
+                let overflow = global.city.smelter.Iron + global.city.smelter.Steel + global.city.smelter.Iridium - total_fuel;
                 global.city.smelter.Iron -= overflow;
                 if (global.city.smelter.Iron < 0){
                     overflow = global.city.smelter.Iron;
@@ -4838,7 +4837,7 @@ function fastLoop(){
                     }
                 }
             }
-            else if (global.city.smelter.Iron + global.city.smelter.Steel + global.city.smelter.Iridium < global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno){
+            else if (global.city.smelter.Iron + global.city.smelter.Steel + global.city.smelter.Iridium < total_fuel){
                 let irid_smelt = global.tech['irid_smelting'] || (global.tech['m_smelting'] && global.tech.m_smelting >= 2) ? true : false;
                 if (!(global.resource.Iridium.display && irid_smelt) && !(global.resource.Steel.display && global.tech.smelting >= 2 && !global.race['steelen'])){
                     global.city.smelter.Iron++;
@@ -4851,13 +4850,14 @@ function fastLoop(){
                 global.city.smelter.Oil += overflow;
             }
 
-            let consume_wood = global.race['forge'] ? 0 : global.city.smelter.Wood * (global.race['evil'] && (!global.race['soul_eater'] || global.race.species === 'wendigo') ? 1 : 3);
-            let consume_coal = global.race['forge'] ? 0 : global.city.smelter.Coal * coal_fuel;
-            let consume_oil = global.race['forge'] ? 0 : global.city.smelter.Oil * 0.35;
+            let fuel_config = smelterFuelConfig();
+            let consume_wood = global.city.smelter.Wood * fuel_config.l_cost;
+            let consume_coal = global.city.smelter.Coal * fuel_config.c_cost;
+            let consume_oil = global.city.smelter.Oil * fuel_config.o_cost;
             iron_smelter = global.city.smelter.Iron;
             let steel_smelter = global.city.smelter.Steel;
             iridium_smelter = global.city.smelter.Iridium;
-            let oil_bonus = global.race['forge'] ? global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil : global.city.smelter.Oil;
+            let oil_bonus = global.city.smelter.Oil;
             let inferno_bonus = global.city.smelter.Inferno;
 
             if (global.race['steelen']) {
@@ -4865,54 +4865,30 @@ function fastLoop(){
                 steel_smelter = 0;
             }
 
-            while (iron_smelter + steel_smelter + iridium_smelter > global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno){
-                if (steel_smelter > 0){
-                    steel_smelter--;
-                }
-                else if (iron_smelter > 0){
-                    iron_smelter--;
-                }
-                else {
-                    iridium_smelter--;
+            let disable_smelters = Math.max(0, iron_smelter + steel_smelter + iridium_smelter - total_fuel);
+
+            if (consume_wood > 0){
+                let max_operable = Math.max(0, Math.floor(global.resource[fuel_config.l_type].amount / (fuel_config.l_cost * time_multiplier)));
+                if (max_operable < global.city.smelter.Wood){
+                    disable_smelters += global.city.smelter.Wood - max_operable;
+                    consume_wood = max_operable * fuel_config.l_cost;
                 }
             }
 
-            let l_type = global.race['soul_eater'] && global.race.species !== 'wendigo' ? 'Food' : (global.race['evil'] ? 'Furs' : 'Lumber');
-            while (consume_wood * time_multiplier > global.resource[l_type].amount && consume_wood > 0){
-                consume_wood -= (global.race['evil'] && (!global.race['soul_eater'] || global.race.species === 'wendigo') ? 1 : 3);
-                if (steel_smelter > 0){
-                    steel_smelter--;
-                }
-                else if (iron_smelter > 0){
-                    iron_smelter--;
-                }
-                else {
-                    iridium_smelter--;
+            if (consume_coal > 0){
+                let max_operable = Math.max(0, Math.floor(global.resource.Coal.amount / (fuel_config.c_cost * time_multiplier)));
+                if (max_operable < global.city.smelter.Coal){
+                    disable_smelters += global.city.smelter.Coal - max_operable;
+                    consume_coal = max_operable * fuel_config.c_cost;
                 }
             }
-            while (consume_coal * time_multiplier > global.resource.Coal.amount && consume_coal > 0){
-                consume_coal -= coal_fuel;
-                if (steel_smelter > 0){
-                    steel_smelter--;
-                }
-                else if (iron_smelter > 0){
-                    iron_smelter--;
-                }
-                else {
-                    iridium_smelter--;
-                }
-            }
-            while (consume_oil * time_multiplier > global.resource.Oil.amount && consume_oil > 0){
-                consume_oil -= 0.35;
-                oil_bonus--;
-                if (steel_smelter > 0){
-                    steel_smelter--;
-                }
-                else if (iron_smelter > 0){
-                    iron_smelter--;
-                }
-                else {
-                    iridium_smelter--;
+
+            if (consume_oil > 0){
+                let max_operable = Math.max(0, Math.floor(global.resource.Oil.amount / (fuel_config.o_cost * time_multiplier)));
+                if (max_operable < oil_bonus){
+                    disable_smelters += oil_bonus - max_operable;
+                    consume_oil = max_operable * fuel_config.o_cost;
+                    oil_bonus = max_operable;
                 }
             }
 
@@ -4922,20 +4898,14 @@ function fastLoop(){
                     Coal: 50,
                     Infernite: 0.5
                 };
-                Object.keys(inferno_rate).forEach(function(fuel){
-                    while (inferno_rate[fuel] * inferno_bonus * time_multiplier > global.resource[fuel].amount && inferno_bonus > 0){
-                        inferno_bonus--;
-                        if (steel_smelter > 0){
-                            steel_smelter--;
-                        }
-                        else if (iron_smelter > 0){
-                            iron_smelter--;
-                        }
-                        else {
-                            iridium_smelter--;
-                        }
-                    }
-                });
+                let max_operable_oil = Math.floor((global.resource.Oil.amount - consume_oil) / (inferno_rate.Oil * time_multiplier));
+                let max_operable_coal = Math.floor((global.resource.Coal.amount - consume_coal) / (inferno_rate.Coal * time_multiplier));
+                let max_operable_infernite = Math.floor(global.resource.Infernite.amount / (inferno_rate.Infernite * time_multiplier));
+                let max_operable = Math.max(0, Math.min(max_operable_oil, max_operable_coal, max_operable_infernite));
+                if (max_operable < inferno_bonus){
+                    disable_smelters += inferno_bonus - max_operable;
+                    inferno_bonus = max_operable;
+                }
 
                 consume_oil += inferno_rate.Oil * inferno_bonus;
                 consume_coal += inferno_rate.Coal * inferno_bonus;
@@ -4943,6 +4913,20 @@ function fastLoop(){
                 let consume_infernite = inferno_rate.Infernite * inferno_bonus;
                 breakdown.p.consume.Infernite[loc('city_smelter')] = -(consume_infernite);
                 modRes('Infernite', -(consume_infernite * time_multiplier));
+            }
+
+            if (disable_smelters > 0){
+                let disable_steel = Math.min(disable_smelters, steel_smelter);
+                steel_smelter -= disable_steel;
+                disable_smelters -= disable_steel;
+
+                let disable_iron = Math.min(disable_smelters, iron_smelter);
+                iron_smelter -= disable_iron;
+                disable_smelters -= disable_iron;
+
+                let disable_iridium = Math.min(disable_smelters, iridium_smelter);
+                iridium_smelter -= disable_iridium;
+                disable_smelters -= disable_iridium;
             }
 
             iron_smelter *= global.tech['smelting'] >= 3 ? 1.2 : 1;
@@ -4984,22 +4968,11 @@ function fastLoop(){
                 iridium_smelter *= 1 + (0.2 * salFathom);
             }
 
-            if (global.race['evil']){
-                if (global.race['soul_eater'] && global.race.species !== 'wendigo' && !global.race['artifical']){
-                    breakdown.p.consume.Food[loc('city_smelter')] = -(consume_wood);
-                }
-                else {
-                    breakdown.p.consume.Furs[loc('city_smelter')] = -(consume_wood);
-                }
-            }
-            else {
-                breakdown.p.consume.Lumber[loc('city_smelter')] = -(consume_wood);
-            }
-
+            breakdown.p.consume[fuel_config.l_type][loc('city_smelter')] = -(consume_wood);
             breakdown.p.consume.Coal[loc('city_smelter')] = -(consume_coal);
             breakdown.p.consume.Oil[loc('city_smelter')] = -(consume_oil);
 
-            modRes(l_type, -(consume_wood * time_multiplier));
+            modRes(fuel_config.l_type, -(consume_wood * time_multiplier));
             modRes('Coal', -(consume_coal * time_multiplier));
             modRes('Oil', -(consume_oil * time_multiplier));
 
