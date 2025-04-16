@@ -2043,6 +2043,30 @@ const extraInformation = {
     tavern: [
         loc(`wiki_tech_tavern`)
     ],
+    wheel: [
+        loc(`wiki_tech_job_unlock`,[loc(`job_teamster`)])
+    ],
+    wagon: [
+        loc(`wiki_tech_transport`, [100])
+    ],
+    steam_engine: [
+        loc(`wiki_tech_transport`, [200])
+    ],
+    combustion_engine: [
+        loc(`wiki_tech_transport`, [300])
+    ],
+    hover_cart: [
+        loc(`wiki_tech_transport`, [400])
+    ],
+    osha: [
+        loc(`wiki_tech_osha`)
+    ],
+    blackmarket: [
+        loc(`wiki_tech_blackmarket`)
+    ],
+    pipelines: [
+        loc(`wiki_tech_pipelines`)
+    ],
 };
 
 const extraInformationTP = {
