@@ -79,6 +79,8 @@ Object.keys(evolutionPath).forEach(function (key) {
 export function racesPage(content){
     content = sideMenu('create',content);
 
+    let genus_trank_pri = (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 4) ? 2 : 1;
+    let genus_trank_sec = (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 4) ? 1 : 0.5;
     let list = [];
     Object.keys(races).forEach(function (race){
         if ((race === 'custom' && !global.custom.hasOwnProperty('race0')) 
@@ -110,17 +112,18 @@ export function racesPage(content){
         let extraTraits = extraTraitList(race);
 
         let genes = $(`<div class="itemlist"></div>`);
-
+        let firstType = true; // For hybrids, arbitrarily display one type as primary and the other as secondary
 
         (typeList.includes('carnivore') && typeList.includes('herbivore') ? ['omnivore'] : typeList).forEach(function (gType){
             Object.keys(genus_traits[gType]).sort().forEach(function (trait){
                 let id = `raceTrait${race}${trait}`;
                 let color = races[race].fanaticism === trait ? 'danger' : 'caution';
                 genes.append(`<span class="has-text-${color}" id="${id}">${traitSkin('name', trait, race)}<span>`);
-                traitList.push({ t: trait, r: 1});
+                traitList.push({ t: trait, r: firstType ? genus_trank_pri : genus_trank_sec});
             });
+            firstType = false;
         });
-        
+
         Object.keys(races[race].traits).sort().forEach(function (trait){
             if (hallowed.active && ((race === 'tortoisan' && trait === 'slow') || (race === 'unicorn' && trait === 'rainbow'))){
                 return;
@@ -150,6 +153,7 @@ export function racesPage(content){
             getTraitDesc(desc, traitList[i].t, {
                 fanatic: traitList[i].t === races[race].fanaticism ? races[race].name : false, 
                 trank: traitList[i].r,
+                rpage: true,
                 wiki: true,
                 species: race
             });
