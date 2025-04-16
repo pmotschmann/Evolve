@@ -5453,7 +5453,7 @@ export function casino_vault(){
         vault *= 1 + (absorb / 10);
         if (global.portal['hell_casino'] && global.portal.hell_casino.rank > 1){
             let rank = global.portal.hell_casino.rank - 1;
-            vault *= 1 + rank * 0.05;
+            vault *= 1 + rank * 0.06;
         }
     }
     return vault;
@@ -5498,7 +5498,7 @@ export function casinoEarn(){
     }
     if (global.race['warlord'] && global.portal['hell_casino'] && global.portal.hell_casino.rank > 1){
         let rank = global.portal.hell_casino.rank - 1;
-        cash *= 1 + rank * 0.24;
+        cash *= 1 + rank * 0.36;
     }
     return cash;
 }
