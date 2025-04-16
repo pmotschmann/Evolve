@@ -5,7 +5,7 @@ import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaT
 import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobName, jobScale, workerScale, limitCraftsmen, loadServants} from './jobs.js';
-import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, luxGoodPrice, smelterUnlocked } from './industry.js';
+import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, luxGoodPrice, smelterUnlocked, smelterFuelConfig } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
 import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, checkPowerRequirements, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct, casino_vault, casinoEarn } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types } from './space.js';
@@ -1877,11 +1877,20 @@ function fastLoop(){
             }
         });
 
-        // Uranium
-        if (!global.race['environmentalist'] && global.race.universe !== 'magic' && global.tech['uranium'] && global.tech['uranium'] >= 3 && p_on['coal_power']){
-            let coal = p_on['coal_power'] * 0.35 * production('psychic_boost','Uranium');
-            breakdown.p['Uranium'][loc('city_coal_ash')] = (coal / 65 / global_multiplier);
-            modRes('Uranium', (coal * time_multiplier) / 65);
+        // Uranium Ash (from coal powerplants)
+        if (global.tech['uranium'] && global.tech['uranium'] >= 3 && p_on['coal_power']){
+            const fuel = actions.city.coal_power.p_fuel();
+            if (fuel.r === 'Coal' && fuel.a > 0){
+                let coal = p_on['coal_power'] * fuel.a;
+                let ash = coal / 65;
+                if (global.city.geology['Uranium']){
+                    ash *= global.city.geology['Uranium'] + 1;
+                }
+                ash *= production('psychic_boost','Uranium');
+                modRes('Uranium', ash * time_multiplier);
+                // Display on the right side of the breakdown to demonstrate that there is no global production scaling
+                breakdown.p.consume['Uranium'][loc('city_coal_ash')] = ash;
+            }
         }
 
         if (global.space['hydrogen_plant']){
@@ -2967,7 +2976,7 @@ function fastLoop(){
         });
 
         let entertainment = 0;
-        if (global.tech['theatre']){
+        if (global.tech['theatre'] && !global.race['joyless']){
             entertainment += workerScale(global.civic.entertainer.workers,'entertainer') * global.tech.theatre;
             if (global.race['musical']){
                 entertainment += workerScale(global.civic.entertainer.workers,'entertainer') * traits.musical.vars()[0];
@@ -2990,11 +2999,20 @@ function fastLoop(){
         morale += entertainment;
 
         if (global.tech['broadcast'] && !global.race['joyless']){
-            let gasVal = govActive('gaslighter',0);
-            let signalVal = global.race['orbit_decayed'] ? (p_on['nav_beacon'] || 0) : (global.tech['isolation'] && global.race['truepath'] ? support_on['colony'] : p_on['wardenclyffe']);
-            if (global.race['orbit_decayed']){ signalVal /= 2; }
-            let mVal = gasVal ? gasVal + global.tech.broadcast : global.tech.broadcast;
-            if (global.tech['isolation']){ mVal *= 2; }
+            let gasVal = govActive('gaslighter',0) || 0;
+            let signalVal;
+            let mVal = gasVal + global.tech.broadcast;
+            if (global.race['orbit_decayed']) {
+                signalVal = p_on['nav_beacon'] || 0;
+                mVal /= 2; // 50% effectiveness also applies to Media governor
+            }
+            else if (global.tech['isolation'] && global.race['truepath']){
+                signalVal = support_on['colony'];
+                mVal *= 2;
+            }
+            else {
+                signalVal = p_on['wardenclyffe'];
+            }
             global.city.morale.broadcast = signalVal * mVal;
             morale += signalVal * mVal;
         }
@@ -3002,8 +3020,8 @@ function fastLoop(){
             global.city.morale.broadcast = 0;
         }
         if (support_on['vr_center'] && !global.race['joyless']){
-            let gasVal = govActive('gaslighter',1);
-            let vr_morale = gasVal ? gasVal + 1 : 1;
+            let gasVal = govActive('gaslighter',1) || 0;
+            let vr_morale = gasVal + 1;
             if (global.race['orbit_decayed']){
                 vr_morale += 2;
             }
@@ -4793,7 +4811,6 @@ function fastLoop(){
             if ((global.race['kindling_kindred'] || global.race['smoldering']) && !global.race['evil']){
                 global.city.smelter.Wood = 0;
             }
-            let coal_fuel = global.race['kindling_kindred'] || global.race['smoldering'] ? 0.15 : 0.25;
 
             let total_fuel = 0;
             ['Wood', 'Coal', 'Oil', 'Star', 'Inferno'].forEach(function(fuel){
@@ -4802,9 +4819,9 @@ function fastLoop(){
                 }
                 total_fuel += global.city.smelter[fuel]
             });
-            if (global.city.smelter.Iron + global.city.smelter.Steel + global.city.smelter.Iridium > global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno){
-                let fueled = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno;
-                let overflow = global.city.smelter.Iron + global.city.smelter.Steel + global.city.smelter.Iridium - fueled;
+
+            if (global.city.smelter.Iron + global.city.smelter.Steel + global.city.smelter.Iridium > total_fuel){
+                let overflow = global.city.smelter.Iron + global.city.smelter.Steel + global.city.smelter.Iridium - total_fuel;
                 global.city.smelter.Iron -= overflow;
                 if (global.city.smelter.Iron < 0){
                     overflow = global.city.smelter.Iron;
@@ -4820,7 +4837,7 @@ function fastLoop(){
                     }
                 }
             }
-            else if (global.city.smelter.Iron + global.city.smelter.Steel + global.city.smelter.Iridium < global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno){
+            else if (global.city.smelter.Iron + global.city.smelter.Steel + global.city.smelter.Iridium < total_fuel){
                 let irid_smelt = global.tech['irid_smelting'] || (global.tech['m_smelting'] && global.tech.m_smelting >= 2) ? true : false;
                 if (!(global.resource.Iridium.display && irid_smelt) && !(global.resource.Steel.display && global.tech.smelting >= 2 && !global.race['steelen'])){
                     global.city.smelter.Iron++;
@@ -4833,13 +4850,14 @@ function fastLoop(){
                 global.city.smelter.Oil += overflow;
             }
 
-            let consume_wood = global.race['forge'] ? 0 : global.city.smelter.Wood * (global.race['evil'] && (!global.race['soul_eater'] || global.race.species === 'wendigo') ? 1 : 3);
-            let consume_coal = global.race['forge'] ? 0 : global.city.smelter.Coal * coal_fuel;
-            let consume_oil = global.race['forge'] ? 0 : global.city.smelter.Oil * 0.35;
+            let fuel_config = smelterFuelConfig();
+            let consume_wood = global.city.smelter.Wood * fuel_config.l_cost;
+            let consume_coal = global.city.smelter.Coal * fuel_config.c_cost;
+            let consume_oil = global.city.smelter.Oil * fuel_config.o_cost;
             iron_smelter = global.city.smelter.Iron;
             let steel_smelter = global.city.smelter.Steel;
             iridium_smelter = global.city.smelter.Iridium;
-            let oil_bonus = global.race['forge'] ? global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil : global.city.smelter.Oil;
+            let oil_bonus = global.city.smelter.Oil;
             let inferno_bonus = global.city.smelter.Inferno;
 
             if (global.race['steelen']) {
@@ -4847,54 +4865,30 @@ function fastLoop(){
                 steel_smelter = 0;
             }
 
-            while (iron_smelter + steel_smelter + iridium_smelter > global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno){
-                if (steel_smelter > 0){
-                    steel_smelter--;
-                }
-                else if (iron_smelter > 0){
-                    iron_smelter--;
-                }
-                else {
-                    iridium_smelter--;
+            let disable_smelters = Math.max(0, iron_smelter + steel_smelter + iridium_smelter - total_fuel);
+
+            if (consume_wood > 0){
+                let max_operable = Math.max(0, Math.floor(global.resource[fuel_config.l_type].amount / (fuel_config.l_cost * time_multiplier)));
+                if (max_operable < global.city.smelter.Wood){
+                    disable_smelters += global.city.smelter.Wood - max_operable;
+                    consume_wood = max_operable * fuel_config.l_cost;
                 }
             }
 
-            let l_type = global.race['soul_eater'] && global.race.species !== 'wendigo' ? 'Food' : (global.race['evil'] ? 'Furs' : 'Lumber');
-            while (consume_wood * time_multiplier > global.resource[l_type].amount && consume_wood > 0){
-                consume_wood -= (global.race['evil'] && (!global.race['soul_eater'] || global.race.species === 'wendigo') ? 1 : 3);
-                if (steel_smelter > 0){
-                    steel_smelter--;
-                }
-                else if (iron_smelter > 0){
-                    iron_smelter--;
-                }
-                else {
-                    iridium_smelter--;
+            if (consume_coal > 0){
+                let max_operable = Math.max(0, Math.floor(global.resource.Coal.amount / (fuel_config.c_cost * time_multiplier)));
+                if (max_operable < global.city.smelter.Coal){
+                    disable_smelters += global.city.smelter.Coal - max_operable;
+                    consume_coal = max_operable * fuel_config.c_cost;
                 }
             }
-            while (consume_coal * time_multiplier > global.resource.Coal.amount && consume_coal > 0){
-                consume_coal -= coal_fuel;
-                if (steel_smelter > 0){
-                    steel_smelter--;
-                }
-                else if (iron_smelter > 0){
-                    iron_smelter--;
-                }
-                else {
-                    iridium_smelter--;
-                }
-            }
-            while (consume_oil * time_multiplier > global.resource.Oil.amount && consume_oil > 0){
-                consume_oil -= 0.35;
-                oil_bonus--;
-                if (steel_smelter > 0){
-                    steel_smelter--;
-                }
-                else if (iron_smelter > 0){
-                    iron_smelter--;
-                }
-                else {
-                    iridium_smelter--;
+
+            if (consume_oil > 0){
+                let max_operable = Math.max(0, Math.floor(global.resource.Oil.amount / (fuel_config.o_cost * time_multiplier)));
+                if (max_operable < oil_bonus){
+                    disable_smelters += oil_bonus - max_operable;
+                    consume_oil = max_operable * fuel_config.o_cost;
+                    oil_bonus = max_operable;
                 }
             }
 
@@ -4904,20 +4898,14 @@ function fastLoop(){
                     Coal: 50,
                     Infernite: 0.5
                 };
-                Object.keys(inferno_rate).forEach(function(fuel){
-                    while (inferno_rate[fuel] * inferno_bonus * time_multiplier > global.resource[fuel].amount && inferno_bonus > 0){
-                        inferno_bonus--;
-                        if (steel_smelter > 0){
-                            steel_smelter--;
-                        }
-                        else if (iron_smelter > 0){
-                            iron_smelter--;
-                        }
-                        else {
-                            iridium_smelter--;
-                        }
-                    }
-                });
+                let max_operable_oil = Math.floor((global.resource.Oil.amount - consume_oil) / (inferno_rate.Oil * time_multiplier));
+                let max_operable_coal = Math.floor((global.resource.Coal.amount - consume_coal) / (inferno_rate.Coal * time_multiplier));
+                let max_operable_infernite = Math.floor(global.resource.Infernite.amount / (inferno_rate.Infernite * time_multiplier));
+                let max_operable = Math.max(0, Math.min(max_operable_oil, max_operable_coal, max_operable_infernite));
+                if (max_operable < inferno_bonus){
+                    disable_smelters += inferno_bonus - max_operable;
+                    inferno_bonus = max_operable;
+                }
 
                 consume_oil += inferno_rate.Oil * inferno_bonus;
                 consume_coal += inferno_rate.Coal * inferno_bonus;
@@ -4925,6 +4913,20 @@ function fastLoop(){
                 let consume_infernite = inferno_rate.Infernite * inferno_bonus;
                 breakdown.p.consume.Infernite[loc('city_smelter')] = -(consume_infernite);
                 modRes('Infernite', -(consume_infernite * time_multiplier));
+            }
+
+            if (disable_smelters > 0){
+                let disable_steel = Math.min(disable_smelters, steel_smelter);
+                steel_smelter -= disable_steel;
+                disable_smelters -= disable_steel;
+
+                let disable_iron = Math.min(disable_smelters, iron_smelter);
+                iron_smelter -= disable_iron;
+                disable_smelters -= disable_iron;
+
+                let disable_iridium = Math.min(disable_smelters, iridium_smelter);
+                iridium_smelter -= disable_iridium;
+                disable_smelters -= disable_iridium;
             }
 
             iron_smelter *= global.tech['smelting'] >= 3 ? 1.2 : 1;
@@ -4966,34 +4968,24 @@ function fastLoop(){
                 iridium_smelter *= 1 + (0.2 * salFathom);
             }
 
-            if (global.race['evil']){
-                if (global.race['soul_eater'] && global.race.species !== 'wendigo' && !global.race['artifical']){
-                    breakdown.p.consume.Food[loc('city_smelter')] = -(consume_wood);
-                }
-                else {
-                    breakdown.p.consume.Furs[loc('city_smelter')] = -(consume_wood);
-                }
-            }
-            else {
-                breakdown.p.consume.Lumber[loc('city_smelter')] = -(consume_wood);
-            }
-
+            breakdown.p.consume[fuel_config.l_type][loc('city_smelter')] = -(consume_wood);
             breakdown.p.consume.Coal[loc('city_smelter')] = -(consume_coal);
             breakdown.p.consume.Oil[loc('city_smelter')] = -(consume_oil);
 
-            modRes(l_type, -(consume_wood * time_multiplier));
+            modRes(fuel_config.l_type, -(consume_wood * time_multiplier));
             modRes('Coal', -(consume_coal * time_multiplier));
             modRes('Oil', -(consume_oil * time_multiplier));
 
-            // Uranium
+            // Uranium Ash (from coal smelters)
             if (consume_coal > 0 && global.tech['uranium'] && global.tech['uranium'] >= 3){
-                let ash_base = consume_coal;
+                let ash = consume_coal / 65;
                 if (global.city.geology['Uranium']){
-                    ash_base *= global.city.geology['Uranium'] + 1;
+                    ash *= global.city.geology['Uranium'] + 1;
                 }
-                let ash = (ash_base / 65) * production('psychic_boost','Uranium');
-                breakdown.p['Uranium'][loc('city_coal_ash')] = breakdown.p['Uranium'][loc('city_coal_ash')] ? breakdown.p['Uranium'][loc('city_coal_ash')] + ash : ash;
-                modRes('Uranium', (ash_base * time_multiplier) / 65);
+                ash *= production('psychic_boost','Uranium');
+                modRes('Uranium', ash * time_multiplier);
+                // Display on the right side of the breakdown to demonstrate that there is no global production scaling
+                breakdown.p.consume['Uranium'][loc('city_coal_ash')] = (breakdown.p.consume['Uranium'][loc('city_coal_ash')] ?? 0) + ash;
             }
 
             //Steel Production
@@ -6025,9 +6017,9 @@ function fastLoop(){
                         breakdown.p['Copper'][`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
                     }
                 }
-                let delta = copper_base * shrineMetal.mult * tunneler;
-                global.city.mine['cpow'] = +(delta * hunger * q_multiplier * global_multiplier * (cop_single - 1)).toFixed(5);
-                delta *= copper_power * hunger * q_multiplier * global_multiplier;
+                let delta = copper_base * shrineMetal.mult * tunneler * hunger * q_multiplier * global_multiplier;
+                global.city.mine['cpow'] = +(delta * (cop_single - 1)).toFixed(5);
+                delta *= copper_power;
 
                 modRes('Copper', delta * time_multiplier);
 
@@ -6413,9 +6405,9 @@ function fastLoop(){
                 power_mult = 1 * zigVal;
             }
 
-            let delta = coal_base * tunneler;
-            global.city.coal_mine['cpow'] = +(delta * hunger * q_multiplier * global_multiplier * (coal_single - 1)).toFixed(5);
-            delta *= power_mult * hunger * q_multiplier * global_multiplier;
+            let delta = coal_base * tunneler * hunger * q_multiplier * global_multiplier;
+            global.city.coal_mine['cpow'] = +(delta * (coal_single - 1)).toFixed(5);
+            delta *= power_mult;
 
             breakdown.p['Coal'][loc('hunger')] = ((hunger - 1) * 100) + '%';
 
@@ -6431,16 +6423,17 @@ function fastLoop(){
 
             modRes('Coal', delta * time_multiplier);
 
-            // Uranium
+            // Uranium (from coal miners)
             if (global.resource.Uranium.display){
                 let uranium = delta / (global.race['cataclysm'] ? 48 : 115) * production('psychic_boost','Uranium');
                 global.city.coal_mine['upow'] = +(global.city.coal_mine['cpow'] / (global.race['cataclysm'] ? 48 : 115)).toFixed(5);
                 if (global.city.geology['Uranium']){
                     uranium *= global.city.geology['Uranium'] + 1;
                 }
-                let u_delta = uranium * tunneler;
-                
+                // Exclude global multiplier to get the base value for display purpose
                 breakdown.p['Uranium'][global.race['cataclysm'] ? loc('space_moon_iridium_mine_title') : (global.race['warlord'] ? jobName('miner') : jobName('coal_miner'))] = uranium / global_multiplier + 'v';
+
+                let u_delta = uranium * tunneler;
                 if (u_delta > 0){
                     breakdown.p['Uranium'][`ᄂ${loc('portal_tunneler_bd')}`] = ((tunneler - 1) * 100) + '%';
                 }
@@ -8447,20 +8440,28 @@ function midLoop(){
             lCaps['entertainer'] += jobScale(athVal ? (global.city.amphitheatre.count * athVal) : global.city.amphitheatre.count);
         }
         if (global.city['casino']){
-            lCaps['entertainer'] += jobScale(global.city.casino.count);
+            if (global.tech['theatre'] && !global.race['joyless']){
+                lCaps['entertainer'] += jobScale(global.city.casino.count);
+            }
         }
         if (global.space['spc_casino']){
-            lCaps['entertainer'] += jobScale(global.space.spc_casino.count);
+            if (global.tech['theatre'] && !global.race['joyless']){
+                lCaps['entertainer'] += jobScale(global.space.spc_casino.count);
+            }
             if (global.race['orbit_decayed']){
                 lCaps['banker'] += jobScale(global.space.spc_casino.count);
             }
         }
         if (global.portal['hell_casino']){
-            lCaps['entertainer'] += jobScale(global.portal.hell_casino.count * 3);
+            if (global.tech['theatre'] && !global.race['joyless']){
+                lCaps['entertainer'] += jobScale(global.portal.hell_casino.count * 3);
+            }
             lCaps['banker'] += jobScale(global.portal.hell_casino.count);
         }
         if (global.tauceti['tauceti_casino']){
-            lCaps['entertainer'] += jobScale(global.tauceti.tauceti_casino.count);
+            if (global.tech['theatre'] && !global.race['joyless']){
+                lCaps['entertainer'] += jobScale(global.tauceti.tauceti_casino.count);
+            }
             if (global.tech['isolation']){
                 lCaps['banker'] += jobScale(global.tauceti.tauceti_casino.count);
 
@@ -8470,7 +8471,9 @@ function midLoop(){
             }
         }
         if (global.galaxy['resort']){
-            lCaps['entertainer'] += jobScale(p_on['resort'] * 2);
+            if (global.tech['theatre'] && !global.race['joyless']){
+                lCaps['entertainer'] += jobScale(p_on['resort'] * 2);
+            }
         }
         if (global.city['cement_plant']){
             lCaps['cement_worker'] += jobScale(global.city.cement_plant.count * 2);
@@ -11983,10 +11986,7 @@ function longLoop(){
                 global.tech.high_tech = 2;
                 global.city['power'] = 0;
                 global.city['powered'] = true;
-                global.city['coal_power'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.city.coal_power);
                 global.settings.showPowerGrid = true;
                 setPowerGrid();
                 drawTech();
@@ -11997,8 +11997,8 @@ function longLoop(){
                 global.tech.high_tech = 4;
                 if (global.race['terrifying']){
                     global.tech['gambling'] = 1;
-                    global.city['casino'] = { count: 0 };
-                    global.space['spc_casino'] = { count: 0 };
+                    initStruct(actions.city.casino);
+                    initStruct(actions.space.spc_hell.spc_casino);
                 }
                 drawTech();
                 drawCity();
@@ -12006,10 +12006,7 @@ function longLoop(){
             if (global.resource.Knowledge.max >= (actions.tech.fission.cost.Knowledge() * know_adjust) && global.tech['high_tech'] && global.tech.high_tech === 4 && global.tech['uranium']){
                 messageQueue(loc(tech_source,[loc('tech_fission')]),'info',false,['progress']);
                 global.tech.high_tech = 5;
-                global.city['fission_power'] = {
-                    count: 0,
-                    on: 0
-                };
+                initStruct(actions.city.fission_power);
                 drawTech();
                 drawCity();
             }
@@ -12071,7 +12068,7 @@ function longLoop(){
                 if (global.resource.Knowledge.max >= (actions.tech.ai_core.cost.Knowledge() * know_adjust) && global.tech['high_tech'] && global.tech.high_tech === 14 && global.tech['blackhole'] && global.tech['blackhole'] >= 3){
                     messageQueue(loc(tech_source,[loc('tech_ai_core')]),'info',false,['progress']);
                     global.tech.high_tech = 15;
-                    global.interstellar['citadel'] = { count: 0, on: 0 };
+                    initStruct(actions.interstellar.int_neutron.citadel);
                     drawTech();
                     drawCity();
                 }

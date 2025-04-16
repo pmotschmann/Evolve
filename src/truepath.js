@@ -1871,7 +1871,7 @@ const tauCetiModules = {
                 
                 if (global.tech['isolation']){
                     let gasVal = govActive('gaslighter',0);
-                    let mVal = (gasVal ? gasVal + global.tech.broadcast : global.tech.broadcast) * 2;
+                    let mVal = ((gasVal || 0) + (global.tech.broadcast || 0)) * 2;
                     desc = desc + `<div>${loc('space_red_vr_center_effect1',[mVal])}</div>`;
                 }
                 
@@ -2579,7 +2579,7 @@ const tauCetiModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('tauceti_casino','tauceti');
-                    if (!global.race['joyless']){
+                    if (global.tech['theatre'] && !global.race['joyless']){
                         global.civic.entertainer.max += jobScale(1);
                         global.civic.entertainer.display = true;
                     }
@@ -5639,7 +5639,6 @@ export function loneSurvivor(){
         global.tech['banking'] = 11;
         global.tech['biotech'] = 1;
         global.tech['boot_camp'] = 2;
-        global.tech['broadcast'] = 2;
         global.tech['container'] = 7;
         global.tech['copper'] = 1;
         global.tech['currency'] = 6;
@@ -5714,7 +5713,6 @@ export function loneSurvivor(){
         global.tech['synthetic_fur'] = 1;
         global.tech['tau_home'] = 6;
         global.tech['tauceti'] = 4;
-        global.tech['theatre'] = 3;
         global.tech['theology'] = 2;
         global.tech['titan'] = 9;
         global.tech['titan_ai_core'] = 3;
@@ -5728,6 +5726,12 @@ export function loneSurvivor(){
         global.tech['wharf'] = 1;
         global.tech['world_control'] = 1;
         global.tech['wsc'] = 0;
+
+        // Note: Joyless cannot be completed in Lone Survivor, and there is no reward for trying.
+        if (!global.race['joyless']){
+            global.tech['theatre'] = 3;
+            global.tech['broadcast'] = 2;
+        }
 
         if (!global.race['flier']){
             global.tech['cement'] = 5;

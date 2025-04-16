@@ -3355,7 +3355,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('casino','city');
-                    if (!global.race['joyless']){
+                    if (global.tech['theatre'] && !global.race['joyless']){
                         global.civic.entertainer.max += jobScale(1);
                         global.civic.entertainer.display = true;
                     }
@@ -5506,7 +5506,7 @@ export function casinoEarn(){
 export function casinoEffect(){
     let money = Math.round(casino_vault());
 
-    let joy = global.race['joyless'] ? '' : `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_entertainer`)])}</div>`;
+    let joy = (global.tech['theatre'] && !global.race['joyless']) ? `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_entertainer`)])}</div>` : '';
     let banker = global.race['orbit_decayed'] || global.tech['isolation'] ? `<div>${loc('plus_max_resource',[jobScale(1),loc('banker_name')])}</div>` : '';
     let desc = `<div>${loc('plus_max_resource',[`\$${money.toLocaleString()}`,loc('resource_Money_name')])}</div>${joy}${banker}<div>${loc('city_max_morale',[1])}</div>`;
     let cash = +(casinoEarn()).toFixed(2);
@@ -8914,11 +8914,14 @@ function aiStart(){
         global.tech['titanium'] = 1;
         global.tech['foundry'] = 7;
         global.tech['factory'] = 1;
-        global.tech['theatre'] = 3;
-        global.tech['broadcast'] = 1;
         global.tech['science'] = 7;
         global.tech['high_tech'] = 4;
         global.tech['theology'] = 2;
+
+        if (!global.race['joyless']){
+            global.tech['theatre'] = 3;
+            global.tech['broadcast'] = 1;
+        }
 
         global.settings.showIndustry = true;
         global.settings.showPowerGrid = true;
@@ -9111,6 +9114,11 @@ function cataclysm(){
         global.tech['satellite'] = 1;
         global.tech['space_explore'] = 4;
         global.tech['genesis'] = 2;
+
+        // Begin with a biodome: joyless is incompatible with Cataclysm
+        if (global.race['joyless']) {
+            delete global.race['joyless'];
+        }
 
         global.settings.showSpace = true;
         global.settings.space.home = true;

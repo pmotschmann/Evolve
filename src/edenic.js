@@ -677,7 +677,9 @@ const edenicModules = {
                 let max = 2;
 
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[loc('eden_asphodel_name')])}</div>`;
-                desc += `<div>${loc('space_red_vr_center_effect1',[morale])}</div>`;
+                if (!global.race['joyless']){
+                    desc += `<div>${loc('space_red_vr_center_effect1',[morale])}</div>`;
+                }
                 desc += `<div>${loc('space_red_vr_center_effect2',[max])}</div>`;
 
                 return desc;
@@ -1350,7 +1352,7 @@ const edenicModules = {
                 if (!global.tech['isle'] || global.tech.isle === 1){
                     desc += `<div>${loc('eden_pillbox_effect',[rating])}</div>`;
                 }
-                if (global.tech['elysium'] && global.tech.elysium >= 12){
+                if (global.tech['elysium'] && global.tech.elysium >= 12 && !global.race['joyless']){
                     desc += `<div>${loc('eden_restaurant_effect',[0.35,loc(`eden_restaurant_bd`)])}</div>`;
                 }
                 desc += `<div class="has-text-caution">${loc('portal_guard_post_effect2',[jobScale(10),$(this)[0].powered()])}</div>`;
@@ -1393,7 +1395,10 @@ const edenicModules = {
                 morale += (global.civic?.elysium_miner?.workers ?? 0) * 0.15;
                 morale += global.eden.hasOwnProperty('archive') && p_on['archive'] ? 0.4 * p_on['archive'] : 0;
 
-                let desc =  `<div>${loc('space_red_vr_center_effect1',[morale.toFixed(1)])}</div>`
+                let desc =  '';
+                if (!global.race['joyless']){
+                    desc += `<div>${loc('space_red_vr_center_effect1',[morale.toFixed(1)])}</div>`;
+                }
                 desc += `<div class="has-text-caution">${loc('interstellar_alpha_starport_effect3',[sizeApproximation(food),global.resource.Food.name])}</div>`;
                 desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
