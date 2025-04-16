@@ -654,7 +654,12 @@ const fortressModules = {
                 return powerModifier(-(power));
             },
             effect(wiki){
-                return `<div>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered(wiki))])}</div>`;
+                let desc = `<div>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered(wiki))])}</div>`;
+                if ((global.portal?.incinerator?.rank || 1) > 1){
+                    let rank = global.portal.incinerator.rank - 1;
+                    desc += `<div>${loc('portal_incinerator_effect',[15 * rank,loc('portal_twisted_lab_title'),global.resource.Graphene.name])}</div>`;
+                }
+                return desc;
             },
             action(){
                 if (global.portal['throne'] && global.portal.throne.skill && global.portal.throne.points > 0 && global.portal.incinerator.rank < 5){

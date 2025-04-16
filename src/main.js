@@ -5137,14 +5137,24 @@ function fastLoop(){
                     ai += graph * p_on['citadel'];
                 }
 
+                let incinerator = 1;
+                if (global.race['warlord'] && global.portal.hasOwnProperty('incinerator') && global.portal.incinerator.rank > 1){
+                    let rank = global.portal.incinerator.rank - 1;
+                    incinerator += rank * 15 * global.portal.incinerator.on / 100;
+                }
+
                 let synd = global.race['truepath'] ? syndicate('spc_titan') : 1;
-                let delta = graphene_production * ai * zigVal * hunger * global_multiplier * synd * eff;
+                let delta = graphene_production * ai * zigVal * hunger * global_multiplier * synd * eff * incinerator;
                 breakdown.p['Graphene'][global.race['warlord'] ? loc('portal_twisted_lab_title') : loc('interstellar_g_factory_bd')] = (graphene_production) + 'v';
                 if (global.tech['isolation'] && graphene_production > 0){
                     delta *= womling_technician;
                     if (womling_technician > 1){
                         breakdown.p['Graphene'][`ᄂ${loc('tau_red_womlings')}+0`] = ((womling_technician - 1) * 100) + '%';
                     }
+                }
+
+                if (incinerator > 1){
+                    breakdown.p['Graphene'][`ᄂ${loc('portal_incinerator_title')}`] = ((incinerator - 1) * 100) + '%';
                 }
 
                 if (graphene_production > 0){

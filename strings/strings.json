@@ -7427,6 +7427,7 @@
   "portal_throne_of_evil_skill2": "Click to exit skill point assignment mode.",
   "portal_incinerator_title": "Incinerator",
   "portal_incinerator_desc": "Burn things for power: plants, debris, bodies, anything.",
+  "portal_incinerator_effect": "+%0% %1 %2 production.",
   "portal_incinerator_flair": "Burn it all",
   "portal_hovel_title": "Hellspawn Hovel",
   "portal_casino": "Den of Sin",
