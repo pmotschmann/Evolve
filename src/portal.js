@@ -1,11 +1,11 @@
 import { global, seededRandom, keyMultiplier, p_on, support_on, gal_on, spire_on, hell_reports, hell_graphs, sizeApproximation } from './vars.js';
-import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost, calcPrestige, get_qlevel } from './functions.js';
+import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost, calcPrestige, get_qlevel, shrineBonusActive, getShrineBonus } from './functions.js';
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { traits, races, fathomCheck, traitCostMod, orbitLength } from './races.js';
 import { spatialReasoning, unlockContainers } from './resources.js';
 import { loadFoundry, jobScale, limitCraftsmen } from './jobs.js';
 import { armyRating, govCivics, garrisonSize, mercCost, soldierDeath } from './civics.js';
-import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc, actions, initStruct, storageMultipler, casinoEffect, structName, absorbRace } from './actions.js';
+import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc, actions, initStruct, storageMultipler, casinoEffect, structName, absorbRace, buildTemplate } from './actions.js';
 import { checkRequirements, incrementStruct, astrialProjection, ascendLab } from './space.js';
 import { asphodelResist } from './edenic.js';
 import { production, highPopAdjust } from './prod.js';
@@ -339,7 +339,12 @@ const fortressModules = {
             powered(){ return 0; },
             effect(){
                 let troops = $(this)[0].soldiers();
-                let desc = `<div>${loc('portal_minions_effect',[troops - 10,troops])}</div>`;
+                let low_troops = troops - 10;
+                if (global.race['infectious']){
+                    troops += traits.infectious.vars()[1];
+                    low_troops += traits.infectious.vars()[0];
+                }
+                let desc = `<div>${loc('portal_minions_effect',[low_troops,troops])}</div>`;
                 desc += `<div>${loc('plus_max_resource',[1,global.resource.Authority.name])}</div>`;
                 return desc;
             },
@@ -501,7 +506,12 @@ const fortressModules = {
             cost: {},
             queue_complete(){ return 0; },
             effect(wiki){
-                let desc = `<div>${loc('plus_max_resource',[sizeApproximation((global.race?.absorbed?.length || 1) * 500000),global.resource.Knowledge.name])}</div>`;
+                let knowCap = (global.race?.absorbed?.length || 1) * 500000;
+                if (shrineBonusActive()){
+                    let shrineBonus = getShrineBonus('know');
+                    knowCap *= shrineBonus.mult;
+                }
+                let desc = `<div>${loc('plus_max_resource',[sizeApproximation(knowCap),global.resource.Knowledge.name])}</div>`;
 
                 let muckVal2 = govActive('muckraker',2);
                 let know = muckVal2 ? (5 - muckVal2) : 5;
@@ -523,7 +533,7 @@ const fortressModules = {
                     desc += `<div class="has-text-success">${loc('portal_throne_of_evil_capture',[hearts])}</div>`;
                     desc += `<div class="has-text-danger">${loc('portal_throne_of_evil_capture2',[races[global.portal.throne.hearts[0]].name])}</div>`;
                 }
-                else if (global.portal.throne.points > 0){
+                else if (global.portal.throne.points > 0 && checkSkillPointAssignments() > 0){
                     if (global.portal.throne.skill){
                         desc += `<div class="has-text-info">${loc('portal_throne_of_evil_skill2')} ${loc('portal_throne_of_evil_skill',[global.portal.throne.points])}</div>`;
                     }
@@ -541,6 +551,7 @@ const fortressModules = {
                     return true;
                 }
                 else if (global.portal['throne'] && global.portal.throne.hearts.length > 0){
+                    let redraw = false;
                     let heart = global.portal.throne.hearts[0];
                     if (!global.race.absorbed.includes(heart)){
                         global.portal.throne.points++;
@@ -550,11 +561,13 @@ const fortressModules = {
                     if (global.portal.throne.hearts.length === 0){
                         $(`#portal-throne .orange`).removeClass('orange');
                     }
+                    if (['mantis','unicorn','capybara'].includes(heart)){
+                        redraw = true;
+                    }
                     if (!global.settings.portal.pit){
                         global.settings.portal.pit = true;
                         global.tech['hell_pit'] = 5;
-                        renderFortress();
-                        drawTech();
+                        redraw = true;
                     }
                     else if (!global.tech['war_vault'] && global.race?.absorbed?.length >= 13){
                         global.tech['hell_ruins'] = 2;
@@ -562,11 +575,28 @@ const fortressModules = {
                         global.settings.portal.ruins = true;
                         initStruct(fortressModules.prtl_ruins.war_vault);
                         initStruct(fortressModules.prtl_badlands.codex);
-                        renderFortress();
-                        drawTech();
+                        redraw = true;
                     }
-                    else if (global.tech['war_vault'] && global.portal['codex']){
+                    else if (global.tech['war_vault'] && global.portal['codex'] && global.portal.codex.s < 10){
                         global.portal.codex.s++;
+                    }
+                    else if (!global.settings.portal.lake && global.race?.absorbed?.length >= 33){
+                        global.tech['hell_lake'] = 6;
+                        global.tech['hell_spire'] = 9;
+                        global.settings.portal.lake = true;
+                        global.settings.portal.spire = true;
+                        global.settings.showCargo = true;
+                        initStruct(fortressModules.prtl_lake.harbor);
+                        initStruct(fortressModules.prtl_lake.cooling_tower);
+                        initStruct(fortressModules.prtl_lake.bireme);
+                        initStruct(fortressModules.prtl_lake.transport);
+                        initStruct(fortressModules.prtl_spire.purifier);
+                        initStruct(fortressModules.prtl_spire.port);
+                        initStruct(fortressModules.prtl_spire.base_camp);
+                        initStruct(fortressModules.prtl_spire.mechbay);
+                        initStruct(fortressModules.prtl_spire.spire);
+                        genSpireFloor();
+                        redraw = true;
                     }
                     if (global.race?.absorbed?.length >= 53){
                         global.stats.warlord.k = true;
@@ -578,6 +608,10 @@ const fortressModules = {
                         if (forge <= troops){
                             global.portal.soul_forge.kills += 250000;
                         }
+                    }
+                    if (redraw){
+                        renderFortress();
+                        drawTech();
                     }
                     return true;
                 }
@@ -1273,6 +1307,9 @@ const fortressModules = {
             },
             flair(){ return loc('portal_brute_flair'); }
         },
+        s_alter: buildTemplate(`s_alter`,'portal'),
+        shrine: buildTemplate(`shrine`,'portal'),
+        meditation: buildTemplate(`meditation`,'portal')
     },
     prtl_pit: {
         info: {
@@ -2847,9 +2884,9 @@ const fortressModules = {
         },
         purifier: {
             id: 'portal-purifier',
-            title: loc('portal_purifier_title'),
+            title(){ return global.race['warlord'] ? loc('portal_putrifier_title') : loc('portal_purifier_title'); },
             desc(){
-                return `<div>${loc('portal_purifier_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+                return `<div>${global.race['warlord'] ? loc('portal_putrifier_desc') : loc('portal_purifier_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { hell_spire: 3 },
             cost: {
@@ -2974,6 +3011,7 @@ const fortressModules = {
                 }
             },
             reqs: { hell_spire: 5 },
+            not_trait: ['warlord'],
             queue_size: 1,
             queue_complete(){ return 10 - global.portal.bridge.count; },
             cost: {
@@ -3016,6 +3054,7 @@ const fortressModules = {
             title(){ return global.tech.hell_spire === 7 ? loc('portal_sphinx_solve') : loc('portal_sphinx_title'); },
             desc: loc('portal_sphinx_desc'),
             reqs: { hell_spire: 6 },
+            not_trait: ['warlord'],
             queue_complete(){ return 8 - global.tech.hell_spire; },
             cost: {
                 Knowledge(offset){
@@ -3062,6 +3101,7 @@ const fortressModules = {
             title: loc('portal_sphinx_bribe'),
             desc: loc('portal_sphinx_desc'),
             reqs: { hell_spire: 7 },
+            not_trait: ['warlord'],
             condition(){
                 return global.tech['hell_spire'] && global.tech.hell_spire === 7 && !global.tech['sphinx_bribe'] ? true : false;
             },
@@ -3098,6 +3138,7 @@ const fortressModules = {
             desc: loc('portal_spire_survey_title'),
             reqs: { hell_spire: 8 },
             grant: ['hell_spire',9],
+            not_trait: ['warlord'],
             queue_complete(){ return global.tech.hell_spire >= 9 ? 0 : 1; },
             cost: {
                 Oil(){ return 1200000; },
@@ -3532,7 +3573,8 @@ function buildEnemyFortress(parent){
         methods: {
             action(idx){
                 let horde = Math.floor(global.portal.minions.spawns * seededRandom(6, 10, true) / 10);
-                let rating = armyRating(1,'hellArmy',0);
+                let scale = global.race['hivemind'] ? traits.hivemind.vars()[0] : 1;
+                let rating = armyRating(scale,'hellArmy',0) / scale;
                 let died = seededRandom((250 + global.portal.throne.enemy[idx].s * 250) / rating, (500 + global.portal.throne.enemy[idx].s * 1250) / rating, true);
                 if (global.race['armored']){
                     died *= 1 - (traits.armored.vars()[0] / 100);
@@ -4605,7 +4647,12 @@ export function hellguard(){
 
         if (global.portal.minions.on > 0){
             let spawn = fortressModules.prtl_badlands.minions.soldiers();
-            global.portal.minions.spawns += Math.rand(global.portal.minions.on * (spawn - 10), global.portal.minions.on * spawn);
+            let low_spawn = spawn - 10;
+            if (global.race['infectious']){
+                spawn += traits.infectious.vars()[1];
+                low_spawn += traits.infectious.vars()[0];
+            }
+            global.portal.minions.spawns += Math.rand(global.portal.minions.on * low_spawn, global.portal.minions.on * spawn);
         }
 
         let forgeOperating = false;
@@ -4626,13 +4673,15 @@ export function hellguard(){
         }
 
         if (global.portal.throne.enemy.length > 0){
-            let rating = armyRating(1,'hellArmy',0);
+            let scale = global.race['hivemind'] ? traits.hivemind.vars()[0] : 1;
+            let rating = armyRating(scale,'hellArmy',0) / scale;
             global.portal.throne.enemy.forEach(function(e){
+                let eRating = e.s + (global.portal.minions.spawns / 10000) ** 8;
                 let reapEffect = global.race['blurry'] ? 102 - traits.blurry.vars()[0] : 102;
                 reapEffect -= (global.portal?.reaper?.count || 1) * 2;
-                let reaper = 0.25 + (e.s * 0.01) - ((global.portal?.reaper?.count || 0) / reapEffect);
+                let reaper = 0.25 + (eRating * 0.01) - ((global.portal?.reaper?.count || 0) / reapEffect);
                 if (reaper < 0.01){ reaper = 0.01; }
-                let bound = Math.round(global.portal.minions.spawns * (0.5 * e.s) * (e.s ** reaper) / rating);
+                let bound = Math.round(global.portal.minions.spawns * (0.5 * eRating) * (eRating ** reaper) / rating);
                 let kills = Math.rand(e.s, bound);
                 if (kills > global.portal.minions.spawns){ kills = global.portal.minions.spawns; }
                 global.portal.minions.spawns -= kills;
@@ -4644,8 +4693,14 @@ export function hellguard(){
                 if (e.f < 100 && Math.rand(0, 10) === 0){
                     e.f++;
                 }
+
+                if (global.race['revive']){
+                    let revive = Math.round(Math.rand(0,(kills / (traits.revive.vars()[6] * 20))));
+                    global.portal.minions.spawns += revive;
+                }
             });
         }
+        
 
         if (forgeOperating && global.tech.hell_pit >= 5 && p_on['soul_attractor']){
             let attract = global.blood['attract'] ? global.blood.attract * 5 : 0;
@@ -4685,21 +4740,24 @@ export function hellguard(){
 }
 
 function checkSkillPointAssignments(){
+    let remaining = 0;
     ['incinerator','warehouse','hovel','hell_casino','twisted_lab','demon_forge','hell_factory','pumpjack','dig_demon','tunneler','brute','minions','reaper'].forEach(function(s){
         if (global.portal[s] && global.portal[s].rank >= 5 || !global.portal.throne.skill || global.portal.throne.points <= 0){
             $(`#portal-${s} a.button`).removeClass('blue');
         }
         else if (global.portal[s] && global.portal[s].rank < 5 && global.portal.throne.skill && global.portal.throne.points > 0){
             $(`#portal-${s} a.button`).addClass('blue');
+            remaining += 5 - global.portal[s].rank;
         }
     });
-    if (!global.portal.throne.skill || global.portal.throne.points <= 0){
+    if (!global.portal.throne.skill || global.portal.throne.points <= 0 || remaining === 0){
         global.portal.throne.skill = false;
         $(`#portal-throne a.button`).removeClass('green');
     }
     else if (global.portal.throne.skill && global.portal.throne.points > 0){
         $(`#portal-throne a.button`).addClass('green');
     }
+    return remaining;
 }
 
 function rankDesc(label, struct){
@@ -7389,9 +7447,6 @@ export function warlordSetup(){
         global.tech['wsc'] = 0;
         global.tech['portal'] = 3;
         global.tech['hell_pit'] = 1;
-        global.tech['hell_ruins'] = 1;
-        global.tech['hell_lake'] = 1;
-        global.tech['hell_spire'] = 1;
         global.tech['hellspawn'] = 1;
 
         if (!global.race['flier']){

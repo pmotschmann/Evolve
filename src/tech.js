@@ -5236,8 +5236,8 @@ const techs = {
     },
     purify: {
         id: 'tech-purify',
-        title: loc('tech_purify'),
-        desc: loc('tech_purify'),
+        title(){ return global.race['warlord'] ? loc('tech_potent_miasma') : loc('tech_purify'); },
+        desc(){ return global.race['warlord'] ? loc('tech_potent_miasma') : loc('tech_purify'); },
         category: 'hell_dimension',
         era: 'dimensional',
         reqs: { hell_spire: 3, b_stone: 2 },
@@ -5246,7 +5246,7 @@ const techs = {
             Knowledge(){ return 52500000; },
             Blood_Stone(){ return 1; }
         },
-        effect(){ return loc('tech_purify_effect'); },
+        effect(){ return global.race['warlord'] ? loc('tech_potent_miasma_effect') : loc('tech_purify_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 return true;

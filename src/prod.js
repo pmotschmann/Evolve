@@ -55,7 +55,7 @@ export function production(id,val,wiki){
                 oil *= 1 + (dirtVal / 100);
             }
             if (global.race['warlord']){
-                oil *= 1 + (global.portal?.pumpjack?.rank || 1) * 0.12;
+                oil *= 1 + (global.portal?.pumpjack?.rank || 1) * 0.24;
             } 
             return oil;
         }
@@ -82,7 +82,7 @@ export function production(id,val,wiki){
         }
         case 'helium_mine':
         {
-            let base = global.race['warlord'] ? 0.3 + (global.portal?.pumpjack?.rank || 1) * 0.05 : 0.18;
+            let base = global.race['warlord'] ? 0.3 + (global.portal?.pumpjack?.rank || 1) * 0.08 : 0.18;
             let gov = govRelationFactor(3);
             return {
                 b: base,

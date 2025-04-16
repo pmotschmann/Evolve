@@ -9179,6 +9179,10 @@ function midLoop(){
         }
         if (global.race['warlord']){
             let gain = (global.race?.absorbed?.length || 1) * 500000;
+            if (shrineBonusActive()){
+                let shrineBonus = getShrineBonus('know');
+                gain *= shrineBonus.mult;
+            }
             caps['Knowledge'] += gain;
             breakdown.c.Knowledge[loc('portal_throne_of_evil_title')] = gain+'v';
 

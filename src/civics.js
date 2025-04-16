@@ -1183,7 +1183,7 @@ function hireMerc(num){
 export function buildGarrison(garrison,full){
     clearElement(garrison);
     if (global.tech['world_control'] && !global.race['truepath']){
-        garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success"><span class="defenseRating">${loc('rating')} {{ g.workers | hell | rating }}</span> - <span class="soldierRating"><span class="has-text-warning">${loc(`civics_garrison_soldier_rating`)}</span> {{ g.workers | single | rating }}</span></div>`));
+        garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success"><span class="defenseRating">${loc('rating')} {{ g.workers | hell | rating }}</span> - <span class="soldierRating"><span class="has-text-warning">${loc(`civics_garrison_soldier_rating`)}</span> {{ g.workers | single | rating(true) }}</span></div>`));
     }
     else {
         garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success"><span class="defenseRating">${loc('rating')} {{ g.workers | hell | rating }}</span> / <span class="offenseRating">{{ g.raid | rating }}</span></span> - <span class="soldierRating"><span class="has-text-warning">${loc(`civics_garrison_soldier_rating`)}</span> {{ g.workers | single | rating }}</span></div>`));
@@ -1331,14 +1331,17 @@ export function buildGarrison(garrison,full){
                         return loc('civics_garrison_tactic_siege');
                 }
             },
-            rating(v){
+            rating(v,scale){
+                if (scale){
+                    return +(armyRating(v,'army',0) / v).toFixed(1);
+                }
                 return +armyRating(v,'army').toFixed(1);
             },
             hell(v){
                 return garrisonSize();
             },
             single(v){
-                return 1;
+                return global.race['hivemind'] ? traits.hivemind.vars()[0] : 1;
             },
             stationed(v){
                 let size = garrisonSize();
@@ -1456,7 +1459,8 @@ export function buildGarrison(garrison,full){
 }
 
 function soldierBreakdown(type){
-    let data = armyRating(1,type,0,true);
+    let scale = global.race['hivemind'] ? traits.hivemind.vars()[0] : 1;
+    let data = armyRating(scale,type,0,true);
 
     let desc = `<div class="soldierEvaluation"><div class="head">${loc(`civics_garrison_soldier_rating`)}</div>`;
     data.forEach(function(d){
@@ -2337,6 +2341,9 @@ export function armyRating(val,type,wound,analysis){
     }
     if (global.race['grenadier']){
         let grenadier = (traits.grenadier.vars()[0] / 100);
+        if (type === 'hellArmy' && global.race['warlord']){
+            grenadier *= 0.4;
+        }
         army *= 1 + grenadier;
         data.push({ k: 'trait_grenadier_name', v: grenadier });
     }
