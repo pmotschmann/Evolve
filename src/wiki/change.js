@@ -14,10 +14,15 @@ export const changeList = [
             `Soldiers assigned to Fortress guard duty now contribute Authority.`,
             `Updated Empowered trait mechanics.`,
             `Adjusted values for Master Artisan.`,
+            `Evil Wendigo can now use Shovels.`,
+            `Breakdown improvements for some resources.`,
+            `Uranium geology bonus now applies to Uranium Ash.`,
             `Fixed bug with Rogue trait that set crafted resources to 0.`,
             `Fixed bug that caused Hybrid species to throw an error when triggering greatness resets.`,
             `Fixed issue with Iridium Smelters miscalculating result.`,
-            `Evil Wendigo can now use Shovels.`
+            `Fixed a variety of Joyless edge cases`,
+            `Fixed Space Casino appearing improperly in power grid.`,
+            `Accessibility improvements.`
         ]
     },
     {
