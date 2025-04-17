@@ -7,7 +7,7 @@ import { massCalc } from './mechanics.js';
 export function resetsPage(content){
     let mainContent = sideMenu('create',content);
 
-    let resets = ['mad','bioseed','blackhole','ascension','cataclysm','vacuum','infusion','ai','terraform'];
+    let resets = ['mad','bioseed','blackhole','vacuum','ascension','cataclysm','terraform','infusion','apotheosis','ai','matrix','retired','eden'];
     let reset_labels = resets.map(x => `<span class="has-text-caution">${loc(`wiki_resets_${x}`)}</span>`);
 
     infoBoxBuilder(mainContent,{ name: 'intro', template: 'resets', paragraphs: 3, h_level: 2,
