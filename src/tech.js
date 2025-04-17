@@ -11692,6 +11692,7 @@ const techs = {
         category: 'hell_dimension',
         era: 'dimensional',
         reqs: { hell_spire: 8 },
+        not_trait: ['warlord'],
         grant: ['sphinx_bribe',1],
         cost: {
             Soul_Gem(){ return 250; },
@@ -15319,6 +15320,29 @@ const techs = {
             return false;
         }
     },
+    hellfire: {
+        id: 'tech-hellfire',
+        title: loc('tech_hellfire'),
+        desc: loc('tech_hellfire'),
+        category: 'evil',
+        era: 'dimensional',
+        reqs: { hellspawn: 5 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        grant: ['hellspawn',6],
+        cost: {
+            Knowledge(){ return 100000000; }
+        },
+        effect: loc('tech_hellfire_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     ghost_miners: {
         id: 'tech-ghost_miners',
         title: loc('tech_ghost_miners'),
@@ -15367,7 +15391,7 @@ const techs = {
             return false;
         }
     },
-};
+}
 
 function uniteEffect(){
     global.tech['world_control'] = 1;

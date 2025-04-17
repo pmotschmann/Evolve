@@ -536,6 +536,10 @@ export function production(id,val,wiki){
                 {
                     return 0.02;
                 }
+                case 'infernite':
+                {
+                    return 0.015;
+                }
                 case 'vitreloy':
                 {
                     return 0.08;

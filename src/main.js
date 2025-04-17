@@ -5223,7 +5223,7 @@ function fastLoop(){
         }
 
         if (p_on['shadow_mine']){
-            let attract = p_on['soul_attractor'] ? 1 + (p_on['soul_attractor'] * 0.05) : 1;
+            let attract = p_on['soul_attractor'] ? 1 + (p_on['soul_attractor'] * 0.1) : 1;
 
             if (global.resource.Vitreloy.display){ // Vitreloy
                 let rate = production('shadow_mine','vitreloy');
@@ -5248,6 +5248,19 @@ function fastLoop(){
                     breakdown.p['Elerium'][`ᄂ${loc('portal_soul_attractor_title')}+0`] = ((attract - 1) * 100) + '%';
                 }
                 modRes('Elerium', mine_delta * time_multiplier);
+            }
+
+            if (global.resource.Infernite.display){ // Infernite
+                let rate = production('shadow_mine','infernite');
+                let mine_base = p_on['shadow_mine'] * rate * production('psychic_boost','Infernite');
+
+                let mine_delta = mine_base * attract * global_multiplier;
+
+                if (mine_base > 0){
+                    breakdown.p['Infernite'][loc('portal_shadow_mine_title')] = mine_base + 'v';
+                    breakdown.p['Infernite'][`ᄂ${loc('portal_soul_attractor_title')}+0`] = ((attract - 1) * 100) + '%';
+                }
+                modRes('Infernite', mine_delta * time_multiplier);
             }
         }
 
