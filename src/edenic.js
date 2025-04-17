@@ -3,7 +3,7 @@ import { vBind, clearElement, popover, powerCostMod, spaceCostMultiplier, messag
 import { spatialReasoning } from './resources.js';
 import { actions, payCosts, initStruct, powerOnNewStruct, setAction, storageMultipler, drawTech, bank_vault } from './actions.js';
 import { checkRequirements, incrementStruct, piracy, ascendLab} from './space.js';
-import { mechRating } from './portal.js';
+import { mechRating, checkWarlordAchieve } from './portal.js';
 import { jobScale, workerScale } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
 import { loc } from './locale.js';
@@ -634,7 +634,7 @@ const edenicModules = {
                     if (milVal){
                         rate *= 1 + (milVal / 100);
                     }
-                    desc += `<div>${loc('city_boot_camp_effect',[rate])}</div>`;
+                    desc += `<div>${loc('city_boot_camp_effect',[+rate.toFixed(2)])}</div>`;
                 }
                 return desc;
             },
@@ -677,7 +677,9 @@ const edenicModules = {
                 let max = 2;
 
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[loc('eden_asphodel_name')])}</div>`;
-                desc += `<div>${loc('space_red_vr_center_effect1',[morale])}</div>`;
+                if (!global.race['joyless']){
+                    desc += `<div>${loc('space_red_vr_center_effect1',[morale])}</div>`;
+                }
                 desc += `<div>${loc('space_red_vr_center_effect2',[max])}</div>`;
 
                 return desc;
@@ -1350,7 +1352,7 @@ const edenicModules = {
                 if (!global.tech['isle'] || global.tech.isle === 1){
                     desc += `<div>${loc('eden_pillbox_effect',[rating])}</div>`;
                 }
-                if (global.tech['elysium'] && global.tech.elysium >= 12){
+                if (global.tech['elysium'] && global.tech.elysium >= 12 && !global.race['joyless']){
                     desc += `<div>${loc('eden_restaurant_effect',[0.35,loc(`eden_restaurant_bd`)])}</div>`;
                 }
                 desc += `<div class="has-text-caution">${loc('portal_guard_post_effect2',[jobScale(10),$(this)[0].powered()])}</div>`;
@@ -1393,7 +1395,10 @@ const edenicModules = {
                 morale += (global.civic?.elysium_miner?.workers ?? 0) * 0.15;
                 morale += global.eden.hasOwnProperty('archive') && p_on['archive'] ? 0.4 * p_on['archive'] : 0;
 
-                let desc =  `<div>${loc('space_red_vr_center_effect1',[morale.toFixed(1)])}</div>`
+                let desc =  '';
+                if (!global.race['joyless']){
+                    desc += `<div>${loc('space_red_vr_center_effect1',[morale.toFixed(1)])}</div>`;
+                }
                 desc += `<div class="has-text-caution">${loc('interstellar_alpha_starport_effect3',[sizeApproximation(food),global.resource.Food.name])}</div>`;
                 desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
@@ -1615,6 +1620,10 @@ const edenicModules = {
                 }
                 else if (global.eden.reincarnation.count === 1 && global['resource'][global.race.species].max > global['resource'][global.race.species].amount && payCosts($(this)[0])){
                     global['resource'][global.race.species].amount++;
+                    if (global.race['warlord']){
+                        global.stats.warlord.r = true;
+                        checkWarlordAchieve();
+                    }
                     return true;
                 }
                 return false;
@@ -2050,6 +2059,10 @@ const edenicModules = {
             },
             action(){
                 if (payCosts($(this)[0])){
+                    if (global.race['warlord']){
+                        global.stats.warlord.g = true;
+                        checkWarlordAchieve();
+                    }
                     ascendLab(true);
                     return true;
                 }

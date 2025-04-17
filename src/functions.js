@@ -3242,7 +3242,8 @@ const altTraitDesc = {
 
 export function getTraitDesc(info, trait, opts){
     let fanatic = opts['fanatic'] || false;
-    let tpage = opts['tpage'] || false;
+    let tpage = opts['tpage'] || false; // Trait page (on wiki)
+    let rpage = opts['rpage'] || false; // Races page (on wiki)
     let trank = opts['trank'] || false;
     let wiki = opts['wiki'] || false;
     let species = opts['species']; // Intentionally keep undefined, not false, when undefined
@@ -3254,20 +3255,17 @@ export function getTraitDesc(info, trait, opts){
     if (tpage && ['genus','major'].includes(traits[trait].type)){
         rank = `<span><span role="button" @click="down()">&laquo;</span><span class="has-text-warning">${loc(`wiki_trait_rank`)} {{ rank }}</span><span role="button" @click="up()">&raquo;</span></span>`;
     }
-    if (wiki){
+    if (tpage || rpage){
         info.append(`<div class="type"><h2 class="has-text-warning">${traitName}</h2>${rank}</div>`);
-    }
-    if (wiki){
         if (tpage && traits[trait].hasOwnProperty('val')){
             info.append(`<div class="type has-text-caution">${loc(`wiki_trait_${traits[trait].type}`)}<span>${loc(`wiki_trait_value`,[traits[trait].val])}</span></div>`);
         }
         else {
             info.append(`<div class="type has-text-caution">${loc(`wiki_trait_${traits[trait].type}`)}</div>`);
         }
-    }
-
-    if (fanatic && wiki){
-        info.append(`<div class="has-text-danger">${loc(`wiki_trait_fanaticism`,[fanatic])}</div>`);
+        if (fanatic){
+            info.append(`<div class="has-text-danger">${loc(`wiki_trait_fanaticism`,[fanatic])}</div>`);
+        }
     }
 
     info.append(`<div class="desc">${traitDesc}</div>`);
@@ -3298,7 +3296,7 @@ export function getTraitDesc(info, trait, opts){
             info.append(`<div class="has-text-${color} effect">${trait_desc}</div>`);
         }
     }
-    if (traitExtra[trait] && wiki){
+    if (traitExtra[trait] && (tpage || rpage)){
         traitExtra[trait].forEach(function(te){
             if (typeof te !== 'string'){
                 te = te(opts);

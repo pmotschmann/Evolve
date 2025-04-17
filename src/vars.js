@@ -1248,7 +1248,7 @@ if (convertVersion(global['version']) <= 104003){
 }
 global['version'] = '1.4.3';
 delete global['revision'];
-global['beta'] = 5;
+global['beta'] = 11;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
@@ -1588,8 +1588,8 @@ export function setupStats(){
     if (global.stats['death_tour'] && !global.stats.death_tour.hasOwnProperty('md')){
         global.stats.death_tour['md'] = { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 };
     }
-    if (global.stats['warlord']){
-        global.stats['warlord'] = { k: false, v: false, p: false, a: false, g: false };
+    if (!global.stats['warlord']){
+        global.stats['warlord'] = { k: false, p: false, a: false, r: false, g: false };
     }
 }
 

@@ -147,7 +147,41 @@ export const f_rate = {
     }
 };
 
+export function smelterFuelConfig(){
+    let fuel = {
+        d_fuel: 'Lumber',
+        l_type: 'Lumber',
+        l_cost: 3,
+        // Discount coal cost for species that (usually) cannot burn lumber
+        c_cost: (global.race['kindling_kindred'] || global.race['smoldering']) ? 0.15 : 0.25,
+        // Oil bonus is free with Forge trait
+        o_cost: global.race['forge'] ? 0 : 0.35,
+    };
+
+    if (global.race['evil']){
+        if (global.race['soul_eater'] && global.race.species !== 'wendigo' && !global.race['artificial']){
+            fuel.l_type = 'Food';
+        }
+        else {
+            fuel.l_type = 'Furs';
+            fuel.l_cost = 1;
+        }
+    }
+    // Set default fuel to coal if it's not possible to burn lumber, souls, or flesh
+    else if (global.race['kindling_kindred'] || global.race['smoldering']){
+        fuel.d_fuel = 'Coal';
+    }
+
+    // Synthetics start with oil unlocked and always default to its use
+    if (global.race['artificial']) {
+        fuel.d_fuel = 'Oil';
+    }
+
+    return fuel;
+}
+
 function loadSmelter(parent,bind){
+    const fuel_config = smelterFuelConfig();
     let fuel = $(`<div><span class="has-text-warning">${loc('modal_smelter_fuel')}:</span> <span :class="level()">{{s.count | on}}/{{ s.cap }}</span></div>`);
     parent.append(fuel);
 
@@ -171,10 +205,10 @@ function loadSmelter(parent,bind){
 
     if (!global.race['forge']){
         if ((!global.race['kindling_kindred'] && !global.race['smoldering']) || global.race['evil']){
-            let f_label = global.race['evil'] ? (global.race['soul_eater'] && global.race.species !== 'wendigo' && !global.race['artifical'] ? global.resource.Food.name : global.resource.Furs.name) : global.resource.Lumber.name;
+            let f_label = global.resource[fuel_config.l_type].name;
             let wood = $(`<span :aria-label="buildLabel('wood') + ariaCount('Wood')" class="current wood">${f_label} {{ s.Wood }}</span>`);
-            let subWood = $(`<span role="button" class="sub" @click="subFuel('Wood')" aria-label="Remove lumber fuel"><span>&laquo;</span></span>`);
-            let addWood = $(`<span role="button" class="add" @click="addFuel('Wood')" aria-label="Add lumber fuel"><span>&raquo;</span></span>`);
+            let subWood = $(`<span role="button" class="sub" @click="subFuel('Wood')" aria-label="Remove ${f_label} fuel"><span>&laquo;</span></span>`);
+            let addWood = $(`<span role="button" class="add" @click="addFuel('Wood')" aria-label="Add ${f_label} fuel"><span>&raquo;</span></span>`);
             fuelTypes.append(subWood);
             fuelTypes.append(wood);
             fuelTypes.append(addWood);
@@ -182,8 +216,8 @@ function loadSmelter(parent,bind){
 
         if (global.resource.Coal.display){
             let coal = $(`<span :aria-label="buildLabel('coal') + ariaCount('Coal')" class="current coal">${global.resource.Coal.name} <span v-html="$options.filters.spook(s.Coal)"></span></span>`);
-            let subCoal = $(`<span role="button" class="sub" @click="subFuel('Coal')" aria-label="Remove coal fuel"><span>&laquo;</span></span>`);
-            let addCoal = $(`<span role="button" class="add" @click="addFuel('Coal')" aria-label="Add coal fuel"><span>&raquo;</span></span>`);
+            let subCoal = $(`<span role="button" class="sub" @click="subFuel('Coal')" aria-label="Remove ${global.resource.Coal.name} fuel"><span>&laquo;</span></span>`);
+            let addCoal = $(`<span role="button" class="add" @click="addFuel('Coal')" aria-label="Add ${global.resource.Coal.name} fuel"><span>&raquo;</span></span>`);
             fuelTypes.append(subCoal);
             fuelTypes.append(coal);
             fuelTypes.append(addCoal);
@@ -196,8 +230,8 @@ function loadSmelter(parent,bind){
     }
     else if (global.resource.Oil.display){
         let oil = $(`<span :aria-label="buildLabel('oil') + ariaCount('Oil')" class="current oil">${global.resource.Oil.name} {{ s.Oil }}</span>`);
-        let subOil = $(`<span role="button" class="sub" @click="subFuel('Oil')" aria-label="Remove oil fuel"><span>&laquo;</span></span>`);
-        let addOil = $(`<span role="button" class="add" @click="addFuel('Oil')" aria-label="Add oil fuel"><span>&raquo;</span></span>`);
+        let subOil = $(`<span role="button" class="sub" @click="subFuel('Oil')" aria-label="Remove ${global.resource.Oil.name} fuel"><span>&laquo;</span></span>`);
+        let addOil = $(`<span role="button" class="add" @click="addFuel('Oil')" aria-label="Add ${global.resource.Oil.name} fuel"><span>&raquo;</span></span>`);
         fuelTypes.append(subOil);
         fuelTypes.append(oil);
         fuelTypes.append(addOil);
@@ -221,18 +255,17 @@ function loadSmelter(parent,bind){
     parent.append(available);
 
     if (!bind && 1 === 2){
-        if (!global.race['kindling_kindred'] || global.race['evil']){
-            if (global.race['evil']){
-                if (global.race['soul_eater'] && global.race.species !== 'wendigo'){
-                    available.append(`<span :class="net('Lumber')">{{ food.diff | diffSize }}</span>`);
-                }
-                else {
-                    available.append(`<span :class="net('Lumber')">{{ fur.diff | diffSize }}</span>`);
-                }
-            }
-            else {
+        switch (fuel_config.l_type){
+            case 'Food':
+                available.append(`<span :class="net('Lumber')">{{ food.diff | diffSize }}</span>`);
+                break;
+            case 'Furs':
+                available.append(`<span :class="net('Lumber')">{{ fur.diff | diffSize }}</span>`);
+                break;
+            case 'Lumber':
+            default:
                 available.append(`<span :class="net('Lumber')">{{ lum.diff | diffSize }}</span>`);
-            }
+                break;
         }
 
         if (global.resource.Coal.display){
@@ -435,17 +468,17 @@ function loadSmelter(parent,bind){
     });
 
     function tooltip(type){
+        const fuel_config = smelterFuelConfig();
         switch(type){
             case 'wood':
-                return loc('modal_build_wood',[global.race['evil'] ? (global.race['soul_eater'] && global.race.species !== 'wendigo' && !global.race['artifical'] ? global.resource.Food.name : global.resource.Furs.name) : global.resource.Lumber.name, global.race['evil'] && !global.race['soul_eater'] || global.race.species === 'wendigo' ? 1 : 3]);
+                return loc('modal_build_wood',[global.resource[fuel_config.l_type].name, fuel_config.l_cost]);
             case 'coal':
                 {
-                    let coal_fuel = global.race['kindling_kindred'] ? 0.15 : 0.25;
                     if (global.tech['uranium'] && global.tech['uranium'] >= 3){
-                        return loc('modal_build_coal2',[coal_fuel,global.resource.Coal.name,global.resource.Uranium.name]);
+                        return loc('modal_build_coal2',[fuel_config.c_cost,global.resource.Coal.name,global.resource.Uranium.name]);
                     }
                     else {
-                        return loc('modal_build_coal1',[coal_fuel,global.resource.Coal.name]);
+                        return loc('modal_build_coal1',[fuel_config.c_cost,global.resource.Coal.name]);
                     }
                 }
             case 'oil':
@@ -633,7 +666,7 @@ function loadFactory(parent,bind){
                     max += support_on['tau_factory'] * (global.tech['isolation'] ? 5 : 3);
                 }
                 if (global.portal['hell_factory'] && p_on['hell_factory']){
-                    max += p_on['hell_factory'] * 6;
+                    max += p_on['hell_factory'] * actions.portal.prtl_wasteland.hell_factory.lines();
                 }
                 let keyMult = keyMultiplier();
                 for (var i=0; i<keyMult; i++){
@@ -666,7 +699,7 @@ function loadFactory(parent,bind){
                     max += support_on['tau_factory'] * (global.tech['isolation'] ? 5 : 3);
                 }
                 if (global.portal['hell_factory'] && p_on['hell_factory']){
-                    max += p_on['hell_factory'] * 6;
+                    max += p_on['hell_factory'] * actions.portal.prtl_wasteland.hell_factory.lines();
                 }
                 return colorRange(on,max);
             }
@@ -684,7 +717,7 @@ function loadFactory(parent,bind){
                     max += support_on['tau_factory'] * (global.tech['isolation'] ? 5 : 3);
                 }
                 if (global.portal['hell_factory'] && p_on['hell_factory']){
-                    max += p_on['hell_factory'] * 6;
+                    max += p_on['hell_factory'] * actions.portal.prtl_wasteland.hell_factory.lines();
                 }
                 return max;
             },

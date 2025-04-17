@@ -2160,7 +2160,7 @@ const techs = {
         grant: ['smelting',8],
         cost: {
             Knowledge(){ return 27500000; },
-            Coal(){ return 45000000; },
+            Coal(){ return global.race['warlord'] ? 35000000 : 45000000; },
             Oil(){ return 500000; },
             Infernite(){ return 750000; }
         },
@@ -5236,8 +5236,8 @@ const techs = {
     },
     purify: {
         id: 'tech-purify',
-        title: loc('tech_purify'),
-        desc: loc('tech_purify'),
+        title(){ return global.race['warlord'] ? loc('tech_potent_miasma') : loc('tech_purify'); },
+        desc(){ return global.race['warlord'] ? loc('tech_potent_miasma') : loc('tech_purify'); },
         category: 'hell_dimension',
         era: 'dimensional',
         reqs: { hell_spire: 3, b_stone: 2 },
@@ -5246,7 +5246,7 @@ const techs = {
             Knowledge(){ return 52500000; },
             Blood_Stone(){ return 1; }
         },
-        effect(){ return loc('tech_purify_effect'); },
+        effect(){ return global.race['warlord'] ? loc('tech_potent_miasma_effect') : loc('tech_purify_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -11692,6 +11692,7 @@ const techs = {
         category: 'hell_dimension',
         era: 'dimensional',
         reqs: { hell_spire: 8 },
+        not_trait: ['warlord'],
         grant: ['sphinx_bribe',1],
         cost: {
             Soul_Gem(){ return 250; },
@@ -15319,6 +15320,29 @@ const techs = {
             return false;
         }
     },
+    hellfire: {
+        id: 'tech-hellfire',
+        title: loc('tech_hellfire'),
+        desc: loc('tech_hellfire'),
+        category: 'evil',
+        era: 'dimensional',
+        reqs: { hellspawn: 5 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        grant: ['hellspawn',6],
+        cost: {
+            Knowledge(){ return 100000000; }
+        },
+        effect: loc('tech_hellfire_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     ghost_miners: {
         id: 'tech-ghost_miners',
         title: loc('tech_ghost_miners'),
@@ -15367,7 +15391,7 @@ const techs = {
             return false;
         }
     },
-};
+}
 
 function uniteEffect(){
     global.tech['world_control'] = 1;

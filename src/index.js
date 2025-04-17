@@ -281,6 +281,8 @@ function tabLabel(lbl){
             return loc('tab_old_sr_res');
         case 'new_sr':
             return loc('tab_new_sr_res');
+        case 'tab_mech':
+            return global.race['warlord'] ? loc('tab_artificer')  : loc(lbl);
         default:
             return loc(lbl);
     }

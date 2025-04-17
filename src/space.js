@@ -192,7 +192,7 @@ const spaceProjects = {
             support(){ return 1; },
             effect(){
                 let orbitEffect = '';
-                if (global.race['orbit_decayed'] && global.tech['broadcast']){
+                if (global.race['orbit_decayed'] && global.tech['broadcast'] && !global.race['joyless']){
                     orbitEffect = `<div class="has-text-caution">${loc('space_red_vr_center_effect1',[global.tech['broadcast'] / 2])}</div>`;
                 }
                 let effect1 = global.race['orbit_decayed'] ? '' : `<div>${loc('space_home_nav_beacon_effect1')}</div>`;
@@ -811,8 +811,8 @@ const spaceProjects = {
                 Soul_Gem(offset){ return spaceCostMultiplier('vr_center', offset, 1, 1.25); }
             },
             effect(){
-                let gasVal = govActive('gaslighter',1);
-                let morale = gasVal ? gasVal + 1 : 1;
+                let gasVal = govActive('gaslighter',1) || 0;
+                let morale = gasVal + 1;
                 if (global.race['orbit_decayed']){
                     morale += 2;
                 }
@@ -1597,7 +1597,7 @@ const spaceProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     global.space.spc_casino.count++;
-                    if (!global.race['joyless']){
+                    if (global.tech['theatre'] && !global.race['joyless']){
                         global.civic.entertainer.max += jobScale(1);
                         global.civic.entertainer.display = true;
                     }
@@ -2013,7 +2013,8 @@ const spaceProjects = {
                 Mythril(offset){ return spaceCostMultiplier('outpost', offset, 300, 1.3); }
             },
             effect(wiki){
-                let neutronium = +(production('outpost')).toFixed(3);
+                let p_values = production('outpost');
+                let neutronium = p_values.b;
                 let max = spatialReasoning(500);
                 let oil = +(fuel_adjust(2,true,wiki)).toFixed(2);
                 return `<div>${loc('space_gas_moon_outpost_effect1',[neutronium])}</div><div>${loc('plus_max_resource',[max,global.resource.Neutronium.name])}</div><div class="has-text-caution">${loc('space_gas_moon_outpost_effect3',[oil,$(this)[0].powered()])}</div>`;
@@ -3270,7 +3271,7 @@ const interstellarProjects = {
             wide: true,
             effect(wiki){
                 let storage = '<div class="aTable">';
-                let multiplier = storageMultipler(wiki);
+                let multiplier = storageMultipler(1, wiki);
                 for (const res of $(this)[0].res()){
                     if (global.resource[res].display){
                         let val = sizeApproximation(+(spatialReasoning($(this)[0].val(res)) * multiplier).toFixed(0),1);
@@ -4599,6 +4600,7 @@ const interstellarProjects = {
                         if (global.interstellar.ascension_machine.count >= 100){
                             global.tech['ascension'] = 7;
                             initStruct(interstellarProjects.int_sirius.ascension_trigger);
+                            incrementStruct('ascension_trigger','interstellar');
                             if (global.settings.alwaysPower){
                                 powerOnNewStruct(interstellarProjects.int_sirius.ascension_trigger);
                             }
@@ -5644,7 +5646,7 @@ const galaxyProjects = {
                 desc += `<div>${loc('galaxy_symposium_effect2',[(650 * pirate).toFixed(0)])}</div>`;
                 if (global.tech.xeno >= 7){
                     desc += `<div>${loc('galaxy_symposium_effect3',[+highPopAdjust(300 * pirate).toFixed(2)])}</div>`;
-                    desc += `<div>${loc('galaxy_symposium_effect3b',[+highPopAdjust(150 * pirate).toFixed(2)])}</div>`;
+                    desc += `<div>${loc('galaxy_symposium_effect3b',[+highPopAdjust(100 * pirate).toFixed(2)])}</div>`;
                 }
                 if(global.tech.science >= 22){
                     desc += `<div>${loc('galaxy_symposium_effect4',[+(100 * pirate).toFixed(2), loc('eden_research_station_title')])}</div>`;
@@ -5788,7 +5790,7 @@ const galaxyProjects = {
             },
             effect(){
                 let money = spatialReasoning(global.tech['world_control'] ? 1875000 : 1500000);
-                let joy = global.race['joyless'] ? '' : `<div>${loc('plus_max_resource',[jobScale(2),loc(`job_entertainer`)])}</div>`;
+                let joy = (global.race['theatre'] && !global.race['joyless']) ? `<div>${loc('plus_max_resource',[jobScale(2),loc(`job_entertainer`)])}</div>` : '';
                 let desc = `<div>${loc('plus_max_resource',[`\$${money.toLocaleString()}`,loc('resource_Money_name')])}</div>${joy}<div>${loc('space_red_vr_center_effect2',[2])}</div>`;
                 return desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
@@ -5797,7 +5799,7 @@ const galaxyProjects = {
                 if (payCosts($(this)[0])){
                     incrementStruct('resort','galaxy');
                     if (powerOnNewStruct($(this)[0])){
-                        if (!global.race['joyless']){
+                        if (global.race['theatre'] && !global.race['joyless']){
                             global.civic.entertainer.max += jobScale(2);
                             global.civic.entertainer.display = true;
                         }
@@ -6402,6 +6404,47 @@ const galaxyProjects = {
     },
 };
 
+export const galaxyRegions = ['gxy_gateway', 'gxy_stargate', 'gxy_gorddon', 'gxy_alien1', 'gxy_alien2', 'gxy_chthonian'];
+export const gatewayArmada = ['scout_ship', 'corvette_ship', 'frigate_ship', 'cruiser_ship', 'dreadnought'];
+
+export const galaxy_ship_types = [
+    {
+        area: 'galaxy',
+        region: 'gxy_gateway',
+        ships: global.support.gateway.map(x => x.split(':')[1])
+    },
+    {
+        area: 'galaxy',
+        region: 'gxy_gorddon',
+        ships: ['freighter'],
+        req: 'embassy'
+    },
+    {
+        area: 'galaxy',
+        region: 'gxy_alien1',
+        ships: ['super_freighter'],
+        req: 'embassy'
+    },
+    {
+        area: 'galaxy',
+        region: 'gxy_alien2',
+        ships: global.support.alien2.map(x => x.split(':')[1]),
+        req: 'foothold'
+    },
+    {
+        area: 'galaxy',
+        region: 'gxy_chthonian',
+        ships: ['minelayer','raider'],
+        req: 'starbase'
+    },
+    {
+        area: 'portal',
+        region: 'prtl_lake',
+        ships: global.support.lake.map(x => x.split(':')[1]),
+        req: 'harbor'
+    }
+];
+
 export function convertSpaceSector(part){
     let space = 'space';
     if (part.substr(0,4) === 'int_'){
@@ -6425,13 +6468,13 @@ export function convertSpaceSector(part){
 export function piracy(region,rating,raw,wiki){
     if (global.tech['piracy'] && !global.race['truepath']){
         let armada = 0;
-        let ships = ['dreadnought','cruiser_ship','frigate_ship','corvette_ship','scout_ship'];
-        for (let i=0; i<ships.length; i++){
-            if (!global.galaxy.defense[region].hasOwnProperty(ships[i])){
-                global.galaxy.defense[region][ships[i]] = 0;
+        for (let i = gatewayArmada.length - 1; i >= 0; i--){
+            let ship = gatewayArmada[i];
+            if (!global.galaxy.defense[region].hasOwnProperty(ship)){
+                global.galaxy.defense[region][ship] = 0;
             }
-            let count = global.galaxy.defense[region][ships[i]];
-            armada += count * galaxyProjects.gxy_gateway[ships[i]].ship.rating();
+            let count = global.galaxy.defense[region][ship];
+            armada += count * galaxyProjects.gxy_gateway[ship].ship.rating();
         }
 
         let pirate = 0;
@@ -6469,17 +6512,17 @@ export function piracy(region,rating,raw,wiki){
             pirate *= 1 - (traits.ocular_power.vars()[1] / 500);
         }
 
-        let num_def_plat_on = wiki ? global.galaxy.defense_platform.on : p_on['defense_platform'];
+        let num_def_plat_on = wiki ? (global.galaxy?.defense_platform?.on ?? 0) : p_on['defense_platform'];
         if (region === 'gxy_stargate' && num_def_plat_on){
             armada += num_def_plat_on * 20;
         }
 
-        let num_starbase_on = wiki ? global.galaxy.starbase.on : p_on['starbase'];
+        let num_starbase_on = wiki ? (global.galaxy?.starbase?.on ?? 0) : p_on['starbase'];
         if (region === 'gxy_gateway' && num_starbase_on){
             armada += num_starbase_on * 25;
         }
 
-        let num_foothold_on = wiki ? global.galaxy.foothold.on : p_on['foothold'];
+        let num_foothold_on = wiki ? (global.galaxy?.foothold?.on ?? 0) : p_on['foothold'];
         if (region === 'gxy_alien2' && num_foothold_on){
             armada += num_foothold_on * 50;
             let num_armed_miner_on = wiki ? global.galaxy.armed_miner.on : gal_on['armed_miner'];
@@ -6489,11 +6532,11 @@ export function piracy(region,rating,raw,wiki){
         }
 
         if (region === 'gxy_chthonian'){
-            let num_minelayer_on = wiki ? global.galaxy.minelayer.on : gal_on['minelayer'];
+            let num_minelayer_on = wiki ? (global.galaxy?.minelayer?.on ?? 0) : gal_on['minelayer'];
             if (num_minelayer_on){
                 armada += num_minelayer_on * galaxyProjects.gxy_chthonian.minelayer.ship.rating();
             }
-            let num_raider_on = wiki ? global.galaxy.raider.on : gal_on['raider'];
+            let num_raider_on = wiki ? (global.galaxy?.raider?.on ?? 0) : gal_on['raider'];
             if (num_raider_on){
                 armada += num_raider_on * galaxyProjects.gxy_chthonian.raider.ship.rating();
             }
@@ -6708,6 +6751,9 @@ export function checkRequirements(action_set,region,action){
             isMet = false;
         }
     });
+    if (isMet && action_set[region][action].hasOwnProperty('condition') && !action_set[region][action].condition()){
+        isMet = false;
+    }
     if (isMet && action_set[region][action].grant && (global.tech[action_set[region][action].grant[0]] && global.tech[action_set[region][action].grant[0]] >= action_set[region][action].grant[1])){
         isMet = false;
     }
@@ -7096,29 +7142,22 @@ function armada(parent,id){
         let fleet = $(`<div id="${id}" class="fleet"></div>`);
         parent.append(fleet);
 
-        let ships = ['scout_ship','corvette_ship','frigate_ship','cruiser_ship','dreadnought'];
-
         let cols = [];
-        for (let i=0; i<6; i++){
+        // One column per ship type plus an extra column for labels
+        for (let i = 0; i < gatewayArmada.length + 1; i++){
             let col = $(`<div class="area"></div>`);
             cols.push(col);
             fleet.append(col);
         }
 
-        for (let i=0; i<ships.length; i++){
-            if (global.galaxy.hasOwnProperty(ships[i])){
-                let ship = $(`<span id="armada${ships[i]}" class="ship has-text-advanced">${galaxyProjects.gxy_gateway[ships[i]].title}</span>`);
-                cols[i+1].append(ship);
-            }
-        }
-
         cols[0].append($(`<span></span>`));
         cols[0].append($(`<span id="armadagateway" class="has-text-danger">${galaxyProjects.gxy_gateway.info.name}</span>`));
 
-        for (let i=0; i<ships.length; i++){
-            if (global.galaxy.hasOwnProperty(ships[i])){
-                let ship = $(`<span class="ship">{{ gateway.${ships[i]} }}</span>`);
-                cols[i+1].append(ship);
+        for (let i = 0; i < gatewayArmada.length; i++){
+            const ship = gatewayArmada[i];
+            if (global.galaxy.hasOwnProperty(ship)){
+                cols[i+1].append($(`<span id="armada${ship}" class="ship has-text-advanced">${galaxyProjects.gxy_gateway[ship].title}</span>`));
+                cols[i+1].append($(`<span class="ship">{{ gateway.${ship} }}</span>`));
             }
         }
 
@@ -7129,16 +7168,17 @@ function armada(parent,id){
                 let region = $(`<span id="armada${r}" class="has-text-caution">${typeof galaxyProjects[area].info.name === 'string' ? galaxyProjects[area].info.name : galaxyProjects[area].info.name()}</span>`);
                 cols[0].append(region);
 
-                for (let i=0; i<ships.length; i++){
-                    if (global.galaxy.hasOwnProperty(ships[i])){
-                        let ship = $(`<span class="ship"></span>`);
-                        let sub = $(`<span role="button" aria-label="remove ${ships[i]}" class="sub has-text-danger" @click="sub('${area}','${ships[i]}')"><span>&laquo;</span></span>`);
-                        let count = $(`<span class="current">{{ ${r}.${ships[i]} }}</span>`);
-                        let add = $(`<span role="button" aria-label="add ${ships[i]}" class="add has-text-success" @click="add('${area}','${ships[i]}')"><span>&raquo;</span></span>`);
-                        cols[i+1].append(ship);
-                        ship.append(sub);
-                        ship.append(count);
-                        ship.append(add);
+                for (let i = 0; i < gatewayArmada.length; i++){
+                    const ship = gatewayArmada[i];
+                    if (global.galaxy.hasOwnProperty(ship)){
+                        let shipSpan = $(`<span class="ship"></span>`);
+                        let sub = $(`<span role="button" aria-label="remove ${ship}" class="sub has-text-danger" @click="sub('${area}','${ship}')"><span>&laquo;</span></span>`);
+                        let count = $(`<span class="current">{{ ${r}.${ship} }}</span>`);
+                        let add = $(`<span role="button" aria-label="add ${ship}" class="add has-text-success" @click="add('${area}','${ship}')"><span>&raquo;</span></span>`);
+                        cols[i+1].append(shipSpan);
+                        shipSpan.append(sub);
+                        shipSpan.append(count);
+                        shipSpan.append(add);
                     }
                 }
 
@@ -7189,10 +7229,11 @@ function armada(parent,id){
             }
         });
 
-        for (let i=0; i<ships.length; i++){
-            if (global.galaxy.hasOwnProperty(ships[i])){
-                popover(`armada${ships[i]}`,function(obj){
-                    actionDesc(obj.popper,galaxyProjects.gxy_gateway[ships[i]],global.galaxy[ships[i]]);
+        for (let i = 0; i < gatewayArmada.length; i++){
+            const ship = gatewayArmada[i];
+            if (global.galaxy.hasOwnProperty(ship)){
+                popover(`armada${ship}`,function(obj){
+                    actionDesc(obj.popper, galaxyProjects.gxy_gateway[ship], global.galaxy[ship]);
                     return undefined;
                 });
             }
@@ -7441,7 +7482,8 @@ export function setUniverse(){
 }
 
 export function ascendLab(hybrid,wiki){
-    if (!wiki && !global.race['noexport']){
+    let isWiki = !!wiki;
+    if (!isWiki && !global.race['noexport']){
         if (webWorker.w){
             webWorker.w.terminate();
         }
@@ -7458,7 +7500,7 @@ export function ascendLab(hybrid,wiki){
             if (['unicorn','seraph'].includes(global.race.species)){
                 unlockAchieve(`traitor`);
             }
-            if (global.stats.achieve['what_is_best'] && global.stats.achieve.what_is_best['e']){
+            if (global.stats.achieve['what_is_best'] && global.stats.achieve.what_is_best.e >= 5){
                 global.race['noexport'] = `Hybrid`;
             }
             else {
@@ -7512,7 +7554,7 @@ export function ascendLab(hybrid,wiki){
         technophobe: global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l ? global.stats.achieve.technophobe.l : 0
     };
 
-    if (wiki){
+    if (isWiki){
         wiki.append(lab);
     }
     else {
@@ -7522,7 +7564,7 @@ export function ascendLab(hybrid,wiki){
     let labStatus = `<div><h3 class="has-text-danger">${loc('genelab_title')}</h3> - <span class="has-text-warning">${loc('genelab_genes')} {{ g.genes }}</span> - <span class="has-text-warning">${loc('trait_untapped_name')}: {{ g.genes | untapped }}</span> - <span class="has-text-caution">${loc('genelab_neg')} {{ td.neg }}/10</span></div>`;
     lab.append(labStatus);
 
-    if (wiki){
+    if (isWiki){
         lab.append(`
             <div class="has-text-caution">${loc('achieve_ascended_name')}</div>
         `);
@@ -7568,7 +7610,7 @@ export function ascendLab(hybrid,wiki){
     let dGenus = false;
     let genus = `<div class="genus_selection"><div class="has-text-caution">${loc('genelab_genus')}</div><template><section>`;
     Object.keys(genus_traits).forEach(function (type){
-        if (wiki || (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0)){
+        if (isWiki || (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0)){
             if (!dGenus){ dGenus = type; }
             genus = genus + `<div class="field ${type}"><b-radio v-model="g.genus" native-value="${type}">${loc(`genelab_genus_${type}`)}</b-radio></div>`;
         }
@@ -7582,13 +7624,13 @@ export function ascendLab(hybrid,wiki){
     Object.keys(races).forEach(function (race){
         let type = races[race].type;
         if (
-            wiki
+            isWiki
                 ||
             (global.stats.achieve[`extinct_${race}`] && global.stats.achieve[`extinct_${race}`].l > 0)
                 ||
             (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0)
             ){
-            if (races[race].hasOwnProperty('traits') && !['junker','sludge','ultra_sludge'].includes(race)){
+            if (races[race].hasOwnProperty('traits') && !['custom','hybrid','junker','sludge','ultra_sludge'].includes(race)){
                 Object.keys(races[race].traits).forEach(function (trait){
                     unlockedTraits[trait] = true;
                 });
@@ -7624,7 +7666,7 @@ export function ascendLab(hybrid,wiki){
             <span>{{ err.msg }}</span>
         </div>
     `;
-    if (!wiki){
+    if (!isWiki){
         buttons += `
             <div class="create">
                 <button class="button" @click="setRace()">${loc('genelab_create')}</button>
@@ -7682,7 +7724,7 @@ export function ascendLab(hybrid,wiki){
         }
     }
 
-    genome.genes = calcGenomeScore(genome,(wiki ? wikiVars : false));
+    genome.genes = calcGenomeScore(genome,(isWiki ? wikiVars : false));
     let error = { msg: "" };
 
     var modal = {
@@ -7724,7 +7766,7 @@ export function ascendLab(hybrid,wiki){
                     }
                 }
                 trait_data.neg = neg_traits;
-                genome.genes = calcGenomeScore(genome,(wiki ? wikiVars : false));
+                genome.genes = calcGenomeScore(genome,(isWiki ? wikiVars : false));
             },
             setRace(){
                 if (genome.fanaticism && !genome.traitlist.includes(genome.fanaticism)){ return false; }
@@ -7786,7 +7828,7 @@ export function ascendLab(hybrid,wiki){
                 genome.eris = "";
                 genome.genus = dGenus;
                 genome.traitlist = [];
-                genome.genes = calcGenomeScore(genome,(wiki ? wikiVars : false));
+                genome.genes = calcGenomeScore(genome,(isWiki ? wikiVars : false));
                 genome.fanaticism = false;
             },
             fanatic(){
@@ -7836,6 +7878,9 @@ export function ascendLab(hybrid,wiki){
                         }
                         let formatError = false;
                         Object.keys(genome).forEach(function (type){
+                            if (type === 'fanaticism' && genome[type] === false){
+                                return;
+                            }
                             if (importCustom[type] && typeof genome[type] !== typeof importCustom[type]){
                                 formatError = true;
                                 return;
@@ -7866,7 +7911,7 @@ export function ascendLab(hybrid,wiki){
                         if (genome.desc.length > 255){
                             genome.desc = genome.desc.substring(0, 255);
                         }
-                        if (!wiki && !(global.stats.achieve[`genus_${genome.genus}`] && global.stats.achieve[`genus_${genome.genus}`].l > 0)){
+                        if (!isWiki && !(global.stats.achieve[`genus_${genome.genus}`] && global.stats.achieve[`genus_${genome.genus}`].l > 0)){
                             genome.genus = dGenus;
                         }
                         let fixTraitlist = [];
@@ -7877,7 +7922,7 @@ export function ascendLab(hybrid,wiki){
                         }
                         genome.fanaticism = importCustom.hasOwnProperty('fanaticism') ? importCustom.fanaticism : false,
                         genome.traitlist = fixTraitlist;
-                        genome.genes = calcGenomeScore(genome,(wiki ? wikiVars : false));
+                        genome.genes = calcGenomeScore(genome,(isWiki ? wikiVars : false));
 
                         let neg_traits = 0;
                         for (let i=0; i<genome.traitlist.length; i++){
@@ -7910,7 +7955,7 @@ export function ascendLab(hybrid,wiki){
             cost(trait){
                 if (traits[trait].val >= 0){
                     let max_complexity = 2;
-                    if (wiki){
+                    if (isWiki){
                         max_complexity += wikiVars.technophobe;
                     }
                     else if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){
@@ -7951,14 +7996,19 @@ export function ascendLab(hybrid,wiki){
         }
     });
 
+    let genus_trank = (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 4) ? 2 : 1;
     Object.keys(genus_traits).forEach(function (type){
-        if (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0){
+        if (isWiki || (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0)){
             popover(`celestialLabgenusSelection${type}`, function(){
                 let desc = $(`<div><div>${loc(`genelab_genus_${type}_desc`)}</div></div>`);
                 Object.keys(genus_traits[type]).forEach(function (t){
                     if (traits[t]){
                         let des = $(`<div></div>`);
-                        getTraitDesc(des, t, { trank: 1 });
+                        let opts = {
+                            trank: genus_trank,
+                            wiki: isWiki
+                        }
+                        getTraitDesc(des, t, opts);
                         desc.append(des);
                     }
                 });
@@ -7975,7 +8025,11 @@ export function ascendLab(hybrid,wiki){
         if (traits.hasOwnProperty(trait) && traits[trait].type === 'major'){
             popover(`celestialLabtraitSelection${trait}`, function(){
                 let desc = $(`<div></div>`);
-                getTraitDesc(desc, trait, { trank: 1 });
+                let opts = {
+                    trank: 1,
+                    wiki: isWiki
+                }
+                getTraitDesc(desc, trait, opts);
                 return desc;
             },{
                 elm: `#celestialLab .trait_selection .t${trait}`,

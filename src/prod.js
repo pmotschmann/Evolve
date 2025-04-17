@@ -54,6 +54,9 @@ export function production(id,val,wiki){
             if (dirtVal){
                 oil *= 1 + (dirtVal / 100);
             }
+            if (global.race['warlord']){
+                oil *= 1 + (global.portal?.pumpjack?.rank || 1) * 0.24;
+            } 
             return oil;
         }
         case 'iridium_mine':
@@ -79,7 +82,7 @@ export function production(id,val,wiki){
         }
         case 'helium_mine':
         {
-            let base = global.race['warlord'] ? 0.35 : 0.18;
+            let base = global.race['warlord'] ? 0.3 + (global.portal?.pumpjack?.rank || 1) * 0.08 : 0.18;
             let gov = govRelationFactor(3);
             return {
                 b: base,
@@ -149,7 +152,7 @@ export function production(id,val,wiki){
                 vals.n = vals.b;
             }
 
-            return val ? vals : vals.n;
+            return vals;
         }
         case 'oil_extractor':
         {
@@ -532,6 +535,10 @@ export function production(id,val,wiki){
                 case 'elerium':
                 {
                     return 0.02;
+                }
+                case 'infernite':
+                {
+                    return 0.015;
                 }
                 case 'vitreloy':
                 {

@@ -4887,7 +4887,8 @@ export const races = {
         entity: loc('race_slitheryn_entity'),
         traits: {
             astrologer: 1,
-            hard_of_hearing: 1
+            hard_of_hearing: 1,
+            slow_digestion: 1
         },
         solar: {
             red: loc('race_slitheryn_solar_red'),
