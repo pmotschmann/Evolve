@@ -6751,6 +6751,9 @@ export function checkRequirements(action_set,region,action){
             isMet = false;
         }
     });
+    if (isMet && action_set[region][action].hasOwnProperty('condition') && !action_set[region][action].condition()){
+        isMet = false;
+    }
     if (isMet && action_set[region][action].grant && (global.tech[action_set[region][action].grant[0]] && global.tech[action_set[region][action].grant[0]] >= action_set[region][action].grant[1])){
         isMet = false;
     }
