@@ -2147,7 +2147,7 @@ const fortressModules = {
                             global.stats.warlord.p = true;
                             checkWarlordAchieve();
                         }
-                        else {
+                        else if (global.tech?.hell_gate >= 2){
                             towerSize(true);
                             fortressModules.prtl_gate.west_tower.post(); //unlock towers if both are complete now
                             fortressModules.prtl_gate.east_tower.post();
