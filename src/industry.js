@@ -172,9 +172,10 @@ function loadSmelter(parent,bind){
     if (!global.race['forge']){
         if ((!global.race['kindling_kindred'] && !global.race['smoldering']) || global.race['evil']){
             let f_label = global.race['evil'] ? (global.race['soul_eater'] && global.race.species !== 'wendigo' && !global.race['artifical'] ? global.resource.Food.name : global.resource.Furs.name) : global.resource.Lumber.name;
+            let basic_fuel_name = global.race['evil'] ? (global.race['soul_eater'] && global.race.species !== 'wendigo' && !global.race['artifical'] ? 'soul' : 'flesh') : 'lumber';
             let wood = $(`<span :aria-label="buildLabel('wood') + ariaCount('Wood')" class="current wood">${f_label} {{ s.Wood }}</span>`);
-            let subWood = $(`<span role="button" class="sub" @click="subFuel('Wood')" aria-label="Remove lumber fuel"><span>&laquo;</span></span>`);
-            let addWood = $(`<span role="button" class="add" @click="addFuel('Wood')" aria-label="Add lumber fuel"><span>&raquo;</span></span>`);
+            let subWood = $(`<span role="button" class="sub" @click="subFuel('Wood')" aria-label="Remove ${basic_fuel_name} fuel"><span>&laquo;</span></span>`);
+            let addWood = $(`<span role="button" class="add" @click="addFuel('Wood')" aria-label="Add ${basic_fuel_name} fuel"><span>&raquo;</span></span>`);
             fuelTypes.append(subWood);
             fuelTypes.append(wood);
             fuelTypes.append(addWood);
@@ -390,7 +391,12 @@ function loadSmelter(parent,bind){
                 return tooltip(type);
             },
             ariaCount(fuel){
-                return ` ${global.city.smelter[fuel]} ${fuel} fueled.`;
+               let fuel_name = fuel;
+               if (fuel === "Wood") {
+                  fuel_name = global.race['evil'] ? (global.race['soul_eater'] && global.race.species !== 'wendigo' && !global.race['artifical'] ? 'Soul' : 'Flesh') : 'Wood';
+               }
+
+                return ` ${global.city.smelter[fuel]} ${fuel_name} fueled.`;
             },
             ariaProd(res){
                 return `. ${global.city.smelter[res]} producing ${res}.`;
