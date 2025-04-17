@@ -206,7 +206,7 @@ function loadSmelter(parent,bind){
     if (!global.race['forge']){
         if ((!global.race['kindling_kindred'] && !global.race['smoldering']) || global.race['evil']){
             let f_label = global.resource[fuel_config.l_type].name;
-            let wood = $(`<span :aria-label="buildLabel('wood') + ariaCount('Wood')" class="current wood">${f_label} {{ s.Wood }}</span>`);
+            let wood = $(`<span :aria-label="buildLabel('wood') + ariaCount('Wood', '${f_label}')" class="current wood">${f_label} {{ s.Wood }}</span>`);
             let subWood = $(`<span role="button" class="sub" @click="subFuel('Wood')" aria-label="Remove ${f_label} fuel"><span>&laquo;</span></span>`);
             let addWood = $(`<span role="button" class="add" @click="addFuel('Wood')" aria-label="Add ${f_label} fuel"><span>&raquo;</span></span>`);
             fuelTypes.append(subWood);
@@ -422,8 +422,8 @@ function loadSmelter(parent,bind){
             buildLabel(type){
                 return tooltip(type);
             },
-            ariaCount(fuel){
-                return ` ${global.city.smelter[fuel]} ${fuel} fueled.`;
+            ariaCount(fuel, name=fuel){
+                return ` ${global.city.smelter[fuel]} ${name} fueled.`;
             },
             ariaProd(res){
                 return `. ${global.city.smelter[res]} producing ${res}.`;
