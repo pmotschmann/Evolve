@@ -7482,7 +7482,8 @@ export function setUniverse(){
 }
 
 export function ascendLab(hybrid,wiki){
-    if (!wiki && !global.race['noexport']){
+    let isWiki = !!wiki;
+    if (!isWiki && !global.race['noexport']){
         if (webWorker.w){
             webWorker.w.terminate();
         }
@@ -7553,7 +7554,7 @@ export function ascendLab(hybrid,wiki){
         technophobe: global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l ? global.stats.achieve.technophobe.l : 0
     };
 
-    if (wiki){
+    if (isWiki){
         wiki.append(lab);
     }
     else {
@@ -7563,7 +7564,7 @@ export function ascendLab(hybrid,wiki){
     let labStatus = `<div><h3 class="has-text-danger">${loc('genelab_title')}</h3> - <span class="has-text-warning">${loc('genelab_genes')} {{ g.genes }}</span> - <span class="has-text-warning">${loc('trait_untapped_name')}: {{ g.genes | untapped }}</span> - <span class="has-text-caution">${loc('genelab_neg')} {{ td.neg }}/10</span></div>`;
     lab.append(labStatus);
 
-    if (wiki){
+    if (isWiki){
         lab.append(`
             <div class="has-text-caution">${loc('achieve_ascended_name')}</div>
         `);
@@ -7609,7 +7610,7 @@ export function ascendLab(hybrid,wiki){
     let dGenus = false;
     let genus = `<div class="genus_selection"><div class="has-text-caution">${loc('genelab_genus')}</div><template><section>`;
     Object.keys(genus_traits).forEach(function (type){
-        if (wiki || (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0)){
+        if (isWiki || (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0)){
             if (!dGenus){ dGenus = type; }
             genus = genus + `<div class="field ${type}"><b-radio v-model="g.genus" native-value="${type}">${loc(`genelab_genus_${type}`)}</b-radio></div>`;
         }
@@ -7623,13 +7624,13 @@ export function ascendLab(hybrid,wiki){
     Object.keys(races).forEach(function (race){
         let type = races[race].type;
         if (
-            wiki
+            isWiki
                 ||
             (global.stats.achieve[`extinct_${race}`] && global.stats.achieve[`extinct_${race}`].l > 0)
                 ||
             (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0)
             ){
-            if (races[race].hasOwnProperty('traits') && !['junker','sludge','ultra_sludge'].includes(race)){
+            if (races[race].hasOwnProperty('traits') && !['custom','hybrid','junker','sludge','ultra_sludge'].includes(race)){
                 Object.keys(races[race].traits).forEach(function (trait){
                     unlockedTraits[trait] = true;
                 });
@@ -7665,7 +7666,7 @@ export function ascendLab(hybrid,wiki){
             <span>{{ err.msg }}</span>
         </div>
     `;
-    if (!wiki){
+    if (!isWiki){
         buttons += `
             <div class="create">
                 <button class="button" @click="setRace()">${loc('genelab_create')}</button>
@@ -7723,7 +7724,7 @@ export function ascendLab(hybrid,wiki){
         }
     }
 
-    genome.genes = calcGenomeScore(genome,(wiki ? wikiVars : false));
+    genome.genes = calcGenomeScore(genome,(isWiki ? wikiVars : false));
     let error = { msg: "" };
 
     var modal = {
@@ -7765,7 +7766,7 @@ export function ascendLab(hybrid,wiki){
                     }
                 }
                 trait_data.neg = neg_traits;
-                genome.genes = calcGenomeScore(genome,(wiki ? wikiVars : false));
+                genome.genes = calcGenomeScore(genome,(isWiki ? wikiVars : false));
             },
             setRace(){
                 if (genome.fanaticism && !genome.traitlist.includes(genome.fanaticism)){ return false; }
@@ -7827,7 +7828,7 @@ export function ascendLab(hybrid,wiki){
                 genome.eris = "";
                 genome.genus = dGenus;
                 genome.traitlist = [];
-                genome.genes = calcGenomeScore(genome,(wiki ? wikiVars : false));
+                genome.genes = calcGenomeScore(genome,(isWiki ? wikiVars : false));
                 genome.fanaticism = false;
             },
             fanatic(){
@@ -7910,7 +7911,7 @@ export function ascendLab(hybrid,wiki){
                         if (genome.desc.length > 255){
                             genome.desc = genome.desc.substring(0, 255);
                         }
-                        if (!wiki && !(global.stats.achieve[`genus_${genome.genus}`] && global.stats.achieve[`genus_${genome.genus}`].l > 0)){
+                        if (!isWiki && !(global.stats.achieve[`genus_${genome.genus}`] && global.stats.achieve[`genus_${genome.genus}`].l > 0)){
                             genome.genus = dGenus;
                         }
                         let fixTraitlist = [];
@@ -7921,7 +7922,7 @@ export function ascendLab(hybrid,wiki){
                         }
                         genome.fanaticism = importCustom.hasOwnProperty('fanaticism') ? importCustom.fanaticism : false,
                         genome.traitlist = fixTraitlist;
-                        genome.genes = calcGenomeScore(genome,(wiki ? wikiVars : false));
+                        genome.genes = calcGenomeScore(genome,(isWiki ? wikiVars : false));
 
                         let neg_traits = 0;
                         for (let i=0; i<genome.traitlist.length; i++){
@@ -7954,7 +7955,7 @@ export function ascendLab(hybrid,wiki){
             cost(trait){
                 if (traits[trait].val >= 0){
                     let max_complexity = 2;
-                    if (wiki){
+                    if (isWiki){
                         max_complexity += wikiVars.technophobe;
                     }
                     else if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){
@@ -7995,14 +7996,19 @@ export function ascendLab(hybrid,wiki){
         }
     });
 
+    let genus_trank = (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 4) ? 2 : 1;
     Object.keys(genus_traits).forEach(function (type){
-        if (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0){
+        if (isWiki || (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0)){
             popover(`celestialLabgenusSelection${type}`, function(){
                 let desc = $(`<div><div>${loc(`genelab_genus_${type}_desc`)}</div></div>`);
                 Object.keys(genus_traits[type]).forEach(function (t){
                     if (traits[t]){
                         let des = $(`<div></div>`);
-                        getTraitDesc(des, t, { trank: 1 });
+                        let opts = {
+                            trank: genus_trank,
+                            wiki: isWiki
+                        }
+                        getTraitDesc(des, t, opts);
                         desc.append(des);
                     }
                 });
@@ -8019,7 +8025,11 @@ export function ascendLab(hybrid,wiki){
         if (traits.hasOwnProperty(trait) && traits[trait].type === 'major'){
             popover(`celestialLabtraitSelection${trait}`, function(){
                 let desc = $(`<div></div>`);
-                getTraitDesc(desc, trait, { trank: 1 });
+                let opts = {
+                    trank: 1,
+                    wiki: isWiki
+                }
+                getTraitDesc(desc, trait, opts);
                 return desc;
             },{
                 elm: `#celestialLab .trait_selection .t${trait}`,
