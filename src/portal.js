@@ -4693,7 +4693,7 @@ export function hellguard(){
             let scale = global.race['hivemind'] ? traits.hivemind.vars()[0] : 1;
             let rating = armyRating(scale,'hellArmy',0) / scale;
             global.portal.throne.enemy.forEach(function(e){
-                let eRating = e.s + (global.portal.minions.spawns / 10000) ** 8;
+                let eRating = e.s + (global.portal.minions.spawns / 9000) ** 8;
                 let reapEffect = global.race['blurry'] ? 102 - traits.blurry.vars()[0] : 102;
                 reapEffect -= (global.portal?.reaper?.count || 1) * 2;
                 let reaper = 0.25 + (eRating * 0.01) - ((global.portal?.reaper?.count || 0) / reapEffect);

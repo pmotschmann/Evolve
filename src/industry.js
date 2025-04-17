@@ -207,8 +207,8 @@ function loadSmelter(parent,bind){
         if ((!global.race['kindling_kindred'] && !global.race['smoldering']) || global.race['evil']){
             let f_label = global.resource[fuel_config.l_type].name;
             let wood = $(`<span :aria-label="buildLabel('wood') + ariaCount('Wood')" class="current wood">${f_label} {{ s.Wood }}</span>`);
-            let subWood = $(`<span role="button" class="sub" @click="subFuel('Wood')" aria-label="Remove lumber fuel"><span>&laquo;</span></span>`);
-            let addWood = $(`<span role="button" class="add" @click="addFuel('Wood')" aria-label="Add lumber fuel"><span>&raquo;</span></span>`);
+            let subWood = $(`<span role="button" class="sub" @click="subFuel('Wood')" aria-label="Remove ${f_label} fuel"><span>&laquo;</span></span>`);
+            let addWood = $(`<span role="button" class="add" @click="addFuel('Wood')" aria-label="Add ${f_label} fuel"><span>&raquo;</span></span>`);
             fuelTypes.append(subWood);
             fuelTypes.append(wood);
             fuelTypes.append(addWood);
@@ -216,8 +216,8 @@ function loadSmelter(parent,bind){
 
         if (global.resource.Coal.display){
             let coal = $(`<span :aria-label="buildLabel('coal') + ariaCount('Coal')" class="current coal">${global.resource.Coal.name} <span v-html="$options.filters.spook(s.Coal)"></span></span>`);
-            let subCoal = $(`<span role="button" class="sub" @click="subFuel('Coal')" aria-label="Remove coal fuel"><span>&laquo;</span></span>`);
-            let addCoal = $(`<span role="button" class="add" @click="addFuel('Coal')" aria-label="Add coal fuel"><span>&raquo;</span></span>`);
+            let subCoal = $(`<span role="button" class="sub" @click="subFuel('Coal')" aria-label="Remove ${global.resource.Coal.name} fuel"><span>&laquo;</span></span>`);
+            let addCoal = $(`<span role="button" class="add" @click="addFuel('Coal')" aria-label="Add ${global.resource.Coal.name} fuel"><span>&raquo;</span></span>`);
             fuelTypes.append(subCoal);
             fuelTypes.append(coal);
             fuelTypes.append(addCoal);
@@ -230,8 +230,8 @@ function loadSmelter(parent,bind){
     }
     else if (global.resource.Oil.display){
         let oil = $(`<span :aria-label="buildLabel('oil') + ariaCount('Oil')" class="current oil">${global.resource.Oil.name} {{ s.Oil }}</span>`);
-        let subOil = $(`<span role="button" class="sub" @click="subFuel('Oil')" aria-label="Remove oil fuel"><span>&laquo;</span></span>`);
-        let addOil = $(`<span role="button" class="add" @click="addFuel('Oil')" aria-label="Add oil fuel"><span>&raquo;</span></span>`);
+        let subOil = $(`<span role="button" class="sub" @click="subFuel('Oil')" aria-label="Remove ${global.resource.Oil.name} fuel"><span>&laquo;</span></span>`);
+        let addOil = $(`<span role="button" class="add" @click="addFuel('Oil')" aria-label="Add ${global.resource.Oil.name} fuel"><span>&raquo;</span></span>`);
         fuelTypes.append(subOil);
         fuelTypes.append(oil);
         fuelTypes.append(addOil);

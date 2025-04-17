@@ -3494,7 +3494,7 @@ export function getTopChange(elm){
     for (let idx=index; idx>=0; idx--){
         elm.append(`<div class="type"><h2 class="has-text-warning">v${changeList[idx].version}${changeList[idx].hasOwnProperty('revision') ? changeList[idx].revision : ''}</h2><span class="has-text-caution">${changeList[idx].date}</span></div>`);
         for (let i=0; i<changeList[idx].changes.length; i++){
-            elm.append(`<div class="desc">${changeList[idx].changes[i]}</div>`);
+            elm.append(`<div class="desc condense">${changeList[idx].changes[i]}</div>`);
         }
     }
     return elm;
