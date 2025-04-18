@@ -1498,7 +1498,7 @@ const edenicModules = {
             id: 'eden-north_pier',
             title(){ return loc('eden_pier',[loc('north')]); },
             desc(wiki){
-                if (!global.eden.hasOwnProperty('rune_gate') || global.eden.north_pier.count < 10 || wiki){
+                if (wiki || !global.eden.hasOwnProperty('rune_gate') || global.eden.north_pier.count < 10){
                     return `<div>${loc('eden_pier',[loc('north')])}</div><div class="has-text-special">${loc('requires_segments',[10])}</div>`;
                 }
                 else {
@@ -1682,7 +1682,7 @@ const edenicModules = {
             id: 'eden-south_pier',
             title(){ return loc('eden_pier',[loc('south')]); },
             desc(wiki){
-                if (!global.eden.hasOwnProperty('rune_gate') || global.eden.south_pier.count < 10 || wiki){
+                if (wiki || !global.eden.hasOwnProperty('rune_gate') || global.eden.south_pier.count < 10){
                     return `<div>${loc('eden_pier',[loc('south')])}</div><div class="has-text-special">${loc('requires_segments',[10])}</div>`;
                 }
                 else {

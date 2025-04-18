@@ -7675,8 +7675,8 @@ function fastLoop(){
 
         if (global.race['gravity_well'] && global.tech['teamster'] && global.tech.teamster >= 2){
             let teamsters = global.civic.teamster.workers;
-            let revenue = teamsters * rawCash * 0.00045;
-            breakdown.p['Money'][jobName('teamster')] = Math.round(revenue) + 'v';
+            let revenue = teamsters * rawCash * 0.01;
+            breakdown.p['Money'][jobName('teamster')] = Math.round(revenue / global_multiplier) + 'v';
             // Allow quadratic hunger penalty, but remove quadratic global production bonus
             modRes('Money', +(revenue * time_multiplier * hunger).toFixed(2));
             rawCash += revenue * hunger;
