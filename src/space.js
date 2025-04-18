@@ -4403,6 +4403,12 @@ const interstellarProjects = {
             },
             action(){
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['s_gate','interstellar']
+                };
             }
         },
     },
