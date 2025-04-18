@@ -66,12 +66,14 @@ Math.rand = function(min, max) {
 
 global['seed'] = 2;
 global['warseed'] = 2;
-export function seededRandom(min, max, alt) {
+export function seededRandom(min, max, alt, useSeed) {
     max = max || 1;
     min = min || 0;
 
-    global[alt ? 'warseed' : 'seed'] = (global[alt ? 'warseed' : 'seed'] * 9301 + 49297) % 233280;
-    let rnd = global[alt ? 'warseed' : 'seed'] / 233280;
+    let seed = useSeed || global[alt ? 'warseed' : 'seed'];
+    let newSeed = (seed * 9301 + 49297) % 233280;
+    let rnd = newSeed / 233280;
+    if (!useSeed){ global[alt ? 'warseed' : 'seed'] = newSeed; }
     return min + rnd * (max - min);
 }
 

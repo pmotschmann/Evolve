@@ -3343,6 +3343,9 @@ function fastLoop(){
                     if (mech.size === 'collector') {
                         supply += mechCollect(mech) * time_multiplier;
                     }
+                    else if (mech.size === 'minion' && mech.equip.includes('scavenger')){
+                        supply += mechCollect(mech) * time_multiplier;
+                    }
                 }
             }
             global.portal.purifier.supply += supply;

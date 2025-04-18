@@ -20,7 +20,7 @@ export const changeList = [
             `Fixed bug with Rogue trait that set crafted resources to 0.`,
             `Fixed bug that caused Hybrid species to throw an error when triggering greatness resets.`,
             `Fixed issue with Iridium Smelters miscalculating result.`,
-            `Fixed a variety of Joyless edge cases`,
+            `Fixed a variety of Joyless edge cases.`,
             `Fixed Space Casino appearing improperly in power grid.`,
             `Accessibility improvements.`
         ]
