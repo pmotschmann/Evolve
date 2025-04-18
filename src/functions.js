@@ -1760,6 +1760,7 @@ export function adjustCosts(c_action, offset, wiki){
     costs = heavyAdjust(costs, offset, wiki);
     costs = dictatorAdjust(costs, offset, wiki);
     costs = lMatAdjust(costs, c_action, offset, wiki);
+    costs = nexusAdjust(costs, c_action, offset, wiki);
     return craftAdjust(costs, offset, wiki);
 }
 
@@ -2048,6 +2049,23 @@ function lMatAdjust(costs, c_action, offset, wiki){
             if (path && global[path[1]].hasOwnProperty(path[0]) && global[path[1]][path[0]].hasOwnProperty('l_m') 
                 && (['Lumber','Furs','Plywood'].includes(res) || (res === 'Stone' && global.race['sappy']))){
                 newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * traits.living_materials.vars()[0] ** (global[path[1]][path[0]].l_m / 25)); }
+            }
+            else {
+                newCosts[res] = function(){ return costs[res](offset, wiki); }
+            }
+        });
+        return newCosts;
+    }
+    return costs;
+}
+
+function nexusAdjust(costs, c_action, offset, wiki){
+    if(global.tech['nexus'] && global.race['witch_hunter'] && global.tech['roguemagic'] && global.tech.roguemagic >= 7){
+        let newCosts = {};
+        let adjustRate = 0.96 ** global.tech['nexus'];
+        Object.keys(costs).forEach(function (res){
+            if (['Mana'].includes(res)){
+                newCosts[res] = function(){ return costs[res](offset, wiki) * adjustRate; }
             }
             else {
                 newCosts[res] = function(){ return costs[res](offset, wiki); }
