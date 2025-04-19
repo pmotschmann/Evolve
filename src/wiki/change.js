@@ -17,6 +17,8 @@ export const changeList = [
             `Evil Wendigo can now use Shovels.`,
             `Breakdown improvements for some resources.`,
             `Uranium geology bonus now applies to Uranium Ash.`,
+            `Spire boss resists now have a random element.`,
+            `Slitheryn once again have slow digestion.`,
             `Fixed bug with Rogue trait that set crafted resources to 0.`,
             `Fixed bug that caused Hybrid species to throw an error when triggering greatness resets.`,
             `Fixed issue with Iridium Smelters miscalculating result.`,

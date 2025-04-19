@@ -6542,7 +6542,7 @@ export function drawMechLab(){
     }
 }
 
-function validWeapons(size,type,point){
+export function validWeapons(size,type,point){
     let weaponList = ['laser','kinetic','shotgun','missile','flame','plasma','sonic','tesla'];
     if (global.race['warlord']){
         switch (size){
@@ -6571,6 +6571,20 @@ function validWeapons(size,type,point){
             case 'archfiend':
                 if (point === undefined || point === false){
                     weaponList = ['claws','venom','cold','shock','fire','acid'];
+                    switch (type){
+                        case 'dragon':
+                            weaponList = ['claws','cold','shock','fire','acid'];
+                            break;
+                        case 'snake':
+                            weaponList = ['venom','cold','shock','fire','acid'];
+                            break;
+                        case 'gorgon':
+                            weaponList = ['axe','hammer','cold','shock','fire','acid'];
+                            break;
+                        case 'hydra':
+                            weaponList = ['cold','shock','fire','acid'];
+                            break;
+                    }
                 }
                 else {
                     switch (type){
@@ -6595,7 +6609,7 @@ function validWeapons(size,type,point){
     return weaponList;
 }
 
-function validEquipment(size,type,point){
+export function validEquipment(size,type,point){
     let equipList = ['special','shields','sonar','grapple','infrared','flare','radiator','coolant','ablative','stabilizer','seals'];
     if (global.race['warlord']){
         switch (size){
