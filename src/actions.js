@@ -4965,7 +4965,7 @@ export function buildTemplate(key, region){
                 id: 'city-shrine',
                 title: loc('city_shrine'),
                 desc(){
-                    return loc('city_shrine_desc');
+                    return global.race['warlord'] ? loc('city_shrine_warlord_desc') : loc('city_shrine_desc');
                 },
                 category: 'commercial',
                 reqs: { theology: 2 },

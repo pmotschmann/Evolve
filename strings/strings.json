@@ -1418,6 +1418,7 @@
   "city_wonder_effect": "Counts as %0 Monuments",
   "city_shrine": "Shrine",
   "city_shrine_desc": "Unicorn Shrine",
+  "city_shrine_warlord_desc": "Bicorn Shrine",
   "city_shrine_effect": "Combined All Shrines",
   "city_shrine_morale": "+%0% Morale",
   "city_shrine_metal": "+%0% Metals Production",

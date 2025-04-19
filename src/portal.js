@@ -8687,6 +8687,17 @@ export function warlordSetup(){
 
         global.civic.govern.type = 'autocracy';
 
+        if (global.race['calm']){
+            global.resource.Zen.display = true;
+            initStruct(actions.city.meditation);
+        }
+        if (global.race['cannibalize']){
+            initStruct(actions.city.s_alter);
+        }
+        if (global.race['magnificent']){
+            initStruct(actions.city.shrine);
+        }
+
         global.portal['fortress'] = {
             threat: 10000,
             garrison: 0,
