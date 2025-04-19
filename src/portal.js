@@ -6982,7 +6982,7 @@ function statusEffect(mech,effect){
         case 'mountain':
             {
                 if (mech.chassis !== 'spider' && !mech.equip.includes('grapple')){
-                    rating = mech.equip.includes('flare') ? 0.75 : 0.5;
+                    rating = mech.equip.includes('flare') || mech.equip.includes('echo') ? 0.75 : 0.5;
                 }
             }
             break;
@@ -7358,7 +7358,7 @@ export function mechRating(mech,boss){
         if (global.stats.achieve['gladiator'] && global.stats.achieve.gladiator.l > 0){
             rating *= 1 + global.stats.achieve.gladiator.l * 0.1;
         }
-        if (mech.size === 'titan'){
+        if (mech.size === 'titan' || mech.size === 'archfiend'){
             rating *= 1.1;
         }
 
@@ -7383,12 +7383,15 @@ export function mechRating(mech,boss){
 
         if (global.portal.spire.type === 'concrete'){
             switch (mech.size){
+                case 'minion':
                 case 'small':
                     rating *= 0.92;
                     break;
+                case 'fiend':
                 case 'medium':
                     rating *= 0.95;
                     break;
+                case 'archfiend':
                 case 'titan':
                     rating *= 1.25;
                     break;
