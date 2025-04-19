@@ -4678,6 +4678,7 @@ export function buildTemplate(key, region){
                     }
                     else if (global['resource'][global.race.species].max > global['resource'][global.race.species].amount && payCosts($(this)[0])){
                         global['resource'][global.race.species].amount++;
+                        global.civic[global.civic.d_job].workers++;
                         return true;
                     }
                     return false;

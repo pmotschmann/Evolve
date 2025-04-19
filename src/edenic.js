@@ -1620,6 +1620,7 @@ const edenicModules = {
                 }
                 else if (global.eden.reincarnation.count === 1 && global['resource'][global.race.species].max > global['resource'][global.race.species].amount && payCosts($(this)[0])){
                     global['resource'][global.race.species].amount++;
+                    global.civic[global.civic.d_job].workers++;
                     if (global.race['warlord']){
                         global.stats.warlord.r = true;
                         checkWarlordAchieve();

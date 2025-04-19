@@ -1918,9 +1918,7 @@ function war_campaign(gov){
             }
             if (infected > 0){
                 global.resource[global.race.species].amount += infected;
-                if (global.civic.d_job !== 'unemployed'){
-                    global.civic[global.civic.d_job].workers += infected;
-                }
+                global.civic[global.civic.d_job].workers += infected;
                 if (infected === 1){
                     messageQueue(loc('civics_garrison_soldier_infected'),'special',false,['combat']);
                 }
