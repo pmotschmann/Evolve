@@ -2,6 +2,7 @@ import { loc } from './../locale.js';
 import { infoBoxBuilder, sideMenu } from './functions.js';
 import { calcPillar } from './../functions.js';
 import { mechSize, mechWeaponPower, mechCost, terrainEffect, monsters } from './../portal.js';
+import { global } from './../vars.js';
 
 export function hellPage(content){
     let mainContent = sideMenu('create',content);
@@ -91,88 +92,115 @@ export function hellPage(content){
     sideMenu('add',`hell-gameplay`,'spire',loc('portal_spire_name'));
 
     { // Spire Mech
-        let mechs = infoBoxBuilder(mainContent,{ name: 'mech', template: 'hell', paragraphs: 2,
-            para_data: {
-                2: [5,loc('portal_mech_size_small'),loc('portal_mech_size_medium'),loc('portal_mech_size_large'),loc('portal_mech_size_titan'),loc('portal_mech_size_collector')]
-            }
-        });
+        if (global.race['warlord']){
+            let demons = infoBoxBuilder(mainContent,{ name: 'demons', template: 'hell', paragraphs: 2,
+                para_data: {
+                    2: [4,loc('portal_mech_size_minion'),loc('portal_mech_size_fiend'),loc('portal_mech_size_cyberdemon'),loc('portal_mech_size_archfiend')]
+                }
+            });
 
-        let s_cost = mechCost('small');
-        infoBoxBuilder(mechs,{ name: 'scout', template: 'hell', paragraphs: 10, break: [3,4,5,6,10], h_level: 4, header: true,
-            para_data: {
-                1: [loc('portal_mech_size_small')],
-                2: [1,1,loc(`arpa_blood_prepared_title`)],
-                3: [(mechWeaponPower('small') * 100).toFixed(2)],
-                4: [mechSize('small'),s_cost.c,s_cost.s],
-                5: [loc(`portal_mech_equip_jumpjet`)],
-                7: [`1%`],
-                8: [loc(`portal_spire_status_fog`),loc(`portal_spire_status_dark`)],
-                9: [`100%`],
-                10: [`8%`],
-            },
-            data_link: {
-                2: [false,false,'wiki.html#blood-prestige-prepared']
-            }
-        });
+            let s_cost = mechCost('minion');
+            infoBoxBuilder(demons,{ name: 'minion', template: 'hell', paragraphs: 10, break: [3,4,5,6,10], h_level: 4, header: true,
+                para_data: {
+                    1: [loc('portal_mech_size_minion')],
+                    2: [1,1,loc(`arpa_blood_prepared_title`)],
+                    3: [(mechWeaponPower('minion') * 100).toFixed(2)],
+                    4: [mechSize('minion'),s_cost.c,s_cost.s],
+                    5: [loc(`portal_mech_equip_scavenger`),loc(`portal_mech_equip_scouter`)],
+                    7: [`1%`],
+                    8: [loc(`portal_spire_status_fog`),loc(`portal_spire_status_dark`)],
+                    9: [`100%`],
+                    10: [`8%`],
+                },
+                data_link: {
+                    2: [false,false,'wiki.html#blood-prestige-prepared']
+                }
+            });
+        }
+        else {
+            let mechs = infoBoxBuilder(mainContent,{ name: 'mech', template: 'hell', paragraphs: 2,
+                para_data: {
+                    2: [5,loc('portal_mech_size_small'),loc('portal_mech_size_medium'),loc('portal_mech_size_large'),loc('portal_mech_size_titan'),loc('portal_mech_size_collector')]
+                }
+            });
 
-        let m_cost = mechCost('medium');
-        infoBoxBuilder(mechs,{ name: 'standard', template: 'hell', paragraphs: 6, break: [3,4,5,6], h_level: 4, header: true,
-            para_data: {
-                1: [loc('portal_mech_size_medium')],
-                2: [1,1,2,loc(`arpa_blood_prepared_title`)],
-                3: [(mechWeaponPower('medium') * 100).toFixed(2)],
-                4: [mechSize('medium'),m_cost.c,m_cost.s],
-                5: [loc(`portal_mech_equip_jumpjet`)],
-                6: [`5%`],
-            },
-            data_link: {
-                2: [false,false,false,'wiki.html#blood-prestige-prepared']
-            }
-        });
+            let s_cost = mechCost('small');
+            infoBoxBuilder(mechs,{ name: 'scout', template: 'hell', paragraphs: 10, break: [3,4,5,6,10], h_level: 4, header: true,
+                para_data: {
+                    1: [loc('portal_mech_size_small')],
+                    2: [1,1,loc(`arpa_blood_prepared_title`)],
+                    3: [(mechWeaponPower('small') * 100).toFixed(2)],
+                    4: [mechSize('small'),s_cost.c,s_cost.s],
+                    5: [loc(`portal_mech_equip_jumpjet`)],
+                    7: [`1%`],
+                    8: [loc(`portal_spire_status_fog`),loc(`portal_spire_status_dark`)],
+                    9: [`100%`],
+                    10: [`8%`],
+                },
+                data_link: {
+                    2: [false,false,'wiki.html#blood-prestige-prepared']
+                }
+            });
 
-        let l_cost = mechCost('large');
-        infoBoxBuilder(mechs,{ name: 'heavy', template: 'hell', paragraphs: 6, break: [3,4,5,6], h_level: 4, header: true,
-            para_data: {
-                1: [loc('portal_mech_size_large')],
-                2: [2,2,3,loc(`arpa_blood_prepared_title`)],
-                3: [(mechWeaponPower('large') * 100).toFixed(2)],
-                4: [mechSize('large'),l_cost.c,l_cost.s],
-                5: [loc(`portal_mech_equip_battery`)]
-            },
-            data_link: {
-                2: [false,false,false,'wiki.html#blood-prestige-prepared']
-            }
-        });
+            let m_cost = mechCost('medium');
+            infoBoxBuilder(mechs,{ name: 'standard', template: 'hell', paragraphs: 6, break: [3,4,5,6], h_level: 4, header: true,
+                para_data: {
+                    1: [loc('portal_mech_size_medium')],
+                    2: [1,1,2,loc(`arpa_blood_prepared_title`)],
+                    3: [(mechWeaponPower('medium') * 100).toFixed(2)],
+                    4: [mechSize('medium'),m_cost.c,m_cost.s],
+                    5: [loc(`portal_mech_equip_jumpjet`)],
+                    6: [`5%`],
+                },
+                data_link: {
+                    2: [false,false,false,'wiki.html#blood-prestige-prepared']
+                }
+            });
 
-        let t_cost = mechCost('titan');
-        infoBoxBuilder(mechs,{ name: 'titan', template: 'hell', paragraphs: 7, break: [3,4,5,6,7], h_level: 4, header: true,
-            para_data: {
-                1: [loc('portal_mech_size_titan')],
-                2: [4,4,5,loc(`arpa_blood_prepared_title`)],
-                3: [(mechWeaponPower('titan') * 100).toFixed(2)],
-                4: [mechSize('titan'),t_cost.c,t_cost.s],
-                5: [loc(`portal_mech_equip_target`)],
-                7: [`25%`]
-            },
-            data_link: {
-                2: [false,false,false,'wiki.html#blood-prestige-prepared']
-            }
-        });
+            let l_cost = mechCost('large');
+            infoBoxBuilder(mechs,{ name: 'heavy', template: 'hell', paragraphs: 6, break: [3,4,5,6], h_level: 4, header: true,
+                para_data: {
+                    1: [loc('portal_mech_size_large')],
+                    2: [2,2,3,loc(`arpa_blood_prepared_title`)],
+                    3: [(mechWeaponPower('large') * 100).toFixed(2)],
+                    4: [mechSize('large'),l_cost.c,l_cost.s],
+                    5: [loc(`portal_mech_equip_battery`)]
+                },
+                data_link: {
+                    2: [false,false,false,'wiki.html#blood-prestige-prepared']
+                }
+            });
 
-        let c_cost = mechCost('collector');
-        infoBoxBuilder(mechs,{ name: 'collector', template: 'hell', paragraphs: 5, break: [3,4,5], h_level: 4, header: true,
-            para_data: {
-                1: [loc('portal_mech_size_collector')],
-                2: [2,3,loc(`arpa_blood_prepared_title`)],
-                3: [mechSize('collector'),c_cost.c,c_cost.s],
-                4: [loc(`portal_mech_equip_jumpjet`)]
-            },
-            data_link: {
-                2: [false,false,'wiki.html#blood-prestige-prepared']
-            }
-        });
+            let t_cost = mechCost('titan');
+            infoBoxBuilder(mechs,{ name: 'titan', template: 'hell', paragraphs: 7, break: [3,4,5,6,7], h_level: 4, header: true,
+                para_data: {
+                    1: [loc('portal_mech_size_titan')],
+                    2: [4,4,5,loc(`arpa_blood_prepared_title`)],
+                    3: [(mechWeaponPower('titan') * 100).toFixed(2)],
+                    4: [mechSize('titan'),t_cost.c,t_cost.s],
+                    5: [loc(`portal_mech_equip_target`)],
+                    7: [`25%`]
+                },
+                data_link: {
+                    2: [false,false,false,'wiki.html#blood-prestige-prepared']
+                }
+            });
 
-        sideMenu('add',`hell-gameplay`,'mech',loc('wiki_hell_mech'));
+            let c_cost = mechCost('collector');
+            infoBoxBuilder(mechs,{ name: 'collector', template: 'hell', paragraphs: 5, break: [3,4,5], h_level: 4, header: true,
+                para_data: {
+                    1: [loc('portal_mech_size_collector')],
+                    2: [2,3,loc(`arpa_blood_prepared_title`)],
+                    3: [mechSize('collector'),c_cost.c,c_cost.s],
+                    4: [loc(`portal_mech_equip_jumpjet`)]
+                },
+                data_link: {
+                    2: [false,false,'wiki.html#blood-prestige-prepared']
+                }
+            });
+        }
+
+        sideMenu('add',`hell-gameplay`,global.race['warlord'] ? 'demons' : 'mech',global.race['warlord'] ? loc('wiki_hell_demons') : loc('wiki_hell_mech'));
     }
 
     { // Mech Chassis
@@ -215,7 +243,7 @@ export function hellPage(content){
     }
 
     { // Monsters
-        let weapons = ['laser','flame','plasma','kinetic','missile','sonic','shotgun','tesla'];
+        let weapons = global.race['warlord'] ? ['laser','kinetic','shotgun','missile','flame','plasma','sonic','tesla','claws','venom','cold','shock','fire','acid','stone','iron','flesh','ice','magma','axe','hammer'] : ['plasma','laser','kinetic','shotgun','missile','flame','sonic','tesla'];
 
         let mobs = infoBoxBuilder(mainContent,{ name: 'monsters', template: 'hell', paragraphs: 4,
             para_data: {
@@ -233,7 +261,7 @@ export function hellPage(content){
                 ])}`;
             }
 
-            infoBoxBuilder(mobs,{ name: `boss_${mob}`, template: 'hell', label: loc(`portal_mech_boss_${mob}`), paragraphs: 8, break: [2,3,4,5,6,7,8], h_level: 4, header: true,
+            infoBoxBuilder(mobs,{ name: `boss_${mob}`, template: 'hell', label: loc(`portal_mech_boss_${mob}`), paragraphs: weapons.length, break: Array.from({length: weapons.length}, (x, i) => i+2), h_level: 4, header: true,
                 rawtext: ratings,
                 pclass: 'col2'
             });

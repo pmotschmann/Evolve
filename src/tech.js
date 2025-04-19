@@ -8335,6 +8335,9 @@ const techs = {
                     unlockAchieve(`second_evolution`);
                 }
                 fanaticism(global.race.gods);
+                if (global.race['warlord']){
+                    global.portal.throne.points++;
+                }
                 return true;
             }
             return false;
@@ -8363,6 +8366,9 @@ const techs = {
                     unlockAchieve(`second_evolution`);
                 }
                 fanaticism(global.race.gods);
+                if (global.race['warlord']){
+                    global.portal.throne.points++;
+                }
                 return true;
             }
             return false;
@@ -8487,6 +8493,9 @@ const techs = {
                 global.tech['ancient_deify'] = 1;
                 fanaticism(global.race.old_gods);
                 arpa('Genetics');
+                if (global.race['warlord']){
+                    global.portal.throne.points++;
+                }
                 return true;
             }
             return false;
@@ -8513,6 +8522,9 @@ const techs = {
             if (payCosts($(this)[0])){
                 fanaticism(global.race.old_gods);
                 arpa('Genetics');
+                if (global.race['warlord']){
+                    global.portal.throne.points++;
+                }
                 return true;
             }
             return false;
@@ -15338,6 +15350,30 @@ const techs = {
         effect: loc('tech_hellfire_effect'),
         action(){
             if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    corpse_retrieval: {
+        id: 'tech-corpse_retrieval',
+        title: loc('tech_corpse_retrieval'),
+        desc: loc('tech_corpse_retrieval'),
+        category: 'evil',
+        era: 'dimensional',
+        reqs: { hellspawn: 6 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        grant: ['hellspawn',7],
+        cost: {
+            Knowledge(){ return 150000000; }
+        },
+        effect: loc('tech_corpse_retrieval_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.portal.prtl_badlands.corpse_pile);
                 return true;
             }
             return false;

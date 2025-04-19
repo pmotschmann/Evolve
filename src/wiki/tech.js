@@ -2007,6 +2007,30 @@ const extraInformation = {
     divine_infuser: [
         loc(`wiki_tech_divine_infuser`)
     ],
+    wheel: [
+        loc(`wiki_tech_job_unlock`,[loc(`job_teamster`)])
+    ],
+    wagon: [
+        loc(`wiki_tech_transport`, [100])
+    ],
+    steam_engine: [
+        loc(`wiki_tech_transport`, [200])
+    ],
+    combustion_engine: [
+        loc(`wiki_tech_transport`, [300])
+    ],
+    hover_cart: [
+        loc(`wiki_tech_transport`, [400])
+    ],
+    osha: [
+        loc(`wiki_tech_osha`)
+    ],
+    blackmarket: [
+        loc(`wiki_tech_blackmarket`)
+    ],
+    pipelines: [
+        loc(`wiki_tech_pipelines`)
+    ],
     minor_wish: [
         loc(`wiki_tech_minor_wish`)
     ],
@@ -2037,35 +2061,17 @@ const extraInformation = {
     reapers: [
         loc(`wiki_tech_reapers`)
     ],
+    hellfire: [
+        loc(`wiki_tech_hellfire`)
+    ],
+    corpse_retrieval: [
+        loc(`wiki_tech_corpse_retrieval`)
+    ],
     ghost_miners: [
         loc(`wiki_tech_ghost_miners`)
     ],
     tavern: [
         loc(`wiki_tech_tavern`)
-    ],
-    wheel: [
-        loc(`wiki_tech_job_unlock`,[loc(`job_teamster`)])
-    ],
-    wagon: [
-        loc(`wiki_tech_transport`, [100])
-    ],
-    steam_engine: [
-        loc(`wiki_tech_transport`, [200])
-    ],
-    combustion_engine: [
-        loc(`wiki_tech_transport`, [300])
-    ],
-    hover_cart: [
-        loc(`wiki_tech_transport`, [400])
-    ],
-    osha: [
-        loc(`wiki_tech_osha`)
-    ],
-    blackmarket: [
-        loc(`wiki_tech_blackmarket`)
-    ],
-    pipelines: [
-        loc(`wiki_tech_pipelines`)
     ],
 };
 

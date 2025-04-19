@@ -426,6 +426,49 @@ const fortressModules = {
                 return false;
             }
         },
+        corpse_pile: {
+            id: 'portal-corpse_pile',
+            title: loc('portal_corpse_pile_title'),
+            desc(){ return rankDesc(loc('portal_corpse_pile_desc'),'corpse_pile'); },
+            reqs: { hellspawn: 7 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('corpse_pile', offset, 2500000, 1.25, 'portal'); },
+                Lumber(offset){ return spaceCostMultiplier('corpse_pile', offset, 2420000, 1.25, 'portal'); },
+                Furs(offset){ return spaceCostMultiplier('corpse_pile', offset, 1563000, 1.25, 'portal'); },
+            },
+            effect(){
+                let power = 0.75 + (global.portal?.corpse_pile?.rank || 1) * 0.25;
+                let desc = `<div>${loc('portal_corpse_pile_effect',[power,loc('portal_incinerator_title')])}</div>`;
+                return desc;
+            },
+            action(){
+                if (global.portal['throne'] && global.portal.throne.skill && global.portal.throne.points > 0 && global.portal.corpse_pile.rank < 5){
+                    global.portal.throne.points--;
+                    global.portal.corpse_pile.rank++;
+                    checkSkillPointAssignments();
+                    return true;
+                }
+                else if (payCosts($(this)[0])){
+                    incrementStruct('corpse_pile','portal');
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, rank: 1 },
+                    p: ['corpse_pile','portal']
+                };
+            },
+            aura(){
+                if (global.portal?.throne?.skill && global.portal?.corpse_pile?.rank < 5){
+                    return 'blue';
+                }
+                return false;
+            }
+        },
         codex: {
             id: 'portal-codex',
             title: loc('portal_codex_title'),
@@ -536,9 +579,11 @@ const fortressModules = {
                 else if (global.portal.throne.points > 0 && checkSkillPointAssignments() > 0){
                     if (global.portal.throne.skill){
                         desc += `<div class="has-text-info">${loc('portal_throne_of_evil_skill2')} ${loc('portal_throne_of_evil_skill',[global.portal.throne.points])}</div>`;
+                        console.log('Yes');
                     }
                     else {
                         desc += `<div class="has-text-info">${loc('portal_throne_of_evil_skill1')} ${loc('portal_throne_of_evil_skill',[global.portal.throne.points])}</div>`;
+                        console.log('No');
                     }
                 }
 
@@ -632,7 +677,7 @@ const fortressModules = {
             },
             struct(){
                 return {
-                    d: { enemy: [], hearts: [], spawned: [], points: 0, skill: false },
+                    d: { enemy: [], hearts: [], spawned: [], points: 1, skill: false },
                     p: ['throne','portal']
                 };
             },
@@ -657,6 +702,9 @@ const fortressModules = {
                 }
                 if (global.tech['hellspawn'] && global.tech.hellspawn >= 6){
                     power += (global.portal?.incinerator?.rank || 1) * 2.5;
+                }
+                if (global.tech['hellspawn'] && global.tech.hellspawn >= 7 && global.portal['corpse_pile']){
+                    power += (0.75 + global.portal.corpse_pile.rank * 0.25) * global.portal.corpse_pile.count;
                 }
                 return powerModifier(-(power));
             },
@@ -4749,8 +4797,8 @@ export function hellguard(){
         checkWarlordAchieve();
     }
 
-    ['incinerator','warehouse','hovel','hell_casino','twisted_lab','demon_forge','hell_factory','pumpjack','dig_demon','tunneler','brute','minions','reaper'].forEach(function(s){
-        if (!global.portal[s]['rank'] || global.portal[s].rank > 5){
+    ['incinerator','warehouse','hovel','hell_casino','twisted_lab','demon_forge','hell_factory','pumpjack','dig_demon','tunneler','brute','minions','reaper','corpse_pile'].forEach(function(s){
+        if (global.portal[s] && (!global.portal[s]['rank'] || global.portal[s].rank > 5)){
             global.portal[s]['rank'] = 1;
         }
     });
@@ -4758,13 +4806,15 @@ export function hellguard(){
 
 function checkSkillPointAssignments(){
     let remaining = 0;
-    ['incinerator','warehouse','hovel','hell_casino','twisted_lab','demon_forge','hell_factory','pumpjack','dig_demon','tunneler','brute','minions','reaper'].forEach(function(s){
-        if (global.portal[s] && global.portal[s].rank >= 5 || !global.portal.throne.skill || global.portal.throne.points <= 0){
-            $(`#portal-${s} a.button`).removeClass('blue');
-        }
-        else if (global.portal[s] && global.portal[s].rank < 5 && global.portal.throne.skill && global.portal.throne.points > 0){
-            $(`#portal-${s} a.button`).addClass('blue');
+    ['incinerator','warehouse','hovel','hell_casino','twisted_lab','demon_forge','hell_factory','pumpjack','dig_demon','tunneler','brute','minions','reaper','corpse_pile'].forEach(function(s){
+        if (global.portal[s]){
             remaining += 5 - global.portal[s].rank;
+            if (global.portal[s].rank >= 5 || !global.portal.throne.skill || global.portal.throne.points <= 0){
+                $(`#portal-${s} a.button`).removeClass('blue');
+            }
+            else if (global.portal[s].rank < 5 && global.portal.throne.skill && global.portal.throne.points > 0){
+                $(`#portal-${s} a.button`).addClass('blue');
+            }
         }
     });
     if (!global.portal.throne.skill || global.portal.throne.points <= 0 || remaining === 0){
@@ -4774,6 +4824,7 @@ function checkSkillPointAssignments(){
     else if (global.portal.throne.skill && global.portal.throne.points > 0){
         $(`#portal-throne a.button`).addClass('green');
     }
+    console.log(remaining);
     return remaining;
 }
 
