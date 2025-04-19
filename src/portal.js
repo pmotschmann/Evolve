@@ -6516,6 +6516,7 @@ export function drawMechLab(){
                         if (val === 'special'){
                             switch (global.portal.mechbay.blueprint.size){
                                 case 'large':
+                                case 'cyberdemon':
                                     val = 'battery';
                                     break;
                                 case 'titan':
@@ -6679,6 +6680,7 @@ function drawMechs(){
                 let type = 'jumpjet';
                 switch (size){
                     case 'large':
+                    case 'cyberdemon':
                         type = 'battery';
                         break;
                     case 'titan':

@@ -1584,12 +1584,13 @@ export const gov_tasks = {
                             let type = 'biped';
                             let typeList = ['wheel','tread','biped','quad','spider','hover'].sort(() => Math.random() - 0.5);
                             typeList.forEach(function(loco){
-                                if (mechs[ctype].chassis[loco] < mechs[ctype].chassis[loco]){
+                                if (mechs[ctype].chassis[loco] < mechs[ctype].chassis[type]){
                                     type = loco;
                                 }
                             });
                             chassis = type;
 
+                            weapons = [];
                             let wTypes = validWeapons(ctype,type,0).sort(() => Math.random() - 0.5);
                             for (let i=0; i<2; i++){
                                 let weapon = wTypes[i];

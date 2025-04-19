@@ -40,12 +40,11 @@ const achieve_list = {
     ],
     universe: [
         'vigilante','squished','double_density','cross','macro','marble','heavyweight','whitehole','heavy','canceled',
-        'eviltwin','microbang','pw_apocalypse','fullmetal','pass','soul_sponge','nightmare','escape_velocity'
+        'eviltwin','microbang','pw_apocalypse','fullmetal','pass','soul_sponge','nightmare','escape_velocity','what_is_best'
     ],
     challenge: [
         'joyless','steelen','dissipated','technophobe','wheelbarrow','iron_will','failed_history','banana','pathfinder',
-        'ashanddust','exodus','obsolete','bluepill','retired','gross','lamentis','overlord',`adam_eve`,'endless_hunger',
-        'what_is_best'
+        'ashanddust','exodus','obsolete','bluepill','retired','gross','lamentis','overlord',`adam_eve`,'endless_hunger'
     ],
 };
 
