@@ -1374,10 +1374,10 @@ const fortressModules = {
         wonder_gardens: {
             id: 'portal-wonder_gardens',
             title(){
-                return loc('space_wonder_gardens',[races[global.race.species].home]);
+                return loc('portal_wonder_skulls');
             },
             desc(){
-                return loc('space_wonder_gardens',[races[global.race.species].home]);
+                return loc('portal_wonder_skulls');
             },
             reqs: {},
             condition(){
@@ -1390,7 +1390,8 @@ const fortressModules = {
             },
             action(){
                 return false;
-            }
+            },
+            flair(){ return loc('portal_wonder_skulls_flair'); }
         },
     },
     prtl_pit: {

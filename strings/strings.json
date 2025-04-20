@@ -7573,6 +7573,8 @@
   "portal_tavern_title": "Dead Man's Tavern",
   "portal_tavern_flair": "Just don't ask what's in the brew.",
   "portal_invasion_msg": "You have encountered a new enemy of %0.",
+  "portal_wonder_skulls": "Pillar of Skulls",
+  "portal_wonder_skulls_flair": "Don't listen to anything it says",
   "eden_purify_well_msg": "You've discovered a well of pure water on floor %0. It radiates holy energy.",
   "eden_asphodel_hostile": "Hostile creatures have started to harass your operations in the asphodel meadows.",
   "eden_asphodel_name": "Asphodel Meadows",
