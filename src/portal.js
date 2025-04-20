@@ -3809,7 +3809,7 @@ export function buildFortress(parent,full){
             aLast(){
                 let dec = keyMultiplier();
                 let min = global.portal.fortress.patrols * global.portal.fortress.patrol_size;
-                if (p_on['soul_forge']){
+                if (p_on['soul_forge'] && !global.race['warlord']){
                     min += soulForgeSoldiers();
                 }
                 if (global.portal.hasOwnProperty('guard_post')){
@@ -6694,6 +6694,8 @@ function drawMechs(){
               <span class="has-text-danger">{{ hp | weapon }}</span>
             </template>
           </div>
+        </div>
+        <div :class="'gearList '+mech.size">
           <div>
             <template v-for="eq of mech.equip">
               <span> | </span>

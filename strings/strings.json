@@ -4088,6 +4088,7 @@
   "arpa_projects_railway_desc": "Construct a new railway to expand your trade options.",
   "arpa_projects_railway_effect1": "Every %2 freight yards increases the number of routes by %3 and each railway improves trade profitability by %1%. Railways are currently adding a total of %0 trade routes each.",
   "arpa_projects_railway_cataclysm1": "Every %2 GPS satellites increases the number of routes by %3 and each railway improves trade profitability by %1%. Railways are currently adding a total of %0 trade routes each.",
+  "arpa_projects_railway_warlord1": "Increases the number of trade routes by %0 and each railway improves trade profitability by %1%.",
   "arpa_projects_railway_highway": "Increases transport supply to spire by %0% per railway and exports of %1 from %2 by %3%.",
   "arpa_projects_roid_eject_title": "%0 Redirect",
   "arpa_projects_roid_eject_desc": "Blast an %0 into the black hole.",

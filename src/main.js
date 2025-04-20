@@ -9707,6 +9707,9 @@ function midLoop(){
             if (global.race['cataclysm'] || global.race['orbit_decayed']){
                 routes = global.space['gps'] ? Math.floor(global.space.gps.count / 3) : 0;
             }
+            else if (global.race['warlord']){
+                routes = 5;
+            }
             else {
                 routes = global.city['storage_yard'] ? Math.floor(global.city.storage_yard.count / 6) : 0;
             }

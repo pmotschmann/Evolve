@@ -6292,16 +6292,17 @@ export function setAction(c_action,action,type,old,prediction){
                 if (
                     (id === 'city-biolab' && !global.race['cataclysm'] && !global.race['orbit_decayed']) || 
                     ((global.race['cataclysm'] || global.race['orbit_decayed']) && id === 'space-exotic_lab') ||
-                    (global.tech['isolation'] && id === 'tauceti-infectious_disease_lab')
+                    (global.tech['isolation'] && id === 'tauceti-infectious_disease_lab') ||
+                    (global.race['warlord'] && id === 'portal-twisted_lab')
                 ){
                     let egg = easterEgg(12,12);
                     if (p === 0 && egg.length > 0){
                         return egg;
                     }
                 }
-                else if (id === 'city-garrison' || id === 'space-space_barracks'){
+                else if (id === 'city-garrison' || id === 'space-space_barracks' || id === 'portal-brute'){
                     let trick = trickOrTreat(1,14,true);
-                    let num = id === 'city-garrison' ? 13 : 0;
+                    let num = id === 'city-garrison' || id === 'portal-brute' ? 13 : 0;
                     if (p === num && trick.length > 0){
                         return trick;
                     }
