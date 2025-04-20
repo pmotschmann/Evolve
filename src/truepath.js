@@ -693,7 +693,7 @@ const outerTruth = {
             },
             reqs: {},
             condition(){
-                return global.race['wish'] && global.race['wishStats'] && global.space['wonder_gardens'] ? true : false;
+                return global.race['wish'] && global.race['wishStats'] && global.portal['wonder_gardens'] ? true : false;
             },
             trait: ['wish'],
             queue_complete(){ return false; },

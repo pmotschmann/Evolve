@@ -573,7 +573,9 @@ export function loadTab(tab){
                                     case 3:
                                         if (global.race.species !== 'protoplasm' && !global.race['start_cataclysm']){
                                             defineGarrison();
-                                            buildFortress($('#fortress'),false);
+                                            if (!global.race['warlord']){
+                                                buildFortress($('#fortress'),false);
+                                            }
                                         }
                                         break;
                                     case 4:
@@ -620,7 +622,9 @@ export function loadTab(tab){
                 if (global.race.species !== 'protoplasm' && !global.race['start_cataclysm']){
                     defineGarrison();
                     buildGarrison($('#c_garrison'),false);
-                    buildFortress($('#fortress'),false);
+                    if (!global.race['warlord']){
+                        buildFortress($('#fortress'),false);
+                    }
                     foreignGov();
                     drawMechLab();
                     if (global.race['truepath']){

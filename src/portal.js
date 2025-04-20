@@ -6,7 +6,7 @@ import { spatialReasoning, unlockContainers } from './resources.js';
 import { loadFoundry, jobScale, limitCraftsmen } from './jobs.js';
 import { armyRating, govCivics, garrisonSize, mercCost, soldierDeath } from './civics.js';
 import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc, actions, initStruct, storageMultipler, casinoEffect, structName, absorbRace, buildTemplate } from './actions.js';
-import { checkRequirements, incrementStruct, astrialProjection, ascendLab } from './space.js';
+import { checkRequirements, incrementStruct, astrialProjection, ascendLab, planetName } from './space.js';
 import { asphodelResist } from './edenic.js';
 import { production, highPopAdjust } from './prod.js';
 import { govActive, defineGovernor } from './governor.js';
@@ -1370,7 +1370,28 @@ const fortressModules = {
         },
         s_alter: buildTemplate(`s_alter`,'portal'),
         shrine: buildTemplate(`shrine`,'portal'),
-        meditation: buildTemplate(`meditation`,'portal')
+        meditation: buildTemplate(`meditation`,'portal'),
+        wonder_gardens: {
+            id: 'portal-wonder_gardens',
+            title(){
+                return loc('space_wonder_gardens',[races[global.race.species].home]);
+            },
+            desc(){
+                return loc('space_wonder_gardens',[races[global.race.species].home]);
+            },
+            reqs: {},
+            condition(){
+                return global.race['wish'] && global.race['wishStats'] && global.portal['wonder_gardens'] ? true : false;
+            },
+            trait: ['wish'],
+            queue_complete(){ return false; },
+            effect(){
+                return loc(`city_wonder_effect`,[5]);
+            },
+            action(){
+                return false;
+            }
+        },
     },
     prtl_pit: {
         info: {
