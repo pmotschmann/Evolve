@@ -1121,6 +1121,7 @@
   "evo_challenge_warlord_desc": "You will be the greatest warlord to ever exist. Crush your enemies, eat their hearts, and drink from their skulls.",
   "evo_challenge_warlord_effect": "Prove you are the most ruthless to ever exist.",
   "evo_challenge_warlord_flair": "There will be no mercy",
+  "evo_challenge_warlord_warn": "You can not complete this scenario unless you possess at least %0 %1.",
   "evo_challenge_lone_survivor": "Lone Survivor",
   "evo_challenge_lone_survivor_desc": "You are the only member of your colony ship to survive the long journey to another star system.",
   "evo_challenge_lone_survivor_effect": "You must survive and thrive alone on an alien world.",

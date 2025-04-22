@@ -1723,6 +1723,10 @@ export function calcPrestige(type,inputs){
             else {
                 gains.supercoiled = pr_gain ** 3;
             }
+            if (global.race['warlord']){
+                gains.supercoiled /= 2;
+                gains.artifact = 5;
+            }
         }
     }
 
@@ -2338,7 +2342,7 @@ export function getBaseIcon(name,type){
                 return 'meat';
             case 'wish':
                 return 'trophy';
-            case 'existential_risk':
+            case 'planned_obsolescence':
                 return 'robot';
             case 'friday':
                 return 'mask';

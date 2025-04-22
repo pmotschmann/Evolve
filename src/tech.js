@@ -5300,7 +5300,7 @@ const techs = {
             return global.resource.Demonic_Essence.amount >= 1 ? true : false;
         },
         grant: ['waygate',4],
-        not_trait: ['witch_hunter','fasting'],
+        not_trait: ['witch_hunter','fasting','warlord'],
         cost: {
             Species(){ return popCost(1000); },
             Knowledge(){ return 55000000; },

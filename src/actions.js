@@ -5394,6 +5394,12 @@ function challengeEffect(c){
                 return `<div>${loc('evo_challenge_cataclysm_effect')}</div><div class="has-text-danger">${loc('evo_challenge_scenario_warn')}</div>`;
             }   
         }
+        case 'warlord':
+        {
+            if (global.prestige.Artifact === 0){
+                return `<div>${loc('evo_challenge_cataclysm_effect')}</div><div class="has-text-danger">${loc('evo_challenge_warlord_warn',[1,loc(`resource_Artifact_name`)])}</div>`;
+            }
+        }
         default:
             return loc(`evo_challenge_${c}_effect`);
     }
@@ -5515,8 +5521,8 @@ export function casinoEarn(){
 export function casinoEffect(){
     let money = Math.round(casino_vault());
 
-    let joy = (global.tech['theatre'] && !global.race['joyless']) ? `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_entertainer`)])}</div>` : '';
-    let banker = global.race['orbit_decayed'] || global.tech['isolation'] ? `<div>${loc('plus_max_resource',[jobScale(1),loc('banker_name')])}</div>` : '';
+    let joy = (global.tech['theatre'] && !global.race['joyless']) ? `<div>${loc('plus_max_resource',[jobScale(global.race['warlord'] ? 3 : 1),loc(`job_entertainer`)])}</div>` : '';
+    let banker = global.race['orbit_decayed'] || global.tech['isolation'] || global.race['warlord'] ? `<div>${loc('plus_max_resource',[jobScale(1),loc('banker_name')])}</div>` : '';
     let desc = `<div>${loc('plus_max_resource',[`\$${money.toLocaleString()}`,loc('resource_Money_name')])}</div>${joy}${banker}<div>${loc('city_max_morale',[1])}</div>`;
     let cash = +(casinoEarn()).toFixed(2);
     desc = desc + `<div>${loc('tech_casino_effect2',[cash])}</div>`;

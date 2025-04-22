@@ -1007,7 +1007,9 @@ const fortressModules = {
                 }
                 else if (payCosts($(this)[0])){
                     incrementStruct('twisted_lab','portal');
-                    powerOnNewStruct($(this)[0]);
+                    if (powerOnNewStruct($(this)[0])){
+                        global.portal.twisted_lab.Coal++;
+                    }
                     return true;
                 }
                 return false;
