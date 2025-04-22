@@ -2392,6 +2392,7 @@ export function armyRating(val,type,wound,analysis){
     }
     
     if (analysis){ return data; }
+    if (army <= 0 && vaL > 0){ army = 0.01; }
     return army;
 }
 

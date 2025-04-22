@@ -11984,9 +11984,9 @@ function longLoop(){
         }
 
         if (!global.race['warlord'] && (global.stats.matrix > 0 || global.stats.retire > 0) && !global.race['servants'] && Math.rand(0,25) === 0){
-            let womlings = global.stats.matrix + global.stats.retire + global.stats.eden;
-            let skilled = global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 5 ? 2 : 0;
-            skilled += Math.min(global.stats.matrix, global.stats.retire);
+            let womlings = Math.min(global.stats.matrix,100) + Math.min(global.stats.retire,100) + Math.min(global.stats.eden,100);
+            let skilled = Math.min(Math.min(global.stats.matrix, global.stats.retire),100);
+            skilled += global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 5 ? 2 : 0;
             if (global.stats.achieve['overlord'] && global.stats.achieve.overlord.l >= 5){
                 universe_affixes.forEach(function(uni){
                     if (global.stats.achieve.overlord[uni] >= 5){
