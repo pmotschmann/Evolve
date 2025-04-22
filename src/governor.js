@@ -1593,9 +1593,9 @@ export const gov_tasks = {
                             weapons = [];
                             let wTypes = validWeapons(ctype,type,0).sort(() => Math.random() - 0.5);
                             for (let i=0; i<2; i++){
-                                let weapon = wTypes[i];
+                                let weapon = weapons.includes(wTypes[i]) ? wTypes[i+1] : wTypes[i];
                                 wTypes.forEach(function(wep){
-                                    if (mechs[ctype].weapon[wep] < mechs[ctype].weapon[weapon] && !weapons.includes(weapon)){
+                                    if (mechs[ctype].weapon[wep] < mechs[ctype].weapon[weapon] && !weapons.includes(wep)){
                                         weapon = wep;
                                     }
                                 });
