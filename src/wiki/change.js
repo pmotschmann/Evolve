@@ -17,6 +17,7 @@ export const changeList = [
             `Evil Wendigo can now use Shovels.`,
             `You can no longer get more then 100 servants from each TP T4 reset.`,
             `You are now capped at 100 skilled servants from TP resets.`,
+            `Empowered Concealment Wards changed to Empowered Nexus in Witch Hunter.`,
             `Breakdown improvements for some resources.`,
             `Uranium geology bonus now applies to Uranium Ash.`,
             `Spire boss resists now have a random element.`,
