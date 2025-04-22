@@ -3,7 +3,7 @@ import { loc } from './locale.js';
 import { defineIndustry } from './industry.js';
 import { setJobName, jobScale, loadFoundry } from './jobs.js';
 import { vBind, clearElement, popover, removeFromQueue, removeFromRQueue, calc_mastery, gameLoop, getEaster, getHalloween, randomKey, modRes, messageQueue } from './functions.js';
-import { setResourceName, atomic_mass } from './resources.js';
+import { setResourceName, drawResourceTab, atomic_mass } from './resources.js';
 import { buildGarrison, govEffect, govTitle, armyRating, govCivics } from './civics.js';
 import { govActive, removeTask, defineGovernor } from './governor.js';
 import { unlockAchieve, unlockFeat, alevel } from './achieve.js';
@@ -6612,9 +6612,12 @@ export function cleanAddTrait(trait){
                     global.resource[res].trade = 0;
                 }
             });
-            global.settings.showMarket = false;
-            if (global.settings.marketTabs === 0) {
-                global.settings.marketTabs = 1;
+            global.city.market.active = false;
+            if (!global.galaxy?.freighter?.count){
+                global.settings.showMarket = false;
+                if (global.settings.marketTabs === 0) {
+                    global.settings.marketTabs = 1;
+                }
             }
             removeFromQueue(['city-trade']);
             removeFromRQueue(['trade']);
@@ -6880,9 +6883,13 @@ export function cleanRemoveTrait(trait,rank){
             delete power_generated[loc('city_wind_power')];
             break;
         case 'terrifying':
-            global.settings.showMarket = true;
             checkPurgatory('tech','trade');
             checkPurgatory('city','trade');
+            if (global.tech['trade']){
+                global.settings.showMarket = true;
+                global.city.market.active = true;
+                drawResourceTab('market');
+            }
             break;
         case 'slaver':
             removeFromQueue(['city-slave_pen']);

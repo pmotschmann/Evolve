@@ -2,7 +2,7 @@ import { global, seededRandom, keyMultiplier, p_on, support_on, gal_on, spire_on
 import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost, calcPrestige, get_qlevel, shrineBonusActive, getShrineBonus } from './functions.js';
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { traits, races, fathomCheck, traitCostMod, orbitLength } from './races.js';
-import { spatialReasoning, unlockContainers } from './resources.js';
+import { spatialReasoning, unlockContainers, drawResourceTab } from './resources.js';
 import { loadFoundry, jobScale, limitCraftsmen } from './jobs.js';
 import { armyRating, govCivics, garrisonSize, mercCost, soldierDeath } from './civics.js';
 import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc, actions, initStruct, storageMultipler, casinoEffect, structName, absorbRace, buildTemplate } from './actions.js';
@@ -2723,6 +2723,7 @@ const fortressModules = {
                         initStruct(fortressModules.prtl_spire.purifier);
                         initStruct(fortressModules.prtl_spire.port);
                         messageQueue(loc('portal_transport_unlocked'),'info',false,['progress','hell']);
+                        drawResourceTab('supply');
                         renderFortress();
                     }
                     return true;
@@ -2796,6 +2797,7 @@ const fortressModules = {
                     if (global.portal.oven.count >= 100){
                         global.tech['dish'] = 3;
                         initStruct(fortressModules.prtl_lake.oven_complete);
+                        incrementStruct('oven_complete','portal');
                         if (global.settings.alwaysPower){
                             powerOnNewStruct(fortressModules.prtl_lake.oven_complete);
                         }
