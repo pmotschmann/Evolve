@@ -7659,7 +7659,7 @@ function checkStructs(structs){
 
 function conceal_adjust(mana){
     if (global.tech['nexus'] && global.tech['roguemagic'] && global.tech.roguemagic >= 7){
-        mana *= 0.92 ** global.tech.nexus;
+        mana *= 0.96 ** global.tech.nexus;
     }
     return mana;
 }

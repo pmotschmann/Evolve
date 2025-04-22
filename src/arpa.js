@@ -246,7 +246,7 @@ export const arpaProjects = {
         grant: 'nexus',
         effect(){
             if (global.tech['roguemagic'] && global.tech.roguemagic >= 7){
-                return `<div>${loc('arpa_projects_nexus_effect1',[5])}</div><div>${loc('witch_hunter_nexus',[8])}</div>`;
+                return `<div>${loc('arpa_projects_nexus_effect1',[5])}</div><div>${loc('witch_hunter_nexus',[4])}</div>`;
             }
             return loc('arpa_projects_nexus_effect1',[5]);
         },
