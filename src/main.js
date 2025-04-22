@@ -819,19 +819,35 @@ set_qlevel(calcQuantumLevel(true));
 
 $('#lbl_city').html('Village');
 
+var loopTick = 0; // Used to synchronize the fast, mid, and long loops to each other
+export function execGameLoops(periods = 1){
+    // Currently there is no smart catch-up mechanism
+    // Limit to 1 minute (12 game days) of simulation per call
+    const maxCatchUp = webWorker.longRatio * 12;
+    periods = Math.min(periods, maxCatchUp); 
+
+    while (webWorker.s && periods--){
+        ++loopTick;
+        const doMid = (loopTick % webWorker.midRatio) === 0;
+        const doLong = (loopTick % webWorker.longRatio) === 0;
+
+        // Always run a faster loop before a slower loop
+        fastLoop();
+        if (doMid){ midLoop(); }
+        if (doLong){ longLoop(); }
+
+        // Overflow prevention
+        if (doMid && doLong){ loopTick = 0; }
+    }
+}
+
 if (window.Worker){
     webWorker.w = new Worker("evolve/evolve.js");
     webWorker.w.addEventListener('message', function(e){
-        var data = e.data;
-        switch (data) {
-            case 'fast':
-                fastLoop();
-                break;
-            case 'mid':
-                midLoop();
-                break;
-            case 'long':
-                longLoop();
+        const data = e.data;
+        switch (data.loop) {
+            case 'main':
+                execGameLoops(data.periods);
                 break;
         }
     }, false);
