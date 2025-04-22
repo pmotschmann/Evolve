@@ -2067,6 +2067,9 @@ const extraInformation = {
     corpse_retrieval: [
         loc(`wiki_tech_corpse_retrieval`)
     ],
+    spire_bazaar: [
+        loc(`wiki_tech_spire_bazaar`)
+    ],
     ghost_miners: [
         loc(`wiki_tech_ghost_miners`)
     ],

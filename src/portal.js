@@ -3491,6 +3491,43 @@ const fortressModules = {
                 return false;
             }
         },
+        bazaar: {
+            id: 'portal-bazaar',
+            title: loc('portal_bazaar_title'),
+            desc: loc('portal_bazaar_title'),
+            reqs: { hellspawn: 8 },
+            trait: ['warlord'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('bazaar', offset, 1000000000, 1.25, 'portal'); },
+                Supply(offset){ return spaceCostMultiplier('bazaar', offset, 250000, 1.25, 'portal'); },
+            },
+            effect(wiki){
+                let vault = spatialReasoning(bank_vault() * (global.portal?.spire?.count || 1) / 2);
+                vault = +(vault).toFixed(0);
+                let containers = (global.portal?.spire?.count || 1) * 5;
+                let mon = (global.portal?.spire?.count || 1);
+
+                let desc = `<div>${loc('plus_max_resource',[`\$${vault.toLocaleString()}`,loc('resource_Money_name')])}</div>`;
+                desc += `<div>${loc('city_tourist_center_effect2',[mon,loc(`arpa_project_monument_title`)])}</div>`;
+                desc += `<div>${loc('plus_max_resource',[containers,global.resource.Crates.name])}</div><div>${loc('plus_max_resource',[containers,global.resource.Containers.name])}</div>`;
+                desc += `<div>${loc('city_trade_effect',[(global.portal?.spire?.count || 1)])}</div>`;
+
+                return desc;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('bazaar','portal');
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['bazaar','portal']
+                };
+            },
+        },
     }
 };
 

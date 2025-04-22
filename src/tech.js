@@ -5319,8 +5319,8 @@ const techs = {
     },
     purify_essence: {
         id: 'tech-purify_essence',
-        title: loc('tech_purify_essence'),
-        desc: loc('tech_purify_essence'),
+        title(){ return loc('tech_purify_essence'); },
+        desc(){ return loc('tech_purify_essence'); },
         category: 'hell_dimension',
         era: 'existential',
         reqs: { b_stone: 2, waygate: 3, edenic: 1 },
@@ -5335,7 +5335,7 @@ const techs = {
             Demonic_Essence(){ return 1; }
         },
         effect(){
-            return `<div>${loc('tech_purify_essence_effect')}</div><div class="has-text-special">${loc('tech_purify_essence_warn')}</div>`;
+            return global.race['warlord'] ? `<div>${loc('tech_purify_essence_effect')}</div>` : `<div>${loc('tech_purify_essence_effect')}</div><div class="has-text-special">${loc('tech_purify_essence_warn')}</div>`;
         },
         action(){
             if (payCosts($(this)[0])){
@@ -15377,7 +15377,7 @@ const techs = {
         },
         grant: ['hellspawn',6],
         cost: {
-            Knowledge(){ return 100000000; }
+            Knowledge(){ return 90000000; }
         },
         effect: loc('tech_hellfire_effect'),
         action(){
@@ -15400,12 +15400,36 @@ const techs = {
         },
         grant: ['hellspawn',7],
         cost: {
-            Knowledge(){ return 150000000; }
+            Knowledge(){ return 125000000; }
         },
         effect: loc('tech_corpse_retrieval_effect'),
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.portal.prtl_badlands.corpse_pile);
+                return true;
+            }
+            return false;
+        }
+    },
+    spire_bazaar: {
+        id: 'tech-spire_bazaar',
+        title: loc('tech_spire_bazaar'),
+        desc: loc('tech_spire_bazaar'),
+        category: 'evil',
+        era: 'dimensional',
+        reqs: { hellspawn: 7, hell_spire: 10 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        grant: ['hellspawn',8],
+        cost: {
+            Knowledge(){ return 150000000; }
+        },
+        effect: loc('tech_spire_bazaar_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.portal.prtl_spire.bazaar);
                 return true;
             }
             return false;

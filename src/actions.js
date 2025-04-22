@@ -5468,7 +5468,7 @@ export function casino_vault(){
         vault *= 1 + (absorb / 10);
         if (global.portal['hell_casino'] && global.portal.hell_casino.rank > 1){
             let rank = global.portal.hell_casino.rank - 1;
-            vault *= 1 + rank * 0.06;
+            vault *= 1 + rank * 0.1;
         }
     }
     return vault;

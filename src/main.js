@@ -7630,6 +7630,24 @@ function fastLoop(){
             rawCash += tourism * global_multiplier * hunger;
         }
 
+        if (global.portal['bazaar'] && global.portal['spire'] && global.tech['monuments']){
+            let monuments = global.tech.monuments;
+            if (global.race['wish'] && global.race['wishStats'] && global.portal['wonder_gardens']){
+                 monuments += 5;
+            }
+            let revenue = global.portal.bazaar.count * monuments * global.portal.spire.count;
+            revenue *= production('psychic_cash');
+
+            breakdown.p['Money'][loc('portal_bazaar_title')] = Math.round(revenue) + 'v';
+            if (astroSign === 'aquarius'){
+                revenue *= 1 + (astroVal('aquarius')[0] / 100);
+                breakdown.p['Money'][`ᄂ${loc('sign_aquarius')}`] = astroVal('aquarius')[0] + '%';
+            }
+
+            modRes('Money', +(revenue * time_multiplier * global_multiplier * hunger).toFixed(2));
+            rawCash += revenue * global_multiplier * hunger;
+        }
+
         if (global.tauceti['tau_cultural_center']){
             let revenue = 0;
             if (global.tauceti['tauceti_casino']){
@@ -8705,6 +8723,19 @@ function midLoop(){
             caps['Money'] += money;
             breakdown.c.Money[loc('portal_arcology_title')] = money+'v';
         }
+
+        if (global.portal['bazaar'] && global.portal['spire']){
+            let containers = (global.portal.bazaar.count * global.portal.spire.count * 5);
+            caps['Containers'] += containers;
+            breakdown.c.Containers[loc('portal_bazaar_title')] = containers + 'v';
+            caps['Crates'] += containers;
+            breakdown.c.Crates[loc('portal_bazaar_title')] = containers + 'v';
+
+            let money = spatialReasoning(bank_vault() * global.portal.spire.count / 2);
+            caps['Money'] += money;
+            breakdown.c.Money[loc('portal_bazaar_title')] = money+'v';
+        }
+
         if (support_on['colony']){
             let containers = global.tech['isolation'] ? 900 : 250;
             caps['Containers'] += (support_on['colony'] * containers);
@@ -9701,6 +9732,11 @@ function midLoop(){
             let r_count = global.city.storage_yard.count;
             global.city.market.mtrade += r_count;
             breakdown.t_route[loc('city_storage_yard')] = r_count;
+        }
+        if (global.portal['bazaar'] && global.portal['spire']){
+            let r_count = global.portal.bazaar.count * global.portal.spire.count;
+            global.city.market.mtrade += r_count;
+            breakdown.t_route[loc('portal_bazaar_title')] = r_count;
         }
         if (global.tech['railway']){
             let routes = 0;
