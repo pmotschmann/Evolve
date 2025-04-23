@@ -3502,7 +3502,7 @@ const fortressModules = {
                 Supply(offset){ return spaceCostMultiplier('bazaar', offset, 250000, 1.25, 'portal'); },
             },
             effect(wiki){
-                let vault = spatialReasoning(bank_vault() * (global.portal?.spire?.count || 1) / 2);
+                let vault = spatialReasoning(bank_vault() * (global.portal?.spire?.count || 1) / 3);
                 vault = +(vault).toFixed(0);
                 let containers = (global.portal?.spire?.count || 1) * 5;
                 let mon = (global.portal?.spire?.count || 1);

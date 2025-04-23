@@ -8730,7 +8730,7 @@ function midLoop(){
             caps['Crates'] += containers;
             breakdown.c.Crates[loc('portal_bazaar_title')] = containers + 'v';
 
-            let money = spatialReasoning(bank_vault() * global.portal.spire.count / 2);
+            let money = spatialReasoning(bank_vault() * global.portal.spire.count * global.portal.bazaar.count / 3);
             caps['Money'] += money;
             breakdown.c.Money[loc('portal_bazaar_title')] = money+'v';
         }
