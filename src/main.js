@@ -8724,7 +8724,7 @@ function midLoop(){
         }
 
         if (global.portal['bazaar'] && global.portal['spire']){
-            let containers = (global.portal.bazaar.count * global.portal.spire.count * 5);
+            let containers = (global.portal.bazaar.count * global.portal.spire.count * 8);
             caps['Containers'] += containers;
             breakdown.c.Containers[loc('portal_bazaar_title')] = containers + 'v';
             caps['Crates'] += containers;
@@ -8855,7 +8855,7 @@ function midLoop(){
                     breakdown.c[res][label] = gain+'v';
                 }
             };
-            let cc_gain = global.portal.warehouse.count * (75 + global.portal.warehouse.rank * 25);
+            let cc_gain = global.portal.warehouse.count * (65 + global.portal.warehouse.rank * 35);
             caps['Crates'] += cc_gain;
             breakdown.c['Crates'][label] = cc_gain+'v';
             caps['Containers'] += cc_gain;

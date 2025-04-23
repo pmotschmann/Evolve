@@ -768,27 +768,27 @@ const fortressModules = {
             val(res){
                 switch (res){
                     case 'Lumber':
-                        return 725 + (global.portal?.warehouse?.rank || 1) * 25;
+                        return 650 + (global.portal?.warehouse?.rank || 1) * 100;
                     case 'Stone':
-                        return 725 + (global.portal?.warehouse?.rank || 1) * 25;
+                        return 650 + (global.portal?.warehouse?.rank || 1) * 100;
                     case 'Chrysotile':
-                        return 725 + (global.portal?.warehouse?.rank || 1) * 25;
+                        return 700 + (global.portal?.warehouse?.rank || 1) * 50;
                     case 'Furs':
                         return 400 + (global.portal?.warehouse?.rank || 1) * 25;
                     case 'Copper':
-                        return 360 + (global.portal?.warehouse?.rank || 1) * 20;
+                        return 330 + (global.portal?.warehouse?.rank || 1) * 50;
                     case 'Iron':
-                        return 335 + (global.portal?.warehouse?.rank || 1) * 15;
+                        return 320 + (global.portal?.warehouse?.rank || 1) * 30;
                     case 'Aluminium':
-                        return 300 + (global.portal?.warehouse?.rank || 1) * 20;
+                        return 290 + (global.portal?.warehouse?.rank || 1) * 30;
                     case 'Cement':
                         return 260 + (global.portal?.warehouse?.rank || 1) * 20;
                     case 'Coal':
-                        return 140 + (global.portal?.warehouse?.rank || 1) * 10;
+                        return 135 + (global.portal?.warehouse?.rank || 1) * 15;
                     case 'Steel':
-                        return 55 + (global.portal?.warehouse?.rank || 1) * 5;
+                        return 52 + (global.portal?.warehouse?.rank || 1) * 8;
                     case 'Titanium':
-                        return 35 + (global.portal?.warehouse?.rank || 1) * 5;
+                        return 32 + (global.portal?.warehouse?.rank || 1) * 8;
                     case 'Uranium':
                         return global.portal?.warehouse?.rank || 1;
                     case 'Alloy':
@@ -831,8 +831,8 @@ const fortressModules = {
                         storage += `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
-                storage += `<span>${loc('plus_max_resource',[75 + (global.portal?.warehouse?.rank || 1) * 25, global.resource.Crates.name])}</span>`;
-                storage += `<span>${loc('plus_max_resource',[75 + (global.portal?.warehouse?.rank || 1) * 25, global.resource.Containers.name])}</span>`;
+                storage += `<span>${loc('plus_max_resource',[65 + (global.portal?.warehouse?.rank || 1) * 35, global.resource.Crates.name])}</span>`;
+                storage += `<span>${loc('plus_max_resource',[65 + (global.portal?.warehouse?.rank || 1) * 35, global.resource.Containers.name])}</span>`;
                 storage += '</div>';
                 return storage;
             },
@@ -2533,10 +2533,18 @@ const fortressModules = {
             },
             wide: true,
             res(){
-                return [
+                let list = [
                     'Oil','Alloy','Polymer','Iridium','Helium_3','Deuterium','Neutronium','Adamantite',
                     'Infernite','Nano_Tube','Graphene','Stanene','Bolognium','Orichalcum'
                 ];
+                if (global.race['warlord']){
+                    list.push('Lumber');
+                    list.push('Stone');
+                    list.push('Copper');
+                    list.push('Iron');
+                    list.push('Aluminium');
+                }
+                return list;
             },
             val(res){
                 switch (res){
@@ -2568,6 +2576,16 @@ const fortressModules = {
                         return 130000;
                     case 'Orichalcum':
                         return 130000;
+                    case 'Lumber':
+                        return 1500000;
+                    case 'Stone':
+                        return 1500000;
+                    case 'Copper':
+                        return 650000;
+                    case 'Iron':
+                        return 650000;
+                    case 'Aluminium':
+                        return 425000;
                     default:
                         return 0;
                 }
@@ -3504,7 +3522,7 @@ const fortressModules = {
             effect(wiki){
                 let vault = spatialReasoning(bank_vault() * (global.portal?.spire?.count || 1) / 3);
                 vault = +(vault).toFixed(0);
-                let containers = (global.portal?.spire?.count || 1) * 5;
+                let containers = (global.portal?.spire?.count || 1) * 8;
                 let mon = (global.portal?.spire?.count || 1);
 
                 let desc = `<div>${loc('plus_max_resource',[`\$${vault.toLocaleString()}`,loc('resource_Money_name')])}</div>`;
