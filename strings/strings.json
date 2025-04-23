@@ -7212,7 +7212,6 @@
   "portal_edenic_gate_effect": "Modify the Waygate to reach a different realm.",
   "portal_edenic_gate_effect_complete": "The Waygate has connected to a higher plane.",
   "portal_bazaar_title": "Bazaar",
-  "portal_bazaar_effect": "Bazaar",
   "portal_spire_title": "The Spire",
   "portal_spire_effect": "Floor Reached: %0",
   "portal_spire_hazard": "Hazard: %0",

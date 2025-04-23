@@ -5646,8 +5646,7 @@ function fastLoop(){
 
             let tunneler = 1;
             if (global.race['warlord'] && global.portal['tunneler']){
-                let boost = (global.portal.tunneler.rank + 3) / 100 * global.portal.tunneler.count;
-                tunneler = 1 + boost;
+                tunneler = 1 + (global.portal.tunneler.rank + 3) / 100 * global.portal.tunneler.count;
             }
 
             let rock_quarry = 1;
@@ -6068,7 +6067,7 @@ function fastLoop(){
 
             let tunneler = 1;
             if (global.race['warlord'] && global.portal['tunneler']){
-                tunneler = 1 + (global.portal.tunneler.count / 20);
+                tunneler = 1 + (global.portal.tunneler.rank + 3) / 100 * global.portal.tunneler.count;
             }
 
             // Copper
@@ -6463,7 +6462,7 @@ function fastLoop(){
 
             let tunneler = 1;
             if (global.race['warlord'] && global.portal['tunneler']){
-                tunneler = 1 + (global.portal.tunneler.count / 20);
+                tunneler = 1 + (global.portal.tunneler.rank + 3) / 100 * global.portal.tunneler.count;
             }
 
             coal_base *= global.civic.coal_miner.impact * production('psychic_boost','Coal');
@@ -6552,7 +6551,7 @@ function fastLoop(){
 
             let tunneler = 1;
             if (global.race['warlord'] && global.portal['tunneler']){
-                tunneler = 1 + (global.portal.tunneler.count / 20);
+                tunneler = 1 + (global.portal.tunneler.rank + 3) / 100 * global.portal.tunneler.count;
             }
 
             ['Neutronium','Adamantite','Bolognium','Orichalcum'].forEach(function(res){
@@ -6716,7 +6715,7 @@ function fastLoop(){
 
             let tunneler = 1;
             if (global.race['warlord'] && global.portal['tunneler']){
-                tunneler = 1 + (global.portal.tunneler.count / 20);
+                tunneler = 1 + (global.portal.tunneler.rank + 3) / 100 * global.portal.tunneler.count;
             }
 
             iridium_base *= production('psychic_boost','Iridium');
@@ -7112,7 +7111,7 @@ function fastLoop(){
 
                 let tunneler = 1;
                 if (global.race['warlord'] && global.portal['tunneler']){
-                    tunneler = 1 + (global.portal.tunneler.count / 20);
+                    tunneler = 1 + (global.portal.tunneler.rank + 3) / 100 * global.portal.tunneler.count;
                 }
 
                 let surveyor_delta = surveyor_base * tunneler * sensors * global_multiplier;
