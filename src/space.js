@@ -7728,7 +7728,7 @@ export function ascendLab(hybrid,wiki){
     };
 
     for (let i=genome.traitlist.length - 1; i >= 0; i--){
-        if (!traits.hasOwnProperty(genome.traitlist[i]) || traits[genome.traitlist[i]].type !== 'major'){
+        if (!traits.hasOwnProperty(genome.traitlist[i]) || !unlockedTraits.hasOwnProperty(genome.traitlist[i]) || traits[genome.traitlist[i]].type !== 'major'){
             genome.traitlist.splice(i,1);
         }
     }
