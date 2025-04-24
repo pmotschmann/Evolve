@@ -8,6 +8,7 @@ export const changeList = [
         changes: [
             `Evil Universe Scenario: Warlord.`,
             `Added Planned Obsolescence Feat.`,
+            `You can now queue Spire Mechs.`,
             `You can now pet your cat or dog once every 5 minutes.`,
             `Symposium now gain Knowledge for all crew in Andromeda.`,
             `Evil Authority adjustments for Cataclysm, Lone Survivor, and Orbit Decay`,

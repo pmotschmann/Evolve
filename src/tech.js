@@ -375,6 +375,7 @@ const techs = {
         category: 'housing',
         era: 'dimensional',
         reqs: { hell_ruins: 4, housing: 3, high_tech: 17 },
+        not_trait: ['warlord'],
         grant: ['housing',4],
         cost: {
             Knowledge(){ return 25000000; }
@@ -5681,7 +5682,7 @@ const techs = {
         era: 'intergalactic',
         reqs: { science: 19 },
         grant: ['ascension',1],
-        not_trait: ['orbit_decay','witch_hunter'],
+        not_trait: ['orbit_decay','witch_hunter','warlord'],
         cost: {
             Knowledge(){ return 17500000; },
             Phage(){ return 25; }
@@ -5745,7 +5746,7 @@ const techs = {
         category: 'ai_core',
         era: 'interstellar',
         reqs: { high_tech: 15 },
-        not_trait: ['flier'],
+        not_trait: ['flier','warlord'],
         grant: ['ai_core',1],
         cost: {
             Knowledge(){ return 1750000; },
@@ -6213,7 +6214,7 @@ const techs = {
         era: 'intergalactic',
         reqs: { mass: 1, science: 19 },
         grant: ['mass',2],
-        not_trait: ['orbit_decayed'],
+        not_trait: ['orbit_decayed','warlord'],
         cost: {
             Knowledge(){ return 14000000; },
             Orichalcum(){ return 400000; }
@@ -8290,6 +8291,7 @@ const techs = {
         category: 'storage',
         era: 'interstellar',
         reqs: { particles: 3, science: 11, supercollider: 3 },
+        not_trait: ['warlord'],
         grant: ['particles',4],
         cost: {
             Knowledge(){ return 425000; }
@@ -9260,6 +9262,7 @@ const techs = {
         category: 'space_exploration',
         era: 'interstellar',
         reqs: { science: 13, luna: 2, stanene: 1 },
+        not_trait: ['warlord'],
         grant: ['luna',3],
         cost: {
             Knowledge(){ return 700000; },

@@ -11,6 +11,7 @@ import { govEffect } from './civics.js';
 import { universeLevel, universeAffix, alevel } from './achieve.js';
 import { astrologySign, astroVal } from './seasons.js';
 import { shipCosts, TPShipDesc } from './truepath.js';
+import { mechCost, mechDesc } from './portal.js';
 
 var popperRef = false;
 export function popover(id,content,opts){
@@ -517,6 +518,10 @@ export function buildQueue(){
                         });
                         c_action = { cost: costs };
                     }
+                    else if (segments[0] === 'hell' && segments[1].substring(0,4) === 'mech'){
+                        let costs = mechCost(global.queue.queue[index].type.size,global.queue.queue[index].type.infernal,true);
+                        c_action = { cost: costs };
+                    }
                     else if (segments[0] === 'city' || segments[0] === 'evolution' || segments[0] === 'starDock'){
                         c_action = actions[segments[0]][segments[1]];
                     }
@@ -624,6 +629,9 @@ function attachQueuePopovers(){
                 else if (struct.s[0].substring(0,2) === 'tp' && struct.s[1].substring(0,4) === 'ship'){
                     TPShipDesc(obj.popper,deepClone(global.queue.queue[i]));
                 }
+                else if (struct.s[0].substring(0,4) === 'hell' && struct.s[1].substring(0,4) === 'mech'){
+                    mechDesc(obj.popper,deepClone(global.queue.queue[i]));
+                }
                 else {
                     actionDesc(obj.popper,struct.a,global[struct.s[0]][struct.s[1]],false,false,false,b_res);
                 }
@@ -649,6 +657,9 @@ export function decodeStructId(id){
     }
     else if (segments[0] === 'tp' && segments[1].substring(0,4) === 'ship'){
         c_action = 'ship';
+    }
+    else if (segments[0] === 'hell' && segments[1].substring(0,4) === 'mech'){
+        c_action = 'mech';
     }
     else if (segments[0] === 'city' || segments[0] === 'evolution' || segments[0] === 'starDock'){
         c_action = actions[segments[0]][segments[1]];

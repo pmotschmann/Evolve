@@ -1,5 +1,5 @@
-import { global, seededRandom, keyMultiplier, p_on, support_on, gal_on, spire_on, hell_reports, hell_graphs, sizeApproximation } from './vars.js';
-import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost, calcPrestige, get_qlevel, shrineBonusActive, getShrineBonus } from './functions.js';
+import { global, seededRandom, keyMultiplier, p_on, support_on, gal_on, spire_on, hell_reports, hell_graphs, sizeApproximation, keyMap } from './vars.js';
+import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost, calcPrestige, get_qlevel, shrineBonusActive, getShrineBonus, buildQueue, timeCheck } from './functions.js';
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { traits, races, fathomCheck, traitCostMod, orbitLength } from './races.js';
 import { spatialReasoning, unlockContainers, drawResourceTab } from './resources.js';
@@ -6174,7 +6174,7 @@ export const monsters = {
     }
 };
 
-export function mechCost(size,infernal){
+export function mechCost(size,infernal,standardize){
     let soul = 9999;
     let cost = 10000000;
     switch (size){
@@ -6236,8 +6236,14 @@ export function mechCost(size,infernal){
             }
             break;
     }
+    if (standardize){
+        return {
+            Soul_Gem(){ return soul; },
+            Supply(){ return cost; }
+        };
+    }
     return { s: soul, c: cost };
-};
+}
 
 function bossResists(boss){
     let weak = `laser`;
@@ -6412,13 +6418,32 @@ export function drawMechLab(){
                     let size = mechSize(global.portal.mechbay.blueprint.size);
 
                     let avail = global.portal.mechbay.max - global.portal.mechbay.bay;
-                    if (global.portal.purifier.supply >= cost && avail >= size && global.resource.Soul_Gem.amount >= soul){
+                    if (!(global.settings.qKey && keyMap.q) && global.portal.purifier.supply >= cost && avail >= size && global.resource.Soul_Gem.amount >= soul){
                         global.portal.purifier.supply -= cost;
                         global.resource.Soul_Gem.amount -= soul;
-                        let mech = deepClone(global.portal.mechbay.blueprint);
-                        global.portal.mechbay.mechs.push(mech);
-                        global.portal.mechbay.bay += size;
-                        global.portal.mechbay.active++;
+                        buildMech(global.portal.mechbay.blueprint);
+                    }
+                    else {
+                        let used = 0;
+                        for (let j=0; j<global.queue.queue.length; j++){
+                            used += Math.ceil(global.queue.queue[j].q / global.queue.queue[j].qs);
+                        }
+                        if (used < global.queue.max){
+                            let blueprint = deepClone(global.portal.mechbay.blueprint);
+                            global.queue.queue.push({ 
+                                id: `hell-mech-${Math.rand(0,100000)}`, 
+                                action: 'hell-mech', 
+                                type: blueprint,
+                                label: `${loc(`portal_mech_size_${blueprint.size}`)} ${loc(`portal_mech_chassis_${blueprint.chassis}`)}`, 
+                                cna: false, 
+                                time: 0, 
+                                q: 1, 
+                                qs: 1, 
+                                t_max: 0, 
+                                bres: false 
+                            });
+                            buildQueue();
+                        }
                     }
                 },
                 setSize(s){
@@ -6673,6 +6698,75 @@ export function drawMechLab(){
         lab.append(mechs);
         drawMechs();
     }
+}
+
+export function buildMechQueue(action){
+    let size = mechSize(action.bp.size);
+    let avail = global.portal.mechbay.max - global.portal.mechbay.bay;
+    if (avail >= size && payCosts(false, action.cost)){
+        buildMech(deepClone(action.bp,true));
+        return true;
+    }
+    return false;
+}
+
+function buildMech(bp, queue){
+    let mech = deepClone(bp);
+    global.portal.mechbay.mechs.push(mech);
+    global.portal.mechbay.bay += mechSize(mech.size);
+    global.portal.mechbay.active++;
+}
+
+export function mechDesc(parent,obj){
+    let mech = obj.type;
+    let costs = mechCost(mech.size,mech.infernal,true);
+
+    console.log(mech);
+
+    var desc = $(`<div class="shipPopper"></div>`);
+    var mechPattern = $(`<div class="divider">${mech.infernal ? `${loc('portal_mech_infernal')} ` : ''}${loc(`portal_mech_size_${mech.size}`)} ${loc(`portal_mech_chassis_${mech.chassis}`)}</div>`);
+    parent.append(desc);
+    desc.append(mechPattern);
+
+    var cost = $('<div class="costList"></div>');
+    desc.append(cost);
+
+    let weapons = [];
+    mech.hardpoint.forEach(function(hp){
+        weapons.push(`<span class="has-text-danger">${loc(`portal_mech_weapon_${hp}`)}</span>`);
+    });
+    desc.append(`<div>${weapons.join(', ')}</div>`);
+
+    let equip = [];
+    mech.equip.forEach(function(eq){
+        equip.push(`<span class="has-text-warning">${loc(`portal_mech_equip_${eq}`)}</span>`);
+    });
+    desc.append(`<div>${equip.join(', ')}</div>`);
+
+    let tc = timeCheck({ id: `${mech.size}${Math.rand(0,100)}` , cost: costs, doNotAdjustCost: true }, false, true);
+    Object.keys(costs).forEach(function (res){
+        if (costs[res]() > 0){
+            let label = res === 'Money' ? '$' : (res === 'Supply' ? loc('resource_Supply_name') : global.resource[res].name) + ': ';
+            let amount = res === 'Supply' ? global.portal.purifier.supply : global.resource[res].amount;
+            let color = amount >= costs[res]() ? 'has-text-dark' : ( res === tc.r ? 'has-text-danger' : 'has-text-alert');
+            cost.append($(`<div class="${color}" data-${res}="${costs[res]()}">${label}${sizeApproximation(costs[res](),2)}</div>`));
+        }
+    });
+
+    if (tc && tc['t']){
+        desc.append($(`<div class="divider"></div><div id="popTimer" class="flair has-text-advanced">{{ t | timer }}</div>`));
+        vBind({
+            el: '#popTimer',
+            data: tc,
+            filters: {
+                timer(t){
+                    return loc('action_ready',[timeFormat(t)]);
+                }
+            }
+        });
+    }
+    
+    return desc;
 }
 
 export function validWeapons(size,type,point){
@@ -8333,6 +8427,7 @@ export function checkWarlordAchieve(){
 
 export function warlordSetup(){
     if (global.race['warlord'] && global.race.universe === 'evil'){
+        global.tech['aerogel'] = 1;
         global.tech['agriculture'] = 7;
         global.tech['alloy'] = 1;
         global.tech['alumina'] = 2;
@@ -8340,7 +8435,7 @@ export function warlordSetup(){
         global.tech['banking'] = 11;
         global.tech['biotech'] = 1;
         global.tech['boot_camp'] = 2;
-        global.tech['container'] = 7;
+        global.tech['container'] = 8;
         global.tech['copper'] = 1;
         global.tech['currency'] = 6;
         global.tech['drone'] = 1;
@@ -8362,7 +8457,7 @@ export function warlordSetup(){
         global.tech['graphene'] = 1;
         global.tech['helium'] = 1;
         global.tech['hell'] = 1;
-        global.tech['high_tech'] = 14;
+        global.tech['high_tech'] = 17;
         global.tech['hoe'] = 5;
         global.tech['home_safe'] = 2;
         global.tech['housing'] = 3;
@@ -8376,7 +8471,7 @@ export function warlordSetup(){
         global.tech['mars'] = 5;
         global.tech['mass'] = 1;
         global.tech['medic'] = 3;
-        global.tech['military'] = 8;
+        global.tech['military'] = 10;
         global.tech['mine_conveyor'] = 1;
         global.tech['mining'] = 4;
         global.tech['monument'] = 1;
@@ -8393,7 +8488,7 @@ export function warlordSetup(){
         global.tech['reproduction'] = 1;
         global.tech['rival'] = 1;
         global.tech['satellite'] = 1;
-        global.tech['science'] = 9;
+        global.tech['science'] = 21;
         global.tech['shelving'] = 3;
         global.tech['shipyard'] = 1;
         global.tech['smelting'] = 6;
@@ -8403,7 +8498,7 @@ export function warlordSetup(){
         global.tech['space_housing'] = 1;
         global.tech['spy'] = 5;
         global.tech['stanene'] = 1;
-        global.tech['steel_container'] = 6;
+        global.tech['steel_container'] = 7;
         global.tech['storage'] = 5;
         global.tech['swarm'] = 6;
         global.tech['syndicate'] = 0;

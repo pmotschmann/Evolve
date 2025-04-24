@@ -9,7 +9,7 @@ import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, 
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
 import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, checkPowerRequirements, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct, casino_vault, casinoEarn } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types } from './space.js';
-import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard } from './portal.js';
+import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
 import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue } from './truepath.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
@@ -11016,6 +11016,16 @@ function midLoop(){
                     doNotAdjustCost: true,
                 };
             }
+            else if (struct.action === 'hell-mech'){
+                let costs = mechCost(struct.type.size,struct.type.infernal,true);
+                t_action = { 
+                    id: struct.id,
+                    cost: costs,
+                    type: 'hell-mech',
+                    bp: struct.type,
+                    doNotAdjustCost: true,
+                };
+            }
             else if (deepScan.includes(struct.action)){
                 for (let region in actions[struct.action]) {
                     if (actions[struct.action][region][struct.type]){
@@ -11117,6 +11127,13 @@ function midLoop(){
             }
             else if (c_action.hasOwnProperty('type') && c_action.type === 'tp-ship'){
                 if (buildTPShipQueue(c_action)){
+                    clearPopper(`q${c_action.id}${idx}`);
+                    global.queue.queue.splice(idx,1);
+                    buildQueue();
+                }
+            }
+            else if (c_action.hasOwnProperty('type') && c_action.type === 'hell-mech'){
+                if (buildMechQueue(c_action)){
                     clearPopper(`q${c_action.id}${idx}`);
                     global.queue.queue.splice(idx,1);
                     buildQueue();
