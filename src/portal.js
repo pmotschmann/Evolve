@@ -2077,7 +2077,7 @@ const fortressModules = {
         },
         hell_forge: {
             id: 'portal-hell_forge',
-            title: loc('portal_hell_forge_title'),
+            title(){ return loc('portal_hell_forge_title'); },
             desc(){
                 return `<div>${loc('portal_hell_forge_title')}</div><div class="has-text-special">${loc('requires_security')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
@@ -2098,7 +2098,7 @@ const fortressModules = {
             effect(wiki){
                 let sup = hellSupression('ruins', 0, wiki);
                 let craft = +(75 * sup.supress).toFixed(1);
-                let reactor = global.tech['inferno_power'] ? `<div>${loc('portal_hell_forge_effect2',[10,loc(`portal_inferno_power_title`)])}</div>` : ``;
+                let reactor = global.tech['inferno_power'] ? `<div>${loc('portal_hell_forge_effect2',[global.stats.achieve['what_is_best'] && global.stats.achieve.what_is_best.e >= 1 ? 12 : 10,loc(`portal_inferno_power_title`)])}</div>` : ``;
                 return `<div>${loc('portal_hell_forge_effect',[jobScale(1)])}</div>${reactor}<div>${loc('interstellar_stellar_forge_effect3',[$(this)[0].smelting()])}</div><div>${loc('interstellar_stellar_forge_effect',[craft])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
@@ -2141,7 +2141,7 @@ const fortressModules = {
                 let power = 20;
                 let infernal_forges_on = wiki ? (global.portal?.hell_forge?.on ?? 0) : p_on['hell_forge'];
                 if (infernal_forges_on){
-                    power += infernal_forges_on * 10; 
+                    power += infernal_forges_on * (global.stats.achieve['what_is_best'] && global.stats.achieve.what_is_best.e >= 1 ? 12 : 10); 
                 }
                 return powerModifier(-(power));
             },
@@ -3003,7 +3003,7 @@ const fortressModules = {
                 Money(offset){ return spaceCostMultiplier('purifier', offset, 85000000, spireCreep(1.15), 'portal'); },
                 Supply(offset){ return global.portal['purifier'] && global.portal.purifier.count === 0 ? 100 : spaceCostMultiplier('purifier', offset, 4200, spireCreep(1.2), 'portal'); },
             },
-            powered(){ return powerCostMod(125); },
+            powered(){ return global.stats.achieve['what_is_best'] && global.stats.achieve.what_is_best.e >= 2 ? powerCostMod(100) : powerCostMod(125); },
             support(){
                 let base = global.tech['b_stone'] && global.tech.b_stone >= 3 ? 1.25 : 1;
                 if (global.tech['hell_spire'] && global.tech.hell_spire >= 11 && global.eden['asphodel_harvester'] && support_on['asphodel_harvester']){
