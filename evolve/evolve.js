@@ -5,6 +5,7 @@ var loopIdx = 0;    // Next index in loopHist[]
 var loopSkew;       // Sum of all entries in loopHist[]
 var loopTargTs;     // Target time for next timer to fire
 var timerId;        // For clearing the timer
+var loopRun;        // Safety guarantee against race condition in timer clear (possibly unnecessary)
 
 self.addEventListener('message', function(e){
     const data = e.data;
@@ -13,10 +14,12 @@ self.addEventListener('message', function(e){
             loopInterval = data.period;
             loopHist = new Array(loopN).fill(0);
             loopSkew = 0;
+            loopRun = true;
             loopTargTs = performance.now() + loopInterval;
             timerId = setTimeout(lowDriftTimer, loopInterval);
             break;
         case 'clear':
+            loopRun = false;
             clearTimeout(timerId);
             break;
     };
@@ -49,7 +52,14 @@ function lowDriftTimer(){
 
     // Cancel out recent skew to center jitter near zero
     const timeout = (loopTargTs - ts) - (loopSkew / loopN);
-    timerId = setTimeout(lowDriftTimer, timeout);
+
+    // Paranoid: in case clearTimeout does not take effect before the event loop calls
+    // the scheduled timeout for lowDriftTimer, these timeouts will continue forever
+    if (loopRun){
+        timerId = setTimeout(lowDriftTimer, timeout);
+    }
+
+    // Not wrapped in if(loopRun): the game loop has separate pause state tracking
     self.postMessage({ loop: 'main', periods: periods });
 
     if (++loopIdx === loopN){ loopIdx = 0; }
