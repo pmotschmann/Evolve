@@ -151,7 +151,7 @@ export function loopTimers(){
     }
 
     // Main loop takes 250ms without any modifiers.
-    const webWorkerMainTimer = Math.floor(webWorker.mt * modifier);
+    const webWorkerMainTimer = Math.floor(250 * modifier);
     // Mid loop takes 1000ms without any modifiers.
     const baseMidTimer = webWorker.midRatio * webWorkerMainTimer;
     // Long loop (game day) takes 5000ms without any modifiers.
@@ -163,6 +163,7 @@ export function loopTimers(){
     return {
         webWorkerMainTimer,
         mainTimer: Math.ceil(webWorkerMainTimer * aTimeMultiplier),
+        longTimer: Math.ceil(baseLongTimer * aTimeMultiplier),
         baseLongTimer,
         timeAccelerationFactor,
     };
