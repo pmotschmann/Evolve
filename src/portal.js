@@ -483,7 +483,7 @@ const fortressModules = {
             },
             powered(){ return powerCostMod(10); },
             effect(){
-                let omniscience = (global.portal?.corpse_pile?.count || 0) * 1;
+                let omniscience = (global.portal?.corpse_pile?.count || 0) * 2;
                 let desc = `<div>${loc(`eden_ascension_machine_effect1`,[loc(`eden_encampment_title`),+omniscience.toFixed(0),global.resource.Omniscience.name])}</div>`;
 
                 let ghost = (global.portal?.corpse_pile?.count || 0) / 8;
@@ -4925,7 +4925,7 @@ export function hellguard(){
         }
     }
 
-    if (global.race['warlord'] && global.resource.Authority.amount >= 999 && global.resource.Authority.max >= 999){
+    if (global.race['warlord'] && global.resource.Authority.amount >= 250 && global.resource.Authority.max >= 250){
         global.stats.warlord.a = true;
         checkWarlordAchieve();
     }

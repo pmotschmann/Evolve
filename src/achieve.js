@@ -1825,7 +1825,7 @@ export const perkList = {
             loc(`wiki_perks_achievement_note_task`,[`<span class="has-text-caution">${loc(`achieve_what_is_best_name`)}</span>`]),
             loc(`wiki_perks_achievement_note_task_num`,[1,`<span class="has-text-${global.stats.warlord.k ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_k`,[50])}</span>`]),
             loc(`wiki_perks_achievement_note_task_num`,[2,`<span class="has-text-${global.stats.warlord.p ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_p`)}</span>`]),
-            loc(`wiki_perks_achievement_note_task_num`,[3,`<span class="has-text-${global.stats.warlord.a ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_a`,[999])}</span>`]),
+            loc(`wiki_perks_achievement_note_task_num`,[3,`<span class="has-text-${global.stats.warlord.a ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_a`,[250])}</span>`]),
             loc(`wiki_perks_achievement_note_task_num`,[4,`<span class="has-text-${global.stats.warlord.r ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_r`)}</span>`]),
             loc(`wiki_perks_achievement_note_task_num`,[5,`<span class="has-text-${global.stats.warlord.g ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_g`)}</span>`])
         ]

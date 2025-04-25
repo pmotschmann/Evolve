@@ -14649,6 +14649,7 @@ const techs = {
         category: 'housing',
         era: 'existential',
         reqs: { asphodel: 10, theology: 2 },
+        not_trait: ['warlord'],
         grant: ['asphodel',11],
         cost: {
             Knowledge(){ return 95000000; },

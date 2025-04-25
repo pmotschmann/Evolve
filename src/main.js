@@ -8260,6 +8260,11 @@ function midLoop(){
                 caps.Authority += gain;
                 breakdown.c.Authority[loc('portal_minions_bd')] = gain+'v';
             }
+            if (global.race['warlord'] && global.eden['bunker'] && support_on['bunker']){
+                let gain = support_on['bunker'];
+                caps.Authority += gain;
+                breakdown.c.Authority[loc('eden_bunker_title')] = gain+'v';
+            }
 
             let pet = 0;
             if (global.race['pet']){
@@ -9339,7 +9344,7 @@ function midLoop(){
             }
 
             if (global.race['warlord'] && global.portal['mortuary'] && global.portal['corpse_pile']){
-                let gain = global.portal.corpse_pile.count * (p_on['mortuary'] || 0) * (p_on['encampment'] || 0); 
+                let gain = global.portal.corpse_pile.count * (p_on['mortuary'] || 0) * (p_on['encampment'] || 0) * 2; 
                 caps['Omniscience'] += gain;
                 breakdown.c.Omniscience[loc('eden_encampment_title')] = gain+'v';
             }

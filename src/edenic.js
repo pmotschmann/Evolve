@@ -77,7 +77,7 @@ const edenicModules = {
                     desc += `<div>${loc('plus_max_resource',[+omniscience.toFixed(0),global.resource.Omniscience.name])}</div>`;
                 }
                 if (global.race['warlord'] && global.portal['mortuary'] && global.portal['corpse_pile'] && p_on['mortuary']){
-                    let omniscience = global.portal.corpse_pile.count * p_on['mortuary'];
+                    let omniscience = global.portal.corpse_pile.count * p_on['mortuary'] * 2;
                     desc += `<div>${loc('plus_max_resource',[+omniscience.toFixed(0),global.resource.Omniscience.name])}</div>`;
                 }
 
@@ -626,6 +626,9 @@ const edenicModules = {
             effect(){
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[loc('eden_asphodel_name')])}</div>`;
                 desc += `<div>${loc('plus_max_soldiers',[$(this)[0].soldiers()])}</div>`;
+                if (global.race.universe === 'evil' && global.race['warlord']){
+                    desc += `<div>${loc('plus_max_resource',[1,global.resource.Authority.name])}</div>`;
+                }
                 if (global.tech['celestial_warfare'] && global.tech.celestial_warfare >= 4 && (!global.tech['elysium'] || global.tech.elysium < 8)){
                     desc += `<div>${loc('eden_bunker_effect',[3])}</div>`;
                 }
