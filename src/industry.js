@@ -1349,7 +1349,7 @@ function loadQuarry(parent,bind){
 }
 
 function loadMechStation(parent,bind){
-    let mech = $(`<div class="factory"><span>${loc(`eden_mech_station_control`)}</span></div>`);
+    let mech = $(`<div class="factory"><span>${global.race['warlord'] ? loc(`eden_demon_station_control`) : loc(`eden_mech_station_control`)}</span></div>`);
     parent.append(mech);
     let mechPatrol = $(`<span class="current">{{ mode | patrolMode }}</span>`);
     let mechDown = $(`<span class="sub" @click="lower()" role="button" aria-label="Decrease Patrol Aggression">&laquo;</span>`);
@@ -1383,7 +1383,7 @@ function loadMechStation(parent,bind){
                 return loc(`eden_mech_station_patrol${v}`);
             },
             patrol(v){
-                return loc(`eden_mech_station_mechs`,[v]);
+                return loc(global.race['warlord'] ? `eden_demon_station_mechs` : `eden_mech_station_mechs`,[v]);
             },
             effect(v){
                 return loc(`eden_mech_station_effective`,[v]);

@@ -7694,7 +7694,7 @@ const techs = {
         grant: ['military',12],
         cost: {
             Knowledge(){ return 72500000; },
-            Asphodel_Powder(){ return 10777; },
+            Asphodel_Powder(){ return 7777; },
             Soul_Gem(){ return 100; },
         },
         effect: loc('tech_ethereal_weapons_effect'),
@@ -14480,8 +14480,8 @@ const techs = {
     },
     purification: {
         id: 'tech-purification',
-        title: loc('tech_purification'),
-        desc: loc('tech_purification'),
+        title(){ return global.race['warlord'] ? loc('tech_putrification') : loc('tech_purification'); },
+        desc(){ return global.race['warlord'] ? loc('tech_putrification') : loc('tech_purification'); },
         category: 'hell_dimension',
         era: 'existential',
         reqs: { asphodel: 4, hell_spire: 10 },
@@ -14491,7 +14491,7 @@ const techs = {
             Omniscience(){ return 5000; },
             Asphodel_Powder(){ return 17500; },
         },
-        effect(){ return loc('tech_purification_effect',[global.resource.Asphodel_Powder.name,loc('portal_purifier_title'),2,loc('eden_asphodel_harvester_title')]); },
+        effect(){ return loc(global.race['warlord'] ? 'tech_putrification_effect' : 'tech_purification_effect',[global.resource.Asphodel_Powder.name, actions.portal.prtl_spire.purifier.title(),2,loc('eden_asphodel_harvester_title')]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -15481,6 +15481,30 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.portal.prtl_pit.tavern);
+                return true;
+            }
+            return false;
+        }
+    },
+    energized_dead: {
+        id: 'tech-energized_dead',
+        title: loc('tech_energized_dead'),
+        desc: loc('tech_energized_dead'),
+        category: 'evil',
+        era: 'existential',
+        reqs: { pitspawn: 2, asphodel: 3 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        grant: ['pitspawn',3],
+        cost: {
+            Knowledge(){ return 12500000; },
+            Asphodel_Powder(){ return 2500; }
+        },
+        effect(){ return loc('tech_energized_dead_effect',[global.resource.Asphodel_Powder.name, loc('portal_shadow_mine_title')]); },
+        action(){
+            if (payCosts($(this)[0])){
                 return true;
             }
             return false;

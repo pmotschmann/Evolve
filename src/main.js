@@ -4739,6 +4739,11 @@ function fastLoop(){
                 ai_core += (p_on['citadel'] * ai);
             }
 
+            let hell_factory = 1;
+            if (global.race['warlord'] && global.portal['hell_factory'] && p_on['hell_factory'] > 0){
+                hell_factory += p_on['hell_factory'] * 8 * (global.portal.hell_factory.rank - 1) / 100
+            }
+
             let mining_pit = global.tech['isolation'] ? 1 + (support_on['mining_pit'] * 0.08) : 1;
 
             let cq_multiplier = global.tech['isolation'] ? 1 : q_multiplier;
@@ -4752,13 +4757,17 @@ function fastLoop(){
                 breakdown.p['Cement'][`ᄂ${loc('quarantine')}+0`] = ((cq_multiplier - 1) * 100) + '%';
             }
 
+            if (hell_factory > 1){
+                breakdown.p['Cement'][`ᄂ${loc('portal_factory_title')}+0`] = ((hell_factory - 1) * 100) + '%';
+            }
+
             if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['cement_plant'] > 0){
                 powered_mult = (powered_mult - 1) * 0.5 + 1;
                 power_single = (power_single - 1) * 0.5 + 1;
                 breakdown.p['Cement'][`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
             }
 
-            let delta = factory_output * ai_core * tauBonus * mining_pit;
+            let delta = factory_output * ai_core * tauBonus * mining_pit * hell_factory;
             if (global.city['cement_plant']){
                 global.city.cement_plant['cnvay'] = +(delta * hunger * cq_multiplier * global_multiplier * (power_single - 1)).toFixed(5);
             }
@@ -5226,7 +5235,7 @@ function fastLoop(){
         }
 
         if (p_on['shadow_mine']){
-            let attract = p_on['soul_attractor'] ? 1 + (p_on['soul_attractor'] * 0.1) : 1;
+            let attract = p_on['soul_attractor'] ? 1 + (p_on['soul_attractor'] * (global.tech.pitspawn >= 3 ? 0.2 : 0.1)) : 1;
 
             if (global.resource.Vitreloy.display){ // Vitreloy
                 let rate = production('shadow_mine','vitreloy');

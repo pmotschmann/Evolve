@@ -136,13 +136,13 @@ const edenicModules = {
         },
         mech_station: {
             id: 'eden-mech_station',
-            title: loc('eden_mech_station_title'),
+            title(){ return global.race['warlord'] ? loc('eden_demon_station_title') : loc('eden_mech_station_title'); },
             desc(wiki){
                 if (!global.eden.hasOwnProperty('mech_station') || global.eden.mech_station.count < 10 || wiki){
-                    return `<div>${loc('eden_mech_station_title')}</div><div class="has-text-special">${loc('requires_segments',[10])}</div>`;
+                    return `<div>${global.race['warlord'] ? loc('eden_demon_station_title') : loc('eden_mech_station_title')}</div><div class="has-text-special">${loc('requires_segments',[10])}</div>`;
                 }
                 else {
-                    return `<div>${loc('eden_mech_station_title')}</div>`;
+                    return `<div>${global.race['warlord'] ? loc('eden_demon_station_title') : loc('eden_mech_station_title')}</div>`;
                 }
             },
             reqs: { asphodel: 6 },
@@ -183,15 +183,15 @@ const edenicModules = {
             effect(wiki){
                 let count = (wiki?.count ?? 0) + (global.eden.hasOwnProperty('mech_station') ? global.eden.mech_station.count : 0);
                 if (count >= 10){
-                    let desc = `<div>${loc('eden_mech_station_effect')}</div>`;
-                    desc += `<div>${loc('eden_mech_station_mechs',[global.eden.mech_station.mechs])}</div>`;
+                    let desc = `<div>${global.race['warlord'] ? loc('eden_demon_station_effect') : loc('eden_mech_station_effect')}</div>`;
+                    desc += `<div>${global.race['warlord'] ? loc('eden_demon_station_mechs',[global.eden.mech_station.mechs]) : loc('eden_mech_station_mechs',[global.eden.mech_station.mechs])}</div>`;
                     desc += `<div>${loc('eden_mech_station_effective',[global.eden.mech_station.effect])}</div>`;
                     return desc;
                 }
                 else {
                     let size = 10;
                     let remain = size - count;
-                    return `<div>${loc('eden_mech_station_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                    return `<div>${global.race['warlord'] ? loc('eden_demon_station_effect') : loc('eden_mech_station_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
             },
             special(){ return global.eden.hasOwnProperty('mech_station') && global.eden.mech_station.count === 10 ? true : false; },
@@ -2307,7 +2307,7 @@ export function renderEdenic(){
 
 export function asphodelResist(){
     if (global.tech['asphodel'] && global.tech.asphodel >= 5){
-        let resist = 0.34;
+        let resist = global.tech.asphodel >= 6 ? 0.34 : 0.67;
         if (global.eden['mech_station'] && global.eden.mech_station.count >= 10){
             resist = 0.34 + (global.eden.mech_station.effect * 0.0066);
         }

@@ -2076,6 +2076,9 @@ const extraInformation = {
     tavern: [
         loc(`wiki_tech_tavern`)
     ],
+    energized_dead: [
+        loc(`wiki_tech_energized_dead`)
+    ],
 };
 
 const extraInformationTP = {

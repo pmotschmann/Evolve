@@ -1735,7 +1735,6 @@ export function calcPrestige(type,inputs){
                 gains.supercoiled = pr_gain ** 3;
             }
             if (global.race['warlord']){
-                gains.supercoiled /= 2;
                 gains.artifact = 5;
             }
         }

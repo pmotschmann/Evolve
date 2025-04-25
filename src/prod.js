@@ -542,7 +542,7 @@ export function production(id,val,wiki){
                 }
                 case 'vitreloy':
                 {
-                    return 0.08;
+                    return 0.105;
                 }
             }
         }

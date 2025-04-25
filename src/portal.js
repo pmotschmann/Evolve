@@ -1104,6 +1104,9 @@ const fortressModules = {
             effect(){
                 let desc = `<div>${loc('portal_factory_effect',[$(this)[0].lines()])}</div><div>${loc('city_crafted_mats',[25])}</div>`;
                 desc += `<div>${loc('plus_max_resource',[jobScale(5),jobName('cement_worker')])}</div>`;
+                if ((global.portal?.hell_factory?.rank || 1) > 1){
+                    desc += `<div>${loc('production',[(global.portal?.hell_factory?.rank || 1) * 8 - 8,global.resource.Cement.name])}</div>`;
+                }
                 desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
             },
@@ -1568,7 +1571,7 @@ const fortressModules = {
                     desc += `<div>${loc('portal_soul_attractor_effect2',[3])}</div>`;
                 }
                 if (global.tech['pitspawn']){
-                    desc += `<div>${loc('production',[10,loc('portal_shadow_mine_title')])}</div>`;
+                    desc += `<div>${loc('production',[global.tech.pitspawn >= 3 ? 20 : 10,loc('portal_shadow_mine_title')])}</div>`;
                 }
                 desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
 
@@ -8523,7 +8526,7 @@ export function warlordSetup(){
         }
 
         if (!global.race['flier']){
-            global.tech['cement'] = 5;
+            global.tech['cement'] = 6;
             global.resource.Cement.display = true;
         }
 
