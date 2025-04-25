@@ -338,6 +338,12 @@ export const job_desc = {
                 ascend = 1 + (heatSink / 12500);
             }
         }
+        if (global.race['warlord'] && global.portal['mortuary'] && global.portal['corpse_pile']){
+            let corpse = (global.portal?.corpse_pile?.count || 0) * (p_on['mortuary'] || 0);
+            if (corpse > 0){
+                ascend = 1 + corpse / 800;
+            }
+        }
         let min = Math.floor((150 + attact) * resist * ascend);
         let max = Math.floor((250 + attact) * resist * ascend);
         

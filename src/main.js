@@ -9338,7 +9338,12 @@ function midLoop(){
                 breakdown.c.Omniscience[loc('eden_research_station_title')] = gain+'v';
             }
 
-            if (p_on['ascension_trigger'] && global.eden.hasOwnProperty('encampment') && global.eden.encampment.asc){
+            if (global.race['warlord'] && global.portal['mortuary'] && global.portal['corpse_pile']){
+                let gain = global.portal.corpse_pile.count * (p_on['mortuary'] || 0) * (p_on['encampment'] || 0); 
+                caps['Omniscience'] += gain;
+                breakdown.c.Omniscience[loc('eden_encampment_title')] = gain+'v';
+            }
+            else if (p_on['ascension_trigger'] && global.eden.hasOwnProperty('encampment') && global.eden.encampment.asc){
                 let heatSink = actions.interstellar.int_sirius.ascension_trigger.heatSink();
                 heatSink = heatSink < 0 ? Math.abs(heatSink) : 0;
                 let omniscience = +(150 + (heatSink ** 0.95 / 10)).toFixed(0);

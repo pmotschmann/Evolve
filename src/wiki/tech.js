@@ -2079,6 +2079,9 @@ const extraInformation = {
     energized_dead: [
         loc(`wiki_tech_energized_dead`)
     ],
+    tech_mortuary: [
+        loc(`wiki_tech_mortuary`)
+    ]
 };
 
 const extraInformationTP = {

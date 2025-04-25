@@ -15465,12 +15465,37 @@ const techs = {
         },
         grant: ['hellspawn',8],
         cost: {
-            Knowledge(){ return 150000000; }
+            Knowledge(){ return 148000000; }
         },
         effect: loc('tech_spire_bazaar_effect'),
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.portal.prtl_spire.bazaar);
+                return true;
+            }
+            return false;
+        }
+    },
+    mortuary: {
+        id: 'tech-mortuary',
+        title: loc('tech_mortuary'),
+        desc: loc('tech_mortuary'),
+        category: 'evil',
+        era: 'existential',
+        reqs: { hellspawn: 8, asphodel: 3 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        grant: ['hellspawn',9],
+        cost: {
+            Knowledge(){ return 175000000; },
+            Omniscience(){ return 5000; }
+        },
+        effect: loc('tech_mortuary_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.portal.prtl_badlands.mortuary);
                 return true;
             }
             return false;

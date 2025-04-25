@@ -469,6 +469,44 @@ const fortressModules = {
                 return false;
             }
         },
+        mortuary: {
+            id: 'portal-mortuary',
+            title: loc('portal_mortuary_title'),
+            desc(){ return `<div>${loc('portal_mortuary_desc',[loc('portal_corpse_pile_title')])}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            reqs: { hellspawn: 9 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('mortuary', offset, 1010101010, 1.25, 'portal'); },
+                Alloy(offset){ return spaceCostMultiplier('mortuary', offset, 56565656, 1.25, 'portal'); },
+                Scarletite(offset){ return spaceCostMultiplier('mortuary', offset, 4545450, 1.25, 'portal'); },
+            },
+            powered(){ return powerCostMod(10); },
+            effect(){
+                let omniscience = (global.portal?.corpse_pile?.count || 0) * 1;
+                let desc = `<div>${loc(`eden_ascension_machine_effect1`,[loc(`eden_encampment_title`),+omniscience.toFixed(0),global.resource.Omniscience.name])}</div>`;
+
+                let ghost = (global.portal?.corpse_pile?.count || 0) / 8;
+                desc += `<div>${loc(`eden_ascension_machine_effect2`,[loc(`job_ghost_trapper`),+ghost.toFixed(2)])}</div>`;
+
+                desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('mortuary','portal');
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['mortuary','portal']
+                };
+            }
+        },
         codex: {
             id: 'portal-codex',
             title: loc('portal_codex_title'),
@@ -920,7 +958,7 @@ const fortressModules = {
         hell_casino: {
             id: 'portal-hell_casino',
             title(){ return structName('casino'); },
-            desc(){ return rankDesc(structName('casino'),'hell_casino'); },
+            desc(){ return `<div>${rankDesc(structName('casino'),'hell_casino')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             reqs: { hellspawn: 1, gambling: 1 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -4626,7 +4664,6 @@ export function bloodwar(){
             }
             souls = Math.floor(souls * asphodelResist());
             global.portal.soul_forge.kills += souls;
-            day_report.ghost_trappers = souls;
             soulCapacitor(souls);
         }
 
@@ -4849,7 +4886,6 @@ export function hellguard(){
                 }
             });
         }
-        
 
         if (forgeOperating && global.tech.hell_pit >= 5 && p_on['soul_attractor']){
             let attract = global.blood['attract'] ? global.blood.attract * 5 : 0;
@@ -4859,6 +4895,19 @@ export function hellguard(){
                 souls *= 1 + (traits.ghostly.vars()[0] / 100);
                 souls = Math.round(souls);
             }
+            global.portal.soul_forge.kills += souls;
+        }
+
+        if (forgeOperating && global.tech['asphodel'] && global.tech.asphodel >= 2 && support_on['ectoplasm_processor']){
+            let attract = global.blood['attract'] ? global.blood.attract * 5 : 0;
+            let souls = global.civic.ghost_trapper.workers * Math.rand(150 + attract, 250 + attract);
+            if (global.portal['mortuary'] && global.portal['corpse_pile']){
+                let corpse = (global.portal?.corpse_pile?.count || 0) * (p_on['mortuary'] || 0);
+                if (corpse > 0){
+                    souls *= 1 + corpse / 800;
+                }
+            }
+            souls = Math.floor(souls * asphodelResist());
             global.portal.soul_forge.kills += souls;
         }
 

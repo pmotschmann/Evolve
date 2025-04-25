@@ -76,6 +76,10 @@ const edenicModules = {
 
                     desc += `<div>${loc('plus_max_resource',[+omniscience.toFixed(0),global.resource.Omniscience.name])}</div>`;
                 }
+                if (global.race['warlord'] && global.portal['mortuary'] && global.portal['corpse_pile'] && p_on['mortuary']){
+                    let omniscience = global.portal.corpse_pile.count * p_on['mortuary'];
+                    desc += `<div>${loc('plus_max_resource',[+omniscience.toFixed(0),global.resource.Omniscience.name])}</div>`;
+                }
 
                 desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
