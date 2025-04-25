@@ -2637,9 +2637,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('rock_quarry','city');
-                    if (!global.race['forager']){
-                        global.civic.quarry_worker.display = true;
-                    }
+                    global.civic.quarry_worker.display = true;
                     let stone = BHStorageMulti(spatialReasoning(100));
                     global['resource']['Stone'].max += stone;
                     if (global.race['smoldering'] && global.resource.Chrysotile.display){
@@ -8977,9 +8975,7 @@ function aiStart(){
             }
             global.resource.Lumber.display = true;
             global.resource.Plywood.display = true;
-            if (!global.race['forager']){
-                global.civic.lumberjack.display = true;
-            }
+            global.civic.lumberjack.display = true;
         }
         if (global.race['smoldering']){
             global.resource.Chrysotile.display = true;
@@ -8994,7 +8990,7 @@ function aiStart(){
 
         global.civic.miner.display = true;
         global.civic.coal_miner.display = true;
-        if (!global.race['sappy'] && !global.race['forager']){
+        if (!global.race['sappy']){
             global.civic.quarry_worker.display = true;
         }
         global.civic.professor.display = true;

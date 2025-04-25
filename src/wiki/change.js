@@ -16,6 +16,7 @@ export const changeList = [
             `Updated Empowered trait mechanics.`,
             `Adjusted values for Master Artisan.`,
             `Evil Wendigo can now use Shovels.`,
+            `Racconar can now recruit quarry workers.`,
             `You can no longer get more then 100 servants from each TP T4 reset.`,
             `You are now capped at 100 skilled servants from TP resets.`,
             `Empowered Concealment Wards changed to Empowered Nexus in Witch Hunter.`,
