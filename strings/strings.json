@@ -10229,7 +10229,7 @@
   "wiki_challenges_genes_weak": "Weak Genes",
   "wiki_challenges_genes_weak_para1": "Mastery is reduced to %0.",
   "wiki_challenges_genes_weak_para2": "Plasmid and Anti-Plasmid production bonus reduced to %0.",
-  "wiki_challenges_genes_weak_para3": "Plasmid and Anti-Plasmid storage bonus reduced to %0.",
+  "wiki_challenges_genes_weak_para3": "Plasmid storage bonus reduced to %0 and Anti-Plasmid storage bonus reduced to %1.",
   "wiki_challenges_genes_weak_para4": "Phage storage bonus reduced to %0.",
   "wiki_challenges_genes_weak_para5": "This %0 is only available in the %1 Scenario.",
   "wiki_challenges_modes_intro": "Challenge Modes",
