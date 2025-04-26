@@ -1713,6 +1713,10 @@ export function setPowerGrid(){
             let region = parts[0] === 'city' ? parts[0] : space;
             let c_action = parts[0] === 'city' ? actions.city[parts[1]] : actions[space][parts[0]][parts[1]];
 
+            if (!global[region][parts[1]]){
+                continue;
+            }
+
             let title = typeof c_action.title === 'function' ? c_action.title() : c_action.title;
             let extra = ``;
             switch (parts[1]){
