@@ -9641,6 +9641,11 @@ function midLoop(){
             caps['Elerium'] += el_gain;
             breakdown.c.Elerium[loc('portal_shadow_mine_title')] = el_gain+'v';
         }
+        if (p_on['corruptor']){
+            let el_gain = p_on['corruptor'] * spatialReasoning(200);
+            caps['Elerium'] += el_gain;
+            breakdown.c.Elerium[loc('eden_corruptor_title')] = el_gain+'v';
+        }
         if (global.city['foundry']){
             lCaps['craftsman'] += jobScale(global.city['foundry'].count);
         }

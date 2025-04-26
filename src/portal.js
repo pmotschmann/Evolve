@@ -1764,7 +1764,7 @@ const fortressModules = {
                 Adamantite(offset){ return spaceCostMultiplier('shadow_mine', offset, 2350000, 1.25, 'portal'); },
             },
             effect(wiki){
-                let elerium_cap = spatialReasoning(225);
+                let elerium_cap = spatialReasoning(200);
                 let elerium = production('shadow_mine', 'elerium', wiki);
                 let infernite = production('shadow_mine', 'infernite', wiki);
                 let vitreloy = production('shadow_mine', 'vitreloy', wiki);

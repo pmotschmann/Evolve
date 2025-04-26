@@ -798,12 +798,14 @@ const edenicModules = {
                 Soul_Gem(offset){ return spaceCostMultiplier('corruptor', offset, 8, 1.24, 'eden'); },
             },
             effect(){
-                let desc = `<div>${loc('eden_encampment_effect',[$(this)[0].support()])}</div>`;
+                let elerium = sizeApproximation(spatialReasoning(200));
 
+                let desc = `<div>${loc('eden_encampment_effect',[$(this)[0].support()])}</div>`;
                 desc += `<div>${loc('eden_corruptor_effect',[4,edenicModules.eden_asphodel.research_station.title(),global.resource.Omniscience.name])}</div>`;
                 desc += `<div>${loc('eden_corruptor_effect',[8,`${loc('wiki_tech_tree_asphodel')} ${edenicModules.eden_asphodel.warehouse.title()}`,loc('tab_storage')])}</div>`;
                 desc += `<div>${loc('eden_corruptor_effect2',[5,edenicModules.eden_asphodel.stabilizer.title()])}</div>`;
                 desc += `<div>${loc('production',[6,edenicModules.eden_asphodel.asphodel_harvester.title()])}</div>`;
+                desc += `<div>${loc('plus_max_resource',[elerium,global.resource.Elerium.name])}</div>`;
 
                 desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
@@ -1506,7 +1508,7 @@ const edenicModules = {
             effect(){
                 let vault = spatialReasoning(bank_vault() * 10);
                 vault = (+(vault).toFixed(0)).toLocaleString();
-                return loc('plus_max_resource',[`\$${vault}`,global.resource.Money.name]);
+                return loc('plus_max_resource',[`\$${vault}`,loc('resource_Money_name')]);
             },
             action(){
                 if (payCosts($(this)[0])){
