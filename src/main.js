@@ -2280,6 +2280,7 @@ function fastLoop(){
                     case 'asphodel':
                         {
                             global[sup.a][sup.s].s_max += (p_on['rectory'] ? p_on['rectory'] : 0) * actions.eden.eden_asphodel.rectory.support();
+                            global[sup.a][sup.s].s_max += (p_on['corruptor'] ? p_on['corruptor'] : 0) * actions.eden.eden_asphodel.corruptor.support();
                         }
                         break;
                 }
@@ -4292,9 +4293,16 @@ function fastLoop(){
                 let ghost_base = workerScale(global.civic.ghost_trapper.workers,'ghost_trapper');
                 ghost_base *= racialTrait(ghost_base,'science');
                 ghost_base *= global.race['pompous'] ? (1 - traits.pompous.vars()[0] / 100) : 1;
+                let corruptor = 1;
+                if (global.race['warlord'] && global.eden['corruptor']){
+                    corruptor = 1 + (p_on['corruptor'] || 0) * 0.04;
+                }
 
-                let ghost_gain = support_on['research_station'] * ghost_base * 0.0000325;
+                let ghost_gain = support_on['research_station'] * ghost_base * 0.0000325 * corruptor;
                 breakdown.p['Omniscience'][loc('eden_research_station_title')] = ghost_gain + 'v';
+                if (corruptor > 1){
+                    breakdown.p['Omniscience'][`ᄂ${loc('eden_corruptor_title')}`] = ((corruptor - 1) * 100) + '%';
+                }
 
                 let delta = ghost_gain;
                 delta *= hunger * global_multiplier;
@@ -7882,6 +7890,10 @@ function fastLoop(){
                         stabilize = 1 - coefficent;
                     }
                 }
+                if (global.race['warlord'] && global.eden['corruptor'] && p_on['corruptor']){
+                    stabilize -= 0.004 * p_on['corruptor'];
+                }
+                if (stabilize < 0.01){ stabilize = 0.01; }
 
                 if (global.eden['stabilizer']){
                     decay *= stabilize ** global.eden.stabilizer.count;
@@ -8849,6 +8861,9 @@ function midLoop(){
 
         if (global.eden['warehouse']){
             var multiplier = storageMultipler(global.race['warlord'] ? 1 : 0.2);
+            if (global.race['warlord'] && global.eden['corruptor']){
+                multiplier *= 1 + (p_on['corruptor'] || 0) * 0.08;
+            }
             let label = loc('eden_asphodel_name');
             for (const res of actions.eden.eden_asphodel.warehouse.res()){
                 if (global.resource[res].display){
@@ -9338,7 +9353,11 @@ function midLoop(){
         //Omniscience
         if (global.resource.Omniscience.display){
             if (global.eden['research_station']){
-                let gain = (support_on['research_station'] || 0) * 777;
+                let corruptor = 1;
+                if (global.race['warlord'] && global.eden['corruptor']){
+                    corruptor = 1 + (p_on['corruptor'] || 0) * 0.04;
+                }
+                let gain = (support_on['research_station'] || 0) * Math.round(777 * corruptor);
                 caps['Omniscience'] += gain;
                 breakdown.c.Omniscience[loc('eden_research_station_title')] = gain+'v';
             }

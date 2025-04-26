@@ -586,6 +586,8 @@ const fortressModules = {
             wiki: global.race['warlord'] ? true : false,
             cost: {},
             queue_complete(){ return 0; },
+            wide: true,
+            class: 'w30',
             effect(wiki){
                 let knowCap = (global.race?.absorbed?.length || 1) * 500000;
                 if (shrineBonusActive()){
@@ -836,9 +838,9 @@ const fortressModules = {
                     case 'Iridium':
                         return 28 + (global.portal?.warehouse?.rank || 1) * 4;
                     case 'Nano_Tube':
-                        return 34 + (global.portal?.warehouse?.rank || 1) * 4;
+                        return 50 + (global.portal?.warehouse?.rank || 1) * 18;
                     case 'Neutronium':
-                        return 12 + (global.portal?.warehouse?.rank || 1) * 3;
+                        return 12 + (global.portal?.warehouse?.rank || 1) * 4;
                     case 'Adamantite':
                         return 15 + (global.portal?.warehouse?.rank || 1) * 3;
                     case 'Infernite':

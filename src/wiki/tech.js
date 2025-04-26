@@ -2079,8 +2079,11 @@ const extraInformation = {
     energized_dead: [
         loc(`wiki_tech_energized_dead`)
     ],
-    tech_mortuary: [
+    mortuary: [
         loc(`wiki_tech_mortuary`)
+    ],
+    corruptor: [
+        loc(`wiki_tech_corruptor`)
     ]
 };
 

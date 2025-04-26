@@ -527,6 +527,9 @@ export function production(id,val,wiki){
             if (global.tech['hell_lake'] && global.tech.hell_lake >= 7 && global.tech['railway']){
                 base *= 1 + (global.tech.railway / 100);
             }
+            if (global.race['warlord'] && global.eden['corruptor']){
+                base = 1 + (p_on['corruptor'] || 0) * 0.06;
+            }
             return base;
         }
         case 'shadow_mine':

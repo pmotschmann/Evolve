@@ -6442,7 +6442,8 @@ export function setAction(c_action,action,type,old,prediction){
             vBind({el: `#popTimer`},'destroy');
         },
         attach: action === 'starDock' ? 'body .modal' : '#main',
-        wide: c_action['wide']
+        wide: c_action['wide'],
+        classes: c_action.hasOwnProperty('class') ? c_action.class : false,
     });
 }
 

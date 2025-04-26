@@ -15574,6 +15574,28 @@ const techs = {
             return false;
         }
     },
+    corruptor: {
+        id: 'tech-corruptor',
+        title: loc('tech_corruptor'),
+        desc: loc('tech_corruptor'),
+        category: 'evil',
+        era: 'existential',
+        reqs: { asphodel: 10, theology: 2 },
+        trait: ['warlord'],
+        grant: ['asphodel',11],
+        cost: {
+            Knowledge(){ return 135000000; },
+            Omniscience(){ return 19500; },
+        },
+        effect(){ return loc('tech_corruptor_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.eden.eden_asphodel.corruptor);
+                return true;
+            }
+            return false;
+        }
+    },
 }
 
 function uniteEffect(){
