@@ -1248,15 +1248,13 @@ if (convertVersion(global['version']) <= 104003){
         global.race.pet['pet'] = 0;
     }
 }
+
 global['version'] = '1.4.3';
 delete global['revision'];
 global['beta'] = 24;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
-}
-if(!global.race.hasOwnProperty('inactiveTraits')){
-    global.race.inactiveTraits = {};
 }
 ['Plasmid','AntiPlasmid','Phage','Dark','Harmony','AICore','Artifact','Blood_Stone','Supercoiled'].forEach(function (res){
     if (!global.prestige.hasOwnProperty(res)){
