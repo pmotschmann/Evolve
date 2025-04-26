@@ -846,13 +846,13 @@ const fortressModules = {
                     case 'Infernite':
                         return 3 + global.portal?.warehouse?.rank || 1;
                     case 'Bolognium':
-                        return 6 + global.portal?.warehouse?.rank || 2;
+                        return 6 + global.portal?.warehouse?.rank || 3;
                     case 'Orichalcum':
-                        return 8 + global.portal?.warehouse?.rank || 2;
+                        return 8 + global.portal?.warehouse?.rank || 4;
                     case 'Graphene':
-                        return 14 + global.portal?.warehouse?.rank || 2;
+                        return 14 + global.portal?.warehouse?.rank || 3;
                     case 'Stanene':
-                        return 14 + global.portal?.warehouse?.rank || 2;
+                        return 14 + global.portal?.warehouse?.rank || 3;
                     case 'Oil':
                         return 18 + global.portal?.warehouse?.rank || 2;
                     case 'Helium_3':
@@ -866,7 +866,7 @@ const fortressModules = {
                 let storage = '<div class="aTable">';
                 let multiplier = storageMultipler(1, wiki);
                 if (global.race['warlord'] && global.eden['corruptor'] && global.tech.asphodel >= 12){
-                    multiplier *= 1 + (p_on['corruptor'] || 0) * 0.1;
+                    multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech.asphodel >= 13 ? 0.16 : 0.12);
                 }
                 for (const res of $(this)[0].res()){
                     if (global.resource[res].display){
@@ -890,7 +890,7 @@ const fortressModules = {
                     incrementStruct('warehouse','portal');
                     let multiplier = storageMultipler();
                     if (global.race['warlord'] && global.eden['corruptor'] && global.tech.asphodel >= 12){
-                        multiplier *= 1 + (p_on['corruptor'] || 0) * 0.1;
+                        multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech.asphodel >= 13 ? 0.16 : 0.12);
                     }
                     for (const res of $(this)[0].res()){
                         if (global.resource[res].display){
@@ -2655,7 +2655,7 @@ const fortressModules = {
                 let storage = '<div class="aTable">';
                 let multiplier = 1;
                 if (global.race['warlord'] && global.eden['corruptor'] && global.tech?.asphodel >= 12){
-                    multiplier *= 1 + (p_on['corruptor'] || 0) * 0.1;
+                    multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech?.asphodel >= 13 ? 0.12 : 0.1);
                 }
                 for (const res of $(this)[0].res()){
                     if (global.resource[res].display){
@@ -2672,7 +2672,7 @@ const fortressModules = {
                     if (powerOnNewStruct($(this)[0])){
                         let multiplier = 1;
                         if (global.race['warlord'] && global.eden['corruptor'] && global.tech?.asphodel >= 12){
-                            multiplier *= 1 + (p_on['corruptor'] || 0) * 0.1;
+                            multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech?.asphodel >= 13 ? 0.12 : 0.1);
                         }
                         for (const res of $(this)[0].res()){
                             if (global.resource[res].display){

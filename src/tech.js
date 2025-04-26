@@ -15636,6 +15636,32 @@ const techs = {
             return false;
         }
     },
+    ultimate_corruption: {
+        id: 'tech-ultimate_corruption',
+        title(){ return loc('tech_ultimate_corruption'); },
+        desc(){ return loc('tech_ultimate_corruption'); },
+        category: 'evil',
+        era: 'existential',
+        reqs: { isle: 5, asphodel: 12 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        wiki: global.race['warlord'] ? true : false,
+        grant: ['asphodel',13],
+        cost: {
+            Knowledge(){ return 325000000; },
+            Omniscience(){ return 50000; },
+            Asphodel_Powder(){ return 900000; }
+        },
+        effect(){ return loc('tech_ultimate_corruption_effect',[loc('eden_asphodel_name')]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
 }
 
 function uniteEffect(){

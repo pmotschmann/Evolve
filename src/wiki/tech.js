@@ -2084,6 +2084,12 @@ const extraInformation = {
     ],
     corruptor: [
         loc(`wiki_tech_corruptor`)
+    ],
+    seeping_corruption: [
+        loc(`wiki_tech_seeping_corruption`)
+    ],
+    ultimate_corruption: [
+        loc(`wiki_tech_ultimate_corruption`)
     ]
 };
 

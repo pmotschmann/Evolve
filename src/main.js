@@ -251,6 +251,9 @@ if (global.eden['soul_engine']){
     p_on['soul_engine'] = global.eden.soul_engine.on;
     support_on['soul_engine'] = global.eden.soul_engine.on;
 }
+if (global.eden['corruptor']){
+    p_on['corruptor'] = global.eden.corruptor.on;
+}
 if (global.eden['ectoplasm_processor']){
     p_on['ectoplasm_processor'] = global.eden.ectoplasm_processor.on;
     support_on['ectoplasm_processor'] = global.eden.ectoplasm_processor.on;
@@ -5902,7 +5905,11 @@ function fastLoop(){
             let drain = 1653439 * p_on['spirit_vacuum'];
             if (global.tech.isle >= 6 && p_on['spirit_battery']){
                 let battery = p_on['spirit_battery'] || 0;
-                drain *= 1 + (battery * 0.08);
+                let boost = 0.08;
+                if (global.race['warlord'] && global.eden['corruptor'] && global.tech?.asphodel >= 13){
+                    boost *= 1 + (p_on['corruptor'] || 0) * 0.03;
+                }
+                drain *= 1 + (battery * boost);
             }
 
             if (global.eden['soul_compactor'] && global.eden.soul_compactor.count === 1){
@@ -8862,7 +8869,7 @@ function midLoop(){
         if (global.eden['warehouse']){
             var multiplier = storageMultipler(global.race['warlord'] ? 1 : 0.2);
             if (global.race['warlord'] && global.eden['corruptor']){
-                multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech.asphodel >= 12 ? 0.12 : 0.08);
+                multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech.asphodel >= 12 ? (global.tech.asphodel >= 13 ? 0.16 : 0.12) : 0.08);
             }
             let label = loc('eden_asphodel_name');
             for (const res of actions.eden.eden_asphodel.warehouse.res()){
@@ -8877,7 +8884,7 @@ function midLoop(){
         if (global.portal['warehouse']){
             var multiplier = storageMultipler();
             if (global.race['warlord'] && global.eden['corruptor'] && global.tech.asphodel >= 12){
-                multiplier *= 1 + (p_on['corruptor'] || 0) * 0.12;
+                multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech.asphodel >= 13 ? 0.16 : 0.12);
             }
             let label = global.tech['storage'] <= 2 ? loc('city_shed_title1') : (global.tech['storage'] >= 4 ? loc('city_shed_title3') : loc('city_shed_title2'));
             for (const res of actions.portal.prtl_wasteland.warehouse.res()){
@@ -8997,7 +9004,7 @@ function midLoop(){
         if (global.portal['harbor'] && p_on['harbor']){
             let multiplier = 1;
             if (global.race['warlord'] && global.eden['corruptor'] && global.tech?.asphodel >= 12){
-                multiplier *= 1 + (p_on['corruptor'] || 0) * 0.1;
+                multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech.asphodel >= 13 ? 0.12 : 0.1);
             }
             let label = loc('portal_harbor_title');
             for (const res of actions.portal.prtl_lake.harbor.res()){
