@@ -5799,7 +5799,7 @@ const galaxyProjects = {
             },
             effect(){
                 let money = spatialReasoning(global.tech['world_control'] ? 1875000 : 1500000);
-                let joy = (global.race['theatre'] && !global.race['joyless']) ? `<div>${loc('plus_max_resource',[jobScale(2),loc(`job_entertainer`)])}</div>` : '';
+                let joy = (global.tech['theatre'] && !global.race['joyless']) ? `<div>${loc('plus_max_resource',[jobScale(2),loc(`job_entertainer`)])}</div>` : '';
                 let desc = `<div>${loc('plus_max_resource',[`\$${money.toLocaleString()}`,loc('resource_Money_name')])}</div>${joy}<div>${loc('space_red_vr_center_effect2',[2])}</div>`;
                 return desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
@@ -5808,7 +5808,7 @@ const galaxyProjects = {
                 if (payCosts($(this)[0])){
                     incrementStruct('resort','galaxy');
                     if (powerOnNewStruct($(this)[0])){
-                        if (global.race['theatre'] && !global.race['joyless']){
+                        if (global.tech['theatre'] && !global.race['joyless']){
                             global.civic.entertainer.max += jobScale(2);
                             global.civic.entertainer.display = true;
                         }
@@ -7728,7 +7728,7 @@ export function ascendLab(hybrid,wiki){
     };
 
     for (let i=genome.traitlist.length - 1; i >= 0; i--){
-        if (!traits.hasOwnProperty(genome.traitlist[i]) || traits[genome.traitlist[i]].type !== 'major'){
+        if (!traits.hasOwnProperty(genome.traitlist[i]) || !unlockedTraits.hasOwnProperty(genome.traitlist[i]) || traits[genome.traitlist[i]].type !== 'major'){
             genome.traitlist.splice(i,1);
         }
     }

@@ -64,12 +64,8 @@ export function govPage(content){
         oligarchy: {
             paragraphs: 5,
             break: [2,4,5],
-            text: {
-                1: `govern_oligarchy_desc`,
-                2: `govern_oligarchy_effect`
-            },
             para_data: {
-                2: [5,`{{ b | line2(g) }}%`],
+                2: ['5%',`{{ b | line2(g) }}%`],
                 3: ['2%',loc('tech_electricity'),loc('tech_virtual_reality')],
                 4: ['45%'],
                 5: ['0.5%','20%']
