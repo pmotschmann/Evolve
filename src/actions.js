@@ -3,7 +3,7 @@ import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
 import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill } from './races.js';
-import { defineResources, unlockCrates, unlockContainers, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus, faithTempleCount } from './resources.js';
+import { defineResources, unlockCrates, unlockContainers, crateValue, containerValue, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus, faithTempleCount } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter } from './industry.js';
 import { defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating, garrisonSize, govEffect } from './civics.js';
@@ -2033,7 +2033,7 @@ export const actions = {
             },
             effect(){
                 let clinic = global.tech['reproduction'] && global.tech.reproduction >= 2 ? `<div>${loc('city_hospital_effect2')}</div>` : ``;
-                let healing = global.tech['medic'] * 5;
+                let healing = (global.tech['medic'] ?? 1) * 5;
                 let desc = `<div>${loc('city_hospital_effect',[healing])}</div>${clinic}`;
                 if (!global.race['artifical'] && global.race.hasOwnProperty('vax')){
                     desc = desc + `<div>${loc('tau_home_disease_lab_vax',[+global.race.vax.toFixed(2)])}</div>`;
@@ -2104,7 +2104,7 @@ export const actions = {
         shed: {
             id: 'city-shed',
             title(){
-                return global.tech['storage'] <= 2 ? loc('city_shed_title1') : (global.tech['storage'] >= 4 ? loc('city_shed_title3') : loc('city_shed_title2'));
+                return global.tech['storage'] >= 3 ? (global.tech['storage'] >= 4 ? loc('city_shed_title3') : loc('city_shed_title2')) : loc('city_shed_title1');
             },
             desc(){
                 let storage = global.tech['storage'] >= 3 ? (global.tech['storage'] >= 4 ? loc('city_shed_desc_size3') : loc('city_shed_desc_size2')) : loc('city_shed_desc_size1');
@@ -3159,23 +3159,22 @@ export const actions = {
                 Furs(offset){ return costMultiplier('trade', offset, 65, 1.36); }
             },
             effect(){
-                let routes = global.race['xenophobic'] || global.race['nomadic'] ? global.tech.trade : global.tech.trade + 1;
-                if (global.tech['trade'] && global.tech['trade'] >= 3){
+                return loc('city_trade_effect',[$(this)[0].routes()]);
+            },
+            routes(){
+                let routes = (global.tech['trade'] >= 2) ? 3 : 2;
+                if (global.race['xenophobic'] || global.race['nomadic']){
                     routes--;
                 }
                 if (global.race['flier']){
                     routes += traits.flier.vars()[1];
                 }
-                return loc('city_trade_effect',[routes]);
+                return routes;
             },
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('trade','city');
-                    let routes = global.race['xenophobic'] || global.race['nomadic'] ? global.tech.trade : global.tech.trade + 1;
-                    if (global.tech['trade'] && global.tech['trade'] >= 3){
-                        routes--;
-                    }
-                    global.city.market.mtrade += routes;
+                    global.city.market.mtrade += $(this)[0].routes();
                     return true;
                 }
                 return false;
@@ -5392,15 +5391,107 @@ function challengeEffect(c){
                 return `<div>${loc('evo_challenge_cataclysm_effect')}</div><div class="has-text-danger">${loc('evo_challenge_scenario_warn')}</div>`;
             }   
         }
+        case 'gravity_well':
+        {
+            let addedFlag = !global.race.hasOwnProperty('gravity_well');
+            if (addedFlag){ global.race['gravity_well'] = 1; }
+
+            // Check storage based on current challenge genes
+            // Could be pessimistic: trait-related adjustments are unknown in protoplasm stage
+            let crates = 36*40;         // 36 freight yards   (max with no CRISPR is usually 46)
+            let containers = 36*40;     // 36 container ports (max with no CRISPR is usually 45)
+            if (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 1){
+                crates *= 1.5;
+                if (global.stats.achieve.pathfinder.l >= 2){
+                    containers *= 1.5;
+                }
+            }
+            // 10 wharves (can build up to 13 even with no CRISPR)
+            crates += 10*20;
+            containers += 10*20;
+
+            // max crate tech = 4
+            if (global.tech['container']) {
+                let real_tech = global.tech['container'];
+                global.tech['container'] = 4;
+                crates *= crateValue();
+                global.tech['container'] = real_tech;
+            }
+            else {
+                global.tech['container'] = 4;
+                crates *= crateValue();
+                delete global.tech['container'];
+            }
+
+            // max container tech = 3
+            if (global.tech['steel_container']) {
+                let real_tech = global.tech['steel_container'];
+                global.tech['steel_container'] = 3;
+                containers *= containerValue();
+                global.tech['steel_container'] = real_tech;
+            }
+            else {
+                global.tech['steel_container'] = 3;
+                containers *= containerValue();
+                delete global.tech['steel_container'];
+            }
+
+            let warehouses = 40; // no spatial reasoning required for 43 warehouses
+            let coeff = 50;      // roughly same as all pre-space warehouses tech + 26 supercolliders
+
+            let cement_name = global.race['flier'] ? 'Stone' : 'Cement';
+            let max_cement = crates + containers + storageMultipler(warehouses * coeff * actions.city.shed.val(cement_name));
+            let num_fuel_depot = 0; // max with no CRISPR is usually 20 fuel depots
+            let offset = global.city?.oil_depot?.count ?? 0;
+            while (true){
+                let costs = adjustCosts(actions.city.oil_depot, num_fuel_depot - offset);
+                let cement_cost = costs[cement_name](num_fuel_depot - offset);
+                if (cement_cost > max_cement){ break; }
+                num_fuel_depot++;
+            }
+
+            let max_derrick = max_cement + storageMultipler(warehouses * coeff * actions.city.shed.val('Steel'));
+            let num_oil_derrick = 0; // max with no CRISPR is usually 16 oil derricks
+            offset = global.city?.oil_well?.count ?? 0;
+            while (true){
+                let costs = adjustCosts(actions.city.oil_well, num_oil_derrick - offset);
+                let cement_cost = costs[cement_name](num_oil_derrick - offset);
+                let steel_cost = costs['Steel'](num_oil_derrick - offset);
+                if (cement_cost + steel_cost > max_derrick){ break; }
+                num_oil_derrick++;
+            }
+
+            let num_propellant_depot = 0; // with low dark energy it may be impossible to build even 1 propellant depot
+            let unified = global.race['unified'] ? 1.5 : 1;
+            let max_oil = spatialReasoning(1000*unified*num_fuel_depot + 500*num_oil_derrick + 1250*unified*num_propellant_depot);
+            offset = global.space?.propellant_depot?.count ?? 0;
+            while (true){
+                let costs = adjustCosts(actions.space.spc_home.propellant_depot, num_propellant_depot - offset);
+                let oil_cost = costs['Oil'](num_propellant_depot - offset);
+                if (oil_cost > max_oil){ break; }
+                num_propellant_depot++;
+                max_oil = spatialReasoning(1000*unified*num_fuel_depot + 500*num_oil_derrick + 1250*unified*num_propellant_depot);
+            }
+
+            let costs = adjustCosts(actions.space.spc_moon.moon_mission);
+            let oil_cost = costs['Oil']();
+            let show_warning = max_oil < oil_cost;
+
+            if (addedFlag){ delete global.race['gravity_well']; }
+            if (show_warning){
+                return `<div>${loc('evo_challenge_gravity_well_effect')}</div><div class="has-text-danger">${loc('evo_challenge_gravity_well_warn')}</div>`;
+            }
+            break;
+        }
         case 'warlord':
         {
             if (global.prestige.Artifact === 0){
-                return `<div>${loc('evo_challenge_cataclysm_effect')}</div><div class="has-text-danger">${loc('evo_challenge_warlord_warn',[1,loc(`resource_Artifact_name`)])}</div>`;
+                return `<div>${loc('evo_challenge_warlord_effect')}</div><div class="has-text-danger">${loc('evo_challenge_warlord_warn',[1,loc(`resource_Artifact_name`)])}</div>`;
             }
+            break;
         }
-        default:
-            return loc(`evo_challenge_${c}_effect`);
     }
+    return loc(`evo_challenge_${c}_effect`);
 }
 
 export function templeEffect(){
@@ -5664,7 +5755,7 @@ export function BHStorageMulti(val){
 }
 
 export function storageMultipler(scale = 1, wiki = false){
-    let multiplier = (global.tech['storage'] - 1) * 1.25 + 1;
+    let multiplier = ((global.tech['storage'] ?? 1) - 1) * 1.25 + 1;
     if (global.tech['storage'] >= 3){
         multiplier *= global.tech['storage'] >= 4 ? 3 : 1.5;
     }

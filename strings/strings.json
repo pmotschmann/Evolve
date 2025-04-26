@@ -1114,6 +1114,7 @@
   "evo_challenge_gravity_well_desc": "Your home planet is an enormous gravity well. Escape is impossible... or is it?",
   "evo_challenge_gravity_well_effect": "Gravity is very strong, so leaving the planet will be very difficult. Find a new one that doesn't drag you down.",
   "evo_challenge_gravity_well_flair": "It's impressive you can even walk",
+  "evo_challenge_gravity_well_warn": "This challenge requires more fuel storage than usual. It may be difficult or impossible to complete with your current spatial reasoning.",
   "evo_challenge_witch_hunter": "Witch Hunter",
   "evo_challenge_witch_hunter_desc": "Magic permeates the universe, but its use is considered taboo. As an underground mage you must practice in secret to avoid witch hunters.",
   "evo_challenge_witch_hunter_effect": "Magic effects are stronger, but using magic draws unwanted attention. Your goal is to perform the ultimate forbidden ritual.",
