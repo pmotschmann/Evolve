@@ -7,7 +7,7 @@ import { loadFoundry, jobScale } from './jobs.js';
 import { defineIndustry, addSmelter } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
 import { actions, payCosts, powerOnNewStruct, initStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, templeCount, casinoEffect, wardenLabel, buildTemplate, structName } from './actions.js';
-import { outerTruthTech, syndicate } from './truepath.js';
+import { outerTruthTech, syndicate, drawShipYard } from './truepath.js';
 import { production, highPopAdjust } from './prod.js';
 import { defineGovernor, govActive } from './governor.js';
 import { ascend, terraform, apotheosis } from './resets.js';
@@ -2583,6 +2583,7 @@ const spaceProjects = {
                     global.tech['syard_engine'] = 2;
                     global.tech['syard_power'] = 3;
                     global.tech['syard_sensor'] = 3;
+                    drawShipYard();
                     return true;
                 }
                 return false;
@@ -2633,6 +2634,7 @@ const spaceProjects = {
                     if (global.space.mass_relay.count >= 100){
                         global.tech['outer'] = 6;
                         initStruct(spaceProjects.spc_dwarf.m_relay);
+                        incrementStruct('m_relay','space');
                         powerOnNewStruct(spaceProjects.spc_dwarf.m_relay);
                         drawTech();
                         renderSpace();
@@ -4403,6 +4405,12 @@ const interstellarProjects = {
             },
             action(){
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['s_gate','interstellar']
+                };
             }
         },
     },
@@ -5559,6 +5567,7 @@ const galaxyProjects = {
                         global.tech['xeno'] = 5;
                         initStruct(galaxyProjects.gxy_gorddon.freighter);
                         global.galaxy['trade'] = { max: 0, cur: 0, f0: 0, f1: 0, f2: 0, f3: 0, f4: 0, f5: 0, f6: 0, f7: 0, f8: 0 };
+                        drawResourceTab('market');
                         messageQueue(loc('galaxy_embassy_complete',[races[global.galaxy.alien1.id].name,races[global.galaxy.alien2.id].name]),'info',false,['progress']);
                     }
                     if (global.race['fasting']){
@@ -5790,7 +5799,7 @@ const galaxyProjects = {
             },
             effect(){
                 let money = spatialReasoning(global.tech['world_control'] ? 1875000 : 1500000);
-                let joy = (global.race['theatre'] && !global.race['joyless']) ? `<div>${loc('plus_max_resource',[jobScale(2),loc(`job_entertainer`)])}</div>` : '';
+                let joy = (global.tech['theatre'] && !global.race['joyless']) ? `<div>${loc('plus_max_resource',[jobScale(2),loc(`job_entertainer`)])}</div>` : '';
                 let desc = `<div>${loc('plus_max_resource',[`\$${money.toLocaleString()}`,loc('resource_Money_name')])}</div>${joy}<div>${loc('space_red_vr_center_effect2',[2])}</div>`;
                 return desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
@@ -5799,7 +5808,7 @@ const galaxyProjects = {
                 if (payCosts($(this)[0])){
                     incrementStruct('resort','galaxy');
                     if (powerOnNewStruct($(this)[0])){
-                        if (global.race['theatre'] && !global.race['joyless']){
+                        if (global.tech['theatre'] && !global.race['joyless']){
                             global.civic.entertainer.max += jobScale(2);
                             global.civic.entertainer.display = true;
                         }
@@ -7719,7 +7728,7 @@ export function ascendLab(hybrid,wiki){
     };
 
     for (let i=genome.traitlist.length - 1; i >= 0; i--){
-        if (!traits.hasOwnProperty(genome.traitlist[i]) || traits[genome.traitlist[i]].type !== 'major'){
+        if (!traits.hasOwnProperty(genome.traitlist[i]) || !unlockedTraits.hasOwnProperty(genome.traitlist[i]) || traits[genome.traitlist[i]].type !== 'major'){
             genome.traitlist.splice(i,1);
         }
     }

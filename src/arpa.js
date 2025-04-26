@@ -199,6 +199,10 @@ export const arpaProjects = {
                 routes += global.space['gps'] ? Math.floor(global.space.gps.count / 3) : 0;
                 desc = loc('arpa_projects_railway_cataclysm1',[routes,profit,3,1]);
             }
+            else if (global.race['warlord']){
+                routes += 5;
+                desc = loc('arpa_projects_railway_warlord1',[routes,profit]);
+            }
             else {
                 routes += global.city['storage_yard'] ? Math.floor(global.city.storage_yard.count / 6) : 0;
                 desc = loc('arpa_projects_railway_effect1',[routes,profit,6,1]);
@@ -242,7 +246,7 @@ export const arpaProjects = {
         grant: 'nexus',
         effect(){
             if (global.tech['roguemagic'] && global.tech.roguemagic >= 7){
-                return `<div>${loc('arpa_projects_nexus_effect1',[5])}</div><div>${loc('witch_hunter_nexus',[8])}</div>`;
+                return `<div>${loc('arpa_projects_nexus_effect1',[5])}</div><div>${loc('witch_hunter_nexus',[4])}</div>`;
             }
             return loc('arpa_projects_nexus_effect1',[5]);
         },

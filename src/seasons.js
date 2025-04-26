@@ -306,7 +306,7 @@ export function astroVal(sign){
         case 'aries': // Combat Rating
             return [boosted ? Math.round(12 * multiplier) : Math.round(10 * multiplier)];
         case 'taurus': // Unification Bonus
-            return [boosted ? 3 * multiplier : 2 * multiplier];
+            return [+(boosted ? 3 * multiplier : 2 * multiplier).toFixed(2)];
         case 'gemini': // Knowledge
             return [boosted ? Math.round(30 * multiplier) : Math.round(20 * multiplier)];
         case 'cancer': // Soldier Healing

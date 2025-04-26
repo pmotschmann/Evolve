@@ -8,6 +8,7 @@ export const changeList = [
         changes: [
             `Evil Universe Scenario: Warlord.`,
             `Added Planned Obsolescence Feat.`,
+            `You can now queue Spire Mechs.`,
             `You can now pet your cat or dog once every 5 minutes.`,
             `Symposium now gain Knowledge for all crew in Andromeda.`,
             `Evil Authority adjustments for Cataclysm, Lone Survivor, and Orbit Decay`,
@@ -15,12 +16,18 @@ export const changeList = [
             `Updated Empowered trait mechanics.`,
             `Adjusted values for Master Artisan.`,
             `Evil Wendigo can now use Shovels.`,
+            `Racconar can now recruit quarry workers.`,
+            `You can no longer get more then 100 servants from each TP T4 reset.`,
+            `You are now capped at 100 skilled servants from TP resets.`,
+            `Empowered Concealment Wards changed to Empowered Nexus in Witch Hunter.`,
             `Breakdown improvements for some resources.`,
             `Uranium geology bonus now applies to Uranium Ash.`,
+            `Spire boss resists now have a random element.`,
+            `Slitheryn once again have slow digestion.`,
             `Fixed bug with Rogue trait that set crafted resources to 0.`,
             `Fixed bug that caused Hybrid species to throw an error when triggering greatness resets.`,
             `Fixed issue with Iridium Smelters miscalculating result.`,
-            `Fixed a variety of Joyless edge cases`,
+            `Fixed a variety of Joyless edge cases.`,
             `Fixed Space Casino appearing improperly in power grid.`,
             `Accessibility improvements.`
         ]

@@ -1,12 +1,12 @@
-import { global, seededRandom, keyMultiplier, p_on, support_on, gal_on, spire_on, hell_reports, hell_graphs, sizeApproximation } from './vars.js';
-import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost, calcPrestige, get_qlevel, shrineBonusActive, getShrineBonus } from './functions.js';
+import { global, seededRandom, keyMultiplier, p_on, support_on, gal_on, spire_on, hell_reports, hell_graphs, sizeApproximation, keyMap } from './vars.js';
+import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost, calcPrestige, get_qlevel, shrineBonusActive, getShrineBonus, buildQueue, timeCheck } from './functions.js';
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { traits, races, fathomCheck, traitCostMod, orbitLength } from './races.js';
-import { spatialReasoning, unlockContainers } from './resources.js';
+import { spatialReasoning, unlockContainers, drawResourceTab } from './resources.js';
 import { loadFoundry, jobScale, limitCraftsmen } from './jobs.js';
 import { armyRating, govCivics, garrisonSize, mercCost, soldierDeath } from './civics.js';
 import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc, actions, initStruct, storageMultipler, casinoEffect, structName, absorbRace, buildTemplate } from './actions.js';
-import { checkRequirements, incrementStruct, astrialProjection, ascendLab } from './space.js';
+import { checkRequirements, incrementStruct, astrialProjection, ascendLab, planetName } from './space.js';
 import { asphodelResist } from './edenic.js';
 import { production, highPopAdjust } from './prod.js';
 import { govActive, defineGovernor } from './governor.js';
@@ -426,6 +426,87 @@ const fortressModules = {
                 return false;
             }
         },
+        corpse_pile: {
+            id: 'portal-corpse_pile',
+            title: loc('portal_corpse_pile_title'),
+            desc(){ return rankDesc(loc('portal_corpse_pile_desc'),'corpse_pile'); },
+            reqs: { hellspawn: 7 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('corpse_pile', offset, 2500000, 1.25, 'portal'); },
+                Lumber(offset){ return spaceCostMultiplier('corpse_pile', offset, 2420000, 1.25, 'portal'); },
+                Furs(offset){ return spaceCostMultiplier('corpse_pile', offset, 1563000, 1.25, 'portal'); },
+            },
+            effect(){
+                let power = 0.75 + (global.portal?.corpse_pile?.rank || 1) * 0.25;
+                let desc = `<div>${loc('portal_corpse_pile_effect',[power,loc('portal_incinerator_title')])}</div>`;
+                return desc;
+            },
+            action(){
+                if (global.portal['throne'] && global.portal.throne.skill && global.portal.throne.points > 0 && global.portal.corpse_pile.rank < 5){
+                    global.portal.throne.points--;
+                    global.portal.corpse_pile.rank++;
+                    checkSkillPointAssignments();
+                    return true;
+                }
+                else if (payCosts($(this)[0])){
+                    incrementStruct('corpse_pile','portal');
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, rank: 1 },
+                    p: ['corpse_pile','portal']
+                };
+            },
+            aura(){
+                if (global.portal?.throne?.skill && global.portal?.corpse_pile?.rank < 5){
+                    return 'blue';
+                }
+                return false;
+            }
+        },
+        mortuary: {
+            id: 'portal-mortuary',
+            title: loc('portal_mortuary_title'),
+            desc(){ return `<div>${loc('portal_mortuary_desc',[loc('portal_corpse_pile_title')])}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            reqs: { hellspawn: 9 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('mortuary', offset, 1010101010, 1.25, 'portal'); },
+                Alloy(offset){ return spaceCostMultiplier('mortuary', offset, 56565656, 1.25, 'portal'); },
+                Scarletite(offset){ return spaceCostMultiplier('mortuary', offset, 4545450, 1.25, 'portal'); },
+            },
+            powered(){ return powerCostMod(10); },
+            effect(){
+                let omniscience = (global.portal?.corpse_pile?.count || 0) * 2;
+                let desc = `<div>${loc(`eden_ascension_machine_effect1`,[loc(`eden_encampment_title`),+omniscience.toFixed(0),global.resource.Omniscience.name])}</div>`;
+
+                let ghost = (global.portal?.corpse_pile?.count || 0) / 8;
+                desc += `<div>${loc(`eden_ascension_machine_effect2`,[loc(`job_ghost_trapper`),+ghost.toFixed(2)])}</div>`;
+
+                desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('mortuary','portal');
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['mortuary','portal']
+                };
+            }
+        },
         codex: {
             id: 'portal-codex',
             title: loc('portal_codex_title'),
@@ -505,6 +586,8 @@ const fortressModules = {
             wiki: global.race['warlord'] ? true : false,
             cost: {},
             queue_complete(){ return 0; },
+            wide: true,
+            class: 'w30',
             effect(wiki){
                 let knowCap = (global.race?.absorbed?.length || 1) * 500000;
                 if (shrineBonusActive()){
@@ -536,9 +619,11 @@ const fortressModules = {
                 else if (global.portal.throne.points > 0 && checkSkillPointAssignments() > 0){
                     if (global.portal.throne.skill){
                         desc += `<div class="has-text-info">${loc('portal_throne_of_evil_skill2')} ${loc('portal_throne_of_evil_skill',[global.portal.throne.points])}</div>`;
+                        console.log('Yes');
                     }
                     else {
                         desc += `<div class="has-text-info">${loc('portal_throne_of_evil_skill1')} ${loc('portal_throne_of_evil_skill',[global.portal.throne.points])}</div>`;
+                        console.log('No');
                     }
                 }
 
@@ -632,7 +717,7 @@ const fortressModules = {
             },
             struct(){
                 return {
-                    d: { enemy: [], hearts: [], spawned: [], points: 0, skill: false },
+                    d: { enemy: [], hearts: [], spawned: [], points: 1, skill: false },
                     p: ['throne','portal']
                 };
             },
@@ -657,6 +742,9 @@ const fortressModules = {
                 }
                 if (global.tech['hellspawn'] && global.tech.hellspawn >= 6){
                     power += (global.portal?.incinerator?.rank || 1) * 2.5;
+                }
+                if (global.tech['hellspawn'] && global.tech.hellspawn >= 7 && global.portal['corpse_pile']){
+                    power += (0.75 + global.portal.corpse_pile.rank * 0.25) * global.portal.corpse_pile.count;
                 }
                 return powerModifier(-(power));
             },
@@ -720,27 +808,27 @@ const fortressModules = {
             val(res){
                 switch (res){
                     case 'Lumber':
-                        return 725 + (global.portal?.warehouse?.rank || 1) * 25;
+                        return 650 + (global.portal?.warehouse?.rank || 1) * 100;
                     case 'Stone':
-                        return 725 + (global.portal?.warehouse?.rank || 1) * 25;
+                        return 650 + (global.portal?.warehouse?.rank || 1) * 100;
                     case 'Chrysotile':
-                        return 725 + (global.portal?.warehouse?.rank || 1) * 25;
+                        return 700 + (global.portal?.warehouse?.rank || 1) * 50;
                     case 'Furs':
                         return 400 + (global.portal?.warehouse?.rank || 1) * 25;
                     case 'Copper':
-                        return 360 + (global.portal?.warehouse?.rank || 1) * 20;
+                        return 330 + (global.portal?.warehouse?.rank || 1) * 50;
                     case 'Iron':
-                        return 335 + (global.portal?.warehouse?.rank || 1) * 15;
+                        return 320 + (global.portal?.warehouse?.rank || 1) * 30;
                     case 'Aluminium':
-                        return 300 + (global.portal?.warehouse?.rank || 1) * 20;
+                        return 290 + (global.portal?.warehouse?.rank || 1) * 30;
                     case 'Cement':
                         return 260 + (global.portal?.warehouse?.rank || 1) * 20;
                     case 'Coal':
-                        return 140 + (global.portal?.warehouse?.rank || 1) * 10;
+                        return 135 + (global.portal?.warehouse?.rank || 1) * 15;
                     case 'Steel':
-                        return 55 + (global.portal?.warehouse?.rank || 1) * 5;
+                        return 52 + (global.portal?.warehouse?.rank || 1) * 8;
                     case 'Titanium':
-                        return 35 + (global.portal?.warehouse?.rank || 1) * 5;
+                        return 32 + (global.portal?.warehouse?.rank || 1) * 8;
                     case 'Uranium':
                         return global.portal?.warehouse?.rank || 1;
                     case 'Alloy':
@@ -750,21 +838,21 @@ const fortressModules = {
                     case 'Iridium':
                         return 28 + (global.portal?.warehouse?.rank || 1) * 4;
                     case 'Nano_Tube':
-                        return 34 + (global.portal?.warehouse?.rank || 1) * 4;
+                        return 50 + (global.portal?.warehouse?.rank || 1) * 18;
                     case 'Neutronium':
-                        return 13 + (global.portal?.warehouse?.rank || 1) * 2;
+                        return 12 + (global.portal?.warehouse?.rank || 1) * 4;
                     case 'Adamantite':
                         return 15 + (global.portal?.warehouse?.rank || 1) * 3;
                     case 'Infernite':
                         return 3 + global.portal?.warehouse?.rank || 1;
                     case 'Bolognium':
-                        return 6 + global.portal?.warehouse?.rank || 2;
+                        return 6 + global.portal?.warehouse?.rank || 3;
                     case 'Orichalcum':
-                        return 8 + global.portal?.warehouse?.rank || 2;
+                        return 8 + global.portal?.warehouse?.rank || 4;
                     case 'Graphene':
-                        return 14 + global.portal?.warehouse?.rank || 2;
+                        return 14 + global.portal?.warehouse?.rank || 3;
                     case 'Stanene':
-                        return 14 + global.portal?.warehouse?.rank || 2;
+                        return 14 + global.portal?.warehouse?.rank || 3;
                     case 'Oil':
                         return 18 + global.portal?.warehouse?.rank || 2;
                     case 'Helium_3':
@@ -777,14 +865,17 @@ const fortressModules = {
             effect(wiki){
                 let storage = '<div class="aTable">';
                 let multiplier = storageMultipler(1, wiki);
+                if (global.race['warlord'] && global.eden['corruptor'] && global.tech.asphodel >= 12){
+                    multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech.asphodel >= 13 ? 0.16 : 0.12);
+                }
                 for (const res of $(this)[0].res()){
                     if (global.resource[res].display){
                         let val = sizeApproximation(+(spatialReasoning($(this)[0].val(res)) * multiplier).toFixed(0),1);
                         storage += `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
-                storage += `<span>${loc('plus_max_resource',[75 + (global.portal?.warehouse?.rank || 1) * 25, global.resource.Crates.name])}</span>`;
-                storage += `<span>${loc('plus_max_resource',[75 + (global.portal?.warehouse?.rank || 1) * 25, global.resource.Containers.name])}</span>`;
+                storage += `<span>${loc('plus_max_resource',[65 + (global.portal?.warehouse?.rank || 1) * 35, global.resource.Crates.name])}</span>`;
+                storage += `<span>${loc('plus_max_resource',[65 + (global.portal?.warehouse?.rank || 1) * 35, global.resource.Containers.name])}</span>`;
                 storage += '</div>';
                 return storage;
             },
@@ -798,6 +889,9 @@ const fortressModules = {
                 else if (payCosts($(this)[0])){
                     incrementStruct('warehouse','portal');
                     let multiplier = storageMultipler();
+                    if (global.race['warlord'] && global.eden['corruptor'] && global.tech.asphodel >= 12){
+                        multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech.asphodel >= 13 ? 0.16 : 0.12);
+                    }
                     for (const res of $(this)[0].res()){
                         if (global.resource[res].display){
                             global.resource[res].max += (spatialReasoning($(this)[0].val(res) * multiplier));
@@ -872,7 +966,7 @@ const fortressModules = {
         hell_casino: {
             id: 'portal-hell_casino',
             title(){ return structName('casino'); },
-            desc(){ return rankDesc(structName('casino'),'hell_casino'); },
+            desc(){ return `<div>${rankDesc(structName('casino'),'hell_casino')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             reqs: { hellspawn: 1, gambling: 1 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -959,7 +1053,9 @@ const fortressModules = {
                 }
                 else if (payCosts($(this)[0])){
                     incrementStruct('twisted_lab','portal');
-                    powerOnNewStruct($(this)[0]);
+                    if (powerOnNewStruct($(this)[0])){
+                        global.portal.twisted_lab.Coal++;
+                    }
                     return true;
                 }
                 return false;
@@ -1054,6 +1150,9 @@ const fortressModules = {
             effect(){
                 let desc = `<div>${loc('portal_factory_effect',[$(this)[0].lines()])}</div><div>${loc('city_crafted_mats',[25])}</div>`;
                 desc += `<div>${loc('plus_max_resource',[jobScale(5),jobName('cement_worker')])}</div>`;
+                if ((global.portal?.hell_factory?.rank || 1) > 1){
+                    desc += `<div>${loc('production',[(global.portal?.hell_factory?.rank || 1) * 8 - 8,global.resource.Cement.name])}</div>`;
+                }
                 desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
             },
@@ -1322,7 +1421,29 @@ const fortressModules = {
         },
         s_alter: buildTemplate(`s_alter`,'portal'),
         shrine: buildTemplate(`shrine`,'portal'),
-        meditation: buildTemplate(`meditation`,'portal')
+        meditation: buildTemplate(`meditation`,'portal'),
+        wonder_gardens: {
+            id: 'portal-wonder_gardens',
+            title(){
+                return loc('portal_wonder_skulls');
+            },
+            desc(){
+                return loc('portal_wonder_skulls');
+            },
+            reqs: {},
+            condition(){
+                return global.race['wish'] && global.race['wishStats'] && global.portal['wonder_gardens'] ? true : false;
+            },
+            trait: ['wish'],
+            queue_complete(){ return false; },
+            effect(){
+                return loc(`city_wonder_effect`,[5]);
+            },
+            action(){
+                return false;
+            },
+            flair(){ return loc('portal_wonder_skulls_flair'); }
+        },
     },
     prtl_pit: {
         info: {
@@ -1496,7 +1617,7 @@ const fortressModules = {
                     desc += `<div>${loc('portal_soul_attractor_effect2',[3])}</div>`;
                 }
                 if (global.tech['pitspawn']){
-                    desc += `<div>${loc('production',[10,loc('portal_shadow_mine_title')])}</div>`;
+                    desc += `<div>${loc('production',[global.tech.pitspawn >= 3 ? 20 : 10,loc('portal_shadow_mine_title')])}</div>`;
                 }
                 desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
 
@@ -1649,7 +1770,7 @@ const fortressModules = {
                 Adamantite(offset){ return spaceCostMultiplier('shadow_mine', offset, 2350000, 1.25, 'portal'); },
             },
             effect(wiki){
-                let elerium_cap = spatialReasoning(225);
+                let elerium_cap = spatialReasoning(200);
                 let elerium = production('shadow_mine', 'elerium', wiki);
                 let infernite = production('shadow_mine', 'infernite', wiki);
                 let vitreloy = production('shadow_mine', 'vitreloy', wiki);
@@ -2005,7 +2126,7 @@ const fortressModules = {
         },
         hell_forge: {
             id: 'portal-hell_forge',
-            title: loc('portal_hell_forge_title'),
+            title(){ return loc('portal_hell_forge_title'); },
             desc(){
                 return `<div>${loc('portal_hell_forge_title')}</div><div class="has-text-special">${loc('requires_security')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
@@ -2026,7 +2147,7 @@ const fortressModules = {
             effect(wiki){
                 let sup = hellSupression('ruins', 0, wiki);
                 let craft = +(75 * sup.supress).toFixed(1);
-                let reactor = global.tech['inferno_power'] ? `<div>${loc('portal_hell_forge_effect2',[10,loc(`portal_inferno_power_title`)])}</div>` : ``;
+                let reactor = global.tech['inferno_power'] ? `<div>${loc('portal_hell_forge_effect2',[global.stats.achieve['what_is_best'] && global.stats.achieve.what_is_best.e >= 1 ? 12 : 10,loc(`portal_inferno_power_title`)])}</div>` : ``;
                 return `<div>${loc('portal_hell_forge_effect',[jobScale(1)])}</div>${reactor}<div>${loc('interstellar_stellar_forge_effect3',[$(this)[0].smelting()])}</div><div>${loc('interstellar_stellar_forge_effect',[craft])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
@@ -2069,7 +2190,7 @@ const fortressModules = {
                 let power = 20;
                 let infernal_forges_on = wiki ? (global.portal?.hell_forge?.on ?? 0) : p_on['hell_forge'];
                 if (infernal_forges_on){
-                    power += infernal_forges_on * 10; 
+                    power += infernal_forges_on * (global.stats.achieve['what_is_best'] && global.stats.achieve.what_is_best.e >= 1 ? 12 : 10); 
                 }
                 return powerModifier(-(power));
             },
@@ -2441,7 +2562,7 @@ const fortressModules = {
         },
         harbor: {
             id: 'portal-harbor',
-            title: loc('portal_harbor_title'),
+            title(){ return loc('portal_harbor_title'); },
             desc(){
                 return `<div>${loc('portal_harbor_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
@@ -2461,10 +2582,22 @@ const fortressModules = {
             },
             wide: true,
             res(){
-                return [
+                let list = [
                     'Oil','Alloy','Polymer','Iridium','Helium_3','Deuterium','Neutronium','Adamantite',
                     'Infernite','Nano_Tube','Graphene','Stanene','Bolognium','Orichalcum'
                 ];
+                if (global.race['warlord']){
+                    list.push('Lumber');
+                    list.push('Stone');
+                    list.push('Copper');
+                    list.push('Iron');
+                    list.push('Aluminium');
+                    list.push('Cement');
+                    list.push('Steel');
+                    list.push('Titanium');
+                    list.push('Coal');
+                }
+                return list;
             },
             val(res){
                 switch (res){
@@ -2496,15 +2629,37 @@ const fortressModules = {
                         return 130000;
                     case 'Orichalcum':
                         return 130000;
+                    case 'Lumber':
+                        return 1500000;
+                    case 'Stone':
+                        return 1500000;
+                    case 'Copper':
+                        return 650000;
+                    case 'Iron':
+                        return 650000;
+                    case 'Steel':
+                        return 650000;
+                    case 'Aluminium':
+                        return 425000;
+                    case 'Titanium':
+                        return 350000;
+                    case 'Cement':
+                        return 550000;
+                    case 'Coal':
+                        return 275000;
                     default:
                         return 0;
                 }
             },
             effect(wiki){
                 let storage = '<div class="aTable">';
+                let multiplier = 1;
+                if (global.race['warlord'] && global.eden['corruptor'] && global.tech?.asphodel >= 12){
+                    multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech?.asphodel >= 13 ? 0.12 : 0.1);
+                }
                 for (const res of $(this)[0].res()){
                     if (global.resource[res].display){
-                        let val = sizeApproximation(+(spatialReasoning($(this)[0].val(res))).toFixed(0),1);
+                        let val = sizeApproximation(+(spatialReasoning($(this)[0].val(res) * multiplier)).toFixed(0),1);
                         storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
@@ -2515,9 +2670,13 @@ const fortressModules = {
                 if (payCosts($(this)[0])){
                     incrementStruct('harbor','portal');
                     if (powerOnNewStruct($(this)[0])){
+                        let multiplier = 1;
+                        if (global.race['warlord'] && global.eden['corruptor'] && global.tech?.asphodel >= 12){
+                            multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech?.asphodel >= 13 ? 0.12 : 0.1);
+                        }
                         for (const res of $(this)[0].res()){
                             if (global.resource[res].display){
-                                global.resource[res].max += (spatialReasoning($(this)[0].val(res)));
+                                global.resource[res].max += (spatialReasoning($(this)[0].val(res) * multiplier));
                             }
                         };
                     }
@@ -2653,6 +2812,7 @@ const fortressModules = {
                         initStruct(fortressModules.prtl_spire.purifier);
                         initStruct(fortressModules.prtl_spire.port);
                         messageQueue(loc('portal_transport_unlocked'),'info',false,['progress','hell']);
+                        drawResourceTab('supply');
                         renderFortress();
                     }
                     return true;
@@ -2726,6 +2886,7 @@ const fortressModules = {
                     if (global.portal.oven.count >= 100){
                         global.tech['dish'] = 3;
                         initStruct(fortressModules.prtl_lake.oven_complete);
+                        incrementStruct('oven_complete','portal');
                         if (global.settings.alwaysPower){
                             powerOnNewStruct(fortressModules.prtl_lake.oven_complete);
                         }
@@ -2911,7 +3072,7 @@ const fortressModules = {
                 Money(offset){ return spaceCostMultiplier('purifier', offset, 85000000, spireCreep(1.15), 'portal'); },
                 Supply(offset){ return global.portal['purifier'] && global.portal.purifier.count === 0 ? 100 : spaceCostMultiplier('purifier', offset, 4200, spireCreep(1.2), 'portal'); },
             },
-            powered(){ return powerCostMod(125); },
+            powered(){ return global.stats.achieve['what_is_best'] && global.stats.achieve.what_is_best.e >= 2 ? powerCostMod(100) : powerCostMod(125); },
             support(){
                 let base = global.tech['b_stone'] && global.tech.b_stone >= 3 ? 1.25 : 1;
                 if (global.tech['hell_spire'] && global.tech.hell_spire >= 11 && global.eden['asphodel_harvester'] && support_on['asphodel_harvester']){
@@ -3417,6 +3578,43 @@ const fortressModules = {
                 return false;
             }
         },
+        bazaar: {
+            id: 'portal-bazaar',
+            title: loc('portal_bazaar_title'),
+            desc: loc('portal_bazaar_title'),
+            reqs: { hellspawn: 8 },
+            trait: ['warlord'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('bazaar', offset, 1000000000, 1.25, 'portal'); },
+                Supply(offset){ return spaceCostMultiplier('bazaar', offset, 250000, 1.25, 'portal'); },
+            },
+            effect(wiki){
+                let vault = spatialReasoning(bank_vault() * (global.portal?.spire?.count || 1) / 3);
+                vault = +(vault).toFixed(0);
+                let containers = (global.portal?.spire?.count || 1) * 8;
+                let mon = (global.portal?.spire?.count || 1);
+
+                let desc = `<div>${loc('plus_max_resource',[`\$${vault.toLocaleString()}`,loc('resource_Money_name')])}</div>`;
+                desc += `<div>${loc('city_tourist_center_effect2',[mon,loc(`arpa_project_monument_title`)])}</div>`;
+                desc += `<div>${loc('plus_max_resource',[containers,global.resource.Crates.name])}</div><div>${loc('plus_max_resource',[containers,global.resource.Containers.name])}</div>`;
+                desc += `<div>${loc('city_trade_effect',[(global.portal?.spire?.count || 1)])}</div>`;
+
+                return desc;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('bazaar','portal');
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['bazaar','portal']
+                };
+            },
+        },
     }
 };
 
@@ -3761,7 +3959,7 @@ export function buildFortress(parent,full){
             aLast(){
                 let dec = keyMultiplier();
                 let min = global.portal.fortress.patrols * global.portal.fortress.patrol_size;
-                if (p_on['soul_forge']){
+                if (p_on['soul_forge'] && !global.race['warlord']){
                     min += soulForgeSoldiers();
                 }
                 if (global.portal.hasOwnProperty('guard_post')){
@@ -4494,7 +4692,6 @@ export function bloodwar(){
             }
             souls = Math.floor(souls * asphodelResist());
             global.portal.soul_forge.kills += souls;
-            day_report.ghost_trappers = souls;
             soulCapacitor(souls);
         }
 
@@ -4695,8 +4892,9 @@ export function hellguard(){
             global.portal.throne.enemy.forEach(function(e){
                 let eRating = e.s + (global.portal.minions.spawns / 9000) ** 8;
                 let reapEffect = global.race['blurry'] ? 102 - traits.blurry.vars()[0] : 102;
-                reapEffect -= (global.portal?.reaper?.count || 1) * 2;
-                let reaper = 0.25 + (eRating * 0.01) - ((global.portal?.reaper?.count || 0) / reapEffect);
+                reapEffect -= (global.portal?.reaper?.rank || 1) * 2;
+                if (reapEffect < 1){ reapEffect = 1; }
+                let reaper = 0.25 + (eRating * 0.01) - ((global.portal?.reaper?.count || 0) ** (1 + ((global.portal?.reaper?.rank || 1) - 1) / 25) / reapEffect);
                 if (reaper < 0.01){ reaper = 0.01; }
                 let bound = Math.round(global.portal.minions.spawns * (0.5 * eRating) * (eRating ** reaper) / rating);
                 let kills = Math.rand(e.s, bound);
@@ -4717,7 +4915,6 @@ export function hellguard(){
                 }
             });
         }
-        
 
         if (forgeOperating && global.tech.hell_pit >= 5 && p_on['soul_attractor']){
             let attract = global.blood['attract'] ? global.blood.attract * 5 : 0;
@@ -4727,6 +4924,19 @@ export function hellguard(){
                 souls *= 1 + (traits.ghostly.vars()[0] / 100);
                 souls = Math.round(souls);
             }
+            global.portal.soul_forge.kills += souls;
+        }
+
+        if (forgeOperating && global.tech['asphodel'] && global.tech.asphodel >= 2 && support_on['ectoplasm_processor']){
+            let attract = global.blood['attract'] ? global.blood.attract * 5 : 0;
+            let souls = global.civic.ghost_trapper.workers * Math.rand(150 + attract, 250 + attract);
+            if (global.portal['mortuary'] && global.portal['corpse_pile']){
+                let corpse = (global.portal?.corpse_pile?.count || 0) * (p_on['mortuary'] || 0);
+                if (corpse > 0){
+                    souls *= 1 + corpse / 800;
+                }
+            }
+            souls = Math.floor(souls * asphodelResist());
             global.portal.soul_forge.kills += souls;
         }
 
@@ -4744,13 +4954,13 @@ export function hellguard(){
         }
     }
 
-    if (global.race['warlord'] && global.resource.Authority.amount >= 999 && global.resource.Authority.max >= 999){
+    if (global.race['warlord'] && global.resource.Authority.amount >= 250 && global.resource.Authority.max >= 250){
         global.stats.warlord.a = true;
         checkWarlordAchieve();
     }
 
-    ['incinerator','warehouse','hovel','hell_casino','twisted_lab','demon_forge','hell_factory','pumpjack','dig_demon','tunneler','brute','minions','reaper'].forEach(function(s){
-        if (!global.portal[s]['rank'] || global.portal[s].rank > 5){
+    ['incinerator','warehouse','hovel','hell_casino','twisted_lab','demon_forge','hell_factory','pumpjack','dig_demon','tunneler','brute','minions','reaper','corpse_pile'].forEach(function(s){
+        if (global.portal[s] && (!global.portal[s]['rank'] || global.portal[s].rank > 5)){
             global.portal[s]['rank'] = 1;
         }
     });
@@ -4758,13 +4968,15 @@ export function hellguard(){
 
 function checkSkillPointAssignments(){
     let remaining = 0;
-    ['incinerator','warehouse','hovel','hell_casino','twisted_lab','demon_forge','hell_factory','pumpjack','dig_demon','tunneler','brute','minions','reaper'].forEach(function(s){
-        if (global.portal[s] && global.portal[s].rank >= 5 || !global.portal.throne.skill || global.portal.throne.points <= 0){
-            $(`#portal-${s} a.button`).removeClass('blue');
-        }
-        else if (global.portal[s] && global.portal[s].rank < 5 && global.portal.throne.skill && global.portal.throne.points > 0){
-            $(`#portal-${s} a.button`).addClass('blue');
+    ['incinerator','warehouse','hovel','hell_casino','twisted_lab','demon_forge','hell_factory','pumpjack','dig_demon','tunneler','brute','minions','reaper','corpse_pile'].forEach(function(s){
+        if (global.portal[s]){
             remaining += 5 - global.portal[s].rank;
+            if (global.portal[s].rank >= 5 || !global.portal.throne.skill || global.portal.throne.points <= 0){
+                $(`#portal-${s} a.button`).removeClass('blue');
+            }
+            else if (global.portal[s].rank < 5 && global.portal.throne.skill && global.portal.throne.points > 0){
+                $(`#portal-${s} a.button`).addClass('blue');
+            }
         }
     });
     if (!global.portal.throne.skill || global.portal.throne.points <= 0 || remaining === 0){
@@ -4774,6 +4986,7 @@ function checkSkillPointAssignments(){
     else if (global.portal.throne.skill && global.portal.throne.points > 0){
         $(`#portal-throne a.button`).addClass('green');
     }
+    console.log(remaining);
     return remaining;
 }
 
@@ -4894,7 +5107,20 @@ export const monsters = {
             missile: 0.5,
             sonic: 1,
             shotgun: 0.75,
-            tesla: 0.65
+            tesla: 0.65,
+            claws: 0.5,
+            venom: 0.62,
+            cold: 1.25,
+            shock: 0.68,
+            fire: 0,
+            acid: 0.25,
+            stone: 0.5,
+            iron: 0.5,
+            flesh: 0.3,
+            ice: 1.12,
+            magma: 0,
+            axe: 0.5,
+            hammer: 0.5
         },
         nozone: {
             freeze: true,
@@ -4915,7 +5141,20 @@ export const monsters = {
             missile: 0.5,
             sonic: 0.5,
             shotgun: 0.25,
-            tesla: 0.75
+            tesla: 0.75,
+            claws: 0.4,
+            venom: 0.8,
+            cold: 1.1,
+            shock: 0.68,
+            fire: 0.8,
+            acid: 0.25,
+            stone: 0.4,
+            iron: 0.3,
+            flesh: 0.5,
+            ice: 1.1,
+            magma: 0.75,
+            axe: 0.45,
+            hammer: 0.45
         },
         nozone: {
             hot: true,
@@ -4938,7 +5177,20 @@ export const monsters = {
             missile: 0.95,
             sonic: 0.75,
             shotgun: 0.35,
-            tesla: 0
+            tesla: 0,
+            claws: 0.7,
+            venom: 0.25,
+            cold: 0.35,
+            shock: 0,
+            fire: 0.9,
+            acid: 1,
+            stone: 0.5,
+            iron: 0.65,
+            flesh: 0.3,
+            ice: 0.3,
+            magma: 0.9,
+            axe: 0.2,
+            hammer: 1
         },
         nozone: {},
         amp: {}
@@ -4952,7 +5204,20 @@ export const monsters = {
             missile: 1,
             sonic: 0.75,
             shotgun: 0.75,
-            tesla: 0.15
+            tesla: 0.15,
+            claws: 0.75,
+            venom: 0,
+            cold: 0.2,
+            shock: 0.15,
+            fire: 0.4,
+            acid: 0.85,
+            stone: 0.9,
+            iron: 1,
+            flesh: 0.15,
+            ice: 0.3,
+            magma: 0.9,
+            axe: 0.65,
+            hammer: 1.2
         },
         nozone: {},
         amp: {}
@@ -4966,7 +5231,20 @@ export const monsters = {
             missile: 0.5,
             sonic: 0.35,
             shotgun: 0.5,
-            tesla: 1
+            tesla: 1,
+            claws: 0.38,
+            venom: 0.1,
+            cold: 0.5,
+            shock: 1.1,
+            fire: 0.5,
+            acid: 0.75,
+            stone: 0.5,
+            iron: 0.5,
+            flesh: 0.15,
+            ice: 0.3,
+            magma: 0.9,
+            axe: 0.6,
+            hammer: 0.4
         },
         nozone: {},
         amp: {}
@@ -4980,7 +5258,20 @@ export const monsters = {
             missile: 0.25,
             sonic: 0.75,
             shotgun: 0.35,
-            tesla: 0.38
+            tesla: 0.38,
+            claws: 0.25,
+            venom: 0.25,
+            cold: 0.65,
+            shock: 0.28,
+            fire: 1,
+            acid: 0.45,
+            stone: 0.6,
+            iron: 0.5,
+            flesh: 0.5,
+            ice: 0.55,
+            magma: 1,
+            axe: 0.25,
+            hammer: 0.15
         },
         nozone: {},
         amp: {}
@@ -4994,7 +5285,20 @@ export const monsters = {
             missile: 0.35,
             sonic: 0.15,
             shotgun: 0.95,
-            tesla: 0.6
+            tesla: 0.6,
+            claws: 1,
+            venom: 0.5,
+            cold: 0.5,
+            shock: 0.75,
+            fire: 0.5,
+            acid: 0.5,
+            stone: 0.7,
+            iron: 0.8,
+            flesh: 0.9,
+            ice: 0.4,
+            magma: 0.5,
+            axe: 1,
+            hammer: 0.75
         },
         nozone: {},
         amp: {}
@@ -5008,7 +5312,20 @@ export const monsters = {
             missile: 1,
             sonic: 0.15,
             shotgun: 0.2,
-            tesla: 0.35
+            tesla: 0.35,
+            claws: 0.6,
+            venom: 1.1,
+            cold: 0.5,
+            shock: 0.3,
+            fire: 0.5,
+            acid: 1,
+            stone: 0.6,
+            iron: 0.9,
+            flesh: 0.3,
+            ice: 0.4,
+            magma: 0.55,
+            axe: 0.75,
+            hammer: 0.6
         },
         nozone: {},
         amp: {}
@@ -5022,7 +5339,20 @@ export const monsters = {
             missile: 0,
             sonic: 0.85,
             shotgun: 0,
-            tesla: 0.15
+            tesla: 0.15,
+            claws: 0,
+            venom: 0.15,
+            cold: 1.5,
+            shock: 0.2,
+            fire: 0.6,
+            acid: 0.5,
+            stone: 0,
+            iron: 0,
+            flesh: 0,
+            ice: 1.25,
+            magma: 0.7,
+            axe: 0,
+            hammer: 0
         },
         nozone: {},
         amp: {}
@@ -5036,7 +5366,20 @@ export const monsters = {
             missile: 0.8,
             sonic: 0.18,
             shotgun: 0.95,
-            tesla: 0.05
+            tesla: 0.05,
+            claws: 0.85,
+            venom: 0,
+            cold: 0.2,
+            shock: 0.35,
+            fire: 0.95,
+            acid: 0.5,
+            stone: 0.5,
+            iron: 0.5,
+            flesh: 0.35,
+            ice: 0.25,
+            magma: 0.9,
+            axe: 1,
+            hammer: 0.5
         },
         nozone: {},
         amp: {}
@@ -5050,7 +5393,20 @@ export const monsters = {
             missile: 0.44,
             sonic: 0.22,
             shotgun: 0.33,
-            tesla: 0.66
+            tesla: 0.66,
+            claws: 0.85,
+            venom: 0.5,
+            cold: 0.5,
+            shock: 0.88,
+            fire: 0.6,
+            acid: 0.6,
+            stone: 1,
+            iron: 0.85,
+            flesh: 0.45,
+            ice: 0.5,
+            magma: 0.65,
+            axe: 0.9,
+            hammer: 0.6
         },
         nozone: {},
         amp: {}
@@ -5064,7 +5420,20 @@ export const monsters = {
             missile: 0.08,
             sonic: 0.45,
             shotgun: 0.28,
-            tesla: 0.5
+            tesla: 0.5,
+            claws: 0.35,
+            venom: 0.15,
+            cold: 0,
+            shock: 0.6,
+            fire: 1.2,
+            acid: 0.5,
+            stone: 0.35,
+            iron: 1,
+            flesh: 0.3,
+            ice: 0,
+            magma: 1.1,
+            axe: 0.5,
+            hammer: 1
         },
         nozone: {
             hot: true
@@ -5083,7 +5452,20 @@ export const monsters = {
             missile: 0.08,
             sonic: 0.66,
             shotgun: 0.38,
-            tesla: 0.45
+            tesla: 0.45,
+            claws: 0.05,
+            venom: 0.01,
+            cold: 0.8,
+            shock: 0.75,
+            fire: 0.8,
+            acid: 0.75,
+            stone: 0.03,
+            iron: 0.03,
+            flesh: 0.03,
+            ice: 0.3,
+            magma: 0.5,
+            axe: 0.01,
+            hammer: 0.05
         },
         nozone: {},
         amp: {}
@@ -5097,7 +5479,20 @@ export const monsters = {
             missile: 1,
             sonic: 0.22,
             shotgun: 0.65,
-            tesla: 0.15
+            tesla: 0.15,
+            claws: 0.38,
+            venom: 0.88,
+            cold: 0.8,
+            shock: 0.35,
+            fire: 0,
+            acid: 0.85,
+            stone: 0.03,
+            iron: 0.03,
+            flesh: 0.03,
+            ice: 0.3,
+            magma: 0,
+            axe: 0.4,
+            hammer: 0.55
         },
         nozone: {},
         amp: {}
@@ -5111,7 +5506,20 @@ export const monsters = {
             missile: 0.75,
             sonic: 0.22,
             shotgun: 0.28,
-            tesla: 1
+            tesla: 1,
+            claws: 0.28,
+            venom: 0,
+            cold: 0.35,
+            shock: 1,
+            fire: 0.15,
+            acid: 0.72,
+            stone: 0.5,
+            iron: 0.5,
+            flesh: 0.5,
+            ice: 0.2,
+            magma: 0.15,
+            axe: 0.25,
+            hammer: 0.8
         },
         nozone: {},
         amp: {}
@@ -5125,7 +5533,20 @@ export const monsters = {
             missile: 0.9,
             sonic: 0.08,
             shotgun: 0.28,
-            tesla: 1
+            tesla: 1,
+            claws: 0.28,
+            venom: 0,
+            cold: 0.45,
+            shock: 1.1,
+            fire: 0.22,
+            acid: 0.68,
+            stone: 0.55,
+            iron: 0.55,
+            flesh: 0.4,
+            ice: 0.4,
+            magma: 0.18,
+            axe: 0.42,
+            hammer: 0.95
         },
         nozone: {},
         amp: {}
@@ -5139,7 +5560,20 @@ export const monsters = {
             missile: 0.05,
             sonic: 0.01,
             shotgun: 0.12,
-            tesla: 0.3
+            tesla: 0.3,
+            claws: 0.48,
+            venom: 0.9,
+            cold: 0.88,
+            shock: 0.24,
+            fire: 0.18,
+            acid: 0.9,
+            stone: 0.72,
+            iron: 0.45,
+            flesh: 0.85,
+            ice: 0.92,
+            magma: 0.16,
+            axe: 0.44,
+            hammer: 0.08
         },
         nozone: {},
         amp: {}
@@ -5153,7 +5587,20 @@ export const monsters = {
             missile: 0.05,
             sonic: 1,
             shotgun: 0.02,
-            tesla: 0.01
+            tesla: 0.01,
+            claws: 0.18,
+            venom: 0.65,
+            cold: 1,
+            shock: 0.02,
+            fire: 0.38,
+            acid: 0.48,
+            stone: 0.22,
+            iron: 0.24,
+            flesh: 0.35,
+            ice: 1,
+            magma: 0.4,
+            axe: 0.15,
+            hammer: 0.05
         },
         nozone: {},
         amp: {}
@@ -5167,7 +5614,20 @@ export const monsters = {
             missile: 0.45,
             sonic: 0.5,
             shotgun: 0.6,
-            tesla: 0.65
+            tesla: 0.65,
+            claws: 0.3,
+            venom: 0.65,
+            cold: 0.55,
+            shock: 0.65,
+            fire: 0.75,
+            acid: 0.85,
+            stone: 0.25,
+            iron: 0.15,
+            flesh: 0.2,
+            ice: 0.55,
+            magma: 0.75,
+            axe: 0.45,
+            hammer: 0.65
         },
         nozone: {},
         amp: {}
@@ -5181,7 +5641,20 @@ export const monsters = {
             missile: 1,
             sonic: 0.35,
             shotgun: 0.35,
-            tesla: 0.5
+            tesla: 0.5,
+            claws: 0.48,
+            venom: 0.22,
+            cold: 0.25,
+            shock: 0.65,
+            fire: 0.15,
+            acid: 0.95,
+            stone: 0.55,
+            iron: 0.95,
+            flesh: 0.25,
+            ice: 0.35,
+            magma: 0.2,
+            axe: 0.55,
+            hammer: 0.35
         },
         nozone: {},
         amp: {}
@@ -5195,7 +5668,20 @@ export const monsters = {
             missile: 0.75,
             sonic: 0.35,
             shotgun: 0.75,
-            tesla: 0.5
+            tesla: 0.5,
+            claws: 0.4,
+            venom: 0.01,
+            cold: 0.1,
+            shock: 0.5,
+            fire: 0.1,
+            acid: 0.1,
+            stone: 0.35,
+            iron: 0.25,
+            flesh: 0.95,
+            ice: 0.1,
+            magma: 0.1,
+            axe: 0.4,
+            hammer: 1
         },
         nozone: {},
         amp: {}
@@ -5209,7 +5695,20 @@ export const monsters = {
             missile: 0.5,
             sonic: 0.05,
             shotgun: 0.35,
-            tesla: 0.68
+            tesla: 0.68,
+            claws: 0.65,
+            venom: 0.95,
+            cold: 0.5,
+            shock: 0.5,
+            fire: 0.75,
+            acid: 0.65,
+            stone: 0.5,
+            iron: 0.5,
+            flesh: 0.5,
+            ice: 0.5,
+            magma: 0.75,
+            axe: 0.65,
+            hammer: 0.5
         },
         nozone: {},
         amp: {}
@@ -5223,7 +5722,20 @@ export const monsters = {
             missile: 0.5,
             sonic: 0.25,
             shotgun: 0.75,
-            tesla: 0.25
+            tesla: 0.25,
+            claws: 1,
+            venom: 0.15,
+            cold: 0.5,
+            shock: 0.25,
+            fire: 0.5,
+            acid: 0.5,
+            stone: 0.5,
+            iron: 0.8,
+            flesh: 0.5,
+            ice: 0.5,
+            magma: 0.5,
+            axe: 1,
+            hammer: 0.5
         },
         nozone: {},
         amp: {}
@@ -5237,7 +5749,20 @@ export const monsters = {
             missile: 0.5,
             sonic: 1,
             shotgun: 0.2,
-            tesla: 0.75
+            tesla: 0.75,
+            claws: 1,
+            venom: 0.5,
+            cold: 1,
+            shock: 0.75,
+            fire: 0.05,
+            acid: 0.08,
+            stone: 0.6,
+            iron: 0.5,
+            flesh: 0.25,
+            ice: 0.95,
+            magma: 0.05,
+            axe: 0.75,
+            hammer: 0.5
         },
         nozone: {},
         amp: {}
@@ -5251,7 +5776,20 @@ export const monsters = {
             missile: 0,
             sonic: 0.65,
             shotgun: 0.22,
-            tesla: 0.4
+            tesla: 0.4,
+            claws: 0.18,
+            venom: 0.12,
+            cold: 0.9,
+            shock: 0.45,
+            fire: 0.3,
+            acid: 0.1,
+            stone: 0.2,
+            iron: 0.95,
+            flesh: 0.2,
+            ice: 0.9,
+            magma: 0.3,
+            axe: 0.12,
+            hammer: 0
         },
         nozone: {},
         amp: {}
@@ -5265,7 +5803,20 @@ export const monsters = {
             missile: 0.5,
             sonic: 0.5,
             shotgun: 0.5,
-            tesla: 0.5
+            tesla: 0.5,
+            claws: 0.5,
+            venom: 0.02,
+            cold: 0.75,
+            shock: 0.5,
+            fire: 0.5,
+            acid: 0.5,
+            stone: 0.5,
+            iron: 0.5,
+            flesh: 0.5,
+            ice: 0.75,
+            magma: 0.5,
+            axe: 0.5,
+            hammer: 0.5
         },
         nozone: {},
         amp: {}
@@ -5279,7 +5830,20 @@ export const monsters = {
             missile: 0.6,
             sonic: 0,
             shotgun: 0.5,
-            tesla: 0.01
+            tesla: 0.01,
+            claws: 0.65,
+            venom: 0.01,
+            cold: 0,
+            shock: 0.01,
+            fire: 0.88,
+            acid: 0.95,
+            stone: 0.6,
+            iron: 0.45,
+            flesh: 0.55,
+            ice: 0,
+            magma: 0.88,
+            axe: 0.7,
+            hammer: 0.4
         },
         nozone: {},
         amp: {}
@@ -5293,7 +5857,20 @@ export const monsters = {
             missile: 0.15,
             sonic: 0.38,
             shotgun: 0.9,
-            tesla: 0.18
+            tesla: 0.18,
+            claws: 0.12,
+            venom: 0.05,
+            cold: 0.5,
+            shock: 0.32,
+            fire: 1,
+            acid: 0.65,
+            stone: 0.8,
+            iron: 0.5,
+            flesh: 0.5,
+            ice: 0.5,
+            magma: 1,
+            axe: 0.18,
+            hammer: 0.75
         },
         nozone: {},
         amp: {}
@@ -5307,7 +5884,20 @@ export const monsters = {
             missile: 0.15,
             sonic: 0.48,
             shotgun: 0.4,
-            tesla: 0.6
+            tesla: 0.6,
+            claws: 0.5,
+            venom: 0.5,
+            cold: 0.8,
+            shock: 0.75,
+            fire: 0.15,
+            acid: 0.95,
+            stone: 0.25,
+            iron: 0.5,
+            flesh: 0.8,
+            ice: 0.8,
+            magma: 0.15,
+            axe: 0.5,
+            hammer: 0.25
         },
         nozone: {},
         amp: {}
@@ -5321,7 +5911,20 @@ export const monsters = {
             missile: 0.75,
             sonic: 0.25,
             shotgun: 0.5,
-            tesla: 0.5
+            tesla: 0.5,
+            claws: 0.65,
+            venom: 0.1,
+            cold: 0.65,
+            shock: 0.5,
+            fire: 0.2,
+            acid: 0.5,
+            stone: 0.25,
+            iron: 0.75,
+            flesh: 1,
+            ice: 0.65,
+            magma: 0.2,
+            axe: 0.75,
+            hammer: 0.25
         },
         nozone: {},
         amp: {}
@@ -5335,7 +5938,20 @@ export const monsters = {
             missile: 0.02,
             sonic: 1,
             shotgun: 0.9,
-            tesla: 0.58
+            tesla: 0.58,
+            claws: 0.1,
+            venom: 0.1,
+            cold: 0.8,
+            shock: 0.65,
+            fire: 0.15,
+            acid: 0.5,
+            stone: 0.1,
+            iron: 0.1,
+            flesh: 0.5,
+            ice: 0.8,
+            magma: 0.2,
+            axe: 0.1,
+            hammer: 0.1
         },
         nozone: {},
         amp: {}
@@ -5349,7 +5965,20 @@ export const monsters = {
             missile: 1,
             sonic: 0.15,
             shotgun: 0.88,
-            tesla: 0.26
+            tesla: 0.26,
+            claws: 0.42,
+            venom: 0.3,
+            cold: 0.48,
+            shock: 0.28,
+            fire: 0.1,
+            acid: 0.85,
+            stone: 1,
+            iron: 0.25,
+            flesh: 0.75,
+            ice: 0.52,
+            magma: 0.12,
+            axe: 0.34,
+            hammer: 1
         },
         nozone: {},
         amp: {}
@@ -5363,7 +5992,20 @@ export const monsters = {
             missile: 0.25,
             sonic: 0.3,
             shotgun: 0.6,
-            tesla: 0.09
+            tesla: 0.09,
+            claws: 0.5,
+            venom: 0.95,
+            cold: 0.3,
+            shock: 0.8,
+            fire: 0.38,
+            acid: 0.9,
+            stone: 0.6,
+            iron: 0.75,
+            flesh: 0.4,
+            ice: 0.28,
+            magma: 0.32,
+            axe: 0.45,
+            hammer: 0.25
         },
         nozone: {},
         amp: {}
@@ -5377,7 +6019,20 @@ export const monsters = {
             missile: 0.05,
             sonic: 0.8,
             shotgun: 0.15,
-            tesla: 1
+            tesla: 1,
+            claws: 0.02,
+            venom: 0.01,
+            cold: 0,
+            shock: 1,
+            fire: 0.25,
+            acid: 0.55,
+            stone: 0.15,
+            iron: 0.15,
+            flesh: 0.95,
+            ice: 0,
+            magma: 0.25,
+            axe: 0.01,
+            hammer: 0.05
         },
         nozone: {},
         amp: {}
@@ -5391,7 +6046,20 @@ export const monsters = {
             missile: 0.7,
             sonic: 0.05,
             shotgun: 0.65,
-            tesla: 0.01
+            tesla: 0.01,
+            claws: 0.1,
+            venom: 0,
+            cold: 0.5,
+            shock: 0.01,
+            fire: 0.02,
+            acid: 1,
+            stone: 0.25,
+            iron: 0.75,
+            flesh: 0.1,
+            ice: 0.5,
+            magma: 0.03,
+            axe: 0.1,
+            hammer: 0.5
         },
         nozone: {},
         amp: {}
@@ -5405,7 +6073,20 @@ export const monsters = {
             missile: 0.5,
             sonic: 0.85,
             shotgun: 1,
-            tesla: 0.2
+            tesla: 0.2,
+            claws: 0.45,
+            venom: 0.05,
+            cold: 0.15,
+            shock: 0.08,
+            fire: 0.38,
+            acid: 0.85,
+            stone: 1,
+            iron: 0.85,
+            flesh: 0.25,
+            ice: 0.15,
+            magma: 0.35,
+            axe: 0.42,
+            hammer: 1
         },
         nozone: {},
         amp: {}
@@ -5419,7 +6100,20 @@ export const monsters = {
             missile: 0.35,
             sonic: 0.5,
             shotgun: 0.65,
-            tesla: 0.8
+            tesla: 0.8,
+            claws: 0.92,
+            venom: 0.5,
+            cold: 0.45,
+            shock: 0.8,
+            fire: 0.56,
+            acid: 0.4,
+            stone: 0.5,
+            iron: 0.5,
+            flesh: 0.5,
+            ice: 0.48,
+            magma: 0.54,
+            axe: 0.88,
+            hammer: 0.42
         },
         nozone: {},
         amp: {}
@@ -5428,12 +6122,25 @@ export const monsters = {
         weapon: {
             laser: 0.65,
             flame: 0.65,
-            plasma: 0.65,
+            plasma: 0.64,
             kinetic: 0.65,
-            missile: 0.65,
+            missile: 0.66,
             sonic: 0.65,
             shotgun: 0.65,
-            tesla: 0.65
+            tesla: 0.65,
+            claws: 0.65,
+            venom: 0.65,
+            cold: 0.65,
+            shock: 0.65,
+            fire: 0.65,
+            acid: 0.65,
+            stone: 0.65,
+            iron: 0.65,
+            flesh: 0.65,
+            ice: 0.65,
+            magma: 0.65,
+            axe: 0.65,
+            hammer: 0.65
         },
         nozone: {},
         amp: {}
@@ -5447,7 +6154,20 @@ export const monsters = {
             missile: 0.5,
             sonic: 0.18,
             shotgun: 0.05,
-            tesla: 0.85
+            tesla: 0.85,
+            claws: 0.32,
+            venom: 0.8,
+            cold: 0.66,
+            shock: 0.82,
+            fire: 0.33,
+            acid: 0.75,
+            stone: 0.45,
+            iron: 0.35,
+            flesh: 0.4,
+            ice: 0.66,
+            magma: 0.33,
+            axe: 0.36,
+            hammer: 0.5
         },
         nozone: {},
         amp: {}
@@ -5461,7 +6181,20 @@ export const monsters = {
             missile: 0.65,
             sonic: 0.5,
             shotgun: 0.75,
-            tesla: 0.2
+            tesla: 0.2,
+            claws: 0.85,
+            venom: 0.4,
+            cold: 0.12,
+            shock: 0.22,
+            fire: 1,
+            acid: 0.13,
+            stone: 0.65,
+            iron: 0.68,
+            flesh: 0.95,
+            ice: 0.18,
+            magma: 0.9,
+            axe: 0.85,
+            hammer: 0.65
         },
         nozone: {},
         amp: {}
@@ -5475,7 +6208,20 @@ export const monsters = {
             missile: 0.95,
             sonic: 0.95,
             shotgun: 0.95,
-            tesla: 0.95
+            tesla: 0.95,
+            claws: 0.95,
+            venom: 0.96,
+            cold: 0.95,
+            shock: 0.95,
+            fire: 0.95,
+            acid: 0.95,
+            stone: 0.95,
+            iron: 0.95,
+            flesh: 0.94,
+            ice: 0.95,
+            magma: 0.95,
+            axe: 0.95,
+            hammer: 0.95
         },
         nozone: {},
         amp: {}
@@ -5489,14 +6235,27 @@ export const monsters = {
             missile: 1.2,
             sonic: 0.5,
             shotgun: 1.05,
-            tesla: 0.2
+            tesla: 0.2,
+            claws: 0.65,
+            venom: 0,
+            cold: 0.11,
+            shock: 0.22,
+            fire: 0.1,
+            acid: 0.5,
+            stone: 1,
+            iron: 0.65,
+            flesh: 0.25,
+            ice: 0.1,
+            magma: 0.12,
+            axe: 0.15,
+            hammer: 1.08
         },
         nozone: {},
         amp: {}
     }
 };
 
-export function mechCost(size,infernal){
+export function mechCost(size,infernal,standardize){
     let soul = 9999;
     let cost = 10000000;
     switch (size){
@@ -5532,20 +6291,54 @@ export function mechCost(size,infernal){
                 soul = 1;
             }
             break;
+        case 'minion':
+            {
+                let baseCost = global.blood['prepared'] && global.blood.prepared >= 2 ? 30000 : 50000;
+                cost = infernal ? baseCost * 2.5 : baseCost;
+                soul = infernal ? 10 : 1;
+            }
+            break;
+        case 'fiend':
+            {
+                cost = infernal ? 300000 : 125000;
+                soul = infernal ? 40 : 4;
+            }
+            break;
+        case 'cyberdemon':
+            {
+                cost = infernal ? 625000 : 250000;
+                soul = infernal ? 120 : 12;
+            }
+            break;
+        case 'archfiend':
+            {
+                cost = infernal ? 1200000 : 600000;
+                soul = infernal ? 250 : 25;
+            }
+            break;
+    }
+    if (standardize){
+        return {
+            Soul_Gem(){ return soul; },
+            Supply(){ return cost; }
+        };
     }
     return { s: soul, c: cost };
-};
+}
 
 function bossResists(boss){
     let weak = `laser`;
     let resist = `laser`;
     
+    let standardList = ['laser','flame','plasma','kinetic','missile','sonic','shotgun','tesla'];
     Object.keys(monsters[boss].weapon).forEach(function(weapon){
-        if (monsters[boss].weapon[weapon] > monsters[boss].weapon[weak]){
-            weak = weapon;
-        }
-        if (monsters[boss].weapon[weapon] < monsters[boss].weapon[resist]){
-            resist = weapon;
+        if (global.race['warlord'] || standardList.includes(weapon)){
+            if (checkBossResist(boss,weapon) > checkBossResist(boss,weak)){
+                weak = weapon;
+            }
+            if (checkBossResist(boss,weapon) < checkBossResist(boss,resist)){
+                resist = weapon;
+            }
         }
     });
     if (weak === resist){
@@ -5553,6 +6346,32 @@ function bossResists(boss){
         resist = 'none';
     }
     return { w: weak, r: resist };
+}
+
+function checkBossResist(boss,weapon){
+    let effectiveness = monsters[boss].weapon[weapon];
+    
+    let seed = global.stats.reset + (global.portal?.spire?.count || 1);
+    let seed_r1 = Math.floor(seededRandom(0,25000,false,seed + (global.portal?.spire?.count || 1) * 2));
+    let seed_w1 = Math.floor(seededRandom(0,25000,false,seed + global.stats.reset * 2));
+    
+    let weaponList = global.race['warlord'] 
+        ? ['laser','kinetic','shotgun','missile','flame','plasma','sonic','tesla','claws','venom','cold','shock','fire','acid','stone','iron','flesh','ice','magma','axe','hammer']
+        : ['laser','kinetic','shotgun','missile','flame','plasma','sonic','tesla'];
+
+    let resist = weaponList[Math.floor(seededRandom(0,weaponList.length,false,seed_r1))];
+    let weak = weaponList[Math.floor(seededRandom(0,weaponList.length,false,seed_w1))];
+
+    if (weapon === resist){
+        let seed_r2 = Math.floor(seededRandom(0,25000,false,seed_r1 + (global.portal?.spire?.count || 1) * 3));
+        effectiveness -= Math.floor(seededRandom(0,26,false,seed_r2)) / 100;
+        if (effectiveness < 0){ effectiveness = 0; }
+    }
+    else if (weapon === weak){
+        let seed_w2 = Math.floor(seededRandom(0,25000,false,seed_w1 + global.stats.reset * 3));
+        effectiveness += Math.floor(seededRandom(0,26,false,seed_w2)) / 100;
+    }
+    return effectiveness;
 }
 
 export function drawMechLab(){
@@ -5576,21 +6395,22 @@ export function drawMechLab(){
         let assemble = $(`<div id="mechAssembly" class="mechAssembly"></div>`);
         lab.append(assemble);
 
-        let title = $(`<div><span class="has-text-caution">${loc(`portal_mech_assembly`)}</span> - <span>{{ b.size | slabel }} {{ b.chassis | clabel }}</span></div>`);
+        let title = $(`<div><span class="has-text-caution">${loc(global.race['warlord'] ? `portal_mech_spawn` : `portal_mech_assembly`)}</span> - <span>{{ b.size | slabel }} {{ b.chassis | clabel }}</span></div>`);
         assemble.append(title);
 
-        title.append(` | <span><span class="has-text-warning">${loc('portal_mech_bay_space')}</span>: {{ m.bay }} / {{ m.max }}</span>`);
+        title.append(` | <span><span class="has-text-warning">${loc(global.race['warlord'] ? `portal_mech_lair_space` : 'portal_mech_bay_space')}</span>: {{ m.bay }} / {{ m.max }}</span>`);
         title.append(` | <span><span class="has-text-warning">${loc('portal_mech_sup_avail')}</span>: {{ p.supply | round }} / {{ p.sup_max }}</span>`);
 
         let infernal = global.blood['prepared'] && global.blood.prepared >= 3 ? `<b-checkbox class="patrol" v-model="b.infernal">${loc('portal_mech_infernal')} (${loc('portal_mech_infernal_effect',[25])})</b-checkbox>` : ``;
-        assemble.append(`<div><span class="has-text-warning">${loc(`portal_mech_space`)}</span> <span class="has-text-danger">{{ b.size | bay }}</span> | <span class="has-text-warning">${loc(`portal_mech_cost`)}</span> <span class="has-text-danger">{{ b.size | price }}</span> | <span class="has-text-warning">${loc(`portal_mech_soul`,[global.resource.Soul_Gem.name])}</span> <span class="has-text-danger">{{ b.size | soul }}</span>${infernal}</div>`)
+        assemble.append(`<div><span class="has-text-warning">${loc(global.race['warlord'] ? `portal_mech_lair` : `portal_mech_space`)}</span> <span class="has-text-danger">{{ b.size | bay }}</span> | <span class="has-text-warning">${loc(`portal_mech_cost`)}</span> <span class="has-text-danger">{{ b.size | price }}</span> | <span class="has-text-warning">${loc(`portal_mech_soul`,[global.resource.Soul_Gem.name])}</span> <span class="has-text-danger">{{ b.size | soul }}</span>${infernal}</div>`)
         assemble.append(`<div>{{ b.size | desc }}</div>`);
 
         let options = $(`<div class="bayOptions"></div>`);
         assemble.append(options);
 
         let sizes = ``;
-        ['small','medium','large','titan','collector'].forEach(function(size,idx){
+        let sizeTypes = global.race['warlord'] ? ['minion','fiend','cyberdemon','archfiend'] : ['small','medium','large','titan','collector'];
+        sizeTypes.forEach(function(size,idx){
             sizes += `<b-dropdown-item aria-role="listitem" v-on:click="setSize('${size}')" class="size r0 a${idx}" data-val="${size}">${loc(`portal_mech_size_${size}`)}</b-dropdown-item>`;
         });
 
@@ -5602,7 +6422,24 @@ export function drawMechLab(){
         </b-dropdown>`);
 
         let chassis = ``;
-        ['wheel','tread','biped','quad','spider','hover'].forEach(function(val,idx){
+        let typeList = ['wheel','tread','biped','quad','spider','hover'];
+        if (global.race['warlord']){
+            switch (global.portal.mechbay.blueprint.size){
+                case 'minion':
+                    typeList = ['imp','flying_imp','hound','harpy','barghest'];
+                    break;
+                case 'fiend':
+                    typeList = ['cambion','minotaur','nightmare','rakshasa','golem'];
+                    break;
+                case 'cyberdemon':
+                    typeList = ['wheel','tread','biped','quad','spider','hover'];
+                    break;
+                case 'archfiend':
+                    typeList = ['dragon','snake','gorgon','hydra'];
+                    break;
+            }
+        }
+        typeList.forEach(function(val,idx){
             chassis += `<b-dropdown-item aria-role="listitem" v-on:click="setType('${val}')" class="chassis r0 a${idx}" data-val="${val}">${loc(`portal_mech_chassis_${val}`)}</b-dropdown-item>`;
         });
 
@@ -5615,7 +6452,8 @@ export function drawMechLab(){
 
         for (let i=0; i<4; i++){
             let weapons = ``;
-            ['laser','kinetic','shotgun','missile','flame','plasma','sonic','tesla'].forEach(function(val,idx){
+            let weaponList = validWeapons(global.portal.mechbay.blueprint.size,global.portal.mechbay.blueprint.chassis,i);
+            weaponList.forEach(function(val,idx){
                 weapons += `<b-dropdown-item aria-role="listitem" v-on:click="setWep('${val}',${i})" class="weapon r${i} a${idx}" data-val="${val}">${loc(`portal_mech_weapon_${val}`)}</b-dropdown-item>`;
             });
 
@@ -5630,19 +6468,20 @@ export function drawMechLab(){
         let e_cap = global.blood['prepared'] ? 5 : 4;
         for (let i=0; i<e_cap; i++){
             let equip = ``;
-            ['special','shields','sonar','grapple','infrared','flare','radiator','coolant','ablative','stabilizer','seals'].forEach(function(val,idx){
+            let equipTypes = validEquipment(global.portal.mechbay.blueprint.size,global.portal.mechbay.blueprint.chassis,i);
+            equipTypes.forEach(function(val,idx){
                 equip += `<b-dropdown-item aria-role="listitem" v-on:click="setEquip('${val}',${i})" class="equip r${i} a${idx}" data-val="${val}">{{ '${val}' | equipment }}</b-dropdown-item>`;
             });
 
             options.append(`<b-dropdown :triggers="['hover', 'click']" aria-role="list" v-show="eVis(${i})">
                 <button class="button is-info" slot="trigger">
-                    <span>${loc(`portal_mech_equipment`)}: {{ b.equip[${i}] || 'shields' | equipment }}</span>
+                    <span>${loc(global.race['warlord'] ? `portal_mech_attribute` : `portal_mech_equipment`)}: {{ b.equip[${i}] || 'shields' | equipment }}</span>
                     <b-icon icon="menu-down"></b-icon>
                 </button>${equip}
             </b-dropdown>`);
         }
 
-        assemble.append(`<div class="mechAssemble"><button class="button is-info" slot="trigger" v-on:click="build()"><span>${loc('portal_mech_construct')}</span></button></div>`);
+        assemble.append(`<div class="mechAssemble"><button class="button is-info" slot="trigger" v-on:click="build()"><span>${global.race['warlord'] ? loc('portal_mech_summon') : loc('portal_mech_construct')}</span></button></div>`);
 
         vBind({
             el: '#mechAssembly',
@@ -5660,13 +6499,32 @@ export function drawMechLab(){
                     let size = mechSize(global.portal.mechbay.blueprint.size);
 
                     let avail = global.portal.mechbay.max - global.portal.mechbay.bay;
-                    if (global.portal.purifier.supply >= cost && avail >= size && global.resource.Soul_Gem.amount >= soul){
+                    if (!(global.settings.qKey && keyMap.q) && global.portal.purifier.supply >= cost && avail >= size && global.resource.Soul_Gem.amount >= soul){
                         global.portal.purifier.supply -= cost;
                         global.resource.Soul_Gem.amount -= soul;
-                        let mech = deepClone(global.portal.mechbay.blueprint);
-                        global.portal.mechbay.mechs.push(mech);
-                        global.portal.mechbay.bay += size;
-                        global.portal.mechbay.active++;
+                        buildMech(global.portal.mechbay.blueprint);
+                    }
+                    else {
+                        let used = 0;
+                        for (let j=0; j<global.queue.queue.length; j++){
+                            used += Math.ceil(global.queue.queue[j].q / global.queue.queue[j].qs);
+                        }
+                        if (used < global.queue.max){
+                            let blueprint = deepClone(global.portal.mechbay.blueprint);
+                            global.queue.queue.push({ 
+                                id: `hell-mech-${Math.rand(0,100000)}`, 
+                                action: 'hell-mech', 
+                                type: blueprint,
+                                label: `${loc(`portal_mech_size_${blueprint.size}`)} ${loc(`portal_mech_chassis_${blueprint.chassis}`)}`, 
+                                cna: false, 
+                                time: 0, 
+                                q: 1, 
+                                qs: 1, 
+                                t_max: 0, 
+                                bres: false 
+                            });
+                            buildQueue();
+                        }
                     }
                 },
                 setSize(s){
@@ -5674,7 +6532,7 @@ export function drawMechLab(){
                     if (s === 'collector'){
                         global.portal.mechbay.blueprint.hardpoint.length = 0;
                     }
-                    else if (s === 'small' || s === 'medium'){
+                    else if (s === 'small' || s === 'medium' || s === 'minion' || s === 'fiend'){
                         if (global.portal.mechbay.blueprint.hardpoint.length === 0){
                             global.portal.mechbay.blueprint.hardpoint.push('laser');
                         }
@@ -5687,7 +6545,7 @@ export function drawMechLab(){
                         if (global.portal.mechbay.blueprint.hardpoint.length === 1){
                             global.portal.mechbay.blueprint.hardpoint.push(global.portal.mechbay.blueprint.hardpoint.includes('laser') ? 'plasma' : 'laser');
                         }
-                        if (s === 'titan'){
+                        if (s === 'titan' || s === 'archfiend'){
                             if (global.portal.mechbay.blueprint.hardpoint.length === 2){
                                 global.portal.mechbay.blueprint.hardpoint.push(global.portal.mechbay.blueprint.hardpoint.includes('laser')  ? 'shotgun' : 'laser');
                                 global.portal.mechbay.blueprint.hardpoint.push(global.portal.mechbay.blueprint.hardpoint.includes('laser')  ? 'kinetic' : 'laser');
@@ -5697,24 +6555,31 @@ export function drawMechLab(){
                             global.portal.mechbay.blueprint.hardpoint.length = 2;
                         }
                     }
+                    if (global.race['warlord']){ 
+                        global.portal.mechbay.blueprint.equip[0] = validEquipment(s,global.portal.mechbay.blueprint.chassis)[0]; 
+                        global.portal.mechbay.blueprint.equip.length = 1;
+                    }
                     switch (s){
                         case 'small':
+                        case 'minion':
                             if (global.blood['prepared']){
-                                global.portal.mechbay.blueprint.equip.push('special');
+                                global.portal.mechbay.blueprint.equip.push(validEquipment(s,global.portal.mechbay.blueprint.chassis)[0]);
                             }
                             global.portal.mechbay.blueprint.equip.length = global.blood['prepared'] ? 1 : 0;
                             break;
                         case 'medium':
+                        case 'fiend':
                             if (global.portal.mechbay.blueprint.equip.length < 1){
-                                global.portal.mechbay.blueprint.equip.push('special');
+                                global.portal.mechbay.blueprint.equip.push(validEquipment(s,global.portal.mechbay.blueprint.chassis)[0]);
                             }
                             if (global.blood['prepared']){
-                                global.portal.mechbay.blueprint.equip.push('shields');
+                                global.portal.mechbay.blueprint.equip.push(validEquipment(s,global.portal.mechbay.blueprint.chassis)[1]);
                             }
                             global.portal.mechbay.blueprint.equip.length = global.blood['prepared'] ? 2 : 1;
                             break;
                         case 'collector':
                         case 'large':
+                        case 'cyberdemon':
                             if (global.portal.mechbay.blueprint.equip.length < 1){
                                 global.portal.mechbay.blueprint.equip.push('special');
                             }
@@ -5727,27 +6592,59 @@ export function drawMechLab(){
                             global.portal.mechbay.blueprint.equip.length = global.blood['prepared'] ? 3 : 2;
                             break;
                         case 'titan':
+                        case 'archfiend':
                             if (global.portal.mechbay.blueprint.equip.length < 1){
-                                global.portal.mechbay.blueprint.equip.push('special');
+                                global.portal.mechbay.blueprint.equip.push(validEquipment(s,global.portal.mechbay.blueprint.chassis)[0]);
                             }
                             if (global.portal.mechbay.blueprint.equip.length < 2){
-                                global.portal.mechbay.blueprint.equip.push('shields');
+                                global.portal.mechbay.blueprint.equip.push(validEquipment(s,global.portal.mechbay.blueprint.chassis)[1]);
                             }
                             if (global.portal.mechbay.blueprint.equip.length < 3){
-                                global.portal.mechbay.blueprint.equip.push('grapple');
+                                global.portal.mechbay.blueprint.equip.push(validEquipment(s,global.portal.mechbay.blueprint.chassis)[2]);
                             }
                             if (global.portal.mechbay.blueprint.equip.length < 4){
-                                global.portal.mechbay.blueprint.equip.push('seals');
+                                global.portal.mechbay.blueprint.equip.push(validEquipment(s,global.portal.mechbay.blueprint.chassis)[3]);
                             }
                             if (global.blood['prepared']){
-                                global.portal.mechbay.blueprint.equip.push('stabilizer');
+                                global.portal.mechbay.blueprint.equip.push(validEquipment(s,global.portal.mechbay.blueprint.chassis)[4]);
                             }
                             global.portal.mechbay.blueprint.equip.length = global.blood['prepared'] ? 5 : 4;
                             break;
                     }
+                    if (global.race['warlord']){
+                        switch (s){
+                            case 'minion':
+                                global.portal.mechbay.blueprint.chassis = 'imp';
+                                break;
+                            case 'fiend':
+                                global.portal.mechbay.blueprint.chassis = 'cambion';
+                                break;
+                            case 'cyberdemon':
+                                global.portal.mechbay.blueprint.chassis = 'biped';
+                                global.portal.mechbay.blueprint.hardpoint[1] = validWeapons(s,global.portal.mechbay.blueprint.chassis,1)[1];
+                                break;
+                            case 'archfiend':
+                                global.portal.mechbay.blueprint.chassis = 'dragon';
+                                global.portal.mechbay.blueprint.hardpoint[1] = validWeapons(s,global.portal.mechbay.blueprint.chassis,1)[0];
+                                break;
+                        }
+                        global.portal.mechbay.blueprint.hardpoint[0] = validWeapons(s,global.portal.mechbay.blueprint.chassis,0)[0];
+                        drawMechLab();
+                        clearPopper();
+                    }
                 },
                 setType(c){
                     global.portal.mechbay.blueprint.chassis = c;
+                    if (global.race['warlord']){
+                        global.portal.mechbay.blueprint.hardpoint[0] = validWeapons(global.portal.mechbay.blueprint.size,c,0)[0];
+                        if (c === 'hydra'){
+                            global.portal.mechbay.blueprint.hardpoint[1] = validWeapons(global.portal.mechbay.blueprint.size,c,1)[0];
+                            global.portal.mechbay.blueprint.hardpoint[2] = validWeapons(global.portal.mechbay.blueprint.size,c,2)[0];
+                            global.portal.mechbay.blueprint.hardpoint[3] = validWeapons(global.portal.mechbay.blueprint.size,c,3)[0];
+                        }
+                        drawMechLab();
+                        clearPopper();
+                    }
                 },
                 setWep(w,i){
                     global.portal.mechbay.blueprint.hardpoint[i] = w;
@@ -5761,8 +6658,18 @@ export function drawMechLab(){
                     if (global.portal.mechbay.blueprint.size === 'collector'){
                         return false;
                     }
-                    if (hp === 0 || (global.portal.mechbay.blueprint.size === 'large' && hp < 2) || global.portal.mechbay.blueprint.size === 'titan'){
+                    if (hp === 0 || (['large','cyberdemon'].includes(global.portal.mechbay.blueprint.size) && hp < 2) || global.portal.mechbay.blueprint.size === 'titan'){
                         return true;
+                    }
+                    else if (global.portal.mechbay.blueprint.size === 'archfiend'){
+                        switch (global.portal.mechbay.blueprint.chassis){
+                            case 'dragon':
+                            case 'snake':
+                            case 'gorgon':
+                                return hp < 2 ? true : false;
+                            case 'hydra':
+                                return hp < 4 ? true : false;
+                        }
                     }
                     return false;
                 },
@@ -5770,13 +6677,17 @@ export function drawMechLab(){
                     let prep = global.blood['prepared'] ? 1 : 0;
                     switch (global.portal.mechbay.blueprint.size){
                         case 'small':
+                        case 'minion':
                             return prep === 1 && es === 0 ? true : false;
                         case 'medium':
+                        case 'fiend':
                             return es <= (0 + prep) ? true : false;
                         case 'collector':
                         case 'large':
+                        case 'cyberdemon':
                             return es <= (1 + prep) ? true : false;
                         case 'titan':
+                        case 'archfiend':
                             return true;
                     }
                 }
@@ -5815,6 +6726,7 @@ export function drawMechLab(){
                     let type = 'jumpjet';
                     switch (global.portal.mechbay.blueprint.size){
                         case 'large':
+                        case 'cyberdemon':
                             type = 'battery';
                             break;
                         case 'titan':
@@ -5842,6 +6754,7 @@ export function drawMechLab(){
                         if (val === 'special'){
                             switch (global.portal.mechbay.blueprint.size){
                                 case 'large':
+                                case 'cyberdemon':
                                     val = 'battery';
                                     break;
                                 case 'titan':
@@ -5868,6 +6781,158 @@ export function drawMechLab(){
     }
 }
 
+export function buildMechQueue(action){
+    let size = mechSize(action.bp.size);
+    let avail = global.portal.mechbay.max - global.portal.mechbay.bay;
+    if (avail >= size && payCosts(false, action.cost)){
+        buildMech(deepClone(action.bp,true));
+        return true;
+    }
+    return false;
+}
+
+function buildMech(bp, queue){
+    let mech = deepClone(bp);
+    global.portal.mechbay.mechs.push(mech);
+    global.portal.mechbay.bay += mechSize(mech.size);
+    global.portal.mechbay.active++;
+}
+
+export function mechDesc(parent,obj){
+    let mech = obj.type;
+    let costs = mechCost(mech.size,mech.infernal,true);
+
+    console.log(mech);
+
+    var desc = $(`<div class="shipPopper"></div>`);
+    var mechPattern = $(`<div class="divider">${mech.infernal ? `${loc('portal_mech_infernal')} ` : ''}${loc(`portal_mech_size_${mech.size}`)} ${loc(`portal_mech_chassis_${mech.chassis}`)}</div>`);
+    parent.append(desc);
+    desc.append(mechPattern);
+
+    var cost = $('<div class="costList"></div>');
+    desc.append(cost);
+
+    let weapons = [];
+    mech.hardpoint.forEach(function(hp){
+        weapons.push(`<span class="has-text-danger">${loc(`portal_mech_weapon_${hp}`)}</span>`);
+    });
+    desc.append(`<div>${weapons.join(', ')}</div>`);
+
+    let equip = [];
+    mech.equip.forEach(function(eq){
+        equip.push(`<span class="has-text-warning">${loc(`portal_mech_equip_${eq}`)}</span>`);
+    });
+    desc.append(`<div>${equip.join(', ')}</div>`);
+
+    let tc = timeCheck({ id: `${mech.size}${Math.rand(0,100)}` , cost: costs, doNotAdjustCost: true }, false, true);
+    Object.keys(costs).forEach(function (res){
+        if (costs[res]() > 0){
+            let label = res === 'Money' ? '$' : (res === 'Supply' ? loc('resource_Supply_name') : global.resource[res].name) + ': ';
+            let amount = res === 'Supply' ? global.portal.purifier.supply : global.resource[res].amount;
+            let color = amount >= costs[res]() ? 'has-text-dark' : ( res === tc.r ? 'has-text-danger' : 'has-text-alert');
+            cost.append($(`<div class="${color}" data-${res}="${costs[res]()}">${label}${sizeApproximation(costs[res](),2)}</div>`));
+        }
+    });
+
+    if (tc && tc['t']){
+        desc.append($(`<div class="divider"></div><div id="popTimer" class="flair has-text-advanced">{{ t | timer }}</div>`));
+        vBind({
+            el: '#popTimer',
+            data: tc,
+            filters: {
+                timer(t){
+                    return loc('action_ready',[timeFormat(t)]);
+                }
+            }
+        });
+    }
+    
+    return desc;
+}
+
+export function validWeapons(size,type,point){
+    let weaponList = ['laser','kinetic','shotgun','missile','flame','plasma','sonic','tesla'];
+    if (global.race['warlord']){
+        switch (size){
+            case 'minion':
+                if (type === 'harpy'){
+                    weaponList = ['claws','venom'];
+                }
+                else if (type === 'hound'){
+                    weaponList = ['cold','shock','fire','acid'];
+                }
+                else if (type === 'barghest'){
+                    weaponList = ['claws','venom'];
+                }
+                break;
+            case 'fiend':
+                if (type === 'minotaur'){
+                    weaponList = ['axe','hammer'];
+                }
+                else if (type === 'nightmare'){
+                    weaponList = ['cold','shock','fire','acid'];
+                }
+                else if (type === 'golem'){
+                    weaponList = ['stone','iron','flesh','ice','magma'];
+                }
+                break;
+            case 'archfiend':
+                if (point === undefined || point === false){
+                    weaponList = ['claws','venom','cold','shock','fire','acid'];
+                    switch (type){
+                        case 'dragon':
+                            weaponList = ['claws','cold','shock','fire','acid'];
+                            break;
+                        case 'snake':
+                            weaponList = ['venom','cold','shock','fire','acid'];
+                            break;
+                        case 'gorgon':
+                            weaponList = ['axe','hammer','cold','shock','fire','acid'];
+                            break;
+                        case 'hydra':
+                            weaponList = ['cold','shock','fire','acid'];
+                            break;
+                    }
+                }
+                else {
+                    switch (type){
+                        case 'dragon':
+                            weaponList = point === 0 ? ['claws'] : ['cold','shock','fire','acid'];
+                            break;
+                        case 'snake':
+                            weaponList = point === 0 ? ['venom'] : ['cold','shock','fire','acid'];
+                            break;
+                        case 'gorgon':
+                            weaponList = point === 0 ? ['axe','hammer'] : ['cold','shock','fire','acid'];
+                            break;
+                        case 'hydra':
+                            let list = ['cold','shock','fire','acid'];
+                            weaponList = [list[point]];
+                            break;
+                    }
+                }
+                break;
+        }
+    }
+    return weaponList;
+}
+
+export function validEquipment(size,type,point){
+    let equipList = ['special','shields','sonar','grapple','infrared','flare','radiator','coolant','ablative','stabilizer','seals'];
+    if (global.race['warlord']){
+        switch (size){
+            case 'minion':
+                equipList = ['scavenger','scouter','darkvision','echo','thermal','manashield','cold','heat','athletic','lucky','stoneskin'];
+                break;
+            case 'fiend':
+            case 'archfiend':
+                equipList = ['darkvision','echo','thermal','manashield','cold','heat','athletic','lucky','stoneskin'];
+                break;
+        }
+    }
+    return equipList;
+}
+
 function drawMechs(){
     clearMechDrag();
     clearElement($('#mechList'));
@@ -5875,8 +6940,8 @@ function drawMechs(){
 
     list.append(`
       <div v-for="(mech, index) of mechs" :key="index" class="mechRow" :class="index < active ? '' : 'inactive-row' ">
-        <a class="scrap" @click="scrap(index)">${loc('portal_mech_scrap')}</a>
-        <span> | </span><span>${loc('portal_mech')} #{{index + 1}}: </span>
+        <a class="scrap" @click="scrap(index)">${loc(global.race['warlord'] ? 'portal_mech_unsummon' : 'portal_mech_scrap')}</a>
+        <span> | </span><span>${loc(global.race['warlord'] ? 'portal_demon' : 'portal_mech')} #{{index + 1}}: </span>
         <span class="has-text-caution">{{ mech.infernal ? "${loc('portal_mech_infernal')} " : "" }}{{ mech | size }} {{ mech | chassis }}</span>
         <div :class="'gearList '+mech.size">
           <div>
@@ -5885,6 +6950,8 @@ function drawMechs(){
               <span class="has-text-danger">{{ hp | weapon }}</span>
             </template>
           </div>
+        </div>
+        <div :class="'gearList '+mech.size">
           <div>
             <template v-for="eq of mech.equip">
               <span> | </span>
@@ -5922,6 +6989,7 @@ function drawMechs(){
                 let type = 'jumpjet';
                 switch (size){
                     case 'large':
+                    case 'cyberdemon':
                         type = 'battery';
                         break;
                     case 'titan':
@@ -5957,12 +7025,20 @@ function drawMechs(){
 
 export function mechSize(s){
     switch (s){
+        case 'minion':
+            return 1;
         case 'small':
             return 2;
+        case 'fiend':
+            return global.blood['prepared'] && global.blood.prepared >= 2 ? 3 : 4;
         case 'medium':
             return global.blood['prepared'] && global.blood.prepared >= 2 ? 4 : 5;
+        case 'cyberdemon':
+            return global.blood['prepared'] && global.blood.prepared >= 2 ? 6 : 8;
         case 'large':
             return global.blood['prepared'] && global.blood.prepared >= 2 ? 8 : 10;
+        case 'archfiend':
+            return global.blood['prepared'] && global.blood.prepared >= 2 ? 15 : 20;
         case 'titan':
             return global.blood['prepared'] && global.blood.prepared >= 2 ? 20 : 25;
         case 'collector':
@@ -6005,7 +7081,10 @@ export function updateMechbay(){
         bay += mechSize(mech.size);
         if (bay <= max){
             active++;
-            if (mech.size === 'small') {
+            if (mech.size === 'small' || mech.size === 'minion') {
+                scouts++;
+            }
+            if (mech.equip.includes('scouter')){
                 scouts++;
             }
         }
@@ -6099,7 +7178,7 @@ function weaponPower(mech,power){
             power += (1 - power) * 0.25;
         }
     }
-    if (mech.equip.includes('special') && mech.size === 'large'){
+    if (mech.equip.includes('special') && (mech.size === 'large' || mech.size === 'cyberdemon')){
         power *= 1.02;
     }
     return power;
@@ -6110,14 +7189,14 @@ function statusEffect(mech,effect){
     switch (effect){
         case 'freeze':
             {
-                if (!mech.equip.includes('radiator')){
+                if (!mech.equip.includes('radiator') && !mech.equip.includes('cold')){
                     rating = 0.25;
                 }
             }
             break;
         case 'hot':
             {
-                if (!mech.equip.includes('coolant')){
+                if (!mech.equip.includes('coolant') && !mech.equip.includes('heat')){
                     rating = 0.25;
                 }
             }
@@ -6125,27 +7204,35 @@ function statusEffect(mech,effect){
         case 'corrosive':
             {
                 if (!mech.equip.includes('ablative')){
-                    rating = mech.equip.includes('shields') ? 0.75 : 0.25;
+                    if (mech.equip.includes('stoneskin')){
+                        rating = 0.9;
+                    }
+                    else if (mech.equip.includes('shields')){
+                        rating = 0.75;
+                    }
+                    else {
+                        rating = mech.equip.includes('manashield') ? 0.5 : 0.25;
+                    }
                 }
             }
             break;
         case 'humid':
             {
                 if (!mech.equip.includes('seals')){
-                    rating = 0.75;
+                    rating = mech.equip.includes('heat') ? 0.85 : 0.75;
                 }
             }
             break;
         case 'windy':
             {
-                if (mech.chassis === 'hover'){
+                if (['hover','flying_imp','harpy','dragon'].includes(mech.chassis)){
                     rating = 0.5;
                 }
             }
             break;
         case 'hilly':
             {
-                if (mech.chassis !== 'spider'){
+                if (!['spider','flying_imp','harpy','dragon'].includes(mech.chassis)){
                     rating = 0.75;
                 }
             }
@@ -6153,13 +7240,13 @@ function statusEffect(mech,effect){
         case 'mountain':
             {
                 if (mech.chassis !== 'spider' && !mech.equip.includes('grapple')){
-                    rating = mech.equip.includes('flare') ? 0.75 : 0.5;
+                    rating = mech.equip.includes('flare') || mech.equip.includes('echo') ? 0.75 : 0.5;
                 }
             }
             break;
         case 'radioactive':
             {
-                if (!mech.equip.includes('shields')){
+                if (!mech.equip.includes('shields') && mech.equip.includes('manashield')){
                     rating = 0.5;
                 }
             }
@@ -6167,20 +7254,20 @@ function statusEffect(mech,effect){
         case 'quake':
             {
                 if (!mech.equip.includes('stabilizer')){
-                    rating = 0.25;
+                    rating = mech.equip.includes('athletic') ? 0.75 : 0.25;
                 }
             }
             break;
         case 'dust':
             {
-                if (!mech.equip.includes('seals')){
+                if (!mech.equip.includes('seals') && !mech.equip.includes('thermal')){
                     rating = 0.5;
                 }
             }
             break;
         case 'river':
             {
-                if (mech.chassis !== 'hover'){
+                if (!['hover','flying_imp','harpy','dragon'].includes(mech.chassis)){
                     rating = 0.65;
                 }
             }
@@ -6194,7 +7281,7 @@ function statusEffect(mech,effect){
             break;
         case 'steam':
             {
-                if (!mech.equip.includes('shields')){
+                if (!mech.equip.includes('shields') && !mech.equip.includes('heat')){
                     rating = 0.75;
                 }
             }
@@ -6202,13 +7289,13 @@ function statusEffect(mech,effect){
         case 'flooded':
             {
                 if (mech.chassis !== 'hover'){
-                    rating = 0.35;
+                    rating = ['snake'].includes(mech.chassis) ? 0.85 : 0.35;
                 }
             }
             break;
         case 'fog':
             {
-                if (!mech.equip.includes('sonar')){
+                if (!mech.equip.includes('sonar') && !mech.equip.includes('echo')){
                     rating = 0.2;
                 }
             }
@@ -6216,27 +7303,27 @@ function statusEffect(mech,effect){
         case 'rain':
             {
                 if (!mech.equip.includes('seals')){
-                    rating = 0.75;
+                    rating = mech.equip.includes('cold') ? 0.9 : 0.75;
                 }
             }
             break;
         case 'hail':
             {
-                if (!mech.equip.includes('ablative') && !mech.equip.includes('shields')){
+                if (!mech.equip.includes('ablative') && !mech.equip.includes('shields') && !mech.equip.includes('manashield') && !mech.equip.includes('stoneskin')){
                     rating = 0.75;
                 }
             }
             break;
         case 'chasm':
             {
-                if (!mech.equip.includes('grapple')){
-                    rating = 0.1;
+                if (!mech.equip.includes('grapple') && !['flying_imp','harpy','dragon'].includes(mech.chassis)){
+                    rating = mech.equip.includes('athletic') ? 0.35 : 0.1;
                 }
             }
             break;
         case 'dark':
             {
-                if (!mech.equip.includes('infrared')){
+                if (!mech.equip.includes('infrared') && !mech.equip.includes('darkvision')){
                     rating = mech.equip.includes('flare') ? 0.25 : 0.1;
                 }
             }
@@ -6244,18 +7331,33 @@ function statusEffect(mech,effect){
         case 'gravity':
             {
                 switch (mech.size){
+                    case 'fiend':
                     case 'medium':
                         rating = 0.8;
                         break;
+                    case 'cyberdemon':
+                        rating = 0.5;
                     case 'large':
                         rating = 0.45;
                         break;
+                    case 'archfiend':
+                        rating = 0.35;
                     case 'titan':
                         rating = 0.25;
                         break;
                 }
+                if (['flying_imp','harpy','dragon'].includes(mech.chassis)){
+                    rating -= 0.15;
+                }
+                if (mech.equip.includes('athletic') && rating < 1){
+                    rating += 0.1;
+                }
             }
             break;
+    }
+    if (mech.equip.includes('lucky')){
+        rating += 0.01 * Math.floor(seededRandom(1,10,false, global.stats.resets + (global.portal?.spire?.count || 1) * 42 ));
+        if (rating > 1){ rating = 1; }
     }
     return rating;
 }
@@ -6265,175 +7367,189 @@ export function terrainEffect(mech,type){
     let terrainFactor = 1;
     switch (mech.chassis){
         case 'wheel':
+        case 'nightmare':
+        case 'hound':
             {
                 switch (terrain){
                     case 'sand':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.9 : 0.85;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.9 : 0.85;
                         break;
                     case 'swamp':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.35 : 0.18;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.35 : 0.18;
                         break;
                     case 'jungle':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.92 : 0.85;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.92 : 0.85;
                         break;
                     case 'rocky':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.65 : 0.5;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.65 : 0.5;
                         break;
                     case 'gravel':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 1 : 0.95;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 1 : 0.95;
                         break;
                     case 'muddy':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.85 : 0.58;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.85 : 0.58;
                         break;
                     case 'grass':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.3 : 1.2;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 1.3 : 1.2;
                         break;
                     case 'brush':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.9 : 0.8;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.9 : 0.8;
                         break;
                     case 'concrete':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.1 : 1;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 1.1 : 1;
                         break;
                 }
             }
             break;
         case 'tread':
+        case 'rakshasa':
+        case 'harpy':
+        case 'dragon':
             {
                 switch (terrain){
                     case 'sand':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.15 : 1.1;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 1.15 : 1.1;
                         break;
                     case 'swamp':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.55 : 0.4;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.55 : 0.4;
                         break;
                     case 'forest':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 1 : 0.95;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 1 : 0.95;
                         break;
                     case 'jungle':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.95 : 0.9;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.95 : 0.9;
                         break;
                     case 'rocky':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.65 : 0.5;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.65 : 0.5;
                         break;
                     case 'gravel':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.3 : 1.2;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 1.3 : 1.2;
                         break;
                     case 'muddy':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.88 : 0.72;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.88 : 0.72;
                         break;
                 }
             }
             break;
+        case 'cambion':
         case 'biped':
+        case 'imp':
+        case 'gorgon':
             {
                 switch (terrain){
                     case 'sand':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.78 : 0.65;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.78 : 0.65;
                         break;
                     case 'swamp':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.68 : 0.5;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.68 : 0.5;
                         break;
                     case 'forest':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 1 : 0.95;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 1 : 0.95;
                         break;
                     case 'jungle':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.82 : 0.7;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.82 : 0.7;
                         break;
                     case 'rocky':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.48 : 0.4;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.48 : 0.4;
                         break;
                     case 'muddy':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.85 : 0.7;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.85 : 0.7;
                         break;
                     case 'grass':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.25 : 1.2;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 1.25 : 1.2;
                         break;
                     case 'brush':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.92 : 0.85;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.92 : 0.85;
                         break;
                 }
             }
             break;
         case 'quad':
+        case 'golem':
+        case 'barghest':
             {
                 switch (terrain){
                     case 'sand':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.86 : 0.75;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.86 : 0.75;
                         break;
                     case 'swamp':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.58 : 0.42;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.58 : 0.42;
                         break;
                     case 'forest':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.25 : 1.2;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 1.25 : 1.2;
                         break;
                     case 'rocky':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.95 : 0.9;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.95 : 0.9;
                         break;
                     case 'gravel':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.9 : 0.8;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.9 : 0.8;
                         break;
                     case 'muddy':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.68 : 0.5;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.68 : 0.5;
                         break;
                     case 'grass':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 1 : 0.95;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 1 : 0.95;
                         break;
                     case 'brush':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.95 : 0.9;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.95 : 0.9;
                         break;
                 }
             }
             break;
         case 'spider':
+        case 'minotaur':
+        case 'hydra':
             {
                 switch (terrain){
                     case 'sand':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.75 : 0.65;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.75 : 0.65;
                         break;
                     case 'swamp':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.9 : 0.78;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.9 : 0.78;
                         break;
                     case 'forest':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.82 : 0.75;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.82 : 0.75;
                         break;
                     case 'jungle':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.77 : 0.65;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.77 : 0.65;
                         break;
                     case 'rocky':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.25 : 1.2;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 1.25 : 1.2;
                         break;
                     case 'gravel':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.86 : 0.75;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.86 : 0.75;
                         break;
                     case 'muddy':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.92 : 0.82;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.92 : 0.82;
                         break;
                     case 'brush':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 1 : 0.95;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 1 : 0.95;
                         break;
                 }
             }
             break;
         case 'hover':
+        case 'flying_imp':
+        case 'snake':
             {
                 switch (terrain){
                     case 'swamp':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.35 : 1.2;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 1.35 : 1.2;
                         break;
                     case 'forest':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.65 : 0.48;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.65 : 0.48;
                         break;
                     case 'jungle':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.55 : 0.35;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.55 : 0.35;
                         break;
                     case 'rocky':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.82 : 0.68;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.82 : 0.68;
                         break;
                     case 'muddy':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.15 : 1.08;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 1.15 : 1.08;
                         break;
                     case 'brush':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.78 : 0.7;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.78 : 0.7;
                         break;
                 }
             }
@@ -6451,17 +7567,28 @@ export function mechCollect(mech){
         rating *= statusEffect(mech,effect);
     });
     rating *= terrainRating(mech,terrainFactor,effects);
+    if (global.race['warlord']){
+        rating *= 0.1;
+    }
     return rating;
 }
 
 export function mechWeaponPower(size){
     switch (size){
+        case 'minion':
+            return 0.0015;
         case 'small':
             return 0.0025;
+        case 'fiend':
+            return 0.006;
         case 'medium':
             return 0.0075;
+        case 'cyberdemon':
+            return 0.009;
         case 'large':
             return 0.01;
+        case 'archfiend':
+            return 0.011;
         case 'titan':
             return 0.012;
         default:
@@ -6481,12 +7608,15 @@ export function mechRating(mech,boss){
     if (global.blood['wrath']){
         rating *= 1 + (global.blood.wrath / 20);
     }
+    if (mech.size === 'archfiend' && mech.chassis != 'hydra'){
+        rating *= 2;
+    }
 
     if (boss){
         if (global.stats.achieve['gladiator'] && global.stats.achieve.gladiator.l > 0){
             rating *= 1 + global.stats.achieve.gladiator.l * 0.1;
         }
-        if (mech.size === 'titan'){
+        if (mech.size === 'titan' || mech.size === 'archfiend'){
             rating *= 1.1;
         }
 
@@ -6511,12 +7641,15 @@ export function mechRating(mech,boss){
 
         if (global.portal.spire.type === 'concrete'){
             switch (mech.size){
+                case 'minion':
                 case 'small':
                     rating *= 0.92;
                     break;
+                case 'fiend':
                 case 'medium':
                     rating *= 0.95;
                     break;
+                case 'archfiend':
                 case 'titan':
                     rating *= 1.25;
                     break;
@@ -6536,7 +7669,7 @@ export function mechRating(mech,boss){
         rating /= global.portal.spire.count;
         let damage = 0;
         for (let i=0; i<mech.hardpoint.length; i++){
-            let effect = monsters[global.portal.spire.boss].weapon[mech.hardpoint[i]];
+            let effect = checkBossResist(global.portal.spire.boss,mech.hardpoint[i]);
             damage += rating * weaponPower(mech,effect);
         }
         return damage;
@@ -7375,6 +8508,7 @@ export function checkWarlordAchieve(){
 
 export function warlordSetup(){
     if (global.race['warlord'] && global.race.universe === 'evil'){
+        global.tech['aerogel'] = 1;
         global.tech['agriculture'] = 7;
         global.tech['alloy'] = 1;
         global.tech['alumina'] = 2;
@@ -7382,7 +8516,7 @@ export function warlordSetup(){
         global.tech['banking'] = 11;
         global.tech['biotech'] = 1;
         global.tech['boot_camp'] = 2;
-        global.tech['container'] = 7;
+        global.tech['container'] = 8;
         global.tech['copper'] = 1;
         global.tech['currency'] = 6;
         global.tech['drone'] = 1;
@@ -7404,7 +8538,7 @@ export function warlordSetup(){
         global.tech['graphene'] = 1;
         global.tech['helium'] = 1;
         global.tech['hell'] = 1;
-        global.tech['high_tech'] = 14;
+        global.tech['high_tech'] = 17;
         global.tech['hoe'] = 5;
         global.tech['home_safe'] = 2;
         global.tech['housing'] = 3;
@@ -7418,7 +8552,7 @@ export function warlordSetup(){
         global.tech['mars'] = 5;
         global.tech['mass'] = 1;
         global.tech['medic'] = 3;
-        global.tech['military'] = 8;
+        global.tech['military'] = 10;
         global.tech['mine_conveyor'] = 1;
         global.tech['mining'] = 4;
         global.tech['monument'] = 1;
@@ -7435,7 +8569,7 @@ export function warlordSetup(){
         global.tech['reproduction'] = 1;
         global.tech['rival'] = 1;
         global.tech['satellite'] = 1;
-        global.tech['science'] = 9;
+        global.tech['science'] = 21;
         global.tech['shelving'] = 3;
         global.tech['shipyard'] = 1;
         global.tech['smelting'] = 6;
@@ -7445,7 +8579,7 @@ export function warlordSetup(){
         global.tech['space_housing'] = 1;
         global.tech['spy'] = 5;
         global.tech['stanene'] = 1;
-        global.tech['steel_container'] = 6;
+        global.tech['steel_container'] = 7;
         global.tech['storage'] = 5;
         global.tech['swarm'] = 6;
         global.tech['syndicate'] = 0;
@@ -7470,7 +8604,7 @@ export function warlordSetup(){
         }
 
         if (!global.race['flier']){
-            global.tech['cement'] = 5;
+            global.tech['cement'] = 6;
             global.resource.Cement.display = true;
         }
 
@@ -7865,6 +8999,17 @@ export function warlordSetup(){
         global.civic.scientist.assigned = 2;
 
         global.civic.govern.type = 'autocracy';
+
+        if (global.race['calm']){
+            global.resource.Zen.display = true;
+            initStruct(actions.city.meditation);
+        }
+        if (global.race['cannibalize']){
+            initStruct(actions.city.s_alter);
+        }
+        if (global.race['magnificent']){
+            initStruct(actions.city.shrine);
+        }
 
         global.portal['fortress'] = {
             threat: 10000,

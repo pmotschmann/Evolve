@@ -337,7 +337,7 @@ function achieveDesc(achievement,showFlair,universe){
         let checklist = `<div class="list">`;
         checklist = checklist + `<div class="has-text-${global.stats.warlord.k ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_k`,[50])}</div>`;
         checklist = checklist + `<div class="has-text-${global.stats.warlord.p ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_p`)}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.warlord.a ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_a`,[999])}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.warlord.a ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_a`,[250])}</div>`;
         checklist = checklist + `<div class="has-text-${global.stats.warlord.r ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_r`)}</div>`;
         checklist = checklist + `<div class="has-text-${global.stats.warlord.g ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_g`)}</div>`;
         checklist = checklist + `</div>`;

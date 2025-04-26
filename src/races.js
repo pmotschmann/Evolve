@@ -3,7 +3,7 @@ import { loc } from './locale.js';
 import { defineIndustry } from './industry.js';
 import { setJobName, jobScale, loadFoundry } from './jobs.js';
 import { vBind, clearElement, popover, removeFromQueue, removeFromRQueue, calc_mastery, gameLoop, getEaster, getHalloween, randomKey, modRes, messageQueue } from './functions.js';
-import { setResourceName, atomic_mass } from './resources.js';
+import { setResourceName, drawResourceTab, atomic_mass } from './resources.js';
 import { buildGarrison, govEffect, govTitle, armyRating, govCivics } from './civics.js';
 import { govActive, removeTask, defineGovernor } from './governor.js';
 import { unlockAchieve, unlockFeat, alevel } from './achieve.js';
@@ -2134,15 +2134,15 @@ export const traits = {
                 case 0.25:
                     return [10];
                 case 0.5:
-                    return [15];
-                case 1:
                     return [20];
-                case 2:
-                    return [25];
-                case 3:
+                case 1:
                     return [30];
+                case 2:
+                    return [40];
+                case 3:
+                    return [50];
                 case 4:
-                    return [35];
+                    return [60];
             }
         },
     },
@@ -6612,9 +6612,12 @@ export function cleanAddTrait(trait){
                     global.resource[res].trade = 0;
                 }
             });
-            global.settings.showMarket = false;
-            if (global.settings.marketTabs === 0) {
-                global.settings.marketTabs = 1;
+            global.city.market.active = false;
+            if (!global.galaxy?.freighter?.count){
+                global.settings.showMarket = false;
+                if (global.settings.marketTabs === 0) {
+                    global.settings.marketTabs = 1;
+                }
             }
             removeFromQueue(['city-trade']);
             removeFromRQueue(['trade']);
@@ -6880,9 +6883,13 @@ export function cleanRemoveTrait(trait,rank){
             delete power_generated[loc('city_wind_power')];
             break;
         case 'terrifying':
-            global.settings.showMarket = true;
             checkPurgatory('tech','trade');
             checkPurgatory('city','trade');
+            if (global.tech['trade']){
+                global.settings.showMarket = true;
+                global.city.market.active = true;
+                drawResourceTab('market');
+            }
             break;
         case 'slaver':
             removeFromQueue(['city-slave_pen']);
@@ -8390,8 +8397,8 @@ function majorWish(parent){
                         {
                             let wonders = [];
                             if (!global.race['lone_survivor']){
-                                let hasCity = global.race['cataclysm'] || global.race['orbit_decay'] ? false : true;
-                                let hasMars = global.tech['mars'] ? true : false;
+                                let hasCity = global.race['cataclysm'] || global.race['orbit_decay'] || global.race['warlord'] ? false : true;
+                                let hasMars = global.tech['mars'] && !global.race['warlord'] ? true : false;
                                 if (!global.city.hasOwnProperty('wonder_lighthouse') && hasCity){
                                     wonders.push('lighthouse');
                                 }
@@ -8401,10 +8408,13 @@ function majorWish(parent){
                                 if (!global.space.hasOwnProperty('wonder_statue') && hasMars){
                                     wonders.push('statue');
                                 }
-                                if (!global.race['truepath'] && !global.interstellar.hasOwnProperty('wonder_gardens') && global.tech['alpha'] && global.tech.alpha >= 2){
+                                if (global.race['warlord']){
                                     wonders.push('gardens');
                                 }
-                                if (global.race['truepath'] && !global.space.hasOwnProperty('wonder_gardens') && global.tech['titan'] && global.tech.titan >= 2){
+                                else if (!global.race['truepath'] && !global.interstellar.hasOwnProperty('wonder_gardens') && global.tech['alpha'] && global.tech.alpha >= 2){
+                                    wonders.push('gardens');
+                                }
+                                else if (global.race['truepath'] && !global.space.hasOwnProperty('wonder_gardens') && global.tech['titan'] && global.tech.titan >= 2){
                                     wonders.push('gardens');
                                 }
                             }
@@ -8422,7 +8432,7 @@ function majorWish(parent){
                                         global.space['wonder_statue'] = { count: 1 };
                                         break;
                                     case 'gardens':
-                                        global[global.race['truepath'] ? 'space' : 'interstellar']['wonder_gardens'] = { count: 1 };
+                                        global[global.race['warlord'] ? 'portal' : (global.race['truepath'] ? 'space' : 'interstellar')]['wonder_gardens'] = { count: 1 };
                                         break;
                                 }
                                 messageQueue(loc('wish_wonder'),'warning',false,['events']);

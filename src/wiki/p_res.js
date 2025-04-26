@@ -361,7 +361,7 @@ export function prestigeCalc(info,resource,extraType,resetType){
             break;
         case 'supercoiled':
             inputs.reset.val = 'apotheosis';
-            equation += `{{ i.genes.val, 'genes' | generic }} ** <span v-show="!i.micro.val">3</span><span v-show="i.micro.val">2</span>`;
+            equation += `({{ i.genes.val, 'genes' | generic }} + 1) ** <span v-show="!i.micro.val">3</span><span v-show="i.micro.val">2</span>`;
             break;
     }
     if (resource === 'plasmid'){

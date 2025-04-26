@@ -11,6 +11,7 @@ import { govEffect } from './civics.js';
 import { universeLevel, universeAffix, alevel } from './achieve.js';
 import { astrologySign, astroVal } from './seasons.js';
 import { shipCosts, TPShipDesc } from './truepath.js';
+import { mechCost, mechDesc } from './portal.js';
 
 var popperRef = false;
 export function popover(id,content,opts){
@@ -281,10 +282,10 @@ export function powerGrid(type,reset){
     switch (type){
         case 'power':
             power_structs = [
-                'city:transmitter','prtl_ruins:arcology','city:apartment','eden_asphodel:rectory','int_alpha:habitat','int_alpha:luxury_condo','spc_red:spaceport','spc_titan:titan_spaceport','spc_titan:electrolysis','int_alpha:starport',
-                'eden_asphodel:encampment','spc_dwarf:shipyard','spc_titan:ai_core2','spc_eris:drone_control','spc_titan:ai_colonist','int_blackhole:s_gate','gxy_gateway:starbase','spc_triton:fob',
+                'city:transmitter','prtl_ruins:arcology','city:apartment','eden_asphodel:rectory','eden_asphodel:corruptor','int_alpha:habitat','int_alpha:luxury_condo','spc_red:spaceport','spc_titan:titan_spaceport','spc_titan:electrolysis',
+                'int_alpha:starport','eden_asphodel:encampment','spc_dwarf:shipyard','spc_titan:ai_core2','spc_eris:drone_control','spc_titan:ai_colonist','int_blackhole:s_gate','gxy_gateway:starbase','spc_triton:fob',
                 'prtl_wasteland:demon_forge','prtl_wasteland:twisted_lab','spc_enceladus:operating_base','spc_enceladus:zero_g_lab','spc_titan:sam','gxy_gateway:ship_dock','prtl_ruins:hell_forge','int_neutron:stellar_forge','int_neutron:citadel',
-                'tau_home:orbital_station','tau_red:orbital_platform','tau_gas:refueling_station','tau_home:tau_farm','tau_gas:ore_refinery','tau_gas:whaling_station',
+                'prtl_badlands:mortuary','tau_home:orbital_station','tau_red:orbital_platform','tau_gas:refueling_station','tau_home:tau_farm','tau_gas:ore_refinery','tau_gas:whaling_station',
                 'city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','gxy_stargate:telemetry_beacon','int_nebula:nexus','gxy_stargate:gateway_depot',
                 'spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','gxy_gorddon:embassy','gxy_gorddon:dormitory','gxy_alien1:resort','spc_gas_moon:oil_extractor',
                 'prtl_wasteland:hell_factory','int_alpha:int_factory','city:factory','spc_red:red_factory','spc_dwarf:world_controller','prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine',
@@ -517,6 +518,10 @@ export function buildQueue(){
                         });
                         c_action = { cost: costs };
                     }
+                    else if (segments[0] === 'hell' && segments[1].substring(0,4) === 'mech'){
+                        let costs = mechCost(global.queue.queue[index].type.size,global.queue.queue[index].type.infernal,true);
+                        c_action = { cost: costs };
+                    }
                     else if (segments[0] === 'city' || segments[0] === 'evolution' || segments[0] === 'starDock'){
                         c_action = actions[segments[0]][segments[1]];
                     }
@@ -624,6 +629,9 @@ function attachQueuePopovers(){
                 else if (struct.s[0].substring(0,2) === 'tp' && struct.s[1].substring(0,4) === 'ship'){
                     TPShipDesc(obj.popper,deepClone(global.queue.queue[i]));
                 }
+                else if (struct.s[0].substring(0,4) === 'hell' && struct.s[1].substring(0,4) === 'mech'){
+                    mechDesc(obj.popper,deepClone(global.queue.queue[i]));
+                }
                 else {
                     actionDesc(obj.popper,struct.a,global[struct.s[0]][struct.s[1]],false,false,false,b_res);
                 }
@@ -649,6 +657,9 @@ export function decodeStructId(id){
     }
     else if (segments[0] === 'tp' && segments[1].substring(0,4) === 'ship'){
         c_action = 'ship';
+    }
+    else if (segments[0] === 'hell' && segments[1].substring(0,4) === 'mech'){
+        c_action = 'mech';
     }
     else if (segments[0] === 'city' || segments[0] === 'evolution' || segments[0] === 'starDock'){
         c_action = actions[segments[0]][segments[1]];
@@ -1723,6 +1734,9 @@ export function calcPrestige(type,inputs){
             else {
                 gains.supercoiled = pr_gain ** 3;
             }
+            if (global.race['warlord']){
+                gains.artifact = 5;
+            }
         }
     }
 
@@ -1769,6 +1783,7 @@ export function adjustCosts(c_action, offset, wiki){
     costs = heavyAdjust(costs, offset, wiki);
     costs = dictatorAdjust(costs, offset, wiki);
     costs = lMatAdjust(costs, c_action, offset, wiki);
+    costs = nexusAdjust(costs, c_action, offset, wiki);
     return craftAdjust(costs, offset, wiki);
 }
 
@@ -2070,6 +2085,23 @@ function lMatAdjust(costs, c_action, offset, wiki){
     return costs;
 }
 
+function nexusAdjust(costs, c_action, offset, wiki){
+    if(global.tech['nexus'] && global.race['witch_hunter'] && global.tech['roguemagic'] && global.tech.roguemagic >= 7){
+        let newCosts = {};
+        let adjustRate = 0.96 ** global.tech['nexus'];
+        Object.keys(costs).forEach(function (res){
+            if (['Mana'].includes(res)){
+                newCosts[res] = function(){ return costs[res](offset, wiki) * adjustRate; }
+            }
+            else {
+                newCosts[res] = function(){ return costs[res](offset, wiki); }
+            }
+        });
+        return newCosts;
+    }
+    return costs;
+}
+
 export function popCost(p){
     if (global.race['high_pop']){
         p *= traits.high_pop.vars()[0];
@@ -2320,7 +2352,7 @@ export function getBaseIcon(name,type){
                 return 'meat';
             case 'wish':
                 return 'trophy';
-            case 'existential_risk':
+            case 'planned_obsolescence':
                 return 'robot';
             case 'friday':
                 return 'mask';

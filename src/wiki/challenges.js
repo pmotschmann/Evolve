@@ -128,13 +128,13 @@ export function challengesPage(content){
         }
 
         {   // Weak Genes
-            let weak_vals = global.race.universe === 'antimatter' ? [`20%`,`50%`,`50%`,`33%`] : [`50%`,`20%`,`50%`,`33%`];
+            let weak_vals = global.race.universe === 'antimatter' ? [`20%`,`50%`,`25%`,`12.5%`,`16.7%`] : [`50%`,`20%`,`10%`,`50%`,`33.3%`];
             infoBoxBuilder(genes,{ name: 'genes_weak', template: 'challenges', paragraphs: 5, break: [2,3,4,5], h_level: 2,
                 para_data: {
                     1: [weak_vals[0]],
                     2: [weak_vals[1]],
-                    3: [weak_vals[2]],
-                    4: [weak_vals[3]],
+                    3: [weak_vals[2], weak_vals[3]],
+                    4: [weak_vals[4]],
                     5: [loc(`wiki_challenges_gene`),loc(`evo_challenge_truepath`)]
                 },
                 data_link: {
