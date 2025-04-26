@@ -8862,7 +8862,7 @@ function midLoop(){
         if (global.eden['warehouse']){
             var multiplier = storageMultipler(global.race['warlord'] ? 1 : 0.2);
             if (global.race['warlord'] && global.eden['corruptor']){
-                multiplier *= 1 + (p_on['corruptor'] || 0) * 0.08;
+                multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech.asphodel >= 12 ? 0.12 : 0.08);
             }
             let label = loc('eden_asphodel_name');
             for (const res of actions.eden.eden_asphodel.warehouse.res()){
@@ -8876,6 +8876,9 @@ function midLoop(){
 
         if (global.portal['warehouse']){
             var multiplier = storageMultipler();
+            if (global.race['warlord'] && global.eden['corruptor'] && global.tech.asphodel >= 12){
+                multiplier *= 1 + (p_on['corruptor'] || 0) * 0.12;
+            }
             let label = global.tech['storage'] <= 2 ? loc('city_shed_title1') : (global.tech['storage'] >= 4 ? loc('city_shed_title3') : loc('city_shed_title2'));
             for (const res of actions.portal.prtl_wasteland.warehouse.res()){
                 if (global.resource[res].display){
@@ -8992,10 +8995,14 @@ function midLoop(){
         }
 
         if (global.portal['harbor'] && p_on['harbor']){
+            let multiplier = 1;
+            if (global.race['warlord'] && global.eden['corruptor'] && global.tech?.asphodel >= 12){
+                multiplier *= 1 + (p_on['corruptor'] || 0) * 0.1;
+            }
             let label = loc('portal_harbor_title');
             for (const res of actions.portal.prtl_lake.harbor.res()){
                 if (global.resource[res].display){
-                    let gain = p_on['harbor'] * spatialReasoning(actions.portal.prtl_lake.harbor.val(res));
+                    let gain = p_on['harbor'] * spatialReasoning(actions.portal.prtl_lake.harbor.val(res) * multiplier);
                     caps[res] += gain;
                     breakdown.c[res][label] = gain+'v';
                 }
@@ -9473,7 +9480,10 @@ function midLoop(){
         }
 
         if (global.eden['eternal_bank']){
-            let vault = bank_vault() * 10;
+            let vault = bank_vault() * (global.race['warlord'] ? 20 : 10);
+            if (global.race['warlord'] && global.eden['corruptor'] && global.tech.asphodel >= 12){
+                vault *= 1 + (p_on['corruptor'] || 0) * 0.08;
+            }
             let banks = global.eden.eternal_bank.count;
             let gain = (banks * spatialReasoning(vault));
             caps['Money'] += gain;

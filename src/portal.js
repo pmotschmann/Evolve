@@ -865,6 +865,9 @@ const fortressModules = {
             effect(wiki){
                 let storage = '<div class="aTable">';
                 let multiplier = storageMultipler(1, wiki);
+                if (global.race['warlord'] && global.eden['corruptor'] && global.tech.asphodel >= 12){
+                    multiplier *= 1 + (p_on['corruptor'] || 0) * 0.1;
+                }
                 for (const res of $(this)[0].res()){
                     if (global.resource[res].display){
                         let val = sizeApproximation(+(spatialReasoning($(this)[0].val(res)) * multiplier).toFixed(0),1);
@@ -886,6 +889,9 @@ const fortressModules = {
                 else if (payCosts($(this)[0])){
                     incrementStruct('warehouse','portal');
                     let multiplier = storageMultipler();
+                    if (global.race['warlord'] && global.eden['corruptor'] && global.tech.asphodel >= 12){
+                        multiplier *= 1 + (p_on['corruptor'] || 0) * 0.1;
+                    }
                     for (const res of $(this)[0].res()){
                         if (global.resource[res].display){
                             global.resource[res].max += (spatialReasoning($(this)[0].val(res) * multiplier));
@@ -2556,7 +2562,7 @@ const fortressModules = {
         },
         harbor: {
             id: 'portal-harbor',
-            title: loc('portal_harbor_title'),
+            title(){ return loc('portal_harbor_title'); },
             desc(){
                 return `<div>${loc('portal_harbor_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
@@ -2647,9 +2653,13 @@ const fortressModules = {
             },
             effect(wiki){
                 let storage = '<div class="aTable">';
+                let multiplier = 1;
+                if (global.race['warlord'] && global.eden['corruptor'] && global.tech?.asphodel >= 12){
+                    multiplier *= 1 + (p_on['corruptor'] || 0) * 0.1;
+                }
                 for (const res of $(this)[0].res()){
                     if (global.resource[res].display){
-                        let val = sizeApproximation(+(spatialReasoning($(this)[0].val(res))).toFixed(0),1);
+                        let val = sizeApproximation(+(spatialReasoning($(this)[0].val(res) * multiplier)).toFixed(0),1);
                         storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
@@ -2660,9 +2670,13 @@ const fortressModules = {
                 if (payCosts($(this)[0])){
                     incrementStruct('harbor','portal');
                     if (powerOnNewStruct($(this)[0])){
+                        let multiplier = 1;
+                        if (global.race['warlord'] && global.eden['corruptor'] && global.tech?.asphodel >= 12){
+                            multiplier *= 1 + (p_on['corruptor'] || 0) * 0.1;
+                        }
                         for (const res of $(this)[0].res()){
                             if (global.resource[res].display){
-                                global.resource[res].max += (spatialReasoning($(this)[0].val(res)));
+                                global.resource[res].max += (spatialReasoning($(this)[0].val(res) * multiplier));
                             }
                         };
                     }

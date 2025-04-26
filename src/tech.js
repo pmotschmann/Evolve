@@ -15036,7 +15036,7 @@ const techs = {
         id: 'tech-otherworldly_cement',
         title(){ return loc('tech_otherworldly_cement',[global.resource.Cement.name]); },
         desc(){ return loc('tech_otherworldly_cement',[global.resource.Cement.name]); },
-        category: 'housing',
+        category: 'cement',
         era: 'existential',
         reqs: { elysium: 17, cement: 7 },
         grant: ['cement', 8],
@@ -15058,7 +15058,7 @@ const techs = {
         id: 'tech-ancient_crafters',
         title(){ return loc('tech_ancient_crafters'); },
         desc(){ return loc('tech_ancient_crafters'); },
-        category: 'housing',
+        category: 'crafting',
         era: 'existential',
         reqs: { elysium: 17 },
         grant: ['elysium',18],
@@ -15345,6 +15345,7 @@ const techs = {
         condition(){
             return global.race['universe'] === 'evil' ? true : false;
         },
+        wiki: global.race['warlord'] ? true : false,
         grant: ['hellspawn',2],
         cost: {
             Knowledge(){ return 250000; }
@@ -15369,6 +15370,7 @@ const techs = {
         condition(){
             return global.race['universe'] === 'evil' ? true : false;
         },
+        wiki: global.race['warlord'] ? true : false,
         grant: ['hellspawn',3],
         cost: {
             Knowledge(){ return 500000; }
@@ -15393,6 +15395,7 @@ const techs = {
         condition(){
             return global.race['universe'] === 'evil' && global.race?.absorbed?.length >= 4 ? true : false;
         },
+        wiki: global.race['warlord'] ? true : false,
         grant: ['hellspawn',4],
         cost: {
             Knowledge(){ return 1750000; }
@@ -15417,6 +15420,7 @@ const techs = {
         condition(){
             return global.race['universe'] === 'evil' ? true : false;
         },
+        wiki: global.race['warlord'] ? true : false,
         grant: ['hellspawn',6],
         cost: {
             Knowledge(){ return 90000000; }
@@ -15440,6 +15444,7 @@ const techs = {
         condition(){
             return global.race['universe'] === 'evil' ? true : false;
         },
+        wiki: global.race['warlord'] ? true : false,
         grant: ['hellspawn',7],
         cost: {
             Knowledge(){ return 125000000; }
@@ -15464,6 +15469,7 @@ const techs = {
         condition(){
             return global.race['universe'] === 'evil' ? true : false;
         },
+        wiki: global.race['warlord'] ? true : false,
         grant: ['hellspawn',8],
         cost: {
             Knowledge(){ return 148000000; }
@@ -15488,6 +15494,7 @@ const techs = {
         condition(){
             return global.race['universe'] === 'evil' ? true : false;
         },
+        wiki: global.race['warlord'] ? true : false,
         grant: ['hellspawn',9],
         cost: {
             Knowledge(){ return 175000000; },
@@ -15513,6 +15520,7 @@ const techs = {
         condition(){
             return global.race['universe'] === 'evil' ? true : false;
         },
+        wiki: global.race['warlord'] ? true : false,
         grant: ['pitspawn',1],
         cost: {
             Knowledge(){ return 1900000; }
@@ -15537,6 +15545,7 @@ const techs = {
         condition(){
             return global.race['universe'] === 'evil' ? true : false;
         },
+        wiki: global.race['warlord'] ? true : false,
         grant: ['pitspawn',2],
         cost: {
             Knowledge(){ return 2500000; }
@@ -15561,6 +15570,7 @@ const techs = {
         condition(){
             return global.race['universe'] === 'evil' ? true : false;
         },
+        wiki: global.race['warlord'] ? true : false,
         grant: ['pitspawn',3],
         cost: {
             Knowledge(){ return 12500000; },
@@ -15582,6 +15592,10 @@ const techs = {
         era: 'existential',
         reqs: { asphodel: 10, theology: 2 },
         trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        wiki: global.race['warlord'] ? true : false,
         grant: ['asphodel',11],
         cost: {
             Knowledge(){ return 135000000; },
@@ -15591,6 +15605,32 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.eden.eden_asphodel.corruptor);
+                return true;
+            }
+            return false;
+        }
+    },
+    seeping_corruption: {
+        id: 'tech-seeping_corruption',
+        title(){ return loc('tech_seeping_corruption'); },
+        desc(){ return loc('tech_seeping_corruption'); },
+        category: 'evil',
+        era: 'existential',
+        reqs: { elysium: 18, asphodel: 11 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        wiki: global.race['warlord'] ? true : false,
+        grant: ['asphodel',12],
+        cost: {
+            Knowledge(){ return 200000000; },
+            Omniscience(){ return 47500; },
+            Elysanite(){ return 100000000; }
+        },
+        effect(){ return loc('tech_seeping_corruption_effect',[loc('eden_asphodel_name')]); },
+        action(){
+            if (payCosts($(this)[0])){
                 return true;
             }
             return false;
