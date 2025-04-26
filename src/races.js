@@ -2134,15 +2134,15 @@ export const traits = {
                 case 0.25:
                     return [10];
                 case 0.5:
-                    return [15];
-                case 1:
                     return [20];
-                case 2:
-                    return [25];
-                case 3:
+                case 1:
                     return [30];
+                case 2:
+                    return [40];
+                case 3:
+                    return [50];
                 case 4:
-                    return [35];
+                    return [60];
             }
         },
     },

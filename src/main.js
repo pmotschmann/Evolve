@@ -8848,7 +8848,7 @@ function midLoop(){
         }
 
         if (global.eden['warehouse']){
-            var multiplier = storageMultipler(0.2);
+            var multiplier = storageMultipler(global.race['warlord'] ? 1 : 0.2);
             let label = loc('eden_asphodel_name');
             for (const res of actions.eden.eden_asphodel.warehouse.res()){
                 if (global.resource[res].display){

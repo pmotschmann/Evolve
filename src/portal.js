@@ -838,7 +838,7 @@ const fortressModules = {
                     case 'Nano_Tube':
                         return 34 + (global.portal?.warehouse?.rank || 1) * 4;
                     case 'Neutronium':
-                        return 13 + (global.portal?.warehouse?.rank || 1) * 2;
+                        return 12 + (global.portal?.warehouse?.rank || 1) * 3;
                     case 'Adamantite':
                         return 15 + (global.portal?.warehouse?.rank || 1) * 3;
                     case 'Infernite':
@@ -2584,6 +2584,10 @@ const fortressModules = {
                     list.push('Copper');
                     list.push('Iron');
                     list.push('Aluminium');
+                    list.push('Cement');
+                    list.push('Steel');
+                    list.push('Titanium');
+                    list.push('Coal');
                 }
                 return list;
             },
@@ -2625,8 +2629,16 @@ const fortressModules = {
                         return 650000;
                     case 'Iron':
                         return 650000;
+                    case 'Steel':
+                        return 650000;
                     case 'Aluminium':
                         return 425000;
+                    case 'Titanium':
+                        return 350000;
+                    case 'Cement':
+                        return 550000;
+                    case 'Coal':
+                        return 275000;
                     default:
                         return 0;
                 }
@@ -4864,8 +4876,9 @@ export function hellguard(){
             global.portal.throne.enemy.forEach(function(e){
                 let eRating = e.s + (global.portal.minions.spawns / 9000) ** 8;
                 let reapEffect = global.race['blurry'] ? 102 - traits.blurry.vars()[0] : 102;
-                reapEffect -= (global.portal?.reaper?.count || 1) * 2;
-                let reaper = 0.25 + (eRating * 0.01) - ((global.portal?.reaper?.count || 0) / reapEffect);
+                reapEffect -= (global.portal?.reaper?.rank || 1) * 2;
+                if (reapEffect < 1){ reapEffect = 1; }
+                let reaper = 0.25 + (eRating * 0.01) - ((global.portal?.reaper?.count || 0) ** (1 + ((global.portal?.reaper?.rank || 1) - 1) / 25) / reapEffect);
                 if (reaper < 0.01){ reaper = 0.01; }
                 let bound = Math.round(global.portal.minions.spawns * (0.5 * eRating) * (eRating ** reaper) / rating);
                 let kills = Math.rand(e.s, bound);

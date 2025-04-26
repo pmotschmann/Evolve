@@ -397,7 +397,7 @@ const edenicModules = {
                     case 'Nano_Tube':
                         return 150;
                     case 'Neutronium':
-                        return 40;
+                        return global.race['warlord'] ? 60 : 40;
                     case 'Adamantite':
                         return 90;
                     case 'Infernite':
@@ -425,7 +425,7 @@ const edenicModules = {
             wide: true,
             effect(){
                 let storage = '<div class="aTable">';
-                let multiplier = storageMultipler(0.2);
+                let multiplier = storageMultipler(global.race['warlord'] ? 1 : 0.2);
                 for (const res of $(this)[0].res()){
                     if (global.resource[res].display){
                         let val = sizeApproximation(+(spatialReasoning(+($(this)[0].val(res) * multiplier)).toFixed(0)));
@@ -438,7 +438,7 @@ const edenicModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('warehouse','eden');
-                    let multiplier = storageMultipler(0.2);
+                    let multiplier = storageMultipler(global.race['warlord'] ? 1 : 0.2);
                     for (const res of $(this)[0].res()){
                         if (global.resource[res].display){
                             global.resource[res].max += (spatialReasoning($(this)[0].val(res) * multiplier));
