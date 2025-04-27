@@ -3164,7 +3164,7 @@ function fastLoop(){
                 if (global.city['wonder_lighthouse']){ monuments += 5; }
                 if (global.city['wonder_pyramid']){ monuments += 5; }
                 if (global.space['wonder_statue']){ monuments += 5; }
-                if (global.interstellar['wonder_gardens'] || global.space['wonder_gardens']){ monuments += 5; }
+                if (global.interstellar['wonder_gardens'] || global.space['wonder_gardens'] || global.portal['wonder_gardens']){ monuments += 5; }
             }
             moraleCap += monuments * mcap;
         }
@@ -8233,6 +8233,7 @@ function midLoop(){
 
         if (global.race.universe === 'evil' && global.tech['primitive'] && global.tech.primitive >= 3){
             global.resource.Authority.display = true;
+            let garrison = garrisonSize() || 0;
 
             if (global.civic.govern.type === 'autocracy'){
                 let gain = 10;
@@ -8317,7 +8318,6 @@ function midLoop(){
                 if (global.tech['evil']){
                     adjust += 0.1 * global.tech.evil;
                 }
-                let garrison = garrisonSize() || 0;
                 if (global.portal['fortress']){
                     garrison += global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size);
                 }
