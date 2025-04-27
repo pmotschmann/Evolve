@@ -8233,6 +8233,7 @@ function midLoop(){
 
         if (global.race.universe === 'evil' && global.tech['primitive'] && global.tech.primitive >= 3){
             global.resource.Authority.display = true;
+            let garrison = garrisonSize() || 0;
 
             if (global.civic.govern.type === 'autocracy'){
                 let gain = 10;
@@ -8317,7 +8318,6 @@ function midLoop(){
                 if (global.tech['evil']){
                     adjust += 0.1 * global.tech.evil;
                 }
-                let garrison = garrisonSize() || 0;
                 if (global.portal['fortress']){
                     garrison += global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size);
                 }
