@@ -2052,7 +2052,8 @@ const edenicModules = {
             queue_complete(){ return global.tech.palace >= 2 ? 0 : 1; },
             cost: {
                 Money(){ return 50000000000; },
-                Deuterium(){ return 5000000; },
+                Helium_3(){ return global.race['warlord'] ? 5000000 : 0; },
+                Deuterium(){ return global.race['warlord'] ? 0 : 5000000; }
             },
             effect: loc('eden_scout_palace_effect'),
             action(){

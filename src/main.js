@@ -1964,7 +1964,7 @@ function fastLoop(){
         }
 
         if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.potato){
-            let power = global.race.wishStats.potato;
+            let power = powerModifier(global.race.wishStats.potato);
             max_power -= power;
             power_grid += power;
             power_generated[loc('wish_potato')] = power;

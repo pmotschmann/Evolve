@@ -1275,7 +1275,14 @@ const fortressModules = {
                 }
                 else if (payCosts($(this)[0])){
                     incrementStruct('dig_demon','portal');
-                    powerOnNewStruct($(this)[0]);
+                    if (powerOnNewStruct($(this)[0])){
+                        let count = $(this)[0].citizens();
+                        global.resource[global.race.species].max += count;
+                        global.resource[global.race.species].amount += count;
+                        global.civic.miner.max += count;
+                        global.civic.miner.workers += count;
+                        global.civic.miner.assigned += count;
+                    }
                     return true;
                 }
                 return false;
