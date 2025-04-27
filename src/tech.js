@@ -1652,7 +1652,7 @@ const techs = {
         category: 'special',
         era: 'discovery',
         reqs: { high_tech: 2 },
-        not_trait: ['fasting','cataclysm','lone_survivor','warlord'],
+        not_trait: ['fasting','cataclysm','lone_survivor'],
         grant: ['banquet',1],
         condition(){ return global.stats.achieve['endless_hunger'] && global.stats.achieve['endless_hunger'].l >= 1 ? true : false; },
         cost: {

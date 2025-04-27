@@ -3469,176 +3469,7 @@ export const actions = {
         },
         shrine: buildTemplate(`shrine`,'city'),
         meditation: buildTemplate(`meditation`,'city'),
-        banquet: {
-            id: 'city-banquet',
-            title: loc('city_banquet'),
-            desc: loc(`city_banquet_desc`),
-            category: 'commercial',
-            reqs: { banquet:1 },
-            queue_complete(){ return global.stats.achieve['endless_hunger'] ? global.stats.achieve['endless_hunger'].l - global.city['banquet'].count : 0},
-            no_multi: true,
-            condition(){
-                return global.stats.achieve['endless_hunger'] && global.stats.achieve['endless_hunger'].l >= 1 ? true : false;
-            },
-            cost: {
-                Money(offset){
-                    const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
-                    //const max = global.stats.achieve['endless_hunger'] ? global.stats.achieve['endless_hunger'].l : 0;
-                    switch (count){
-                        case 0:
-                            return 45000;
-                        case 1:
-                            return 180000;
-                        case 2:
-                            return 2400000;
-                        case 3:
-                            return 30000000;
-                        case 4:
-                            return 140000000;
-                        default:
-                            return 0;
-                    }
-                },
-                Food(offset){
-                    const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
-                    return (() => {
-                        switch (count){
-                            case 0:
-                                return 40000;
-                            case 1:
-                                return 124000;
-                            case 2:
-                                return 300000;
-                            case 3:
-                                return 720000;
-                            case 4:
-                                return 1200000;
-                            default:
-                                return 0;
-                        }
-                    })() * (global.race['artifical'] ? 0.25 : 1);
-                },
-                Brick(offset){ 
-                    const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
-                    switch (count){
-                        case 0:
-                            return 1600;
-                        case 1:
-                            return 18000;
-                        case 2:
-                            return 75000;
-                        default:
-                            return 0;
-                    }
-                },
-                Wrought_Iron(offset){
-                    const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
-                    switch (count){
-                        case 0:
-                            return 0;
-                        case 1:
-                            return 26000;
-                        case 2:
-                            return 88000;
-                        case 3:
-                            return 144000;
-                        case 4:
-                            return 240000;
-                        default:
-                            return 0;
-                    }
-                },
-                Iridium(offset){
-                    const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
-                    switch (count){
-                        case 2:
-                            return 50000;
-                        case 3:
-                            return 270000;
-                        case 4:
-                            return 700000;
-                        default:
-                            return 0;
-                    }
-                },
-                Aerogel(offset, wiki){
-                    const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
-                    if(wiki ? wiki.truepath : global.race['truepath']){
-                        return 0;
-                    }
-                    switch (count){
-                        case 3:
-                            return 40000;
-                        case 4:
-                            return 150000;
-                        default:
-                            return 0;
-                    }
-                },
-                Quantium(offset, wiki){
-                    const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
-                    if(wiki ? !wiki.truepath : !global.race['truepath']){
-                        return 0;
-                    }
-                    switch (count){
-                        case 3:
-                            return 40000;
-                        case 4:
-                            return 150000;
-                        default:
-                            return 0;
-                    }
-                },
-                Bolognium(offset){
-                    const count = (offset ? offset : 0) || (global.city['banquet'] ? global.city['banquet'].count : 0);
-                    switch (count){
-                        case 4:
-                            return 150000;
-                        default:
-                            return 0;
-                    }
-                }
-            },
-            effect(wiki){
-                let strength = global.city['banquet'] ? global.city['banquet'].strength : 0;
-                let count = (wiki?.count ?? 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
-                let desc = `<div>Strength: <span class="has-text-caution">${strength}</span></div>`;
-                desc += `<div>${loc(`city_banquet_effect1`, [sizeApproximation(((count >= 5 ? 1.02 : 1.022)**(strength) - 1) * 100)])}</div>`;
-                if(count >= 1){
-                    desc += `<div>${loc(`city_banquet_effect2`, [(strength**0.75).toFixed(2)])}</div>`;
-                }
-                if(count >= 2){
-                    desc += `<div>${loc(`city_banquet_effect3`, [(strength**0.65).toFixed(2)])}</div>`;
-                }
-                if(count >= 3){
-                    desc += `<div>${loc(`city_banquet_effect4`, [(strength**0.65).toFixed(2)])}</div>`;
-                }
-                if(count >= 4){
-                    desc += `<div>${loc(`city_banquet_effect5`, [(strength**0.75).toFixed(2)])}</div>`;
-                }
-                return desc;
-            },
-            powered(){ return 0; },
-            action(){
-                if (global.city['banquet'].count < global.stats.achieve['endless_hunger'].l && payCosts($(this)[0])){
-                    incrementStruct('banquet','city');
-                    if(global.city.banquet.count === 1){
-                        global.city.banquet.on = 1;
-                    }
-                    //drawTech();
-                    drawCity();
-                    return true;
-                }
-                return false;
-            },
-            struct(){
-                return {
-                    d: { count: 0, on: 0, strength: 0 },
-                    p: ['banquet','city']
-                };
-            },
-            flair: loc('city_banquet_flair')
-        },
+        banquet: buildTemplate(`banquet`, 'city'),
         university: {
             id: 'city-university',
             title: loc('city_university'),
@@ -5079,6 +4910,183 @@ export function buildTemplate(key, region){
                     };
                 },
             };
+            return tKey(action,tName,region);
+        }
+        case 'banquet':
+        {
+            let action = {
+                id: 'city-banquet',
+                title(){
+                    return global.race['warlord'] ? loc('portal_banquet') : loc('city_banquet');
+                },
+                desc:loc(`city_banquet_desc`),
+                category: 'commercial',
+                reqs: { banquet:1 },
+                queue_complete(){ return global.stats.achieve['endless_hunger'] ? global.stats.achieve['endless_hunger'].l - global.city['banquet'].count : 0},
+                no_multi: true,
+                region: 'city',
+                condition(){
+                    return global.stats.achieve['endless_hunger'] && global.stats.achieve['endless_hunger'].l >= 1 ? true : false;
+                },
+                cost: {
+                    Money(offset){
+                        const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
+                        //const max = global.stats.achieve['endless_hunger'] ? global.stats.achieve['endless_hunger'].l : 0;
+                        switch (count){
+                            case 0:
+                                return 45000;
+                            case 1:
+                                return 180000;
+                            case 2:
+                                return 2400000;
+                            case 3:
+                                return 30000000;
+                            case 4:
+                                return 140000000;
+                            default:
+                                return 0;
+                        }
+                    },
+                    Food(offset){
+                        const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
+                        return (() => {
+                            switch (count){
+                                case 0:
+                                    return 40000;
+                                case 1:
+                                    return 124000;
+                                case 2:
+                                    return 300000;
+                                case 3:
+                                    return 720000;
+                                case 4:
+                                    return 1200000;
+                                default:
+                                    return 0;
+                            }
+                        })() * (global.race['artifical'] ? 0.25 : 1);
+                    },
+                    Brick(offset){ 
+                        const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
+                        switch (count){
+                            case 0:
+                                return 1600;
+                            case 1:
+                                return 18000;
+                            case 2:
+                                return 75000;
+                            default:
+                                return 0;
+                        }
+                    },
+                    Wrought_Iron(offset){
+                        const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
+                        switch (count){
+                            case 0:
+                                return 0;
+                            case 1:
+                                return 26000;
+                            case 2:
+                                return 88000;
+                            case 3:
+                                return 144000;
+                            case 4:
+                                return 240000;
+                            default:
+                                return 0;
+                        }
+                    },
+                    Iridium(offset){
+                        const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
+                        switch (count){
+                            case 2:
+                                return 50000;
+                            case 3:
+                                return 270000;
+                            case 4:
+                                return 700000;
+                            default:
+                                return 0;
+                        }
+                    },
+                    Aerogel(offset, wiki){
+                        const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
+                        if(wiki ? wiki.truepath : global.race['truepath']){
+                            return 0;
+                        }
+                        switch (count){
+                            case 3:
+                                return 40000;
+                            case 4:
+                                return 150000;
+                            default:
+                                return 0;
+                        }
+                    },
+                    Quantium(offset, wiki){
+                        const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
+                        if(wiki ? !wiki.truepath : !global.race['truepath']){
+                            return 0;
+                        }
+                        switch (count){
+                            case 3:
+                                return 40000;
+                            case 4:
+                                return 150000;
+                            default:
+                                return 0;
+                        }
+                    },
+                    Bolognium(offset){
+                        const count = (offset ? offset : 0) || (global.city['banquet'] ? global.city['banquet'].count : 0);
+                        switch (count){
+                            case 4:
+                                return 150000;
+                            default:
+                                return 0;
+                        }
+                    }
+                },
+                effect(wiki){
+                    let strength = global.city['banquet'] ? global.city['banquet'].strength : 0;
+                    let count = (wiki?.count ?? 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
+                    let desc = `<div>Strength: <span class="has-text-caution">${strength}</span></div>`;
+                    desc += `<div>${loc(`city_banquet_effect1`, [sizeApproximation(((count >= 5 ? 1.02 : 1.022)**(strength) - 1) * 100)])}</div>`;
+                    if(count >= 1){
+                        desc += `<div>${loc(`city_banquet_effect2`, [(strength**0.75).toFixed(2)])}</div>`;
+                    }
+                    if(count >= 2){
+                        desc += `<div>${loc(`city_banquet_effect3`, [(strength**0.65).toFixed(2)])}</div>`;
+                    }
+                    if(count >= 3){
+                        desc += `<div>${loc(`city_banquet_effect4`, [(strength**0.65).toFixed(2)])}</div>`;
+                    }
+                    if(count >= 4){
+                        desc += `<div>${loc(`city_banquet_effect5`, [(strength**0.75).toFixed(2)])}</div>`;
+                    }
+                    return desc;
+                },
+                powered(){ return 0; },
+                action(){
+                    if (global.city['banquet'].count < global.stats.achieve['endless_hunger'].l && payCosts($(this)[0])){
+                        incrementStruct('banquet','city');
+                        if(global.city.banquet.count === 1){
+                            global.city.banquet.on = 1;
+                        }
+                        //drawTech();
+                        drawCity();
+                        return true;
+                    }
+                    return false;
+                },
+                struct(){
+                    return {
+                        d: { count: 0, on: 0, strength: 0 },
+                        p: ['banquet','city']
+                    };
+                },
+                flair: loc('city_banquet_flair')
+            }
             return tKey(action,tName,region);
         }
     }

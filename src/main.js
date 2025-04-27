@@ -3702,7 +3702,7 @@ function fastLoop(){
                 }
                 else{
                     if(banquet > 1){
-                        breakdown.p.consume.Food[`${loc('city_banquet')}`] = -(consume*(banquet-1));
+                        breakdown.p.consume.Food[`${global.race['warlord'] ? loc('portal_banquet') : loc('city_banquet')}`] = -(consume*(banquet-1));
                     }
                     consume *= banquet;
                 }
