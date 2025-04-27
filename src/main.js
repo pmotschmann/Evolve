@@ -822,19 +822,35 @@ set_qlevel(calcQuantumLevel(true));
 
 $('#lbl_city').html('Village');
 
+var loopTick = 0; // Used to synchronize the fast, mid, and long loops to each other
+export function execGameLoops(periods = 1){
+    // Currently there is no smart catch-up mechanism
+    // Limit to 1 minute (12 game days) of simulation per call
+    const maxCatchUp = webWorker.longRatio * 12;
+    periods = Math.min(periods, maxCatchUp); 
+
+    while (webWorker.s && periods--){
+        ++loopTick;
+        const doMid = (loopTick % webWorker.midRatio) === 0;
+        const doLong = (loopTick % webWorker.longRatio) === 0;
+
+        // Always run a faster loop before a slower loop
+        fastLoop();
+        if (doMid){ midLoop(); }
+        if (doLong){ longLoop(); }
+
+        // Overflow prevention
+        if (doMid && doLong){ loopTick = 0; }
+    }
+}
+
 if (window.Worker){
     webWorker.w = new Worker("evolve/evolve.js");
     webWorker.w.addEventListener('message', function(e){
-        var data = e.data;
-        switch (data) {
-            case 'fast':
-                fastLoop();
-                break;
-            case 'mid':
-                midLoop();
-                break;
-            case 'long':
-                longLoop();
+        const data = e.data;
+        switch (data.loop) {
+            case 'main':
+                execGameLoops(data.periods);
                 break;
         }
     }, false);
@@ -1964,7 +1980,7 @@ function fastLoop(){
         }
 
         if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.potato){
-            let power = global.race.wishStats.potato;
+            let power = powerModifier(global.race.wishStats.potato);
             max_power -= power;
             power_grid += power;
             power_generated[loc('wish_potato')] = power;
@@ -3164,7 +3180,7 @@ function fastLoop(){
                 if (global.city['wonder_lighthouse']){ monuments += 5; }
                 if (global.city['wonder_pyramid']){ monuments += 5; }
                 if (global.space['wonder_statue']){ monuments += 5; }
-                if (global.interstellar['wonder_gardens'] || global.space['wonder_gardens']){ monuments += 5; }
+                if (global.interstellar['wonder_gardens'] || global.space['wonder_gardens'] || global.portal['wonder_gardens']){ monuments += 5; }
             }
             moraleCap += monuments * mcap;
         }
@@ -8233,6 +8249,7 @@ function midLoop(){
 
         if (global.race.universe === 'evil' && global.tech['primitive'] && global.tech.primitive >= 3){
             global.resource.Authority.display = true;
+            let garrison = garrisonSize() || 0;
 
             if (global.civic.govern.type === 'autocracy'){
                 let gain = 10;
@@ -8317,7 +8334,6 @@ function midLoop(){
                 if (global.tech['evil']){
                     adjust += 0.1 * global.tech.evil;
                 }
-                let garrison = garrisonSize() || 0;
                 if (global.portal['fortress']){
                     garrison += global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size);
                 }

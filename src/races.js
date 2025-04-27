@@ -6981,6 +6981,7 @@ export function cleanRemoveTrait(trait,rank){
                 if (global.race['shapeshifter']){
                     shapeShift(false, true, false); //update mimic options
                 }
+                combineTraits();
             }
             break;
         case 'evil':
@@ -8409,13 +8410,19 @@ function majorWish(parent){
                                     wonders.push('statue');
                                 }
                                 if (global.race['warlord']){
-                                    wonders.push('gardens');
+                                    if (!global.portal.hasOwnProperty('wonder_gardens')){
+                                        wonders.push('gardens');
+                                    }
                                 }
-                                else if (!global.race['truepath'] && !global.interstellar.hasOwnProperty('wonder_gardens') && global.tech['alpha'] && global.tech.alpha >= 2){
-                                    wonders.push('gardens');
+                                else if (global.race['truepath']){
+                                    if (!global.space.hasOwnProperty('wonder_gardens') && global.tech['titan'] && global.tech.titan >= 2){
+                                        wonders.push('gardens');
+                                    }
                                 }
-                                else if (global.race['truepath'] && !global.space.hasOwnProperty('wonder_gardens') && global.tech['titan'] && global.tech.titan >= 2){
-                                    wonders.push('gardens');
+                                else {
+                                    if (!global.interstellar.hasOwnProperty('wonder_gardens') && global.tech['alpha'] && global.tech.alpha >= 2){
+                                        wonders.push('gardens');
+                                    }
                                 }
                             }
 

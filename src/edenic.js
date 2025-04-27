@@ -2052,7 +2052,8 @@ const edenicModules = {
             queue_complete(){ return global.tech.palace >= 2 ? 0 : 1; },
             cost: {
                 Money(){ return 50000000000; },
-                Deuterium(){ return 5000000; },
+                Helium_3(){ return global.race['warlord'] ? 5000000 : 0; },
+                Deuterium(){ return global.race['warlord'] ? 0 : 5000000; }
             },
             effect: loc('eden_scout_palace_effect'),
             action(){
@@ -2312,6 +2313,9 @@ export function apotheosisProjection(){
     let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_name') : loc('resource_Plasmid_name');
     let desc = `<div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.plasmid,plasmidType])}</div>`;
     desc += `<div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.supercoiled,loc('resource_Supercoiled_plural_name')])}</div>`;
+    if (global.race['warlord']){
+        desc += `<div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.artifact,loc('resource_Artifact_name')])}</div>`;
+    }
     return desc;
 }
 

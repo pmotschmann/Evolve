@@ -801,67 +801,58 @@ export function checkControlling(gov){
 }
 
 function spyAction(sa,g){
-    switch (sa){
-        case 'influence':
-            {
-                if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1 && global.civic.foreign[`gov${g}`].sab === 0){
-                    let timer = global.tech['spy'] >= 4 ? 200 : 300;
-                    if (global.civic.foreign[`gov${g}`].spy === 1){ timer *= 1.5; }
-                    else if (global.civic.foreign[`gov${g}`].spy >= 3){ timer -= (global.civic.foreign[`gov${g}`].spy - 2) * 50; }
-                    if (global.genes.hasOwnProperty('governor') && global.genes.governor >= 3){ timer *= 0.9; }
-                    timer = Math.ceil(timer);
-                    if (global.race['befuddle']){
-                        timer = Math.round(timer * (1 - traits.befuddle.vars()[0] / 100));
-                    }
-                    let fathom = fathomCheck('dryad');
-                    if (fathom > 0){
-                        timer = Math.round(timer * (1 - traits.befuddle.vars(1)[0] / 100 * fathom));
-                    }
-                    global.civic.foreign[`gov${g}`].sab = timer;
-                    global.civic.foreign[`gov${g}`].act = 'influence';
-                }
+    // Espionage researched
+    if (global.tech['spy'] && global.tech['spy'] >= 2){
+        // At least 1 spy and no ongoing espionage action
+        let num_spies = global.civic.foreign[`gov${g}`].spy;
+        if (num_spies >= 1 && global.civic.foreign[`gov${g}`].sab === 0){
+            let timer;
+            let can_sab = false;
+
+            switch (sa){
+                case 'influence':
+                    // Timer is minimized at 5 spies (7 without spy gadgets)
+                    timer = global.tech['spy'] >= 4 ? 200 : 300;
+                    if (num_spies === 1){ timer *= 1.5; }
+                    else if (num_spies >= 3){ timer -= (num_spies - 2) * 50; }
+                    timer = Math.max(timer, 50);
+                    can_sab = true;
+                    break;
+
+                case 'sabotage':
+                    // Timer is minimized at 8 spies (12 without spy gadgets)
+                    timer = global.tech['spy'] >= 4 ? 400 : 600;
+                    if (num_spies >= 2){ timer -= (num_spies - 1) * 50; }
+                    timer = Math.max(timer, 50);
+                    can_sab = true;
+                    break;
+
+                case 'incite':
+                    // Timer is minimized at 8 spies (11 without spy gadgets)
+                    if (g >= 3){ break; }
+                    timer = global.tech['spy'] >= 4 ? 600 : 900;
+                    if (num_spies <= 2){ timer *= 1.5; }
+                    else if (num_spies >= 4){ timer -= (num_spies - 3) * 100; }
+                    timer = Math.max(timer, 100);
+                    can_sab = true;
+                    break;
             }
-            break;
-        case 'sabotage':
-            {
-                if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1 && global.civic.foreign[`gov${g}`].sab === 0){
-                    let timer = global.tech['spy'] >= 4 ? 400 : 600;
-                    if (global.civic.foreign[`gov${g}`].spy >= 2){ timer -= (global.civic.foreign[`gov${g}`].spy - 1) * 50; }
-                    if (global.genes.hasOwnProperty('governor') && global.genes.governor >= 3){ timer *= 0.9; }
-                    timer = Math.ceil(timer);
-                    if (global.race['befuddle']){
-                        timer = Math.round(timer * (1 - traits.befuddle.vars()[0] / 100));
-                    }
-                    let fathom = fathomCheck('dryad');
-                    if (fathom > 0){
-                        timer = Math.round(timer * (1 - traits.befuddle.vars(1)[0] / 100 * fathom));
-                    }
-                    global.civic.foreign[`gov${g}`].sab = timer;
-                    global.civic.foreign[`gov${g}`].act = 'sabotage';
+
+            // This part of the timer computation is currently common to all spy actions
+            if (can_sab){
+                if (global.genes.hasOwnProperty('governor') && global.genes.governor >= 3){ timer *= 0.9; }
+                timer = Math.ceil(timer);
+                if (global.race['befuddle']){
+                    timer = Math.round(timer * (1 - traits.befuddle.vars()[0] / 100));
                 }
-            }
-            break;
-        case 'incite':
-            {
-                if (g >= 3){ break; }
-                else if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1 && global.civic.foreign[`gov${g}`].sab === 0){
-                    let timer = global.tech['spy'] >= 4 ? 600 : 900;
-                    if (global.civic.foreign[`gov${g}`].spy <= 2){ timer *= 1.5; }
-                    else if (global.civic.foreign[`gov${g}`].spy >= 4){ timer -= (global.civic.foreign[`gov${g}`].spy - 3) * 100; }
-                    if (global.genes.hasOwnProperty('governor') && global.genes.governor >= 3){ timer *= 0.9; }
-                    timer = Math.ceil(timer);
-                    if (global.race['befuddle']){
-                        timer = Math.round(timer * (1 - traits.befuddle.vars()[0] / 100));
-                    }
-                    let fathom = fathomCheck('dryad');
-                    if (fathom > 0){
-                        timer = Math.round(timer * (1 - traits.befuddle.vars(1)[0] / 100 * fathom));
-                    }
-                    global.civic.foreign[`gov${g}`].sab = timer;
-                    global.civic.foreign[`gov${g}`].act = 'incite';
+                let fathom = fathomCheck('dryad');
+                if (fathom > 0){
+                    timer = Math.round(timer * (1 - traits.befuddle.vars(1)[0] / 100 * fathom));
                 }
+                global.civic.foreign[`gov${g}`].sab = timer;
+                global.civic.foreign[`gov${g}`].act = sa;
             }
-            break;
+        }
     }
 }
 

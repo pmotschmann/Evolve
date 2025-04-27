@@ -115,11 +115,6 @@ export function gameLoop(act){
                 if (webWorker.w){
                     webWorker.w.postMessage({ loop: 'clear' });
                 }
-                else {
-                    clearInterval(intervals['main_loop']);
-                    clearInterval(intervals['mid_loop']);
-                    clearInterval(intervals['long_loop']);
-                }
                 if (global.settings.at > 0){
                     global.settings.at = atrack.t;
                 }
@@ -136,22 +131,8 @@ export function gameLoop(act){
                 webWorker.mt = timers.webWorkerMainTimer;
 
                 if (webWorker.w){
-                    webWorker.w.postMessage({ loop: 'short', period: timers.mainTimer });
-                    webWorker.w.postMessage({ loop: 'mid', period: timers.midTimer });
-                    webWorker.w.postMessage({ loop: 'long', period: timers.longTimer });
+                    webWorker.w.postMessage({ loop: 'start', period: timers.mainTimer });
                 }
-                else {
-                    intervals['main_loop'] = setInterval(function(){
-                        fastLoop();
-                    }, timers.mainTimer);
-                    intervals['mid_loop'] = setInterval(function(){
-                        midLoop();
-                    }, timers.midTimer);
-                    intervals['long_loop'] = setInterval(function(){
-                        longLoop();
-                    }, timers.longTimer);
-                }
-
                 webWorker.s = true;
             }
     }
@@ -173,9 +154,9 @@ export function loopTimers(){
     // Main loop takes 250ms without any modifiers.
     const webWorkerMainTimer = Math.floor(250 * modifier);
     // Mid loop takes 1000ms without any modifiers.
-    const baseMidTimer = 4 * webWorkerMainTimer;
+    const baseMidTimer = webWorker.midRatio * webWorkerMainTimer;
     // Long loop (game day) takes 5000ms without any modifiers.
-    const baseLongTimer = 20 * webWorkerMainTimer;
+    const baseLongTimer = webWorker.longRatio * webWorkerMainTimer;
     // The constant by which the time is accelerated when atrack.t > 0.
     const timeAccelerationFactor = 2;
 
@@ -183,7 +164,6 @@ export function loopTimers(){
     return {
         webWorkerMainTimer,
         mainTimer: Math.ceil(webWorkerMainTimer * aTimeMultiplier),
-        midTimer: Math.ceil(baseMidTimer * aTimeMultiplier),
         longTimer: Math.ceil(baseLongTimer * aTimeMultiplier),
         baseLongTimer,
         timeAccelerationFactor,

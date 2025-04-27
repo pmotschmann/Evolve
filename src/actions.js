@@ -5221,7 +5221,7 @@ Object.keys(challengeList).forEach(challenge => actions.evolution[challenge] = {
                     delete global.race['nerfed'];
                     delete global.race['badgenes'];
                 }
-                ['junker','cataclysm','banana','truepath','lone_survivor','fasting'].forEach(function(s){
+                ['junker','cataclysm','banana','truepath','lone_survivor','fasting','warlord'].forEach(function(s){
                     delete global.race[s];
                     $(`#evolution-${s}`).removeClass('hl');
                 });

@@ -1250,7 +1250,7 @@ if (convertVersion(global['version']) <= 104003){
 }
 global['version'] = '1.4.3';
 delete global['revision'];
-global['beta'] = 24;
+global['beta'] = 25;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
@@ -2259,7 +2259,7 @@ window.soft_reset = function reset(source){
     window.location.reload();
 }
 
-export var webWorker = { w: false, s: false, mt: 250 };
+export var webWorker = { w: false, s: false, mt: 250, midRatio: 4, longRatio: 20 };
 export var intervals = {};
 
 export function clearSavedMessages(){

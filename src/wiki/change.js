@@ -29,6 +29,7 @@ export const changeList = [
             `Fixed issue with Iridium Smelters miscalculating result.`,
             `Fixed a variety of Joyless edge cases.`,
             `Fixed Space Casino appearing improperly in power grid.`,
+            `Fixed Potato Battery in antimatter universe not benefiting from dark energy.`,
             `Accessibility improvements.`
         ]
     },

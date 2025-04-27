@@ -1275,7 +1275,14 @@ const fortressModules = {
                 }
                 else if (payCosts($(this)[0])){
                     incrementStruct('dig_demon','portal');
-                    powerOnNewStruct($(this)[0]);
+                    if (powerOnNewStruct($(this)[0])){
+                        let count = $(this)[0].citizens();
+                        global.resource[global.race.species].max += count;
+                        global.resource[global.race.species].amount += count;
+                        global.civic.miner.max += count;
+                        global.civic.miner.workers += count;
+                        global.civic.miner.assigned += count;
+                    }
                     return true;
                 }
                 return false;
@@ -8547,7 +8554,6 @@ export function warlordSetup(){
         global.tech['kuiper'] = 2;
         global.tech['launch_facility'] = 1;
         global.tech['luna'] = 2;
-        global.tech['m_smelting'] = 2;
         global.tech['marines'] = 2;
         global.tech['mars'] = 5;
         global.tech['mass'] = 1;
