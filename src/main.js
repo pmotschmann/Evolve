@@ -574,7 +574,7 @@ vBind({
         },
         petPet(){
             if (global.race['pet'] && global.race.pet.pet === 0){
-                let outcome = Math.rand(0,3);
+                let outcome = global.race.pet.type === 'cat' ? Math.rand(0,3) : Math.rand(0,10);
                 if (outcome === 0){
                     global.race.pet.pet = -300;
                     messageQueue(loc(`event_${global.race.pet.type}_pet_failure`,[loc(`event_${global.race.pet.type}_name${global.race.pet.name}`)]),false,false,['events','minor_events']);

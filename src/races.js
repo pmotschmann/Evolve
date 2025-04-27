@@ -7826,6 +7826,7 @@ function minorWish(parent){
                     }
                     else {
                         global.civic.foreign[spell].hstl = 0;
+                        messageQueue(loc('wish_love_gov',[govTitle(spell.substring(3))]),false,false,['minor_events']);
                     }
                 }
             },
