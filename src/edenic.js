@@ -2313,6 +2313,9 @@ export function apotheosisProjection(){
     let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_name') : loc('resource_Plasmid_name');
     let desc = `<div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.plasmid,plasmidType])}</div>`;
     desc += `<div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.supercoiled,loc('resource_Supercoiled_plural_name')])}</div>`;
+    if (global.race['warlord']){
+        desc += `<div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.artifact,loc('resource_Artifact_name')])}</div>`;
+    }
     return desc;
 }
 
