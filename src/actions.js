@@ -2,13 +2,13 @@ import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, 
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
-import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill } from './races.js';
-import { defineResources, unlockCrates, unlockContainers, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus } from './resources.js';
+import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill } from './races.js';
+import { defineResources, unlockCrates, unlockContainers, crateValue, containerValue, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus, faithTempleCount } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter } from './industry.js';
-import { defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating, garrisonSize } from './civics.js';
+import { defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating, garrisonSize, govEffect } from './civics.js';
 import { spaceTech, interstellarTech, galaxyTech, incrementStruct, universe_affixes, renderSpace, piracy, fuel_adjust, isStargateOn } from './space.js';
-import { renderFortress, fortressTech } from './portal.js';
+import { renderFortress, fortressTech, warlordSetup } from './portal.js';
 import { edenicTech, renderEdenic } from './edenic.js';
 import { tauCetiTech, renderTauCeti, loneSurvivor } from './truepath.js';
 import { arpa, gainGene, gainBlood } from './arpa.js';
@@ -1371,110 +1371,7 @@ export const actions = {
             },
             touchlabel: loc(`purchase`)
         },
-        s_alter: {
-            id: 'city-s_alter',
-            title: loc('city_s_alter'),
-            desc(){
-                return global.city.hasOwnProperty('s_alter') && global.city['s_alter'].count >= 1 ? `<div>${loc('city_s_alter')}</div><div class="has-text-special">${loc('city_s_alter_desc')}</div>` : loc('city_s_alter');
-            },
-            category: 'outskirts',
-            reqs: { mining: 1 },
-            trait: ['cannibalize'],
-            not_trait: ['cataclysm','lone_survivor'],
-            inflation: false,
-            cost: {
-                Stone(offset){ return ((offset || 0) + (global.city.hasOwnProperty('s_alter') ? global.city['s_alter'].count : 0)) >= 1 ? 0 : 100; }
-            },
-            effect(){
-                let sacrifices = global.civic[global.civic.d_job] ? global.civic[global.civic.d_job].workers : 0;
-                let desc = `<div class="has-text-caution">${loc('city_s_alter_sacrifice',[sacrifices])}</div>`;
-                if (global.city.hasOwnProperty('s_alter') && global.city.s_alter.rage > 0){
-                    desc = desc + `<div>${loc('city_s_alter_rage',[traits.cannibalize.vars()[0],timeFormat(global.city.s_alter.rage)])}</div>`;
-                }
-                if (global.city.hasOwnProperty('s_alter') && global.city.s_alter.regen > 0){
-                    desc = desc + `<div>${loc('city_s_alter_regen',[traits.cannibalize.vars()[0],timeFormat(global.city.s_alter.regen)])}</div>`;
-                }
-                if (global.city.hasOwnProperty('s_alter') && global.city.s_alter.mind > 0){
-                    desc = desc + `<div>${loc('city_s_alter_mind',[traits.cannibalize.vars()[0],timeFormat(global.city.s_alter.mind)])}</div>`;
-                }
-                if (global.city.hasOwnProperty('s_alter') && global.city.s_alter.mine > 0){
-                    desc = desc + `<div>${loc('city_s_alter_mine',[traits.cannibalize.vars()[0],timeFormat(global.city.s_alter.mine)])}</div>`;
-                }
-                if (global.city.hasOwnProperty('s_alter') && global.city.s_alter.harvest > 0){
-                    let jobType = global.race['evil'] && !global.race['soul_eater'] ? loc('job_reclaimer') : loc('job_lumberjack');
-                    desc = desc + `<div>${loc('city_s_alter_harvest',[traits.cannibalize.vars()[0],timeFormat(global.city.s_alter.harvest),jobType])}</div>`;
-                }
-                return desc;
-            },
-            action(){
-                if (payCosts($(this)[0])){
-                    if (global.city['s_alter'].count === 0){
-                        incrementStruct('s_alter','city');
-                    }
-                    else {
-                        let sacrifices = global.civic[global.civic.d_job].workers;
-                        if (sacrifices > 0){
-                            global.resource[global.race.species].amount--;
-                            global.civic[global.civic.d_job].workers--;
-                            global.stats.sac++;
-                            blubberFill(1);
-                            modRes('Food', Math.rand(250,1000), true);
-                            let low = 300;
-                            let high = 600;
-                            if (global.tech['sacrifice']){
-                                switch (global.tech['sacrifice']){
-                                    case 1:
-                                        low = 600;
-                                        high = 1500;
-                                        break;
-                                    case 2:
-                                        low = 1800;
-                                        high = 3600;
-                                        break;
-                                    case 3:
-                                        low = 5400;
-                                        high = 16200;
-                                        break;
-                                }
-                            }
-                            switch (global.race['kindling_kindred'] || global.race['smoldering'] ? Math.rand(0,4) : Math.rand(0,5)){
-                                case 0:
-                                    global.city.s_alter.rage += Math.rand(low,high);
-                                    break;
-                                case 1:
-                                    global.city.s_alter.mind += Math.rand(low,high);
-                                    break;
-                                case 2:
-                                    global.city.s_alter.regen += Math.rand(low,high);
-                                    break;
-                                case 3:
-                                    global.city.s_alter.mine += Math.rand(low,high);
-                                    break;
-                                case 4:
-                                    global.city.s_alter.harvest += Math.rand(low,high);
-                                    break;
-                            }
-                        }
-                    }
-                    return true;
-                }
-                return false;
-            },
-            struct(){
-                return {
-                    d: {
-                        count: 0,
-                        rage: 0,
-                        mind: 0,
-                        regen: 0,
-                        mine: 0,
-                        harvest: 0,
-                    },
-                    p: ['s_alter','city']
-                };
-            },
-            touchlabel: loc(`tech_dist_sacrifice`)
-        },
+        s_alter: buildTemplate(`s_alter`,'city'),
         basic_housing: {
             id: 'city-basic_housing',
             title(){
@@ -1701,7 +1598,7 @@ export const actions = {
             },
             effect(){
                 let food = BHStorageMulti(spatialReasoning(100));
-                return `<div>${loc('plus_max_resource',[food, loc('resource_Food_name')])}</div><div>${loc('city_smokehouse_effect',[10])}</div>`;
+                return `<div>${loc('plus_max_resource',[food, global.resource.Food.name])}</div><div>${loc('city_smokehouse_effect',[10])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -1975,6 +1872,10 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('mill','city');
+                    // Prevent alwaysPower from enabling mills that were built before researching Wind Turbines
+                    if (checkPowerRequirements($(this)[0])){
+                        powerOnNewStruct($(this)[0]);
+                    }
                     return true;
                 }
                 return false;
@@ -2039,7 +1940,7 @@ export const actions = {
             },
             effect(){
                 let food = BHStorageMulti(spatialReasoning(500));
-                return loc('plus_max_resource',[food, loc('resource_Food_name')]);
+                return loc('plus_max_resource',[food, global.resource.Food.name]);
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -2132,7 +2033,7 @@ export const actions = {
             },
             effect(){
                 let clinic = global.tech['reproduction'] && global.tech.reproduction >= 2 ? `<div>${loc('city_hospital_effect2')}</div>` : ``;
-                let healing = global.tech['medic'] * 5;
+                let healing = (global.tech['medic'] ?? 1) * 5;
                 let desc = `<div>${loc('city_hospital_effect',[healing])}</div>${clinic}`;
                 if (!global.race['artifical'] && global.race.hasOwnProperty('vax')){
                     desc = desc + `<div>${loc('tau_home_disease_lab_vax',[+global.race.vax.toFixed(2)])}</div>`;
@@ -2203,7 +2104,7 @@ export const actions = {
         shed: {
             id: 'city-shed',
             title(){
-                return global.tech['storage'] <= 2 ? loc('city_shed_title1') : (global.tech['storage'] >= 4 ? loc('city_shed_title3') : loc('city_shed_title2'));
+                return global.tech['storage'] >= 3 ? (global.tech['storage'] >= 4 ? loc('city_shed_title3') : loc('city_shed_title2')) : loc('city_shed_title1');
             },
             desc(){
                 let storage = global.tech['storage'] >= 3 ? (global.tech['storage'] >= 4 ? loc('city_shed_desc_size3') : loc('city_shed_desc_size2')) : loc('city_shed_desc_size1');
@@ -2304,7 +2205,7 @@ export const actions = {
             },
             effect(wiki){
                 let storage = '<div class="aTable">';
-                let multiplier = storageMultipler(wiki);
+                let multiplier = storageMultipler(1, wiki);
                 for (const res of $(this)[0].res()){
                     if (global.resource[res].display){
                         let val = sizeApproximation(+(spatialReasoning($(this)[0].val(res)) * multiplier).toFixed(0),1);
@@ -2359,10 +2260,10 @@ export const actions = {
                     cap *= 2;
                 }
                 if (global.tech['trade'] && global.tech['trade'] >= 3){
-                    return `<div>${loc('plus_max_resource',[cap,loc('resource_Crates_name')])}</div><div>${loc('city_trade_effect',[1])}</div>`;
+                    return `<div>${loc('plus_max_resource',[cap,global.resource.Crates.name])}</div><div>${loc('city_trade_effect',[1])}</div>`;
                 }
                 else {
-                    return loc('plus_max_resource',[cap,loc('resource_Crates_name')]);
+                    return loc('plus_max_resource',[cap,global.resource.Crates.name]);
                 }
             },
             action(){
@@ -2418,7 +2319,7 @@ export const actions = {
                 if (global.tech['particles'] && global.tech['particles'] >= 2){
                     cap *= 2;
                 }
-                return loc('plus_max_resource',[cap,loc('resource_Containers_name')]);
+                return loc('plus_max_resource',[cap,global.resource.Containers.name]);
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -2736,19 +2637,18 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('rock_quarry','city');
-                    if (!global.race['forager']){
-                        global.civic.quarry_worker.display = true;
-                    }
+                    global.civic.quarry_worker.display = true;
                     let stone = BHStorageMulti(spatialReasoning(100));
                     global['resource']['Stone'].max += stone;
                     if (global.race['smoldering'] && global.resource.Chrysotile.display){
-                        global.settings.showCivic = true;
-                        global.settings.showIndustry = true;
                         global['resource']['Chrysotile'].max += stone;
+                        if (global.city.rock_quarry.count === 1){
+                            global.settings.showCivic = true;
+                            global.settings.showIndustry = true;
+                            defineIndustry();
+                        }
                     }
-                    if (global.tech['mine_conveyor']){
-                        powerOnNewStruct($(this)[0]);
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -2799,9 +2699,7 @@ export const actions = {
                     incrementStruct('cement_plant','city');
                     global.civic.cement_worker.display = true;
                     global.civic.cement_worker.max = global.city.cement_plant.count * jobScale(2);
-                    if (global.tech['cement'] && global.tech['cement'] >= 5){
-                        powerOnNewStruct($(this)[0]);
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -2910,15 +2808,17 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('factory','city');
-                    global.resource.Alloy.display = true;
-                    if (global.tech['polymer']){
-                        global.resource.Polymer.display = true;
+                    if (global.city.factory.count === 1){
+                        global.resource.Alloy.display = true;
+                        if (global.tech['polymer']){
+                            global.resource.Polymer.display = true;
+                        }
+                        global.settings.showIndustry = true;
+                        defineIndustry();
                     }
                     if (powerOnNewStruct($(this)[0])){
                         global.city.factory.Alloy++;
                     }
-                    global.settings.showIndustry = true;
-                    defineIndustry();
                     return true;
                 }
                 return false;
@@ -2978,8 +2878,10 @@ export const actions = {
                         fuel = 'Coal';
                     }
                     addSmelter($(this)[0].smelting(), 'Iron', fuel);
-                    global.settings.showIndustry = true;
-                    defineIndustry();
+                    if (global.city.smelter.count === 1){
+                        global.settings.showIndustry = true;
+                        defineIndustry();
+                    }
                     return true;
                 }
                 return false;
@@ -3040,9 +2942,7 @@ export const actions = {
                         global.resource.Sheet_Metal.display = true;
                         loadFoundry();
                     }
-                    if (global.tech['alumina'] >= 2){
-                        powerOnNewStruct($(this)[0]);
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -3089,9 +2989,7 @@ export const actions = {
                     global.resource.Copper.display = true;
                     global.civic.miner.display = true;
                     global.civic.miner.max = jobScale(global.city.mine.count);
-                    if (global.tech['mine_conveyor']){
-                        powerOnNewStruct($(this)[0]);
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -3140,9 +3038,7 @@ export const actions = {
                     global.resource.Coal.display = true;
                     global.civic.coal_miner.display = true;
                     global.civic.coal_miner.max = jobScale(global.city.coal_mine.count);
-                    if (global.tech['mine_conveyor']){
-                        powerOnNewStruct($(this)[0]);
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -3263,23 +3159,22 @@ export const actions = {
                 Furs(offset){ return costMultiplier('trade', offset, 65, 1.36); }
             },
             effect(){
-                let routes = global.race['xenophobic'] || global.race['nomadic'] ? global.tech.trade : global.tech.trade + 1;
-                if (global.tech['trade'] && global.tech['trade'] >= 3){
+                return loc('city_trade_effect',[$(this)[0].routes()]);
+            },
+            routes(){
+                let routes = (global.tech['trade'] >= 2) ? 3 : 2;
+                if (global.race['xenophobic'] || global.race['nomadic']){
                     routes--;
                 }
                 if (global.race['flier']){
                     routes += traits.flier.vars()[1];
                 }
-                return loc('city_trade_effect',[routes]);
+                return routes;
             },
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('trade','city');
-                    let routes = global.race['xenophobic'] || global.race['nomadic'] ? global.tech.trade : global.tech.trade + 1;
-                    if (global.tech['trade'] && global.tech['trade'] >= 3){
-                        routes--;
-                    }
-                    global.city.market.mtrade += routes;
+                    global.city.market.mtrade += $(this)[0].routes();
                     return true;
                 }
                 return false;
@@ -3464,7 +3359,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('casino','city');
-                    if (!global.race['joyless']){
+                    if (global.tech['theatre'] && !global.race['joyless']){
                         global.civic.entertainer.max += jobScale(1);
                         global.civic.entertainer.display = true;
                     }
@@ -3572,112 +3467,8 @@ export const actions = {
                 return false;
             }
         },
-        shrine: {
-            id: 'city-shrine',
-            title: loc('city_shrine'),
-            desc(){
-                return loc('city_shrine_desc');
-            },
-            category: 'commercial',
-            reqs: { theology: 2 },
-            trait: ['magnificent'],
-            not_trait: ['cataclysm','lone_survivor'],
-            cost: {
-                Money(offset){ return costMultiplier('shrine', offset, 75, 1.32); },
-                Stone(offset){ return costMultiplier('shrine', offset, 65, 1.32); },
-                Furs(offset){ return costMultiplier('shrine', offset, 10, 1.32); },
-                Copper(offset){ return costMultiplier('shrine', offset, 15, 1.32); }
-            },
-            effect(){
-                let morale = getShrineBonus('morale');
-                let metal = getShrineBonus('metal');
-                let know = getShrineBonus('know');
-                let tax = getShrineBonus('tax');
-
-                let desc = `<div class="has-text-special">${loc('city_shrine_effect')}</div>`;
-                if (global.city['shrine'] && morale.active){
-                    desc = desc + `<div>${loc('city_shrine_morale',[+(morale.add).toFixed(1)])}</div>`;
-                }
-                if (global.city['shrine'] && metal.active){
-                    desc = desc + `<div>${loc('city_shrine_metal',[+((metal.mult - 1) * 100).toFixed(1)])}</div>`;
-                }
-                if (global.city['shrine'] && know.active){
-                    desc = desc + `<div>${loc('city_shrine_know',[(+(know.add).toFixed(1)).toLocaleString()])}</div>`;
-                    desc = desc + `<div>${loc('city_shrine_know2',[+((know.mult - 1) * 100).toFixed(1)])}</div>`;
-                }
-                if (global.city['shrine'] && tax.active){
-                    desc = desc + `<div>${loc('city_shrine_tax',[+((tax.mult - 1) * 100).toFixed(1)])}</div>`;
-                }
-                return desc;
-            },
-            action(){
-                if (payCosts($(this)[0])){
-                    incrementStruct('shrine','city');
-                    if (global.city.calendar.moon > 0 && global.city.calendar.moon < 7){
-                        global.city.shrine.morale++;
-                    }
-                    else if (global.city.calendar.moon > 7 && global.city.calendar.moon < 14){
-                        global.city.shrine.metal++;
-                    }
-                    else if (global.city.calendar.moon > 14 && global.city.calendar.moon < 21){
-                        global.city.shrine.know++;
-                    }
-                    else if (global.city.calendar.moon > 21){
-                        global.city.shrine.tax++;
-                    }
-                    else {
-                        global.city.shrine.cycle++;
-                    }
-                    return true;
-                }
-                return false;
-            },
-            struct(){
-                return {
-                    d: {
-                        count: 0,
-                        morale: 0,
-                        metal: 0,
-                        know: 0,
-                        tax: 0,
-                        cycle: 0,
-                    },
-                    p: ['shrine','city']
-                };
-            },
-        },
-        meditation: {
-            id: 'city-meditation',
-            title: loc('city_meditation'),
-            desc: loc('city_meditation'),
-            category: 'commercial',
-            reqs: { primitive: 3 },
-            trait: ['calm'],
-            not_trait: ['cataclysm','lone_survivor'],
-            cost: {
-                Money(offset){ return costMultiplier('meditation', offset, 50, 1.2); },
-                Stone(offset){ return costMultiplier('meditation', offset, 25, 1.2); },
-                Furs(offset){ return costMultiplier('meditation', offset, 8, 1.2); }
-            },
-            effect(){
-                let zen = global.resource.Zen.amount / (global.resource.Zen.amount + 5000);
-                return `<div>${loc(`city_meditation_effect`,[traits.calm.vars()[0]])}</div><div class="has-text-special">${loc(`city_meditation_effect2`,[2])}</div><div class="has-text-special">${loc(`city_meditation_effect3`,[1])}</div><div>${loc(`city_meditation_effect4`,[`${(zen * 100).toFixed(2)}%`])}</div>`;
-            },
-            action(){
-                if (payCosts($(this)[0])){
-                    incrementStruct('meditation','city');
-                    global.resource.Zen.max += traits.calm.vars()[0];
-                    return true;
-                }
-                return false;
-            },
-            struct(){
-                return {
-                    d: { count: 0 },
-                    p: ['meditation','city']
-                };
-            },
-        },
+        shrine: buildTemplate(`shrine`,'city'),
+        meditation: buildTemplate(`meditation`,'city'),
         banquet: {
             id: 'city-banquet',
             title: loc('city_banquet'),
@@ -3987,7 +3778,7 @@ export const actions = {
                     gain *= 1.4;
                 }
                 if (global.tech['anthropology'] && global.tech['anthropology'] >= 2){
-                    gain *= 1 + (global.city.temple.count * 0.05);
+                    gain *= 1 + (faithTempleCount() * 0.05);
                 }
                 if (global.tech['science'] && global.tech['science'] >= 5){
                     let sci_val = workerScale(global.civic.scientist.workers,'scientist');
@@ -4029,7 +3820,7 @@ export const actions = {
                         gain *= 1.4;
                     }
                     if (global.tech['anthropology'] && global.tech.anthropology >= 2){
-                        gain *= 1 + (global.city.temple.count * 0.05);
+                        gain *= 1 + (faithTempleCount() * 0.05);
                     }
                     if (global.tech['science'] && global.tech.science >= 5){
                         gain *= 1 + (workerScale(global.civic.scientist.workers,'scientist') * 0.12);
@@ -4270,7 +4061,7 @@ export const actions = {
             desc(){
                 return global.race['environmentalist']
                     ? `<div>${loc('city_wind_power_desc')}</div>`
-                    : `<div>${loc('city_oil_power_desc')}</div><div class="has-text-special">${loc('requires_res',[loc('resource_Oil_name')])}</div>`
+                    : `<div>${loc('city_oil_power_desc')}</div><div class="has-text-special">${loc('requires_res',[global.resource.Oil.name])}</div>`
             },
             category: 'utility',
             reqs: { oil: 3 },
@@ -4330,7 +4121,7 @@ export const actions = {
         fission_power: {
             id: 'city-fission_power',
             title: loc('city_fission_power'),
-            desc: `<div>${loc('city_fission_power_desc')}</div><div class="has-text-special">${loc('requires_res',[loc('resource_Uranium_name')])}</div>`,
+            desc(){ return `<div>${loc('city_fission_power_desc')}</div><div class="has-text-special">${loc('requires_res',[global.resource.Uranium.name])}</div>`; },
             category: 'utility',
             reqs: { high_tech: 5 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -4649,7 +4440,7 @@ export function setChallengeScreen(){
         global.evolution['witch_hunter'] = { count: 0 };
     }
     if (global.race.universe === 'evil' && ((global.stats.achieve['godslayer'] && global.stats.achieve.godslayer['e']) || global['sim'])){
-        //global.evolution['warlord'] = { count: 0 };
+        global.evolution['warlord'] = { count: 0 };
     }
     if (global.stats.achieve['ascended'] || global.stats.achieve['corrupted'] || global['sim']){
         global.evolution['truepath'] = { count: 0 };
@@ -4719,9 +4510,6 @@ export function setChallengeScreen(){
     if (global.race.universe === 'magic' && ((global.stats.achieve['ascended'] && global.stats.achieve.ascended['mg']) || global['sim'])){
         addAction('evolution','witch_hunter');
     }
-    if (global.race.universe === 'evil' && ((global.stats.achieve['godslayer'] && global.stats.achieve.godslayer['e']) || global['sim'])){
-        //addAction('evolution','warlord');
-    }
     if (global.hasOwnProperty('beta') && !global['sim']){
         addAction('evolution','simulation');
     }
@@ -4742,26 +4530,45 @@ export function setChallengeScreen(){
     if(global.stats.achieve['corrupted'] || global['sim']){
         addAction('evolution','fasting');
     }
+    if (global.race.universe === 'evil' && ((global.stats.achieve['godslayer'] && global.stats.achieve.godslayer['e']) || global['sim'])){
+        addAction('evolution','warlord');
+    }
     if (global['sim']){
         exitSimulation();
     }
     else if (global.race['simulation']){
         configSimulation();
     }
+
+    if (global.race['warlord']){
+        if ($(`#evolution-custom`).length > 0){
+            $(`#evolution-custom`).addClass('disabled');
+        }
+        if ($(`#evolution-hybrid`).length > 0){
+            $(`#evolution-hybrid`).addClass('disabled');
+        }
+    }
+    else {
+        if ($(`#evolution-custom`).length > 0 && $(`#evolution-custom`).hasClass('disabled')){
+            $(`#evolution-custom`).removeClass('disabled');
+        }
+        if ($(`#evolution-hybrid`).length > 0 && $(`#evolution-hybrid`).hasClass('disabled')){
+            $(`#evolution-hybrid`).removeClass('disabled');
+        }
+    }
 }
 
 export function buildTemplate(key, region){
-    let tName = global.race['orbit_decay'] ? 'orbit_decayed' : 'cataclysm';
+    let tName = global.race['orbit_decay'] ? 'orbit_decayed' : (global.race['warlord'] ? 'warlord' :'cataclysm');
 
     let tKey = function(a,k,r){
-        if (r === 'space'){
+        if (r === 'space' || r === 'portal'){
             if (a.hasOwnProperty('trait')){
                 a.trait.push(k);
             }
             else {
                 a['trait'] = [k];
             }
-            
         }
         else if (r === 'tauceti'){
             a.reqs['isolation'] = 1;
@@ -4905,8 +4712,10 @@ export function buildTemplate(key, region){
                 action(){
                     if (payCosts($(this)[0])){
                         incrementStruct('nanite_factory','city');
-                        global.settings.showIndustry = true;
-                        defineIndustry();
+                        if (global.city.nanite_factory.count === 1){
+                            global.settings.showIndustry = true;
+                            defineIndustry();
+                        }
                         return true;
                     }
                     return false;
@@ -4982,7 +4791,6 @@ export function buildTemplate(key, region){
             };
             return tKey(action,tName,region);
         }
-
         case 'horseshoe':
         {
             let action = {
@@ -5048,6 +4856,231 @@ export function buildTemplate(key, region){
             };
             return tKey(action,tName,region);
         }
+        case 's_alter':   
+        {
+            let action = {
+                id: 'city-s_alter',
+                title: loc('city_s_alter'),
+                desc(){
+                    return global.city.hasOwnProperty('s_alter') && global.city['s_alter'].count >= 1 ? `<div>${loc('city_s_alter')}</div><div class="has-text-special">${loc('city_s_alter_desc')}</div>` : loc('city_s_alter');
+                },
+                category: 'outskirts',
+                reqs: { mining: 1 },
+                trait: ['cannibalize'],
+                not_trait: ['cataclysm','lone_survivor'],
+                inflation: false,
+                region: 'city',
+                cost: {
+                    Stone(offset){ return ((offset || 0) + (global.city.hasOwnProperty('s_alter') ? global.city['s_alter'].count : 0)) >= 1 ? 0 : 100; }
+                },
+                effect(){
+                    let sacrifices = global.civic[global.civic.d_job] ? global.civic[global.civic.d_job].workers : 0;
+                    let desc = `<div class="has-text-caution">${loc('city_s_alter_sacrifice',[sacrifices])}</div>`;
+                    if (global.city.hasOwnProperty('s_alter') && global.city.s_alter.rage > 0){
+                        desc = desc + `<div>${loc('city_s_alter_rage',[traits.cannibalize.vars()[0],timeFormat(global.city.s_alter.rage)])}</div>`;
+                    }
+                    if (global.city.hasOwnProperty('s_alter') && global.city.s_alter.regen > 0){
+                        desc = desc + `<div>${loc('city_s_alter_regen',[traits.cannibalize.vars()[0],timeFormat(global.city.s_alter.regen)])}</div>`;
+                    }
+                    if (global.city.hasOwnProperty('s_alter') && global.city.s_alter.mind > 0){
+                        desc = desc + `<div>${loc('city_s_alter_mind',[traits.cannibalize.vars()[0],timeFormat(global.city.s_alter.mind)])}</div>`;
+                    }
+                    if (global.city.hasOwnProperty('s_alter') && global.city.s_alter.mine > 0){
+                        desc = desc + `<div>${loc('city_s_alter_mine',[traits.cannibalize.vars()[0],timeFormat(global.city.s_alter.mine)])}</div>`;
+                    }
+                    if (global.city.hasOwnProperty('s_alter') && global.city.s_alter.harvest > 0){
+                        let jobType = global.race['evil'] && !global.race['soul_eater'] ? loc('job_reclaimer') : loc('job_lumberjack');
+                        desc = desc + `<div>${loc('city_s_alter_harvest',[traits.cannibalize.vars()[0],timeFormat(global.city.s_alter.harvest),jobType])}</div>`;
+                    }
+                    return desc;
+                },
+                action(){
+                    if (payCosts($(this)[0])){
+                        if (global.city['s_alter'].count === 0){
+                            incrementStruct('s_alter','city');
+                        }
+                        else {
+                            let sacrifices = global.civic[global.civic.d_job].workers;
+                            if (sacrifices > 0){
+                                global.resource[global.race.species].amount--;
+                                global.civic[global.civic.d_job].workers--;
+                                global.stats.sac++;
+                                blubberFill(1);
+                                modRes('Food', Math.rand(250,1000), true);
+                                let low = 300;
+                                let high = 600;
+                                if (global.tech['sacrifice']){
+                                    switch (global.tech['sacrifice']){
+                                        case 1:
+                                            low = 600;
+                                            high = 1500;
+                                            break;
+                                        case 2:
+                                            low = 1800;
+                                            high = 3600;
+                                            break;
+                                        case 3:
+                                            low = 5400;
+                                            high = 16200;
+                                            break;
+                                    }
+                                }
+                                switch (global.race['kindling_kindred'] || global.race['smoldering'] ? Math.rand(0,4) : Math.rand(0,5)){
+                                    case 0:
+                                        global.city.s_alter.rage += Math.rand(low,high);
+                                        break;
+                                    case 1:
+                                        global.city.s_alter.mind += Math.rand(low,high);
+                                        break;
+                                    case 2:
+                                        global.city.s_alter.regen += Math.rand(low,high);
+                                        break;
+                                    case 3:
+                                        global.city.s_alter.mine += Math.rand(low,high);
+                                        break;
+                                    case 4:
+                                        global.city.s_alter.harvest += Math.rand(low,high);
+                                        break;
+                                }
+                            }
+                        }
+                        return true;
+                    }
+                    return false;
+                },
+                struct(){
+                    return {
+                        d: {
+                            count: 0,
+                            rage: 0,
+                            mind: 0,
+                            regen: 0,
+                            mine: 0,
+                            harvest: 0,
+                        },
+                        p: ['s_alter','city']
+                    };
+                },
+                touchlabel: loc(`tech_dist_sacrifice`)
+            };
+            return tKey(action,tName,region);
+        }
+        case 'shrine':
+        {
+            let action = {
+                id: 'city-shrine',
+                title: loc('city_shrine'),
+                desc(){
+                    return global.race['warlord'] ? loc('city_shrine_warlord_desc') : loc('city_shrine_desc');
+                },
+                category: 'commercial',
+                reqs: { theology: 2 },
+                trait: ['magnificent'],
+                not_trait: ['cataclysm','lone_survivor'],
+                region: 'city',
+                cost: {
+                    Money(offset){ return costMultiplier('shrine', offset, 75, 1.32); },
+                    Stone(offset){ return costMultiplier('shrine', offset, 65, 1.32); },
+                    Furs(offset){ return costMultiplier('shrine', offset, 10, 1.32); },
+                    Copper(offset){ return costMultiplier('shrine', offset, 15, 1.32); }
+                },
+                effect(){
+                    let morale = getShrineBonus('morale');
+                    let metal = getShrineBonus('metal');
+                    let know = getShrineBonus('know');
+                    let tax = getShrineBonus('tax');
+    
+                    let desc = `<div class="has-text-special">${loc('city_shrine_effect')}</div>`;
+                    if (global.city['shrine'] && morale.active){
+                        desc = desc + `<div>${loc('city_shrine_morale',[+(morale.add).toFixed(1)])}</div>`;
+                    }
+                    if (global.city['shrine'] && metal.active){
+                        desc = desc + `<div>${loc('city_shrine_metal',[+((metal.mult - 1) * 100).toFixed(2)])}</div>`;
+                    }
+                    if (global.city['shrine'] && know.active){
+                        desc = desc + `<div>${loc('city_shrine_know',[(+(know.add).toFixed(1)).toLocaleString()])}</div>`;
+                        desc = desc + `<div>${loc(global.race['warlord'] ? 'city_shrine_warlord' : 'city_shrine_know2',[+((know.mult - 1) * 100).toFixed(1)])}</div>`;
+                    }
+                    if (global.city['shrine'] && tax.active){
+                        desc = desc + `<div>${loc('city_shrine_tax',[+((tax.mult - 1) * 100).toFixed(1)])}</div>`;
+                    }
+                    return desc;
+                },
+                action(){
+                    if (payCosts($(this)[0])){
+                        incrementStruct('shrine','city');
+                        if (global.city.calendar.moon > 0 && global.city.calendar.moon < 7){
+                            global.city.shrine.morale++;
+                        }
+                        else if (global.city.calendar.moon > 7 && global.city.calendar.moon < 14){
+                            global.city.shrine.metal++;
+                        }
+                        else if (global.city.calendar.moon > 14 && global.city.calendar.moon < 21){
+                            global.city.shrine.know++;
+                        }
+                        else if (global.city.calendar.moon > 21){
+                            global.city.shrine.tax++;
+                        }
+                        else {
+                            global.city.shrine.cycle++;
+                        }
+                        return true;
+                    }
+                    return false;
+                },
+                struct(){
+                    return {
+                        d: {
+                            count: 0,
+                            morale: 0,
+                            metal: 0,
+                            know: 0,
+                            tax: 0,
+                            cycle: 0,
+                        },
+                        p: ['shrine','city']
+                    };
+                },
+            };
+            return tKey(action,tName,region);
+        }
+        case 'meditation':
+        {
+            let action = {
+                id: 'city-meditation',
+                title: loc('city_meditation'),
+                desc: loc('city_meditation'),
+                category: 'commercial',
+                reqs: { primitive: 3 },
+                trait: ['calm'],
+                not_trait: ['cataclysm','lone_survivor'],
+                region: 'city',
+                cost: {
+                    Money(offset){ return costMultiplier('meditation', offset, 50, 1.2); },
+                    Stone(offset){ return costMultiplier('meditation', offset, 25, 1.2); },
+                    Furs(offset){ return costMultiplier('meditation', offset, 8, 1.2); }
+                },
+                effect(){
+                    let zen = global.resource.Zen.amount / (global.resource.Zen.amount + 5000);
+                    return `<div>${loc(`city_meditation_effect`,[traits.calm.vars()[0]])}</div><div class="has-text-special">${loc(`city_meditation_effect2`,[2])}</div><div class="has-text-special">${loc(`city_meditation_effect3`,[1])}</div><div>${loc(`city_meditation_effect4`,[`${(zen * 100).toFixed(2)}%`])}</div>`;
+                },
+                action(){
+                    if (payCosts($(this)[0])){
+                        incrementStruct('meditation','city');
+                        global.resource.Zen.max += traits.calm.vars()[0];
+                        return true;
+                    }
+                    return false;
+                },
+                struct(){
+                    return {
+                        d: { count: 0 },
+                        p: ['meditation','city']
+                    };
+                },
+            };
+            return tKey(action,tName,region);
+        }
     }
 }
 
@@ -5089,7 +5122,7 @@ raceList.forEach(function(race){
             desc(){ return `${loc("evo_evolve")} ${races[race].name}`; },
             reqs: { evo: 7 },
             grant: ['evo',8],
-            condition(){ 
+            condition(){
                 let typeList = global.stats.achieve['godslayer'] && races[race].type === 'hybrid' ? races[race].hybrid : [races[race].type];
                 let typeCheck = false;
                 typeList.forEach(function(t){
@@ -5112,6 +5145,7 @@ raceList.forEach(function(race){
                 return `${raceDesc} ${loc(`evo_complete`)}`;
             },
             action(){
+                if (global.race['warlord'] && ['custom','hybrid'].includes(race)){ return false; }
                 if (payCosts($(this)[0])){
                     if (['synth','custom'].includes(race)){
                         return evoExtraState(race);
@@ -5187,7 +5221,7 @@ Object.keys(challengeList).forEach(challenge => actions.evolution[challenge] = {
                     delete global.race['nerfed'];
                     delete global.race['badgenes'];
                 }
-                ['junker','cataclysm','banana','truepath','lone_survivor','fasting'].forEach(function(s){
+                ['junker','cataclysm','banana','truepath','lone_survivor','fasting','warlord'].forEach(function(s){
                     delete global.race[s];
                     $(`#evolution-${s}`).removeClass('hl');
                 });
@@ -5217,7 +5251,6 @@ const advancedChallengeList = {
     //'nonstandard': {t: 'c', e: 'anathema' },
     'gravity_well': {t: 'c', e: 'escape_velocity' },
     'witch_hunter': {t: 'c', e: 'soul_sponge' },
-    //'warlord': {t: 'c', e: 'what_is_best' },
     //'storage_wars': {t: 'c', e: '???' },
     'simulation': {t: 'c', e: 'thereisnospoon' },
     'junker': {t: 's', e: 'extinct_junker' },
@@ -5226,6 +5259,7 @@ const advancedChallengeList = {
     'truepath': {t: 's', e: 'pathfinder' },
     'lone_survivor': {t: 's', e: 'adam_eve' },
     'fasting': {t: 's', e: 'endless_hunger' },
+    'warlord': {t: 's', e: 'what_is_best' },
 };
 Object.keys(advancedChallengeList).forEach(challenge => actions.evolution[challenge] = {
     id: `evolution-${challenge}`,
@@ -5357,9 +5391,107 @@ function challengeEffect(c){
                 return `<div>${loc('evo_challenge_cataclysm_effect')}</div><div class="has-text-danger">${loc('evo_challenge_scenario_warn')}</div>`;
             }   
         }
-        default:
-            return loc(`evo_challenge_${c}_effect`);
+        case 'gravity_well':
+        {
+            let addedFlag = !global.race.hasOwnProperty('gravity_well');
+            if (addedFlag){ global.race['gravity_well'] = 1; }
+
+            // Check storage based on current challenge genes
+            // Could be pessimistic: trait-related adjustments are unknown in protoplasm stage
+            let crates = 36*40;         // 36 freight yards   (max with no CRISPR is usually 46)
+            let containers = 36*40;     // 36 container ports (max with no CRISPR is usually 45)
+            if (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 1){
+                crates *= 1.5;
+                if (global.stats.achieve.pathfinder.l >= 2){
+                    containers *= 1.5;
+                }
+            }
+            // 10 wharves (can build up to 13 even with no CRISPR)
+            crates += 10*20;
+            containers += 10*20;
+
+            // max crate tech = 4
+            if (global.tech['container']) {
+                let real_tech = global.tech['container'];
+                global.tech['container'] = 4;
+                crates *= crateValue();
+                global.tech['container'] = real_tech;
+            }
+            else {
+                global.tech['container'] = 4;
+                crates *= crateValue();
+                delete global.tech['container'];
+            }
+
+            // max container tech = 3
+            if (global.tech['steel_container']) {
+                let real_tech = global.tech['steel_container'];
+                global.tech['steel_container'] = 3;
+                containers *= containerValue();
+                global.tech['steel_container'] = real_tech;
+            }
+            else {
+                global.tech['steel_container'] = 3;
+                containers *= containerValue();
+                delete global.tech['steel_container'];
+            }
+
+            let warehouses = 40; // no spatial reasoning required for 43 warehouses
+            let coeff = 50;      // roughly same as all pre-space warehouses tech + 26 supercolliders
+
+            let cement_name = global.race['flier'] ? 'Stone' : 'Cement';
+            let max_cement = crates + containers + storageMultipler(warehouses * coeff * actions.city.shed.val(cement_name));
+            let num_fuel_depot = 0; // max with no CRISPR is usually 20 fuel depots
+            let offset = global.city?.oil_depot?.count ?? 0;
+            while (true){
+                let costs = adjustCosts(actions.city.oil_depot, num_fuel_depot - offset);
+                let cement_cost = costs[cement_name](num_fuel_depot - offset);
+                if (cement_cost > max_cement){ break; }
+                num_fuel_depot++;
+            }
+
+            let max_derrick = max_cement + storageMultipler(warehouses * coeff * actions.city.shed.val('Steel'));
+            let num_oil_derrick = 0; // max with no CRISPR is usually 16 oil derricks
+            offset = global.city?.oil_well?.count ?? 0;
+            while (true){
+                let costs = adjustCosts(actions.city.oil_well, num_oil_derrick - offset);
+                let cement_cost = costs[cement_name](num_oil_derrick - offset);
+                let steel_cost = costs['Steel'](num_oil_derrick - offset);
+                if (cement_cost + steel_cost > max_derrick){ break; }
+                num_oil_derrick++;
+            }
+
+            let num_propellant_depot = 0; // with low dark energy it may be impossible to build even 1 propellant depot
+            let unified = global.race['unified'] ? 1.5 : 1;
+            let max_oil = spatialReasoning(1000*unified*num_fuel_depot + 500*num_oil_derrick + 1250*unified*num_propellant_depot);
+            offset = global.space?.propellant_depot?.count ?? 0;
+            while (true){
+                let costs = adjustCosts(actions.space.spc_home.propellant_depot, num_propellant_depot - offset);
+                let oil_cost = costs['Oil'](num_propellant_depot - offset);
+                if (oil_cost > max_oil){ break; }
+                num_propellant_depot++;
+                max_oil = spatialReasoning(1000*unified*num_fuel_depot + 500*num_oil_derrick + 1250*unified*num_propellant_depot);
+            }
+
+            let costs = adjustCosts(actions.space.spc_moon.moon_mission);
+            let oil_cost = costs['Oil']();
+            let show_warning = max_oil < oil_cost;
+
+            if (addedFlag){ delete global.race['gravity_well']; }
+            if (show_warning){
+                return `<div>${loc('evo_challenge_gravity_well_effect')}</div><div class="has-text-danger">${loc('evo_challenge_gravity_well_warn')}</div>`;
+            }
+            break;
+        }
+        case 'warlord':
+        {
+            if (global.prestige.Artifact === 0){
+                return `<div>${loc('evo_challenge_warlord_effect')}</div><div class="has-text-danger">${loc('evo_challenge_warlord_warn',[1,loc(`resource_Artifact_name`)])}</div>`;
+            }
+            break;
+        }
     }
+    return loc(`evo_challenge_${c}_effect`);
 }
 
 export function templeEffect(){
@@ -5396,47 +5528,57 @@ export function templeEffect(){
     return desc;
 }
 
-export function casinoEffect(){
-    let money = global.tech['gambling'] >= 3 ? 60000 : 40000;
+export function casino_vault(){
+    let vault = global.tech['gambling'] >= 3 ? 60000 : 40000;
     if (global.tech['gambling'] >= 5){
-        money += global.tech['gambling'] >= 6 ? 240000 : 60000;
+        vault += global.tech['gambling'] >= 6 ? 240000 : 60000;
     }
-    money = spatialReasoning(money);
+    vault = spatialReasoning(vault);
     if (global.race['gambler']){
-        money *= 1 + (global.race['gambler'] * 0.04);
+        vault *= 1 + (traits.gambler.vars()[0] * global.race['gambler'] / 100);
     }
     if (global.tech['world_control']){
-        money = money * 1.25;
+        vault *= 1.25;
     }
     if (global.race['truepath']){
-        money = money * 1.5;
+        vault *= 1.5;
     }
     if (global.tech['stock_exchange'] && global.tech['gambling'] >= 4){
-        money *= 1 + (global.tech['stock_exchange'] * 0.05);
+        vault *= 1 + (global.tech['stock_exchange'] * 0.05);
     }
     if (global.race['inflation']){
-        money *= 1 + (global.race.inflation / 100);
+        vault *= 1 + (global.race.inflation / 100);
     }
     if (global.tech['isolation']){
-        money *= 5.5;
+        vault *= 5.5;
     }
-    money = Math.round(money);
+    if (global.race['warlord']){
+        let absorb = global.race?.absorbed?.length || 1;
+        vault *= 1 + (absorb / 10);
+        if (global.portal['hell_casino'] && global.portal.hell_casino.rank > 1){
+            let rank = global.portal.hell_casino.rank - 1;
+            vault *= 1 + rank * 0.1;
+        }
+    }
+    return vault;
+}
 
-    let joy = global.race['joyless'] ? '' : `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_entertainer`)])}</div>`;
-    let banker = global.race['orbit_decayed'] || global.tech['isolation'] ? `<div>${loc('plus_max_resource',[jobScale(1),loc('banker_name')])}</div>` : '';
-    let desc = `<div>${loc('plus_max_resource',[`\$${money.toLocaleString()}`,loc('resource_Money_name')])}</div>${joy}${banker}<div>${loc('city_max_morale',[1])}</div>`;
-    let cash = Math.log2(1 + global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5);
+export function casinoEarn(){
+    let cash = Math.log2(1 + global.resource[global.race.species].amount) * 2.5;
+    if (global.race['gambler']){
+        cash *= 1 + (traits.gambler.vars()[0] * global.race['gambler'] / 100);
+    }
     if (global.tech['gambling'] && global.tech['gambling'] >= 2){
         cash *= global.tech.gambling >= 5 ? 2 : 1.5;
-    }
-    if (global.tech['stock_exchange'] && global.tech['gambling'] >= 4){
-        cash *= 1 + (global.tech['stock_exchange'] * 0.01);
+        if (global.tech['stock_exchange'] && global.tech['gambling'] >= 4){
+            cash *= 1 + (global.tech['stock_exchange'] * 0.01);
+        }
     }
     if (global.civic.govern.type === 'corpocracy'){
-        cash *= 3;
+        cash *= 1 + (govEffect.corpocracy()[0] / 100);
     }
     if (global.civic.govern.type === 'socialist'){
-        cash *= 0.8;
+        cash *= 1 - (govEffect.socialist()[3] / 100);
     }
     if (global.race['inflation']){
         cash *= 1 + (global.race.inflation / 1250);
@@ -5447,10 +5589,31 @@ export function casinoEffect(){
             cash *= 1 + (workerScale(global.civic.banker.workers,'banker') * 0.05)
         }
     }
+    if (global.race['warlord'] && global.race['befuddle']){
+        cash *= 1 + (traits.befuddle.vars()[0] / 100);
+    }
+    cash *= production('psychic_cash');
+    let racVal = govActive('racketeer', 1);
+    if (racVal){
+        cash *= 1 + (racVal / 100);
+    }
     if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.casino){
         cash *= 1.35;
     }
-    cash = +(cash).toFixed(2);
+    if (global.race['warlord'] && global.portal['hell_casino'] && global.portal.hell_casino.rank > 1){
+        let rank = global.portal.hell_casino.rank - 1;
+        cash *= 1 + rank * 0.36;
+    }
+    return cash;
+}
+
+export function casinoEffect(){
+    let money = Math.round(casino_vault());
+
+    let joy = (global.tech['theatre'] && !global.race['joyless']) ? `<div>${loc('plus_max_resource',[jobScale(global.race['warlord'] ? 3 : 1),loc(`job_entertainer`)])}</div>` : '';
+    let banker = global.race['orbit_decayed'] || global.tech['isolation'] || global.race['warlord'] ? `<div>${loc('plus_max_resource',[jobScale(1),loc('banker_name')])}</div>` : '';
+    let desc = `<div>${loc('plus_max_resource',[`\$${money.toLocaleString()}`,loc('resource_Money_name')])}</div>${joy}${banker}<div>${loc('city_max_morale',[1])}</div>`;
+    let cash = +(casinoEarn()).toFixed(2);
     desc = desc + `<div>${loc('tech_casino_effect2',[cash])}</div>`;
     return desc;
 }
@@ -5493,6 +5656,7 @@ function setChallenge(challenge){
         }
         if (challenge === 'orbit_decay'){
             delete global.race['cataclysm'];
+            delete global.race['warlord'];
             if (global.race['lone_survivor']){
                 delete global.race['lone_survivor'];
                 ['nerfed','badgenes'].forEach(function(gene){
@@ -5521,7 +5685,7 @@ function setScenario(scenario){
         });
     }
     else {
-        ['junker','cataclysm','banana','truepath','lone_survivor','fasting'].forEach(function(s){
+        ['junker','cataclysm','banana','truepath','lone_survivor','fasting','warlord'].forEach(function(s){
             delete global.race[s];
             $(`#evolution-${s}`).removeClass('hl');
         });
@@ -5542,7 +5706,7 @@ function setScenario(scenario){
             }
         }
 
-        if (scenario === 'cataclysm' || scenario === 'lone_survivor'){
+        if (scenario === 'cataclysm' || scenario === 'lone_survivor' || scenario === 'warlord'){
             delete global.race['orbit_decay'];
         }
 
@@ -5591,7 +5755,7 @@ export function BHStorageMulti(val){
 }
 
 export function storageMultipler(scale = 1, wiki = false){
-    let multiplier = (global.tech['storage'] - 1) * 1.25 + 1;
+    let multiplier = ((global.tech['storage'] ?? 1) - 1) * 1.25 + 1;
     if (global.tech['storage'] >= 3){
         multiplier *= global.tech['storage'] >= 4 ? 3 : 1.5;
     }
@@ -5800,6 +5964,9 @@ export function gainTech(action){
 
 export function drawCity(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 1 || global.settings.spaceTabs !== 0)){
+        return;
+    }
+    if (!global.settings.showCity){
         return;
     }
     let city_buildings = {};
@@ -6041,8 +6208,9 @@ export function setAction(c_action,action,type,old,prediction){
             clss = typeof c_action['class'] === 'function' ? ` ${c_action.class()}`: ` ${c_action['class']}`;
         }
         if (prediction){ clss = ' precog'; }
+        else if (c_action['aura'] && c_action.aura()){ clss = ` ${c_action.aura()}`; }
         let active = c_action['highlight'] ? (c_action.highlight() ? `<span class="is-sr-only">${loc('active')}</span>` : `<span class="is-sr-only">${loc('not_active')}</span>`) : '';
-        element = $(`<a class="button is-dark${cst}${clss}"${data} v-on:click="action"><span class="aTitle" v-html="$options.filters.title(title)"></span>${active}</a><a role="button" v-on:click="describe" class="is-sr-only">{{ title }} description</a>`);
+        element = $(`<a class="button is-dark${cst}${clss}"${data} v-on:click="action" role="link"><span class="aTitle" v-html="$options.filters.title(title)"></span>${active}</a><a role="button" v-on:click="describe" class="is-sr-only">{{ title }} description</a>`);
     }
     parent.append(element);
 
@@ -6069,7 +6237,8 @@ export function setAction(c_action,action,type,old,prediction){
         }
     }
     else {
-        if ((c_action['powered'] && global.tech['high_tech'] && global.tech['high_tech'] >= 2 && checkPowerRequirements(c_action)) || (c_action['switchable'] && c_action.switchable())){
+        let switchable = c_action['switchable'] ? c_action.switchable() : (c_action['powered'] && global.tech['high_tech'] && global.tech['high_tech'] >= 2 && checkPowerRequirements(c_action));
+        if (switchable){
             let powerOn = $(`<span role="button" :aria-label="on_label()" class="on" @click="power_on" title="ON" v-html="$options.filters.p_on(act.on,'${c_action.id}')"></span>`);
             let powerOff = $(`<span role="button" :aria-label="off_label()" class="off" @click="power_off" title="OFF" v-html="$options.filters.p_off(act.on,'${c_action.id}')"></span>`);
             parent.append(powerOn);
@@ -6213,7 +6382,8 @@ export function setAction(c_action,action,type,old,prediction){
                 if (
                     (id === 'city-casino' && !global.race['cataclysm'] && !global.race['orbit_decayed']) || 
                     (id === 'space-spc_casino' && (global.race['cataclysm'] || global.race['orbit_decayed'])) || 
-                    (id === 'tauceti-tauceti_casino' && global.tech['isolation'])
+                    (id === 'tauceti-tauceti_casino' && global.tech['isolation']) ||
+                    (id === 'portal-hell_casino' && global.race['warlord'])
                 ){
                     let egg = easterEgg(5,12);
                     if (value === 0 && egg.length > 0){
@@ -6229,16 +6399,17 @@ export function setAction(c_action,action,type,old,prediction){
                 if (
                     (id === 'city-biolab' && !global.race['cataclysm'] && !global.race['orbit_decayed']) || 
                     ((global.race['cataclysm'] || global.race['orbit_decayed']) && id === 'space-exotic_lab') ||
-                    (global.tech['isolation'] && id === 'tauceti-infectious_disease_lab')
+                    (global.tech['isolation'] && id === 'tauceti-infectious_disease_lab') ||
+                    (global.race['warlord'] && id === 'portal-twisted_lab')
                 ){
                     let egg = easterEgg(12,12);
                     if (p === 0 && egg.length > 0){
                         return egg;
                     }
                 }
-                else if (id === 'city-garrison' || id === 'space-space_barracks'){
+                else if (id === 'city-garrison' || id === 'space-space_barracks' || id === 'portal-brute'){
                     let trick = trickOrTreat(1,14,true);
-                    let num = id === 'city-garrison' ? 13 : 0;
+                    let num = id === 'city-garrison' || id === 'portal-brute' ? 13 : 0;
                     if (p === num && trick.length > 0){
                         return trick;
                     }
@@ -6271,7 +6442,8 @@ export function setAction(c_action,action,type,old,prediction){
             vBind({el: `#popTimer`},'destroy');
         },
         attach: action === 'starDock' ? 'body .modal' : '#main',
-        wide: c_action['wide']
+        wide: c_action['wide'],
+        classes: c_action.hasOwnProperty('class') ? c_action.class : false,
     });
 }
 
@@ -6798,7 +6970,7 @@ export function powerOnNewStruct(c_action,extra){
     let need_p = c_action.hasOwnProperty('powered') && c_action.powered() > 0;
     let can_p = !need_p;
     let gov_replicator = global.race.hasOwnProperty('governor') && global.race.governor.hasOwnProperty('tasks') && global.race.hasOwnProperty('replicator') && Object.values(global.race.governor.tasks).includes('replicate') && global.race.governor.config.replicate.pow.on && global.race.replicator.pow > 0;
-    if (need_p && global.city.hasOwnProperty('powered')){
+    if (need_p && global.city.hasOwnProperty('powered') && checkPowerRequirements(c_action)){
         let power = global.city.power;
         if (gov_replicator){
             power += global.race.replicator.pow;
@@ -6849,10 +7021,10 @@ export function getStructNumActive(c_action,wiki){
 
     // Electricity: production is negative, consumption is positive
     if (c_action.hasOwnProperty('powered') && c_action.powered() > 0) {
-        if (global.city.hasOwnProperty('powered')){
-            // The p_on struct is empty in the wiki view
-            if (!wiki){
-                num_on = p_on[parts[1]];
+        if (global.city.hasOwnProperty('powered') && checkPowerRequirements(c_action)){
+            // The p_on struct is empty in the wiki view and right when the page has been reloaded
+            if (p_on.hasOwnProperty(parts[1])){
+                num_on = Math.min(num_on, p_on[parts[1]]);
             }
         }
         else {
@@ -6862,9 +7034,27 @@ export function getStructNumActive(c_action,wiki){
 
     // Support: production is positive, consumption is negative
     if (c_action.hasOwnProperty('s_type') && c_action.hasOwnProperty('support') && c_action.support() < 0){
-        if (wiki) {
-            // The support_on and similarly-named structs are empty in the wiki view
-            // This means that the wiki can be wrong, but we can at least check "max" support
+        let found_support = false;
+        if (support_on.hasOwnProperty(parts[1])){
+            found_support = true;
+            num_on = Math.min(num_on, support_on[parts[1]]);
+        }
+        if (int_on.hasOwnProperty(parts[1])){
+            found_support = true;
+            num_on = Math.min(num_on, int_on[parts[1]]);
+        }
+        if (gal_on.hasOwnProperty(parts[1])){
+            found_support = true;
+            num_on = isStargateOn(wiki) ? Math.min(num_on, gal_on[parts[1]]) : 0;
+        }
+        if (spire_on.hasOwnProperty(parts[1])){
+            found_support = true;
+            num_on = Math.min(num_on, spire_on[parts[1]]);
+        }
+
+        // The support_on structs are empty in the wiki view and right when the page has been reloaded
+        // This means that the wiki can be wrong, but we can at least check "max" support
+        if (!found_support) {
             let grids = gridDefs();
             let s_r = grids[c_action.s_type].r;
             if (s_r === 'galaxy' && !isStargateOn(wiki)){
@@ -6874,29 +7064,6 @@ export function getStructNumActive(c_action,wiki){
                 let s_rs = grids[c_action.s_type].rs;
                 let max_s = Math.floor(global[s_r][s_rs].s_max / -c_action.support());
                 num_on = Math.min(num_on, max_s);
-            }
-        }
-        else {
-            let found_support = false;
-            if (support_on.hasOwnProperty(parts[1])){
-                found_support = true;
-                num_on = Math.min(num_on, support_on[parts[1]]);
-            }
-            if (int_on.hasOwnProperty(parts[1])){
-                found_support = true;
-                num_on = Math.min(num_on, int_on[parts[1]]);
-            }
-            if (gal_on.hasOwnProperty(parts[1])){
-                found_support = true;
-                num_on = isStargateOn(wiki) ? Math.min(num_on, gal_on[parts[1]]) : 0;
-            }
-            if (spire_on.hasOwnProperty(parts[1])){
-                found_support = true;
-                num_on = Math.min(num_on, spire_on[parts[1]]);
-            }
-            // Error case, hope never to hit this.
-            if (!found_support){
-                num_on = 0;
             }
         }
     }
@@ -7375,21 +7542,25 @@ export function checkAffordable(c_action,max,raw){
 export function templeCount(zig){
     if (!zig && global.city['temple']){
         let count = global.city.temple.count;
-        if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.temple){
-            count++;
-        }
-        if (global.genes.hasOwnProperty('ancients') && global.genes.ancients >= 6){
-            count++;
+        if (!global.race['cataclysm'] && !global.race['orbit_decayed'] && !global.race['lone_survivor'] && !global.race['warlord']){
+            if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.temple){
+                count++;
+            }
+            if (global.genes.hasOwnProperty('ancients') && global.genes.ancients >= 6){
+                count++;
+            }
         }
         return count;
     }
     else if (zig && global.space['ziggurat']){
         let count = global.space.ziggurat.count;
-        if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.zigg){
-            count++;
-        }
-        if (global.genes.hasOwnProperty('ancients') && global.genes.ancients >= 7){
-            count++;
+        if (!global.race['lone_survivor'] && !global.race['warlord']){
+            if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.zigg){
+                count++;
+            }
+            if (global.genes.hasOwnProperty('ancients') && global.genes.ancients >= 7){
+                count++;
+            }
         }
         return count;
     }
@@ -7584,7 +7755,7 @@ function checkStructs(structs){
 
 function conceal_adjust(mana){
     if (global.tech['nexus'] && global.tech['roguemagic'] && global.tech.roguemagic >= 7){
-        mana *= 0.92 ** global.tech.nexus;
+        mana *= 0.96 ** global.tech.nexus;
     }
     return mana;
 }
@@ -7674,6 +7845,7 @@ function drawModal(c_action,type){
         case 'hell_smelter':
         case 'stellar_forge':
         case 'hell_forge':
+        case 'demon_forge':
         case 'sacred_smelter':
         case 'geothermal':
         case 'ore_refinery':
@@ -7683,6 +7855,7 @@ function drawModal(c_action,type){
         case 'red_factory':
         case 'int_factory':
         case 'tau_factory':
+        case 'hell_factory':
             loadIndustry('factory',body);
             break;
         case 'star_dock':
@@ -7693,6 +7866,7 @@ function drawModal(c_action,type){
             break;
         case 'g_factory':
         case 'refueling_station':
+        case 'twisted_lab':
             loadIndustry('graphene',body);
             break;
         case 'freighter':
@@ -8029,7 +8203,7 @@ export function structName(type){
     switch (type){
         case 'casino':
         {
-            return halloween.active ? loc(`events_halloween_casino`) : loc(`city_casino`);
+            return halloween.active ? loc(`events_halloween_casino`) : (global.race['warlord'] ? loc(`portal_casino`) : loc(`city_casino`));
         }
         case 'farm':
         {
@@ -8172,40 +8346,49 @@ function sentience(){
         }
     }
 
-    let typeList = global.stats.achieve['godslayer'] && races[global.race.species].type === 'hybrid' ? races[global.race.species].hybrid : [races[global.race.species].type];
-    typeList.forEach(function(type){
-        Object.keys(genus_traits[type]).forEach(function (trait) {
-            let mainspec = global.tech[`evo_${type}`] >= 2 ? true : false;
-            if (mainspec){
-                global.race['maintype'] = type;
-                setTraitRank(trait,{ set: genus_traits[type][trait] });
-                if (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 4){
-                    setTraitRank(trait);
+    if (global.race['warlord']){
+        let trait = races[global.race.species].fanaticism;
+        global.race['absorbed'] = [global.race.species];
+        global.race['origin'] = global.race.species;
+        global.race.species = 'hellspawn';
+        if (trait === 'kindling_kindred'){ trait = 'iron_wood'; }
+        setTraitRank(trait, { set: 0.5 });
+    }
+    else {
+        let typeList = global.stats.achieve['godslayer'] && races[global.race.species].type === 'hybrid' ? races[global.race.species].hybrid : [races[global.race.species].type];
+        typeList.forEach(function(type){
+            Object.keys(genus_traits[type]).forEach(function (trait) {
+                let mainspec = global.tech[`evo_${type}`] >= 2 ? true : false;
+                if (mainspec){
+                    global.race['maintype'] = type;
+                    setTraitRank(trait,{ set: genus_traits[type][trait] });
+                    if (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 4){
+                        setTraitRank(trait);
+                    }
                 }
-            }
-            else {
-                setTraitRank(trait,{ set: genus_traits[type][trait] });
-                setTraitRank(trait, {down:true});
-            }
+                else {
+                    setTraitRank(trait,{ set: genus_traits[type][trait] });
+                    setTraitRank(trait, {down:true});
+                }
+            });
         });
-    });
-    if (typeList.includes('carnivore') && typeList.includes('herbivore')){
-        setTraitRank('forager',{ set: genus_traits.omnivore.forager });
-        delete global.race['carnivore'];
-        delete global.race['herbivore'];
-    }
 
-    Object.keys(races[global.race.species].traits).forEach(function (trait) {
-        setTraitRank(trait,{ set: races[global.race.species].traits[trait] });
-    });
+        Object.keys(races[global.race.species].traits).forEach(function (trait) {
+            setTraitRank(trait,{ set: races[global.race.species].traits[trait] });
+        });
 
-    if (global.race['evil'] && global.race['maintype'] && global.race.maintype === 'angelic'){
-        delete global.race['evil'];
-    }
+        if (global.race['evil'] && global.race['maintype'] && global.race.maintype === 'angelic'){
+            delete global.race['evil'];
+        }
 
-    if (global.race['imitation'] && global.race['srace']){
-        setImitation(false);
+        if (global.race['imitation'] && global.race['srace']){
+            setImitation(false);
+        }
     }
+    if(!global.race.inactiveTraits){
+        global.race.inactiveTraits = {};
+    }
+    combineTraits();
 
     Object.keys(global.tech).forEach(function (tech){
         if (tech.substring(0,4) === 'evo_'){
@@ -8530,14 +8713,14 @@ function sentience(){
         messageQueue(loc('cataclysm_sentience',[races[global.race.species].home,flib('name')]),'info',false,['progress']);
     }
     else {
-        messageQueue(loc('sentience',[loc('genelab_genus_' + global.race.maintype),races[global.race.species].entity,flib('name')]),'info',false,['progress']);
+        messageQueue(loc('sentience',[loc('genelab_genus_' + (global.race.maintype || races[global.race.species].type)),races[global.race.species].entity,flib('name')]),'info',false,['progress']);
     }
 
     if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){
         global.resource.Steel.display = true;
         global.resource.Steel.amount = 25;
         if (global.stats.achieve.technophobe.l >= 3){
-            if (!global.race['truepath']){
+            if (!global.race['truepath'] && !global.race['lone_survivor']){
                 global.resource.Soul_Gem.display = true;
             }
             let gems = 1;
@@ -8685,50 +8868,46 @@ function sentience(){
     else if (global.race['lone_survivor']){
         loneSurvivor();
     }
+    else if (global.race['warlord']){
+        warlordSetup();
+    }
     else if (global.race['artifical']){
         aiStart();
     }
 
     if (global.settings.tabLoad){
         drawCity();
+        clearElement($(`#r_civics`));
+        defineGovernment();
         defineGarrison();
         buildGarrison($('#c_garrison'),false);
         foreignGov();
+        defineIndustry();
+        initResourceTabs('market');
+        initResourceTabs('storage');
 
-        if (global.race['cataclysm'] || global.race['lone_survivor']){
-            clearElement($(`#r_civics`));
-            defineGovernment();
-            defineIndustry();
-            initResourceTabs('market');
-            initResourceTabs('storage');
-
-            if (tmp_vars.hasOwnProperty('resource')){
-                Object.keys(tmp_vars.resource).forEach(function(name){
-                    let color = tmp_vars.resource[name].color;
-                    let tradable = tmp_vars.resource[name].tradable;
-                    let stackable = tmp_vars.resource[name].stackable;
-                    if (stackable){
-                        var market_item = $(`<div id="stack-${name}" class="market-item" v-show="display"></div>`);
-                        $('#resStorage').append(market_item);
-                        containerItem(`#stack-${name}`,market_item,name,color,true);
-                    }
-                    if (tradable){
-                        var market_item = $(`<div id="market-${name}" class="market-item" v-show="r.display"></div>`);
-                        $('#market').append(market_item);
-                        marketItem(`#market-${name}`,market_item,name,color,true);
-                    }
-                });
-            }
-            tradeSummery();
-
-            arpa('Genetics');
-            arpa('Crispr');
-            arpa('Blood');
+        if (tmp_vars.hasOwnProperty('resource')){
+            Object.keys(tmp_vars.resource).forEach(function(name){
+                let color = tmp_vars.resource[name].color;
+                let tradable = tmp_vars.resource[name].tradable;
+                let stackable = tmp_vars.resource[name].stackable;
+                if (stackable){
+                    var market_item = $(`<div id="stack-${name}" class="market-item" v-show="display"></div>`);
+                    $('#resStorage').append(market_item);
+                    containerItem(`#stack-${name}`,market_item,name,color,true);
+                }
+                if (tradable){
+                    var market_item = $(`<div id="market-${name}" class="market-item" v-show="r.display"></div>`);
+                    $('#market').append(market_item);
+                    marketItem(`#market-${name}`,market_item,name,color,true);
+                }
+            });
         }
-        else if (global['sim']){
-            arpa('Crispr');
-            arpa('Blood');
-        }
+        tradeSummery();
+
+        arpa('Genetics');
+        arpa('Crispr');
+        arpa('Blood');
     }
     else {
         loadTab('mTabCivil');
@@ -8832,22 +9011,22 @@ function aiStart(){
         global.tech['titanium'] = 1;
         global.tech['foundry'] = 7;
         global.tech['factory'] = 1;
-        global.tech['theatre'] = 3;
-        global.tech['broadcast'] = 1;
         global.tech['science'] = 7;
         global.tech['high_tech'] = 4;
         global.tech['theology'] = 2;
 
-        global.settings.showIndustry = true;
+        if (!global.race['joyless']){
+            global.tech['theatre'] = 3;
+            global.tech['broadcast'] = 1;
+        }
+
         global.settings.showPowerGrid = true;
         global.settings.showResearch = true;
         global.settings.showCivic = true;
-        global.settings.showMil = true;
         global.settings.showResources = true;
         global.settings.showMarket = true;
         global.settings.showStorage = true;
 
-        //global.civic.garrison.display = true;
         global.resource[global.race.species].display = true;
         global.resource.Knowledge.display = true;
         global.resource.Money.display = true;
@@ -8888,9 +9067,7 @@ function aiStart(){
             }
             global.resource.Lumber.display = true;
             global.resource.Plywood.display = true;
-            if (!global.race['forager']){
-                global.civic.lumberjack.display = true;
-            }
+            global.civic.lumberjack.display = true;
         }
         if (global.race['smoldering']){
             global.resource.Chrysotile.display = true;
@@ -8905,7 +9082,7 @@ function aiStart(){
 
         global.civic.miner.display = true;
         global.civic.coal_miner.display = true;
-        if (!global.race['sappy'] && !global.race['forager']){
+        if (!global.race['sappy']){
             global.civic.quarry_worker.display = true;
         }
         global.civic.professor.display = true;
@@ -8962,20 +9139,8 @@ function aiStart(){
         }
 
         global.civic.govern.type = 'technocracy';
-        global.civic['garrison'] = {
-            display: true,
-            disabled: false,
-            progress: 0,
-            tactic: 0,
-            workers: 0,
-            wounded: 0,
-            raid: 0,
-            max: 0
-        };
-
         drawCity();
         drawTech();
-        loadFoundry();
     }
 }
 
@@ -9030,6 +9195,11 @@ function cataclysm(){
         global.tech['space_explore'] = 4;
         global.tech['genesis'] = 2;
 
+        // Begin with a biodome: joyless is incompatible with Cataclysm
+        if (global.race['joyless']) {
+            delete global.race['joyless'];
+        }
+
         global.settings.showSpace = true;
         global.settings.space.home = true;
         global.settings.space.moon = true;
@@ -9055,7 +9225,6 @@ function cataclysm(){
         global.settings.showGenetics = true;
         global.settings.arpa.physics = true;
 
-        //global.civic.garrison.display = true;
         global.resource[global.race.species].display = true;
         global.resource.Knowledge.display = true;
         global.resource.Money.display = true;
@@ -9263,39 +9432,63 @@ function cataclysm(){
 }
 
 export function fanaticism(god){
-    switch (races[god].fanaticism){
-        case 'smart':
-            if (global.race['dumb']){
+    if (['custom','hybrid'].includes(god) && global.race['warlord']){
+        randomMinorTrait(5);
+        arpa('Genetics');
+    }
+    else {
+        switch (races[god].fanaticism){
+            case 'smart':
+                if (global.race['dumb']){
+                    randomMinorTrait(5);
+                    arpa('Genetics');
+                }
+                else {
+                    fanaticTrait('smart');
+                }
+                break;
+            case 'infectious':
+                fanaticTrait('infectious');
+                if (global.race.species === 'human'){
+                    unlockAchieve(`infested`);
+                }
+                break;
+            case 'blood_thirst':
+                fanaticTrait('blood_thirst');
+                if (global.race.species === 'entish'){
+                    unlockAchieve(`madagascar_tree`);
+                }
+                break;
+            case 'none':
                 randomMinorTrait(5);
                 arpa('Genetics');
-            }
-            else {
-                fanaticTrait('smart');
-            }
-            break;
-        case 'infectious':
-            fanaticTrait('infectious');
-            if (global.race.species === 'human'){
-                unlockAchieve(`infested`);
-            }
-            break;
-        case 'blood_thirst':
-            fanaticTrait('blood_thirst');
-            if (global.race.species === 'entish'){
-                unlockAchieve(`madagascar_tree`);
-            }
-            break;
-        case 'none':
-            randomMinorTrait(5);
-            arpa('Genetics')
-            break;
-        default:
-            fanaticTrait(races[god].fanaticism);
-            break;
+                break;
+            case 'kindling_kindred':
+                fanaticTrait(races[god].fanaticism);
+                break;
+            default:
+                fanaticTrait(races[god].fanaticism);
+                break;
+        }
+    }
+    if (global.race['warlord']){
+        global.race.absorbed.push(god);
     }
 }
 
-function fanaticTrait(trait){
+export function absorbRace(race){
+    if (global.race['warlord']){
+        fanaticTrait(races[race].fanaticism, 0.25);
+        if (!global.race.absorbed.includes(race)){
+            global.race.absorbed.push(race);
+        }
+    }
+}
+
+function fanaticTrait(trait,rank){
+    if (global.race['warlord'] && trait === 'kindling_kindred'){ trait = 'iron_wood'; }
+    else if (global.race['warlord'] && trait === 'spiritual'){ trait = 'unified'; }
+    else if (global.race['warlord'] && trait === 'blood_thirst'){ trait = 'apex_predator'; }
     if (global.race[trait]){
         if (!setTraitRank(trait)){
             randomMinorTrait(5);
@@ -9309,7 +9502,12 @@ function fanaticTrait(trait){
         }
     }
     else {
-        global.race[trait] = 1;
+        if (global.race['warlord']){
+            global.race[trait] = rank ?? 0.5;
+        }
+        else {
+            global.race[trait] = rank ?? 1;
+        }
         cleanAddTrait(trait);
     }
 }

@@ -4,7 +4,7 @@ import { races } from './races.js';
 import { actions, checkCityRequirements, housingLabel, wardenLabel, updateQueueNames, checkAffordable, drawTech } from './actions.js';
 import { govCivics, govTitle } from './civics.js';
 import { crateGovHook, atomic_mass } from './resources.js';
-import { checkHellRequirements, mechSize, mechCost } from './portal.js';
+import { checkHellRequirements, mechSize, mechCost, validWeapons, validEquipment } from './portal.js';
 import { loc } from './locale.js';
 import { jobScale } from './jobs.js';
 import { isStargateOn } from './space.js';
@@ -414,7 +414,7 @@ export function drawnGovernOffice(){
     govern.append(govHeader);
 
     let governorTitle = $(`<div></div>`);
-    governorTitle.append($(`<div class="has-text-caution">${loc(`governor_office`,[global.race.governor.g.n])}</div>`));
+    governorTitle.append($(`<div class="has-text-caution" role="heading" aria-level="2">${loc(`governor_office`,[global.race.governor.g.n])}</div>`));
     governorTitle.append($(`<div><span class="has-text-warning">${loc(`governor_background`)}:</span> <span class="bg">${gmen[global.race.governor.g.bg].name}</span></div>`));
 
     govHeader.append(governorTitle);
@@ -459,7 +459,7 @@ export function drawnGovernOffice(){
             };
         }
 
-        let storeContain = $(`<div class="tConfig" v-show="showTask('storage')"><div class="has-text-warning">${loc(`gov_task_storage`)}</div></div>`);
+        let storeContain = $(`<div class="tConfig" v-show="showTask('storage')"><div class="has-text-warning" role="heading" aria-level="3">${loc(`gov_task_storage`)}</div></div>`);
         options.append(storeContain);
         let storage = $(`<div class="storage"></div>`);
         storeContain.append(storage);
@@ -479,7 +479,7 @@ export function drawnGovernOffice(){
             global.race.governor.config.bal_storage['adv'] = false;
         }
 
-        let storeContain = $(`<div class="tConfig" v-show="showTask('bal_storage')"><div class="hRow"><div class="has-text-warning">${loc(`gov_task_bal_storage`)}</div><div class="chk"><b-checkbox v-model="c.bal_storage.adv">${loc(`advanced`)}</b-checkbox></div></div></div>`);
+        let storeContain = $(`<div class="tConfig" v-show="showTask('bal_storage')"><div class="hRow"><div class="has-text-warning" role="heading" aria-level="3">${loc(`gov_task_bal_storage`)}</div><div class="chk"><b-checkbox v-model="c.bal_storage.adv">${loc(`advanced`)}</b-checkbox></div></div></div>`);
         options.append(storeContain);
         let storage = $(`<div class="bal_storage"></div>`);
         storeContain.append(storage);
@@ -490,7 +490,7 @@ export function drawnGovernOffice(){
                     global.race.governor.config.bal_storage[res] = "2";
                 }
 
-                storage.append($(`<div class="ccmOption" :class="bStrEx()" v-show="showStrRes('${res}')"><span>${global.resource[res].name}</span>
+                storage.append($(`<div class="ccmOption" :class="bStrEx()" v-show="showStrRes('${res}')"><span role="heading" aria-level="4">${global.resource[res].name}</span>
                 <b-field>
                     <b-radio-button class="b1" v-show="c.bal_storage.adv" v-model="c.bal_storage.${res}" native-value="0" type="is-danger is-light">0x</b-radio-button>
                     <b-radio-button class="b2" v-show="c.bal_storage.adv" v-model="c.bal_storage.${res}" native-value="1" type="is-danger is-light">1/2</b-radio-button>
@@ -515,7 +515,7 @@ export function drawnGovernOffice(){
             };
         }
 
-        let contain = $(`<div class="tConfig" v-show="showTask('merc')"><div class="has-text-warning">${loc(`gov_task_merc`)}</div></div>`);
+        let contain = $(`<div class="tConfig" v-show="showTask('merc')"><div class="has-text-warning" role="heading" aria-level="3">${loc(`gov_task_merc`)}</div></div>`);
         options.append(contain);
         let merc = $(`<div class="storage"></div>`);
         contain.append(merc);
@@ -531,7 +531,7 @@ export function drawnGovernOffice(){
             };
         }
 
-        let contain = $(`<div class="tConfig" v-show="showTask('spy')"><div class="has-text-warning">${loc(`gov_task_spy`)}</div></div>`);
+        let contain = $(`<div class="tConfig" v-show="showTask('spy')"><div class="has-text-warning" role="heading" aria-level="3">${loc(`gov_task_spy`)}</div></div>`);
         options.append(contain);
         let spy = $(`<div class="storage"></div>`);
         contain.append(spy);
@@ -547,14 +547,14 @@ export function drawnGovernOffice(){
             });
         }
         
-        let contain = $(`<div class="tConfig" v-show="showTask('spyop')"><div class="has-text-warning">${loc(`gov_task_spyop`)}</div></div>`);
+        let contain = $(`<div class="tConfig" v-show="showTask('spyop')"><div class="has-text-warning" role="heading" aria-level="3">${loc(`gov_task_spyop`)}</div></div>`);
         options.append(contain);
         Object.keys(global.civic.foreign).forEach(function (gov){
             if ((gov.substr(3,1) < 3 && !global.tech['world_control']) || (gov === 'gov3' && global.tech['rival'])){
                 let spyop = $(`<div></div>`);
                 contain.append(spyop);
                 spyop.append(`
-                    <h2 class="has-text-caution">${loc('gov_task_spyop_priority',[govTitle(gov.substring(3))])}</h2>
+                    <h2 class="has-text-caution" aria-level="4">${loc('gov_task_spyop_priority',[govTitle(gov.substring(3))])}</h2>
                     <ul id="spyopConfig${gov}" class="spyopConfig"></ul>
                 `);
                 let missions = $(`#spyopConfig${gov}`);
@@ -574,7 +574,7 @@ export function drawnGovernOffice(){
             };
         }
 
-        let contain = $(`<div class="tConfig" v-show="showTask('tax')"><div class="has-text-warning">${loc(`gov_task_tax`)}</div></div>`);
+        let contain = $(`<div class="tConfig" v-show="showTask('tax')"><div class="has-text-warning" role="heading" aria-level="3">${loc(`gov_task_tax`)}</div></div>`);
         options.append(contain);
         let tax = $(`<div class="storage"></div>`);
         contain.append(tax);
@@ -589,7 +589,7 @@ export function drawnGovernOffice(){
             };
         }
 
-        let contain = $(`<div class="tConfig" v-show="showTask('slave')"><div class="has-text-warning">${loc(`gov_task_slave`,[global.resource.Slave.name])}</div></div>`);
+        let contain = $(`<div class="tConfig" v-show="showTask('slave')"><div class="has-text-warning" role="heading" aria-level="3">${loc(`gov_task_slave`,[global.resource.Slave.name])}</div></div>`);
         options.append(contain);
         let slave = $(`<div class="storage"></div>`);
         contain.append(slave);
@@ -612,7 +612,7 @@ export function drawnGovernOffice(){
 
         let advanced = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? `<div class="chk"><b-checkbox v-model="c.trash.stab">${loc(`gov_task_auto_stabilize`)}</b-checkbox></div>` : ``;
 
-        let contain = $(`<div class="tConfig" v-show="showTask('trash')"><div class="hRow"><div class="has-text-warning">${loc(`gov_task_trash`)}</div>${advanced}</div></div>`);
+        let contain = $(`<div class="tConfig" v-show="showTask('trash')"><div class="hRow"><div class="has-text-warning" role="heading" aria-level="3">${loc(`gov_task_trash`)}</div>${advanced}</div></div>`);
         options.append(contain);
         let trash = $(`<div class="storage"></div>`);
         contain.append(trash);
@@ -633,7 +633,7 @@ export function drawnGovernOffice(){
             global.race.governor.config.replicate['res'] = { que: true, neg: true, cap: true };
         }
 
-        let contain = $(`<div class="tConfig" v-show="showTask('replicate')"><div class="has-text-warning">${loc(`gov_task_replicate`)}</div></div>`);
+        let contain = $(`<div class="tConfig" v-show="showTask('replicate')"><div class="has-text-warning" role="heading" aria-level="3">${loc(`gov_task_replicate`)}</div></div>`);
         options.append(contain);
         let replicate = $(`<div class="storage"></div>`);
         contain.append(replicate);
@@ -784,7 +784,9 @@ function appointGovernor(){
     govern.append($(`<div class="appoint header"><span class="has-text-caution">${loc(`governor_candidate`)}</span><span class="has-text-caution">${loc(`governor_background`)}</span><span></span><div>`));
     for (let i=0; i<global.race.governor.candidates.length; i++){
         let gov = global.race.governor.candidates[i];
-        govern.append($(`<div class="appoint ${gov.bg}"><span class="has-text-warning">${gov.t} ${gov.n}</span><span class="bg">${gmen[gov.bg].name}</span><span><button class="button" v-on:click="appoint(${i})">${loc(`governor_appoint`)}</button></span><div>`));
+        if ((global.race['warlord'] && gov.bg === 'soldier') || !global.race['warlord']){
+            govern.append($(`<div class="appoint ${gov.bg}"><span class="has-text-warning" role="heading" aria-level="3">${gov.t} ${gov.n}</span><span class="bg">${gmen[gov.bg].name}</span><span><button class="button" v-on:click="appoint(${i})">${loc(`governor_appoint`)}</button></span><div>`));
+        }
     }
 
     vBind({
@@ -1294,7 +1296,7 @@ export const gov_tasks = {
         },
         task(){
             if ( $(this)[0].req() ){
-                let ctype = 'large';
+                let ctype = global.race['warlord'] ? 'cyberdemon' : 'large';
                 let mCosts = mechCost(ctype,false);
                 let cost = mCosts.c;
                 let soul = mCosts.s;
@@ -1304,20 +1306,24 @@ export const gov_tasks = {
                     type: {}
                 };
 
-                ['small','medium','large','titan','collector'].forEach(function(type){
+                let sizeTypes = global.race['warlord'] ? ['minion','fiend','cyberdemon','archfiend'] : ['small','medium','large','titan','collector'];
+                let chassisTypes = global.race['warlord'] ? ['imp','flying_imp','hound','harpy','barghest','cambion','minotaur','nightmare','rakshasa','golem','hover','spider','wheel','tread','biped','quad','dragon','snake','gorgon','hydra'] : ['hover','spider','wheel','tread','biped','quad'];
+                let weaponTypes = global.race['warlord'] ? ['laser','kinetic','shotgun','missile','flame','plasma','sonic','tesla','claws','venom','cold','shock','fire','acid','stone','iron','flesh','ice','magma','axe','hammer'] : ['plasma','laser','kinetic','shotgun','missile','flame','sonic','tesla'];
+                let equipTypes = global.race['warlord'] ? ['shields','flare','seals','grapple','sonar','ablative','radiator','infrared','coolant','stabilizer','scavenger','scouter','darkvision','echo','thermal','manashield','cold','heat','athletic','lucky','stoneskin'] : ['shields','flare','seals','grapple','sonar','ablative','radiator','infrared','coolant','stabilizer'];
+                sizeTypes.forEach(function(type){
                     mechs.type[type] = 0;
                     mechs[type] = {
                         chassis: {},
                         weapon: {},
                         equip: {}
                     };
-                    ['hover','spider','wheel','tread','biped','quad'].forEach(function(chassis){
+                    chassisTypes.forEach(function(chassis){
                         mechs[type].chassis[chassis] = 0;
                     });
-                    ['plasma','laser','kinetic','shotgun','missile','flame','sonic','tesla'].map((a) => ({sort: Math.random(), value: a})).sort((a, b) => a.sort - b.sort).map((a) => a.value).forEach(function(weapon){
+                    weaponTypes.map((a) => ({sort: Math.random(), value: a})).sort((a, b) => a.sort - b.sort).map((a) => a.value).forEach(function(weapon){
                         mechs[type].weapon[weapon] = 0;
                     });
-                    ['shields','flare','seals','grapple','sonar','ablative','radiator','infrared','coolant','stabilizer'].forEach(function(equip){
+                    equipTypes.forEach(function(equip){
                         mechs[type].equip[equip] = 0;
                     });
                 });
@@ -1333,27 +1339,59 @@ export const gov_tasks = {
                     });
                 });
 
-                if ((mechs.type.large >= 6 && mechs.type.small < 12) || (mechs.type.large >= 12 && mechs.type.titan >= 2 && mechs.type.small < 24)){
-                    ctype = 'small';
-                    mCosts = mechCost(ctype,false);
-                    cost = mCosts.c;
-                    soul = mCosts.s;
-                    size = mechSize(ctype);
-                }
-                else if (mechs.type.large >= 6 && mechs.type.medium < 12){
-                    ctype = 'medium';
-                    mCosts = mechCost(ctype,false);
-                    cost = mCosts.c;
-                    soul = mCosts.s;
-                    size = mechSize(ctype);
-                }
-                else if (mechs.type.large >= 12 && mechs.type.titan < 2){
-                    mCosts = mechCost('titan',false);
-                    if (mCosts.c <= global.portal.purifier.sup_max){
-                        ctype = 'titan';
+                if (global.race['warlord']){
+                    if (mechs.type.minion < 16 || (mechs.type.minion < 32 && mechs.type.fiend >= 19 && mechs.type.cyberdemon >= 6 && mechs.type.archfiend >= 5)){
+                        ctype = 'minion';
+                        mCosts = mechCost(ctype,false);
                         cost = mCosts.c;
                         soul = mCosts.s;
                         size = mechSize(ctype);
+                    }
+                    else if (mechs.type.fiend < 14 || (mechs.type.cyberdemon >= 4 && mechs.type.fiend < 19)){
+                        ctype = 'fiend';
+                        mCosts = mechCost(ctype,false);
+                        cost = mCosts.c;
+                        soul = mCosts.s;
+                        size = mechSize(ctype);
+                    }
+                    else if (mechs.type.cyberdemon < 4 || mechs.type.archfiend >= 5){
+                        ctype = 'cyberdemon';
+                        mCosts = mechCost(ctype,false);
+                        cost = mCosts.c;
+                        soul = mCosts.s;
+                        size = mechSize(ctype);
+                    }
+                    else if (mechs.type.archfiend < 5){
+                        ctype = 'archfiend';
+                        mCosts = mechCost(ctype,false);
+                        cost = mCosts.c;
+                        soul = mCosts.s;
+                        size = mechSize(ctype);
+                    }
+                }
+                else {
+                    if ((mechs.type.large >= 6 && mechs.type.small < 12) || (mechs.type.large >= 12 && mechs.type.titan >= 2 && mechs.type.small < 24)){
+                        ctype = 'small';
+                        mCosts = mechCost(ctype,false);
+                        cost = mCosts.c;
+                        soul = mCosts.s;
+                        size = mechSize(ctype);
+                    }
+                    else if (mechs.type.large >= 6 && mechs.type.medium < 12){
+                        ctype = 'medium';
+                        mCosts = mechCost(ctype,false);
+                        cost = mCosts.c;
+                        soul = mCosts.s;
+                        size = mechSize(ctype);
+                    }
+                    else if (mechs.type.large >= 12 && mechs.type.titan < 2){
+                        mCosts = mechCost('titan',false);
+                        if (mCosts.c <= global.portal.purifier.sup_max){
+                            ctype = 'titan';
+                            cost = mCosts.c;
+                            soul = mCosts.s;
+                            size = mechSize(ctype);
+                        }
                     }
                 }
 
@@ -1411,48 +1449,284 @@ export const gov_tasks = {
                 else if (global.portal.purifier.supply >= cost && avail >= size && global.resource.Soul_Gem.amount >= soul){
                     let c_val = 99;
                     let chassis = 'hover';
-                    Object.keys(mechs[ctype].chassis).forEach(function(val){
-                        if (mechs[ctype].chassis[val] < c_val){
-                            c_val = mechs[ctype].chassis[val];
-                            chassis = val;
-                        }
-                    });
                     let weapons = ctype === 'titan' ? ['???','???','???','???'] : ['???','???'];
-                    let wCap = ctype === 'titan' ? 4 : 2;
-                    for (let i=0; i<wCap; i++){
-                        Object.keys(mechs[ctype].weapon).forEach(function(val){
-                            if (weapons[i] === '???' || mechs[ctype].weapon[val] < mechs[ctype].weapon[weapons[i]]){
-                                if (!weapons.includes(val)){
-                                    weapons[i] = val;
-                                }
-                            }
-                        });
-                    }
-                    let equip = ['???','???','???','???'];
-                    for (let i=0; i<4; i++){
-                        Object.keys(mechs[ctype].equip).forEach(function(val){
-                            if (equip[i] === '???' || mechs[ctype].equip[val] < mechs[ctype].equip[equip[i]]){
-                                if (!equip.includes(val)){
-                                    equip[i] = val;
-                                }
-                            }
-                        });
-                    }
+                    let equipment = [];
 
-                    let equipment = global.blood['prepared'] ? equip : [equip[0],equip[1]];
-                    if (ctype === 'small'){
-                        weapons = [weapons[0]];
-                        equipment = global.blood['prepared'] ? ['special'] : [];
+                    if (global.race['warlord']){
+                        let cList = ['imp','flying_imp','hound','harpy','barghest'];
+                        if (ctype === 'fiend'){
+                            cList = ['cambion','minotaur','nightmare','rakshasa','golem'];
+                        }
+                        else if (ctype === 'cyberdemon'){
+                            cList = ['wheel','tread','biped','quad','spider','hover'];
+                        }
+                        else if (ctype === 'archfiend'){
+                            cList = ['dragon','snake','gorgon','hydra'];
+                        }
+
+                        let counts = {};
+
+                        cList.forEach(function(creature){
+                            counts[creature] = { c: 0, w: {}, e: {} };
+                            let weapons = validWeapons(ctype,creature,false);
+                            weapons.forEach(function(wep){
+                                counts[creature].w[wep] = 0;
+                            });
+                            let equip = validEquipment(ctype,creature,false);
+                            equip.forEach(function(eq){
+                                counts[creature].e[eq] = 0;
+                            });
+                        });
+
+                        global.portal.mechbay.mechs.forEach(function(mech){
+                            if (mech.size === ctype){
+                                if (cList.includes(mech.chassis)){
+                                    counts[mech.chassis].c++;
+                                }
+                                mech.hardpoint.forEach(function(wep){
+                                    counts[mech.chassis].w[wep]++;
+                                });
+                                mech.equip.forEach(function(equip){
+                                    counts[mech.chassis].e[equip]++;
+                                });
+                            }
+                        });
+
+                        if (ctype === 'minion'){
+                            let type = 'imp';
+                            if (counts.imp.c < 4 || counts.flying_imp.c < 4 || (mechs.type.minion >= 16 && (counts.imp.c < 8 || counts.flying_imp.c < 8))){
+                                type = (counts.imp.c > counts.flying_imp.c) ? 'flying_imp' : 'imp';
+                            }
+                            else if (counts.hound.c < 4 || (mechs.type.minion >= 16 && counts.hound.c < 8)){
+                                type = 'hound';
+                            }
+                            else if (counts.harpy.c < 2 || (mechs.type.minion >= 16 && counts.harpy.c < 8)){
+                                type = 'harpy';
+                            }
+                            else if (counts.barghest.c < 2 || mechs.type.minion >= 16){
+                                type = 'barghest';
+                            }
+                            chassis = type;
+
+                            let wTypes = validWeapons(ctype,type,0).sort(() => Math.random() - 0.5);
+                            let weapon = wTypes[0];
+                            wTypes.forEach(function(wep){
+                                if (['imp','flying_imp'].includes(type)){
+                                    if (counts.imp.w[wep] + counts.flying_imp.w[wep] < counts.imp.w[weapon] + counts.flying_imp.w[weapon]){
+                                        weapon = wep;
+                                    }
+                                }
+                                else {
+                                    if (counts[type].w[wep] < counts[type].w[weapon]){
+                                        weapon = wep;
+                                    }
+                                }
+                            });
+                            weapons = [weapon];
+
+                            if (global.blood['prepared']){
+                                equipment = mechs.minion.equip.scavenger < 16 ? ['scavenger'] : ['scouter'];
+                            }
+                        }
+                        else if (ctype === 'fiend'){
+                            let type = 'golem';
+                            if (counts.cambion.c < 4 || counts.rakshasa.c < 4){
+                                type = (counts.cambion.c > counts.rakshasa.c) ? 'rakshasa' : 'cambion';
+                            }
+                            else if (counts.nightmare.c < 4){
+                                type = 'nightmare';
+                            }
+                            else if (counts.minotaur.c < 2){
+                                type = 'minotaur';
+                            }
+                            chassis = type;
+
+                            let wTypes = validWeapons(ctype,type,0).sort(() => Math.random() - 0.5);
+                            let weapon = wTypes[0];
+                            wTypes.forEach(function(wep){
+                                if (['cambion','rakshasa'].includes(type)){
+                                    if (counts.cambion.w[wep] + counts.rakshasa.w[wep] < counts.cambion.w[weapon] + counts.rakshasa.w[weapon]){
+                                        weapon = wep;
+                                    }
+                                }
+                                else {
+                                    if (counts[type].w[wep] < counts[type].w[weapon]){
+                                        weapon = wep;
+                                    }
+                                }
+                            });
+                            weapons = [weapon];
+                            
+                            let eTypes = validEquipment(ctype,type,0).sort(() => Math.random() - 0.5);
+                            let equip = eTypes[0];
+                            let eTotals = {};
+                            eTypes.forEach(function(eq){
+                                eTotals[eq] = counts.cambion.e[eq] + counts.minotaur.e[eq] + counts.nightmare.e[eq] + counts.rakshasa.e[eq] + counts.golem.e[eq];
+                            });
+                            eTypes.forEach(function(eq){
+                                if (eTotals[eq] < eTotals[equip]){
+                                    equip = eq;
+                                }
+                            });
+                            equipment.push(equip);
+
+                            if (global.blood['prepared']){
+                                let equip2 = eTypes[0] === equip ? eTypes[1] : eTypes[0];
+                                eTypes.forEach(function(eq){
+                                    if (eTotals[eq] < eTotals[equip2] && equip != eq){
+                                        equip2 = eq;
+                                    }
+                                });
+                                equipment.push(equip2);
+                            }
+                        }
+                        else if (ctype === 'cyberdemon'){
+                            let type = 'biped';
+                            let typeList = ['wheel','tread','biped','quad','spider','hover'].sort(() => Math.random() - 0.5);
+                            typeList.forEach(function(loco){
+                                if (mechs[ctype].chassis[loco] < mechs[ctype].chassis[type]){
+                                    type = loco;
+                                }
+                            });
+                            chassis = type;
+
+                            weapons = [];
+                            let wTypes = validWeapons(ctype,type,0).sort(() => Math.random() - 0.5);
+                            for (let i=0; i<2; i++){
+                                let weapon = weapons.includes(wTypes[i]) ? wTypes[i+1] : wTypes[i];
+                                wTypes.forEach(function(wep){
+                                    if (mechs[ctype].weapon[wep] < mechs[ctype].weapon[weapon] && !weapons.includes(wep)){
+                                        weapon = wep;
+                                    }
+                                });
+                                mechs[ctype].weapon[weapon]++;
+                                weapons.push(weapon);
+                            }
+                            
+                            let eTypes = validEquipment(ctype,type,0).sort(() => Math.random() - 0.5);
+                            let eTotals = {};
+                            eTypes.forEach(function(eq){
+                                eTotals[eq] = counts.wheel.e[eq] + counts.tread.e[eq] + counts.biped.e[eq] + counts.quad.e[eq] + counts.spider.e[eq] + counts.hover.e[eq];
+                            });
+
+                            equipment.push('special');
+                            let slots = global.blood['prepared'] ? 2 : 1;
+                            for (let i=0; i<slots; i++){
+                                let equip = eTypes[0];
+                                eTypes.forEach(function(eq){
+                                    if (eTotals[eq] < eTotals[equip] && !equipment.includes(eq)){
+                                        equip = eq;
+                                    }
+                                });
+                                equipment.push(equip);
+                                eTotals[equip]++;
+                            }
+                        }
+                        else if (ctype === 'archfiend'){
+                            let type = 'gorgon';
+                            if (counts.hydra.c < 1){
+                                type = 'hydra';
+                            }
+                            else if (counts.dragon.c < 1){
+                                type = 'dragon';
+                            }
+                            else if (counts.snake.c < 1){
+                                type = 'snake';
+                            }
+                            chassis = type;
+
+                            if (type === 'hydra'){
+                                weapons = [
+                                    validWeapons(ctype,type,0)[0],
+                                    validWeapons(ctype,type,1)[0],
+                                    validWeapons(ctype,type,2)[0],
+                                    validWeapons(ctype,type,3)[0]
+                                ];
+                            }
+                            else {
+                                if (['dragon','snake'].includes(type)){
+                                    weapons = [
+                                        validWeapons(ctype,type,0)[0]
+                                    ];
+                                }
+                                else {
+                                    weapons = [counts.gorgon.w.hammer < counts.gorgon.w.axe ? 'hammer' : 'axe'];
+                                }
+
+                                let wTypes = validWeapons(ctype,type,1).sort(() => Math.random() - 0.5);
+                                let weapon = wTypes[0];
+                                wTypes.forEach(function(wep){
+                                    if (counts.dragon.w[wep] + counts.snake.w[wep] + counts.gorgon.w[wep] < counts.dragon.w[weapon] + counts.snake.w[weapon] + counts.gorgon.w[weapon]){
+                                        weapon = wep;
+                                    }
+                                });
+                                weapons.push(weapon);
+                            }
+                            
+                            let eTypes = validEquipment(ctype,type,0).sort(() => Math.random() - 0.5);
+                            let eTotals = {};
+                            eTypes.forEach(function(eq){
+                                eTotals[eq] = counts.dragon.e[eq] + counts.snake.e[eq] + counts.gorgon.e[eq] + counts.hydra.e[eq];
+                            });
+
+                            let slots = global.blood['prepared'] ? 5 : 4;
+                            for (let i=0; i<slots; i++){
+                                let equip = eTypes[0];
+                                eTypes.forEach(function(eq){
+                                    if (eTotals[eq] < eTotals[equip] && !equipment.includes(eq)){
+                                        equip = eq;
+                                    }
+                                });
+                                equipment.push(equip);
+                                eTotals[equip]++;
+                            }
+                        }
                     }
-                    else if (ctype === 'medium'){
-                        weapons = [weapons[0]];
-                        equipment = global.blood['prepared'] ? ['special',equip[0]] : ['special'];
-                    }
-                    else if (ctype === 'large'){
-                        equipment = global.blood['prepared'] ? ['special',equip[0],equip[1]] : ['special',equip[0]];
-                    }
-                    else if (ctype === 'titan'){
-                        equipment = global.blood['prepared'] ? ['special',equip[0],equip[1],equip[2],equip[3]] : ['special',equip[0],equip[1],equip[2]];
+                    else {
+                        Object.keys(mechs[ctype].chassis).forEach(function(val){
+                            if (mechs[ctype].chassis[val] < c_val){
+                                c_val = mechs[ctype].chassis[val];
+                                chassis = val;
+                            }
+                        });
+
+                        let wCap = ctype === 'titan' ? 4 : 2;
+                        for (let i=0; i<wCap; i++){
+                            Object.keys(mechs[ctype].weapon).forEach(function(val){
+                                if (weapons[i] === '???' || mechs[ctype].weapon[val] < mechs[ctype].weapon[weapons[i]]){
+                                    if (!weapons.includes(val)){
+                                        weapons[i] = val;
+                                    }
+                                }
+                            });
+                        }
+                        
+                        let equip = ['???','???','???','???'];
+                        for (let i=0; i<4; i++){
+                            Object.keys(mechs[ctype].equip).forEach(function(val){
+                                if (equip[i] === '???' || mechs[ctype].equip[val] < mechs[ctype].equip[equip[i]]){
+                                    if (!equip.includes(val)){
+                                        equip[i] = val;
+                                    }
+                                }
+                            });
+                        }
+
+                        equipment = global.blood['prepared'] ? equip : [equip[0],equip[1]];
+                        if (ctype === 'small'){
+                            weapons = [weapons[0]];
+                            equipment = global.blood['prepared'] ? ['special'] : [];
+                        }
+                        else if (ctype === 'medium'){
+                            weapons = [weapons[0]];
+                            equipment = global.blood['prepared'] ? ['special',equip[0]] : ['special'];
+                        }
+                        else if (ctype === 'large'){
+                            equipment = global.blood['prepared'] ? ['special',equip[0],equip[1]] : ['special',equip[0]];
+                        }
+                        else if (ctype === 'titan'){
+                            equipment = global.blood['prepared'] ? ['special',equip[0],equip[1],equip[2],equip[3]] : ['special',equip[0],equip[1],equip[2]];
+                        }
                     }
 
                     global.portal.purifier.supply -= cost;

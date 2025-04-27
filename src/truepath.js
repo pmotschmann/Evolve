@@ -214,6 +214,9 @@ const outerTruth = {
                         global.civic[global.civic.d_job].workers -= hired;
                         global.civic.titan_colonist.workers += hired;
                     }
+                    if (global.space.titan_quarters.count === 1){
+                        renderSpace();
+                    }
                     return true;
                 }
                 return false;
@@ -260,8 +263,11 @@ const outerTruth = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('titan_mine');
-                    global.resource.Adamantite.display = true;
                     powerOnNewStruct($(this)[0]);
+                    if (global.space.titan_mine.count === 1){
+                        global.resource.Adamantite.display = true;
+                        defineIndustry();
+                    }
                     return true;
                 }
                 return false;
@@ -388,7 +394,7 @@ const outerTruth = {
                 let vault = bank_vault() * 2;
                 vault = spatialReasoning(vault);
                 vault = (+(vault).toFixed(0)).toLocaleString();
-                return loc('plus_max_resource',[`\$${vault}`,loc('resource_Money_name')]);
+                return loc('plus_max_resource',[`\$${vault}`,global.resource.Money.name]);
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -582,8 +588,9 @@ const outerTruth = {
                         incrementStruct('ai_core');
                         if (global.space.ai_core.count >= 100){
                             global.tech['titan_ai_core'] = 1;
-                            global.space['ai_core2'] = { count: 1, on: 0 };
-                            powerOnNewStruct($(outerTruth.spc_titan.ai_core2)[0]);
+                            initStruct(outerTruth.spc_titan.ai_core2);
+                            incrementStruct('ai_core2','space');
+                            powerOnNewStruct(outerTruth.spc_titan.ai_core2);
                             renderSpace();
                             drawTech();
                             if (global.city.ptrait.includes('kamikaze') && !global.race['tidal_decay']){
@@ -639,6 +646,12 @@ const outerTruth = {
             },
             flair(){
                 return global.space.hasOwnProperty('ai_core2') && global.space.ai_core2.on >= 1 ? loc(`space_ai_core_flair`) : loc(`space_ai_core_flair2`);
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['ai_core2','space']
+                };
             }
         },
         ai_colonist: {
@@ -687,7 +700,7 @@ const outerTruth = {
             },
             reqs: {},
             condition(){
-                return global.race['wish'] && global.race['wishStats'] && global.space['wonder_gardens'] ? true : false;
+                return global.race['wish'] && global.race['wishStats'] && global.portal['wonder_gardens'] ? true : false;
             },
             trait: ['wish'],
             queue_complete(){ return false; },
@@ -816,6 +829,9 @@ const outerTruth = {
                 if (payCosts($(this)[0])){
                     incrementStruct('zero_g_lab');
                     powerOnNewStruct($(this)[0]);
+                    if (global.space.zero_g_lab.count === 1 && global.tech['quantium']){
+                        loadFoundry();
+                    }
                     return true;
                 }
                 return false;
@@ -825,9 +841,6 @@ const outerTruth = {
                     d: { count: 0, on: 0 },
                     p: ['zero_g_lab','space']
                 };
-            },
-            post(){
-                loadFoundry();
             },
             postPower(on){
                 limitCraftsmen('Quantium');
@@ -1162,7 +1175,7 @@ const outerTruth = {
             effect(wiki){
                 let mineral = +(production('orichalcum_mine')).toFixed(3);
                 let fuel = +fuel_adjust($(this)[0].p_fuel().a,true,wiki).toFixed(1);
-                let desc = `<div>${loc('gain',[mineral,loc('resource_Orichalcum_name')])}</div>`;
+                let desc = `<div>${loc('gain',[mineral,global.resource.Orichalcum.name])}</div>`;
                 return desc + `<div class="has-text-caution">${loc('requires_power_combo_effect',[$(this)[0].powered(),fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
             },
             powered(){ return powerCostMod(10); },
@@ -1199,7 +1212,7 @@ const outerTruth = {
             effect(wiki){
                 let mineral = +(production('uranium_mine')).toFixed(3);
                 let fuel = +fuel_adjust($(this)[0].p_fuel().a,true,wiki).toFixed(1);
-                let desc = `<div>${loc('gain',[mineral,loc('resource_Uranium_name')])}</div>`;
+                let desc = `<div>${loc('gain',[mineral,global.resource.Uranium.name])}</div>`;
                 return desc + `<div class="has-text-caution">${loc('requires_power_combo_effect',[$(this)[0].powered(),fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
             },
             powered(){ return powerCostMod(5); },
@@ -1235,7 +1248,7 @@ const outerTruth = {
             effect(wiki){
                 let mineral = +(production('neutronium_mine')).toFixed(3);
                 let fuel = +fuel_adjust($(this)[0].p_fuel().a,true,wiki).toFixed(1);
-                let desc = `<div>${loc('gain',[mineral,loc('resource_Neutronium_name')])}</div>`;
+                let desc = `<div>${loc('gain',[mineral,global.resource.Neutronium.name])}</div>`;
                 return desc + `<div class="has-text-caution">${loc('requires_power_combo_effect',[$(this)[0].powered(),fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
             },
             powered(){ return powerCostMod(8); },
@@ -1272,7 +1285,7 @@ const outerTruth = {
             effect(wiki){
                 let mineral = +(production('elerium_mine')).toFixed(3);
                 let fuel = +fuel_adjust($(this)[0].p_fuel().a,true,wiki).toFixed(1);
-                let desc = `<div>${loc('gain',[mineral,loc('resource_Elerium_name')])}</div>`;
+                let desc = `<div>${loc('gain',[mineral,global.resource.Elerium.name])}</div>`;
                 return desc + `<div class="has-text-caution">${loc('requires_power_combo_effect',[$(this)[0].powered(),fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
             },
             powered(){ return powerCostMod(12); },
@@ -1549,6 +1562,7 @@ const tauCetiModules = {
                                 global.tech.matrix = 3;
                                 global.tauceti['matrix'] = { count: 1, on: 0 };
                             }
+                            drawTech();
                             renderTauCeti();
                             clearPopper();
                         }
@@ -1858,18 +1872,18 @@ const tauCetiModules = {
                     let vault = bank_vault() * 25;
                     vault = spatialReasoning(vault);
                     vault = (+(vault).toFixed(0)).toLocaleString();
-                    desc = desc + `<div>${loc('plus_max_resource',[`\$${vault}`,loc('resource_Money_name')])}</div>`;
+                    desc = desc + `<div>${loc('plus_max_resource',[`\$${vault}`,global.resource.Money.name])}</div>`;
                 }
 
                 desc = desc + `<div>${loc('tau_home_colony_effect',[50,races[global.race.species].home])}</div>`;
                 
                 if (global.tech['isolation']){
                     let gasVal = govActive('gaslighter',0);
-                    let mVal = (gasVal ? gasVal + global.tech.broadcast : global.tech.broadcast) * 2;
+                    let mVal = ((gasVal || 0) + (global.tech.broadcast || 0)) * 2;
                     desc = desc + `<div>${loc('space_red_vr_center_effect1',[mVal])}</div>`;
                 }
                 
-                desc = desc + `<div>${loc('plus_max_resource',[containers,loc('resource_Crates_name')])}</div><div>${loc('plus_max_resource',[containers,loc('resource_Containers_name')])}</div>`;
+                desc = desc + `<div>${loc('plus_max_resource',[containers,global.resource.Crates.name])}</div><div>${loc('plus_max_resource',[containers,global.resource.Containers.name])}</div>`;
 
                 if (global.race['lone_survivor']){
                     desc = desc + `<div>${loc('gain',[-(fuel),global.resource[$(this)[0].support_fuel().r].name])}</div>`;
@@ -2184,9 +2198,9 @@ const tauCetiModules = {
             cost: {},
             queue_complete(){ return 0; },
             effect(){
-                let desc = `<div>${loc('plus_max_resource',[20+'%',loc('resource_Knowledge_name')])}</div>`;
+                let desc = `<div>${loc('plus_max_resource',[20+'%',global.resource.Knowledge.name])}</div>`;
                 if (global.tech['isolation']){
-                    desc = desc + `<div>${loc('plus_max_resource',[(global.race['lone_survivor'] ? 3500000 : 6500000).toLocaleString(),loc('resource_Knowledge_name')])}</div>`;
+                    desc = desc + `<div>${loc('plus_max_resource',[(global.race['lone_survivor'] ? 3500000 : 6500000).toLocaleString(),global.resource.Knowledge.name])}</div>`;
                     desc = desc + `<div>${loc('plus_max_resource',[(200000).toLocaleString(),global.resource.Cipher.name])}</div>`;
                     desc = desc + `<div>${loc(`space_lander_effect3`,[production('alien_outpost'),global.resource.Cipher.name])}</div>`;
                 }
@@ -2393,7 +2407,7 @@ const tauCetiModules = {
                     }
                 };
                 if (global.tech['isolation']){
-                    storage = storage + `<span>${loc('plus_max_resource',[containers,loc('resource_Crates_name')])}</span><span>${loc('plus_max_resource',[containers,loc('resource_Containers_name')])}</span>`;
+                    storage = storage + `<span>${loc('plus_max_resource',[containers,global.resource.Crates.name])}</span><span>${loc('plus_max_resource',[containers,global.resource.Containers.name])}</span>`;
                 }
                 storage = storage + '</div>';
                 return storage;
@@ -2465,11 +2479,15 @@ const tauCetiModules = {
                     incrementStruct('tau_factory','tauceti');
                     if (powerOnNewStruct($(this)[0])){
                         global.city.factory.Alloy += $(this)[0].manufacturing();
-                        defineIndustry();
                     }
                     return true;
                 }
                 return false;
+            },
+            post(){
+                if (global.race['lone_survivor']){
+                    defineIndustry();
+                }
             },
             struct(){
                 return {
@@ -2503,7 +2521,7 @@ const tauCetiModules = {
                 desc = desc + `<div>${loc('city_max_knowledge',[Math.round(sci).toLocaleString()])}</div>`;
                 if (global.tech['isolation']){
                     let elerium = spatialReasoning(375);
-                    desc = desc + `<div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div>`;
+                    desc = desc + `<div>${loc('plus_max_resource',[elerium,global.resource.Elerium.name])}</div>`;
                     desc = desc + `<div>${loc('city_wardenclyffe_effect1',[jobScale(2), global.civic.professor.name])}</div>`;
                     desc = desc + `<div>${loc('city_wardenclyffe_effect1',[jobScale(1), global.civic.scientist.name])}</div>`;
                     desc = desc + `<div>${loc('space_zero_g_lab_effect',[jobScale(1)])}</div>`;
@@ -2573,7 +2591,7 @@ const tauCetiModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('tauceti_casino','tauceti');
-                    if (!global.race['joyless']){
+                    if (global.tech['theatre'] && !global.race['joyless']){
                         global.civic.entertainer.max += jobScale(1);
                         global.civic.entertainer.display = true;
                     }
@@ -2641,7 +2659,7 @@ const tauCetiModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('tau_cultural_center','tauceti');
-                    global.tauceti.tau_cultural_center.on++;
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -3284,7 +3302,17 @@ const tauCetiModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('refueling_station','tauceti');
-                    powerOnNewStruct($(this)[0]);
+                    if (powerOnNewStruct($(this)[0])) {
+                        if (global.tech['isolation']){
+                            // Graphene allocation is stored on the Titan graphene factory even after isolation
+                            if (global.race['kindling_kindred'] || global.race['smoldering']){
+                                global.space.g_factory.Oil++;
+                            }
+                            else {
+                                global.space.g_factory.Lumber++;
+                            }
+                        }
+                    }
                     return true;
                 }
                 return false;
@@ -3298,6 +3326,7 @@ const tauCetiModules = {
             post(){
                 if (global.tech.tau_gas === 2){
                     global.tech.tau_gas = 3;
+                    defineIndustry();
                     drawTech();
                 }
             }
@@ -3549,6 +3578,9 @@ const tauCetiModules = {
                 if (payCosts($(this)[0])){
                     incrementStruct('mining_ship','tauceti');
                     powerOnNewStruct($(this)[0]);
+                    if (global.tauceti.mining_ship.count === 1){
+                        defineIndustry();
+                    }
                     return true;
                 }
                 return false;
@@ -3691,6 +3723,7 @@ const tauCetiModules = {
                         if (global.tauceti.alien_station.count >= 100){
                             global.tech.tau_gas2 = 5;
                             global.tauceti['alien_space_station'] = { count: 1, on: 0 };
+                            drawTech();
                         }
                         return true;
                     }
@@ -3704,10 +3737,12 @@ const tauCetiModules = {
                 };
             },
             post(){
-                if (global.resource.Elerium.diff >= 10){
-                    global.tauceti.alien_space_station.on = 1; 
+                if (global.tauceti.hasOwnProperty('alien_space_station')){
+                    if (global.resource.Elerium.diff >= 10){
+                        global.tauceti.alien_space_station.on = 1;
+                    }
+                    renderTauCeti();
                 }
-                renderTauCeti();
             }
         },
         alien_space_station: {
@@ -3831,6 +3866,7 @@ const tauCetiModules = {
                         incrementStruct('ignition_device','tauceti');
                         if (global.tauceti.ignition_device.count >= 10){
                             global.tech['m_ignite'] = 1;
+                            renderTauCeti();
                         }
                         return true;
                     }
@@ -5633,7 +5669,6 @@ export function loneSurvivor(){
         global.tech['banking'] = 11;
         global.tech['biotech'] = 1;
         global.tech['boot_camp'] = 2;
-        global.tech['broadcast'] = 2;
         global.tech['container'] = 7;
         global.tech['copper'] = 1;
         global.tech['currency'] = 6;
@@ -5708,7 +5743,6 @@ export function loneSurvivor(){
         global.tech['synthetic_fur'] = 1;
         global.tech['tau_home'] = 6;
         global.tech['tauceti'] = 4;
-        global.tech['theatre'] = 3;
         global.tech['theology'] = 2;
         global.tech['titan'] = 9;
         global.tech['titan_ai_core'] = 3;
@@ -5722,6 +5756,12 @@ export function loneSurvivor(){
         global.tech['wharf'] = 1;
         global.tech['world_control'] = 1;
         global.tech['wsc'] = 0;
+
+        // Note: Joyless cannot be completed in Lone Survivor, and there is no reward for trying.
+        if (!global.race['joyless']){
+            global.tech['theatre'] = 3;
+            global.tech['broadcast'] = 2;
+        }
 
         if (!global.race['flier']){
             global.tech['cement'] = 5;
@@ -5761,7 +5801,6 @@ export function loneSurvivor(){
         global.settings.showPowerGrid = true;
         global.settings.showResearch = true;
         global.settings.showCivic = true;
-        global.settings.showMil = true;
         global.settings.showResources = true;
         global.settings.showMarket = true;
         global.settings.showStorage = true;
@@ -5771,7 +5810,6 @@ export function loneSurvivor(){
         global.settings.arpa.physics = true;
         global.settings.arpa.genetics = true
 
-        //global.civic.garrison.display = true;
         global.resource[global.race.species].display = true;
         global.resource.Knowledge.display = true;
         global.resource.Money.display = true;
@@ -5966,7 +6004,7 @@ export function loneSurvivor(){
 
         initStruct(actions.city.factory);
         initStruct(actions.city.foundry);
-        initStruct(actions.city.smelter); addSmelter(1, 'Iron'); addSmelter(1, 'Steel');
+        initStruct(actions.city.smelter);
 
         initStruct(actions.city.amphitheatre);
         initStruct(actions.city.apartment);
@@ -6081,17 +6119,6 @@ export function loneSurvivor(){
         global.space['ai_core'] = { count: 100 };
         global.space['ai_core2'] = { count: 0, on: 0 };
         global.space['m_relay'] = { count: 0, on: 0 };
-        
-        global.civic['garrison'] = {
-            display: true,
-            disabled: false,
-            progress: 0,
-            tactic: 0,
-            workers: 2,
-            wounded: 0,
-            raid: 0,
-            max: 2
-        };
 
         global.arpa['sequence'] = {
             max: 50000,

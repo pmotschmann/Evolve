@@ -5,11 +5,11 @@ import { unlockAchieve, alevel, universeAffix, unlockFeat } from './achieve.js';
 import { payCosts, housingLabel, wardenLabel, structName, updateQueueNames, drawTech, fanaticism, checkAffordable, actions, initStruct } from './actions.js';
 import { races, checkAltPurgatory, renderPsychicPowers, renderSupernatural, traitCostMod } from './races.js';
 import { drawResourceTab, resource_values, atomic_mass } from './resources.js';
-import { loadFoundry, jobScale } from './jobs.js';
+import { loadFoundry, jobScale, jobName, limitCraftsmen } from './jobs.js';
 import { buildGarrison, checkControlling, govTitle } from './civics.js';
 import { renderSpace, planetName, int_fuel_adjust } from './space.js';
 import { drawHellObservations } from './portal.js';
-import { setOrbits, jumpGateShutdown } from './truepath.js';
+import { setOrbits, drawShipYard, jumpGateShutdown } from './truepath.js';
 import { arpa } from './arpa.js';
 import { setPowerGrid, defineIndustry, addSmelter } from './industry.js';
 import { defineGovernor, removeTask } from './governor.js';
@@ -129,6 +129,11 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            if (global.race['banana'] && !global.race['terrifying']){
+                drawResourceTab('market');
+            }
         }
     },
     wheel: {
@@ -370,6 +375,7 @@ const techs = {
         category: 'housing',
         era: 'dimensional',
         reqs: { hell_ruins: 4, housing: 3, high_tech: 17 },
+        not_trait: ['warlord'],
         grant: ['housing',4],
         cost: {
             Knowledge(){ return 25000000; }
@@ -863,6 +869,48 @@ const techs = {
         cost: {
             Knowledge(){ return global.city.ptrait.includes('unstable') ? 1650 : 3300; },
             Iron(){ return 375; }
+        },
+        effect: loc('tech_bronze_spear_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    steel_spear: {
+        id: 'tech-steel_spear',
+        title: loc('tech_steel_spear'),
+        desc: loc('tech_steel_spear_desc'),
+        category: 'foraging',
+        era: 'civilized',
+        reqs: { foraging: 3, smelting: 2 },
+        trait: ['forager'],
+        grant: ['foraging',4],
+        cost: {
+            Knowledge(){ return 10500; },
+            Iron(){ return 750; }
+        },
+        effect: loc('tech_bronze_spear_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    titanium_spear: {
+        id: 'tech-titanium_spear',
+        title: loc('tech_titanium_spear'),
+        desc: loc('tech_titanium_spear_desc'),
+        category: 'foraging',
+        era: 'civilized',
+        reqs: { foraging: 4, high_tech: 3},
+        trait: ['forager'],
+        grant: ['foraging',5],
+        cost: {
+            Knowledge(){ return 39500; },
+            Titanium(){ return 475; }
         },
         effect: loc('tech_bronze_spear_effect'),
         action(){
@@ -1604,7 +1652,7 @@ const techs = {
         category: 'special',
         era: 'discovery',
         reqs: { high_tech: 2 },
-        not_trait: ['fasting','cataclysm','lone_survivor'],
+        not_trait: ['fasting','cataclysm','lone_survivor','warlord'],
         grant: ['banquet',1],
         condition(){ return global.stats.achieve['endless_hunger'] && global.stats.achieve['endless_hunger'].l >= 1 ? true : false; },
         cost: {
@@ -1651,7 +1699,7 @@ const techs = {
         cost: {
             Knowledge(){ return 1080; }
         },
-        effect(){ return global.race.universe === 'evil' ? loc('tech_gladiators_effect') : loc('tech_playwright_effect'); },
+        effect(){ return global.race.universe === 'evil' ? loc('tech_gladiators_effect',[loc('city_colosseum')]) : loc('tech_playwright_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -1761,6 +1809,7 @@ const techs = {
         era: 'interstellar',
         reqs: { broadcast: 2, high_tech: 12, stanene: 1 },
         grant: ['broadcast',3],
+        not_trait: ['warlord'],
         cost: {
             Knowledge(){ return 620000; }
         },
@@ -1780,6 +1829,7 @@ const techs = {
         category: 'entertainment',
         era: 'dimensional',
         reqs: { hell_ruins: 2 },
+        not_trait: ['warlord'],
         grant: ['zoo',1],
         cost: {
             Knowledge(){ return 22500000; }
@@ -2158,7 +2208,7 @@ const techs = {
         grant: ['smelting',8],
         cost: {
             Knowledge(){ return 27500000; },
-            Coal(){ return 45000000; },
+            Coal(){ return global.race['warlord'] ? 35000000 : 45000000; },
             Oil(){ return 500000; },
             Infernite(){ return 750000; }
         },
@@ -2193,6 +2243,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            defineIndustry();
         }
     },
     rotary_kiln: {
@@ -3318,6 +3371,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            drawResourceTab('market');
         }
     },
     tax_rates: {
@@ -3430,6 +3486,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            drawResourceTab('market');
         }
     },
     diplomacy: {
@@ -3924,6 +3983,7 @@ const techs = {
         category: 'banking',
         era: 'interstellar',
         reqs: { home_safe: 2, infernite: 1 },
+        not_trait: ['warlord'],
         grant: ['home_safe',3],
         cost: {
             Money(){ return 2500000; },
@@ -4110,7 +4170,7 @@ const techs = {
         cost: {
             Knowledge(){ return traitCostMod('stubborn',36000); }
         },
-        effect(){ return loc('tech_adjunct_professor_effect',[wardenLabel(),global.civic.scientist ? global.civic.scientist.name : loc('job_scientist')]); },
+        effect(){ return loc('tech_adjunct_professor_effect',[wardenLabel(),global.civic.scientist ? global.civic.scientist.name : jobName('scientist')]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -4188,6 +4248,7 @@ const techs = {
         path: ['standard'],
         reqs: { science: 9, elerium: 2 },
         grant: ['science',10],
+        not_trait: ['warlord'],
         cost: {
             Knowledge(){ return traitCostMod('stubborn',350000); }
         },
@@ -4432,7 +4493,7 @@ const techs = {
             Knowledge(){ return 80000000; },
             Omniscience(){ return 12500; },
         },
-        effect(){ return loc('tech_spirit_researcher_effect',[global.civic.scientist ? global.civic.scientist.name : loc('job_scientist')]); },
+        effect(){ return loc('tech_spirit_researcher_effect',[global.civic.scientist ? global.civic.scientist.name : jobName('scientist')]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -4819,6 +4880,7 @@ const techs = {
             return false;
         },
         post(){
+            defineIndustry();
             defineGovernor();
         }
     },
@@ -5232,8 +5294,8 @@ const techs = {
     },
     purify: {
         id: 'tech-purify',
-        title: loc('tech_purify'),
-        desc: loc('tech_purify'),
+        title(){ return global.race['warlord'] ? loc('tech_potent_miasma') : loc('tech_purify'); },
+        desc(){ return global.race['warlord'] ? loc('tech_potent_miasma') : loc('tech_purify'); },
         category: 'hell_dimension',
         era: 'dimensional',
         reqs: { hell_spire: 3, b_stone: 2 },
@@ -5242,7 +5304,7 @@ const techs = {
             Knowledge(){ return 52500000; },
             Blood_Stone(){ return 1; }
         },
-        effect(){ return loc('tech_purify_effect'); },
+        effect(){ return global.race['warlord'] ? loc('tech_potent_miasma_effect') : loc('tech_purify_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -5281,7 +5343,7 @@ const techs = {
             return global.resource.Demonic_Essence.amount >= 1 ? true : false;
         },
         grant: ['waygate',4],
-        not_trait: ['witch_hunter','fasting'],
+        not_trait: ['witch_hunter','fasting','warlord'],
         cost: {
             Species(){ return popCost(1000); },
             Knowledge(){ return 55000000; },
@@ -5300,8 +5362,8 @@ const techs = {
     },
     purify_essence: {
         id: 'tech-purify_essence',
-        title: loc('tech_purify_essence'),
-        desc: loc('tech_purify_essence'),
+        title(){ return loc('tech_purify_essence'); },
+        desc(){ return loc('tech_purify_essence'); },
         category: 'hell_dimension',
         era: 'existential',
         reqs: { b_stone: 2, waygate: 3, edenic: 1 },
@@ -5316,7 +5378,7 @@ const techs = {
             Demonic_Essence(){ return 1; }
         },
         effect(){
-            return `<div>${loc('tech_purify_essence_effect')}</div><div class="has-text-special">${loc('tech_purify_essence_warn')}</div>`;
+            return global.race['warlord'] ? `<div>${loc('tech_purify_essence_effect')}</div>` : `<div>${loc('tech_purify_essence_effect')}</div><div class="has-text-special">${loc('tech_purify_essence_warn')}</div>`;
         },
         action(){
             if (payCosts($(this)[0])){
@@ -5662,7 +5724,7 @@ const techs = {
         era: 'intergalactic',
         reqs: { science: 19 },
         grant: ['ascension',1],
-        not_trait: ['orbit_decay','witch_hunter'],
+        not_trait: ['orbit_decay','witch_hunter','warlord'],
         cost: {
             Knowledge(){ return 17500000; },
             Phage(){ return 25; }
@@ -5726,7 +5788,7 @@ const techs = {
         category: 'ai_core',
         era: 'interstellar',
         reqs: { high_tech: 15 },
-        not_trait: ['flier'],
+        not_trait: ['flier','warlord'],
         grant: ['ai_core',1],
         cost: {
             Knowledge(){ return 1750000; },
@@ -6194,7 +6256,7 @@ const techs = {
         era: 'intergalactic',
         reqs: { mass: 1, science: 19 },
         grant: ['mass',2],
-        not_trait: ['orbit_decayed'],
+        not_trait: ['orbit_decayed','warlord'],
         cost: {
             Knowledge(){ return 14000000; },
             Orichalcum(){ return 400000; }
@@ -6441,9 +6503,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.civic.lumberjack.name = loc('job_reclaimer');
-                if (!global.race['forager']){
-                    global.civic.lumberjack.display = true;
-                }
+                global.civic.lumberjack.display = true;
                 initStruct(actions.city.graveyard);
                 return true;
             }
@@ -6459,7 +6519,7 @@ const techs = {
         reqs: { reclaimer: 1, mining: 2 },
         grant: ['reclaimer',2],
         trait: ['evil'],
-        not_trait: ['living_tool','forager'],
+        not_trait: ['living_tool'],
         condition(){
             return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
@@ -6484,7 +6544,7 @@ const techs = {
         reqs: { reclaimer: 2, mining: 3 },
         grant: ['reclaimer',3],
         trait: ['evil'],
-        not_trait: ['living_tool','forager'],
+        not_trait: ['living_tool'],
         condition(){
             return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
@@ -6509,7 +6569,7 @@ const techs = {
         reqs: { reclaimer: 3, smelting: 2 },
         grant: ['reclaimer',4],
         trait: ['evil'],
-        not_trait: ['living_tool','forager'],
+        not_trait: ['living_tool'],
         condition(){
             return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
@@ -6534,7 +6594,7 @@ const techs = {
         reqs: { reclaimer: 4, high_tech: 3 },
         grant: ['reclaimer',5],
         trait: ['evil'],
-        not_trait: ['living_tool','forager'],
+        not_trait: ['living_tool'],
         condition(){
             return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
@@ -6559,7 +6619,7 @@ const techs = {
         reqs: { reclaimer: 5, high_tech: 4 },
         grant: ['reclaimer',6],
         trait: ['evil'],
-        not_trait: ['living_tool','forager'],
+        not_trait: ['living_tool'],
         condition(){
             return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
@@ -6584,7 +6644,7 @@ const techs = {
         reqs: { reclaimer: 6, space: 3 },
         grant: ['reclaimer',7],
         trait: ['evil'],
-        not_trait: ['living_tool','forager'],
+        not_trait: ['living_tool'],
         condition(){
             return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
@@ -6609,7 +6669,7 @@ const techs = {
         reqs: { reclaimer: 7, alpha: 2 },
         grant: ['reclaimer',8],
         trait: ['evil'],
-        not_trait: ['living_tool','forager'],
+        not_trait: ['living_tool'],
         condition(){
             return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
@@ -6645,9 +6705,7 @@ const techs = {
         },
         action(){
             if (payCosts($(this)[0])){
-                if (!global.race['forager']){
-                    global.civic.lumberjack.display = true;
-                }
+                global.civic.lumberjack.display = true;
                 initStruct(actions.city.lumber_yard);
                 return true;
             }
@@ -6661,7 +6719,7 @@ const techs = {
         category: 'lumber_gathering',
         era: 'civilized',
         reqs: { axe: 1, mining: 2 },
-        not_trait: ['living_tool','forager'],
+        not_trait: ['living_tool'],
         grant: ['axe',2],
         cost: {
             Knowledge(){ return 540; },
@@ -6683,7 +6741,7 @@ const techs = {
         era: 'civilized',
         reqs: { axe: 1, mining: 3 },
         grant: ['saw',1],
-        not_trait: ['lone_survivor'],
+        not_trait: ['lone_survivor','warlord'],
         cost: {
             Knowledge(){ return 3375; },
             Iron(){ return 400; }
@@ -6724,7 +6782,7 @@ const techs = {
         category: 'lumber_gathering',
         era: 'civilized',
         reqs: { axe: 2, mining: 3 },
-        not_trait: ['living_tool','forager'],
+        not_trait: ['living_tool'],
         grant: ['axe',3],
         cost: {
             Knowledge(){ return global.city.ptrait.includes('unstable') ? 1350 : 2700; },
@@ -6745,7 +6803,7 @@ const techs = {
         category: 'lumber_gathering',
         era: 'discovery',
         reqs: { axe: 3, smelting: 2 },
-        not_trait: ['living_tool','forager'],
+        not_trait: ['living_tool'],
         grant: ['axe',4],
         cost: {
             Knowledge(){ return 9000; },
@@ -6766,7 +6824,7 @@ const techs = {
         category: 'lumber_gathering',
         era: 'industrialized',
         reqs: { axe: 4, high_tech: 3 },
-        not_trait: ['living_tool','forager'],
+        not_trait: ['living_tool'],
         grant: ['axe',5],
         cost: {
             Knowledge(){ return 38000; },
@@ -6787,7 +6845,7 @@ const techs = {
         category: 'lumber_gathering',
         era: 'interstellar',
         reqs: { axe: 5, alpha: 2 },
-        not_trait: ['living_tool','forager'],
+        not_trait: ['living_tool'],
         grant: ['axe',6],
         cost: {
             Knowledge(){ return 560000; },
@@ -6810,7 +6868,7 @@ const techs = {
         category: 'stone_gathering',
         era: 'civilized',
         reqs: { mining: 2 },
-        not_trait: ['cataclysm','sappy','living_tool','forager'],
+        not_trait: ['cataclysm','sappy','living_tool'],
         grant: ['hammer',1],
         cost: {
             Knowledge(){ return 540; },
@@ -6831,7 +6889,7 @@ const techs = {
         category: 'stone_gathering',
         era: 'civilized',
         reqs: { hammer: 1, mining: 3 },
-        not_trait: ['cataclysm','sappy','living_tool','forager'],
+        not_trait: ['cataclysm','sappy','living_tool'],
         grant: ['hammer',2],
         cost: {
             Knowledge(){ return global.city.ptrait.includes('unstable') ? 1350 : 2700; },
@@ -6852,7 +6910,7 @@ const techs = {
         category: 'stone_gathering',
         era: 'discovery',
         reqs: { hammer: 2, smelting: 2 },
-        not_trait: ['cataclysm','sappy','living_tool','forager'],
+        not_trait: ['cataclysm','sappy','living_tool'],
         grant: ['hammer',3],
         cost: {
             Knowledge(){ return 7200; },
@@ -6873,7 +6931,7 @@ const techs = {
         category: 'stone_gathering',
         era: 'industrialized',
         reqs: { hammer: 3, high_tech: 3 },
-        not_trait: ['cataclysm','sappy','living_tool','forager'],
+        not_trait: ['cataclysm','sappy','living_tool'],
         grant: ['hammer',4],
         cost: {
             Knowledge(){ return 40000; },
@@ -7674,7 +7732,7 @@ const techs = {
         grant: ['military',12],
         cost: {
             Knowledge(){ return 72500000; },
-            Asphodel_Powder(){ return 10777; },
+            Asphodel_Powder(){ return 7777; },
             Soul_Gem(){ return 100; },
         },
         effect: loc('tech_ethereal_weapons_effect'),
@@ -7839,6 +7897,7 @@ const techs = {
         category: 'hell_dimension',
         era: 'interstellar',
         reqs: { high_tech: 9, portal: 2 },
+        not_trait: ['warlord'],
         grant: ['turret',1],
         cost: {
             Knowledge(){ return 600000; },
@@ -7970,7 +8029,7 @@ const techs = {
         category: 'special',
         era: 'globalized',
         reqs: { uranium: 1, explosives: 3, high_tech: 7 },
-        not_trait: ['cataclysm','lone_survivor'],
+        not_trait: ['cataclysm','lone_survivor','warlord'],
         grant: ['mad',1],
         condition(){
             if (global.race['sludge'] || global.race['ultra_sludge']){ return false; }
@@ -8270,6 +8329,7 @@ const techs = {
         category: 'storage',
         era: 'interstellar',
         reqs: { particles: 3, science: 11, supercollider: 3 },
+        not_trait: ['warlord'],
         grant: ['particles',4],
         cost: {
             Knowledge(){ return 425000; }
@@ -8330,6 +8390,9 @@ const techs = {
                     unlockAchieve(`second_evolution`);
                 }
                 fanaticism(global.race.gods);
+                if (global.race['warlord']){
+                    global.portal.throne.points++;
+                }
                 return true;
             }
             return false;
@@ -8358,6 +8421,9 @@ const techs = {
                     unlockAchieve(`second_evolution`);
                 }
                 fanaticism(global.race.gods);
+                if (global.race['warlord']){
+                    global.portal.throne.points++;
+                }
                 return true;
             }
             return false;
@@ -8482,6 +8548,9 @@ const techs = {
                 global.tech['ancient_deify'] = 1;
                 fanaticism(global.race.old_gods);
                 arpa('Genetics');
+                if (global.race['warlord']){
+                    global.portal.throne.points++;
+                }
                 return true;
             }
             return false;
@@ -8508,6 +8577,9 @@ const techs = {
             if (payCosts($(this)[0])){
                 fanaticism(global.race.old_gods);
                 arpa('Genetics');
+                if (global.race['warlord']){
+                    global.portal.throne.points++;
+                }
                 return true;
             }
             return false;
@@ -9163,6 +9235,9 @@ const techs = {
         category: 'power_generation',
         era: 'existential',
         reqs: { high_tech: 19, dyson: 2 },
+        condition(){
+            return global.interstellar?.orichalcum_sphere?.count >= 100;
+        },
         grant: ['dyson',3],
         cost: {
             Knowledge(){ return 122500000; },
@@ -9225,6 +9300,7 @@ const techs = {
         category: 'space_exploration',
         era: 'interstellar',
         reqs: { science: 13, luna: 2, stanene: 1 },
+        not_trait: ['warlord'],
         grant: ['luna',3],
         cost: {
             Knowledge(){ return 700000; },
@@ -9612,7 +9688,7 @@ const techs = {
         era: 'deep_space',
         reqs: { genesis: 2, space: 5, high_tech: 10 },
         grant: ['genesis',3],
-        not_trait: ['lone_survivor'],
+        not_trait: ['lone_survivor','warlord'],
         cost: {
             Knowledge(){ return 380000; },
         },
@@ -10249,7 +10325,8 @@ const techs = {
                                 soul_forge: 0,
                                 crafted: 0,
                                 turrets: 0,
-                                surveyors: 0
+                                surveyors: 0,
+                                compactor: 0
                             },
                         },
                         period: {
@@ -10270,7 +10347,8 @@ const techs = {
                                 soul_forge: 0,
                                 crafted: 0,
                                 turrets: 0,
-                                surveyors: 0
+                                surveyors: 0,
+                                compactor: 0
                             },
                         }
                     },
@@ -10313,6 +10391,7 @@ const techs = {
         category: 'hell_dimension',
         era: 'interstellar',
         reqs: { portal: 3, stanene: 1 },
+        not_trait: ['warlord'],
         grant: ['portal',4],
         cost: {
             Knowledge(){ return 745000; },
@@ -11040,6 +11119,7 @@ const techs = {
         category: 'hell_dimension',
         era: 'intergalactic',
         reqs: { hell_pit: 4 },
+        not_trait: ['warlord'],
         grant: ['hell_gun',1],
         cost: {
             Knowledge(){ return 3000000; }
@@ -11420,6 +11500,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            drawResourceTab('alchemy');
         }
     },
     secret_society: {
@@ -11680,6 +11763,7 @@ const techs = {
         category: 'hell_dimension',
         era: 'dimensional',
         reqs: { hell_spire: 8 },
+        not_trait: ['warlord'],
         grant: ['sphinx_bribe',1],
         cost: {
             Soul_Gem(){ return 250; },
@@ -12074,6 +12158,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.resource.Quantium.display = true;
+                limitCraftsmen('Quantium');
                 return true;
             }
             return false;
@@ -12560,6 +12645,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            defineIndustry();
         }
     },
     adamantite_crates: {
@@ -13134,6 +13222,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            drawShipYard();
         }
     },
     alien_outpost: {
@@ -13615,6 +13706,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            defineIndustry();
         }
     },
     space_whaling: {
@@ -14264,6 +14358,10 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            defineIndustry();
+            defineGovernor();
         }
     },
     womling_unlock: {
@@ -14420,8 +14518,8 @@ const techs = {
     },
     purification: {
         id: 'tech-purification',
-        title: loc('tech_purification'),
-        desc: loc('tech_purification'),
+        title(){ return global.race['warlord'] ? loc('tech_putrification') : loc('tech_purification'); },
+        desc(){ return global.race['warlord'] ? loc('tech_putrification') : loc('tech_purification'); },
         category: 'hell_dimension',
         era: 'existential',
         reqs: { asphodel: 4, hell_spire: 10 },
@@ -14431,7 +14529,7 @@ const techs = {
             Omniscience(){ return 5000; },
             Asphodel_Powder(){ return 17500; },
         },
-        effect(){ return loc('tech_purification_effect',[global.resource.Asphodel_Powder.name,loc('portal_purifier_title'),2,loc('eden_asphodel_harvester_title')]); },
+        effect(){ return loc(global.race['warlord'] ? 'tech_putrification_effect' : 'tech_purification_effect',[global.resource.Asphodel_Powder.name, actions.portal.prtl_spire.purifier.title(),2,loc('eden_asphodel_harvester_title')]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -14551,12 +14649,13 @@ const techs = {
         category: 'housing',
         era: 'existential',
         reqs: { asphodel: 10, theology: 2 },
+        not_trait: ['warlord'],
         grant: ['asphodel',11],
         cost: {
             Knowledge(){ return 95000000; },
             Omniscience(){ return 19500; },
         },
-        effect(){ return loc('tech_hallowed_housing_effect',[global.civic?.priest?.name || loc(`job_priest`),loc('eden_asphodel_name')]); },
+        effect(){ return loc('tech_hallowed_housing_effect',[jobName('priest'),loc('eden_asphodel_name')]); },
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.eden.eden_asphodel.rectory);
@@ -15234,8 +15333,336 @@ const techs = {
             }
             return false;
         }
-    }
-};
+    },
+    hellspawn_tunnelers: {
+        id: 'tech-hellspawn_tunnelers',
+        title: loc('tech_hellspawn_tunnelers'),
+        desc: loc('tech_hellspawn_tunnelers'),
+        category: 'evil',
+        era: 'dimensional',
+        reqs: { evil: 1, hellspawn: 1 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        wiki: global.race['warlord'] ? true : false,
+        grant: ['hellspawn',2],
+        cost: {
+            Knowledge(){ return 250000; }
+        },
+        effect: loc('tech_hellspawn_tunnelers_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.portal.prtl_wasteland.tunneler);
+                return true;
+            }
+            return false;
+        }
+    },
+    hell_minions: {
+        id: 'tech-hell_minions',
+        title: loc('tech_minion_spawn'),
+        desc: loc('tech_minion_spawn'),
+        category: 'evil',
+        era: 'dimensional',
+        reqs: { hellspawn: 2 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        wiki: global.race['warlord'] ? true : false,
+        grant: ['hellspawn',3],
+        cost: {
+            Knowledge(){ return 500000; }
+        },
+        effect: loc('tech_minion_spawn_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.portal.prtl_badlands.minions);
+                return true;
+            }
+            return false;
+        }
+    },
+    reapers: {
+        id: 'tech-reapers',
+        title: loc('tech_reapers'),
+        desc: loc('tech_reapers'),
+        category: 'evil',
+        era: 'dimensional',
+        reqs: { hellspawn: 3 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' && global.race?.absorbed?.length >= 4 ? true : false;
+        },
+        wiki: global.race['warlord'] ? true : false,
+        grant: ['hellspawn',4],
+        cost: {
+            Knowledge(){ return 1750000; }
+        },
+        effect: loc('tech_reapers_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.portal.prtl_badlands.reaper);
+                return true;
+            }
+            return false;
+        }
+    },
+    hellfire: {
+        id: 'tech-hellfire',
+        title: loc('tech_hellfire'),
+        desc: loc('tech_hellfire'),
+        category: 'evil',
+        era: 'dimensional',
+        reqs: { hellspawn: 5 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        wiki: global.race['warlord'] ? true : false,
+        grant: ['hellspawn',6],
+        cost: {
+            Knowledge(){ return 90000000; }
+        },
+        effect: loc('tech_hellfire_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    corpse_retrieval: {
+        id: 'tech-corpse_retrieval',
+        title: loc('tech_corpse_retrieval'),
+        desc: loc('tech_corpse_retrieval'),
+        category: 'evil',
+        era: 'dimensional',
+        reqs: { hellspawn: 6 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        wiki: global.race['warlord'] ? true : false,
+        grant: ['hellspawn',7],
+        cost: {
+            Knowledge(){ return 125000000; }
+        },
+        effect: loc('tech_corpse_retrieval_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.portal.prtl_badlands.corpse_pile);
+                return true;
+            }
+            return false;
+        }
+    },
+    spire_bazaar: {
+        id: 'tech-spire_bazaar',
+        title: loc('tech_spire_bazaar'),
+        desc: loc('tech_spire_bazaar'),
+        category: 'evil',
+        era: 'dimensional',
+        reqs: { hellspawn: 7, hell_spire: 10 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        wiki: global.race['warlord'] ? true : false,
+        grant: ['hellspawn',8],
+        cost: {
+            Knowledge(){ return 148000000; }
+        },
+        effect: loc('tech_spire_bazaar_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.portal.prtl_spire.bazaar);
+                return true;
+            }
+            return false;
+        }
+    },
+    mortuary: {
+        id: 'tech-mortuary',
+        title: loc('tech_mortuary'),
+        desc: loc('tech_mortuary'),
+        category: 'evil',
+        era: 'existential',
+        reqs: { hellspawn: 8, asphodel: 3 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        wiki: global.race['warlord'] ? true : false,
+        grant: ['hellspawn',9],
+        cost: {
+            Knowledge(){ return 175000000; },
+            Omniscience(){ return 5000; }
+        },
+        effect: loc('tech_mortuary_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.portal.prtl_badlands.mortuary);
+                return true;
+            }
+            return false;
+        }
+    },
+    ghost_miners: {
+        id: 'tech-ghost_miners',
+        title: loc('tech_ghost_miners'),
+        desc: loc('tech_ghost_miners'),
+        category: 'evil',
+        era: 'dimensional',
+        reqs: { hellspawn: 2, hell_pit: 5 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        wiki: global.race['warlord'] ? true : false,
+        grant: ['pitspawn',1],
+        cost: {
+            Knowledge(){ return 1900000; }
+        },
+        effect: loc('tech_ghost_miners_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.portal.prtl_pit.shadow_mine);
+                return true;
+            }
+            return false;
+        }
+    },
+    tavern: {
+        id: 'tech-tavern',
+        title: loc('tech_tavern'),
+        desc: loc('tech_tavern'),
+        category: 'evil',
+        era: 'dimensional',
+        reqs: { pitspawn: 1 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        wiki: global.race['warlord'] ? true : false,
+        grant: ['pitspawn',2],
+        cost: {
+            Knowledge(){ return 2500000; }
+        },
+        effect: loc('tech_tavern_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.portal.prtl_pit.tavern);
+                return true;
+            }
+            return false;
+        }
+    },
+    energized_dead: {
+        id: 'tech-energized_dead',
+        title: loc('tech_energized_dead'),
+        desc: loc('tech_energized_dead'),
+        category: 'evil',
+        era: 'existential',
+        reqs: { pitspawn: 2, asphodel: 3 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        wiki: global.race['warlord'] ? true : false,
+        grant: ['pitspawn',3],
+        cost: {
+            Knowledge(){ return 12500000; },
+            Asphodel_Powder(){ return 2500; }
+        },
+        effect(){ return loc('tech_energized_dead_effect',[global.resource.Asphodel_Powder.name, loc('portal_shadow_mine_title')]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    corruptor: {
+        id: 'tech-corruptor',
+        title: loc('tech_corruptor'),
+        desc: loc('tech_corruptor'),
+        category: 'evil',
+        era: 'existential',
+        reqs: { asphodel: 10, theology: 2 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        wiki: global.race['warlord'] ? true : false,
+        grant: ['asphodel',11],
+        cost: {
+            Knowledge(){ return 135000000; },
+            Omniscience(){ return 19500; },
+        },
+        effect(){ return loc('tech_corruptor_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.eden.eden_asphodel.corruptor);
+                return true;
+            }
+            return false;
+        }
+    },
+    seeping_corruption: {
+        id: 'tech-seeping_corruption',
+        title(){ return loc('tech_seeping_corruption'); },
+        desc(){ return loc('tech_seeping_corruption'); },
+        category: 'evil',
+        era: 'existential',
+        reqs: { elysium: 18, asphodel: 11 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        wiki: global.race['warlord'] ? true : false,
+        grant: ['asphodel',12],
+        cost: {
+            Knowledge(){ return 200000000; },
+            Omniscience(){ return 47500; },
+            Elysanite(){ return 100000000; }
+        },
+        effect(){ return loc('tech_seeping_corruption_effect',[loc('eden_asphodel_name')]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    ultimate_corruption: {
+        id: 'tech-ultimate_corruption',
+        title(){ return loc('tech_ultimate_corruption'); },
+        desc(){ return loc('tech_ultimate_corruption'); },
+        category: 'evil',
+        era: 'existential',
+        reqs: { isle: 5, asphodel: 12 },
+        trait: ['warlord'],
+        condition(){
+            return global.race['universe'] === 'evil' ? true : false;
+        },
+        wiki: global.race['warlord'] ? true : false,
+        grant: ['asphodel',13],
+        cost: {
+            Knowledge(){ return 325000000; },
+            Omniscience(){ return 50000; },
+            Asphodel_Powder(){ return 900000; }
+        },
+        effect(){ return loc('tech_ultimate_corruption_effect',[loc('eden_asphodel_name')]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+}
 
 function uniteEffect(){
     global.tech['world_control'] = 1;

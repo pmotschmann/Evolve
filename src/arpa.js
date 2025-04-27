@@ -1,7 +1,7 @@
 import { global, keyMultiplier, sizeApproximation, srSpeak, p_on, support_on } from './vars.js';
 import { clearElement, popover, clearPopper, flib, fibonacci, eventActive, timeFormat, vBind, messageQueue, adjustCosts, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, trickOrTreat, getTraitDesc, removeFromQueue, arpaTimeCheck, deepClone } from './functions.js';
 import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts, structName } from './actions.js';
-import { races, traits, cleanAddTrait, cleanRemoveTrait, traitSkin, fathomCheck, planetTraits, setTraitRank, traitRank } from './races.js';
+import { races, traits, cleanAddTrait, cleanRemoveTrait, combineTraits, traitSkin, fathomCheck, planetTraits, setTraitRank, traitRank } from './races.js';
 import { renderSpace } from './space.js';
 import { drawMechLab } from './portal.js';
 import { govActive, defineGovernor } from './governor.js';
@@ -46,7 +46,10 @@ export const arpaProjects = {
             }
             let sc = global.tech['tp_particles'] || (global.tech['particles'] && global.tech['particles'] >= 3) ? (global.race['cataclysm'] ? 20 : 8) : (global.race['cataclysm'] ? 10 : 4);
             if (global.tech['storage'] >= 6){
-                if (global.tech['particles'] && global.tech['particles'] >= 4){
+                if (global.race['warlord']){
+                    return loc('arpa_projects_lhc_warlord2',[loc('portal_twisted_lab_title'),sc,5]);
+                }
+                else if (global.tech['particles'] && global.tech['particles'] >= 4){
                     return global.race['cataclysm'] ? loc('arpa_projects_lhc_cataclysm3',[sc]) : loc('arpa_projects_lhc_effect3',[sc,global.race['orbit_decayed'] ? loc('space_home_satellite_title') : wardenLabel()]);
                 }
                 else {
@@ -54,7 +57,12 @@ export const arpaProjects = {
                 }
             }
             else {
-                return global.race['cataclysm'] ? loc('arpa_projects_lhc_cataclysm1',[sc]) : global.tech['isolation'] ? loc('arpa_projects_lhc_iso1',[sc,loc('tech_infectious_disease_lab_alt')]) : (loc('arpa_projects_lhc_effect1',[sc,global.race['orbit_decayed'] ? loc('space_home_satellite_title') : wardenLabel()]));
+                if (global.race['warlord']){
+                    return loc('arpa_projects_lhc_warlord1',[loc('portal_twisted_lab_title'),sc]);
+                }
+                else {
+                    return global.race['cataclysm'] ? loc('arpa_projects_lhc_cataclysm1',[sc]) : global.tech['isolation'] ? loc('arpa_projects_lhc_iso1',[sc,loc('tech_infectious_disease_lab_alt')]) : (loc('arpa_projects_lhc_effect1',[sc,global.race['orbit_decayed'] ? loc('space_home_satellite_title') : wardenLabel()]));
+                }
             }
         },
         cost: {
@@ -73,7 +81,10 @@ export const arpaProjects = {
         reqs: { banking: 9 },
         grant: 'stock_exchange',
         effect(){
-            if (global.tech['banking'] >= 10){
+            if (global.race['warlord']){
+                return loc('arpa_projects_stock_exchange_warlord',[structName('casino'),5,1]);
+            }
+            else if (global.tech['banking'] >= 10){
                 if (global.race['cataclysm']){
                     return global.tech['gambling'] && global.tech['gambling'] >= 4 
                     ? loc('arpa_projects_stock_exchange_cataclysm2',[loc('space_red_spaceport_title'),10,structName('casino'),5,1]) 
@@ -118,7 +129,7 @@ export const arpaProjects = {
         desc: loc('arpa_projects_launch_facility_desc'),
         reqs: { high_tech: 7 },
         condition(){
-            return global.race['cataclysm'] || global.race['lone_survivor'] ? false : true;
+            return global.race['cataclysm'] || global.race['lone_survivor'] || global.race['warlord'] ? false : true;
         },
         grant: 'launch_facility',
         rank: 1,
@@ -188,6 +199,10 @@ export const arpaProjects = {
                 routes += global.space['gps'] ? Math.floor(global.space.gps.count / 3) : 0;
                 desc = loc('arpa_projects_railway_cataclysm1',[routes,profit,3,1]);
             }
+            else if (global.race['warlord']){
+                routes += 5;
+                desc = loc('arpa_projects_railway_warlord1',[routes,profit]);
+            }
             else {
                 routes += global.city['storage_yard'] ? Math.floor(global.city.storage_yard.count / 6) : 0;
                 desc = loc('arpa_projects_railway_effect1',[routes,profit,6,1]);
@@ -231,7 +246,7 @@ export const arpaProjects = {
         grant: 'nexus',
         effect(){
             if (global.tech['roguemagic'] && global.tech.roguemagic >= 7){
-                return `<div>${loc('arpa_projects_nexus_effect1',[5])}</div><div>${loc('witch_hunter_nexus',[8])}</div>`;
+                return `<div>${loc('arpa_projects_nexus_effect1',[5])}</div><div>${loc('witch_hunter_nexus',[4])}</div>`;
             }
             return loc('arpa_projects_nexus_effect1',[5]);
         },
@@ -1963,14 +1978,24 @@ function genetics(){
         }
         Object.keys(trait_listing).forEach(function (trait){
             if (traits[trait] && traits[trait].type !== 'minor' && traits[trait].type !== 'special' && trait !== 'evil' && trait !== 'soul_eater' && trait !== 'artifical'){
+                let mimicTraits = [
+                    ...(global.race['ss_traits'] ? global.race['ss_traits'] : []),
+                    ...(global.race['iTraits'] ? Object.keys(global.race['iTraits']) : [])
+                ];
                 let readOnly = false;
-                if ((global.race['ss_traits'] && global.race.ss_traits.includes(trait)) || (global.race['iTraits'] && global.race.iTraits.hasOwnProperty(trait))){
+                if (mimicTraits.includes(trait)){
                     readOnly = true;
                 }
                 else if (['sludge','ultra_sludge'].includes(global.race.species) && (trait === 'ooze' || global.race['modified'])){
                     readOnly = true;
                 }
                 else if (!global.race.hasOwnProperty(trait)){
+                    readOnly = true;
+                }
+                else if (global.race.hasOwnProperty('absorbed') && global.race.absorbed.map(r => races[r].fanaticism).includes(trait) || global.race['warlord'] && ['iron_wood','unified','apex_predator'].includes(trait)){
+                    readOnly = true;
+                }
+                else if(trait === 'forager' && mimicTraits.some(item => ['herbivore', 'carnivore'].includes(item))){
                     readOnly = true;
                 }
                 if (!readOnly && ((traits[trait].type === 'major' && global.genes['mutation']) || (traits[trait].type === 'genus' && global.genes['mutation'] && global.genes['mutation'] >= 2))){
@@ -1993,7 +2018,7 @@ function genetics(){
         let offspec_traits = [];
         let trait_list = [];
         if (global.genes['mutation'] && global.genes['mutation'] >= 3){
-            if ((global.race.species !== 'sludge' && global.race.species !== 'ultra_sludge') || !global.race['modified']){
+            if (global.race.species !== 'hellspawn' && ((global.race.species !== 'sludge' && global.race.species !== 'ultra_sludge') || !global.race['modified'])){
                 breakdown.append(`<div class="trait major has-text-success">${loc('arpa_race_genetic_gain')}</div>`);
 
                 let conflict_traits = ['dumb','smart']; //Conflicting traits are paired together
@@ -2187,6 +2212,10 @@ function genetics(){
                         else {
                             global.race['modified']++;
                         }
+                        if(t === 'forager'){
+                            delete global.race.inactiveTraits['herbivore'];
+                            delete global.race.inactiveTraits['carnivore'];
+                        }
                         cleanRemoveTrait(t,rank);
                         genetics();
                         drawTech();
@@ -2204,7 +2233,8 @@ function genetics(){
                     }
                 },
                 gain(t){
-                    if (['sludge','ultra_sludge'].includes(global.race.species) && global.race['modified']){
+                    if (['hellspawn'].includes(global.race.species)){ return; }
+                    else if (['sludge','ultra_sludge'].includes(global.race.species) && global.race['modified']){
                         return;
                     }
                     let cost = traits[t].val * 5;
@@ -2234,6 +2264,7 @@ function genetics(){
                         genetics();
                         drawTech();
                         drawCity();
+                        combineTraits();
                     }
                 },
                 geneCost(t){
@@ -2339,7 +2370,7 @@ function genetics(){
 }
 
 export function sequenceLabs(){
-    let labs = global.race['cataclysm'] || global.race['orbit_decayed'] ? support_on['exotic_lab'] : p_on['biolab'];
+    let labs = global.race['cataclysm'] || global.race['orbit_decayed'] ? support_on['exotic_lab'] : (global.race['warlord'] ? p_on['twisted_lab'] : p_on['biolab']);
     if (global.tech['isolation']){ labs = support_on['infectious_disease_lab'] * 5; }
     if (global.race['lone_survivor']){ labs += 2; }
     if (labs > 0 && global.city.ptrait.includes('toxic')){
