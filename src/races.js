@@ -6981,6 +6981,7 @@ export function cleanRemoveTrait(trait,rank){
                 if (global.race['shapeshifter']){
                     shapeShift(false, true, false); //update mimic options
                 }
+                combineTraits();
             }
             break;
         case 'evil':
