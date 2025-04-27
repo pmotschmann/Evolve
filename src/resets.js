@@ -772,6 +772,11 @@ export function apotheosis(){
     }
     global.stats.pdebt = gains.pdebt;
 
+    if (global.race['warlord']){
+        global.prestige.Artifact.count += gains.artifact;
+        global.stats.artifact += gains.artifact;
+    }
+
     atmo.forEach(function(a){
         if (planetTraits.hasOwnProperty(a)){
             unlockAchieve(`atmo_${a}`);

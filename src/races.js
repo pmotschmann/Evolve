@@ -5944,7 +5944,7 @@ function customRace(hybrid){
             }
         }
 
-        return {
+        let def = {
             name: global.custom[slot].name,
             desc: global.custom[slot].desc,
             type: global.custom[slot].genus,
@@ -5961,6 +5961,12 @@ function customRace(hybrid){
             fanaticism: fanatic,
             basic(){ return false; }
         };
+
+        if (hybrid){
+            def['hybrid'] = global.custom[slot].hybrid;
+        }
+
+        return def;
     }
     else {
         return {};
@@ -8410,19 +8416,13 @@ function majorWish(parent){
                                     wonders.push('statue');
                                 }
                                 if (global.race['warlord']){
-                                    if (!global.portal.hasOwnProperty('wonder_gardens')){
-                                        wonders.push('gardens');
-                                    }
+                                    wonders.push('gardens');
                                 }
-                                else if (global.race['truepath']){
-                                    if (!global.space.hasOwnProperty('wonder_gardens') && global.tech['titan'] && global.tech.titan >= 2){
-                                        wonders.push('gardens');
-                                    }
+                                else if (!global.race['truepath'] && !global.interstellar.hasOwnProperty('wonder_gardens') && global.tech['alpha'] && global.tech.alpha >= 2){
+                                    wonders.push('gardens');
                                 }
-                                else {
-                                    if (!global.interstellar.hasOwnProperty('wonder_gardens') && global.tech['alpha'] && global.tech.alpha >= 2){
-                                        wonders.push('gardens');
-                                    }
+                                else if (global.race['truepath'] && !global.space.hasOwnProperty('wonder_gardens') && global.tech['titan'] && global.tech.titan >= 2){
+                                    wonders.push('gardens');
                                 }
                             }
 

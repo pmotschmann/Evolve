@@ -4060,6 +4060,15 @@ a {
         box-shadow: 0px 0px 1rem black;
         border-radius: 1rem;
     }
+
+    .genus_selection {
+        > section {
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+    }
 }
 
 .main>div.popper,
@@ -4994,6 +5003,10 @@ div.bigbang {
             section {
                 margin-top: .5rem;
             }
+
+            button {
+                padding: 1rem 0.5rem;
+            }
         }
 
         .trait_selection {
@@ -5050,11 +5063,12 @@ div.bigbang {
         text-align: center;
     }
 
-    #geneLabFanatic {
-        margin-top: 1rem;
+    .genus {
+        margin-bottom: 0.75rem;
         text-align: center;
-        > div {
-            margin-top: 0.5rem;
+        > button {
+            margin-top: 0.25rem;
+            width: 8.5rem;
         }
     }
 }

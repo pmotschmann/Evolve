@@ -2648,9 +2648,18 @@ export function calcGenomeScore(genome,wiki){
         }
     }
 
-    Object.keys(genus_traits[genome.genus]).forEach(function (t){
-        genes -= traits[t].val;
-    });
+    if (genome.genus === 'hybrid'){
+        genome.hybrid.forEach(function(g){
+            Object.keys(genus_traits[g]).forEach(function (t){
+                genes -= traits[t].val;
+            });
+        });
+    }
+    else {
+        Object.keys(genus_traits[genome.genus]).forEach(function (t){
+            genes -= traits[t].val;
+        });
+    }
 
     let max_complexity = 2;
     if (wiki){

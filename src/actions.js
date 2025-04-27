@@ -5112,7 +5112,7 @@ const raceList = [
     'synth','nano',
     'ghast','shoggoth',
     'dwarf','raccoon','lichen','wyvern','beholder','djinn','narwhal','bombardier','nephilim',
-    'custom'//,'hybrid'
+    'custom','hybrid'
 ];
 raceList.forEach(function(race){
     if (!['custom','hybrid'].includes(race) || (race === 'custom' && global.custom.hasOwnProperty('race0')) || (race === 'hybrid' && global.custom.hasOwnProperty('race1')) ) {
@@ -8296,7 +8296,7 @@ export function initStruct(c_action){
 }
 
 function evoExtraState(race){
-    if ((race === 'synth' || (race === 'custom' && global.custom.race0.traits.includes('imitation'))) && Object.keys(global.stats.synth).length > 1){
+    if ((race === 'synth' || (race === 'custom' && global.custom.race0.traits.includes('imitation')) || (race === 'hybrid' && global.custom.race1.traits.includes('imitation'))) && Object.keys(global.stats.synth).length > 1){
         global.race['evoFinalMenu'] = race;
         drawEvolution();
         return true;
@@ -8579,9 +8579,36 @@ function sentience(){
                 neg_traits++;
             }
         }
-        if (neg_traits > 10 && convertVersion(global['version']) > 104001){
-            let suffering = convertVersion(global['version']) > 104002 ? 2 : 1;
-            global.race['overtapped'] = (neg_traits - 10) * suffering;
+        if (neg_traits > 10){
+            global.race['overtapped'] = (neg_traits - 10) * 2;
+        }
+    }
+
+    if (global.race.species === 'hybrid' && global.custom.hasOwnProperty('race1')){
+        global.race['untapped'] = calcGenomeScore({
+            name: global.custom.race1.name,
+            desc: global.custom.race1.desc,
+            entity: global.custom.race1.entity,
+            home: global.custom.race1.home,
+            red: global.custom.race1.red,
+            hell: global.custom.race1.hell,
+            gas: global.custom.race1.gas,
+            gas_moon: global.custom.race1.gas_moon,
+            dwarf: global.custom.race1.dwarf,
+            genes: 0,
+            genus: global.custom.race1.genus,
+            hybrid: global.custom.race1.hybrid,
+            traitlist: global.custom.race1.traits
+        });
+
+        let neg_traits = 0;
+        for (let i=0; i<global.custom.race1.traits.length; i++){
+            if (traits[global.custom.race1.traits[i]].val < 0){
+                neg_traits++;
+            }
+        }
+        if (neg_traits > 10){
+            global.race['overtapped'] = (neg_traits - 10) * 2;
         }
     }
 

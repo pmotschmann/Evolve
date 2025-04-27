@@ -7621,18 +7621,30 @@ export function ascendLab(hybrid,wiki){
     let genes = $(`<div class="sequence"></div>`);
     lab.append(genes);
 
-    let fanatic = `<div id="geneLabFanatic"><button class="button" @click="fanatic()">${loc(`tech_fanaticism`)}</button><div class="has-text-special">{{ g.fanaticism | fanaticism }}</div></div>`;
+    let fanatic = `<div id="geneLabFanatic" class="genus"><div class="has-text-caution header">${loc(`tech_fanaticism`)}</div><button class="button" @click="fanatic()">{{ g.fanaticism | fanaticism }}</button></div>`;
 
     let dGenus = false;
-    let genus = `<div class="genus_selection"><div class="has-text-caution">${loc('genelab_genus')}</div><template><section>`;
-    Object.keys(genus_traits).forEach(function (type){
-        if (isWiki || (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0)){
-            if (!dGenus){ dGenus = type; }
-            genus = genus + `<div class="field ${type}"><b-radio v-model="g.genus" native-value="${type}">${loc(`genelab_genus_${type}`)}</b-radio></div>`;
-        }
-    });
-    genus = genus + `</section></template>${fanatic}</div>`;
-    genes.append($(genus));
+    if (hybrid){
+        dGenus = 'hybrid';
+        let genus = `<div class="genus_selection">`;
+        
+        genus += `<div id="geneLabGenusA" class="genus"><div class="has-text-caution header">${loc('genelab_genus_a')}</div><button class="button" @click="genus(0)" v-html="$options.filters.genus(g.hybrid,0)"></button></div>`;
+        genus += `<div id="geneLabGenusB" class="genus"><div class="has-text-caution header">${loc('genelab_genus_b')}</div><button class="button" @click="genus(1)" v-html="$options.filters.genus(g.hybrid,1)"></button></div>`;
+
+        genus += `${fanatic}</div>`;
+        genes.append($(genus));
+    }
+    else {
+        let genus = `<div class="genus_selection"><div class="has-text-caution">${loc('genelab_genus')}</div><template><section>`;
+        Object.keys(genus_traits).forEach(function (type){
+            if (isWiki || (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0)){
+                if (!dGenus){ dGenus = type; }
+                genus = genus + `<div class="field ${type}"><b-radio v-model="g.genus" native-value="${type}">${loc(`genelab_genus_${type}`)}</b-radio></div>`;
+            }
+        });
+        genus += `</section></template>${fanatic}</div>`;
+        genes.append($(genus));
+    }
 
     let trait_list = `<div class="trait_selection"><div class="has-text-warning">${loc('genelab_traits')}</div><template><section>`;
     let negative = '';
@@ -7657,10 +7669,10 @@ export function ascendLab(hybrid,wiki){
     Object.keys(unlockedTraits).sort().forEach(function (trait){
         if (traits.hasOwnProperty(trait) && traits[trait].type === 'major'){
             if (traits[trait].val >= 0){
-                trait_list = trait_list + `<div class="field t${trait}"><b-checkbox :disabled="allowed('${trait}')" :input="geneEdit()" v-model="g.traitlist" native-value="${trait}"><span class="has-text-success">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-advanced">{{ '${trait}' | cost }}</span>)</b-checkbox></div>`;
+                trait_list += `<div class="field t${trait}"><b-checkbox :disabled="allowed('${trait}')" :input="geneEdit()" v-model="g.traitlist" native-value="${trait}"><span class="has-text-success">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-advanced">{{ '${trait}' | cost }}</span>)</b-checkbox></div>`;
             }
             else {
-                negative = negative + `<div class="field t${trait}"><b-checkbox :disabled="allowed('${trait}')" :input="geneEdit()" v-model="g.traitlist" native-value="${trait}"><span class="has-text-danger">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-caution">{{ '${trait}' | cost }}</span>)</b-checkbox></div>`;
+                negative += `<div class="field t${trait}"><b-checkbox :disabled="allowed('${trait}')" :input="geneEdit()" v-model="g.traitlist" native-value="${trait}"><span class="has-text-danger">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-caution">{{ '${trait}' | cost }}</span>)</b-checkbox></div>`;
             }
         }
     });
@@ -7733,6 +7745,15 @@ export function ascendLab(hybrid,wiki){
         traitlist: [],
         fanaticism: false,
     };
+
+    if (hybrid){
+        if (global.hasOwnProperty('custom') && global.custom.hasOwnProperty(slot)){
+            genome['hybrid'] = global.custom[slot].hybrid;
+        }
+        else {
+            genome['hybrid'] = ['humanoid','small'];
+        }
+    }
 
     for (let i=genome.traitlist.length - 1; i >= 0; i--){
         if (!traits.hasOwnProperty(genome.traitlist[i]) || !unlockedTraits.hasOwnProperty(genome.traitlist[i]) || traits[genome.traitlist[i]].type !== 'major'){
@@ -7815,7 +7836,13 @@ export function ascendLab(hybrid,wiki){
                             traits: genome.traitlist,
                             fanaticism: genome.fanaticism,
                         };
-                        ascend();
+                        if (hybrid){
+                            global.custom[slot]['hybrid'] = genome.hybrid;
+                            apotheosis();
+                        }
+                        else {
+                            ascend();
+                        }
                     }
                 }
             },
@@ -7876,7 +7903,64 @@ export function ascendLab(hybrid,wiki){
                         });
                     }
                 }, 50);
+            },
+            genus(slot){
+                this.$buefy.modal.open({
+                    parent: this,
+                    component: modal
+                });
+            
+                var checkExist = setInterval(function() {
+                    if ($('#modalBox').length > 0) {
+                        clearInterval(checkExist);
+                        
+                        $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${loc(`genelab_genus`)}</p>`));
+                        var body = $('<div id="specialModal" class="modalBody"></div>');
+                        $('#modalBox').append(body);
 
+                        let genus = `<div class="genus_selection"><template><section>`;
+                        Object.keys(genus_traits).forEach(function (type){
+                            if (isWiki || (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0)){
+                                if ((slot === 0 && type !== genome.hybrid[1]) || (slot === 1 && type !== genome.hybrid[0])){
+                                    genus = genus + `<div class="field ${type}"><b-radio v-model="hybrid[${slot}]" native-value="${type}">${loc(`genelab_genus_${type}`)}</b-radio></div>`;
+                                }
+                            }
+                        });
+                        genus += `</section></template></div>`;
+                        body.append($(genus));
+
+                        vBind({
+                            el: '#specialModal',
+                            data: genome
+                        });
+
+                        Object.keys(genus_traits).forEach(function (type){
+                            if (isWiki || (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0)){
+                                if ((slot === 0 && type !== genome.hybrid[1]) || (slot === 1 && type !== genome.hybrid[0])){
+                                    popover(`geneLabGenus${type}`, function(){
+                                        let desc = $(`<div><div>${loc(`genelab_genus_${type}_desc`)}</div></div>`);
+                                        Object.keys(genus_traits[type]).forEach(function (t){
+                                            if (traits[t]){
+                                                let des = $(`<div></div>`);
+                                                let opts = {
+                                                    trank: genus_trank,
+                                                    wiki: isWiki
+                                                }
+                                                getTraitDesc(des, t, opts);
+                                                desc.append(des);
+                                            }
+                                        });
+                                        return desc;
+                                    },{
+                                        elm: `#specialModal .${type}`,
+                                        classes: `w30`,
+                                        wide: true
+                                    });
+                                }
+                            }
+                        });
+                    }
+                }, 50);
             },
             customImport(){
                 let file = document.getElementById("customFile").files[0];
@@ -8008,14 +8092,18 @@ export function ascendLab(hybrid,wiki){
             },
             fanaticism(trait){
                 return trait ? loc(`trait_${trait}_name`) : loc(`genelab_unset`);
+            },
+            genus(g,i){
+                return loc(`genelab_genus_${g[i]}`);
             }
         }
     });
 
     let genus_trank = (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 4) ? 2 : 1;
-    Object.keys(genus_traits).forEach(function (type){
-        if (isWiki || (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0)){
-            popover(`celestialLabgenusSelection${type}`, function(){
+    if (hybrid){
+        ['A','B'].forEach(function(g){
+            popover(`geneLabGenus${g}`, function(){
+                let type = genome.hybrid[g === 'A' ? 0 : 1];
                 let desc = $(`<div><div>${loc(`genelab_genus_${type}_desc`)}</div></div>`);
                 Object.keys(genus_traits[type]).forEach(function (t){
                     if (traits[t]){
@@ -8030,12 +8118,37 @@ export function ascendLab(hybrid,wiki){
                 });
                 return desc;
             },{
-                elm: `#celestialLab .genus_selection .${type}`,
+                elm: `#geneLabGenus${g}`,
                 classes: `w30`,
                 wide: true
             });
-        }
-    });
+        });
+    }
+    else {
+        Object.keys(genus_traits).forEach(function (type){
+            if (isWiki || (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0)){
+                popover(`celestialLabgenusSelection${type}`, function(){
+                    let desc = $(`<div><div>${loc(`genelab_genus_${type}_desc`)}</div></div>`);
+                    Object.keys(genus_traits[type]).forEach(function (t){
+                        if (traits[t]){
+                            let des = $(`<div></div>`);
+                            let opts = {
+                                trank: genus_trank,
+                                wiki: isWiki
+                            }
+                            getTraitDesc(des, t, opts);
+                            desc.append(des);
+                        }
+                    });
+                    return desc;
+                },{
+                    elm: `#celestialLab .genus_selection .${type}`,
+                    classes: `w30`,
+                    wide: true
+                });
+            }
+        });
+    }
 
     Object.keys(unlockedTraits).sort().forEach(function (trait){
         if (traits.hasOwnProperty(trait) && traits[trait].type === 'major'){
