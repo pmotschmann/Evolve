@@ -3164,7 +3164,7 @@ function fastLoop(){
                 if (global.city['wonder_lighthouse']){ monuments += 5; }
                 if (global.city['wonder_pyramid']){ monuments += 5; }
                 if (global.space['wonder_statue']){ monuments += 5; }
-                if (global.interstellar['wonder_gardens'] || global.space['wonder_gardens']){ monuments += 5; }
+                if (global.interstellar['wonder_gardens'] || global.space['wonder_gardens'] || global.portal['wonder_gardens']){ monuments += 5; }
             }
             moraleCap += monuments * mcap;
         }
