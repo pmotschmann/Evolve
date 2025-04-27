@@ -6763,6 +6763,13 @@ export function checkRequirements(action_set,region,action){
     if (isMet && action_set[region][action].hasOwnProperty('condition') && !action_set[region][action].condition()){
         isMet = false;
     }
+    if (isMet && action_set[region][action].hasOwnProperty('not_trait')){
+        for (let trait of action_set[region][action].not_trait){
+            if (global.race[trait]){
+                isMet = false;
+            }
+        }
+    }
     if (isMet && action_set[region][action].grant && (global.tech[action_set[region][action].grant[0]] && global.tech[action_set[region][action].grant[0]] >= action_set[region][action].grant[1])){
         isMet = false;
     }

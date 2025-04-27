@@ -1644,11 +1644,11 @@ export function gridEnabled(c_action,region,p0,p1){
                 isOk = true;
             }
             else {
-                isOk = global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation'] ? false : checkCityRequirements(p1);
+                isOk = global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation'] || global.race['warlord'] ? false : checkCityRequirements(p1);
             }
             break;
         case 'space':
-            isOk = global.tech['isolation'] ? false : checkSpaceRequirements(region,p0,p1);
+            isOk = global.tech['isolation'] || global.race['warlord'] ? false : checkSpaceRequirements(region,p0,p1);
             break;
         case 'portal':
             isOk = checkRequirements(fortressTech(),p0,p1);
@@ -1712,10 +1712,6 @@ export function setPowerGrid(){
             let space = convertSpaceSector(parts[0]);
             let region = parts[0] === 'city' ? parts[0] : space;
             let c_action = parts[0] === 'city' ? actions.city[parts[1]] : actions[space][parts[0]][parts[1]];
-
-            if (!global[region][parts[1]]){
-                continue;
-            }
 
             let title = typeof c_action.title === 'function' ? c_action.title() : c_action.title;
             let extra = ``;
