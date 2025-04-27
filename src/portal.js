@@ -8554,7 +8554,6 @@ export function warlordSetup(){
         global.tech['kuiper'] = 2;
         global.tech['launch_facility'] = 1;
         global.tech['luna'] = 2;
-        global.tech['m_smelting'] = 2;
         global.tech['marines'] = 2;
         global.tech['mars'] = 5;
         global.tech['mass'] = 1;
