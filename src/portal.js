@@ -5003,6 +5003,7 @@ function rankDesc(label, struct){
 
 function addHellEnemy(type = [], allowRecursion = true, allowRepeat = false){
     let invaders = [];
+    let current = window.evolve.global.portal.throne.enemy.map(e => e.r);
     if (type.includes('basic')){
         [
             'human','elven','orc','cath','wolven','vulpine','centaur','rhinotaur','capybara','kobold','goblin',
@@ -5010,21 +5011,21 @@ function addHellEnemy(type = [], allowRecursion = true, allowRepeat = false){
             'entish','cacti','pinguicula','sporgar','shroomi','moldling','mantis','scorpid','antid'
         ].forEach(function(r){
             if (allowRepeat || (!global.portal.throne.spawned.includes(r) && ![global.race.gods,global.race.old_gods,global.race.origin].includes(r))){
-                invaders.push(r);
+                if (!current.includes(r)){ invaders.push(r); }
             }
         });
     }
     if (type.includes('advanced')){
         ['sharkin','octigoran','dryad','satyr','phoenix','salamander','yeti','wendigo','tuskin','kamel','balorg','imp','seraph','unicorn','synth'].forEach(function(r){
             if (allowRepeat || (!global.portal.throne.spawned.includes(r) && ![global.race.gods,global.race.old_gods,global.race.origin].includes(r))){
-                invaders.push(r);
+                if (!current.includes(r)){ invaders.push(r); }
             }
         });
     }
     if (type.includes('rare')){
         ['ghast','shoggoth','dwarf','raccoon','lichen','wyvern','beholder','djinn','narwhal','bombardier','nephilim'].forEach(function(r){
             if (allowRepeat || (!global.portal.throne.spawned.includes(r) && ![global.race.gods,global.race.old_gods,global.race.origin].includes(r))){
-                invaders.push(r);
+                if (!current.includes(r)){ invaders.push(r); }
             }
         });
     }
