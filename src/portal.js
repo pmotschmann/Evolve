@@ -5003,7 +5003,7 @@ function rankDesc(label, struct){
 
 function addHellEnemy(type = [], allowRecursion = true, allowRepeat = false){
     let invaders = [];
-    let current = window.evolve.global.portal.throne.enemy.map(e => e.r);
+    let current = global.portal.throne.enemy.map(e => e.r);
     if (type.includes('basic')){
         [
             'human','elven','orc','cath','wolven','vulpine','centaur','rhinotaur','capybara','kobold','goblin',
