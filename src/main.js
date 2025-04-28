@@ -3331,11 +3331,12 @@ function fastLoop(){
             let total = 0;
             let supply = 0;
             let bireme_rating = global.blood['spire'] && global.blood.spire >= 2 ? 0.8 : 0.85;
+            let cargoSize = global.stats.achieve['what_is_best'] && global.stats.achieve.what_is_best.e >= 4 ? 8 : 5;
             Object.keys(global.portal.transport.cargo).forEach(function (res){
                 if (supplyValue[res]){
                     let shipped = global.portal.transport.cargo[res];
-                    if (total + shipped > gal_on['transport'] * 5){
-                        shipped = gal_on['transport'] * 5 - total;
+                    if (total + shipped > gal_on['transport'] * cargoSize){
+                        shipped = gal_on['transport'] * cargoSize - total;
                     }
                     total += shipped;
 
@@ -10419,7 +10420,7 @@ function midLoop(){
         if (global.portal.hasOwnProperty('transport')){
             let max = 0;
             if (gal_on['transport']){
-                max = gal_on['transport'] * 5;
+                max = gal_on['transport'] * (global.stats.achieve['what_is_best'] && global.stats.achieve.what_is_best.e >= 4 ? 8 : 5);
             }
             global.portal.transport.cargo.max = max;
         }

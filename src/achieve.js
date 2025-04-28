@@ -1797,7 +1797,7 @@ export const perkList = {
             },
             {
                 desc(){
-                    return loc("achieve_perks_what_is_best3");
+                    return loc("achieve_perks_what_is_best3",[actions.portal.prtl_pit.soul_forge.title(),actions.portal.prtl_pit.soul_attractor.title(),'1%']);
                 },
                 active(){
                     return global.stats.achieve['what_is_best'] && global.stats.achieve.what_is_best.e >= 3 ? true : false;
@@ -1805,7 +1805,7 @@ export const perkList = {
             },
             {
                 desc(){
-                    return loc("achieve_perks_what_is_best4");
+                    return loc("achieve_perks_what_is_best4",[actions.portal.prtl_lake.transport.title(),3]);
                 },
                 active(){
                     return global.stats.achieve['what_is_best'] && global.stats.achieve.what_is_best.e >= 4 ? true : false;
