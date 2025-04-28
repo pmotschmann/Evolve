@@ -1397,7 +1397,7 @@ export const gov_tasks = {
 
                 let avail = global.portal.mechbay.max - global.portal.mechbay.bay;
                 if (avail < size && global.blood['prepared'] && global.blood.prepared >= 3){
-                    if (global.queue.queue.some(q => ['portal-purifier','portal-port','portal-base_camp','portal-mechbay','portal-waygate'].includes(q.id))){
+                    if (global.queue.queue.some(q => ['portal-purifier','portal-port','portal-base_camp','portal-mechbay','portal-waygate','portal-bazaar'].includes(q.id))){
                         return;
                     }
 
