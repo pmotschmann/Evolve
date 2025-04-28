@@ -3526,7 +3526,7 @@ export const traits = {
                 case 3:
                     return [500, 3, 2, 2, 2];
                 case 4:
-                    return [520, 3, 2.5, 2,5, 2.5];
+                    return [520, 3, 2.5, 2.5, 2.5];
             }
         }
     },
