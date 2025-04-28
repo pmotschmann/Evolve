@@ -15654,7 +15654,7 @@ const techs = {
             Omniscience(){ return 50000; },
             Asphodel_Powder(){ return 900000; }
         },
-        effect(){ return loc('tech_ultimate_corruption_effect',[loc('eden_asphodel_name')]); },
+        effect(){ return loc('tech_ultimate_corruption_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 return true;

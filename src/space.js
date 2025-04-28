@@ -5338,7 +5338,7 @@ const galaxyProjects = {
             effect(wiki){
                 let base = global.tech['telemetry'] ? 1200 : 800;
                 if (global.tech.science >= 17){
-                    let num_scout_ship_on = wiki ? global.galaxy.scout_ship.on : gal_on['scout_ship'];
+                    let num_scout_ship_on = wiki ? (global.galaxy?.scout_ship?.on ?? 0) : gal_on['scout_ship'];
                     base += num_scout_ship_on * 25;
                 }
                 let num_telemetry_on = wiki ? (global.galaxy?.telemetry_beacon?.on ?? 0) : p_on['telemetry_beacon'];
