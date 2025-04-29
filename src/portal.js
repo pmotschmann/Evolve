@@ -6810,8 +6810,6 @@ export function mechDesc(parent,obj){
     let mech = obj.type;
     let costs = mechCost(mech.size,mech.infernal,true);
 
-    console.log(mech);
-
     var desc = $(`<div class="shipPopper"></div>`);
     var mechPattern = $(`<div class="divider">${mech.infernal ? `${loc('portal_mech_infernal')} ` : ''}${loc(`portal_mech_size_${mech.size}`)} ${loc(`portal_mech_chassis_${mech.chassis}`)}</div>`);
     parent.append(desc);
@@ -6828,7 +6826,22 @@ export function mechDesc(parent,obj){
 
     let equip = [];
     mech.equip.forEach(function(eq){
-        equip.push(`<span class="has-text-warning">${loc(`portal_mech_equip_${eq}`)}</span>`);
+        let type = eq;
+        if (type === 'special'){
+            switch (mech.size){
+                case 'large':
+                case 'cyberdemon':
+                    type = 'battery';
+                    break;
+                case 'titan':
+                    type = 'target';
+                    break;
+                default:
+                    type = 'jumpjet';
+                    break;
+            }
+        }
+        equip.push(`<span class="has-text-warning">${loc(`portal_mech_equip_${type}`)}</span>`);
     });
     desc.append(`<div>${equip.join(', ')}</div>`);
 
