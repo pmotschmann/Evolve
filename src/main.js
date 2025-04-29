@@ -4871,6 +4871,9 @@ function fastLoop(){
                         overflow = global.city.smelter.Iridium;
                         global.city.smelter.Iridium = 0;
                     }
+                    else {
+                        overflow = 0;
+                    }
                     global.city.smelter.Steel += overflow;
                     if (global.city.smelter.Steel < 0){
                         global.city.smelter.Steel = 0;
