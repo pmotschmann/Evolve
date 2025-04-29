@@ -1530,11 +1530,15 @@ function fastLoop(){
                 }
             }
             Object.keys(global.resource).forEach(function (res){
-                if (global.resource[res].trade > 0){
-                    used_trade += global.resource[res].trade;
-                    let price = tradeBuyPrice(res) * global.resource[res].trade;
+                let routes = global.resource[res].trade;
+                if (routes > 0){
+                    used_trade += routes;
+                    let price = tradeBuyPrice(res);
+                    const affordable_routes = Math.floor(global.resource.Money.amount / (price * time_multiplier));
+                    routes = Math.min(routes, affordable_routes);
 
-                    if (global.resource.Money.amount >= price * time_multiplier){
+                    if (routes > 0){
+                        price *= routes;
                         let rate = tradeRatio[res];
                         if (dealVal){
                             rate *= 1 + (dealVal / 100);
@@ -1575,16 +1579,15 @@ function fastLoop(){
                         if (global.race['truepath']){
                             rate *= 1 - (global.civic.foreign.gov3.hstl / 101);
                         }
-                        modRes(res,global.resource[res].trade * time_multiplier * rate);
+                        modRes(res,routes * time_multiplier * rate);
                         modRes('Money', -(price * time_multiplier));
                         breakdown.p.consume.Money[loc('trade')] -= price;
-                        breakdown.p.consume[res][loc('trade')] = global.resource[res].trade * rate;
+                        breakdown.p.consume[res][loc('trade')] = routes * rate;
                     }
                     steelCheck();
                 }
-                else if (global.resource[res].trade < 0){
-                    used_trade -= global.resource[res].trade;
-                    let price = tradeSellPrice(res) * global.resource[res].trade;
+                else if (routes < 0){
+                    used_trade -= routes;
 
                     let rate = tradeRatio[res];
                     if (global.stats.achieve.hasOwnProperty('trade')){
@@ -1593,11 +1596,14 @@ function fastLoop(){
                         rate *= 1 - (rank / 100);
                     }
 
-                    if (global.resource[res].amount >= rate * time_multiplier){
-                        modRes(res,global.resource[res].trade * time_multiplier * rate);
+                    const affordable_routes = Math.floor(global.resource[res].amount / (rate * time_multiplier));
+                    routes = Math.max(routes, -affordable_routes);
+                    if (routes < 0){
+                        let price = tradeSellPrice(res) * routes;
+                        modRes(res,routes * time_multiplier * rate);
                         modRes('Money', -(price * time_multiplier));
                         breakdown.p.consume.Money[loc('trade')] -= price;
-                        breakdown.p.consume[res][loc('trade')] = global.resource[res].trade * rate;
+                        breakdown.p.consume[res][loc('trade')] = routes * rate;
                     }
                     steelCheck();
                 }
