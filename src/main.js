@@ -4845,7 +4845,7 @@ function fastLoop(){
             if (global.race['forge']){
                 global.city.smelter.Wood = 0;
                 global.city.smelter.Coal = 0;
-                global.city.smelter.Oil = global.city.smelter.cap - global.city.smelter.Star - global.city.smelter.Inferno;
+                global.city.smelter.Oil = Math.max(0, global.city.smelter.cap - global.city.smelter.Star - global.city.smelter.Inferno);
             }
 
             if ((global.race['kindling_kindred'] || global.race['smoldering']) && !global.race['evil']){
