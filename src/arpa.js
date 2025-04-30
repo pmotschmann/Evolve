@@ -1964,7 +1964,7 @@ function genetics(){
             }
         });
 
-        breakdown.append(`<div class="trait major has-text-success">${loc('arpa_race_genetic_traids',[flib('name')])}</div>`)
+        breakdown.append(`<div class="trait major has-text-success" role="heading" aria-level="3">${loc('arpa_race_genetic_traids',[flib('name')])}</div>`)
 
         let traitName = traitSkin('name');
 
@@ -2019,7 +2019,7 @@ function genetics(){
         let trait_list = [];
         if (global.genes['mutation'] && global.genes['mutation'] >= 3){
             if (global.race.species !== 'hellspawn' && ((global.race.species !== 'sludge' && global.race.species !== 'ultra_sludge') || !global.race['modified'])){
-                breakdown.append(`<div class="trait major has-text-success">${loc('arpa_race_genetic_gain')}</div>`);
+                breakdown.append(`<div class="trait major has-text-success" role="heading" aria-level="3">${loc('arpa_race_genetic_gain')}</div>`);
 
                 let conflict_traits = ['dumb','smart']; //Conflicting traits are paired together
                 let mainType = races[global.race.species].type === 'hybrid' ? global.race.maintype : races[global.race.species].type
@@ -2079,7 +2079,7 @@ function genetics(){
         }
 
         if (minor){
-            breakdown.prepend(`<div class="trait minor has-text-success">${loc('arpa_race_genetic_minor_traits',[flib('name')])}</div>`)
+            breakdown.prepend(`<div class="trait minor has-text-success" role="heading" aria-level="3">${loc('arpa_race_genetic_minor_traits',[flib('name')])}</div>`)
         }
 
         let rmCost = function(t){
@@ -2384,7 +2384,7 @@ export function sequenceLabs(){
 
 function bindTrait(breakdown,trait){
     let m_trait = $(`<div class="trait t-${trait} traitRow"></div>`);
-    let gene = $(`<span v-bind:class="['basic-button', 'gene', 'gbuy', genePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="geneCost('${trait}')" @click="gene('${trait}')">${global.resource.Genes.name} (${global.race.minor[trait] || 0})</span>`);
+    let gene = $(`<h4 class="is-sr-only">${trait}</h4><span v-bind:class="['basic-button', 'gene', 'gbuy', genePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="geneCost('${trait}')" @click="gene('${trait}')">${global.resource.Genes.name} (${global.race.minor[trait] || 0})</span>`);
     m_trait.append(gene);
     if (global.prestige.Phage.count > 0){
         let phage = $(`<span v-bind:class="['basic-button', 'gene', 'pbuy', phagePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="phageCost('${trait}')" @click="phage('${trait}')">${loc('resource_Phage_name')} (${global.genes.minor[trait] || 0})</span>`);
