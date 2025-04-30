@@ -2430,7 +2430,7 @@ function addProject(parent,project){
         parent.append(current);
 
         let title = typeof arpaProjects[project].title === 'string' ? arpaProjects[project].title : arpaProjects[project].title();
-        let head = $(`<div class="head"><span aria-hidden="true" class="desc has-text-warning">${title}</span><a v-on:click="srDesc" class="is-sr-only">${title}</a><span aria-hidden="true" v-show="rank" class="rank">{{ rank | level }}</span><a v-on:click="srLevel" class="is-sr-only">{{ rank | level }}</a></div>`);
+        let head = $(`<div class="head"><span aria-hidden="true" class="desc has-text-warning">${title}</span><a v-on:click="srDescAndEffect" class="is-sr-only" role="button">${title} description</a><span aria-hidden="true" v-show="rank" class="rank">{{ rank | level }}</span><span class="is-sr-only">{{ rank | level }}</span></div>`);
         current.append(head);
 
         let progress = $(`<div class="pbar"><progress class="progress" :value="complete" max="100"></progress><span class="progress-value has-text-danger">{{ complete }}%</span></div>`);
@@ -2481,11 +2481,10 @@ function addProject(parent,project){
                 build(pro,num){
                     buildArpa(pro,num,true);
                 },
-                srDesc(){
-                    return srSpeak(typeof arpaProjects[project].desc === 'string' ? arpaProjects[project].desc : arpaProjects[project].desc());
-                },
-                srLevel(){
-                    return srSpeak(arpaProjects[project].effect());
+                srDescAndEffect(){
+                    let desc = typeof arpaProjects[project].desc === 'string' ? arpaProjects[project].desc : arpaProjects[project].desc();
+                    let effect = arpaProjects[project].effect();
+                    return srSpeak(`${desc}\n${effect}`);
                 },
                 arpaProjectSRCosts(id,project){
                     let inc = id === '100' ? 100 - global.arpa[project].complete : id;
