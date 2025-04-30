@@ -2439,7 +2439,7 @@ function addProject(parent,project){
         let buy = $('<div class="buy"></div>');
         current.append(buy);
 
-        buy.append($(`<button aria-label="${loc('queue')} ${project}" class="button" @click="queue('${project}')">${loc('queue')}</button>`));
+        buy.append($(`<button aria-label="${loc('queue')} ${title}" class="button" @click="queue('${project}')">${loc('queue')}</button>`));
         buy.append($(`<button :aria-label="arpaProjectSRCosts('1','${project}')" class="button x1" @click="build('${project}',1)">1%</button>`));
         buy.append($(`<button :aria-label="arpaProjectSRCosts('10','${project}')" class="button x10" @click="build('${project}',10)">10%</button>`));
         buy.append($(`<button :aria-label="arpaProjectSRCosts('25','${project}')" class="button x25" @click="build('${project}',25)">25%</button>`));
