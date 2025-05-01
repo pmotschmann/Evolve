@@ -4849,7 +4849,10 @@ function fastLoop(){
             }
 
             if ((global.race['kindling_kindred'] || global.race['smoldering']) && !global.race['evil']){
-                global.city.smelter.Wood = 0;
+                if (global.city.smelter.Wood !== 0){
+                    global.city.smelter.Coal += global.city.smelter.Wood;
+                    global.city.smelter.Wood = 0;
+                }
             }
 
             let total_fuel = 0;
