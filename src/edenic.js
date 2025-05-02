@@ -1275,8 +1275,12 @@ const edenicModules = {
                         element = '#eden-isle_garrison .button';
                     }
 
+                    let redraw = false;
                     global.eden.enemy_isle[target] -= Math.floor(seededRandom(25,75));
-                    if (global.eden.enemy_isle[target] < 0){ global.eden.enemy_isle[target] = 0; }
+                    if (global.eden.enemy_isle[target] <= 0){
+                        global.eden.enemy_isle[target] = 0;
+                        redraw = true;
+                    }
 
                     let nuke = $('<div class="mininuke"></div>');
                     $(element).append(nuke);
@@ -1301,6 +1305,9 @@ const edenicModules = {
                         drawTech();
                         renderEdenic();
                         return true;
+                    }
+                    else if (redraw){
+                        renderEdenic();
                     }
                 }
                 return false;
