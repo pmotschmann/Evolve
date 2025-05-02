@@ -12330,6 +12330,7 @@ function longLoop(){
                     global.tech['smelting'] = 2;
                 }
                 drawTech();
+                drawCity();
             }
             if (moldFathom >= 0.04 && global.resource.Knowledge.max >= (actions.tech.dynamite.cost.Knowledge() * know_adjust) && checkTechRequirements('dynamite',false) && global.tech['explosives'] && global.tech.explosives === 1){
                 messageQueue(loc(tech_source,[loc('tech_dynamite')]),'info',false,['progress']);
