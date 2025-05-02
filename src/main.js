@@ -576,11 +576,11 @@ vBind({
             if (global.race['pet'] && global.race.pet.pet === 0){
                 let outcome = global.race.pet.type === 'cat' ? Math.rand(0,3) : Math.rand(0,10);
                 if (outcome === 0){
-                    global.race.pet.pet = -300;
+                    global.race.pet.pet = -60;
                     messageQueue(loc(`event_${global.race.pet.type}_pet_failure`,[loc(`event_${global.race.pet.type}_name${global.race.pet.name}`)]),false,false,['events','minor_events']);
                 }
                 else {
-                    global.race.pet.pet = 300;
+                    global.race.pet.pet = 60;
                     messageQueue(loc(`event_${global.race.pet.type}_pet_success`,[loc(`event_${global.race.pet.type}_name${global.race.pet.name}`)]),false,false,['events','minor_events']);
                 }
             }

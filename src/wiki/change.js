@@ -4,7 +4,7 @@ import { clearElement } from './../functions.js';
 export const changeList = [
     {
         version: `1.4.3`,
-        date: `4/??/2025`,
+        date: `5/??/2025`,
         changes: [
             `Evil Universe Scenario: Warlord.`,
             `Added Planned Obsolescence Feat.`,
