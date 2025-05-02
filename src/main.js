@@ -4845,11 +4845,14 @@ function fastLoop(){
             if (global.race['forge']){
                 global.city.smelter.Wood = 0;
                 global.city.smelter.Coal = 0;
-                global.city.smelter.Oil = global.city.smelter.cap - global.city.smelter.Star - global.city.smelter.Inferno;
+                global.city.smelter.Oil = Math.max(0, global.city.smelter.cap - global.city.smelter.Star - global.city.smelter.Inferno);
             }
 
             if ((global.race['kindling_kindred'] || global.race['smoldering']) && !global.race['evil']){
-                global.city.smelter.Wood = 0;
+                if (global.city.smelter.Wood !== 0){
+                    global.city.smelter.Coal += global.city.smelter.Wood;
+                    global.city.smelter.Wood = 0;
+                }
             }
 
             let total_fuel = 0;
@@ -4870,6 +4873,9 @@ function fastLoop(){
                     if (global.city.smelter.Iridium < 0){
                         overflow = global.city.smelter.Iridium;
                         global.city.smelter.Iridium = 0;
+                    }
+                    else {
+                        overflow = 0;
                     }
                     global.city.smelter.Steel += overflow;
                     if (global.city.smelter.Steel < 0){
