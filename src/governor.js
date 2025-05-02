@@ -9,6 +9,7 @@ import { loc } from './locale.js';
 import { jobScale } from './jobs.js';
 import { isStargateOn } from './space.js';
 import { stabilize_blackhole } from './tech.js';
+import { shipCosts } from './truepath.js';
 
 export const gmen = {
     soldier: {
@@ -1784,6 +1785,20 @@ export const gov_tasks = {
                     let remain = (100 - global.arpa[struct.a].complete) / 100;
                     let c_action = actions.arpa[struct.a];
                     tc = arpaTimeCheck(c_action,remain,false,true);
+                }
+                else if (global.queue.queue[idx].action === 'tp-ship'){
+                    let raw = shipCosts(global.queue.queue[idx].type);
+                    let costs = {};
+                    Object.keys(raw).forEach(function(res){
+                        costs[res] = function(){ return raw[res]; }
+                    });
+                    let c_action = { cost: costs };
+                    tc = timeCheck(c_action,false,true);
+                }
+                else if (global.queue.queue[idx].action === 'hell-mech'){
+                    let costs = mechCost(global.queue.queue[idx].type.size,global.queue.queue[idx].type.infernal,true);
+                    let c_action = { cost: costs };
+                    tc = timeCheck(c_action,false,true);
                 }
                 else {
                     tc = timeCheck(struct.a,false,true);
