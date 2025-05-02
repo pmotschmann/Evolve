@@ -2426,7 +2426,7 @@ export function asphodelResist(){
 }
 
 export function mechStationEffect(){
-    if (global.eden.mech_station.mode === 0){
+    if (global.eden.mech_station.count < 10 || global.eden.mech_station.mode === 0){
         global.eden.mech_station.effect = 0;
         global.eden.mech_station.mechs = 0;
         return;
