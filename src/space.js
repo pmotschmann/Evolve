@@ -7637,9 +7637,11 @@ export function ascendLab(hybrid,wiki){
     else {
         let genus = `<div class="genus_selection"><div class="has-text-caution">${loc('genelab_genus')}</div><template><section>`;
         Object.keys(genus_traits).forEach(function (type){
-            if (isWiki || (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0)){
-                if (!dGenus){ dGenus = type; }
-                genus = genus + `<div class="field ${type}"><b-radio v-model="g.genus" native-value="${type}">${loc(`genelab_genus_${type}`)}</b-radio></div>`;
+            if (type !== 'hybrid'){
+                if (isWiki || (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0)){
+                    if (!dGenus){ dGenus = type; }
+                    genus = genus + `<div class="field ${type}"><b-radio v-model="g.genus" native-value="${type}">${loc(`genelab_genus_${type}`)}</b-radio></div>`;
+                }
             }
         });
         genus += `</section></template>${fanatic}</div>`;
@@ -7847,7 +7849,7 @@ export function ascendLab(hybrid,wiki){
                 }
             },
             allowed(t){
-                if (genome.genus !== 'synthetic' && ['deconstructor','imitation'].includes(t)){
+                if ((!['synthetic','hybrid'].includes(genome.genus) || (genome.hasOwnProperty('hybrid') && !genome.hybrid.includes('synthetic'))) && ['deconstructor','imitation'].includes(t)){
                     if (genome.traitlist.includes(t)){
                         genome.traitlist.splice(genome.traitlist.indexOf(t), 1);
                     }
@@ -7920,9 +7922,11 @@ export function ascendLab(hybrid,wiki){
 
                         let genus = `<div class="genus_selection"><template><section>`;
                         Object.keys(genus_traits).forEach(function (type){
-                            if (isWiki || (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0)){
-                                if ((slot === 0 && type !== genome.hybrid[1]) || (slot === 1 && type !== genome.hybrid[0])){
-                                    genus = genus + `<div class="field ${type}"><b-radio v-model="hybrid[${slot}]" native-value="${type}">${loc(`genelab_genus_${type}`)}</b-radio></div>`;
+                            if (type !== 'hybrid'){
+                                if (isWiki || (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0)){
+                                    if ((slot === 0 && type !== genome.hybrid[1]) || (slot === 1 && type !== genome.hybrid[0])){
+                                        genus = genus + `<div class="field ${type}"><b-radio v-model="hybrid[${slot}]" native-value="${type}">${loc(`genelab_genus_${type}`)}</b-radio></div>`;
+                                    }
                                 }
                             }
                         });
