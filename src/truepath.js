@@ -1820,8 +1820,11 @@ const tauCetiModules = {
                 let helium = spatialReasoning(15000);
                 let fuel = +int_fuel_adjust($(this)[0].support_fuel().a).toFixed(1);
                 let desc = `<div>${loc('space_red_spaceport_effect1',[loc('tau_planet',[races[global.race.species].home]),$(this)[0].support()])}</div>`;
-                desc = desc + `<div>${loc('plus_max_resource',[helium.toLocaleString(),global.resource.Helium_3.name])}</div>`;
-                desc = desc + `<div class="has-text-caution">${loc('spend_power',[fuel,global.resource[$(this)[0].support_fuel().r].name,$(this)[0].powered()])}</div>`;
+                desc += `<div>${loc('plus_max_resource',[helium.toLocaleString(),global.resource.Helium_3.name])}</div>`;
+                if (global.race.universe === 'evil' && (global.race['lone_survivor'] || global.tech['isolation'])){
+                    desc += `<div>${loc('plus_max_resource',[1,global.resource.Authority.name])}</div>`;
+                }
+                desc += `<div class="has-text-caution">${loc('spend_power',[fuel,global.resource[$(this)[0].support_fuel().r].name,$(this)[0].powered()])}</div>`;
                 return desc;
             },
             support_fuel(){ return { r: 'Helium_3', a: global.tech['isolation'] ? (global.race['lone_survivor'] ? 5 : 25) : 400 }; },
@@ -1872,24 +1875,28 @@ const tauCetiModules = {
                     let vault = bank_vault() * 25;
                     vault = spatialReasoning(vault);
                     vault = (+(vault).toFixed(0)).toLocaleString();
-                    desc = desc + `<div>${loc('plus_max_resource',[`\$${vault}`,global.resource.Money.name])}</div>`;
+                    desc += `<div>${loc('plus_max_resource',[`\$${vault}`,global.resource.Money.name])}</div>`;
                 }
 
-                desc = desc + `<div>${loc('tau_home_colony_effect',[50,races[global.race.species].home])}</div>`;
+                desc += `<div>${loc('tau_home_colony_effect',[50,races[global.race.species].home])}</div>`;
                 
                 if (global.tech['isolation']){
                     let gasVal = govActive('gaslighter',0);
                     let mVal = ((gasVal || 0) + (global.tech.broadcast || 0)) * 2;
-                    desc = desc + `<div>${loc('space_red_vr_center_effect1',[mVal])}</div>`;
+                    desc += `<div>${loc('space_red_vr_center_effect1',[mVal])}</div>`;
                 }
                 
-                desc = desc + `<div>${loc('plus_max_resource',[containers,global.resource.Crates.name])}</div><div>${loc('plus_max_resource',[containers,global.resource.Containers.name])}</div>`;
+                desc += `<div>${loc('plus_max_resource',[containers,global.resource.Crates.name])}</div><div>${loc('plus_max_resource',[containers,global.resource.Containers.name])}</div>`;
+
+                if (global.race.universe === 'evil' && (global.race['lone_survivor'] || global.tech['isolation'])){
+                    desc += `<div>${loc('plus_resource',[5,global.resource.Authority.name])}</div>`;
+                }
 
                 if (global.race['lone_survivor']){
-                    desc = desc + `<div>${loc('gain',[-(fuel),global.resource[$(this)[0].support_fuel().r].name])}</div>`;
+                    desc += `<div>${loc('gain',[-(fuel),global.resource[$(this)[0].support_fuel().r].name])}</div>`;
                 }
                 else {
-                    desc = desc + `<div class="has-text-caution">${loc('spend',[fuel,global.resource[$(this)[0].support_fuel().r].name])}</div>`;
+                    desc += `<div class="has-text-caution">${loc('spend',[fuel,global.resource[$(this)[0].support_fuel().r].name])}</div>`;
                 }
                 return desc;
             },
