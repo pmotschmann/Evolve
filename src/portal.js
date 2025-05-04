@@ -619,11 +619,9 @@ const fortressModules = {
                 else if (global.portal.throne.points > 0 && checkSkillPointAssignments() > 0){
                     if (global.portal.throne.skill){
                         desc += `<div class="has-text-info">${loc('portal_throne_of_evil_skill2')} ${loc('portal_throne_of_evil_skill',[global.portal.throne.points])}</div>`;
-                        console.log('Yes');
                     }
                     else {
                         desc += `<div class="has-text-info">${loc('portal_throne_of_evil_skill1')} ${loc('portal_throne_of_evil_skill',[global.portal.throne.points])}</div>`;
-                        console.log('No');
                     }
                 }
 
@@ -4999,7 +4997,6 @@ function checkSkillPointAssignments(){
     else if (global.portal.throne.skill && global.portal.throne.points > 0){
         $(`#portal-throne a.button`).addClass('green');
     }
-    console.log(remaining);
     return remaining;
 }
 
