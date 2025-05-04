@@ -7176,7 +7176,7 @@ export function combineTraits(){
     global.race.inactiveTraits = {};
 
     if(global.race['herbivore'] && global.race['carnivore']){ //herbivore and carnivore found. Add forager
-        let rank = Math.min(global.race['herbivore'], global.race['carnivore']); //forager has rank equal to lower of carnivore/herbivore
+        let rank = 1
 
         global.race.inactiveTraits['herbivore'] = global.race['herbivore'];
         global.race.inactiveTraits['carnivore'] = global.race['carnivore'];
