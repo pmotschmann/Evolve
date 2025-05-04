@@ -578,7 +578,7 @@ export const events = {
                 global.resource[res].amount += gain;
             }
 
-            return res === 'Money' ? loc('event_klepto',[gain]) : loc('event_klepto',[gain,global.resource[res].name]);
+            return res === 'Money' ? loc('event_klepto_money',[gain]) : loc('event_klepto',[gain,global.resource[res].name]);
         }
     },
     chicken_feast:{ 
