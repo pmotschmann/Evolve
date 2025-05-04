@@ -271,6 +271,7 @@ export function cataclysm_end(){
 
         let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
         let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
+        let mainType = global.race.hasOwnProperty('maintype') ? global.race.maintype : false;
         global['race'] = {
             species : global.race.species,
             gods: global.race.gods,
@@ -285,7 +286,10 @@ export function cataclysm_end(){
         if (srace){
             global.race['srace'] = srace;
         }
-
+        if (mainType){
+            global.race['maintype'] = mainType;
+        }
+             
         resetCommon({
             orbit: global.city.calendar.orbit, 
             biome: global.city.biome, 

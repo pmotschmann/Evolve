@@ -1,4 +1,4 @@
-import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, int_on, gal_on, spire_on, tmp_vars, setupStats, convertVersion } from './vars.js';
+import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, int_on, gal_on, spire_on, tmp_vars, setupStats } from './vars.js';
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
@@ -4547,6 +4547,9 @@ export function setChallengeScreen(){
         if ($(`#evolution-hybrid`).length > 0){
             $(`#evolution-hybrid`).addClass('disabled');
         }
+        if ($(`#evolution-nano`).length > 0){
+            $(`#evolution-nano`).addClass('disabled');
+        }
     }
     else {
         if ($(`#evolution-custom`).length > 0 && $(`#evolution-custom`).hasClass('disabled')){
@@ -4554,6 +4557,9 @@ export function setChallengeScreen(){
         }
         if ($(`#evolution-hybrid`).length > 0 && $(`#evolution-hybrid`).hasClass('disabled')){
             $(`#evolution-hybrid`).removeClass('disabled');
+        }
+        if ($(`#evolution-nano`).length > 0 && $(`#evolution-nano`).hasClass('disabled')){
+            $(`#evolution-nano`).removeClass('disabled');
         }
     }
 }
@@ -9459,7 +9465,7 @@ function cataclysm(){
 }
 
 export function fanaticism(god){
-    if (['custom','hybrid'].includes(god) && global.race['warlord']){
+    if (['custom','hybrid','nano'].includes(god) && global.race['warlord']){
         randomMinorTrait(5);
         arpa('Genetics');
     }

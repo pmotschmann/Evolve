@@ -5707,7 +5707,7 @@ export const races = {
         type: 'demonic',
         home: loc('race_hellspawn_home'),
         entity: loc('race_hellspawn_entity'),
-        traits: {},
+        traits: { immoral: 4 },
         solar: {
             red: loc('race_hellspawn_solar_red'),
             hell: loc('race_hellspawn_solar_hell'),

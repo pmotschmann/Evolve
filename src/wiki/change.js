@@ -26,11 +26,16 @@ export const changeList = [
             `Slitheryn once again have slow digestion.`,
             `Fixed bug with Rogue trait that set crafted resources to 0.`,
             `Fixed bug that caused Hybrid species to throw an error when triggering greatness resets.`,
+            `Fixed bug that caused Hybrid species to throw an error when triggering a Cataclysm reset.`,
             `Fixed issue with Iridium Smelters miscalculating result.`,
             `Fixed a variety of Joyless edge cases.`,
             `Fixed Space Casino appearing improperly in power grid.`,
             `Fixed Potato Battery in antimatter universe not benefiting from dark energy.`,
-            `Accessibility improvements.`
+            `Fixed issue with Resonance not unlocking if you pillared without unlocking the gate towers.`,
+            `Fixed divide by zero error with Soul Forge when you have 0 Authority.`,
+            `Deprecated trait Frail will no longer show up in the Custom Lab.`,
+            `Accessibility improvements.`,
+            `Minor misc bug fixes.`
         ]
     },
     {
