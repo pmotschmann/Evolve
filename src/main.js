@@ -8128,7 +8128,7 @@ function midLoop(){
         var caps = {
             Money: 1000,
             Slave: 0,
-            Authority: global.race['cataclysm'] || global.race['orbit_decayed'] || global.race['lone_survivor'] ? 90 : 80,
+            Authority: global.race['cataclysm'] || global.race['orbit_decayed'] ? 90 : (global.race['lone_survivor'] ? 100 : 80),
             Mana: 0,
             Energy: 100,
             Sus: 100,
@@ -8333,7 +8333,7 @@ function midLoop(){
                 breakdown.c.Authority[loc(`event_pet_${global.race.pet.type}_owner`)] = pet+'v';
             }
 
-            global.resource.Authority.amount = global.race['cataclysm'] || global.race['orbit_decayed'] || global.race['lone_survivor'] ? 90 : 80;
+            global.resource.Authority.amount = global.race['cataclysm'] || global.race['orbit_decayed'] ? 90 : (global.race['lone_survivor'] ? 100 : 80);
             if (global.city.morale.current > 100){
                 let excess = global.city.morale.current - 100;
                 if (global.civic.govern.type === 'democracy'){
