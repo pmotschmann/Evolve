@@ -11,7 +11,7 @@ export const changeList = [
             `You can now queue Spire Mechs.`,
             `You can now pet your cat or dog once every 5 minutes.`,
             `Symposium now gain Knowledge for all crew in Andromeda.`,
-            `Evil Authority adjustments for Cataclysm, Lone Survivor, and Orbit Decay`,
+            `Evil Authority adjustments for Cataclysm, Lone Survivor, and Orbit Decay.`,
             `Soldiers assigned to Fortress guard duty now contribute Authority.`,
             `Updated Empowered trait mechanics.`,
             `Adjusted values for Master Artisan.`,
