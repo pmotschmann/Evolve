@@ -1088,7 +1088,7 @@ const fortressModules = {
                 Sheet_Metal(offset){ return spaceCostMultiplier('demon_forge', offset, 155000, 1.3, 'portal'); },
             },
             effect(){
-                let desc = `<div>${loc('city_foundry_effect1',[jobScale(8)])}</div><div>${loc('interstellar_stellar_forge_effect',[40])}</div>`;
+                let desc = `<div>${loc('city_foundry_effect1',[jobScale($(this)[0].crafters())])}</div><div>${loc('interstellar_stellar_forge_effect',[$(this)[0].crafting()])}</div>`;
                 let num_smelters = $(this)[0].smelting();
                 if (num_smelters > 0){
                     desc += `<div>${loc('interstellar_stellar_forge_effect3',[num_smelters])}</div>`;
@@ -1098,7 +1098,13 @@ const fortressModules = {
             powered(){ return powerCostMod(3); },
             special: true,
             smelting(){
-                return 18 + (global.portal?.demon_forge?.rank || 1) * 2;
+                return 4 + (global.portal?.demon_forge?.rank || 1) * 4;
+            },
+            crafting(){
+                return 20 + (global.portal?.demon_forge?.rank || 1) * 12;
+            },
+            crafters(){
+                return 5 + (global.portal?.demon_forge?.rank || 1);
             },
             action(){
                 if (global.portal['throne'] && global.portal.throne.skill && global.portal.throne.points > 0 && global.portal.demon_forge.rank < 5){

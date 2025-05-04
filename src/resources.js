@@ -1,7 +1,7 @@
 import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, support_on } from './vars.js';
 import { vBind, clearElement, modRes, flib, calc_mastery, calcPillar, eventActive, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect, hoovedRename, messageQueue } from './functions.js';
 import { traits, fathomCheck } from './races.js';
-import { templeCount } from './actions.js';
+import { templeCount, actions } from './actions.js';
 import { workerScale } from './jobs.js';
 import { hellSupression } from './portal.js';
 import { syndicate } from './truepath.js';
@@ -316,7 +316,7 @@ export const craftingRatio = (function(){
                 crafting.general.add.push({
                     name: loc(`portal_demon_forge_title`),
                     manual: 0,
-                    auto: p_on['demon_forge'] * 0.4
+                    auto: p_on['demon_forge'] * actions.portal.prtl_wasteland.demon_forge.crafting() / 100
                 });
             }
             if (global.portal['hell_factory'] && p_on['hell_factory']){
