@@ -343,7 +343,7 @@ function achieveDesc(achievement,showFlair,universe){
         checklist = checklist + `</div>`;
         popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`));
     }
-    else if (achievement.includes('extinct_') && achievement.substring(8) !== 'custom'){
+    else if (achievement.includes('extinct_') && achievement.substring(8) !== 'custom' && achievement.substring(8) !== 'hybrid'){
         let race = achievement.substring(8);
         popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc('wiki_achieve_extinct_race',[loc(`race_${race}`)])}</div>${flair}`));
     }

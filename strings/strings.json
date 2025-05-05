@@ -9455,6 +9455,7 @@
   "wiki_achieve_mass_extinction": "Cause an extinction event for 25 unique races.",
   "wiki_achieve_extinct_race": "Cause an extinction event for the %0 race.",
   "wiki_achieve_extinct_custom": "Cause an extinction event for a custom race.",
+  "wiki_achieve_extinct_hybrid": "Cause an extinction event for a custom hybrid race.",
   "wiki_achieve_creator": "Achieve a greatness event with at least one race from 9 unique genera.",
   "wiki_achieve_genus_type": "Achieve a greatness event while playing as any race in the %0 genus type.",
   "wiki_achieve_explorer": "Achieve a greatness event on 6 unique planetary biomes.",
