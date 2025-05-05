@@ -1,12 +1,14 @@
 import { global, keyMultiplier, p_on, support_on, tmp_vars } from './vars.js';
 import { vBind, clearElement, popover, darkEffect, eventActive, easterEgg, getHalloween } from './functions.js';
 import { loc } from './locale.js';
+import { highPopAdjust } from './prod.js';
 import { racialTrait, servantTrait, races, traits, biomes, planetTraits, fathomCheck } from './races.js';
 import { armyRating } from './civics.js';
 import { craftingRatio, craftCost, craftingPopover } from './resources.js';
 import { planetName } from './space.js';
+import { hellSupression } from './portal.js';
 import { asphodelResist } from './edenic.js';
-import { actions } from './actions.js';
+import { actions, getStructNumActive, templeCount } from './actions.js';
 
 export const job_desc = {
     unemployed: function(servant){
@@ -28,14 +30,14 @@ export const job_desc = {
             desc = loc(global.race['evil'] ? 'job_evil_hunter_desc' : 'job_not_evil_hunter_desc',[global.resource.Food.name,global.resource.Lumber.name,global.resource.Furs.name]);
         }
         if (global.civic.d_job === 'hunter' && !servant){
-            desc = desc + ' ' + loc('job_default',[global.race['unfathomable'] ? loc('job_raider') : loc('job_hunter')]);
+            desc = desc + ' ' + loc('job_default',[global.race['unfathomable'] ? loc('job_raider') : jobName('hunter')]);
         }
         return desc;
     },
     forager: function(servant){
         let desc = loc(`job_forager_desc`);
         if (global.civic.d_job === 'forager' && !servant){
-            desc = desc + ' ' + loc('job_default',[loc('job_forager')]);
+            desc = desc + ' ' + loc('job_default',[jobName('forager')]);
         }
         return desc;
     },
@@ -50,7 +52,7 @@ export const job_desc = {
             ? loc('job_farmer_desc_hp',[farmer,global.resource.Food.name,jobScale(1),farmhand,jobScale(1) * global.city.farm.count])
             : loc('job_farmer_desc',[farmer,global.resource.Food.name,global.city.farm.count,farmhand]);
         if (global.civic.d_job === 'farmer' && !servant){
-            desc = desc + ' ' + loc('job_default',[loc('job_farmer')]);
+            desc = desc + ' ' + loc('job_default',[jobName('farmer')]);
         }
         return desc;
     },
@@ -70,7 +72,7 @@ export const job_desc = {
             let flesh = +(impact / 4 * multiplier).toFixed(2);
             let desc = global.race.species === 'wendigo' ? loc('job_reclaimer_desc2',[bone]) : loc('job_reclaimer_desc',[bone,flesh]);
             if (global.civic.d_job === 'lumberjack' && !servant){
-                desc = desc + ' ' + loc('job_default',[loc('job_reclaimer')]);
+                desc = desc + ' ' + loc('job_default',[jobName('reclaimer')]);
             }
             return desc;
         }
@@ -97,7 +99,7 @@ export const job_desc = {
             let gain = +(impact * multiplier).toFixed(2);
             let desc = loc('job_lumberjack_desc',[gain,global.resource.Lumber.name]);
             if (global.civic.d_job === 'lumberjack' && !servant){
-                desc = desc + ' ' + loc('job_default',[loc('job_lumberjack')]);
+                desc = desc + ' ' + loc('job_default',[jobName('lumberjack')]);
             }
             let hallowed = getHalloween();
             if (hallowed.active){
@@ -132,7 +134,7 @@ export const job_desc = {
             desc = desc + ' ' + loc('job_quarry_worker_smoldering',[global.resource.Chrysotile.name]);
         }
         if (global.civic.d_job === 'quarry_worker' && !servant){
-            desc = desc + ' ' + loc('job_default',[loc('job_quarry_worker')]);
+            desc = desc + ' ' + loc('job_default',[jobName('quarry_worker')]);
         }
         return desc;
     },
@@ -148,7 +150,7 @@ export const job_desc = {
         let gain = +(impact * multiplier).toFixed(2);
         let desc = loc('job_crystal_miner_desc',[gain,global.resource.Crystal.name]);
         if (global.civic.d_job === 'crystal_miner' && !servant){
-            desc = desc + ' ' + loc('job_default',[loc('job_crystal_miner')]);
+            desc = desc + ' ' + loc('job_default',[jobName('crystal_miner')]);
         }
         return desc;
     },
@@ -165,21 +167,21 @@ export const job_desc = {
         }
         let desc = loc('job_scavenger_desc',[races[global.race.species].home,scavenger]);
         if (global.civic.d_job === 'scavenger' && !servant){
-            desc = desc + ' ' + loc('job_default',[loc('job_scavenger')]);
+            desc = desc + ' ' + loc('job_default',[jobName('scavenger')]);
         }
         return desc;
     },
     teamster: function(servant){
         let desc = loc('job_teamster_desc',[teamsterCap()]);
         if (global.civic.d_job === 'teamster' && !servant){
-            desc = desc + ' ' + loc('job_default',[loc('job_teamster')]);
+            desc = desc + ' ' + loc('job_default',[jobName('teamster')]);
         }
         return desc;
     },
     meditator: function(servant){
         let desc = loc('job_meditator_desc');
         if (global.civic.d_job === 'meditator' && !servant){
-            desc = desc + ' ' + loc('job_default',[loc('job_meditator')]);
+            desc = desc + ' ' + loc('job_default',[jobName('meditator')]);
         }
         return desc;
     },
@@ -187,7 +189,10 @@ export const job_desc = {
         return loc('job_torturer_desc');
     },
     miner: function(){
-        if (global.tech['mining'] >= 3){
+        if (global.race['warlord']){
+            return loc('job_dig_demon_desc');
+        }
+        else if (global.tech['mining'] >= 3){
             return global.race['sappy'] && global.tech['alumina'] ? loc('job_miner_desc2_amber') : loc('job_miner_desc2');
         }
         else {
@@ -281,7 +286,7 @@ export const job_desc = {
         professor *= global.race['pompous'] ? (1 - traits.pompous.vars()[0] / 100) : 1;
         professor *= racialTrait(global.civic.professor.workers,'science');
         if (global.tech['anthropology'] && global.tech['anthropology'] >= 3){
-            professor *= 1 + (global.city.temple.count * 0.05);
+            professor *= 1 + (templeCount() * 0.05);
         }
         if (global.civic.govern.type === 'theocracy'){
             professor *= 0.75;
@@ -317,14 +322,9 @@ export const job_desc = {
         return loc('job_hell_surveyor_desc');
     },
     archaeologist(){
-        let arc = (p_on['arcology'] || 0) * 75;
-        let supress = (armyRating(global.portal.guard_post.on,'hellArmy',0) + arc) / 5000;
-        supress = supress > 1 ? 1 : supress;
-        let value = 250000;
-        if (global.race['high_pop']){
-            value *= traits.high_pop.vars()[1] / 100;
-        }
-        let know = Math.round(value * supress);
+        let value = highPopAdjust(250000);
+        let sup = hellSupression('ruins');
+        let know = Math.round(value * sup.supress);
         return loc('job_archaeologist_desc',[know.toLocaleString()]);
     },
     ghost_trapper(){
@@ -336,6 +336,12 @@ export const job_desc = {
             heatSink = heatSink < 0 ? Math.abs(heatSink) : 0;
             if (heatSink > 0){
                 ascend = 1 + (heatSink / 12500);
+            }
+        }
+        if (global.race['warlord'] && global.portal['mortuary'] && global.portal['corpse_pile']){
+            let corpse = (global.portal?.corpse_pile?.count || 0) * (p_on['mortuary'] || 0);
+            if (corpse > 0){
+                ascend = 1 + corpse / 800;
             }
         }
         let min = Math.floor((150 + attact) * resist * ascend);
@@ -393,6 +399,9 @@ export function defineJobs(define){
     loadJob('pit_miner',define,1,4.5,'advanced');
     loadJob('crew',define,1,4,'alert');
     if (!define && !global.race['start_cataclysm']){
+        ['Scarletite','Quantium'].forEach(function (res){
+            limitCraftsmen(res, false);
+        });
         loadFoundry();
         if (global.race['servants']){
             loadServants();
@@ -448,10 +457,18 @@ export function setJobName(job){
     else if (global.race.universe === 'evil' && job === 'priest' && global.civic.govern.type != 'theocracy'){
         job_name = loc('job_pofficer');
     }
+    else if (job === 'lumberjack' && global.race['evil'] && (!global.race['soul_eater'] || global.race.species === 'wendigo')){
+        job_name = loc('job_reclaimer');
+    }
     else {
-        job_name = job === 'lumberjack' && global.race['evil'] && (!global.race['soul_eater'] || global.race.species === 'wendigo') ? loc('job_reclaimer') : loc('job_' + job);
+        job_name = loc('job_' + job);
     }
     global['civic'][job].name = job_name;
+}
+
+export function jobName(job){
+    let name = global.civic[job]?.name || loc(`job_${job}`);
+    return name;
 }
 
 function loadJob(job, define, impact, stress, color){
@@ -468,6 +485,11 @@ function loadJob(job, define, impact, stress, color){
             max: 0,
             impact: impact
         };
+    }
+
+    let noControl = {};
+    if (global.race['warlord']){
+        noControl['miner'] = true;
     }
 
     setJobName(job);
@@ -503,7 +525,7 @@ function loadJob(job, define, impact, stress, color){
     civ_container.append(controls);
     $(servant ? '#servants' : '#jobs').append(civ_container);
 
-    if (job !== 'crew'){
+    if (job !== 'crew' && !noControl[job]){
         var sub = $(`<span role="button" aria-label="${loc('remove')} ${global['civic'][job].name}" class="sub has-text-danger" @click="sub"><span>&laquo;</span></span>`);
         var add = $(`<span role="button" aria-label="${loc('add')} ${global['civic'][job].name}" class="add has-text-success" @click="add"><span>&raquo;</span></span>`);
         controls.append(sub);
@@ -710,7 +732,7 @@ export function craftsmanCap(res){
     switch (res){
         case 'Scarletite':
             if (global.portal.hasOwnProperty('hell_forge')){
-                let cap = Math.min(global.portal.hell_forge.on, p_on['hell_forge']);
+                let cap = getStructNumActive(actions.portal.prtl_ruins.hell_forge);
                 return jobScale(cap);
             }
             return 0;
@@ -719,11 +741,11 @@ export function craftsmanCap(res){
             let cap = 0;
             if (global.tech['isolation']){
                 if (global.tauceti.hasOwnProperty('infectious_disease_lab')){
-                    cap = Math.min(global.tauceti.infectious_disease_lab.on, support_on['infectious_disease_lab'], p_on['infectious_disease_lab']);
+                    cap = getStructNumActive(actions.tauceti.tau_home.infectious_disease_lab);
                 }
             }
             else if (global.space.hasOwnProperty('zero_g_lab')){
-                cap = Math.min(global.space.zero_g_lab.on, support_on['zero_g_lab'], p_on['zero_g_lab']);
+                cap = getStructNumActive(actions.space.spc_enceladus.zero_g_lab);
             }
             return jobScale(cap || 0);
 
@@ -733,7 +755,12 @@ export function craftsmanCap(res){
     }
 }
 
-export function limitCraftsmen(res){
+export function limitCraftsmen(res, allow_redraw = true){
+    // Ignore undiscovered materials
+    if (!global.resource[res].display){
+        return;
+    }
+
     // Remember previous crafter limits and refresh UI later on if they change
     if (!tmp_vars.hasOwnProperty('craftsman_cap')){
         tmp_vars.craftsman_cap = {};
@@ -748,13 +775,16 @@ export function limitCraftsmen(res){
         global.city.foundry[res] -= diff;
         refresh = true;
     }
-    else if (tmp_vars['craftsman_cap'].hasOwnProperty(res) && cap != tmp_vars['craftsman_cap'][res]){
+    else if (!tmp_vars['craftsman_cap'].hasOwnProperty(res)){
+        refresh = true;
+    }
+    else if (cap != tmp_vars['craftsman_cap'][res]){
         refresh = true;
     }
     tmp_vars['craftsman_cap'][res] = cap;
 
     // Refresh UI when the cap changes due to power balancing
-    if (refresh){
+    if (allow_redraw && refresh){
         loadFoundry();
     }
 }
@@ -789,7 +819,7 @@ export function farmerValue(farm,servant){
 
 export function loadFoundry(servants){
     clearElement($(servants ? '#skilledServants' : '#foundry'));
-    if ((global.city['foundry'] && global.city['foundry'].count > 0) || global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation']){
+    if ((global.city['foundry'] && global.city['foundry'].count > 0) || global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation'] || global.race['warlord']){
         let element = $(servants ? '#skilledServants' : '#foundry');
         let track = servants ? `{{ s.sused }} / {{ s.smax }}` : `{{ f.crafting }} / {{ c.max }}`;
         let foundry = $(`<div class="job"><div class="foundry job_label"><h3 class="has-text-warning">${loc(servants ? 'civics_skilled_servants' : 'craftsman_assigned')}</h3><span :class="level()">${track}</span></div></div>`);

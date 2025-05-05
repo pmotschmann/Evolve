@@ -96,7 +96,7 @@ export function bioseed(){
 
     let god = global.race.species;
     let old_god = global.race.gods;
-    let genus = races[god].type;
+    let genus = races[god].type === 'hybrid' ? global.race.maintype : races[god].type;
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
     let atmo = global.city.ptrait;
@@ -271,6 +271,7 @@ export function cataclysm_end(){
 
         let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
         let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
+        let mainType = global.race.hasOwnProperty('maintype') ? global.race.maintype : false;
         global['race'] = {
             species : global.race.species,
             gods: global.race.gods,
@@ -285,7 +286,10 @@ export function cataclysm_end(){
         if (srace){
             global.race['srace'] = srace;
         }
-
+        if (mainType){
+            global.race['maintype'] = mainType;
+        }
+             
         resetCommon({
             orbit: global.city.calendar.orbit, 
             biome: global.city.biome, 
@@ -611,7 +615,7 @@ export function ascend(){
     }
 
     Object.keys(geo).forEach(function (g){
-        geo[g] += 0.02;
+        geo[g] = +(geo[g] + 0.02).toFixed(2);
     });
 
     resetCommon({
@@ -772,6 +776,11 @@ export function apotheosis(){
     }
     global.stats.pdebt = gains.pdebt;
 
+    if (global.race['warlord']){
+        global.prestige.Artifact.count += gains.artifact;
+        global.stats.artifact += gains.artifact;
+    }
+
     atmo.forEach(function(a){
         if (planetTraits.hasOwnProperty(a)){
             unlockAchieve(`atmo_${a}`);
@@ -821,7 +830,7 @@ export function apotheosis(){
     }
 
     Object.keys(geo).forEach(function (g){
-        geo[g] += 0.02;
+        geo[g] = +(geo[g] + 0.02).toFixed(2);
     });
 
     resetCommon({
@@ -1017,7 +1026,7 @@ export function matrix(){
 
     let god = global.race.species;
     let old_god = global.race.gods;
-    let genus = races[god].type;
+    let genus = races[god].type === 'hybrid' ? global.race.maintype : races[god].type;
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
     let atmo = global.city.ptrait;
@@ -1102,7 +1111,7 @@ export function retirement(){
 
     let god = global.race.species;
     let old_god = global.race.gods;
-    let genus = races[god].type;
+    let genus = races[god].type === 'hybrid' ? global.race.maintype : races[god].type;
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
     let atmo = global.city.ptrait;
@@ -1187,7 +1196,7 @@ export function gardenOfEden(){
 
     let god = global.race.species;
     let old_god = global.race.gods;
-    let genus = races[god].type;
+    let genus = races[god].type === 'hybrid' ? global.race.maintype : races[god].type;
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
     let atmo = global.city.ptrait;

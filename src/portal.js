@@ -1,12 +1,12 @@
-import { global, seededRandom, keyMultiplier, p_on, support_on, gal_on, spire_on, hell_reports, hell_graphs, sizeApproximation } from './vars.js';
-import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost, calcPrestige, get_qlevel } from './functions.js';
+import { global, seededRandom, keyMultiplier, p_on, support_on, gal_on, spire_on, hell_reports, hell_graphs, sizeApproximation, keyMap } from './vars.js';
+import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost, calcPrestige, get_qlevel, shrineBonusActive, getShrineBonus, buildQueue, timeCheck } from './functions.js';
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { traits, races, fathomCheck, traitCostMod, orbitLength } from './races.js';
-import { spatialReasoning, unlockContainers } from './resources.js';
+import { spatialReasoning, unlockContainers, drawResourceTab } from './resources.js';
 import { loadFoundry, jobScale, limitCraftsmen } from './jobs.js';
 import { armyRating, govCivics, garrisonSize, mercCost, soldierDeath } from './civics.js';
-import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc, actions, initStruct } from './actions.js';
-import { checkRequirements, incrementStruct, astrialProjection, ascendLab } from './space.js';
+import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc, actions, initStruct, storageMultipler, casinoEffect, structName, absorbRace, buildTemplate } from './actions.js';
+import { checkRequirements, incrementStruct, astrialProjection, ascendLab, planetName } from './space.js';
 import { asphodelResist } from './edenic.js';
 import { production, highPopAdjust } from './prod.js';
 import { govActive, defineGovernor } from './governor.js';
@@ -14,7 +14,9 @@ import { descension } from './resets.js';
 import { renderEdenic } from './edenic.js';
 import { loadTab } from './index.js';
 import { loc } from './locale.js';
-import { addSmelter } from './industry.js';
+import { defineIndustry, addSmelter } from './industry.js';
+import { arpa } from './arpa.js';
+import { jobName } from './jobs.js';
 
 const fortressModules = {
     prtl_fortress: {
@@ -40,6 +42,7 @@ const fortressModules = {
                 return `<div>${loc(type)}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { portal: 2 },
+            not_trait: ['warlord'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('turret', offset, 350000, 1.28, 'portal'); },
                 Copper(offset){ return spaceCostMultiplier('turret', offset, 50000, 1.28, 'portal'); },
@@ -84,6 +87,7 @@ const fortressModules = {
                 return loc('portal_carport_desc',[jobScale(1)]);
             },
             reqs: { portal: 2 },
+            not_trait: ['warlord'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('carport', offset, 250000, 1.3, 'portal'); },
                 Cement(offset){ return spaceCostMultiplier('carport', offset, 18000, 1.3, 'portal'); },
@@ -131,6 +135,7 @@ const fortressModules = {
                 return `<div>${loc('portal_war_droid_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { portal: 5 },
+            not_trait: ['warlord'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('war_droid', offset, 495000, 1.26, 'portal'); },
                 Neutronium(offset){ return spaceCostMultiplier('war_droid', offset, 1250, 1.26, 'portal'); },
@@ -165,6 +170,7 @@ const fortressModules = {
                 return `<div>${loc('portal_repair_droid_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { portal: 6 },
+            not_trait: ['warlord'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('repair_droid', offset, 444000, 1.26, 'portal'); },
                 Iron(offset){ return spaceCostMultiplier('repair_droid', offset, 88000, 1.26, 'portal'); },
@@ -197,6 +203,21 @@ const fortressModules = {
         info: {
             name: loc('portal_badlands_name'),
             desc: loc('portal_badlands_desc'),
+            support: 'minions',
+            hide_support: true,
+            prop(){
+                let desc = '';
+                if (global.portal['minions'] && global.portal.minions.count > 0){
+                    desc = ` <span class="has-text-danger">${loc('portal_minions_bd')}:</span> <span class="has-text-caution">{{ spawns | approx }}</span>`;
+                }
+                return desc;
+            },
+            filter(v,type){
+                switch (type){
+                    case 'approx':
+                        return sizeApproximation(v);
+                }
+            }
         },
         war_drone: {
             id: 'portal-war_drone',
@@ -205,6 +226,7 @@ const fortressModules = {
                 return `<div>${loc('portal_war_drone_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { portal: 3 },
+            not_trait: ['warlord'],
             powered(){ return powerCostMod(5); },
             cost: {
                 Money(offset){ return spaceCostMultiplier('war_drone', offset, 650000, 1.28, 'portal'); },
@@ -239,6 +261,7 @@ const fortressModules = {
                 return `<div>${loc('portal_sensor_drone_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { infernite: 2 },
+            not_trait: ['warlord'],
             powered(){ return powerCostMod(3); },
             cost: {
                 Money(offset){ return spaceCostMultiplier('sensor_drone', offset, 500000, 1.25, 'portal'); },
@@ -275,6 +298,7 @@ const fortressModules = {
                 return `<div>${loc('portal_attractor_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { portal: 4 },
+            not_trait: ['warlord'],
             powered(){ return powerCostMod(3); },
             cost: {
                 Money(offset){ return spaceCostMultiplier('attractor', offset, 350000, 1.25, 'portal'); },
@@ -298,6 +322,1138 @@ const fortressModules = {
                     p: ['attractor','portal']
                 };
             }
+        },
+        minions: {
+            id: 'portal-minions',
+            title: loc('portal_minions_title'),
+            desc(){ return rankDesc(loc('portal_minions_title'),'minions'); },
+            reqs: { hellspawn: 3 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('minions', offset, 150000, 1.22, 'portal'); },
+                Furs(offset){ return spaceCostMultiplier('minions', offset, 35000, 1.22, 'portal'); },
+                Infernite(offset){ return spaceCostMultiplier('minions', offset, 500, 1.22, 'portal'); },
+                Orichalcum(offset){ return spaceCostMultiplier('minions', offset, 25000, 1.22, 'portal'); },
+            },
+            powered(){ return 0; },
+            effect(){
+                let troops = $(this)[0].soldiers();
+                let low_troops = troops - 10;
+                if (global.race['infectious']){
+                    troops += traits.infectious.vars()[1];
+                    low_troops += traits.infectious.vars()[0];
+                }
+                let desc = `<div>${loc('portal_minions_effect',[low_troops,troops])}</div>`;
+                desc += `<div>${loc('plus_max_resource',[1,global.resource.Authority.name])}</div>`;
+                return desc;
+            },
+            action(){
+                if (global.portal['throne'] && global.portal.throne.skill && global.portal.throne.points > 0 && global.portal.minions.rank < 5){
+                    global.portal.throne.points--;
+                    global.portal.minions.rank++;
+                    checkSkillPointAssignments();
+                    return true;
+                }
+                else if (payCosts($(this)[0])){
+                    incrementStruct('minions','portal');
+                    global.portal.minions.on++;
+                    if (global.portal.minions.count === 1){
+                        renderFortress();
+                    }
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, spawns: 0, rank: 1 },
+                    p: ['minions','portal']
+                };
+            },
+            soldiers(){
+                let absorb = (global.race?.absorbed?.length || 1);
+                return 20 + absorb + (global.portal.minions?.rank || 1);
+            },
+            aura(){
+                if (global.portal?.throne?.skill && global.portal?.minions?.rank < 5){
+                    return 'blue';
+                }
+                return false;
+            },
+            flair(){ return loc('portal_minions_flair'); }
+        },
+        reaper: {
+            id: 'portal-reaper',
+            title: loc('portal_reaper_title'),
+            desc(){ return rankDesc(loc('portal_reaper_title'),'reaper'); },
+            reqs: { hellspawn: 4 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('reaper', offset, 1200000, 1.2, 'portal'); },
+                Furs(offset){ return spaceCostMultiplier('reaper', offset, 118000, 1.2, 'portal'); },
+                Iron(offset){ return spaceCostMultiplier('reaper', offset, 340000, 1.2, 'portal'); },
+                Soul_Gem(offset){ return spaceCostMultiplier('reaper', offset, 1, 1.1, 'portal'); },
+            },
+            effect(){
+                let desc = `<div>${loc('portal_reaper_effect')}</div>`;
+                return desc;
+            },
+            action(){
+                if (global.portal['throne'] && global.portal.throne.skill && global.portal.throne.points > 0 && global.portal.reaper.rank < 5){
+                    global.portal.throne.points--;
+                    global.portal.reaper.rank++;
+                    checkSkillPointAssignments();
+                    return true;
+                }
+                else if (payCosts($(this)[0])){
+                    incrementStruct('reaper','portal');
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, rank: 1 },
+                    p: ['reaper','portal']
+                };
+            },
+            aura(){
+                if (global.portal?.throne?.skill && global.portal?.reaper?.rank < 5){
+                    return 'blue';
+                }
+                return false;
+            }
+        },
+        corpse_pile: {
+            id: 'portal-corpse_pile',
+            title: loc('portal_corpse_pile_title'),
+            desc(){ return rankDesc(loc('portal_corpse_pile_desc'),'corpse_pile'); },
+            reqs: { hellspawn: 7 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('corpse_pile', offset, 2500000, 1.25, 'portal'); },
+                Lumber(offset){ return spaceCostMultiplier('corpse_pile', offset, 2420000, 1.25, 'portal'); },
+                Furs(offset){ return spaceCostMultiplier('corpse_pile', offset, 1563000, 1.25, 'portal'); },
+            },
+            effect(){
+                let power = 0.75 + (global.portal?.corpse_pile?.rank || 1) * 0.25;
+                let desc = `<div>${loc('portal_corpse_pile_effect',[power,loc('portal_incinerator_title')])}</div>`;
+                return desc;
+            },
+            action(){
+                if (global.portal['throne'] && global.portal.throne.skill && global.portal.throne.points > 0 && global.portal.corpse_pile.rank < 5){
+                    global.portal.throne.points--;
+                    global.portal.corpse_pile.rank++;
+                    checkSkillPointAssignments();
+                    return true;
+                }
+                else if (payCosts($(this)[0])){
+                    incrementStruct('corpse_pile','portal');
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, rank: 1 },
+                    p: ['corpse_pile','portal']
+                };
+            },
+            aura(){
+                if (global.portal?.throne?.skill && global.portal?.corpse_pile?.rank < 5){
+                    return 'blue';
+                }
+                return false;
+            }
+        },
+        mortuary: {
+            id: 'portal-mortuary',
+            title: loc('portal_mortuary_title'),
+            desc(){ return `<div>${loc('portal_mortuary_desc',[loc('portal_corpse_pile_title')])}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            reqs: { hellspawn: 9 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('mortuary', offset, 1010101010, 1.25, 'portal'); },
+                Alloy(offset){ return spaceCostMultiplier('mortuary', offset, 56565656, 1.25, 'portal'); },
+                Scarletite(offset){ return spaceCostMultiplier('mortuary', offset, 4545450, 1.25, 'portal'); },
+            },
+            powered(){ return powerCostMod(10); },
+            effect(){
+                let omniscience = (global.portal?.corpse_pile?.count || 0) * 2;
+                let desc = `<div>${loc(`eden_ascension_machine_effect1`,[loc(`eden_encampment_title`),+omniscience.toFixed(0),global.resource.Omniscience.name])}</div>`;
+
+                let ghost = (global.portal?.corpse_pile?.count || 0) / 8;
+                desc += `<div>${loc(`eden_ascension_machine_effect2`,[loc(`job_ghost_trapper`),+ghost.toFixed(2)])}</div>`;
+
+                desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('mortuary','portal');
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['mortuary','portal']
+                };
+            }
+        },
+        codex: {
+            id: 'portal-codex',
+            title: loc('portal_codex_title'),
+            desc: loc('portal_codex_title'),
+            reqs: { war_vault: 1 },
+            trait: ['warlord'],
+            condition(){ return global.portal?.codex?.count === 0 ? true : false; },
+            wiki: global.race['warlord'] ? true : false,
+            queue_complete(){ 
+                if (global.portal.codex.s >= 10 && global.portal.minions.spawns >= 2500){
+                    return 1 - global.portal.codex.count; 
+                }
+                else {
+                    return 0;
+                }
+            },
+            cost: {
+                Money(o){ return 100000000; },
+                Furs(o){ return 35000000; },
+            },
+            effect(){
+                let desc = `<div>${loc('portal_codex_effect',[])}</div>`;
+                desc += `<div class="has-text-${global.resource.Money.amount >= $(this)[0].cost.Money() ? 'success' : 'danger'}">${loc('portal_codex_money',[sizeApproximation(global.resource.Money.amount),sizeApproximation($(this)[0].cost.Money())])}</div>`;
+                desc += `<div class="has-text-${global.resource.Furs.amount >= $(this)[0].cost.Furs() ? 'success' : 'danger'}">${loc('portal_codex_res',[sizeApproximation(global.resource.Furs.amount),sizeApproximation($(this)[0].cost.Furs()),global.resource.Furs.name])}</div>`;
+                desc += `<div class="has-text-${global.portal.minions?.spawns >= 3000 ? 'success' : 'danger'}">${loc('portal_codex_res',[(global.portal.minions?.spawns || 0),3000,loc('portal_codex_demon')])}</div>`;
+                desc += `<div class="has-text-${global.portal.codex?.s >= 10 ? 'success' : 'danger'}">${loc('portal_codex_res',[(global.portal.codex?.s || 0),10,loc('portal_codex_sac')])}</div>`;
+                return desc;
+            },
+            action(){
+                if (global.portal.minions.spawns >= 3000 && global.portal.codex.s >= 10 && global.portal.codex.count === 0 && payCosts($(this)[0])){
+                    global.portal.minions.spawns -= 3000;
+                    global.resource.Codex.amount = 1;
+                    global.resource.Codex.display = true;
+                    global.tech['scarletite'] = 1;
+                    global.tech['hell_ruins'] = 4;
+                    global.resource.Scarletite.display = true;
+                    initStruct(actions.portal.prtl_ruins.hell_forge);
+                    if (global.race.universe !== 'micro' && !global.pillars[global.race.species]){
+                        global.tech['fusable'] = 1;
+                    }
+                    else {
+                        if (global.race.universe !== 'micro'){
+                            let rank = alevel();
+                            if (rank > global.pillars[global.race.species]){
+                                global.pillars[global.race.species] = rank;
+                            }
+                        }
+                        global.tech['pillars'] = 2;
+                    }
+                    incrementStruct('codex','portal');
+                    loadFoundry();
+                    drawTech();
+                    renderFortress();
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, s: 0 },
+                    p: ['codex','portal']
+                };
+            }
+        },
+    },
+    prtl_wasteland: {
+        info: {
+            name: loc('portal_wasteland_name'),
+            desc: loc('portal_wasteland_desc'),
+        },
+        throne: {
+            id: 'portal-throne',
+            title: loc('portal_throne_of_evil_title'),
+            desc: loc('portal_throne_of_evil_desc'),
+            reqs: { hellspawn: 1 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {},
+            queue_complete(){ return 0; },
+            wide: true,
+            class: 'w30',
+            effect(wiki){
+                let knowCap = (global.race?.absorbed?.length || 1) * 500000;
+                if (shrineBonusActive()){
+                    let shrineBonus = getShrineBonus('know');
+                    knowCap *= shrineBonus.mult;
+                }
+                let desc = `<div>${loc('plus_max_resource',[sizeApproximation(knowCap),global.resource.Knowledge.name])}</div>`;
+
+                let muckVal2 = govActive('muckraker',2);
+                let know = muckVal2 ? (5 - muckVal2) : 5;
+                if (global.race['autoignition']){
+                    know -= traits.autoignition.vars()[0];
+                    if (know < 0){ know = 0; }
+                }
+                desc += `<div>${loc('city_library_effect',[Math.round((global.race?.absorbed?.length || 1) * 10 * know)])}</div>`;
+                desc += `<div>${loc('plus_res_duo',[500,global.resource.Crates.name,global.resource.Containers.name])}</div>`;
+                desc += `<div>${loc('plus_max_resource',[(global.race?.absorbed?.length || 1),global.resource.Authority.name])}</div>`;
+
+                if (global.race['absorbed']){
+                    let essense = global.race.absorbed.map(r => races[r].name).join(', ');
+                    desc += `<div>${loc('portal_throne_of_evil_effect',[essense])}</div>`;
+                }
+                
+                if (global.portal['throne'] && global.portal.throne.hearts.length > 0){
+                    let hearts = global.portal.throne.hearts.map(r => races[r].name).join(', ');
+                    desc += `<div class="has-text-success">${loc('portal_throne_of_evil_capture',[hearts])}</div>`;
+                    desc += `<div class="has-text-danger">${loc('portal_throne_of_evil_capture2',[races[global.portal.throne.hearts[0]].name])}</div>`;
+                }
+                else if (global.portal.throne.points > 0 && checkSkillPointAssignments() > 0){
+                    if (global.portal.throne.skill){
+                        desc += `<div class="has-text-info">${loc('portal_throne_of_evil_skill2')} ${loc('portal_throne_of_evil_skill',[global.portal.throne.points])}</div>`;
+                    }
+                    else {
+                        desc += `<div class="has-text-info">${loc('portal_throne_of_evil_skill1')} ${loc('portal_throne_of_evil_skill',[global.portal.throne.points])}</div>`;
+                    }
+                }
+
+                return desc;
+            },
+            action(){
+                if (global.portal['throne'] && global.portal.throne.hearts.length === 0 && global.portal.throne.points > 0){
+                    global.portal.throne.skill = global.portal.throne.skill ? false : true;
+                    checkSkillPointAssignments();
+                    return true;
+                }
+                else if (global.portal['throne'] && global.portal.throne.hearts.length > 0){
+                    let redraw = false;
+                    let heart = global.portal.throne.hearts[0];
+                    if (!global.race.absorbed.includes(heart)){
+                        global.portal.throne.points++;
+                    }
+                    absorbRace(heart);
+                    global.portal.throne.hearts.splice(0,1);
+                    if (global.portal.throne.hearts.length === 0){
+                        $(`#portal-throne .orange`).removeClass('orange');
+                    }
+                    if (['mantis','unicorn','capybara'].includes(heart)){
+                        redraw = true;
+                    }
+                    if (!global.settings.portal.pit){
+                        global.settings.portal.pit = true;
+                        global.tech['hell_pit'] = 5;
+                        redraw = true;
+                    }
+                    else if (!global.tech['war_vault'] && global.race?.absorbed?.length >= 13){
+                        global.tech['hell_ruins'] = 2;
+                        global.tech['war_vault'] = 1;
+                        global.settings.portal.ruins = true;
+                        initStruct(fortressModules.prtl_ruins.war_vault);
+                        initStruct(fortressModules.prtl_badlands.codex);
+                        redraw = true;
+                    }
+                    else if (global.tech['war_vault'] && global.portal['codex'] && global.portal.codex.s < 10){
+                        global.portal.codex.s++;
+                    }
+                    else if (!global.settings.portal.lake && global.race?.absorbed?.length >= 33){
+                        global.tech['hell_lake'] = 6;
+                        global.tech['hell_spire'] = 9;
+                        global.settings.portal.lake = true;
+                        global.settings.portal.spire = true;
+                        global.settings.showCargo = true;
+                        initStruct(fortressModules.prtl_lake.harbor);
+                        initStruct(fortressModules.prtl_lake.cooling_tower);
+                        initStruct(fortressModules.prtl_lake.bireme);
+                        initStruct(fortressModules.prtl_lake.transport);
+                        initStruct(fortressModules.prtl_spire.purifier);
+                        initStruct(fortressModules.prtl_spire.port);
+                        initStruct(fortressModules.prtl_spire.base_camp);
+                        initStruct(fortressModules.prtl_spire.mechbay);
+                        initStruct(fortressModules.prtl_spire.spire);
+                        genSpireFloor();
+                        redraw = true;
+                    }
+                    else if (global.race?.absorbed?.length >= 43 && global.tech.hellspawn === 4){
+                        global.tech.hellspawn = 5;
+                        redraw = true;
+                    }
+                    if (global.race?.absorbed?.length >= 53){
+                        global.stats.warlord.k = true;
+                        checkWarlordAchieve();
+                    }
+                    if (p_on['soul_forge']){
+                        let troops = garrisonSize(false,{no_forge: true});
+                        let forge = soulForgeSoldiers();
+                        if (forge <= troops){
+                            global.portal.soul_forge.kills += 250000;
+                        }
+                    }
+                    if (redraw){
+                        renderFortress();
+                        drawTech();
+                    }
+                    return true;
+                }
+                return false;
+            },
+            aura(){
+                if (global.portal['throne'] && global.portal.throne.hearts.length > 0){
+                    return 'orange';
+                }
+                else if (global.portal['throne'] && global.portal.throne.skill){
+                    return 'green';
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { enemy: [], hearts: [], spawned: [], points: 1, skill: false },
+                    p: ['throne','portal']
+                };
+            },
+        },
+        incinerator: {
+            id: 'portal-incinerator',
+            title: loc('portal_incinerator_title'),
+            desc(){ return rankDesc(loc('portal_incinerator_desc'),'incinerator'); },
+            reqs: { hellspawn: 1 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('incinerator', offset, 220000, 1.3, 'portal'); },
+                Coal(offset){ return spaceCostMultiplier('incinerator', offset, 80000, 1.3, 'portal'); },
+                Neutronium(offset){ return spaceCostMultiplier('incinerator', offset, 5000, 1.3, 'portal'); },
+                Infernite(offset){ return spaceCostMultiplier('incinerator', offset, 4000, 1.3, 'portal'); },
+            },
+            powered(wiki){
+                let power = 22.5 + (global.portal?.incinerator?.rank || 1) * 2.5;
+                if (global.race['forge']){
+                    power += traits.forge.vars()[0] * 5;
+                }
+                if (global.tech['hellspawn'] && global.tech.hellspawn >= 6){
+                    power += (global.portal?.incinerator?.rank || 1) * 2.5;
+                }
+                if (global.tech['hellspawn'] && global.tech.hellspawn >= 7 && global.portal['corpse_pile']){
+                    power += (0.75 + global.portal.corpse_pile.rank * 0.25) * global.portal.corpse_pile.count;
+                }
+                return powerModifier(-(power));
+            },
+            effect(wiki){
+                let desc = `<div>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered(wiki))])}</div>`;
+                if ((global.portal?.incinerator?.rank || 1) > 1){
+                    let rank = global.portal.incinerator.rank - 1;
+                    desc += `<div>${loc('portal_incinerator_effect',[15 * rank,loc('portal_twisted_lab_title'),global.resource.Graphene.name])}</div>`;
+                }
+                return desc;
+            },
+            action(){
+                if (global.portal['throne'] && global.portal.throne.skill && global.portal.throne.points > 0 && global.portal.incinerator.rank < 5){
+                    global.portal.throne.points--;
+                    global.portal.incinerator.rank++;
+                    checkSkillPointAssignments();
+                    return true;
+                }
+                else if (payCosts($(this)[0])){
+                    incrementStruct('incinerator','portal');
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, rank: 1 },
+                    p: ['incinerator','portal']
+                };
+            },
+            aura(){
+                if (global.portal?.throne?.skill && global.portal?.incinerator?.rank < 5){
+                    return 'blue';
+                }
+                return false;
+            },
+            flair: loc('portal_incinerator_flair')
+        },
+        warehouse: {
+            id: 'portal-warehouse',
+            title(){ return loc('city_shed_title3'); },
+            desc(){ return rankDesc(loc('city_shed_title3'),'warehouse'); },
+            reqs: { hellspawn: 1 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('warehouse', offset, 175000, 1.28, 'portal'); },
+                Lumber(offset){ return spaceCostMultiplier('warehouse', offset, 300000, 1.28, 'portal'); },
+                Aluminium(offset){ return spaceCostMultiplier('warehouse', offset, 180000, 1.28, 'portal'); },
+                Cement(offset){ return spaceCostMultiplier('warehouse', offset, 95000, 1.28, 'portal'); }
+            },
+            res(){
+                let r_list = [
+                    'Lumber','Stone','Chrysotile','Furs','Copper','Iron','Aluminium','Steel','Titanium',
+                    'Cement','Coal','Uranium','Alloy','Polymer','Iridium','Nano_Tube','Neutronium',
+                    'Adamantite','Infernite','Bolognium','Orichalcum','Graphene','Stanene','Oil','Helium_3'
+                ];
+                return r_list;
+            },
+            val(res){
+                switch (res){
+                    case 'Lumber':
+                        return 650 + (global.portal?.warehouse?.rank || 1) * 100;
+                    case 'Stone':
+                        return 650 + (global.portal?.warehouse?.rank || 1) * 100;
+                    case 'Chrysotile':
+                        return 700 + (global.portal?.warehouse?.rank || 1) * 50;
+                    case 'Furs':
+                        return 400 + (global.portal?.warehouse?.rank || 1) * 25;
+                    case 'Copper':
+                        return 330 + (global.portal?.warehouse?.rank || 1) * 50;
+                    case 'Iron':
+                        return 320 + (global.portal?.warehouse?.rank || 1) * 30;
+                    case 'Aluminium':
+                        return 290 + (global.portal?.warehouse?.rank || 1) * 30;
+                    case 'Cement':
+                        return 260 + (global.portal?.warehouse?.rank || 1) * 20;
+                    case 'Coal':
+                        return 135 + (global.portal?.warehouse?.rank || 1) * 15;
+                    case 'Steel':
+                        return 52 + (global.portal?.warehouse?.rank || 1) * 8;
+                    case 'Titanium':
+                        return 32 + (global.portal?.warehouse?.rank || 1) * 8;
+                    case 'Uranium':
+                        return global.portal?.warehouse?.rank || 1;
+                    case 'Alloy':
+                        return 31 + (global.portal?.warehouse?.rank || 1) * 4;
+                    case 'Polymer':
+                        return 31 + (global.portal?.warehouse?.rank || 1) * 4;
+                    case 'Iridium':
+                        return 28 + (global.portal?.warehouse?.rank || 1) * 4;
+                    case 'Nano_Tube':
+                        return 50 + (global.portal?.warehouse?.rank || 1) * 18;
+                    case 'Neutronium':
+                        return 12 + (global.portal?.warehouse?.rank || 1) * 4;
+                    case 'Adamantite':
+                        return 15 + (global.portal?.warehouse?.rank || 1) * 3;
+                    case 'Infernite':
+                        return 3 + global.portal?.warehouse?.rank || 1;
+                    case 'Bolognium':
+                        return 6 + global.portal?.warehouse?.rank || 3;
+                    case 'Orichalcum':
+                        return 8 + global.portal?.warehouse?.rank || 4;
+                    case 'Graphene':
+                        return 14 + global.portal?.warehouse?.rank || 3;
+                    case 'Stanene':
+                        return 14 + global.portal?.warehouse?.rank || 3;
+                    case 'Oil':
+                        return 18 + global.portal?.warehouse?.rank || 2;
+                    case 'Helium_3':
+                        return 17 + global.portal?.warehouse?.rank || 2;
+                    default:
+                        return 0;
+                }
+            },
+            wide: true,
+            effect(wiki){
+                let storage = '<div class="aTable">';
+                let multiplier = storageMultipler(1, wiki);
+                if (global.race['warlord'] && global.eden['corruptor'] && global.tech.asphodel >= 12){
+                    multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech.asphodel >= 13 ? 0.16 : 0.12);
+                }
+                for (const res of $(this)[0].res()){
+                    if (global.resource[res].display){
+                        let val = sizeApproximation(+(spatialReasoning($(this)[0].val(res)) * multiplier).toFixed(0),1);
+                        storage += `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
+                    }
+                };
+                storage += `<span>${loc('plus_max_resource',[65 + (global.portal?.warehouse?.rank || 1) * 35, global.resource.Crates.name])}</span>`;
+                storage += `<span>${loc('plus_max_resource',[65 + (global.portal?.warehouse?.rank || 1) * 35, global.resource.Containers.name])}</span>`;
+                storage += '</div>';
+                return storage;
+            },
+            action(){
+                if (global.portal['throne'] && global.portal.throne.skill && global.portal.throne.points > 0 && global.portal.warehouse.rank < 5){
+                    global.portal.throne.points--;
+                    global.portal.warehouse.rank++;
+                    checkSkillPointAssignments();
+                    return true;
+                }
+                else if (payCosts($(this)[0])){
+                    incrementStruct('warehouse','portal');
+                    let multiplier = storageMultipler();
+                    if (global.race['warlord'] && global.eden['corruptor'] && global.tech.asphodel >= 12){
+                        multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech.asphodel >= 13 ? 0.16 : 0.12);
+                    }
+                    for (const res of $(this)[0].res()){
+                        if (global.resource[res].display){
+                            global.resource[res].max += (spatialReasoning($(this)[0].val(res) * multiplier));
+                        }
+                    };
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, rank: 1 },
+                    p: ['warehouse','portal']
+                };
+            },
+            aura(){
+                if (global.portal?.throne?.skill && global.portal?.warehouse?.rank < 5){
+                    return 'blue';
+                }
+                return false;
+            }
+        },
+        hovel: {
+            id: 'portal-hovel',
+            title: loc('portal_hovel_title'),
+            desc(){ return rankDesc(loc('portal_hovel_title'),'hovel'); },
+            reqs: { hellspawn: 1 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('hovel', offset, 145000, 1.3, 'portal'); },
+                Stone(offset){ return spaceCostMultiplier('hovel', offset, 185000, 1.3, 'portal'); },
+                Furs(offset){ return spaceCostMultiplier('hovel', offset, 66600, 1.3, 'portal'); },
+            },
+            effect(){
+                let pop = $(this)[0].citizens();
+                return global.race['sappy'] ? `<div>${loc('plus_max_resource',[pop,loc('citizen')])}</div><div>${loc('city_grove_effect',[2.5])}</div>` : loc('plus_max_resource',[pop,loc('citizen')]);
+            },
+            action(){
+                if (global.portal['throne'] && global.portal.throne.skill && global.portal.throne.points > 0 && global.portal.hovel.rank < 5){
+                    global.portal.throne.points--;
+                    global.portal.hovel.rank++;
+                    checkSkillPointAssignments();
+                    return true;
+                }
+                else if (payCosts($(this)[0])){
+                    incrementStruct('hovel','portal');
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, rank: 1 },
+                    p: ['hovel','portal']
+                };
+            },
+            citizens(){
+                let pop = 18 + (global.portal?.hovel?.rank || 1) * 2;
+                if (global.race['high_pop']){
+                    pop *= traits.high_pop.vars()[0];
+                }
+                return pop;
+            },
+            aura(){
+                if (global.portal?.throne?.skill && global.portal?.hovel?.rank < 5){
+                    return 'blue';
+                }
+                return false;
+            }
+        },
+        hell_casino: {
+            id: 'portal-hell_casino',
+            title(){ return structName('casino'); },
+            desc(){ return `<div>${rankDesc(structName('casino'),'hell_casino')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            reqs: { hellspawn: 1, gambling: 1 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('hell_casino', offset, traitCostMod('untrustworthy',400000), 1.3, 'portal'); },
+                Furs(offset){ return spaceCostMultiplier('hell_casino', offset, traitCostMod('untrustworthy',175000), 1.3, 'portal'); },
+                Stone(offset){ return spaceCostMultiplier('hell_casino', offset, traitCostMod('untrustworthy',350000), 1.3, 'portal'); },
+                Plywood(offset){ return spaceCostMultiplier('hell_casino', offset, traitCostMod('untrustworthy',65000), 1.3, 'portal'); }
+            },
+            effect(){
+                let desc = casinoEffect();
+                desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            powered(){ return powerCostMod(global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 2 ? 2 : 3); },
+            action(){
+                if (global.portal['throne'] && global.portal.throne.skill && global.portal.throne.points > 0 && global.portal.hell_casino.rank < 5){
+                    global.portal.throne.points--;
+                    global.portal.hell_casino.rank++;
+                    checkSkillPointAssignments();
+                    return true;
+                }
+                else if (payCosts($(this)[0])){
+                    incrementStruct('hell_casino','portal');
+                    if (global.tech['theatre'] && !global.race['joyless']){
+                        global.civic.entertainer.max += jobScale(3);
+                        global.civic.entertainer.display = true;
+                    }
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, rank: 1 },
+                    p: ['hell_casino','portal']
+                };
+            },
+            aura(){
+                if (global.portal?.throne?.skill && global.portal?.hell_casino?.rank < 5){
+                    return 'blue';
+                }
+                return false;
+            },
+            flair: loc('portal_casino_flair')
+        },
+        twisted_lab: {
+            id: 'portal-twisted_lab',
+            title: loc('portal_twisted_lab_title'),
+            desc(){ return `<div>${rankDesc(loc('portal_twisted_lab_title'),'twisted_lab')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            reqs: { hellspawn: 1, science: 9 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('twisted_lab', offset, 350000, 1.3, 'portal'); },
+                Knowledge(offset){ return spaceCostMultiplier('twisted_lab', offset, 69000, 1.3, 'portal'); },
+                Copper(offset){ return spaceCostMultiplier('twisted_lab', offset, 375000, 1.3, 'portal'); },
+                Polymer(offset){ return spaceCostMultiplier('twisted_lab', offset, 289000, 1.3, 'portal'); },
+                Graphene(offset){ return spaceCostMultiplier('twisted_lab', offset, 230000, 1.3, 'portal'); }
+            },
+            effect(){
+                let baseVal = 6000 + (global.portal?.twisted_lab?.rank || 1) * 2000;
+                let know = global.race['absorbed'] ? global.race.absorbed.length * baseVal : baseVal;
+                if (global.tech['supercollider']){
+                    let ratio = global.tech['tp_particles'] || (global.tech['particles'] && global.tech['particles'] >= 3) ? 12.5: 25;
+                    know *= (global.tech['supercollider'] / ratio) + 1;
+                }
+                let desc = `<div>${loc('plus_max_resource',[(+know.toFixed(0)).toLocaleString(),global.resource.Knowledge.name])}</div>`;
+                desc += `<div>${loc('city_university_effect',[jobScale(3)])}</div>`;
+                desc += `<div>${loc('plus_max_resource',[jobScale(2),jobName('scientist')])}</div>`;
+                desc += `<div>${loc('interstellar_g_factory_effect')}</div>`;
+                desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            powered(){ return 4; },
+            special: true,
+            action(){
+                if (global.portal['throne'] && global.portal.throne.skill && global.portal.throne.points > 0 && global.portal.twisted_lab.rank < 5){
+                    global.portal.throne.points--;
+                    global.portal.twisted_lab.rank++;
+                    checkSkillPointAssignments();
+                    return true;
+                }
+                else if (payCosts($(this)[0])){
+                    incrementStruct('twisted_lab','portal');
+                    if (powerOnNewStruct($(this)[0])){
+                        global.portal.twisted_lab.Coal++;
+                    }
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, Lumber: 0, Coal: 0, Oil: 0, rank: 1 },
+                    p: ['twisted_lab','portal']
+                };
+            },
+            aura(){
+                if (global.portal?.throne?.skill && global.portal?.twisted_lab?.rank < 5){
+                    return 'blue';
+                }
+                return false;
+            },
+            flair(){ return loc('portal_twisted_lab_flair'); }
+        },
+        demon_forge: {
+            id: 'portal-demon_forge',
+            title: loc('portal_demon_forge_title'),
+            desc(){ return `<div>${rankDesc(loc('portal_demon_forge_title'),'demon_forge')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            reqs: { hellspawn: 1 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('demon_forge', offset, 480000, 1.3, 'portal'); },
+                Iridium(offset){ return spaceCostMultiplier('demon_forge', offset, 265000, 1.3, 'portal'); },
+                Iron(offset){ return spaceCostMultiplier('demon_forge', offset, 535000, 1.3, 'portal'); },
+                Sheet_Metal(offset){ return spaceCostMultiplier('demon_forge', offset, 155000, 1.3, 'portal'); },
+            },
+            effect(){
+                let desc = `<div>${loc('city_foundry_effect1',[jobScale($(this)[0].crafters())])}</div><div>${loc('interstellar_stellar_forge_effect',[$(this)[0].crafting()])}</div>`;
+                let num_smelters = $(this)[0].smelting();
+                if (num_smelters > 0){
+                    desc += `<div>${loc('interstellar_stellar_forge_effect3',[num_smelters])}</div>`;
+                }
+                return `${desc}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            powered(){ return powerCostMod(3); },
+            special: true,
+            smelting(){
+                return 4 + (global.portal?.demon_forge?.rank || 1) * 4;
+            },
+            crafting(){
+                return 20 + (global.portal?.demon_forge?.rank || 1) * 12;
+            },
+            crafters(){
+                return 5 + (global.portal?.demon_forge?.rank || 1);
+            },
+            action(){
+                if (global.portal['throne'] && global.portal.throne.skill && global.portal.throne.points > 0 && global.portal.demon_forge.rank < 5){
+                    global.portal.throne.points--;
+                    global.portal.demon_forge.rank++;
+                    checkSkillPointAssignments();
+                    return true;
+                }
+                else if (payCosts($(this)[0])){
+                    incrementStruct('demon_forge','portal');
+                    if (powerOnNewStruct($(this)[0])){
+                        global.civic.craftsman.max += jobScale(10);
+                        let num_smelters = $(this)[0].smelting();
+                        if (num_smelters > 0){
+                            addSmelter(Math.floor(num_smelters / 2), 'Iron', 'Coal');
+                            addSmelter(Math.floor(num_smelters / 2), 'Steel', 'Coal');
+                        }
+                    }
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, rank: 1 },
+                    p: ['demon_forge','portal']
+                };
+            },
+            aura(){
+                if (global.portal?.throne?.skill && global.portal?.demon_forge?.rank < 5){
+                    return 'blue';
+                }
+                return false;
+            }
+        },
+        hell_factory: {
+            id: 'portal-hell_factory',
+            title: loc('portal_factory_title'),
+            desc(){ return `<div>${rankDesc(loc('portal_factory_title'),'hell_factory')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            reqs: { hellspawn: 1 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('hell_factory', offset, 720000, 1.3, 'portal'); },
+                Titanium(offset){ return spaceCostMultiplier('hell_factory', offset, 550000, 1.3, 'portal'); },
+                Nano_Tube(offset){ return spaceCostMultiplier('hell_factory', offset, 55000, 1.3, 'portal'); },
+                Stanene(offset){ return spaceCostMultiplier('hell_factory', offset, 375000, 1.3, 'portal'); }
+            },
+            effect(){
+                let desc = `<div>${loc('portal_factory_effect',[$(this)[0].lines()])}</div><div>${loc('city_crafted_mats',[25])}</div>`;
+                desc += `<div>${loc('plus_max_resource',[jobScale(5),jobName('cement_worker')])}</div>`;
+                if ((global.portal?.hell_factory?.rank || 1) > 1){
+                    desc += `<div>${loc('production',[(global.portal?.hell_factory?.rank || 1) * 8 - 8,global.resource.Cement.name])}</div>`;
+                }
+                desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            powered(){ return powerCostMod(5); },
+            special: true,
+            action(){
+                if (global.portal['throne'] && global.portal.throne.skill && global.portal.throne.points > 0 && global.portal.hell_factory.rank < 5){
+                    global.portal.throne.points--;
+                    global.portal.hell_factory.rank++;
+                    checkSkillPointAssignments();
+                    return true;
+                }
+                else if (payCosts($(this)[0])){
+                    incrementStruct('hell_factory','portal');
+                    if (powerOnNewStruct($(this)[0])){
+                        global.city.factory.Alloy += $(this)[0].lines();
+                        defineIndustry();
+                    }
+                    return true;
+                }
+                return false;
+            },
+            lines(){
+                return 3 + (global.portal?.hell_factory?.rank || 1);
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, rank: 1 },
+                    p: ['hell_factory','portal']
+                };
+            },
+            aura(){
+                if (global.portal?.throne?.skill && global.portal?.hell_factory?.rank < 5){
+                    return 'blue';
+                }
+                return false;
+            },
+            flair(){ return loc(`portal_factory_flair`); }
+        },
+        pumpjack: {
+            id: 'portal-pumpjack',
+            title(){ return loc('portal_pumpjack_title'); },
+            desc(){ return rankDesc(loc('portal_pumpjack_title'),'pumpjack'); },
+            reqs: { hellspawn: 1, oil: 1 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('pumpjack', offset, 295000, 1.3, 'portal'); },
+                Cement(offset){ return spaceCostMultiplier('pumpjack', offset, 185000, 1.3, 'portal'); },
+                Steel(offset){ return spaceCostMultiplier('pumpjack', offset, 275000, 1.3, 'portal'); }
+            },
+            effect(){
+                let oil = +(production('oil_well')).toFixed(2);
+                let oc = spatialReasoning(500);
+                let desc = `<div>${loc('plus_res_combo',[oil,oc,global.resource.Oil.name])}</div>`;
+
+                let storage = spatialReasoning(250);
+                let values = production('helium_mine');
+                let helium = +(values.b).toFixed(3);
+                desc += `<div>${loc('plus_res_combo',[helium,storage,global.resource.Helium_3.name])}</div>`;
+
+                if (global.race['blubber'] && global.portal.hasOwnProperty('pumpjack')){
+                    let maxDead = global.portal.pumpjack.count;
+                    desc += `<div>${loc('city_oil_well_bodies',[+(global.city.oil_well.dead).toFixed(1),50 * maxDead])}</div>`;
+                    desc += `<div>${loc('city_oil_well_consume',[traits.blubber.vars()[0]])}</div>`;
+                }
+                return desc;
+            },
+            action(){
+                if (global.portal['throne'] && global.portal.throne.skill && global.portal.throne.points > 0 && global.portal.pumpjack.rank < 5){
+                    global.portal.throne.points--;
+                    global.portal.pumpjack.rank++;
+                    checkSkillPointAssignments();
+                    return true;
+                }
+                else if (payCosts($(this)[0])){
+                    incrementStruct('pumpjack','portal');
+                    global['resource']['Oil'].max += spatialReasoning(500);
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, dead: 0, rank: 1 },
+                    p: ['pumpjack','portal']
+                };
+            },
+            aura(){
+                if (global.portal?.throne?.skill && global.portal?.pumpjack?.rank < 5){
+                    return 'blue';
+                }
+                return false;
+            },
+            flair: loc('portal_pumpjack_flair')
+        },
+        dig_demon: {
+            id: 'portal-dig_demon',
+            title: loc('portal_dig_demon_title'),
+            desc(){ return rankDesc(loc('portal_dig_demon_title'),'dig_demon'); },
+            reqs: { hellspawn: 1 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('dig_demon', offset, 315000, 1.3, 'portal'); },
+                Adamantite(offset){ return spaceCostMultiplier('dig_demon', offset, 188000, 1.3, 'portal'); },
+                Wrought_Iron(offset){ return spaceCostMultiplier('dig_demon', offset, 150000, 1.3, 'portal'); },
+            },
+            powered(){ return true; },
+            effect(wiki){
+                let pop = $(this)[0].citizens();
+                return loc('plus_resource',[pop,jobName('miner')]);
+            },
+            action(){
+                if (global.portal['throne'] && global.portal.throne.skill && global.portal.throne.points > 0 && global.portal.dig_demon.rank < 5){
+                    global.portal.throne.points--;
+                    global.portal.dig_demon.rank++;
+                    checkSkillPointAssignments();
+                    return true;
+                }
+                else if (payCosts($(this)[0])){
+                    incrementStruct('dig_demon','portal');
+                    if (powerOnNewStruct($(this)[0])){
+                        let count = $(this)[0].citizens();
+                        global.resource[global.race.species].max += count;
+                        global.resource[global.race.species].amount += count;
+                        global.civic.miner.max += count;
+                        global.civic.miner.workers += count;
+                        global.civic.miner.assigned += count;
+                    }
+                    return true;
+                }
+                return false;
+            },
+            postPower(o){
+                let count = $(this)[0].citizens();
+                if (o){
+                    global.resource[global.race.species].max += count;
+                    global.resource[global.race.species].amount += count;
+                    global.civic.miner.max += count;
+                    global.civic.miner.workers += count;
+                    global.civic.miner.assigned += count;
+                }
+                else {
+                    global.resource[global.race.species].max -= count;
+                    global.resource[global.race.species].amount -= count;
+                    if (global.resource[global.race.species].amount < 0){ global.resource[global.race.species].amount = 0; }
+                    if (global.resource[global.race.species].max < 0){ global.resource[global.race.species].max = 0; }
+                    global.civic.miner.max -= count;
+                    global.civic.miner.workers -= count;
+                    global.civic.miner.assigned -= count;
+                }
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, rank: 1 },
+                    p: ['dig_demon','portal']
+                };
+            },
+            citizens(){
+                let pop = 15 + (global.portal?.dig_demon?.rank || 1);
+                if (global.race['high_pop']){
+                    pop *= traits.high_pop.vars()[0];
+                }
+                return pop;
+            },
+            aura(){
+                if (global.portal?.throne?.skill && global.portal?.dig_demon?.rank < 5){
+                    return 'blue';
+                }
+                return false;
+            }
+        },
+        tunneler: {
+            id: 'portal-tunneler',
+            title: loc('portal_tunneler_title'),
+            desc(){ return rankDesc(loc('portal_tunneler_desc'),'tunneler'); },
+            reqs: { hellspawn: 2 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('tunneler', offset, 275000, 1.3, 'portal'); },
+                Food(offset){ return spaceCostMultiplier('tunneler', offset, 135000, 1.3, 'portal'); },
+                Uranium(offset){ return spaceCostMultiplier('tunneler', offset, 135, 1.3, 'portal'); },
+            },
+            effect(wiki){
+                let boost = (global.portal?.tunneler?.rank || 1) + 3;
+                let desc = `<div>${loc('portal_tunneler_effect',[boost])}</div>`;
+                desc += `<div>${loc('portal_tunneler_effect2')}</div>`;
+                return desc;
+            },
+            action(){
+                if (global.portal['throne'] && global.portal.throne.skill && global.portal.throne.points > 0 && global.portal.tunneler.rank < 5){
+                    global.portal.throne.points--;
+                    global.portal.tunneler.rank++;
+                    checkSkillPointAssignments();
+                    return true;
+                }
+                else if (payCosts($(this)[0])){
+                    incrementStruct('tunneler','portal');
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, rank: 1 },
+                    p: ['tunneler','portal']
+                };
+            },
+            aura(){
+                if (global.portal?.throne?.skill && global.portal?.tunneler?.rank < 5){
+                    return 'blue';
+                }
+                return false;
+            }
+        },
+        brute: {
+            id: 'portal-brute',
+            title: loc('portal_brute_title'),
+            desc(){ return rankDesc(loc('portal_brute_title'),'brute'); },
+            reqs: { hellspawn: 1 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('brute', offset, 300000, 1.25, 'portal'); },
+                Alloy(offset){ return spaceCostMultiplier('brute', offset, 238000, 1.25, 'portal'); },
+                Bolognium(offset){ return spaceCostMultiplier('brute', offset, 65000, 1.25, 'portal'); },
+                Mythril(offset){ return spaceCostMultiplier('brute', offset, 178000, 1.25, 'portal'); },
+            },
+            powered(){ return 0; },
+            effect(){
+                let troops = $(this)[0].soldiers();
+                let desc = `<div>${loc('plus_max_soldiers',[troops])}</div>`;
+                desc += `<div>${loc('plus_max_resource',[1,global.resource.Authority.name])}</div>`;
+                return desc;
+            },
+            action(){
+                if (global.portal['throne'] && global.portal.throne.skill && global.portal.throne.points > 0 && global.portal.brute.rank < 5){
+                    global.portal.throne.points--;
+                    global.portal.brute.rank++;
+                    checkSkillPointAssignments();
+                    return true;
+                }
+                else if (payCosts($(this)[0])){
+                    incrementStruct('brute','portal');
+                    global.portal.brute.on++;
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, rank: 1 },
+                    p: ['brute','portal']
+                };
+            },
+            soldiers(){
+                let soldiers = 7 + (global.portal?.brute?.rank || 1);
+                if (global.race['grenadier']){
+                    soldiers -= 4;
+                }
+                return jobScale(soldiers);
+            },
+            aura(){
+                if (global.portal?.throne?.skill && global.portal?.brute?.rank < 5){
+                    return 'blue';
+                }
+                return false;
+            },
+            flair(){ return loc('portal_brute_flair'); }
+        },
+        s_alter: buildTemplate(`s_alter`,'portal'),
+        shrine: buildTemplate(`shrine`,'portal'),
+        meditation: buildTemplate(`meditation`,'portal'),
+        wonder_gardens: {
+            id: 'portal-wonder_gardens',
+            title(){
+                return loc('portal_wonder_skulls');
+            },
+            desc(){
+                return loc('portal_wonder_skulls');
+            },
+            reqs: {},
+            condition(){
+                return global.race['wish'] && global.race['wishStats'] && global.portal['wonder_gardens'] ? true : false;
+            },
+            trait: ['wish'],
+            queue_complete(){ return false; },
+            effect(){
+                return loc(`city_wonder_effect`,[5]);
+            },
+            action(){
+                return false;
+            },
+            flair(){ return loc('portal_wonder_skulls_flair'); }
         },
     },
     prtl_pit: {
@@ -354,7 +1510,7 @@ const fortressModules = {
         },
         soul_forge: {
             id: 'portal-soul_forge',
-            title: loc('portal_soul_forge_title'),
+            title(){ return loc('portal_soul_forge_title'); },
             desc(){
                 return `<div>${loc('portal_soul_forge_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
@@ -368,16 +1524,19 @@ const fortressModules = {
                 Money(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('soul_forge') ? global.portal.soul_forge.count : 0)) < 1 ? 25000000 : 0; },
                 Graphene(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('soul_forge') ? global.portal.soul_forge.count : 0)) < 1 ? 1500000 : 0; },
                 Infernite(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('soul_forge') ? global.portal.soul_forge.count : 0)) < 1 ? 25000 : 0; },
-                Bolognium(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('soul_forge') ? global.portal.soul_forge.count : 0)) < 1 ? 100000 : 0; },
+                Bolognium(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('soul_forge') ? global.portal.soul_forge.count : 0)) < 1 ? (global.race['warlord'] ? 500000 : 100000) : 0; },
             },
             effect(wiki){
-                let desc = `<div>${loc('portal_soul_forge_effect',[global.resource.Soul_Gem.name])}</div>`;
+                let desc = `<div>${loc(global.race['warlord'] ? 'portal_soul_forge_warlord' : 'portal_soul_forge_effect',[global.resource.Soul_Gem.name])}</div>`;
                 let count = (wiki?.count ?? 0) + (global.portal.hasOwnProperty('soul_forge') ? global.portal.soul_forge.count : 0);
                 if (count >= 1){
                     let cap = global.tech.hell_pit >= 6 ? 750000 : 1000000;
                     let num_s_attractor_on = (wiki ? global.portal.soul_attractor.on : p_on['soul_attractor']);
                     if (global.tech.hell_pit >= 7 && num_s_attractor_on > 0){
-                        cap *= 0.97 ** num_s_attractor_on;
+                        cap *= (global.stats.achieve['what_is_best'] && global.stats.achieve.what_is_best.e >= 3 ? 0.96 : 0.97) ** num_s_attractor_on;
+                    }
+                    if (global.race['ghostly'] && global.race['warlord']){
+                        cap *= 2 - traits.ghostly.vars()[1];
                     }
                     desc = desc + `<div>${loc('portal_soul_forge_effect2',[global.portal['soul_forge'] ? global.portal.soul_forge.kills.toLocaleString() : 0,Math.round(cap).toLocaleString()])}</div>`;
                 }
@@ -438,7 +1597,7 @@ const fortressModules = {
         },
         soul_attractor: {
             id: 'portal-soul_attractor',
-            title: loc('portal_soul_attractor_title'),
+            title(){ return loc('portal_soul_attractor_title'); },
             desc(){
                 return `<div>${loc('portal_soul_attractor_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
@@ -452,10 +1611,28 @@ const fortressModules = {
                 Aerogel(offset){ return spaceCostMultiplier('soul_attractor', offset, 180000, 1.25, 'portal'); },
             },
             effect(){
-                let link = global.tech.hell_pit >= 7 ? `<div>${loc('portal_soul_attractor_effect2',[3])}</div>` : ``;
                 let attract = global.blood['attract'] ? global.blood.attract * 5 : 0;
                 if (global.tech['hell_pit'] && global.tech.hell_pit >= 8){ attract *= 2; }
-                return `<div>${loc('portal_soul_attractor_effect',[40 + attract, 120 + attract])}</div>${link}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                let low = 40 + attract;
+                let high = 120 + attract;
+
+                if (global.race['ghostly'] && global.race['warlord']){
+                    low *= 1 + (traits.ghostly.vars()[0] / 100);
+                    low = Math.round(low);
+                    high *= 1 + (traits.ghostly.vars()[0] / 100);
+                    high = Math.round(high);
+                }
+
+                let desc = `<div>${loc('portal_soul_attractor_effect',[low, high])}</div>`;
+                if (global.tech.hell_pit >= 7){
+                    desc += `<div>${loc('portal_soul_attractor_effect2',[global.stats.achieve['what_is_best'] && global.stats.achieve.what_is_best.e >= 3 ? 4 : 3])}</div>`;
+                }
+                if (global.tech['pitspawn']){
+                    desc += `<div>${loc('production',[global.tech.pitspawn >= 3 ? 20 : 10,loc('portal_shadow_mine_title')])}</div>`;
+                }
+                desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+
+                return desc;
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -585,6 +1762,96 @@ const fortressModules = {
                 };
             }
         },
+        shadow_mine: {
+            id: 'portal-shadow_mine',
+            title: loc('portal_shadow_mine_title'),
+            desc(){
+                return `<div>${loc('portal_shadow_mine_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { pitspawn: 1 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            powered(){ return powerCostMod(5); },
+            powerBalancer(){
+                return [{ r: 'Infernite', k: 'lpmod' }];
+            },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('shadow_mine', offset, 10000000, 1.25, 'portal'); },
+                Lumber(offset){ return spaceCostMultiplier('shadow_mine', offset, 4650000, 1.25, 'portal'); },
+                Adamantite(offset){ return spaceCostMultiplier('shadow_mine', offset, 2350000, 1.25, 'portal'); },
+            },
+            effect(wiki){
+                let elerium_cap = spatialReasoning(200);
+                let elerium = production('shadow_mine', 'elerium', wiki);
+                let infernite = production('shadow_mine', 'infernite', wiki);
+                let vitreloy = production('shadow_mine', 'vitreloy', wiki);
+                let desc = `<div>${loc('gain',[+(elerium).toFixed(3), global.resource.Elerium.name])}</div>`;
+                desc += `<div>${loc('gain',[+(infernite).toFixed(3), global.resource.Infernite.name])}</div>`;
+                desc += `<div>${loc('gain',[+(vitreloy).toFixed(3), global.resource.Vitreloy.name])}</div>`;
+                desc += `<div>${loc('plus_max_resource',[elerium_cap, global.resource.Elerium.name])}</div>`;
+                desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('shadow_mine','portal');
+                    powerOnNewStruct($(this)[0]);
+                    global.resource.Vitreloy.display = true;
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['shadow_mine','portal']
+                };
+            },
+            flair(){ return loc('portal_shadow_mine_flair'); }
+        },
+        tavern: {
+            id: 'portal-tavern',
+            title: loc('portal_tavern_title'),
+            desc(){
+                return `<div>${loc('portal_tavern_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { pitspawn: 2 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            powered(){ return powerCostMod(3); },
+            powerBalancer(){
+                return [{ r: 'Infernite', k: 'lpmod' }];
+            },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('tavern', offset, 12500000, 1.25, 'portal'); },
+                Food(offset){ return spaceCostMultiplier('tavern', offset, 250000, 1.25, 'portal'); },
+                Oil(offset){ return spaceCostMultiplier('tavern', offset, 125000, 1.25, 'portal'); },
+                Brick(offset){ return spaceCostMultiplier('tavern', offset, 138000, 1.25, 'portal'); },
+            },
+            effect(wiki){
+                let desc = '';
+                if (!global.race['joyless']){
+                    desc += `<div>${loc('plus_resource_per',[0.35,loc('morale'),loc('portal_shadow_mine_title')])}</div>`;
+                }
+                desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('tavern','portal');
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['tavern','portal']
+                };
+            },
+            flair(){ return loc('portal_tavern_flair'); }
+        },
     },
     prtl_ruins: {
         info: {
@@ -592,6 +1859,7 @@ const fortressModules = {
             desc: loc('portal_ruins_desc'),
             support: 'guard_post',
             prop(){
+                if (global.race['warlord']){ return ''; }
                 let desc = ` - <span class="has-text-advanced">${loc('portal_ruins_security')}:</span> <span class="has-text-caution">{{ on | filter('army') }}</span>`;
                 desc = desc + ` - <span class="has-text-advanced">${loc('portal_ruins_supressed')}:</span> <span class="has-text-caution">{{ on | filter('sup') }}</span>`;
                 return desc;
@@ -638,6 +1906,7 @@ const fortressModules = {
                 return `<div>${loc('portal_guard_post_title')}</div><div class="has-text-special">${loc('requires_soldiers')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { hell_ruins: 2 },
+            not_trait: ['warlord'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('guard_post', offset, 8000000, 1.06, 'portal'); },
                 Lumber(offset){ return spaceCostMultiplier('guard_post', offset, 6500000, 1.06, 'portal'); },
@@ -657,7 +1926,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('guard_post','portal');
-                    global.portal.guard_post.on++;
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -678,6 +1947,8 @@ const fortressModules = {
             title: loc('portal_vault_title'),
             desc: loc('portal_vault_title'),
             reqs: { hell_ruins: 2, hell_vault: 1 },
+            not_trait: ['warlord'],
+            wiki: global.race['warlord'] ? false : true,
             condition(){
                 return global.portal.vault.count >= 2 ? false : true;
             },
@@ -718,6 +1989,51 @@ const fortressModules = {
                 }
             }
         },
+        war_vault: {
+            id: 'portal-war_vault',
+            title: loc('portal_vault_title'),
+            desc: loc('portal_vault_title'),
+            reqs: { hell_ruins: 2, war_vault: 1 },
+            trait: ['warlord'],
+            wiki: global.race['warlord'] ? true : false,
+            queue_complete(){ return 1 - global.portal.war_vault.count; },
+            cost: {
+                Codex(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('war_vault') ? global.portal.war_vault.count : 0)) === 0 ? 1 : 0; },
+            },
+            effect(wiki){
+                let count = (wiki?.count ?? 0) + (global.portal.hasOwnProperty('war_vault') ? global.portal.war_vault.count : 0);
+                return count < 1 ? loc('portal_war_vault_effect',[100,global.resource.Soul_Gem.name]) : loc('portal_war_vault_effect2'); },
+            action(){
+                if (global.portal.war_vault.count < 1){
+                    if (payCosts($(this)[0])){
+                        incrementStruct('war_vault','portal');
+                        if (global.portal.war_vault.count === 1){
+                            global.resource.Codex.display = false;
+                            global.resource.Soul_Gem.amount += 100;
+                            messageQueue(loc('portal_war_vault_result',[global.resource.Soul_Gem.name]),'info',false,['progress','hell']);
+                        }
+                        return true;
+                    }
+                    else {
+                        messageQueue(loc('portal_war_vault_fail',[global.resource.Soul_Gem.name]),'info',false,['progress','hell']);
+                    }
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['war_vault','portal']
+                };
+            },
+            post(){
+                if (global.portal.war_vault.count === 2){
+                    drawTech();
+                    renderFortress();
+                    clearPopper();
+                }
+            }
+        },
         archaeology: {
             id: 'portal-archaeology',
             title: loc('portal_archaeology_title'),
@@ -725,6 +2041,7 @@ const fortressModules = {
                 return `<div>${loc('portal_archaeology_title')}</div><div class="has-text-special">${loc('requires_security')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { hell_ruins: 2 },
+            not_trait: ['warlord'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('archaeology', offset, 100000000, 1.25, 'portal'); },
                 Titanium(offset){ return spaceCostMultiplier('archaeology', offset, 3750000, 1.25, 'portal'); },
@@ -764,6 +2081,7 @@ const fortressModules = {
                 return `<div>${loc('portal_arcology_title')}</div><div class="has-text-special">${loc('requires_security')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { housing: 4 },
+            not_trait: ['warlord'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('arcology', offset, traitCostMod('untrustworthy',180000000), 1.22, 'portal'); },
                 Graphene(offset){ return spaceCostMultiplier('arcology', offset, traitCostMod('untrustworthy',7500000), 1.22, 'portal'); },
@@ -778,8 +2096,8 @@ const fortressModules = {
                 let vault = spatialReasoning(bank_vault() * 8 * sup.supress);
                 vault = +(vault).toFixed(0);
                 let containers = Math.round(get_qlevel(wiki)) * 10;
-                let container_string = `<div>${loc('plus_max_resource',[containers,loc('resource_Crates_name')])}</div><div>${loc('plus_max_resource',[containers,loc('resource_Containers_name')])}</div>`;
-                return `<div>${loc('plus_max_resource',[`\$${vault.toLocaleString()}`,loc('resource_Money_name')])}</div><div>${loc('plus_max_citizens',[$(this)[0].citizens()])}</div><div>${loc('plus_max_resource',[jobScale(5),loc('civics_garrison_soldiers')])}</div><div>${loc('portal_guard_post_effect1',[75])}</div>${container_string}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                let container_string = `<div>${loc('plus_max_resource',[containers,global.resource.Crates.name])}</div><div>${loc('plus_max_resource',[containers,global.resource.Containers.name])}</div>`;
+                return `<div>${loc('plus_max_resource',[`\$${vault.toLocaleString()}`,loc('resource_Money_name')])}</div><div>${loc('plus_max_citizens',[$(this)[0].citizens()])}</div><div>${loc('plus_max_resource',[$(this)[0].soldiers(),loc('civics_garrison_soldiers')])}</div><div>${loc('portal_guard_post_effect1',[75])}</div>${container_string}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -819,7 +2137,7 @@ const fortressModules = {
         },
         hell_forge: {
             id: 'portal-hell_forge',
-            title: loc('portal_hell_forge_title'),
+            title(){ return loc('portal_hell_forge_title'); },
             desc(){
                 return `<div>${loc('portal_hell_forge_title')}</div><div class="has-text-special">${loc('requires_security')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
@@ -840,7 +2158,7 @@ const fortressModules = {
             effect(wiki){
                 let sup = hellSupression('ruins', 0, wiki);
                 let craft = +(75 * sup.supress).toFixed(1);
-                let reactor = global.tech['inferno_power'] ? `<div>${loc('portal_hell_forge_effect2',[10,loc(`portal_inferno_power_title`)])}</div>` : ``;
+                let reactor = global.tech['inferno_power'] ? `<div>${loc('portal_hell_forge_effect2',[global.stats.achieve['what_is_best'] && global.stats.achieve.what_is_best.e >= 1 ? 12 : 10,loc(`portal_inferno_power_title`)])}</div>` : ``;
                 return `<div>${loc('portal_hell_forge_effect',[jobScale(1)])}</div>${reactor}<div>${loc('interstellar_stellar_forge_effect3',[$(this)[0].smelting()])}</div><div>${loc('interstellar_stellar_forge_effect',[craft])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
@@ -883,7 +2201,7 @@ const fortressModules = {
                 let power = 20;
                 let infernal_forges_on = wiki ? (global.portal?.hell_forge?.on ?? 0) : p_on['hell_forge'];
                 if (infernal_forges_on){
-                    power += infernal_forges_on * 10; 
+                    power += infernal_forges_on * (global.stats.achieve['what_is_best'] && global.stats.achieve.what_is_best.e >= 1 ? 12 : 10); 
                 }
                 return powerModifier(-(power));
             },
@@ -957,9 +2275,15 @@ const fortressModules = {
                         global.tech.pillars = 2;
                         spatialReasoning(0,false,true);
                         calcPillar(true);
-                        towerSize(true);
-                        fortressModules.prtl_gate.west_tower.post(); //unlock towers if both are complete now
-                        fortressModules.prtl_gate.east_tower.post();
+                        if (global.race['warlord']){
+                            global.stats.warlord.p = true;
+                            checkWarlordAchieve();
+                        }
+                        else if (global.tech?.hell_gate >= 2){
+                            towerSize(true);
+                            fortressModules.prtl_gate.west_tower.post(); //unlock towers if both are complete now
+                            fortressModules.prtl_gate.east_tower.post();
+                        }
                         unlockAchieve('resonance');
                         vBind({el: `#portal-ancient_pillars`},'update');
                         return true;
@@ -1249,7 +2573,7 @@ const fortressModules = {
         },
         harbor: {
             id: 'portal-harbor',
-            title: loc('portal_harbor_title'),
+            title(){ return loc('portal_harbor_title'); },
             desc(){
                 return `<div>${loc('portal_harbor_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
@@ -1269,10 +2593,22 @@ const fortressModules = {
             },
             wide: true,
             res(){
-                return [
+                let list = [
                     'Oil','Alloy','Polymer','Iridium','Helium_3','Deuterium','Neutronium','Adamantite',
                     'Infernite','Nano_Tube','Graphene','Stanene','Bolognium','Orichalcum'
                 ];
+                if (global.race['warlord']){
+                    list.push('Lumber');
+                    list.push('Stone');
+                    list.push('Copper');
+                    list.push('Iron');
+                    list.push('Aluminium');
+                    list.push('Cement');
+                    list.push('Steel');
+                    list.push('Titanium');
+                    list.push('Coal');
+                }
+                return list;
             },
             val(res){
                 switch (res){
@@ -1304,15 +2640,37 @@ const fortressModules = {
                         return 130000;
                     case 'Orichalcum':
                         return 130000;
+                    case 'Lumber':
+                        return 1500000;
+                    case 'Stone':
+                        return 1500000;
+                    case 'Copper':
+                        return 650000;
+                    case 'Iron':
+                        return 650000;
+                    case 'Steel':
+                        return 650000;
+                    case 'Aluminium':
+                        return 425000;
+                    case 'Titanium':
+                        return 350000;
+                    case 'Cement':
+                        return 550000;
+                    case 'Coal':
+                        return 275000;
                     default:
                         return 0;
                 }
             },
             effect(wiki){
                 let storage = '<div class="aTable">';
+                let multiplier = 1;
+                if (global.race['warlord'] && global.eden['corruptor'] && global.tech?.asphodel >= 12){
+                    multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech?.asphodel >= 13 ? 0.12 : 0.1);
+                }
                 for (const res of $(this)[0].res()){
                     if (global.resource[res].display){
-                        let val = sizeApproximation(+(spatialReasoning($(this)[0].val(res))).toFixed(0),1);
+                        let val = sizeApproximation(+(spatialReasoning($(this)[0].val(res) * multiplier)).toFixed(0),1);
                         storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
@@ -1323,9 +2681,13 @@ const fortressModules = {
                 if (payCosts($(this)[0])){
                     incrementStruct('harbor','portal');
                     if (powerOnNewStruct($(this)[0])){
+                        let multiplier = 1;
+                        if (global.race['warlord'] && global.eden['corruptor'] && global.tech?.asphodel >= 12){
+                            multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech?.asphodel >= 13 ? 0.12 : 0.1);
+                        }
                         for (const res of $(this)[0].res()){
                             if (global.resource[res].display){
-                                global.resource[res].max += (spatialReasoning($(this)[0].val(res)));
+                                global.resource[res].max += (spatialReasoning($(this)[0].val(res) * multiplier));
                             }
                         };
                     }
@@ -1415,7 +2777,7 @@ const fortressModules = {
         },
         transport: {
             id: 'portal-transport',
-            title: loc('portal_transport_title'),
+            title(){ return loc('portal_transport_title'); },
             desc(){
                 return `<div>${loc('portal_transport_title')}</div><div class="has-text-special">${loc('space_support',[loc('lake')])}</div>`;
             },
@@ -1435,7 +2797,7 @@ const fortressModules = {
                 let rating = global.blood['spire'] && global.blood.spire >= 2 ? 0.8 : 0.85;
                 let num_on = wiki ? (global.portal?.bireme?.on ?? 0) : gal_on['bireme'];
                 let bireme = +((rating ** num_on) * 100).toFixed(1);
-                return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div><div>${loc('portal_transport_effect',[5])}</div><div class="has-text-danger">${loc('portal_transport_effect2',[bireme])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ()])}</div>`;
+                return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div><div>${loc('portal_transport_effect',[global.stats.achieve['what_is_best'] && global.stats.achieve.what_is_best.e >= 4 ? 8 : 5])}</div><div class="has-text-danger">${loc('portal_transport_effect2',[bireme])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ()])}</div>`;
             },
             special: true,
             sAction(){
@@ -1461,6 +2823,7 @@ const fortressModules = {
                         initStruct(fortressModules.prtl_spire.purifier);
                         initStruct(fortressModules.prtl_spire.port);
                         messageQueue(loc('portal_transport_unlocked'),'info',false,['progress','hell']);
+                        drawResourceTab('supply');
                         renderFortress();
                     }
                     return true;
@@ -1533,8 +2896,12 @@ const fortressModules = {
                     global.portal['oven'].count++;
                     if (global.portal.oven.count >= 100){
                         global.tech['dish'] = 3;
-                        global.portal['oven_complete'] = { count: 1, on: 0 };
-                        global.portal['devilish_dish'] = { count: 0, done: 0, time: 0 };
+                        initStruct(fortressModules.prtl_lake.oven_complete);
+                        incrementStruct('oven_complete','portal');
+                        if (global.settings.alwaysPower){
+                            powerOnNewStruct(fortressModules.prtl_lake.oven_complete);
+                        }
+                        initStruct(fortressModules.prtl_lake.devilish_dish);
                         renderFortress();
                         clearPopper();
                     }
@@ -1570,6 +2937,12 @@ const fortressModules = {
             p_fuel(){ return { r: 'Infernite', a: 225 }},
             action(){
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['oven_complete','portal']
+                };
             }
         },
         devilish_dish: {
@@ -1585,6 +2958,12 @@ const fortressModules = {
             },
             action(){
                 return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, done: 0, time: 0 },
+                    p: ['devilish_dish','portal']
+                };
             }
         },
         dish_soul_steeper: {
@@ -1695,16 +3074,16 @@ const fortressModules = {
         },
         purifier: {
             id: 'portal-purifier',
-            title: loc('portal_purifier_title'),
+            title(){ return global.race['warlord'] ? loc('portal_putrifier_title') : loc('portal_purifier_title'); },
             desc(){
-                return `<div>${loc('portal_purifier_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+                return `<div>${global.race['warlord'] ? loc('portal_putrifier_desc') : loc('portal_purifier_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { hell_spire: 3 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('purifier', offset, 85000000, spireCreep(1.15), 'portal'); },
                 Supply(offset){ return global.portal['purifier'] && global.portal.purifier.count === 0 ? 100 : spaceCostMultiplier('purifier', offset, 4200, spireCreep(1.2), 'portal'); },
             },
-            powered(){ return powerCostMod(125); },
+            powered(){ return global.stats.achieve['what_is_best'] && global.stats.achieve.what_is_best.e >= 2 ? powerCostMod(100) : powerCostMod(125); },
             support(){
                 let base = global.tech['b_stone'] && global.tech.b_stone >= 3 ? 1.25 : 1;
                 if (global.tech['hell_spire'] && global.tech.hell_spire >= 11 && global.eden['asphodel_harvester'] && support_on['asphodel_harvester']){
@@ -1822,6 +3201,7 @@ const fortressModules = {
                 }
             },
             reqs: { hell_spire: 5 },
+            not_trait: ['warlord'],
             queue_size: 1,
             queue_complete(){ return 10 - global.portal.bridge.count; },
             cost: {
@@ -1861,8 +3241,8 @@ const fortressModules = {
         },
         sphinx: {
             id: 'portal-sphinx',
-            title(){ return global.tech.hell_spire === 7 ? loc('portal_sphinx_solve') : loc('portal_sphinx_title'); },
-            desc: loc('portal_sphinx_desc'),
+            title(){ return global.race['warlord'] ? loc('portal_sphinx_warlord') : (global.tech.hell_spire === 7 ? loc('portal_sphinx_solve') : loc('portal_sphinx_title')); },
+            desc(){ return global.race['warlord'] ? loc('portal_sphinx_warlord_desc') : loc('portal_sphinx_desc'); },
             reqs: { hell_spire: 6 },
             queue_complete(){ return 8 - global.tech.hell_spire; },
             cost: {
@@ -1877,7 +3257,7 @@ const fortressModules = {
                     return loc('portal_sphinx_effect2');
                 }
                 else if (count === 2){
-                    return loc('portal_sphinx_effect3');
+                    return global.race['warlord'] ? loc('portal_sphinx_warlord_effect') :loc('portal_sphinx_effect3');
                 }
                 return loc('portal_sphinx_effect');
             },
@@ -1910,6 +3290,7 @@ const fortressModules = {
             title: loc('portal_sphinx_bribe'),
             desc: loc('portal_sphinx_desc'),
             reqs: { hell_spire: 7 },
+            not_trait: ['warlord'],
             condition(){
                 return global.tech['hell_spire'] && global.tech.hell_spire === 7 && !global.tech['sphinx_bribe'] ? true : false;
             },
@@ -1946,6 +3327,7 @@ const fortressModules = {
             desc: loc('portal_spire_survey_title'),
             reqs: { hell_spire: 8 },
             grant: ['hell_spire',9],
+            not_trait: ['warlord'],
             queue_complete(){ return global.tech.hell_spire >= 9 ? 0 : 1; },
             cost: {
                 Oil(){ return 1200000; },
@@ -1971,9 +3353,9 @@ const fortressModules = {
         },
         mechbay: {
             id: 'portal-mechbay',
-            title: loc('portal_mechbay_title'),
+            title(){ return global.race['warlord'] ? loc('portal_demon_artificer_title') : loc('portal_mechbay_title'); },
             desc(){
-                return `<div>${loc('portal_mechbay_title')}</div><div class="has-text-special">${loc('portal_spire_support')}</div>`;
+                return `<div>${loc('portal_demon_artificer_title')}</div><div class="has-text-special">${loc('portal_spire_support')}</div>`;
             },
             reqs: { hell_spire: 9 },
             cost: {
@@ -1995,7 +3377,7 @@ const fortressModules = {
             effect(){
                 let bay = global.portal.hasOwnProperty('mechbay') ? global.portal.mechbay.bay : 0;
                 let max = global.portal.hasOwnProperty('mechbay') ? global.portal.mechbay.max : 0;
-                return `<div class="has-text-caution">${loc('portal_port_effect1',[$(this)[0].support()])}</div><div>${loc('portal_mechbay_effect')}</div><div>${loc('portal_mechbay_effect2',[bay,max])}</div>`;
+                return `<div class="has-text-caution">${loc('portal_port_effect1',[$(this)[0].support()])}</div><div>${loc(global.race['warlord'] ? 'portal_demon_artificer_effect' : 'portal_mechbay_effect')}</div><div>${loc('portal_mechbay_effect2',[bay,max])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -2145,6 +3527,9 @@ const fortressModules = {
                     if (global.portal.waygate.count >= 10){
                         global.tech.waygate = 2;
                         global.portal.waygate.count = 1;
+                        if (global.settings.alwaysPower){
+                            global.portal.waygate.on = 1;
+                        }
                         renderFortress();
                         drawTech();
                     }
@@ -2204,6 +3589,43 @@ const fortressModules = {
                 return false;
             }
         },
+        bazaar: {
+            id: 'portal-bazaar',
+            title: loc('portal_bazaar_title'),
+            desc: loc('portal_bazaar_title'),
+            reqs: { hellspawn: 8 },
+            trait: ['warlord'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('bazaar', offset, 1000000000, 1.25, 'portal'); },
+                Supply(offset){ return spaceCostMultiplier('bazaar', offset, 250000, 1.25, 'portal'); },
+            },
+            effect(wiki){
+                let vault = spatialReasoning(bank_vault() * (global.portal?.spire?.count || 1) / 3);
+                vault = +(vault).toFixed(0);
+                let containers = (global.portal?.spire?.count || 1) * 8;
+                let mon = (global.portal?.spire?.count || 1);
+
+                let desc = `<div>${loc('plus_max_resource',[`\$${vault.toLocaleString()}`,loc('resource_Money_name')])}</div>`;
+                desc += `<div>${loc('city_tourist_center_effect2',[mon,loc(`arpa_project_monument_title`)])}</div>`;
+                desc += `<div>${loc('plus_max_resource',[containers,global.resource.Crates.name])}</div><div>${loc('plus_max_resource',[containers,global.resource.Containers.name])}</div>`;
+                desc += `<div>${loc('city_trade_effect',[(global.portal?.spire?.count || 1)])}</div>`;
+
+                return desc;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('bazaar','portal');
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['bazaar','portal']
+                };
+            },
+        },
     }
 };
 
@@ -2237,14 +3659,27 @@ function towerPrice(cost, wiki){
 }
 
 export function soulForgeSoldiers(wiki){
-    let soldiers = Math.round(650 / armyRating(1,'hellArmy'));
+    let base = global.race['warlord'] ? 400 : 650;
     let num_gun_emplacement = wiki ? (global.portal?.gun_emplacement?.on ?? 0) : p_on['gun_emplacement'];
-    if (num_gun_emplacement){
-        soldiers -= num_gun_emplacement * (global.tech.hell_gun >= 2 ? jobScale(2) : jobScale(1));
-        if (soldiers < 0){
-            soldiers = 0;
+    let num_soldiers_saved = num_gun_emplacement * (global.tech.hell_gun >= 2 ? jobScale(2) : jobScale(1));
+
+    // To avoid divide-by-0 type issues, force the average soldier combat rating to be at least 1
+    let avg_rating = Math.max(armyRating(1, 'hellArmy'), highPopAdjust(1));
+    let soldiers = Math.ceil(base / avg_rating);
+    soldiers = Math.max(0, soldiers - num_soldiers_saved);
+
+    if (global.race['hivemind']){
+        // Permit actual soldiers to count as a group for combat rating adjustment
+        // Gun emplacements use the combat rating of the remaining soldiers
+        // Both soldiers=0 and soldiers=1 cases use the combat rating of 1 soldier alone
+        soldiers = 0;
+        while ((soldiers + num_soldiers_saved) * avg_rating < base){
+            soldiers++;
+            avg_rating = armyRating(soldiers, 'hellArmy') / soldiers;
+            avg_rating = Math.max(avg_rating, highPopAdjust(1));
         }
     }
+
     return soldiers;
 }
 
@@ -2273,7 +3708,7 @@ export function renderFortress(){
                 property = fortressModules[region].info.prop();
             }
 
-            if (fortressModules[region].info['support']){
+            if (typeof fortressModules[region].info['support'] && global.portal[fortressModules[region].info['support']]){
                 let support = fortressModules[region].info['support'];
                 if (fortressModules[region].info['hide_support']){
                     parent.append(`<div id="${region}" class="space"><div id="sr${region}"><h3 class="name has-text-warning">${name}</h3>${property}</div></div>`);
@@ -2305,7 +3740,12 @@ export function renderFortress(){
             );
 
             if (region === 'prtl_fortress'){
-                buildFortress(parent,true);
+                if (global.race['warlord']){
+                    buildEnemyFortress(parent);
+                }
+                else {
+                    buildFortress(parent,true);
+                }
             } 
 
             Object.keys(fortressModules[region]).forEach(function (tech){
@@ -2322,48 +3762,90 @@ export function checkHellRequirements(region,tech){
     return checkRequirements(fortressModules,region,tech);
 }
 
-function fortressData(dt){
-    switch (dt){
-        case 'hostiles':
-            {
-                if (global.portal.fortress.threat >= 2000){
-                    return `${loc('fortress_threat',[global.portal.fortress.threat])} ${loc('fortress_threat_high')}`;
-                }
-                else if (global.portal.fortress.threat < 1000){
-                    return `${loc('fortress_threat',[global.portal.fortress.threat])} ${loc('fortress_threat_low')}`;
-                }
-                else {
-                    return `${loc('fortress_threat',[global.portal.fortress.threat])} ${loc('fortress_threat_medium')}`;
-                }
-            }
-        case 'threatLevel':
-            {
-                let t = global.portal.fortress.threat;
-                if (t < 1000){
-                    return `${loc('fortress_threat_level')} ${loc('fortress_threat_level1')}`;
-                }
-                else if (t < 1500){
-                    return `${loc('fortress_threat_level')} ${loc('fortress_threat_level2')}`;
-                }
-                else if (t >= 5000){
-                    return `${loc('fortress_threat_level')} ${loc('fortress_threat_level6')}`;
-                }
-                else if (t >= 3000){
-                    return `${loc('fortress_threat_level')} ${loc('fortress_threat_level5')}`;
-                }
-                else if (t >= 2000){
-                    return `${loc('fortress_threat_level')} ${loc('fortress_threat_level4')}`;
-                }
-                else {
-                    return `${loc('fortress_threat_level')} ${loc('fortress_threat_level3')}`;
-                }
-            }
-        case 'hireLabel':
-            {
-                let cost = Math.round(govCivics('m_cost')).toLocaleString();
-                return loc('civics_garrison_hire_mercenary_cost',[cost]);
-            }
+function buildEnemyFortress(parent){
+    if (!global.race['warlord']){
+        return;
     }
+    if (!global.settings.tabLoad){
+        switch (global.settings.civTabs){
+            case 1:
+                if (global.settings.spaceTabs !== 4){
+                    return;
+                }
+                break;
+            case 2:
+                if (global.settings.govTabs !== 3){
+                    return;
+                }
+                break;
+            default:
+                return;
+        }
+    }
+
+    let id = 'fort';
+    let fort = $(`<div id="${id}" class="fort"></div>`);
+    parent.append(fort);
+
+    let enemy = $(`<div v-for="(e, index) of enemy" :key="index" class="enemyFortress">
+        <div class="fortRow"><span class="has-text-success">{{ e.r | species }}</span><span class="has-text-warning">${loc(`fortress_wall`)} {{ e.f }}%</span></div>
+        <div class="fortRow second"><span class="has-text-caution">${loc(`fortress_demon_kills`)} {{ e.k | kills }}</span><a class="button" v-on:click="action(index)">${loc(`civics_garrison_attack`)}</a></div>
+    </div>`);
+    fort.append(enemy);
+
+    vBind({
+        el: `#${id}`,
+        data: global.portal.throne,
+        methods: {
+            action(idx){
+                let horde = Math.floor(global.portal.minions.spawns * seededRandom(6, 10, true) / 10);
+                let scale = global.race['hivemind'] ? traits.hivemind.vars()[0] : 1;
+                let rating = armyRating(scale,'hellArmy',0) / scale;
+                let died = seededRandom((250 + global.portal.throne.enemy[idx].s * 250) / rating, (500 + global.portal.throne.enemy[idx].s * 1250) / rating, true);
+                if (global.race['armored']){
+                    died *= 1 - (traits.armored.vars()[0] / 100);
+                    died = Math.round(died);
+                }
+                let range = global.portal.throne.enemy[idx].f;
+                for (let i=0; i<range; i++){
+                    died += seededRandom(global.portal.throne.enemy[idx].s * 250 / rating, global.portal.throne.enemy[idx].s * 1250 / rating, true);
+                    if (horde > died){
+                        global.portal.throne.enemy[idx].f--;
+                    }
+                    else {
+                        break;
+                    }
+                }
+                died = Math.round(died);
+                if (global.portal.minions.spawns < died){ died = global.portal.minions.spawns; }
+                global.portal.minions.spawns -= died;
+                global.portal.throne.enemy[idx].k += died;
+                   
+                if (p_on['soul_forge']){
+                    let troops = garrisonSize(false,{no_forge: true});
+                    let forge = soulForgeSoldiers();
+                    if (forge <= troops){
+                        global.portal.soul_forge.kills += died;
+                    }
+                }
+
+                if (global.portal.throne.enemy[idx].f <= 0){
+                    messageQueue(loc('fortress_enemy_defeat',[races[global.portal.throne.enemy[idx].r].name]),'info',false,['progress']);
+                    global.portal.throne.hearts.push(global.portal.throne.enemy[idx].r);
+                    global.portal.throne.enemy.splice(idx,1);
+                    renderFortress();
+                }
+            }
+        },
+        filters: {
+            species(v){
+                return races[v].name;
+            },
+            kills(v){
+                return sizeApproximation(v);
+            }
+        }
+    });
 }
 
 export function buildFortress(parent,full){
@@ -2488,7 +3970,7 @@ export function buildFortress(parent,full){
             aLast(){
                 let dec = keyMultiplier();
                 let min = global.portal.fortress.patrols * global.portal.fortress.patrol_size;
-                if (p_on['soul_forge']){
+                if (p_on['soul_forge'] && !global.race['warlord']){
                     min += soulForgeSoldiers();
                 }
                 if (global.portal.hasOwnProperty('guard_post')){
@@ -2722,6 +4204,50 @@ function casualties(demons,pat_armor,ambush,report){
         soldierDeath(dead);
     }
     return dead;
+}
+
+function fortressData(dt){
+    switch (dt){
+        case 'hostiles':
+            {
+                if (global.portal.fortress.threat >= 2000){
+                    return `${loc('fortress_threat',[global.portal.fortress.threat])} ${loc('fortress_threat_high')}`;
+                }
+                else if (global.portal.fortress.threat < 1000){
+                    return `${loc('fortress_threat',[global.portal.fortress.threat])} ${loc('fortress_threat_low')}`;
+                }
+                else {
+                    return `${loc('fortress_threat',[global.portal.fortress.threat])} ${loc('fortress_threat_medium')}`;
+                }
+            }
+        case 'threatLevel':
+            {
+                let t = global.portal.fortress.threat;
+                if (t < 1000){
+                    return `${loc('fortress_threat_level')} ${loc('fortress_threat_level1')}`;
+                }
+                else if (t < 1500){
+                    return `${loc('fortress_threat_level')} ${loc('fortress_threat_level2')}`;
+                }
+                else if (t >= 5000){
+                    return `${loc('fortress_threat_level')} ${loc('fortress_threat_level6')}`;
+                }
+                else if (t >= 3000){
+                    return `${loc('fortress_threat_level')} ${loc('fortress_threat_level5')}`;
+                }
+                else if (t >= 2000){
+                    return `${loc('fortress_threat_level')} ${loc('fortress_threat_level4')}`;
+                }
+                else {
+                    return `${loc('fortress_threat_level')} ${loc('fortress_threat_level3')}`;
+                }
+            }
+        case 'hireLabel':
+            {
+                let cost = Math.round(govCivics('m_cost')).toLocaleString();
+                return loc('civics_garrison_hire_mercenary_cost',[cost]);
+            }
+    }
 }
 
 export function bloodwar(){
@@ -3177,7 +4703,6 @@ export function bloodwar(){
             }
             souls = Math.floor(souls * asphodelResist());
             global.portal.soul_forge.kills += souls;
-            day_report.ghost_trappers = souls;
             soulCapacitor(souls);
         }
 
@@ -3228,7 +4753,7 @@ export function bloodwar(){
 
         let cap = global.tech.hell_pit >= 6 ? 750000 : 1000000;
         if (global.tech.hell_pit >= 7 && p_on['soul_attractor'] > 0){
-            cap *= 0.97 ** p_on['soul_attractor'];
+            cap *= (global.stats.achieve['what_is_best'] && global.stats.achieve.what_is_best.e >= 3 ? 0.96 : 0.97) ** p_on['soul_attractor'];
         }
         if (forgeOperating && global.portal.soul_forge.kills >= Math.round(cap)){
             day_report.soul_forge.gem_craft = true;
@@ -3320,6 +4845,216 @@ export function bloodwar(){
     });
 }
 
+export function hellguard(){
+    if (global.race['warlord'] && global.portal['minions'] && global.portal.minions.count > 0){
+        if ((global.portal.throne.enemy.length === 0 || 
+            (global.portal.throne.spawned.length >= 3 && global.portal.throne.enemy.length <= 1) ||
+            (global.portal.throne.spawned.length >= 8 && global.portal.throne.enemy.length <= 2)
+        ) && Math.rand(0,10) === 0 && global.portal.minions.spawns > 0){
+            if (global.portal.throne.spawned.length === 0){
+                addHellEnemy(['basic']);
+            }
+            else {
+                if (global.portal.throne.spawned.length % 3 === 0 && global.portal.throne.spawned.length % 5 === 0){
+                    addHellEnemy(['advanced','rare']);
+                }
+                else if (global.portal.throne.spawned.length % 3 === 0){
+                    addHellEnemy(['advanced']);
+                }
+                else if (global.portal.throne.spawned.length % 5 === 0){
+                    addHellEnemy(['rare']);
+                }
+                else {
+                    addHellEnemy(['basic']);
+                }
+            }
+        }
+
+        if (global.portal.minions.on > 0){
+            let spawn = fortressModules.prtl_badlands.minions.soldiers();
+            let low_spawn = spawn - 10;
+            if (global.race['infectious']){
+                spawn += traits.infectious.vars()[1];
+                low_spawn += traits.infectious.vars()[0];
+            }
+            global.portal.minions.spawns += Math.rand(global.portal.minions.on * low_spawn, global.portal.minions.on * spawn);
+        }
+
+        let forgeOperating = false;
+        if (p_on['soul_forge']){
+            let troops = garrisonSize(false,{no_forge: true});
+            let forge = soulForgeSoldiers();
+            if (forge <= troops){
+                forgeOperating = true;
+                $(`#portal-soul_forge .on`).removeClass('altwarn');
+            }
+            else {
+                forgeOperating = false;
+                $(`#portal-soul_forge .on`).addClass('altwarn');
+            }
+        }
+        else {
+            $(`#portal-soul_forge .on`).addClass('altwarn');
+        }
+
+        if (global.portal.throne.enemy.length > 0){
+            let scale = global.race['hivemind'] ? traits.hivemind.vars()[0] : 1;
+            let rating = armyRating(scale,'hellArmy',0) / scale;
+            global.portal.throne.enemy.forEach(function(e){
+                let eRating = e.s + (global.portal.minions.spawns / 9000) ** 8;
+                let reapEffect = global.race['blurry'] ? 102 - traits.blurry.vars()[0] : 102;
+                reapEffect -= (global.portal?.reaper?.rank || 1) * 2;
+                if (reapEffect < 1){ reapEffect = 1; }
+                let reaper = 0.25 + (eRating * 0.01) - ((global.portal?.reaper?.count || 0) ** (1 + ((global.portal?.reaper?.rank || 1) - 1) / 25) / reapEffect);
+                if (reaper < 0.01){ reaper = 0.01; }
+                let bound = Math.round(global.portal.minions.spawns * (0.5 * eRating) * (eRating ** reaper) / rating);
+                let kills = Math.rand(e.s, bound);
+                if (kills > global.portal.minions.spawns){ kills = global.portal.minions.spawns; }
+                global.portal.minions.spawns -= kills;
+                e.k += kills;
+                if (forgeOperating){
+                    global.portal.soul_forge.kills += kills;
+                }
+
+                if (e.f < 100 && Math.rand(0, 10) === 0){
+                    e.f++;
+                }
+
+                if (global.race['revive']){
+                    let revive = Math.round(Math.rand(0,(kills / (traits.revive.vars()[6] * 20))));
+                    global.portal.minions.spawns += revive;
+                }
+            });
+        }
+
+        if (forgeOperating && global.tech.hell_pit >= 5 && p_on['soul_attractor']){
+            let attract = global.blood['attract'] ? global.blood.attract * 5 : 0;
+            if (global.tech['hell_pit'] && global.tech.hell_pit >= 8){ attract *= 2; }
+            let souls = p_on['soul_attractor'] * Math.rand(40 + attract, 120 + attract);
+            if (global.race['ghostly']){
+                souls *= 1 + (traits.ghostly.vars()[0] / 100);
+                souls = Math.round(souls);
+            }
+            global.portal.soul_forge.kills += souls;
+        }
+
+        if (forgeOperating && global.tech['asphodel'] && global.tech.asphodel >= 2 && support_on['ectoplasm_processor']){
+            let attract = global.blood['attract'] ? global.blood.attract * 5 : 0;
+            let souls = global.civic.ghost_trapper.workers * Math.rand(150 + attract, 250 + attract);
+            if (global.portal['mortuary'] && global.portal['corpse_pile']){
+                let corpse = (global.portal?.corpse_pile?.count || 0) * (p_on['mortuary'] || 0);
+                if (corpse > 0){
+                    souls *= 1 + corpse / 800;
+                }
+            }
+            souls = Math.floor(souls * asphodelResist());
+            global.portal.soul_forge.kills += souls;
+        }
+
+        let cap = global.tech.hell_pit >= 6 ? 750000 : 1000000;
+        if (global.tech.hell_pit >= 7 && p_on['soul_attractor'] > 0){
+            cap *= (global.stats.achieve['what_is_best'] && global.stats.achieve.what_is_best.e >= 3 ? 0.96 : 0.97) ** p_on['soul_attractor'];
+        }
+        if (global.race['ghostly']){
+            cap *= 2 - traits.ghostly.vars()[1];
+        }
+        if (forgeOperating && global.portal.soul_forge.kills >= Math.round(cap)){
+            let gems = Math.floor(global.portal.soul_forge.kills / Math.round(cap));
+            global.portal.soul_forge.kills -= Math.round(cap) * gems;
+            global.resource.Soul_Gem.amount += gems;
+        }
+    }
+
+    if (global.race['warlord'] && global.resource.Authority.amount >= 250 && global.resource.Authority.max >= 250){
+        global.stats.warlord.a = true;
+        checkWarlordAchieve();
+    }
+
+    ['incinerator','warehouse','hovel','hell_casino','twisted_lab','demon_forge','hell_factory','pumpjack','dig_demon','tunneler','brute','minions','reaper','corpse_pile'].forEach(function(s){
+        if (global.portal[s] && (!global.portal[s]['rank'] || global.portal[s].rank > 5)){
+            global.portal[s]['rank'] = 1;
+        }
+    });
+}
+
+function checkSkillPointAssignments(){
+    let remaining = 0;
+    ['incinerator','warehouse','hovel','hell_casino','twisted_lab','demon_forge','hell_factory','pumpjack','dig_demon','tunneler','brute','minions','reaper','corpse_pile'].forEach(function(s){
+        if (global.portal[s]){
+            remaining += 5 - global.portal[s].rank;
+            if (global.portal[s].rank >= 5 || !global.portal.throne.skill || global.portal.throne.points <= 0){
+                $(`#portal-${s} a.button`).removeClass('blue');
+            }
+            else if (global.portal[s].rank < 5 && global.portal.throne.skill && global.portal.throne.points > 0){
+                $(`#portal-${s} a.button`).addClass('blue');
+            }
+        }
+    });
+    if (!global.portal.throne.skill || global.portal.throne.points <= 0 || remaining === 0){
+        global.portal.throne.skill = false;
+        $(`#portal-throne a.button`).removeClass('green');
+    }
+    else if (global.portal.throne.skill && global.portal.throne.points > 0){
+        $(`#portal-throne a.button`).addClass('green');
+    }
+    return remaining;
+}
+
+function rankDesc(label, struct){
+    return (global.portal[struct]?.rank || 1) <= 1 ? label : `${label} (<span class="has-text-${global.portal[struct]?.rank === 5 ? 'caution' : 'info'}">${loc('wiki_trait_rank')} ${global.portal[struct]?.rank}</span>)`;
+}
+
+function addHellEnemy(type = [], allowRecursion = true, allowRepeat = false){
+    let invaders = [];
+    let current = global.portal.throne.enemy.map(e => e.r);
+    if (type.includes('basic')){
+        [
+            'human','elven','orc','cath','wolven','vulpine','centaur','rhinotaur','capybara','kobold','goblin',
+            'gnome','ogre','cyclops','troll','tortoisan','gecko','slitheryn','arraak','pterodacti','dracnid',
+            'entish','cacti','pinguicula','sporgar','shroomi','moldling','mantis','scorpid','antid'
+        ].forEach(function(r){
+            if (allowRepeat || (!global.portal.throne.spawned.includes(r) && ![global.race.gods,global.race.old_gods,global.race.origin].includes(r))){
+                if (!current.includes(r)){ invaders.push(r); }
+            }
+        });
+    }
+    if (type.includes('advanced')){
+        ['sharkin','octigoran','dryad','satyr','phoenix','salamander','yeti','wendigo','tuskin','kamel','balorg','imp','seraph','unicorn','synth'].forEach(function(r){
+            if (allowRepeat || (!global.portal.throne.spawned.includes(r) && ![global.race.gods,global.race.old_gods,global.race.origin].includes(r))){
+                if (!current.includes(r)){ invaders.push(r); }
+            }
+        });
+    }
+    if (type.includes('rare')){
+        ['ghast','shoggoth','dwarf','raccoon','lichen','wyvern','beholder','djinn','narwhal','bombardier','nephilim'].forEach(function(r){
+            if (allowRepeat || (!global.portal.throne.spawned.includes(r) && ![global.race.gods,global.race.old_gods,global.race.origin].includes(r))){
+                if (!current.includes(r)){ invaders.push(r); }
+            }
+        });
+    }
+    if (invaders.length === 0 && allowRecursion){
+        addHellEnemy(['basic','advanced','rare'],false);
+    }
+    else if (invaders.length === 0){
+        addHellEnemy(['basic','advanced','rare'],false,true);
+    }
+    else {
+        let race = invaders[Math.floor(seededRandom(0,invaders.length))];
+        global.portal.throne.enemy.push({
+            r: race,
+            f: 100,
+            s: global.portal.throne.spawned.length+1,
+            k: 0
+        });
+        global.portal.throne.spawned.push(race);
+        messageQueue(loc('portal_invasion_msg',[races[race].entity]),'info',false,['progress']);
+        if (!global.settings.portal.fortress){
+            global.settings.portal.fortress = true;
+            renderFortress();
+        }
+    }
+}
+
 function soulCapacitor(souls){
     if (global.race['witch_hunter'] && global.portal.hasOwnProperty('soul_capacitor') && p_on['soul_capacitor'] > 0){
         global.portal.soul_capacitor.energy += souls;
@@ -3345,7 +5080,7 @@ export function hellSupression(area, val, wiki){
                 if (unicornFathom > 0){
                     aRating *= 1 + (traits.holy.vars(1)[1] / 100 * unicornFathom);
                 }
-                let supress = (aRating + arc) / 5000;
+                let supress = global.race['warlord'] ? 1 : (aRating + arc) / 5000;
                 return {
                     supress: supress > 1 ? 1 : supress,
                     rating: aRating + arc
@@ -3362,7 +5097,7 @@ export function hellSupression(area, val, wiki){
                 if (unicornFathom > 0){
                     turret *= 1 + (traits.holy.vars(1)[1] / 100 * unicornFathom);
                 }
-                let supress = (gSup.rating + turret) / 7500;
+                let supress = global.race['warlord'] ? 1 : (gSup.rating + turret) / 7500;
                 return {
                     supress: supress > 1 ? 1 : supress,
                     rating: gSup.rating + turret
@@ -3383,7 +5118,20 @@ export const monsters = {
             missile: 0.5,
             sonic: 1,
             shotgun: 0.75,
-            tesla: 0.65
+            tesla: 0.65,
+            claws: 0.5,
+            venom: 0.62,
+            cold: 1.25,
+            shock: 0.68,
+            fire: 0,
+            acid: 0.25,
+            stone: 0.5,
+            iron: 0.5,
+            flesh: 0.3,
+            ice: 1.12,
+            magma: 0,
+            axe: 0.5,
+            hammer: 0.5
         },
         nozone: {
             freeze: true,
@@ -3404,7 +5152,20 @@ export const monsters = {
             missile: 0.5,
             sonic: 0.5,
             shotgun: 0.25,
-            tesla: 0.75
+            tesla: 0.75,
+            claws: 0.4,
+            venom: 0.8,
+            cold: 1.1,
+            shock: 0.68,
+            fire: 0.8,
+            acid: 0.25,
+            stone: 0.4,
+            iron: 0.3,
+            flesh: 0.5,
+            ice: 1.1,
+            magma: 0.75,
+            axe: 0.45,
+            hammer: 0.45
         },
         nozone: {
             hot: true,
@@ -3427,7 +5188,20 @@ export const monsters = {
             missile: 0.95,
             sonic: 0.75,
             shotgun: 0.35,
-            tesla: 0
+            tesla: 0,
+            claws: 0.7,
+            venom: 0.25,
+            cold: 0.35,
+            shock: 0,
+            fire: 0.9,
+            acid: 1,
+            stone: 0.5,
+            iron: 0.65,
+            flesh: 0.3,
+            ice: 0.3,
+            magma: 0.9,
+            axe: 0.2,
+            hammer: 1
         },
         nozone: {},
         amp: {}
@@ -3441,7 +5215,20 @@ export const monsters = {
             missile: 1,
             sonic: 0.75,
             shotgun: 0.75,
-            tesla: 0.15
+            tesla: 0.15,
+            claws: 0.75,
+            venom: 0,
+            cold: 0.2,
+            shock: 0.15,
+            fire: 0.4,
+            acid: 0.85,
+            stone: 0.9,
+            iron: 1,
+            flesh: 0.15,
+            ice: 0.3,
+            magma: 0.9,
+            axe: 0.65,
+            hammer: 1.2
         },
         nozone: {},
         amp: {}
@@ -3455,7 +5242,20 @@ export const monsters = {
             missile: 0.5,
             sonic: 0.35,
             shotgun: 0.5,
-            tesla: 1
+            tesla: 1,
+            claws: 0.38,
+            venom: 0.1,
+            cold: 0.5,
+            shock: 1.1,
+            fire: 0.5,
+            acid: 0.75,
+            stone: 0.5,
+            iron: 0.5,
+            flesh: 0.15,
+            ice: 0.3,
+            magma: 0.9,
+            axe: 0.6,
+            hammer: 0.4
         },
         nozone: {},
         amp: {}
@@ -3469,7 +5269,20 @@ export const monsters = {
             missile: 0.25,
             sonic: 0.75,
             shotgun: 0.35,
-            tesla: 0.38
+            tesla: 0.38,
+            claws: 0.25,
+            venom: 0.25,
+            cold: 0.65,
+            shock: 0.28,
+            fire: 1,
+            acid: 0.45,
+            stone: 0.6,
+            iron: 0.5,
+            flesh: 0.5,
+            ice: 0.55,
+            magma: 1,
+            axe: 0.25,
+            hammer: 0.15
         },
         nozone: {},
         amp: {}
@@ -3483,7 +5296,20 @@ export const monsters = {
             missile: 0.35,
             sonic: 0.15,
             shotgun: 0.95,
-            tesla: 0.6
+            tesla: 0.6,
+            claws: 1,
+            venom: 0.5,
+            cold: 0.5,
+            shock: 0.75,
+            fire: 0.5,
+            acid: 0.5,
+            stone: 0.7,
+            iron: 0.8,
+            flesh: 0.9,
+            ice: 0.4,
+            magma: 0.5,
+            axe: 1,
+            hammer: 0.75
         },
         nozone: {},
         amp: {}
@@ -3497,7 +5323,20 @@ export const monsters = {
             missile: 1,
             sonic: 0.15,
             shotgun: 0.2,
-            tesla: 0.35
+            tesla: 0.35,
+            claws: 0.6,
+            venom: 1.1,
+            cold: 0.5,
+            shock: 0.3,
+            fire: 0.5,
+            acid: 1,
+            stone: 0.6,
+            iron: 0.9,
+            flesh: 0.3,
+            ice: 0.4,
+            magma: 0.55,
+            axe: 0.75,
+            hammer: 0.6
         },
         nozone: {},
         amp: {}
@@ -3511,7 +5350,20 @@ export const monsters = {
             missile: 0,
             sonic: 0.85,
             shotgun: 0,
-            tesla: 0.15
+            tesla: 0.15,
+            claws: 0,
+            venom: 0.15,
+            cold: 1.5,
+            shock: 0.2,
+            fire: 0.6,
+            acid: 0.5,
+            stone: 0,
+            iron: 0,
+            flesh: 0,
+            ice: 1.25,
+            magma: 0.7,
+            axe: 0,
+            hammer: 0
         },
         nozone: {},
         amp: {}
@@ -3525,7 +5377,20 @@ export const monsters = {
             missile: 0.8,
             sonic: 0.18,
             shotgun: 0.95,
-            tesla: 0.05
+            tesla: 0.05,
+            claws: 0.85,
+            venom: 0,
+            cold: 0.2,
+            shock: 0.35,
+            fire: 0.95,
+            acid: 0.5,
+            stone: 0.5,
+            iron: 0.5,
+            flesh: 0.35,
+            ice: 0.25,
+            magma: 0.9,
+            axe: 1,
+            hammer: 0.5
         },
         nozone: {},
         amp: {}
@@ -3539,7 +5404,20 @@ export const monsters = {
             missile: 0.44,
             sonic: 0.22,
             shotgun: 0.33,
-            tesla: 0.66
+            tesla: 0.66,
+            claws: 0.85,
+            venom: 0.5,
+            cold: 0.5,
+            shock: 0.88,
+            fire: 0.6,
+            acid: 0.6,
+            stone: 1,
+            iron: 0.85,
+            flesh: 0.45,
+            ice: 0.5,
+            magma: 0.65,
+            axe: 0.9,
+            hammer: 0.6
         },
         nozone: {},
         amp: {}
@@ -3553,7 +5431,20 @@ export const monsters = {
             missile: 0.08,
             sonic: 0.45,
             shotgun: 0.28,
-            tesla: 0.5
+            tesla: 0.5,
+            claws: 0.35,
+            venom: 0.15,
+            cold: 0,
+            shock: 0.6,
+            fire: 1.2,
+            acid: 0.5,
+            stone: 0.35,
+            iron: 1,
+            flesh: 0.3,
+            ice: 0,
+            magma: 1.1,
+            axe: 0.5,
+            hammer: 1
         },
         nozone: {
             hot: true
@@ -3572,7 +5463,20 @@ export const monsters = {
             missile: 0.08,
             sonic: 0.66,
             shotgun: 0.38,
-            tesla: 0.45
+            tesla: 0.45,
+            claws: 0.05,
+            venom: 0.01,
+            cold: 0.8,
+            shock: 0.75,
+            fire: 0.8,
+            acid: 0.75,
+            stone: 0.03,
+            iron: 0.03,
+            flesh: 0.03,
+            ice: 0.3,
+            magma: 0.5,
+            axe: 0.01,
+            hammer: 0.05
         },
         nozone: {},
         amp: {}
@@ -3586,7 +5490,20 @@ export const monsters = {
             missile: 1,
             sonic: 0.22,
             shotgun: 0.65,
-            tesla: 0.15
+            tesla: 0.15,
+            claws: 0.38,
+            venom: 0.88,
+            cold: 0.8,
+            shock: 0.35,
+            fire: 0,
+            acid: 0.85,
+            stone: 0.03,
+            iron: 0.03,
+            flesh: 0.03,
+            ice: 0.3,
+            magma: 0,
+            axe: 0.4,
+            hammer: 0.55
         },
         nozone: {},
         amp: {}
@@ -3600,7 +5517,20 @@ export const monsters = {
             missile: 0.75,
             sonic: 0.22,
             shotgun: 0.28,
-            tesla: 1
+            tesla: 1,
+            claws: 0.28,
+            venom: 0,
+            cold: 0.35,
+            shock: 1,
+            fire: 0.15,
+            acid: 0.72,
+            stone: 0.5,
+            iron: 0.5,
+            flesh: 0.5,
+            ice: 0.2,
+            magma: 0.15,
+            axe: 0.25,
+            hammer: 0.8
         },
         nozone: {},
         amp: {}
@@ -3614,7 +5544,20 @@ export const monsters = {
             missile: 0.9,
             sonic: 0.08,
             shotgun: 0.28,
-            tesla: 1
+            tesla: 1,
+            claws: 0.28,
+            venom: 0,
+            cold: 0.45,
+            shock: 1.1,
+            fire: 0.22,
+            acid: 0.68,
+            stone: 0.55,
+            iron: 0.55,
+            flesh: 0.4,
+            ice: 0.4,
+            magma: 0.18,
+            axe: 0.42,
+            hammer: 0.95
         },
         nozone: {},
         amp: {}
@@ -3628,7 +5571,20 @@ export const monsters = {
             missile: 0.05,
             sonic: 0.01,
             shotgun: 0.12,
-            tesla: 0.3
+            tesla: 0.3,
+            claws: 0.48,
+            venom: 0.9,
+            cold: 0.88,
+            shock: 0.24,
+            fire: 0.18,
+            acid: 0.9,
+            stone: 0.72,
+            iron: 0.45,
+            flesh: 0.85,
+            ice: 0.92,
+            magma: 0.16,
+            axe: 0.44,
+            hammer: 0.08
         },
         nozone: {},
         amp: {}
@@ -3642,7 +5598,20 @@ export const monsters = {
             missile: 0.05,
             sonic: 1,
             shotgun: 0.02,
-            tesla: 0.01
+            tesla: 0.01,
+            claws: 0.18,
+            venom: 0.65,
+            cold: 1,
+            shock: 0.02,
+            fire: 0.38,
+            acid: 0.48,
+            stone: 0.22,
+            iron: 0.24,
+            flesh: 0.35,
+            ice: 1,
+            magma: 0.4,
+            axe: 0.15,
+            hammer: 0.05
         },
         nozone: {},
         amp: {}
@@ -3656,7 +5625,20 @@ export const monsters = {
             missile: 0.45,
             sonic: 0.5,
             shotgun: 0.6,
-            tesla: 0.65
+            tesla: 0.65,
+            claws: 0.3,
+            venom: 0.65,
+            cold: 0.55,
+            shock: 0.65,
+            fire: 0.75,
+            acid: 0.85,
+            stone: 0.25,
+            iron: 0.15,
+            flesh: 0.2,
+            ice: 0.55,
+            magma: 0.75,
+            axe: 0.45,
+            hammer: 0.65
         },
         nozone: {},
         amp: {}
@@ -3670,7 +5652,20 @@ export const monsters = {
             missile: 1,
             sonic: 0.35,
             shotgun: 0.35,
-            tesla: 0.5
+            tesla: 0.5,
+            claws: 0.48,
+            venom: 0.22,
+            cold: 0.25,
+            shock: 0.65,
+            fire: 0.15,
+            acid: 0.95,
+            stone: 0.55,
+            iron: 0.95,
+            flesh: 0.25,
+            ice: 0.35,
+            magma: 0.2,
+            axe: 0.55,
+            hammer: 0.35
         },
         nozone: {},
         amp: {}
@@ -3684,7 +5679,20 @@ export const monsters = {
             missile: 0.75,
             sonic: 0.35,
             shotgun: 0.75,
-            tesla: 0.5
+            tesla: 0.5,
+            claws: 0.4,
+            venom: 0.01,
+            cold: 0.1,
+            shock: 0.5,
+            fire: 0.1,
+            acid: 0.1,
+            stone: 0.35,
+            iron: 0.25,
+            flesh: 0.95,
+            ice: 0.1,
+            magma: 0.1,
+            axe: 0.4,
+            hammer: 1
         },
         nozone: {},
         amp: {}
@@ -3698,7 +5706,20 @@ export const monsters = {
             missile: 0.5,
             sonic: 0.05,
             shotgun: 0.35,
-            tesla: 0.68
+            tesla: 0.68,
+            claws: 0.65,
+            venom: 0.95,
+            cold: 0.5,
+            shock: 0.5,
+            fire: 0.75,
+            acid: 0.65,
+            stone: 0.5,
+            iron: 0.5,
+            flesh: 0.5,
+            ice: 0.5,
+            magma: 0.75,
+            axe: 0.65,
+            hammer: 0.5
         },
         nozone: {},
         amp: {}
@@ -3712,7 +5733,20 @@ export const monsters = {
             missile: 0.5,
             sonic: 0.25,
             shotgun: 0.75,
-            tesla: 0.25
+            tesla: 0.25,
+            claws: 1,
+            venom: 0.15,
+            cold: 0.5,
+            shock: 0.25,
+            fire: 0.5,
+            acid: 0.5,
+            stone: 0.5,
+            iron: 0.8,
+            flesh: 0.5,
+            ice: 0.5,
+            magma: 0.5,
+            axe: 1,
+            hammer: 0.5
         },
         nozone: {},
         amp: {}
@@ -3726,7 +5760,20 @@ export const monsters = {
             missile: 0.5,
             sonic: 1,
             shotgun: 0.2,
-            tesla: 0.75
+            tesla: 0.75,
+            claws: 1,
+            venom: 0.5,
+            cold: 1,
+            shock: 0.75,
+            fire: 0.05,
+            acid: 0.08,
+            stone: 0.6,
+            iron: 0.5,
+            flesh: 0.25,
+            ice: 0.95,
+            magma: 0.05,
+            axe: 0.75,
+            hammer: 0.5
         },
         nozone: {},
         amp: {}
@@ -3740,7 +5787,20 @@ export const monsters = {
             missile: 0,
             sonic: 0.65,
             shotgun: 0.22,
-            tesla: 0.4
+            tesla: 0.4,
+            claws: 0.18,
+            venom: 0.12,
+            cold: 0.9,
+            shock: 0.45,
+            fire: 0.3,
+            acid: 0.1,
+            stone: 0.2,
+            iron: 0.95,
+            flesh: 0.2,
+            ice: 0.9,
+            magma: 0.3,
+            axe: 0.12,
+            hammer: 0
         },
         nozone: {},
         amp: {}
@@ -3754,7 +5814,20 @@ export const monsters = {
             missile: 0.5,
             sonic: 0.5,
             shotgun: 0.5,
-            tesla: 0.5
+            tesla: 0.5,
+            claws: 0.5,
+            venom: 0.02,
+            cold: 0.75,
+            shock: 0.5,
+            fire: 0.5,
+            acid: 0.5,
+            stone: 0.5,
+            iron: 0.5,
+            flesh: 0.5,
+            ice: 0.75,
+            magma: 0.5,
+            axe: 0.5,
+            hammer: 0.5
         },
         nozone: {},
         amp: {}
@@ -3768,7 +5841,20 @@ export const monsters = {
             missile: 0.6,
             sonic: 0,
             shotgun: 0.5,
-            tesla: 0.01
+            tesla: 0.01,
+            claws: 0.65,
+            venom: 0.01,
+            cold: 0,
+            shock: 0.01,
+            fire: 0.88,
+            acid: 0.95,
+            stone: 0.6,
+            iron: 0.45,
+            flesh: 0.55,
+            ice: 0,
+            magma: 0.88,
+            axe: 0.7,
+            hammer: 0.4
         },
         nozone: {},
         amp: {}
@@ -3782,7 +5868,20 @@ export const monsters = {
             missile: 0.15,
             sonic: 0.38,
             shotgun: 0.9,
-            tesla: 0.18
+            tesla: 0.18,
+            claws: 0.12,
+            venom: 0.05,
+            cold: 0.5,
+            shock: 0.32,
+            fire: 1,
+            acid: 0.65,
+            stone: 0.8,
+            iron: 0.5,
+            flesh: 0.5,
+            ice: 0.5,
+            magma: 1,
+            axe: 0.18,
+            hammer: 0.75
         },
         nozone: {},
         amp: {}
@@ -3796,7 +5895,20 @@ export const monsters = {
             missile: 0.15,
             sonic: 0.48,
             shotgun: 0.4,
-            tesla: 0.6
+            tesla: 0.6,
+            claws: 0.5,
+            venom: 0.5,
+            cold: 0.8,
+            shock: 0.75,
+            fire: 0.15,
+            acid: 0.95,
+            stone: 0.25,
+            iron: 0.5,
+            flesh: 0.8,
+            ice: 0.8,
+            magma: 0.15,
+            axe: 0.5,
+            hammer: 0.25
         },
         nozone: {},
         amp: {}
@@ -3810,7 +5922,20 @@ export const monsters = {
             missile: 0.75,
             sonic: 0.25,
             shotgun: 0.5,
-            tesla: 0.5
+            tesla: 0.5,
+            claws: 0.65,
+            venom: 0.1,
+            cold: 0.65,
+            shock: 0.5,
+            fire: 0.2,
+            acid: 0.5,
+            stone: 0.25,
+            iron: 0.75,
+            flesh: 1,
+            ice: 0.65,
+            magma: 0.2,
+            axe: 0.75,
+            hammer: 0.25
         },
         nozone: {},
         amp: {}
@@ -3824,7 +5949,20 @@ export const monsters = {
             missile: 0.02,
             sonic: 1,
             shotgun: 0.9,
-            tesla: 0.58
+            tesla: 0.58,
+            claws: 0.1,
+            venom: 0.1,
+            cold: 0.8,
+            shock: 0.65,
+            fire: 0.15,
+            acid: 0.5,
+            stone: 0.1,
+            iron: 0.1,
+            flesh: 0.5,
+            ice: 0.8,
+            magma: 0.2,
+            axe: 0.1,
+            hammer: 0.1
         },
         nozone: {},
         amp: {}
@@ -3838,7 +5976,20 @@ export const monsters = {
             missile: 1,
             sonic: 0.15,
             shotgun: 0.88,
-            tesla: 0.26
+            tesla: 0.26,
+            claws: 0.42,
+            venom: 0.3,
+            cold: 0.48,
+            shock: 0.28,
+            fire: 0.1,
+            acid: 0.85,
+            stone: 1,
+            iron: 0.25,
+            flesh: 0.75,
+            ice: 0.52,
+            magma: 0.12,
+            axe: 0.34,
+            hammer: 1
         },
         nozone: {},
         amp: {}
@@ -3852,7 +6003,20 @@ export const monsters = {
             missile: 0.25,
             sonic: 0.3,
             shotgun: 0.6,
-            tesla: 0.09
+            tesla: 0.09,
+            claws: 0.5,
+            venom: 0.95,
+            cold: 0.3,
+            shock: 0.8,
+            fire: 0.38,
+            acid: 0.9,
+            stone: 0.6,
+            iron: 0.75,
+            flesh: 0.4,
+            ice: 0.28,
+            magma: 0.32,
+            axe: 0.45,
+            hammer: 0.25
         },
         nozone: {},
         amp: {}
@@ -3866,7 +6030,20 @@ export const monsters = {
             missile: 0.05,
             sonic: 0.8,
             shotgun: 0.15,
-            tesla: 1
+            tesla: 1,
+            claws: 0.02,
+            venom: 0.01,
+            cold: 0,
+            shock: 1,
+            fire: 0.25,
+            acid: 0.55,
+            stone: 0.15,
+            iron: 0.15,
+            flesh: 0.95,
+            ice: 0,
+            magma: 0.25,
+            axe: 0.01,
+            hammer: 0.05
         },
         nozone: {},
         amp: {}
@@ -3880,7 +6057,20 @@ export const monsters = {
             missile: 0.7,
             sonic: 0.05,
             shotgun: 0.65,
-            tesla: 0.01
+            tesla: 0.01,
+            claws: 0.1,
+            venom: 0,
+            cold: 0.5,
+            shock: 0.01,
+            fire: 0.02,
+            acid: 1,
+            stone: 0.25,
+            iron: 0.75,
+            flesh: 0.1,
+            ice: 0.5,
+            magma: 0.03,
+            axe: 0.1,
+            hammer: 0.5
         },
         nozone: {},
         amp: {}
@@ -3894,7 +6084,20 @@ export const monsters = {
             missile: 0.5,
             sonic: 0.85,
             shotgun: 1,
-            tesla: 0.2
+            tesla: 0.2,
+            claws: 0.45,
+            venom: 0.05,
+            cold: 0.15,
+            shock: 0.08,
+            fire: 0.38,
+            acid: 0.85,
+            stone: 1,
+            iron: 0.85,
+            flesh: 0.25,
+            ice: 0.15,
+            magma: 0.35,
+            axe: 0.42,
+            hammer: 1
         },
         nozone: {},
         amp: {}
@@ -3908,7 +6111,20 @@ export const monsters = {
             missile: 0.35,
             sonic: 0.5,
             shotgun: 0.65,
-            tesla: 0.8
+            tesla: 0.8,
+            claws: 0.92,
+            venom: 0.5,
+            cold: 0.45,
+            shock: 0.8,
+            fire: 0.56,
+            acid: 0.4,
+            stone: 0.5,
+            iron: 0.5,
+            flesh: 0.5,
+            ice: 0.48,
+            magma: 0.54,
+            axe: 0.88,
+            hammer: 0.42
         },
         nozone: {},
         amp: {}
@@ -3917,12 +6133,25 @@ export const monsters = {
         weapon: {
             laser: 0.65,
             flame: 0.65,
-            plasma: 0.65,
+            plasma: 0.64,
             kinetic: 0.65,
-            missile: 0.65,
+            missile: 0.66,
             sonic: 0.65,
             shotgun: 0.65,
-            tesla: 0.65
+            tesla: 0.65,
+            claws: 0.65,
+            venom: 0.65,
+            cold: 0.65,
+            shock: 0.65,
+            fire: 0.65,
+            acid: 0.65,
+            stone: 0.65,
+            iron: 0.65,
+            flesh: 0.65,
+            ice: 0.65,
+            magma: 0.65,
+            axe: 0.65,
+            hammer: 0.65
         },
         nozone: {},
         amp: {}
@@ -3936,7 +6165,20 @@ export const monsters = {
             missile: 0.5,
             sonic: 0.18,
             shotgun: 0.05,
-            tesla: 0.85
+            tesla: 0.85,
+            claws: 0.32,
+            venom: 0.8,
+            cold: 0.66,
+            shock: 0.82,
+            fire: 0.33,
+            acid: 0.75,
+            stone: 0.45,
+            iron: 0.35,
+            flesh: 0.4,
+            ice: 0.66,
+            magma: 0.33,
+            axe: 0.36,
+            hammer: 0.5
         },
         nozone: {},
         amp: {}
@@ -3950,7 +6192,20 @@ export const monsters = {
             missile: 0.65,
             sonic: 0.5,
             shotgun: 0.75,
-            tesla: 0.2
+            tesla: 0.2,
+            claws: 0.85,
+            venom: 0.4,
+            cold: 0.12,
+            shock: 0.22,
+            fire: 1,
+            acid: 0.13,
+            stone: 0.65,
+            iron: 0.68,
+            flesh: 0.95,
+            ice: 0.18,
+            magma: 0.9,
+            axe: 0.85,
+            hammer: 0.65
         },
         nozone: {},
         amp: {}
@@ -3964,7 +6219,20 @@ export const monsters = {
             missile: 0.95,
             sonic: 0.95,
             shotgun: 0.95,
-            tesla: 0.95
+            tesla: 0.95,
+            claws: 0.95,
+            venom: 0.96,
+            cold: 0.95,
+            shock: 0.95,
+            fire: 0.95,
+            acid: 0.95,
+            stone: 0.95,
+            iron: 0.95,
+            flesh: 0.94,
+            ice: 0.95,
+            magma: 0.95,
+            axe: 0.95,
+            hammer: 0.95
         },
         nozone: {},
         amp: {}
@@ -3978,14 +6246,27 @@ export const monsters = {
             missile: 1.2,
             sonic: 0.5,
             shotgun: 1.05,
-            tesla: 0.2
+            tesla: 0.2,
+            claws: 0.65,
+            venom: 0,
+            cold: 0.11,
+            shock: 0.22,
+            fire: 0.1,
+            acid: 0.5,
+            stone: 1,
+            iron: 0.65,
+            flesh: 0.25,
+            ice: 0.1,
+            magma: 0.12,
+            axe: 0.15,
+            hammer: 1.08
         },
         nozone: {},
         amp: {}
     }
 };
 
-export function mechCost(size,infernal){
+export function mechCost(size,infernal,standardize){
     let soul = 9999;
     let cost = 10000000;
     switch (size){
@@ -4021,20 +6302,54 @@ export function mechCost(size,infernal){
                 soul = 1;
             }
             break;
+        case 'minion':
+            {
+                let baseCost = global.blood['prepared'] && global.blood.prepared >= 2 ? 30000 : 50000;
+                cost = infernal ? baseCost * 2.5 : baseCost;
+                soul = infernal ? 10 : 1;
+            }
+            break;
+        case 'fiend':
+            {
+                cost = infernal ? 300000 : 125000;
+                soul = infernal ? 40 : 4;
+            }
+            break;
+        case 'cyberdemon':
+            {
+                cost = infernal ? 625000 : 250000;
+                soul = infernal ? 120 : 12;
+            }
+            break;
+        case 'archfiend':
+            {
+                cost = infernal ? 1200000 : 600000;
+                soul = infernal ? 250 : 25;
+            }
+            break;
+    }
+    if (standardize){
+        return {
+            Soul_Gem(){ return soul; },
+            Supply(){ return cost; }
+        };
     }
     return { s: soul, c: cost };
-};
+}
 
 function bossResists(boss){
     let weak = `laser`;
     let resist = `laser`;
     
+    let standardList = ['laser','flame','plasma','kinetic','missile','sonic','shotgun','tesla'];
     Object.keys(monsters[boss].weapon).forEach(function(weapon){
-        if (monsters[boss].weapon[weapon] > monsters[boss].weapon[weak]){
-            weak = weapon;
-        }
-        if (monsters[boss].weapon[weapon] < monsters[boss].weapon[resist]){
-            resist = weapon;
+        if (global.race['warlord'] || standardList.includes(weapon)){
+            if (checkBossResist(boss,weapon) > checkBossResist(boss,weak)){
+                weak = weapon;
+            }
+            if (checkBossResist(boss,weapon) < checkBossResist(boss,resist)){
+                resist = weapon;
+            }
         }
     });
     if (weak === resist){
@@ -4042,6 +6357,32 @@ function bossResists(boss){
         resist = 'none';
     }
     return { w: weak, r: resist };
+}
+
+function checkBossResist(boss,weapon){
+    let effectiveness = monsters[boss].weapon[weapon];
+    
+    let seed = global.stats.reset + (global.portal?.spire?.count || 1);
+    let seed_r1 = Math.floor(seededRandom(0,25000,false,seed + (global.portal?.spire?.count || 1) * 2));
+    let seed_w1 = Math.floor(seededRandom(0,25000,false,seed + global.stats.reset * 2));
+    
+    let weaponList = global.race['warlord'] 
+        ? ['laser','kinetic','shotgun','missile','flame','plasma','sonic','tesla','claws','venom','cold','shock','fire','acid','stone','iron','flesh','ice','magma','axe','hammer']
+        : ['laser','kinetic','shotgun','missile','flame','plasma','sonic','tesla'];
+
+    let resist = weaponList[Math.floor(seededRandom(0,weaponList.length,false,seed_r1))];
+    let weak = weaponList[Math.floor(seededRandom(0,weaponList.length,false,seed_w1))];
+
+    if (weapon === resist){
+        let seed_r2 = Math.floor(seededRandom(0,25000,false,seed_r1 + (global.portal?.spire?.count || 1) * 3));
+        effectiveness -= Math.floor(seededRandom(0,26,false,seed_r2)) / 100;
+        if (effectiveness < 0){ effectiveness = 0; }
+    }
+    else if (weapon === weak){
+        let seed_w2 = Math.floor(seededRandom(0,25000,false,seed_w1 + global.stats.reset * 3));
+        effectiveness += Math.floor(seededRandom(0,26,false,seed_w2)) / 100;
+    }
+    return effectiveness;
 }
 
 export function drawMechLab(){
@@ -4065,21 +6406,22 @@ export function drawMechLab(){
         let assemble = $(`<div id="mechAssembly" class="mechAssembly"></div>`);
         lab.append(assemble);
 
-        let title = $(`<div><span class="has-text-caution">${loc(`portal_mech_assembly`)}</span> - <span>{{ b.size | slabel }} {{ b.chassis | clabel }}</span></div>`);
+        let title = $(`<div><span class="has-text-caution">${loc(global.race['warlord'] ? `portal_mech_spawn` : `portal_mech_assembly`)}</span> - <span>{{ b.size | slabel }} {{ b.chassis | clabel }}</span></div>`);
         assemble.append(title);
 
-        title.append(` | <span><span class="has-text-warning">${loc('portal_mech_bay_space')}</span>: {{ m.bay }} / {{ m.max }}</span>`);
+        title.append(` | <span><span class="has-text-warning">${loc(global.race['warlord'] ? `portal_mech_lair_space` : 'portal_mech_bay_space')}</span>: {{ m.bay }} / {{ m.max }}</span>`);
         title.append(` | <span><span class="has-text-warning">${loc('portal_mech_sup_avail')}</span>: {{ p.supply | round }} / {{ p.sup_max }}</span>`);
 
         let infernal = global.blood['prepared'] && global.blood.prepared >= 3 ? `<b-checkbox class="patrol" v-model="b.infernal">${loc('portal_mech_infernal')} (${loc('portal_mech_infernal_effect',[25])})</b-checkbox>` : ``;
-        assemble.append(`<div><span class="has-text-warning">${loc(`portal_mech_space`)}</span> <span class="has-text-danger">{{ b.size | bay }}</span> | <span class="has-text-warning">${loc(`portal_mech_cost`)}</span> <span class="has-text-danger">{{ b.size | price }}</span> | <span class="has-text-warning">${loc(`portal_mech_soul`,[global.resource.Soul_Gem.name])}</span> <span class="has-text-danger">{{ b.size | soul }}</span>${infernal}</div>`)
+        assemble.append(`<div><span class="has-text-warning">${loc(global.race['warlord'] ? `portal_mech_lair` : `portal_mech_space`)}</span> <span class="has-text-danger">{{ b.size | bay }}</span> | <span class="has-text-warning">${loc(`portal_mech_cost`)}</span> <span class="has-text-danger">{{ b.size | price }}</span> | <span class="has-text-warning">${loc(`portal_mech_soul`,[global.resource.Soul_Gem.name])}</span> <span class="has-text-danger">{{ b.size | soul }}</span>${infernal}</div>`)
         assemble.append(`<div>{{ b.size | desc }}</div>`);
 
         let options = $(`<div class="bayOptions"></div>`);
         assemble.append(options);
 
         let sizes = ``;
-        ['small','medium','large','titan','collector'].forEach(function(size,idx){
+        let sizeTypes = global.race['warlord'] ? ['minion','fiend','cyberdemon','archfiend'] : ['small','medium','large','titan','collector'];
+        sizeTypes.forEach(function(size,idx){
             sizes += `<b-dropdown-item aria-role="listitem" v-on:click="setSize('${size}')" class="size r0 a${idx}" data-val="${size}">${loc(`portal_mech_size_${size}`)}</b-dropdown-item>`;
         });
 
@@ -4091,7 +6433,24 @@ export function drawMechLab(){
         </b-dropdown>`);
 
         let chassis = ``;
-        ['wheel','tread','biped','quad','spider','hover'].forEach(function(val,idx){
+        let typeList = ['wheel','tread','biped','quad','spider','hover'];
+        if (global.race['warlord']){
+            switch (global.portal.mechbay.blueprint.size){
+                case 'minion':
+                    typeList = ['imp','flying_imp','hound','harpy','barghest'];
+                    break;
+                case 'fiend':
+                    typeList = ['cambion','minotaur','nightmare','rakshasa','golem'];
+                    break;
+                case 'cyberdemon':
+                    typeList = ['wheel','tread','biped','quad','spider','hover'];
+                    break;
+                case 'archfiend':
+                    typeList = ['dragon','snake','gorgon','hydra'];
+                    break;
+            }
+        }
+        typeList.forEach(function(val,idx){
             chassis += `<b-dropdown-item aria-role="listitem" v-on:click="setType('${val}')" class="chassis r0 a${idx}" data-val="${val}">${loc(`portal_mech_chassis_${val}`)}</b-dropdown-item>`;
         });
 
@@ -4104,7 +6463,8 @@ export function drawMechLab(){
 
         for (let i=0; i<4; i++){
             let weapons = ``;
-            ['laser','kinetic','shotgun','missile','flame','plasma','sonic','tesla'].forEach(function(val,idx){
+            let weaponList = validWeapons(global.portal.mechbay.blueprint.size,global.portal.mechbay.blueprint.chassis,i);
+            weaponList.forEach(function(val,idx){
                 weapons += `<b-dropdown-item aria-role="listitem" v-on:click="setWep('${val}',${i})" class="weapon r${i} a${idx}" data-val="${val}">${loc(`portal_mech_weapon_${val}`)}</b-dropdown-item>`;
             });
 
@@ -4119,19 +6479,20 @@ export function drawMechLab(){
         let e_cap = global.blood['prepared'] ? 5 : 4;
         for (let i=0; i<e_cap; i++){
             let equip = ``;
-            ['special','shields','sonar','grapple','infrared','flare','radiator','coolant','ablative','stabilizer','seals'].forEach(function(val,idx){
+            let equipTypes = validEquipment(global.portal.mechbay.blueprint.size,global.portal.mechbay.blueprint.chassis,i);
+            equipTypes.forEach(function(val,idx){
                 equip += `<b-dropdown-item aria-role="listitem" v-on:click="setEquip('${val}',${i})" class="equip r${i} a${idx}" data-val="${val}">{{ '${val}' | equipment }}</b-dropdown-item>`;
             });
 
             options.append(`<b-dropdown :triggers="['hover', 'click']" aria-role="list" v-show="eVis(${i})">
                 <button class="button is-info" slot="trigger">
-                    <span>${loc(`portal_mech_equipment`)}: {{ b.equip[${i}] || 'shields' | equipment }}</span>
+                    <span>${loc(global.race['warlord'] ? `portal_mech_attribute` : `portal_mech_equipment`)}: {{ b.equip[${i}] || 'shields' | equipment }}</span>
                     <b-icon icon="menu-down"></b-icon>
                 </button>${equip}
             </b-dropdown>`);
         }
 
-        assemble.append(`<div class="mechAssemble"><button class="button is-info" slot="trigger" v-on:click="build()"><span>${loc('portal_mech_construct')}</span></button></div>`);
+        assemble.append(`<div class="mechAssemble"><button class="button is-info" slot="trigger" v-on:click="build()"><span>${global.race['warlord'] ? loc('portal_mech_summon') : loc('portal_mech_construct')}</span></button></div>`);
 
         vBind({
             el: '#mechAssembly',
@@ -4149,13 +6510,32 @@ export function drawMechLab(){
                     let size = mechSize(global.portal.mechbay.blueprint.size);
 
                     let avail = global.portal.mechbay.max - global.portal.mechbay.bay;
-                    if (global.portal.purifier.supply >= cost && avail >= size && global.resource.Soul_Gem.amount >= soul){
+                    if (!(global.settings.qKey && keyMap.q) && global.portal.purifier.supply >= cost && avail >= size && global.resource.Soul_Gem.amount >= soul){
                         global.portal.purifier.supply -= cost;
                         global.resource.Soul_Gem.amount -= soul;
-                        let mech = deepClone(global.portal.mechbay.blueprint);
-                        global.portal.mechbay.mechs.push(mech);
-                        global.portal.mechbay.bay += size;
-                        global.portal.mechbay.active++;
+                        buildMech(global.portal.mechbay.blueprint);
+                    }
+                    else {
+                        let used = 0;
+                        for (let j=0; j<global.queue.queue.length; j++){
+                            used += Math.ceil(global.queue.queue[j].q / global.queue.queue[j].qs);
+                        }
+                        if (used < global.queue.max){
+                            let blueprint = deepClone(global.portal.mechbay.blueprint);
+                            global.queue.queue.push({ 
+                                id: `hell-mech-${Math.rand(0,100000)}`, 
+                                action: 'hell-mech', 
+                                type: blueprint,
+                                label: `${loc(`portal_mech_size_${blueprint.size}`)} ${loc(`portal_mech_chassis_${blueprint.chassis}`)}`, 
+                                cna: false, 
+                                time: 0, 
+                                q: 1, 
+                                qs: 1, 
+                                t_max: 0, 
+                                bres: false 
+                            });
+                            buildQueue();
+                        }
                     }
                 },
                 setSize(s){
@@ -4163,7 +6543,7 @@ export function drawMechLab(){
                     if (s === 'collector'){
                         global.portal.mechbay.blueprint.hardpoint.length = 0;
                     }
-                    else if (s === 'small' || s === 'medium'){
+                    else if (s === 'small' || s === 'medium' || s === 'minion' || s === 'fiend'){
                         if (global.portal.mechbay.blueprint.hardpoint.length === 0){
                             global.portal.mechbay.blueprint.hardpoint.push('laser');
                         }
@@ -4176,7 +6556,7 @@ export function drawMechLab(){
                         if (global.portal.mechbay.blueprint.hardpoint.length === 1){
                             global.portal.mechbay.blueprint.hardpoint.push(global.portal.mechbay.blueprint.hardpoint.includes('laser') ? 'plasma' : 'laser');
                         }
-                        if (s === 'titan'){
+                        if (s === 'titan' || s === 'archfiend'){
                             if (global.portal.mechbay.blueprint.hardpoint.length === 2){
                                 global.portal.mechbay.blueprint.hardpoint.push(global.portal.mechbay.blueprint.hardpoint.includes('laser')  ? 'shotgun' : 'laser');
                                 global.portal.mechbay.blueprint.hardpoint.push(global.portal.mechbay.blueprint.hardpoint.includes('laser')  ? 'kinetic' : 'laser');
@@ -4186,24 +6566,31 @@ export function drawMechLab(){
                             global.portal.mechbay.blueprint.hardpoint.length = 2;
                         }
                     }
+                    if (global.race['warlord']){ 
+                        global.portal.mechbay.blueprint.equip[0] = validEquipment(s,global.portal.mechbay.blueprint.chassis)[0]; 
+                        global.portal.mechbay.blueprint.equip.length = 1;
+                    }
                     switch (s){
                         case 'small':
+                        case 'minion':
                             if (global.blood['prepared']){
-                                global.portal.mechbay.blueprint.equip.push('special');
+                                global.portal.mechbay.blueprint.equip.push(validEquipment(s,global.portal.mechbay.blueprint.chassis)[0]);
                             }
                             global.portal.mechbay.blueprint.equip.length = global.blood['prepared'] ? 1 : 0;
                             break;
                         case 'medium':
+                        case 'fiend':
                             if (global.portal.mechbay.blueprint.equip.length < 1){
-                                global.portal.mechbay.blueprint.equip.push('special');
+                                global.portal.mechbay.blueprint.equip.push(validEquipment(s,global.portal.mechbay.blueprint.chassis)[0]);
                             }
                             if (global.blood['prepared']){
-                                global.portal.mechbay.blueprint.equip.push('shields');
+                                global.portal.mechbay.blueprint.equip.push(validEquipment(s,global.portal.mechbay.blueprint.chassis)[1]);
                             }
                             global.portal.mechbay.blueprint.equip.length = global.blood['prepared'] ? 2 : 1;
                             break;
                         case 'collector':
                         case 'large':
+                        case 'cyberdemon':
                             if (global.portal.mechbay.blueprint.equip.length < 1){
                                 global.portal.mechbay.blueprint.equip.push('special');
                             }
@@ -4216,27 +6603,59 @@ export function drawMechLab(){
                             global.portal.mechbay.blueprint.equip.length = global.blood['prepared'] ? 3 : 2;
                             break;
                         case 'titan':
+                        case 'archfiend':
                             if (global.portal.mechbay.blueprint.equip.length < 1){
-                                global.portal.mechbay.blueprint.equip.push('special');
+                                global.portal.mechbay.blueprint.equip.push(validEquipment(s,global.portal.mechbay.blueprint.chassis)[0]);
                             }
                             if (global.portal.mechbay.blueprint.equip.length < 2){
-                                global.portal.mechbay.blueprint.equip.push('shields');
+                                global.portal.mechbay.blueprint.equip.push(validEquipment(s,global.portal.mechbay.blueprint.chassis)[1]);
                             }
                             if (global.portal.mechbay.blueprint.equip.length < 3){
-                                global.portal.mechbay.blueprint.equip.push('grapple');
+                                global.portal.mechbay.blueprint.equip.push(validEquipment(s,global.portal.mechbay.blueprint.chassis)[2]);
                             }
                             if (global.portal.mechbay.blueprint.equip.length < 4){
-                                global.portal.mechbay.blueprint.equip.push('seals');
+                                global.portal.mechbay.blueprint.equip.push(validEquipment(s,global.portal.mechbay.blueprint.chassis)[3]);
                             }
                             if (global.blood['prepared']){
-                                global.portal.mechbay.blueprint.equip.push('stabilizer');
+                                global.portal.mechbay.blueprint.equip.push(validEquipment(s,global.portal.mechbay.blueprint.chassis)[4]);
                             }
                             global.portal.mechbay.blueprint.equip.length = global.blood['prepared'] ? 5 : 4;
                             break;
                     }
+                    if (global.race['warlord']){
+                        switch (s){
+                            case 'minion':
+                                global.portal.mechbay.blueprint.chassis = 'imp';
+                                break;
+                            case 'fiend':
+                                global.portal.mechbay.blueprint.chassis = 'cambion';
+                                break;
+                            case 'cyberdemon':
+                                global.portal.mechbay.blueprint.chassis = 'biped';
+                                global.portal.mechbay.blueprint.hardpoint[1] = validWeapons(s,global.portal.mechbay.blueprint.chassis,1)[1];
+                                break;
+                            case 'archfiend':
+                                global.portal.mechbay.blueprint.chassis = 'dragon';
+                                global.portal.mechbay.blueprint.hardpoint[1] = validWeapons(s,global.portal.mechbay.blueprint.chassis,1)[0];
+                                break;
+                        }
+                        global.portal.mechbay.blueprint.hardpoint[0] = validWeapons(s,global.portal.mechbay.blueprint.chassis,0)[0];
+                        drawMechLab();
+                        clearPopper();
+                    }
                 },
                 setType(c){
                     global.portal.mechbay.blueprint.chassis = c;
+                    if (global.race['warlord']){
+                        global.portal.mechbay.blueprint.hardpoint[0] = validWeapons(global.portal.mechbay.blueprint.size,c,0)[0];
+                        if (c === 'hydra'){
+                            global.portal.mechbay.blueprint.hardpoint[1] = validWeapons(global.portal.mechbay.blueprint.size,c,1)[0];
+                            global.portal.mechbay.blueprint.hardpoint[2] = validWeapons(global.portal.mechbay.blueprint.size,c,2)[0];
+                            global.portal.mechbay.blueprint.hardpoint[3] = validWeapons(global.portal.mechbay.blueprint.size,c,3)[0];
+                        }
+                        drawMechLab();
+                        clearPopper();
+                    }
                 },
                 setWep(w,i){
                     global.portal.mechbay.blueprint.hardpoint[i] = w;
@@ -4250,8 +6669,18 @@ export function drawMechLab(){
                     if (global.portal.mechbay.blueprint.size === 'collector'){
                         return false;
                     }
-                    if (hp === 0 || (global.portal.mechbay.blueprint.size === 'large' && hp < 2) || global.portal.mechbay.blueprint.size === 'titan'){
+                    if (hp === 0 || (['large','cyberdemon'].includes(global.portal.mechbay.blueprint.size) && hp < 2) || global.portal.mechbay.blueprint.size === 'titan'){
                         return true;
+                    }
+                    else if (global.portal.mechbay.blueprint.size === 'archfiend'){
+                        switch (global.portal.mechbay.blueprint.chassis){
+                            case 'dragon':
+                            case 'snake':
+                            case 'gorgon':
+                                return hp < 2 ? true : false;
+                            case 'hydra':
+                                return hp < 4 ? true : false;
+                        }
                     }
                     return false;
                 },
@@ -4259,13 +6688,17 @@ export function drawMechLab(){
                     let prep = global.blood['prepared'] ? 1 : 0;
                     switch (global.portal.mechbay.blueprint.size){
                         case 'small':
+                        case 'minion':
                             return prep === 1 && es === 0 ? true : false;
                         case 'medium':
+                        case 'fiend':
                             return es <= (0 + prep) ? true : false;
                         case 'collector':
                         case 'large':
+                        case 'cyberdemon':
                             return es <= (1 + prep) ? true : false;
                         case 'titan':
+                        case 'archfiend':
                             return true;
                     }
                 }
@@ -4304,6 +6737,7 @@ export function drawMechLab(){
                     let type = 'jumpjet';
                     switch (global.portal.mechbay.blueprint.size){
                         case 'large':
+                        case 'cyberdemon':
                             type = 'battery';
                             break;
                         case 'titan':
@@ -4331,6 +6765,7 @@ export function drawMechLab(){
                         if (val === 'special'){
                             switch (global.portal.mechbay.blueprint.size){
                                 case 'large':
+                                case 'cyberdemon':
                                     val = 'battery';
                                     break;
                                 case 'titan':
@@ -4357,6 +6792,171 @@ export function drawMechLab(){
     }
 }
 
+export function buildMechQueue(action){
+    let size = mechSize(action.bp.size);
+    let avail = global.portal.mechbay.max - global.portal.mechbay.bay;
+    if (avail >= size && payCosts(false, action.cost)){
+        buildMech(deepClone(action.bp,true));
+        return true;
+    }
+    return false;
+}
+
+function buildMech(bp, queue){
+    let mech = deepClone(bp);
+    global.portal.mechbay.mechs.push(mech);
+    global.portal.mechbay.bay += mechSize(mech.size);
+    global.portal.mechbay.active++;
+}
+
+export function mechDesc(parent,obj){
+    let mech = obj.type;
+    let costs = mechCost(mech.size,mech.infernal,true);
+
+    var desc = $(`<div class="shipPopper"></div>`);
+    var mechPattern = $(`<div class="divider">${mech.infernal ? `${loc('portal_mech_infernal')} ` : ''}${loc(`portal_mech_size_${mech.size}`)} ${loc(`portal_mech_chassis_${mech.chassis}`)}</div>`);
+    parent.append(desc);
+    desc.append(mechPattern);
+
+    var cost = $('<div class="costList"></div>');
+    desc.append(cost);
+
+    let weapons = [];
+    mech.hardpoint.forEach(function(hp){
+        weapons.push(`<span class="has-text-danger">${loc(`portal_mech_weapon_${hp}`)}</span>`);
+    });
+    desc.append(`<div>${weapons.join(', ')}</div>`);
+
+    let equip = [];
+    mech.equip.forEach(function(eq){
+        let type = eq;
+        if (type === 'special'){
+            switch (mech.size){
+                case 'large':
+                case 'cyberdemon':
+                    type = 'battery';
+                    break;
+                case 'titan':
+                    type = 'target';
+                    break;
+                default:
+                    type = 'jumpjet';
+                    break;
+            }
+        }
+        equip.push(`<span class="has-text-warning">${loc(`portal_mech_equip_${type}`)}</span>`);
+    });
+    desc.append(`<div>${equip.join(', ')}</div>`);
+
+    let tc = timeCheck({ id: `${mech.size}${Math.rand(0,100)}` , cost: costs, doNotAdjustCost: true }, false, true);
+    Object.keys(costs).forEach(function (res){
+        if (costs[res]() > 0){
+            let label = res === 'Money' ? '$' : (res === 'Supply' ? loc('resource_Supply_name') : global.resource[res].name) + ': ';
+            let amount = res === 'Supply' ? global.portal.purifier.supply : global.resource[res].amount;
+            let color = amount >= costs[res]() ? 'has-text-dark' : ( res === tc.r ? 'has-text-danger' : 'has-text-alert');
+            cost.append($(`<div class="${color}" data-${res}="${costs[res]()}">${label}${sizeApproximation(costs[res](),2)}</div>`));
+        }
+    });
+
+    if (tc && tc['t']){
+        desc.append($(`<div class="divider"></div><div id="popTimer" class="flair has-text-advanced">{{ t | timer }}</div>`));
+        vBind({
+            el: '#popTimer',
+            data: tc,
+            filters: {
+                timer(t){
+                    return loc('action_ready',[timeFormat(t)]);
+                }
+            }
+        });
+    }
+    
+    return desc;
+}
+
+export function validWeapons(size,type,point){
+    let weaponList = ['laser','kinetic','shotgun','missile','flame','plasma','sonic','tesla'];
+    if (global.race['warlord']){
+        switch (size){
+            case 'minion':
+                if (type === 'harpy'){
+                    weaponList = ['claws','venom'];
+                }
+                else if (type === 'hound'){
+                    weaponList = ['cold','shock','fire','acid'];
+                }
+                else if (type === 'barghest'){
+                    weaponList = ['claws','venom'];
+                }
+                break;
+            case 'fiend':
+                if (type === 'minotaur'){
+                    weaponList = ['axe','hammer'];
+                }
+                else if (type === 'nightmare'){
+                    weaponList = ['cold','shock','fire','acid'];
+                }
+                else if (type === 'golem'){
+                    weaponList = ['stone','iron','flesh','ice','magma'];
+                }
+                break;
+            case 'archfiend':
+                if (point === undefined || point === false){
+                    weaponList = ['claws','venom','cold','shock','fire','acid'];
+                    switch (type){
+                        case 'dragon':
+                            weaponList = ['claws','cold','shock','fire','acid'];
+                            break;
+                        case 'snake':
+                            weaponList = ['venom','cold','shock','fire','acid'];
+                            break;
+                        case 'gorgon':
+                            weaponList = ['axe','hammer','cold','shock','fire','acid'];
+                            break;
+                        case 'hydra':
+                            weaponList = ['cold','shock','fire','acid'];
+                            break;
+                    }
+                }
+                else {
+                    switch (type){
+                        case 'dragon':
+                            weaponList = point === 0 ? ['claws'] : ['cold','shock','fire','acid'];
+                            break;
+                        case 'snake':
+                            weaponList = point === 0 ? ['venom'] : ['cold','shock','fire','acid'];
+                            break;
+                        case 'gorgon':
+                            weaponList = point === 0 ? ['axe','hammer'] : ['cold','shock','fire','acid'];
+                            break;
+                        case 'hydra':
+                            let list = ['cold','shock','fire','acid'];
+                            weaponList = [list[point]];
+                            break;
+                    }
+                }
+                break;
+        }
+    }
+    return weaponList;
+}
+
+export function validEquipment(size,type,point){
+    let equipList = ['special','shields','sonar','grapple','infrared','flare','radiator','coolant','ablative','stabilizer','seals'];
+    if (global.race['warlord']){
+        switch (size){
+            case 'minion':
+                equipList = ['scavenger','scouter','darkvision','echo','thermal','manashield','cold','heat','athletic','lucky','stoneskin'];
+                break;
+            case 'fiend':
+            case 'archfiend':
+                equipList = ['darkvision','echo','thermal','manashield','cold','heat','athletic','lucky','stoneskin'];
+                break;
+        }
+    }
+    return equipList;
+}
+
 function drawMechs(){
     clearMechDrag();
     clearElement($('#mechList'));
@@ -4364,8 +6964,8 @@ function drawMechs(){
 
     list.append(`
       <div v-for="(mech, index) of mechs" :key="index" class="mechRow" :class="index < active ? '' : 'inactive-row' ">
-        <a class="scrap" @click="scrap(index)">${loc('portal_mech_scrap')}</a>
-        <span> | </span><span>${loc('portal_mech')} #{{index + 1}}: </span>
+        <a class="scrap" @click="scrap(index)">${loc(global.race['warlord'] ? 'portal_mech_unsummon' : 'portal_mech_scrap')}</a>
+        <span> | </span><span>${loc(global.race['warlord'] ? 'portal_demon' : 'portal_mech')} #{{index + 1}}: </span>
         <span class="has-text-caution">{{ mech.infernal ? "${loc('portal_mech_infernal')} " : "" }}{{ mech | size }} {{ mech | chassis }}</span>
         <div :class="'gearList '+mech.size">
           <div>
@@ -4374,6 +6974,8 @@ function drawMechs(){
               <span class="has-text-danger">{{ hp | weapon }}</span>
             </template>
           </div>
+        </div>
+        <div :class="'gearList '+mech.size">
           <div>
             <template v-for="eq of mech.equip">
               <span> | </span>
@@ -4411,6 +7013,7 @@ function drawMechs(){
                 let type = 'jumpjet';
                 switch (size){
                     case 'large':
+                    case 'cyberdemon':
                         type = 'battery';
                         break;
                     case 'titan':
@@ -4446,12 +7049,20 @@ function drawMechs(){
 
 export function mechSize(s){
     switch (s){
+        case 'minion':
+            return 1;
         case 'small':
             return 2;
+        case 'fiend':
+            return global.blood['prepared'] && global.blood.prepared >= 2 ? 3 : 4;
         case 'medium':
             return global.blood['prepared'] && global.blood.prepared >= 2 ? 4 : 5;
+        case 'cyberdemon':
+            return global.blood['prepared'] && global.blood.prepared >= 2 ? 6 : 8;
         case 'large':
             return global.blood['prepared'] && global.blood.prepared >= 2 ? 8 : 10;
+        case 'archfiend':
+            return global.blood['prepared'] && global.blood.prepared >= 2 ? 15 : 20;
         case 'titan':
             return global.blood['prepared'] && global.blood.prepared >= 2 ? 20 : 25;
         case 'collector':
@@ -4494,7 +7105,10 @@ export function updateMechbay(){
         bay += mechSize(mech.size);
         if (bay <= max){
             active++;
-            if (mech.size === 'small') {
+            if (mech.size === 'small' || mech.size === 'minion') {
+                scouts++;
+            }
+            if (mech.equip.includes('scouter')){
                 scouts++;
             }
         }
@@ -4588,7 +7202,7 @@ function weaponPower(mech,power){
             power += (1 - power) * 0.25;
         }
     }
-    if (mech.equip.includes('special') && mech.size === 'large'){
+    if (mech.equip.includes('special') && (mech.size === 'large' || mech.size === 'cyberdemon')){
         power *= 1.02;
     }
     return power;
@@ -4599,14 +7213,14 @@ function statusEffect(mech,effect){
     switch (effect){
         case 'freeze':
             {
-                if (!mech.equip.includes('radiator')){
+                if (!mech.equip.includes('radiator') && !mech.equip.includes('cold')){
                     rating = 0.25;
                 }
             }
             break;
         case 'hot':
             {
-                if (!mech.equip.includes('coolant')){
+                if (!mech.equip.includes('coolant') && !mech.equip.includes('heat')){
                     rating = 0.25;
                 }
             }
@@ -4614,27 +7228,35 @@ function statusEffect(mech,effect){
         case 'corrosive':
             {
                 if (!mech.equip.includes('ablative')){
-                    rating = mech.equip.includes('shields') ? 0.75 : 0.25;
+                    if (mech.equip.includes('stoneskin')){
+                        rating = 0.9;
+                    }
+                    else if (mech.equip.includes('shields')){
+                        rating = 0.75;
+                    }
+                    else {
+                        rating = mech.equip.includes('manashield') ? 0.5 : 0.25;
+                    }
                 }
             }
             break;
         case 'humid':
             {
                 if (!mech.equip.includes('seals')){
-                    rating = 0.75;
+                    rating = mech.equip.includes('heat') ? 0.85 : 0.75;
                 }
             }
             break;
         case 'windy':
             {
-                if (mech.chassis === 'hover'){
+                if (['hover','flying_imp','harpy','dragon'].includes(mech.chassis)){
                     rating = 0.5;
                 }
             }
             break;
         case 'hilly':
             {
-                if (mech.chassis !== 'spider'){
+                if (!['spider','flying_imp','harpy','dragon'].includes(mech.chassis)){
                     rating = 0.75;
                 }
             }
@@ -4642,13 +7264,13 @@ function statusEffect(mech,effect){
         case 'mountain':
             {
                 if (mech.chassis !== 'spider' && !mech.equip.includes('grapple')){
-                    rating = mech.equip.includes('flare') ? 0.75 : 0.5;
+                    rating = mech.equip.includes('flare') || mech.equip.includes('echo') ? 0.75 : 0.5;
                 }
             }
             break;
         case 'radioactive':
             {
-                if (!mech.equip.includes('shields')){
+                if (!mech.equip.includes('shields') && mech.equip.includes('manashield')){
                     rating = 0.5;
                 }
             }
@@ -4656,20 +7278,20 @@ function statusEffect(mech,effect){
         case 'quake':
             {
                 if (!mech.equip.includes('stabilizer')){
-                    rating = 0.25;
+                    rating = mech.equip.includes('athletic') ? 0.75 : 0.25;
                 }
             }
             break;
         case 'dust':
             {
-                if (!mech.equip.includes('seals')){
+                if (!mech.equip.includes('seals') && !mech.equip.includes('thermal')){
                     rating = 0.5;
                 }
             }
             break;
         case 'river':
             {
-                if (mech.chassis !== 'hover'){
+                if (!['hover','flying_imp','harpy','dragon'].includes(mech.chassis)){
                     rating = 0.65;
                 }
             }
@@ -4683,7 +7305,7 @@ function statusEffect(mech,effect){
             break;
         case 'steam':
             {
-                if (!mech.equip.includes('shields')){
+                if (!mech.equip.includes('shields') && !mech.equip.includes('heat')){
                     rating = 0.75;
                 }
             }
@@ -4691,13 +7313,13 @@ function statusEffect(mech,effect){
         case 'flooded':
             {
                 if (mech.chassis !== 'hover'){
-                    rating = 0.35;
+                    rating = ['snake'].includes(mech.chassis) ? 0.85 : 0.35;
                 }
             }
             break;
         case 'fog':
             {
-                if (!mech.equip.includes('sonar')){
+                if (!mech.equip.includes('sonar') && !mech.equip.includes('echo')){
                     rating = 0.2;
                 }
             }
@@ -4705,27 +7327,27 @@ function statusEffect(mech,effect){
         case 'rain':
             {
                 if (!mech.equip.includes('seals')){
-                    rating = 0.75;
+                    rating = mech.equip.includes('cold') ? 0.9 : 0.75;
                 }
             }
             break;
         case 'hail':
             {
-                if (!mech.equip.includes('ablative') && !mech.equip.includes('shields')){
+                if (!mech.equip.includes('ablative') && !mech.equip.includes('shields') && !mech.equip.includes('manashield') && !mech.equip.includes('stoneskin')){
                     rating = 0.75;
                 }
             }
             break;
         case 'chasm':
             {
-                if (!mech.equip.includes('grapple')){
-                    rating = 0.1;
+                if (!mech.equip.includes('grapple') && !['flying_imp','harpy','dragon'].includes(mech.chassis)){
+                    rating = mech.equip.includes('athletic') ? 0.35 : 0.1;
                 }
             }
             break;
         case 'dark':
             {
-                if (!mech.equip.includes('infrared')){
+                if (!mech.equip.includes('infrared') && !mech.equip.includes('darkvision')){
                     rating = mech.equip.includes('flare') ? 0.25 : 0.1;
                 }
             }
@@ -4733,18 +7355,33 @@ function statusEffect(mech,effect){
         case 'gravity':
             {
                 switch (mech.size){
+                    case 'fiend':
                     case 'medium':
                         rating = 0.8;
                         break;
+                    case 'cyberdemon':
+                        rating = 0.5;
                     case 'large':
                         rating = 0.45;
                         break;
+                    case 'archfiend':
+                        rating = 0.35;
                     case 'titan':
                         rating = 0.25;
                         break;
                 }
+                if (['flying_imp','harpy','dragon'].includes(mech.chassis)){
+                    rating -= 0.15;
+                }
+                if (mech.equip.includes('athletic') && rating < 1){
+                    rating += 0.1;
+                }
             }
             break;
+    }
+    if (mech.equip.includes('lucky')){
+        rating += 0.01 * Math.floor(seededRandom(1,10,false, global.stats.resets + (global.portal?.spire?.count || 1) * 42 ));
+        if (rating > 1){ rating = 1; }
     }
     return rating;
 }
@@ -4754,175 +7391,189 @@ export function terrainEffect(mech,type){
     let terrainFactor = 1;
     switch (mech.chassis){
         case 'wheel':
+        case 'nightmare':
+        case 'hound':
             {
                 switch (terrain){
                     case 'sand':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.9 : 0.85;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.9 : 0.85;
                         break;
                     case 'swamp':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.35 : 0.18;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.35 : 0.18;
                         break;
                     case 'jungle':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.92 : 0.85;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.92 : 0.85;
                         break;
                     case 'rocky':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.65 : 0.5;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.65 : 0.5;
                         break;
                     case 'gravel':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 1 : 0.95;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 1 : 0.95;
                         break;
                     case 'muddy':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.85 : 0.58;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.85 : 0.58;
                         break;
                     case 'grass':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.3 : 1.2;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 1.3 : 1.2;
                         break;
                     case 'brush':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.9 : 0.8;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.9 : 0.8;
                         break;
                     case 'concrete':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.1 : 1;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 1.1 : 1;
                         break;
                 }
             }
             break;
         case 'tread':
+        case 'rakshasa':
+        case 'harpy':
+        case 'dragon':
             {
                 switch (terrain){
                     case 'sand':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.15 : 1.1;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 1.15 : 1.1;
                         break;
                     case 'swamp':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.55 : 0.4;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.55 : 0.4;
                         break;
                     case 'forest':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 1 : 0.95;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 1 : 0.95;
                         break;
                     case 'jungle':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.95 : 0.9;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.95 : 0.9;
                         break;
                     case 'rocky':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.65 : 0.5;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.65 : 0.5;
                         break;
                     case 'gravel':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.3 : 1.2;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 1.3 : 1.2;
                         break;
                     case 'muddy':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.88 : 0.72;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.88 : 0.72;
                         break;
                 }
             }
             break;
+        case 'cambion':
         case 'biped':
+        case 'imp':
+        case 'gorgon':
             {
                 switch (terrain){
                     case 'sand':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.78 : 0.65;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.78 : 0.65;
                         break;
                     case 'swamp':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.68 : 0.5;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.68 : 0.5;
                         break;
                     case 'forest':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 1 : 0.95;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 1 : 0.95;
                         break;
                     case 'jungle':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.82 : 0.7;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.82 : 0.7;
                         break;
                     case 'rocky':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.48 : 0.4;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.48 : 0.4;
                         break;
                     case 'muddy':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.85 : 0.7;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.85 : 0.7;
                         break;
                     case 'grass':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.25 : 1.2;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 1.25 : 1.2;
                         break;
                     case 'brush':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.92 : 0.85;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.92 : 0.85;
                         break;
                 }
             }
             break;
         case 'quad':
+        case 'golem':
+        case 'barghest':
             {
                 switch (terrain){
                     case 'sand':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.86 : 0.75;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.86 : 0.75;
                         break;
                     case 'swamp':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.58 : 0.42;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.58 : 0.42;
                         break;
                     case 'forest':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.25 : 1.2;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 1.25 : 1.2;
                         break;
                     case 'rocky':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.95 : 0.9;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.95 : 0.9;
                         break;
                     case 'gravel':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.9 : 0.8;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.9 : 0.8;
                         break;
                     case 'muddy':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.68 : 0.5;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.68 : 0.5;
                         break;
                     case 'grass':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 1 : 0.95;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 1 : 0.95;
                         break;
                     case 'brush':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.95 : 0.9;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.95 : 0.9;
                         break;
                 }
             }
             break;
         case 'spider':
+        case 'minotaur':
+        case 'hydra':
             {
                 switch (terrain){
                     case 'sand':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.75 : 0.65;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.75 : 0.65;
                         break;
                     case 'swamp':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.9 : 0.78;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.9 : 0.78;
                         break;
                     case 'forest':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.82 : 0.75;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.82 : 0.75;
                         break;
                     case 'jungle':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.77 : 0.65;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.77 : 0.65;
                         break;
                     case 'rocky':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.25 : 1.2;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 1.25 : 1.2;
                         break;
                     case 'gravel':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.86 : 0.75;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.86 : 0.75;
                         break;
                     case 'muddy':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.92 : 0.82;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.92 : 0.82;
                         break;
                     case 'brush':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 1 : 0.95;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 1 : 0.95;
                         break;
                 }
             }
             break;
         case 'hover':
+        case 'flying_imp':
+        case 'snake':
             {
                 switch (terrain){
                     case 'swamp':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.35 : 1.2;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 1.35 : 1.2;
                         break;
                     case 'forest':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.65 : 0.48;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.65 : 0.48;
                         break;
                     case 'jungle':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.55 : 0.35;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.55 : 0.35;
                         break;
                     case 'rocky':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.82 : 0.68;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.82 : 0.68;
                         break;
                     case 'muddy':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.15 : 1.08;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 1.15 : 1.08;
                         break;
                     case 'brush':
-                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.78 : 0.7;
+                        terrainFactor = ['small','medium','minion','fiend'].includes(mech.size) ? 0.78 : 0.7;
                         break;
                 }
             }
@@ -4940,17 +7591,28 @@ export function mechCollect(mech){
         rating *= statusEffect(mech,effect);
     });
     rating *= terrainRating(mech,terrainFactor,effects);
+    if (global.race['warlord']){
+        rating *= 0.1;
+    }
     return rating;
 }
 
 export function mechWeaponPower(size){
     switch (size){
+        case 'minion':
+            return 0.0015;
         case 'small':
             return 0.0025;
+        case 'fiend':
+            return 0.006;
         case 'medium':
             return 0.0075;
+        case 'cyberdemon':
+            return 0.009;
         case 'large':
             return 0.01;
+        case 'archfiend':
+            return 0.011;
         case 'titan':
             return 0.012;
         default:
@@ -4967,15 +7629,18 @@ export function mechRating(mech,boss){
     if (mech.hasOwnProperty('infernal') && mech.infernal && global.blood['prepared'] && global.blood.prepared >= 3){
         rating *= 1.25;
     }
+    if (global.blood['wrath']){
+        rating *= 1 + (global.blood.wrath / 20);
+    }
+    if (mech.size === 'archfiend' && mech.chassis != 'hydra'){
+        rating *= 2;
+    }
 
     if (boss){
         if (global.stats.achieve['gladiator'] && global.stats.achieve.gladiator.l > 0){
             rating *= 1 + global.stats.achieve.gladiator.l * 0.1;
         }
-        if (global.blood['wrath']){
-            rating *= 1 + (global.blood.wrath / 20);
-        }
-        if (mech.size === 'titan'){
+        if (mech.size === 'titan' || mech.size === 'archfiend'){
             rating *= 1.1;
         }
 
@@ -4989,7 +7654,7 @@ export function mechRating(mech,boss){
 
         let damage = 0;
         for (let i=0; i<mech.hardpoint.length; i++){
-            damage += rating;
+            damage += rating * weaponPower(mech,1);
         }
         return damage;
     }
@@ -4997,18 +7662,18 @@ export function mechRating(mech,boss){
         if (global.stats.achieve['gladiator'] && global.stats.achieve.gladiator.l > 0){
             rating *= 1 + global.stats.achieve.gladiator.l * 0.2;
         }
-        if (global.blood['wrath']){
-            rating *= 1 + (global.blood.wrath / 20);
-        }
 
         if (global.portal.spire.type === 'concrete'){
             switch (mech.size){
+                case 'minion':
                 case 'small':
                     rating *= 0.92;
                     break;
+                case 'fiend':
                 case 'medium':
                     rating *= 0.95;
                     break;
+                case 'archfiend':
                 case 'titan':
                     rating *= 1.25;
                     break;
@@ -5028,7 +7693,7 @@ export function mechRating(mech,boss){
         rating /= global.portal.spire.count;
         let damage = 0;
         for (let i=0; i<mech.hardpoint.length; i++){
-            let effect = monsters[global.portal.spire.boss].weapon[mech.hardpoint[i]];
+            let effect = checkBossResist(global.portal.spire.boss,mech.hardpoint[i]);
             damage += rating * weaponPower(mech,effect);
         }
         return damage;
@@ -5196,7 +7861,7 @@ function drawHellAnalysis(){
                 <div v-show="p.soul_forge"><h2>{{ st.${type}.kills.soul_forge, 'kills_soul_forge', s.average | genericSub }}</h2></div>
                 <div v-show="p.gate_turret"><h2>{{ st.${type}.kills.turrets, 'kills_turrets', s.average | genericSub }}</h2></div>
             </div>
-            <div v-show="sg.display"><h2>{{ st.${type}.gems, 'gems', s.average | genericMulti }}</h2><h2 class="text-button has-text-advanced" aria-label="${loc('hell_analysis_toggle_bd',[loc('resource_Soul_Gem_name')])}" @click="toggleDropdown('dropGems')">{{ s.dropGems | dropdownLabel }}</h2></div>
+            <div v-show="sg.display"><h2>{{ st.${type}.gems, 'gems', s.average | genericMulti }}</h2><h2 class="text-button has-text-advanced" aria-label="${loc('hell_analysis_toggle_bd',[global.resource.Soul_Gem.name])}" @click="toggleDropdown('dropGems')">{{ s.dropGems | dropdownLabel }}</h2></div>
             <div v-show="sg.display && s.dropGems">
                 <div><h2>{{ st.${type}.gems.patrols, 'gems_patrols', s.average | genericSub }}</h2></div>
                 <div v-show="p.gun_emplacement"><h2>{{ st.${type}.gems.guns, 'gems_guns', s.average | genericSub }}</h2></div>
@@ -5597,7 +8262,7 @@ function drawHellReports(){
                     gemString = `<span class="has-text-advanced" aria-label="${loc(`hell_report_log_soul_gem_aria`)}">${gemCount >= 5 ? `&#9830x${gemCount}` : "&#9830".repeat(gemCount)}</span>`;
                 }
                 list = `
-                    <div class="text-button"><span @click="reportLoad('${startYear}','${startDay}')">${loc('year') + " " + startYear + " | " + loc('day') + " " + startDay}</span>${gemString}</div>
+                    <div class="text-button"><span @click="reportLoad('${startYear}','${startDay}')">${loc('year') + " " + startYear + " | " + loc('day') + " " + startDay}${gemString}</span></div>
                 ` + list;
             }
             startDay = 1;
@@ -5609,7 +8274,7 @@ function drawHellReports(){
                 gemString = `<span class="has-text-advanced" aria-label="${loc(`hell_report_log_soul_gem_aria`)}">${gemCount >= 5 ? `&#9830x${gemCount}` : "&#9830".repeat(gemCount)}</span>`;
             }
             list = `
-                <div class="text-button"><span @click="reportLoad('${startYear}','${startDay}')">${loc('year') + " " + startYear + " | " + loc('day') + " " + startDay}</span>${gemString}</div>
+                <div class="text-button"><span @click="reportLoad('${startYear}','${startDay}')">${loc('year') + " " + startYear + " | " + loc('day') + " " + startDay}${gemString}</span></div>
             ` + list;
         }
         recentDay.year = startYear;
@@ -5728,7 +8393,7 @@ function drawHellReports(){
         if (curr_report.surveyor_finds){
             Object.keys(curr_report.surveyor_finds).forEach(function(num){
                 let surveyor = curr_report.surveyor_finds[num];
-                let name = loc('hell_report_log_obj_counter',[loc('job_hell_surveyor'),num]);
+                let name = loc('hell_report_log_obj_counter',[jobName('hell_surveyor'),num]);
 
                 let displayText = $(`<p></p>`);
                 displayText.append(`<span>${loc('hell_report_log_search',[name,surveyor.bodies])}</span>`);
@@ -5848,5 +8513,599 @@ function purgeReports(refresh){
             }
         }
         return removed;
+    }
+}
+
+export function checkWarlordAchieve(){
+    if (global.race['warlord']){
+        let tasks = 0;
+        Object.keys(global.stats.warlord).forEach(function(k){
+            if (global.stats.warlord[k]){
+                tasks++;
+            }
+        });
+        if (tasks > 0){
+            unlockAchieve('what_is_best',false,tasks);
+        }
+    }
+}
+
+export function warlordSetup(){
+    if (global.race['warlord'] && global.race.universe === 'evil'){
+        global.tech['aerogel'] = 1;
+        global.tech['agriculture'] = 7;
+        global.tech['alloy'] = 1;
+        global.tech['alumina'] = 2;
+        global.tech['asteroid'] = 7;
+        global.tech['banking'] = 11;
+        global.tech['biotech'] = 1;
+        global.tech['boot_camp'] = 2;
+        global.tech['container'] = 8;
+        global.tech['copper'] = 1;
+        global.tech['currency'] = 6;
+        global.tech['drone'] = 1;
+        global.tech['elerium'] = 2;
+        global.tech['explosives'] = 3;
+        global.tech['factory'] = 3;
+        global.tech['farm'] = 1;
+        global.tech['foundry'] = 8;
+        global.tech['gambling'] = 4;
+        global.tech['gas_giant'] = 1;
+        global.tech['gas_moon'] = 2;
+        global.tech['genesis'] = 2;
+        global.tech['genetics'] = 2;
+        global.tech['gov_corp'] = 1;
+        global.tech['gov_fed'] = 1;
+        global.tech['gov_soc'] = 1;
+        global.tech['gov_theo'] = 1;
+        global.tech['govern'] = 3;
+        global.tech['graphene'] = 1;
+        global.tech['helium'] = 1;
+        global.tech['hell'] = 1;
+        global.tech['high_tech'] = 17;
+        global.tech['hoe'] = 5;
+        global.tech['home_safe'] = 2;
+        global.tech['housing'] = 3;
+        global.tech['housing_reduction'] = 3;
+        global.tech['infernite'] = 6;
+        global.tech['kuiper'] = 2;
+        global.tech['launch_facility'] = 1;
+        global.tech['luna'] = 2;
+        global.tech['marines'] = 2;
+        global.tech['mars'] = 5;
+        global.tech['mass'] = 1;
+        global.tech['medic'] = 3;
+        global.tech['military'] = 10;
+        global.tech['mine_conveyor'] = 1;
+        global.tech['mining'] = 4;
+        global.tech['monument'] = 1;
+        global.tech['nano'] = 1;
+        global.tech['oil'] = 7;
+        global.tech['pickaxe'] = 5;
+        global.tech['polymer'] = 2;
+        global.tech['primitive'] = 3;
+        global.tech['q_factory'] = 1;
+        global.tech['quantium'] = 1;
+        global.tech['queue'] = 3;
+        global.tech['reclaimer'] = 8;
+        global.tech['r_queue'] = 1;
+        global.tech['reproduction'] = 1;
+        global.tech['rival'] = 1;
+        global.tech['satellite'] = 1;
+        global.tech['science'] = 21;
+        global.tech['shelving'] = 3;
+        global.tech['shipyard'] = 1;
+        global.tech['smelting'] = 6;
+        global.tech['solar'] = 5;
+        global.tech['space'] = 6;
+        global.tech['space_explore'] = 4;
+        global.tech['space_housing'] = 1;
+        global.tech['spy'] = 5;
+        global.tech['stanene'] = 1;
+        global.tech['steel_container'] = 7;
+        global.tech['storage'] = 5;
+        global.tech['swarm'] = 6;
+        global.tech['syndicate'] = 0;
+        global.tech['synthetic_fur'] = 1;
+        global.tech['theology'] = 2;
+        global.tech['titanium'] = 3;
+        global.tech['trade'] = 3;
+        global.tech['unify'] = 2;
+        global.tech['uranium'] = 4;
+        global.tech['v_train'] = 1;
+        global.tech['vault'] = 4;
+        global.tech['wharf'] = 1;
+        global.tech['world_control'] = 1;
+        global.tech['wsc'] = 0;
+        global.tech['portal'] = 3;
+        global.tech['hell_pit'] = 1;
+        global.tech['hellspawn'] = 1;
+
+        if (!global.race['joyless']){
+            global.tech['theatre'] = 3;
+            global.tech['broadcast'] = 2;
+        }
+
+        if (!global.race['flier']){
+            global.tech['cement'] = 6;
+            global.resource.Cement.display = true;
+        }
+
+        global.settings.showSpace = false;
+        global.settings.showPortal = true;
+
+        global.settings.showCity = false;
+        global.settings.showIndustry = true;
+        global.settings.showPowerGrid = true;
+        global.settings.showResearch = true;
+        global.settings.showCivic = true;
+        global.settings.showMil = true;
+        global.settings.showResources = true;
+        global.settings.showMarket = true;
+        global.settings.showStorage = true;
+        global.settings.civTabs = 1;
+        global.settings.spaceTabs = 6;
+        global.settings.showGenetics = true;
+        global.settings.arpa.physics = true;
+        global.settings.arpa.genetics = true
+
+        //global.civic.garrison.display = true;
+        global.resource[global.race.species].display = true;
+        global.resource.Knowledge.display = true;
+        global.resource.Money.display = true;
+        global.resource.Crates.display = true;
+        global.resource.Containers.display = true;
+
+        global.resource.Food.display = true;
+        global.resource.Stone.display = true;
+        global.resource.Furs.display = true;
+        global.resource.Copper.display = true;
+        global.resource.Iron.display = true;
+        global.resource.Aluminium.display = true;
+        global.resource.Coal.display = true;
+        global.resource.Oil.display = true;
+        global.resource.Uranium.display = true;
+        global.resource.Steel.display = true;
+        global.resource.Titanium.display = true;
+        global.resource.Alloy.display = true;
+        global.resource.Polymer.display = true;
+        global.resource.Iridium.display = true;
+        global.resource.Helium_3.display = true;
+
+        global.resource.Neutronium.display = true;
+        global.resource.Adamantite.display = true;
+        global.resource.Elerium.display = true;
+        global.resource.Nano_Tube.display = true;
+        global.resource.Graphene.display = true;
+        global.resource.Stanene.display = true;
+        global.resource.Orichalcum.display = true;
+        global.resource.Bolognium.display = true;
+        global.resource.Infernite.display = true;
+
+        global.resource.Brick.display = true;
+        global.resource.Wrought_Iron.display = true;
+        global.resource.Sheet_Metal.display = true;
+        global.resource.Mythril.display = true;
+        global.resource.Aerogel.display = true;
+
+        if (!global.race['kindling_kindred'] && !global.race['smoldering']){
+            global.civic.lumberjack.display = true;
+            global.resource.Lumber.display = true;
+            global.resource.Plywood.display = true;
+            global.resource.Lumber.max = 10000000;
+            global.resource.Lumber.amount = 10000000;
+            global.resource.Plywood.amount = 2500000;
+            global.resource.Lumber.crates = 30;
+            global.resource.Lumber.containers = 30;
+            global.tech['axe'] = 5;
+        }
+        if (global.race['smoldering']){
+            global.resource.Chrysotile.display = true;
+            global.resource.Chrysotile.max = 5000000;
+            global.resource.Chrysotile.amount = 5000000;
+        }
+        if (!global.race['sappy']){
+            global.tech['hammer'] = 4;
+        }
+        if (!global.race['apex_predator']){
+            global.tech['armor'] = 3;
+        }
+
+        global.resource.Crates.amount = 1000;
+        global.resource.Containers.amount = 1000;
+        global.resource.Money.max = 1000000000;
+        global.resource.Money.amount = 1000000000;
+        global.resource.Knowledge.max = 4321200;
+        global.resource.Knowledge.amount = 4321200;
+        global.resource.Food.max = 10000;
+        global.resource.Food.amount = 10000;
+        global.resource.Oil.max = 500000;
+        global.resource.Oil.amount = 500000;
+        global.resource.Helium_3.max = 500000;
+        global.resource.Helium_3.amount = 500000;
+        global.resource.Uranium.max = 500000;
+        global.resource.Uranium.amount = 500000;
+        global.resource.Stone.max = 10000000;
+        global.resource.Stone.amount = 10000000;
+        global.resource.Furs.max = 5000000;
+        global.resource.Furs.amount = 5000000;
+        global.resource.Copper.max = 5000000;
+        global.resource.Copper.amount = 5000000;
+        global.resource.Iron.max = 5000000;
+        global.resource.Iron.amount = 5000000;
+        global.resource.Steel.max = 5000000;
+        global.resource.Steel.amount = 5000000;
+        global.resource.Aluminium.max = 5000000;
+        global.resource.Aluminium.amount = 5000000;
+        global.resource.Cement.max = 5000000;
+        global.resource.Cement.amount = 5000000;
+        global.resource.Titanium.max = 5000000;
+        global.resource.Titanium.amount = 5000000;
+        global.resource.Coal.max = 5000000;
+        global.resource.Coal.amount = 5000000;
+        global.resource.Alloy.max = 5000000;
+        global.resource.Alloy.amount = 5000000;
+        global.resource.Polymer.max = 5000000;
+        global.resource.Polymer.amount = 5000000;
+        global.resource.Iridium.max = 5000000;
+        global.resource.Iridium.amount = 5000000;
+        global.resource.Neutronium.max = 500000;
+        global.resource.Neutronium.amount = 500000;
+        global.resource.Adamantite.max = 5000000;
+        global.resource.Adamantite.amount = 5000000;
+        global.resource.Elerium.max = 1000;
+        global.resource.Elerium.amount = 1000;
+        global.resource.Nano_Tube.max = 5000000;
+        global.resource.Nano_Tube.amount = 5000000;
+        global.resource.Graphene.max = 5000000;
+        global.resource.Graphene.amount = 5000000;
+        global.resource.Stanene.max = 5000000;
+        global.resource.Stanene.amount = 5000000;
+        global.resource.Bolognium.max = 5000000;
+        global.resource.Bolognium.amount = 5000000;
+        global.resource.Orichalcum.max = 5000000;
+        global.resource.Orichalcum.amount = 5000000;
+        global.resource.Brick.amount = 2500000;
+        global.resource.Wrought_Iron.amount = 2500000;
+        global.resource.Sheet_Metal.amount = 2500000;
+        global.resource.Mythril.amount = 2500000;
+        global.resource.Aerogel.amount = 2500000;
+        global.resource.Authority.amount = 80;
+
+        if (!global.race['artifical']){
+            global.resource.Food.crates = 10;
+            global.resource.Food.containers = 10;
+        }
+
+        global.resource.Stone.crates = 30;
+        global.resource.Stone.containers = 30;
+        global.resource.Furs.crates = 30;
+        global.resource.Furs.containers = 30;
+        global.resource.Coal.crates = 10;
+        global.resource.Coal.containers = 10;
+        global.resource.Copper.crates = 30;
+        global.resource.Copper.containers = 30;
+        global.resource.Iron.crates = 30;
+        global.resource.Iron.containers = 30;
+        global.resource.Aluminium.crates = 30;
+        global.resource.Aluminium.containers = 30;
+        global.resource.Steel.crates = 30;
+        global.resource.Steel.containers = 30;
+        global.resource.Titanium.crates = 30;
+        global.resource.Titanium.containers = 30;
+        global.resource.Alloy.crates = 30;
+        global.resource.Alloy.containers = 30;
+        global.resource.Polymer.crates = 30;
+        global.resource.Polymer.containers = 30;
+        global.resource.Iridium.crates = 30;
+        global.resource.Iridium.containers = 30;
+        global.resource.Adamantite.crates = 30;
+        global.resource.Adamantite.containers = 30;
+        global.resource.Graphene.crates = 30;
+        global.resource.Graphene.containers = 30;
+        global.resource.Stanene.crates = 30;
+        global.resource.Stanene.containers = 30;
+        global.resource.Bolognium.crates = 30;
+        global.resource.Bolognium.containers = 30;
+        global.resource.Orichalcum.crates = 30;
+        global.resource.Orichalcum.containers = 30;
+
+        global.civic.taxes.display = true;
+
+        if (!global.race['flier']){
+            global.civic.cement_worker.display = true;
+            global.resource.Cement.crates = 30;
+            global.resource.Cement.containers = 30;
+        }
+
+        global.civic.professor.display = true;
+        global.civic.scientist.display = true;
+        global.civic.banker.display = true;
+
+        global.civic.professor.max = 1;
+        global.civic.professor.workers = 1;
+
+        global.city.calendar.day++;
+        global.city.market.active = true;
+        global.city['power'] = 0;
+        global.city['powered'] = true;
+
+        if (global.race['artifical']){
+            global.city['transmitter'] = { count: 0, on: 0 };
+        }
+
+        initStruct(actions.city.factory);
+        initStruct(actions.city.foundry);
+        initStruct(actions.city.smelter);
+
+        initStruct(actions.city.amphitheatre);
+        initStruct(actions.city.apartment);
+        initStruct(actions.city.bank);
+        initStruct(actions.city.basic_housing);
+        initStruct(actions.city.biolab);
+        initStruct(actions.city.boot_camp);
+        initStruct(actions.city.casino);
+        initStruct(actions.city.cement_plant);
+        initStruct(actions.city.coal_mine);
+        initStruct(actions.city.coal_power);
+        initStruct(actions.city.cottage);
+        initStruct(actions.city.fission_power);
+        initStruct(actions.city.garrison);
+        initStruct(actions.city.hospital);
+        initStruct(actions.city.library);
+        initStruct(actions.city.lumber_yard);
+        initStruct(actions.city.mass_driver);
+        initStruct(actions.city.metal_refinery);
+        initStruct(actions.city.mine);
+        initStruct(actions.city.oil_depot);
+        initStruct(actions.city.oil_power);
+        initStruct(actions.city.oil_well);
+        initStruct(actions.city.rock_quarry);
+        initStruct(actions.city.sawmill);
+        initStruct(actions.city.shed);
+        initStruct(actions.city.storage_yard);
+        initStruct(actions.city.temple);
+        initStruct(actions.city.tourist_center);
+        initStruct(actions.city.trade);
+        initStruct(actions.city.university);
+        initStruct(actions.city.wardenclyffe);
+        initStruct(actions.city.warehouse);
+        initStruct(actions.city.wharf);
+
+        initStruct(actions.space.spc_belt.elerium_ship);
+        initStruct(actions.space.spc_belt.iridium_ship);
+        initStruct(actions.space.spc_belt.iron_ship);
+        initStruct(actions.space.spc_belt.space_station);
+        initStruct(actions.space.spc_dwarf.e_reactor);
+        initStruct(actions.space.spc_dwarf.elerium_contain);
+        initStruct(actions.space.spc_dwarf.shipyard);
+        initStruct(actions.space.spc_gas.gas_mining);
+        initStruct(actions.space.spc_gas.gas_storage);
+        initStruct(actions.space.spc_gas_moon.drone);
+        initStruct(actions.space.spc_gas_moon.oil_extractor);
+        initStruct(actions.space.spc_gas_moon.outpost);
+        initStruct(actions.space.spc_hell.geothermal);
+        initStruct(actions.space.spc_hell.hell_smelter);
+        initStruct(actions.space.spc_hell.spc_casino);
+        initStruct(actions.space.spc_hell.swarm_plant);
+        initStruct(actions.space.spc_home.gps);
+        initStruct(actions.space.spc_home.nav_beacon);
+        initStruct(actions.space.spc_home.propellant_depot);
+        initStruct(actions.space.spc_home.satellite);
+        initStruct(actions.space.spc_moon.helium_mine);
+        initStruct(actions.space.spc_moon.iridium_mine);
+        initStruct(actions.space.spc_moon.moon_base);
+        initStruct(actions.space.spc_moon.observatory);
+        initStruct(actions.space.spc_red.biodome);
+        initStruct(actions.space.spc_red.exotic_lab);
+        initStruct(actions.space.spc_red.fabrication);
+        initStruct(actions.space.spc_red.garage);
+        initStruct(actions.space.spc_red.living_quarters);
+        initStruct(actions.space.spc_red.red_factory);
+        initStruct(actions.space.spc_red.red_mine);
+        initStruct(actions.space.spc_red.red_tower);
+        initStruct(actions.space.spc_red.space_barracks);
+        initStruct(actions.space.spc_red.spaceport);
+        initStruct(actions.space.spc_red.vr_center);
+        initStruct(actions.space.spc_red.ziggurat);
+        initStruct(actions.space.spc_sun.swarm_control);
+        initStruct(actions.space.spc_sun.swarm_satellite);
+
+        global.civic['garrison'] = {
+            display: true,
+            disabled: false,
+            progress: 0,
+            tactic: 0,
+            workers: 2,
+            wounded: 0,
+            raid: 0,
+            max: 2
+        };
+
+        global.arpa['sequence'] = {
+            max: 50000,
+            progress: 0,
+            time: 50000,
+            on: true,
+            boost: false,
+            auto: false,
+            labs: 0,
+        };
+
+        global.tech['stock_exchange'] = 0;
+        global.tech['monuments'] = 0;
+        global.tech['supercollider'] = 0;
+        global.tech['railway'] = 0;
+        global.arpa['m_type'] = arpa('Monument');
+
+        if (!global.settings.msgFilters.hell.unlocked){
+            global.settings.msgFilters.hell.unlocked = true;
+            global.settings.msgFilters.hell.vis = true;
+        }
+
+        global.settings.showPortal = true;
+        global.settings.portal.fortress = false;
+        global.settings.portal.badlands = true;
+        global.settings.portal.pit = false;
+        global.settings.portal.wasteland = true;
+        global.settings.portal.ruins = false;
+        global.settings.portal.gate = false;
+        global.settings.portal.lake = false;
+        global.settings.portal.spire = false;
+        global.settings.showCargo = false;
+        global.settings.spaceTabs = 4;
+
+        initStruct(fortressModules.prtl_fortress.turret);
+        initStruct(fortressModules.prtl_fortress.carport);
+        initStruct(fortressModules.prtl_badlands.war_drone);
+        initStruct(fortressModules.prtl_pit.soul_forge);
+        initStruct(fortressModules.prtl_pit.soul_attractor);
+        initStruct(fortressModules.prtl_ruins.guard_post);
+        initStruct(fortressModules.prtl_lake.harbor);
+        initStruct(fortressModules.prtl_spire.purifier);
+        initStruct(fortressModules.prtl_spire.port);
+
+        initStruct(fortressModules.prtl_wasteland.throne);
+        initStruct(fortressModules.prtl_wasteland.incinerator); global.portal.incinerator.count = 1; global.portal.incinerator.on = 1;
+        initStruct(fortressModules.prtl_wasteland.warehouse); global.portal.warehouse.count = 1;
+        initStruct(fortressModules.prtl_wasteland.hovel); global.portal.hovel.count = 1;
+        initStruct(fortressModules.prtl_wasteland.dig_demon); global.portal.dig_demon.count = 1; global.portal.dig_demon.on = 1;
+        initStruct(fortressModules.prtl_wasteland.hell_casino); global.portal.hell_casino.count = 1; global.portal.hell_casino.on = 1;
+        initStruct(fortressModules.prtl_wasteland.demon_forge); global.portal.demon_forge.count = 1; global.portal.demon_forge.on = 1;
+        initStruct(fortressModules.prtl_wasteland.hell_factory); global.portal.hell_factory.count = 1; global.portal.hell_factory.on = 1;
+        initStruct(fortressModules.prtl_wasteland.twisted_lab); global.portal.twisted_lab.count = 1; global.portal.twisted_lab.on = 1; global.portal.twisted_lab.Coal = 1;
+        initStruct(fortressModules.prtl_wasteland.pumpjack); global.portal.pumpjack.count = 1;
+        initStruct(fortressModules.prtl_wasteland.brute); global.portal.brute.count = 1; global.portal.brute.on = 1;
+
+        addSmelter(10, 'Iron', 'Coal'); addSmelter(10, 'Steel', 'Coal');
+        global.city.factory.Alloy = 2;
+        global.city.factory.Polymer = 2;
+        global.city.factory.Nano_Tube = 1;
+        global.city.factory.Stanene = 1;
+
+        global.civic.d_job = 'lumberjack';
+        global.civic.miner.display = true;
+        if (!global.race['joyless']){
+            global.civic.entertainer.display = true;
+        }
+        global.civic.craftsman.display = true;
+
+        let citizens = actions.portal.prtl_wasteland.dig_demon.citizens() + actions.portal.prtl_wasteland.hovel.citizens();
+
+        global.resource[global.race.species].max = citizens;
+        global.resource[global.race.species].amount = citizens;
+
+        global.civic.miner.max = actions.portal.prtl_wasteland.dig_demon.citizens();
+        global.civic.miner.workers = actions.portal.prtl_wasteland.dig_demon.citizens();
+        global.civic.miner.assigned = actions.portal.prtl_wasteland.dig_demon.citizens();
+
+        global.civic.cement_worker.max = 5;
+        global.civic.cement_worker.workers = 5;
+        global.civic.cement_worker.assigned = 5;
+
+        if (!global.race['joyless']){
+            global.civic.entertainer.max = 3;
+            global.civic.entertainer.workers = 3;
+            global.civic.entertainer.assigned = 3;
+        }
+
+        global.civic.banker.max = 1;
+        global.civic.banker.workers = 1;
+        global.civic.banker.assigned = 1;
+
+        global.civic.professor.max = 3;
+        global.civic.professor.workers = 3;
+        global.civic.professor.assigned = 3;
+
+        global.civic.scientist.max = 2;
+        global.civic.scientist.workers = 2;
+        global.civic.scientist.assigned = 2;
+
+        global.civic.govern.type = 'autocracy';
+
+        if (global.race['calm']){
+            global.resource.Zen.display = true;
+            initStruct(actions.city.meditation);
+        }
+        if (global.race['cannibalize']){
+            initStruct(actions.city.s_alter);
+        }
+        if (global.race['magnificent']){
+            initStruct(actions.city.shrine);
+        }
+
+        global.portal['fortress'] = {
+            threat: 10000,
+            garrison: 0,
+            walls: 100,
+            repair: 0,
+            patrols: 0,
+            patrol_size: 10,
+            siege: 999,
+            notify: 'Yes',
+            s_ntfy: 'Yes',
+            nocrew: false,
+        };
+        global.portal.observe = {
+            settings: {
+                expanded: false,
+                average: false,
+                hyperSlow: false,
+                display: 'game_days',
+                dropKills: true,
+                dropGems: true
+            },
+            stats: {
+                total: {
+                    start: { year: global.city.calendar.year, day: global.city.calendar.day },
+                    days: 0,
+                    wounded: 0, died: 0, revived: 0, surveyors: 0, sieges: 0,
+                    kills: {
+                        drones: 0,
+                        patrols: 0,
+                        sieges: 0,
+                        guns: 0,
+                        soul_forge: 0,
+                        turrets: 0
+                    },
+                    gems: {
+                        patrols: 0,
+                        guns: 0,
+                        soul_forge: 0,
+                        crafted: 0,
+                        turrets: 0,
+                        surveyors: 0
+                    },
+                },
+                period: {
+                    start: { year: global.city.calendar.year, day: global.city.calendar.day },
+                    days: 0,
+                    wounded: 0, died: 0, revived: 0, surveyors: 0, sieges: 0,
+                    kills: {
+                        drones: 0,
+                        patrols: 0,
+                        sieges: 0,
+                        guns: 0,
+                        soul_forge: 0,
+                        turrets: 0
+                    },
+                    gems: {
+                        patrols: 0,
+                        guns: 0,
+                        soul_forge: 0,
+                        crafted: 0,
+                        turrets: 0,
+                        surveyors: 0
+                    },
+                }
+            },
+            graphID: 0,
+            graphs: {}
+        };
+
+        drawTech();
+        arpa('Physics');
+        loadFoundry();
+        renderFortress();
     }
 }

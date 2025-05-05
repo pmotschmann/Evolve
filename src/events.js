@@ -3,7 +3,7 @@ import { loc } from './locale.js';
 import { races, traits, fathomCheck, blubberFill } from './races.js';
 import { govTitle, garrisonSize, armyRating } from './civics.js';
 import { housingLabel, drawTech, actions } from './actions.js';
-import { flib } from './functions.js';
+import { flib, drawPet } from './functions.js';
 import { tradeRatio } from './resources.js';
 import { checkControlling, soldierDeath } from './civics.js';
 import { govActive } from './governor.js';
@@ -571,14 +571,14 @@ export const events = {
             }
 
             let gain = Math.floor(seededRandom(1,maxRoll));
-            if (global.resource[res].amount + gain > global.resource[res].max){
+            if (global.resource[res].max !== -1 && global.resource[res].amount + gain > global.resource[res].max){
                 global.resource[res].amount = global.resource[res].max;
             }
             else {
                 global.resource[res].amount += gain;
             }
 
-            return res === 'Money' ? loc('event_klepto',[gain]) : loc('event_klepto',[gain,global.resource[res].name]);
+            return res === 'Money' ? loc('event_klepto_money',[gain]) : loc('event_klepto',[gain,global.resource[res].name]);
         }
     },
     chicken_feast:{ 
@@ -986,14 +986,19 @@ export const events = {
         type: 'minor',
         effect(){
             if (global.race['pet']){
+                global.race.pet.event += Math.rand(300,600);
                 let interaction = Math.rand(0,10);
                 return loc(`event_${global.race.pet.type}_interaction${interaction}`,[loc(`event_${global.race.pet.type}_name${global.race.pet.name}`)]);
             }
             else {
+                let pet = Math.rand(0,2) === 0 ? 'cat' : 'dog';
                 global.race['pet'] = {
-                    type: Math.rand(0,2) === 0 ? 'cat' : 'dog',
-                    name: Math.rand(0,10)
+                    type: pet,
+                    name: pet === 'cat' ? Math.rand(0,12) : Math.rand(0,10),
+                    event: 0,
+                    pet: 0
                 };
+                drawPet();
                 return loc(`event_pet_${global.race.pet.type}`,[loc(`event_${global.race.pet.type}_name${global.race.pet.name}`)]);
             }
         }

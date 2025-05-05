@@ -1180,18 +1180,35 @@ export function minorEventsPage(content){
     }
 
     {   // Pet
-        let section = infoBoxBuilder(mainContent,{ name: 'pet', template: 'events', label: loc('wiki_events_pet'), paragraphs: 1, h_level: 2 });
-        infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_pet'), paragraphs: 1, h_level: 2,
+        let section = infoBoxBuilder(mainContent,{ name: 'pet', template: 'events', label: loc('wiki_events_pet'), paragraphs: 4, h_level: 2,
             para_data: {
-                1: [loc(`tech_club`)]
+                2: ['1%']
             }
-        }, section);
-        infoBoxBuilder(mainContent, { name: 'cat_examples', template: 'events', label: loc('wiki_events_pet'), h_level: 2, 
+         });
+        
+         infoBoxBuilder(mainContent, { name: 'cat_examples', template: 'events', label: loc('wiki_events_pet'), h_level: 2, 
             examples: [
                 loc(`event_pet_cat`,[loc(`event_cat_name3`)]),
                 loc(`event_pet_dog`,[loc(`event_dog_name0`)])
             ]
         }, section);
+
+        infoBoxBuilder(mainContent, { name: 'pet_action', template: 'events', label: loc('wiki_events_pet'), paragraphs: 10, break: [2,3,7,9], h_level: 2, 
+            para_data: {
+                2: [`<img src="lib/cat.png">`,`<img src="lib/dog.png">`],
+                7: ['2%'],
+                8: ['66%'],
+                9: ['1%'],
+                10: ['90%']
+            }
+        }, section);
+
+        infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_pet'), paragraphs: 1, h_level: 2,
+            para_data: {
+                1: [loc(`tech_club`)]
+            }
+        }, section);
+
         sideMenu('add',`minor-events`,`pet`,loc('wiki_events_pet'));
     }
 }

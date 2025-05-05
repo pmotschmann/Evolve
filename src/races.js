@@ -3,7 +3,7 @@ import { loc } from './locale.js';
 import { defineIndustry } from './industry.js';
 import { setJobName, jobScale, loadFoundry } from './jobs.js';
 import { vBind, clearElement, popover, removeFromQueue, removeFromRQueue, calc_mastery, gameLoop, getEaster, getHalloween, randomKey, modRes, messageQueue } from './functions.js';
-import { setResourceName, atomic_mass } from './resources.js';
+import { setResourceName, drawResourceTab, atomic_mass } from './resources.js';
 import { buildGarrison, govEffect, govTitle, armyRating, govCivics } from './civics.js';
 import { govActive, removeTask, defineGovernor } from './governor.js';
 import { unlockAchieve, unlockFeat, alevel } from './achieve.js';
@@ -2134,15 +2134,15 @@ export const traits = {
                 case 0.25:
                     return [10];
                 case 0.5:
-                    return [15];
-                case 1:
                     return [20];
-                case 2:
-                    return [25];
-                case 3:
+                case 1:
                     return [30];
+                case 2:
+                    return [40];
+                case 3:
+                    return [50];
                 case 4:
-                    return [35];
+                    return [60];
             }
         },
     },
@@ -2338,6 +2338,30 @@ export const traits = {
                     return [3];
                 case 4:
                     return [2];
+            }
+        },
+    },
+    iron_wood: { // Removes Plywood as a resource, adds attack bonus
+        name: loc('trait_iron_wood_name'),
+        desc: loc('trait_iron_wood'),
+        type: 'major',
+        val: 4,
+        vars(r){
+            switch (r || traitRank('iron_wood') || 1){
+                case 0.1:
+                    return [3];
+                case 0.25:
+                    return [6];
+                case 0.5:
+                    return [9];
+                case 1:
+                    return [12];
+                case 2:
+                    return [15];
+                case 3:
+                    return [18];
+                case 4:
+                    return [21];
             }
         },
     },
@@ -3034,7 +3058,7 @@ export const traits = {
             }
         }
     },
-    blurry: { // Increased success chance of spies
+    blurry: { // Increased success chance of spies // Warlord improves Reapers
         name: loc('trait_blurry_name'),
         desc: loc('trait_blurry'),
         type: 'major',
@@ -3502,7 +3526,7 @@ export const traits = {
                 case 3:
                     return [500, 3, 2, 2, 2];
                 case 4:
-                    return [520, 3, 2.5, 2,5, 2.5];
+                    return [520, 3, 2.5, 2.5, 2.5];
             }
         }
     },
@@ -3807,7 +3831,7 @@ export const traits = {
         name: loc('trait_artisan_name'),
         desc: loc('trait_artisan'),
         type: 'major',
-        val: 8,
+        val: 9,
         vars(r){
             // [Auto Crafting Boost, Manufacturing Boost, Improved Morale]
             switch (r || traitRank('artisan') || 1){
@@ -3820,11 +3844,11 @@ export const traits = {
                 case 1:
                     return [50,20,0.5];
                 case 2:
-                    return [65,25,0.6];
+                    return [60,25,0.55];
                 case 3:
-                    return [80,30,0.7];
+                    return [70,30,0.6];
                 case 4:
-                    return [95,35,0.8];
+                    return [80,35,0.65];
             }
         }
     },
@@ -4266,19 +4290,19 @@ export const traits = {
             // [Boosts Other Traits]
             switch (r || traitRank('empowered') || 1){
                 case 0.1:
-                    return [0];
+                    return [-1,2];
                 case 0.25:
-                    return [0];
+                    return [-2,3];
                 case 0.5:
-                    return [0];
+                    return [-3,4];
                 case 1:
-                    return [1];
+                    return [-4,6];
                 case 2:
-                    return [1];
+                    return [-6,9];
                 case 3:
-                    return [2];
+                    return [-8,12];
                 case 4:
-                    return [2];
+                    return [-99,99];
             }
         }
     },
@@ -4863,7 +4887,8 @@ export const races = {
         entity: loc('race_slitheryn_entity'),
         traits: {
             astrologer: 1,
-            hard_of_hearing: 1
+            hard_of_hearing: 1,
+            slow_digestion: 1
         },
         solar: {
             red: loc('race_slitheryn_solar_red'),
@@ -5676,6 +5701,23 @@ export const races = {
         fanaticism: 'empowered',
         basic(){ return false; }
     },
+    hellspawn: {
+        name: loc('race_hellspawn'),
+        desc: loc('race_hellspawn_desc'),
+        type: 'demonic',
+        home: loc('race_hellspawn_home'),
+        entity: loc('race_hellspawn_entity'),
+        traits: { immoral: 4 },
+        solar: {
+            red: loc('race_hellspawn_solar_red'),
+            hell: loc('race_hellspawn_solar_hell'),
+            gas: loc('race_hellspawn_solar_gas'),
+            gas_moon: loc('race_hellspawn_solar_gas_moon'),
+            dwarf: loc('race_hellspawn_solar_dwarf'),
+        },
+        fanaticism: 'immoral',
+        basic(){ return false; }
+    },
     junker: {
         name: altRace('junker') ? loc('race_ghoul') : loc('race_junker'),
         desc: altRace('junker') ? loc('race_ghoul_desc') : loc('race_junker_desc'),
@@ -5902,7 +5944,7 @@ function customRace(hybrid){
             }
         }
 
-        return {
+        let def = {
             name: global.custom[slot].name,
             desc: global.custom[slot].desc,
             type: global.custom[slot].genus,
@@ -5919,6 +5961,12 @@ function customRace(hybrid){
             fanaticism: fanatic,
             basic(){ return false; }
         };
+
+        if (hybrid){
+            def['hybrid'] = global.custom[slot].hybrid;
+        }
+
+        return def;
     }
     else {
         return {};
@@ -5945,7 +5993,7 @@ export function racialTrait(workers,type){
     if (global.race['rejuvenated'] && ['lumberjack','miner','factory'].includes(type)){
         modifier *= 1.1;
     }
-    if (type === 'lumberjack' && global.race['evil'] && !global.race['soul_eater']){
+    if (type === 'lumberjack' && global.race['evil'] && (global.race.universe === 'evil' || !global.race['soul_eater'])){
         if (global.race['living_tool']){
             modifier *= 1 + traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science * 0.3 : 0);
         }
@@ -6148,6 +6196,17 @@ export function racialTrait(workers,type){
         let tusk = global.race['tusk'] ? 1 + ((traits.tusk.vars()[0] / 100) * (armyRating(jobScale(1),'army',0) / 100)) : 1;
         let lt = global.race['living_tool'] ? 1 + traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science * 0.12 : 0) : 1;
         modifier *= lt > tusk ? lt : tusk;
+    }
+    if (global.race['warlord']){
+        if (type === 'miner'){
+            modifier *= 1.82;
+        }
+        else if (type === 'lumberjack'){
+            modifier *= 1.3;
+        }
+        else if (type === 'science'){
+            modifier *= 1.5;
+        }
     }
     if (global.race['forager'] && type === 'forager'){
         modifier *= traits.forager.vars()[0] / 100;
@@ -6491,6 +6550,12 @@ export function cleanAddTrait(trait){
             }
             purgeLumber();
             break;
+        case 'iron_wood':
+            if (global.race['smoldering']){
+                break;
+            }
+            releaseResource('Plywood');
+            break;
         case 'forge':
             defineIndustry();
             break;
@@ -6553,9 +6618,12 @@ export function cleanAddTrait(trait){
                     global.resource[res].trade = 0;
                 }
             });
-            global.settings.showMarket = false;
-            if (global.settings.marketTabs === 0) {
-                global.settings.marketTabs = 1;
+            global.city.market.active = false;
+            if (!global.galaxy?.freighter?.count){
+                global.settings.showMarket = false;
+                if (global.settings.marketTabs === 0) {
+                    global.settings.marketTabs = 1;
+                }
             }
             removeFromQueue(['city-trade']);
             removeFromRQueue(['trade']);
@@ -6773,6 +6841,11 @@ export function cleanRemoveTrait(trait,rank){
                 global.civic.lumberjack.display = true;
             }
             break;
+        case 'iron_wood':
+            if (global.tech['foundry']){
+                global.resource.Plywood.display = true;
+            }
+            break;
         case 'forge':
             defineIndustry();
             break;
@@ -6816,9 +6889,13 @@ export function cleanRemoveTrait(trait,rank){
             delete power_generated[loc('city_wind_power')];
             break;
         case 'terrifying':
-            global.settings.showMarket = true;
             checkPurgatory('tech','trade');
             checkPurgatory('city','trade');
+            if (global.tech['trade']){
+                global.settings.showMarket = true;
+                global.city.market.active = true;
+                drawResourceTab('market');
+            }
             break;
         case 'slaver':
             removeFromQueue(['city-slave_pen']);
@@ -6895,13 +6972,14 @@ export function cleanRemoveTrait(trait,rank){
             if (global.race['iTraits']){
                 Object.keys(global.race.iTraits).forEach(function (t){
                     if (t !== 'imitation'){
+                        let base = global.race.inactiveTraits[t] ? global.race.inactiveTraits : global.race;
                         if (global.race.iTraits[t] === 0){
-                            let rank = global.race[t];
-                            delete global.race[t];
+                            let rank = base[t];
+                            delete base[t];
                             cleanRemoveTrait(t,rank);
                         }
                         else {
-                            global.race[t] = global.race.iTraits[t];
+                            base[t] = global.race.iTraits[t];
                         }
                     }
                 });
@@ -6909,6 +6987,7 @@ export function cleanRemoveTrait(trait,rank){
                 if (global.race['shapeshifter']){
                     shapeShift(false, true, false); //update mimic options
                 }
+                combineTraits();
             }
             break;
         case 'evil':
@@ -6955,10 +7034,13 @@ export function setImitation(mod){
             }
         }
 
+        Object.keys(global.race.inactiveTraits).forEach(function (trait){
+            global.race[trait] = global.race.inactiveTraits[trait];
+        })
+        global.race.inactiveTraits = {};
+
         let i_traits = [];
         if(races[global.race['srace']].type === 'hybrid'){
-            let genusList = races[global.race['srace']].hybrid;
-            if (genusList.includes('carnivore') && genusList.includes('herbivore')){ genusList = ['omnivore']; }
             races[global.race['srace']].hybrid.forEach(function(genus) {
                 Object.keys(genus_traits[genus]).forEach(function (trait) {
                     if (!global.race[trait]){
@@ -6999,11 +7081,18 @@ export function setImitation(mod){
                 if (mod && set){ cleanAddTrait(trait); }
             }
         }
+        combineTraits();
     }
 }
 
 export function shapeShift(genus,setup,forceClean){
     let shifted = global.race.hasOwnProperty('ss_traits') ? global.race.ss_traits : [];
+
+    Object.keys(global.race.inactiveTraits).forEach(function (trait){
+        global.race[trait] = global.race.inactiveTraits[trait];
+    })
+    global.race.inactiveTraits = {};
+
     if (!setup || forceClean){
         shifted.forEach(function(trait){
             let rank = global.race[trait];
@@ -7039,7 +7128,7 @@ export function shapeShift(genus,setup,forceClean){
         const imitation =  global.race['imitation'] ? (races[global.race['srace']].type === 'hybrid' ? races[global.race['srace']].hybrid : [races[global.race['srace']].type]) : [];
         const base = races[global.race.species].type === 'hybrid' ? races[global.race.species].hybrid : [races[global.race.species].type];
         Object.keys(genus_traits).forEach(function (gen) {
-            if(!['synthetic', 'eldritch', ...base, ...imitation].includes(gen) && global.stats.achieve[`genus_${gen}`] && global.stats.achieve[`genus_${gen}`].l > 0){
+            if(!['synthetic', 'eldritch', 'hybrid', ...base, ...imitation].includes(gen) && global.stats.achieve[`genus_${gen}`] && global.stats.achieve[`genus_${gen}`].l > 0){
                 drop += `<b-dropdown-item v-on:click="setShape('${gen}')">{{ '${gen}' | genus }}</b-dropdown-item>`;
             }
         });
@@ -7069,6 +7158,7 @@ export function shapeShift(genus,setup,forceClean){
     }
 
     global.race['ss_traits'] = shifted;
+    combineTraits();
     if(genus || !setup || forceClean){
         //redraws for mimic heat or avian removing buildings or techs
         arpa('Genetics');
@@ -7078,23 +7168,53 @@ export function shapeShift(genus,setup,forceClean){
     }
 }
 
+export function combineTraits(){
+
+    Object.keys(global.race.inactiveTraits).forEach(function (trait){
+        global.race[trait] = global.race.inactiveTraits[trait];
+    })
+    global.race.inactiveTraits = {};
+
+    if(global.race['herbivore'] && global.race['carnivore']){ //herbivore and carnivore found. Add forager
+        let rank = 1
+
+        global.race.inactiveTraits['herbivore'] = global.race['herbivore'];
+        global.race.inactiveTraits['carnivore'] = global.race['carnivore'];
+        delete global.race['herbivore'];
+        delete global.race['carnivore'];
+        if(global.race['forager'] !== rank){
+            setTraitRank('forager',{ set: rank, force:true});
+            cleanRemoveTrait('carnivore');
+            cleanRemoveTrait('herbivore');
+            cleanAddTrait('forager');
+        }
+    }
+    else if(global.race['forager']){
+        delete global.race['forager'];
+        cleanRemoveTrait('forager');
+    }
+}
+
 export function traitRank(trait){
     if (global.race['empowered'] && trait !== 'empowered'){
-        switch (global.race[trait]){
-            case 0.1:
-                return traits.empowered.vars()[0] >= 2 ? 0.5 : 0.25;
-            case 0.25:
-                return traits.empowered.vars()[0] >= 2 ? 1 : 0.5;
-            case 0.5:
-                return traits.empowered.vars()[0] >= 2 ? 2 : 1;
-            case 1:
-                return traits.empowered.vars()[0] >= 1 ? (traits.empowered.vars()[0] >= 2 ? 3 : 2) : 1;
-            case 2:
-                return traits.empowered.vars()[0] >= 1 ? (traits.empowered.vars()[0] >= 2 ? 4 : 3) : 2;
-            case 3:
-                return traits.empowered.vars()[0] >= 1 ? 4 : 3;
-            case 4:
-                return 4;
+        let val = traits[trait].val;
+        if (val >= traits.empowered.vars()[0] && val <= traits.empowered.vars()[1]){
+            switch (global.race[trait]){
+                case 0.1:
+                    return 0.25;
+                case 0.25:
+                    return 0.5;
+                case 0.5:
+                    return 1;
+                case 1:
+                    return 2;
+                case 2:
+                    return 3;
+                case 3:
+                    return 4;
+                case 4:
+                    return 4;
+            }
         }
     }
     return global.race[trait];
@@ -7169,6 +7289,9 @@ export function traitSkin(type, trait, species){
                 promiscuous: artificial ? loc('trait_promiscuous_synth') : traits['promiscuous'].desc,
                 weak: species === 'dwarf' ? loc('trait_drunk') : traits.weak.desc,
                 spiritual: global.race.universe === 'evil' && global.civic.govern.type != 'theocracy' ? loc('trait_manipulator') : traits.spiritual.desc,
+                blurry: global.race['warlord'] ? loc('trait_blurry_warlord') : traits.blurry.desc,
+                playful: global.race['warlord'] ? loc('trait_playful_warlord') : traits.blurry.desc,
+                befuddle: global.race['warlord'] ? loc('trait_befuddle_warlord') : traits.befuddle.desc,
             };
             return trait ? (desc[trait] ? desc[trait] : traits[trait].desc) : desc;
         }
@@ -7703,6 +7826,7 @@ function minorWish(parent){
                     }
                     else {
                         global.civic.foreign[spell].hstl = 0;
+                        messageQueue(loc('wish_love_gov',[govTitle(spell.substring(3))]),false,false,['minor_events']);
                     }
                 }
             },
@@ -8051,11 +8175,13 @@ function majorWish(parent){
                     global.race.wishStats.major = traits.wish.vars()[0];
 
                     let options = ['fake','future'];
-                    if (global.tech['blackhole'] && global.tech.blackhole >= 5 && global.interstellar['mass_ejector'] && global.interstellar.mass_ejector.count >= 1){
-                        options.push('blackhole');
-                    }
-                    else if (!global.race['cataclysm'] && !global.race['lone_survivor'] && global.race.species !== 'sludge'){
-                        options.push('mad');
+                    if (!global.race['warlord']){
+                        if (global.tech['blackhole'] && global.tech.blackhole >= 5 && global.interstellar['mass_ejector'] && global.interstellar.mass_ejector.count >= 1){
+                            options.push('blackhole');
+                        }
+                        else if (!global.race['cataclysm'] && !global.race['lone_survivor'] && global.race.species !== 'sludge'){
+                            options.push('mad');
+                        }
                     }
 
                     let spell = options[Math.floor(seededRandom(0,options.length))];
@@ -8126,7 +8252,7 @@ function majorWish(parent){
                     global.race.wishStats.major = traits.wish.vars()[0];
 
                     let options = ['potato'];
-                    if (!global.race.wishStats.ship && (global.tech['shipyard'] || (global.tech['science'] && global.tech.science >= 16))){
+                    if (!global.race['warlord'] && !global.race.wishStats.ship && (global.tech['shipyard'] || (global.tech['science'] && global.tech.science >= 16))){
                         options.push('ship');
                     }
                     if (!global.race.wishStats.gov){
@@ -8161,10 +8287,10 @@ function majorWish(parent){
                     global.race.wishStats.major = traits.wish.vars()[0];
 
                     let options = ['priest'];
-                    if (!global.race.wishStats.temple){
+                    if (!global.race.wishStats.temple && !global.race['cataclysm'] && !global.race['lone_survivor'] && !global.race['warlord']){
                         options.push('temple');
                     }
-                    if (!global.race.wishStats.zigg){
+                    if (!global.race.wishStats.zigg && !global.race['lone_survivor'] && !global.race['warlord']){
                         options.push('zigg');
                     }
 
@@ -8269,7 +8395,7 @@ function majorWish(parent){
                     let options = ['wonder'];
 
                     let a_level = alevel();
-                    if (!global.race['lone_survivor'] && !global.stats.feat['wish'] || (global.stats.feat['wish'] && global.stats.feat['wish'] < a_level)){
+                    if (!global.race['lone_survivor'] && !global.race['warlord'] && !global.stats.feat['wish'] || (global.stats.feat['wish'] && global.stats.feat['wish'] < a_level)){
                         options.push('feat');
                     }
 
@@ -8279,8 +8405,8 @@ function majorWish(parent){
                         {
                             let wonders = [];
                             if (!global.race['lone_survivor']){
-                                let hasCity = global.race['cataclysm'] || global.race['orbit_decay'] ? false : true;
-                                let hasMars = global.tech['mars'] ? true : false;
+                                let hasCity = global.race['cataclysm'] || global.race['orbit_decay'] || global.race['warlord'] ? false : true;
+                                let hasMars = global.tech['mars'] && !global.race['warlord'] ? true : false;
                                 if (!global.city.hasOwnProperty('wonder_lighthouse') && hasCity){
                                     wonders.push('lighthouse');
                                 }
@@ -8290,11 +8416,20 @@ function majorWish(parent){
                                 if (!global.space.hasOwnProperty('wonder_statue') && hasMars){
                                     wonders.push('statue');
                                 }
-                                if (!global.race['truepath'] && !global.interstellar.hasOwnProperty('wonder_gardens') && global.tech['alpha'] && global.tech.alpha >= 2){
-                                    wonders.push('gardens');
+                                if (global.race['warlord']){
+                                    if (!global.portal.hasOwnProperty('wonder_gardens')){
+                                        wonders.push('gardens');
+                                    }
                                 }
-                                if (global.race['truepath'] && !global.space.hasOwnProperty('wonder_gardens') && global.tech['titan'] && global.tech.titan >= 2){
-                                    wonders.push('gardens');
+                                else if (global.race['truepath']){
+                                    if (!global.space.hasOwnProperty('wonder_gardens') && global.tech['titan'] && global.tech.titan >= 2){
+                                        wonders.push('gardens');
+                                    }
+                                }
+                                else {
+                                    if (!global.interstellar.hasOwnProperty('wonder_gardens') && global.tech['alpha'] && global.tech.alpha >= 2){
+                                        wonders.push('gardens');
+                                    }
                                 }
                             }
 
@@ -8311,7 +8446,7 @@ function majorWish(parent){
                                         global.space['wonder_statue'] = { count: 1 };
                                         break;
                                     case 'gardens':
-                                        global[global.race['truepath'] ? 'space' : 'interstellar']['wonder_gardens'] = { count: 1 };
+                                        global[global.race['warlord'] ? 'portal' : (global.race['truepath'] ? 'space' : 'interstellar')]['wonder_gardens'] = { count: 1 };
                                         break;
                                 }
                                 messageQueue(loc('wish_wonder'),'warning',false,['events']);

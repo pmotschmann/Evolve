@@ -1127,6 +1127,10 @@ Misc ---------> Main template
             color: @link-hover;
         }
 
+        .tabs > ul {
+            border-bottom: solid .0625rem;
+        }
+
         // .button
         .button {
             background-color: @button-background;
@@ -1391,17 +1395,51 @@ Misc ---------> Main template
                     }
                 }
 
+                .enemyFortress {
+                    background-color: @button-background;
+                }
+
                 .divider h2 {
                     background: @html-background;
                 }
 
+                .green,
                 .synth {
                     box-shadow: 0 0 6px @has-text-success;
                     > span {
                         text-shadow: 1px 1px @has-text-success;
                     }
                 }
+
+                .red {
+                    box-shadow: 0 0 6px @has-text-danger;
+                    > span {
+                        text-shadow: 1px 1px @has-text-danger;
+                    }
+                }
+
+                .yellow {
+                    box-shadow: 0 0 6px @has-text-warning;
+                    > span {
+                        text-shadow: 1px 1px @has-text-warning;
+                    }
+                }
+
+                .orange {
+                    box-shadow: 0 0 6px @has-text-caution;
+                    > span {
+                        text-shadow: 1px 1px @has-text-caution;
+                    }
+                }
+
+                .purple {
+                    box-shadow: 0 0 6px @has-text-special;
+                    > span {
+                        text-shadow: 1px 1px @has-text-special;
+                    }
+                }
                 
+                .blue,
                 .precog {
                     box-shadow: 0 0 6px @has-text-info;
                     > span {
@@ -2633,16 +2671,13 @@ a {
             display: flex;
             cursor: default;
 
-            :first-child {
-                width: 34%;
+            div {
+                width: 70%;
+                display: flex;
+                justify-content: space-between;
             }
 
-            :nth-child(2) {
-                text-align: right;
-                width: 36%;
-            }
-
-            :nth-child(3) {
+            > :nth-child(2) {
                 text-align: center;
                 width: 4%;
             }
@@ -2651,7 +2686,7 @@ a {
                 cursor: pointer;
             }
 
-            :nth-child(4) {
+            > :nth-child(3) {
                 text-align: right;
                 width: 26%;
             }
@@ -2850,6 +2885,46 @@ a {
             .flair:nth-of-type(6) {
                 right: 1.3125rem;
                 top: 1.875rem;
+            }
+        }
+
+        .action.disabled {
+            display: none;
+        }
+
+        .enemyFortress {
+            display: inline-block;
+            position: relative;
+            min-width: 17.375rem;
+            height: 3.125rem;
+            margin: .375rem .375rem 0 0;
+            border-radius: .25rem;
+
+            .fortRow {
+                > span {
+                    display: inline-block;
+                }
+                :first-child {
+                    margin-left: 0.5rem;
+                    margin-right: 0;
+                    float: left;
+                }
+                :last-child {
+                    margin-left: 0.25rem;
+                    margin-right: 0.5rem;
+                    float: right;
+                }
+            }
+
+            .second {
+                line-height: 2rem;
+                a.button {
+                    height: 1.5rem;
+                    margin-top: 0.25rem;
+                    padding-left: 0.25rem;
+                    padding-right: 0.25rem;
+                    min-width: 4.5rem;
+                }
             }
         }
 
@@ -3985,6 +4060,15 @@ a {
         box-shadow: 0px 0px 1rem black;
         border-radius: 1rem;
     }
+
+    .genus_selection {
+        > section {
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+    }
 }
 
 .main>div.popper,
@@ -4100,6 +4184,9 @@ body .modal>div.popper {
 
     .desc {
         text-align: left;
+    }
+    .condense {
+        margin: 0;
     }
 }
 
@@ -4349,10 +4436,15 @@ span.inline {
         margin-left: 1rem;
 
         .universe,
-        .simulation {
+        .simulation,
+        .pet {
             border-left: 1px solid;
-            margin-left: 1rem;
-            padding-left: 1rem;
+            margin-left: 0.75rem;
+            padding-left: 0.75rem;
+        }
+
+        .pet {
+            cursor: pointer;
         }
     }
 
@@ -4364,6 +4456,96 @@ span.inline {
             position: relative;
             top: .125rem;
             left: .25rem;
+        }
+    }
+
+    .pet {
+        .black {
+            fill: #000000;
+            filter: drop-shadow(0px 0px 2px #fff);
+        }
+        .black.stripe {
+            fill: url(#PetGradient);
+            #PetGradient {
+                .stop1 { stop-color: #000; }
+                .stop2 { stop-color: #4e4e4e; }
+            }
+        }
+        .black.patched {
+            fill: url(#PetGradient);
+            #PetGradient {
+                .stop1 { stop-color: #000; }
+                .stop2 { stop-color: #424242; }
+            }
+        }
+        .orange {
+            fill: #e25f08;
+            filter: drop-shadow(0px 0px 2px #000);
+        }
+        .orange.stripe {
+            fill: url(#PetGradient);
+            #PetGradient {
+                .stop1 { stop-color: #e25f08; }
+                .stop2 { stop-color: #ccb9ad; }
+            }
+        }
+        .gray {
+            fill: #575757;
+            filter: drop-shadow(0px 0px 2px #000);
+        }
+        .gray.stripe {
+            fill: url(#PetGradient);
+            #PetGradient {
+                .stop1 { stop-color: #575757; }
+                .stop2 { stop-color: #202020; }
+            }
+        }
+        .gray.patched {
+            fill: url(#PetGradient);
+            #PetGradient {
+                .stop1 { stop-color: #575757; }
+                .stop2 { stop-color: #665237; }
+            }
+        }
+        .white {
+            fill: #f0efef;
+            filter: drop-shadow(0px 0px 2px #000);
+        }
+        .white.stripe {
+            fill: url(#PetGradient);
+            #PetGradient {
+                .stop1 { stop-color: #f0efef; }
+                .stop2 { stop-color: #f5dec4; }
+            }
+        }
+        .white.patched {
+            fill: url(#PetGradient);
+            #PetGradient {
+                .stop1 { stop-color: #f0efef; }
+                .stop2 { stop-color: #b8ab9b; }
+            }
+        }
+        .cream {
+            fill: #bd8754;
+            filter: drop-shadow(0px 0px 2px #000);
+        }
+        .cream.stripe {
+            fill: url(#PetGradient);
+            #PetGradient {
+                .stop1 { stop-color: #bd8754; }
+                .stop2 { stop-color: #f5dec4; }
+            }
+        }
+        .brown {
+            fill: #996f48;
+            filter: drop-shadow(0px 0px 2px #000);
+        }
+        .brown.patched {
+            fill: url(#PetGradient);
+            #PetGradient {
+                .stop1 { stop-color: #996f48; }
+                .stop2 { stop-color: #af9a85; }
+            }
         }
     }
 
@@ -4821,6 +5003,10 @@ div.bigbang {
             section {
                 margin-top: .5rem;
             }
+
+            button {
+                padding: 1rem 0.5rem;
+            }
         }
 
         .trait_selection {
@@ -4877,11 +5063,12 @@ div.bigbang {
         text-align: center;
     }
 
-    #geneLabFanatic {
-        margin-top: 1rem;
+    .genus {
+        margin-bottom: 0.75rem;
         text-align: center;
-        > div {
-            margin-top: 0.5rem;
+        > button {
+            margin-top: 0.25rem;
+            width: 8.5rem;
         }
     }
 }
@@ -4975,6 +5162,20 @@ div.bigbang {
         pointer-events: all;
         height: 1.25rem;
         margin-bottom: .25rem;
+    }
+
+    .soldierEvaluation {
+        > div {
+            display: flex;
+            justify-content: space-between;
+            :first-child {
+                margin-right: 1rem;
+            }
+        }
+        > div.head {
+            display: block;
+            text-align: center;
+        }
     }
 }
 #powerStatus { white-space: nowrap; }

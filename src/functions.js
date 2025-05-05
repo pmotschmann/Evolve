@@ -11,6 +11,7 @@ import { govEffect } from './civics.js';
 import { universeLevel, universeAffix, alevel } from './achieve.js';
 import { astrologySign, astroVal } from './seasons.js';
 import { shipCosts, TPShipDesc } from './truepath.js';
+import { mechCost, mechDesc } from './portal.js';
 
 var popperRef = false;
 export function popover(id,content,opts){
@@ -114,11 +115,6 @@ export function gameLoop(act){
                 if (webWorker.w){
                     webWorker.w.postMessage({ loop: 'clear' });
                 }
-                else {
-                    clearInterval(intervals['main_loop']);
-                    clearInterval(intervals['mid_loop']);
-                    clearInterval(intervals['long_loop']);
-                }
                 if (global.settings.at > 0){
                     global.settings.at = atrack.t;
                 }
@@ -135,22 +131,8 @@ export function gameLoop(act){
                 webWorker.mt = timers.webWorkerMainTimer;
 
                 if (webWorker.w){
-                    webWorker.w.postMessage({ loop: 'short', period: timers.mainTimer });
-                    webWorker.w.postMessage({ loop: 'mid', period: timers.midTimer });
-                    webWorker.w.postMessage({ loop: 'long', period: timers.longTimer });
+                    webWorker.w.postMessage({ loop: 'start', period: timers.mainTimer });
                 }
-                else {
-                    intervals['main_loop'] = setInterval(function(){
-                        fastLoop();
-                    }, timers.mainTimer);
-                    intervals['mid_loop'] = setInterval(function(){
-                        midLoop();
-                    }, timers.midTimer);
-                    intervals['long_loop'] = setInterval(function(){
-                        longLoop();
-                    }, timers.longTimer);
-                }
-
                 webWorker.s = true;
             }
     }
@@ -172,9 +154,9 @@ export function loopTimers(){
     // Main loop takes 250ms without any modifiers.
     const webWorkerMainTimer = Math.floor(250 * modifier);
     // Mid loop takes 1000ms without any modifiers.
-    const baseMidTimer = 4 * webWorkerMainTimer;
+    const baseMidTimer = webWorker.midRatio * webWorkerMainTimer;
     // Long loop (game day) takes 5000ms without any modifiers.
-    const baseLongTimer = 20 * webWorkerMainTimer;
+    const baseLongTimer = webWorker.longRatio * webWorkerMainTimer;
     // The constant by which the time is accelerated when atrack.t > 0.
     const timeAccelerationFactor = 2;
 
@@ -182,7 +164,6 @@ export function loopTimers(){
     return {
         webWorkerMainTimer,
         mainTimer: Math.ceil(webWorkerMainTimer * aTimeMultiplier),
-        midTimer: Math.ceil(baseMidTimer * aTimeMultiplier),
         longTimer: Math.ceil(baseLongTimer * aTimeMultiplier),
         baseLongTimer,
         timeAccelerationFactor,
@@ -255,9 +236,18 @@ window.importGame = function importGame(data,utf16){
             }
         }
         // prevent invalid message colors from escaping class attribute
-        for (const msgQueue in saveState.lastMsg) {
-            for (const msg of saveState.lastMsg[msgQueue]) {
-                msg.c = msg.c.replaceAll('"', '')
+        if (Array.isArray(saveState.lastMsg)){
+            // Legacy save file: prior to v1.1.4
+            for (let i = 0; i < saveState.lastMsg.length; i++){
+                saveState.lastMsg[i].c = saveState.lastMsg[i].c.replaceAll('"', '');
+            }
+        }
+        else {
+            // Save file from v1.1.4 or newer
+            for (const msgQueue in saveState.lastMsg){
+                for (const msg of saveState.lastMsg[msgQueue]){
+                    msg.c = msg.c.replaceAll('"', '');
+                }
             }
         }
         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(saveState)));
@@ -272,16 +262,16 @@ export function powerGrid(type,reset){
     switch (type){
         case 'power':
             power_structs = [
-                'city:transmitter','prtl_ruins:arcology','city:apartment','eden_asphodel:rectory','int_alpha:habitat','int_alpha:luxury_condo','spc_red:spaceport','spc_titan:titan_spaceport','spc_titan:electrolysis','int_alpha:starport',
-                'eden_asphodel:encampment','spc_dwarf:shipyard','spc_titan:ai_core2','spc_eris:drone_control','spc_titan:ai_colonist','int_blackhole:s_gate','gxy_gateway:starbase','spc_triton:fob',
-                'spc_enceladus:operating_base','spc_enceladus:zero_g_lab','spc_titan:sam','gxy_gateway:ship_dock','prtl_ruins:hell_forge','int_neutron:stellar_forge','int_neutron:citadel',
-                'tau_home:orbital_station','tau_red:orbital_platform','tau_gas:refueling_station','tau_home:tau_farm','tau_gas:ore_refinery','tau_gas:whaling_station',
+                'city:transmitter','prtl_ruins:arcology','city:apartment','eden_asphodel:rectory','eden_asphodel:corruptor','int_alpha:habitat','int_alpha:luxury_condo','spc_red:spaceport','spc_titan:titan_spaceport','spc_titan:electrolysis',
+                'int_alpha:starport','eden_asphodel:encampment','spc_dwarf:shipyard','spc_titan:ai_core2','spc_eris:drone_control','spc_titan:ai_colonist','int_blackhole:s_gate','gxy_gateway:starbase','spc_triton:fob',
+                'prtl_wasteland:demon_forge','prtl_wasteland:twisted_lab','spc_enceladus:operating_base','spc_enceladus:zero_g_lab','spc_titan:sam','gxy_gateway:ship_dock','prtl_ruins:hell_forge','int_neutron:stellar_forge','int_neutron:citadel',
+                'prtl_badlands:mortuary','tau_home:orbital_station','tau_red:orbital_platform','tau_gas:refueling_station','tau_home:tau_farm','tau_gas:ore_refinery','tau_gas:whaling_station',
                 'city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','gxy_stargate:telemetry_beacon','int_nebula:nexus','gxy_stargate:gateway_depot',
                 'spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','gxy_gorddon:embassy','gxy_gorddon:dormitory','gxy_alien1:resort','spc_gas_moon:oil_extractor',
-                'int_alpha:int_factory','city:factory','spc_red:red_factory','spc_dwarf:world_controller','prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine',
-                'city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','prtl_pit:soul_forge','gxy_chthonian:excavator',
+                'prtl_wasteland:hell_factory','int_alpha:int_factory','city:factory','spc_red:red_factory','spc_dwarf:world_controller','prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine',
+                'city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','prtl_pit:soul_forge','gxy_chthonian:excavator','prtl_pit:shadow_mine','prtl_pit:tavern',
                 'int_blackhole:far_reach','prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','gxy_stargate:gateway_station','gxy_alien1:vitreloy_plant','gxy_alien2:foothold',
-                'gxy_gorddon:symposium','int_blackhole:mass_ejector','city:casino','spc_hell:spc_casino','tau_home:tauceti_casino','prtl_fortress:repair_droid','gxy_stargate:defense_platform','prtl_ruins:guard_post',
+                'gxy_gorddon:symposium','int_blackhole:mass_ejector','city:casino','spc_hell:spc_casino','tau_home:tauceti_casino','prtl_wasteland:hell_casino','prtl_fortress:repair_droid','gxy_stargate:defense_platform','prtl_ruins:guard_post',
                 'prtl_lake:cooling_tower','prtl_lake:harbor','prtl_spire:purifier','prtl_ruins:archaeology','prtl_pit:gun_emplacement','prtl_gate:gate_turret','prtl_pit:soul_attractor',
                 'prtl_gate:infernite_mine','int_sirius:ascension_trigger','spc_kuiper:orichalcum_mine','spc_kuiper:elerium_mine','spc_kuiper:uranium_mine','spc_kuiper:neutronium_mine','spc_dwarf:m_relay',
                 'tau_home:tau_factory','tau_home:infectious_disease_lab','tau_home:alien_outpost','tau_gas:womling_station','spc_red:atmo_terraformer','tau_star:matrix','tau_home:tau_cultural_center',
@@ -363,8 +353,8 @@ export function initMessageQueue(filters){
     filters.forEach(function (filter){
         message_logs[filter] = [];
         if (!global.settings.msgFilters[message_logs.view].vis){
-            $(`#msgQueueFilter-${message_logs.view}`).removeClass('is-active');
-            $(`#msgQueueFilter-${filter}`).addClass('is-active');
+            $(`#msgQueueFilter-${message_logs.view}`).removeClass('is-active').attr('aria-disabled', 'false');
+            $(`#msgQueueFilter-${filter}`).addClass('is-active').attr('aria-disabled', 'true');
             message_logs.view = filter;
         }
     });
@@ -508,6 +498,10 @@ export function buildQueue(){
                         });
                         c_action = { cost: costs };
                     }
+                    else if (segments[0] === 'hell' && segments[1].substring(0,4) === 'mech'){
+                        let costs = mechCost(global.queue.queue[index].type.size,global.queue.queue[index].type.infernal,true);
+                        c_action = { cost: costs };
+                    }
                     else if (segments[0] === 'city' || segments[0] === 'evolution' || segments[0] === 'starDock'){
                         c_action = actions[segments[0]][segments[1]];
                     }
@@ -615,6 +609,9 @@ function attachQueuePopovers(){
                 else if (struct.s[0].substring(0,2) === 'tp' && struct.s[1].substring(0,4) === 'ship'){
                     TPShipDesc(obj.popper,deepClone(global.queue.queue[i]));
                 }
+                else if (struct.s[0].substring(0,4) === 'hell' && struct.s[1].substring(0,4) === 'mech'){
+                    mechDesc(obj.popper,deepClone(global.queue.queue[i]));
+                }
                 else {
                     actionDesc(obj.popper,struct.a,global[struct.s[0]][struct.s[1]],false,false,false,b_res);
                 }
@@ -640,6 +637,9 @@ export function decodeStructId(id){
     }
     else if (segments[0] === 'tp' && segments[1].substring(0,4) === 'ship'){
         c_action = 'ship';
+    }
+    else if (segments[0] === 'hell' && segments[1].substring(0,4) === 'mech'){
+        c_action = 'mech';
     }
     else if (segments[0] === 'city' || segments[0] === 'evolution' || segments[0] === 'starDock'){
         c_action = actions[segments[0]][segments[1]];
@@ -1714,6 +1714,10 @@ export function calcPrestige(type,inputs){
             else {
                 gains.supercoiled = pr_gain ** 3;
             }
+            if (global.race['warlord']){
+                gains.artifact = 5;
+                gains.supercoiled = 64;
+            }
         }
     }
 
@@ -1760,6 +1764,7 @@ export function adjustCosts(c_action, offset, wiki){
     costs = heavyAdjust(costs, offset, wiki);
     costs = dictatorAdjust(costs, offset, wiki);
     costs = lMatAdjust(costs, c_action, offset, wiki);
+    costs = nexusAdjust(costs, c_action, offset, wiki);
     return craftAdjust(costs, offset, wiki);
 }
 
@@ -1940,12 +1945,15 @@ function smolderAdjust(costs, offset, wiki){
 }
 
 function kindlingAdjust(costs, offset, wiki){
-    if (global.race['kindling_kindred'] && (costs['Lumber'] || costs['Plywood'])){
+    if ((global.race['kindling_kindred'] || global.race['iron_wood']) && (costs['Lumber'] || costs['Plywood'])){
         var newCosts = {};
         let adjustRate = 1 + (traits.kindling_kindred.vars()[0] / 100);
         Object.keys(costs).forEach(function (res){
-            if (res !== 'Lumber' && res !== 'Plywood' && res !== 'Structs'){
+            if (global.race['kindling_kindred'] && res !== 'Lumber' && res !== 'Plywood' && res !== 'Structs'){
                 newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * adjustRate) || 0; }
+            }
+            else if (global.race['iron_wood'] && res !== 'Plywood'){
+                newCosts[res] = function(){ return costs[res](offset, wiki); }
             }
             else if (res === 'Structs'){
                 newCosts[res] = function(){ return costs[res](offset, wiki); }
@@ -2048,6 +2056,23 @@ function lMatAdjust(costs, c_action, offset, wiki){
             if (path && global[path[1]].hasOwnProperty(path[0]) && global[path[1]][path[0]].hasOwnProperty('l_m') 
                 && (['Lumber','Furs','Plywood'].includes(res) || (res === 'Stone' && global.race['sappy']))){
                 newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * traits.living_materials.vars()[0] ** (global[path[1]][path[0]].l_m / 25)); }
+            }
+            else {
+                newCosts[res] = function(){ return costs[res](offset, wiki); }
+            }
+        });
+        return newCosts;
+    }
+    return costs;
+}
+
+function nexusAdjust(costs, c_action, offset, wiki){
+    if(global.tech['nexus'] && global.race['witch_hunter'] && global.tech['roguemagic'] && global.tech.roguemagic >= 7){
+        let newCosts = {};
+        let adjustRate = 0.96 ** global.tech['nexus'];
+        Object.keys(costs).forEach(function (res){
+            if (['Mana'].includes(res)){
+                newCosts[res] = function(){ return costs[res](offset, wiki) * adjustRate; }
             }
             else {
                 newCosts[res] = function(){ return costs[res](offset, wiki); }
@@ -2179,7 +2204,13 @@ export function svgIcons(icon){
             return `<rect width='24' height='24' stroke='none' fill='#000000' opacity='0'/><g transform="matrix(0.42 0 0 0.42 12 12)" ><g style=""><g transform="matrix(1 0 0 1 0 7)" ><path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(255,160,0); fill-rule: nonzero; opacity: 1;" transform=" translate(-24, -31)" d="M 25 34 L 24 36 L 23 34 L 22 26 L 26 26 z" stroke-linecap="round" /></g><g transform="matrix(1 0 0 1 0 16)" ><path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(251,192,45); fill-rule: nonzero; opacity: 1;" transform=" translate(-24, -40)" d="M 29 44 C 29 45.105 28.104 46 27 46 L 21 46 C 19.896 46 19 45.105 19 44 L 19 37 C 19 35.895 23 34 23 34 L 25 34 C 25 34 29 35.895 29 37 L 29 44 z" stroke-linecap="round" /></g><g transform="matrix(1 0 0 1 0 -5.5)" ><path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill-rule: nonzero; opacity: 1;" transform=" translate(-24, -18.5)" d="M 25 34 L 25 35 L 23 35 L 23 34 L 22 26 L 26 26 z M 19.71 24.971 C 19.204 24.842 7.292000000000002 21.735 5.32 12.203 C 4.443 7.958 5.529 5.508 6.596 4.199 C 7.915 2.578 9.713 2 10.955 2 C 12.616 2 13.9 2.457 14.773 3.359 C 15.871 4.496 15.855 5.879 15.850999999999999 6.035 C 15.850999999999999 7.607 14.786 10 11.850999999999999 10 L 11.850999999999999 10 C 11.728 10 11.094999999999999 9.982 10.437 9.635 C 9.48 9.133 8.955 8.195 8.955 7 L 10.955 7 C 10.955 7.574 11.178 7.764 11.37 7.867 C 11.598 7.986 11.85 8 11.852 8 C 13.755 8 13.852 6.333 13.852 6 C 13.852 5.951 13.85 5.268 13.317 4.731 C 12.834 4.246 12.039 4 10.955 4 C 10.353 4 9.086 4.309 8.146 5.461 C 7.01 6.857 6.71 9.047 7.279 11.797 C 8.999 20.115000000000002 20.087 23.002000000000002 20.198999999999998 23.029 L 19.71 24.971 z M 28.09 25 L 27.491 23.092 C 27.591 23.063 37.562 19.83 40.397999999999996 11.714999999999998 C 41.266999999999996 9.234999999999998 41.206999999999994 7.273999999999998 40.217999999999996 5.882999999999998 C 39.263 4.534999999999998 37.644 4.046999999999998 36.79 4.046999999999998 C 33.824 4.046999999999998 33.79 5.964999999999998 33.79 6.046999999999998 C 33.798 6.507999999999998 33.964 8.046999999999997 35.79 8.046999999999997 C 36.24 8.034999999999997 36.79 7.851999999999997 36.79 7.046999999999997 L 38.79 7.046999999999997 C 38.79 9.245999999999997 36.996 10.046999999999997 35.79 10.046999999999997 C 32.854 10.046999999999997 31.79 7.6519999999999975 31.79 6.046999999999997 C 31.79 4.663999999999997 32.835 2.046999999999997 36.79 2.046999999999997 C 38.311 2.046999999999997 40.544 2.882999999999997 41.851 4.722999999999997 C 42.802 6.062999999999997 43.65 8.480999999999998 42.289 12.374999999999996 C 39.115 21.449 28.539 24.859 28.09 25 z" stroke-linecap="round" /></g><g transform="matrix(1 0 0 1 0 -3)" ><path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill-rule: nonzero; opacity: 1;" transform=" translate(-24, -21)" d="M 29 39 L 19 39 L 19 37 C 19 35.896 23 34 23 34 L 25 34 C 25 34 29 35.896 29 37 L 29 39 z M 34 3 C 34 11 31.916 28 24 28 C 16.084 28 14 11 14 3 L 34 3 z" stroke-linecap="round" /></g><g transform="matrix(1 0 0 1 -1 -10)" ><path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(255,236,179); fill-rule: nonzero; opacity: 1;" transform=" translate(-23, -14)" d="M 25 19 L 23 19 L 23 11.609 L 21 12.275 L 21 10.515 L 24.813 9 L 25 9 L 25 19 z" stroke-linecap="round" /></g><g transform="matrix(1 0 0 1 0 18)" ><path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(122,83,75); fill-rule: nonzero; opacity: 1;" transform=" translate(-24, -42)" d="M 17 38 L 31 38 L 31 46 L 17 46 z" stroke-linecap="round" /></g><g transform="matrix(1 0 0 1 0 18)" ><path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill-rule: nonzero; opacity: 1;" transform=" translate(-24, -42)" d="M 19 41 L 29 41 L 29 43 L 19 43 z" stroke-linecap="round" /></g></g></g>`;
         case 'sludge':
             return `<path d="M269.614 30.044c-41.094.11-65.414 10.652-81.03 26.75-16.656 17.17-24.139 42.145-28.03 71.115-3.893 28.97-4.132 61.396-7.866 92.127-3.734 30.73-10.966 60.248-30.557 82.406-15.817 17.892-42.361 25.805-62.95 35.092-10.296 4.643-19.02 9.523-23.905 14.351-4.885 4.829-6.475 8.28-4.984 15.149 1.096 5.052 1.608 4.95 5.66 5.863.26.059.576.099.865.147.557 5.33.8 11.75-.547 15.793-2.607 7.825-15.762 11.07-15.469 19.314.375 10.517 11.005 24.543 21.44 23.178 9.19-1.203 13.373-15.322 12.992-24.582-.206-4.997-6.993-7.761-8.076-12.643-1.234-5.558.271-14.423 1.748-20.937 2.398-.154 4.955-.365 7.662-.627 17.928-1.738 42.524-4.773 62.908 10.922l.188.144.18.154c8.02 6.876 11.601 15.838 13.708 23.77 2.107 7.931 3.122 15.205 5.084 20.517 1.963 5.313 4.028 8.479 9.606 11.131 5.527 2.63 15.524 4.371 32.275 2.875 6.943-1.197 23.278-9.063 40.928-16.4 17.776-7.39 37.824-14.455 57.451-11.662 22.195 3.158 36.671 21.628 50.092 35.969 6.71 7.17 13.151 13.532 19.105 17.296 5.955 3.765 10.752 5.103 16.756 3.752 3.784-.85 6.019-2.717 8.604-6.716 2.585-4 4.872-10.023 7.088-16.815 4.43-13.584 8.153-30.887 22.523-41.054 15.43-10.919 35.04-9.373 51.36-9.366 2.497.001 4.914-.024 7.236-.088 1.676 6.563 3.632 16.245 2.43 22.186-1.07 5.28-8.3 8.397-8.44 13.781-.322 12.39 5.349 32.649 17.742 32.672 12.318.023 18.463-20.109 17.758-32.406-.326-5.692-7.844-8.637-9.877-13.963-2.372-6.216-3.17-17.085-3.437-24.25 3.643-1.11 5.647-2.575 6.986-4.809 1.073-1.79 1.352-3.25.978-5.77-.373-2.519-1.69-5.98-4.097-9.984-4.815-8.008-13.776-17.92-24.324-28.353-21.097-20.867-48.347-43.68-62.825-67.358-4.863-7.952-8.993-16.588-12.576-25.705-7.318-.474-14.554-.62-21.726-.51-.277 9.449-.298 27.428 3.062 37.31 3.313 9.743 17.026 11.318 17.207 25.634.193 15.237-6.193 39.866-21.422 40.383-15.972.541-25.213-24.753-25.283-40.735-.06-13.684 12.29-14.826 14.397-23.879 1.635-7.029.603-17.906-.751-26.676-1.116-5.49-5.266-11.503-12.227-10.64-33.643 3.153-66.13 10.934-98.915 17.518 3.746-21.205 11.727-47.904 35.3-65.721a73.974 73.974 0 0 1 4.52-3.154c-.304 5.65-.976 11.957-2.492 16.06-1.742 4.717-9.088 7.325-8.68 12.336.611 7.504 8.295 16.512 15.815 16.13 8.506-.434 16.796-11.492 15.943-19.966-.404-4.016-7.606-4.097-9.29-7.765-2.548-5.546-1.784-15.554-.835-22.373 21.352-9.2 44.721-6.84 64.479.29 8.004 2.89 13.774 7.568 18.152 13.231-4.283-18.421-7.608-37.494-11.049-56.047-4.684 11.104-23.122 12.455-42.303 4.672 15.512-9.746 25.996-23.802 35.4-38.783-5.935-25.782-13.52-48.61-24.792-64.387-11.33-15.859-25.448-25.085-48.428-25.775a258.397 258.397 0 0 0-8.445-.12zm-41.33 90.005c.635-.009 1.278.256 1.91.832 17.36 15.839 31.196 35.58 54.338 41.11-10.236 9.53-31.876 14.4-57.028 1.125-10.858-17.297-5.365-42.982.78-43.067zm41.023 318.409c-16.932.1-38.307 8.538-36.385 22.369 3.127 22.496 55.236 28.997 67.424 9.832 6.62-10.41-8.522-27.451-20.367-30.903-3.094-.901-6.764-1.321-10.672-1.298z"/>`;
-    }
+        case 'robot':
+            return `<path d="M5,7A1,1,0,0,0,4,8V22a1,1,0,0,0,1,1H19a1,1,0,0,0,1-1V8a1,1,0,0,0-1-1H13V4.723a2,2,0,1,0-2,0V7ZM18,9V21H6V9ZM7,13a1,1,0,0,1,1-1h2a1,1,0,0,1,0,2H8A1,1,0,0,1,7,13Zm6,0a1,1,0,0,1,1-1h2a1,1,0,0,1,0,2H14A1,1,0,0,1,13,13ZM1,14V12a1,1,0,0,1,2,0v2a1,1,0,0,1-2,0Zm22-2v2a1,1,0,0,1-2,0V12a1,1,0,0,1,2,0ZM7,18a1,1,0,0,1,1-1h8a1,1,0,0,1,0,2H8A1,1,0,0,1,7,18Z"/>`
+        case 'cat':
+            return `<g transform="translate(-.0014746 .00074460)"><path transform="translate(-1.43234e-6,6.02517e-6)" d="m421.35 116.37c6.661-9.874 7.19-19.641-5.553-41.645-4.768-10.077 1.085-14.588-1.666-22.211-10.943-56.08-3.316-77.199 47.17-11.458 9.356-3.0944 12.552-6.6149 36.148-0.5553 80.297-73.641 36.59-34.393 39.098 19.137-2.321 56.725-38.187 78.129-27.466 162.79 2.517 12.053-57.032 55.227-47.891 113.8 4.63 29.661 14.892 52.317 27.902 87.766 19.39-6.734 25.904 15.347 22.211 19.989-19.827 2.078-56.587 0.962-72.427 0.891-28.246 1.04-17.003-99.465-40.292-107.5-37.637 21.833-58.661 48.551-78.847 75.516 53.873-3.785 66.665 2.675 72.39 16.849 10.387 25.711-63.607 12.096-98.276 15.277-98.42 0.949-179.72-1.584-276.42-0.136-13.416 0.509-32.329-20.174 2.0063-23.757 46.559-1.37 129.56-23.365 162.6-7.122-13.05-81.378 61.401-252.64 196.01-250.42 10.73-1.215 31.068-29.052 43.311-47.197z"/><path style="fill:#87825a" transform="matrix(1.1462,0,0,1.1462,446.68,72.202)" d="m17.668 8.3434c0 4.6079-3.9552 8.3434-8.8342 8.3434-4.8786 0-8.8338-3.736-8.8338-8.3438 0-4.6079 3.9552-8.3434 8.8342-8.3434 4.8788 0 8.8338 3.7355 8.8338 8.3434z"/><path style="fill:#87825a" transform="matrix(1.1105,0,0,1.1105,497.17,72.096)" d="m17.668 8.3434c0 4.6079-3.9552 8.3434-8.8342 8.3434-4.8786 0-8.8338-3.736-8.8338-8.3438 0-4.6079 3.9552-8.3434 8.8342-8.3434 4.8788 0 8.8338 3.7355 8.8338 8.3434z"/><path style="fill:#000000" transform="matrix(1.4192 .37457 -.56317 1.2626 454.02 73.155)" d="m7.4758 5.0605c0 2.7948-1.6735 5.0605-3.7379 5.0605s-3.7379-2.2656-3.7379-5.0605c0-2.7948 1.6735-5.0605 3.7379-5.0605 2.0643 0 3.7379 2.2657 3.7379 5.0605z"/><path style="fill-opacity:.93677;fill:#ffffff" transform="translate(452.67,76.1)" d="m2.9301 1.465c0 0.8092-0.6559 1.4651-1.4651 1.4651-0.80907 0-1.465-0.6559-1.465-1.4651 0-0.80907 0.65593-1.465 1.465-1.465 0.8092 0 1.4651 0.65593 1.4651 1.465z"/><path style="fill:#000000" transform="matrix(1.3622 -.7547 .8342 1.2323 497.28 77.555)" d="m7.4758 4.428c0 2.4455-1.6735 4.428-3.7379 4.428-2.0644-0.0001-3.7379-1.9826-3.7379-4.428 0-2.4455 1.6735-4.428 3.7379-4.428s3.7379 1.9825 3.7379 4.428z"/><path style="fill-opacity:.93677;fill:#ffffff" transform="matrix(1.3077,0,0,1.3077,502.03,75.437)" d="m2.9301 1.465c0 0.8092-0.6559 1.4651-1.4651 1.4651-0.80907 0-1.465-0.6559-1.465-1.4651 0-0.80907 0.65593-1.465 1.465-1.465 0.8092 0 1.4651 0.65593 1.4651 1.465z"/></g>`;
+        case 'dog':
+            return `<g transform="translate(404.66 -518.36)"><path style="stroke:#000000;stroke-width:1.2597px" d="m-235.91 791.54c0.27836 10.072 2.2495 30.144 2.2495 30.144 0.79523 10.656 1.6323 21.311 2.6994 31.943 0.64834 6.4596 2.2495 19.346 2.2495 19.346 0.3533 3.0383 0.67076 6.1552 1.7996 8.9981 0.52214 1.3149 2.2495 3.5992 2.2495 3.5992 1.6809 2.6895 1.05 6.2773 1.1248 9.448 0.0745 3.1565-0.67486 9.448-0.67486 9.448-0.12207 1.7088-1.5022 3.0924-2.0246 4.724-1.2871 4.0201-2.5296 8.1546-2.6994 12.372-0.11262 2.7974 1.1248 8.3232 1.1248 8.3232 0.17766 1.3147 1.6981 2.0542 2.6994 2.9244 0.89489 0.7777 1.8186 1.5969 2.9244 2.0246 1.0583 0.40932 2.2446 0.55708 3.3743 0.4499 0.70819-0.0671 1.4411-0.26798 2.0246-0.67485 0.39384-0.27462 0.89981-1.1248 0.89981-1.1248 0.56406-0.70507 1.0985 1.4556 1.7996 2.0246 0.93889 0.76181 3.1493 1.7996 3.1493 1.7996 1.2005 0.68598 2.667 0.8628 4.0491 0.8998 0.9119 0.0244 2.6994-0.4499 2.6994-0.4499 0.53846-0.0897 1.0594-0.26964 1.5747-0.4499 0.92011-0.3219 2.6994-1.1248 2.6994-1.1248 1.029-0.42873 1.3713 1.788 2.2495 2.4745 0.87227 0.68181 2.9244 1.5747 2.9244 1.5747 1.0666 0.57432 2.3915-0.64138 3.3743-1.3497 1.0359-0.74663 2.4745-2.9244 2.4745-2.9244 1.2118-1.4322-0.12869-3.7813 0.22495-5.6238 0.25482-1.3276 1.4172-2.4741 1.3497-3.8242 0 0 0.22185-3.0655-0.22495-4.499-0.55107-1.7681-1.9715-3.1359-2.9244-4.724 0 0-2.953-4.3652-4.0491-6.7486-1.189-2.5851-2.0187-5.3354-2.6994-8.0983-0.78148-3.1719-1.1454-6.4345-1.5747-9.6729-0.77262-5.8284-1.7996-17.546-1.7996-17.546-0.69064-6.7336-1.2557-13.484-1.5747-20.246-0.4241-8.9893-0.4499-26.994-0.4499-26.994-0.0612-3.6745 0.0692-7.351 0.22495-11.023 0.0988-2.3272 0.12132-4.6675 0.44992-6.9735 0.29258-2.0532 1.3497-6.0737 1.3497-6.0737 0.41661-1.8748 2.3344-3.0539 3.5992-4.499 1.5718-1.7959 4.9489-5.1739 4.9489-5.1739 1.6922-1.7692 3.6156-3.3237 5.6238-4.724 1.4877-1.0373 4.724-2.6994 4.724-2.6994 1.0437-0.5964 2.4013-0.12559 3.5992-0.22495 2.1787-0.18069 6.5236-0.67486 6.5236-0.67486 1.945-0.2012 4.3764-0.83683 5.8488 0.44991 0.80839 0.7065 0.67485 3.1493 0.67485 3.1493l0.89981 9.8979c0.32762 3.6038 0.75725 7.1977 1.1248 10.798 0.38264 3.7484 1.1248 11.248 1.1248 11.248 0.43589 4.3589 1.1859 8.6839 1.5747 13.047 0.34662 3.8902 0.67485 11.698 0.67485 11.698 0.12963 2.247 0.18746 4.4981 0.22496 6.7486 0.0237 1.4245 0 4.2741 0 4.2741 0 1.1641 0.47479 2.2906 0.8998 3.3743 0.52662 1.3428 2.0246 3.8242 2.0246 3.8242 0.98486 1.8603 0.20163 4.2084 0.44991 6.2987 0.26901 2.2646-0.0294 4.7816 1.1248 6.7486 0.97189 1.6565 4.499 3.5992 4.499 3.5992 0.98152 0.78521 0.73239 2.4051 1.1248 3.5992 0.71804 2.1852 2.2495 6.5236 2.2495 6.5236 0.65817 1.9087 1.9707 3.5346 3.1493 5.1739 1.0873 1.5123 3.5992 4.2741 3.5992 4.2741 0.84352 1.0017 2.3046 1.3778 3.5992 1.5747 1.3426 0.20411 3.1493-0.22495 4.0491-0.4499 0.89981-0.22495 3.0333-0.81836 3.8242-2.0246 0.53606-0.8176-0.65411-2.4965 0.22495-2.9244 0.72927-0.35499 2.0246 1.3497 2.0246 1.3497 2.271 1.514 4.9643 2.4287 7.6484 2.9244 1.696 0.31317 3.5523 0.58711 5.1739 0 1.1013-0.39875 2.0767-1.2575 2.6994-2.2495 0.32872-0.52372 0.47364-1.1817 0.44991-1.7996-0.0364-0.94779-0.89981-2.6994-0.89981-2.6994-0.1852-0.55559 1.0055-0.65094 1.3497-1.1248 0.47468-0.65338 0.89982-2.2495 0.89982-2.2495 0.30633-0.76583 0.26083-1.692 0-2.4745-0.35569-1.067-2.0246-2.6994-2.0246-2.6994-2.2351-2.9801-5.6089-4.91-8.5482-7.1985-2.3316-1.8154-7.1985-5.1739-7.1985-5.1739-1.6383-1.1775-3.3086-2.4201-4.499-4.0491-1.5049-2.0593-3.1493-6.9735-3.1493-6.9735-1.1925-2.6406-1.3378-5.6605-1.5747-8.5482-0.66202-8.0726 0.44991-24.295 0.44991-24.295 0.0918-4.9572 0.23208-9.934 0.8998-14.847 0.48525-3.5703 1.6234-7.0244 2.2495-10.573 0 0 0.87878-5.1027 1.3497-7.6484 0.43069-2.3281 1.0286-4.6277 1.3497-6.9735 0.37752-2.7578 0.10255-5.5992 0.67487-8.3232 0.42416-2.019 2.0246-5.8487 2.0246-5.8487 1.0223-2.9532 2.9205-5.546 4.724-8.0983 1.4738-2.0857 4.9489-5.8487 4.9489-5.8487 2.0023-2.3664 3.6961-5.0379 4.9489-7.8733 1.1323-2.5626 2.2495-8.0983 2.2495-8.0983 1.1848-4.2651-0.3749-8.8462-0.4499-13.272-0.11306-6.6726 0-20.021 0-20.021 0-4.8693 2.0121-9.5496 2.4745-14.397 0.3561-3.733 0.27241-7.4979 0.22495-11.248 0 0-0.63255-11.861-0.22495-17.771 0.17219-2.4968 0.54907-4.9878 1.1248-7.4234 0 0 2.0342-8.2292 2.9244-12.372 0.49736-2.3148 1.3497-6.9735 1.3497-6.9735s0.29215-2.7003 0.4499-4.0491c0.50022-4.277 1.1404-8.538 1.5747-12.822 0.37928-3.742 0.55794-7.502 0.8998-11.248 0.2672-2.9276-0.007-5.9767 0.89982-8.7731 0.50768-1.566 1.2246-3.2027 2.4745-4.2741 0 0 3.0179-2.8698 4.724-4.0491 2.9537-2.0417 6.2992-3.4483 9.448-5.1739 2.3249-1.274 4.6842-2.4873 6.9735-3.8242 2.2101-1.2906 4.5698-2.3959 6.5236-4.0491 0 0 4.2498-2.9575 5.8488-4.9489 1.008-1.2554 1.6842-2.7666 2.2495-4.2741l2.6994-7.1985c0.49677-1.3247 1.7641-2.2703 2.2495-3.5992 0.36387-0.99605 0.53676-2.0924 0.44991-3.1493-0.12236-1.489-1.2846-2.7815-1.3497-4.2741-0.09041-2.072 1.3497-6.0737 1.3497-6.0737 0.36007-1.6203-0.78145-3.266-1.5747-4.724-0.22945-0.42176-0.89981-1.1248-0.89981-1.1248-1.2647-1.5809 0.43432-4.0963 0-6.0737-0.23031-1.0486-1.3497-2.9244-1.3497-2.9244-0.31107-0.67398-0.90075-1.2635-1.5747-1.5747-1.7073-0.78842-5.6238-0.4499-5.6238-0.4499-3.5257-0.28205-7.0526 0.55451-10.573 0.8998-2.7031 0.26515-8.0983 0.89982-8.0983 0.89982-2.9217 0.32464-5.906 0.25077-8.7731 0.89981-2.1744 0.49221-4.1019 1.869-6.2987 2.2495-0.51718 0.0896-1.2035 0.37116-1.5747 0-0.79532-0.79533 0-3.3743 0-3.3743s-0.14722-2.4985-0.67485-3.5992c-0.89647-1.8702-4.0491-4.724-4.0491-4.724-1.1424-1.3327-3.2098-1.5616-4.9489-1.7996-1.9373-0.26511-5.8488 0.44991-5.8488 0.44991-1.1214 0.0863-2.2762 0.2436-3.3743 0-3.6352-0.80648-10.123-4.724-10.123-4.724-4.7062-2.1962-10.329-1.2918-15.522-1.3497-6.9876-0.078-14.041 0.12131-20.921 1.3497-2.8493 0.50879-8.3232 2.4745-8.3232 2.4745-1.2716 0.37805-1.9602 1.8228-2.6994 2.9244-0.69162 1.0307-0.60496 2.5995-1.5747 3.3743-1.3789 1.1017-3.4794 0.63104-5.1739 1.1248-1.4577 0.42473-4.2741 1.5747-4.2741 1.5747-1.8415 0.67845-2.6396 2.9086-4.0491 4.2741-1.9456 1.8848-6.0737 5.3988-6.0737 5.3988-1.9129 1.7004-2.7786 4.8144-4.0491 6.5236s-2.669 2.2774-3.3743 3.8242c-0.94144 2.0649 0.10557 4.714-0.8998 6.7486-0.42281 0.85562-1.5816 1.1792-2.0246 2.0246-0.77816 1.4852-0.89981 4.9489-0.89981 4.9489-0.48289 2.6559-0.56038 5.4577 0 8.0983 0.30662 1.4448 1.7996 4.0491 1.7996 4.0491 0.58579 1.318 1.2862 2.5852 2.0246 3.8242 0.41524 0.69673 1.2162 1.2245 1.3497 2.0246 0.24247 1.4531-1.1248 4.2741-1.1248 4.2741-1.4583 5.5416-0.77782 11.458-1.7996 17.096-0.7459 4.116-3.1493 12.147-3.1493 12.147-0.74564 2.876-4.0084 4.4921-6.5236 6.0737-1.5678 0.98584-5.1739 2.0246-5.1739 2.0246-1.9664 0.76946-5.1739 0.22495-6.2986 0.67486-1.1248 0.4499-5.2915-0.15268-7.8733-0.67486-2.8588-0.5782-5.5888-1.6846-8.3232-2.6994-2.3632-0.87698-6.9735-2.9244-6.9735-2.9244-3.5449-1.4866-7.0487-3.1999-10.798-4.0491-3.3767-0.76487-6.8855-0.8901-10.348-0.8998l-40.154-0.11249c-7.1692-0.02-14.358 1.1085-21.483 0.78733-1.1438-0.0515-4.724-1.7996-7.6484-2.9244s-4.4658-2.6099-6.7486-3.8242l-10.573-5.6238s-5.9617-2.2121-8.9981-3.1493c-3.0415-0.93883-6.2986-2.2495-9.223-2.4745-2.9244-0.22496-13.817-1.1248-10.348-1.1248 1.1819 0-4.2229-0.18944-6.5236 0.22495-1.7275 0.31114-4.949 1.7996-4.949 1.7996-1.3463 0.48957-2.5767 1.6112-3.1493 2.9244-0.50953 1.1685-0.26986 2.5784 0 3.8242 0.19181 0.8855 0.62256 1.7204 1.1248 2.4745 0.79404 1.1924 1.7199 2.3738 2.9244 3.1493 2.193 1.4121 4.9669 1.5976 7.4234 2.4745 3.174 1.133 6.141 3.7345 9.448 3.5992 3.379-0.13824 4.7509 0.54802 7.1984 2.6994 1.6876 1.4834 5.3988 4.0491 5.3988 4.0491 2.2122 1.6592 4.3364 3.4505 6.2986 5.3988 1.6218 1.6103 4.499 5.1739 4.499 5.1739 2.2537 2.5917 5.3181 4.4107 8.3232 6.0737 2.8264 1.5642 8.9981 3.5992 8.9981 3.5992 1.9936 0.79744 3.8259 1.9792 5.8487 2.6994 1.2764 0.45446 3.9367 1.0123 3.9367 1.0123 5.3073 1.3647-0.94665 10.51-2.137 15.859-1.0044 4.5131-2.0246 13.722-2.0246 13.722-0.66986 4.5402-1.1167 9.1327-1.1248 13.722-0.006 3.8359 0.32093 7.6806 0.89981 11.473 0.40628 2.6613 1.6646 5.1846 1.7996 7.8733 0.0606 1.2076-0.4499 3.5992-0.4499 3.5992-0.35925 2.874-2.9244 7.1985-3.1493 8.0983-0.22495 0.8998-2.8918 5.5225-3.1493 8.5482 0 0-0.74971 7.039-0.89982 10.573-0.30548 7.192 0 21.595 0 21.595 0 2.41-0.4499 6.2986-0.67485 7.1985-0.22495 0.89981-1.5747 7.1985-1.7996 8.0983-0.22495 0.89981-1.7996 8.5482-2.0246 9.8979-0.22495 1.3497-2.7266 7.0382-4.0491 10.573-1.4547 3.888-2.5484 7.9219-4.2741 11.698-0.96276 2.1064-3.3743 6.0737-3.3743 6.0737-1.3028 2.3451-2.3717 4.8131-3.5992 7.1984-0.66 1.2825-1.7846 2.4019-2.0246 3.8242-0.16406 0.97252 0.44991 2.9244 0.44991 2.9244 0.19684 1.2794-0.17072 2.8441 0.67485 3.8242 0.3098 0.35907 1.3497 0.4499 1.3497 0.4499 0.57351 0.19116 1.0518-1.2032 1.5747-0.8998 0.38912 0.22581-0.0669 0.9048 0 1.3497 0.15166 1.0086 0.47222 1.9984 0.89981 2.9244 0.40989 0.88761 0.73017 1.9819 1.5747 2.4745 0 0 1.6938 1.3028 2.6994 1.5747 0.79624 0.21526 2.1056 0.73775 2.4745 0 0 0 0.23415-1.7177 0.8998-1.7996 0.68614-0.0844 0.70002 1.3384 1.3497 1.5747 0 0 1.6556 0.83771 2.4745 0.8998 0.81883 0.0621 2.0246 0.28097 2.2495-0.4499 0 0 0.0183-2.4116 0.89981-2.9244 0.59758-0.34758 1.3332 0.4499 2.0246 0.4499 0 0 0.92127 0.1373 1.3497 0 0.61426-0.19684 1.2795-0.5512 1.5747-1.1248 0.48036-0.93342-0.893-2.5974 0-3.1493 0.5705-0.3526 1.7996 0.8998 1.7996 0.8998 0.91222 0.45611 2.1949-0.18706 2.9244-0.8998 1.1872-1.16 1.2578-3.0947 1.5747-4.724 0.22949-1.18 0.22495-3.5992 0.22495-3.5992s-0.40917-11.85-0.22495-17.771c0.0936-3.0063 0.67485-8.9981 0.67485-8.9981 0.50608-6.7479 2.4732-13.339 4.499-19.796 1.0171-3.2417 3.8242-9.448 3.8242-9.448 1.2911-3.1897 0.65662-6.9653 2.0246-10.123 1.0257-2.3675 4.499-6.2986 4.499-6.2986 2.2605-3.1647 4.2124-6.5451 6.5236-9.6729 1.4893-2.0155 4.724-5.8488 4.724-5.8488 1.0754-1.3315 1.7886-2.9309 2.4745-4.499 0.66512-1.5207 0.92503-3.1966 1.5747-4.724 0.69573-1.6358 1.1388-3.551 2.4745-4.724 1.1408-1.0019 4.2741-1.5747 4.2741-1.5747 2.0598-0.75886 4.4712 0.12131 6.5236 0.8998 1.7695 0.67117 4.724 3.1493 4.724 3.1493 1.5447 1.0298 3.3206 2.2622 3.8242 4.0491 0.39489 1.4014-0.3725 2.917-0.8998 4.2741-0.69397 1.786-2.9244 4.949-2.9244 4.949-1.1271 1.9074-2.2395 3.9064-2.6994 6.0737-0.28019 1.3203 0 4.0491 0 4.0491 0 3.2942 1.0216 6.5352 2.0246 9.6729 0.7974 2.4948 2.2532 4.7375 3.1493 7.1985 0.90931 2.497 2.2495 7.6484 2.2495 7.6484 0.71937 2.4459 0 6.5236 0 7.6484s-0.12421 6.0504 0.4499 8.9981c0.34906 1.7923 0.47254 3.9197 1.7996 5.1739 0.79348 0.74991 3.1493 0.8998 3.1493 0.8998 0.88009 0.25145 1.3367-1.5074 2.2495-1.5747 0.66887-0.0492 1.7996 0.89982 1.7996 0.89982 1.1421 0.57106 1.7254 2.0352 2.9244 2.4745 1.6194 0.59319 3.4492 0 5.1739 0h2.2495c0.87446 0 1.8187-0.58876 2.2495-1.3497 0.18472-0.32626 0-1.1248 0-1.1248 0-1.0199 1.7996 0.8998 2.4745 1.7996 0.67487 0.8998 3.4434 2.1604 4.9489 1.3497l2.9244-1.5747c0.79773-0.42956 0.29044-2.1212 1.1248-2.4745 1.0265-0.43468 2.115 1.5404 3.1493 1.1248 0.46675-0.18754 0.48237-0.885 0.67487-1.3497 0.36296-0.87628 0.8998-2.6994 0.8998-2.6994 0.32251-0.96756-0.56017-1.9627-0.8998-2.9244-0.5379-1.523-1.7996-4.499-1.7996-4.499-0.7601-1.9003-4.499-2.9244-5.3988-2.9244s-4.2683-2.4418-6.2986-3.8242c-1.9463-1.3251-4.1039-2.4758-5.6238-4.2741-1.1475-1.3576-2.4745-4.724-2.4745-4.724-0.82702-1.5789-1.1884-3.3988-1.3497-5.1739-0.18372-2.0218 0.4499-6.0737 0.4499-6.0737 0.13759-1.8575 2.2387-3.002 3.5992-4.2741 1.0188-0.95259 3.3743-2.4745 3.3743-2.4745 0.7256-0.53211 1.8425-0.2746 2.6994 0 1.2285 0.3937 3.1493 2.2495 3.1493 2.2495 2.5634 1.831 5.1548 3.663 7.4234 5.8488 1.4174 1.3656 2.3538 3.1907 3.8242 4.499 0.8079 0.71888 1.6434 1.7485 2.6994 1.7996 4.9122 0.23777 3.2489 16.284 2.4745 24.745z"/></g>`;
+        }
 }
 
 export function svgViewBox(icon){
@@ -2260,6 +2291,12 @@ export function svgViewBox(icon){
             return `0 0 24 24`;
         case 'sludge':
             return `0 0 512 512`;
+        case 'robot':
+            return `0 0 24 24`;
+        case 'cat':
+            return `0 0 546.19 445.84`;
+        case 'dog':
+            return `0 0 349.85 422.66`;
     }
 }
 
@@ -2296,6 +2333,8 @@ export function getBaseIcon(name,type){
                 return 'meat';
             case 'wish':
                 return 'trophy';
+            case 'planned_obsolescence':
+                return 'robot';
             case 'friday':
                 return 'mask';
             case 'valentine':
@@ -2334,6 +2373,105 @@ export function drawIcon(icon,size,shade,id,inject){
     }
     inject = inject || '';
     return `<span ${inject}${select}class="flair drawnIcon"><svg class="star${shade}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox(icon)}" xml:space="preserve">${svgIcons(icon)}</svg></span>`;
+}
+
+export function drawPet(){
+    if ($('#playerPet span.flair')){
+        clearElement($('#playerPet span.flair'),true);
+    }
+
+    if ($('#playerPet .flair').length === 0 && global.race['pet']){
+        let color = 'black';
+        if (global.race.pet['color']){
+            color = global.race.pet.color;
+        }
+        else {
+            if (global.race.pet.type === 'cat'){
+                switch (global.race.pet.name){
+                    case 0:
+                        color = 'gray';
+                        break;
+                    case 1:
+                    case 4:
+                    case 8:
+                        color = 'orange';
+                        break;
+                    case 10:
+                        color = 'black';
+                        global.race.pet['pattern'] = 'solid';
+                        break;
+                    default:
+                        let colors = ['black','white','gray','orange','cream'];
+                        color = colors[Math.rand(0,colors.length)];
+                        break;
+                }
+            }
+            else {
+                let colors = ['black','white','gray','brown'];
+                color = colors[Math.rand(0,colors.length)];
+            }
+            global.race.pet['color'] = color;
+        }
+
+        let pattern = 'solid';
+        if (global.race.pet['pattern']){
+            pattern = global.race.pet.pattern;
+        }
+        else {
+            let patterns = ['solid'];
+            if (global.race.pet.type === 'cat'){
+                patterns.push('stripe');
+            }
+            else {
+                patterns.push('patched');
+            }
+            pattern = patterns[Math.rand(0,patterns.length)];
+            global.race.pet['pattern'] = pattern;
+        }
+
+        let coat = ``;
+        if (pattern === 'patched'){
+            coat = `<defs>
+            <radialGradient id="PetGradient">
+                <stop class="stop1" offset="0%" />
+                <stop class="stop2" offset="50%" />
+                <stop class="stop1" offset="100%" />
+            </radialGradient>
+            </defs>`;
+        }
+        else if (pattern === 'stripe'){
+            coat = `<defs>
+            <linearGradient id="PetGradient" gradientTransform="rotate(135 0.45 0.5)">
+                <stop class="stop1" offset="0%" />
+                <stop class="stop2" offset="10%" />
+                <stop class="stop1" offset="20%" />
+                <stop class="stop2" offset="30%" />
+                <stop class="stop1" offset="40%" />
+                <stop class="stop2" offset="50%" />
+                <stop class="stop1" offset="60%" />
+                <stop class="stop2" offset="70%" />
+                <stop class="stop1" offset="80%" />
+                <stop class="stop2" offset="90%" />
+                <stop class="stop1" offset="100%" />
+            </linearGradient>
+            </defs>`;
+        }
+
+        $('#playerPet').append(`<span class="flair" aria-label="${loc(`event_${global.race.pet.type}_name${global.race.pet.name}`)} (${global.race.pet.type})"><svg class="${color} ${pattern}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(global.race.pet.type)}" xml:space="preserve">${coat}${svgIcons(global.race.pet.type)}</svg></span>`);
+
+        popover('playerPet',
+            function(obj){
+                let popper = $(`<div id="playerPetPop"></div>`);
+                obj.popper.append(popper);
+                popper.append(`<div>${loc(`event_${global.race.pet.type}_name${global.race.pet.name}`)}</div>`);
+                return undefined;
+            },
+            {
+                elm: `#playerPet .flair`,
+                classes: `has-background-light has-text-dark`
+            }
+        );
+    }
 }
 
 export function easterEgg(num,size){
@@ -2511,9 +2649,18 @@ export function calcGenomeScore(genome,wiki){
         }
     }
 
-    Object.keys(genus_traits[genome.genus]).forEach(function (t){
-        genes -= traits[t].val;
-    });
+    if (genome.genus === 'hybrid'){
+        genome.hybrid.forEach(function(g){
+            Object.keys(genus_traits[g]).forEach(function (t){
+                genes -= traits[t].val;
+            });
+        });
+    }
+    else {
+        Object.keys(genus_traits[genome.genus]).forEach(function (t){
+            genes -= traits[t].val;
+        });
+    }
 
     let max_complexity = 2;
     if (wiki){
@@ -2909,6 +3056,9 @@ const valAdjust = {
     living_tool: false,
     empowered: false,
     living_materials: true,
+    blurry: true,
+    playful: true,
+    ghostly: true,
 };
 
 function getTraitVals(trait, rank, species){
@@ -2943,6 +3093,21 @@ function getTraitVals(trait, rank, species){
         }
         else if (trait === 'living_materials'){
             vals = [global.resource.Lumber.name, global.resource.Plywood.name, global.resource.Furs.name, loc('resource_Amber_name')];
+        }
+        else if (trait === 'blurry'){
+            if (global.race['warlord']){
+                vals = [+((100/(100-vals[0])-1)*100).toFixed(1)];
+            }
+        }
+        else if (trait === 'playful'){
+            if (global.race['warlord']){
+                vals = [vals[0] * 100, global.resource.Furs.name];
+            }
+        }
+        else if (trait === 'ghostly'){
+            if (global.race['warlord']){
+                vals = [vals[0], +((vals[1] - 1) * 100).toFixed(0), global.resource.Soul_Gem.name];
+            }
         }
         else if (!valAdjust[trait]){
             vals = [];
@@ -3090,9 +3255,17 @@ function rName(r){
     return `<span class="has-text-warning">${res}</span>`;
 }
 
+const altTraitDesc = {
+    befuddle: 'warlord',
+    blurry: 'warlord',
+    ghostly: 'warlord',
+    playful: 'warlord',
+};
+
 export function getTraitDesc(info, trait, opts){
     let fanatic = opts['fanatic'] || false;
-    let tpage = opts['tpage'] || false;
+    let tpage = opts['tpage'] || false; // Trait page (on wiki)
+    let rpage = opts['rpage'] || false; // Races page (on wiki)
     let trank = opts['trank'] || false;
     let wiki = opts['wiki'] || false;
     let species = opts['species']; // Intentionally keep undefined, not false, when undefined
@@ -3104,20 +3277,17 @@ export function getTraitDesc(info, trait, opts){
     if (tpage && ['genus','major'].includes(traits[trait].type)){
         rank = `<span><span role="button" @click="down()">&laquo;</span><span class="has-text-warning">${loc(`wiki_trait_rank`)} {{ rank }}</span><span role="button" @click="up()">&raquo;</span></span>`;
     }
-    if (wiki){
+    if (tpage || rpage){
         info.append(`<div class="type"><h2 class="has-text-warning">${traitName}</h2>${rank}</div>`);
-    }
-    if (wiki){
         if (tpage && traits[trait].hasOwnProperty('val')){
             info.append(`<div class="type has-text-caution">${loc(`wiki_trait_${traits[trait].type}`)}<span>${loc(`wiki_trait_value`,[traits[trait].val])}</span></div>`);
         }
         else {
             info.append(`<div class="type has-text-caution">${loc(`wiki_trait_${traits[trait].type}`)}</div>`);
         }
-    }
-
-    if (fanatic && wiki){
-        info.append(`<div class="has-text-danger">${loc(`wiki_trait_fanaticism`,[fanatic])}</div>`);
+        if (fanatic){
+            info.append(`<div class="has-text-danger">${loc(`wiki_trait_fanaticism`,[fanatic])}</div>`);
+        }
     }
 
     info.append(`<div class="desc">${traitDesc}</div>`);
@@ -3141,13 +3311,14 @@ export function getTraitDesc(info, trait, opts){
                     trait_desc = loc(`wiki_trait_effect_${alt_trait}`, getTraitVals(trait, trank, species));
                 }
                 else {
-                    trait_desc = loc(`wiki_trait_effect_${trait}`, getTraitVals(trait, trank, species));
+                    let key = altTraitDesc[trait] && global.race.hasOwnProperty(altTraitDesc[trait]) ? altTraitDesc[trait] : 'effect';
+                    trait_desc = loc(`wiki_trait_${key}_${trait}`, getTraitVals(trait, trank, species));
                 }
             }
             info.append(`<div class="has-text-${color} effect">${trait_desc}</div>`);
         }
     }
-    if (traitExtra[trait] && wiki){
+    if (traitExtra[trait] && (tpage || rpage)){
         traitExtra[trait].forEach(function(te){
             if (typeof te !== 'string'){
                 te = te(opts);
@@ -3170,7 +3341,8 @@ export function getTraitDesc(info, trait, opts){
                         let alt_trait = trait === 'spiritual' ? 'manipulator' : 'blasphemous_evil';
                         return loc(`wiki_trait_effect_${alt_trait}`, getTraitVals(trait, trank, species));
                     }
-                    return loc(`wiki_trait_effect_${trait}`, getTraitVals(trait, rk, species));
+                    let key = altTraitDesc[trait] && global.race.hasOwnProperty(altTraitDesc[trait]) ? altTraitDesc[trait] : 'effect';
+                    return loc(`wiki_trait_${key}_${trait}`, getTraitVals(trait, rk, species));
                 },
                 up(){
                     switch (data.rank){

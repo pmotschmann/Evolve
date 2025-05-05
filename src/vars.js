@@ -66,12 +66,14 @@ Math.rand = function(min, max) {
 
 global['seed'] = 2;
 global['warseed'] = 2;
-export function seededRandom(min, max, alt) {
+export function seededRandom(min, max, alt, useSeed) {
     max = max || 1;
     min = min || 0;
 
-    global[alt ? 'warseed' : 'seed'] = (global[alt ? 'warseed' : 'seed'] * 9301 + 49297) % 233280;
-    let rnd = global[alt ? 'warseed' : 'seed'] / 233280;
+    let seed = useSeed || global[alt ? 'warseed' : 'seed'];
+    let newSeed = (seed * 9301 + 49297) % 233280;
+    let rnd = newSeed / 233280;
+    if (!useSeed){ global[alt ? 'warseed' : 'seed'] = newSeed; }
     return min + rnd * (max - min);
 }
 
@@ -1233,7 +1235,21 @@ if (convertVersion(global['version']) < 104002){
     }
 }
 
-global['version'] = '1.4.2';
+if (convertVersion(global['version']) < 104003){
+    if (global.portal.hasOwnProperty('observe') && global.portal.observe.hasOwnProperty('stats')){
+        global.portal.observe.stats.period.gems['compactor'] ??= 0;
+        global.portal.observe.stats.total.gems['compactor'] ??= 0;
+    }
+}
+
+if (convertVersion(global['version']) <= 104003){
+    if(global.race['pet'] && !global.race.pet.hasOwnProperty('event')){
+        global.race.pet['event'] = 0;
+        global.race.pet['pet'] = 0;
+    }
+}
+
+global['version'] = '1.4.3';
 delete global['revision'];
 delete global['beta'];
 
@@ -1291,6 +1307,15 @@ if (!global.settings.space.hasOwnProperty('home')){
 }
 
 setRegionStates(false);
+
+if(!global.race.hasOwnProperty('inactiveTraits')){
+    if(global.race['forager']){
+        global.race.inactiveTraits = {herbivore:global.race['forager'], carnivore:global.race['forager']};
+    }
+    else{
+        global.race.inactiveTraits = {};
+    }
+}
 
 if (!global.settings['icon']){
     global.settings['icon'] = 'star';
@@ -1562,6 +1587,9 @@ export function setupStats(){
     }
     if (global.stats['death_tour'] && !global.stats.death_tour.hasOwnProperty('md')){
         global.stats.death_tour['md'] = { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 };
+    }
+    if (!global.stats['warlord']){
+        global.stats['warlord'] = { k: false, p: false, a: false, r: false, g: false };
     }
 }
 
@@ -2229,7 +2257,7 @@ window.soft_reset = function reset(source){
     window.location.reload();
 }
 
-export var webWorker = { w: false, s: false, mt: 250 };
+export var webWorker = { w: false, s: false, mt: 250, midRatio: 4, longRatio: 20 };
 export var intervals = {};
 
 export function clearSavedMessages(){
@@ -2255,7 +2283,7 @@ function setRegionStates(reset){
             'nebula','neutron','blackhole','sirius','stargate','gateway','gorddon',
             'alien1','alien2','chthonian','titan','enceladus','triton','eris','kuiper'
         ],
-        portal: ['fortress','badlands','pit','ruins','gate','lake','spire'],
+        portal: ['fortress','badlands','pit','ruins','gate','lake','spire','wasteland'],
         eden: ['asphodel','elysium','isle','palace'],
         tau: ['home','red','roid','gas','gas2','star']
     };

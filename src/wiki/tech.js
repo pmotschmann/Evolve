@@ -1998,6 +1998,9 @@ const extraInformation = {
     otherworldly_cement: [
         loc(`wiki_tech_otherworldly_cement`)
     ],
+    ancient_crafters: [
+        loc(`wiki_tech_ancient_crafters`)
+    ],
     tomb: [
         loc(`wiki_tech_tomb`)
     ],
@@ -2006,6 +2009,30 @@ const extraInformation = {
     ],
     divine_infuser: [
         loc(`wiki_tech_divine_infuser`)
+    ],
+    wheel: [
+        loc(`wiki_tech_job_unlock`,[loc(`job_teamster`)])
+    ],
+    wagon: [
+        loc(`wiki_tech_transport`, [100])
+    ],
+    steam_engine: [
+        loc(`wiki_tech_transport`, [200])
+    ],
+    combustion_engine: [
+        loc(`wiki_tech_transport`, [300])
+    ],
+    hover_cart: [
+        loc(`wiki_tech_transport`, [400])
+    ],
+    osha: [
+        loc(`wiki_tech_osha`)
+    ],
+    blackmarket: [
+        loc(`wiki_tech_blackmarket`)
+    ],
+    pipelines: [
+        loc(`wiki_tech_pipelines`)
     ],
     minor_wish: [
         loc(`wiki_tech_minor_wish`)
@@ -2028,6 +2055,45 @@ const extraInformation = {
     predictive_arrests: [
         loc(`wiki_tech_evil`)
     ],
+    hellspawn_tunnelers: [
+        loc(`wiki_tech_hellspawn_tunnelers`)
+    ],
+    hell_minions: [
+        loc(`wiki_tech_hell_minions`)
+    ],
+    reapers: [
+        loc(`wiki_tech_reapers`)
+    ],
+    hellfire: [
+        loc(`wiki_tech_hellfire`)
+    ],
+    corpse_retrieval: [
+        loc(`wiki_tech_corpse_retrieval`)
+    ],
+    spire_bazaar: [
+        loc(`wiki_tech_spire_bazaar`)
+    ],
+    ghost_miners: [
+        loc(`wiki_tech_ghost_miners`)
+    ],
+    tavern: [
+        loc(`wiki_tech_tavern`)
+    ],
+    energized_dead: [
+        loc(`wiki_tech_energized_dead`)
+    ],
+    mortuary: [
+        loc(`wiki_tech_mortuary`)
+    ],
+    corruptor: [
+        loc(`wiki_tech_corruptor`)
+    ],
+    seeping_corruption: [
+        loc(`wiki_tech_seeping_corruption`)
+    ],
+    ultimate_corruption: [
+        loc(`wiki_tech_ultimate_corruption`)
+    ]
 };
 
 const extraInformationTP = {

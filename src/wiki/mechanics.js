@@ -1,7 +1,7 @@
 import { global } from './../vars.js';
 import { universeAffix } from './../achieve.js';
 import { loc } from './../locale.js';
-import { timeFormat, vBind, svgIcons, svgViewBox, calcGenomeScore } from './../functions.js';
+import { timeFormat, vBind, svgIcons, svgViewBox, calcGenomeScore, powerModifier } from './../functions.js';
 import { job_desc } from './../jobs.js';
 import { races, traits, planetTraits } from './../races.js';
 import { atomic_mass } from './../resources.js';
@@ -2148,6 +2148,7 @@ export function massCalc(info){
     let inputs = {
         solar_tot: { val: undefined },
         exotic_tot: { val: undefined },
+        gWell: { val: undefined },
         grav: { val: true }
     }
     let resVariables = $(`<div></div>`);
@@ -2198,7 +2199,25 @@ export function massCalc(info){
             <h2 class="has-text-caution">${loc('wiki_calc_mass_MW_tot')}</h2>
         </div>
         <div>
-            <span>20 + (({{ i.solar_tot.val, 'solar_tot' | generic }} - 8) * {{ false | amountMW }}) + ({{ i.exotic_tot.val, 'exotic_tot' | generic }} * {{ true | amountMW }})</span><span v-show="s.result.MWVis"> = {{ | calcMW }}</span>
+            <span>{{ | baseMW }} + (({{ i.solar_tot.val, 'solar_tot' | generic }} - 8) * {{ false | amountMW }}) + ({{ i.exotic_tot.val, 'exotic_tot' | generic }} * {{ true | amountMW }})</span><span v-show="s.result.MWVis"> = {{ true, 'MWTot' | calcMW }}</span>
+        </div>
+        <div>
+            <h2 class="has-text-caution">${loc('wiki_calc_mass_MW_adj_10k')}</h2>
+        </div>
+        <div>
+            <span>{{ false, 'MW10k' | calcMW }}</span><span v-show="s.result.MWIs10k"> + ({{ s.result.MWTot, 'MW_tot' | generic }} - 10000) ** 0.975</span><span v-show="s.result.MWVis"> = {{ false, 'MWAdj10k' | calcMW }}</span>
+        </div>
+        <div>
+            <h2 class="has-text-caution">${loc('wiki_calc_mass_MW_adj_20k')}</h2>
+        </div>
+        <div>
+            <span>{{ false, 'MW20k' | calcMW }}</span><span v-show="s.result.MWIs20k"> + ({{ s.result.MWAdj10k, 'MW_adj_10k' | generic }} - 20000) ** 0.95</span><span v-show="s.result.MWVis"> = {{ false, 'MWAdj20k' | calcMW }}</span>
+        </div>
+        <div>
+            <h2 class="has-text-caution">${loc('wiki_calc_mass_MW_adj_30k')}</h2>
+        </div>
+        <div>
+            <span>{{ false, 'MW30k' | calcMW }}</span><span v-show="s.result.MWIs30k"> + ({{ s.result.MWAdj20k, 'MW_adj_20k' | generic }} - 30000) ** 0.925</span><span v-show="s.result.MWVis"> = {{ false, 'MWAdj30k' | calcMW }}</span>
         </div>
         <div>
             <h2 class="has-text-caution">${loc('wiki_calc_mass_time_to_explode')}</h2>
@@ -2212,6 +2231,7 @@ export function massCalc(info){
         <div>
             <div class="calcInput"><span>${loc('wiki_calc_mass_solar_tot')}</span> <b-numberinput :input="val('solar_tot')" min="8" v-model="i.solar_tot.val" :controls="false"></b-numberinput></div>
             <div class="calcInput"><span>${loc('wiki_calc_mass_exotic_tot')}</span> <b-numberinput :input="val('exotic_tot')" min="0" v-model="i.exotic_tot.val" :controls="false"></b-numberinput></div>
+            <div class="calcInput"><span>${loc('achieve_escape_velocity_name')}</span> <b-numberinput :input="val('gWell')" min="0" max="5" v-model="i.gWell.val" :controls="false"></b-numberinput></div>
             <div class="calcInput"><b-checkbox class="patrol" v-model="i.grav.val">${loc('tech_gravity_convection')}</b-checkbox></div>
         </div>
         <div class="calcButton">
@@ -2245,6 +2265,7 @@ export function massCalc(info){
                 });
                 inputs.solar_tot.val = undefined;
                 inputs.exotic_tot.val = undefined;
+                inputs.gWell.val = undefined;
                 inputs.grav.val = true;
             },
             importInputs(){
@@ -2262,7 +2283,10 @@ export function massCalc(info){
                 if (global.tech['roid_eject']){
                     inputs.solar_tot.val += 0.225 * global.tech['roid_eject'] * (1 + (global.tech['roid_eject'] / 12));
                 }
+                inputs.solar_tot.val = +(inputs.solar_tot.val).toFixed(5);
                 inputs.exotic_tot.val = global.interstellar['stellar_engine'] ? global.interstellar.stellar_engine.exotic : 0;
+                inputs.exotic_tot.val = +(inputs.exotic_tot.val).toFixed(5);
+                inputs.gWell.val = global.stats.achieve?.escape_velocity?.h ?? 0;
                 inputs.grav.val = global.tech['gravity'] && global.tech.gravity >= 2;
             }
         },
@@ -2278,13 +2302,21 @@ export function massCalc(info){
                     case 'exotic':
                     case 'exotic_tot':
                     case 'MW':
+                    case 'MW_tot':
+                    case 'MW_adj_10k':
+                    case 'MW_adj_20k':
+                    case 'MW_adj_30k':
                         return loc('wiki_calc_mass_' + type);
                     default:
                         return loc('resource_' + type + '_name') + '/s';
                 }
             },
+            baseMW(){
+                return powerModifier(20);
+            },
             amountMW(exotic){
-                return (inputs.grav.val ? 13.5 : 7.5) * (exotic ? 10 : 1);
+                let gWellFactor = (1 + (inputs.gWell.val ?? 0) * 0.02) ;
+                return +powerModifier((inputs.grav.val ? 13.5 : 7.5) * (exotic ? 10 : 1) * gWellFactor).toFixed(2);
             },
             calc(recalc, type){
                 if (recalc){
@@ -2304,7 +2336,8 @@ export function massCalc(info){
                         });
                         show.result.kt = +(total).toFixed(4);
                         show.result.solar = +(total / 10000000000).toFixed(10);
-                        show.result.MW = +(show.result.solar * (inputs.grav.val ? 13.5 : 7.5) + show.result.exotic * (inputs.grav.val ? 135 : 75)).toFixed(10);
+                        let massRatio = (inputs.grav.val ? 13.5 : 7.5) * (1 + inputs.gWell.val * 0.02);
+                        show.result.MW = +(show.result.solar * massRatio + show.result.exotic * massRatio * 10).toFixed(10);
                     }
                     else {
                         show.result.kt = undefined;
@@ -2327,18 +2360,64 @@ export function massCalc(info){
                     show.result.exotic = undefined;
                 }
             },
-            calcMW(){
-                if (inputs.solar_tot.val !== undefined && inputs.exotic_tot.val !== undefined){
-                    show.result.MWVis = true;
-                    
-                    show.result.MWTot = +(20 + ((inputs.solar_tot.val - 8) * (inputs.grav.val ? 13.5 : 7.5) + inputs.exotic_tot.val * (inputs.grav.val ? 135 : 75))).toFixed(10);
-                    
-                    return show.result.MWTot;
+            calcMW(recalc, type){
+                if (recalc){
+                    if (inputs.solar_tot.val !== undefined && inputs.exotic_tot.val !== undefined){
+                        show.result.MWVis = true;
+                        
+                        let massRatio = (inputs.grav.val ? 13.5 : 7.5) * (1 + inputs.gWell.val * 0.02);
+                        let rawPower = powerModifier(20 + ((inputs.solar_tot.val - 8) * massRatio + inputs.exotic_tot.val * massRatio * 10));
+                        show.result.MWTot = +rawPower.toFixed(2);
+                        let adjPower = rawPower;
+
+                        show.result.MWIs10k = adjPower > 10000;
+                        if (show.result.MWIs10k){
+                            adjPower = 10000 + (adjPower - 10000) ** 0.975;
+                            show.result.MWIs10k = true;
+                            show.result.MW10k = 10000;
+                        }
+                        else {
+                            show.result.MW10k = +adjPower.toFixed(2);
+                        }
+                        show.result.MWAdj10k = +adjPower.toFixed(2);
+
+                        show.result.MWIs20k = adjPower > 20000;
+                        if (show.result.MWIs20k){
+                            adjPower = 20000 + (adjPower - 20000) ** 0.95;
+                            show.result.MW20k = 20000;
+                        }
+                        else {
+                            show.result.MW20k = +adjPower.toFixed(2);
+                        }
+                        show.result.MWAdj20k = +adjPower.toFixed(2);
+
+                        show.result.MWIs30k = adjPower > 30000;
+                        if (show.result.MWIs30k){
+                            adjPower = 30000 + (adjPower - 30000) ** 0.925;
+                            show.result.MW30k = 30000;
+                        }
+                        else {
+                            show.result.MW30k = +adjPower.toFixed(2);
+                        }
+                        show.result.MWAdj30k = +adjPower.toFixed(2);
+                        
+                        return show.result.MWTot;
+                    }
+                    else {
+                        show.result.MWVis = false;
+                        show.result.MW10k = 10000;
+                        show.result.MW20k = 20000;
+                        show.result.MW30k = 30000;
+                        show.result.MWIs10k = true;
+                        show.result.MWIs20k = true;
+                        show.result.MWIs30k = true;
+                        show.result.MWTot = undefined;
+                        show.result.MWAdj10k = undefined;
+                        show.result.MWAdj20k = undefined;
+                        show.result.MWAdj30k = undefined;
+                    }
                 }
-                else {
-                    show.result.MWVis = false;
-                    show.result.MWTot = undefined;
-                }
+                return show.result[type];
             },
             calcTime(){
                 if (inputs.exotic_tot.val !== undefined && show.result.exoVis){

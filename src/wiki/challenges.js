@@ -128,13 +128,13 @@ export function challengesPage(content){
         }
 
         {   // Weak Genes
-            let weak_vals = global.race.universe === 'antimatter' ? [`20%`,`50%`,`50%`,`33%`] : [`50%`,`20%`,`50%`,`33%`];
+            let weak_vals = global.race.universe === 'antimatter' ? [`20%`,`50%`,`25%`,`12.5%`,`16.7%`] : [`50%`,`20%`,`10%`,`50%`,`33.3%`];
             infoBoxBuilder(genes,{ name: 'genes_weak', template: 'challenges', paragraphs: 5, break: [2,3,4,5], h_level: 2,
                 para_data: {
                     1: [weak_vals[0]],
                     2: [weak_vals[1]],
-                    3: [weak_vals[2]],
-                    4: [weak_vals[3]],
+                    3: [weak_vals[2], weak_vals[3]],
+                    4: [weak_vals[4]],
                     5: [loc(`wiki_challenges_gene`),loc(`evo_challenge_truepath`)]
                 },
                 data_link: {
@@ -747,6 +747,34 @@ export function challengesPage(content){
                 }
             ]);
             subSideMenu('add',`challenges-gameplay`,'scenarios_lone_survivor',loc('wiki_challenges_scenarios_lone_survivor'));
+        }
+
+        {   // Warlord
+            let lone = infoBoxBuilder(scenarios,{ name: 'scenarios_warlord', template: 'challenges', paragraphs: 10, break: [4,9,10], h_level: 2,
+                para_data: {
+                    1: [loc(`evo_challenge_warlord`),loc(`wiki_universe_evil`),loc(`wiki_challenges_scenario`),loc(`tab_portal`)],
+                    2: [loc(`race_hellspawn`)],
+                    9: [loc(`wiki_challenges_scenario`),loc(`wiki_resets_apotheosis`)],
+                    10: [loc(`wiki_resets_apotheosis`),loc(`wiki_universe_evil`)],
+                },
+                data_link: {
+                    4: [false,'wiki.html#resets-prestige-eden']
+                }
+            });
+            addAchievements(lone,false,['what_is_best']);
+            addRequirements(lone,[
+                {
+                    text: `wiki_challenges_reqs_reset`,
+                    subreqs: [
+                        {
+                            text: `${loc(`wiki_universe_evil`)} ${loc(`wiki_resets_apotheosis`)}`,
+                            color: global.stats?.achieve?.godslayer?.e > 0 ? true : false,
+                            link: 'wiki.html#resets-prestige-apotheosis'
+                        }
+                    ]
+                }
+            ]);
+            subSideMenu('add',`challenges-gameplay`,'scenarios_warlord',loc('wiki_challenges_scenarios_warlord'));
         }
     }
 }

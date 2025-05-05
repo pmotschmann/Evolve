@@ -3,6 +3,42 @@ import { clearElement } from './../functions.js';
 
 export const changeList = [
     {
+        version: `1.4.3`,
+        date: `5/4/2025`,
+        changes: [
+            `Evil Universe Scenario: Warlord.`,
+            `Added Planned Obsolescence Feat.`,
+            `You can now queue Spire Mechs.`,
+            `You can now pet your cat or dog once every 5 minutes.`,
+            `Symposium now gain Knowledge for all crew in Andromeda.`,
+            `Evil Authority adjustments for Cataclysm, Lone Survivor, and Orbit Decay.`,
+            `Soldiers assigned to Fortress guard duty now contribute Authority.`,
+            `Updated Empowered trait mechanics.`,
+            `Adjusted values for Master Artisan.`,
+            `Evil Wendigo can now use Shovels.`,
+            `Racconar can now recruit quarry workers.`,
+            `You can no longer get more then 100 servants from each TP T4 reset.`,
+            `You are now capped at 100 skilled servants from TP resets.`,
+            `Empowered Concealment Wards changed to Empowered Nexus in Witch Hunter.`,
+            `Breakdown improvements for some resources.`,
+            `Uranium geology bonus now applies to Uranium Ash.`,
+            `Spire boss resists now have a random element.`,
+            `Slitheryn once again have slow digestion.`,
+            `Fixed bug with Rogue trait that set crafted resources to 0.`,
+            `Fixed bug that caused Hybrid species to throw an error when triggering greatness resets.`,
+            `Fixed bug that caused Hybrid species to throw an error when triggering a Cataclysm reset.`,
+            `Fixed issue with Iridium Smelters miscalculating result.`,
+            `Fixed a variety of Joyless edge cases.`,
+            `Fixed Space Casino appearing improperly in power grid.`,
+            `Fixed Potato Battery in antimatter universe not benefiting from dark energy.`,
+            `Fixed issue with Resonance not unlocking if you pillared without unlocking the gate towers.`,
+            `Fixed divide by zero error with Soul Forge when you have 0 Authority.`,
+            `Deprecated trait Frail will no longer show up in the Custom Lab.`,
+            `Accessibility improvements.`,
+            `Minor misc bug fixes.`
+        ]
+    },
+    {
         version: `1.4.2`,
         date: `3/23/2025`,
         changes: [
@@ -12,7 +48,7 @@ export const changeList = [
             `Evil Dark Energy effects changed.`,
             `Evil Biodome produces less food but boosts marine garrison.`,
             `Various Evil flavor updates.`,
-            `Various bug fixes.`,
+            `Various bug fixes.`
         ]
     },
     {
@@ -3476,7 +3512,7 @@ export function getTopChange(elm){
     for (let idx=index; idx>=0; idx--){
         elm.append(`<div class="type"><h2 class="has-text-warning">v${changeList[idx].version}${changeList[idx].hasOwnProperty('revision') ? changeList[idx].revision : ''}</h2><span class="has-text-caution">${changeList[idx].date}</span></div>`);
         for (let i=0; i<changeList[idx].changes.length; i++){
-            elm.append(`<div class="desc">${changeList[idx].changes[i]}</div>`);
+            elm.append(`<div class="desc condense">${changeList[idx].changes[i]}</div>`);
         }
     }
     return elm;
