@@ -373,7 +373,7 @@ const fortressModules = {
             },
             soldiers(){
                 let absorb = (global.race?.absorbed?.length || 1);
-                return 20 + absorb + global.portal.minions.rank;
+                return 20 + absorb + (global.portal.minions?.rank || 1);
             },
             aura(){
                 if (global.portal?.throne?.skill && global.portal?.minions?.rank < 5){
@@ -531,8 +531,8 @@ const fortressModules = {
                 let desc = `<div>${loc('portal_codex_effect',[])}</div>`;
                 desc += `<div class="has-text-${global.resource.Money.amount >= $(this)[0].cost.Money() ? 'success' : 'danger'}">${loc('portal_codex_money',[sizeApproximation(global.resource.Money.amount),sizeApproximation($(this)[0].cost.Money())])}</div>`;
                 desc += `<div class="has-text-${global.resource.Furs.amount >= $(this)[0].cost.Furs() ? 'success' : 'danger'}">${loc('portal_codex_res',[sizeApproximation(global.resource.Furs.amount),sizeApproximation($(this)[0].cost.Furs()),global.resource.Furs.name])}</div>`;
-                desc += `<div class="has-text-${global.portal.minions.spawns >= 3000 ? 'success' : 'danger'}">${loc('portal_codex_res',[global.portal.minions.spawns,3000,loc('portal_codex_demon')])}</div>`;
-                desc += `<div class="has-text-${global.portal.codex.s >= 10 ? 'success' : 'danger'}">${loc('portal_codex_res',[global.portal.codex.s,10,loc('portal_codex_sac')])}</div>`;
+                desc += `<div class="has-text-${global.portal.minions?.spawns >= 3000 ? 'success' : 'danger'}">${loc('portal_codex_res',[(global.portal.minions?.spawns || 0),3000,loc('portal_codex_demon')])}</div>`;
+                desc += `<div class="has-text-${global.portal.codex?.s >= 10 ? 'success' : 'danger'}">${loc('portal_codex_res',[(global.portal.codex?.s || 0),10,loc('portal_codex_sac')])}</div>`;
                 return desc;
             },
             action(){
@@ -5001,7 +5001,7 @@ function checkSkillPointAssignments(){
 }
 
 function rankDesc(label, struct){
-    return global.portal[struct].rank <= 1 ? label : `${label} (<span class="has-text-${global.portal[struct].rank === 5 ? 'caution' : 'info'}">${loc('wiki_trait_rank')} ${global.portal[struct].rank}</span>)`;
+    return (global.portal[struct]?.rank || 1) <= 1 ? label : `${label} (<span class="has-text-${global.portal[struct]?.rank === 5 ? 'caution' : 'info'}">${loc('wiki_trait_rank')} ${global.portal[struct]?.rank}</span>)`;
 }
 
 function addHellEnemy(type = [], allowRecursion = true, allowRepeat = false){
