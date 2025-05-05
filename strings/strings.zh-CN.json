@@ -1114,7 +1114,7 @@
   "evo_challenge_gravity_well_desc": "你的母星被一个强大的引力井影响，似乎没有什么人能够离开这里……吧？",
   "evo_challenge_gravity_well_effect": "这个宇宙的引力过大，离开星球将成为难题。去寻找一个合适的新地方吧。",
   "evo_challenge_gravity_well_flair": "在这样的情况下还能走路，真是奇迹！",
-  "evo_challenge_gravity_well_warn": "This challenge requires more fuel storage than usual. It may be difficult or impossible to complete with your current spatial reasoning.",
+  "evo_challenge_gravity_well_warn": "警告：该挑战需要的燃料存储上限比平常多得多，如果燃料存储上限不足，难度会很大，甚至是以失败告终！",
   "evo_challenge_witch_hunter": "猎巫行动",
   "evo_challenge_witch_hunter_desc": "法力在这个宇宙里随处可见，但使用魔法被视为禁忌。身为一名地下法师，你必须谨慎行事，避免让猎巫惹上麻烦。",
   "evo_challenge_witch_hunter_effect": "这个宇宙的魔法效果比之前更强，但也会引起不必要的麻烦。你的夙愿是进行一场最终的禁忌仪式。",
