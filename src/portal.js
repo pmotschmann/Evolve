@@ -1433,6 +1433,7 @@ const fortressModules = {
         s_alter: buildTemplate(`s_alter`,'portal'),
         shrine: buildTemplate(`shrine`,'portal'),
         meditation: buildTemplate(`meditation`,'portal'),
+        banquet: buildTemplate(`banquet`, 'portal'),
         wonder_gardens: {
             id: 'portal-wonder_gardens',
             title(){
