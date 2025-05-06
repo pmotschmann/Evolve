@@ -4541,26 +4541,18 @@ export function setChallengeScreen(){
     }
 
     if (global.race['warlord']){
-        if ($(`#evolution-custom`).length > 0){
-            $(`#evolution-custom`).addClass('disabled');
-        }
-        if ($(`#evolution-hybrid`).length > 0){
-            $(`#evolution-hybrid`).addClass('disabled');
-        }
-        if ($(`#evolution-nano`).length > 0){
-            $(`#evolution-nano`).addClass('disabled');
-        }
+        ['custom','hybrid','nano','sentience'].forEach(function(r){
+            if ($(`#evolution-${r}`).length > 0){
+                $(`#evolution-${r}`).addClass('disabled');
+            }
+        });
     }
     else {
-        if ($(`#evolution-custom`).length > 0 && $(`#evolution-custom`).hasClass('disabled')){
-            $(`#evolution-custom`).removeClass('disabled');
-        }
-        if ($(`#evolution-hybrid`).length > 0 && $(`#evolution-hybrid`).hasClass('disabled')){
-            $(`#evolution-hybrid`).removeClass('disabled');
-        }
-        if ($(`#evolution-nano`).length > 0 && $(`#evolution-nano`).hasClass('disabled')){
-            $(`#evolution-nano`).removeClass('disabled');
-        }
+        ['custom','hybrid','nano','sentience'].forEach(function(r){
+            if ($(`#evolution-${r}`).length > 0 && $(`#evolution-${r}`).hasClass('disabled')){
+                $(`#evolution-${r}`).removeClass('disabled');
+            }
+        });
     }
 }
 
@@ -5151,7 +5143,7 @@ raceList.forEach(function(race){
                 return `${raceDesc} ${loc(`evo_complete`)}`;
             },
             action(){
-                if (global.race['warlord'] && ['custom','hybrid'].includes(race)){ return false; }
+                if (global.race['warlord'] && ['custom','hybrid','nano'].includes(race)){ return false; }
                 if (payCosts($(this)[0])){
                     if (['synth','custom'].includes(race)){
                         return evoExtraState(race);
