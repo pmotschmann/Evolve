@@ -3884,6 +3884,7 @@ function fastLoop(){
             let missing = Math.min(global.civic.homeless, global.resource[global.race.species].max - global.resource[global.race.species].amount);
             global.civic.homeless -= missing;
             global.resource[global.race.species].amount += missing;
+            global.civic[global.civic.d_job].workers++;
         }
         else if (((fed && global['resource']['Food'].amount > 0) || global.race['fasting']) && global['resource'][global.race.species].max > global['resource'][global.race.species].amount){
             if (global.race['artifical'] || (global.race['spongy'] && global.city.calendar.weather === 0)){
@@ -3951,6 +3952,7 @@ function fastLoop(){
                 upperBound *= (3 - (2 ** time_multiplier));
                 if(Math.rand(0, upperBound) <= lowerBound){
                     global['resource'][global.race.species].amount++;
+                    global.civic[global.civic.d_job].workers++;
                 }
             }
         }
