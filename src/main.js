@@ -11037,7 +11037,7 @@ function midLoop(){
                 global.r_queue.queue[i].qa = global.settings.qAny_res ? true : false;
             }
             if (idx >= 0 && c_action && !global.r_queue.pause){
-                if (c_action.action()){
+                if (c_action.action({isQueue: true})){
                     messageQueue(loc('research_success',[global.r_queue.queue[idx].label]),'success',false,['queue','research_queue']);
                     gainTech(global.r_queue.queue[idx].type);
                     if (c_action['post']) {
@@ -11242,7 +11242,7 @@ function midLoop(){
                 let struct = global.queue.queue[idx];
                 let report_in = c_action['queue_complete'] ? c_action.queue_complete() : 1;
                 for (let i=0; i<attempts; i++){
-                    if (c_action.action() !== false){
+                    if (c_action.action({isQueue: true}) !== false){
                         triggerd = true;
                         if (report_in - i <= 1){
                             messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success',false,['queue','building_queue']);

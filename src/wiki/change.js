@@ -3,6 +3,15 @@ import { clearElement } from './../functions.js';
 
 export const changeList = [
     {
+        version: `1.4.4`,
+        date: `5/7/2025`,
+        changes: [
+            `Build queue will no longer spend Warlord skill points.`,
+            `Dreaded will no longer unlock from Apotheosis.`,
+            `Custom Hybrids will no longer unlock Gross.`
+        ]
+    },
+    {
         version: `1.4.3`,
         date: `5/4/2025`,
         changes: [

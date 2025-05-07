@@ -43,7 +43,7 @@ const edenicModules = {
             effect(){
                 return loc('eden_survery_meadows_effect');
             },
-            action(){
+            action(args){
                 if (payCosts($(this)[0])){
                     messageQueue(loc('eden_survery_meadows_action'),'info',false,['progress']);
                     return true;
@@ -90,7 +90,7 @@ const edenicModules = {
                 return [{ s: global.eden.encampment.s_max - global.eden.encampment.support }];
             },*/
             refresh: true,
-            action(){
+            action(args){
                 if (payCosts($(this)[0])){
                     incrementStruct('encampment','eden');
                     powerOnNewStruct($(this)[0]);
@@ -129,7 +129,7 @@ const edenicModules = {
                 }
                 return powerModifier(power);
             },
-            action(){
+            action(args){
                 if (payCosts($(this)[0])){
                     incrementStruct('soul_engine','eden');
                     powerOnNewStruct($(this)[0]);
@@ -205,7 +205,7 @@ const edenicModules = {
                 }
             },
             special(){ return global.eden.hasOwnProperty('mech_station') && global.eden.mech_station.count === 10 ? true : false; },
-            action(){
+            action(args){
                 if (global.eden.mech_station.count < 10 && payCosts($(this)[0])){
                     incrementStruct('mech_station','eden');
                     if (global.eden.mech_station.count === 10){
@@ -246,7 +246,7 @@ const edenicModules = {
             s_type: 'asphodel',
             support(){ return -1; },
             powered(){ return 0; },
-            action(){
+            action(args){
                 if (payCosts($(this)[0])){
                     incrementStruct('asphodel_harvester','eden');
                     powerOnNewStruct($(this)[0]);
@@ -280,7 +280,7 @@ const edenicModules = {
             s_type: 'asphodel',
             support(){ return -1; },
             powered(){ return 0; },
-            action(){
+            action(args){
                 if (payCosts($(this)[0])){
                     incrementStruct('ectoplasm_processor','eden');
                     powerOnNewStruct($(this)[0]);
@@ -336,7 +336,7 @@ const edenicModules = {
             s_type: 'asphodel',
             support(){ return -1; },
             powered(){ return 0; },
-            action(){
+            action(args){
                 if (payCosts($(this)[0])){
                     incrementStruct('research_station','eden');
                     powerOnNewStruct($(this)[0]);
@@ -453,7 +453,7 @@ const edenicModules = {
                 storage = storage + '</div>';
                 return storage;
             },
-            action(){
+            action(args){
                 if (payCosts($(this)[0])){
                     incrementStruct('warehouse','eden');
                     let multiplier = storageMultipler(global.race['warlord'] ? 1 : 0.2);
@@ -514,7 +514,7 @@ const edenicModules = {
                 desc += `<div class="has-text-special">${loc('eden_stabilizer_limit',[global?.eden?.warehouse?.count || 0])}</div>`;
                 return desc;
             },
-            action(){
+            action(args){
                 if (global.eden.stabilizer.count < global.eden.warehouse.count && payCosts($(this)[0])){
                     incrementStruct('stabilizer','eden');
                     return true;
@@ -595,7 +595,7 @@ const edenicModules = {
                     return `<div>${loc('eden_rune_gate_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
             },
-            action(){
+            action(args){
                 if (global.eden.rune_gate.count < 100 && payCosts($(this)[0])){
                     incrementStruct('rune_gate','eden');
                     if (global.eden.rune_gate.count === 100){
@@ -631,7 +631,7 @@ const edenicModules = {
             effect(){
                 return `<div>${loc('eden_rune_gate_open',[loc('eden_elysium_name')])}</div>`;
             },
-            action(){
+            action(args){
                 return false;
             },
             struct(){
@@ -677,7 +677,7 @@ const edenicModules = {
             s_type: 'asphodel',
             support(){ return -1; },
             powered(){ return 0; },
-            action(){
+            action(args){
                 if (payCosts($(this)[0])){
                     incrementStruct('bunker','eden');
                     powerOnNewStruct($(this)[0]);
@@ -723,7 +723,7 @@ const edenicModules = {
             s_type: 'asphodel',
             support(){ return -1; },
             powered(){ return 0; },
-            action(){
+            action(args){
                 if (payCosts($(this)[0])){
                     incrementStruct('bliss_den','eden');
                     powerOnNewStruct($(this)[0]);
@@ -764,7 +764,7 @@ const edenicModules = {
             },
             support(){ return 1; },
             powered(){ return powerCostMod(50); },
-            action(){
+            action(args){
                 if (payCosts($(this)[0])){
                     incrementStruct('rectory','eden');
                     if (powerOnNewStruct($(this)[0])){
@@ -829,7 +829,7 @@ const edenicModules = {
             },
             support(){ return 1; },
             powered(){ return powerCostMod(25); },
-            action(){
+            action(args){
                 if (payCosts($(this)[0])){
                     incrementStruct('corruptor','eden');
                     powerOnNewStruct($(this)[0]);
@@ -882,7 +882,7 @@ const edenicModules = {
                 Helium_3(){ return 5000000; },
             },
             effect:loc('eden_survey_fields_effect'),
-            action(){
+            action(args){
                 if (payCosts($(this)[0])){
                     messageQueue(loc('eden_survey_fields_msg'),'info',false,['progress']);
                     global.eden['fortress'] = { fortress: 1000, patrols: 20, armory: 100, detector: 100 };
@@ -913,7 +913,7 @@ const edenicModules = {
                 desc += `<div>${loc('eden_fortress_armory',[global.eden['fortress'] ? global.eden.fortress.armory : 0])}</div>`;
                 return desc;
             },
-            action(){
+            action(args){
                 return false;
             }
         },
@@ -941,7 +941,7 @@ const edenicModules = {
                 }
                 return desc;
             },
-            action(){
+            action(args){
                 let armySize = jobScale(100);
                 if (garrisonSize() < armySize){
                     return false;
@@ -1019,7 +1019,7 @@ const edenicModules = {
                 }
                 return desc;
             },
-            action(){
+            action(args){
                 let armySize = jobScale(50);
                 if (garrisonSize() < armySize){
                     return false;
@@ -1085,7 +1085,7 @@ const edenicModules = {
                 }
                 return desc;
             },
-            action(){
+            action(args){
                 let armySize = jobScale(25);
                 if (garrisonSize() < armySize){
                     return false;
@@ -1133,7 +1133,7 @@ const edenicModules = {
             effect(){ 
                 return loc('eden_ruined_fortress_effect');
             },
-            action(){
+            action(args){
                 return false;
             }
         },
@@ -1151,7 +1151,7 @@ const edenicModules = {
                 Troops(){ return jobScale(100); },
             },
             effect: loc('eden_scout_elysium_effect'),
-            action(){
+            action(args){
                 if (payCosts($(this)[0])){
                     messageQueue(loc('eden_scout_elysium_result'),'info',false,['progress']);
                     global.settings.eden.isle = true;
@@ -1232,7 +1232,7 @@ const edenicModules = {
                     return `<div>${loc('eden_fire_support_base_build')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
             },
-            action(){
+            action(args){
                 if (global.eden.fire_support_base.count < 100 && payCosts($(this)[0])){
                     incrementStruct('fire_support_base','eden');
                     if (global.eden.fire_support_base.count === 100 && !global.tech['isle']){
@@ -1339,7 +1339,7 @@ const edenicModules = {
                 return desc;
             },
             powered(){ return powerCostMod(25); },
-            action(){
+            action(args){
                 if (payCosts($(this)[0])){
                     incrementStruct('elysanite_mine','eden');
                     powerOnNewStruct($(this)[0]);
@@ -1378,7 +1378,7 @@ const edenicModules = {
                 return 5;
             },
             special: true,
-            action(){
+            action(args){
                 if (payCosts($(this)[0])){
                     incrementStruct('sacred_smelter','eden');
                     if (powerOnNewStruct($(this)[0])){
@@ -1413,7 +1413,7 @@ const edenicModules = {
                 return `<div>${loc('plus_max_resource',[elerium,global.resource.Elerium.name])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             powered(){ return powerCostMod(50); },
-            action(){
+            action(args){
                 if (payCosts($(this)[0])){
                     incrementStruct('elerium_containment','eden');
                     powerOnNewStruct($(this)[0]);
@@ -1457,7 +1457,7 @@ const edenicModules = {
                 return desc;
             },
             powered(){ return powerCostMod(12); },
-            action(){
+            action(args){
                 if (payCosts($(this)[0])){
                     incrementStruct('pillbox','eden');
                     powerOnNewStruct($(this)[0]);
@@ -1501,7 +1501,7 @@ const edenicModules = {
                 return desc;
             },
             powered(){ return powerCostMod(25); },
-            action(){
+            action(args){
                 if (payCosts($(this)[0])){
                     incrementStruct('restaurant','eden');
                     powerOnNewStruct($(this)[0]);
@@ -1537,7 +1537,7 @@ const edenicModules = {
                 vault = (+(vault).toFixed(0)).toLocaleString();
                 return loc('plus_max_resource',[`\$${vault}`,loc('resource_Money_name')]);
             },
-            action(){
+            action(args){
                 if (payCosts($(this)[0])){
                     incrementStruct('eternal_bank','eden');
                     global['resource']['Money'].max += spatialReasoning(bank_vault() * (global.race['warlord'] ? 20 : 10));
@@ -1575,7 +1575,7 @@ const edenicModules = {
                 return desc;
             },
             powered(){ return powerCostMod(75); },
-            action(){
+            action(args){
                 if (payCosts($(this)[0])){
                     incrementStruct('archive','eden');
                     powerOnNewStruct($(this)[0]);
@@ -1647,7 +1647,7 @@ const edenicModules = {
                     return `<div>${loc('eden_pier_effect',[loc('eden_pier',[loc('south')]),loc('eden_isle_name')])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
             },
-            action(){
+            action(args){
                 if (global.eden.north_pier.count < 10 && payCosts($(this)[0])){
                     incrementStruct('north_pier','eden');
                     if (global.eden.south_pier.count === 10 && global.eden.north_pier.count === 10 && global.tech.isle === 2){
@@ -1678,7 +1678,7 @@ const edenicModules = {
             effect(){
                 return `<div>${loc('space_red_vr_center_effect2',[10])}</div>`;
             },
-            action(){
+            action(args){
                 if (global.eden.rushmore.count === 0 && payCosts($(this)[0])){
                     incrementStruct('rushmore','eden');
                     return true;
@@ -1713,7 +1713,7 @@ const edenicModules = {
             effect(){
                 return `<div>${loc('eden_reincarnation_effect',[races[global.race.species].name])}</div>`;
             },
-            action(){
+            action(args){
                 if (global.eden.reincarnation.count === 0 && payCosts($(this)[0])){
                     incrementStruct('reincarnation','eden');
                     return true;
@@ -1757,7 +1757,7 @@ const edenicModules = {
                 return desc;
             },
             powered(){ return powerCostMod(10); },
-            action(){
+            action(args){
                 if (payCosts($(this)[0])){
                     incrementStruct('eden_cement','eden');
                     powerOnNewStruct($(this)[0]);
@@ -1831,7 +1831,7 @@ const edenicModules = {
                     return `<div>${loc('eden_pier_effect',[loc('eden_pier',[loc('north')]),loc('eden_elysium_name')])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
             },
-            action(){
+            action(args){
                 if (global.eden.south_pier.count < 10 && payCosts($(this)[0])){
                     incrementStruct('south_pier','eden');
                     if (global.eden.south_pier.count === 10 && global.eden.north_pier.count === 10 && global.tech.isle === 2){
@@ -1863,7 +1863,7 @@ const edenicModules = {
                     return `<div>${loc('eden_tower_intact',[global.eden['enemy_isle'] ? global.eden.enemy_isle.wt : 100])}</div>`;
                 }
             },
-            action(){
+            action(args){
                 return false;
             }
         },
@@ -1881,7 +1881,7 @@ const edenicModules = {
                     return `<div>${loc('eden_tower_intact',[global.eden['enemy_isle'] ? global.eden.enemy_isle.g : 100])}</div>`;
                 }
             },
-            action(){
+            action(args){
                 return false;
             }
         },
@@ -1899,7 +1899,7 @@ const edenicModules = {
                     return `<div>${loc('eden_tower_intact',[global.eden['enemy_isle'] ? global.eden.enemy_isle.et : 100])}</div>`;
                 }
             },
-            action(){
+            action(args){
                 return false;
             }
         },
@@ -1934,7 +1934,7 @@ const edenicModules = {
                 }
                 return +(powerCostMod(18000 * (coefficent ** factor))).toFixed(2);
             },
-            action(){
+            action(args){
                 if (payCosts($(this)[0])){
                     incrementStruct('spirit_vacuum','eden');
                     powerOnNewStruct($(this)[0]);
@@ -1982,7 +1982,7 @@ const edenicModules = {
             powered(){
                 return powerCostMod(500);
             },
-            action(){
+            action(args){
                 if (payCosts($(this)[0])){
                     incrementStruct('spirit_battery','eden');
                     powerOnNewStruct($(this)[0]);
@@ -2015,7 +2015,7 @@ const edenicModules = {
                 desc += `<div>${loc('eden_soul_compactor_effect3',[global.resource.Soul_Gem.name])}</div>`;
                 return desc;
             },
-            action(){
+            action(args){
                 if (global.eden.soul_compactor.count === 0 && payCosts($(this)[0])){
                     incrementStruct('soul_compactor','eden');
                     return true;
@@ -2063,7 +2063,7 @@ const edenicModules = {
                 Deuterium(){ return global.race['warlord'] ? 0 : 5000000; }
             },
             effect: loc('eden_scout_palace_effect'),
-            action(){
+            action(args){
                 if (payCosts($(this)[0])){
                     messageQueue(loc('eden_scout_palace_result'),'info',false,['progress']);
                     return true;
@@ -2080,7 +2080,7 @@ const edenicModules = {
             queue_complete(){ return false },
             cost: {},
             effect: loc('eden_abandoned_throne_effect'),
-            action(){
+            action(args){
                 return false;
             }
         },
@@ -2136,7 +2136,7 @@ const edenicModules = {
                     return `<div>${loc('eden_infuser_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
             },
-            action(){
+            action(args){
                 if (global.eden.infuser.count < 25 && payCosts($(this)[0])){
                     incrementStruct('infuser','eden');
                     if (global.eden?.conduit?.count === 25 && global.eden?.infuser?.count === 25){
@@ -2170,7 +2170,7 @@ const edenicModules = {
                 let reward = apotheosisProjection();
                 return `<div>${loc('eden_apotheosis_effect')}</div>${reward}`;
             },
-            action(){
+            action(args){
                 if (payCosts($(this)[0])){
                     if (global.race['warlord']){
                         global.stats.warlord.g = true;
@@ -2228,7 +2228,7 @@ const edenicModules = {
                     return `<div>${loc('eden_conduit_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
             },
-            action(){
+            action(args){
                 if (global.eden.conduit.count < 25 && payCosts($(this)[0])){
                     incrementStruct('conduit','eden');
                     if (global.eden?.conduit?.count === 25 && global.eden?.infuser?.count === 25){
@@ -2293,7 +2293,7 @@ const edenicModules = {
                     return `<div>${loc('eden_tomb_constuct')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
             },
-            action(){
+            action(args){
                 if (global.eden.tomb.count < 10 && payCosts($(this)[0])){
                     incrementStruct('tomb','eden');
                     if (global.eden.tomb.count === 10 && global.tech.palace === 3){
