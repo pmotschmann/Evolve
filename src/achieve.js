@@ -2914,7 +2914,14 @@ export function drawStats(){
                 return (+(r).toFixed(2)).toLocaleString();
             },
             species(s){
-                return s === 'custom' ? global.custom.race0.name : loc(`race_${s}`);
+                switch (s){
+                    case 'custom':
+                        return global.custom.race0.name;
+                    case 'hybrid':
+                        return global.custom.race1.name;
+                    default:
+                        return loc(`race_${s}`);
+                }
             }
         }
     });

@@ -2,7 +2,7 @@ import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resiz
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat, checkAdept } from './achieve.js';
 import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone, addATime, exceededATimeThreshold, loopTimers, calcQuantumLevel, drawPet } from './functions.js';
-import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill } from './races.js';
+import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, cleanRemoveTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobName, jobScale, workerScale, limitCraftsmen, loadServants} from './jobs.js';
 import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, luxGoodPrice, smelterUnlocked, smelterFuelConfig } from './industry.js';
@@ -3884,6 +3884,7 @@ function fastLoop(){
             let missing = Math.min(global.civic.homeless, global.resource[global.race.species].max - global.resource[global.race.species].amount);
             global.civic.homeless -= missing;
             global.resource[global.race.species].amount += missing;
+            global.civic[global.civic.d_job].workers++;
         }
         else if (((fed && global['resource']['Food'].amount > 0) || global.race['fasting']) && global['resource'][global.race.species].max > global['resource'][global.race.species].amount){
             if (global.race['artifical'] || (global.race['spongy'] && global.city.calendar.weather === 0)){
@@ -3951,6 +3952,7 @@ function fastLoop(){
                 upperBound *= (3 - (2 ** time_multiplier));
                 if(Math.rand(0, upperBound) <= lowerBound){
                     global['resource'][global.race.species].amount++;
+                    global.civic[global.civic.d_job].workers++;
                 }
             }
         }
@@ -11037,7 +11039,7 @@ function midLoop(){
                 global.r_queue.queue[i].qa = global.settings.qAny_res ? true : false;
             }
             if (idx >= 0 && c_action && !global.r_queue.pause){
-                if (c_action.action()){
+                if (c_action.action({isQueue: true})){
                     messageQueue(loc('research_success',[global.r_queue.queue[idx].label]),'success',false,['queue','research_queue']);
                     gainTech(global.r_queue.queue[idx].type);
                     if (c_action['post']) {
@@ -11242,7 +11244,7 @@ function midLoop(){
                 let struct = global.queue.queue[idx];
                 let report_in = c_action['queue_complete'] ? c_action.queue_complete() : 1;
                 for (let i=0; i<attempts; i++){
-                    if (c_action.action() !== false){
+                    if (c_action.action({isQueue: true}) !== false){
                         triggerd = true;
                         if (report_in - i <= 1){
                             messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success',false,['queue','building_queue']);
@@ -12686,6 +12688,10 @@ function longLoop(){
         if (global.eden['mech_station']){
             mechStationEffect()
         }
+    }
+
+    if (global.race['warlord'] && global.race['shapeshifter']){
+        cleanRemoveTrait('shapeshifter');
     }
 
     if (date.getMonth() === 11 && date.getDate() >= 17 && date.getDate() <= 24){

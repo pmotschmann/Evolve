@@ -148,7 +148,7 @@ export function bioseed(){
     if (global.race['cataclysm']){
         unlockAchieve('iron_will',false,5);
     }
-    if (global.race['gross_enabled'] && global.race['ooze'] && global.race.species !== 'custom' && global.race.species !== 'sludge'){
+    if (global.race['gross_enabled'] && global.race['ooze'] && global.race.species !== 'custom' && global.race.species !== 'sludge' && global.race.species != 'hybrid'){
         unlockAchieve(`gross`);
     }
 
@@ -590,7 +590,7 @@ export function ascend(){
         unlockFeat('digital_ascension');
     }
 
-    if (global.race['gross_enabled'] && global.race['ooze'] && global.race.species !== 'custom' && global.race.species !== 'sludge'){
+    if (global.race['gross_enabled'] && global.race['ooze'] && global.race.species !== 'custom' && global.race.species !== 'sludge' && global.race.species != 'hybrid'){
         unlockAchieve(`gross`);
     }
 
@@ -801,11 +801,7 @@ export function apotheosis(){
         unlockAchieve('miners_dream');
     }
 
-    if (!global.galaxy.hasOwnProperty('dreadnought') || global.galaxy.dreadnought.count === 0){
-        unlockAchieve(`dreaded`);
-    }
-
-    if (global.race['gross_enabled'] && global.race['ooze'] && global.race.species !== 'custom' && global.race.species !== 'sludge'){
+    if (global.race['gross_enabled'] && global.race['ooze'] && global.race.species !== 'custom' && global.race.species !== 'sludge' && global.race.species != 'hybrid'){
         unlockAchieve(`gross`);
     }
 
@@ -898,7 +894,7 @@ export function terraform(planet){
         unlockAchieve('miners_dream');
     }
 
-    if (global.race['gross_enabled'] && global.race['ooze'] && global.race.species !== 'custom' && global.race.species !== 'sludge'){
+    if (global.race['gross_enabled'] && global.race['ooze'] && global.race.species !== 'custom' && global.race.species !== 'sludge' && global.race.species != 'hybrid'){
         unlockAchieve(`gross`);
     }
 
@@ -1041,7 +1037,7 @@ export function matrix(){
         }
     });
     unlockAchieve(`genus_${genus}`);
-    if (global.race['gross_enabled'] && global.race['ooze'] && global.race.species !== 'custom' && global.race.species !== 'sludge'){
+    if (global.race['gross_enabled'] && global.race['ooze'] && global.race.species !== 'custom' && global.race.species !== 'sludge' && global.race.species != 'hybrid'){
         unlockAchieve(`gross`);
     }
     unlockAchieve(`bluepill`);
@@ -1126,7 +1122,7 @@ export function retirement(){
         }
     });
     unlockAchieve(`genus_${genus}`);
-    if (global.race['gross_enabled'] && global.race['ooze'] && global.race.species !== 'custom' && global.race.species !== 'sludge'){
+    if (global.race['gross_enabled'] && global.race['ooze'] && global.race.species !== 'custom' && global.race.species !== 'sludge' && global.race.species != 'hybrid'){
         unlockAchieve(`gross`);
     }
     unlockAchieve(`retired`);
@@ -1211,7 +1207,7 @@ export function gardenOfEden(){
         }
     });
     unlockAchieve(`genus_${genus}`);
-    if (global.race['gross_enabled'] && global.race['ooze'] && global.race.species !== 'custom' && global.race.species !== 'sludge'){
+    if (global.race['gross_enabled'] && global.race['ooze'] && global.race.species !== 'custom' && global.race.species !== 'sludge' && global.race.species != 'hybrid'){
         unlockAchieve(`gross`);
     }
     unlockAchieve(`adam_eve`);

@@ -1028,6 +1028,7 @@ const outerTruth = {
                 if (global.space.fob.count < 1 && payCosts($(this)[0])){
                     incrementStruct('fob');
                     powerOnNewStruct($(this)[0]);
+                    if (global.tech['triton'] === 2){ global.tech['triton'] = 3; }
                     return true;
                 }
                 return false;
@@ -1043,12 +1044,9 @@ const outerTruth = {
                 return jobScale(soldiers);
             },
             post(){
-                if (global.tech['triton'] === 2){
-                    global.tech['triton'] = 3;
-                    drawTech();
-                    renderSpace();
-                    messageQueue(loc('space_fob_msg'),'info',false,['progress']);
-                }
+                drawTech();
+                renderSpace();
+                messageQueue(loc('space_fob_msg'),'info',false,['progress']);
             }
         },
         lander: {

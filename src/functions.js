@@ -3054,7 +3054,6 @@ const valAdjust = {
     unfathomable: false,
     darkness: false,
     living_tool: false,
-    empowered: false,
     living_materials: true,
     blurry: true,
     playful: true,
