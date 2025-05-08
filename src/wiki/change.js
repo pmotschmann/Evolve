@@ -6,6 +6,7 @@ export const changeList = [
         version: `1.4.4`,
         date: `5/7/2025`,
         changes: [
+            `The native rank of Empowered for Nephilim is now 2.`,
             `Build queue will no longer spend Warlord skill points.`,
             `Dreaded will no longer unlock from Apotheosis.`,
             `Custom Hybrids will no longer unlock Gross.`

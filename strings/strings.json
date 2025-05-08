@@ -8745,7 +8745,7 @@
   "wiki_trait_effect_devious": "All trades are %0% worse, in buy/sell price and import volume.",
   "wiki_trait_effect_grenadier": "You gain fewer soldiers but they are %0% stronger.",
   "wiki_trait_effect_aggressive": "Random events occur that can kill up to %1/%0 citizens.",
-  "wiki_trait_effect_empowered": "Other traits you own are ranked up.",
+  "wiki_trait_effect_empowered": "Other traits with value between %0 and %1 you own are ranked up.",
   "wiki_trait_effect_blasphemous": "Temple production effect is %0% weaker.",
   "wiki_trait_effect_blasphemous_evil": "Propaganda Center production effect is %0% weaker.",
   "wiki_trait_effect_ooze": "All workers %0% weaker, Theology bonuses %1% weaker, and Mastery lowered by %2%.",

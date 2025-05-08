@@ -2644,24 +2644,24 @@ export const traits = {
         name: loc('trait_frail_name'),
         desc: loc('trait_frail'),
         type: 'major',
-        val: -5,
+        val: -2,
         vars(r){
             // [Win Deaths, Loss Deaths]
             switch (r || traitRank('frail') || 1){
                 case 0.1:
-                    return [2,3];
+                    return [3,4];
                 case 0.25:
-                    return [2,2];
+                    return [3,3];
                 case 0.5:
-                    return [1,2];
+                    return [2,3];
                 case 1:
-                    return [1,1];
+                    return [2,2];
                 case 2:
-                    return [1,1];
+                    return [1,2];
                 case 3:
-                    return [1,0];
+                    return [1,1];
                 case 4:
-                    return [1,0];
+                    return [0,1];
             }
         }
     },
@@ -5688,7 +5688,7 @@ export const races = {
         home: loc('race_nephilim_home'),
         entity: loc('race_nephilim_entity'),
         traits: {
-            empowered: 1,
+            empowered: 2,
             blasphemous: 1
         },
         solar: {

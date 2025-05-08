@@ -115,12 +115,14 @@ export function racesPage(content){
         let firstType = true; // For hybrids, arbitrarily display one type as primary and the other as secondary
 
         (typeList.includes('carnivore') && typeList.includes('herbivore') ? ['omnivore'] : typeList).forEach(function (gType){
-            Object.keys(genus_traits[gType]).sort().forEach(function (trait){
-                let id = `raceTrait${race}${trait}`;
-                let color = races[race].fanaticism === trait ? 'danger' : 'caution';
-                genes.append(`<span class="has-text-${color}" id="${id}">${traitSkin('name', trait, race)}<span>`);
-                traitList.push({ t: trait, r: firstType ? genus_trank_pri : genus_trank_sec});
-            });
+            if (race !== 'hellspawn'){
+                Object.keys(genus_traits[gType]).sort().forEach(function (trait){
+                    let id = `raceTrait${race}${trait}`;
+                    let color = races[race].fanaticism === trait ? 'danger' : 'caution';
+                    genes.append(`<span class="has-text-${color}" id="${id}">${traitSkin('name', trait, race)}<span>`);
+                    traitList.push({ t: trait, r: firstType ? genus_trank_pri : genus_trank_sec});
+                });
+            }
             firstType = false;
         });
 
