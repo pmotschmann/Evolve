@@ -1249,7 +1249,7 @@ if (convertVersion(global['version']) <= 104003){
     }
 }
 
-global['version'] = '1.4.3';
+global['version'] = '1.4.4';
 delete global['revision'];
 delete global['beta'];
 
