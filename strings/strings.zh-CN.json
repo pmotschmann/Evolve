@@ -7007,7 +7007,7 @@
   "galaxy_symposium_effect": "每住宅区使知识上限 +%0",
   "galaxy_symposium_effect2": "每星贸路线使知识上限 +%0",
   "galaxy_symposium_effect3": "每戈尔顿星系船员使知识上限 +%0",
-  "galaxy_symposium_effect3b": "每戈尔顿星系以外的船员使知识上限 +%0",
+  "galaxy_symposium_effect3b": "每戈尔顿星系以外的船员最多使知识上限 +%0",
   "galaxy_symposium_effect4": "%1知识上限 +%0%",
   "galaxy_freighter": "星际货轮",
   "galaxy_freighter_effect": "%1贸易路线 +%0",
