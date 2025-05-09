@@ -11610,6 +11610,7 @@ function longLoop(){
             }
             if (astroSign === 'cancer'){
                 hc += astroVal('cancer')[0];
+                if (hc < 0){ hc = 0; }
             }
             if (global.tech['medic'] && global.tech['medic'] >= 2){
                 hc *= global.tech['medic'];

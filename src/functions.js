@@ -3058,6 +3058,7 @@ const valAdjust = {
     blurry: true,
     playful: true,
     ghostly: true,
+    environmentalist: true
 };
 
 function getTraitVals(trait, rank, species){
@@ -3092,6 +3093,11 @@ function getTraitVals(trait, rank, species){
         }
         else if (trait === 'living_materials'){
             vals = [global.resource.Lumber.name, global.resource.Plywood.name, global.resource.Furs.name, loc('resource_Amber_name')];
+        }
+        else if (trait === 'environmentalist'){
+            let coal = -(actions.city.coal_power.powered(true));
+            let oil = -(actions.city.oil_power.powered(true));
+            vals = [coal + vals[0], oil + vals[0] - 1, oil + vals[0] + 1, coal, oil, vals[1]];
         }
         else if (trait === 'blurry'){
             if (global.race['warlord']){

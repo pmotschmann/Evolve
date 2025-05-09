@@ -3,6 +3,15 @@ import { clearElement } from './../functions.js';
 
 export const changeList = [
     {
+        version: `1.4.5`,
+        date: `5/??/2025`,
+        changes: [
+            `Enviromentalist now scales with trait rank.`,
+            `Thalassophobia replaced with Unfavored.`,
+            `Optimistic cost lowered from 5 points to 3.`
+        ]
+    },
+    {
         version: `1.4.4`,
         date: `5/7/2025`,
         changes: [

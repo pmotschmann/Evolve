@@ -3193,7 +3193,7 @@ export const actions = {
             category: 'trade',
             era: 'industrialized',
             reqs: { wharf: 1 },
-            not_trait: ['thalassophobia','cataclysm'],
+            not_trait: ['thalassophobia','cataclysm','warlord'],
             cost: {
                 Money(offset){ return costMultiplier('wharf', offset, 62000, 1.32); },
                 Lumber(offset){ return costMultiplier('wharf', offset, 44000, 1.32); },
@@ -4021,10 +4021,11 @@ export const actions = {
                 let power = -($(this)[0].powered());
                 return global.race['environmentalist'] ? `+${power}MW` : `<span>+${power}MW.</span> <span class="has-text-caution">${loc(global.race.universe === 'magic' ? 'city_mana_engine_effect' : 'city_coal_power_effect',[consume])}</span>`;
             },
-            powered(){
-                let power = global.race['environmentalist']
-                    ? global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 1 ? -5 : -4
-                    : global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 1 ? -6 : -5;
+            powered(wiki){
+                let power = global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 1 ? -6 : -5;
+                if (!wiki && global.race['environmentalist']){
+                    power += traits.environmentalist.vars()[0];
+                }
                 let dirt = govActive('dirty_jobs',1);
                 if (dirt){ power -= dirt; }
                 return powerModifier(power);
@@ -4078,23 +4079,21 @@ export const actions = {
                 let power = -($(this)[0].powered());
                 return global.race['environmentalist'] ? `+${power}MW` : `<span>+${power}MW.</span> <span class="has-text-caution">${loc('city_oil_power_effect',[consume])}</span>`;
             },
-            powered(){
+            powered(wiki){
                 let power = 0;
-                if (global.race['environmentalist']){
-                    if (global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 3){
-                        let base = global.city.calendar.wind === 1 ? -7 : -5;
-                        power = global.stats.achieve['dissipated'].l >= 5 ? (base - 2) : (base - 1);
-                    }
-                    else {
-                        power = global.city.calendar.wind === 1 ? -7 : -5;
-                    }
+                if (global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 3){
+                    power = global.stats.achieve['dissipated'].l >= 5 ? -8 : -7;
                 }
                 else {
-                    if (global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 3){
-                        power = global.stats.achieve['dissipated'].l >= 5 ? -8 : -7;
+                    power = -6;
+                }
+                if (!wiki && global.race['environmentalist']){
+                    power -= traits.environmentalist.vars()[0];
+                    if (global.city.calendar.wind === 1){
+                        power -= 1;
                     }
                     else {
-                        power = -6;
+                        power += 1;
                     }
                 }
                 let dirt = govActive('dirty_jobs',1);
