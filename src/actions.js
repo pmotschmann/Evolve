@@ -8577,16 +8577,6 @@ function sentience(){
             genus: global.custom.race0.genus,
             traitlist: global.custom.race0.traits
         });
-
-        let neg_traits = 0;
-        for (let i=0; i<global.custom.race0.traits.length; i++){
-            if (traits[global.custom.race0.traits[i]].val < 0){
-                neg_traits++;
-            }
-        }
-        if (neg_traits > 10){
-            global.race['overtapped'] = (neg_traits - 10) * 2;
-        }
     }
 
     if (global.race.species === 'hybrid' && global.custom.hasOwnProperty('race1')){
@@ -8605,16 +8595,6 @@ function sentience(){
             hybrid: global.custom.race1.hybrid,
             traitlist: global.custom.race1.traits
         });
-
-        let neg_traits = 0;
-        for (let i=0; i<global.custom.race1.traits.length; i++){
-            if (traits[global.custom.race1.traits[i]].val < 0){
-                neg_traits++;
-            }
-        }
-        if (neg_traits > 10){
-            global.race['overtapped'] = (neg_traits - 10) * 2;
-        }
     }
 
     if (global.race.unfathomable){
