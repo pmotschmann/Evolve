@@ -7577,7 +7577,7 @@ export function ascendLab(hybrid,wiki){
         $(`#city`).append(lab);
     }
 
-    let labStatus = `<div><h3 class="has-text-danger">${loc('genelab_title')}</h3> - <span class="has-text-warning">${loc('genelab_genes')} {{ g.genes }}</span> - <span class="has-text-warning">${loc('trait_untapped_name')}: {{ g.genes | untapped }}</span> - <span class="has-text-caution">${loc('genelab_neg')} {{ td.neg }}/10</span></div>`;
+    let labStatus = `<div><h3 class="has-text-danger">${loc('genelab_title')}</h3> - <span class="has-text-warning">${loc('genelab_genes')} {{ g.genes }}</span> - <span class="has-text-warning">${loc('trait_untapped_name')}: {{ g.genes | untapped }}</span></div>`;
     lab.append(labStatus);
 
     if (isWiki){
@@ -7801,13 +7801,6 @@ export function ascendLab(hybrid,wiki){
                 }
             },
             geneEdit(){
-                let neg_traits = 0;
-                for (let i=0; i<genome.traitlist.length; i++){
-                    if (traits[genome.traitlist[i]].val < 0){
-                        neg_traits++;
-                    }
-                }
-                trait_data.neg = neg_traits;
                 genome.genes = calcGenomeScore(genome,(isWiki ? wikiVars : false));
             },
             setRace(){
@@ -7815,39 +7808,30 @@ export function ascendLab(hybrid,wiki){
                 if (calcGenomeScore(genome) >= 0 && genome.name.length > 0 && genome.desc.length > 0 && genome.entity.length > 0 && genome.home.length > 0
                     && genome.red.length > 0 && genome.hell.length > 0 && genome.gas.length > 0 && genome.gas_moon.length > 0 && genome.dwarf.length > 0){
 
-                    let neg_traits = 0;
-                    for (let i=0; i<genome.traitlist.length; i++){
-                        if (traits[genome.traitlist[i]].val < 0){
-                            neg_traits++;
-                        }
+                    global.custom[slot] = {
+                        name: genome.name,
+                        desc: genome.desc,
+                        entity: genome.entity,
+                        home: genome.home,
+                        red: genome.red,
+                        hell: genome.hell,
+                        gas: genome.gas,
+                        gas_moon: genome.gas_moon,
+                        dwarf: genome.dwarf,
+                        titan: genome.titan,
+                        enceladus: genome.enceladus,
+                        triton: genome.triton,
+                        eris: genome.eris,
+                        genus: genome.genus,
+                        traits: genome.traitlist,
+                        fanaticism: genome.fanaticism,
+                    };
+                    if (hybrid){
+                        global.custom[slot]['hybrid'] = genome.hybrid;
+                        apotheosis();
                     }
-
-                    if (neg_traits <= 10){
-                        global.custom[slot] = {
-                            name: genome.name,
-                            desc: genome.desc,
-                            entity: genome.entity,
-                            home: genome.home,
-                            red: genome.red,
-                            hell: genome.hell,
-                            gas: genome.gas,
-                            gas_moon: genome.gas_moon,
-                            dwarf: genome.dwarf,
-                            titan: genome.titan,
-                            enceladus: genome.enceladus,
-                            triton: genome.triton,
-                            eris: genome.eris,
-                            genus: genome.genus,
-                            traits: genome.traitlist,
-                            fanaticism: genome.fanaticism,
-                        };
-                        if (hybrid){
-                            global.custom[slot]['hybrid'] = genome.hybrid;
-                            apotheosis();
-                        }
-                        else {
-                            ascend();
-                        }
+                    else {
+                        ascend();
                     }
                 }
             },
@@ -8042,14 +8026,6 @@ export function ascendLab(hybrid,wiki){
                         genome.traitlist = fixTraitlist;
                         genome.genes = calcGenomeScore(genome,(isWiki ? wikiVars : false));
 
-                        let neg_traits = 0;
-                        for (let i=0; i<genome.traitlist.length; i++){
-                            if (traits[genome.traitlist[i]].val < 0){
-                                neg_traits++;
-                            }
-                        }
-                        trait_data.neg = neg_traits;
-
                         error.msg = "";
                     }
                     reader.onerror = function (evt) {
@@ -8071,41 +8047,48 @@ export function ascendLab(hybrid,wiki){
         },
         filters: {
             cost(trait){
-                if (traits[trait].val >= 0){
-                    let max_complexity = 2;
+                let max_complexity = 1;
 
-                    let active_genus = genome.genus === 'hybrid' ? genome.hybrid : [genome.genus];
-                    let oppose_genus = [];
-                    active_genus.forEach(function(g){
-                        oppose_genus = oppose_genus.concat(genus_def[g].oppose);
-                    });
+                let active_genus = genome.genus === 'hybrid' ? genome.hybrid : [genome.genus];
+                let oppose_genus = [];
+                active_genus.forEach(function(g){
+                    oppose_genus = oppose_genus.concat(genus_def[g].oppose);
+                });
 
-                    let taxonomy = traits[trait].taxonomy;
-                    let genus_origin = races[traits[trait].origin].type;
-                    let gene_cost = traits[trait].val;
-                    if (active_genus.includes(genus_origin)){ gene_cost--; }
-                    if (oppose_genus.includes(genus_origin)){ gene_cost++; }
+                let taxonomy = traits[trait].taxonomy;
+                let genus_origin = races[traits[trait].origin].type;
+                let gene_cost = traits[trait].val;
+                if (active_genus.includes(genus_origin)){ gene_cost--; }
+                if (oppose_genus.includes(genus_origin)){ gene_cost++; }
 
-                    let complexity = { utility: 0, resource: 0, production: 0, combat: 0 };
-                    for (let i=0; i<genome.traitlist.length; i++){
-                        if (traits[genome.traitlist[i]].val >= 0){
-                            complexity[traits[genome.traitlist[i]].taxonomy]++;
-                        }
+                let complexity = { utility: 0, resource: 0, production: 0, combat: 0 };
+                let neg_complexity = { utility: 0, resource: 0, production: 0, combat: 0 };
+                for (let i=0; i<genome.traitlist.length; i++){
+                    if (traits[genome.traitlist[i]].val >= 0){
+                        complexity[traits[genome.traitlist[i]].taxonomy]++;
                     }
-
+                    else {
+                        neg_complexity[traits[genome.traitlist[i]].taxonomy]++;
+                    }
+                }
+                if (traits[trait].val >= 0){
                     if (genome.traitlist.includes(trait)){
                         complexity[taxonomy]--;
                     }
-
                     if (complexity[taxonomy] > max_complexity){
                         gene_cost += complexity[taxonomy] - max_complexity;
                     }
-
-                    return gene_cost;
                 }
                 else {
-                    return traits[trait].val;
+                    if (genome.traitlist.includes(trait)){
+                        neg_complexity[taxonomy]--;
+                    }
+                    if (neg_complexity[taxonomy] >= max_complexity){
+                        gene_cost += neg_complexity[taxonomy];
+                    }
                 }
+
+                return gene_cost;
             },
             untapped(genes){
                 if (!genome.traitlist.includes(genome.fanaticism)){ genome.fanaticism = false; }

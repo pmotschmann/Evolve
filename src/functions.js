@@ -2657,7 +2657,6 @@ export function calcGenomeScore(genome,wiki){
         });
         oppose_genus = oppose_genus.concat(genus_def[g].oppose);
     });
-
     
     if (wiki){
         genes += wiki.technophobe * 4;
@@ -2666,9 +2665,10 @@ export function calcGenomeScore(genome,wiki){
         genes += global.stats.achieve.technophobe.l * 4;
     }
 
-    let max_complexity = 2;
+    let max_complexity = 1;
 
     let complexity = { utility: 0, resource: 0, production: 0, combat: 0 };
+    let neg_complexity = { utility: 0, resource: 0, production: 0, combat: 0 };
     for (let i=0; i<genome.traitlist.length; i++){
         let taxonomy = traits[genome.traitlist[i]].taxonomy;
         let genus_origin = races[traits[genome.traitlist[i]].origin].type;
@@ -2682,10 +2682,14 @@ export function calcGenomeScore(genome,wiki){
             }
             complexity[taxonomy]++;
         }
+        else {
+            if (neg_complexity[taxonomy] >= max_complexity){
+                gene_cost += neg_complexity[taxonomy];
+            }
+            neg_complexity[taxonomy]++;
+        }
         genes -= gene_cost;
     }
-
-    console.log(complexity);
 
     return genes;
 }
