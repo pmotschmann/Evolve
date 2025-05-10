@@ -5113,7 +5113,9 @@ const raceList = [
     'custom','hybrid'
 ];
 raceList.forEach(function(race){
-    if (!['custom','hybrid'].includes(race) || (race === 'custom' && global.custom.hasOwnProperty('race0')) || (race === 'hybrid' && global.custom.hasOwnProperty('race1')) ) {
+    if (!['custom','hybrid'].includes(race) || (race === 'custom' && global.custom.hasOwnProperty('race0')) || (race === 'hybrid' && global.custom.hasOwnProperty('race1')) ){
+        if (race === 'hybrid' && global.custom.race1.genus !== 'hybrid'){ return false; }
+        else if (race === 'custom' && global.custom.race0.genus === 'hybrid'){ return false; }
         actions.evolution[race] = {
             id: `evolution-${race}`,
             title(){ return races[race].name; },

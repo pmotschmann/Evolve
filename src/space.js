@@ -8024,6 +8024,14 @@ export function ascendLab(hybrid,wiki){
                         if (!isWiki && !(global.stats.achieve[`genus_${genome.genus}`] && global.stats.achieve[`genus_${genome.genus}`].l > 0)){
                             genome.genus = dGenus;
                         }
+                        if (importCustom.genus !== 'hybrid' && hybrid){
+                            genome['hybrid'] = [importCustom.genus, importCustom.genus === 'humanoid' ? 'small' : 'humanoid'];
+                            genome.genus = 'hybrid';
+                        }
+                        else if (importCustom.genus === 'hybrid' && !hybrid){
+                            genome.genus = importCustom.hybrid[0];
+                            delete genome.hybrid;
+                        }
                         let fixTraitlist = [];
                         for (let i=0; i < genome.traitlist.length; i++){
                             if (traits.hasOwnProperty(genome.traitlist[i]) && traits[genome.traitlist[i]].type === 'major' && unlockedTraits[genome.traitlist[i]] && !fixTraitlist.includes(genome.traitlist[i])){
@@ -8058,7 +8066,7 @@ export function ascendLab(hybrid,wiki){
                     a.click();
                     URL.revokeObjectURL(a.href);
                 };
-                downloadToFile(JSON.stringify(genome, null, 4), `evolve-custom-${genome.name}.txt`, 'text/plain');
+                downloadToFile(JSON.stringify(genome, null, 4), `evolve-${hybrid ? 'hybrid' : 'custom'}-${genome.name}.txt`, 'text/plain');
             }
         },
         filters: {
@@ -8265,11 +8273,11 @@ export function terraformLab(wiki){
     let geo_list = `<div class="res_selection"><div class="has-text-warning">${loc('planetlab_res')}</div><template><section>`;
     geoList.forEach(function (res){
         geology[res] = 0;
-        geo_list = geo_list + `<div class="field t${res}"><div>${global.resource[res].name}</div><div>`;
-        geo_list = geo_list + `<span role="button" aria-label="export ${res}" class="sub has-text-danger" @click="less('${res}')"><span>-</span></span>`;
-        geo_list = geo_list + `<span class="current" v-html="$options.filters.res('${res}')"></span>`;
-        geo_list = geo_list + `<span role="button" aria-label="import ${res}" class="add has-text-success" @click="more('${res}')"><span>+</span></span>`;
-        geo_list = geo_list + `</div></div>`;
+        geo_list += `<div class="field t${res}"><div>${global.resource[res].name}</div><div>`;
+        geo_list += `<span role="button" aria-label="export ${res}" class="sub has-text-danger" @click="less('${res}')"><span>-</span></span>`;
+        geo_list += `<span class="current" v-html="$options.filters.res('${res}')"></span>`;
+        geo_list += `<span role="button" aria-label="import ${res}" class="add has-text-success" @click="more('${res}')"><span>+</span></span>`;
+        geo_list += `</div></div>`;
     });
     geo_list = geo_list + `</section></template></div>`;
     pBiome.append($(geo_list));
