@@ -1537,7 +1537,7 @@ export const perkList = {
             },
             {
                 desc(wiki){
-                    let bonus = wiki ? "1/2/3/4/5" : global.stats.achieve['technophobe'] ? global.stats.achieve.technophobe.l : 0;
+                    let bonus = wiki ? "4/8/12/16/20" : global.stats.achieve['technophobe'] ? global.stats.achieve.technophobe.l : 0;
                     return loc("achieve_perks_technophobe5",[bonus]);
                 },
                 active(){

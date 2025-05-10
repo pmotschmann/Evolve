@@ -6,6 +6,8 @@ export const changeList = [
         version: `1.4.5`,
         date: `5/??/2025`,
         changes: [
+            `New Custom/Hybrid Lab mechanics.`,
+            `Technophobe perk race complexity changed to flat gene point bonus.`,
             `Enviromentalist now scales with trait rank.`,
             `Thalassophobia replaced with Unfavored.`,
             `Optimistic cost lowered from 5 points to 3.`
