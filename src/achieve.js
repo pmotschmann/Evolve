@@ -1,6 +1,6 @@
 import { global, set_alevel, set_ulevel } from './vars.js';
 import { clearElement, popover, flib, calc_mastery, masteryType, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, calcQueueMax, calcRQueueMax, messageQueue, eventActive, easterEgg, getHalloween, trickOrTreat, harmonyEffect } from './functions.js';
-import { races, genus_traits } from './races.js';
+import { races, genus_def } from './races.js';
 import { actions } from './actions.js';
 import { universe_affixes, universe_types, piracy } from './space.js';
 import { monsters } from './portal.js';
@@ -646,7 +646,7 @@ export function checkAchievements(){
                 equilProgress[global.pillars[race]]++;
             }
         });
-        if (Object.keys(genus).length >= Object.keys(genus_traits).length - 2){
+        if (Object.keys(genus).length >= Object.keys(genus_def).length - 2){
             let rank = 5;
             Object.keys(genus).forEach(function(g){
                 if (genus[g] < rank && g !== 'hybrid'){

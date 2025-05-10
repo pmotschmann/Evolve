@@ -2,7 +2,7 @@ import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, 
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
-import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill } from './races.js';
+import { races, traits, genus_def, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill } from './races.js';
 import { defineResources, unlockCrates, unlockContainers, crateValue, containerValue, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus, faithTempleCount } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter } from './industry.js';
@@ -884,7 +884,7 @@ export const actions = {
                     let allowed = [];
 
                     let type = 'humanoid';
-                    for (let genus in genus_traits){
+                    for (let genus in genus_def){
                         if (global.tech[`evo_${genus}`] && global.tech[`evo_${genus}`] >= 2){
                             type = genus;
                             break;
@@ -8360,17 +8360,17 @@ function sentience(){
     else {
         let typeList = global.stats.achieve['godslayer'] && races[global.race.species].type === 'hybrid' ? races[global.race.species].hybrid : [races[global.race.species].type];
         typeList.forEach(function(type){
-            Object.keys(genus_traits[type]).forEach(function (trait) {
+            Object.keys(genus_def[type].traits).forEach(function (trait) {
                 let mainspec = global.tech[`evo_${type}`] >= 2 ? true : false;
                 if (mainspec){
                     global.race['maintype'] = type;
-                    setTraitRank(trait,{ set: genus_traits[type][trait] });
+                    setTraitRank(trait,{ set: genus_def[type].traits[trait] });
                     if (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 4){
                         setTraitRank(trait);
                     }
                 }
                 else {
-                    setTraitRank(trait,{ set: genus_traits[type][trait] });
+                    setTraitRank(trait,{ set: genus_def[type].traits[trait] });
                     setTraitRank(trait, {down:true});
                 }
             });

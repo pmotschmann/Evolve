@@ -19,7 +19,7 @@ const date = new Date();
 const easter = getEaster();
 const hallowed = getHalloween();
 
-export const neg_roll_traits = ['angry','arrogant','atrophy','diverse','dumb','fragrant','frail','freespirit','gluttony','gnawer','greedy','hard_of_hearing','heavy','hooved','invertebrate','lazy','mistrustful','nearsighted','nyctophilia','paranoid','pathetic','pessimistic','puny','pyrophobia','skittish','slow','slow_regen','snowy','solitary','unorganized'];
+export const neg_roll_traits = ['angry','arrogant','atrophy','diverse','dumb','fragrant','frail','freespirit','gluttony','gnawer','greedy','hard_of_hearing','heavy','hooved','invertebrate','lazy','mistrustful','nearsighted','nyctophilia','paranoid','pathetic','pessimistic','puny','pyrophobia','skittish','slow','slow_regen','snowy','solitary','unorganized','unfavored'];
 
 export function altRace(race,set){
     if (global.settings.boring){
@@ -82,97 +82,159 @@ export function altRace(race,set){
     return false;
 }
 
-export const genus_traits = {
+export const genus_def = {
     humanoid: {
-        adaptable: 1,
-        wasteful: 1
+        traits: {
+            adaptable: 1,
+            wasteful: 1
+        },
+        oppose: ['fungi']
     },
     carnivore: {
-        carnivore: 1,
-        beast: 1,
-        cautious: 1
+        traits: {
+            carnivore: 1,
+            beast: 1,
+            cautious: 1
+        },
+        oppose: ['herbivore']
     },
     herbivore: {
-        herbivore: 1,
-        instinct: 1
+        traits: {
+            herbivore: 1,
+            instinct: 1
+        },
+        oppose: ['carnivore']
     },
     omnivore: {
-        forager: 1,
-        beast: 1,
-        cautious: 1,
-        instinct: 1
+        traits: {
+            forager: 1,
+            beast: 1,
+            cautious: 1,
+            instinct: 1
+        }
     },
     small: {
-        small: 1,
-        weak: 1
+        traits: {
+            small: 1,
+            weak: 1
+        },
+        oppose: ['giant']
     },
     giant: {
-        large: 1,
-        strong: 1
+        traits: {
+            large: 1,
+            strong: 1
+        },
+        oppose: ['small']
     },
     reptilian: {
-        cold_blooded: 1,
-        scales: 1
+        traits: {
+            cold_blooded: 1,
+            scales: 1
+        },
+        oppose: ['avian']
     },
     avian: {
-        flier: 1,
-        hollow_bones: 1,
-        sky_lover: 1,
+        traits: {
+            flier: 1,
+            hollow_bones: 1,
+            sky_lover: 1
+        },
+        oppose: ['reptilian']
     },
     insectoid: {
-        high_pop: 1,
-        fast_growth: 1,
-        high_metabolism: 1
+        traits: {
+            high_pop: 1,
+            fast_growth: 1,
+            high_metabolism: 1
+        },
+        oppose: ['plant']
     },
     plant: {
-        sappy: 1,
-        asymmetrical: 1
+        traits: {
+            sappy: 1,
+            asymmetrical: 1
+        },
+        oppose: ['insectoid']
     },
     fungi: {
-        detritivore: 1,
-        spongy: 1
+        traits: {
+            detritivore: 1,
+            spongy: 1
+        },
+        oppose: ['humanoid']
     },
     aquatic: {
-        submerged: 1,
-        low_light: 1
+        traits: {
+            submerged: 1,
+            low_light: 1
+        },
+        oppose: ['sand']
     },
     fey: {
-        elusive: 1,
-        iron_allergy: 1
+        traits: {
+            elusive: 1,
+            iron_allergy: 1
+        },
+        oppose: ['eldritch','synthetic']
     },
     heat: {
-        smoldering: 1,
-        cold_intolerance: 1
+        traits: {
+            smoldering: 1,
+            cold_intolerance: 1
+        },
+        oppose: ['polar']
     },
     polar: {
-        chilled: 1,
-        heat_intolerance: 1
+        traits: {
+            chilled: 1,
+            heat_intolerance: 1
+        },
+        oppose: ['heat']
     },
     sand: {
-        scavenger: 1,
-        nomadic: 1
+        traits: {
+            scavenger: 1,
+            nomadic: 1
+        },
+        oppose: ['aquatic']
     },
     demonic: {
-        immoral: 1,
-        evil: 1,
-        soul_eater: 1
+        traits: {
+            immoral: 1,
+            evil: 1,
+            soul_eater: 1
+        },
+        oppose: ['angelic']
     },
     angelic: {
-        blissful: 1,
-        pompous: 1,
-        holy: 1
+        traits: {
+            blissful: 1,
+            pompous: 1,
+            holy: 1
+        },
+        oppose: ['demonic']
     },
     synthetic: {
-        artifical: 1,
-        powered: 1
+        traits: {
+            artifical: 1,
+            powered: 1
+        },
+        oppose: ['eldritch','fey']
     },
     eldritch: {
-        psychic: 1,
-        tormented: 1,
-        darkness: 1,
-        unfathomable: 1
+        traits: {
+            psychic: 1,
+            tormented: 1,
+            darkness: 1,
+            unfathomable: 1
+        },
+        oppose: ['synthetic','fey']
     },
-    hybrid: {}
+    hybrid: {
+        traits: {},
+        oppose: []
+    }
 };
 
 export const traits = {
@@ -7440,7 +7502,7 @@ export function setImitation(mod){
         let i_traits = [];
         if(races[global.race['srace']].type === 'hybrid'){
             races[global.race['srace']].hybrid.forEach(function(genus) {
-                Object.keys(genus_traits[genus]).forEach(function (trait) {
+                Object.keys(genus_def[genus].traits).forEach(function (trait) {
                     if (!global.race[trait]){
                         i_traits.push(trait);
                     }
@@ -7448,7 +7510,7 @@ export function setImitation(mod){
             })
         }
         else {
-            Object.keys(genus_traits[races[global.race['srace']].type]).forEach(function (trait) {
+            Object.keys(genus_def[races[global.race['srace']].type].traits).forEach(function (trait) {
                 if (!global.race[trait]){
                     i_traits.push(trait);
                 }
@@ -7502,7 +7564,7 @@ export function shapeShift(genus,setup,forceClean){
 
     if (genus){
         if (genus !== 'none'){
-            Object.keys(genus_traits[genus]).forEach(function (trait) {
+            Object.keys(genus_def[genus].traits).forEach(function (trait) {
                 if (!global.race[trait] && trait !== 'high_pop'){
                     if (traits[trait].val >= 0){
                         global.race[trait] = traits.shapeshifter.vars()[0];
@@ -7525,7 +7587,7 @@ export function shapeShift(genus,setup,forceClean){
         let drop = ``;
         const imitation =  global.race['imitation'] ? (races[global.race['srace']].type === 'hybrid' ? races[global.race['srace']].hybrid : [races[global.race['srace']].type]) : [];
         const base = races[global.race.species].type === 'hybrid' ? races[global.race.species].hybrid : [races[global.race.species].type];
-        Object.keys(genus_traits).forEach(function (gen) {
+        Object.keys(genus_def).forEach(function (gen) {
             if(!['synthetic', 'eldritch', 'hybrid', ...base, ...imitation].includes(gen) && global.stats.achieve[`genus_${gen}`] && global.stats.achieve[`genus_${gen}`].l > 0){
                 drop += `<b-dropdown-item v-on:click="setShape('${gen}')">{{ '${gen}' | genus }}</b-dropdown-item>`;
             }
@@ -7668,7 +7730,7 @@ export function fathomCheck(race){
 }
 
 export function traitSkin(type, trait, species){
-    let artificial = species ? genus_traits[races[species].type].artifical : global.race['artifical'];
+    let artificial = species ? genus_def[races[species].type].traits.artifical : global.race['artifical'];
     switch (type){
         case 'name':
         {

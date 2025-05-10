@@ -1,7 +1,7 @@
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
 import { clearElement, popover, getEaster, getHalloween, getTraitDesc } from './../functions.js';
-import { races, traits, genus_traits, traitSkin } from './../races.js';
+import { races, traits, genus_def, traitSkin } from './../races.js';
 import { ascendLab } from './../space.js';
 import { actions } from './../actions.js';
 import { sideMenu, infoBoxBuilder } from './functions.js';
@@ -116,7 +116,7 @@ export function racesPage(content){
 
         (typeList.includes('carnivore') && typeList.includes('herbivore') ? ['omnivore'] : typeList).forEach(function (gType){
             if (race !== 'hellspawn'){
-                Object.keys(genus_traits[gType]).sort().forEach(function (trait){
+                Object.keys(genus_def[gType].traits).sort().forEach(function (trait){
                     let id = `raceTrait${race}${trait}`;
                     let color = races[race].fanaticism === trait ? 'danger' : 'caution';
                     genes.append(`<span class="has-text-${color}" id="${id}">${traitSkin('name', trait, race)}<span>`);

@@ -1,6 +1,6 @@
 import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame, atrack, p_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { races, traits, genus_traits, traitSkin, fathomCheck } from './races.js';
+import { races, traits, genus_def, traitSkin, fathomCheck } from './races.js';
 import { actions, actionDesc } from './actions.js';
 import { jobScale } from './jobs.js';
 import { universe_affixes } from './space.js';
@@ -2649,38 +2649,44 @@ export function calcGenomeScore(genome,wiki){
         }
     }
 
-    if (genome.genus === 'hybrid'){
-        genome.hybrid.forEach(function(g){
-            Object.keys(genus_traits[g]).forEach(function (t){
-                genes -= traits[t].val;
-            });
-        });
-    }
-    else {
-        Object.keys(genus_traits[genome.genus]).forEach(function (t){
+    let active_genus = genome.genus === 'hybrid' ? genome.hybrid : [genome.genus];
+    let oppose_genus = [];
+    active_genus.forEach(function(g){
+        Object.keys(genus_def[g].traits).forEach(function (t){
             genes -= traits[t].val;
         });
+        oppose_genus = oppose_genus.concat(genus_def[g].oppose);
+    });
+
+    
+    if (wiki){
+        genes += wiki.technophobe * 4;
+    }
+    else if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){
+        genes += global.stats.achieve.technophobe.l * 4;
     }
 
     let max_complexity = 2;
-    if (wiki){
-        max_complexity += wiki.technophobe;
-    }
-    else if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){
-        max_complexity += global.stats.achieve.technophobe.l;
-    }
 
-    let complexity = 0;
+    let complexity = { utility: 0, resource: 0, production: 0, combat: 0 };
     for (let i=0; i<genome.traitlist.length; i++){
+        let taxonomy = traits[genome.traitlist[i]].taxonomy;
+        let genus_origin = races[traits[genome.traitlist[i]].origin].type;
         let gene_cost = traits[genome.traitlist[i]].val;
+        if (active_genus.includes(genus_origin)){ gene_cost--; }
+        if (oppose_genus.includes(genus_origin)){ gene_cost++; }
+
         if (traits[genome.traitlist[i]].val >= 0){
-            if (complexity > max_complexity){
-                gene_cost -= max_complexity - complexity;
+            if (complexity[taxonomy] > max_complexity){
+                gene_cost -= max_complexity - complexity[taxonomy];
             }
-            complexity++;
+            complexity[taxonomy]++;
         }
         genes -= gene_cost;
     }
+
+    console.log(complexity);
+
     return genes;
 }
 

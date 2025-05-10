@@ -1,7 +1,7 @@
 import { save, global, seededRandom, webWorker, keyMultiplier, sizeApproximation, p_on, support_on, int_on, gal_on } from './vars.js';
 import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, calcGenomeScore, randomKey, getTraitDesc, deepClone, get_qlevel, timeFormat } from './functions.js';
 import { unlockAchieve, unlockFeat, universeAffix } from './achieve.js';
-import { races, traits, genus_traits, genusVars, planetTraits, biomes, traitCostMod } from './races.js';
+import { races, traits, genus_def, genusVars, planetTraits, biomes, traitCostMod } from './races.js';
 import { spatialReasoning, unlockContainers, drawResourceTab, atomic_mass } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
 import { defineIndustry, addSmelter } from './industry.js';
@@ -7623,34 +7623,28 @@ export function ascendLab(hybrid,wiki){
 
     let fanatic = `<div id="geneLabFanatic" class="genus"><div class="has-text-caution header">${loc(`tech_fanaticism`)}</div><button class="button" @click="fanatic()">{{ g.fanaticism | fanaticism }}</button></div>`;
 
-    let dGenus = false;
+    let dGenus = 'humanoid';
     if (hybrid){
         dGenus = 'hybrid';
         let genus = `<div class="genus_selection">`;
-        
-        genus += `<div id="geneLabGenusA" class="genus"><div class="has-text-caution header">${loc('genelab_genus_a')}</div><button class="button" @click="genus(0)" v-html="$options.filters.genus(g.hybrid,0)"></button></div>`;
-        genus += `<div id="geneLabGenusB" class="genus"><div class="has-text-caution header">${loc('genelab_genus_b')}</div><button class="button" @click="genus(1)" v-html="$options.filters.genus(g.hybrid,1)"></button></div>`;
-
-        genus += `${fanatic}</div>`;
+        genus += `<div class="genus"><div class="has-text-caution header">${loc('genelab_genus_a')}</div><button class="button" @click="genus(0)" v-html="$options.filters.genus(g.hybrid,0)"></button></div>`;
+        genus += `<div class="genus"><div class="has-text-caution header">${loc('genelab_genus_b')}</div><button class="button" @click="genus(1)" v-html="$options.filters.genus(g.hybrid,1)"></button></div>`;
+        genus += `${fanatic}`;
+        genus += `<div class="resetLab"><button class="button" @click="reset()">${loc('genelab_reset')}</button></div>`;
+        genus += `</div>`;
         genes.append($(genus));
     }
     else {
-        let genus = `<div class="genus_selection"><div class="has-text-caution">${loc('genelab_genus')}</div><template><section>`;
-        Object.keys(genus_traits).forEach(function (type){
-            if (type !== 'hybrid'){
-                if (isWiki || (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0)){
-                    if (!dGenus){ dGenus = type; }
-                    genus = genus + `<div class="field ${type}"><b-radio v-model="g.genus" native-value="${type}">${loc(`genelab_genus_${type}`)}</b-radio></div>`;
-                }
-            }
-        });
-        genus += `</section></template>${fanatic}</div>`;
+        let genus = `<div class="genus_selection">`;
+        genus += `<div class="genus"><div class="has-text-caution header">${loc('genelab_genus')}</div><button class="button" @click="genus()">{{ g.genus | genus }}</button></div>`;
+        genus += `${fanatic}`;
+        genus += `<div class="resetLab"><button class="button" @click="reset()">${loc('genelab_reset')}</button></div>`;
+        genus += `</div>`;
         genes.append($(genus));
     }
 
-    let trait_list = `<div class="trait_selection"><div class="has-text-warning">${loc('genelab_traits')}</div><template><section>`;
-    let negative = '';
     let unlockedTraits = {};
+    let taxomized = { utility: {}, resource: {}, production: {}, combat: {} };;
     Object.keys(races).forEach(function (race){
         let type = races[race].type;
         if (
@@ -7662,29 +7656,36 @@ export function ascendLab(hybrid,wiki){
             ){
             if (races[race].hasOwnProperty('traits') && !['custom','hybrid','junker','sludge','ultra_sludge'].includes(race)){
                 Object.keys(races[race].traits).forEach(function (trait){
-                    unlockedTraits[trait] = true;
+                    if (traits[trait]?.taxonomy){
+                        taxomized[traits[trait].taxonomy][trait] = true;
+                        unlockedTraits[trait] = true;
+                    }
                 });
             }
         }
     });
 
-    Object.keys(unlockedTraits).sort().forEach(function (trait){
-        if (traits.hasOwnProperty(trait) && traits[trait].type === 'major'){
-            if (traits[trait].val >= 0){
-                trait_list += `<div class="field t${trait}"><b-checkbox :disabled="allowed('${trait}')" :input="geneEdit()" v-model="g.traitlist" native-value="${trait}"><span class="has-text-success">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-advanced">{{ '${trait}' | cost }}</span>)</b-checkbox></div>`;
+    let trait_listing = $(`<b-tabs v-model="tt.t"></b-tabs>`);
+    Object.keys(taxomized).sort().forEach(function (tax){
+        let negative = '';
+        let trait_list = `<b-tab-item><template slot="header"><h2 class="is-sr-only">${loc(`genelab_traits_${tax}`)}}</h2><span aria-hidden="true">${loc(`genelab_traits_${tax}`)}</span></template>`;
+        trait_list += `<div class="trait_selection">`;
+        Object.keys(taxomized[tax]).sort().forEach(function (trait){
+            if (traits.hasOwnProperty(trait) && traits[trait].type === 'major'){
+                if (traits[trait].val >= 0){
+                    trait_list += `<div class="field t${trait}"><b-checkbox :disabled="allowed('${trait}')" :input="geneEdit()" v-model="g.traitlist" native-value="${trait}"><span class="has-text-success">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-advanced">{{ '${trait}' | cost }}</span>)</b-checkbox></div>`;
+                }
+                else {
+                    negative += `<div class="field t${trait}"><b-checkbox :disabled="allowed('${trait}')" :input="geneEdit()" v-model="g.traitlist" native-value="${trait}"><span class="has-text-danger">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-caution">{{ '${trait}' | cost }}</span>)</b-checkbox></div>`;
+                }
             }
-            else {
-                negative += `<div class="field t${trait}"><b-checkbox :disabled="allowed('${trait}')" :input="geneEdit()" v-model="g.traitlist" native-value="${trait}"><span class="has-text-danger">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-caution">{{ '${trait}' | cost }}</span>)</b-checkbox></div>`;
-            }
-        }
+        });
+        trait_list = trait_list + negative + `</div></b-tab-item>`;
+        trait_listing.append($(trait_list));
     });
-    trait_list = trait_list + negative + `</section></template></div>`;
-    genes.append($(trait_list));
+    genes.append(trait_listing);
 
     let buttons = `
-        <div class="reset">
-            <button class="button" @click="reset()">${loc('genelab_reset')}</button>
-        </div>
         <hr>
         ${labStatus}
         <div class="importExport">
@@ -7770,6 +7771,7 @@ export function ascendLab(hybrid,wiki){
         template: '<div id="modalBox" class="modalBox"></div>'
     };
 
+    let activeTab = { t: 0 };
     vBind({
         el: '#celestialLab',
         data: {
@@ -7777,6 +7779,7 @@ export function ascendLab(hybrid,wiki){
             w: wikiVars,
             err: error,
             td: trait_data,
+            tt: activeTab
         },
         methods: {
             val(type){
@@ -7921,11 +7924,14 @@ export function ascendLab(hybrid,wiki){
                         $('#modalBox').append(body);
 
                         let genus = `<div class="genus_selection"><template><section>`;
-                        Object.keys(genus_traits).forEach(function (type){
+                        Object.keys(genus_def).forEach(function (type){
                             if (type !== 'hybrid'){
                                 if (isWiki || (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0)){
-                                    if ((slot === 0 && type !== genome.hybrid[1]) || (slot === 1 && type !== genome.hybrid[0])){
-                                        genus = genus + `<div class="field ${type}"><b-radio v-model="hybrid[${slot}]" native-value="${type}">${loc(`genelab_genus_${type}`)}</b-radio></div>`;
+                                    if (genome.genus === 'hybrid' && ((slot === 0 && type !== genome.hybrid[1]) || (slot === 1 && type !== genome.hybrid[0]))){
+                                        genus += `<div class="field ${type}"><b-radio v-model="hybrid[${slot}]" native-value="${type}">${loc(`genelab_genus_${type}`)}</b-radio></div>`;
+                                    }
+                                    else if (genome.genus !== 'hybrid'){
+                                        genus += `<div class="field ${type}"><b-radio v-model="genus" native-value="${type}">${loc(`genelab_genus_${type}`)}</b-radio></div>`;
                                     }
                                 }
                             }
@@ -7938,12 +7944,12 @@ export function ascendLab(hybrid,wiki){
                             data: genome
                         });
 
-                        Object.keys(genus_traits).forEach(function (type){
+                        Object.keys(genus_def).forEach(function (type){
                             if (isWiki || (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0)){
-                                if ((slot === 0 && type !== genome.hybrid[1]) || (slot === 1 && type !== genome.hybrid[0])){
+                                if ((genome.genus !== 'hybrid') || (genome.genus === 'hybrid' && slot === 0 && type !== genome.hybrid[1]) || (genome.genus === 'hybrid' && slot === 1 && type !== genome.hybrid[0])){
                                     popover(`geneLabGenus${type}`, function(){
                                         let desc = $(`<div><div>${loc(`genelab_genus_${type}_desc`)}</div></div>`);
-                                        Object.keys(genus_traits[type]).forEach(function (t){
+                                        Object.keys(genus_def[type].traits).forEach(function (t){
                                             if (traits[t]){
                                                 let des = $(`<div></div>`);
                                                 let opts = {
@@ -8059,31 +8065,35 @@ export function ascendLab(hybrid,wiki){
             cost(trait){
                 if (traits[trait].val >= 0){
                     let max_complexity = 2;
-                    if (isWiki){
-                        max_complexity += wikiVars.technophobe;
-                    }
-                    else if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){
-                        max_complexity += global.stats.achieve.technophobe.l;
-                    }
 
-                    let cost = traits[trait].val;
+                    let active_genus = genome.genus === 'hybrid' ? genome.hybrid : [genome.genus];
+                    let oppose_genus = [];
+                    active_genus.forEach(function(g){
+                        oppose_genus = oppose_genus.concat(genus_def[g].oppose);
+                    });
 
-                    let complexity = 0;
+                    let taxonomy = traits[trait].taxonomy;
+                    let genus_origin = races[traits[trait].origin].type;
+                    let gene_cost = traits[trait].val;
+                    if (active_genus.includes(genus_origin)){ gene_cost--; }
+                    if (oppose_genus.includes(genus_origin)){ gene_cost++; }
+
+                    let complexity = { utility: 0, resource: 0, production: 0, combat: 0 };
                     for (let i=0; i<genome.traitlist.length; i++){
                         if (traits[genome.traitlist[i]].val >= 0){
-                            complexity++;
+                            complexity[traits[genome.traitlist[i]].taxonomy]++;
                         }
                     }
 
                     if (genome.traitlist.includes(trait)){
-                        complexity--;
+                        complexity[taxonomy]--;
                     }
 
-                    if (complexity > max_complexity){
-                        cost += complexity - max_complexity;
+                    if (complexity[taxonomy] > max_complexity){
+                        gene_cost += complexity[taxonomy] - max_complexity;
                     }
 
-                    return cost;
+                    return gene_cost;
                 }
                 else {
                     return traits[trait].val;
@@ -8098,7 +8108,7 @@ export function ascendLab(hybrid,wiki){
                 return trait ? loc(`trait_${trait}_name`) : loc(`genelab_unset`);
             },
             genus(g,i){
-                return loc(`genelab_genus_${g[i]}`);
+                return typeof i === 'undefined' ? loc(`genelab_genus_${g}`) : loc(`genelab_genus_${g[i]}`);
             }
         }
     });
@@ -8109,7 +8119,7 @@ export function ascendLab(hybrid,wiki){
             popover(`geneLabGenus${g}`, function(){
                 let type = genome.hybrid[g === 'A' ? 0 : 1];
                 let desc = $(`<div><div>${loc(`genelab_genus_${type}_desc`)}</div></div>`);
-                Object.keys(genus_traits[type]).forEach(function (t){
+                Object.keys(genus_def[type].traits).forEach(function (t){
                     if (traits[t]){
                         let des = $(`<div></div>`);
                         let opts = {
@@ -8129,11 +8139,11 @@ export function ascendLab(hybrid,wiki){
         });
     }
     else {
-        Object.keys(genus_traits).forEach(function (type){
+        Object.keys(genus_def).forEach(function (type){
             if (isWiki || (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0)){
                 popover(`celestialLabgenusSelection${type}`, function(){
                     let desc = $(`<div><div>${loc(`genelab_genus_${type}_desc`)}</div></div>`);
-                    Object.keys(genus_traits[type]).forEach(function (t){
+                    Object.keys(genus_def[type].traits).forEach(function (t){
                         if (traits[t]){
                             let des = $(`<div></div>`);
                             let opts = {
