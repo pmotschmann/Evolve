@@ -2780,7 +2780,7 @@ export const traits = {
         desc: loc('trait_parasite'),
         type: 'major',
         origin: 'sporgar',
-        taxonomy: 'utility',
+        taxonomy: 'combat',
         val: -4,
     },
     toxic: { // Factory type jobs are more productive
@@ -4469,7 +4469,7 @@ export const traits = {
         desc: loc('trait_chicken'),
         type: 'major',
         origin: 'wyvern',
-        taxonomy: 'utility',
+        taxonomy: 'combat',
         val: -8,
         vars(r){
             // [Hell Worse, Piracy Worse, Events Worse]
