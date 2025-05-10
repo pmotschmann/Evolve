@@ -2671,10 +2671,10 @@ export function calcGenomeScore(genome,wiki){
     let neg_complexity = { utility: 0, resource: 0, production: 0, combat: 0 };
     for (let i=0; i<genome.traitlist.length; i++){
         let taxonomy = traits[genome.traitlist[i]].taxonomy;
-        let genus_origin = races[traits[genome.traitlist[i]].origin].type;
         let gene_cost = traits[genome.traitlist[i]].val;
-        if (active_genus.includes(genus_origin)){ gene_cost--; }
-        if (oppose_genus.includes(genus_origin)){ gene_cost++; }
+        let genus_origin = races[traits[genome.traitlist[i]].origin].type === 'hybrid' ? races[traits[genome.traitlist[i]].origin].hybrid : [races[traits[genome.traitlist[i]].origin].type];
+        if (active_genus.filter(x => genus_origin.includes(x)).length > 0){ active_genus.filter(x => genus_origin.includes(x)).length === 1 ? gene_cost-- : gene_cost -= 2; }
+        if (oppose_genus.filter(x => genus_origin.includes(x)).length > 0){ oppose_genus.filter(x => genus_origin.includes(x)).length === 1 ? gene_cost++ : gene_cost += 2; }
 
         if (traits[genome.traitlist[i]].val >= 0){
             if (complexity[taxonomy] > max_complexity){
