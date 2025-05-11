@@ -11,7 +11,8 @@ export const changeList = [
             `Overtapped has been removed, Negative traits instead pay a complexity tax.`,
             `Enviromentalist now scales with trait rank.`,
             `Thalassophobia replaced with Unfavored.`,
-            `Optimistic cost lowered from 5 points to 3.`
+            `Optimistic cost lowered from 5 points to 3.`,
+            `Fixed bug that could cause archfiends to queue with extra weapons.`
         ]
     },
     {

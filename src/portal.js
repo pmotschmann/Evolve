@@ -6556,7 +6556,7 @@ export function drawMechLab(){
                         if (global.portal.mechbay.blueprint.hardpoint.length === 1){
                             global.portal.mechbay.blueprint.hardpoint.push(global.portal.mechbay.blueprint.hardpoint.includes('laser') ? 'plasma' : 'laser');
                         }
-                        if (s === 'titan' || s === 'archfiend'){
+                        if (s === 'titan'){
                             if (global.portal.mechbay.blueprint.hardpoint.length === 2){
                                 global.portal.mechbay.blueprint.hardpoint.push(global.portal.mechbay.blueprint.hardpoint.includes('laser')  ? 'shotgun' : 'laser');
                                 global.portal.mechbay.blueprint.hardpoint.push(global.portal.mechbay.blueprint.hardpoint.includes('laser')  ? 'kinetic' : 'laser');
@@ -6652,6 +6652,9 @@ export function drawMechLab(){
                             global.portal.mechbay.blueprint.hardpoint[1] = validWeapons(global.portal.mechbay.blueprint.size,c,1)[0];
                             global.portal.mechbay.blueprint.hardpoint[2] = validWeapons(global.portal.mechbay.blueprint.size,c,2)[0];
                             global.portal.mechbay.blueprint.hardpoint[3] = validWeapons(global.portal.mechbay.blueprint.size,c,3)[0];
+                        }
+                        else if (c !== 'hydra' && global.portal.mechbay.blueprint.size === 'archfiend'){
+                            global.portal.mechbay.blueprint.hardpoint.length = 2;
                         }
                         drawMechLab();
                         clearPopper();
