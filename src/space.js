@@ -7729,10 +7729,10 @@ export function ascendLab(hybrid,wiki){
         Object.keys(taxomized[tax]).sort().forEach(function (trait){
             if (traits.hasOwnProperty(trait) && traits[trait].type === 'major'){
                 if (traits[trait].val >= 0){
-                    trait_list += `<div class="field t${trait}"><b-checkbox :disabled="allowed('${trait}')" :input="geneEdit()" v-model="g.traitlist" native-value="${trait}"><span class="has-text-success">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-advanced">{{ '${trait}' | cost }}</span>)</b-checkbox></div>`;
+                    trait_list += `<div class="field t${trait}"><b-checkbox :disabled="allowed('${trait}')" :input="geneEdit()" v-model="g.traitlist" native-value="${trait}"><span class="has-text-success">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-advanced">{{ '${trait}' | cost }}</span>)<span v-html="$options.filters.empower(g.traitlist,'${trait}')"></span></b-checkbox></div>`;
                 }
                 else {
-                    negative += `<div class="field t${trait}"><b-checkbox :disabled="allowed('${trait}')" :input="geneEdit()" v-model="g.traitlist" native-value="${trait}"><span class="has-text-danger">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-caution">{{ '${trait}' | cost }}</span>)</b-checkbox></div>`;
+                    negative += `<div class="field t${trait}"><b-checkbox :disabled="allowed('${trait}')" :input="geneEdit()" v-model="g.traitlist" native-value="${trait}"><span class="has-text-danger">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-caution">{{ '${trait}' | cost }}</span>)<span v-html="$options.filters.empower(g.traitlist,'${trait}')"></span></b-checkbox></div>`;
                 }
             }
         });
@@ -7976,7 +7976,9 @@ export function ascendLab(hybrid,wiki){
                             if (traits[trait].val >= 0){
                                 summary += `<div class="field t${trait}">`;
                                 summary += `<b-checkbox :input="geneEdit()" v-model="g.traitlist" native-value="${trait}"><span class="has-text-success">${loc(`trait_${trait}_name`)}</span> `;
-                                summary += `[<span class="has-text-warning">${loc(`wiki_calc_cost`)}</span> <span>{{ '${trait}' | cost }}</span>, <span class="has-text-warning">${loc(`genelab_rank`)}</span> <span>{{ '${trait}' | tRank }}</span>]</b-checkbox>`;
+                                summary += `[<span class="has-text-warning">${loc(`wiki_calc_cost`)}</span> <span>{{ '${trait}' | cost }}</span>, <span class="has-text-warning">${loc(`genelab_rank`)}</span> <span>{{ '${trait}' | tRank }}</span>]`;
+                                summary += `<span v-html="$options.filters.empower(t.empowered,'${trait}')"></span>`;
+                                summary += `</b-checkbox>`;
                                 summary += `<span role="button" aria-label="${loc(`genelab_rank_lower`,[loc(`trait_${trait}_name`)])}" class="sub has-text-danger" @click="reduce('${trait}')"><span>-</span></span>`;
                                 summary += `<span role="button" aria-label="${loc(`genelab_rank_higher`,[loc(`trait_${trait}_name`)])}" class="add has-text-success" @click="increase('${trait}')"><span>+</span></span>`;
                                 summary += `</div>`;
@@ -7984,7 +7986,9 @@ export function ascendLab(hybrid,wiki){
                             else {
                                 negative_sum += `<div class="field t${trait}">`;
                                 negative_sum += `<b-checkbox :input="geneEdit()" v-model="g.traitlist" native-value="${trait}"><span class="has-text-danger">${loc(`trait_${trait}_name`)}</span> `;
-                                negative_sum += `[<span class="has-text-warning">${loc(`wiki_calc_cost`)}</span> <span>{{ '${trait}' | cost }}</span>, <span class="has-text-warning">${loc(`genelab_rank`)}</span> <span>{{ '${trait}' | tRank }}</span>]</b-checkbox>`;
+                                negative_sum += `[<span class="has-text-warning">${loc(`wiki_calc_cost`)}</span> <span>{{ '${trait}' | cost }}</span>, <span class="has-text-warning">${loc(`genelab_rank`)}</span> <span>{{ '${trait}' | tRank }}</span>]`;
+                                negative_sum += `<span v-html="$options.filters.empower(t.empowered,'${trait}')"></span>`;
+                                negative_sum += `</b-checkbox>`;
                                 negative_sum += `<span role="button" aria-label="${loc(`genelab_rank_lower`,[loc(`trait_${trait}_name`)])}" class="sub has-text-danger" @click="reduce('${trait}')"><span>-</span></span>`;
                                 negative_sum += `<span role="button" aria-label="${loc(`genelab_rank_higher`,[loc(`trait_${trait}_name`)])}" class="add has-text-success" @click="increase('${trait}')"><span>+</span></span>`;
                                 negative_sum += `</div>`;
@@ -8009,18 +8013,22 @@ export function ascendLab(hybrid,wiki){
                                 genome.genes = calcGenomeScore(genome,(isWiki ? wikiVars : false),tRanks);
                             },
                             reduce(t){
+                                let unlock = global.stats.achieve[`extinct_${traits[t].origin}`] && global.stats.achieve[`extinct_${traits[t].origin}`].l || 0;
                                 switch (tRanks[t]){
-                                    case 0.1:
-                                        tRanks[t] = 0.1;
-                                        break;
                                     case 0.25:
-                                        tRanks[t] = 0.1;
+                                        if (unlock >= 5){
+                                            tRanks[t] = 0.1;
+                                        }
                                         break;
                                     case 0.5:
-                                        tRanks[t] = 0.25;
+                                        if (unlock >= 4){
+                                            tRanks[t] = 0.25;
+                                        }
                                         break;
                                     case 1:
-                                        tRanks[t] = 0.5;
+                                        if (unlock >= 3){
+                                            tRanks[t] = 0.5;
+                                        }
                                         break;
                                     case 2:
                                         tRanks[t] = 1;
@@ -8043,6 +8051,7 @@ export function ascendLab(hybrid,wiki){
                                 getTraitDesc(desc, t, opts);
                             },
                             increase(t){
+                                let unlock = global.stats.achieve[`extinct_${traits[t].origin}`] && global.stats.achieve[`extinct_${traits[t].origin}`].l || 0;
                                 switch (tRanks[t]){
                                     case 0.1:
                                         tRanks[t] = 0.25;
@@ -8054,16 +8063,19 @@ export function ascendLab(hybrid,wiki){
                                         tRanks[t] = 1;
                                         break;
                                     case 1:
-                                        tRanks[t] = 2;
+                                        if (unlock >= 3){
+                                            tRanks[t] = 2;
+                                        }
                                         break;
                                     case 2:
-                                        tRanks[t] = 3;
+                                        if (unlock >= 4){
+                                            tRanks[t] = 3;
+                                        }
                                         break;
                                     case 3:
-                                        tRanks[t] = 4;
-                                        break;
-                                    case 4:
-                                        tRanks[t] = 4;
+                                        if (unlock >= 5){
+                                            tRanks[t] = 4;
+                                        }
                                         break;
                                 }
                                 vBind({el: `#traitSummary .trait_selection`},'update');
@@ -8082,6 +8094,10 @@ export function ascendLab(hybrid,wiki){
                             },
                             tRank(trait){
                                 return tRanks[trait];
+                            },
+                            empower(e,t){
+                                let valid_empower = traits[t].val >= traits.empowered.vars(tRanks['empowered'] || 1)[0] && traits[t].val <= traits.empowered.vars(tRanks['empowered'] || 1)[1] && t !== 'empowered' && genome.traitlist.includes('empowered');
+                                return valid_empower ? ` (<span class="has-text-caution">E</span>)` : ``;
                             }
                         }
                     });
@@ -8208,6 +8224,10 @@ export function ascendLab(hybrid,wiki){
             },
             genus(g,i){
                 return typeof i === 'undefined' ? loc(`genelab_genus_${g}`) : loc(`genelab_genus_${g[i]}`);
+            },
+            empower(e,t){
+                let valid_empower = traits[t].val >= traits.empowered.vars(tRanks['empowered'] || 1)[0] && traits[t].val <= traits.empowered.vars(tRanks['empowered'] || 1)[1] && t !== 'empowered' && genome.traitlist.includes('empowered');
+                return valid_empower ? ` (<span class="has-text-caution">E</span>)` : ``;
             }
         }
     });
