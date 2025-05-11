@@ -2633,7 +2633,8 @@ export function sLevel(level){
     }
 }
 
-export function calcGenomeScore(genome,wiki){
+export function calcGenomeScore(genome,wiki,tRanks){
+    if (!tRanks){ tRanks = genome.ranks || {}; }
     let genes = 0;
 
     if (wiki){
@@ -2653,7 +2654,8 @@ export function calcGenomeScore(genome,wiki){
     let oppose_genus = [];
     active_genus.forEach(function(g){
         Object.keys(genus_def[g].traits).forEach(function (t){
-            genes -= traits[t].val;
+            let value = traits[t].val;
+            genes -= value;
         });
         oppose_genus = oppose_genus.concat(genus_def[g].oppose);
     });
@@ -2672,9 +2674,6 @@ export function calcGenomeScore(genome,wiki){
     for (let i=0; i<genome.traitlist.length; i++){
         let taxonomy = traits[genome.traitlist[i]].taxonomy;
         let gene_cost = traits[genome.traitlist[i]].val;
-        let genus_origin = races[traits[genome.traitlist[i]].origin].type === 'hybrid' ? races[traits[genome.traitlist[i]].origin].hybrid : [races[traits[genome.traitlist[i]].origin].type];
-        if (active_genus.filter(x => genus_origin.includes(x)).length > 0){ active_genus.filter(x => genus_origin.includes(x)).length === 1 ? gene_cost-- : gene_cost -= 2; }
-        if (oppose_genus.filter(x => genus_origin.includes(x)).length > 0){ oppose_genus.filter(x => genus_origin.includes(x)).length === 1 ? gene_cost++ : gene_cost += 2; }
 
         if (traits[genome.traitlist[i]].val >= 0){
             if (complexity[taxonomy] > max_complexity){
@@ -2688,6 +2687,59 @@ export function calcGenomeScore(genome,wiki){
             }
             neg_complexity[taxonomy]++;
         }
+
+        if (tRanks[genome.traitlist[i]]){
+            if (traits[genome.traitlist[i]].val >= 0){
+                switch (tRanks[genome.traitlist[i]]){
+                    case 0.1:
+                        gene_cost -= 3;
+                        break;
+                    case 0.25:
+                        gene_cost -= 2;
+                        break;
+                    case 0.5:
+                        gene_cost--;
+                        break;
+                    case 2:
+                        gene_cost = Math.max(Math.round(gene_cost * 1.5), gene_cost + 1);;
+                        break;
+                    case 3:
+                        gene_cost = Math.max(Math.round(gene_cost * 2), gene_cost + 2);;
+                        break;
+                    case 4:
+                        gene_cost = Math.max(Math.round(gene_cost * 2.5), gene_cost + 3);;
+                        break;
+                }
+                if (gene_cost < 1){ gene_cost = 1; }
+            }
+            else {
+                switch (tRanks[genome.traitlist[i]]){
+                    case 0.1:
+                        gene_cost -= 3;
+                        break;
+                    case 0.25:
+                        gene_cost -= 2;
+                        break;
+                    case 0.5:
+                        gene_cost--;
+                        break;
+                    case 2:
+                        gene_cost++;
+                        break;
+                    case 3:
+                        gene_cost += 2;
+                        break;
+                    case 4:
+                        gene_cost += 3;
+                        break
+                }
+            }
+        }
+
+        let genus_origin = races[traits[genome.traitlist[i]].origin].type === 'hybrid' ? races[traits[genome.traitlist[i]].origin].hybrid : [races[traits[genome.traitlist[i]].origin].type];
+        if (active_genus.filter(x => genus_origin.includes(x)).length > 0){ active_genus.filter(x => genus_origin.includes(x)).length === 1 ? gene_cost-- : gene_cost -= 2; }
+        if (oppose_genus.filter(x => genus_origin.includes(x)).length > 0){ oppose_genus.filter(x => genus_origin.includes(x)).length === 1 ? gene_cost++ : gene_cost += 2; }
+
         genes -= gene_cost;
     }
 

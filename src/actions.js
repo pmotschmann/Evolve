@@ -8578,7 +8578,8 @@ function sentience(){
             dwarf: global.custom.race0.dwarf,
             genes: 0,
             genus: global.custom.race0.genus,
-            traitlist: global.custom.race0.traits
+            traitlist: global.custom.race0.traits,
+            ranks: global.custom.race0?.ranks || {} 
         });
     }
 
@@ -8596,7 +8597,8 @@ function sentience(){
             genes: 0,
             genus: global.custom.race1.genus,
             hybrid: global.custom.race1.hybrid,
-            traitlist: global.custom.race1.traits
+            traitlist: global.custom.race1.traits,
+            ranks: global.custom.race0?.ranks || {} 
         });
     }
 

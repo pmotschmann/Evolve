@@ -6389,8 +6389,9 @@ function customRace(hybrid){
     let slot = hybrid ? 'race1' : 'race0';
     if (global.hasOwnProperty('custom') && global.custom.hasOwnProperty(slot)){
         let trait = {};
+        let ranks = global.custom[slot]?.ranks || {};
         for (let i=0; i<global.custom[slot].traits.length; i++){
-            trait[global.custom[slot].traits[i]] = 1;
+            trait[global.custom[slot].traits[i]] = ranks[global.custom[slot].traits[i]] || 1;
         }
 
         let fanatic = global.custom[slot].hasOwnProperty('fanaticism') && global.custom[slot].fanaticism ? global.custom[slot].fanaticism : false;
