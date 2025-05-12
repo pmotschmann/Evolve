@@ -88,6 +88,7 @@
   "theme_redgreen": "Red Green CB",
   "theme_gruvboxLight": "GruvBox (Light)",
   "theme_gruvboxDark": "GruvBox (Dark)",
+  "theme_gruvboxDarkRG": "GruvBox (RedGreen CB)",
   "theme_orangeSoda": "Orange Soda",
   "theme_dracula": "Dracula",
   "units": "Number Notation",

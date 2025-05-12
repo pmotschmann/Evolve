@@ -619,6 +619,45 @@ Misc ---------> Main template
             @webkit-scrollbar-thumb-background: @primary-border;
         }
 
+        // GruvBox Dark Red Green CB theme
+        .gruvboxDarkRG() {
+            // .has-text-xxx
+            @has-text-danger: #c409bb;
+            @has-text-flair: @has-text-success;
+            @has-text-special: #ffff9e;
+            @has-text-success: #00ff00;
+            @has-text-warning: #ffcc00;
+            @has-text-caution: #9ab8ff;
+            @has-text-info: #83a598;
+            @disabled: #ffe940;
+
+            // .popper
+            @tabs-li-is-active-link: #82bdff;
+
+            .switch input[type=checkbox]:checked+.check {
+                background: #a28cdf;
+            }
+
+            /* AFP 2021
+            // .fool
+            @fool-has-text-danger: @has-text-success;
+            @fool-has-text-success: @has-text-danger;
+            @fool-span-on: @has-text-danger;
+            @fool-span-off: @has-text-success;
+            */
+
+            // .meter
+            @meter-low: @disabled;
+            @meter-neutral: @has-text-caution;
+            @meter-high: @has-text-info;
+
+            // .main
+            @span-on: @has-text-success;
+            @span-off: @has-text-danger;
+
+            @cnam-aTitle: @disabled;
+        }
+
         // Orange Soda theme
         .orangeSoda() {
             // Theme colors {
@@ -2074,6 +2113,50 @@ html.gruvboxLight {
 // GruvBox Dark theme
 html.gruvboxDark {
     #lib.themes.gruvboxDark(); // Highest priority
+    #lib.themes.dark(); // Lowest priority
+    #lib.mainTemplate();
+
+    input,
+    select,
+    textarea,
+    .notification {
+        background: @primary-color;
+    }
+
+    .add,
+    .sub {
+        border: @secondary-border solid .0625rem;
+    }
+
+    .current {
+        border-top: @secondary-border solid .0625rem;
+        border-bottom: @secondary-border solid .0625rem;
+    }
+    .current.infoOnly {
+        border: @secondary-border solid .0625rem;
+    }
+
+    .popper {
+        .grad-from-left {
+            background-image: linear-gradient(90deg, @has-text-danger 45%, @popper 55%);
+        }
+        .grad-from-left-warn {
+            background-image: linear-gradient(90deg, @has-text-alert 45%, @has-text-danger 55%);
+        }
+        .grad-from-right {
+            background-image: linear-gradient(90deg, @popper 45%, @has-text-danger 55%);
+        }
+    }
+
+    .modal .buttonList .is-selected {
+        border-color: @enabled;
+    }
+}
+
+// GruvBox Dark theme
+html.gruvboxDarkRG {
+    #lib.themes.gruvboxDarkRG(); // Highest priority
+    #lib.themes.gruvboxDark(); // Higher priority
     #lib.themes.dark(); // Lowest priority
     #lib.mainTemplate();
 

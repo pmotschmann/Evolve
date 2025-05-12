@@ -7,6 +7,7 @@ export const changeList = [
         date: `5/??/2025`,
         changes: [
             `New Custom/Hybrid Lab mechanics.`,
+            `Added New Theme GrubBox (RedGreen CB) for Red color blind players.`,
             `Technophobe perk race complexity changed to flat gene point bonus.`,
             `Overtapped has been removed, Negative traits instead pay a complexity tax.`,
             `Enviromentalist now scales with trait rank.`,
