@@ -8681,7 +8681,7 @@
   "wiki_trait_effect_sticky": "Food requirements are lowered by %0% and combat rating is increased by %1%.",
   "wiki_trait_effect_fragrant": "Hunting produces %0% less.",
   "wiki_trait_effect_infectious": "Attacking has a chance to increase your population. Up to %0/%1/%2/%3/%4 enemies will be infected, depending on campaign type.",
-  "wiki_trait_effect_parasite": "Natural population growth only occurs when it's windy. Start with 2 Soldiers.",
+  "wiki_trait_effect_parasite": "Natural population growth only occurs when it's windy. Start with %0 Soldiers. %1% less loot recovered from attacks.",
   "wiki_trait_effect_toxic": "+%0% Factory Money/Alloy/Polymer production. +%1% Nano Tube/Stanene production. +%2% Cement production.",
   "wiki_trait_effect_nyctophilia": "-%0% Morale when Sunny. +%1% Morale when Cloudy.",
   "wiki_trait_effect_hibernator": "Food consumption is lowered by %0% during winter, but production is also lowered by %1%.",

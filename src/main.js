@@ -3622,7 +3622,7 @@ function fastLoop(){
 
             let soldiers = global.civic.garrison.workers;
             if (global.race['parasite'] && !global.tech['isolation']){
-                soldiers -= 2;
+                soldiers -= jobScale(traits.parasite.vars()[0]);
                 if (soldiers < 0){
                     soldiers = 0;
                 }
@@ -8657,7 +8657,7 @@ function midLoop(){
             lCaps['cement_worker'] += jobScale(p_on['red_factory']);
         }
         if (global.race['parasite'] && !global.tech['isolation']){
-            lCaps['garrison'] += jobScale(2);
+            lCaps['garrison'] += jobScale(traits.parasite.vars()[0]);
         }
         if (global.city['garrison']){
             lCaps['garrison'] += global.city.garrison.on * actions.city.garrison.soldiers();

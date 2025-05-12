@@ -2082,6 +2082,9 @@ function lootModify(val,gov){
     if (global.race['gravity_well']){
         loot *= 1 - (0.75 * darkEffect('heavy'));
     }
+    if (global.race['parasite']){
+        loot *= 1 - (traits.parasite.vars()[0] / 100);
+    }
 
     switch(global.civic.garrison.tactic){
         case 1:

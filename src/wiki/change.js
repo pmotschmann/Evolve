@@ -4,6 +4,23 @@ import { clearElement } from './../functions.js';
 export const changeList = [
     {
         version: `1.4.5`,
+        revision: `b`,
+        date: `5/12/2025`,
+        changes: [
+            `Fixed issues with loading custom race data into custom lab.`
+        ]
+    },
+    {
+        version: `1.4.5`,
+        revision: `a`,
+        date: `5/12/2025`,
+        changes: [
+            `Parasite now scales with rank.`,
+            `Synthetic parasites can now only assemble new citizens when it's windy.`
+        ]
+    },
+    {
+        version: `1.4.5`,
         date: `5/11/2025`,
         changes: [
             `New Custom/Hybrid Lab mechanics.`,
