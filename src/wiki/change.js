@@ -4,7 +4,7 @@ import { clearElement } from './../functions.js';
 export const changeList = [
     {
         version: `1.4.5`,
-        date: `5/??/2025`,
+        date: `5/11/2025`,
         changes: [
             `New Custom/Hybrid Lab mechanics.`,
             `Added New Theme GrubBox (RedGreen CB) for Red/Green color blind players.`,
