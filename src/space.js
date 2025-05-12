@@ -7694,12 +7694,6 @@ export function ascendLab(hybrid,wiki){
         }
     }
 
-    for (let i=genome.traitlist.length - 1; i >= 0; i--){
-        if (!traits.hasOwnProperty(genome.traitlist[i]) || !unlockedTraits.hasOwnProperty(genome.traitlist[i]) || traits[genome.traitlist[i]].type !== 'major'){
-            genome.traitlist.splice(i,1);
-        }
-    }
-
     let taxomized = { utility: {}, resource: {}, production: {}, combat: {} };;
     Object.keys(races).forEach(function (race){
         let type = races[race].type;
@@ -7720,6 +7714,12 @@ export function ascendLab(hybrid,wiki){
             }
         }
     });
+    
+    for (let i=genome.traitlist.length - 1; i >= 0; i--){
+        if (!traits.hasOwnProperty(genome.traitlist[i]) || !unlockedTraits.hasOwnProperty(genome.traitlist[i]) || traits[genome.traitlist[i]].type !== 'major'){
+            genome.traitlist.splice(i,1);
+        }
+    }
 
     let trait_listing = $(`<b-tabs v-model="tt.t" @input="swapTab"></b-tabs>`);
     Object.keys(taxomized).sort().forEach(function (tax){
@@ -7773,7 +7773,7 @@ export function ascendLab(hybrid,wiki){
         template: '<div id="modalBox" class="modalBox"></div>'
     };
 
-    let tRanks = {};
+    let tRanks = genome.ranks;
     let activeTab = { t: 0 };
     vBind({
         el: '#celestialLab',
