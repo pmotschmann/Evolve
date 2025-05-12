@@ -2,7 +2,7 @@ import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, 
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
-import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill } from './races.js';
+import { races, traits, genus_def, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill } from './races.js';
 import { defineResources, unlockCrates, unlockContainers, crateValue, containerValue, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus, faithTempleCount } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter } from './industry.js';
@@ -884,7 +884,7 @@ export const actions = {
                     let allowed = [];
 
                     let type = 'humanoid';
-                    for (let genus in genus_traits){
+                    for (let genus in genus_def){
                         if (global.tech[`evo_${genus}`] && global.tech[`evo_${genus}`] >= 2){
                             type = genus;
                             break;
@@ -3193,7 +3193,7 @@ export const actions = {
             category: 'trade',
             era: 'industrialized',
             reqs: { wharf: 1 },
-            not_trait: ['thalassophobia','cataclysm'],
+            not_trait: ['thalassophobia','cataclysm','warlord'],
             cost: {
                 Money(offset){ return costMultiplier('wharf', offset, 62000, 1.32); },
                 Lumber(offset){ return costMultiplier('wharf', offset, 44000, 1.32); },
@@ -4021,10 +4021,11 @@ export const actions = {
                 let power = -($(this)[0].powered());
                 return global.race['environmentalist'] ? `+${power}MW` : `<span>+${power}MW.</span> <span class="has-text-caution">${loc(global.race.universe === 'magic' ? 'city_mana_engine_effect' : 'city_coal_power_effect',[consume])}</span>`;
             },
-            powered(){
-                let power = global.race['environmentalist']
-                    ? global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 1 ? -5 : -4
-                    : global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 1 ? -6 : -5;
+            powered(wiki){
+                let power = global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 1 ? -6 : -5;
+                if (!wiki && global.race['environmentalist']){
+                    power += traits.environmentalist.vars()[0];
+                }
                 let dirt = govActive('dirty_jobs',1);
                 if (dirt){ power -= dirt; }
                 return powerModifier(power);
@@ -4078,23 +4079,21 @@ export const actions = {
                 let power = -($(this)[0].powered());
                 return global.race['environmentalist'] ? `+${power}MW` : `<span>+${power}MW.</span> <span class="has-text-caution">${loc('city_oil_power_effect',[consume])}</span>`;
             },
-            powered(){
+            powered(wiki){
                 let power = 0;
-                if (global.race['environmentalist']){
-                    if (global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 3){
-                        let base = global.city.calendar.wind === 1 ? -7 : -5;
-                        power = global.stats.achieve['dissipated'].l >= 5 ? (base - 2) : (base - 1);
-                    }
-                    else {
-                        power = global.city.calendar.wind === 1 ? -7 : -5;
-                    }
+                if (global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 3){
+                    power = global.stats.achieve['dissipated'].l >= 5 ? -8 : -7;
                 }
                 else {
-                    if (global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 3){
-                        power = global.stats.achieve['dissipated'].l >= 5 ? -8 : -7;
+                    power = -6;
+                }
+                if (!wiki && global.race['environmentalist']){
+                    power -= traits.environmentalist.vars()[0];
+                    if (global.city.calendar.wind === 1){
+                        power -= 1;
                     }
                     else {
-                        power = -6;
+                        power += 1;
                     }
                 }
                 let dirt = govActive('dirty_jobs',1);
@@ -5114,7 +5113,12 @@ const raceList = [
     'custom','hybrid'
 ];
 raceList.forEach(function(race){
-    if (!['custom','hybrid'].includes(race) || (race === 'custom' && global.custom.hasOwnProperty('race0')) || (race === 'hybrid' && global.custom.hasOwnProperty('race1')) ) {
+    if (!['custom','hybrid'].includes(race) || (race === 'custom' && global.custom.hasOwnProperty('race0')) || (race === 'hybrid' && global.custom.hasOwnProperty('race1')) ){
+        if (race === 'hybrid' && global.custom.race1.genus !== 'hybrid'){
+            global.custom.race1.hybrid = [global.custom.race1.genus, global.custom.race1.genus === 'humanoid' ? 'small' : 'humanoid'];
+            global.custom.race1.genus = 'hybrid';
+        }
+        else if (race === 'custom' && global.custom.race0.genus === 'hybrid'){ global.custom.race0.genus = 'humanoid'; }
         actions.evolution[race] = {
             id: `evolution-${race}`,
             title(){ return races[race].name; },
@@ -8361,17 +8365,17 @@ function sentience(){
     else {
         let typeList = global.stats.achieve['godslayer'] && races[global.race.species].type === 'hybrid' ? races[global.race.species].hybrid : [races[global.race.species].type];
         typeList.forEach(function(type){
-            Object.keys(genus_traits[type]).forEach(function (trait) {
+            Object.keys(genus_def[type].traits).forEach(function (trait) {
                 let mainspec = global.tech[`evo_${type}`] >= 2 ? true : false;
                 if (mainspec){
                     global.race['maintype'] = type;
-                    setTraitRank(trait,{ set: genus_traits[type][trait] });
+                    setTraitRank(trait,{ set: genus_def[type].traits[trait] });
                     if (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 4){
                         setTraitRank(trait);
                     }
                 }
                 else {
-                    setTraitRank(trait,{ set: genus_traits[type][trait] });
+                    setTraitRank(trait,{ set: genus_def[type].traits[trait] });
                     setTraitRank(trait, {down:true});
                 }
             });
@@ -8574,18 +8578,9 @@ function sentience(){
             dwarf: global.custom.race0.dwarf,
             genes: 0,
             genus: global.custom.race0.genus,
-            traitlist: global.custom.race0.traits
+            traitlist: global.custom.race0.traits,
+            ranks: global.custom.race0?.ranks || {} 
         });
-
-        let neg_traits = 0;
-        for (let i=0; i<global.custom.race0.traits.length; i++){
-            if (traits[global.custom.race0.traits[i]].val < 0){
-                neg_traits++;
-            }
-        }
-        if (neg_traits > 10){
-            global.race['overtapped'] = (neg_traits - 10) * 2;
-        }
     }
 
     if (global.race.species === 'hybrid' && global.custom.hasOwnProperty('race1')){
@@ -8602,18 +8597,9 @@ function sentience(){
             genes: 0,
             genus: global.custom.race1.genus,
             hybrid: global.custom.race1.hybrid,
-            traitlist: global.custom.race1.traits
+            traitlist: global.custom.race1.traits,
+            ranks: global.custom.race0?.ranks || {} 
         });
-
-        let neg_traits = 0;
-        for (let i=0; i<global.custom.race1.traits.length; i++){
-            if (traits[global.custom.race1.traits[i]].val < 0){
-                neg_traits++;
-            }
-        }
-        if (neg_traits > 10){
-            global.race['overtapped'] = (neg_traits - 10) * 2;
-        }
     }
 
     if (global.race.unfathomable){

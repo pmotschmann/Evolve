@@ -1424,6 +1424,13 @@ export function marketItem(mount,market_item,name,color,full){
                 if (global.race['persuasive']){
                     rate *= 1 + (global.race['persuasive'] / 100);
                 }
+                if (astroSign === 'capricorn'){
+                    rate *= 1 + (astroVal('capricorn')[0] / 100);
+                }
+                if (global.race['ocular_power'] && global.race['ocularPowerConfig'] && global.race.ocularPowerConfig.c){
+                    let trade = 70 * (traits.ocular_power.vars()[1] / 100);
+                    rate *= 1 + (trade / 100);
+                }
                 if (global.race['devious']){
                     rate *= 1 - (traits.devious.vars()[0] / 100);
                 }

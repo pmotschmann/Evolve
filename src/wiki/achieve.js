@@ -2,7 +2,7 @@ import { global } from './../vars.js';
 import { loc } from './../locale.js';
 import { clearElement, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel } from './../functions.js';
 import { achievements, feats, universeAffix } from './../achieve.js';
-import { races, biomes, genus_traits } from './../races.js';
+import { races, biomes, genus_def } from './../races.js';
 import { monsters } from './../portal.js';
 import { vBind, popover } from './../functions.js';
 
@@ -210,7 +210,7 @@ function achieveDesc(achievement,showFlair,universe){
     }
     else if (achievement === 'creator' || achievement === 'heavyweight'){
         let genus = `<div class="flexed">`;
-        Object.keys(genus_traits).sort().forEach(function (key){
+        Object.keys(genus_def).sort().forEach(function (key){
             if (key !== 'hybrid' && key !== 'omnivore'){
                 let label = ['carnivore','herbivore','omnivore'].includes(key) ? loc(`evo_${key}_title`) : loc(`genelab_genus_${key}`);
                 if (achievement === 'creator' ? global.stats.achieve[`genus_${key}`] && global.stats.achieve[`genus_${key}`][uAffix] >= 0 : global.stats.achieve[`genus_${key}`] && global.stats.achieve[`genus_${key}`].h >= 0){
@@ -236,7 +236,7 @@ function achieveDesc(achievement,showFlair,universe){
             });
         }
         let checked = `<div class="flexed">`;    
-        Object.keys(genus_traits).sort().forEach(function (key){
+        Object.keys(genus_def).sort().forEach(function (key){
             if (key !== 'omnivore'){
                 let label = ['carnivore','herbivore','omnivore'].includes(key) ? loc(`evo_${key}_title`) : loc(`genelab_genus_${key}`);
                 if (genus[key] && genus[key] >= 1){

@@ -918,11 +918,6 @@ function fastLoop(){
             global_multiplier *= 1 + (untapped);
         }
     }
-    if (global.race['overtapped'] && global.race.overtapped > 0){
-        let overtapped = +(global.race.overtapped * 0.01).toFixed(3);
-        breakdown.p['Global'][loc('trait_overtapped_bd')] = `-${overtapped * 100}%`;
-        global_multiplier *= 1 - (overtapped);
-    }
     if (global.race['rainbow_active'] && global.race['rainbow_active'] > 1){
         breakdown.p['Global'][loc('trait_rainbow_bd')] = `${traits.rainbow.vars()[0]}%`;
         global_multiplier *= 1 + (traits.rainbow.vars()[0] / 100);
@@ -11610,6 +11605,7 @@ function longLoop(){
             }
             if (astroSign === 'cancer'){
                 hc += astroVal('cancer')[0];
+                if (hc < 0){ hc = 0; }
             }
             if (global.tech['medic'] && global.tech['medic'] >= 2){
                 hc *= global.tech['medic'];

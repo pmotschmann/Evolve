@@ -1,10 +1,11 @@
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
 import { clearElement, popover, getEaster, getHalloween, getTraitDesc } from './../functions.js';
-import { races, traits, genus_traits, traitSkin } from './../races.js';
+import { races, traits, genus_def, traitSkin } from './../races.js';
 import { ascendLab } from './../space.js';
 import { actions } from './../actions.js';
-import { sideMenu, infoBoxBuilder } from './functions.js';
+import { sideMenu } from './functions.js';
+import { customRaceMechanics } from './mechanics.js';
 
 const hallowed = getHalloween();
 
@@ -26,25 +27,7 @@ export function speciesPage(zone){
 }
 
 export function customPage(content) {
-    infoBoxBuilder(content,{ name: 'custom', template: 'mechanics', label: loc('wiki_mechanics_custom'), paragraphs: 12, break: [3,5,9,11], full: true, h_level: 2,
-        para_data: {
-            1: [loc('wiki_resets_ascension')],
-            2: [loc('wiki_resets_ascension')],
-            5: [loc('resource_Genes_name')],
-            6: [loc('resource_Genes_name')],
-            7: [2],
-            8: [loc('achieve_technophobe_name'),5,7],
-            9: [loc('tech_fanaticism'),loc('tech_deify')],
-            11: [0,loc('resource_Genes_name')],
-            12: [loc('resource_Genes_name'),loc('trait_untapped_name')]
-        },
-        data_link: {
-            1: ['wiki.html#resets-prestige-ascension'],
-            2: ['wiki.html#resets-prestige-ascension'],
-            8: ['wiki.html#perks-prestige-technophobe'],
-            9: [(global.genes['transcendence'] ? 'wiki.html#civilized-tech-alt_fanaticism' : 'wiki.html#civilized-tech-fanaticism'),'wiki.html#early_space-tech-deify']
-        }
-    });
+    customRaceMechanics(content,true);
     let lab = $(`<div class="infoBox wide"></div>`);
     content.append(lab);
     ascendLab(false,lab);
@@ -116,7 +99,7 @@ export function racesPage(content){
 
         (typeList.includes('carnivore') && typeList.includes('herbivore') ? ['omnivore'] : typeList).forEach(function (gType){
             if (race !== 'hellspawn'){
-                Object.keys(genus_traits[gType]).sort().forEach(function (trait){
+                Object.keys(genus_def[gType].traits).sort().forEach(function (trait){
                     let id = `raceTrait${race}${trait}`;
                     let color = races[race].fanaticism === trait ? 'danger' : 'caution';
                     genes.append(`<span class="has-text-${color}" id="${id}">${traitSkin('name', trait, race)}<span>`);

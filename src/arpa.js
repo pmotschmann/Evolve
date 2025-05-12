@@ -2087,8 +2087,18 @@ function genetics(){
             if (['custom','hybrid','sludge','ultra_sludge'].includes(global.race.species)){
                 cost *= 10;
             }
-            if (races[global.race.species].type === 'hybrid'){
-                cost *= 2;
+            if (global.race[t]){
+                switch(global.race[t]){
+                    case 0.1:
+                        cost *= 4;
+                        break;
+                    case 0.25:
+                        cost *= 3;
+                        break;
+                    case 0.5:
+                        cost *= 2;
+                        break;
+                }
             }
             if (cost < 0){
                 cost *= -1;
@@ -2100,9 +2110,6 @@ function genetics(){
             let cost = traits[t].val * 5;
             if (['custom','hybrid','sludge','ultra_sludge'].includes(global.race.species)){
                 cost *= 10;
-            }
-            if (races[global.race.species].type === 'hybrid'){
-                cost *= 2;
             }
             if (cost < 0){
                 cost *= -1;

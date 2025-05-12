@@ -1,6 +1,6 @@
 import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame, atrack, p_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { races, traits, genus_traits, traitSkin, fathomCheck } from './races.js';
+import { races, traits, genus_def, traitSkin, fathomCheck } from './races.js';
 import { actions, actionDesc } from './actions.js';
 import { jobScale } from './jobs.js';
 import { universe_affixes } from './space.js';
@@ -2633,7 +2633,8 @@ export function sLevel(level){
     }
 }
 
-export function calcGenomeScore(genome,wiki){
+export function calcGenomeScore(genome,wiki,tRanks){
+    if (!tRanks){ tRanks = genome.ranks || {}; }
     let genes = 0;
 
     if (wiki){
@@ -2649,38 +2650,99 @@ export function calcGenomeScore(genome,wiki){
         }
     }
 
-    if (genome.genus === 'hybrid'){
-        genome.hybrid.forEach(function(g){
-            Object.keys(genus_traits[g]).forEach(function (t){
-                genes -= traits[t].val;
-            });
+    let active_genus = genome.genus === 'hybrid' ? genome.hybrid : [genome.genus];
+    let oppose_genus = [];
+    active_genus.forEach(function(g){
+        Object.keys(genus_def[g].traits).forEach(function (t){
+            let value = traits[t].val;
+            genes -= value;
         });
-    }
-    else {
-        Object.keys(genus_traits[genome.genus]).forEach(function (t){
-            genes -= traits[t].val;
-        });
-    }
-
-    let max_complexity = 2;
+        oppose_genus = oppose_genus.concat(genus_def[g].oppose);
+    });
+    
     if (wiki){
-        max_complexity += wiki.technophobe;
+        genes += wiki.technophobe * 4;
     }
     else if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){
-        max_complexity += global.stats.achieve.technophobe.l;
+        genes += global.stats.achieve.technophobe.l * 4;
     }
 
-    let complexity = 0;
+    let max_complexity = 1;
+
+    let complexity = { utility: 0, resource: 0, production: 0, combat: 0 };
+    let neg_complexity = { utility: 0, resource: 0, production: 0, combat: 0 };
     for (let i=0; i<genome.traitlist.length; i++){
+        let taxonomy = traits[genome.traitlist[i]].taxonomy;
         let gene_cost = traits[genome.traitlist[i]].val;
+
         if (traits[genome.traitlist[i]].val >= 0){
-            if (complexity > max_complexity){
-                gene_cost -= max_complexity - complexity;
+            if (complexity[taxonomy] > max_complexity){
+                gene_cost -= max_complexity - complexity[taxonomy];
             }
-            complexity++;
+            complexity[taxonomy]++;
         }
+        else {
+            if (neg_complexity[taxonomy] >= max_complexity){
+                gene_cost += neg_complexity[taxonomy];
+            }
+            neg_complexity[taxonomy]++;
+        }
+
+        if (tRanks[genome.traitlist[i]]){
+            if (traits[genome.traitlist[i]].val >= 0){
+                switch (tRanks[genome.traitlist[i]]){
+                    case 0.1:
+                        gene_cost -= 3;
+                        break;
+                    case 0.25:
+                        gene_cost -= 2;
+                        break;
+                    case 0.5:
+                        gene_cost--;
+                        break;
+                    case 2:
+                        gene_cost = Math.max(Math.round(gene_cost * 1.5), gene_cost + 1);;
+                        break;
+                    case 3:
+                        gene_cost = Math.max(Math.round(gene_cost * 2), gene_cost + 2);;
+                        break;
+                    case 4:
+                        gene_cost = Math.max(Math.round(gene_cost * 2.5), gene_cost + 3);;
+                        break;
+                }
+                if (gene_cost < 1){ gene_cost = 1; }
+            }
+            else {
+                switch (tRanks[genome.traitlist[i]]){
+                    case 0.1:
+                        gene_cost -= 3;
+                        break;
+                    case 0.25:
+                        gene_cost -= 2;
+                        break;
+                    case 0.5:
+                        gene_cost--;
+                        break;
+                    case 2:
+                        gene_cost++;
+                        break;
+                    case 3:
+                        gene_cost += 2;
+                        break;
+                    case 4:
+                        gene_cost += 3;
+                        break
+                }
+            }
+        }
+
+        let genus_origin = races[traits[genome.traitlist[i]].origin].type === 'hybrid' ? races[traits[genome.traitlist[i]].origin].hybrid : [races[traits[genome.traitlist[i]].origin].type];
+        if (active_genus.filter(x => genus_origin.includes(x)).length > 0){ active_genus.filter(x => genus_origin.includes(x)).length === 1 ? gene_cost-- : gene_cost -= 2; }
+        if (oppose_genus.filter(x => genus_origin.includes(x)).length > 0){ oppose_genus.filter(x => genus_origin.includes(x)).length === 1 ? gene_cost++ : gene_cost += 2; }
+
         genes -= gene_cost;
     }
+
     return genes;
 }
 
@@ -3058,6 +3120,7 @@ const valAdjust = {
     blurry: true,
     playful: true,
     ghostly: true,
+    environmentalist: true
 };
 
 function getTraitVals(trait, rank, species){
@@ -3092,6 +3155,11 @@ function getTraitVals(trait, rank, species){
         }
         else if (trait === 'living_materials'){
             vals = [global.resource.Lumber.name, global.resource.Plywood.name, global.resource.Furs.name, loc('resource_Amber_name')];
+        }
+        else if (trait === 'environmentalist'){
+            let coal = -(actions.city.coal_power.powered(true));
+            let oil = -(actions.city.oil_power.powered(true));
+            vals = [coal + vals[0], oil + vals[0] - 1, oil + vals[0] + 1, coal, oil, vals[1]];
         }
         else if (trait === 'blurry'){
             if (global.race['warlord']){

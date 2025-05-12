@@ -19,7 +19,7 @@ const date = new Date();
 const easter = getEaster();
 const hallowed = getHalloween();
 
-export const neg_roll_traits = ['angry','arrogant','atrophy','diverse','dumb','fragrant','frail','freespirit','gluttony','gnawer','greedy','hard_of_hearing','heavy','hooved','invertebrate','lazy','mistrustful','nearsighted','nyctophilia','paranoid','pathetic','pessimistic','puny','pyrophobia','skittish','slow','slow_regen','snowy','solitary','unorganized'];
+export const neg_roll_traits = ['angry','arrogant','atrophy','diverse','dumb','fragrant','frail','freespirit','gluttony','gnawer','greedy','hard_of_hearing','heavy','hooved','invertebrate','lazy','mistrustful','nearsighted','nyctophilia','paranoid','pathetic','pessimistic','puny','pyrophobia','skittish','slow','slow_regen','snowy','solitary','unorganized','unfavored'];
 
 export function altRace(race,set){
     if (global.settings.boring){
@@ -82,97 +82,159 @@ export function altRace(race,set){
     return false;
 }
 
-export const genus_traits = {
+export const genus_def = {
     humanoid: {
-        adaptable: 1,
-        wasteful: 1
+        traits: {
+            adaptable: 1,
+            wasteful: 1
+        },
+        oppose: ['fungi']
     },
     carnivore: {
-        carnivore: 1,
-        beast: 1,
-        cautious: 1
+        traits: {
+            carnivore: 1,
+            beast: 1,
+            cautious: 1
+        },
+        oppose: ['herbivore']
     },
     herbivore: {
-        herbivore: 1,
-        instinct: 1
+        traits: {
+            herbivore: 1,
+            instinct: 1
+        },
+        oppose: ['carnivore']
     },
     omnivore: {
-        forager: 1,
-        beast: 1,
-        cautious: 1,
-        instinct: 1
+        traits: {
+            forager: 1,
+            beast: 1,
+            cautious: 1,
+            instinct: 1
+        }
     },
     small: {
-        small: 1,
-        weak: 1
+        traits: {
+            small: 1,
+            weak: 1
+        },
+        oppose: ['giant']
     },
     giant: {
-        large: 1,
-        strong: 1
+        traits: {
+            large: 1,
+            strong: 1
+        },
+        oppose: ['small']
     },
     reptilian: {
-        cold_blooded: 1,
-        scales: 1
+        traits: {
+            cold_blooded: 1,
+            scales: 1
+        },
+        oppose: ['avian']
     },
     avian: {
-        flier: 1,
-        hollow_bones: 1,
-        sky_lover: 1,
+        traits: {
+            flier: 1,
+            hollow_bones: 1,
+            sky_lover: 1
+        },
+        oppose: ['reptilian']
     },
     insectoid: {
-        high_pop: 1,
-        fast_growth: 1,
-        high_metabolism: 1
+        traits: {
+            high_pop: 1,
+            fast_growth: 1,
+            high_metabolism: 1
+        },
+        oppose: ['plant']
     },
     plant: {
-        sappy: 1,
-        asymmetrical: 1
+        traits: {
+            sappy: 1,
+            asymmetrical: 1
+        },
+        oppose: ['insectoid']
     },
     fungi: {
-        detritivore: 1,
-        spongy: 1
+        traits: {
+            detritivore: 1,
+            spongy: 1
+        },
+        oppose: ['humanoid']
     },
     aquatic: {
-        submerged: 1,
-        low_light: 1
+        traits: {
+            submerged: 1,
+            low_light: 1
+        },
+        oppose: ['sand']
     },
     fey: {
-        elusive: 1,
-        iron_allergy: 1
+        traits: {
+            elusive: 1,
+            iron_allergy: 1
+        },
+        oppose: ['eldritch','synthetic']
     },
     heat: {
-        smoldering: 1,
-        cold_intolerance: 1
+        traits: {
+            smoldering: 1,
+            cold_intolerance: 1
+        },
+        oppose: ['polar']
     },
     polar: {
-        chilled: 1,
-        heat_intolerance: 1
+        traits: {
+            chilled: 1,
+            heat_intolerance: 1
+        },
+        oppose: ['heat']
     },
     sand: {
-        scavenger: 1,
-        nomadic: 1
+        traits: {
+            scavenger: 1,
+            nomadic: 1
+        },
+        oppose: ['aquatic']
     },
     demonic: {
-        immoral: 1,
-        evil: 1,
-        soul_eater: 1
+        traits: {
+            immoral: 1,
+            evil: 1,
+            soul_eater: 1
+        },
+        oppose: ['angelic']
     },
     angelic: {
-        blissful: 1,
-        pompous: 1,
-        holy: 1
+        traits: {
+            blissful: 1,
+            pompous: 1,
+            holy: 1
+        },
+        oppose: ['demonic']
     },
     synthetic: {
-        artifical: 1,
-        powered: 1
+        traits: {
+            artifical: 1,
+            powered: 1
+        },
+        oppose: ['eldritch','fey']
     },
     eldritch: {
-        psychic: 1,
-        tormented: 1,
-        darkness: 1,
-        unfathomable: 1
+        traits: {
+            psychic: 1,
+            tormented: 1,
+            darkness: 1,
+            unfathomable: 1
+        },
+        oppose: ['synthetic','fey']
     },
-    hybrid: {}
+    hybrid: {
+        traits: {},
+        oppose: []
+    }
 };
 
 export const traits = {
@@ -180,6 +242,8 @@ export const traits = {
         name: loc('trait_adaptable_name'),
         desc: loc('trait_adaptable'),
         type: 'genus',
+        origin: 'humanoid',
+        taxonomy: 'utility',
         val: 3,
         vars(r){ 
             switch (r || traitRank('adaptable') || 1){
@@ -204,6 +268,8 @@ export const traits = {
         name: loc('trait_wasteful_name'),
         desc: loc('trait_wasteful'),
         type: 'genus',
+        origin: 'humanoid',
+        taxonomy: 'resource',
         val: -3,
         vars(r){ 
             switch (r || traitRank('wasteful') || 1){
@@ -228,12 +294,16 @@ export const traits = {
         name: loc('trait_xenophobic_name'),
         desc: loc('trait_xenophobic'),
         type: 'genus',
+        genus: 'humanoid',
+        taxonomy: 'resource',
         val: -5,
     },
     carnivore: { // No agriculture tech tree path, however unemployed citizens now act as hunters.
         name: loc('trait_carnivore_name'),
         desc: loc('trait_carnivore'),
         type: 'genus',
+        origin: 'carnivore',
+        taxonomy: 'resource',
         val: 3,
         vars(r){ 
             // [Rot Percent]
@@ -259,6 +329,8 @@ export const traits = {
         name: loc('trait_beast_name'),
         desc: loc('trait_beast'),
         type: 'genus',
+        origin: 'carnivore',
+        taxonomy: 'resource',
         val: 2,
         vars(r){
             // [Hunting, Windy Hunting, Training Speed]
@@ -284,6 +356,8 @@ export const traits = {
         name: loc('trait_cautious_name'),
         desc: loc('trait_cautious'),
         type: 'genus',
+        origin: 'carnivore',
+        taxonomy: 'combat',
         val: -2,
         vars(r){ 
             switch (r || traitRank('cautious') || 1){
@@ -308,12 +382,16 @@ export const traits = {
         name: loc('trait_herbivore_name'),
         desc: loc('trait_herbivore'),
         type: 'genus',
+        origin: 'herbivore',
+        taxonomy: 'resource',
         val: -7,
     },
     instinct: { // Avoids Danger
         name: loc('trait_instinct_name'),
         desc: loc('trait_instinct'),
         type: 'genus',
+        genus: 'herbivore',
+        taxonomy: 'utility',
         val: 5,
         vars(r){
             // [Surveyor Survival Boost, Reduce Combat Deaths %]
@@ -339,6 +417,8 @@ export const traits = {
         name: loc('trait_forager_name'),
         desc: loc('trait_forager'),
         type: 'genus',
+        origin: 'hybrid',
+        taxonomy: 'resource',
         val: 4,
         vars(r){
             // [Foraging Strength]
@@ -364,6 +444,8 @@ export const traits = {
         name: loc('trait_small_name'),
         desc: loc('trait_small'),
         type: 'genus',
+        origin: 'small',
+        taxonomy: 'utility',
         val: 6,
         vars(r){
             // [Planet Creep, Space Creep]
@@ -389,6 +471,8 @@ export const traits = {
         name: loc('trait_weak_name'),
         desc: loc('trait_weak'),
         type: 'genus',
+        origin: 'small',
+        taxonomy: 'resource',
         val: -3,
         vars(r){
             switch (r || traitRank('weak') || 1){
@@ -413,6 +497,8 @@ export const traits = {
         name: loc('trait_large_name'),
         desc: loc('trait_large'),
         type: 'genus',
+        origin: 'giant',
+        taxonomy: 'utility',
         val: -5,
         vars(r){
             switch (r || traitRank('large') || 1){
@@ -437,6 +523,8 @@ export const traits = {
         name: loc('trait_strong_name'),
         desc: loc('trait_strong'),
         type: 'genus',
+        origin: 'giant',
+        taxonomy: 'resource',
         val: 5,
         vars(r){
             // [Manual Gathering, Basic Jobs]
@@ -462,6 +550,8 @@ export const traits = {
         name: loc('trait_cold_blooded_name'),
         desc: loc('trait_cold_blooded'),
         type: 'genus',
+        origin: 'reptilian',
+        taxonomy: 'production',
         val: -2,
         vars(r){
             // [Weather Penalty, Weather Bonus]
@@ -485,6 +575,8 @@ export const traits = {
         name: loc('trait_scales_name'),
         desc: loc('trait_scales'),
         type: 'genus',
+        origin: 'reptilian',
+        taxonomy: 'combat',
         val: 5,
         vars(r){
             // [Win, Loss, Hell]
@@ -510,6 +602,8 @@ export const traits = {
         name: loc('trait_flier_name'),
         desc: loc('trait_flier'),
         type: 'genus',
+        origin: 'avian',
+        taxonomy: 'resource',
         val: 3,
         vars(r){
             // [Reduce Stone Costs, Extra Trade Post Route]
@@ -535,6 +629,8 @@ export const traits = {
         name: loc('trait_hollow_bones_name'),
         desc: loc('trait_hollow_bones'),
         type: 'genus',
+        origin: 'avian',
+        taxonomy: 'resource',
         val: 2,
         vars(r){
             switch (r || traitRank('hollow_bones') || 1){
@@ -559,6 +655,8 @@ export const traits = {
         name: loc('trait_sky_lover_name'),
         desc: loc('trait_sky_lover'),
         type: 'genus',
+        origin: 'avian',
+        taxonomy: 'utility',
         val: -2,
         vars(r){
             switch (r || traitRank('sky_lover') || 1){
@@ -583,6 +681,8 @@ export const traits = {
         name: loc('trait_rigid_name'),
         desc: loc('trait_rigid'),
         type: 'genus',
+        origin: 'avian',
+        taxonomy: 'resource',
         val: -2,
         vars(r){
             switch (r || traitRank('rigid') || 1){
@@ -607,6 +707,8 @@ export const traits = {
         name: loc('trait_high_pop_name'),
         desc: loc('trait_high_pop'),
         type: 'genus',
+        origin: 'insectoid',
+        taxonomy: 'utility',
         val: 3,
         vars(r){
             // [Citizen Cap, Worker Effectiveness, Growth Multiplier]
@@ -632,6 +734,8 @@ export const traits = {
         name: loc('trait_fast_growth_name'),
         desc: loc('trait_fast_growth'),
         type: 'genus',
+        origin: 'insectoid',
+        taxonomy: 'utility',
         val: 2,
         vars(r){
             // [bound multi, bound add]
@@ -657,6 +761,8 @@ export const traits = {
         name: loc('trait_high_metabolism_name'),
         desc: loc('trait_high_metabolism'),
         type: 'genus',
+        origin: 'insectoid',
+        taxonomy: 'utility',
         val: -1,
         vars(r){
             switch (r || traitRank('high_metabolism') || 1){
@@ -681,6 +787,8 @@ export const traits = {
         name: loc('trait_photosynth_name'),
         desc: loc('trait_photosynth'),
         type: 'genus',
+        origin: 'plant',
+        taxonomy: 'utility',
         val: 3,
         vars(r){
             // [Sunny, Cloudy, Rainy]
@@ -706,6 +814,8 @@ export const traits = {
         name: loc('trait_sappy_name'),
         desc: loc('trait_sappy',[loc('resource_Amber_name')]),
         type: 'genus',
+        origin: 'plant',
+        taxonomy: 'resource',
         val: 4,
         vars(r){
             switch (r || traitRank('sappy') || 1){
@@ -730,6 +840,8 @@ export const traits = {
         name: loc('trait_asymmetrical_name'),
         desc: loc('trait_asymmetrical'),
         type: 'genus',
+        origin: 'plant',
+        taxonomy: 'utility',
         val: -3,
         vars(r){
             switch (r || traitRank('asymmetrical') || 1){
@@ -754,6 +866,8 @@ export const traits = {
         name: loc('trait_detritivore_name'),
         desc: loc('trait_detritivore'),
         type: 'genus',
+        origin: 'fungi',
+        taxonomy: 'utility',
         val: 2,
         vars(r){
             switch (r || traitRank('detritivore') || 1){
@@ -778,6 +892,8 @@ export const traits = {
         name: loc('trait_spores_name'),
         desc: loc('trait_spores'),
         type: 'genus',
+        origin: 'fungi',
+        taxonomy: 'utility',
         val: 2,
         vars(r){
             // [Bound Add, Bound Multi, Bound Add Parasite]
@@ -803,18 +919,24 @@ export const traits = {
         name: loc('trait_spongy_name'),
         desc: loc('trait_spongy'),
         type: 'genus',
+        origin: 'fungi',
+        taxonomy: 'utility',
         val: -2,
     },
     submerged: { // Immune to weather effects
         name: loc('trait_submerged_name'),
         desc: loc('trait_submerged'),
         type: 'genus',
+        origin: 'aquatic',
+        taxonomy: 'utility',
         val: 3,
     },
     low_light: { // Farming effectiveness decreased
         name: loc('trait_low_light_name'),
         desc: loc('trait_low_light'),
         type: 'genus',
+        origin: 'aquatic',
+        taxonomy: 'resource',
         val: -2,
         vars(r){
             switch (r || traitRank('low_light') || 1){
@@ -839,6 +961,8 @@ export const traits = {
         name: loc('trait_elusive_name'),
         desc: loc('trait_elusive'),
         type: 'genus',
+        origin: 'fey',
+        taxonomy: 'utility',
         val: 7,
         vars(r){
             switch (r || traitRank('elusive') || 1){
@@ -863,6 +987,8 @@ export const traits = {
         name: loc('trait_iron_allergy_name'),
         desc: loc('trait_iron_allergy'),
         type: 'genus',
+        origin: 'fey',
+        taxonomy: 'resource',
         val: -4,
         vars(r){
             switch (r || traitRank('iron_allergy') || 1){
@@ -887,6 +1013,8 @@ export const traits = {
         name: loc('trait_smoldering_name'),
         desc: loc('trait_smoldering'),
         type: 'genus',
+        origin: 'heat',
+        taxonomy: 'production',
         val: 7,
         vars(r){
             // [Seasonal Morale, Hot Bonus, High Hot Bonus]
@@ -912,6 +1040,8 @@ export const traits = {
         name: loc('trait_cold_intolerance_name'),
         desc: loc('trait_cold_intolerance'),
         type: 'genus',
+        origin: 'heat',
+        taxonomy: 'production',
         val: -4,
         vars(r){
             switch (r || traitRank('cold_intolerance') || 1){
@@ -936,6 +1066,8 @@ export const traits = {
         name: loc('trait_chilled_name'),
         desc: loc('trait_chilled'),
         type: 'genus',
+        origin: 'polar',
+        taxonomy: 'production',
         val: 7,
         vars(r){
             // [Seasonal Morale, Cold Bonus, High Cold Bonus, Snow Food Bonus, Cold Food Bonus, Sun Food Penalty]
@@ -961,6 +1093,8 @@ export const traits = {
         name: loc('trait_heat_intolerance_name'),
         desc: loc('trait_heat_intolerance'),
         type: 'genus',
+        origin: 'polar',
+        taxonomy: 'production',
         val: -4,
         vars(r){
             switch (r || traitRank('heat_intolerance') || 1){
@@ -985,6 +1119,8 @@ export const traits = {
         name: loc('trait_scavenger_name'),
         desc: loc('trait_scavenger'),
         type: 'genus',
+        origin: 'sand',
+        taxonomy: 'production',
         val: 3,
         vars(r){
             // [impact, duel bonus]
@@ -1010,12 +1146,16 @@ export const traits = {
         name: loc('trait_nomadic_name'),
         desc: loc('trait_nomadic'),
         type: 'genus',
+        origin: 'sand',
+        taxonomy: 'utility',
         val: -5,
     },
     immoral: { // Warmonger is a bonus instead of a penalty
         name: loc('trait_immoral_name'),
         desc: loc('trait_immoral'),
         type: 'genus',
+        origin: 'demonic',
+        taxonomy: 'utility',
         val: 4,
         vars(r){
             switch (r || traitRank('immoral') || 1){
@@ -1040,12 +1180,16 @@ export const traits = {
         name: loc('trait_evil_name'),
         desc: loc('trait_evil'),
         type: 'genus',
+        origin: 'demonic',
+        taxonomy: 'utility',
         val: 0,
     },
     blissful: { // Low morale penalty is halved and citizens never riot.
         name: loc('trait_blissful_name'),
         desc: loc('trait_blissful'),
         type: 'genus',
+        origin: 'angelic',
+        taxonomy: 'utility',
         val: 3,
         vars(r){
             switch (r || traitRank('blissful') || 1){
@@ -1070,6 +1214,8 @@ export const traits = {
         name: loc('trait_pompous_name'),
         desc: loc('trait_pompous'),
         type: 'genus',
+        origin: 'angelic',
+        taxonomy: 'utility',
         val: -6,
         vars(r){
             switch (r || traitRank('pompous') || 1){
@@ -1094,6 +1240,8 @@ export const traits = {
         name: loc('trait_holy_name'),
         desc: loc('trait_holy'),
         type: 'genus',
+        origin: 'angelic',
+        taxonomy: 'combat',
         val: 4,
         vars(r){
             // [Hell Army Bonus, Hell Suppression Bonus]
@@ -1119,6 +1267,8 @@ export const traits = {
         name: loc('trait_artifical_name'),
         desc: loc('trait_artifical'),
         type: 'genus',
+        origin: 'synthetic',
+        taxonomy: 'utility',
         val: 5,
         vars(r){
             // [Science Bonus]
@@ -1144,6 +1294,8 @@ export const traits = {
         name: loc('trait_powered_name'),
         desc: loc('trait_powered'),
         type: 'genus',
+        origin: 'synthetic',
+        taxonomy: 'utility',
         val: -6,
         vars(r){
             // [Power Req, Labor Boost]
@@ -1169,6 +1321,8 @@ export const traits = {
         name: loc('trait_psychic_name'),
         desc: loc('trait_psychic'),
         type: 'genus',
+        origin: 'eldritch',
+        taxonomy: 'utility',
         val: 10,
         vars(r){
             // [Mind Break Modifer, Thrall Modifer, Recharge Rate, Effect Strength]
@@ -1194,6 +1348,8 @@ export const traits = {
         name: loc('trait_tormented_name'),
         desc: loc('trait_tormented'),
         type: 'genus',
+        origin: 'eldritch',
+        taxonomy: 'utility',
         val: -25,
         vars(r){
             // [Morale above 100% is greatly reduced]
@@ -1219,6 +1375,8 @@ export const traits = {
         name: loc('trait_darkness_name'),
         desc: loc('trait_darkness'),
         type: 'genus',
+        origin: 'eldritch',
+        taxonomy: 'utility',
         val: 1,
         vars(r){
             // [Sunny Days less frequent]
@@ -1244,6 +1402,8 @@ export const traits = {
         name: loc('trait_unfathomable_name'),
         desc: loc('trait_unfathomable'),
         type: 'genus',
+        origin: 'eldritch',
+        taxonomy: 'utility',
         val: 15,
         vars(r){
             // [Thrall Races, Catch Modifer, Thrall Effectiveness]
@@ -1269,6 +1429,8 @@ export const traits = {
         name: loc('trait_creative_name'),
         desc: loc('trait_creative'),
         type: 'major',
+        origin: 'human',
+        taxonomy: 'resource',
         val: 8,
         vars(r){
             switch (r || traitRank('creative') || 1){
@@ -1293,6 +1455,8 @@ export const traits = {
         name: loc('trait_diverse_name'),
         desc: loc('trait_diverse'),
         type: 'major',
+        origin: 'human',
+        taxonomy: 'combat',
         val: -4,
         vars(r){
             switch (r || traitRank('diverse') || 1){
@@ -1317,6 +1481,8 @@ export const traits = {
         name: loc('trait_studious_name'),
         desc: loc('trait_studious'),
         type: 'major',
+        origin: 'elven',
+        taxonomy: 'utility',
         val: 2,
         vars(r){
             // [Prof Bonus, Library Bonus]
@@ -1342,6 +1508,8 @@ export const traits = {
         name: loc('trait_arrogant_name'),
         desc: loc('trait_arrogant'),
         type: 'major',
+        origin: 'elven',
+        taxonomy: 'resource',
         val: -2,
         vars(r){
             switch (r || traitRank('arrogant') || 1){
@@ -1366,6 +1534,8 @@ export const traits = {
         name: loc('trait_brute_name'),
         desc: loc('trait_brute'),
         type: 'major',
+        origin: 'orc',
+        taxonomy: 'combat',
         val: 7,
         vars(r){
             // [Merc Discount, Training Bonus]
@@ -1391,6 +1561,8 @@ export const traits = {
         name: loc('trait_angry_name'),
         desc: loc('trait_angry'),
         type: 'major',
+        origin: 'orc',
+        taxonomy: 'production',
         val: -1,
         vars(r){
             switch (r || traitRank('angry') || 1){
@@ -1415,6 +1587,8 @@ export const traits = {
         name: loc('trait_lazy_name'),
         desc: loc('trait_lazy'),
         type: 'major',
+        origin: 'cath',
+        taxonomy: 'production',
         val: -4,
         vars(r){
             switch (r || traitRank('lazy') || 1){
@@ -1439,6 +1613,8 @@ export const traits = {
         name: loc('trait_curious_name'),
         desc: loc('trait_curious'),
         type: 'major',
+        origin: 'cath',
+        taxonomy: 'utility',
         val: 4,
         vars(r){
             switch (r || traitRank('curious') || 1){
@@ -1463,6 +1639,8 @@ export const traits = {
         name: loc('trait_pack_mentality_name'),
         desc: loc('trait_pack_mentality'),
         type: 'major',
+        origin: 'wolven',
+        taxonomy: 'utility',
         val: 4,
         vars(r){
             // [Cabin Creep penatly, Cottage Creep bonus]
@@ -1488,6 +1666,8 @@ export const traits = {
         name: loc('trait_tracker_name'),
         desc: loc('trait_tracker'),
         type: 'major',
+        origin: 'wolven',
+        taxonomy: 'resource',
         val: 2,
         vars(r){
             switch (r || traitRank('tracker') || 1){
@@ -1512,6 +1692,8 @@ export const traits = {
         name: loc('trait_playful_name'),
         desc: loc('trait_playful'),
         type: 'major',
+        origin: 'vulpine',
+        taxonomy: 'production',
         val: 5,
         vars(r){
             switch (r || traitRank('playful') || 1){
@@ -1536,6 +1718,8 @@ export const traits = {
         name: loc('trait_freespirit_name'),
         desc: loc('trait_freespirit'),
         type: 'major',
+        origin: 'vulpine',
+        taxonomy: 'production',
         val: -3,
         vars(r){
             switch (r || traitRank('freespirit') || 1){
@@ -1560,12 +1744,16 @@ export const traits = {
         name: loc('trait_beast_of_burden_name'),
         desc: loc('trait_beast_of_burden'),
         type: 'major',
+        origin: 'centaur',
+        taxonomy: 'combat',
         val: 3
     },
     sniper: { // Weapon upgrades are more impactful
         name: loc('trait_sniper_name'),
         desc: loc('trait_sniper'),
         type: 'major',
+        origin: 'centaur',
+        taxonomy: 'combat',
         val: 6,
         vars(r){
             switch (r || traitRank('sniper') || 1){
@@ -1590,6 +1778,8 @@ export const traits = {
         name: loc('trait_hooved_name'),
         desc: loc('trait_hooved'),
         type: 'major',
+        origin: 'centaur',
+        taxonomy: 'utility',
         val: -4,
         vars(r){
             // [Cost Adjustment]
@@ -1615,6 +1805,8 @@ export const traits = {
         name: loc('trait_rage_name'),
         desc: loc('trait_rage'),
         type: 'major',
+        origin: 'rhinotaur',
+        taxonomy: 'combat',
         val: 4,
         vars(r){
             // [Rage Bonus, Wounded Bonus]
@@ -1640,6 +1832,8 @@ export const traits = {
         name: loc('trait_heavy_name'),
         desc: loc('trait_heavy'),
         type: 'major',
+        origin: 'rhinotaur',
+        taxonomy: 'utility',
         val: -4,
         vars(r){
             // [Fuel Costs, Stone Cement and Wrought Iron Costs]
@@ -1665,6 +1859,8 @@ export const traits = {
         name: loc('trait_gnawer_name'),
         desc: loc('trait_gnawer'),
         type: 'major',
+        origin: 'capybara',
+        taxonomy: 'resource',
         val: -1,
         vars(r){
             switch (r || traitRank('gnawer') || 1){
@@ -1689,6 +1885,8 @@ export const traits = {
         name: loc('trait_calm_name'),
         desc: loc('trait_calm'),
         type: 'major',
+        origin: 'capybara',
+        taxonomy: 'production',
         val: 6,
         vars(r){
             switch (r || traitRank('calm') || 1){
@@ -1713,6 +1911,8 @@ export const traits = {
         name: loc('trait_pack_rat_name'),
         desc: loc('trait_pack_rat'),
         type: 'major',
+        origin: 'kobold',
+        taxonomy: 'resource',
         val: 3,
         vars(r){
             // [Crate Bonus, Storage Bonus]
@@ -1738,6 +1938,8 @@ export const traits = {
         name: loc('trait_paranoid_name'),
         desc: loc('trait_paranoid'),
         type: 'major',
+        origin: 'kobold',
+        taxonomy: 'resource',
         val: -3,
         vars(r){
             switch (r || traitRank('paranoid') || 1){
@@ -1762,6 +1964,8 @@ export const traits = {
         name: loc('trait_greedy_name'),
         desc: loc('trait_greedy'),
         type: 'major',
+        origin: 'goblin',
+        taxonomy: 'resource',
         val: -5,
         vars(r){
             switch (r || traitRank('greedy') || 1){
@@ -1786,6 +1990,8 @@ export const traits = {
         name: loc('trait_merchant_name'),
         desc: loc('trait_merchant'),
         type: 'major',
+        origin: 'goblin',
+        taxonomy: 'resource',
         val: 3,
         vars(r){
             // [Sell Price, Galactic Buy Volume]
@@ -1811,6 +2017,8 @@ export const traits = {
         name: loc('trait_smart_name'),
         desc: loc('trait_smart'),
         type: 'major',
+        origin: 'gnome',
+        taxonomy: 'utility',
         val: 6,
         vars(r){
             switch (r || traitRank('smart') || 1){
@@ -1835,6 +2043,8 @@ export const traits = {
         name: loc('trait_puny_name'),
         desc: loc('trait_puny'),
         type: 'major',
+        origin: 'gnome',
+        taxonomy: 'combat',
         val: -4,
         vars(r){
             switch (r || traitRank('puny') || 1){
@@ -1859,6 +2069,8 @@ export const traits = {
         name: loc('trait_dumb_name'),
         desc: loc('trait_dumb'),
         type: 'major',
+        origin: 'ogre',
+        taxonomy: 'utility',
         val: -5,
         vars(r){
             switch (r || traitRank('dumb') || 1){
@@ -1883,6 +2095,8 @@ export const traits = {
         name: loc('trait_tough_name'),
         desc: loc('trait_tough'),
         type: 'major',
+        origin: 'ogre',
+        taxonomy: 'resource',
         val: 4,
         vars(r){
             switch (r || traitRank('tough') || 1){
@@ -1907,6 +2121,8 @@ export const traits = {
         name: loc('trait_nearsighted_name'),
         desc: loc('trait_nearsighted'),
         type: 'major',
+        origin: 'cyclops',
+        taxonomy: 'utility',
         val: -4,
         vars(r){
             switch (r || traitRank('nearsighted') || 1){
@@ -1931,6 +2147,8 @@ export const traits = {
         name: loc('trait_intelligent_name'),
         desc: loc('trait_intelligent'),
         type: 'major',
+        origin: 'cyclops',
+        taxonomy: 'production',
         val: 7,
         vars(r){
             // [Prof Bonus, Scientist Bonus]
@@ -1956,6 +2174,8 @@ export const traits = {
         name: loc('trait_regenerative_name'),
         desc: loc('trait_regenerative'),
         type: 'major',
+        origin: 'troll',
+        taxonomy: 'combat',
         val: 8,
         vars(r){
             switch (r || traitRank('regenerative') || 1){
@@ -1980,6 +2200,8 @@ export const traits = {
         name: loc('trait_gluttony_name'),
         desc: loc('trait_gluttony'),
         type: 'major',
+        origin: 'troll',
+        taxonomy: 'resource',
         val: -2,
         vars(r){
             switch (r || traitRank('gluttony') || 1){
@@ -2004,6 +2226,8 @@ export const traits = {
         name: loc('trait_slow_name'),
         desc: loc('trait_slow'),
         type: 'major',
+        origin: 'tortoisan',
+        taxonomy: 'utility',
         val: -6,
         vars(r){
             switch (r || traitRank('slow') || 1){
@@ -2028,6 +2252,8 @@ export const traits = {
         name: loc('trait_armored_name'),
         desc: loc('trait_armored'),
         type: 'major',
+        origin: 'tortoisan',
+        taxonomy: 'combat',
         val: 4,
         vars(r){
             // [Solder % death prevention, Hell Armor Bonus]
@@ -2053,7 +2279,9 @@ export const traits = {
         name: loc('trait_optimistic_name'),
         desc: loc('trait_optimistic'),
         type: 'major',
-        val: 5,
+        origin: 'gecko',
+        taxonomy: 'production',
+        val: 3,
         vars(r){
             switch (r || traitRank('optimistic') || 1){
                 case 0.1:
@@ -2077,6 +2305,8 @@ export const traits = {
         name: loc('trait_chameleon_name'),
         desc: loc('trait_chameleon'),
         type: 'major',
+        origin: 'gecko',
+        taxonomy: 'combat',
         val: 6,
         vars(r){
             // [Combat Rating Bonus, Ambush Avoid]
@@ -2102,6 +2332,8 @@ export const traits = {
         name: loc('trait_slow_digestion_name'),
         desc: loc('trait_slow_digestion'),
         type: 'major',
+        origin: 'slitheryn',
+        taxonomy: 'production',
         val: 1,
         vars(r){
             switch (r || traitRank('slow_digestion') || 1){
@@ -2126,23 +2358,25 @@ export const traits = {
         name: loc('trait_astrologer_name'),
         desc: loc('trait_astrologer'),
         type: 'major',
+        origin: 'slitheryn',
+        taxonomy: 'utility',
         val: 3,
         vars(r){
             switch (r || traitRank('astrologer') || 1){
                 case 0.1:
-                    return [5];
-                case 0.25:
                     return [10];
-                case 0.5:
+                case 0.25:
                     return [20];
-                case 1:
+                case 0.5:
                     return [30];
-                case 2:
+                case 1:
                     return [40];
-                case 3:
+                case 2:
                     return [50];
-                case 4:
+                case 3:
                     return [60];
+                case 4:
+                    return [70];
             }
         },
     },
@@ -2150,6 +2384,8 @@ export const traits = {
         name: loc('trait_hard_of_hearing_name'),
         desc: loc('trait_hard_of_hearing'),
         type: 'major',
+        origin: 'slitheryn',
+        taxonomy: 'utility',
         val: -3,
         vars(r){
             switch (r || traitRank('hard_of_hearing') || 1){
@@ -2174,6 +2410,8 @@ export const traits = {
         name: loc('trait_resourceful_name'),
         desc: loc('trait_resourceful'),
         type: 'major',
+        origin: 'arraak',
+        taxonomy: 'resource',
         val: 4,
         vars(r){
             switch (r || traitRank('resourceful') || 1){
@@ -2198,6 +2436,8 @@ export const traits = {
         name: loc('trait_selenophobia_name'),
         desc: loc('trait_selenophobia'),
         type: 'major',
+        origin: 'arraak',
+        taxonomy: 'production',
         val: -6,
         vars(r){
             // [Max bonus]
@@ -2223,6 +2463,8 @@ export const traits = {
         name: loc('trait_leathery_name'),
         desc: loc('trait_leathery'),
         type: 'major',
+        origin: 'pterodacti',
+        taxonomy: 'production',
         val: 2,
         vars(r){
             // Morale loss (Base value is 5)
@@ -2248,6 +2490,8 @@ export const traits = {
         name: loc('trait_pessimistic_name'),
         desc: loc('trait_pessimistic'),
         type: 'major',
+        origin: 'pterodacti',
+        taxonomy: 'production',
         val: -1,
         vars(r){
             switch (r || traitRank('pessimistic') || 1){
@@ -2272,6 +2516,8 @@ export const traits = {
         name: loc('trait_hoarder_name'),
         desc: loc('trait_hoarder'),
         type: 'major',
+        origin: 'dracnid',
+        taxonomy: 'resource',
         val: 4,
         vars(r){
             switch (r || traitRank('hoarder') || 1){
@@ -2296,6 +2542,8 @@ export const traits = {
         name: loc('trait_solitary_name'),
         desc: loc('trait_solitary'),
         type: 'major',
+        origin: 'dracnid',
+        taxonomy: 'utility',
         val: -1,
         vars(r){
             // [Cabin Creep bonus, Cottage Creep malus]
@@ -2321,6 +2569,8 @@ export const traits = {
         name: loc('trait_kindling_kindred_name'),
         desc: loc('trait_kindling_kindred'),
         type: 'major',
+        origin: 'entish',
+        taxonomy: 'resource',
         val: 8,
         vars(r){
             switch (r || traitRank('kindling_kindred') || 1){
@@ -2345,6 +2595,8 @@ export const traits = {
         name: loc('trait_iron_wood_name'),
         desc: loc('trait_iron_wood'),
         type: 'major',
+        origin: 'entish',
+        taxonomy: 'resource',
         val: 4,
         vars(r){
             switch (r || traitRank('iron_wood') || 1){
@@ -2369,6 +2621,8 @@ export const traits = {
         name: loc('trait_pyrophobia_name'),
         desc: loc('trait_pyrophobia'),
         type: 'major',
+        origin: 'entish',
+        taxonomy: 'resource',
         val: -4,
         vars(r){
             switch (r || traitRank('pyrophobia') || 1){
@@ -2393,6 +2647,8 @@ export const traits = {
         name: loc('trait_hyper_name'),
         desc: loc('trait_hyper'),
         type: 'major',
+        origin: 'cacti',
+        taxonomy: 'utility',
         val: 4,
         vars(r){
             switch (r || traitRank('hyper') || 1){
@@ -2417,6 +2673,8 @@ export const traits = {
         name: loc('trait_skittish_name'),
         desc: loc('trait_skittish'),
         type: 'major',
+        origin: 'cacti',
+        taxonomy: 'production',
         val: -4,
         vars(r){
             switch (r || traitRank('skittish') || 1){
@@ -2441,6 +2699,8 @@ export const traits = {
         name: loc('trait_fragrant_name'),
         desc: loc('trait_fragrant'),
         type: 'major',
+        origin: 'pinguicula',
+        taxonomy: 'resource',
         val: -3,
         vars(r){
             switch (r || traitRank('fragrant') || 1){
@@ -2465,6 +2725,8 @@ export const traits = {
         name: loc('trait_sticky_name'),
         desc: loc('trait_sticky'),
         type: 'major',
+        origin: 'pinguicula',
+        taxonomy: 'combat',
         val: 3,
         vars(r){
             // [Food Consumption, Army Bonus]
@@ -2490,6 +2752,8 @@ export const traits = {
         name: loc('trait_infectious_name'),
         desc: loc('trait_infectious'),
         type: 'major',
+        origin: 'sporgar',
+        taxonomy: 'combat',
         val: 4,
         vars(r){
             // [Ambush, Raid, Pillage, Assault, Siege]
@@ -2515,12 +2779,16 @@ export const traits = {
         name: loc('trait_parasite_name'),
         desc: loc('trait_parasite'),
         type: 'major',
+        origin: 'sporgar',
+        taxonomy: 'combat',
         val: -4,
     },
     toxic: { // Factory type jobs are more productive
         name: loc('trait_toxic_name'),
         desc: loc('trait_toxic'),
         type: 'major',
+        origin: 'shroomi',
+        taxonomy: 'resource',
         val: 5,
         vars(r){
             // [Lux Fur Alloy Polymer, Nano Stanene, Cement]
@@ -2546,6 +2814,8 @@ export const traits = {
         name: loc('trait_nyctophilia_name'),
         desc: loc('trait_nyctophilia'),
         type: 'major',
+        origin: 'shroomi',
+        taxonomy: 'production',
         val: -3,
         vars(r){
             // [Sunny, Cloudy]
@@ -2571,6 +2841,8 @@ export const traits = {
         name: loc('trait_infiltrator_name'),
         desc: loc('trait_infiltrator'),
         type: 'major',
+        origin: 'moldling',
+        taxonomy: 'utility',
         val: 4,
         vars(r){ // [Steal Cap]
             switch (r || traitRank('infiltrator') || 1){
@@ -2595,6 +2867,8 @@ export const traits = {
         name: loc('trait_hibernator_name'),
         desc: loc('trait_hibernator'),
         type: 'major',
+        origin: 'moldling',
+        taxonomy: 'production',
         val: -3,
         vars(r){
             // [Food Consumption, Production]
@@ -2620,6 +2894,8 @@ export const traits = {
         name: loc('trait_cannibalize_name'),
         desc: loc('trait_cannibalize'),
         type: 'major',
+        origin: 'mantis',
+        taxonomy: 'utility',
         val: 5,
         vars(r){
             switch (r || traitRank('cannibalize') || 1){
@@ -2644,6 +2920,8 @@ export const traits = {
         name: loc('trait_frail_name'),
         desc: loc('trait_frail'),
         type: 'major',
+        origin: 'mantis',
+        taxonomy: 'combat',
         val: -2,
         vars(r){
             // [Win Deaths, Loss Deaths]
@@ -2669,6 +2947,8 @@ export const traits = {
         name: loc('trait_malnutrition_name'),
         desc: loc('trait_malnutrition'),
         type: 'major',
+        origin: 'mantis',
+        taxonomy: 'production',
         val: 1,
         vars(r){
             switch (r || traitRank('malnutrition') || 1){
@@ -2693,6 +2973,8 @@ export const traits = {
         name: loc('trait_claws_name'),
         desc: loc('trait_claws'),
         type: 'major',
+        origin: 'scorpid',
+        taxonomy: 'combat',
         val: 5,
         vars(r){
             switch (r || traitRank('claws') || 1){
@@ -2717,6 +2999,8 @@ export const traits = {
         name: loc('trait_atrophy_name'),
         desc: loc('trait_atrophy'),
         type: 'major',
+        origin: 'scorpid',
+        taxonomy: 'production',
         val: -1,
         vars(r){
             switch (r || traitRank('atrophy') || 1){
@@ -2741,6 +3025,8 @@ export const traits = {
         name: loc('trait_hivemind_name'),
         desc: loc('trait_hivemind'),
         type: 'major',
+        origin: 'antid',
+        taxonomy: 'production',
         val: 9,
         vars(r){
             switch (r || traitRank('hivemind') || 1){
@@ -2765,6 +3051,8 @@ export const traits = {
         name: loc('trait_tunneler_name'),
         desc: loc('trait_tunneler'),
         type: 'major',
+        origin: 'antid',
+        taxonomy: 'utility',
         val: 2,
         vars(r){
             switch (r || traitRank('tunneler') || 1){
@@ -2789,6 +3077,8 @@ export const traits = {
         name: loc('trait_blood_thirst_name'),
         desc: loc('trait_blood_thirst'),
         type: 'major',
+        origin: 'sharkin',
+        taxonomy: 'combat',
         val: 5,
         vars(r){
             // [Cap]
@@ -2814,6 +3104,8 @@ export const traits = {
         name: loc('trait_apex_predator_name'),
         desc: loc('trait_apex_predator'),
         type: 'major',
+        origin: 'sharkin',
+        taxonomy: 'combat',
         val: 6,
         vars(r){
             // [Combat, Hunting]
@@ -2839,6 +3131,8 @@ export const traits = {
         name: loc('trait_invertebrate_name'),
         desc: loc('trait_invertebrate'),
         type: 'major',
+        origin: 'octigoran',
+        taxonomy: 'combat',
         val: -2,
         vars(r){
             switch (r || traitRank('invertebrate') || 1){
@@ -2863,6 +3157,8 @@ export const traits = {
         name: loc('trait_suction_grip_name'),
         desc: loc('trait_suction_grip'),
         type: 'major',
+        origin: 'octigoran',
+        taxonomy: 'production',
         val: 4,
         vars(r){
             switch (r || traitRank('suction_grip') || 1){
@@ -2887,6 +3183,8 @@ export const traits = {
         name: loc('trait_befuddle_name'),
         desc: loc('trait_befuddle'),
         type: 'major',
+        origin: 'dryad',
+        taxonomy: 'utility',
         val: 4,
         vars(r){
             switch (r || traitRank('befuddle') || 1){
@@ -2911,12 +3209,35 @@ export const traits = {
         name: loc('trait_environmentalist_name'),
         desc: loc('trait_environmentalist'),
         type: 'major',
+        origin: 'dryad',
+        taxonomy: 'utility',
         val: -5,
+        vars(r){
+            // [power adjustment, windmill power]
+            switch (r || traitRank('environmentalist') || 1){
+                case 0.1:
+                    return [-2.5,1];
+                case 0.25:
+                    return [-2,1.15];
+                case 0.5:
+                    return [-1.5,1.25];
+                case 1:
+                    return [-1,1.35];
+                case 2:
+                    return [-0.5,1.4];
+                case 3:
+                    return [-0.25,1.45];
+                case 4:
+                    return [0,1.5];
+            }
+        }
     },
     unorganized: { // Increased time between revolutions
         name: loc('trait_unorganized_name'),
         desc: loc('trait_unorganized'),
         type: 'major',
+        origin: 'satyr',
+        taxonomy: 'utility',
         val: -2,
         vars(r){
             switch (r || traitRank('unorganized') || 1){
@@ -2941,6 +3262,8 @@ export const traits = {
         name: loc('trait_musical_name'),
         desc: loc('trait_musical'),
         type: 'major',
+        origin: 'satyr',
+        taxonomy: 'production',
         val: 5,
         vars(r){
             switch (r || traitRank('musical') || 1){
@@ -2965,6 +3288,8 @@ export const traits = {
         name: loc('trait_revive_name'),
         desc: loc('trait_revive'),
         type: 'major',
+        origin: 'phoenix',
+        taxonomy: 'combat',
         val: 4,
         vars(r){
             // [cold win, normal win, hot win, cold loss, normal loss, hot loss, hell]
@@ -2990,6 +3315,8 @@ export const traits = {
         name: loc('trait_slow_regen_name'),
         desc: loc('trait_slow_regen'),
         type: 'major',
+        origin: 'phoenix',
+        taxonomy: 'combat',
         val: -4,
         vars(r){
             switch (r || traitRank('slow_regen') || 1){
@@ -3014,6 +3341,8 @@ export const traits = {
         name: loc('trait_forge_name'),
         desc: loc('trait_forge'),
         type: 'major',
+        origin: 'salamander',
+        taxonomy: 'utility',
         val: 4,
         vars(r){
             switch (r || traitRank('forge') || 1){
@@ -3038,6 +3367,8 @@ export const traits = {
         name: loc('trait_autoignition_name'),
         desc: loc('trait_autoignition'),
         type: 'major',
+        origin: 'salamander',
+        taxonomy: 'utility',
         val: -4,
         vars(r){
             switch (r || traitRank('autoignition') || 1){
@@ -3062,6 +3393,8 @@ export const traits = {
         name: loc('trait_blurry_name'),
         desc: loc('trait_blurry'),
         type: 'major',
+        origin: 'yeti',
+        taxonomy: 'utility',
         val: 5,
         vars(r){
             switch (r || traitRank('blurry') || 1){
@@ -3086,6 +3419,8 @@ export const traits = {
         name: loc('trait_snowy_name'),
         desc: loc('trait_snowy'),
         type: 'major',
+        origin: 'yeti',
+        taxonomy: 'production',
         val: -3,
         vars(r){
             // [Not Hot, Hot]
@@ -3111,6 +3446,8 @@ export const traits = {
         name: loc('trait_ravenous_name'),
         desc: loc('trait_ravenous'),
         type: 'major',
+        origin: 'wendigo',
+        taxonomy: 'resource',
         val: -5,
         vars(r){
             // [Extra Food Consumed, Stockpile Divisor]
@@ -3136,6 +3473,8 @@ export const traits = {
         name: loc('trait_ghostly_name'),
         desc: loc('trait_ghostly'),
         type: 'major',
+        origin: 'wendigo',
+        taxonomy: 'utility',
         val: 5,
         vars(r){
             // [Hunting Food, Soul Well Food, Soul Gem Adjust]
@@ -3161,6 +3500,8 @@ export const traits = {
         name: loc('trait_lawless_name'),
         desc: loc('trait_lawless'),
         type: 'major',
+        origin: 'tuskin',
+        taxonomy: 'utility',
         val: 3,
         vars(r){
             switch (r || traitRank('lawless') || 1){
@@ -3185,6 +3526,8 @@ export const traits = {
         name: loc('trait_mistrustful_name'),
         desc: loc('trait_mistrustful'),
         type: 'major',
+        origin: 'tuskin',
+        taxonomy: 'utility',
         val: -1,
         vars(r){
             switch (r || traitRank('mistrustful') || 1){
@@ -3209,6 +3552,8 @@ export const traits = {
         name: loc('trait_humpback_name'),
         desc: loc('trait_humpback'),
         type: 'major',
+        origin: 'kamel',
+        taxonomy: 'resource',
         val: 4,
         vars(r){
             // [Starve Resist, Miner/Lumber boost]
@@ -3234,12 +3579,43 @@ export const traits = {
         name: loc('trait_thalassophobia_name'),
         desc: loc('trait_thalassophobia'),
         type: 'major',
+        origin: 'kamel',
+        taxonomy: 'utility',
+        val: -4
+    },
+    unfavored: { // Zodiac Signs give negative Effects
+        name: loc('trait_unfavored_name'),
+        desc: loc('trait_unfavored'),
+        type: 'major',
+        origin: 'kamel',
+        taxonomy: 'utility',
         val: -4,
+        vars(r){
+            // [Negative Sign Intensity]
+            switch (r || traitRank('unfavored') || 1){
+                case 0.1:
+                    return [175];
+                case 0.25:
+                    return [150];
+                case 0.5:
+                    return [125];
+                case 1:
+                    return [100];
+                case 2:
+                    return [75];
+                case 3:
+                    return [50];
+                case 4:
+                    return [25];
+            }
+        }
     },
     fiery: { // Major war bonus
         name: loc('trait_fiery_name'),
         desc: loc('trait_fiery'),
         type: 'major',
+        origin: 'balorg',
+        taxonomy: 'combat',
         val: 10,
         vars(r){
             // [Combat Bonus, Hunting Bonus]
@@ -3265,6 +3641,8 @@ export const traits = {
         name: loc('trait_terrifying_name'),
         desc: loc('trait_terrifying'),
         type: 'major',
+        origin: 'balorg',
+        taxonomy: 'resource',
         val: 6,
         vars(r){
             // [Titanium Low Roll, Titanium High Roll]
@@ -3290,6 +3668,8 @@ export const traits = {
         name: loc('trait_slaver_name'),
         desc: loc('trait_slaver'),
         type: 'major',
+        origin: 'balorg',
+        taxonomy: 'production',
         val: 12,
         vars(r){
             switch (r || traitRank('slaver') || 1){
@@ -3314,6 +3694,8 @@ export const traits = {
         name: loc('trait_compact_name'),
         desc: loc('trait_compact'),
         type: 'major',
+        origin: 'imp',
+        taxonomy: 'utility',
         val: 10,
         vars(r){
             // [Planet Creep, Space Creep]
@@ -3339,6 +3721,8 @@ export const traits = {
         name: loc('trait_conniving_name'),
         desc: loc('trait_conniving'),
         type: 'major',
+        origin: 'imp',
+        taxonomy: 'resource',
         val: 4,
         vars(r){
             // [Buy Price, Sell Price]
@@ -3364,6 +3748,8 @@ export const traits = {
         name: loc('trait_pathetic_name'),
         desc: loc('trait_pathetic'),
         type: 'major',
+        origin: 'imp',
+        taxonomy: 'combat',
         val: -5,
         vars(r){
             switch (r || traitRank('pathetic') || 1){
@@ -3388,6 +3774,8 @@ export const traits = {
         name: loc('trait_spiritual_name'),
         desc: loc('trait_spiritual'),
         type: 'major',
+        origin: 'seraph',
+        taxonomy: 'production',
         val: 4,
         vars(r){
             switch (r || traitRank('spiritual') || 1){
@@ -3412,6 +3800,8 @@ export const traits = {
         name: loc('trait_truthful_name'),
         desc: loc('trait_truthful'),
         type: 'major',
+        origin: 'seraph',
+        taxonomy: 'resource',
         val: -7,
         vars(r){
             switch (r || traitRank('truthful') || 1){
@@ -3436,6 +3826,8 @@ export const traits = {
         name: loc('trait_unified_name'),
         desc: loc('trait_unified'),
         type: 'major',
+        origin: 'seraph',
+        taxonomy: 'production',
         val: 4,
         vars(r){
             // [Bonus to unification]
@@ -3461,6 +3853,8 @@ export const traits = {
         name: loc('trait_rainbow_name'),
         desc: loc('trait_rainbow'),
         type: 'major',
+        origin: 'unicorn',
+        taxonomy: 'production',
         val: 3,
         vars(r){
             switch (r || traitRank('rainbow') || 1){
@@ -3485,6 +3879,8 @@ export const traits = {
         name: loc('trait_gloomy_name'),
         desc: loc('trait_gloomy'),
         type: 'major',
+        origin: 'unicorn',
+        taxonomy: 'production',
         val: 3,
         vars(r){
             switch (r || traitRank('gloomy') || 1){
@@ -3509,6 +3905,8 @@ export const traits = {
         name: loc('trait_magnificent_name'),
         desc: loc('trait_magnificent'),
         type: 'major',
+        origin: 'unicorn',
+        taxonomy: 'utility',
         val: 6,
         vars(r){
             // [Knowledge Base, Knowledge Scale, Tax Bonus, Metal Bonus, Morale Bonus]
@@ -3534,6 +3932,8 @@ export const traits = {
         name: loc('trait_noble_name'),
         desc: loc('trait_noble'),
         type: 'major',
+        origin: 'unicorn',
+        taxonomy: 'resource',
         val: -3,
         vars(r){
             // [min tax, max tax]
@@ -3559,6 +3959,8 @@ export const traits = {
         name: loc('trait_imitation_name'),
         desc: loc('trait_imitation'),
         type: 'major',
+        origin: 'synth',
+        taxonomy: 'utility',
         val: 6,
         vars(r){
             // [Postitive Trait Rank, Negative Trait Rank]
@@ -3584,6 +3986,8 @@ export const traits = {
         name: loc('trait_emotionless_name'),
         desc: loc('trait_emotionless'),
         type: 'major',
+        origin: 'synth',
+        taxonomy: 'production',
         val: -4,
         vars(r){
             // [Entertainer Reduction, Stress Reduction]
@@ -3609,6 +4013,8 @@ export const traits = {
         name: loc('trait_logical_name'),
         desc: loc('trait_logical'),
         type: 'major',
+        origin: 'synth',
+        taxonomy: 'utility',
         val: 6,
         vars(r){
             // [Reduce Wardenclyffe Knowledge Cost, Knowledge per Citizen]
@@ -3634,6 +4040,8 @@ export const traits = {
         name: loc('trait_shapeshifter_name'),
         desc: loc('trait_shapeshifter'),
         type: 'major',
+        origin: 'nano',
+        taxonomy: 'utility',
         val: 10,
         vars(r){
             // [Postitive Trait Rank, Negative Trait Rank]
@@ -3659,6 +4067,8 @@ export const traits = {
         name: loc('trait_deconstructor_name'),
         desc: loc('trait_deconstructor'),
         type: 'major',
+        origin: 'nano',
+        taxonomy: 'utility',
         val: -4,
         vars(r){
             switch (r || traitRank('deconstructor') || 1){
@@ -3683,6 +4093,8 @@ export const traits = {
         name: loc('trait_linked_name'),
         desc: loc('trait_linked'),
         type: 'major',
+        origin: 'nano',
+        taxonomy: 'utility',
         val: 4,
         vars(r){
             // [Quantum Bonus per Citizen, Softcap]
@@ -3708,6 +4120,8 @@ export const traits = {
         name: loc('trait_dark_dweller_name'),
         desc: loc('trait_dark_dweller'),
         type: 'major',
+        origin: 'ghast',
+        taxonomy: 'resource',
         val: -3,
         vars(r){
             switch (r || traitRank('dark_dweller') || 1){
@@ -3732,6 +4146,8 @@ export const traits = {
         name: loc('trait_swift_name'),
         desc: loc('trait_swift'),
         type: 'major',
+        origin: 'ghast',
+        taxonomy: 'combat',
         val: 10,
         vars(r){
             // [Combat Bonus, Thrall Catch Bonus]
@@ -3757,6 +4173,8 @@ export const traits = {
         name: loc('trait_anthropophagite_name'),
         desc: loc('trait_anthropophagite'),
         type: 'major',
+        origin: 'ghast',
+        taxonomy: 'utility',
         val: -2,
         vars(r){
             switch (r || traitRank('anthropophagite') || 1){
@@ -3781,6 +4199,8 @@ export const traits = {
         name: loc('trait_living_tool_name'),
         desc: loc('trait_living_tool'),
         type: 'major',
+        origin: 'shoggoth',
+        taxonomy: 'resource',
         val: 12,
         vars(r){
             // [Tool Factor, Crafting Factor]
@@ -3806,6 +4226,8 @@ export const traits = {
         name: loc('trait_bloated_name'),
         desc: loc('trait_bloated'),
         type: 'major',
+        origin: 'shoggoth',
+        taxonomy: 'utility',
         val: -10,
         vars(r){
             // [Costs are higher]
@@ -3831,6 +4253,8 @@ export const traits = {
         name: loc('trait_artisan_name'),
         desc: loc('trait_artisan'),
         type: 'major',
+        origin: 'dwarf',
+        taxonomy: 'resource',
         val: 9,
         vars(r){
             // [Auto Crafting Boost, Manufacturing Boost, Improved Morale]
@@ -3856,6 +4280,8 @@ export const traits = {
         name: loc('trait_stubborn_name'),
         desc: loc('trait_stubborn'),
         type: 'major',
+        origin: 'dwarf',
+        taxonomy: 'utility',
         val: -5,
         vars(r){
             // Raises Knowledge cost of scientific advancements
@@ -3881,6 +4307,8 @@ export const traits = {
         name: loc('trait_rogue_name'),
         desc: loc('trait_rogue'),
         type: 'major',
+        origin: 'raccoon',
+        taxonomy: 'resource',
         val: 6,
         vars(r){
             // [Randomly Steal Things]
@@ -3906,6 +4334,8 @@ export const traits = {
         name: loc('trait_untrustworthy_name'),
         desc: loc('trait_untrustworthy'),
         type: 'major',
+        origin: 'raccoon',
+        taxonomy: 'utility',
         val: -4,
         vars(r){
             // [Financial Institutions Cost Extra]
@@ -3931,6 +4361,8 @@ export const traits = {
         name: loc('trait_living_materials_name'),
         desc: loc('trait_living_materials'),
         type: 'major',
+        origin: 'lichen',
+        taxonomy: 'resource',
         val: 6,
         vars(r){
             // [Some building materials self replicate reducing cost of the next building]
@@ -3957,6 +4389,8 @@ export const traits = {
         name: loc('trait_unstable_name'),
         desc: loc('trait_unstable'),
         type: 'major',
+        origin: 'lichen',
+        taxonomy: 'utility',
         val: -5,
         vars(r){
             // [Randomly Die]
@@ -3982,6 +4416,8 @@ export const traits = {
         name: loc('trait_elemental_name'),
         desc: loc('trait_elemental'),
         type: 'major',
+        origin: 'wyvern',
+        taxonomy: 'utility',
         val: 5,
         vars(r){
             let element = 'fire';
@@ -4032,6 +4468,8 @@ export const traits = {
         name: loc('trait_chicken_name'),
         desc: loc('trait_chicken'),
         type: 'major',
+        origin: 'wyvern',
+        taxonomy: 'combat',
         val: -8,
         vars(r){
             // [Hell Worse, Piracy Worse, Events Worse]
@@ -4057,6 +4495,8 @@ export const traits = {
         name: loc('trait_tusk_name'),
         desc: loc('trait_tusk'),
         type: 'major',
+        origin: 'narwhal',
+        taxonomy: 'resource',
         val: 6,
         vars(r){
             let moisture = 0;
@@ -4110,6 +4550,8 @@ export const traits = {
         name: loc('trait_blubber_name'),
         desc: loc('trait_blubber'),
         type: 'major',
+        origin: 'narwhal',
+        taxonomy: 'resource',
         val: -3,
         vars(r){
             // [Refine your dead to make Oil]
@@ -4135,6 +4577,8 @@ export const traits = {
         name: loc('trait_ocular_power_name'),
         desc: loc('trait_ocular_power'),
         type: 'major',
+        origin: 'beholder',
+        taxonomy: 'utility',
         val: 9,
         vars(r){
             // [Powers Active, Power Scaling]
@@ -4160,6 +4604,8 @@ export const traits = {
         name: loc('trait_floating_name'),
         desc: loc('trait_floating'),
         type: 'major',
+        origin: 'beholder',
+        taxonomy: 'production',
         val: -3,
         vars(r){
             // [Wind lowers production]
@@ -4185,6 +4631,8 @@ export const traits = {
         name: loc('trait_wish_name'),
         desc: loc('trait_wish'),
         type: 'major',
+        origin: 'djinn',
+        taxonomy: 'utility',
         val: 13,
         vars(r){
             // [Wish Cooldown Period]
@@ -4210,6 +4658,8 @@ export const traits = {
         name: loc('trait_devious_name'),
         desc: loc('trait_devious'),
         type: 'major',
+        origin: 'djinn',
+        taxonomy: 'resource',
         val: -4,
         vars(r){
             // [Trade Less Productive]
@@ -4235,6 +4685,8 @@ export const traits = {
         name: loc('trait_grenadier_name'),
         desc: loc('trait_grenadier'),
         type: 'major',
+        origin: 'bombardier',
+        taxonomy: 'combat',
         val: 6,
         vars(r){
             // [More Powerful Soldiers but less of them]
@@ -4260,6 +4712,8 @@ export const traits = {
         name: loc('trait_aggressive_name'),
         desc: loc('trait_aggressive'),
         type: 'major',
+        origin: 'bombardier',
+        taxonomy: 'combat',
         val: -2,
         vars(r){
             // [Major Death, Minor Death]
@@ -4285,6 +4739,8 @@ export const traits = {
         name: loc('trait_empowered_name'),
         desc: loc('trait_empowered'),
         type: 'major',
+        origin: 'nephilim',
+        taxonomy: 'utility',
         val: 8,
         vars(r){
             // [Boosts Other Traits]
@@ -4310,6 +4766,8 @@ export const traits = {
         name: loc('trait_blasphemous_name'),
         desc: loc('trait_blasphemous'),
         type: 'major',
+        origin: 'nephilim',
+        taxonomy: 'production',
         val: -5,
         vars(r){
             // [Temples less effective]
@@ -4335,6 +4793,8 @@ export const traits = {
         name: loc('trait_ooze_name'),
         desc: loc('trait_ooze'),
         type: 'major',
+        origin: 'sludge',
+        taxonomy: 'production',
         val: -50,
         vars(r){
             // [All jobs worse, Theology weaker, Mastery weaker]
@@ -5330,7 +5790,7 @@ export const races = {
         entity: loc('race_kamel_entity'),
         traits: {
             humpback: 1,
-            thalassophobia: 1
+            unfavored: 1
         },
         solar: {
             red: loc('race_kamel_solar_red'),
@@ -5929,8 +6389,9 @@ function customRace(hybrid){
     let slot = hybrid ? 'race1' : 'race0';
     if (global.hasOwnProperty('custom') && global.custom.hasOwnProperty(slot)){
         let trait = {};
+        let ranks = global.custom[slot]?.ranks || {};
         for (let i=0; i<global.custom[slot].traits.length; i++){
-            trait[global.custom[slot].traits[i]] = 1;
+            trait[global.custom[slot].traits[i]] = ranks[global.custom[slot].traits[i]] || 1;
         }
 
         let fanatic = global.custom[slot].hasOwnProperty('fanaticism') && global.custom[slot].fanaticism ? global.custom[slot].fanaticism : false;
@@ -7042,7 +7503,7 @@ export function setImitation(mod){
         let i_traits = [];
         if(races[global.race['srace']].type === 'hybrid'){
             races[global.race['srace']].hybrid.forEach(function(genus) {
-                Object.keys(genus_traits[genus]).forEach(function (trait) {
+                Object.keys(genus_def[genus].traits).forEach(function (trait) {
                     if (!global.race[trait]){
                         i_traits.push(trait);
                     }
@@ -7050,7 +7511,7 @@ export function setImitation(mod){
             })
         }
         else {
-            Object.keys(genus_traits[races[global.race['srace']].type]).forEach(function (trait) {
+            Object.keys(genus_def[races[global.race['srace']].type].traits).forEach(function (trait) {
                 if (!global.race[trait]){
                     i_traits.push(trait);
                 }
@@ -7104,7 +7565,7 @@ export function shapeShift(genus,setup,forceClean){
 
     if (genus){
         if (genus !== 'none'){
-            Object.keys(genus_traits[genus]).forEach(function (trait) {
+            Object.keys(genus_def[genus].traits).forEach(function (trait) {
                 if (!global.race[trait] && trait !== 'high_pop'){
                     if (traits[trait].val >= 0){
                         global.race[trait] = traits.shapeshifter.vars()[0];
@@ -7127,7 +7588,7 @@ export function shapeShift(genus,setup,forceClean){
         let drop = ``;
         const imitation =  global.race['imitation'] ? (races[global.race['srace']].type === 'hybrid' ? races[global.race['srace']].hybrid : [races[global.race['srace']].type]) : [];
         const base = races[global.race.species].type === 'hybrid' ? races[global.race.species].hybrid : [races[global.race.species].type];
-        Object.keys(genus_traits).forEach(function (gen) {
+        Object.keys(genus_def).forEach(function (gen) {
             if(!['synthetic', 'eldritch', 'hybrid', ...base, ...imitation].includes(gen) && global.stats.achieve[`genus_${gen}`] && global.stats.achieve[`genus_${gen}`].l > 0){
                 drop += `<b-dropdown-item v-on:click="setShape('${gen}')">{{ '${gen}' | genus }}</b-dropdown-item>`;
             }
@@ -7270,7 +7731,7 @@ export function fathomCheck(race){
 }
 
 export function traitSkin(type, trait, species){
-    let artificial = species ? genus_traits[races[species].type].artifical : global.race['artifical'];
+    let artificial = species ? genus_def[races[species].type].traits.artifical : global.race['artifical'];
     switch (type){
         case 'name':
         {
