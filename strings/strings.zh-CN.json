@@ -10279,7 +10279,7 @@
   "wiki_challenges_genes_weak": "弱化基因",
   "wiki_challenges_genes_weak_para1": "精通效果变为原来的 %0。",
   "wiki_challenges_genes_weak_para2": "质粒和反质粒的全局产量加成变为原来的 %0。",
-  "wiki_challenges_genes_weak_para3": "质粒和反质粒的储量上限加成变为原来的 %0。",
+  "wiki_challenges_genes_weak_para3": "质粒的储量上限加成变为原来的 %0，反质粒的储量上限加成变为原来的 %1。",
   "wiki_challenges_genes_weak_para4": "噬菌体的储量上限加成变为原来的 %0。",
   "wiki_challenges_genes_weak_para5": "您只能随着%1剧情模式的开启而强制激活这个%0。",
   "wiki_challenges_modes_intro": "挑战模式",
