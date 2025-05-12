@@ -9891,7 +9891,7 @@
   "wiki_mechanics_custom_para14": "特质级别影响基因点数的消耗。",
   "wiki_mechanics_custom_para15": "进行核爆重置之后，才可以设置特质价值。",
   "wiki_mechanics_custom_para16": "同种群的特质消耗的基因点数会略微减少。",
-  "wiki_mechanics_custom_para17": "所有种群都存在互斥的情况，互斥的种群消耗的基因点数会增加。",
+  "wiki_mechanics_custom_para17": "所有种群都存在互斥的情况，互斥的种群，相应特质消耗的基因点数增加。",
   "wiki_mechanics_custom_oppose": "%0与%1互斥。",
   "wiki_mechanics_custom_oppose3": "%0、%1与%2互斥。",
   "wiki_mechanics_pillar": "永恒之环",
