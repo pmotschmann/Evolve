@@ -1176,7 +1176,18 @@ export function mechanicsPage(content){
 }
 
 export function customRaceMechanics(content,full){
-    return infoBoxBuilder(content,{ name: 'custom', template: 'mechanics', label: loc('wiki_mechanics_custom'), paragraphs: 12, break: [3,5,9,11,13], h_level: 2, full: full,
+    let info = infoBoxBuilder(content,{ name: 'custom', template: 'mechanics', label: loc('wiki_mechanics_custom'), paragraphs: 26, break: [3,5,9,11,13,16,18,19,20,21,22,23,24,25,26], h_level: 2, full: full,
+        text: {
+            18: `wiki_mechanics_custom_oppose`,
+            19: `wiki_mechanics_custom_oppose`,
+            20: `wiki_mechanics_custom_oppose`,
+            21: `wiki_mechanics_custom_oppose`,
+            22: `wiki_mechanics_custom_oppose`,
+            23: `wiki_mechanics_custom_oppose`,
+            24: `wiki_mechanics_custom_oppose`,
+            25: `wiki_mechanics_custom_oppose`,
+            26: `wiki_mechanics_custom_oppose3`,
+        },
         para_data: {
             1: [loc('wiki_resets_ascension')],
             2: [loc('wiki_resets_ascension')],
@@ -1188,7 +1199,15 @@ export function customRaceMechanics(content,full){
             11: [0,loc('resource_Genes_name')],
             12: [loc('resource_Genes_name'),loc('trait_untapped_name')],
             13: [10],
-            14: [10,'1.4.5',loc('trait_overtapped_name')]
+            18: [loc('genelab_genus_humanoid'),loc('genelab_genus_fungi')],
+            19: [loc('genelab_genus_carnivore'),loc('genelab_genus_herbivore')],
+            20: [loc('genelab_genus_small'),loc('genelab_genus_giant')],
+            21: [loc('genelab_genus_reptilian'),loc('genelab_genus_avian')],
+            22: [loc('genelab_genus_plant'),loc('genelab_genus_insectoid')],
+            23: [loc('genelab_genus_polar'),loc('genelab_genus_heat')],
+            24: [loc('genelab_genus_sand'),loc('genelab_genus_aquatic')],
+            25: [loc('genelab_genus_angelic'),loc('genelab_genus_demonic')],
+            26: [loc('genelab_genus_fey'),loc('genelab_genus_eldritch'),loc('genelab_genus_synthetic')],
         },
         data_link: {
             1: ['wiki.html#resets-prestige-ascension'],
@@ -1197,6 +1216,7 @@ export function customRaceMechanics(content,full){
             9: [(global.genes['transcendence'] ? 'wiki.html#civilized-tech-alt_fanaticism' : 'wiki.html#civilized-tech-fanaticism'),'wiki.html#early_space-tech-deify']
         }
     });
+    return info;
 }
 
 function jobStressCalc(info){
