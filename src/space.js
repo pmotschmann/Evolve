@@ -7563,6 +7563,7 @@ export function ascendLab(hybrid,wiki){
         global.settings.spaceTabs = 0;
     }
 
+    let unlockedTraits = {};
     let lab = $(`<div id="celestialLab" class="celestialLab"></div>`);
 
     let wikiVars = {
@@ -7699,7 +7700,6 @@ export function ascendLab(hybrid,wiki){
         }
     }
 
-    let unlockedTraits = {};
     let taxomized = { utility: {}, resource: {}, production: {}, combat: {} };;
     Object.keys(races).forEach(function (race){
         let type = races[race].type;

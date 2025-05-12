@@ -1198,7 +1198,6 @@ export function customRaceMechanics(content,full){
             9: [loc('tech_fanaticism'),loc('tech_deify')],
             11: [0,loc('resource_Genes_name')],
             12: [loc('resource_Genes_name'),loc('trait_untapped_name')],
-            13: [10],
             18: [loc('genelab_genus_humanoid'),loc('genelab_genus_fungi')],
             19: [loc('genelab_genus_carnivore'),loc('genelab_genus_herbivore')],
             20: [loc('genelab_genus_small'),loc('genelab_genus_giant')],
