@@ -4674,6 +4674,9 @@ export function buildTemplate(key, region){
                     return `<div>${loc('city_assembly_effect',[races[global.race.species].name])}</div>${warn}`;
                 },
                 action(args){
+                    if (global.city.calendar.wind !== 1 && global.race['parasite']){
+                        return false;
+                    }
                     if (global.race['vax'] && global.race.vax >= 100){
                         return true;
                     }
