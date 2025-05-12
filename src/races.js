@@ -2782,6 +2782,24 @@ export const traits = {
         origin: 'sporgar',
         taxonomy: 'combat',
         val: -4,
+        vars(r){
+            switch (r || traitRank('parasite') || 1){
+                case 0.1:
+                    return [0,12];
+                case 0.25:
+                    return [1,10];
+                case 0.5:
+                    return [1,8];
+                case 1:
+                    return [2,6];
+                case 2:
+                    return [2,4];
+                case 3:
+                    return [3,2];
+                case 4:
+                    return [3,0];
+            }
+        }
     },
     toxic: { // Factory type jobs are more productive
         name: loc('trait_toxic_name'),
