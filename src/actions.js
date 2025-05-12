@@ -1859,7 +1859,7 @@ export const actions = {
                 Iron(offset){ return costMultiplier('mill', offset, 150, 1.33); },
                 Cement(offset){ return costMultiplier('mill', offset, 125, 1.33); },
             },
-            powered(){ return powerModifier(global.race['environmentalist'] ? -1.5 : -1); },
+            powered(){ return powerModifier(global.race['environmentalist'] ? -(traits.environmentalist.vars()[1]) : -1); },
             power_reqs: { agriculture: 6 },
             effect(){
                 if (global.tech['agriculture'] >= 6){
@@ -1899,7 +1899,7 @@ export const actions = {
             category: 'utility',
             reqs: { wind_plant: 1 },
             not_trait: ['cataclysm','lone_survivor'],
-            powered(){ return powerModifier(global.race['environmentalist'] ? -1.5 : -1); },
+            powered(){ return powerModifier(global.race['environmentalist'] ? -(traits.environmentalist.vars()[1]) : -1); },
             power_reqs: { false: 1 },
             cost: {
                 Money(offset){ return costMultiplier('windmill', offset, 1000, 1.31); },
