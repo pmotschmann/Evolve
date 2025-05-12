@@ -8681,7 +8681,7 @@
   "wiki_trait_effect_sticky": "食物消耗 -%0%，战斗评级 +%1%。",
   "wiki_trait_effect_fragrant": "狩猎产量 -%0%。",
   "wiki_trait_effect_infectious": "战斗时有机会获得新市民。根据战役规模不同，最多有 %0/%1/%2/%3/%4 名敌军士兵被感染转化为市民。",
-  "wiki_trait_effect_parasite": "人口只在有风时自然增长，开局拥有 2 名士兵。（特质级别无影响。）",
+  "wiki_trait_effect_parasite": "人口只在有风时自然增长，开局拥有 %0 名士兵，战利品 -%1%。",
   "wiki_trait_effect_toxic": "工厂的奢侈品、毛皮、合金、聚合物产量 +%0%，纳米管、锡烯产量 +%1%；水泥工人产量 +%2%。",
   "wiki_trait_effect_nyctophilia": "晴天时士气 -%0%，多云时士气 +%1%。",
   "wiki_trait_effect_hibernator": "冬季的食物消耗 -%0%，全局产量 -%1%。",
