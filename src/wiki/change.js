@@ -7,7 +7,8 @@ export const changeList = [
         revision: `b`,
         date: `5/12/2025`,
         changes: [
-            `Fixed issues with loading custom race data into custom lab.`
+            `Fixed issues with loading custom race data into custom lab.`,
+            `Creates now correctly cost Bones instead of Boneweave with Iron Wood trait.`
         ]
     },
     {
