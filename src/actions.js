@@ -9479,6 +9479,12 @@ export function fanaticism(god){
                     unlockAchieve(`madagascar_tree`);
                 }
                 break;
+            case 'musical':
+                fanaticTrait('musical');
+                if (global.race.species === 'cath'){
+                    unlockAchieve(`broadway_cath`);
+                }
+                break;
             case 'none':
                 randomMinorTrait(5);
                 arpa('Genetics');
