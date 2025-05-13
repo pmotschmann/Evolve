@@ -7619,7 +7619,7 @@
   "portal_shadow_mine_flair": "Only the dead work here.",
   "portal_tavern_title": "Dead Man's Tavern",
   "portal_tavern_flair": "Just don't ask what's in the brew.",
-  "portal_invasion_msg": "您遭遇了一种被称之为%0的新敌人。",
+  "portal_invasion_msg": "您遭遇了新敌人：%0。",
   "portal_wonder_skulls": "骸骨之柱",
   "portal_wonder_skulls_flair": "Don't listen to anything it says",
   "eden_purify_well_msg": "您在尖塔第%0层里发现了一口水井，这道神圣光芒就是从这口水井发出的。",
