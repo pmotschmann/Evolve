@@ -7,7 +7,7 @@ import { defineResources, resource_values, spatialReasoning, craftCost, plasmidB
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobName, jobScale, workerScale, limitCraftsmen, loadServants} from './jobs.js';
 import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, luxGoodPrice, smelterUnlocked, smelterFuelConfig } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
-import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, checkPowerRequirements, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct, casino_vault, casinoEarn } from './actions.js';
+import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, checkPowerRequirements, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct, casino_vault, casinoEarn, doCallbacks, cLabels } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
@@ -837,6 +837,9 @@ export function execGameLoops(periods = 1){
         // Always run a faster loop before a slower loop
         fastLoop();
         if (doMid){ midLoop(); }
+
+        // Perform callbacks before longLoop, so that any permanent results can be saved during longLoop
+        doCallbacks();
         if (doLong){ longLoop(); }
 
         // Overflow prevention
@@ -11440,23 +11443,26 @@ function longLoop(){
     const date = new Date();
     const astroSign = astrologySign();
     if (global.race.species !== 'protoplasm'){
-        let grids = gridDefs();
-        let updatePowerGrid = false;
-        Object.keys(grids).forEach(function(grid){
-            grids[grid].l.forEach(function(struct){
-                let parts = struct.split(":");
-                let space = convertSpaceSector(parts[0]);
-                let region = parts[0] === 'city' ? parts[0] : space;
-                let c_action = parts[0] === 'city' ? actions.city[parts[1]] : actions[space][parts[0]][parts[1]];
-                let breaker = $(`#pg${c_action.id}${grid}`);
 
-                if (grids[grid].s && (breaker.length === 0 || (gridEnabled(c_action,region,parts[0],parts[1]) && breaker.hasClass('inactive')))){
-                    updatePowerGrid = true;
-                }
+        if (global.settings.tabLoad || (global.settings.civTabs === 2 && global.settings.govTabs === 2)){
+            let grids = gridDefs();
+            let updatePowerGrid = false;
+            Object.keys(grids).forEach(function(grid){
+                grids[grid].l.forEach(function(struct){
+                    let parts = struct.split(":");
+                    let space = convertSpaceSector(parts[0]);
+                    let region = parts[0] === 'city' ? parts[0] : space;
+                    let c_action = parts[0] === 'city' ? actions.city[parts[1]] : actions[space][parts[0]][parts[1]];
+                    let breaker = $(`#pg${c_action.id}${grid}`);
+
+                    if (grids[grid].s && (breaker.length === 0 || (gridEnabled(c_action,region,parts[0],parts[1]) && breaker.hasClass('inactive')))){
+                        updatePowerGrid = true;
+                    }
+                });
             });
-        });
-        if (updatePowerGrid){
-            setPowerGrid();
+            if (updatePowerGrid){
+                setPowerGrid();
+            }
         }
 
         if (global.tech['syphon'] && global.tech.syphon >= 80){
@@ -11952,10 +11958,7 @@ function longLoop(){
             drawTech();
         }
 
-        if (global.settings['cLabels'] && $('#city-dist-outskirts').length === 0){
-            drawCity();
-        }
-        if (!global.settings['cLabels'] && $('#city-dist-outskirts').length > 0){
+        if (global.settings['cLabels'] !== cLabels){
             drawCity();
         }
 

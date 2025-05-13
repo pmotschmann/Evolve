@@ -15666,8 +15666,6 @@ const techs = {
 
 function uniteEffect(){
     global.tech['world_control'] = 1;
-    clearElement($('#garrison'));
-    clearElement($('#c_garrison'));
     buildGarrison($('#garrison'),true);
     buildGarrison($('#c_garrison'),false);
     for (let i=0; i<3; i++){

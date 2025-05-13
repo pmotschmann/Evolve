@@ -658,15 +658,21 @@ const spaceProjects = {
                 return powerCostMod((wiki ? wiki.truepath : global.race['truepath']) ? 500 : 5000);
             },
             postPower(o){
-                if (o){
-                    setTimeout(function(){
-                        global.tech.terraforming = p_on['atmo_terraformer'] ? 3 : 2;
-                        renderSpace();
-                    }, 250);
+                if (o && p_on['atmo_terraformer']){
+                    // Powered on and energized
+                    global.tech.terraforming = 3;
+                    renderSpace();
                 }
                 else {
-                    global.tech.terraforming = 2;
-                    renderSpace();
+                    if (global.tech.terraforming > 2){
+                        // Disabled or lost power
+                        global.tech.terraforming = 2;
+                        renderSpace();
+                    }
+                    if (o){
+                        // Not powered yet, check again soon
+                        return true;
+                    }
                 }
             },
             effect(wiki){
@@ -4664,15 +4670,21 @@ const interstellarProjects = {
                 deepSpace();
             },
             postPower(o){
-                if (o){
-                    setTimeout(function(){
-                        global.tech.ascension = p_on['ascension_trigger'] ? 8 : 7;
-                        deepSpace();
-                    }, 250);
+                if (o && p_on['ascension_trigger']){
+                    // Powered on and energized
+                    global.tech.ascension = 8;
+                    deepSpace();
                 }
                 else {
-                    global.tech.ascension = 7;
-                    deepSpace();
+                    if (global.tech.ascension > 7){
+                        // Disabled or lost power
+                        global.tech.ascension = 7;
+                        deepSpace();
+                    }
+                    if (o){
+                        // Not powered yet, check again soon
+                        return true;
+                    }
                 }
             },
             effect(){
@@ -5355,14 +5367,6 @@ const galaxyProjects = {
                 return global.galaxy.hasOwnProperty('starbase') ? [{ s: global.galaxy.starbase.s_max - global.galaxy.starbase.support }] : false;
             },
             postPower(o){
-                let powered = o ? p_on['telemetry_beacon'] + keyMultiplier() : p_on['telemetry_beacon'] - keyMultiplier();
-                if (powered > global.galaxy.telemetry_beacon.count){
-                    powered = global.galaxy.telemetry_beacon.count;
-                }
-                else if (powered < 0){
-                    powered = 0;
-                }
-                p_on['telemetry_beacon'] = powered;
                 updateDesc($(this)[0],'galaxy','telemetry_beacon');
             },
             action(args){

@@ -7136,8 +7136,6 @@ export function cleanAddTrait(trait){
         case 'unified':
             global.tech['world_control'] = 1;
             global.tech['unify'] = 2;
-            clearElement($('#garrison'));
-            clearElement($('#c_garrison'));
             buildGarrison($('#garrison'),true);
             buildGarrison($('#c_garrison'),false);
             for (let i=0; i<3; i++){
