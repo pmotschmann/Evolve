@@ -9379,7 +9379,7 @@
   "wiki_tech_transport": "由于货运技术先进，驾驶员工作效率因此 +%0%。",
   "wiki_tech_osha": "驾驶员工作压力 -33%。",
   "wiki_tech_blackmarket": "每位驾驶员使税收收入、旅游收入和赌场收入 +1%。",
-  "wiki_tech_pipelines": "无需增加驾驶员也能使石油井架全产。",
+  "wiki_tech_pipelines": "石油井架无需指派额外的驾驶员来维持全产了。",
   "wiki_tech_req_tech": "需要前置研究：",
   "wiki_tech_req_other": "需要前置条件：",
   "wiki_tech_req_special": "需要特殊条件：",
