@@ -8115,21 +8115,26 @@ function midLoop(){
                 let c_action = actions.evolution[action];
                 let element = $('#'+c_action.id);
                 if (element.length > 0){
-                    if (checkAffordable(c_action)){
-                        if (element.hasClass('cna')){
-                            element.removeClass('cna');
-                        }
-                    }
-                    else if (!element.hasClass('cna')){
-                        element.addClass('cna');
-                    }
                     if (checkAffordable(c_action,true)){
                         if (element.hasClass('cnam')){
                             element.removeClass('cnam');
                         }
+                        if (checkAffordable(c_action)){
+                            if (element.hasClass('cna')){
+                                element.removeClass('cna');
+                            }
+                        }
+                        else if (!element.hasClass('cna')){
+                            element.addClass('cna');
+                        }
                     }
-                    else if (!element.hasClass('cnam')){
-                        element.addClass('cnam');
+                    else {
+                        if (!element.hasClass('cnam')){
+                            element.addClass('cnam');
+                        }
+                        if (!element.hasClass('cna')){
+                            element.addClass('cna');
+                        }
                     }
                 }
             }
@@ -10625,21 +10630,28 @@ function midLoop(){
             if (actions.city[action] && actions.city[action].cost){
                 let c_action = actions.city[action];
                 let element = $('#'+c_action.id);
-                if (checkAffordable(c_action)){
-                    if (element.hasClass('cna')){
-                        element.removeClass('cna');
+                if (element.length > 0){
+                    if (checkAffordable(c_action,true)){
+                        if (element.hasClass('cnam')){
+                            element.removeClass('cnam');
+                        }
+                        if (checkAffordable(c_action)){
+                            if (element.hasClass('cna')){
+                                element.removeClass('cna');
+                            }
+                        }
+                        else if (!element.hasClass('cna')){
+                            element.addClass('cna');
+                        }
                     }
-                }
-                else if (!element.hasClass('cna')){
-                    element.addClass('cna');
-                }
-                if (checkAffordable(c_action,true)){
-                    if (element.hasClass('cnam')){
-                        element.removeClass('cnam');
+                    else {
+                        if (!element.hasClass('cnam')){
+                            element.addClass('cnam');
+                        }
+                        if (!element.hasClass('cna')){
+                            element.addClass('cna');
+                        }
                     }
-                }
-                else if (!element.hasClass('cnam')){
-                    element.addClass('cnam');
                 }
                 if (global.city[action]){
                     let tc = timeCheck(c_action,false,true);
@@ -10654,21 +10666,26 @@ function midLoop(){
                 let c_action = actions.tech[action];
                 let element = $('#'+c_action.id);
                 if (element.length > 0){
-                    if (checkAffordable(c_action)){
-                        if (element.hasClass('cna')){
-                            element.removeClass('cna');
-                        }
-                    }
-                    else if (!element.hasClass('cna')){
-                        element.addClass('cna');
-                    }
                     if (checkAffordable(c_action,true)){
                         if (element.hasClass('cnam')){
                             element.removeClass('cnam');
                         }
+                        if (checkAffordable(c_action)){
+                            if (element.hasClass('cna')){
+                                element.removeClass('cna');
+                            }
+                        }
+                        else if (!element.hasClass('cna')){
+                            element.addClass('cna');
+                        }
                     }
-                    else if (!element.hasClass('cnam')){
-                        element.addClass('cnam');
+                    else {
+                        if (!element.hasClass('cnam')){
+                            element.addClass('cnam');
+                        }
+                        if (!element.hasClass('cna')){
+                            element.addClass('cna');
+                        }
                     }
                 }
             }
@@ -10683,21 +10700,28 @@ function midLoop(){
                     if ((global[s_region][action] || actions[location][region][action].grant) && actions[location][region][action] && actions[location][region][action].cost){
                         let c_action = actions[location][region][action];
                         let element = $('#'+c_action.id);
-                        if (checkAffordable(c_action)){
-                            if (element.hasClass('cna')){
-                                element.removeClass('cna');
+                        if (element.length > 0){
+                            if (checkAffordable(c_action,true)){
+                                if (element.hasClass('cnam')){
+                                    element.removeClass('cnam');
+                                }
+                                if (checkAffordable(c_action)){
+                                    if (element.hasClass('cna')){
+                                        element.removeClass('cna');
+                                    }
+                                }
+                                else if (!element.hasClass('cna')){
+                                    element.addClass('cna');
+                                }
                             }
-                        }
-                        else if (!element.hasClass('cna')){
-                            element.addClass('cna');
-                        }
-                        if (checkAffordable(c_action,true)){
-                            if (element.hasClass('cnam')){
-                                element.removeClass('cnam');
+                            else {
+                                if (!element.hasClass('cnam')){
+                                    element.addClass('cnam');
+                                }
+                                if (!element.hasClass('cna')){
+                                    element.addClass('cna');
+                                }
                             }
-                        }
-                        else if (!element.hasClass('cnam')){
-                            element.addClass('cnam');
                         }
                         if (global[s_region][action]){
                             global[s_region][action]['time'] = timeFormat(timeCheck(c_action));
