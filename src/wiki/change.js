@@ -7,7 +7,8 @@ export const changeList = [
         date: `5/13/2025`,
         changes: [
             `Added Catnip and Anise traits to Ent/Pinguicula.`,
-            `Fixed issue with saving trait ranks to custom export.`
+            `Fixed issue with saving trait ranks to custom export.`,
+            `Performance Optimizations.`
         ]
     },
     {
