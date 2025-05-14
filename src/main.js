@@ -12520,6 +12520,8 @@ function longLoop(){
                 else if (global.tech['isolation']){
                     if (global.tech.plague < 5 && Math.rand(0,50) === 0){
                         global.tech.plague = 5;
+                        delete global.race['quarantine'];
+                        delete global.race['qDays'];
                         messageQueue(loc('tau_plague5b',[races[global.race.species].home]),'info',false,['progress']);
                         drawTech();
                     }
