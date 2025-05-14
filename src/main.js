@@ -415,6 +415,12 @@ popover('morale',
 
         if (global.race['pet']){
             let change = 1;
+            if (global.race['catnip']){
+                change = traits.catnip.vars()[0];
+            }
+            else if (global.race['anise']){
+                change = traits.anise.vars()[0];
+            }
             if (global.race['pet']){
                 if (global.race.pet.event > 0){
                     if (global.race['catnip']){
