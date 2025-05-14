@@ -6710,8 +6710,10 @@ function fastLoop(){
             let synd = syndicate('spc_gas_moon');
             let fueled_oil_wells = global.race['warlord'] ? global.portal.pumpjack.count : global.city.oil_well.count;
             let fueled_oil_extractor = p_on['oil_extractor'];
-            let oil_prod = global.city['oil_well'] ? (production('oil_well') * q_multiplier) : 0;
-            let extract_prod = global.space['oil_extractor'] ? (production('oil_extractor') * qs_multiplier * synd * zigVal) : 0;
+            let oil_prod = global.city['oil_well'] ? production('oil_well') : 0;
+            let oil_prod_mod = q_multiplier;
+            let extract_prod = global.space['oil_extractor'] ? production('oil_extractor') : 0;
+            let extract_prod_mod = qs_multiplier * synd * zigVal;
             if (global.race['blubber']){
                 let tick = traits.blubber.vars()[0] * time_multiplier / 5;
                 let check_dead = function(amount){
@@ -6726,7 +6728,7 @@ function fastLoop(){
                     }
                     return amount;
                 }
-                if(oil_prod >= extract_prod){ /* swap order of extractors and wells based on which produces more */
+                if(oil_prod * oil_prod_mod >= extract_prod * extract_prod_mod){ /* swap order of extractors and wells based on which produces more */
                     fueled_oil_wells = check_dead(fueled_oil_wells);
                     fueled_oil_extractor = check_dead(fueled_oil_extractor);
                 }
@@ -6740,7 +6742,7 @@ function fastLoop(){
             oil_extractor *= production('psychic_boost','Oil');
             oil_well *= production('psychic_boost','Oil');
 
-            let delta = oil_well + oil_extractor + (whale_oil * womling_technician);
+            let delta = (oil_well * oil_prod_mod) + (oil_extractor * extract_prod_mod) + (whale_oil * womling_technician);
             delta *= hunger * global_multiplier;
             if (global.race['gravity_well']){ delta = teamster(delta); }
 
