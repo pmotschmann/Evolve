@@ -417,13 +417,21 @@ popover('morale',
             let change = 1;
             if (global.race['pet']){
                 if (global.race.pet.event > 0){
-                    change++;
+                    if (global.race['catnip']){
+                        change += traits.catnip.vars()[0];
+                    }
+                    else if (global.race['anise']){
+                        change += traits.anise.vars()[0];
+                    }
+                    else {
+                        change++;
+                    }
                 }
                 if (global.race.pet.pet > 0){
-                    change += global.race.pet.type === 'cat' ? 2 : 1;
+                    change += global.race.pet.type === 'cat' ? (global.race['catnip'] ? traits.catnip.vars()[1] : 2) : (global.race['anise'] ? traits.anise.vars()[1] : 1);
                 }
                 else if (global.race.pet.pet < 0){
-                    change -= global.race.pet.type === 'cat' ? 2 : 1
+                    change -= global.race.pet.type === 'cat' ? (global.race['catnip'] ? traits.catnip.vars()[1] : 2) : (global.race['anise'] ? traits.anise.vars()[1] : 1);
                 }
             }
             if (change !== 0){
@@ -12645,6 +12653,9 @@ function longLoop(){
         if (global.race.species !== 'protoplasm'){
             if (Math.rand(0,global.m_event.t) === 0){
                 let event_pool = eventList('minor');
+                if (!global.race['pet'] && ((global.race['catnip'] && global.race.catnip >= 2) || (global.race['anise'] && global.race.anise >= 2))){
+                    event_pool = ['pet'];
+                }
                 if (event_pool.length > 0){
                     let event = event_pool[Math.floor(seededRandom(0,event_pool.length))];
                     let msg = events[event].effect();

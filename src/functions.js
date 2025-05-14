@@ -3120,7 +3120,9 @@ const valAdjust = {
     blurry: true,
     playful: true,
     ghostly: true,
-    environmentalist: true
+    environmentalist: true,
+    catnip: true,
+    anise: true
 };
 
 function getTraitVals(trait, rank, species){
@@ -3175,6 +3177,9 @@ function getTraitVals(trait, rank, species){
             if (global.race['warlord']){
                 vals = [vals[0], +((vals[1] - 1) * 100).toFixed(0), global.resource.Soul_Gem.name];
             }
+        }
+        else if (trait === 'catnip' || trait === 'anise'){
+            vals = rank <= 2 ? [] : (rank === 3  ? [vals[0]] : [vals[0],vals[1]]);
         }
         else if (!valAdjust[trait]){
             vals = [];
@@ -3371,6 +3376,10 @@ export function getTraitDesc(info, trait, opts){
             let trait_desc = '';
             if (trait === 'elemental'){
                 trait_desc = loc(`wiki_trait_effect_${trait}_${traits.elemental.vars()[0]}`, getTraitVals(trait, trank, species));
+            }
+            else if (['catnip','anise'].includes(trait)){
+                let rank = trank;// <= 1 ? 1 : trank;
+                trait_desc = loc(`wiki_trait_effect_${trait}${rank}`, getTraitVals(trait, trank, species));
             }
             else {
                 if (global?.race?.universe === 'evil' && global?.civic?.govern?.type != 'theocracy' && ['spiritual','blasphemous'].includes(trait)){
