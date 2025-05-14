@@ -2067,13 +2067,15 @@ function genetics(){
                 breakdown.append(addListing);
                 for (let i=0; i<trait_list.length; i++){
                     let trait = trait_list[i];
-                    let major = $(`<div class="traitRow"></div>`);
-                    let add = $(`<span class="add${trait} basic-button has-text-success" role="button" :aria-label="addCost('${trait}')" @click="gain('${trait}')">${loc('arpa_gain_button')}</span>`);
+                    if (!['catnip','anise'].includes(trait)){
+                        let major = $(`<div class="traitRow"></div>`);
+                        let add = $(`<span class="add${trait} basic-button has-text-success" role="button" :aria-label="addCost('${trait}')" @click="gain('${trait}')">${loc('arpa_gain_button')}</span>`);
 
-                    major.append(add);
-                    major.append($(`<span class="trait has-text-warning" id="raceTrait${trait}">${traitName[trait] ? traitName[trait] : traits[trait].name} (${loc(`arpa_genepool_rank`,[offspec_traits[trait] ? 0.5 : 1])})</span>`));
+                        major.append(add);
+                        major.append($(`<span class="trait has-text-warning" id="raceTrait${trait}">${traitName[trait] ? traitName[trait] : traits[trait].name} (${loc(`arpa_genepool_rank`,[offspec_traits[trait] ? 0.5 : 1])})</span>`));
 
-                    addListing.append(major);
+                        addListing.append(major);
+                    }
                 }
             }
         }

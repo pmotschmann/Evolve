@@ -1588,15 +1588,21 @@ const tauCetiModules = {
             cost: {},
             powered(){ return 10000; },
             postPower(o){
-                if (o){
-                    setTimeout(function(){
-                        global.tech.matrix = p_on['matrix'] ? 4 : 3;
-                        renderTauCeti();
-                    }, 250);
+                if (o && p_on['matrix']){
+                    // Powered on and energized
+                    global.tech.matrix = 4;
+                    renderTauCeti();
                 }
                 else {
-                    global.tech.matrix = 3;
-                    renderTauCeti();
+                    if (global.tech.matrix > 3){
+                        // Disabled or lost power
+                        global.tech.matrix = 3;
+                        renderTauCeti();
+                    }
+                    if (o){
+                        // Not powered yet, check again soon
+                        return true;
+                    }
                 }
             },
             effect(){
@@ -1793,9 +1799,7 @@ const tauCetiModules = {
                         global.civic[global.civic.d_job].workers -= hired;
                         global.civic.pit_miner.workers += hired;
                     }
-                    if (global.settings.tabLoad){
-                        drawShips();
-                    }
+                    drawShips();
                     return true;
                 }
                 return false;

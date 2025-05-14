@@ -1,4 +1,4 @@
-import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
+import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level, callback_queue } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat, checkAdept } from './achieve.js';
 import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone, addATime, exceededATimeThreshold, loopTimers, calcQuantumLevel, drawPet } from './functions.js';
@@ -7,7 +7,7 @@ import { defineResources, resource_values, spatialReasoning, craftCost, plasmidB
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobName, jobScale, workerScale, limitCraftsmen, loadServants} from './jobs.js';
 import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, luxGoodPrice, smelterUnlocked, smelterFuelConfig } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
-import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, checkPowerRequirements, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct, casino_vault, casinoEarn } from './actions.js';
+import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, checkPowerRequirements, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct, casino_vault, casinoEarn, doCallbacks, cLabels } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
@@ -415,15 +415,29 @@ popover('morale',
 
         if (global.race['pet']){
             let change = 1;
+            if (global.race['catnip']){
+                change = traits.catnip.vars()[0];
+            }
+            else if (global.race['anise']){
+                change = traits.anise.vars()[0];
+            }
             if (global.race['pet']){
                 if (global.race.pet.event > 0){
-                    change++;
+                    if (global.race['catnip']){
+                        change += traits.catnip.vars()[0];
+                    }
+                    else if (global.race['anise']){
+                        change += traits.anise.vars()[0];
+                    }
+                    else {
+                        change++;
+                    }
                 }
                 if (global.race.pet.pet > 0){
-                    change += global.race.pet.type === 'cat' ? 2 : 1;
+                    change += global.race.pet.type === 'cat' ? (global.race['catnip'] ? traits.catnip.vars()[1] : 2) : (global.race['anise'] ? traits.anise.vars()[1] : 1);
                 }
                 else if (global.race.pet.pet < 0){
-                    change -= global.race.pet.type === 'cat' ? 2 : 1
+                    change -= global.race.pet.type === 'cat' ? (global.race['catnip'] ? traits.catnip.vars()[1] : 2) : (global.race['anise'] ? traits.anise.vars()[1] : 1);
                 }
             }
             if (change !== 0){
@@ -837,6 +851,9 @@ export function execGameLoops(periods = 1){
         // Always run a faster loop before a slower loop
         fastLoop();
         if (doMid){ midLoop(); }
+
+        // Perform callbacks before longLoop, so that any permanent results can be saved during longLoop
+        doCallbacks();
         if (doLong){ longLoop(); }
 
         // Overflow prevention
@@ -2130,6 +2147,10 @@ function fastLoop(){
                 if (p_on[struct] !== global[region][struct].on){
                     $(`#${region}-${struct} .on`).addClass('warn');
                     $(`#${region}-${struct} .on`).prop('title',`ON ${p_on[struct]}/${global[region][struct].on}`);
+                    // Remove the reset actions for reset structures that lose power
+                    if (['matrix', 'atmo_terraformer', 'ascension_trigger'].includes(struct)){
+                        callback_queue.set([c_action, 'postPower'], [true]);
+                    }
                 }
                 else {
                     $(`#${region}-${struct} .on`).removeClass('warn');
@@ -8100,21 +8121,26 @@ function midLoop(){
                 let c_action = actions.evolution[action];
                 let element = $('#'+c_action.id);
                 if (element.length > 0){
-                    if (checkAffordable(c_action)){
-                        if (element.hasClass('cna')){
-                            element.removeClass('cna');
-                        }
-                    }
-                    else if (!element.hasClass('cna')){
-                        element.addClass('cna');
-                    }
                     if (checkAffordable(c_action,true)){
                         if (element.hasClass('cnam')){
                             element.removeClass('cnam');
                         }
+                        if (checkAffordable(c_action)){
+                            if (element.hasClass('cna')){
+                                element.removeClass('cna');
+                            }
+                        }
+                        else if (!element.hasClass('cna')){
+                            element.addClass('cna');
+                        }
                     }
-                    else if (!element.hasClass('cnam')){
-                        element.addClass('cnam');
+                    else {
+                        if (!element.hasClass('cnam')){
+                            element.addClass('cnam');
+                        }
+                        if (!element.hasClass('cna')){
+                            element.addClass('cna');
+                        }
                     }
                 }
             }
@@ -10610,21 +10636,28 @@ function midLoop(){
             if (actions.city[action] && actions.city[action].cost){
                 let c_action = actions.city[action];
                 let element = $('#'+c_action.id);
-                if (checkAffordable(c_action)){
-                    if (element.hasClass('cna')){
-                        element.removeClass('cna');
+                if (element.length > 0){
+                    if (checkAffordable(c_action,true)){
+                        if (element.hasClass('cnam')){
+                            element.removeClass('cnam');
+                        }
+                        if (checkAffordable(c_action)){
+                            if (element.hasClass('cna')){
+                                element.removeClass('cna');
+                            }
+                        }
+                        else if (!element.hasClass('cna')){
+                            element.addClass('cna');
+                        }
                     }
-                }
-                else if (!element.hasClass('cna')){
-                    element.addClass('cna');
-                }
-                if (checkAffordable(c_action,true)){
-                    if (element.hasClass('cnam')){
-                        element.removeClass('cnam');
+                    else {
+                        if (!element.hasClass('cnam')){
+                            element.addClass('cnam');
+                        }
+                        if (!element.hasClass('cna')){
+                            element.addClass('cna');
+                        }
                     }
-                }
-                else if (!element.hasClass('cnam')){
-                    element.addClass('cnam');
                 }
                 if (global.city[action]){
                     let tc = timeCheck(c_action,false,true);
@@ -10639,21 +10672,26 @@ function midLoop(){
                 let c_action = actions.tech[action];
                 let element = $('#'+c_action.id);
                 if (element.length > 0){
-                    if (checkAffordable(c_action)){
-                        if (element.hasClass('cna')){
-                            element.removeClass('cna');
-                        }
-                    }
-                    else if (!element.hasClass('cna')){
-                        element.addClass('cna');
-                    }
                     if (checkAffordable(c_action,true)){
                         if (element.hasClass('cnam')){
                             element.removeClass('cnam');
                         }
+                        if (checkAffordable(c_action)){
+                            if (element.hasClass('cna')){
+                                element.removeClass('cna');
+                            }
+                        }
+                        else if (!element.hasClass('cna')){
+                            element.addClass('cna');
+                        }
                     }
-                    else if (!element.hasClass('cnam')){
-                        element.addClass('cnam');
+                    else {
+                        if (!element.hasClass('cnam')){
+                            element.addClass('cnam');
+                        }
+                        if (!element.hasClass('cna')){
+                            element.addClass('cna');
+                        }
                     }
                 }
             }
@@ -10668,21 +10706,28 @@ function midLoop(){
                     if ((global[s_region][action] || actions[location][region][action].grant) && actions[location][region][action] && actions[location][region][action].cost){
                         let c_action = actions[location][region][action];
                         let element = $('#'+c_action.id);
-                        if (checkAffordable(c_action)){
-                            if (element.hasClass('cna')){
-                                element.removeClass('cna');
+                        if (element.length > 0){
+                            if (checkAffordable(c_action,true)){
+                                if (element.hasClass('cnam')){
+                                    element.removeClass('cnam');
+                                }
+                                if (checkAffordable(c_action)){
+                                    if (element.hasClass('cna')){
+                                        element.removeClass('cna');
+                                    }
+                                }
+                                else if (!element.hasClass('cna')){
+                                    element.addClass('cna');
+                                }
                             }
-                        }
-                        else if (!element.hasClass('cna')){
-                            element.addClass('cna');
-                        }
-                        if (checkAffordable(c_action,true)){
-                            if (element.hasClass('cnam')){
-                                element.removeClass('cnam');
+                            else {
+                                if (!element.hasClass('cnam')){
+                                    element.addClass('cnam');
+                                }
+                                if (!element.hasClass('cna')){
+                                    element.addClass('cna');
+                                }
                             }
-                        }
-                        else if (!element.hasClass('cnam')){
-                            element.addClass('cnam');
                         }
                         if (global[s_region][action]){
                             global[s_region][action]['time'] = timeFormat(timeCheck(c_action));
@@ -11440,23 +11485,26 @@ function longLoop(){
     const date = new Date();
     const astroSign = astrologySign();
     if (global.race.species !== 'protoplasm'){
-        let grids = gridDefs();
-        let updatePowerGrid = false;
-        Object.keys(grids).forEach(function(grid){
-            grids[grid].l.forEach(function(struct){
-                let parts = struct.split(":");
-                let space = convertSpaceSector(parts[0]);
-                let region = parts[0] === 'city' ? parts[0] : space;
-                let c_action = parts[0] === 'city' ? actions.city[parts[1]] : actions[space][parts[0]][parts[1]];
-                let breaker = $(`#pg${c_action.id}${grid}`);
 
-                if (grids[grid].s && (breaker.length === 0 || (gridEnabled(c_action,region,parts[0],parts[1]) && breaker.hasClass('inactive')))){
-                    updatePowerGrid = true;
-                }
+        if (global.settings.tabLoad || (global.settings.civTabs === 2 && global.settings.govTabs === 2)){
+            let grids = gridDefs();
+            let updatePowerGrid = false;
+            Object.keys(grids).forEach(function(grid){
+                grids[grid].l.forEach(function(struct){
+                    let parts = struct.split(":");
+                    let space = convertSpaceSector(parts[0]);
+                    let region = parts[0] === 'city' ? parts[0] : space;
+                    let c_action = parts[0] === 'city' ? actions.city[parts[1]] : actions[space][parts[0]][parts[1]];
+                    let breaker = $(`#pg${c_action.id}${grid}`);
+
+                    if (grids[grid].s && (breaker.length === 0 || (gridEnabled(c_action,region,parts[0],parts[1]) && breaker.hasClass('inactive')))){
+                        updatePowerGrid = true;
+                    }
+                });
             });
-        });
-        if (updatePowerGrid){
-            setPowerGrid();
+            if (updatePowerGrid){
+                setPowerGrid();
+            }
         }
 
         if (global.tech['syphon'] && global.tech.syphon >= 80){
@@ -11952,10 +12000,7 @@ function longLoop(){
             drawTech();
         }
 
-        if (global.settings['cLabels'] && $('#city-dist-outskirts').length === 0){
-            drawCity();
-        }
-        if (!global.settings['cLabels'] && $('#city-dist-outskirts').length > 0){
+        if (global.settings['cLabels'] !== cLabels){
             drawCity();
         }
 
@@ -12645,6 +12690,9 @@ function longLoop(){
         if (global.race.species !== 'protoplasm'){
             if (Math.rand(0,global.m_event.t) === 0){
                 let event_pool = eventList('minor');
+                if (!global.race['pet'] && ((global.race['catnip'] && global.race.catnip >= 2) || (global.race['anise'] && global.race.anise >= 2))){
+                    event_pool = ['pet'];
+                }
                 if (event_pool.length > 0){
                     let event = event_pool[Math.floor(seededRandom(0,event_pool.length))];
                     let msg = events[event].effect();

@@ -3,6 +3,15 @@ import { clearElement } from './../functions.js';
 
 export const changeList = [
     {
+        version: `1.4.6`,
+        date: `5/13/2025`,
+        changes: [
+            `Added Catnip and Anise traits to Ent/Pinguicula.`,
+            `Fixed issue with saving trait ranks to custom export.`,
+            `Performance Optimizations.`
+        ]
+    },
+    {
         version: `1.4.5`,
         revision: `b`,
         date: `5/12/2025`,
