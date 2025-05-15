@@ -1286,7 +1286,6 @@ export const gov_tasks = {
 
             if (global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 && global.race.governor.config.trash.stab){
                 stabilize_blackhole();
-                drawTech();
             }
         }
     },
