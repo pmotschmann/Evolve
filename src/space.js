@@ -658,15 +658,21 @@ const spaceProjects = {
                 return powerCostMod((wiki ? wiki.truepath : global.race['truepath']) ? 500 : 5000);
             },
             postPower(o){
-                if (o){
-                    setTimeout(function(){
-                        global.tech.terraforming = p_on['atmo_terraformer'] ? 3 : 2;
-                        renderSpace();
-                    }, 250);
+                if (o && p_on['atmo_terraformer']){
+                    // Powered on and energized
+                    global.tech.terraforming = 3;
+                    renderSpace();
                 }
                 else {
-                    global.tech.terraforming = 2;
-                    renderSpace();
+                    if (global.tech.terraforming > 2){
+                        // Disabled or lost power
+                        global.tech.terraforming = 2;
+                        renderSpace();
+                    }
+                    if (o){
+                        // Not powered yet, check again soon
+                        return true;
+                    }
                 }
             },
             effect(wiki){
@@ -4664,15 +4670,21 @@ const interstellarProjects = {
                 deepSpace();
             },
             postPower(o){
-                if (o){
-                    setTimeout(function(){
-                        global.tech.ascension = p_on['ascension_trigger'] ? 8 : 7;
-                        deepSpace();
-                    }, 250);
+                if (o && p_on['ascension_trigger']){
+                    // Powered on and energized
+                    global.tech.ascension = 8;
+                    deepSpace();
                 }
                 else {
-                    global.tech.ascension = 7;
-                    deepSpace();
+                    if (global.tech.ascension > 7){
+                        // Disabled or lost power
+                        global.tech.ascension = 7;
+                        deepSpace();
+                    }
+                    if (o){
+                        // Not powered yet, check again soon
+                        return true;
+                    }
                 }
             },
             effect(){
@@ -5355,14 +5367,6 @@ const galaxyProjects = {
                 return global.galaxy.hasOwnProperty('starbase') ? [{ s: global.galaxy.starbase.s_max - global.galaxy.starbase.support }] : false;
             },
             postPower(o){
-                let powered = o ? p_on['telemetry_beacon'] + keyMultiplier() : p_on['telemetry_beacon'] - keyMultiplier();
-                if (powered > global.galaxy.telemetry_beacon.count){
-                    powered = global.galaxy.telemetry_beacon.count;
-                }
-                else if (powered < 0){
-                    powered = 0;
-                }
-                p_on['telemetry_beacon'] = powered;
                 updateDesc($(this)[0],'galaxy','telemetry_beacon');
             },
             action(args){
@@ -7843,7 +7847,10 @@ export function ascendLab(hybrid,wiki){
                 }
             },
             allowed(t){
-                if ((!['synthetic','hybrid'].includes(genome.genus) || (genome.hasOwnProperty('hybrid') && !genome.hybrid.includes('synthetic'))) && ['deconstructor','imitation'].includes(t)){
+                if ((genome.traitlist.includes('catnip') && t === 'anise') || (genome.traitlist.includes('anise') && t === 'catnip')){
+                    return true;
+                }
+                else if ((!['synthetic','hybrid'].includes(genome.genus) || (genome.hasOwnProperty('hybrid') && !genome.hybrid.includes('synthetic'))) && ['deconstructor','imitation'].includes(t)){
                     if (genome.traitlist.includes(t)){
                         genome.traitlist.splice(genome.traitlist.indexOf(t), 1);
                     }
@@ -8096,7 +8103,7 @@ export function ascendLab(hybrid,wiki){
                                 return tRanks[trait];
                             },
                             empower(e,t){
-                                let valid_empower = traits[t].val >= traits.empowered.vars(tRanks['empowered'] || 1)[0] && traits[t].val <= traits.empowered.vars(tRanks['empowered'] || 1)[1] && t !== 'empowered' && genome.traitlist.includes('empowered');
+                                let valid_empower = traits[t].val >= traits.empowered.vars(tRanks['empowered'] || 1)[0] && traits[t].val <= traits.empowered.vars(tRanks['empowered'] || 1)[1] && !['empowered','catnip','anise'].includes(t) && genome.traitlist.includes('empowered');
                                 return valid_empower ? `, <span class="has-text-caution">E</span>` : ``;
                             }
                         }
@@ -8187,6 +8194,8 @@ export function ascendLab(hybrid,wiki){
                                 fixTraitlist.push(genome.traitlist[i]);
                             }
                         }
+                        tRanks = importCustom.hasOwnProperty('ranks') ? importCustom.ranks : {};
+                        genome.ranks = {};
                         genome.fanaticism = importCustom.hasOwnProperty('fanaticism') ? importCustom.fanaticism : false,
                         genome.traitlist = fixTraitlist;
                         genome.genes = calcGenomeScore(genome,(isWiki ? wikiVars : false),tRanks);
@@ -8199,6 +8208,8 @@ export function ascendLab(hybrid,wiki){
                 }
             },
             customExport(){
+                let exportGenome = deepClone(genome);
+                exportGenome['ranks'] = tRanks;
                 const downloadToFile = (content, filename, contentType) => {
                     const a = document.createElement('a');
                     const file = new Blob([content], {type: contentType});
@@ -8207,7 +8218,7 @@ export function ascendLab(hybrid,wiki){
                     a.click();
                     URL.revokeObjectURL(a.href);
                 };
-                downloadToFile(JSON.stringify(genome, null, 4), `evolve-${hybrid ? 'hybrid' : 'custom'}-${genome.name}.txt`, 'text/plain');
+                downloadToFile(JSON.stringify(exportGenome, null, 4), `evolve-${hybrid ? 'hybrid' : 'custom'}-${exportGenome.name}.txt`, 'text/plain');
             }
         },
         filters: {
@@ -8226,7 +8237,7 @@ export function ascendLab(hybrid,wiki){
                 return typeof i === 'undefined' ? loc(`genelab_genus_${g}`) : loc(`genelab_genus_${g[i]}`);
             },
             empower(e,t){
-                let valid_empower = traits[t].val >= traits.empowered.vars(tRanks['empowered'] || 1)[0] && traits[t].val <= traits.empowered.vars(tRanks['empowered'] || 1)[1] && t !== 'empowered' && genome.traitlist.includes('empowered');
+                let valid_empower = traits[t].val >= traits.empowered.vars(tRanks['empowered'] || 1)[0] && traits[t].val <= traits.empowered.vars(tRanks['empowered'] || 1)[1] && !['empowered','catnip','anise'].includes(t) && genome.traitlist.includes('empowered');
                 return valid_empower ? `, <span class="has-text-caution">E</span>` : ``;
             }
         }

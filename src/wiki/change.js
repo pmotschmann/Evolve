@@ -3,6 +3,34 @@ import { clearElement } from './../functions.js';
 
 export const changeList = [
     {
+        version: `1.4.7`,
+        date: `5/15/2025`,
+        changes: [
+            `Pit Miners now produce Chrysotile outside of Isolation.`,
+            `Fixed issue with "Hybrid" and Enlightenment.`,
+            `Fixed some problems with entering Isolation and ending Quarantine.`,
+            `Fixed some broken wiki trait displays.`
+        ]
+    },
+    {
+        version: `1.4.6`,
+        date: `5/13/2025`,
+        changes: [
+            `Added Catnip and Anise traits to Ent/Pinguicula.`,
+            `Fixed issue with saving trait ranks to custom export.`,
+            `Performance Optimizations.`
+        ]
+    },
+    {
+        version: `1.4.5`,
+        revision: `b`,
+        date: `5/12/2025`,
+        changes: [
+            `Fixed issues with loading custom race data into custom lab.`,
+            `Crates now correctly cost Bones instead of Boneweave with Iron Wood trait.`
+        ]
+    },
+    {
         version: `1.4.5`,
         revision: `a`,
         date: `5/12/2025`,

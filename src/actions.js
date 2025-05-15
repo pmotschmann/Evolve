@@ -1,4 +1,4 @@
-import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, int_on, gal_on, spire_on, tmp_vars, setupStats } from './vars.js';
+import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, int_on, gal_on, spire_on, tmp_vars, setupStats, callback_queue } from './vars.js';
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
@@ -1859,7 +1859,7 @@ export const actions = {
                 Iron(offset){ return costMultiplier('mill', offset, 150, 1.33); },
                 Cement(offset){ return costMultiplier('mill', offset, 125, 1.33); },
             },
-            powered(){ return powerModifier(global.race['environmentalist'] ? -1.5 : -1); },
+            powered(){ return powerModifier(global.race['environmentalist'] ? -(traits.environmentalist.vars()[1]) : -1); },
             power_reqs: { agriculture: 6 },
             effect(){
                 if (global.tech['agriculture'] >= 6){
@@ -1899,7 +1899,7 @@ export const actions = {
             category: 'utility',
             reqs: { wind_plant: 1 },
             not_trait: ['cataclysm','lone_survivor'],
-            powered(){ return powerModifier(global.race['environmentalist'] ? -1.5 : -1); },
+            powered(){ return powerModifier(global.race['environmentalist'] ? -(traits.environmentalist.vars()[1]) : -1); },
             power_reqs: { false: 1 },
             cost: {
                 Money(offset){ return costMultiplier('windmill', offset, 1000, 1.31); },
@@ -4024,7 +4024,7 @@ export const actions = {
             powered(wiki){
                 let power = global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 1 ? -6 : -5;
                 if (!wiki && global.race['environmentalist']){
-                    power += traits.environmentalist.vars()[0];
+                    power -= traits.environmentalist.vars()[0];
                 }
                 let dirt = govActive('dirty_jobs',1);
                 if (dirt){ power -= dirt; }
@@ -5968,6 +5968,7 @@ export function gainTech(action){
     renderEdenic();
 }
 
+export var cLabels = global.settings['cLabels'];
 export function drawCity(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 1 || global.settings.spaceTabs !== 0)){
         return;
@@ -6031,6 +6032,8 @@ export function drawCity(){
             });
         }
     });
+
+    cLabels = global.settings['cLabels'];
 }
 
 export function drawTech(){
@@ -6346,9 +6349,7 @@ export function setAction(c_action,action,type,old,prediction){
                     }
                 }
                 if (c_action['postPower']){
-                    setTimeout(function(){
-                        c_action.postPower(true);
-                    }, 250);
+                    callback_queue.set([c_action, 'postPower'], [true]);
                 }
             },
             power_off(){
@@ -6362,9 +6363,7 @@ export function setAction(c_action,action,type,old,prediction){
                     }
                 }
                 if (c_action['postPower']){
-                    setTimeout(function(){
-                        c_action.postPower(false);
-                    }, 250);
+                    callback_queue.set([c_action, 'postPower'], [false]);
                 }
             },
             repair(){
@@ -6463,9 +6462,7 @@ function runAction(c_action,action,type){
                 if (!(global.settings.qKey && keyMap.q) && checkTechRequirements(type,false) && c_action.action({isQueue: false})){
                     gainTech(type);
                     if (c_action['post']){
-                        setTimeout(function(){
-                            c_action.post();
-                        }, 250);
+                        callback_queue.set([c_action, 'post'], []);
                     }
                 }
                 else {
@@ -6497,9 +6494,7 @@ function runAction(c_action,action,type){
                         gainBlood(type);
                     }
                     if (c_action['post']){
-                        setTimeout(function(){
-                            c_action.post();
-                        }, 250);
+                        callback_queue.set([c_action, 'post'], []);
                     }
                 }
                 break;
@@ -6619,9 +6614,7 @@ export function postBuild(c_action,action,type){
         }
     }
     if (c_action['post']){
-        setTimeout(function(){
-            c_action.post();
-        }, 250);
+        callback_queue.set([c_action, 'post'], []);
     }
     updateDesc(c_action,action,type);
 }
@@ -9512,7 +9505,6 @@ function fanaticTrait(trait,rank){
     if (global.race[trait]){
         if (!setTraitRank(trait)){
             randomMinorTrait(5);
-            arpa('Genetics');
         }
         else if (trait === 'imitation'){
             setImitation(true);
@@ -9530,6 +9522,7 @@ function fanaticTrait(trait,rank){
         }
         cleanAddTrait(trait);
     }
+    arpa('Genetics');
 }
 
 export function resQueue(){
@@ -9703,4 +9696,20 @@ export function start_cataclysm(){
         delete global.race['start_cataclysm'];
         sentience();
     }
+}
+
+var callback_repeat = new Map();
+export function doCallbacks(){
+    for (const [[c_action, func], args] of callback_queue){
+        // If the function returns true, then it wants to be called again in the future
+        if (c_action[func](...args)){
+            callback_repeat.set([c_action, func], args);
+        }
+    }
+    // Remove all registered callbacks, then reinsert any callbacks that want to be repeated
+    callback_queue.clear();
+    for (const [[c_action, func], args] of callback_repeat){
+        callback_queue.set([c_action, func], args);
+    }
+    callback_repeat.clear();
 }
