@@ -3,6 +3,16 @@ import { clearElement } from './../functions.js';
 
 export const changeList = [
     {
+        version: `1.4.7`,
+        date: `5/15/2025`,
+        changes: [
+            `Pit Miners now produce Chrysotile outside of Isolation.`,
+            `Fixed issue with "Hybrid" and Enlightenment`,
+            `Fixed some problems with entering Isolation and ending Quarantine`,
+            `Fixed some broken wiki trait displays.`
+        ]
+    },
+    {
         version: `1.4.6`,
         date: `5/13/2025`,
         changes: [

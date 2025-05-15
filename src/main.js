@@ -7309,6 +7309,19 @@ function fastLoop(){
                     modRes('Stone', delta * time_multiplier);
                 }
 
+                if (global.race['smoldering']){ // Chrysotile
+                    let cry_base = miner_base * production('psychic_boost','Chrysotile');
+                    cry_base *= production('mining_pit','chrysotile');
+                    let delta = cry_base * global_multiplier * colony_val * hunger;
+
+                    breakdown.p['Chrysotile'][jobName('pit_miner')] = cry_base + 'v';
+                    if (cry_base > 0){
+                        breakdown.p['Chrysotile'][`ᄂ${loc('tau_home_colony')}`] = ((colony_val - 1) * 100) + '%';
+                        breakdown.p['Chrysotile'][loc('hunger')] = ((hunger - 1) * 100) + '%';
+                    }
+                    modRes('Chrysotile', delta * time_multiplier);
+                }
+
                 { // Adamantite
                     let adam_base = miner_base * production('psychic_boost','Adamantite');
                     adam_base *= production('mining_pit','adamantite');
@@ -7360,19 +7373,6 @@ function fastLoop(){
                         }
 
                         modRes('Aluminium', delta * time_multiplier);
-                    }
-
-                    { // Chrysotile
-                        let cry_base = miner_base * production('psychic_boost','Chrysotile');
-                        cry_base *= production('mining_pit','chrysotile');
-                        let delta = cry_base * global_multiplier * colony_val * hunger;
-
-                        breakdown.p['Chrysotile'][jobName('pit_miner')] = cry_base + 'v';
-                        if (cry_base > 0){
-                            breakdown.p['Chrysotile'][`ᄂ${loc('tau_home_colony')}`] = ((colony_val - 1) * 100) + '%';
-                            breakdown.p['Chrysotile'][loc('hunger')] = ((hunger - 1) * 100) + '%';
-                        }
-                        modRes('Chrysotile', delta * time_multiplier);
                     }
                 }
             }

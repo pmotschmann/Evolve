@@ -8018,6 +8018,7 @@
   "tau_home_mining_pit": "Mining Pit",
   "tau_home_mining_pit_effect": "Employs workers to mine %0.",
   "tau_home_mining_pit_effect2": "Employs workers to mine %0, %1, & %2.",
+  "tau_home_mining_pit_effect2s": "Employs workers to mine %0, %1, %2, & %3.",
   "tau_home_mining_pit_effect2b": "Employs workers to mine %0, %1, %2, %3, & %4.",
   "tau_home_mining_pit_effect2bs": "Employs workers to mine %0, %1, %2, %3, %4, & %5.",
   "tau_home_mining_pit_effect2c": "Employs workers to mine %0, %1, %2, %3, %4, %5, & %6.",
