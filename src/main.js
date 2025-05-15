@@ -7264,6 +7264,7 @@ function fastLoop(){
                 if (ogreFathom > 0){
                     miner_base *= 1 + (traits.tough.vars(1)[0] / 100 * ogreFathom);
                 }
+                miner_base *= production('psychic_boost','Elysanite');
 
                 breakdown.p['Elysanite'][jobName('elysium_miner')] = miner_base + 'v';
 
