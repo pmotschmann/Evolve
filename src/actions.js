@@ -9505,7 +9505,6 @@ function fanaticTrait(trait,rank){
     if (global.race[trait]){
         if (!setTraitRank(trait)){
             randomMinorTrait(5);
-            arpa('Genetics');
         }
         else if (trait === 'imitation'){
             setImitation(true);
@@ -9523,6 +9522,7 @@ function fanaticTrait(trait,rank){
         }
         cleanAddTrait(trait);
     }
+    arpa('Genetics');
 }
 
 export function resQueue(){
