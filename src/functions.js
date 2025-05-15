@@ -3378,7 +3378,7 @@ export function getTraitDesc(info, trait, opts){
                 trait_desc = loc(`wiki_trait_effect_${trait}_${traits.elemental.vars()[0]}`, getTraitVals(trait, trank, species));
             }
             else if (['catnip','anise'].includes(trait)){
-                let rank = trank;// <= 1 ? 1 : trank;
+                let rank = trank;
                 trait_desc = loc(`wiki_trait_effect_${trait}${rank}`, getTraitVals(trait, trank, species));
             }
             else {
@@ -3413,9 +3413,12 @@ export function getTraitDesc(info, trait, opts){
                     if (trait === 'elemental'){
                         return loc(`wiki_trait_effect_${trait}_${traits.elemental.vars()[0]}`, getTraitVals(trait, rk, species));
                     }
+                    else if (['catnip','anise'].includes(trait)){
+                        return loc(`wiki_trait_effect_${trait}${rk}`, getTraitVals(trait, rk, species));
+                    }
                     else if (global?.race?.universe === 'evil' && global?.civic?.govern?.type != 'theocracy' && ['spiritual','blasphemous'].includes(trait)){
                         let alt_trait = trait === 'spiritual' ? 'manipulator' : 'blasphemous_evil';
-                        return loc(`wiki_trait_effect_${alt_trait}`, getTraitVals(trait, trank, species));
+                        return loc(`wiki_trait_effect_${alt_trait}`, getTraitVals(trait, rk, species));
                     }
                     let key = altTraitDesc[trait] && global.race.hasOwnProperty(altTraitDesc[trait]) ? altTraitDesc[trait] : 'effect';
                     return loc(`wiki_trait_${key}_${trait}`, getTraitVals(trait, rk, species));
