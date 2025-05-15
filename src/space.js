@@ -5482,9 +5482,6 @@ const galaxyProjects = {
                     d: { count: 0, on: 0 },
                     p: ['defense_platform','galaxy']
                 };
-            },
-            post(){
-                vBind({el: `#gxy_stargate`},'update');
             }
         },
     },
@@ -6301,7 +6298,7 @@ const galaxyProjects = {
             action(args){
                 if (payCosts($(this)[0])){
                     incrementStruct('minelayer','galaxy');
-                    global.galaxy.minelayer.on++;
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -6313,9 +6310,6 @@ const galaxyProjects = {
                 };
             },
             postPower(){
-                vBind({el: `#gxy_chthonian`},'update');
-            },
-            post(){
                 vBind({el: `#gxy_chthonian`},'update');
             }
         },
@@ -6396,7 +6390,7 @@ const galaxyProjects = {
             action(args){
                 if (payCosts($(this)[0])){
                     incrementStruct('raider','galaxy');
-                    global.galaxy.raider.on++;
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -6408,9 +6402,6 @@ const galaxyProjects = {
                 };
             },
             postPower(){
-                vBind({el: `#gxy_chthonian`},'update');
-            },
-            post(){
                 vBind({el: `#gxy_chthonian`},'update');
             }
         },

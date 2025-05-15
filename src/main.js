@@ -2572,6 +2572,7 @@ function fastLoop(){
                 }
                 if (army < jobScale(global.portal.guard_post.on)){
                     global.portal.guard_post.on = Math.floor(army / jobScale(1));
+                    p_on['guard_post'] = Math.min(global.portal.guard_post.on, p_on['guard_post']);
                 }
             }
 
@@ -3900,7 +3901,7 @@ function fastLoop(){
             let missing = Math.min(global.civic.homeless, global.resource[global.race.species].max - global.resource[global.race.species].amount);
             global.civic.homeless -= missing;
             global.resource[global.race.species].amount += missing;
-            global.civic[global.civic.d_job].workers++;
+            global.civic[global.civic.d_job].workers += missing;
         }
         else if (((fed && global['resource']['Food'].amount > 0) || global.race['fasting']) && global['resource'][global.race.species].max > global['resource'][global.race.species].amount){
             if (global.race['artifical'] || (global.race['spongy'] && global.city.calendar.weather === 0)){
