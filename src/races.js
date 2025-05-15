@@ -7821,7 +7821,7 @@ export function traitSkin(type, trait, species){
                 weak: species === 'dwarf' ? loc('trait_drunk') : traits.weak.desc,
                 spiritual: global.race.universe === 'evil' && global.civic.govern.type != 'theocracy' ? loc('trait_manipulator') : traits.spiritual.desc,
                 blurry: global.race['warlord'] ? loc('trait_blurry_warlord') : traits.blurry.desc,
-                playful: global.race['warlord'] ? loc('trait_playful_warlord') : traits.blurry.desc,
+                playful: global.race['warlord'] ? loc('trait_playful_warlord') : traits.playful.desc,
                 befuddle: global.race['warlord'] ? loc('trait_befuddle_warlord') : traits.befuddle.desc,
             };
             return trait ? (desc[trait] ? desc[trait] : traits[trait].desc) : desc;

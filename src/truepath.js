@@ -2141,7 +2141,14 @@ const tauCetiModules = {
                         desc = desc + `<div>${loc('production',[8,global.resource.Cement.name])}</div>`;
                     }
                     else {
-                        desc = desc + `<div>${loc('tau_home_mining_pit_effect2',[global.resource.Bolognium.name,global.resource.Adamantite.name,global.resource.Stone.name])}</div>`;
+                        let res_list = [global.resource.Bolognium.name,global.resource.Adamantite.name,global.resource.Stone.name];
+                        if (global.race['smoldering']){
+                            res_list.push(global.resource.Chrysotile.name);
+                            desc = desc + `<div>${loc('tau_home_mining_pit_effect2s',res_list)}</div>`;
+                        }
+                        else {
+                            desc = desc + `<div>${loc('tau_home_mining_pit_effect2',res_list)}</div>`;
+                        }
                     }
                 }
                 return desc;

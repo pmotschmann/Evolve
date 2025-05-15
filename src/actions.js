@@ -4024,7 +4024,7 @@ export const actions = {
             powered(wiki){
                 let power = global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 1 ? -6 : -5;
                 if (!wiki && global.race['environmentalist']){
-                    power += traits.environmentalist.vars()[0];
+                    power -= traits.environmentalist.vars()[0];
                 }
                 let dirt = govActive('dirty_jobs',1);
                 if (dirt){ power -= dirt; }
@@ -9505,7 +9505,6 @@ function fanaticTrait(trait,rank){
     if (global.race[trait]){
         if (!setTraitRank(trait)){
             randomMinorTrait(5);
-            arpa('Genetics');
         }
         else if (trait === 'imitation'){
             setImitation(true);
@@ -9523,6 +9522,7 @@ function fanaticTrait(trait,rank){
         }
         cleanAddTrait(trait);
     }
+    arpa('Genetics');
 }
 
 export function resQueue(){

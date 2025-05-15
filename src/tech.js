@@ -8547,7 +8547,6 @@ const techs = {
             if (payCosts($(this)[0])){
                 global.tech['ancient_deify'] = 1;
                 fanaticism(global.race.old_gods);
-                arpa('Genetics');
                 if (global.race['warlord']){
                     global.portal.throne.points++;
                 }
@@ -8576,7 +8575,6 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 fanaticism(global.race.old_gods);
-                arpa('Genetics');
                 if (global.race['warlord']){
                     global.portal.throne.points++;
                 }
@@ -15729,6 +15727,7 @@ export function stabilize_blackhole(){
     if (global.interstellar['stellar_engine'] && global.interstellar.stellar_engine.exotic >= 0.025 && global.tech['whitehole']){
         if (techs.stabilize_blackhole.action()){
             global.tech['stablized'] = 1;
+            drawTech();
         }
     }
 }
