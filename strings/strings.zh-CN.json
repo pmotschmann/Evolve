@@ -9278,7 +9278,7 @@
   "wiki_tech_calibrated_sensors": "每个供能的探测无人机使地狱石产量 +%0%。",
   "wiki_tech_shield_generator": "使勘探者死亡率 -25%。",
   "wiki_tech_enhanced_sensors1": "使每个供能的探测无人机对知识上限的加成由 +1000 提升到 +2500。",
-  "wiki_tech_shore_leave": "戈尔顿星系的每名船员可以使联谊会的知识上限 +300。",
+  "wiki_tech_shore_leave": "戈尔顿星系的每名船员可以使联谊会的知识上限 +300，戈尔顿星系以外的每名船员可以使联谊会的知识上限 +100。",
   "wiki_tech_xeno_gift": "解锁 %0 星系。",
   "wiki_tech_embassy_housing": "为大使馆供能后，它可以使市民上限 +20。",
   "wiki_tech_advanced_telemetry": "使遥测信标的知识上限和提供的星门支持 +50%。",
