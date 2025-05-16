@@ -5972,6 +5972,11 @@ export function drawCity(){
     if (!global.settings.showCity){
         return;
     }
+
+    let parent = $('#city');
+    clearElement(parent);
+    parent.append($(`<h2 class="is-sr-only">${loc('tab_city5')}</h2>`));
+
     let city_buildings = {};
     Object.keys(actions.city).forEach(function (city_name) {
         removeAction(actions.city[city_name].id);
