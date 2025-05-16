@@ -3,6 +3,14 @@ import { clearElement } from './../functions.js';
 
 export const changeList = [
     {
+        version: `1.4.8`,
+        date: `5/16/2025`,
+        changes: [
+            `Psychic now works with Elysanite.`,
+            `Fixed bugs with trait mutation costs.`
+        ]
+    },
+    {
         version: `1.4.7`,
         date: `5/15/2025`,
         changes: [
