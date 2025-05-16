@@ -23,8 +23,6 @@ import { setWeather, seasonDesc, astrologySign, astroVal } from './seasons.js';
 import { getTopChange } from './wiki/change.js';
 import { enableDebug, updateDebugData } from './debug.js';
 
-global.race['parasite'] = 1;
-
 {
     $(document).ready(function() {
         if (!window.matchMedia)
