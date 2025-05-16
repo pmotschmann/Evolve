@@ -7,6 +7,7 @@ export const changeList = [
         date: `5/16/2025`,
         changes: [
             `Psychic now works with Elysanite.`,
+            `Parasite Assembly now works on a delay timer rather then a wind restriction.`,
             `Fixed bugs with trait mutation costs.`
         ]
     },

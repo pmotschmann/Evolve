@@ -2,7 +2,7 @@ import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, 
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
-import { races, traits, genus_def, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill } from './races.js';
+import { races, traits, genus_def, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill, traitRank } from './races.js';
 import { defineResources, unlockCrates, unlockContainers, crateValue, containerValue, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus, faithTempleCount } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter } from './industry.js';
@@ -4671,11 +4671,51 @@ export function buildTemplate(key, region){
                     if (global['resource'][global.race.species].max === global['resource'][global.race.species].amount){
                         warn = `<div class="has-text-caution">${loc('city_assembly_effect_warn')}</div>`;
                     }
+                    else if (global.race['parasite']){
+                        let buffer = 6;
+                        switch (traitRank('parasite')){
+                            case 0.25:
+                                buffer = 5;
+                                break;
+                            case 0.5:   
+                                buffer = 4;
+                                break;
+                            case 1:
+                            case 2:
+                            case 3:
+                            case 4:
+                                buffer = 4 - traitRank('parasite');
+                                break;
+                        }
+                        if (global.race['last_assembled'] && global.race.last_assembled + buffer >= global.city.calendar.day){
+                            warn = `<div class="has-text-caution">${loc('city_assembly_effect_parasite',[global.race.last_assembled + buffer + 1 - global.city.calendar.day])}</div>`;
+                        }
+                        else {
+                            warn = `<div class="has-text-success">${loc('city_assembly_effect_parasite_ok')}</div>`;
+                        }
+                    }
                     return `<div>${loc('city_assembly_effect',[races[global.race.species].name])}</div>${warn}`;
                 },
                 action(args){
-                    if (global.city.calendar.wind !== 1 && global.race['parasite']){
-                        return false;
+                    if (global.race['parasite'] && (global.race['cataclysm'] || global.race['orbit_decayed'])){
+                        let buffer = 6;
+                        switch (traitRank('parasite')){
+                            case 0.25:
+                                buffer = 5;
+                                break;
+                            case 0.5:   
+                                buffer = 4;
+                                break;
+                            case 1:
+                            case 2:
+                            case 3:
+                            case 4:
+                                buffer = 4 - traitRank('parasite');
+                                break;
+                        }
+                        if (global.race['last_assembled'] && global.race.last_assembled + buffer >= global.city.calendar.day){
+                            return false;
+                        }
                     }
                     if (global.race['vax'] && global.race.vax >= 100){
                         return true;
@@ -4683,6 +4723,7 @@ export function buildTemplate(key, region){
                     else if (global['resource'][global.race.species].max > global['resource'][global.race.species].amount && payCosts($(this)[0])){
                         global['resource'][global.race.species].amount++;
                         global.civic[global.civic.d_job].workers++;
+                        global.race['last_assembled'] = global.city.calendar.day;
                         return true;
                     }
                     return false;
