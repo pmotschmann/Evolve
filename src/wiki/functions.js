@@ -149,8 +149,8 @@ export function actionDesc(info, c_action, extended, isStruct){
         let cost = hasEffect ? $(`<div class="cost right"${isStruct ? ' v-show="i.costVis"' : ''}></div>`) : $(`<div class="cost"${isStruct ? ' v-show="i.costVis"' : ''}></div>`);
         let costCreep = ``;
         if (isStruct){
-            cost.append($(`<h2 class="has-text-warning">${loc('wiki_calc_cost')}</h2>`));
-            costCreep = $(`<div class="cost right" v-show="i.creepVis"><h2 class="has-text-warning">${loc('wiki_calc_cost_creep')}</h2></div>`);
+            cost.append($(`<h2 class="has-text-warning" aria-level="3">${loc('wiki_calc_cost')}</h2>`));
+            costCreep = $(`<div class="cost right" v-show="i.creepVis"><h2 class="has-text-warning" aria-level="3">${loc('wiki_calc_cost_creep')}</h2></div>`);
         }
         let render = false;
 
