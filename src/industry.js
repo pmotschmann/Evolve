@@ -1,4 +1,4 @@
-import { global, keyMultiplier, sizeApproximation, p_on, support_on, quantum_level } from './vars.js';
+import { global, keyMultiplier, sizeApproximation, p_on, support_on, quantum_level, callback_queue } from './vars.js';
 import { loc } from './locale.js';
 import { vBind, popover, clearElement, powerGrid, easterEgg, trickOrTreat } from './functions.js';
 import { actions, checkCityRequirements, checkPowerRequirements } from './actions.js';
@@ -1753,9 +1753,7 @@ export function setPowerGrid(){
                                 }
                             }
                             if (c_action['postPower']){
-                                setTimeout(function(){
-                                    c_action.postPower(true);
-                                }, 250);
+                                callback_queue.set([c_action, 'postPower'], [true]);
                             }
                         },
                         power_off(){
@@ -1769,9 +1767,7 @@ export function setPowerGrid(){
                                 }
                             }
                             if (c_action['postPower']){
-                                setTimeout(function(){
-                                    c_action.postPower(false);
-                                }, 250);
+                                callback_queue.set([c_action, 'postPower'], [false]);
                             }
                         },
                         higher(){

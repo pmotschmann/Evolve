@@ -59,6 +59,7 @@ export var message_logs = {
     view: 'all'
 };
 export const message_filters = ['all','progress','queue','building_queue','research_queue','combat','spy','events','major_events','minor_events','achievements','hell'];
+export var callback_queue = new Map();
 
 Math.rand = function(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
@@ -1249,8 +1250,8 @@ if (convertVersion(global['version']) <= 104003){
     }
 }
 
-global['version'] = '1.4.5';
-global['revision'] = 'a';
+global['version'] = '1.4.7';
+delete global['revision'];
 delete global['beta'];
 
 if (!global.hasOwnProperty('prestige')){

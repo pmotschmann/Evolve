@@ -2643,6 +2643,32 @@ export const traits = {
             }
         }
     },
+    catnip: { // Attract Cats
+        name: loc('trait_catnip_name'),
+        desc: loc('trait_catnip'),
+        type: 'major',
+        origin: 'entish',
+        taxonomy: 'production',
+        val: 1,
+        vars(r){
+            switch (r || traitRank('catnip') || 1){
+                case 0.1:
+                    return [1,2];
+                case 0.25:
+                    return [1,2];
+                case 0.5:
+                    return [1,2];
+                case 1:
+                    return [1,2];
+                case 2:
+                    return [1,2];
+                case 3:
+                    return [2,2];
+                case 4:
+                    return [2,4];
+            }
+        }
+    },
     hyper: { // The game moves at a 5% faster pace
         name: loc('trait_hyper_name'),
         desc: loc('trait_hyper'),
@@ -2745,6 +2771,32 @@ export const traits = {
                     return [30,20];
                 case 4:
                     return [35,22];
+            }
+        }
+    },
+    anise: { // Attract Dogs
+        name: loc('trait_anise_name'),
+        desc: loc('trait_anise'),
+        type: 'major',
+        origin: 'pinguicula',
+        taxonomy: 'production',
+        val: 1,
+        vars(r){
+            switch (r || traitRank('anise') || 1){
+                case 0.1:
+                    return [1,1];
+                case 0.25:
+                    return [1,1];
+                case 0.5:
+                    return [1,1];
+                case 1:
+                    return [1,1];
+                case 2:
+                    return [1,1];
+                case 3:
+                    return [2,1];
+                case 4:
+                    return [2,3];
             }
         }
     },
@@ -5446,7 +5498,8 @@ export const races = {
         entity: loc(altRace('entish') ? 'race_spruce_entity' : 'race_entish_entity'),
         traits: {
             kindling_kindred: 1,
-            pyrophobia: 1
+            pyrophobia: 1,
+            catnip: 1
         },
         solar: {
             red: loc(altRace('entish') ? 'race_spruce_solar_red' : 'race_entish_solar_red'),
@@ -5486,7 +5539,8 @@ export const races = {
         entity: loc('race_pinguicula_entity'),
         traits: {
             fragrant: 1,
-            sticky: 1
+            sticky: 1,
+            anise: 1
         },
         solar: {
             red: loc('race_pinguicula_solar_red'),
@@ -7136,8 +7190,6 @@ export function cleanAddTrait(trait){
         case 'unified':
             global.tech['world_control'] = 1;
             global.tech['unify'] = 2;
-            clearElement($('#garrison'));
-            clearElement($('#c_garrison'));
             buildGarrison($('#garrison'),true);
             buildGarrison($('#c_garrison'),false);
             for (let i=0; i<3; i++){
@@ -7675,7 +7727,7 @@ export function combineTraits(){
 }
 
 export function traitRank(trait){
-    if (global.race['empowered'] && trait !== 'empowered'){
+    if (global.race['empowered'] && !['empowered','catnip','anise'].includes(trait)){
         let val = traits[trait].val;
         if (val >= traits.empowered.vars()[0] && val <= traits.empowered.vars()[1]){
             switch (global.race[trait]){
@@ -7769,7 +7821,7 @@ export function traitSkin(type, trait, species){
                 weak: species === 'dwarf' ? loc('trait_drunk') : traits.weak.desc,
                 spiritual: global.race.universe === 'evil' && global.civic.govern.type != 'theocracy' ? loc('trait_manipulator') : traits.spiritual.desc,
                 blurry: global.race['warlord'] ? loc('trait_blurry_warlord') : traits.blurry.desc,
-                playful: global.race['warlord'] ? loc('trait_playful_warlord') : traits.blurry.desc,
+                playful: global.race['warlord'] ? loc('trait_playful_warlord') : traits.playful.desc,
                 befuddle: global.race['warlord'] ? loc('trait_befuddle_warlord') : traits.befuddle.desc,
             };
             return trait ? (desc[trait] ? desc[trait] : traits[trait].desc) : desc;

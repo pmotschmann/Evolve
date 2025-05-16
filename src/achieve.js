@@ -639,8 +639,9 @@ export function checkAchievements(){
         let equilProgress = Array(5+1).fill(0); // Add 1 extra element to fill the "rank 0" position
         Object.keys(global.pillars).forEach(function(race){                
             if (races[race]){
-                if (!genus[races[race].type] || global.pillars[race] > genus[races[race].type]){
-                    genus[races[race].type] = global.pillars[race];
+                const type = races[race].type;
+                if (type !== 'hybrid' && (!genus[type] || global.pillars[race] > genus[type])){
+                    genus[type] = global.pillars[race];
                 }
                 rCnt++;
                 equilProgress[global.pillars[race]]++;

@@ -991,7 +991,7 @@ export const events = {
                 return loc(`event_${global.race.pet.type}_interaction${interaction}`,[loc(`event_${global.race.pet.type}_name${global.race.pet.name}`)]);
             }
             else {
-                let pet = Math.rand(0,2) === 0 ? 'cat' : 'dog';
+                let pet = global.race['catnip'] && global.race['catnip'] >= 1 ? 'cat' : (global.race['anise'] && global.race['anise'] >= 1 ? 'dog' : (Math.rand(0,2) === 0 ? 'cat' : 'dog'));
                 global.race['pet'] = {
                     type: pet,
                     name: pet === 'cat' ? Math.rand(0,12) : Math.rand(0,10),
