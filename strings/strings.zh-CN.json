@@ -169,7 +169,7 @@
   "string_pack_none": "未选择任何字符串包",
   "string_pack_using": "正在使用%0",
   "string_pack_error": "%0的格式有误",
-  "string_example": "字符串包必须为有效的JSON文件。你可以查阅GitHub仓库下的strings.json文件以获取对应文本的字符串。文件格式举例如下：%0",
+  "string_example": "字符串包必须为有效的JSON格式化的TXT文件。您可以查阅GitHub仓库下的strings.json文件以获取对应文本的字符串。文件格式举例如下：%0",
   "import": "导入存档",
   "export": "导出存档",
   "export_file": "导出存档为文件",
