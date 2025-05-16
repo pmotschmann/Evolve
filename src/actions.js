@@ -6959,7 +6959,7 @@ function buildPlanet(aspect,opt,args){
 }
 
 // Returns true when side effects associated with the new structure being powered on should occur. Can return false even when alwaysPowered is enabled.
-export function powerOnNewStruct(c_action,extra){
+export function powerOnNewStruct(c_action){
     let parts = c_action.id.split('-');
     if (!global.hasOwnProperty(parts[0]) || !global[parts[0]].hasOwnProperty(parts[1])){
         return false;
@@ -6995,8 +6995,8 @@ export function powerOnNewStruct(c_action,extra){
                 gov_tasks.replicate.task();
             }
         }
-        if (extra && typeof extra === 'function'){
-            return extra(c_action);
+        if (c_action['postPower']){
+            callback_queue.set([c_action, 'postPower'], [true]);
         }
         return true;
     }
