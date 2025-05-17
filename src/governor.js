@@ -1171,13 +1171,7 @@ export const gov_tasks = {
     combo_spy: {
         name: loc(`gov_task_combo_spy`),
         req(){
-            if (global.tech['isolation']){
-                return false;
-            }
-            if (global.race['truepath'] && global.tech['spy'] && global.tech.spy >= 2){
-                return true;
-            }
-            return global.tech['spy'] && global.tech.spy >= 2 && !global.tech['world_control'] && !global.race['cataclysm'] && global.genes.governor >= 3 ? true : false;
+            return (global.genes.governor >= 3) && gov_tasks.spyop.req();
         },
         task(){
             if ( $(this)[0].req() ){
