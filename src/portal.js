@@ -3784,7 +3784,7 @@ function buildEnemyFortress(parent){
 
     let enemy = $(`<div v-for="(e, index) of enemy" :key="index" class="enemyFortress">
         <div class="fortRow"><span class="has-text-success">{{ e.r | species }}</span><span class="has-text-warning">${loc(`fortress_wall`)} {{ e.f }}%</span></div>
-        <div class="fortRow second"><span class="has-text-caution">${loc(`fortress_demon_kills`)} {{ e.k | kills }}</span><a class="button" v-on:click="attack(index)">${loc(`civics_garrison_attack`)}</a></div>
+        <div class="fortRow second"><span class="has-text-caution">${loc(`fortress_demon_kills`)} {{ e.k | kills }}</span><a class="button" v-on:click="attack(index)" role="button">${loc(`civics_garrison_attack`)}</a></div>
     </div>`);
     fort.append(enemy);
 
