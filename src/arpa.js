@@ -2084,12 +2084,12 @@ function genetics(){
             breakdown.prepend(`<div class="trait minor has-text-success" role="heading" aria-level="3">${loc('arpa_race_genetic_minor_traits',[flib('name')])}</div>`)
         }
 
-        let rmCost = function(t){
+        let rmCost = function(t,label){
             let cost = traits[t].val * 5;
             if (['custom','hybrid','sludge','ultra_sludge'].includes(global.race.species)){
                 cost *= 10;
             }
-            if (global.race[t]){
+            if (global.race[t] && traits[t].val < 0){
                 switch(global.race[t]){
                     case 0.1:
                         cost *= 4;
@@ -2105,10 +2105,17 @@ function genetics(){
             if (cost < 0){
                 cost *= -1;
             }
-            return loc('arpa_remove',[traitSkin('name',t),cost,global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name')]);
+            if (global.race['modified']){
+                cost += global.race.modified.t * 10;
+                if (traits[t].val < 0){ cost += global.race.modified.nr * 10; }
+            }
+            if (label){
+                return loc('arpa_remove',[traitSkin('name',t),cost,global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name')]);
+            }
+            return cost;
         };
 
-        let addCost = function(t){
+        let addCost = function(t,label){
             let cost = traits[t].val * 5;
             if (['custom','hybrid','sludge','ultra_sludge'].includes(global.race.species)){
                 cost *= 10;
@@ -2116,7 +2123,14 @@ function genetics(){
             if (cost < 0){
                 cost *= -1;
             }
-            return loc('arpa_gain',[traitSkin('name',t),cost,global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name')]);
+            if (global.race['modified']){
+                cost += global.race.modified.t * 10;
+                if (traits[t].val >= 0){ cost += global.race.modified.pa * 10; }
+            }
+            if (label){
+                return loc('arpa_gain',[traitSkin('name',t),cost,global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name')]);
+            }
+            return cost;
         };
 
         let mGeneCost = function(t){
@@ -2200,27 +2214,20 @@ function genetics(){
                     if (['sludge','ultra_sludge'].includes(global.race.species) && (global.race['modified'] || t === 'ooze')){
                         return;
                     }
-                    let cost = traits[t].val * 5;
-                    if (['custom','hybrid','sludge','ultra_sludge'].includes(global.race.species)){
-                        cost *= 10;
-                    }
-                    if (races[global.race.species].type === 'hybrid'){
-                        cost *= 2;
-                    }
-                    if (cost < 0){
-                        cost *= -1;
-                    }
+                    let cost = rmCost(t,false);
                     let res = global.race.universe === 'antimatter' ? 'AntiPlasmid' : 'Plasmid';
                     if (global.prestige[res].count >= cost){
                         global.prestige[res].count -= cost;
                         let rank = global.race[t];
                         delete global.race[t];
                         if (!global.race['modified']){
-                            global.race['modified'] = 1;
+                            global.race['modified'] = {
+                                t: 0, nr: 0, na: 0, pr: 0, pa: 0
+                            };
                         }
-                        else {
-                            global.race['modified']++;
-                        }
+                        global.race.modified.t++;
+                        if (traits[t].val >= 0){ global.race.modified.pr++; } else { global.race.modified.nr++; }
+
                         if(t === 'forager'){
                             delete global.race.inactiveTraits['herbivore'];
                             delete global.race.inactiveTraits['carnivore'];
@@ -2246,26 +2253,18 @@ function genetics(){
                     else if (['sludge','ultra_sludge'].includes(global.race.species) && global.race['modified']){
                         return;
                     }
-                    let cost = traits[t].val * 5;
-                    if (['custom','hybrid','sludge','ultra_sludge'].includes(global.race.species)){
-                        cost *= 10;
-                    }
-                    if (races[global.race.species].type === 'hybrid'){
-                        cost *= 2;
-                    }
-                    if (cost < 0){
-                        cost *= -1;
-                    }
+                    let cost = addCost(t,false);
                     let res = global.race.universe === 'antimatter' ? 'AntiPlasmid' : 'Plasmid';
                     if (global.prestige[res].count >= cost){
                         global.prestige[res].count -= cost;
                         global.race[t] = 1;
-                        if (!global.race['modified']){
-                            global.race['modified'] = 1;
+                        if (!global.race.hasOwnProperty('modified')){
+                            global.race['modified'] = {
+                                t: 0, nr: 0, na: 0, pr: 0, pa: 0
+                            };
                         }
-                        else {
-                            global.race['modified']++;
-                        }
+                        global.race.modified.t++;
+                        if (traits[t].val >= 0){ global.race.modified.pa++; } else { global.race.modified.na++; }
                         cleanAddTrait(t);
                         if (offspec_traits.includes(t)){
                             setTraitRank(t, {down:true});
@@ -2286,10 +2285,10 @@ function genetics(){
                     return loc(`trait_${t}_effect`);
                 },
                 removeCost(t){
-                    return rmCost(t);
+                    return rmCost(t,true);
                 },
                 addCost(t){
-                    return addCost(t);
+                    return addCost(t,true);
                 },
                 genePurchasable(t){
                     let cost = fibonacci(global.race.minor[t] ? global.race.minor[t] + 4 : 4);
@@ -2339,7 +2338,7 @@ function genetics(){
 
         remove_list.forEach(function (t){
             popover(`popRemoveBkdwn${t}`, function(){
-                return rmCost(t);
+                return rmCost(t,true);
             },
             {
                 elm: `#geneticBreakdown .remove${t}`,
@@ -2361,7 +2360,7 @@ function genetics(){
 
         trait_list.forEach(function (t){
             popover(`popAddBkdwn${t}`, function(){
-                return addCost(t);
+                return addCost(t,true);
             },
             {
                 elm: `#geneticBreakdown .add${t}`,

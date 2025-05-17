@@ -1292,23 +1292,14 @@ const fortressModules = {
                 return false;
             },
             postPower(o){
-                let count = $(this)[0].citizens();
-                if (o){
-                    global.resource[global.race.species].max += count;
-                    global.resource[global.race.species].amount += count;
-                    global.civic.miner.max += count;
-                    global.civic.miner.workers += count;
-                    global.civic.miner.assigned += count;
-                }
-                else {
-                    global.resource[global.race.species].max -= count;
-                    global.resource[global.race.species].amount -= count;
-                    if (global.resource[global.race.species].amount < 0){ global.resource[global.race.species].amount = 0; }
-                    if (global.resource[global.race.species].max < 0){ global.resource[global.race.species].max = 0; }
-                    global.civic.miner.max -= count;
-                    global.civic.miner.workers -= count;
-                    global.civic.miner.assigned -= count;
-                }
+                const prev_count = global.civic.miner.max;
+                const new_count = $(this)[0].citizens() * global.portal.dig_demon.on;
+                const delta = new_count - prev_count;
+                global.resource[global.race.species].max = Math.max(0, global.resource[global.race.species].max + delta);
+                global.resource[global.race.species].amount = Math.max(0, global.resource[global.race.species].amount + delta);
+                global.civic.miner.max = new_count;
+                global.civic.miner.workers = new_count;
+                global.civic.miner.assigned = new_count;
             },
             struct(){
                 return {
@@ -1926,7 +1917,18 @@ const fortressModules = {
             action(args){
                 if (payCosts($(this)[0])){
                     incrementStruct('guard_post','portal');
-                    powerOnNewStruct($(this)[0]);
+
+                    let army = global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size);
+                    if (p_on['soul_forge']){
+                        let forge = soulForgeSoldiers();
+                        if (forge <= army){
+                            army -= forge;
+                        }
+                    }
+                    if (army >= jobScale(global.portal.guard_post.on + 1)){
+                        // Don't power on unless there are enough guards
+                        powerOnNewStruct($(this)[0]);
+                    }
                     return true;
                 }
                 return false;
@@ -2112,10 +2114,6 @@ const fortressModules = {
                     return true;
                 }
                 return false;
-            },
-            post(){
-                vBind({el: `#srprtl_ruins`},'update');
-                drawTech();
             },
             postPower(){
                 vBind({el: `#srprtl_ruins`},'update');
@@ -2499,9 +2497,6 @@ const fortressModules = {
                     d: { count: 0, on: 0 },
                     p: ['gate_turret','portal']
                 };
-            },
-            post(){
-                vBind({el: `#srprtl_gate`},'update');
             },
             postPower(){
                 vBind({el: `#srprtl_gate`},'update');
@@ -3355,7 +3350,7 @@ const fortressModules = {
             id: 'portal-mechbay',
             title(){ return global.race['warlord'] ? loc('portal_demon_artificer_title') : loc('portal_mechbay_title'); },
             desc(){
-                return `<div>${loc('portal_demon_artificer_title')}</div><div class="has-text-special">${loc('portal_spire_support')}</div>`;
+                return `<div>${$(this)[0].title()}</div><div class="has-text-special">${loc('portal_spire_support')}</div>`;
             },
             reqs: { hell_spire: 9 },
             cost: {
