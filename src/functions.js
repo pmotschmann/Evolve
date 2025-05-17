@@ -8,6 +8,7 @@ import { arpaAdjustCosts, arpaProjectCosts } from './arpa.js';
 import { gridDefs } from './industry.js';
 import { govActive } from './governor.js';
 import { govEffect } from './civics.js';
+import { highPopAdjust } from './prod.js';
 import { universeLevel, universeAffix, alevel } from './achieve.js';
 import { astrologySign, astroVal } from './seasons.js';
 import { shipCosts, TPShipDesc } from './truepath.js';
@@ -808,7 +809,7 @@ export function costMultiplier(structure,offset,base,mutiplier,cat){
     if (mutiplier < 1.005){
         mutiplier = 1.005;
     }
-    var count = structure === 'citizen' ? global['resource'][global.race.species].amount : (global[cat][structure] ? global[cat][structure].count : 0);
+    var count = structure === 'citizen' ? highPopAdjust(global['resource'][global.race.species].amount) : (global[cat][structure] ? global[cat][structure].count : 0);
     if (offset){
         count += offset;
     }

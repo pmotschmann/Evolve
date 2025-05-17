@@ -1490,7 +1490,7 @@ function fastLoop(){
             global.city.morale.unemployed = global.civic.hunter.workers * val;
         }
         else {
-            stress -= global.civic.hunter.workers / divisor;
+            stress -= highPopAdjust(global.civic.hunter.workers) / divisor;
         }
 
         if (global.race['optimistic']){
@@ -3514,17 +3514,17 @@ function fastLoop(){
                                 global.city.captive_housing.cattle++;
                                 global.city.captive_housing.cattleCatch = 0;
                             }
-                            if (global.city.captive_housing.cattle > 0 && global.resource.Food.amount < global.resource.Food.max * 0.01){
-                                global.city.captive_housing.cattle--;
-                                modRes('Food', 1000, true);
-                                global.stats.cattle++;
-                            }
                         }
 
                         if (global.city.captive_housing.cattle > 0){
                             let food = global.city.captive_housing.cattle / 3 * production('psychic_boost','Food');
                             breakdown.p['Food'][loc('city_captive_housing_cattle_bd')] = food + 'v';
                             food_base += food;
+                            if (global.resource.Food.amount < global.resource.Food.max * 0.01){
+                                global.city.captive_housing.cattle--;
+                                modRes('Food', food * global_multiplier * 30, true);
+                                global.stats.cattle++;
+                            }
                         }
                     }
                 }
@@ -4039,7 +4039,7 @@ function fastLoop(){
                 let hunters = workerScale(global.civic.hunter.workers,'hunter');
                 hunters *= racialTrait(hunters,'hunting');
                 if (global.race['servants']){
-                    let serve = jobScale(global.race.servants.jobs.hunter);
+                    let serve = global.race.servants.jobs.hunter;
                     serve *= servantTrait(global.race.servants.jobs.hunter,'hunting');
                     hunters += serve;
                 }
@@ -5690,8 +5690,9 @@ function fastLoop(){
             // Foragers excluded from use of tools
             if (global.race['living_tool'] || global.race['tusk']){
                 // buffed twice with racial trait on purpose
+                const balance = global.race['hivemind'] ? traits.hivemind.vars()[0] : 1;
+                let tusk = global.race['tusk'] ? 1 + ((traits.tusk.vars()[0] / 100) * (armyRating(jobScale(balance),'army',0) / balance / 100)) : 1;
                 let lt = global.race['living_tool'] ? traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science * 0.06 : 0) + 1 : 1;
-                let tusk = global.race['tusk'] ? ((traits.tusk.vars()[0] / 100) * (armyRating(jobScale(1),'army',0) / 100)) + 1 : 1;
                 stone_base *= lt > tusk ? lt : tusk;
             }
             else {
@@ -7126,13 +7127,13 @@ function fastLoop(){
                         rate += (p_on['citadel'] * 0.02);
                     }
                     let bonus = int_on['processing'] * rate;
-                    driod_delta *= 1 + bonus;
                     breakdown.p['Adamantite'][`ᄂ${loc('interstellar_processing_title')}`] = (bonus * 100) + '%';
 
                     if (global.race['discharge'] && global.race['discharge'] > 0){
-                        driod_delta *= 0.5;
+                        bonus *= 0.5;
                         breakdown.p['Adamantite'][`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
                     }
+                    driod_delta *= 1 + bonus;
                 }
                 breakdown.p['Adamantite'][`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
             }
@@ -10966,6 +10967,9 @@ function midLoop(){
             if(p_on['oven_complete']){
                 progress = 0.00025;
                 if(global.portal['dish_life_infuser'] && global.portal['dish_life_infuser'].on){
+                    progress *= 1 + (0.15 * global.portal['dish_life_infuser'].on);
+                }
+                if(global.portal['dish_soul_steeper'] && global.portal['dish_soul_steeper'].on && global.portal['spire']){
                     let hunger = 0.5;
                     if (global.race['angry']){
                         hunger -= traits.angry.vars()[0] / 100;
@@ -10973,11 +10977,9 @@ function midLoop(){
                     if (global.race['malnutrition']){
                         hunger += traits.malnutrition.vars()[0] / 100;
                     }
-                    let working = Math.min(global.portal['dish_life_infuser'].on, Math.floor(hunger / 0.02));
-                    progress *= 1 + (0.15 * working);
-                }
-                if(global.portal['dish_soul_steeper'] && global.portal['dish_soul_steeper'].on && global.portal['spire']){
-                    progress *= 1 + (0.05 * global.portal['spire'].count * global.portal['dish_soul_steeper'].on);
+                    let mult = (0.03 + (global.race['malnutrition'] ? 0.01 : 0) + (global.race['angry'] ? -0.01 : 0));
+                    let working = Math.min(global.portal['dish_soul_steeper'].on, Math.floor(hunger / mult));
+                    progress *= 1 + (0.05 * global.portal['spire'].count * working);
                 }
                 global.portal['devilish_dish'].done += progress;
                 global.portal['devilish_dish'].done = Math.min(global.portal['devilish_dish'].done, 100);
