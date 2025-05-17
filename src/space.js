@@ -7469,7 +7469,7 @@ export function setUniverse(){
         let id = `uni-${universe}`;
 
         let parent = $(`<div id="${id}" class="action"></div>`);
-        let element = $(`<a class="button is-dark" v-on:click="action"><span class="aTitle">${universe_types[universe].name}</span></a>`);
+        let element = $(`<a class="button is-dark" v-on:click="action" role="link"><span class="aTitle">${universe_types[universe].name}</span></a>`);
         parent.append(element);
 
         $('#evolution').append(parent);
