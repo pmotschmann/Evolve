@@ -3350,7 +3350,7 @@ const fortressModules = {
             id: 'portal-mechbay',
             title(){ return global.race['warlord'] ? loc('portal_demon_artificer_title') : loc('portal_mechbay_title'); },
             desc(){
-                return `<div>${loc('portal_demon_artificer_title')}</div><div class="has-text-special">${loc('portal_spire_support')}</div>`;
+                return `<div>${$(this)[0].title()}</div><div class="has-text-special">${loc('portal_spire_support')}</div>`;
             },
             reqs: { hell_spire: 9 },
             cost: {
