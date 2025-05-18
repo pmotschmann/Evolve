@@ -3522,7 +3522,7 @@ function fastLoop(){
                             food_base += food;
                             if (global.resource.Food.amount < global.resource.Food.max * 0.01){
                                 global.city.captive_housing.cattle--;
-                                modRes('Food', food * global_multiplier * 30, true);
+                                modRes('Food', 1000 * production('psychic_boost','Food') * global_multiplier, true);
                                 global.stats.cattle++;
                             }
                         }
