@@ -4162,7 +4162,7 @@ const interstellarProjects = {
                     r_mass += 0.225 * global.tech['roid_eject'] * (1 + (global.tech['roid_eject'] / 12));
                 }
                 let gWell = 1 + (global.stats.achieve['escape_velocity'] && global.stats.achieve.escape_velocity['h'] ? global.stats.achieve.escape_velocity['h'] * 0.02 : 0);
-                let output = powerModifier(20 + (r_mass - 8 + exotic * 10) * waves * gWell);
+                let output = powerModifier((20 + (r_mass - 8 + exotic * 10) * waves) * gWell);
                 if (output > 10000){
                     output = 10000 + (output - 10000) ** 0.975;
                     if (output > 20000){ output = 20000 + (output - 20000) ** 0.95; }

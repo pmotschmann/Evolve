@@ -2335,7 +2335,8 @@ export function massCalc(info){
                 }
             },
             baseMW(){
-                return powerModifier(20);
+                let gWellFactor = (1 + (inputs.gWell.val ?? 0) * 0.02) ;
+                return +powerModifier(20 * gWellFactor).toFixed(2);
             },
             amountMW(exotic){
                 let gWellFactor = (1 + (inputs.gWell.val ?? 0) * 0.02) ;
@@ -2388,8 +2389,9 @@ export function massCalc(info){
                     if (inputs.solar_tot.val !== undefined && inputs.exotic_tot.val !== undefined){
                         show.result.MWVis = true;
                         
-                        let massRatio = (inputs.grav.val ? 13.5 : 7.5) * (1 + inputs.gWell.val * 0.02);
-                        let rawPower = powerModifier(20 + ((inputs.solar_tot.val - 8) * massRatio + inputs.exotic_tot.val * massRatio * 10));
+                        let massRatio = (inputs.grav.val ? 13.5 : 7.5);
+                        let gWellFactor = (1 + inputs.gWell.val * 0.02);
+                        let rawPower = powerModifier((20 + ((inputs.solar_tot.val - 8) * massRatio + inputs.exotic_tot.val * massRatio * 10)) * gWellFactor);
                         show.result.MWTot = +rawPower.toFixed(2);
                         let adjPower = rawPower;
 
