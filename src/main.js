@@ -10848,14 +10848,14 @@ function midLoop(){
             if (Math.rand(0,250) <= belt_mining){
                 global.tech['asteroid'] = 4;
                 global.resource.Elerium.display = true;
-                modRes('Elerium',1);
+                modRes('Elerium',1,true);
                 drawTech();
                 messageQueue(loc('discover_elerium'),'info',false,['progress']);
             }
         }
 
         if (global.tech['asteroid'] && global.tech.asteroid === 4 && global.resource.Elerium.amount === 0){
-            modRes('Elerium',1);
+            modRes('Elerium',1,true);
         }
 
         if (p_on['outpost'] > 0 && global.tech['gas_moon'] && global.tech['gas_moon'] === 1){
@@ -12886,7 +12886,7 @@ function diffCalc(res,period){
 function steelCheck(){
     if (global.resource.Steel.display === false && Math.rand(0,1250) === 0){
         global.resource.Steel.display = true;
-        modRes('Steel',1);
+        modRes('Steel', 1, true);
         messageQueue(loc('steel_sample'),'info',false,['progress']);
     }
 }

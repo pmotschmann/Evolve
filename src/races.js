@@ -9253,7 +9253,7 @@ function psychicKill(parent){
                     global.stats.psykill++;
                     blubberFill(1);
                     if (global.race['anthropophagite']){
-                        modRes('Food', 10000 * traits.anthropophagite.vars()[0]);
+                        modRes('Food', 10000 * traits.anthropophagite.vars()[0], true);
                     }
                     if (global.stats.psykill === 10){
                         renderPsychicPowers();

@@ -2421,7 +2421,7 @@ function buildCrate(num){
         keyMutipler = Math.floor(global.resource[material].amount / cost);
     }
     if (global.resource[material].amount >= (cost * keyMutipler) && global.resource.Crates.amount < global.resource.Crates.max){
-        modRes(material,-(cost * keyMutipler));
+        modRes(material, -(cost * keyMutipler), true);
         global.resource.Crates.amount += keyMutipler;
     }
 }
@@ -2435,7 +2435,7 @@ function buildContainer(num){
         keyMutipler = Math.floor(global.resource['Steel'].amount / 125);
     }
     if (global.resource['Steel'].amount >= (125 * keyMutipler) && global.resource.Containers.amount < global.resource.Containers.max){
-        modRes('Steel',-(125 * keyMutipler));
+        modRes('Steel', -(125 * keyMutipler), true);
         global.resource.Containers.amount += keyMutipler;
     }
 }

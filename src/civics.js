@@ -1830,7 +1830,7 @@ function war_campaign(gov){
         if (global.resource.Money.display && gains.Money > 0){
             gains.Money = lootModify(gains.Money,gov);
             loot = loot + loc('civics_garrison_quant_money',[gains.Money]);
-            modRes('Money',gains.Money);
+            modRes('Money',gains.Money,true);
         }
 
         let payout = basic.concat(common,rare);
@@ -1838,7 +1838,7 @@ function war_campaign(gov){
             if (gains[res] > 0 && (global.resource[res].display || res === 'Steel' || res === 'Titanium')){
                 gains[res] = lootModify(gains[res],gov);
                 loot = loot + loc('civics_garrison_quant_res',[gains[res],global.resource[res].name]);
-                modRes(res,gains[res]);
+                modRes(res,gains[res],true);
                 if (res === 'Steel' || res === 'Titanium'){
                     global.resource[res].display = true;
                 }
