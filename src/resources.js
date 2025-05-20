@@ -1031,7 +1031,8 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
     tmp_vars.resource[name] = {
         color: color,
         tradable: tradable,
-        stackable: stackable
+        stackable: stackable,
+        temp_max: 0
     };
 }
 

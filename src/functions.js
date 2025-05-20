@@ -1,4 +1,4 @@
-import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame, atrack, p_on, quantum_level } from './vars.js';
+import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame, atrack, p_on, quantum_level, tmp_vars } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits, genus_def, traitSkin, fathomCheck } from './races.js';
 import { actions, actionDesc } from './actions.js';
@@ -662,6 +662,20 @@ export function tagEvent(event, data){
     } catch (err){}
 }
 
+export function resetResBuffer(){
+    // During fastLoop, temporarily increase the maximum storage to avoid unfortunate cases where
+    // storage cannot be maximized as a result of consuming a resource after it is produced.
+    // The resource buffer is eliminated at the end of fastLoop.
+    Object.keys(tmp_vars.resource).forEach(function (res) {
+        let temp_max = global.resource[res].max;
+        // Don't change infinite storage (-1) into finite storage
+        if (temp_max > 0){
+            temp_max += global.resource[res].amount;
+        }
+        tmp_vars.resource[res].temp_max = temp_max;
+    });
+}
+
 export function modRes(res,val,notrack,buffer){
     if(res === 'Food' && global.race['fasting']){
         global.resource[res].amount = 0;
@@ -669,8 +683,9 @@ export function modRes(res,val,notrack,buffer){
     }
     let count = global.resource[res].amount + val;
     let success = true;
-    if (count > global.resource[res].max && global.resource[res].max != -1){
-        count = global.resource[res].max;
+    let max = notrack ? global.resource[res].max : tmp_vars.resource[res].temp_max;
+    if (count > max && max >= 0){
+        count = max;
     }
     else if (count < 0){
         if (!buffer || (buffer && (count * -1) > buffer)){
@@ -684,6 +699,9 @@ export function modRes(res,val,notrack,buffer){
             global.resource[res].delta += val;
             if (res === 'Mana' && val > 0){
                 global.resource[res].gen_d += val;
+            }
+            else if (val < 0 && max >= 0){
+                tmp_vars.resource[res].temp_max = Math.max(0, tmp_vars.resource[res].temp_max + val);
             }
         }
     }
