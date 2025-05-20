@@ -5986,23 +5986,6 @@ function fastLoop(){
 
         // Mana
         if (global.resource.Mana.display){
-            if (global.race['casting']){
-                ['farmer','miner','lumberjack','science','factory','army','hunting','crafting'].forEach(function (spell){
-                    if (global.race.casting[spell] && global.race.casting[spell] > 0){
-                        let consume_mana = manaCost(global.race.casting[spell]);
-                        breakdown.p.consume.Mana[loc(`modal_pylon_spell_${spell}`)] = -(consume_mana);
-
-                        let buffer = global.resource.Mana.diff > 0 ? global.resource.Mana.diff * time_multiplier : 0
-                        if (!modRes('Mana', -(consume_mana * time_multiplier), false, buffer)){
-                            global.race.casting[spell]--;
-                        }
-                    }
-                    else {
-                        delete breakdown.p.consume.Mana[loc(`modal_pylon_spell_${spell}`)];
-                    }
-                });
-            }
-
             if (global.city['pylon'] || global.space['pylon'] || global.tauceti['pylon']){
                 let mana_base = 0;
                 let name = 'city_pylon';
@@ -6073,6 +6056,23 @@ function fastLoop(){
             }
 
             breakdown.p['Mana'][loc('hunger')] = ((hunger - 1) * 100) + '%';
+
+            if (global.race['casting']){
+                ['farmer','miner','lumberjack','science','factory','army','hunting','crafting'].forEach(function (spell){
+                    if (global.race.casting[spell] && global.race.casting[spell] > 0){
+                        let consume_mana = manaCost(global.race.casting[spell]);
+                        breakdown.p.consume.Mana[loc(`modal_pylon_spell_${spell}`)] = -(consume_mana);
+
+                        if (!modRes('Mana', -(consume_mana * time_multiplier))){
+                            global.race.casting[spell]--;
+                        }
+                    }
+                    else {
+                        delete breakdown.p.consume.Mana[loc(`modal_pylon_spell_${spell}`)];
+                    }
+                });
+            }
+
         }
 
         // Crystal

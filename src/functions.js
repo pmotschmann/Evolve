@@ -676,7 +676,7 @@ export function resetResBuffer(){
     });
 }
 
-export function modRes(res,val,notrack,buffer){
+export function modRes(res,val,notrack){
     if(res === 'Food' && global.race['fasting']){
         global.resource[res].amount = 0;
         return false;
@@ -688,9 +688,7 @@ export function modRes(res,val,notrack,buffer){
         count = max;
     }
     else if (count < 0){
-        if (!buffer || (buffer && (count * -1) > buffer)){
-            success = false;
-        }
+        success = false;
         count = 0;
     }
     if (!Number.isNaN(count)){
