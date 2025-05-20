@@ -11033,6 +11033,7 @@ function midLoop(){
             global.race.casting.total = total;
         }
 
+        let blockGeneBuffer = false;
         if (global.tech['r_queue'] && global.r_queue.display){
             let idx = -1;
             let c_action = false;
@@ -11064,6 +11065,9 @@ function midLoop(){
                                 }
                             }
                             else {
+                                if (t_time <= 1){
+                                    blockGeneBuffer = true;
+                                }
                                 if (reqMet){
                                     time += t_time;
                                 }
@@ -11124,7 +11128,7 @@ function midLoop(){
         }
 
         if (global.arpa.sequence && global.arpa.sequence['auto'] && global.tech['genetics'] && global.tech['genetics'] >= 8){
-            buildGene();
+            buildGene(blockGeneBuffer);
         }
 
         if (p_on['soul_forge']){
@@ -12813,9 +12817,8 @@ function longLoop(){
     }
 }
 
-function buildGene(){
-    // Reduce size of Knowledge buffer when daily production is under 10000 to avoid jumping in front of the research queue
-    let buffer = global.resource.Knowledge.diff < 10000 ? global.resource.Knowledge.diff : 10000;
+function buildGene(blockGeneBuffer = false){
+    let buffer = blockGeneBuffer ? 0 : 10000;
     if (global.resource.Knowledge.amount >= 200000 && global.resource.Knowledge.amount >= global.resource.Knowledge.max - buffer){
         global.resource.Knowledge.amount -= 200000;
         let gene = global.genes['synthesis'] ? sythMap[global.genes['synthesis']] : 1;
