@@ -5551,7 +5551,7 @@ export function jumpGateShutdown(){
     Object.keys(actions.city).forEach(function (k){
         if (global.city.hasOwnProperty(k) && global.city[k].hasOwnProperty('count')){
             if (global.race['hooved']){
-                if (actions.city[k].cost.hasOwnProperty('Horseshoe')){
+                if (actions.city[k]?.cost.hasOwnProperty('Horseshoe')){
                     global.race['shoecnt'] -= actions.city[k].cost.Horseshoe() * global.city[k].count;
                 }
             }
@@ -5571,8 +5571,8 @@ export function jumpGateShutdown(){
         Object.keys(actions.space[sector]).forEach(function (k){
             if (global.space.hasOwnProperty(k) && global.space[k].hasOwnProperty('count')){
                 if (global.race['hooved']){
-                    if (actions.space[sector][k].cost.hasOwnProperty('Horseshoe')){
-                        global.race['shoecnt'] -= actions.space[sector][k].cost.Horseshoe() * global.space[k].count;
+                    if (actions.space[sector][k]?.cost.hasOwnProperty('Horseshoe')){
+                        global.race['shoecnt'] -= actions.space[sector][k]?.cost.Horseshoe() * global.space[k].count;
                     }
                 }
                 inactive.space[k] = {c: global.space[k].count};

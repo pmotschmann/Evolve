@@ -6726,7 +6726,8 @@ export function racialTrait(workers,type){
         }
     }
     if ((global.race['living_tool'] || global.race['tusk']) && type === 'miner'){
-        let tusk = global.race['tusk'] ? 1 + ((traits.tusk.vars()[0] / 100) * (armyRating(jobScale(1),'army',0) / 100)) : 1;
+        const balance = global.race['hivemind'] ? traits.hivemind.vars()[0] : 1;
+        let tusk = global.race['tusk'] ? 1 + ((traits.tusk.vars()[0] / 100) * (armyRating(jobScale(balance),'army',0) / balance / 100)) : 1;
         let lt = global.race['living_tool'] ? 1 + traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science * 0.12 : 0) : 1;
         modifier *= lt > tusk ? lt : tusk;
     }
