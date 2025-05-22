@@ -837,7 +837,7 @@ export function govActive(trait,val){
 
 export function removeTask(task){
     if (global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
-        for (let i=0; i<global.race.governor.tasks.length; i++){
+        for (let i=0; i<Object.keys(global.race.governor.tasks).length; i++){
             if (global.race.governor.tasks[`t${i}`] === task){
                 global.race.governor.tasks[`t${i}`] = 'none';
             }
