@@ -15680,6 +15680,7 @@ function uniteEffect(){
     }
     removeTask('spy');
     removeTask('spyop');
+    removeTask('combo_spy');
     defineGovernor();
 }
 

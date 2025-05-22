@@ -5672,6 +5672,7 @@ export function jumpGateShutdown(){
 
     removeTask('spy');
     removeTask('spyop');
+    removeTask('combo_spy');
     defineGovernor();
 
     clearElement($(`#infoTimer`));
