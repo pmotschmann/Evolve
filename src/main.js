@@ -11065,10 +11065,10 @@ function midLoop(){
                                 }
                             }
                             else {
-                                if (t_time <= 1){
-                                    blockGeneBuffer = true;
-                                }
                                 if (reqMet){
+                                    if (!stop && t_time <= 1){
+                                        blockGeneBuffer = true;
+                                    }
                                     time += t_time;
                                 }
                                 untime += t_time;
