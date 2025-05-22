@@ -7207,6 +7207,7 @@ export function cleanAddTrait(trait){
             }
             removeTask('spy');
             removeTask('spyop');
+            defineGovernor();
             break;
         case 'noble':
             if (global.civic.taxes.tax_rate < 10) {

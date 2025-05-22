@@ -14,7 +14,7 @@ import { tauCetiTech, renderTauCeti, loneSurvivor } from './truepath.js';
 import { arpa, gainGene, gainBlood } from './arpa.js';
 import { production, highPopAdjust } from './prod.js';
 import { techList, techPath } from './tech.js';
-import { govActive, removeTask, gov_tasks } from './governor.js';
+import { defineGovernor, govActive, removeTask, gov_tasks } from './governor.js';
 import { bioseed } from './resets.js';
 import { loadTab } from './index.js';
 
@@ -8025,6 +8025,7 @@ export function orbitDecayed(){
             global.resource.Slave.display = false;
             global.resource.Slave.amount = 0;
             removeTask('slave');
+            defineGovernor();
         }
         if (global.race['deconstructor']){
             nf_resources.forEach(function (res){
