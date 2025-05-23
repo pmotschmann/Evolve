@@ -1,11 +1,11 @@
-import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level, callback_queue } from './vars.js';
+import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level, callback_queue, active_rituals } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat, checkAdept } from './achieve.js';
 import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, resetResBuffer, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone, addATime, exceededATimeThreshold, loopTimers, calcQuantumLevel, drawPet } from './functions.js';
 import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, cleanRemoveTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobName, jobScale, workerScale, limitCraftsmen, loadServants} from './jobs.js';
-import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, luxGoodPrice, smelterUnlocked, smelterFuelConfig } from './industry.js';
+import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, luxGoodPrice, smelterUnlocked, smelterFuelConfig, setupRituals, maxRitualNum, ritual_types } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
 import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, checkPowerRequirements, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct, casino_vault, casinoEarn, doCallbacks, cLabels } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types } from './space.js';
@@ -287,6 +287,7 @@ buildQueue();
 if (global.race['shapeshifter']){
     shapeShift(false,true);
 }
+setupRituals();
 
 Object.keys(gridDefs()).forEach(function(gridtype){
     powerGrid(gridtype);
@@ -5986,6 +5987,29 @@ function fastLoop(){
 
         // Mana
         if (global.resource.Mana.display){
+            if (global.race['casting']){
+                ritual_types.forEach(function (spell){
+                    if (global.race.casting[spell]){
+                        if (global.race.casting[spell] > 0){
+                            const consume_mana = manaCost(global.race.casting[spell]);
+                            const consume_mana_dt = consume_mana * time_multiplier;
+                            if (consume_mana_dt > global.resource.Mana.amount){
+                                active_rituals[spell] = maxRitualNum(global.resource.Mana.amount, time_multiplier);
+                            }
+                            else {
+                                active_rituals[spell] = global.race.casting[spell];
+                            }
+                            breakdown.p.consume.Mana[loc(`modal_pylon_spell_${spell}`)] = -(consume_mana);
+
+                            modRes('Mana', -(consume_mana_dt));
+                        }
+                        else {
+                            active_rituals[spell] = 0;
+                        }
+                    }
+                });
+            }
+
             if (global.city['pylon'] || global.space['pylon'] || global.tauceti['pylon']){
                 let mana_base = 0;
                 let name = 'city_pylon';
@@ -6056,23 +6080,6 @@ function fastLoop(){
             }
 
             breakdown.p['Mana'][loc('hunger')] = ((hunger - 1) * 100) + '%';
-
-            if (global.race['casting']){
-                ['farmer','miner','lumberjack','science','factory','army','hunting','crafting'].forEach(function (spell){
-                    if (global.race.casting[spell] && global.race.casting[spell] > 0){
-                        let consume_mana = manaCost(global.race.casting[spell]);
-                        breakdown.p.consume.Mana[loc(`modal_pylon_spell_${spell}`)] = -(consume_mana);
-
-                        if (!modRes('Mana', -(consume_mana * time_multiplier))){
-                            global.race.casting[spell]--;
-                        }
-                    }
-                    else {
-                        delete breakdown.p.consume.Mana[loc(`modal_pylon_spell_${spell}`)];
-                    }
-                });
-            }
-
         }
 
         // Crystal
@@ -11025,7 +11032,7 @@ function midLoop(){
 
         if (global.race['casting']){
             let total = 0;
-            ['farmer','miner','lumberjack','science','factory','army','hunting','crafting'].forEach(function (spell){
+            ritual_types.forEach(function (spell){
                 if (global.race.casting[spell]){
                     total += global.race.casting[spell];
                 }

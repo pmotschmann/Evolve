@@ -2620,6 +2620,30 @@ export function format_emblem(achieve,size,baseIcon,fool,universe){
     return emblem;
 }
 
+export function binary_limit_test(f, start=1, startIsMin=true){
+    if (start !== Math.floor(start) || start < 1){ return 0; }
+
+    let num = start;
+    while (f(num)){ num *= 2; }
+
+    let test = Math.floor(num/2);
+    if (num === start){
+        num = 0;
+        if (startIsMin){ test = 0; }
+    }
+    else {
+        num = test;
+    }
+
+    while (test > 1){
+        test = Math.floor(test/2);
+        if (f(num + test)){
+            num += test;
+        }
+    }
+    return num;
+}
+
 export function fibonacci(num, memo){
     memo = memo || {};
     if (memo[num]) return memo[num];

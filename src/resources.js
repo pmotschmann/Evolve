@@ -1,4 +1,4 @@
-import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, support_on } from './vars.js';
+import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, support_on, active_rituals } from './vars.js';
 import { vBind, clearElement, modRes, flib, calc_mastery, calcPillar, eventActive, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect, hoovedRename, messageQueue } from './functions.js';
 import { traits, fathomCheck } from './races.js';
 import { templeCount, actions } from './actions.js';
@@ -423,9 +423,10 @@ export const craftingRatio = (function(){
                     auto: 1 + (govEffect.socialist()[0] / 100)
                 });
             }
-            if (global.race['casting'] && global.race.casting['crafting']){
-                let boost_m = 1 + (global.race.casting['crafting'] / (global.race.casting['crafting'] + 75));
-                let boost_a = 1 + (2 * global.race.casting['crafting'] / (2 * global.race.casting['crafting'] + 75));
+            if (global.race['casting'] && active_rituals['crafting']){
+                let num_rituals = active_rituals['crafting'];
+                let boost_m = 1 + (num_rituals / (num_rituals + 75));
+                let boost_a = 1 + (2 * num_rituals / (2 * num_rituals + 75));
                 crafting.general.multi.push({
                     name: loc(`modal_pylon_casting`),
                     manual: boost_m,

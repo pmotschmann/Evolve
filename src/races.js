@@ -1,4 +1,4 @@
-import { global, seededRandom, save, webWorker, power_generated, keyMultiplier, sizeApproximation } from './vars.js';
+import { global, seededRandom, save, webWorker, power_generated, keyMultiplier, sizeApproximation, active_rituals } from './vars.js';
 import { loc } from './locale.js';
 import { defineIndustry } from './industry.js';
 import { setJobName, jobScale, loadFoundry } from './jobs.js';
@@ -6715,8 +6715,8 @@ export function racialTrait(workers,type){
         if (global.race['witch_hunter']){
             modifier *= 0.75;
         }
-        if (global.race.hasOwnProperty('casting') && global.race.casting[type === 'hellArmy' ? 'army' : type]){
-            let boost = global.race.casting[type === 'hellArmy' ? 'army' : type];
+        if (global.race.hasOwnProperty('casting') && active_rituals[type === 'hellArmy' ? 'army' : type]){
+            let boost = active_rituals[type === 'hellArmy' ? 'army' : type];
             if (global.race['witch_hunter']){
                 modifier *= 1 + (boost / (boost + 75) * 2.5);
             }
@@ -6845,6 +6845,7 @@ function purgeLumber(){
     if (global.race['casting']){
         global.race.casting.total -= global.race.casting.lumberjack;
         global.race.casting.lumberjack = 0;
+        active_rituals.lumberjack = 0;
         defineIndustry();
     }
     if (global.city['s_alter']) {
@@ -7036,6 +7037,7 @@ function adjustFood() {
         if (!farmersEnabled) {
             global.race.casting.total -= global.race.casting.farmer;
             global.race.casting.farmer = 0;
+            active_rituals.farmer = 0;
         }
         defineIndustry();
     }
