@@ -4901,7 +4901,7 @@ export function buildTemplate(key, region){
         case 's_alter':   
         {
             let action = {
-                id: 'city-s_alter',
+                id: `${region}-s_alter`,
                 title: loc('city_s_alter'),
                 desc(){
                     return global.city.hasOwnProperty('s_alter') && global.city['s_alter'].count >= 1 ? `<div>${loc('city_s_alter')}</div><div class="has-text-special">${loc('city_s_alter_desc')}</div>` : loc('city_s_alter');
@@ -5010,7 +5010,7 @@ export function buildTemplate(key, region){
         case 'shrine':
         {
             let action = {
-                id: 'city-shrine',
+                id: `${region}-shrine`,
                 title: loc('city_shrine'),
                 desc(){
                     return global.race['warlord'] ? loc('city_shrine_warlord_desc') : loc('city_shrine_desc');
@@ -5089,7 +5089,7 @@ export function buildTemplate(key, region){
         case 'meditation':
         {
             let action = {
-                id: 'city-meditation',
+                id: `${region}-meditation`,
                 title: loc('city_meditation'),
                 desc: loc('city_meditation'),
                 category: 'commercial',
