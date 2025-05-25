@@ -10979,7 +10979,7 @@ function midLoop(){
                     }
                     let mult = (0.03 + (global.race['malnutrition'] ? 0.01 : 0) + (global.race['angry'] ? -0.01 : 0));
                     let working = Math.min(global.portal['dish_soul_steeper'].on, Math.floor(hunger / mult));
-                    progress *= 1 + (0.05 * global.portal['spire'].count * working);
+                    progress *= 1 + (0.05 * (global.portal['spire'].count-1) * working);
                 }
                 global.portal['devilish_dish'].done += progress;
                 global.portal['devilish_dish'].done = Math.min(global.portal['devilish_dish'].done, 100);
