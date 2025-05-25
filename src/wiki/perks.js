@@ -15,14 +15,14 @@ export function perksPage(content){
 function perkDesc(content, perk){
     let perkbox = $(`<div id="${perk}" class="infoBox"></div>`);
     if (perkList[perk].hasOwnProperty('group')){
-        let gperk = $(`<div><div class="has-text-warning">${perkList[perk].name}</div></div>`);
+        let gperk = $(`<div><div class="has-text-warning" role="heading" aria-level="2">${perkList[perk].name}</div></div>`);
         perkList[perk].group.forEach(function(subperk){
             gperk.append($(`<div class="perk has-text-${subperk.active() ? `success`: `danger`}">${subperk.desc(true)}</div>`));
         });
         perkbox.append(gperk);
     }
     else {
-        perkbox.append($(`<div class="has-text-warning">${perkList[perk].name}</div><div class="has-text-${perkList[perk].active() ? `success`: `danger`}">${perkList[perk].desc(true)}</div>`));
+        perkbox.append($(`<div class="has-text-warning" role="heading" aria-level="2">${perkList[perk].name}</div><div class="has-text-${perkList[perk].active() ? `success`: `danger`}">${perkList[perk].desc(true)}</div>`));
     }
     if (perkList[perk].notes.length > 0){
         let notes = $(`<div class="extra"></div>`);

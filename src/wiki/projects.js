@@ -81,8 +81,8 @@ function addCosts(parent,key){
     
     let costContain = $(`<div class="stats"></div>`);
     parent.append(costContain);
-    let costs = $(`<div class="cost"><h2 class="has-text-warning">${loc('wiki_calc_cost')}</h2></div>`);
-    let costCreep = $(`<div class="cost right" v-show="i.creepVis"><h2 class="has-text-warning">${loc('wiki_calc_cost_creep')}</h2></div>`);
+    let costs = $(`<div class="cost"><h2 class="has-text-warning" aria-level="3">${loc('wiki_calc_cost')}</h2></div>`);
+    let costCreep = $(`<div class="cost right" v-show="i.creepVis"><h2 class="has-text-warning" aria-level="3">${loc('wiki_calc_cost_creep')}</h2></div>`);
     costContain.append(costs);
     costContain.append(costCreep);
     
