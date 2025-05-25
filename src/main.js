@@ -3522,7 +3522,7 @@ function fastLoop(){
                             food_base += food;
                             if (global.resource.Food.amount < global.resource.Food.max * 0.01){
                                 global.city.captive_housing.cattle--;
-                                modRes('Food', food * global_multiplier * 30, true);
+                                modRes('Food', 1000 * production('psychic_boost','Food') * global_multiplier, true);
                                 global.stats.cattle++;
                             }
                         }
@@ -3690,7 +3690,7 @@ function fastLoop(){
             let banquet = 1;
             if(global.city.banquet){
                 if(global.city.banquet.on){
-                    banquet *= ((global.city.banquet.count >= 5 ? 1.02 : 1.022)**global.city.banquet.strength);
+                    banquet *= ((global.city.banquet.level >= 5 ? 1.02 : 1.022)**global.city.banquet.strength);
                 }
                 else{
                     global.city.banquet.strength = 0;
@@ -3945,7 +3945,7 @@ function fastLoop(){
                 if(global.race['fasting']){
                     lowerBound += highPopAdjust(global.civic.meditator.workers) * 0.15;
                 }
-                if(global.city.banquet && global.city.banquet.on && global.city.banquet.count >= 1){
+                if(global.city.banquet && global.city.banquet.on && global.city.banquet.level >= 1){
                     lowerBound *= 1 + (global.city.banquet.strength ** 0.75) / 100;
                 }
                 if (astroSign === 'libra'){
@@ -10979,7 +10979,7 @@ function midLoop(){
                     }
                     let mult = (0.03 + (global.race['malnutrition'] ? 0.01 : 0) + (global.race['angry'] ? -0.01 : 0));
                     let working = Math.min(global.portal['dish_soul_steeper'].on, Math.floor(hunger / mult));
-                    progress *= 1 + (0.05 * global.portal['spire'].count * working);
+                    progress *= 1 + (0.05 * (global.portal['spire'].count-1) * working);
                 }
                 global.portal['devilish_dish'].done += progress;
                 global.portal['devilish_dish'].done = Math.min(global.portal['devilish_dish'].done, 100);
@@ -11681,7 +11681,7 @@ function longLoop(){
             if (painVal){
                 hc *= 1 + (painVal / 100);
             }
-            if(global.city.banquet && global.city.banquet.on && global.city.banquet.count >= 2){
+            if(global.city.banquet && global.city.banquet.on && global.city.banquet.level >= 2){
                 hc *= 1 + (global.city.banquet.strength ** 0.65) / 100;
             }
             let fathom = fathomCheck('troll');
