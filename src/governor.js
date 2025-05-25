@@ -837,7 +837,7 @@ export function govActive(trait,val){
 
 export function removeTask(task){
     if (global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
-        for (let i=0; i<global.race.governor.tasks.length; i++){
+        for (let i=0; i<Object.keys(global.race.governor.tasks).length; i++){
             if (global.race.governor.tasks[`t${i}`] === task){
                 global.race.governor.tasks[`t${i}`] = 'none';
             }
@@ -1171,13 +1171,7 @@ export const gov_tasks = {
     combo_spy: {
         name: loc(`gov_task_combo_spy`),
         req(){
-            if (global.tech['isolation']){
-                return false;
-            }
-            if (global.race['truepath'] && global.tech['spy'] && global.tech.spy >= 2){
-                return true;
-            }
-            return global.tech['spy'] && global.tech.spy >= 2 && !global.tech['world_control'] && !global.race['cataclysm'] && global.genes.governor >= 3 ? true : false;
+            return (global.genes.governor >= 3) && gov_tasks.spyop.req();
         },
         task(){
             if ( $(this)[0].req() ){

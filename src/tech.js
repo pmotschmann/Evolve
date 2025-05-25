@@ -15680,6 +15680,8 @@ function uniteEffect(){
     }
     removeTask('spy');
     removeTask('spyop');
+    removeTask('combo_spy');
+    defineGovernor();
 }
 
 export function swissKnife(cheeseOnly,cheeseList){
