@@ -2438,7 +2438,7 @@ function addProject(parent,project){
         parent.append(current);
 
         let title = typeof arpaProjects[project].title === 'string' ? arpaProjects[project].title : arpaProjects[project].title();
-        let head = $(`<div class="head"><span class="desc has-text-warning" role="heading" aria-level="3">${title}</span><a v-on:click="srDescAndEffect" class="is-sr-only" role="button">${title} description</a><span aria-hidden="true" v-show="rank" class="rank">{{ rank | level }}</span><span class="is-sr-only">{{ rank | level }}</span></div>`);
+        let head = $(`<div class="head"><span class="desc has-text-warning" role="heading" aria-level="3">${title}</span><a v-on:click="srDescAndEffect" class="is-sr-only" role="button">{{ projectName() }} description</a><span aria-hidden="true" v-show="rank" class="rank">{{ rank | level }}</span><span class="is-sr-only">{{ rank | level }}</span></div>`);
         current.append(head);
 
         let progress = $(`<div class="pbar"><progress class="progress" :value="complete" max="100"></progress><span class="progress-value has-text-danger">{{ complete }}%</span></div>`);
@@ -2447,7 +2447,7 @@ function addProject(parent,project){
         let buy = $('<div class="buy"></div>');
         current.append(buy);
 
-        buy.append($(`<button aria-label="${loc('queue')} ${title}" class="button" @click="queue('${project}')">${loc('queue')}</button>`));
+        buy.append($(`<button :aria-label="loc('queue') + ' ' + projectName()" class="button" @click="queue('${project}')">${loc('queue')}</button>`));
         buy.append($(`<button :aria-label="arpaProjectSRCosts('1','${project}')" class="button x1" @click="build('${project}',1)">1%</button>`));
         buy.append($(`<button :aria-label="arpaProjectSRCosts('10','${project}')" class="button x10" @click="build('${project}',10)">10%</button>`));
         buy.append($(`<button :aria-label="arpaProjectSRCosts('25','${project}')" class="button x25" @click="build('${project}',25)">25%</button>`));
@@ -2457,6 +2457,7 @@ function addProject(parent,project){
             el: `#arpa${project}`,
             data: global.arpa[project],
             methods: {
+                loc: loc,
                 queue(pro){
                     if (global.tech['queue']){
                         let keyMult = keyMultiplier();
@@ -2493,6 +2494,9 @@ function addProject(parent,project){
                     let desc = typeof arpaProjects[project].desc === 'string' ? arpaProjects[project].desc : arpaProjects[project].desc();
                     let effect = arpaProjects[project].effect();
                     return srSpeak(`${desc}\n${effect}`);
+                },
+                projectName() {
+                    return typeof arpaProjects[project].title === 'string' ? arpaProjects[project].title : arpaProjects[project].title();
                 },
                 arpaProjectSRCosts(id,project){
                     let inc = id === '100' ? 100 - global.arpa[project].complete : id;
