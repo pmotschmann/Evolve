@@ -3690,7 +3690,7 @@ function fastLoop(){
             let banquet = 1;
             if(global.city.banquet){
                 if(global.city.banquet.on){
-                    banquet *= ((global.city.banquet.count >= 5 ? 1.02 : 1.022)**global.city.banquet.strength);
+                    banquet *= ((global.city.banquet.level >= 5 ? 1.02 : 1.022)**global.city.banquet.strength);
                 }
                 else{
                     global.city.banquet.strength = 0;
@@ -3945,7 +3945,7 @@ function fastLoop(){
                 if(global.race['fasting']){
                     lowerBound += highPopAdjust(global.civic.meditator.workers) * 0.15;
                 }
-                if(global.city.banquet && global.city.banquet.on && global.city.banquet.count >= 1){
+                if(global.city.banquet && global.city.banquet.on && global.city.banquet.level >= 1){
                     lowerBound *= 1 + (global.city.banquet.strength ** 0.75) / 100;
                 }
                 if (astroSign === 'libra'){
@@ -11681,7 +11681,7 @@ function longLoop(){
             if (painVal){
                 hc *= 1 + (painVal / 100);
             }
-            if(global.city.banquet && global.city.banquet.on && global.city.banquet.count >= 2){
+            if(global.city.banquet && global.city.banquet.on && global.city.banquet.level >= 2){
                 hc *= 1 + (global.city.banquet.strength ** 0.65) / 100;
             }
             let fathom = fathomCheck('troll');

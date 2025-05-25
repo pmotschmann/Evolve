@@ -6698,7 +6698,7 @@ export function racialTrait(workers,type){
         if (global.race['dark_dweller'] && global.city.calendar.weather === 2){
             modifier *= 1 - traits.dark_dweller.vars()[0] / 100;
         }
-        if(global.city.banquet && global.city.banquet.on && global.city.banquet.count >= 3){
+        if(global.city.banquet && global.city.banquet.on && global.city.banquet.level >= 3){
             modifier *= 1 + (global.city.banquet.strength ** 0.65) / 100;
         }
     }
