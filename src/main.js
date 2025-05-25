@@ -14,7 +14,7 @@ import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
 import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue } from './truepath.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
-import { govern, govActive, removeTask } from './governor.js';
+import { defineGovernor, govern, govActive, removeTask } from './governor.js';
 import { production, highPopAdjust, teamster, factoryBonus } from './prod.js';
 import { swissKnife } from './tech.js';
 import { vacuumCollapse } from './resets.js';
@@ -12255,6 +12255,7 @@ function longLoop(){
                     global.tech.focus_cure = 7;
                     messageQueue(loc('tech_vaccine_campaign_msg2'),'info',false,['progress']);
                     removeTask('assemble');
+                    defineGovernor();
                 }
             }
         }

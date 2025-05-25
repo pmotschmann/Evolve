@@ -7,7 +7,7 @@ import { jobScale, job_desc, loadFoundry, limitCraftsmen } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
 import { actions, payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, buildTemplate, casinoEffect, housingLabel, structName, initStruct } from './actions.js';
 import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, incrementStruct, planetName } from './space.js';
-import { removeTask, govActive } from './governor.js';
+import { defineGovernor, removeTask, govActive } from './governor.js';
 import { defineIndustry, nf_resources, addSmelter } from './industry.js';
 import { arpa } from './arpa.js';
 import { matrix, retirement, gardenOfEden } from './resets.js';
@@ -5672,6 +5672,8 @@ export function jumpGateShutdown(){
 
     removeTask('spy');
     removeTask('spyop');
+    removeTask('combo_spy');
+    defineGovernor();
 
     clearElement($(`#infoTimer`));
     global.race['inactive'] = inactive;
