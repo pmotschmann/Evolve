@@ -8314,7 +8314,7 @@ export function updateQueueNames(both, items){
                         }
                     });
                 }
-                else if (actions[currItem.action][currItem.type]){
+                else if (actions[currItem.action]?.[currItem.type]){
                     global.queue.queue[i].label = 
                         typeof actions[currItem.action][currItem.type].title === 'string' ? 
                         actions[currItem.action][currItem.type].title : 
