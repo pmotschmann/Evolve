@@ -1,7 +1,7 @@
 import { global, seededRandom, p_on, breakdown } from './vars.js';
 import { vBind, popover, tagEvent, calcQueueMax, calcRQueueMax, clearElement, adjustCosts, decodeStructId, timeCheck, arpaTimeCheck, hoovedRename } from './functions.js';
 import { races } from './races.js';
-import { actions, checkCityRequirements, housingLabel, wardenLabel, updateQueueNames, checkAffordable, drawTech } from './actions.js';
+import { actions, checkCityRequirements, housingLabel, wardenLabel, updateQueueNames, checkAffordable, drawTech, drawCity } from './actions.js';
 import { govCivics, govTitle } from './civics.js';
 import { crateGovHook, atomic_mass } from './resources.js';
 import { checkHellRequirements, mechSize, mechCost, validWeapons, validEquipment } from './portal.js';
@@ -731,7 +731,9 @@ export function drawnGovernOffice(){
                     }
                     delete global.race.governor.g;
                     delete global.race.governor.tasks;
-                    updateQueueNames(false, ['city-amphitheatre', 'city-apartment']);
+                    updateQueueNames(true, ['city-amphitheatre', 'city-apartment']);
+                    drawCity();
+                    drawTech();
                     calcQueueMax();
                     calcRQueueMax();
                     defineGovernor();
@@ -802,7 +804,9 @@ function appointGovernor(){
                     global.race.governor['tasks'] = {
                         t0: 'none', t1: 'none', t2: 'none', t3: 'none', t4: 'none', t5: 'none'
                     };
-                    updateQueueNames(false, ['city-amphitheatre', 'city-apartment']);
+                    updateQueueNames(true, ['city-amphitheatre', 'city-apartment']);
+                    drawCity();
+                    drawTech();
                     calcQueueMax();
                     calcRQueueMax();
                     defineGovernor();
