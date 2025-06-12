@@ -8707,7 +8707,7 @@
   "wiki_trait_effect_invertebrate": "战利品 -%0%。",
   "wiki_trait_effect_suction_grip": "全局产量 +%0%。",
   "wiki_trait_effect_befuddle": "间谍行动时间 -%0%。",
-  "wiki_trait_effect_environmentalist": "水电站（电力 +%0MW）和风力发电厂（电力 +%1MW；有风时，电力 +%2MW）分别取代煤电厂（或法力引擎；电力 +%3MW）和石油发电厂（电力 +%4MW）出现，无能源消耗；风车的发电量变为 +%5MW。",
+  "wiki_trait_effect_environmentalist": "水电站（电力 +%0MW）和风力发电厂（电力 +%1MW；有风时，电力 +%2MW）分别取代煤电厂（或法力引擎；电力 +%3MW）和石油发电厂（电力 +%4MW）出现，无能源消耗；风车的发电量变为 +%5MW（在反物质宇宙中，这些数值可能有误，以实际游戏为准）。",
   "wiki_trait_effect_unorganized": "改革政府体制的冷却时间 +%0%。",
   "wiki_trait_effect_musical": "每位艺人额外使士气 +%0%。",
   "wiki_trait_effect_revive": "士兵战死后有几率复活，炎热天气概率增加，寒冷天气概率降低。复活概率还受特质级别影响。",
