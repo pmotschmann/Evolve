@@ -8751,7 +8751,7 @@
   "wiki_trait_effect_unfathomable_ex1": "您可以雇佣一类特殊的猎人，被称为袭击者。袭击者可以从地表世界掠夺资源和居民。被捕获的俘虏可被转化为奴役，根据奴役种族的不同，会产生各类加成。",
   "wiki_trait_effect_unfathomable_ex2": "奴役加成因种族而异，和主要特质（即狂热信仰/神化先祖获得的特质）相关，并且可以和其他特质的加成一同生效。",
   "wiki_trait_effect_darkness": "晴天天气会随机转为多云。",
-  "wiki_trait_effect_tormented": "士气大于 100% 时，将大幅度减少 %0%。",
+  "wiki_trait_effect_tormented": "士气大于 100% 的部分，将大幅度减少 %0%。",
   "wiki_trait_effect_swift": "战斗评级 +%0%，捕获奴役效率 +%1%。",
   "wiki_trait_effect_dark_dweller": "晴天时，狩猎产量 -%0%。",
   "wiki_trait_effect_anthropophagite": "如果食物资源过少，市民将通过献祭同族来获取食物。每献祭一位市民，获得%0个食物。",
