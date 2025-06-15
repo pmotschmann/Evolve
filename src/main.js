@@ -8265,7 +8265,12 @@ function midLoop(){
 
         if (global.stats.feat['adept']){
             let rank = checkAdept();
-            caps['Lumber'] += rank * 60;
+            if (global.race['smoldering']){
+                caps['Chrysotile'] += rank * 60;
+            }
+            else {
+                caps['Lumber'] += rank * 60;
+            }
             caps['Stone'] += rank * 60;
         }
 
