@@ -10330,7 +10330,7 @@
   "wiki_challenges_modes_emfield_para4": "%0在%1时产量 %2。",
   "wiki_challenges_modes_emfield_para5": "此%0完成条件为：进行%1。",
   "wiki_challenges_modes_inflation": "通货膨胀",
-  "wiki_challenges_modes_inflation_para1": "%1：%0使资金（%2）在建造建筑或ARPA项目后变得更加不值钱。",
+  "wiki_challenges_modes_inflation_para1": "%1：%0使%2在建造建筑或ARPA项目后变得更加不值钱。",
   "wiki_challenges_modes_inflation_para2": "每个建筑使通货膨胀 +%0 点，每级ARPA项目使通货膨胀 +%1 点。",
   "wiki_challenges_modes_inflation_para3": "需要分项工程的大型建筑，例如%0和%1，每个分项工程使通货膨胀 +%2 点。",
   "wiki_challenges_modes_inflation_para4": "每点通货膨胀的效果为：",
