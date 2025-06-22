@@ -11435,7 +11435,7 @@
   "wiki_events_crop_circle_para1": "麦田怪圈到底是恶作剧还是外星人所为，市民们看法不一。",
   "wiki_events_llama": "野生骆驼",
   "wiki_events_llama_para1": "一群野生美洲驼闯进田里，吃掉了一些食物，数量在 %0 至 %1 范围之间随机取值。",
-  "wiki_events_llama_condition_para1": "该事件只在未拥有以下特质时发生：%0，%1，%2和%3。",
+  "wiki_events_llama_condition_para1": "该事件只在未拥有以下特质时发生：%0、%1、%2和%3。",
   "wiki_events_cat": "猫",
   "wiki_events_cat_para1": "一只黑猫在您面前跑过。",
   "wiki_events_omen": "不祥之兆",
