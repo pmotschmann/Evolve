@@ -6533,7 +6533,7 @@
   "psychic_boost_title": "提升资源产量",
   "psychic_boost_desc": "使所选资源产量 +%0%。",
   "psychic_boost_button": "提升%0产量，能量 -%1",
-  "psychic_boost_time": "持续时间: %0",
+  "psychic_boost_time": "持续时间：%0",
   "psychic_murder_title": "谋杀一位市民",
   "psychic_murder_desc": "无情地谋杀一位市民。",
   "psychic_murder_button": "谋杀市民，能量 -%0",
