@@ -4110,7 +4110,7 @@
   "arpa_projects_stock_exchange_effect3": "每有一个证券交易所，就使%0资金上限 +%1%，%2效果 +%3%，%4资金上限 +%5%，%4收入 +%6%。",
   "arpa_projects_stock_exchange_cataclysm1": "每有一个证券交易所，就使%0资金上限 +%1%。",
   "arpa_projects_stock_exchange_cataclysm2": "每有一个证券交易所，就使%0资金上限 +%1%，%2资金上限 +%3%，%2收入 +%4%。",
-  "arpa_projects_stock_exchange_warlord": "每有一个证券交易所，就使%0资金上限 +%1%，%0收入 +%2%.",
+  "arpa_projects_stock_exchange_warlord": "每有一个证券交易所，就使%0资金上限 +%1%，%0收入 +%2%。",
   "arpa_projects_depot_desc": "大型存储设施",
   "arpa_projects_depot_effect": "使仓库储量上限 +%0%，板条箱和集装箱储量 +%1。",
   "arpa_projects_depot_effect_iso": "使仓库储量上限 +%0%，板条箱和集装箱储量 +%1。",
