@@ -2771,7 +2771,7 @@
   "tech_soul_absorption": "灵魂吸取",
   "tech_soul_absorption_effect": "灵魂锻炉可以从每个灵魂中吸取更多能量，因此锻造灵魂宝石的灵魂数量需求降低了。",
   "tech_soul_link": "灵魂连接",
-  "tech_soul_link_effect": "连接灵魂引渡器和灵魂锻炉，每为一个灵魂引渡器供能，就使灵魂锻炉锻造灵魂宝石的灵魂数量需求 -3%。",
+  "tech_soul_link_effect": "连接灵魂引渡器和灵魂锻炉，每为一个灵魂引渡器供能，就使灵魂锻炉锻造灵魂宝石的灵魂数量需求 -3%，并使自动炮台发现灵魂宝石需要的平均时间 -6%。",
   "tech_soul_bait": "灵魂诱饵",
   "tech_soul_bait_effect": "使用%0强化灵魂引渡器，能够平息暴怒之灵，使%1对其的效果翻倍。",
   "tech_gun_emplacement_effect": "绘制自动炮台的图纸，可用于防卫灵魂锻炉。",
