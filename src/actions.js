@@ -7253,6 +7253,10 @@ function srDesc(c_action,old){
         });
     }
 
+    if (desc.endsWith('Affordable. Costs: ')){
+        desc = desc.slice(0, -19);
+    }
+
     if (c_action.effect){
         let effect = typeof c_action.effect === 'string' ? c_action.effect : c_action.effect();
         if (effect){
