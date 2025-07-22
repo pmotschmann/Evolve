@@ -7297,7 +7297,8 @@ export function planetGeology(geology){
 
 function srDesc(c_action,old){
     let desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc();
-    desc = desc + '. ';
+    let preAffordableLen = desc.length;
+    let preResCostsLen = 0;
     if (c_action.cost && !old){
         if (checkAffordable(c_action)){
             desc = desc + loc('affordable') + '. ';
@@ -7306,6 +7307,7 @@ function srDesc(c_action,old){
             desc = desc + loc('not_affordable') + '. ';
         }
         desc = desc + 'Costs: ';
+        preResCostsLen = desc.length;
         let type = c_action.id.split('-')[0];
         var costs = type !== 'genes' && type !== 'blood' ? adjustCosts(c_action) : c_action.cost;
         Object.keys(costs).forEach(function (res){
@@ -7405,6 +7407,11 @@ function srDesc(c_action,old){
                 }
             }
         });
+    }
+
+    // if no res costs were found remove the stray text "affordable Costs:" or the equivalent for the current language
+    if (desc.length === preResCostsLen){
+        desc = desc.slice(0, preAffordableLen);
     }
 
     if (c_action.effect){
