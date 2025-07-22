@@ -7216,6 +7216,26 @@ function srDesc(c_action,old){
                     }
                 }
             }
+            else if (res === 'HellArmy'){
+                let res_cost = costs[res]();
+                if (res_cost > 0){
+                    let label = loc('fortress_troops');
+                    desc = desc + `${label}: ${res_cost}. `;
+                    if (global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size) < res_cost){
+                        desc = desc + `${loc('insufficient')} ${label}. `;
+                    }
+                }
+            }
+            else if (res === 'Troops'){
+                let res_cost = costs[res]();
+                if (res_cost > 0){
+                    let label = loc('fortress_troops');
+                    desc = desc + `${label}: ${res_cost}. `;
+                    if (garrisonSize() < res_cost){
+                        let label = global.tech['world_control'] && !global.race['truepath'] ? loc('civics_garrison_peacekeepers') : loc('civics_garrison_soldiers');
+                    }
+                }
+            }
             else if (res !== 'Morale' && res !== 'Army' && res !== 'Bool'){
                 let res_cost = costs[res]();
                 let f_res = res === 'Species' ? global.race.species : res;
