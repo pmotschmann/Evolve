@@ -7179,7 +7179,7 @@ function srDesc(c_action,old){
                                 num_on = getStructNumActive(actions[region][struct]);
                             }
                         }
-                        desc = desc + `${label}. `;
+                        desc = desc + `${label}: ${structs[region][struct].count}. `;
 
                         if (!global[region][struct]){
                             desc = desc + `${loc('insufficient')} ${label}. `;
