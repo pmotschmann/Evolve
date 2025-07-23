@@ -16,7 +16,7 @@ import { production, highPopAdjust } from './prod.js';
 import { techList, techPath } from './tech.js';
 import { govActive, removeTask, gov_tasks } from './governor.js';
 import { bioseed } from './resets.js';
-import { loadTab } from './index.js';
+import { loadTab, tabLabel } from './index.js';
 
 export const actions = {
     evolution: {
@@ -5975,7 +5975,7 @@ export function drawCity(){
 
     let parent = $('#city');
     clearElement(parent);
-    parent.append($(`<h2 class="is-sr-only">${loc('tab_city5')}</h2>`));
+    parent.append($(`<h2 class="is-sr-only">${tabLabel('city')}</h2>`));
 
     let city_buildings = {};
     Object.keys(actions.city).forEach(function (city_name) {
