@@ -11146,7 +11146,7 @@
   "wiki_planet_hellscape_universe": "邪悪宇宙に出現しない。",
   "wiki_planet_eden_geology": "地質ボーナスの上限 +5%",
   "wiki_planet_eden_genus": "天使属が出現できる。",
-  "wiki_planet_eden_universe": "邪悪宇宙での未出現する。",
+  "wiki_planet_eden_universe": "邪悪宇宙でのみ出現する。",
   "wiki_planet_toxic0": "突然変異研究の速度が%0生物学研究所分速くなる。",
   "wiki_planet_toxic1": "出生率 %0",
   "wiki_planet_mellow0": "兵士と狩人のストレス軽減 %0",
