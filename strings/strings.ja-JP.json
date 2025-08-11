@@ -8669,7 +8669,7 @@
   "wiki_trait_effect_gluttony": "食料の消費量 +%0%。",
   "wiki_trait_effect_slow": "ゲームスピード -%0%。",
   "wiki_trait_effect_armored": "兵士の死亡者数 -%0%。地獄のパトロールのアーマー +%1。",
-  "wiki_trait_effect_optimistic": "仕事のストレス -%0, 士気の下限 -%1%。",
+  "wiki_trait_effect_optimistic": "仕事のストレス -%0, 士気の下限 +%1%。",
   "wiki_trait_effect_chameleon": "兵舎当たりの兵士数 -1。戦闘力 +%0%。地獄のパトロールが待ち伏せに遭う確率 -%1%。この効果は「神出鬼没」とは併用できません。",
   "wiki_trait_effect_slow_digestion": "飢餓の閾値 +%0。",
   "wiki_trait_effect_astrologer": "星座の効果 +%0%。",
@@ -11637,3 +11637,4 @@
   "wiki_search_placeholder": "結果が見つかりませんでした。",
   "wiki_search_regex_support": "正規表現対応"
 }
+
