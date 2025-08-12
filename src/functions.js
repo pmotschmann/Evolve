@@ -756,96 +756,96 @@ export function genCivName(alt){
     };
 }
 
-export function costMultiplier(structure,offset,base,mutiplier,cat){
+export function costMultiplier(structure,offset,base,multiplier,cat){
     if (!cat){
         cat = 'city';
     }
     if (global.race.universe === 'micro'){
-        mutiplier -= darkEffect('micro',false);
+        multiplier -= darkEffect('micro',false);
     }
 
-    if (global.race['small']){ mutiplier -= traits.small.vars()[0]; }
-    if (global.race['large']){ mutiplier += traits.large.vars()[0]; }
-    if (global.race['compact']){ mutiplier -= traits.compact.vars()[0]; }
-    if (global.race['tunneler'] && (structure === 'mine' || structure === 'coal_mine')){ mutiplier -= traits.tunneler.vars()[0]; }
+    if (global.race['small']){ multiplier -= traits.small.vars()[0]; }
+    if (global.race['large']){ multiplier += traits.large.vars()[0]; }
+    if (global.race['compact']){ multiplier -= traits.compact.vars()[0]; }
+    if (global.race['tunneler'] && (structure === 'mine' || structure === 'coal_mine')){ multiplier -= traits.tunneler.vars()[0]; }
     if (global.tech['housing_reduction'] && (structure === 'basic_housing' || structure === 'cottage')){
-        mutiplier -= global.tech['housing_reduction'] * 0.02;
+        multiplier -= global.tech['housing_reduction'] * 0.02;
     }
     if (global.tech['housing_reduction'] && structure === 'captive_housing'){
-        mutiplier -= global.tech['housing_reduction'] * 0.01;
+        multiplier -= global.tech['housing_reduction'] * 0.01;
     }
     if (structure === 'basic_housing'){
         if (global.race['solitary']){
-            mutiplier -= traits.solitary.vars()[0];
+            multiplier -= traits.solitary.vars()[0];
         }
         if (global.race['pack_mentality']){
-            mutiplier += traits.pack_mentality.vars()[0];
+            multiplier += traits.pack_mentality.vars()[0];
         }
     }
     if (structure === 'cottage'){
         if (global.race['solitary']){
-            mutiplier += traits.solitary.vars()[1];
+            multiplier += traits.solitary.vars()[1];
         }
         if (global.race['pack_mentality']){
-            mutiplier -= traits.pack_mentality.vars()[1];
+            multiplier -= traits.pack_mentality.vars()[1];
         }
     }
     if (structure === 'apartment'){
         if (global.race['pack_mentality']){
-            mutiplier -= traits.pack_mentality.vars()[1];
+            multiplier -= traits.pack_mentality.vars()[1];
         }
     }
     if (global.genes['creep'] && !global.race['no_crispr']){
-        mutiplier -= global.genes['creep'] * 0.01;
+        multiplier -= global.genes['creep'] * 0.01;
     }
     else if (global.genes['creep'] && global.race['no_crispr']){
-        mutiplier -= global.genes['creep'] * 0.002;
+        multiplier -= global.genes['creep'] * 0.002;
     }
     let nqVal = govActive('noquestions',0);
     if (nqVal){
-        mutiplier -= nqVal;
+        multiplier -= nqVal;
     }
-    if (mutiplier < 1.005){
-        mutiplier = 1.005;
+    if (multiplier < 1.005){
+        multiplier = 1.005;
     }
     var count = structure === 'citizen' ? global['resource'][global.race.species].amount : (global[cat][structure] ? global[cat][structure].count : 0);
     if (offset){
         count += offset;
     }
-    return Math.round((mutiplier ** count) * base);
+    return Math.round((multiplier ** count) * base);
 }
 
-export function spaceCostMultiplier(action,offset,base,mutiplier,sector,c_min){
+export function spaceCostMultiplier(action,offset,base,multiplier,sector,c_min){
     if (!sector){
         sector = 'space';
     }
     c_min = c_min || 1.005;
     if (global.race.universe === 'micro'){
-        mutiplier -= darkEffect('micro',true);
+        multiplier -= darkEffect('micro',true);
     }
     if (global.genes['creep'] && !global.race['no_crispr']){
-        mutiplier -= global.genes['creep'] * 0.01;
+        multiplier -= global.genes['creep'] * 0.01;
     }
     else if (global.genes['creep'] && global.race['no_crispr']){
-        mutiplier -= global.genes['creep'] * 0.002;
+        multiplier -= global.genes['creep'] * 0.002;
     }
-    if (global.race['small']){ mutiplier -= traits.small.vars()[1]; }
-    if (global.race['compact']){ mutiplier -= traits.compact.vars()[1]; }
+    if (global.race['small']){ multiplier -= traits.small.vars()[1]; }
+    if (global.race['compact']){ multiplier -= traits.compact.vars()[1]; }
     if (global.prestige.Harmony.count > 0 && global.stats.achieve[`ascended`]){
-        mutiplier -= harmonyEffect();
+        multiplier -= harmonyEffect();
     }
     let nqVal = govActive('noquestions',0);
     if (nqVal){
-        mutiplier -= nqVal;
+        multiplier -= nqVal;
     }
-    if (mutiplier < c_min){
-        mutiplier = c_min;
+    if (multiplier < c_min){
+        multiplier = c_min;
     }
     var count = action === 'citizen' ? global['resource'][global.race.species].amount : (global[sector][action] ? global[sector][action].count : 0);
     if (offset && typeof offset === 'number'){
         count += offset;
     }
-    return Math.round((mutiplier ** count) * base);
+    return Math.round((multiplier ** count) * base);
 }
 
 export function harmonyEffect(){
