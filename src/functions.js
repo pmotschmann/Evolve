@@ -765,7 +765,7 @@ export function costMultiplier(structure,offset,base,mutiplier,cat){
     }
 
     if (global.race['small']){ mutiplier -= traits.small.vars()[0]; }
-    else if (global.race['large']){ mutiplier += traits.large.vars()[0]; }
+    if (global.race['large']){ mutiplier += traits.large.vars()[0]; }
     if (global.race['compact']){ mutiplier -= traits.compact.vars()[0]; }
     if (global.race['tunneler'] && (structure === 'mine' || structure === 'coal_mine')){ mutiplier -= traits.tunneler.vars()[0]; }
     if (global.tech['housing_reduction'] && (structure === 'basic_housing' || structure === 'cottage')){
