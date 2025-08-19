@@ -273,7 +273,7 @@ if (global.eden['spirit_battery']){
     p_on['spirit_battery'] = global.eden.spirit_battery.on;
 }
 if (global.city['replicator'] && global.race?.replicator?.pow && global.race?.governor?.config?.replicate?.pow?.on){
-    if (Object.values(global.race.governor.tasks).includes('replicate')){
+    if (Object.values(global.race.governor.tasks || {}).includes('replicate')){
         global.city.replicator.on = 0;
         global.city.replicator.count = 0;
         global.race.replicator.pow = 0;
