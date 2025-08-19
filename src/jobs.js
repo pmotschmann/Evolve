@@ -4,6 +4,7 @@ import { loc } from './locale.js';
 import { highPopAdjust } from './prod.js';
 import { racialTrait, servantTrait, races, traits, biomes, planetTraits, fathomCheck } from './races.js';
 import { armyRating } from './civics.js';
+import { govActive } from './governor.js';
 import { craftingRatio, craftCost, craftingPopover } from './resources.js';
 import { planetName } from './space.js';
 import { hellSupression } from './portal.js';
@@ -415,6 +416,10 @@ export function workerScale(num,job){
     }
     if ((global.race['swift'] || global.race['living_tool']) && ['hunter','forager','farmer','lumberjack','quarry_worker','crystal_miner','scavenger'].includes(job)){
         num *= traits.strong.vars(0.25)[1];
+    }
+    let teacher = govActive('teacher',1);
+    if(teacher && ['professor'].includes(job)){
+        num *= 1 + (teacher / 100);
     }
     if (global.race['lone_survivor']){
         if (['hunter','forager','farmer','lumberjack','quarry_worker','crystal_miner','scavenger'].includes(job)){
