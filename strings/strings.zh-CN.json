@@ -6247,7 +6247,7 @@
   "gov_trait_risktaker_effect": "市场价格波动性增加，银行资金上限 +%0%。",
   "gov_trait_teacher": "教师",
   "gov_trait_teacher_desc": "高超的教育水平可以提升教育机构的效果。",
-  "gov_trait_teacher_effect": "大学和图书馆的知识上限 +%0%，牧师效果 +%1%。",
+  "gov_trait_teacher_effect": "大学和图书馆的知识上限 +%0%，教授效果 +%1%（知识产量、寺庙效果和 [智慧] 特质提供的全局产量都受加成）。",
   "gov_trait_theorist": "理论家",
   "gov_trait_theorist_desc": "理论有利于研究，但缺乏实践经验是其弊端。",
   "gov_trait_theorist_effect": "研究队列上限 +%0%，伐木工人、石工、回收者、水晶矿工、矿工、煤矿工人和水泥工人产量 -%1%。",
