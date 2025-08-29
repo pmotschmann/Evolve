@@ -7855,7 +7855,7 @@
   "hell_report_log_soul_attractors": "ソウルアトラクターは、%0個の魂をソウルフォージに引き寄せた。",
   "hell_report_log_ghost_trappers": "ゴーストトラッパーは%0の魂をソウルフォージに輸送した。",
   "hell_report_log_misc_kills": "%0は、%1体の悪魔を%2周辺で発見し、殺害した。",
-  "hell_report_log_soul_forge": "ソウルフォージ警備兵は、%1体の悪魔をピット周辺で発見し、殺害した。",
+  "hell_report_log_soul_forge": "ソウルフォージ警備兵は、%0体の悪魔をピット周辺で発見し、殺害した。",
   "hell_report_log_soul_craft": "ソウルフォージは十分な魂を集め、%0を1個製造した。",
   "hell_analysis_total": "現在のゲームの統計",
   "hell_analysis_period": "観測期間の統計",
@@ -11637,4 +11637,5 @@
   "wiki_search_placeholder": "結果が見つかりませんでした。",
   "wiki_search_regex_support": "正規表現対応"
 }
+
 
