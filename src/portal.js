@@ -7268,7 +7268,7 @@ function statusEffect(mech,effect){
             break;
         case 'radioactive':
             {
-                if (!mech.equip.includes('shields') && mech.equip.includes('manashield')){
+                if (!mech.equip.includes('shields') && !mech.equip.includes('manashield')){
                     rating = 0.5;
                 }
             }
