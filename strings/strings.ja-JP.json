@@ -10537,7 +10537,7 @@
   "wiki_resets_ascension_para5": "昇天リセットの完了後、カスタム種族を作成できます。カスタム種族スロットは1つだけです、2回目以降の昇天リセットでは、以前のカスタム種族を変更できます。",
   "wiki_resets_ascension_para6": "複数の宇宙やより高いスターレベルで昇天を実行することにより、種族のカスタムに必要な遺伝子ポイントをさらに獲得できます。",
   "wiki_resets_ascension_para7": "昇天リセット後、惑星の地質鉱床の値が全て%0増加し、惑星が昇天惑星になります。",
-  "wiki_resets_ascension_para8": "昇天惑星では日時計の知識生産が +%0、全生産が +%1、全容量が +%2され、これらは惑星を離れるまで維持されます。",
+  "wiki_resets_ascension_para8": "昇天惑星では日時計の知識生産が %0、全生産が %1、全容量が %2され、これらは惑星を離れるまで維持されます。",
   "wiki_resets_ascension_para9": "同じ惑星で何度も昇天すると、地質鉱床の値は増加し続けますが、昇天惑星の効果は累積しません。",
   "wiki_resets_ascension_para10": "%0は偉大イベントとしてカウントされます。",
   "wiki_resets_cataclysm": "大災害",
@@ -11637,3 +11637,4 @@
   "wiki_search_placeholder": "結果が見つかりませんでした。",
   "wiki_search_regex_support": "正規表現対応"
 }
+
