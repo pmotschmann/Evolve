@@ -1,0 +1,68 @@
+name: Deploy website
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  # Build job
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v3
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - run: npm run build
+      - run: npm run less
+      - run: npm run wiki
+      - run: npm run wiki-less
+
+      - run: |
+          sed -i -e 's_src="src/main.js"_src="evolve/main.js"_' index.html
+          sed -i -e 's_src="src/wiki/wiki.js"_src="wiki/wiki.js"_' wiki.html
+          rm -rf .gitattributes .gitignore .github/ buildEvolve.js buildWiki.js
+          rm -rf package-lock.json package.json README.md LICENSE
+          rm -rf node_modules/ src/
+          rm -f strings/*.py strings/*.md
+
+      - name: Fix permissions
+        run: |
+          chmod -c -R +rX "./" | while read line; do
+            echo "::warning title=Invalid file permissions automatically fixed::$line"
+          done
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+  # Deployment job
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{steps.deployment.outputs.page_url}}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
