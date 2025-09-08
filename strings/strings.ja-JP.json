@@ -2779,7 +2779,7 @@
   "tech_advanced_emplacement_effect": "新しい技術で砲座をアップグレードし、効果を高めます。",
   "tech_dial_it_to_11": "11に上げる",
   "tech_dial_it_to_11_effect": "%0の粒子加速器が%1で地震を引き起こす？ばかげている！ワールドコライダーの出力を11まで上げて、何が起こるか見てみましょう。",
-  "tech_dial_it_to_11_effect2": "これは災難を招くでしょう。本当にそうするつもりがない限り、やめてください。",
+  "tech_dial_it_to_11_effect2": "これは災難を招くでしょう。本当にそうするつもりがない限り、実行しないでください。",
   "tech_dial_it_to_11_flair": "科学のために！",
   "tech_limit_collider": "出力制限",
   "tech_limit_collider_effect": "科学の全てを理解しているわけではありませんが、安全のためにワールドコライダーの将来の運用を制限します。",
@@ -11637,4 +11637,5 @@
   "wiki_search_placeholder": "結果が見つかりませんでした。",
   "wiki_search_regex_support": "正規表現対応"
 }
+
 
