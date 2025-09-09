@@ -2771,7 +2771,7 @@
   "tech_soul_absorption": "魂の吸収",
   "tech_soul_absorption_effect": "各魂から吸い取られる力の量を増やし、宝石を鍛造するために必要な魂の総数を減らします。",
   "tech_soul_link": "魂のリンク",
-  "tech_soul_link_effect": "ソウルアトラクターとソウルフォージの間にリンクを作成し、宝石を鍛造するために必要なソウルを減らします。.",
+  "tech_soul_link_effect": "ソウルアトラクターとソウルフォージの間にリンクを作成し、宝石を鍛造するために必要なソウルを減らします。",
   "tech_soul_bait": "魂の餌",
   "tech_soul_bait_effect": "%0でソウルアトラクターを強化します。これにより、近くの激怒した霊を鎮め、%1の効果が2倍になります。",
   "tech_gun_emplacement_effect": "ソウルフォージを砲座で強化する計画を立てます。",
@@ -11637,5 +11637,6 @@
   "wiki_search_placeholder": "結果が見つかりませんでした。",
   "wiki_search_regex_support": "正規表現対応"
 }
+
 
 
