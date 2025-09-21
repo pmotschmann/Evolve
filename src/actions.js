@@ -8635,7 +8635,7 @@ function sentience(){
             genus: global.custom.race1.genus,
             hybrid: global.custom.race1.hybrid,
             traitlist: global.custom.race1.traits,
-            ranks: global.custom.race0?.ranks || {} 
+            ranks: global.custom.race1?.ranks || {} 
         });
     }
 
