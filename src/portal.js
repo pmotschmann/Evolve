@@ -7378,7 +7378,7 @@ function statusEffect(mech,effect){
             break;
     }
     if (mech.equip.includes('lucky')){
-        rating += 0.01 * Math.floor(seededRandom(1,10,false, global.stats.resets + (global.portal?.spire?.count || 1) * 42 ));
+        rating += 0.01 * Math.floor(seededRandom(1,10,false, global.stats.reset + (global.portal?.spire?.count || 1) * 42 ));
         if (rating > 1){ rating = 1; }
     }
     return rating;
