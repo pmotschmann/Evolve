@@ -4688,8 +4688,8 @@ export function buildTemplate(key, region){
                                 buffer = 4 - traitRank('parasite');
                                 break;
                         }
-                        if (global.race['last_assembled'] && global.race.last_assembled + buffer >= global.city.calendar.day){
-                            warn = `<div class="has-text-caution">${loc('city_assembly_effect_parasite',[global.race.last_assembled + buffer + 1 - global.city.calendar.day])}</div>`;
+                        if (global.race['last_assembled'] && global.race.last_assembled + buffer >= global.stats.days){
+                            warn = `<div class="has-text-caution">${loc('city_assembly_effect_parasite',[global.race.last_assembled + buffer + 1 - global.stats.days])}</div>`;
                         }
                         else {
                             warn = `<div class="has-text-success">${loc('city_assembly_effect_parasite_ok')}</div>`;
@@ -4714,7 +4714,7 @@ export function buildTemplate(key, region){
                                 buffer = 4 - traitRank('parasite');
                                 break;
                         }
-                        if (global.race['last_assembled'] && global.race.last_assembled + buffer >= global.city.calendar.day){
+                        if (global.race['last_assembled'] && global.race.last_assembled + buffer >= global.stats.days){
                             return false;
                         }
                     }
@@ -4724,7 +4724,7 @@ export function buildTemplate(key, region){
                     else if (global['resource'][global.race.species].max > global['resource'][global.race.species].amount && payCosts($(this)[0])){
                         global['resource'][global.race.species].amount++;
                         global.civic[global.civic.d_job].workers++;
-                        global.race['last_assembled'] = global.city.calendar.day;
+                        global.race['last_assembled'] = global.stats.days;
                         return true;
                     }
                     return false;

@@ -7268,7 +7268,7 @@ function statusEffect(mech,effect){
             break;
         case 'radioactive':
             {
-                if (!mech.equip.includes('shields') && mech.equip.includes('manashield')){
+                if (!mech.equip.includes('shields') && !mech.equip.includes('manashield')){
                     rating = 0.5;
                 }
             }
@@ -7359,11 +7359,13 @@ function statusEffect(mech,effect){
                         break;
                     case 'cyberdemon':
                         rating = 0.5;
+                        break;
                     case 'large':
                         rating = 0.45;
                         break;
                     case 'archfiend':
                         rating = 0.35;
+                        break;
                     case 'titan':
                         rating = 0.25;
                         break;
