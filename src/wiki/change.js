@@ -3,6 +3,27 @@ import { clearElement } from './../functions.js';
 
 export const changeList = [
     {
+        version: `1.4.9`,
+        date: `9/21/2025`,
+        changes: [
+            `Bluecollar Governor: Raised production effect from 10/12% to 14/18%, now also affects factories.`,
+            `Educator Governor: Raises professor effect by +30%.`,
+            `Noble Governor: Mansion gives +7 citizens when upgraded.`,
+            `Media Governor: 30/35% of overcapped morale can go past the morale cap.`,
+            `Sports Governor: No longer has a soldier healing bonus, now raises surveyor infernite by 10/12%`,
+            `Soldier Governor: Added 40%/50% healing bonus.`,
+            `Added Japanese language.`,
+            `Discharge now affects the processing factory bonus instead of adamantite directly.`,
+            `Servant hunters no longer produce 4x more furs with high pop.`,
+            `Hunter job stress is now affected by high pop.`,
+            `Synth assembly scales slower with high population.`,
+            `Eldritch cattle slaughtering gives more food.`,
+            `Tusked no longer penalized by hivemind`,
+            `Adv. Spy operator is no longer free to use in Truepath without unlocking.`,
+            `Many misc bug fixes, can't be bothered to document them.`
+        ]
+    },
+    {
         version: `1.4.8`,
         date: `5/16/2025`,
         changes: [
