@@ -13,6 +13,8 @@ export const changeList = [
             `Sports Governor: No longer has a soldier healing bonus, now raises surveyor infernite by 10/12%`,
             `Soldier Governor: Added 40%/50% healing bonus.`,
             `Added Japanese language.`,
+            `Untrustworthy now affects Titan banks.`,
+            `Soul capacitors now lose stored energy if you turn off all capacitors.`,
             `Discharge now affects the processing factory bonus instead of adamantite directly.`,
             `Servant hunters no longer produce 4x more furs with high pop.`,
             `Hunter job stress is now affected by high pop.`,
