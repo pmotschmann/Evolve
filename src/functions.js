@@ -8,6 +8,7 @@ import { arpaAdjustCosts, arpaProjectCosts } from './arpa.js';
 import { gridDefs } from './industry.js';
 import { govActive } from './governor.js';
 import { govEffect } from './civics.js';
+import { highPopAdjust } from './prod.js';
 import { universeLevel, universeAffix, alevel } from './achieve.js';
 import { astrologySign, astroVal } from './seasons.js';
 import { shipCosts, TPShipDesc } from './truepath.js';
@@ -460,7 +461,7 @@ export function buildQueue(){
     let queue = $(`<ul class="buildList"></ul>`);
     $('#buildQueue').append(queue);
 
-    queue.append($(`<li v-for="(item, index) in queue"><a v-bind:id="setID(index)" class="has-text-warning queued" v-bind:class="{ 'qany': item.qa }" @click="remove(index)"><span v-bind:class="setData(index,'res')" v-bind="setData(index,'data')">{{ item.label }}{{ item.q | count }}</span> [<span v-bind:class="{ 'has-text-danger': item.cna, 'has-text-success': !item.cna }">{{ item.time | time }}{{ item.t_max | max_t(item.time) }}</span>]</a></li>`));
+    queue.append($(`<li v-for="(item, index) in queue"><a v-bind:id="setID(index)" class="has-text-warning queued" v-bind:class="{ 'qany': item.qa }" @click="remove(index)" role="link"><span v-bind:class="setData(index,'res')" v-bind="setData(index,'data')">{{ item.label }}{{ item.q | count }}</span> [<span v-bind:class="{ 'has-text-danger': item.cna, 'has-text-success': !item.cna }">{{ item.time | time }}{{ item.t_max | max_t(item.time) }}</span>]</a></li>`));
 
     try {
         vBind({
@@ -824,7 +825,7 @@ export function costMultiplier(structure,offset,base,mutiplier,cat){
     if (mutiplier < 1.005){
         mutiplier = 1.005;
     }
-    var count = structure === 'citizen' ? global['resource'][global.race.species].amount : (global[cat][structure] ? global[cat][structure].count : 0);
+    var count = structure === 'citizen' ? highPopAdjust(global['resource'][global.race.species].amount) : (global[cat][structure] ? global[cat][structure].count : 0);
     if (offset){
         count += offset;
     }

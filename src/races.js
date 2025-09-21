@@ -6698,7 +6698,7 @@ export function racialTrait(workers,type){
         if (global.race['dark_dweller'] && global.city.calendar.weather === 2){
             modifier *= 1 - traits.dark_dweller.vars()[0] / 100;
         }
-        if(global.city.banquet && global.city.banquet.on && global.city.banquet.count >= 3){
+        if(global.city.banquet && global.city.banquet.on && global.city.banquet.level >= 3){
             modifier *= 1 + (global.city.banquet.strength ** 0.65) / 100;
         }
     }
@@ -6726,7 +6726,8 @@ export function racialTrait(workers,type){
         }
     }
     if ((global.race['living_tool'] || global.race['tusk']) && type === 'miner'){
-        let tusk = global.race['tusk'] ? 1 + ((traits.tusk.vars()[0] / 100) * (armyRating(jobScale(1),'army',0) / 100)) : 1;
+        const balance = global.race['hivemind'] ? traits.hivemind.vars()[0] : 1;
+        let tusk = global.race['tusk'] ? 1 + ((traits.tusk.vars()[0] / 100) * (armyRating(jobScale(balance),'army',0) / balance / 100)) : 1;
         let lt = global.race['living_tool'] ? 1 + traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science * 0.12 : 0) : 1;
         modifier *= lt > tusk ? lt : tusk;
     }
@@ -7208,6 +7209,8 @@ export function cleanAddTrait(trait){
             }
             removeTask('spy');
             removeTask('spyop');
+            removeTask('combo_spy');
+            defineGovernor();
             break;
         case 'noble':
             if (global.civic.taxes.tax_rate < 10) {

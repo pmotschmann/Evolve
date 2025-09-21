@@ -3350,7 +3350,7 @@ const fortressModules = {
             id: 'portal-mechbay',
             title(){ return global.race['warlord'] ? loc('portal_demon_artificer_title') : loc('portal_mechbay_title'); },
             desc(){
-                return `<div>${loc('portal_demon_artificer_title')}</div><div class="has-text-special">${loc('portal_spire_support')}</div>`;
+                return `<div>${$(this)[0].title()}</div><div class="has-text-special">${loc('portal_spire_support')}</div>`;
             },
             reqs: { hell_spire: 9 },
             cost: {
@@ -3784,7 +3784,7 @@ function buildEnemyFortress(parent){
 
     let enemy = $(`<div v-for="(e, index) of enemy" :key="index" class="enemyFortress">
         <div class="fortRow"><span class="has-text-success">{{ e.r | species }}</span><span class="has-text-warning">${loc(`fortress_wall`)} {{ e.f }}%</span></div>
-        <div class="fortRow second"><span class="has-text-caution">${loc(`fortress_demon_kills`)} {{ e.k | kills }}</span><a class="button" v-on:click="attack(index)">${loc(`civics_garrison_attack`)}</a></div>
+        <div class="fortRow second"><span class="has-text-caution">${loc(`fortress_demon_kills`)} {{ e.k | kills }}</span><a class="button" v-on:click="attack(index)" role="button">${loc(`civics_garrison_attack`)}</a></div>
     </div>`);
     fort.append(enemy);
 
@@ -4577,7 +4577,7 @@ export function bloodwar(){
     // Surveyor threats
     if (global.civic.hell_surveyor.display && global.civic.hell_surveyor.workers > 0){
         let divisor = 1000;
-        let painVal = govActive('nopain',1);
+        let painVal = govActive('runner',0);
         if (painVal){
             divisor *= 1 + (painVal / 100);
         }
@@ -6962,7 +6962,7 @@ function drawMechs(){
 
     list.append(`
       <div v-for="(mech, index) of mechs" :key="index" class="mechRow" :class="index < active ? '' : 'inactive-row' ">
-        <a class="scrap" @click="scrap(index)">${loc(global.race['warlord'] ? 'portal_mech_unsummon' : 'portal_mech_scrap')}</a>
+        <a class="scrap" @click="scrap(index)" role="button">${loc(global.race['warlord'] ? 'portal_mech_unsummon' : 'portal_mech_scrap')}</a>
         <span> | </span><span>${loc(global.race['warlord'] ? 'portal_demon' : 'portal_mech')} #{{index + 1}}: </span>
         <span class="has-text-caution">{{ mech.infernal ? "${loc('portal_mech_infernal')} " : "" }}{{ mech | size }} {{ mech | chassis }}</span>
         <div :class="'gearList '+mech.size">

@@ -1260,6 +1260,13 @@ if (convertVersion(global['version']) < 104008){
     }
 }
 
+if (convertVersion(global['version']) < 104009){
+    if(global.city['banquet'] && !global.city['banquet'].level){
+        global.city['banquet'].level = global.city['banquet'].count;
+        global.city['banquet'].count = Math.min(1, global.city['banquet'].count);
+    }
+}
+
 
 
 global['version'] = '1.4.8';

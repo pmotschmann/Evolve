@@ -14,7 +14,7 @@ import { tauCetiTech, renderTauCeti, loneSurvivor } from './truepath.js';
 import { arpa, gainGene, gainBlood } from './arpa.js';
 import { production, highPopAdjust } from './prod.js';
 import { techList, techPath } from './tech.js';
-import { govActive, removeTask, gov_tasks } from './governor.js';
+import { defineGovernor, govActive, removeTask, gov_tasks } from './governor.js';
 import { bioseed } from './resets.js';
 import { loadTab } from './index.js';
 
@@ -3475,16 +3475,15 @@ export const actions = {
             desc: loc(`city_banquet_desc`),
             category: 'commercial',
             reqs: { banquet:1 },
-            queue_complete(){ return global.stats.achieve['endless_hunger'] ? global.stats.achieve['endless_hunger'].l - global.city['banquet'].count : 0},
+            queue_complete(){ return global.stats.achieve['endless_hunger'] ? global.stats.achieve['endless_hunger'].l - global.city['banquet'].level : 0},
             no_multi: true,
             condition(){
                 return global.stats.achieve['endless_hunger'] && global.stats.achieve['endless_hunger'].l >= 1 ? true : false;
             },
             cost: {
                 Money(offset){
-                    const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
-                    //const max = global.stats.achieve['endless_hunger'] ? global.stats.achieve['endless_hunger'].l : 0;
-                    switch (count){
+                    const level = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].level : 0);
+                    switch (level){
                         case 0:
                             return 45000;
                         case 1:
@@ -3500,9 +3499,9 @@ export const actions = {
                     }
                 },
                 Food(offset){
-                    const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
+                    const level = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].level : 0);
                     return (() => {
-                        switch (count){
+                        switch (level){
                             case 0:
                                 return 40000;
                             case 1:
@@ -3519,8 +3518,8 @@ export const actions = {
                     })() * (global.race['artifical'] ? 0.25 : 1);
                 },
                 Brick(offset){ 
-                    const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
-                    switch (count){
+                    const level = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].level : 0);
+                    switch (level){
                         case 0:
                             return 1600;
                         case 1:
@@ -3532,8 +3531,8 @@ export const actions = {
                     }
                 },
                 Wrought_Iron(offset){
-                    const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
-                    switch (count){
+                    const level = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].level : 0);
+                    switch (level){
                         case 0:
                             return 0;
                         case 1:
@@ -3549,8 +3548,8 @@ export const actions = {
                     }
                 },
                 Iridium(offset){
-                    const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
-                    switch (count){
+                    const level = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].level : 0);
+                    switch (level){
                         case 2:
                             return 50000;
                         case 3:
@@ -3562,11 +3561,11 @@ export const actions = {
                     }
                 },
                 Aerogel(offset, wiki){
-                    const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
+                    const level = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].level : 0);
                     if(wiki ? wiki.truepath : global.race['truepath']){
                         return 0;
                     }
-                    switch (count){
+                    switch (level){
                         case 3:
                             return 40000;
                         case 4:
@@ -3576,11 +3575,11 @@ export const actions = {
                     }
                 },
                 Quantium(offset, wiki){
-                    const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
+                    const level = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].level : 0);
                     if(wiki ? !wiki.truepath : !global.race['truepath']){
                         return 0;
                     }
-                    switch (count){
+                    switch (level){
                         case 3:
                             return 40000;
                         case 4:
@@ -3590,8 +3589,8 @@ export const actions = {
                     }
                 },
                 Bolognium(offset){
-                    const count = (offset ? offset : 0) || (global.city['banquet'] ? global.city['banquet'].count : 0);
-                    switch (count){
+                    const level = (offset ? offset : 0) || (global.city['banquet'] ? global.city['banquet'].level : 0);
+                    switch (level){
                         case 4:
                             return 150000;
                         default:
@@ -3601,39 +3600,41 @@ export const actions = {
             },
             effect(wiki){
                 let strength = global.city['banquet'] ? global.city['banquet'].strength : 0;
-                let count = (wiki?.count ?? 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
+                let level = (wiki?.count ?? 0) + (global.city['banquet'] ? global.city['banquet'].level : 0);
                 let desc = `<div>Strength: <span class="has-text-caution">${strength}</span></div>`;
-                desc += `<div>${loc(`city_banquet_effect1`, [sizeApproximation(((count >= 5 ? 1.02 : 1.022)**(strength) - 1) * 100)])}</div>`;
-                if(count >= 1){
+                desc += `<div>${loc(`city_banquet_effect1`, [sizeApproximation(((level >= 5 ? 1.02 : 1.022)**(strength) - 1) * 100)])}</div>`;
+                if(level >= 1){
                     desc += `<div>${loc(`city_banquet_effect2`, [(strength**0.75).toFixed(2)])}</div>`;
                 }
-                if(count >= 2){
+                if(level >= 2){
                     desc += `<div>${loc(`city_banquet_effect3`, [(strength**0.65).toFixed(2)])}</div>`;
                 }
-                if(count >= 3){
+                if(level >= 3){
                     desc += `<div>${loc(`city_banquet_effect4`, [(strength**0.65).toFixed(2)])}</div>`;
                 }
-                if(count >= 4){
+                if(level >= 4){
                     desc += `<div>${loc(`city_banquet_effect5`, [(strength**0.75).toFixed(2)])}</div>`;
                 }
                 return desc;
             },
             powered(){ return 0; },
             action(args){
-                if (global.city['banquet'].count < global.stats.achieve['endless_hunger'].l && payCosts($(this)[0])){
+                if (global.city['banquet'].level < global.stats.achieve['endless_hunger'].l && payCosts($(this)[0])){
                     incrementStruct('banquet','city');
-                    if(global.city.banquet.count === 1){
-                        global.city.banquet.on = 1;
+                    global.city['banquet'].level++;
+                    if(global.city['banquet'].level === 1){
+                        global.city['banquet'].on = 1;
                     }
-                    //drawTech();
+                    global.city['banquet'].count = 1; //banquet hall can be powered on once at most
                     drawCity();
                     return true;
                 }
                 return false;
             },
+            count(){ return global.city['banquet'].level },
             struct(){
                 return {
-                    d: { count: 0, on: 0, strength: 0 },
+                    d: { count: 0, on: 0, strength: 0, level: 0 },
                     p: ['banquet','city']
                 };
             },
@@ -4901,7 +4902,7 @@ export function buildTemplate(key, region){
         case 's_alter':   
         {
             let action = {
-                id: 'city-s_alter',
+                id: `${region}-s_alter`,
                 title: loc('city_s_alter'),
                 desc(){
                     return global.city.hasOwnProperty('s_alter') && global.city['s_alter'].count >= 1 ? `<div>${loc('city_s_alter')}</div><div class="has-text-special">${loc('city_s_alter_desc')}</div>` : loc('city_s_alter');
@@ -5010,7 +5011,7 @@ export function buildTemplate(key, region){
         case 'shrine':
         {
             let action = {
-                id: 'city-shrine',
+                id: `${region}-shrine`,
                 title: loc('city_shrine'),
                 desc(){
                     return global.race['warlord'] ? loc('city_shrine_warlord_desc') : loc('city_shrine_desc');
@@ -5089,7 +5090,7 @@ export function buildTemplate(key, region){
         case 'meditation':
         {
             let action = {
-                id: 'city-meditation',
+                id: `${region}-meditation`,
                 title: loc('city_meditation'),
                 desc: loc('city_meditation'),
                 category: 'commercial',
@@ -6297,7 +6298,7 @@ export function setAction(c_action,action,type,old,prediction){
     }
     if (c_action['count']){
         let count = c_action.count();
-        if (count > 1){
+        if (count > 0 && (id !== 'city-gift' || count > 1)){
             element.append($(`<span class="count">${count}</span>`));
         }
     }
@@ -6375,18 +6376,13 @@ export function setAction(c_action,action,type,old,prediction){
                 return `off: ${global[action][type].count - global[action][type].on}`;
             },
             power_on(){
-                if(type === "banquet"){
-                    global[action][type].on = 1;
-                }
-                else{
-                    let keyMult = keyMultiplier();
-                    for (let i=0; i<keyMult; i++){
-                        if (global[action][type].on < global[action][type].count){
-                            global[action][type].on++;
-                        }
-                        else {
-                            break;
-                        }
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global[action][type].on < global[action][type].count){
+                        global[action][type].on++;
+                    }
+                    else {
+                        break;
                     }
                 }
                 if (c_action['postPower']){
@@ -6436,9 +6432,6 @@ export function setAction(c_action,action,type,old,prediction){
                         return egg;
                     }
                 }
-                else if(id === 'city-banquet'){
-                    return (p ? 0 : 1);
-                }
                 return value;
             },
             p_on(p,id){
@@ -6459,9 +6452,6 @@ export function setAction(c_action,action,type,old,prediction){
                     if (p === num && trick.length > 0){
                         return trick;
                     }
-                }
-                else if(id === 'city-banquet'){
-                    return (p ? 1 : 0);
                 }
                 return p;
             },
@@ -6765,7 +6755,7 @@ export function setPlanet(opt){
 
     let title = `${traits}${biomes[biome].label} ${num}`;
     var parent = $(`<div id="${id}" class="action"></div>`);
-    var element = $(`<a class="button is-dark" v-on:click="action"><span class="aTitle">${title}</span></a>`);
+    var element = $(`<a class="button is-dark" v-on:click="action" role="link"><span class="aTitle">${title}</span></a>`);
     parent.append(element);
 
     $('#evolution').append(parent);
@@ -7524,7 +7514,9 @@ export function removeAction(id){
 export function updateDesc(c_action,category,action){
     var id = c_action.id;
     if (global[category] && global[category][action] && global[category][action]['count']){
-        $(`#${id} .count`).html(global[category][action].count);
+        if(!c_action.hasOwnProperty('count')){
+            $(`#${id} .count`).html(global[category][action].count);
+        }
         if (global[category][action] && global[category][action].count > 0){
             $(`#${id} .count`).css('display','inline-block');
             $(`#${id} .special`).css('display','block');
@@ -8020,6 +8012,7 @@ export function orbitDecayed(){
             global.resource.Slave.display = false;
             global.resource.Slave.amount = 0;
             removeTask('slave');
+            defineGovernor();
         }
         if (global.race['deconstructor']){
             nf_resources.forEach(function (res){
@@ -9575,7 +9568,7 @@ export function resQueue(){
     let queue = $(`<ul class="buildList"></ul>`);
     $('#resQueue').append(queue);
 
-    queue.append($(`<li v-for="(item, index) in queue"><a v-bind:id="setID(index)" class="queued" v-bind:class="{ 'qany': item.qa }" @click="remove(index)"><span class="has-text-warning">{{ item.label }}</span> [<span v-bind:class="{ 'has-text-danger': item.cna, 'has-text-success': !item.cna && item.req, 'has-text-caution': !item.req && !item.cna }">{{ item.time | time }}</span>]</a></li>`));
+    queue.append($(`<li v-for="(item, index) in queue"><a v-bind:id="setID(index)" class="queued" v-bind:class="{ 'qany': item.qa }" @click="remove(index)" role="link"><span class="has-text-warning">{{ item.label }}</span> [<span v-bind:class="{ 'has-text-danger': item.cna, 'has-text-success': !item.cna && item.req, 'has-text-caution': !item.req && !item.cna }">{{ item.time | time }}</span>]</a></li>`));
 
     try {
         vBind({
