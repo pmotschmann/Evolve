@@ -8903,7 +8903,7 @@ function majorWish(parent){
                     else {
                         switch(spell){
                             case 'flower':
-                                messageQueue(loc('wish_peace_flower',[govTitle(spell.substring(3))]),'warning',false,['events']);
+                                messageQueue(loc('wish_peace_flower'),'warning',false,['events']);
                                 break;
                             case 'gov3':
                                 global.civic.foreign[spell].hstl = 0;
