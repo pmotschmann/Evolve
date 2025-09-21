@@ -11,6 +11,7 @@ import { defineGovernor, removeTask, govActive } from './governor.js';
 import { defineIndustry, nf_resources, addSmelter, setupRituals, cancelRituals } from './industry.js';
 import { arpa } from './arpa.js';
 import { matrix, retirement, gardenOfEden } from './resets.js';
+import { traitCostMod } from './races.js';
 import { loc } from './locale.js';
 
 const outerTruth = {
