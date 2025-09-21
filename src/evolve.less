@@ -162,6 +162,9 @@ Misc ---------> Main template
             @market-item-order-hover-background: @secondary-color;
             @market-item-order-hover-border: #eee;
 
+            // .resource
+            @resource-overlay-color: #888888ee;
+
             // .modalBox
             @modalBox-background: #282f2f;
 
@@ -284,6 +287,9 @@ Misc ---------> Main template
             @market-item-order-hover-background: #ccc;
             @market-item-order-hover-border: #333;
 
+            // .resource
+            @resource-overlay-color: #000000;
+
             // .modalBox
             @modalBox-background: @white;
 
@@ -324,6 +330,9 @@ Misc ---------> Main template
 
             // .market-item
             @market-item-background: #1b1b1b;
+
+            // .resource
+            @resource-overlay-color: #888888;
 
             // -webkit-scrollbar
             @webkit-scrollbar-thumb-background: #727272;
@@ -483,6 +492,9 @@ Misc ---------> Main template
             @market-item-order-hover-background: @secondary-color;
             @market-item-order-hover-border: @link-hover;
 
+            // .resource
+            @resource-overlay-color: #a89984;
+
             // .modalBox
             @modalBox-background: @html-background;
 
@@ -604,6 +616,9 @@ Misc ---------> Main template
             @market-item-background: #1d2021;
             @market-item-order-hover-background: @secondary-color;
             @market-item-order-hover-border: @link-hover;
+
+            // .resource
+            @resource-overlay-color: #ebdbb2;
 
             // .modalBox
             @modalBox-background: @html-background;
@@ -766,6 +781,9 @@ Misc ---------> Main template
             @market-item-order-hover-background: @secondary-color;
             @market-item-order-hover-border: @link-hover;
 
+            // .resource
+            @resource-overlay-color: #a89259;
+
             // .modalBox
             @modalBox-background: @html-background;
 
@@ -888,6 +906,9 @@ Misc ---------> Main template
             @market-item-background: #1d2021;
             @market-item-order-hover-background: @secondary-color;
             @market-item-order-hover-border: @link-hover;
+
+            // .resource
+            @resource-overlay-color: #3c4888;
 
             // .modalBox
             @modalBox-background: @html-background;
@@ -1604,6 +1625,17 @@ Misc ---------> Main template
             &.alt {
                 background-color: @market-item-background;
             }
+        }
+
+        .resource {
+          background-image: linear-gradient(
+            to right, fade(@resource-overlay-color, 10%) 0%,
+            fade(@resource-overlay-color, 10%) calc(var(--percent-full) - 2px),
+            fade(@resource-overlay-color, 50%) calc(var(--percent-full) - 2px),
+            fade(@resource-overlay-color, 50%) var(--percent-full),
+            transparent var(--percent-full),
+            transparent 100%);
+          padding: 3px;
         }
 
         .inactive-row {
