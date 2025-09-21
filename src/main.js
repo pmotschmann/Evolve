@@ -12940,10 +12940,12 @@ function resourceAlt(){
         $(`${id}:visible`).each(function(){
             if (alt){
                 $(this).addClass('alt');
+                $(this).removeClass('prime');
                 alt = false;
             }
             else {
                 $(this).removeClass('alt');
+                $(this).addClass('prime');
                 alt = true;
             }
         });

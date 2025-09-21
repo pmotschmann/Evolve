@@ -163,7 +163,8 @@ Misc ---------> Main template
             @market-item-order-hover-border: #eee;
 
             // .resource
-            @resource-overlay-color: #888888ee;
+            @resource-overlay-color: darken(@html-background, 15%);
+            @resource-overlay-color-alt: darken(@market-item-background, 15%);
 
             // .modalBox
             @modalBox-background: #282f2f;
@@ -288,7 +289,8 @@ Misc ---------> Main template
             @market-item-order-hover-border: #333;
 
             // .resource
-            @resource-overlay-color: #000000;
+            @resource-overlay-color: darken(@html-background, 25%);
+            @resource-overlay-color-alt: darken(@market-item-background, 25%);
 
             // .modalBox
             @modalBox-background: @white;
@@ -332,7 +334,8 @@ Misc ---------> Main template
             @market-item-background: #1b1b1b;
 
             // .resource
-            @resource-overlay-color: #888888;
+            @resource-overlay-color: lighten(@html-background, 10%);
+            @resource-overlay-color-alt: darken(@market-item-background, 15%);
 
             // -webkit-scrollbar
             @webkit-scrollbar-thumb-background: #727272;
@@ -493,7 +496,8 @@ Misc ---------> Main template
             @market-item-order-hover-border: @link-hover;
 
             // .resource
-            @resource-overlay-color: #a89984;
+            @resource-overlay-color: darken(@html-background, 15%);
+            @resource-overlay-color-alt: darken(@market-item-background, 15%);
 
             // .modalBox
             @modalBox-background: @html-background;
@@ -618,7 +622,10 @@ Misc ---------> Main template
             @market-item-order-hover-border: @link-hover;
 
             // .resource
-            @resource-overlay-color: #ebdbb2;
+            @resource-overlay-color: darken(@html-background, 15%);
+            @resource-overlay-color-alt: darken(@market-item-background, 15%);
+
+            //@html-background: #282828;
 
             // .modalBox
             @modalBox-background: @html-background;
@@ -782,7 +789,8 @@ Misc ---------> Main template
             @market-item-order-hover-border: @link-hover;
 
             // .resource
-            @resource-overlay-color: #a89259;
+            @resource-overlay-color: darken(@html-background, 13%);
+            @resource-overlay-color-alt: darken(@market-item-background, 15%);
 
             // .modalBox
             @modalBox-background: @html-background;
@@ -908,7 +916,8 @@ Misc ---------> Main template
             @market-item-order-hover-border: @link-hover;
 
             // .resource
-            @resource-overlay-color: #3c4888;
+            @resource-overlay-color: darken(@html-background, 15%);
+            @resource-overlay-color-alt: darken(@market-item-background, 15%);
 
             // .modalBox
             @modalBox-background: @html-background;
@@ -1627,14 +1636,23 @@ Misc ---------> Main template
             }
         }
 
-        .resource {
-          background-image: linear-gradient(
-            to right, fade(@resource-overlay-color, 10%) 0%,
-            fade(@resource-overlay-color, 10%) calc(var(--percent-full) - 2px),
-            fade(@resource-overlay-color, 50%) calc(var(--percent-full) - 2px),
-            fade(@resource-overlay-color, 50%) var(--percent-full),
-            transparent var(--percent-full),
-            transparent 100%);
+        .resource.showBar {
+            &.prime {
+                background-image: linear-gradient(
+                to right, transparent 0%,
+                    transparent calc(var(--percent-full) - 1px),
+                    @resource-overlay-color calc(var(--percent-full) + 1px),
+                    @resource-overlay-color 100%
+                );
+            }
+            &.alt {
+                background-image: linear-gradient(
+                    to right, transparent 0%,
+                        transparent calc(var(--percent-full) - 1px),
+                        @resource-overlay-color-alt calc(var(--percent-full) + 1px),
+                        @resource-overlay-color-alt 100%
+                    );
+            }
         }
 
         .resource .bar {
