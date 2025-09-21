@@ -5051,7 +5051,7 @@ function addHellEnemy(type = [], allowRecursion = true, allowRepeat = false){
 }
 
 function soulCapacitor(souls){
-    if (global.race['witch_hunter'] && global.portal.hasOwnProperty('soul_capacitor') && p_on['soul_capacitor'] > 0){
+    if (global.race['witch_hunter'] && global.portal.hasOwnProperty('soul_capacitor')){
         global.portal.soul_capacitor.energy += souls;
         if (global.portal.soul_capacitor.energy > global.portal.soul_capacitor.ecap){
             global.portal.soul_capacitor.energy = global.portal.soul_capacitor.ecap;

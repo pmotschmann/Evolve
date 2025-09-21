@@ -11,6 +11,7 @@ import { defineGovernor, removeTask, govActive } from './governor.js';
 import { defineIndustry, nf_resources, addSmelter, setupRituals, cancelRituals } from './industry.js';
 import { arpa } from './arpa.js';
 import { matrix, retirement, gardenOfEden } from './resets.js';
+import { traitCostMod } from './races.js';
 import { loc } from './locale.js';
 
 const outerTruth = {
@@ -386,9 +387,9 @@ const outerTruth = {
             reqs: { titan: 6 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('titan_bank', offset, 2500000, 1.32); },
-                Titanium(offset){ return spaceCostMultiplier('titan_bank', offset, 380000, 1.32); },
-                Neutronium(offset){ return spaceCostMultiplier('titan_bank', offset, 5000, 1.32); }
+                Money(offset){ return spaceCostMultiplier('titan_bank', offset, traitCostMod('untrustworthy',2500000), 1.32); },
+                Titanium(offset){ return spaceCostMultiplier('titan_bank', offset, traitCostMod('untrustworthy',380000), 1.32); },
+                Neutronium(offset){ return spaceCostMultiplier('titan_bank', offset, traitCostMod('untrustworthy',5000), 1.32); }
             },
             effect(){
                 let vault = bank_vault() * 2;
@@ -4530,7 +4531,7 @@ export function shipPower(ship, wiki){
             break;
     }
 
-    watts = Math.round(powerModifier(watts));
+    watts = Math.round(Math.max(watts, powerModifier(watts)));
 
     switch (ship.weapon){
         case 'railgun':
