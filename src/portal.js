@@ -4577,7 +4577,7 @@ export function bloodwar(){
     // Surveyor threats
     if (global.civic.hell_surveyor.display && global.civic.hell_surveyor.workers > 0){
         let divisor = 1000;
-        let painVal = govActive('nopain',1);
+        let painVal = govActive('runner',0);
         if (painVal){
             divisor *= 1 + (painVal / 100);
         }

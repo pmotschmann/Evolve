@@ -273,7 +273,7 @@ if (global.eden['spirit_battery']){
     p_on['spirit_battery'] = global.eden.spirit_battery.on;
 }
 if (global.city['replicator'] && global.race?.replicator?.pow && global.race?.governor?.config?.replicate?.pow?.on){
-    if (Object.values(global.race.governor.tasks).includes('replicate')){
+    if (Object.values(global.race.governor.tasks || {}).includes('replicate')){
         global.city.replicator.on = 0;
         global.city.replicator.count = 0;
         global.race.replicator.pow = 0;
@@ -3266,7 +3266,8 @@ function fastLoop(){
             morale = m_min;
         }
         else if (morale > moraleCap){
-            morale = moraleCap;
+            let gasVal = govActive('gaslighter',3) || 0;
+            morale = moraleCap + (morale - moraleCap) * gasVal / 100;
         }
         global.city.morale.cap = moraleCap;
         global.city.morale.current = morale;
@@ -4776,6 +4777,10 @@ function fastLoop(){
             }
             if (global.civic.govern.type === 'socialist'){
                 factory_output *= 1 + (govEffect.socialist()[1] / 100);
+            }
+            let dirtVal = govActive('dirty_jobs',2);
+            if (dirtVal){
+                factory_output *= 1 + (dirtVal / 100);
             }
 
             let powered_mult = 1;
@@ -7184,12 +7189,18 @@ function fastLoop(){
                     sensors = 1 + (p_on['sensor_drone'] * drone_rate);
                 }
 
+                let runner = govActive('runner',1);
+                let runBonus = 1;
+                if(runner){
+                    runBonus = 1 + (runner / 100);
+                }
+
                 let tunneler = 1;
                 if (global.race['warlord'] && global.portal['tunneler']){
                     tunneler = 1 + (global.portal.tunneler.rank + 3) / 100 * global.portal.tunneler.count;
                 }
 
-                let surveyor_delta = surveyor_base * tunneler * sensors * global_multiplier;
+                let surveyor_delta = surveyor_base * tunneler * sensors * runBonus * global_multiplier;
 
                 breakdown.p['Infernite'][global.race['warlord'] ? jobName('miner') : jobName('hell_surveyor')] = surveyor_base + 'v';
                 breakdown.p['Infernite'][`ᄂ${loc('portal_sensor_drone_title')}`] = ((sensors - 1) * 100) + '%';
@@ -7568,7 +7579,8 @@ function fastLoop(){
         let rawCash = FactoryMoney ? FactoryMoney * global_multiplier * hunger : 0;
         if (FactoryMoney && global.race['discharge'] && global.race['discharge'] > 0){rawCash *= 0.5;}
         if (global.tech['currency'] >= 1){
-            let income_base = global.resource[global.race.species].amount + global.civic.garrison.workers - global.civic.unemployed.workers;
+            let citizens = global.resource[global.race.species].amount + global.civic.garrison.workers - global.civic.unemployed.workers;
+            let income_base = citizens;
             if (global.race['high_pop']){
                 income_base = highPopAdjust(income_base);
             }
@@ -7597,8 +7609,17 @@ function fastLoop(){
                 }
                 income_base *= 1 + (global.civic.banker.workers * impact);
             }
-
+            
+            let extra_income = 0;
+            if (govActive('extravagant',0) && global.city['apartment']){
+                let mult = income_base / citizens;
+                let pop = p_on['apartment'] * actions.city.apartment.citizens();
+                pop = Math.min(citizens, pop);
+                extra_income = pop * mult * (govCivics('tax_cap') / 20); //citizens in mansions pay max taxes always.
+                income_base -= pop * mult;
+            }
             income_base *= (global.civic.taxes.tax_rate / 20);
+            income_base += extra_income;
             if (global.civic.govern.type === 'oligarchy'){
                 income_base *= 1 - (govEffect.oligarchy()[0] / 100);
             }
