@@ -5,7 +5,7 @@ import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from 
 import { races, traits, genus_def, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill, traitRank } from './races.js';
 import { defineResources, unlockCrates, unlockContainers, crateValue, containerValue, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus, faithTempleCount } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
-import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter } from './industry.js';
+import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter, cancelRituals } from './industry.js';
 import { defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating, garrisonSize, govEffect } from './civics.js';
 import { spaceTech, interstellarTech, galaxyTech, incrementStruct, universe_affixes, renderSpace, piracy, fuel_adjust, isStargateOn } from './space.js';
 import { renderFortress, fortressTech, warlordSetup } from './portal.js';
@@ -7742,8 +7742,7 @@ export function checkCosts(costs){
                 return;
             }
             let f_res = res === 'Species' ? global.race.species : res;
-            let fail_max = global.resource[f_res].max >= 0 && testCost > global.resource[f_res].max ? true : false;
-            if (testCost > Number(global.resource[f_res].amount) + global.resource[f_res].diff || fail_max){
+            if (testCost > Number(global.resource[f_res].amount) || (global.resource[f_res].max >= 0 && testCost > global.resource[f_res].max)){
                 test = false;
                 return;
             }
@@ -7986,11 +7985,7 @@ export function orbitDecayed(){
             if (global.city['pylon']){
                 global.space['pylon'] = { count: Math.ceil(global.city.pylon.count / 2) };
             }
-            if (global.race['casting']){
-                Object.keys(global.race.casting).forEach(function (c){
-                    global.race.casting[c] = 0;
-                });
-            }
+            cancelRituals();
         }
 
         Object.keys(actions.city).forEach(function (k){

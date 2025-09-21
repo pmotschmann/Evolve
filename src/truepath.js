@@ -8,7 +8,7 @@ import { production, highPopAdjust } from './prod.js';
 import { actions, payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, buildTemplate, casinoEffect, housingLabel, structName, initStruct } from './actions.js';
 import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, incrementStruct, planetName } from './space.js';
 import { defineGovernor, removeTask, govActive } from './governor.js';
-import { defineIndustry, nf_resources, addSmelter } from './industry.js';
+import { defineIndustry, nf_resources, addSmelter, setupRituals, cancelRituals } from './industry.js';
 import { arpa } from './arpa.js';
 import { matrix, retirement, gardenOfEden } from './resets.js';
 import { loc } from './locale.js';
@@ -5657,11 +5657,7 @@ export function jumpGateShutdown(){
 
     if (global.tech['magic'] && global.tech.magic >= 2){
         global.tauceti['pylon'] = { count: 0 };
-        if (global.race['casting']){
-            Object.keys(global.race.casting).forEach(function (c){
-                global.race.casting[0] = 0;
-            });
-        }
+        cancelRituals();
     }
 
     initStruct(tauCetiModules.tau_home.tauceti_casino);
@@ -5794,17 +5790,7 @@ export function loneSurvivor(){
             global.resource.Crystal.display = true;
             global.civic.crystal_miner.display = true;
             global.tauceti['pylon'] = { count: 0 };
-            global.race['casting'] = {
-                farmer: 0,
-                miner: 0,
-                lumberjack: 0,
-                science: 0,
-                factory: 0,
-                army: 0,
-                hunting: 0,
-                crafting: 0,
-                total: 0,
-            };
+            setupRituals(true);
         }
         if(global.race.universe === 'evil'){
             global.tech['reclaimer'] = 1;

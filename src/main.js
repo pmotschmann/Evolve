@@ -1,11 +1,11 @@
-import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level, callback_queue } from './vars.js';
+import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level, callback_queue, active_rituals } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat, checkAdept } from './achieve.js';
-import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone, addATime, exceededATimeThreshold, loopTimers, calcQuantumLevel, drawPet } from './functions.js';
+import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, resetResBuffer, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone, addATime, exceededATimeThreshold, loopTimers, calcQuantumLevel, drawPet } from './functions.js';
 import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, cleanRemoveTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobName, jobScale, workerScale, limitCraftsmen, loadServants} from './jobs.js';
-import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, luxGoodPrice, smelterUnlocked, smelterFuelConfig } from './industry.js';
+import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, luxGoodPrice, smelterUnlocked, smelterFuelConfig, setupRituals, maxRitualNum, ritual_types } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
 import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, checkPowerRequirements, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct, casino_vault, casinoEarn, doCallbacks, cLabels } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types } from './space.js';
@@ -287,6 +287,7 @@ buildQueue();
 if (global.race['shapeshifter']){
     shapeShift(false,true);
 }
+setupRituals();
 
 Object.keys(gridDefs()).forEach(function(gridtype){
     powerGrid(gridtype);
@@ -1213,6 +1214,7 @@ function fastLoop(){
     }
 
     var time_multiplier = 0.25;
+    resetResBuffer();
 
     if (global.race.species === 'protoplasm'){
         // Early Evolution Game
@@ -5992,18 +5994,24 @@ function fastLoop(){
         // Mana
         if (global.resource.Mana.display){
             if (global.race['casting']){
-                ['farmer','miner','lumberjack','science','factory','army','hunting','crafting'].forEach(function (spell){
-                    if (global.race.casting[spell] && global.race.casting[spell] > 0){
-                        let consume_mana = manaCost(global.race.casting[spell]);
-                        breakdown.p.consume.Mana[loc(`modal_pylon_spell_${spell}`)] = -(consume_mana);
+                ritual_types.forEach(function (spell){
+                    if (global.race.casting[spell]){
+                        if (global.race.casting[spell] > 0){
+                            const consume_mana = manaCost(global.race.casting[spell]);
+                            const consume_mana_dt = consume_mana * time_multiplier;
+                            if (consume_mana_dt > global.resource.Mana.amount){
+                                active_rituals[spell] = maxRitualNum(global.resource.Mana.amount, time_multiplier);
+                            }
+                            else {
+                                active_rituals[spell] = global.race.casting[spell];
+                            }
+                            breakdown.p.consume.Mana[loc(`modal_pylon_spell_${spell}`)] = -(consume_mana);
 
-                        let buffer = global.resource.Mana.diff > 0 ? global.resource.Mana.diff * time_multiplier : 0
-                        if (!modRes('Mana', -(consume_mana * time_multiplier), false, buffer)){
-                            global.race.casting[spell]--;
+                            modRes('Mana', -(consume_mana_dt));
                         }
-                    }
-                    else {
-                        delete breakdown.p.consume.Mana[loc(`modal_pylon_spell_${spell}`)];
+                        else {
+                            active_rituals[spell] = 0;
+                        }
                     }
                 });
             }
@@ -8075,6 +8083,9 @@ function fastLoop(){
 
     // main resource delta tracking
     Object.keys(global.resource).forEach(function (res) {
+        if (global.resource[res].amount > global.resource[res].max && global.resource[res].max >= 0){
+            global.resource[res].amount = global.resource[res].max;
+        }
         if (global['resource'][res].rate > 0 || (global['resource'][res].rate === 0 && global['resource'][res].max === -1)){
             diffCalc(res,webWorker.mt);
         }
@@ -10875,14 +10886,14 @@ function midLoop(){
             if (Math.rand(0,250) <= belt_mining){
                 global.tech['asteroid'] = 4;
                 global.resource.Elerium.display = true;
-                modRes('Elerium',1);
+                modRes('Elerium',1,true);
                 drawTech();
                 messageQueue(loc('discover_elerium'),'info',false,['progress']);
             }
         }
 
         if (global.tech['asteroid'] && global.tech.asteroid === 4 && global.resource.Elerium.amount === 0){
-            modRes('Elerium',1);
+            modRes('Elerium',1,true);
         }
 
         if (p_on['outpost'] > 0 && global.tech['gas_moon'] && global.tech['gas_moon'] === 1){
@@ -11049,7 +11060,7 @@ function midLoop(){
 
         if (global.race['casting']){
             let total = 0;
-            ['farmer','miner','lumberjack','science','factory','army','hunting','crafting'].forEach(function (spell){
+            ritual_types.forEach(function (spell){
                 if (global.race.casting[spell]){
                     total += global.race.casting[spell];
                 }
@@ -11057,6 +11068,7 @@ function midLoop(){
             global.race.casting.total = total;
         }
 
+        let blockGeneBuffer = false;
         if (global.tech['r_queue'] && global.r_queue.display){
             let idx = -1;
             let c_action = false;
@@ -11089,6 +11101,9 @@ function midLoop(){
                             }
                             else {
                                 if (reqMet){
+                                    if (!stop && t_time <= 1){
+                                        blockGeneBuffer = true;
+                                    }
                                     time += t_time;
                                 }
                                 untime += t_time;
@@ -11148,7 +11163,7 @@ function midLoop(){
         }
 
         if (global.arpa.sequence && global.arpa.sequence['auto'] && global.tech['genetics'] && global.tech['genetics'] >= 8){
-            buildGene();
+            buildGene(blockGeneBuffer);
         }
 
         if (p_on['soul_forge']){
@@ -12838,9 +12853,8 @@ function longLoop(){
     }
 }
 
-function buildGene(){
-    // Reduce size of Knowledge buffer when daily production is under 10000 to avoid jumping in front of the research queue
-    let buffer = global.resource.Knowledge.diff < 10000 ? global.resource.Knowledge.diff : 10000;
+function buildGene(blockGeneBuffer = false){
+    let buffer = blockGeneBuffer ? 0 : 10000;
     if (global.resource.Knowledge.amount >= 200000 && global.resource.Knowledge.amount >= global.resource.Knowledge.max - buffer){
         global.resource.Knowledge.amount -= 200000;
         let gene = global.genes['synthesis'] ? sythMap[global.genes['synthesis']] : 1;
@@ -12915,7 +12929,7 @@ function diffCalc(res,period){
 function steelCheck(){
     if (global.resource.Steel.display === false && Math.rand(0,1250) === 0){
         global.resource.Steel.display = true;
-        modRes('Steel',1);
+        modRes('Steel', 1, true);
         messageQueue(loc('steel_sample'),'info',false,['progress']);
     }
 }
