@@ -836,7 +836,7 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
         res_container = $(`<div id="res${name}" class="resource crafted" v-show="display"><div><h3 class="res has-text-${color}">{{ name | namespace }}</h3><span id="cnt${name}" class="count">{{ amount | diffSize }}</span></div></div>`);
     }
     else {
-        res_container = $(`<div id="res${name}" class="resource" v-show="display" :style="{ '--percent-full': (bar ? (amount/max)*100 : 0) + '%' }"><div><h3 class="res has-text-${color} bar" @click="toggle('${name}')">{{ name | namespace }}</h3><span id="cnt${name}" class="count">{{ amount | size }} / {{ max | size }}</span></div></div>`);
+        res_container = $(`<div id="res${name}" class="resource${global.settings.resBar[name] ? ` showBar` : ``}" v-show="display" :style="{ '--percent-full': (bar && max > 0 ? (amount/max)*100 : 0) + '%' }"><div><h3 class="res has-text-${color} bar" @click="toggle('${name}')">{{ name | namespace }}</h3><span id="cnt${name}" class="count">{{ amount | size }} / {{ max | size }}</span></div></div>`);
     }
 
     if (stackable){
@@ -948,9 +948,11 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
             toggle(res){
                 if (global.settings.resBar[res]){
                     global.settings.resBar[res] = false;
+                    $(`#res${name}`).removeClass('showBar');
                 }
                 else {
                     global.settings.resBar[res] = true;
+                    $(`#res${name}`).addClass('showBar');
                 }
                 global.resource[name]['bar'] = global.settings.resBar[name];
             }
