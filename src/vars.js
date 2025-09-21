@@ -1541,6 +1541,9 @@ if (typeof global.settings.boring === 'undefined'){
 if (!global.settings.hasOwnProperty('mtorder')){
     global.settings['mtorder'] = [];
 }
+if (!global.settings.hasOwnProperty('resBar')){
+    global.settings['resBar'] = {};
+}
 
 export function setupStats(){
     // Stat Counters
