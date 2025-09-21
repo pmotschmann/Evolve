@@ -808,7 +808,7 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
     if (!global.resource[name].hasOwnProperty('rate')){
         global.resource[name]['rate'] = rate;
     }
-    if (!global.settings.resBar[name]){
+    if (!global.settings.resBar.hasOwnProperty(name)){
         global.settings.resBar[name] = true;
     }
     if (!global.resource[name].hasOwnProperty('bar')){
