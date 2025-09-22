@@ -3879,7 +3879,7 @@ function fastLoop(){
             if (biodome > 0){
                 breakdown.p['Food'][`ᄂ${loc('space_syndicate')}+0`] = -((1 - red_synd) * 100) + '%';
                 breakdown.p['Food'][`ᄂ${loc('space_red_ziggurat_title')}+0`] = ((zigVal - 1) * 100) + '%';
-                breakdown.p['Food'][`ᄂ${loc('sign_virgo')}+0`] = ((virgo - 1) * 100) + '%';
+                breakdown.p['Food'][`ᄂ${loc('sign_virgo')}+1`] = ((virgo - 1) * 100) + '%';
             }
 
             let generated = food_base + (hunting * q_multiplier) + (biodome * red_synd * zigVal * virgo);
