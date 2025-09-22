@@ -3054,10 +3054,7 @@ export const spatialReasoning = (function(){
                         let active = global.race.p_mutation + (global.race['wish'] && global.race['wishStats'] ? global.race.wishStats.plas : 0);
                         raw = Math.min(active, plasmids);
                     }
-                    else if (global.race['nerfed']){
-                        raw = Math.floor(plasmids / (global.race.universe === 'antimatter' ? 2 : 5));
-                    }
-                    plasmids = Math.round(raw * (global.race['nerfed'] ? 0.5 : 1));
+                    plasmids = Math.round(raw * (global.race['nerfed'] ? .5 : 1));
                 }
                 if (!type || (type && type === 'phage')){
                     if (global.genes['store'] >= 4){
