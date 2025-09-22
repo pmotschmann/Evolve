@@ -7236,6 +7236,7 @@
   "portal_gun_emplacement_title": "Gun Emplacement",
   "portal_gun_emplacement_desc": "Reduces soldier requirement of Soul Forge",
   "portal_gun_emplacement_effect": "Soul Forge: -%0 Soldiers Required",
+  "portal_gun_emplacement_effect_hivemind": "Soul Forge: Fewer Soldiers Required",
   "portal_gun_emplacement_effect2": "Kills %0-%1 Pit Demons per Day",
   "portal_soul_attractor_title": "Soul Attractor",
   "portal_soul_attractor_effect": "Attracts %0-%1 roaming souls into your Soul Forge per day.",

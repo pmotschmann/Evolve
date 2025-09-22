@@ -1604,7 +1604,11 @@ const fortressModules = {
                 let soldiers = global.tech.hell_gun >= 2 ? jobScale(2) : jobScale(1);
                 let min = global.tech.hell_gun >= 2 ? 35 : 20;
                 let max = global.tech.hell_gun >= 2 ? 75 : 40;
-                return `<div>${loc('portal_gun_emplacement_effect',[soldiers])}</div><div>${loc('portal_gun_emplacement_effect2',[min,max])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                let soldierEffect = loc('portal_gun_emplacement_effect',[soldiers]);
+                if (global.race['hivemind']){
+                    soldierEffect = loc('portal_gun_emplacement_effect_hivemind');
+                }
+                return `<div>${soldierEffect}</div><div>${loc('portal_gun_emplacement_effect2',[min,max])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(args){
                 if (payCosts($(this)[0])){
