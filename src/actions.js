@@ -7,7 +7,7 @@ import { defineResources, unlockCrates, unlockContainers, crateValue, containerV
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter, cancelRituals } from './industry.js';
 import { defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating, garrisonSize, govEffect } from './civics.js';
-import { spaceTech, interstellarTech, galaxyTech, incrementStruct, universe_affixes, renderSpace, piracy, fuel_adjust, isStargateOn } from './space.js';
+import { spaceTech, interstellarTech, galaxyTech, incrementStruct, universe_affixes, renderSpace, piracy, fuel_adjust, isStargateOn, spaceSectors } from './space.js';
 import { renderFortress, fortressTech, warlordSetup } from './portal.js';
 import { edenicTech, renderEdenic } from './edenic.js';
 import { tauCetiTech, renderTauCeti, loneSurvivor } from './truepath.js';
@@ -8287,11 +8287,10 @@ export function structName(type){
 
 export function updateQueueNames(both, items){
     if (global.tech['queue'] && global.queue.display){
-        let deepScan = ['space','interstellar','galaxy','portal','tauceti'];
         for (let i=0; i<global.queue.queue.length; i++){
             let currItem = global.queue.queue[i];
             if (!items || items.indexOf(currItem.id) > -1){
-                if (deepScan.includes(currItem.action)){
+                if (spaceSectors.includes(currItem.action)){
                     let scan = true; Object.keys(actions[currItem.action]).forEach(function (region){
                         if (actions[currItem.action][region][currItem.type] && scan){
                             global.queue.queue[i].label = 

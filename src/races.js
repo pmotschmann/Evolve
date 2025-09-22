@@ -14,6 +14,7 @@ import { renderEdenic } from './edenic.js';
 import { events, eventList } from './events.js';
 import { swissKnife } from './tech.js';
 import { warhead, big_bang } from './resets.js';
+import { spaceSectors } from './space.js';
 
 const date = new Date();
 const easter = getEaster();
@@ -6817,6 +6818,44 @@ function setPurgatory(s,t){
     if (global[s].hasOwnProperty(t)){
         global.race.purgatory[s][t] = global[s][t];
         delete global[s][t];
+    }
+    // Remove tech from research queue
+    if (s === 'tech'){
+        if (global.tech['r_queue'] && global.r_queue.display){
+            for (let i=0; i<global.r_queue.queue.length; i++){
+                const struct = global.r_queue.queue[i];
+                const t_action = actions[struct.action][struct.type];
+                if (t_action['grant'] && t_action.grant[0] === t){
+                    global.r_queue.queue.splice(i,1);
+                    clearPopper(`rq${t_action.id}`);
+                }
+            }
+        }
+    }
+    // Remove structures from building queue
+    else {
+        if (global.tech['queue'] && global.queue.display){
+            for (let i=0; i<global.queue.queue.length; i++){
+                const struct = global.queue.queue[i];
+                if (struct.action === s && struct.type === t){
+                    global.queue.queue.splice(idx,1);
+                    // Remove info dialog (different code for city and space)
+                    if (spaceSectors.includes(struct.action)){
+                        for (const region in actions[struct.action]) {
+                            if (actions[struct.action][region][struct.type]){
+                                const c_action = actions[struct.action][region][struct.type];
+                                clearPopper(`q${c_action.id}${idx}`);
+                                break;
+                            }
+                        }
+                    }
+                    else {
+                        const c_action = actions[struct.action][struct.type];
+                        clearPopper(`q${c_action.id}${idx}`);
+                    }
+                }
+            }
+        }
     }
 }
 

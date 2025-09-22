@@ -14,6 +14,8 @@ import { ascend, terraform, apotheosis } from './resets.js';
 import { loadTab } from './index.js';
 import { loc } from './locale.js';
 
+export const spaceSectors = ['space','interstellar','galaxy','portal','tauceti','eden'];
+
 const spaceProjects = {
     spc_home: {
         info: {

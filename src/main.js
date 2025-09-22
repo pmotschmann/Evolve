@@ -8,7 +8,7 @@ import { defineJobs, job_desc, loadFoundry, farmerValue, jobName, jobScale, work
 import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, luxGoodPrice, smelterUnlocked, smelterFuelConfig, setupRituals, maxRitualNum, ritual_types } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
 import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, checkPowerRequirements, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct, casino_vault, casinoEarn, doCallbacks, cLabels } from './actions.js';
-import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types } from './space.js';
+import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types, spaceSectors } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
 import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue } from './truepath.js';
@@ -10739,9 +10739,8 @@ function midLoop(){
             }
         });
 
-        let spc_locations = ['space','interstellar','galaxy','portal','tauceti','eden'];
-        for (let i=0; i<spc_locations.length; i++){
-            let location = spc_locations[i];
+        for (let i=0; i<spaceSectors.length; i++){
+            let location = spaceSectors[i];
             Object.keys(actions[location]).forEach(function (region){
                 Object.keys(actions[location][region]).forEach(function (action){
                     let s_region = actions[location][region][action] && actions[location][region][action].hasOwnProperty('region') ? actions[location][region][action].region : location;
@@ -11083,7 +11082,7 @@ function midLoop(){
 
                 if (t_action['grant'] && global.tech[t_action.grant[0]] && global.tech[t_action.grant[0]] >= t_action.grant[1]){
                     global.r_queue.queue.splice(i,1);
-                    clearPopper(`rq${c_action.id}`);
+                    clearPopper(`rq${t_action.id}`);
                     break;
                 }
                 else {
@@ -11177,7 +11176,6 @@ function midLoop(){
         let idx = -1;
         let c_action = false;
         let stop = false;
-        let deepScan = ['space','interstellar','galaxy','portal','tauceti','eden'];
         let time = 0;
         let spent = { t: {t:0,rt:0}, r: {}, rr: {}, id: {}};
         let arpa = false;
@@ -11213,7 +11211,7 @@ function midLoop(){
                     doNotAdjustCost: true,
                 };
             }
-            else if (deepScan.includes(struct.action)){
+            else if (spaceSectors.includes(struct.action)){
                 for (let region in actions[struct.action]) {
                     if (actions[struct.action][region][struct.type]){
                         t_action = actions[struct.action][region][struct.type];
@@ -12706,7 +12704,8 @@ function longLoop(){
         }
 
         if (global.race['living_materials']){
-            ['city','space','interstellar','galaxy','portal','eden','tauceti'].forEach(function(sector){
+            const structSectors = ['city'].concat(spaceSectors);
+            structSectors.forEach(function(sector){
                 Object.keys(global[sector]).forEach(function(struct){
                     if (global[sector][struct].hasOwnProperty('l_m')){
                         global[sector][struct].l_m++;
