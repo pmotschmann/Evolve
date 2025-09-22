@@ -1671,7 +1671,7 @@ const fortressModules = {
             },
             action(args){
                 if (global.portal.soul_capacitor.count < 40 && payCosts($(this)[0])){
-                    global.portal.soul_capacitor.count++;
+                    incrementStruct('soul_capacitor','portal');
                     powerOnNewStruct($(this)[0]);
                     return true;
                 }
@@ -2888,7 +2888,7 @@ const fortressModules = {
             },
             action(args){
                 if (global.portal.oven.count < 100 && payCosts($(this)[0])){
-                    global.portal['oven'].count++;
+                    incrementStruct('oven','portal');
                     if (global.portal.oven.count >= 100){
                         global.tech['dish'] = 3;
                         initStruct(fortressModules.prtl_lake.oven_complete);
@@ -2977,7 +2977,7 @@ const fortressModules = {
             },
             action(args){
                 if (payCosts($(this)[0])){
-                    global.portal['dish_soul_steeper'].count++;
+                    incrementStruct('dish_soul_steeper','portal');
                     global.portal['dish_soul_steeper'].on++;
                     return true;
                 }
@@ -3008,7 +3008,7 @@ const fortressModules = {
             },
             action(args){
                 if (payCosts($(this)[0])){
-                    global.portal['dish_life_infuser'].count++;
+                    incrementStruct('dish_life_infuser','portal');
                     global.portal['dish_life_infuser'].on++;
                     return true;
                 }
