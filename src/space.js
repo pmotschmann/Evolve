@@ -8234,8 +8234,12 @@ export function ascendLab(hybrid,wiki){
                                 tRanks[t] = 3;
                                 break;
                         }
-                        vBind({el: `#traitSummary .trait_selection`},'update');
-                        vBind({el: `#traitSummary .trait_selection`},'update');
+                        if (tab === 4 ){
+                            vBind({el: `#traitSummary .trait_selection`},'update');
+                        }
+                        else {
+                            vBind({el: `#allSum .trait_selection`},'update');
+                        }
                         let desc = $(`#traitLabActiveDesc`);
                         clearElement(desc);
                         let opts = {
@@ -8272,7 +8276,12 @@ export function ascendLab(hybrid,wiki){
                                 }
                                 break;
                         }
-                        vBind({el: `#traitSummary .trait_selection`},'update');
+                        if (tab === 4 ){
+                            vBind({el: `#traitSummary .trait_selection`},'update');
+                        }
+                        else {
+                            vBind({el: `#allSum .trait_selection`},'update');
+                        }
                         let desc = $(`#traitLabActiveDesc`);
                         clearElement(desc);
                         let opts = {
