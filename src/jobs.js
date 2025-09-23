@@ -236,7 +236,7 @@ export const job_desc = {
             interest *= 1 - (traits.truthful.vars()[0] / 100);
         }
         if (global.civic.govern.type === 'republic'){
-            interest *= 1.25;
+            interest *= 1 + (govEffect.republic()[0] / 100);
         }
         if (global.race['high_pop']){
             interest *= traits.high_pop.vars()[1] / 100;
@@ -290,7 +290,7 @@ export const job_desc = {
             professor *= 1 + (templeCount() * 0.05);
         }
         if (global.civic.govern.type === 'theocracy'){
-            professor *= 0.75;
+            professor *= 1 - (govEffect.theocracy()[1] / 100);
         }
         professor = +professor.toFixed(2);
         return loc('job_professor_desc',[professor]);
@@ -305,7 +305,7 @@ export const job_desc = {
             impact *= 1 + (global.space.satellite.count * 0.01);
         }
         if (global.civic.govern.type === 'theocracy'){
-            impact *= global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 0.75 : 0.6 ) : 0.5;
+            impact *= 1 - (govEffect.theocracy()[2] / 100);
         }
         impact = +impact.toFixed(2);
         return global.race.universe === 'magic' ? loc('job_wizard_desc',[impact,+(0.025 * darkEffect('magic')).toFixed(4)]) : loc('job_scientist_desc',[impact]);
