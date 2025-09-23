@@ -3248,20 +3248,30 @@ export const actions = {
             },
             effect(wiki){
                 let xeno = global.tech['monument'] && global.tech.monument >= 3 && isStargateOn(wiki) ? 3 : 1;
-                let amp = (global.civic.govern.type === 'corpocracy' ? 2 : 1) * xeno;
-                let cas = (global.civic.govern.type === 'corpocracy' ? 10 : 5) * xeno;
-                let mon = (global.civic.govern.type === 'corpocracy' ? 4 : 2) * xeno;
+                let modifier = xeno;
+                if (global.civic.govern.type === 'corpocracy'){
+                    modifier *= 1 + (govEffect.corpocracy()[2] / 100);
+                }
+                else if (global.civic.govern.type === 'socialist'){
+                    modifier *= 1 - (govEffect.socialist()[3] / 100);
+                }
+
+                let amp = +(1 * modifier).toFixed(2);
+                let cas = +(5 * modifier).toFixed(2);
+                let mon = +(2 * modifier).toFixed(2);
+                let trd = +(3 * modifier).toFixed(2);
 
                 let desc = `<div class="has-text-caution">${loc('city_tourist_center_effect1',[global.resource.Food.name])}</div>`;
                 desc += `<div>${loc('city_tourist_center_effect2',[amp,actions.city.amphitheatre.title()])}</div>`;
                 desc += `<div>${loc('city_tourist_center_effect2',[cas,structName('casino')])}</div>`;
                 desc += `<div>${loc('city_tourist_center_effect2',[mon,loc(`arpa_project_monument_title`)])}</div>`;
                 if (global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 4){
-                    desc += `<div>${loc(`city_tourist_center_effect2`,[(global.civic.govern.type === 'corpocracy' ? 6 : 3) * xeno, loc('city_trade')])}</div>`;
+                    desc += `<div>${loc(`city_tourist_center_effect2`,[trd, loc('city_trade')])}</div>`;
                 }
                 let piousVal = govActive('pious',1);
                 if (piousVal){
-                    desc += `<div>${loc(`city_tourist_center_effect2`,[(global.civic.govern.type === 'corpocracy' ? (piousVal * 2) : piousVal) * xeno, structName('temple')])}</div>`;
+                    piousVal *= modifier;
+                    desc += `<div>${loc(`city_tourist_center_effect2`,[piousVal, structName('temple')])}</div>`;
                 }
 
                 return desc;

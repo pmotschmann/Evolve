@@ -9,6 +9,7 @@ import { fortressTech } from './portal.js';
 import { edenicTech } from './edenic.js';
 import { checkPathRequirements } from './truepath.js';
 import { highPopAdjust, production } from './prod.js';
+import { govEffect } from './civics.js';
 
 export function loadIndustry(industry,parent,bind){
     switch (industry){
@@ -796,10 +797,10 @@ export function luxGoodPrice(demand){
         demand *= 1 + (traits.toxic.vars(1)[0] / 100 * fathom);
     }
     if (global.civic.govern.type === 'corpocracy'){
-        demand *= 2.5;
+        demand *= 1 + (govEffect.corpocracy()[1] / 100);
     }
     if (global.civic.govern.type === 'socialist'){
-        demand *= 0.8;
+        demand *= 1 - (govEffect.socialist()[3] / 100);
     }
     if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2){
         demand *= 1.1;

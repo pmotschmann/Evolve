@@ -996,14 +996,8 @@ function taxCap(min){
     }
     else {
         let cap = 30;
-        if (global.race['noble']){
-            cap = traits.noble.vars()[1];
-        }
-        else if (extreme || global.race['terrifying']){
+        if (extreme || global.race['terrifying']){
             cap += 20;
-        }
-        if (global.civic.govern.type === 'oligarchy'){
-            cap += govEffect.oligarchy()[1];
         }
         let aristoVal = govActive('aristocrat',1);
         if (aristoVal){
@@ -1011,6 +1005,13 @@ function taxCap(min){
         }
         if (global.race['wish'] && global.race['wishStats']){
             cap += global.race.wishStats.tax;
+        }
+        // The trait "Noble" overrides extreme taxation policy (/ terrifying), governors, and wish, but not oligarchy
+        if (global.race['noble']){
+            cap = traits.noble.vars()[1];
+        }
+        if (global.civic.govern.type === 'oligarchy'){
+            cap += govEffect.oligarchy()[1];
         }
         return cap;
     }
@@ -1022,30 +1023,14 @@ function adjustTax(a,n){
             {
                 let inc = n || keyMultiplier();
                 let cap = taxCap(false);
-                if (global.race['noble']){
-                    global.civic.taxes.tax_rate += inc;
-                    if (global.civic.taxes.tax_rate > (global.civic.govern.type === 'oligarchy' ? traits.noble.vars()[1] + 20 : traits.noble.vars()[1])){
-                        global.civic.taxes.tax_rate = global.civic.govern.type === 'oligarchy' ? traits.noble.vars()[1] + 20 : traits.noble.vars()[1];
-                    }
-                }
-                else if (global.civic.taxes.tax_rate < cap){
-                    global.civic.taxes.tax_rate += inc;
-                    if (global.civic.taxes.tax_rate > cap){
-                        global.civic.taxes.tax_rate = cap;
-                    }
-                }
+                global.civic.taxes.tax_rate = Math.min(cap, global.civic.taxes.tax_rate + inc);
             }
             break;
         case 'sub':
             {
                 let dec = n || keyMultiplier();
                 let min = taxCap(true);
-                if (global.civic.taxes.tax_rate > min){
-                    global.civic.taxes.tax_rate -= dec;
-                    if (global.civic.taxes.tax_rate < min){
-                        global.civic.taxes.tax_rate = min;
-                    }
-                }
+                global.civic.taxes.tax_rate = Math.max(min, global.civic.taxes.tax_rate - dec);
             }
             break;
     }

@@ -225,10 +225,10 @@ export function production(id,val,wiki){
         {
             let vitreloy = 0.18;
             if (global.civic.govern.type === 'corpocracy'){
-                vitreloy *= global.tech['high_tech'] && global.tech['high_tech'] >= 16 ? 1.4 : 1.3;
+                vitreloy *= 1 + (govEffect.corpocracy()[4] / 100);
             }
             if (global.civic.govern.type === 'socialist'){
-                vitreloy *= 1.1;
+                vitreloy *= 1 + (govEffect.socialist()[1] / 100);
             }
             return vitreloy;
         }
@@ -568,6 +568,10 @@ export function factoryBonus(factory){
     }
     if (global.civic.govern.type === 'socialist'){
         factory *= 1 + (govEffect.socialist()[1] / 100);
+    }
+    let dirtVal = govActive('dirty_jobs', 2);
+    if (dirtVal){
+        factory *= 1 + (dirtVal / 100);
     }
     if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2){
         factory *= 1.1;

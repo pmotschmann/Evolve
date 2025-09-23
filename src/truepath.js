@@ -2,7 +2,7 @@ import { global, p_on, support_on, sizeApproximation, keyMap } from './vars.js';
 import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect, adjustCosts, get_qlevel, timeCheck, timeFormat, buildQueue } from './functions.js';
 import { races, traits, orbitLength } from './races.js';
 import { spatialReasoning, unlockContainers } from './resources.js';
-import { armyRating, garrisonSize, soldierDeath } from './civics.js';
+import { armyRating, garrisonSize, soldierDeath, govEffect } from './civics.js';
 import { jobScale, job_desc, loadFoundry, limitCraftsmen } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
 import { actions, payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, buildTemplate, casinoEffect, housingLabel, structName, initStruct } from './actions.js';
@@ -2651,15 +2651,15 @@ const tauCetiModules = {
                 let womling = 8;
                 let modifier = 1;
                 if (global.civic.govern.type === 'corpocracy'){
-                    modifier = 2;
+                    modifier = 1 + (govEffect.corpocracy()[2] / 100);
                 }
                 else if (global.civic.govern.type === 'socialist'){
-                    modifier = 0.8;
+                    modifier = 1 - (govEffect.socialist()[3] / 100);
                 }
 
-                let cas = 20 * modifier;
-                let mon = 5 * modifier;
-                let bake = 15 * modifier;
+                let cas = +(20 * modifier).toFixed(2);
+                let mon = +(5 * modifier).toFixed(2);
+                let bake = +(15 * modifier).toFixed(2);
 
                 let desc = `<div class="has-text-caution">${loc('tau_home_cultureal_effect1',[$(this)[0].p_fuel().a,global.resource[$(this)[0].p_fuel().r].name,$(this)[0].title])}</div>`;
                 desc += `<div>${loc('city_tourist_center_effect2',[cas,structName('casino')])}</div>`;

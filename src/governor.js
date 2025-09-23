@@ -2,7 +2,7 @@ import { global, seededRandom, p_on, breakdown } from './vars.js';
 import { vBind, popover, tagEvent, calcQueueMax, calcRQueueMax, clearElement, adjustCosts, decodeStructId, timeCheck, arpaTimeCheck, hoovedRename } from './functions.js';
 import { races } from './races.js';
 import { actions, checkCityRequirements, housingLabel, wardenLabel, updateQueueNames, checkAffordable, drawTech, drawCity } from './actions.js';
-import { govCivics, govTitle } from './civics.js';
+import { govCivics, govTitle, govEffect } from './civics.js';
 import { crateGovHook, atomic_mass } from './resources.js';
 import { checkHellRequirements, mechSize, mechCost, validWeapons, validEquipment } from './portal.js';
 import { loc } from './locale.js';
@@ -190,7 +190,10 @@ export const gov_traits = {
         effect(b,wiki){
             let val = $(this)[0].vars(b)[1];
             let xeno = global.tech['monument'] && global.tech.monument >= 3 && isStargateOn(wiki) ? 3 : 1;
-            val = (global.civic.govern.type === 'corpocracy' ? (val * 2) : val) * xeno;
+            val *= xeno;
+            if (global.civic.govern.type === 'corpocracy'){
+                val *= 1 + (govEffect.corpocracy()[2] / 100);
+            }
             return loc(`gov_trait_pious_effect`,[$(this)[0].vars(b)[0],val]);
         },
         vars(b){ 
