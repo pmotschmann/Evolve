@@ -9,11 +9,11 @@ import { loc } from './locale.js'
 const achieve_list = {
     misc: [
         'apocalypse','ascended','dreaded','anarchist','second_evolution','blackhole','warmonger',
-        'red_tactics','pacifist','neutralized','paradise','scrooge','madagascar_tree','godwin',
-        'laser_shark','infested','mass_starvation','colonist','world_domination','illuminati',
-        'syndicate','cult_of_personality','doomed','pandemonium','blood_war','landfill','seeder',
-        'miners_dream','shaken','blacken_the_sun','trade','resonance','enlightenment','gladiator',
-        'corrupted','red_dead','godslayer','traitor','doppelganger'
+        'red_tactics','pacifist','neutralized','paradise','scrooge','madagascar_tree','godwin', 
+        'broadway_cath', 'laser_shark','infested','mass_starvation','colonist','world_domination',
+        'illuminati','syndicate','cult_of_personality','doomed','pandemonium','blood_war','landfill',
+        'seeder','miners_dream','shaken','blacken_the_sun','trade','resonance','enlightenment','gladiator',
+        'corrupted','red_dead','godslayer','traitor','doppelganger', 
     ],
     species: [
         'mass_extinction','extinct_human','extinct_elven','extinct_orc','extinct_cath','extinct_wolven','extinct_vulpine','extinct_centaur',
