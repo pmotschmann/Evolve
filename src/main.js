@@ -4780,10 +4780,6 @@ function fastLoop(){
             if (global.civic.govern.type === 'socialist'){
                 factory_output *= 1 + (govEffect.socialist()[1] / 100);
             }
-            let dirtVal = govActive('dirty_jobs',2);
-            if (dirtVal){
-                factory_output *= 1 + (dirtVal / 100);
-            }
 
             let powered_mult = 1;
             let power_single = 1;

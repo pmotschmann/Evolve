@@ -569,6 +569,10 @@ export function factoryBonus(factory){
     if (global.civic.govern.type === 'socialist'){
         factory *= 1 + (govEffect.socialist()[1] / 100);
     }
+    let dirtVal = govActive('dirty_jobs', 2);
+    if (dirtVal){
+        factory *= 1 + (dirtVal / 100);
+    }
     if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2){
         factory *= 1.1;
     }
