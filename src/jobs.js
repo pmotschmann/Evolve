@@ -3,7 +3,7 @@ import { vBind, clearElement, popover, darkEffect, eventActive, easterEgg, getHa
 import { loc } from './locale.js';
 import { highPopAdjust } from './prod.js';
 import { racialTrait, servantTrait, races, traits, biomes, planetTraits, fathomCheck } from './races.js';
-import { armyRating } from './civics.js';
+import { armyRating, govEffect } from './civics.js';
 import { govActive } from './governor.js';
 import { craftingRatio, craftCost, craftingPopover } from './resources.js';
 import { planetName } from './space.js';
