@@ -225,10 +225,10 @@ export function production(id,val,wiki){
         {
             let vitreloy = 0.18;
             if (global.civic.govern.type === 'corpocracy'){
-                vitreloy *= global.tech['high_tech'] && global.tech['high_tech'] >= 16 ? 1.4 : 1.3;
+                vitreloy *= 1 + (govEffect.corpocracy()[4] / 100);
             }
             if (global.civic.govern.type === 'socialist'){
-                vitreloy *= 1.1;
+                vitreloy *= 1 + (govEffect.socialist()[1] / 100);
             }
             return vitreloy;
         }

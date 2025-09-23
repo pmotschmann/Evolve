@@ -190,7 +190,10 @@ export const gov_traits = {
         effect(b,wiki){
             let val = $(this)[0].vars(b)[1];
             let xeno = global.tech['monument'] && global.tech.monument >= 3 && isStargateOn(wiki) ? 3 : 1;
-            val = (global.civic.govern.type === 'corpocracy' ? (val * 2) : val) * xeno;
+            val *= xeno;
+            if (global.civic.govern.type === 'corpocracy'){
+                val *= 1 + (govEffect.corpocracy()[2] / 100);
+            }
             return loc(`gov_trait_pious_effect`,[$(this)[0].vars(b)[0],val]);
         },
         vars(b){ 

@@ -3120,11 +3120,14 @@ function fastLoop(){
         if (global.civic.govern.type === 'anarchy'){
             stress /= 2;
         }
-        if (global.civic.govern.type === 'autocracy'){
+        else if (global.civic.govern.type === 'autocracy'){
             stress *= 1 + (govEffect.autocracy()[0] / 100);
         }
-        if (global.civic.govern.type === 'socialist'){
+        else if (global.civic.govern.type === 'socialist'){
             stress *= 1 + (govEffect.socialist()[2] / 100);
+        }
+        else if (global.civic.govern.type === 'dictator'){
+            stress *= 1 + (govEffect.dictator()[0] / 100);
         }
         if (global.race['emotionless']){
             stress *= 1 - (traits.emotionless.vars()[1] / 100);
@@ -3135,9 +3138,6 @@ function fastLoop(){
             }
         }
 
-        if (global.civic.govern.type === 'dictator'){
-            stress *= 1 + (govEffect.dictator()[0] / 100);
-        }
 
         stress = +(stress).toFixed(1);
         global.city.morale.stress = stress;
