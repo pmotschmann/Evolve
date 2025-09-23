@@ -8132,6 +8132,7 @@ function fastLoop(){
 
 function midLoop(){
     const astroSign = astrologySign();
+    let blockGeneBuffer = false;
     if (global.race.species === 'protoplasm'){
         let base = 100;
         if (global.stats.achieve['mass_extinction'] && global.stats.achieve['mass_extinction'].l > 1){
@@ -11068,11 +11069,10 @@ function midLoop(){
             global.race.casting.total = total;
         }
 
-        let blockGeneBuffer = false;
         if (global.tech['r_queue'] && global.r_queue.display){
             let idx = -1;
             let c_action = false;
-            let stop = false;
+            let stop = global.r_queue.pause;
             let time = 0; let untime = 0;
             let spent = { t: {t:0,rt:0}, r: {}, rr: {}, id: {}};
             for (let i=0; i<global.r_queue.queue.length; i++){
@@ -11162,10 +11162,6 @@ function midLoop(){
             }
         }
 
-        if (global.arpa.sequence && global.arpa.sequence['auto'] && global.tech['genetics'] && global.tech['genetics'] >= 8){
-            buildGene(blockGeneBuffer);
-        }
-
         if (p_on['soul_forge']){
             vBind({el: `#fort`},'update');
         }
@@ -11174,15 +11170,16 @@ function midLoop(){
     }
 
     if (global.tech['queue'] && global.queue.display){
+        const qAny = global.settings.qAny ? true : false; // Coerce to boolean and cache to avoid repeated Vue callbacks.
         let idx = -1;
         let c_action = false;
-        let stop = false;
+        let stop = global.queue.pause;
         let deepScan = ['space','interstellar','galaxy','portal','tauceti','eden'];
         let time = 0;
         let spent = { t: {t:0,rt:0}, r: {}, rr: {}, id: {}};
         let arpa = false;
         for (let i=0; i<global.queue.queue.length; i++){
-            if (global.settings.qAny){
+            if (qAny){
                 spent = { t: {t:0,rt:0}, r: {}, rr: {}, id: {}};
                 time = 0;
             }
@@ -11243,15 +11240,26 @@ function midLoop(){
                     struct['time'] = -1;
                 }
 
-                if (arpaTimeCheck(t_action, 0.01) >= 0){
-                    if (global.settings.qAny && !global.queue.pause && struct['time'] > 1){
-                        buildArpa(struct.type,100,true);
-                    }
-                    else if (!stop){
+                if (!stop){
+                    const segment_info = arpaTimeCheck(t_action, 0.01, false, true);
+                    const segment_time = segment_info.t;
+
+                    // Ordered building queue: always stop on the first struct or project.
+                    // Unordered building queue: entire remainder of ARPA project can be completed now
+                    if (!qAny || struct['time'] === 0){
                         c_action = t_action;
                         idx = i;
                         arpa = true;
                         stop = true;
+                    }
+                    // Unordered building queue: at least 1% of ARPA project can be completed now
+                    else if (qAny && segment_time === 0){
+                        // Build in parallel without blocking later structs or projects from also making progress
+                        buildArpa(struct.type, 100, true);
+                    }
+                    // If blocking resource is Knowledge and segment time remaining is less than 1 second, then block gene assembly
+                    if (segment_info.r === 'Knowledge' && segment_time > 0 && segment_time <= 1){
+                        blockGeneBuffer = true;
                     }
                 }
             }
@@ -11265,14 +11273,17 @@ function midLoop(){
                             c_action = t_action;
                             idx = i;
                             arpa = false;
-                            if (global.settings.qAny){
+                            if (qAny){
                                 stop = true;
                             }
                         }
                         else {
+                            if (!stop && t_time <= 1 && t_action.cost.hasOwnProperty('Knowledge')){
+                                blockGeneBuffer = true;
+                            }
                             time += t_time;
                         }
-                        if (!global.settings.qAny){
+                        if (!qAny){
                             stop = true;
                         }
                         struct['time'] = time;
@@ -11294,7 +11305,7 @@ function midLoop(){
                     struct['time'] = -1;
                 }
             }
-            struct.qa = global.settings.qAny ? true : false;
+            struct.qa = qAny;
         }
         if (idx >= 0 && c_action && !global.queue.pause){
             let triggerd = false;
@@ -11410,6 +11421,10 @@ function midLoop(){
             global.queue.queue = merged_queue;
             buildQueue();
         }
+    }
+
+    if (global?.arpa?.sequence?.auto && global.tech?.genetics >= 8){
+        buildGene(blockGeneBuffer);
     }
 
     resourceAlt();
