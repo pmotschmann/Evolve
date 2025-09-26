@@ -1,5 +1,5 @@
 import { global, save, seededRandom, webWorker, clearSavedMessages, clearStates } from './vars.js';
-import { tagEvent, calcPrestige, updateResetStats } from './functions.js';
+import { tagEvent, calcPrestige, updateResetStats, logPrestigeGains } from './functions.js';
 import { races, planetTraits } from './races.js';
 import { unlockAchieve, unlockFeat, checkAchievements, universeAffix, alevel } from './achieve.js';
 
@@ -49,6 +49,8 @@ export function warhead(){
             unlockAchieve('ashanddust');
         }
         checkAchievements();
+
+        logPrestigeGains('mad', gains);
 
         grandDeathTour('md');
 
@@ -187,6 +189,8 @@ export function bioseed(){
 
     checkAchievements();
 
+    logPrestigeGains('bioseed', gains);
+
     let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
     let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
     let probes = global.starDock.probes.count + 1;
@@ -267,6 +271,7 @@ export function cataclysm_end(){
             unlockAchieve('failed_history');
         }
 
+        logPrestigeGains('cataclysm', gains);
         grandDeathTour('ct');
 
         let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
@@ -377,6 +382,7 @@ export function big_bang(){
     let gains = calcPrestige('bigbang');
 
     checkAchievements();
+    logPrestigeGains('blackhole', gains);
 
     global.stats.blackhole++;
     updateResetStats();
@@ -475,6 +481,7 @@ export function vacuumCollapse(){
         let gains = calcPrestige('vacuum');
 
         checkAchievements();
+        logPrestigeGains('vacuum', gains);
 
         global.stats.blackhole++;
         updateResetStats();
@@ -595,6 +602,7 @@ export function ascend(){
     }
 
     checkAchievements();
+    logPrestigeGains('ascension', gains);
 
     let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
     let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
@@ -717,6 +725,7 @@ export function descension(){
     global.stats.descend++;
     updateResetStats();
     checkAchievements();
+    logPrestigeGains('infusion', gains);
 
     let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
     global['race'] = {
@@ -806,6 +815,7 @@ export function apotheosis(){
     }
 
     checkAchievements();
+    logPrestigeGains('apotheosis', gains);
 
     let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
     let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
@@ -899,6 +909,7 @@ export function terraform(planet){
     }
 
     checkAchievements();
+    logPrestigeGains('terraform', gains);
 
     let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
     let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
@@ -960,6 +971,7 @@ export function aiApocalypse(){
 
     let gains = calcPrestige('ai');
     checkAchievements();
+    logPrestigeGains('ai', gains);
 
     global.stats.aiappoc++;
     updateResetStats();
@@ -1044,6 +1056,7 @@ export function matrix(){
 
     trackWomling();
     checkAchievements();
+    logPrestigeGains('matrix', gains);
 
     global.stats.matrix++;
     updateResetStats();
@@ -1129,6 +1142,7 @@ export function retirement(){
 
     trackWomling();
     checkAchievements();
+    logPrestigeGains('retired', gains);
 
     global.stats.retire++;
     updateResetStats();
@@ -1214,6 +1228,7 @@ export function gardenOfEden(){
 
     trackWomling();
     checkAchievements();
+    logPrestigeGains('eden', gains);
 
     global.stats.eden++;
     updateResetStats();

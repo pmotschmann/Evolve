@@ -1756,6 +1756,59 @@ export function calcPrestige(type,inputs){
     return gains;
 }
 
+export function logPrestigeGains(reset, gains) {
+    if (!global.settings.msgFilters.prestige.unlocked){
+        global.settings.msgFilters.prestige.unlocked = true;
+        global.settings.msgFilters.prestige.vis = true;
+    }
+
+    let prestigeReport = loc('prestige_report_list_start');
+
+    let gainedRes = Object.keys(gains).filter((res) => ((gains[res] > 0) && !res.includes('pdebt')));
+
+    for(let i = 0; i < gainedRes.length; ++i) {
+        let res = gainedRes[i];
+        let resCount = gains[res];
+        if (res === 'plasmid' && reset !== 'infusion'){ // DI gain data includes an unrewarded Plasmid count
+            let plasmidName = loc('resource_' + (global.race.universe === 'antimatter' ? 'AntiPlasmid': 'Plasmid') + (resCount !== 1? '_plural': '') + '_name');
+            prestigeReport = prestigeReport + loc('prestige_report_list_entry',[resCount,plasmidName]);
+        }
+        else if (res === 'phage'){
+            prestigeReport = prestigeReport + loc('prestige_report_list_entry',[resCount,loc('resource_Phage_name')]);
+        }
+        else if (res === 'dark'){
+            prestigeReport = prestigeReport + loc('prestige_report_list_entry',[resCount,loc('resource_Dark_name')]);
+        }
+        else if (res === 'harmony'){
+            let hcName = loc(resCount === 1 ? 'resource_Harmony_name' : 'wiki_p_res_harmony');
+            prestigeReport = prestigeReport + loc('prestige_report_list_entry',[resCount,hcName]);
+        }
+        else if (res === 'artifact'){
+            let artifactName = loc(resCount === 1 ? 'resource_Artifact_name' : 'wiki_events_artifacts');
+            prestigeReport = prestigeReport + loc('prestige_report_list_entry',[resCount,artifactName]);
+        }
+        else if (res === 'supercoiled'){
+            let supercoiledName = loc('resource_Supercoiled' + (resCount !== 1 ? '_plural' : '') + '_name');
+            prestigeReport = prestigeReport + loc('prestige_report_list_entry',[resCount,supercoiledName]);
+        }
+        else if (res === 'cores'){
+            let coreName = loc(resCount === 1 ? 'resource_AICore_name' : 'wiki_calc_cores');
+            prestigeReport = prestigeReport + loc('prestige_report_list_entry',[resCount,coreName]);
+        }
+
+        if ((i < gainedRes.length-1) && (gainedRes.length > 2)) {
+            prestigeReport = prestigeReport + loc('prestige_report_list_separator');
+        }
+        if ((i === gainedRes.length-2) && (gainedRes.length > 1)) {
+            prestigeReport = prestigeReport + loc('prestige_report_list_and');
+        }
+    }
+
+    prestigeReport = prestigeReport + loc('prestige_report_list_end',[loc('wiki_resets_' + reset)]);
+
+    messageQueue(prestigeReport,'success',false,['prestige']);
+}
+
 export function adjustCosts(c_action, offset, wiki){
     let costs = c_action.cost || {};
     if ((costs['RNA'] || costs['DNA']) && global.genes['evolve']){
