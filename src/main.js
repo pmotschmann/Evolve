@@ -11684,8 +11684,12 @@ function longLoop(){
 
         // Soldier Healing
         if (global.civic.garrison.wounded > 0){
-            let healed = global.race['regenerative'] ? traits.regenerative.vars()[0] : 1;
+            let healed = jobScale(global.race['regenerative'] ? traits.regenerative.vars()[0] : 1);
 
+            let fathom = fathomCheck('troll');
+            if (fathom > 0){
+                healed += Math.round(jobScale(20 * traits.regenerative.vars(1)[0] * fathom));
+            }
             let hc = global.city['hospital'] ? global.city.hospital.count : 0;
             if (global.race['orbit_decayed'] && global.race['truepath']){
                 hc = Math.min(support_on['operating_base'],p_on['operating_base']);
@@ -11716,7 +11720,7 @@ function longLoop(){
                 hc >= 20 ? hc *= (1 + traits.cannibalize.vars(1)[0] / 100 * mantisFathom) : hc += Math.floor(traits.cannibalize.vars(1)[0] / 5 * mantisFathom);
             }
             if (global.race['high_pop']){
-                hc *= traits.high_pop.vars()[2]
+                hc *= traits.high_pop.vars()[2];
             }
             let painVal = govActive('nopain',0);
             if (painVal){
@@ -11724,10 +11728,6 @@ function longLoop(){
             }
             if(global.city.banquet && global.city.banquet.on && global.city.banquet.level >= 2){
                 hc *= 1 + (global.city.banquet.strength ** 0.65) / 100;
-            }
-            let fathom = fathomCheck('troll');
-            if (fathom > 0){
-                hc += Math.round(20 * traits.regenerative.vars(1)[0] * fathom);
             }
             let max_bound = 20;
             if (global.race['slow_regen']){
