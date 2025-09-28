@@ -3267,6 +3267,8 @@
   "prestige_report_list_separator": ",",
   "prestige_report_list_and": " and",
   "prestige_report_list_end": " from %0.",
+  "prestige_report_singular_servant": "Servant",
+  "prestige_report_singular_skilled_servant": "Skilled Servant",
   "achieve_unlock_achieve": "Achievement Unlocked! %0",
   "achieve_unlock_achieve_upgrade": "Achievement Upgraded! %0",
   "achieve_unlock_achieve_icon": "Achievement Icon Unlocked! %0",
