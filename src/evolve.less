@@ -162,6 +162,10 @@ Misc ---------> Main template
             @market-item-order-hover-background: @secondary-color;
             @market-item-order-hover-border: #eee;
 
+            // .resource
+            @resource-overlay-color: darken(@html-background, 15%);
+            @resource-overlay-color-alt: darken(@market-item-background, 15%);
+
             // .modalBox
             @modalBox-background: #282f2f;
 
@@ -284,6 +288,10 @@ Misc ---------> Main template
             @market-item-order-hover-background: #ccc;
             @market-item-order-hover-border: #333;
 
+            // .resource
+            @resource-overlay-color: darken(@html-background, 25%);
+            @resource-overlay-color-alt: darken(@market-item-background, 25%);
+
             // .modalBox
             @modalBox-background: @white;
 
@@ -324,6 +332,10 @@ Misc ---------> Main template
 
             // .market-item
             @market-item-background: #1b1b1b;
+
+            // .resource
+            @resource-overlay-color: lighten(@html-background, 10%);
+            @resource-overlay-color-alt: darken(@market-item-background, 15%);
 
             // -webkit-scrollbar
             @webkit-scrollbar-thumb-background: #727272;
@@ -483,6 +495,10 @@ Misc ---------> Main template
             @market-item-order-hover-background: @secondary-color;
             @market-item-order-hover-border: @link-hover;
 
+            // .resource
+            @resource-overlay-color: darken(@html-background, 15%);
+            @resource-overlay-color-alt: darken(@market-item-background, 15%);
+
             // .modalBox
             @modalBox-background: @html-background;
 
@@ -604,6 +620,12 @@ Misc ---------> Main template
             @market-item-background: #1d2021;
             @market-item-order-hover-background: @secondary-color;
             @market-item-order-hover-border: @link-hover;
+
+            // .resource
+            @resource-overlay-color: darken(@html-background, 15%);
+            @resource-overlay-color-alt: darken(@market-item-background, 15%);
+
+            //@html-background: #282828;
 
             // .modalBox
             @modalBox-background: @html-background;
@@ -766,6 +788,10 @@ Misc ---------> Main template
             @market-item-order-hover-background: @secondary-color;
             @market-item-order-hover-border: @link-hover;
 
+            // .resource
+            @resource-overlay-color: darken(@html-background, 13%);
+            @resource-overlay-color-alt: darken(@market-item-background, 15%);
+
             // .modalBox
             @modalBox-background: @html-background;
 
@@ -888,6 +914,10 @@ Misc ---------> Main template
             @market-item-background: #1d2021;
             @market-item-order-hover-background: @secondary-color;
             @market-item-order-hover-border: @link-hover;
+
+            // .resource
+            @resource-overlay-color: darken(@html-background, 15%);
+            @resource-overlay-color-alt: darken(@market-item-background, 15%);
 
             // .modalBox
             @modalBox-background: @html-background;
@@ -1604,6 +1634,29 @@ Misc ---------> Main template
             &.alt {
                 background-color: @market-item-background;
             }
+        }
+
+        .resource.showBar {
+            &.prime {
+                background-image: linear-gradient(
+                to right, transparent 0%,
+                    transparent calc(var(--percent-full) - 1px),
+                    @resource-overlay-color calc(var(--percent-full) + 1px),
+                    @resource-overlay-color 100%
+                );
+            }
+            &.alt {
+                background-image: linear-gradient(
+                    to right, transparent 0%,
+                        transparent calc(var(--percent-full) - 1px),
+                        @resource-overlay-color-alt calc(var(--percent-full) + 1px),
+                        @resource-overlay-color-alt 100%
+                    );
+            }
+        }
+
+        .resource .bar {
+            cursor: pointer;
         }
 
         .inactive-row {
@@ -5116,9 +5169,16 @@ div.bigbang {
                 width: 23rem;
             }
 
-            .sub, .add {
-                position: relative;
-                bottom: .1875rem;
+            .field {
+                display: flex;
+                justify-content: space-between;
+                padding-right: .5rem;
+
+                .rc {
+                    display: inline-block;
+                    min-width: 7rem;
+                    text-align: center;
+                }
             }
         }
 

@@ -8241,6 +8241,7 @@
   "genelab_traits_production": "Production Traits",
   "genelab_traits_utility": "Utility Traits",
   "genelab_traits_summary": "Summary",
+  "genelab_traits_all": "All",
   "genelab_rank": "Rank",
   "genelab_rank_lower": "Reduce rank of %0",
   "genelab_rank_higher": "Increase rank of %0",

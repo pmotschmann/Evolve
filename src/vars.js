@@ -1271,7 +1271,7 @@ if (convertVersion(global['version']) < 104009){
 
 global['version'] = '1.4.9';
 delete global['revision'];
-global['beta'] = 1;
+delete global['beta'];
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
@@ -1540,6 +1540,9 @@ if (typeof global.settings.boring === 'undefined'){
 }
 if (!global.settings.hasOwnProperty('mtorder')){
     global.settings['mtorder'] = [];
+}
+if (!global.settings.hasOwnProperty('resBar')){
+    global.settings['resBar'] = {};
 }
 
 export function setupStats(){
