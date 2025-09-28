@@ -972,10 +972,10 @@ export function aiApocalypse(){
 
     let gains = calcPrestige('ai');
     checkAchievements();
-    logPrestigeGains('ai', gains);
 
     global.stats.aiappoc++;
     updateResetStats();
+    logPrestigeGains('ai', gains);
     global.prestige.Phage.count += gains.phage;
     global.stats.phage += gains.phage;
     if (global.race.universe === 'antimatter'){
@@ -1057,10 +1057,10 @@ export function matrix(){
 
     trackWomling();
     checkAchievements();
-    logPrestigeGains('matrix', gains);
 
     global.stats.matrix++;
     updateResetStats();
+    logPrestigeGains('matrix', gains); // needs to be after reset count is updated for servant calculation
     if (global.race.universe === 'antimatter'){
         global.prestige.AntiPlasmid.count += gains.plasmid;
         global.stats.antiplasmid += gains.plasmid;
@@ -1140,10 +1140,10 @@ export function retirement(){
 
     trackWomling();
     checkAchievements();
-    logPrestigeGains('retired', gains);
 
     global.stats.retire++;
     updateResetStats();
+    logPrestigeGains('retired', gains);
     if (global.race.universe === 'antimatter'){
         global.prestige.AntiPlasmid.count += gains.plasmid;
         global.stats.antiplasmid += gains.plasmid;
@@ -1223,10 +1223,10 @@ export function gardenOfEden(){
 
     trackWomling();
     checkAchievements();
-    logPrestigeGains('eden', gains);
 
     global.stats.eden++;
     updateResetStats();
+    logPrestigeGains('eden', gains);
     if (global.race.universe === 'antimatter'){
         global.prestige.AntiPlasmid.count += gains.plasmid;
         global.stats.antiplasmid += gains.plasmid;
