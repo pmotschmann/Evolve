@@ -1,4 +1,4 @@
-import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, support_on } from './vars.js';
+import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, support_on, active_rituals } from './vars.js';
 import { vBind, clearElement, modRes, flib, calc_mastery, calcPillar, eventActive, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect, hoovedRename, messageQueue } from './functions.js';
 import { traits, fathomCheck } from './races.js';
 import { templeCount, actions } from './actions.js';
@@ -423,9 +423,10 @@ export const craftingRatio = (function(){
                     auto: 1 + (govEffect.socialist()[0] / 100)
                 });
             }
-            if (global.race['casting'] && global.race.casting['crafting']){
-                let boost_m = 1 + (global.race.casting['crafting'] / (global.race.casting['crafting'] + 75));
-                let boost_a = 1 + (2 * global.race.casting['crafting'] / (2 * global.race.casting['crafting'] + 75));
+            if (global.race['casting'] && active_rituals['crafting']){
+                let num_rituals = active_rituals['crafting'];
+                let boost_m = 1 + (num_rituals / (num_rituals + 75));
+                let boost_a = 1 + (2 * num_rituals / (2 * num_rituals + 75));
                 crafting.general.multi.push({
                     name: loc(`modal_pylon_casting`),
                     manual: boost_m,
@@ -807,6 +808,12 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
     if (!global.resource[name].hasOwnProperty('rate')){
         global.resource[name]['rate'] = rate;
     }
+    if (!global.settings.resBar.hasOwnProperty(name)){
+        global.settings.resBar[name] = true;
+    }
+    if (!global.resource[name].hasOwnProperty('bar')){
+        global.resource[name]['bar'] = global.settings.resBar[name];
+    }
 
     if (name === 'Mana'){
         global['resource'][name]['gen'] = 0;
@@ -829,7 +836,7 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
         res_container = $(`<div id="res${name}" class="resource crafted" v-show="display"><div><h3 class="res has-text-${color}">{{ name | namespace }}</h3><span id="cnt${name}" class="count">{{ amount | diffSize }}</span></div></div>`);
     }
     else {
-        res_container = $(`<div id="res${name}" class="resource" v-show="display"><div><h3 class="res has-text-${color}">{{ name | namespace }}</h3><span id="cnt${name}" class="count">{{ amount | size }} / {{ max | size }}</span></div></div>`);
+        res_container = $(`<div id="res${name}" class="resource${global.settings.resBar[name] ? ` showBar` : ``}" v-show="display" :style="{ '--percent-full': (bar && max > 0 ? (amount/max)*100 : 0) + '%' }"><div><h3 class="res has-text-${color} bar" @click="toggle('${name}')">{{ name | namespace }}</h3><span id="cnt${name}" class="count">{{ amount | size }} / {{ max | size }}</span></div></div>`);
     }
 
     if (stackable){
@@ -937,6 +944,17 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
                     costs = costs + `<div>${global.resource[craft_costs[res][i].r].name} ${num}</div>`;
                 }
                 return costs;
+            },
+            toggle(res){
+                if (global.settings.resBar[res]){
+                    global.settings.resBar[res] = false;
+                    $(`#res${name}`).removeClass('showBar');
+                }
+                else {
+                    global.settings.resBar[res] = true;
+                    $(`#res${name}`).addClass('showBar');
+                }
+                global.resource[name]['bar'] = global.settings.resBar[name];
             }
         }
     });
@@ -1031,7 +1049,8 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
     tmp_vars.resource[name] = {
         color: color,
         tradable: tradable,
-        stackable: stackable
+        stackable: stackable,
+        temp_max: 0
     };
 }
 
@@ -2389,7 +2408,8 @@ function tradeRouteColor(res){
 
 function buildCrateLabel(){
     let material = global.race['kindling_kindred'] || global.race['smoldering'] ? (global.race['smoldering'] ? global.resource.Chrysotile.name : global.resource.Stone.name) : (global.resource['Plywood'] ? global.resource.Plywood.name : global.resource.Plywood.name);
-    let cost = global.race['kindling_kindred'] || global.race['smoldering'] ? 200 : 10
+    if (global.race['iron_wood']){ material = global.resource.Lumber.name; }
+    let cost = global.race['kindling_kindred'] || global.race['smoldering'] || global.race['iron_wood'] ? 200 : 10
     return loc('resource_modal_crate_construct_desc',[cost,material,crateValue()]);
 }
 
@@ -2411,7 +2431,8 @@ export function crateGovHook(type,num){
 function buildCrate(num){
     let keyMutipler = num || keyMultiplier();
     let material = global.race['kindling_kindred'] || global.race['smoldering'] ? (global.race['smoldering'] ? 'Chrysotile' : 'Stone') : 'Plywood';
-    let cost = global.race['kindling_kindred'] || global.race['smoldering'] ? 200 : 10;
+    if (global.race['iron_wood']){ material = 'Lumber'; }
+    let cost = global.race['kindling_kindred'] || global.race['smoldering'] || global.race['iron_wood'] ? 200 : 10;
     if (keyMutipler + global.resource.Crates.amount > global.resource.Crates.max){
         keyMutipler = global.resource.Crates.max - global.resource.Crates.amount;
     }
@@ -2419,7 +2440,7 @@ function buildCrate(num){
         keyMutipler = Math.floor(global.resource[material].amount / cost);
     }
     if (global.resource[material].amount >= (cost * keyMutipler) && global.resource.Crates.amount < global.resource.Crates.max){
-        modRes(material,-(cost * keyMutipler));
+        modRes(material, -(cost * keyMutipler), true);
         global.resource.Crates.amount += keyMutipler;
     }
 }
@@ -2433,7 +2454,7 @@ function buildContainer(num){
         keyMutipler = Math.floor(global.resource['Steel'].amount / 125);
     }
     if (global.resource['Steel'].amount >= (125 * keyMutipler) && global.resource.Containers.amount < global.resource.Containers.max){
-        modRes('Steel',-(125 * keyMutipler));
+        modRes('Steel', -(125 * keyMutipler), true);
         global.resource.Containers.amount += keyMutipler;
     }
 }

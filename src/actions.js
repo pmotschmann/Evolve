@@ -1,11 +1,11 @@
-import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, int_on, gal_on, spire_on, tmp_vars, setupStats } from './vars.js';
+import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, int_on, gal_on, spire_on, tmp_vars, setupStats, callback_queue } from './vars.js';
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
-import { races, traits, genus_def, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill } from './races.js';
+import { races, traits, genus_def, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill, traitRank } from './races.js';
 import { defineResources, unlockCrates, unlockContainers, crateValue, containerValue, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus, faithTempleCount } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
-import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter } from './industry.js';
+import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter, cancelRituals } from './industry.js';
 import { defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating, garrisonSize, govEffect } from './civics.js';
 import { spaceTech, interstellarTech, galaxyTech, incrementStruct, universe_affixes, renderSpace, piracy, fuel_adjust, isStargateOn } from './space.js';
 import { renderFortress, fortressTech, warlordSetup } from './portal.js';
@@ -14,7 +14,7 @@ import { tauCetiTech, renderTauCeti, loneSurvivor } from './truepath.js';
 import { arpa, gainGene, gainBlood } from './arpa.js';
 import { production, highPopAdjust } from './prod.js';
 import { techList, techPath } from './tech.js';
-import { govActive, removeTask, gov_tasks } from './governor.js';
+import { defineGovernor, govActive, removeTask, gov_tasks } from './governor.js';
 import { bioseed } from './resets.js';
 import { loadTab, tabLabel } from './index.js';
 
@@ -1859,7 +1859,7 @@ export const actions = {
                 Iron(offset){ return costMultiplier('mill', offset, 150, 1.33); },
                 Cement(offset){ return costMultiplier('mill', offset, 125, 1.33); },
             },
-            powered(){ return powerModifier(global.race['environmentalist'] ? -1.5 : -1); },
+            powered(){ return powerModifier(global.race['environmentalist'] ? -(traits.environmentalist.vars()[1]) : -1); },
             power_reqs: { agriculture: 6 },
             effect(){
                 if (global.tech['agriculture'] >= 6){
@@ -1899,7 +1899,7 @@ export const actions = {
             category: 'utility',
             reqs: { wind_plant: 1 },
             not_trait: ['cataclysm','lone_survivor'],
-            powered(){ return powerModifier(global.race['environmentalist'] ? -1.5 : -1); },
+            powered(){ return powerModifier(global.race['environmentalist'] ? -(traits.environmentalist.vars()[1]) : -1); },
             power_reqs: { false: 1 },
             cost: {
                 Money(offset){ return costMultiplier('windmill', offset, 1000, 1.31); },
@@ -3475,16 +3475,15 @@ export const actions = {
             desc: loc(`city_banquet_desc`),
             category: 'commercial',
             reqs: { banquet:1 },
-            queue_complete(){ return global.stats.achieve['endless_hunger'] ? global.stats.achieve['endless_hunger'].l - global.city['banquet'].count : 0},
+            queue_complete(){ return global.stats.achieve['endless_hunger'] ? global.stats.achieve['endless_hunger'].l - global.city['banquet'].level : 0},
             no_multi: true,
             condition(){
                 return global.stats.achieve['endless_hunger'] && global.stats.achieve['endless_hunger'].l >= 1 ? true : false;
             },
             cost: {
                 Money(offset){
-                    const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
-                    //const max = global.stats.achieve['endless_hunger'] ? global.stats.achieve['endless_hunger'].l : 0;
-                    switch (count){
+                    const level = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].level : 0);
+                    switch (level){
                         case 0:
                             return 45000;
                         case 1:
@@ -3500,9 +3499,9 @@ export const actions = {
                     }
                 },
                 Food(offset){
-                    const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
+                    const level = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].level : 0);
                     return (() => {
-                        switch (count){
+                        switch (level){
                             case 0:
                                 return 40000;
                             case 1:
@@ -3519,8 +3518,8 @@ export const actions = {
                     })() * (global.race['artifical'] ? 0.25 : 1);
                 },
                 Brick(offset){ 
-                    const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
-                    switch (count){
+                    const level = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].level : 0);
+                    switch (level){
                         case 0:
                             return 1600;
                         case 1:
@@ -3532,8 +3531,8 @@ export const actions = {
                     }
                 },
                 Wrought_Iron(offset){
-                    const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
-                    switch (count){
+                    const level = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].level : 0);
+                    switch (level){
                         case 0:
                             return 0;
                         case 1:
@@ -3549,8 +3548,8 @@ export const actions = {
                     }
                 },
                 Iridium(offset){
-                    const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
-                    switch (count){
+                    const level = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].level : 0);
+                    switch (level){
                         case 2:
                             return 50000;
                         case 3:
@@ -3562,11 +3561,11 @@ export const actions = {
                     }
                 },
                 Aerogel(offset, wiki){
-                    const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
+                    const level = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].level : 0);
                     if(wiki ? wiki.truepath : global.race['truepath']){
                         return 0;
                     }
-                    switch (count){
+                    switch (level){
                         case 3:
                             return 40000;
                         case 4:
@@ -3576,11 +3575,11 @@ export const actions = {
                     }
                 },
                 Quantium(offset, wiki){
-                    const count = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
+                    const level = (offset ? offset : 0) + (global.city['banquet'] ? global.city['banquet'].level : 0);
                     if(wiki ? !wiki.truepath : !global.race['truepath']){
                         return 0;
                     }
-                    switch (count){
+                    switch (level){
                         case 3:
                             return 40000;
                         case 4:
@@ -3590,8 +3589,8 @@ export const actions = {
                     }
                 },
                 Bolognium(offset){
-                    const count = (offset ? offset : 0) || (global.city['banquet'] ? global.city['banquet'].count : 0);
-                    switch (count){
+                    const level = (offset ? offset : 0) || (global.city['banquet'] ? global.city['banquet'].level : 0);
+                    switch (level){
                         case 4:
                             return 150000;
                         default:
@@ -3601,39 +3600,41 @@ export const actions = {
             },
             effect(wiki){
                 let strength = global.city['banquet'] ? global.city['banquet'].strength : 0;
-                let count = (wiki?.count ?? 0) + (global.city['banquet'] ? global.city['banquet'].count : 0);
+                let level = (wiki?.count ?? 0) + (global.city['banquet'] ? global.city['banquet'].level : 0);
                 let desc = `<div>Strength: <span class="has-text-caution">${strength}</span></div>`;
-                desc += `<div>${loc(`city_banquet_effect1`, [sizeApproximation(((count >= 5 ? 1.02 : 1.022)**(strength) - 1) * 100)])}</div>`;
-                if(count >= 1){
+                desc += `<div>${loc(`city_banquet_effect1`, [sizeApproximation(((level >= 5 ? 1.02 : 1.022)**(strength) - 1) * 100)])}</div>`;
+                if(level >= 1){
                     desc += `<div>${loc(`city_banquet_effect2`, [(strength**0.75).toFixed(2)])}</div>`;
                 }
-                if(count >= 2){
+                if(level >= 2){
                     desc += `<div>${loc(`city_banquet_effect3`, [(strength**0.65).toFixed(2)])}</div>`;
                 }
-                if(count >= 3){
+                if(level >= 3){
                     desc += `<div>${loc(`city_banquet_effect4`, [(strength**0.65).toFixed(2)])}</div>`;
                 }
-                if(count >= 4){
+                if(level >= 4){
                     desc += `<div>${loc(`city_banquet_effect5`, [(strength**0.75).toFixed(2)])}</div>`;
                 }
                 return desc;
             },
             powered(){ return 0; },
             action(args){
-                if (global.city['banquet'].count < global.stats.achieve['endless_hunger'].l && payCosts($(this)[0])){
+                if (global.city['banquet'].level < global.stats.achieve['endless_hunger'].l && payCosts($(this)[0])){
                     incrementStruct('banquet','city');
-                    if(global.city.banquet.count === 1){
-                        global.city.banquet.on = 1;
+                    global.city['banquet'].level++;
+                    if(global.city['banquet'].level === 1){
+                        global.city['banquet'].on = 1;
                     }
-                    //drawTech();
+                    global.city['banquet'].count = 1; //banquet hall can be powered on once at most
                     drawCity();
                     return true;
                 }
                 return false;
             },
+            count(){ return global.city['banquet'].level },
             struct(){
                 return {
-                    d: { count: 0, on: 0, strength: 0 },
+                    d: { count: 0, on: 0, strength: 0, level: 0 },
                     p: ['banquet','city']
                 };
             },
@@ -4024,7 +4025,7 @@ export const actions = {
             powered(wiki){
                 let power = global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 1 ? -6 : -5;
                 if (!wiki && global.race['environmentalist']){
-                    power += traits.environmentalist.vars()[0];
+                    power -= traits.environmentalist.vars()[0];
                 }
                 let dirt = govActive('dirty_jobs',1);
                 if (dirt){ power -= dirt; }
@@ -4671,15 +4672,59 @@ export function buildTemplate(key, region){
                     if (global['resource'][global.race.species].max === global['resource'][global.race.species].amount){
                         warn = `<div class="has-text-caution">${loc('city_assembly_effect_warn')}</div>`;
                     }
+                    else if (global.race['parasite']){
+                        let buffer = 6;
+                        switch (traitRank('parasite')){
+                            case 0.25:
+                                buffer = 5;
+                                break;
+                            case 0.5:   
+                                buffer = 4;
+                                break;
+                            case 1:
+                            case 2:
+                            case 3:
+                            case 4:
+                                buffer = 4 - traitRank('parasite');
+                                break;
+                        }
+                        if (global.race['last_assembled'] && global.race.last_assembled + buffer >= global.stats.days){
+                            warn = `<div class="has-text-caution">${loc('city_assembly_effect_parasite',[global.race.last_assembled + buffer + 1 - global.stats.days])}</div>`;
+                        }
+                        else {
+                            warn = `<div class="has-text-success">${loc('city_assembly_effect_parasite_ok')}</div>`;
+                        }
+                    }
                     return `<div>${loc('city_assembly_effect',[races[global.race.species].name])}</div>${warn}`;
                 },
                 action(args){
+                    if (global.race['parasite'] && (global.race['cataclysm'] || global.race['orbit_decayed'])){
+                        let buffer = 6;
+                        switch (traitRank('parasite')){
+                            case 0.25:
+                                buffer = 5;
+                                break;
+                            case 0.5:   
+                                buffer = 4;
+                                break;
+                            case 1:
+                            case 2:
+                            case 3:
+                            case 4:
+                                buffer = 4 - traitRank('parasite');
+                                break;
+                        }
+                        if (global.race['last_assembled'] && global.race.last_assembled + buffer >= global.stats.days){
+                            return false;
+                        }
+                    }
                     if (global.race['vax'] && global.race.vax >= 100){
                         return true;
                     }
                     else if (global['resource'][global.race.species].max > global['resource'][global.race.species].amount && payCosts($(this)[0])){
                         global['resource'][global.race.species].amount++;
                         global.civic[global.civic.d_job].workers++;
+                        global.race['last_assembled'] = global.stats.days;
                         return true;
                     }
                     return false;
@@ -4857,7 +4902,7 @@ export function buildTemplate(key, region){
         case 's_alter':   
         {
             let action = {
-                id: 'city-s_alter',
+                id: `${region}-s_alter`,
                 title: loc('city_s_alter'),
                 desc(){
                     return global.city.hasOwnProperty('s_alter') && global.city['s_alter'].count >= 1 ? `<div>${loc('city_s_alter')}</div><div class="has-text-special">${loc('city_s_alter_desc')}</div>` : loc('city_s_alter');
@@ -4966,7 +5011,7 @@ export function buildTemplate(key, region){
         case 'shrine':
         {
             let action = {
-                id: 'city-shrine',
+                id: `${region}-shrine`,
                 title: loc('city_shrine'),
                 desc(){
                     return global.race['warlord'] ? loc('city_shrine_warlord_desc') : loc('city_shrine_desc');
@@ -5045,7 +5090,7 @@ export function buildTemplate(key, region){
         case 'meditation':
         {
             let action = {
-                id: 'city-meditation',
+                id: `${region}-meditation`,
                 title: loc('city_meditation'),
                 desc: loc('city_meditation'),
                 category: 'commercial',
@@ -5965,6 +6010,7 @@ export function gainTech(action){
     renderEdenic();
 }
 
+export var cLabels = global.settings['cLabels'];
 export function drawCity(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 1 || global.settings.spaceTabs !== 0)){
         return;
@@ -6033,6 +6079,8 @@ export function drawCity(){
             });
         }
     });
+
+    cLabels = global.settings['cLabels'];
 }
 
 export function drawTech(){
@@ -6255,7 +6303,7 @@ export function setAction(c_action,action,type,old,prediction){
     }
     if (c_action['count']){
         let count = c_action.count();
-        if (count > 1){
+        if (count > 0 && (id !== 'city-gift' || count > 1)){
             element.append($(`<span class="count">${count}</span>`));
         }
     }
@@ -6333,24 +6381,17 @@ export function setAction(c_action,action,type,old,prediction){
                 return `off: ${global[action][type].count - global[action][type].on}`;
             },
             power_on(){
-                if(type === "banquet"){
-                    global[action][type].on = 1;
-                }
-                else{
-                    let keyMult = keyMultiplier();
-                    for (let i=0; i<keyMult; i++){
-                        if (global[action][type].on < global[action][type].count){
-                            global[action][type].on++;
-                        }
-                        else {
-                            break;
-                        }
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global[action][type].on < global[action][type].count){
+                        global[action][type].on++;
+                    }
+                    else {
+                        break;
                     }
                 }
                 if (c_action['postPower']){
-                    setTimeout(function(){
-                        c_action.postPower(true);
-                    }, 250);
+                    callback_queue.set([c_action, 'postPower'], [true]);
                 }
             },
             power_off(){
@@ -6364,9 +6405,7 @@ export function setAction(c_action,action,type,old,prediction){
                     }
                 }
                 if (c_action['postPower']){
-                    setTimeout(function(){
-                        c_action.postPower(false);
-                    }, 250);
+                    callback_queue.set([c_action, 'postPower'], [false]);
                 }
             },
             repair(){
@@ -6398,9 +6437,6 @@ export function setAction(c_action,action,type,old,prediction){
                         return egg;
                     }
                 }
-                else if(id === 'city-banquet'){
-                    return (p ? 0 : 1);
-                }
                 return value;
             },
             p_on(p,id){
@@ -6421,9 +6457,6 @@ export function setAction(c_action,action,type,old,prediction){
                     if (p === num && trick.length > 0){
                         return trick;
                     }
-                }
-                else if(id === 'city-banquet'){
-                    return (p ? 1 : 0);
                 }
                 return p;
             },
@@ -6465,9 +6498,7 @@ function runAction(c_action,action,type){
                 if (!(global.settings.qKey && keyMap.q) && checkTechRequirements(type,false) && c_action.action({isQueue: false})){
                     gainTech(type);
                     if (c_action['post']){
-                        setTimeout(function(){
-                            c_action.post();
-                        }, 250);
+                        callback_queue.set([c_action, 'post'], []);
                     }
                 }
                 else {
@@ -6499,9 +6530,7 @@ function runAction(c_action,action,type){
                         gainBlood(type);
                     }
                     if (c_action['post']){
-                        setTimeout(function(){
-                            c_action.post();
-                        }, 250);
+                        callback_queue.set([c_action, 'post'], []);
                     }
                 }
                 break;
@@ -6621,9 +6650,7 @@ export function postBuild(c_action,action,type){
         }
     }
     if (c_action['post']){
-        setTimeout(function(){
-            c_action.post();
-        }, 250);
+        callback_queue.set([c_action, 'post'], []);
     }
     updateDesc(c_action,action,type);
 }
@@ -6733,7 +6760,7 @@ export function setPlanet(opt){
 
     let title = `${traits}${biomes[biome].label} ${num}`;
     var parent = $(`<div id="${id}" class="action"></div>`);
-    var element = $(`<a class="button is-dark" v-on:click="action"><span class="aTitle">${title}</span></a>`);
+    var element = $(`<a class="button is-dark" v-on:click="action" role="link"><span class="aTitle">${title}</span></a>`);
     parent.append(element);
 
     $('#evolution').append(parent);
@@ -6968,7 +6995,7 @@ function buildPlanet(aspect,opt,args){
 }
 
 // Returns true when side effects associated with the new structure being powered on should occur. Can return false even when alwaysPowered is enabled.
-export function powerOnNewStruct(c_action,extra){
+export function powerOnNewStruct(c_action){
     let parts = c_action.id.split('-');
     if (!global.hasOwnProperty(parts[0]) || !global[parts[0]].hasOwnProperty(parts[1])){
         return false;
@@ -7004,8 +7031,8 @@ export function powerOnNewStruct(c_action,extra){
                 gov_tasks.replicate.task();
             }
         }
-        if (extra && typeof extra === 'function'){
-            return extra(c_action);
+        if (c_action['postPower']){
+            callback_queue.set([c_action, 'postPower'], [true]);
         }
         return true;
     }
@@ -7492,7 +7519,9 @@ export function removeAction(id){
 export function updateDesc(c_action,category,action){
     var id = c_action.id;
     if (global[category] && global[category][action] && global[category][action]['count']){
-        $(`#${id} .count`).html(global[category][action].count);
+        if(!c_action.hasOwnProperty('count')){
+            $(`#${id} .count`).html(global[category][action].count);
+        }
         if (global[category][action] && global[category][action].count > 0){
             $(`#${id} .count`).css('display','inline-block');
             $(`#${id} .special`).css('display','block');
@@ -7718,8 +7747,7 @@ export function checkCosts(costs){
                 return;
             }
             let f_res = res === 'Species' ? global.race.species : res;
-            let fail_max = global.resource[f_res].max >= 0 && testCost > global.resource[f_res].max ? true : false;
-            if (testCost > Number(global.resource[f_res].amount) + global.resource[f_res].diff || fail_max){
+            if (testCost > Number(global.resource[f_res].amount) || (global.resource[f_res].max >= 0 && testCost > global.resource[f_res].max)){
                 test = false;
                 return;
             }
@@ -7962,11 +7990,7 @@ export function orbitDecayed(){
             if (global.city['pylon']){
                 global.space['pylon'] = { count: Math.ceil(global.city.pylon.count / 2) };
             }
-            if (global.race['casting']){
-                Object.keys(global.race.casting).forEach(function (c){
-                    global.race.casting[c] = 0;
-                });
-            }
+            cancelRituals();
         }
 
         Object.keys(actions.city).forEach(function (k){
@@ -7993,6 +8017,7 @@ export function orbitDecayed(){
             global.resource.Slave.display = false;
             global.resource.Slave.amount = 0;
             removeTask('slave');
+            defineGovernor();
         }
         if (global.race['deconstructor']){
             nf_resources.forEach(function (res){
@@ -8282,7 +8307,7 @@ export function updateQueueNames(both, items){
                         }
                     });
                 }
-                else if (actions[currItem.action][currItem.type]){
+                else if (actions[currItem.action]?.[currItem.type]){
                     global.queue.queue[i].label = 
                         typeof actions[currItem.action][currItem.type].title === 'string' ? 
                         actions[currItem.action][currItem.type].title : 
@@ -8583,7 +8608,8 @@ function sentience(){
             dwarf: global.custom.race0.dwarf,
             genes: 0,
             genus: global.custom.race0.genus,
-            traitlist: global.custom.race0.traits
+            traitlist: global.custom.race0.traits,
+            ranks: global.custom.race0?.ranks || {} 
         });
     }
 
@@ -8601,7 +8627,8 @@ function sentience(){
             genes: 0,
             genus: global.custom.race1.genus,
             hybrid: global.custom.race1.hybrid,
-            traitlist: global.custom.race1.traits
+            traitlist: global.custom.race1.traits,
+            ranks: global.custom.race1?.ranks || {} 
         });
     }
 
@@ -9512,7 +9539,6 @@ function fanaticTrait(trait,rank){
     if (global.race[trait]){
         if (!setTraitRank(trait)){
             randomMinorTrait(5);
-            arpa('Genetics');
         }
         else if (trait === 'imitation'){
             setImitation(true);
@@ -9530,6 +9556,7 @@ function fanaticTrait(trait,rank){
         }
         cleanAddTrait(trait);
     }
+    arpa('Genetics');
 }
 
 export function resQueue(){
@@ -9546,7 +9573,7 @@ export function resQueue(){
     let queue = $(`<ul class="buildList"></ul>`);
     $('#resQueue').append(queue);
 
-    queue.append($(`<li v-for="(item, index) in queue"><a v-bind:id="setID(index)" class="queued" v-bind:class="{ 'qany': item.qa }" @click="remove(index)"><span class="has-text-warning">{{ item.label }}</span> [<span v-bind:class="{ 'has-text-danger': item.cna, 'has-text-success': !item.cna && item.req, 'has-text-caution': !item.req && !item.cna }">{{ item.time | time }}</span>]</a></li>`));
+    queue.append($(`<li v-for="(item, index) in queue"><a v-bind:id="setID(index)" class="queued" v-bind:class="{ 'qany': item.qa }" @click="remove(index)" role="link"><span class="has-text-warning">{{ item.label }}</span> [<span v-bind:class="{ 'has-text-danger': item.cna, 'has-text-success': !item.cna && item.req, 'has-text-caution': !item.req && !item.cna }">{{ item.time | time }}</span>]</a></li>`));
 
     try {
         vBind({
@@ -9703,4 +9730,20 @@ export function start_cataclysm(){
         delete global.race['start_cataclysm'];
         sentience();
     }
+}
+
+var callback_repeat = new Map();
+export function doCallbacks(){
+    for (const [[c_action, func], args] of callback_queue){
+        // If the function returns true, then it wants to be called again in the future
+        if (c_action[func](...args)){
+            callback_repeat.set([c_action, func], args);
+        }
+    }
+    // Remove all registered callbacks, then reinsert any callbacks that want to be repeated
+    callback_queue.clear();
+    for (const [[c_action, func], args] of callback_repeat){
+        callback_queue.set([c_action, func], args);
+    }
+    callback_repeat.clear();
 }

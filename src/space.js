@@ -658,15 +658,21 @@ const spaceProjects = {
                 return powerCostMod((wiki ? wiki.truepath : global.race['truepath']) ? 500 : 5000);
             },
             postPower(o){
-                if (o){
-                    setTimeout(function(){
-                        global.tech.terraforming = p_on['atmo_terraformer'] ? 3 : 2;
-                        renderSpace();
-                    }, 250);
+                if (o && p_on['atmo_terraformer']){
+                    // Powered on and energized
+                    global.tech.terraforming = 3;
+                    renderSpace();
                 }
                 else {
-                    global.tech.terraforming = 2;
-                    renderSpace();
+                    if (global.tech.terraforming > 2){
+                        // Disabled or lost power
+                        global.tech.terraforming = 2;
+                        renderSpace();
+                    }
+                    if (o){
+                        // Not powered yet, check again soon
+                        return true;
+                    }
                 }
             },
             effect(wiki){
@@ -4156,7 +4162,7 @@ const interstellarProjects = {
                     r_mass += 0.225 * global.tech['roid_eject'] * (1 + (global.tech['roid_eject'] / 12));
                 }
                 let gWell = 1 + (global.stats.achieve['escape_velocity'] && global.stats.achieve.escape_velocity['h'] ? global.stats.achieve.escape_velocity['h'] * 0.02 : 0);
-                let output = powerModifier(20 + (r_mass - 8 + exotic * 10) * waves * gWell);
+                let output = powerModifier((20 + (r_mass - 8 + exotic * 10) * waves) * gWell);
                 if (output > 10000){
                     output = 10000 + (output - 10000) ** 0.975;
                     if (output > 20000){ output = 20000 + (output - 20000) ** 0.95; }
@@ -4664,15 +4670,21 @@ const interstellarProjects = {
                 deepSpace();
             },
             postPower(o){
-                if (o){
-                    setTimeout(function(){
-                        global.tech.ascension = p_on['ascension_trigger'] ? 8 : 7;
-                        deepSpace();
-                    }, 250);
+                if (o && p_on['ascension_trigger']){
+                    // Powered on and energized
+                    global.tech.ascension = 8;
+                    deepSpace();
                 }
                 else {
-                    global.tech.ascension = 7;
-                    deepSpace();
+                    if (global.tech.ascension > 7){
+                        // Disabled or lost power
+                        global.tech.ascension = 7;
+                        deepSpace();
+                    }
+                    if (o){
+                        // Not powered yet, check again soon
+                        return true;
+                    }
                 }
             },
             effect(){
@@ -5355,14 +5367,6 @@ const galaxyProjects = {
                 return global.galaxy.hasOwnProperty('starbase') ? [{ s: global.galaxy.starbase.s_max - global.galaxy.starbase.support }] : false;
             },
             postPower(o){
-                let powered = o ? p_on['telemetry_beacon'] + keyMultiplier() : p_on['telemetry_beacon'] - keyMultiplier();
-                if (powered > global.galaxy.telemetry_beacon.count){
-                    powered = global.galaxy.telemetry_beacon.count;
-                }
-                else if (powered < 0){
-                    powered = 0;
-                }
-                p_on['telemetry_beacon'] = powered;
                 updateDesc($(this)[0],'galaxy','telemetry_beacon');
             },
             action(args){
@@ -5478,9 +5482,6 @@ const galaxyProjects = {
                     d: { count: 0, on: 0 },
                     p: ['defense_platform','galaxy']
                 };
-            },
-            post(){
-                vBind({el: `#gxy_stargate`},'update');
             }
         },
     },
@@ -6297,7 +6298,7 @@ const galaxyProjects = {
             action(args){
                 if (payCosts($(this)[0])){
                     incrementStruct('minelayer','galaxy');
-                    global.galaxy.minelayer.on++;
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -6309,9 +6310,6 @@ const galaxyProjects = {
                 };
             },
             postPower(){
-                vBind({el: `#gxy_chthonian`},'update');
-            },
-            post(){
                 vBind({el: `#gxy_chthonian`},'update');
             }
         },
@@ -6392,7 +6390,7 @@ const galaxyProjects = {
             action(args){
                 if (payCosts($(this)[0])){
                     incrementStruct('raider','galaxy');
-                    global.galaxy.raider.on++;
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -6404,9 +6402,6 @@ const galaxyProjects = {
                 };
             },
             postPower(){
-                vBind({el: `#gxy_chthonian`},'update');
-            },
-            post(){
                 vBind({el: `#gxy_chthonian`},'update');
             }
         },
@@ -7474,7 +7469,7 @@ export function setUniverse(){
         let id = `uni-${universe}`;
 
         let parent = $(`<div id="${id}" class="action"></div>`);
-        let element = $(`<a class="button is-dark" v-on:click="action"><span class="aTitle">${universe_types[universe].name}</span></a>`);
+        let element = $(`<a class="button is-dark" v-on:click="action" role="link"><span class="aTitle">${universe_types[universe].name}</span></a>`);
         parent.append(element);
 
         $('#evolution').append(parent);
@@ -7563,6 +7558,7 @@ export function ascendLab(hybrid,wiki){
         global.settings.spaceTabs = 0;
     }
 
+    let unlockedTraits = {};
     let lab = $(`<div id="celestialLab" class="celestialLab"></div>`);
 
     let wikiVars = {
@@ -7643,8 +7639,57 @@ export function ascendLab(hybrid,wiki){
         genes.append($(genus));
     }
 
-    let unlockedTraits = {};
-    let taxomized = { utility: {}, resource: {}, production: {}, combat: {} };;
+    let slot = hybrid ? 'race1' : 'race0';
+    let genome = global.hasOwnProperty('custom') && global.custom.hasOwnProperty(slot) ? {
+        name: global.custom[slot].name,
+        desc: global.custom[slot].desc,
+        entity: global.custom[slot].entity,
+        home: global.custom[slot].home,
+        red: global.custom[slot].red,
+        hell: global.custom[slot].hell,
+        gas: global.custom[slot].gas,
+        gas_moon: global.custom[slot].gas_moon,
+        dwarf: global.custom[slot].dwarf,
+        titan: global.custom[slot].titan || planetName().titan,
+        enceladus: global.custom[slot].enceladus || planetName().enceladus,
+        triton: global.custom[slot].triton || planetName().triton,
+        eris: global.custom[slot].eris || planetName().eris,
+        genes: 0,
+        genus: global.custom[slot].genus,
+        traitlist: global.custom[slot].traits,
+        ranks: global.custom[slot]?.ranks || {},
+        fanaticism: global.custom[slot].hasOwnProperty('fanaticism') && global.custom[slot].fanaticism ? global.custom[slot].fanaticism : false,
+    } : {
+        name: 'Zombie',
+        desc: `Zombies aren't so much a species as they are the shambling remains of a race who succumbed to a nightmarish virus. Yet somehow they continue to drone on.`,
+        entity: 'rotting bipedal creatures',
+        home: 'Grave',
+        red: 'Brains',
+        hell: 'Rigor Mortis',
+        gas: 'Decompose',
+        gas_moon: 'Bones',
+        dwarf: 'Double Tap',
+        titan: 'Necromancer',
+        enceladus: 'Skeleton',
+        triton: 'Rot',
+        eris: 'Zombieland',
+        genes: 10,
+        genus: dGenus,
+        traitlist: [],
+        ranks: {},
+        fanaticism: false,
+    };
+
+    if (hybrid){
+        if (global.hasOwnProperty('custom') && global.custom.hasOwnProperty(slot)){
+            genome['hybrid'] = global.custom[slot].hybrid;
+        }
+        else {
+            genome['hybrid'] = ['humanoid','small'];
+        }
+    }
+
+    let taxomized = { utility: {}, resource: {}, production: {}, combat: {}, all: {} };;
     Object.keys(races).forEach(function (race){
         let type = races[race].type;
         if (
@@ -7664,25 +7709,44 @@ export function ascendLab(hybrid,wiki){
             }
         }
     });
+    
+    for (let i=genome.traitlist.length - 1; i >= 0; i--){
+        if (!traits.hasOwnProperty(genome.traitlist[i]) || !unlockedTraits.hasOwnProperty(genome.traitlist[i]) || traits[genome.traitlist[i]].type !== 'major'){
+            genome.traitlist.splice(i,1);
+        }
+    }
 
-    let trait_listing = $(`<b-tabs v-model="tt.t"></b-tabs>`);
+    let trait_listing = $(`<b-tabs v-model="tt.t" @input="swapTab"></b-tabs>`);
+    let all_listing = ``;
     Object.keys(taxomized).sort().forEach(function (tax){
+        if (tax === 'all'){
+            return;
+        }
         let negative = '';
-        let trait_list = `<b-tab-item><template slot="header"><h2 class="is-sr-only">${loc(`genelab_traits_${tax}`)}}</h2><span aria-hidden="true">${loc(`genelab_traits_${tax}`)}</span></template>`;
-        trait_list += `<div class="trait_selection">`;
+        let trait_list_header = `<b-tab-item><template slot="header"><h2 class="is-sr-only">${loc(`genelab_traits_${tax}`)}}</h2><span aria-hidden="true">${loc(`genelab_traits_${tax}`)}</span></template>`;
+        let trait_list = ``;
         Object.keys(taxomized[tax]).sort().forEach(function (trait){
             if (traits.hasOwnProperty(trait) && traits[trait].type === 'major'){
                 if (traits[trait].val >= 0){
-                    trait_list += `<div class="field t${trait}"><b-checkbox :disabled="allowed('${trait}')" :input="geneEdit()" v-model="g.traitlist" native-value="${trait}"><span class="has-text-success">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-advanced">{{ '${trait}' | cost }}</span>)</b-checkbox></div>`;
+                    trait_list += `<div class="field t${trait}"><b-checkbox :disabled="allowed('${trait}')" @input="geneEdit()" v-model="g.traitlist" native-value="${trait}"><span class="has-text-success">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-advanced">{{ '${trait}' | cost }}</span><span v-html="$options.filters.empower(g.traitlist,'${trait}')"></span>)</b-checkbox></div>`;
                 }
                 else {
-                    negative += `<div class="field t${trait}"><b-checkbox :disabled="allowed('${trait}')" :input="geneEdit()" v-model="g.traitlist" native-value="${trait}"><span class="has-text-danger">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-caution">{{ '${trait}' | cost }}</span>)</b-checkbox></div>`;
+                    negative += `<div class="field t${trait}"><b-checkbox :disabled="allowed('${trait}')" @input="geneEdit()" v-model="g.traitlist" native-value="${trait}"><span class="has-text-danger">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-caution">{{ '${trait}' | cost }}</span><span v-html="$options.filters.empower(g.traitlist,'${trait}')"></span>)</b-checkbox></div>`;
                 }
             }
         });
-        trait_list = trait_list + negative + `</div></b-tab-item>`;
-        trait_listing.append($(trait_list));
+        let full_list = trait_list_header + `<div class="cool trait_selection">` + trait_list + negative + `</div></b-tab-item>`;
+        trait_listing.append($(full_list));
+
+        all_listing += `<h3>${loc(`genelab_traits_${tax}`)}</h3>` + `<div class="lame trait_selection">` + trait_list + negative + `</div>`;
     });
+
+    let summary = `<b-tab-item id="traitSummary"><template slot="header"><h2 class="is-sr-only">${loc(`genelab_traits_summary`)}}</h2><span aria-hidden="true">${loc(`genelab_traits_summary`)}</span></template></b-tab-item>`;
+    trait_listing.append(summary);
+
+    let allListing = `<b-tab-item id="traitAll"><template slot="header"><h2 class="is-sr-only">${loc(`genelab_traits_all`)}}</h2><span aria-hidden="true">${loc(`genelab_traits_all`)}</span></template>${all_listing}<h3>${loc(`genelab_traits_summary`)}</h3><div id="allSum"></div></b-tab-item>`;
+    trait_listing.append(allListing);
+
     genes.append(trait_listing);
 
     let buttons = `
@@ -7706,64 +7770,6 @@ export function ascendLab(hybrid,wiki){
     }
     lab.append(buttons);
 
-    let trait_data = {
-        neg: 0
-    };
-
-    let slot = hybrid ? 'race1' : 'race0';
-    let genome = global.hasOwnProperty('custom') && global.custom.hasOwnProperty(slot) ? {
-        name: global.custom[slot].name,
-        desc: global.custom[slot].desc,
-        entity: global.custom[slot].entity,
-        home: global.custom[slot].home,
-        red: global.custom[slot].red,
-        hell: global.custom[slot].hell,
-        gas: global.custom[slot].gas,
-        gas_moon: global.custom[slot].gas_moon,
-        dwarf: global.custom[slot].dwarf,
-        titan: global.custom[slot].titan || planetName().titan,
-        enceladus: global.custom[slot].enceladus || planetName().enceladus,
-        triton: global.custom[slot].triton || planetName().triton,
-        eris: global.custom[slot].eris || planetName().eris,
-        genes: 0,
-        genus: global.custom[slot].genus,
-        traitlist: global.custom[slot].traits,
-        fanaticism: global.custom[slot].hasOwnProperty('fanaticism') && global.custom[slot].fanaticism ? global.custom[slot].fanaticism : false,
-    } : {
-        name: 'Zombie',
-        desc: `Zombies aren't so much a species as they are the shambling remains of a race who succumbed to a nightmarish virus. Yet somehow they continue to drone on.`,
-        entity: 'rotting bipedal creatures',
-        home: 'Grave',
-        red: 'Brains',
-        hell: 'Rigor Mortis',
-        gas: 'Decompose',
-        gas_moon: 'Bones',
-        dwarf: 'Double Tap',
-        titan: 'Necromancer',
-        enceladus: 'Skeleton',
-        triton: 'Rot',
-        eris: 'Zombieland',
-        genes: 10,
-        genus: dGenus,
-        traitlist: [],
-        fanaticism: false,
-    };
-
-    if (hybrid){
-        if (global.hasOwnProperty('custom') && global.custom.hasOwnProperty(slot)){
-            genome['hybrid'] = global.custom[slot].hybrid;
-        }
-        else {
-            genome['hybrid'] = ['humanoid','small'];
-        }
-    }
-
-    for (let i=genome.traitlist.length - 1; i >= 0; i--){
-        if (!traits.hasOwnProperty(genome.traitlist[i]) || !unlockedTraits.hasOwnProperty(genome.traitlist[i]) || traits[genome.traitlist[i]].type !== 'major'){
-            genome.traitlist.splice(i,1);
-        }
-    }
-
     genome.genes = calcGenomeScore(genome,(isWiki ? wikiVars : false));
     let error = { msg: "" };
 
@@ -7771,6 +7777,7 @@ export function ascendLab(hybrid,wiki){
         template: '<div id="modalBox" class="modalBox"></div>'
     };
 
+    let tRanks = genome.ranks;
     let activeTab = { t: 0 };
     vBind({
         el: '#celestialLab',
@@ -7778,7 +7785,6 @@ export function ascendLab(hybrid,wiki){
             g: genome,
             w: wikiVars,
             err: error,
-            td: trait_data,
             tt: activeTab
         },
         methods: {
@@ -7801,11 +7807,18 @@ export function ascendLab(hybrid,wiki){
                 }
             },
             geneEdit(){
-                genome.genes = calcGenomeScore(genome,(isWiki ? wikiVars : false));
+                let newRanks = genome.traitlist.map(x => tRanks[x] ? { [x]: tRanks[x] } : { [x]: 1 });
+                let ranks = {};
+                newRanks.forEach(function(k){ Object.keys(k).forEach(function(t){ ranks[t] = k[t] }) });
+                tRanks = ranks;
+                genome.genes = calcGenomeScore(genome,(isWiki ? wikiVars : false),tRanks);
+                if (activeTab.t === 5){
+                    summaryTab(5);
+                }
             },
             setRace(){
                 if (genome.fanaticism && !genome.traitlist.includes(genome.fanaticism)){ return false; }
-                if (calcGenomeScore(genome) >= 0 && genome.name.length > 0 && genome.desc.length > 0 && genome.entity.length > 0 && genome.home.length > 0
+                if (calcGenomeScore(genome,false,tRanks) >= 0 && genome.name.length > 0 && genome.desc.length > 0 && genome.entity.length > 0 && genome.home.length > 0
                     && genome.red.length > 0 && genome.hell.length > 0 && genome.gas.length > 0 && genome.gas_moon.length > 0 && genome.dwarf.length > 0){
 
                     global.custom[slot] = {
@@ -7825,6 +7838,7 @@ export function ascendLab(hybrid,wiki){
                         genus: genome.genus,
                         traits: genome.traitlist,
                         fanaticism: genome.fanaticism,
+                        ranks: tRanks
                     };
                     if (hybrid){
                         global.custom[slot]['hybrid'] = genome.hybrid;
@@ -7836,7 +7850,10 @@ export function ascendLab(hybrid,wiki){
                 }
             },
             allowed(t){
-                if ((!['synthetic','hybrid'].includes(genome.genus) || (genome.hasOwnProperty('hybrid') && !genome.hybrid.includes('synthetic'))) && ['deconstructor','imitation'].includes(t)){
+                if ((genome.traitlist.includes('catnip') && t === 'anise') || (genome.traitlist.includes('anise') && t === 'catnip')){
+                    return true;
+                }
+                else if ((!['synthetic','hybrid'].includes(genome.genus) || (genome.hasOwnProperty('hybrid') && !genome.hybrid.includes('synthetic'))) && ['deconstructor','imitation'].includes(t)){
                     if (genome.traitlist.includes(t)){
                         genome.traitlist.splice(genome.traitlist.indexOf(t), 1);
                     }
@@ -7860,7 +7877,8 @@ export function ascendLab(hybrid,wiki){
                 genome.eris = "";
                 genome.genus = dGenus;
                 genome.traitlist = [];
-                genome.genes = calcGenomeScore(genome,(isWiki ? wikiVars : false));
+                genome.ranks = {};
+                genome.genes = calcGenomeScore(genome,(isWiki ? wikiVars : false), tRanks);
                 genome.fanaticism = false;
             },
             fanatic(){
@@ -7956,6 +7974,9 @@ export function ascendLab(hybrid,wiki){
                     }
                 }, 50);
             },
+            swapTab(tab){
+                summaryTab(tab);
+            },
             customImport(){
                 let file = document.getElementById("customFile").files[0];
                 if (file){
@@ -8022,9 +8043,11 @@ export function ascendLab(hybrid,wiki){
                                 fixTraitlist.push(genome.traitlist[i]);
                             }
                         }
+                        tRanks = importCustom.hasOwnProperty('ranks') ? importCustom.ranks : {};
+                        genome.ranks = {};
                         genome.fanaticism = importCustom.hasOwnProperty('fanaticism') ? importCustom.fanaticism : false,
                         genome.traitlist = fixTraitlist;
-                        genome.genes = calcGenomeScore(genome,(isWiki ? wikiVars : false));
+                        genome.genes = calcGenomeScore(genome,(isWiki ? wikiVars : false),tRanks);
 
                         error.msg = "";
                     }
@@ -8034,6 +8057,8 @@ export function ascendLab(hybrid,wiki){
                 }
             },
             customExport(){
+                let exportGenome = deepClone(genome);
+                exportGenome['ranks'] = tRanks;
                 const downloadToFile = (content, filename, contentType) => {
                     const a = document.createElement('a');
                     const file = new Blob([content], {type: contentType});
@@ -8042,53 +8067,12 @@ export function ascendLab(hybrid,wiki){
                     a.click();
                     URL.revokeObjectURL(a.href);
                 };
-                downloadToFile(JSON.stringify(genome, null, 4), `evolve-${hybrid ? 'hybrid' : 'custom'}-${genome.name}.txt`, 'text/plain');
+                downloadToFile(JSON.stringify(exportGenome, null, 4), `evolve-${hybrid ? 'hybrid' : 'custom'}-${exportGenome.name}.txt`, 'text/plain');
             }
         },
         filters: {
             cost(trait){
-                let max_complexity = 1;
-
-                let active_genus = genome.genus === 'hybrid' ? genome.hybrid : [genome.genus];
-                let oppose_genus = [];
-                active_genus.forEach(function(g){
-                    oppose_genus = oppose_genus.concat(genus_def[g].oppose);
-                });
-
-                let taxonomy = traits[trait].taxonomy;
-                let gene_cost = traits[trait].val;
-                let genus_origin = races[traits[trait].origin].type === 'hybrid' ? races[traits[trait].origin].hybrid : [races[traits[trait].origin].type];
-                if (active_genus.filter(x => genus_origin.includes(x)).length > 0){ active_genus.filter(x => genus_origin.includes(x)).length === 1 ? gene_cost-- : gene_cost -= 2; }
-                if (oppose_genus.filter(x => genus_origin.includes(x)).length > 0){ oppose_genus.filter(x => genus_origin.includes(x)).length === 1 ? gene_cost++ : gene_cost += 2; }
-
-                let complexity = { utility: 0, resource: 0, production: 0, combat: 0 };
-                let neg_complexity = { utility: 0, resource: 0, production: 0, combat: 0 };
-                for (let i=0; i<genome.traitlist.length; i++){
-                    if (traits[genome.traitlist[i]].val >= 0){
-                        complexity[traits[genome.traitlist[i]].taxonomy]++;
-                    }
-                    else {
-                        neg_complexity[traits[genome.traitlist[i]].taxonomy]++;
-                    }
-                }
-                if (traits[trait].val >= 0){
-                    if (genome.traitlist.includes(trait)){
-                        complexity[taxonomy]--;
-                    }
-                    if (complexity[taxonomy] > max_complexity){
-                        gene_cost += complexity[taxonomy] - max_complexity;
-                    }
-                }
-                else {
-                    if (genome.traitlist.includes(trait)){
-                        neg_complexity[taxonomy]--;
-                    }
-                    if (neg_complexity[taxonomy] >= max_complexity){
-                        gene_cost += neg_complexity[taxonomy];
-                    }
-                }
-
-                return gene_cost;
+                return geneCost(genome,trait,tRanks);
             },
             untapped(genes){
                 if (!genome.traitlist.includes(genome.fanaticism)){ genome.fanaticism = false; }
@@ -8100,6 +8084,10 @@ export function ascendLab(hybrid,wiki){
             },
             genus(g,i){
                 return typeof i === 'undefined' ? loc(`genelab_genus_${g}`) : loc(`genelab_genus_${g[i]}`);
+            },
+            empower(e,t){
+                let valid_empower = traits[t].val >= traits.empowered.vars(tRanks['empowered'] || 1)[0] && traits[t].val <= traits.empowered.vars(tRanks['empowered'] || 1)[1] && !['empowered','catnip','anise'].includes(t) && genome.traitlist.includes('empowered');
+                return valid_empower ? `, <span class="has-text-caution">E</span>` : ``;
             }
         }
     });
@@ -8154,21 +8142,284 @@ export function ascendLab(hybrid,wiki){
 
     Object.keys(unlockedTraits).sort().forEach(function (trait){
         if (traits.hasOwnProperty(trait) && traits[trait].type === 'major'){
-            popover(`celestialLabtraitSelection${trait}`, function(){
-                let desc = $(`<div></div>`);
-                let opts = {
-                    trank: 1,
-                    wiki: isWiki
-                }
-                getTraitDesc(desc, trait, opts);
-                return desc;
-            },{
-                elm: `#celestialLab .trait_selection .t${trait}`,
-                classes: `w30`,
-                wide: true
+            ['cool','lame'].forEach(function(s){
+                popover(`celestialLabtraitSelection${trait}`, function(){
+                    let desc = $(`<div></div>`);
+                    let opts = {
+                        trank: tRanks[trait] || 1,
+                        wiki: isWiki
+                    }
+                    getTraitDesc(desc, trait, opts);
+                    return desc;
+                },{
+                    elm: `#celestialLab .${s}.trait_selection .t${trait}`,
+                    classes: `w30`,
+                    wide: true
+                });
             });
         }
     });
+
+    function summaryTab(tab){
+        if (tab === 4 || tab == 5){
+            let container = tab === 4 ? $(`#traitSummary`) : $(`#allSum`);
+            clearElement(container);
+
+            let negative_sum = '';
+            let summary = `<div class="trait_selection summary">`;
+            genome.traitlist.sort().forEach(function (trait){
+                if (traits.hasOwnProperty(trait) && traits[trait].type === 'major'){
+                    if (traits[trait].val >= 0){
+                        summary += `<div class="field t${trait}">`;
+                        summary += `<b-checkbox :input="geneEdit()" v-model="g.traitlist" native-value="${trait}"><span class="has-text-success">${loc(`trait_${trait}_name`)}</span></b-checkbox>`;
+                        summary += `<span>[<span class="rc"><span class="has-text-warning">${loc(`wiki_calc_cost`)}</span> <span>{{ '${trait}' | cost }}</span>, <span class="has-text-warning">${loc(`genelab_rank`)}</span> <span>{{ '${trait}' | tRank }}</span>`;
+                        summary += `<span v-html="$options.filters.empower(t.empowered,'${trait}')"></span></span>]`;
+                        summary += `<span role="button" aria-label="${loc(`genelab_rank_lower`,[loc(`trait_${trait}_name`)])}" class="sub has-text-danger" @click="reduce('${trait}')"><span>-</span></span>`;
+                        summary += `<span role="button" aria-label="${loc(`genelab_rank_higher`,[loc(`trait_${trait}_name`)])}" class="add has-text-success" @click="increase('${trait}')"><span>+</span></span>`;
+                        summary += `</span></div>`;
+                    }
+                    else {
+                        negative_sum += `<div class="field t${trait}">`;
+                        negative_sum += `<b-checkbox :input="geneEdit()" v-model="g.traitlist" native-value="${trait}"><span class="has-text-danger">${loc(`trait_${trait}_name`)}</span></b-checkbox>`;
+                        negative_sum += `<span>[<span class="rc"><span class="has-text-warning">${loc(`wiki_calc_cost`)}</span> <span>{{ '${trait}' | cost }}</span>, <span class="has-text-warning">${loc(`genelab_rank`)}</span> <span>{{ '${trait}' | tRank }}</span>`;
+                        negative_sum += `<span v-html="$options.filters.empower(t.empowered,'${trait}')"></span></span>]`;
+                        negative_sum += `<span role="button" aria-label="${loc(`genelab_rank_lower`,[loc(`trait_${trait}_name`)])}" class="sub has-text-danger" @click="reduce('${trait}')"><span>-</span></span>`;
+                        negative_sum += `<span role="button" aria-label="${loc(`genelab_rank_higher`,[loc(`trait_${trait}_name`)])}" class="add has-text-success" @click="increase('${trait}')"><span>+</span></span>`;
+                        negative_sum += `</span></div>`;
+                    }
+                }
+            });
+            summary += negative_sum + `</div>`;
+            container.append(summary);
+
+            vBind({
+                el: tab === 4 ? '#traitSummary .trait_selection' : '#allSum .trait_selection',
+                data: {
+                    g: genome,
+                    t: tRanks
+                },
+                methods: {
+                    geneEdit(){
+                        let newRanks = genome.traitlist.map(x => tRanks[x] ? { [x]: tRanks[x] } : { [x]: 1 });
+                        let ranks = {};
+                        newRanks.forEach(function(k){ Object.keys(k).forEach(function(t){ ranks[t] = k[t] }) });
+                        tRanks = ranks;
+                        genome.genes = calcGenomeScore(genome,(isWiki ? wikiVars : false),tRanks);
+                    },
+                    reduce(t){
+                        let unlock = global.stats.achieve[`extinct_${traits[t].origin}`] && global.stats.achieve[`extinct_${traits[t].origin}`].l || 0;
+                        switch (tRanks[t]){
+                            case 0.25:
+                                if (unlock >= 5){
+                                    tRanks[t] = 0.1;
+                                }
+                                break;
+                            case 0.5:
+                                if (unlock >= 4){
+                                    tRanks[t] = 0.25;
+                                }
+                                break;
+                            case 1:
+                                if (unlock >= 3){
+                                    tRanks[t] = 0.5;
+                                }
+                                break;
+                            case 2:
+                                tRanks[t] = 1;
+                                break;
+                            case 3:
+                                tRanks[t] = 2;
+                                break;
+                            case 4:
+                                tRanks[t] = 3;
+                                break;
+                        }
+                        if (tab === 4 ){
+                            vBind({el: `#traitSummary .trait_selection`},'update');
+                        }
+                        else {
+                            vBind({el: `#allSum .trait_selection`},'update');
+                        }
+                        let desc = $(`#traitLabActiveDesc`);
+                        clearElement(desc);
+                        let opts = {
+                            trank: tRanks[t] || 1,
+                            wiki: isWiki
+                        }
+                        getTraitDesc(desc, t, opts);
+                    },
+                    increase(t){
+                        let unlock = global.stats.achieve[`extinct_${traits[t].origin}`] && global.stats.achieve[`extinct_${traits[t].origin}`].l || 0;
+                        switch (tRanks[t]){
+                            case 0.1:
+                                tRanks[t] = 0.25;
+                                break;
+                            case 0.25:
+                                tRanks[t] = 0.5;
+                                break;
+                            case 0.5:
+                                tRanks[t] = 1;
+                                break;
+                            case 1:
+                                if (unlock >= 3){
+                                    tRanks[t] = 2;
+                                }
+                                break;
+                            case 2:
+                                if (unlock >= 4){
+                                    tRanks[t] = 3;
+                                }
+                                break;
+                            case 3:
+                                if (unlock >= 5){
+                                    tRanks[t] = 4;
+                                }
+                                break;
+                        }
+                        if (tab === 4 ){
+                            vBind({el: `#traitSummary .trait_selection`},'update');
+                        }
+                        else {
+                            vBind({el: `#allSum .trait_selection`},'update');
+                        }
+                        let desc = $(`#traitLabActiveDesc`);
+                        clearElement(desc);
+                        let opts = {
+                            trank: tRanks[t] || 1,
+                            wiki: isWiki
+                        }
+                        getTraitDesc(desc, t, opts);
+                    }
+                },
+                filters: {
+                    cost(trait){
+                        return geneCost(genome,trait,tRanks);
+                    },
+                    tRank(trait){
+                        return tRanks[trait];
+                    },
+                    empower(e,t){
+                        let valid_empower = traits[t].val >= traits.empowered.vars(tRanks['empowered'] || 1)[0] && traits[t].val <= traits.empowered.vars(tRanks['empowered'] || 1)[1] && !['empowered','catnip','anise'].includes(t) && genome.traitlist.includes('empowered');
+                        return valid_empower ? `, <span class="has-text-caution">E</span>` : ``;
+                    }
+                }
+            });
+
+            let popAnchor = tab === 4 ? '#traitSummary' : '#allSum';
+
+            genome.traitlist.sort().forEach(function (trait){
+                if (traits.hasOwnProperty(trait) && traits[trait].type === 'major'){
+                    popover(`celestialLabtraitSelection${trait}Sum`, function(){
+                        let desc = $(`<div id="traitLabActiveDesc"></div>`);
+                        let opts = {
+                            trank: tRanks[trait] || 1,
+                            wiki: isWiki
+                        }
+                        getTraitDesc(desc, trait, opts);
+                        return desc;
+                    },{
+                        elm: `${popAnchor} .summary .t${trait}`,
+                        classes: `w30`,
+                        wide: true
+                    });
+                }
+            });
+        }
+    }
+}
+
+function geneCost(genome,trait,tRanks){
+    let max_complexity = 1;
+
+    let active_genus = genome.genus === 'hybrid' ? genome.hybrid : [genome.genus];
+    let oppose_genus = [];
+    active_genus.forEach(function(g){
+        oppose_genus = oppose_genus.concat(genus_def[g].oppose);
+    });
+
+    let taxonomy = traits[trait].taxonomy;
+    let gene_cost = traits[trait].val;
+
+    let complexity = { utility: 0, resource: 0, production: 0, combat: 0 };
+    let neg_complexity = { utility: 0, resource: 0, production: 0, combat: 0 };
+    for (let i=0; i<genome.traitlist.length; i++){
+        if (traits[genome.traitlist[i]].val >= 0){
+            complexity[traits[genome.traitlist[i]].taxonomy]++;
+        }
+        else {
+            neg_complexity[traits[genome.traitlist[i]].taxonomy]++;
+        }
+    }
+    if (traits[trait].val >= 0){
+        if (genome.traitlist.includes(trait)){
+            complexity[taxonomy]--;
+        }
+        if (complexity[taxonomy] > max_complexity){
+            gene_cost += complexity[taxonomy] - max_complexity;
+        }
+    }
+    else {
+        if (genome.traitlist.includes(trait)){
+            neg_complexity[taxonomy]--;
+        }
+        if (neg_complexity[taxonomy] >= max_complexity){
+            gene_cost += neg_complexity[taxonomy];
+        }
+    }
+
+    if (tRanks[trait] && tRanks[trait] !== 1){
+        if (traits[trait].val >= 0){
+            switch (tRanks[trait]){
+                case 0.1:
+                    gene_cost -= 3;
+                    break;
+                case 0.25:
+                    gene_cost -= 2;
+                    break;
+                case 0.5:
+                    gene_cost--;
+                    break;
+                case 2:
+                    gene_cost = Math.max(Math.round(gene_cost * 1.5), gene_cost + 1);
+                    break;
+                case 3:
+                    gene_cost = Math.max(Math.round(gene_cost * 2), gene_cost + 2);
+                    break;
+                case 4:
+                    gene_cost = Math.max(Math.round(gene_cost * 2.5), gene_cost + 3);
+                    break;
+            }
+            if (gene_cost < 1){ gene_cost = 1; }
+        }
+        else {
+            switch (tRanks[trait]){
+                case 0.1:
+                    gene_cost -= 3;
+                    break;
+                case 0.25:
+                    gene_cost -= 2;
+                    break;
+                case 0.5:
+                    gene_cost--;
+                    break;
+                case 2:
+                    gene_cost++;
+                    break;
+                case 3:
+                    gene_cost += 2;
+                    break;
+                case 4:
+                    gene_cost += 3;
+                    break
+            }
+        }
+    }
+
+    let genus_origin = races[traits[trait].origin].type === 'hybrid' ? races[traits[trait].origin].hybrid : [races[traits[trait].origin].type];
+    if (active_genus.filter(x => genus_origin.includes(x)).length > 0){ active_genus.filter(x => genus_origin.includes(x)).length === 1 ? gene_cost-- : gene_cost -= 2; }
+    if (oppose_genus.filter(x => genus_origin.includes(x)).length > 0){ oppose_genus.filter(x => genus_origin.includes(x)).length === 1 ? gene_cost++ : gene_cost += 2; }
+
+    return gene_cost;
 }
 
 export function terraformLab(wiki){

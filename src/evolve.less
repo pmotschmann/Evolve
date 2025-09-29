@@ -162,6 +162,10 @@ Misc ---------> Main template
             @market-item-order-hover-background: @secondary-color;
             @market-item-order-hover-border: #eee;
 
+            // .resource
+            @resource-overlay-color: darken(@html-background, 15%);
+            @resource-overlay-color-alt: darken(@market-item-background, 15%);
+
             // .modalBox
             @modalBox-background: #282f2f;
 
@@ -284,6 +288,10 @@ Misc ---------> Main template
             @market-item-order-hover-background: #ccc;
             @market-item-order-hover-border: #333;
 
+            // .resource
+            @resource-overlay-color: darken(@html-background, 25%);
+            @resource-overlay-color-alt: darken(@market-item-background, 25%);
+
             // .modalBox
             @modalBox-background: @white;
 
@@ -324,6 +332,10 @@ Misc ---------> Main template
 
             // .market-item
             @market-item-background: #1b1b1b;
+
+            // .resource
+            @resource-overlay-color: lighten(@html-background, 10%);
+            @resource-overlay-color-alt: darken(@market-item-background, 15%);
 
             // -webkit-scrollbar
             @webkit-scrollbar-thumb-background: #727272;
@@ -483,6 +495,10 @@ Misc ---------> Main template
             @market-item-order-hover-background: @secondary-color;
             @market-item-order-hover-border: @link-hover;
 
+            // .resource
+            @resource-overlay-color: darken(@html-background, 15%);
+            @resource-overlay-color-alt: darken(@market-item-background, 15%);
+
             // .modalBox
             @modalBox-background: @html-background;
 
@@ -605,11 +621,17 @@ Misc ---------> Main template
             @market-item-order-hover-background: @secondary-color;
             @market-item-order-hover-border: @link-hover;
 
+            // .resource
+            @resource-overlay-color: darken(@html-background, 15%);
+            @resource-overlay-color-alt: darken(@market-item-background, 15%);
+
+            //@html-background: #282828;
+
             // .modalBox
             @modalBox-background: @html-background;
 
             // Stars
-            @star-2-fill: @white;
+            @star-2-fill: @primary-border;
             @star-3-fill: #cd7f32;
             @star-4-fill: #c0c0c0;
             @star-5-fill: #d4af37;
@@ -617,6 +639,45 @@ Misc ---------> Main template
             // -webkit-scrollbar
             @webkit-scrollbar-background: @html-background;
             @webkit-scrollbar-thumb-background: @primary-border;
+        }
+
+        // GruvBox Dark Red Green CB theme
+        .gruvboxDarkRG() {
+            // .has-text-xxx
+            @has-text-danger: #c409bb;
+            @has-text-flair: @has-text-success;
+            @has-text-special: #ffff9e;
+            @has-text-success: #00ff00;
+            @has-text-warning: #ffcc00;
+            @has-text-caution: #9ab8ff;
+            @has-text-info: #83a598;
+            @disabled: #ffe940;
+
+            // .popper
+            @tabs-li-is-active-link: #82bdff;
+
+            .switch input[type=checkbox]:checked+.check {
+                background: #a28cdf;
+            }
+
+            /* AFP 2021
+            // .fool
+            @fool-has-text-danger: @has-text-success;
+            @fool-has-text-success: @has-text-danger;
+            @fool-span-on: @has-text-danger;
+            @fool-span-off: @has-text-success;
+            */
+
+            // .meter
+            @meter-low: @disabled;
+            @meter-neutral: @has-text-caution;
+            @meter-high: @has-text-info;
+
+            // .main
+            @span-on: @has-text-success;
+            @span-off: @has-text-danger;
+
+            @cnam-aTitle: @disabled;
         }
 
         // Orange Soda theme
@@ -726,6 +787,10 @@ Misc ---------> Main template
             @market-item-background: #292929;
             @market-item-order-hover-background: @secondary-color;
             @market-item-order-hover-border: @link-hover;
+
+            // .resource
+            @resource-overlay-color: darken(@html-background, 13%);
+            @resource-overlay-color-alt: darken(@market-item-background, 15%);
 
             // .modalBox
             @modalBox-background: @html-background;
@@ -849,6 +914,10 @@ Misc ---------> Main template
             @market-item-background: #1d2021;
             @market-item-order-hover-background: @secondary-color;
             @market-item-order-hover-border: @link-hover;
+
+            // .resource
+            @resource-overlay-color: darken(@html-background, 15%);
+            @resource-overlay-color-alt: darken(@market-item-background, 15%);
 
             // .modalBox
             @modalBox-background: @html-background;
@@ -1567,6 +1636,29 @@ Misc ---------> Main template
             }
         }
 
+        .resource.showBar {
+            &.prime {
+                background-image: linear-gradient(
+                to right, transparent 0%,
+                    transparent calc(var(--percent-full) - 1px),
+                    @resource-overlay-color calc(var(--percent-full) + 1px),
+                    @resource-overlay-color 100%
+                );
+            }
+            &.alt {
+                background-image: linear-gradient(
+                    to right, transparent 0%,
+                        transparent calc(var(--percent-full) - 1px),
+                        @resource-overlay-color-alt calc(var(--percent-full) + 1px),
+                        @resource-overlay-color-alt 100%
+                    );
+            }
+        }
+
+        .resource .bar {
+            cursor: pointer;
+        }
+
         .inactive-row {
             background-color: @market-item-background;
         }
@@ -2074,6 +2166,50 @@ html.gruvboxLight {
 // GruvBox Dark theme
 html.gruvboxDark {
     #lib.themes.gruvboxDark(); // Highest priority
+    #lib.themes.dark(); // Lowest priority
+    #lib.mainTemplate();
+
+    input,
+    select,
+    textarea,
+    .notification {
+        background: @primary-color;
+    }
+
+    .add,
+    .sub {
+        border: @secondary-border solid .0625rem;
+    }
+
+    .current {
+        border-top: @secondary-border solid .0625rem;
+        border-bottom: @secondary-border solid .0625rem;
+    }
+    .current.infoOnly {
+        border: @secondary-border solid .0625rem;
+    }
+
+    .popper {
+        .grad-from-left {
+            background-image: linear-gradient(90deg, @has-text-danger 45%, @popper 55%);
+        }
+        .grad-from-left-warn {
+            background-image: linear-gradient(90deg, @has-text-alert 45%, @has-text-danger 55%);
+        }
+        .grad-from-right {
+            background-image: linear-gradient(90deg, @popper 45%, @has-text-danger 55%);
+        }
+    }
+
+    .modal .buttonList .is-selected {
+        border-color: @enabled;
+    }
+}
+
+// GruvBox Dark Red Green theme
+html.gruvboxDarkRG {
+    #lib.themes.gruvboxDarkRG(); // Highest priority
+    #lib.themes.gruvboxDark(); // Higher priority
     #lib.themes.dark(); // Lowest priority
     #lib.mainTemplate();
 
@@ -2748,7 +2884,7 @@ a {
         }
 
         #oldTech {
-            margin-bottom: 1rem;
+            margin-bottom: 4rem;
         }
 
         .mtab {
@@ -5026,6 +5162,23 @@ div.bigbang {
             flex-wrap: wrap;
             >div {
                 width: 11.5rem;
+            }
+        }
+        .trait_selection.summary {
+            >div {
+                width: 23rem;
+            }
+
+            .field {
+                display: flex;
+                justify-content: space-between;
+                padding-right: .5rem;
+
+                .rc {
+                    display: inline-block;
+                    min-width: 7rem;
+                    text-align: center;
+                }
             }
         }
 

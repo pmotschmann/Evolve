@@ -3,15 +3,88 @@ import { clearElement } from './../functions.js';
 
 export const changeList = [
     {
+        version: `1.4.9`,
+        date: `9/21/2025`,
+        changes: [
+            `Bluecollar Governor: Raised production effect from 10/12% to 14/18%, now also affects factories.`,
+            `Educator Governor: Raises professor effect by +30%.`,
+            `Noble Governor: Mansion gives +7 citizens when upgraded.`,
+            `Media Governor: 30/35% of overcapped morale can go past the morale cap.`,
+            `Sports Governor: No longer has a soldier healing bonus, now raises surveyor infernite by 10/12%`,
+            `Soldier Governor: Added 40%/50% healing bonus.`,
+            `Added Japanese language.`,
+            `Added an "All" tab to the custom race lab.`,
+            `Added filled rate animation for resources, click resource name to disable.`,
+            `Untrustworthy now affects Titan banks.`,
+            `Soul capacitors now lose stored energy if you turn off all capacitors.`,
+            `Discharge now affects the processing factory bonus instead of adamantite directly.`,
+            `Servant hunters no longer produce 4x more furs with high pop.`,
+            `Hunter job stress is now affected by high pop.`,
+            `Synth assembly scales slower with high population.`,
+            `Eldritch cattle slaughtering gives more food.`,
+            `Tusked no longer penalized by hivemind`,
+            `Adv. Spy operator is no longer free to use in Truepath without unlocking.`,
+            `Many misc bug fixes, can't be bothered to document them.`
+        ]
+    },
+    {
+        version: `1.4.8`,
+        date: `5/16/2025`,
+        changes: [
+            `Psychic now works with Elysanite.`,
+            `Parasite Assembly now works on a delay timer rather than a wind restriction.`,
+            `Fixed bugs with trait mutation costs.`
+        ]
+    },
+    {
+        version: `1.4.7`,
+        date: `5/15/2025`,
+        changes: [
+            `Pit Miners now produce Chrysotile outside of Isolation.`,
+            `Fixed issue with "Hybrid" and Enlightenment.`,
+            `Fixed some problems with entering Isolation and ending Quarantine.`,
+            `Fixed some broken wiki trait displays.`
+        ]
+    },
+    {
+        version: `1.4.6`,
+        date: `5/13/2025`,
+        changes: [
+            `Added Catnip and Anise traits to Ent/Pinguicula.`,
+            `Fixed issue with saving trait ranks to custom export.`,
+            `Performance Optimizations.`
+        ]
+    },
+    {
         version: `1.4.5`,
-        date: `5/??/2025`,
+        revision: `b`,
+        date: `5/12/2025`,
+        changes: [
+            `Fixed issues with loading custom race data into custom lab.`,
+            `Crates now correctly cost Bones instead of Boneweave with Iron Wood trait.`
+        ]
+    },
+    {
+        version: `1.4.5`,
+        revision: `a`,
+        date: `5/12/2025`,
+        changes: [
+            `Parasite now scales with rank.`,
+            `Synthetic parasites can now only assemble new citizens when it's windy.`
+        ]
+    },
+    {
+        version: `1.4.5`,
+        date: `5/11/2025`,
         changes: [
             `New Custom/Hybrid Lab mechanics.`,
+            `Added New Theme GrubBox (RedGreen CB) for Red/Green color blind players.`,
             `Technophobe perk race complexity changed to flat gene point bonus.`,
             `Overtapped has been removed, Negative traits instead pay a complexity tax.`,
             `Enviromentalist now scales with trait rank.`,
             `Thalassophobia replaced with Unfavored.`,
-            `Optimistic cost lowered from 5 points to 3.`
+            `Optimistic cost lowered from 5 points to 3.`,
+            `Fixed bug that could cause archfiends to queue with extra weapons.`
         ]
     },
     {

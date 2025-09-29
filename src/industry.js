@@ -1,6 +1,6 @@
-import { global, keyMultiplier, sizeApproximation, p_on, support_on, quantum_level } from './vars.js';
+import { global, keyMultiplier, sizeApproximation, p_on, support_on, quantum_level, callback_queue, active_rituals } from './vars.js';
 import { loc } from './locale.js';
-import { vBind, popover, clearElement, powerGrid, easterEgg, trickOrTreat } from './functions.js';
+import { vBind, popover, clearElement, powerGrid, easterEgg, trickOrTreat, binary_limit_test } from './functions.js';
 import { actions, checkCityRequirements, checkPowerRequirements } from './actions.js';
 import { races, traits, fathomCheck } from './races.js';
 import { atomic_mass } from './resources.js';
@@ -810,7 +810,7 @@ export function luxGoodPrice(demand){
     if (global.tech['isolation']){
         demand *= 1 + ((support_on['colony'] || 0) * 0.5);
     }
-    if(global.stats.achieve['endless_hunger'] && global.stats.achieve['endless_hunger'].l >= 4 && global.city.banquet && global.city.banquet.count >= 4 && global.city.banquet.strength){
+    if(global.stats.achieve['endless_hunger'] && global.stats.achieve['endless_hunger'].l >= 4 && global.city.banquet && global.city.banquet.level >= 4 && global.city.banquet.strength){
         demand *= 1 + (global.city.banquet.strength ** 0.75) / 100;
     }
     demand *= production('psychic_cash');
@@ -1316,6 +1316,38 @@ function loadPylon(parent,bind){
     });
 }
 
+export const ritual_types = ['farmer','miner','lumberjack','science','factory','army','hunting','crafting'];
+export function setupRituals(define=false){
+    if (define){
+        global.race['casting'] = {
+            farmer: 0,
+            miner: 0,
+            lumberjack: 0,
+            science: 0,
+            factory: 0,
+            army: 0,
+            hunting: 0,
+            crafting: 0,
+            total: 0,
+        };
+    }
+
+    if (global.race['casting']){
+        ritual_types.forEach(function (c){
+            active_rituals[c] = global.race.casting[c];
+        });
+    }
+}
+
+export function cancelRituals(){
+    if (global.race['casting']){
+        Object.keys(global.race.casting).forEach(function (c){
+            global.race.casting[c] = 0;
+            active_rituals[c] = 0;
+        });
+    }
+}
+
 function loadQuarry(parent,bind){
     parent.append($(`<div>${loc('modal_quarry_ratio',[global.resource.Chrysotile.name])}</div>`));
 
@@ -1610,9 +1642,14 @@ export function replicator(res,pow){
     }
 }
 
-export function manaCost(spell,rate){
-    rate = typeof rate === 'undefined' ? 0.0025 : rate;
+export function manaCost(spell,rate=0.0025){
     return spell * ((1 + rate) ** spell - 1);
+}
+
+export function maxRitualNum(mana, time_multiplier=0.25, rate=0.0025){
+    return binary_limit_test(function(num){
+        return (manaCost(num, rate) * time_multiplier) <= mana;
+    });
 }
 
 function colorRange(num,max,invert){
@@ -1753,9 +1790,7 @@ export function setPowerGrid(){
                                 }
                             }
                             if (c_action['postPower']){
-                                setTimeout(function(){
-                                    c_action.postPower(true);
-                                }, 250);
+                                callback_queue.set([c_action, 'postPower'], [true]);
                             }
                         },
                         power_off(){
@@ -1769,9 +1804,7 @@ export function setPowerGrid(){
                                 }
                             }
                             if (c_action['postPower']){
-                                setTimeout(function(){
-                                    c_action.postPower(false);
-                                }, 250);
+                                callback_queue.set([c_action, 'postPower'], [false]);
                             }
                         },
                         higher(){

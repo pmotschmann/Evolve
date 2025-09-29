@@ -11,7 +11,7 @@ import { renderSpace, planetName, int_fuel_adjust } from './space.js';
 import { drawHellObservations } from './portal.js';
 import { setOrbits, drawShipYard, jumpGateShutdown } from './truepath.js';
 import { arpa } from './arpa.js';
-import { setPowerGrid, defineIndustry, addSmelter } from './industry.js';
+import { setPowerGrid, defineIndustry, addSmelter, setupRituals } from './industry.js';
 import { defineGovernor, removeTask } from './governor.js';
 import { big_bang, cataclysm_end, descension, aiApocalypse } from './resets.js';
 
@@ -8547,7 +8547,6 @@ const techs = {
             if (payCosts($(this)[0])){
                 global.tech['ancient_deify'] = 1;
                 fanaticism(global.race.old_gods);
-                arpa('Genetics');
                 if (global.race['warlord']){
                     global.portal.throne.points++;
                 }
@@ -8576,7 +8575,6 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 fanaticism(global.race.old_gods);
-                arpa('Genetics');
                 if (global.race['warlord']){
                     global.portal.throne.points++;
                 }
@@ -11287,17 +11285,7 @@ const techs = {
         effect(){ return loc('tech_rituals_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.race['casting'] = {
-                    farmer: 0,
-                    miner: 0,
-                    lumberjack: 0,
-                    science: 0,
-                    factory: 0,
-                    army: 0,
-                    hunting: 0,
-                    crafting: 0,
-                    total: 0
-                };
+                setupRituals(true);
                 global.settings.showIndustry = true;
                 return true;
             }
@@ -15666,8 +15654,6 @@ const techs = {
 
 function uniteEffect(){
     global.tech['world_control'] = 1;
-    clearElement($('#garrison'));
-    clearElement($('#c_garrison'));
     buildGarrison($('#garrison'),true);
     buildGarrison($('#c_garrison'),false);
     for (let i=0; i<3; i++){
@@ -15684,6 +15670,8 @@ function uniteEffect(){
     }
     removeTask('spy');
     removeTask('spyop');
+    removeTask('combo_spy');
+    defineGovernor();
 }
 
 export function swissKnife(cheeseOnly,cheeseList){
@@ -15731,6 +15719,7 @@ export function stabilize_blackhole(){
     if (global.interstellar['stellar_engine'] && global.interstellar.stellar_engine.exotic >= 0.025 && global.tech['whitehole']){
         if (techs.stabilize_blackhole.action()){
             global.tech['stablized'] = 1;
+            drawTech();
         }
     }
 }

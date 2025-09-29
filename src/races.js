@@ -1,4 +1,4 @@
-import { global, seededRandom, save, webWorker, power_generated, keyMultiplier, sizeApproximation } from './vars.js';
+import { global, seededRandom, save, webWorker, power_generated, keyMultiplier, sizeApproximation, active_rituals } from './vars.js';
 import { loc } from './locale.js';
 import { defineIndustry } from './industry.js';
 import { setJobName, jobScale, loadFoundry } from './jobs.js';
@@ -2643,6 +2643,32 @@ export const traits = {
             }
         }
     },
+    catnip: { // Attract Cats
+        name: loc('trait_catnip_name'),
+        desc: loc('trait_catnip'),
+        type: 'major',
+        origin: 'entish',
+        taxonomy: 'production',
+        val: 1,
+        vars(r){
+            switch (r || traitRank('catnip') || 1){
+                case 0.1:
+                    return [1,2];
+                case 0.25:
+                    return [1,2];
+                case 0.5:
+                    return [1,2];
+                case 1:
+                    return [1,2];
+                case 2:
+                    return [1,2];
+                case 3:
+                    return [2,2];
+                case 4:
+                    return [2,4];
+            }
+        }
+    },
     hyper: { // The game moves at a 5% faster pace
         name: loc('trait_hyper_name'),
         desc: loc('trait_hyper'),
@@ -2748,6 +2774,32 @@ export const traits = {
             }
         }
     },
+    anise: { // Attract Dogs
+        name: loc('trait_anise_name'),
+        desc: loc('trait_anise'),
+        type: 'major',
+        origin: 'pinguicula',
+        taxonomy: 'production',
+        val: 1,
+        vars(r){
+            switch (r || traitRank('anise') || 1){
+                case 0.1:
+                    return [1,1];
+                case 0.25:
+                    return [1,1];
+                case 0.5:
+                    return [1,1];
+                case 1:
+                    return [1,1];
+                case 2:
+                    return [1,1];
+                case 3:
+                    return [2,1];
+                case 4:
+                    return [2,3];
+            }
+        }
+    },
     infectious: { // Attacking has a chance to infect other creatures and grow your population
         name: loc('trait_infectious_name'),
         desc: loc('trait_infectious'),
@@ -2782,6 +2834,24 @@ export const traits = {
         origin: 'sporgar',
         taxonomy: 'combat',
         val: -4,
+        vars(r){
+            switch (r || traitRank('parasite') || 1){
+                case 0.1:
+                    return [0,12];
+                case 0.25:
+                    return [1,10];
+                case 0.5:
+                    return [1,8];
+                case 1:
+                    return [2,6];
+                case 2:
+                    return [2,4];
+                case 3:
+                    return [3,2];
+                case 4:
+                    return [3,0];
+            }
+        }
     },
     toxic: { // Factory type jobs are more productive
         name: loc('trait_toxic_name'),
@@ -5428,7 +5498,8 @@ export const races = {
         entity: loc(altRace('entish') ? 'race_spruce_entity' : 'race_entish_entity'),
         traits: {
             kindling_kindred: 1,
-            pyrophobia: 1
+            pyrophobia: 1,
+            catnip: 1
         },
         solar: {
             red: loc(altRace('entish') ? 'race_spruce_solar_red' : 'race_entish_solar_red'),
@@ -5468,7 +5539,8 @@ export const races = {
         entity: loc('race_pinguicula_entity'),
         traits: {
             fragrant: 1,
-            sticky: 1
+            sticky: 1,
+            anise: 1
         },
         solar: {
             red: loc('race_pinguicula_solar_red'),
@@ -6389,8 +6461,9 @@ function customRace(hybrid){
     let slot = hybrid ? 'race1' : 'race0';
     if (global.hasOwnProperty('custom') && global.custom.hasOwnProperty(slot)){
         let trait = {};
+        let ranks = global.custom[slot]?.ranks || {};
         for (let i=0; i<global.custom[slot].traits.length; i++){
-            trait[global.custom[slot].traits[i]] = 1;
+            trait[global.custom[slot].traits[i]] = ranks[global.custom[slot].traits[i]] || 1;
         }
 
         let fanatic = global.custom[slot].hasOwnProperty('fanaticism') && global.custom[slot].fanaticism ? global.custom[slot].fanaticism : false;
@@ -6625,7 +6698,7 @@ export function racialTrait(workers,type){
         if (global.race['dark_dweller'] && global.city.calendar.weather === 2){
             modifier *= 1 - traits.dark_dweller.vars()[0] / 100;
         }
-        if(global.city.banquet && global.city.banquet.on && global.city.banquet.count >= 3){
+        if(global.city.banquet && global.city.banquet.on && global.city.banquet.level >= 3){
             modifier *= 1 + (global.city.banquet.strength ** 0.65) / 100;
         }
     }
@@ -6642,8 +6715,8 @@ export function racialTrait(workers,type){
         if (global.race['witch_hunter']){
             modifier *= 0.75;
         }
-        if (global.race.hasOwnProperty('casting') && global.race.casting[type === 'hellArmy' ? 'army' : type]){
-            let boost = global.race.casting[type === 'hellArmy' ? 'army' : type];
+        if (global.race.hasOwnProperty('casting') && active_rituals[type === 'hellArmy' ? 'army' : type]){
+            let boost = active_rituals[type === 'hellArmy' ? 'army' : type];
             if (global.race['witch_hunter']){
                 modifier *= 1 + (boost / (boost + 75) * 2.5);
             }
@@ -6653,7 +6726,8 @@ export function racialTrait(workers,type){
         }
     }
     if ((global.race['living_tool'] || global.race['tusk']) && type === 'miner'){
-        let tusk = global.race['tusk'] ? 1 + ((traits.tusk.vars()[0] / 100) * (armyRating(jobScale(1),'army',0) / 100)) : 1;
+        const balance = global.race['hivemind'] ? traits.hivemind.vars()[0] : 1;
+        let tusk = global.race['tusk'] ? 1 + ((traits.tusk.vars()[0] / 100) * (armyRating(jobScale(balance),'army',0) / balance / 100)) : 1;
         let lt = global.race['living_tool'] ? 1 + traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science * 0.12 : 0) : 1;
         modifier *= lt > tusk ? lt : tusk;
     }
@@ -6772,6 +6846,7 @@ function purgeLumber(){
     if (global.race['casting']){
         global.race.casting.total -= global.race.casting.lumberjack;
         global.race.casting.lumberjack = 0;
+        active_rituals.lumberjack = 0;
         defineIndustry();
     }
     if (global.city['s_alter']) {
@@ -6963,6 +7038,7 @@ function adjustFood() {
         if (!farmersEnabled) {
             global.race.casting.total -= global.race.casting.farmer;
             global.race.casting.farmer = 0;
+            active_rituals.farmer = 0;
         }
         defineIndustry();
     }
@@ -7117,8 +7193,6 @@ export function cleanAddTrait(trait){
         case 'unified':
             global.tech['world_control'] = 1;
             global.tech['unify'] = 2;
-            clearElement($('#garrison'));
-            clearElement($('#c_garrison'));
             buildGarrison($('#garrison'),true);
             buildGarrison($('#c_garrison'),false);
             for (let i=0; i<3; i++){
@@ -7135,6 +7209,8 @@ export function cleanAddTrait(trait){
             }
             removeTask('spy');
             removeTask('spyop');
+            removeTask('combo_spy');
+            defineGovernor();
             break;
         case 'noble':
             if (global.civic.taxes.tax_rate < 10) {
@@ -7656,7 +7732,7 @@ export function combineTraits(){
 }
 
 export function traitRank(trait){
-    if (global.race['empowered'] && trait !== 'empowered'){
+    if (global.race['empowered'] && !['empowered','catnip','anise'].includes(trait)){
         let val = traits[trait].val;
         if (val >= traits.empowered.vars()[0] && val <= traits.empowered.vars()[1]){
             switch (global.race[trait]){
@@ -7750,7 +7826,7 @@ export function traitSkin(type, trait, species){
                 weak: species === 'dwarf' ? loc('trait_drunk') : traits.weak.desc,
                 spiritual: global.race.universe === 'evil' && global.civic.govern.type != 'theocracy' ? loc('trait_manipulator') : traits.spiritual.desc,
                 blurry: global.race['warlord'] ? loc('trait_blurry_warlord') : traits.blurry.desc,
-                playful: global.race['warlord'] ? loc('trait_playful_warlord') : traits.blurry.desc,
+                playful: global.race['warlord'] ? loc('trait_playful_warlord') : traits.playful.desc,
                 befuddle: global.race['warlord'] ? loc('trait_befuddle_warlord') : traits.befuddle.desc,
             };
             return trait ? (desc[trait] ? desc[trait] : traits[trait].desc) : desc;
@@ -8827,7 +8903,7 @@ function majorWish(parent){
                     else {
                         switch(spell){
                             case 'flower':
-                                messageQueue(loc('wish_peace_flower',[govTitle(spell.substring(3))]),'warning',false,['events']);
+                                messageQueue(loc('wish_peace_flower'),'warning',false,['events']);
                                 break;
                             case 'gov3':
                                 global.civic.foreign[spell].hstl = 0;
@@ -9182,7 +9258,7 @@ function psychicKill(parent){
                     global.stats.psykill++;
                     blubberFill(1);
                     if (global.race['anthropophagite']){
-                        modRes('Food', 10000 * traits.anthropophagite.vars()[0]);
+                        modRes('Food', 10000 * traits.anthropophagite.vars()[0], true);
                     }
                     if (global.stats.psykill === 10){
                         renderPsychicPowers();

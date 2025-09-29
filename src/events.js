@@ -600,7 +600,7 @@ export const events = {
             global.resource[global.race.species].amount -= dead;
             blubberFill(dead);
             if(type === 7){
-                return loc('event_chicken',[loc(`event_chicken_eaten${type}`, [flib('name')]),dead,loc(`event_chicken_seasoning${Math.floor(seededRandom(0,10))}`)]);
+                return loc('event_chicken',[loc(`event_chicken_eaten${type}`,[flib('name')]),dead,loc(`event_chicken_seasoning${Math.floor(seededRandom(0,10))}`)]);
             }
             return loc('event_chicken',[loc(`event_chicken_eaten${type}`),dead,loc(`event_chicken_seasoning${Math.floor(seededRandom(0,10))}`)]);
         }
@@ -774,7 +774,11 @@ export const events = {
         effect(){
             global.resource[global.race.species].amount--;
             blubberFill(1);
-            return loc('event_chicken',[loc(`event_chicken_eaten${Math.rand(0,10)}`),1,loc(`event_chicken_seasoning${Math.floor(seededRandom(0,10))}`)]);
+            let type = Math.floor(seededRandom(0,10));
+            if(type === 7){
+                return loc('event_chicken',[loc(`event_chicken_eaten${type}`,[flib('name')]),1,loc(`event_chicken_seasoning${Math.floor(seededRandom(0,10))}`)]);
+            }
+            return loc('event_chicken',[loc(`event_chicken_eaten${type}`),1,loc(`event_chicken_seasoning${Math.floor(seededRandom(0,10))}`)]);
         }
     },
     fight:{ 
@@ -991,7 +995,7 @@ export const events = {
                 return loc(`event_${global.race.pet.type}_interaction${interaction}`,[loc(`event_${global.race.pet.type}_name${global.race.pet.name}`)]);
             }
             else {
-                let pet = Math.rand(0,2) === 0 ? 'cat' : 'dog';
+                let pet = global.race['catnip'] && global.race['catnip'] >= 1 ? 'cat' : (global.race['anise'] && global.race['anise'] >= 1 ? 'dog' : (Math.rand(0,2) === 0 ? 'cat' : 'dog'));
                 global.race['pet'] = {
                     type: pet,
                     name: pet === 'cat' ? Math.rand(0,12) : Math.rand(0,10),

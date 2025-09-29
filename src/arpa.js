@@ -2067,13 +2067,15 @@ function genetics(){
                 breakdown.append(addListing);
                 for (let i=0; i<trait_list.length; i++){
                     let trait = trait_list[i];
-                    let major = $(`<div class="traitRow"></div>`);
-                    let add = $(`<span class="add${trait} basic-button has-text-success" role="button" :aria-label="addCost('${trait}')" @click="gain('${trait}')">${loc('arpa_gain_button')}</span>`);
+                    if (!['catnip','anise'].includes(trait)){
+                        let major = $(`<div class="traitRow"></div>`);
+                        let add = $(`<span class="add${trait} basic-button has-text-success" role="button" :aria-label="addCost('${trait}')" @click="gain('${trait}')">${loc('arpa_gain_button')}</span>`);
 
-                    major.append(add);
-                    major.append($(`<span class="trait has-text-warning" id="raceTrait${trait}">${traitName[trait] ? traitName[trait] : traits[trait].name} (${loc(`arpa_genepool_rank`,[offspec_traits[trait] ? 0.5 : 1])})</span>`));
+                        major.append(add);
+                        major.append($(`<span class="trait has-text-warning" id="raceTrait${trait}">${traitName[trait] ? traitName[trait] : traits[trait].name} (${loc(`arpa_genepool_rank`,[offspec_traits[trait] ? 0.5 : 1])})</span>`));
 
-                    addListing.append(major);
+                        addListing.append(major);
+                    }
                 }
             }
         }
@@ -2082,32 +2084,53 @@ function genetics(){
             breakdown.prepend(`<div class="trait minor has-text-success" role="heading" aria-level="3">${loc('arpa_race_genetic_minor_traits',[flib('name')])}</div>`)
         }
 
-        let rmCost = function(t){
+        let rmCost = function(t,label){
             let cost = traits[t].val * 5;
             if (['custom','hybrid','sludge','ultra_sludge'].includes(global.race.species)){
                 cost *= 10;
             }
-            if (races[global.race.species].type === 'hybrid'){
-                cost *= 2;
+            if (global.race[t] && traits[t].val < 0){
+                switch(global.race[t]){
+                    case 0.1:
+                        cost *= 4;
+                        break;
+                    case 0.25:
+                        cost *= 3;
+                        break;
+                    case 0.5:
+                        cost *= 2;
+                        break;
+                }
             }
             if (cost < 0){
                 cost *= -1;
             }
-            return loc('arpa_remove',[traitSkin('name',t),cost,global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name')]);
+            if (global.race['modified']){
+                cost += global.race.modified.t * 10;
+                if (traits[t].val < 0){ cost += global.race.modified.nr * 10; }
+            }
+            if (label){
+                return loc('arpa_remove',[traitSkin('name',t),cost,global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name')]);
+            }
+            return cost;
         };
 
-        let addCost = function(t){
+        let addCost = function(t,label){
             let cost = traits[t].val * 5;
             if (['custom','hybrid','sludge','ultra_sludge'].includes(global.race.species)){
                 cost *= 10;
             }
-            if (races[global.race.species].type === 'hybrid'){
-                cost *= 2;
-            }
             if (cost < 0){
                 cost *= -1;
             }
-            return loc('arpa_gain',[traitSkin('name',t),cost,global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name')]);
+            if (global.race['modified']){
+                cost += global.race.modified.t * 10;
+                if (traits[t].val >= 0){ cost += global.race.modified.pa * 10; }
+            }
+            if (label){
+                return loc('arpa_gain',[traitSkin('name',t),cost,global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name')]);
+            }
+            return cost;
         };
 
         let mGeneCost = function(t){
@@ -2191,27 +2214,20 @@ function genetics(){
                     if (['sludge','ultra_sludge'].includes(global.race.species) && (global.race['modified'] || t === 'ooze')){
                         return;
                     }
-                    let cost = traits[t].val * 5;
-                    if (['custom','hybrid','sludge','ultra_sludge'].includes(global.race.species)){
-                        cost *= 10;
-                    }
-                    if (races[global.race.species].type === 'hybrid'){
-                        cost *= 2;
-                    }
-                    if (cost < 0){
-                        cost *= -1;
-                    }
+                    let cost = rmCost(t,false);
                     let res = global.race.universe === 'antimatter' ? 'AntiPlasmid' : 'Plasmid';
                     if (global.prestige[res].count >= cost){
                         global.prestige[res].count -= cost;
                         let rank = global.race[t];
                         delete global.race[t];
                         if (!global.race['modified']){
-                            global.race['modified'] = 1;
+                            global.race['modified'] = {
+                                t: 0, nr: 0, na: 0, pr: 0, pa: 0
+                            };
                         }
-                        else {
-                            global.race['modified']++;
-                        }
+                        global.race.modified.t++;
+                        if (traits[t].val >= 0){ global.race.modified.pr++; } else { global.race.modified.nr++; }
+
                         if(t === 'forager'){
                             delete global.race.inactiveTraits['herbivore'];
                             delete global.race.inactiveTraits['carnivore'];
@@ -2237,26 +2253,18 @@ function genetics(){
                     else if (['sludge','ultra_sludge'].includes(global.race.species) && global.race['modified']){
                         return;
                     }
-                    let cost = traits[t].val * 5;
-                    if (['custom','hybrid','sludge','ultra_sludge'].includes(global.race.species)){
-                        cost *= 10;
-                    }
-                    if (races[global.race.species].type === 'hybrid'){
-                        cost *= 2;
-                    }
-                    if (cost < 0){
-                        cost *= -1;
-                    }
+                    let cost = addCost(t,false);
                     let res = global.race.universe === 'antimatter' ? 'AntiPlasmid' : 'Plasmid';
                     if (global.prestige[res].count >= cost){
                         global.prestige[res].count -= cost;
                         global.race[t] = 1;
-                        if (!global.race['modified']){
-                            global.race['modified'] = 1;
+                        if (!global.race.hasOwnProperty('modified')){
+                            global.race['modified'] = {
+                                t: 0, nr: 0, na: 0, pr: 0, pa: 0
+                            };
                         }
-                        else {
-                            global.race['modified']++;
-                        }
+                        global.race.modified.t++;
+                        if (traits[t].val >= 0){ global.race.modified.pa++; } else { global.race.modified.na++; }
                         cleanAddTrait(t);
                         if (offspec_traits.includes(t)){
                             setTraitRank(t, {down:true});
@@ -2277,10 +2285,10 @@ function genetics(){
                     return loc(`trait_${t}_effect`);
                 },
                 removeCost(t){
-                    return rmCost(t);
+                    return rmCost(t,true);
                 },
                 addCost(t){
-                    return addCost(t);
+                    return addCost(t,true);
                 },
                 genePurchasable(t){
                     let cost = fibonacci(global.race.minor[t] ? global.race.minor[t] + 4 : 4);
@@ -2330,7 +2338,7 @@ function genetics(){
 
         remove_list.forEach(function (t){
             popover(`popRemoveBkdwn${t}`, function(){
-                return rmCost(t);
+                return rmCost(t,true);
             },
             {
                 elm: `#geneticBreakdown .remove${t}`,
@@ -2352,7 +2360,7 @@ function genetics(){
 
         trait_list.forEach(function (t){
             popover(`popAddBkdwn${t}`, function(){
-                return addCost(t);
+                return addCost(t,true);
             },
             {
                 elm: `#geneticBreakdown .add${t}`,
@@ -2430,7 +2438,7 @@ function addProject(parent,project){
         parent.append(current);
 
         let title = typeof arpaProjects[project].title === 'string' ? arpaProjects[project].title : arpaProjects[project].title();
-        let head = $(`<div class="head"><span class="desc has-text-warning" role="heading" aria-level="3">${title}</span><a v-on:click="srDescAndEffect" class="is-sr-only" role="button">${title} description</a><span aria-hidden="true" v-show="rank" class="rank">{{ rank | level }}</span><span class="is-sr-only">{{ rank | level }}</span></div>`);
+        let head = $(`<div class="head"><span class="desc has-text-warning" role="heading" aria-level="3">${title}</span><a v-on:click="srDescAndEffect" class="is-sr-only" role="button">{{ projectName() }} description</a><span aria-hidden="true" v-show="rank" class="rank">{{ rank | level }}</span><span class="is-sr-only">{{ rank | level }}</span></div>`);
         current.append(head);
 
         let progress = $(`<div class="pbar"><progress class="progress" :value="complete" max="100"></progress><span class="progress-value has-text-danger">{{ complete }}%</span></div>`);
@@ -2439,7 +2447,7 @@ function addProject(parent,project){
         let buy = $('<div class="buy"></div>');
         current.append(buy);
 
-        buy.append($(`<button aria-label="${loc('queue')} ${title}" class="button" @click="queue('${project}')">${loc('queue')}</button>`));
+        buy.append($(`<button :aria-label="loc('queue') + ' ' + projectName()" class="button" @click="queue('${project}')">${loc('queue')}</button>`));
         buy.append($(`<button :aria-label="arpaProjectSRCosts('1','${project}')" class="button x1" @click="build('${project}',1)">1%</button>`));
         buy.append($(`<button :aria-label="arpaProjectSRCosts('10','${project}')" class="button x10" @click="build('${project}',10)">10%</button>`));
         buy.append($(`<button :aria-label="arpaProjectSRCosts('25','${project}')" class="button x25" @click="build('${project}',25)">25%</button>`));
@@ -2449,6 +2457,7 @@ function addProject(parent,project){
             el: `#arpa${project}`,
             data: global.arpa[project],
             methods: {
+                loc: loc,
                 queue(pro){
                     if (global.tech['queue']){
                         let keyMult = keyMultiplier();
@@ -2485,6 +2494,9 @@ function addProject(parent,project){
                     let desc = typeof arpaProjects[project].desc === 'string' ? arpaProjects[project].desc : arpaProjects[project].desc();
                     let effect = arpaProjects[project].effect();
                     return srSpeak(`${desc}\n${effect}`);
+                },
+                projectName() {
+                    return typeof arpaProjects[project].title === 'string' ? arpaProjects[project].title : arpaProjects[project].title();
                 },
                 arpaProjectSRCosts(id,project){
                     let inc = id === '100' ? 100 - global.arpa[project].complete : id;

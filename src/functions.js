@@ -1,4 +1,4 @@
-import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame, atrack, p_on, quantum_level } from './vars.js';
+import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame, atrack, p_on, quantum_level, tmp_vars } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits, genus_def, traitSkin, fathomCheck } from './races.js';
 import { actions, actionDesc } from './actions.js';
@@ -8,6 +8,7 @@ import { arpaAdjustCosts, arpaProjectCosts } from './arpa.js';
 import { gridDefs } from './industry.js';
 import { govActive } from './governor.js';
 import { govEffect } from './civics.js';
+import { highPopAdjust } from './prod.js';
 import { universeLevel, universeAffix, alevel } from './achieve.js';
 import { astrologySign, astroVal } from './seasons.js';
 import { shipCosts, TPShipDesc } from './truepath.js';
@@ -460,7 +461,7 @@ export function buildQueue(){
     let queue = $(`<ul class="buildList"></ul>`);
     $('#buildQueue').append(queue);
 
-    queue.append($(`<li v-for="(item, index) in queue"><a v-bind:id="setID(index)" class="has-text-warning queued" v-bind:class="{ 'qany': item.qa }" @click="remove(index)"><span v-bind:class="setData(index,'res')" v-bind="setData(index,'data')">{{ item.label }}{{ item.q | count }}</span> [<span v-bind:class="{ 'has-text-danger': item.cna, 'has-text-success': !item.cna }">{{ item.time | time }}{{ item.t_max | max_t(item.time) }}</span>]</a></li>`));
+    queue.append($(`<li v-for="(item, index) in queue"><a v-bind:id="setID(index)" class="has-text-warning queued" v-bind:class="{ 'qany': item.qa }" @click="remove(index)" role="link"><span v-bind:class="setData(index,'res')" v-bind="setData(index,'data')">{{ item.label }}{{ item.q | count }}</span> [<span v-bind:class="{ 'has-text-danger': item.cna, 'has-text-success': !item.cna }">{{ item.time | time }}{{ item.t_max | max_t(item.time) }}</span>]</a></li>`));
 
     try {
         vBind({
@@ -662,20 +663,33 @@ export function tagEvent(event, data){
     } catch (err){}
 }
 
-export function modRes(res,val,notrack,buffer){
+export function resetResBuffer(){
+    // During fastLoop, temporarily increase the maximum storage to avoid unfortunate cases where
+    // storage cannot be maximized as a result of consuming a resource after it is produced.
+    // The resource buffer is eliminated at the end of fastLoop.
+    Object.keys(tmp_vars.resource).forEach(function (res) {
+        let temp_max = global.resource[res].max;
+        // Don't change infinite storage (-1) into finite storage
+        if (temp_max > 0){
+            temp_max += global.resource[res].amount;
+        }
+        tmp_vars.resource[res].temp_max = temp_max;
+    });
+}
+
+export function modRes(res,val,notrack){
     if(res === 'Food' && global.race['fasting']){
         global.resource[res].amount = 0;
         return false;
     }
     let count = global.resource[res].amount + val;
     let success = true;
-    if (count > global.resource[res].max && global.resource[res].max != -1){
-        count = global.resource[res].max;
+    let max = notrack ? global.resource[res].max : tmp_vars.resource[res].temp_max;
+    if (count > max && max >= 0){
+        count = max;
     }
     else if (count < 0){
-        if (!buffer || (buffer && (count * -1) > buffer)){
-            success = false;
-        }
+        success = false;
         count = 0;
     }
     if (!Number.isNaN(count)){
@@ -684,6 +698,9 @@ export function modRes(res,val,notrack,buffer){
             global.resource[res].delta += val;
             if (res === 'Mana' && val > 0){
                 global.resource[res].gen_d += val;
+            }
+            else if (val < 0 && max >= 0){
+                tmp_vars.resource[res].temp_max = Math.max(0, tmp_vars.resource[res].temp_max + val);
             }
         }
     }
@@ -756,96 +773,96 @@ export function genCivName(alt){
     };
 }
 
-export function costMultiplier(structure,offset,base,mutiplier,cat){
+export function costMultiplier(structure,offset,base,multiplier,cat){
     if (!cat){
         cat = 'city';
     }
     if (global.race.universe === 'micro'){
-        mutiplier -= darkEffect('micro',false);
+        multiplier -= darkEffect('micro',false);
     }
 
-    if (global.race['small']){ mutiplier -= traits.small.vars()[0]; }
-    else if (global.race['large']){ mutiplier += traits.large.vars()[0]; }
-    if (global.race['compact']){ mutiplier -= traits.compact.vars()[0]; }
-    if (global.race['tunneler'] && (structure === 'mine' || structure === 'coal_mine')){ mutiplier -= traits.tunneler.vars()[0]; }
+    if (global.race['small']){ multiplier -= traits.small.vars()[0]; }
+    if (global.race['large']){ multiplier += traits.large.vars()[0]; }
+    if (global.race['compact']){ multiplier -= traits.compact.vars()[0]; }
+    if (global.race['tunneler'] && (structure === 'mine' || structure === 'coal_mine')){ multiplier -= traits.tunneler.vars()[0]; }
     if (global.tech['housing_reduction'] && (structure === 'basic_housing' || structure === 'cottage')){
-        mutiplier -= global.tech['housing_reduction'] * 0.02;
+        multiplier -= global.tech['housing_reduction'] * 0.02;
     }
     if (global.tech['housing_reduction'] && structure === 'captive_housing'){
-        mutiplier -= global.tech['housing_reduction'] * 0.01;
+        multiplier -= global.tech['housing_reduction'] * 0.01;
     }
     if (structure === 'basic_housing'){
         if (global.race['solitary']){
-            mutiplier -= traits.solitary.vars()[0];
+            multiplier -= traits.solitary.vars()[0];
         }
         if (global.race['pack_mentality']){
-            mutiplier += traits.pack_mentality.vars()[0];
+            multiplier += traits.pack_mentality.vars()[0];
         }
     }
     if (structure === 'cottage'){
         if (global.race['solitary']){
-            mutiplier += traits.solitary.vars()[1];
+            multiplier += traits.solitary.vars()[1];
         }
         if (global.race['pack_mentality']){
-            mutiplier -= traits.pack_mentality.vars()[1];
+            multiplier -= traits.pack_mentality.vars()[1];
         }
     }
     if (structure === 'apartment'){
         if (global.race['pack_mentality']){
-            mutiplier -= traits.pack_mentality.vars()[1];
+            multiplier -= traits.pack_mentality.vars()[1];
         }
     }
     if (global.genes['creep'] && !global.race['no_crispr']){
-        mutiplier -= global.genes['creep'] * 0.01;
+        multiplier -= global.genes['creep'] * 0.01;
     }
     else if (global.genes['creep'] && global.race['no_crispr']){
-        mutiplier -= global.genes['creep'] * 0.002;
+        multiplier -= global.genes['creep'] * 0.002;
     }
     let nqVal = govActive('noquestions',0);
     if (nqVal){
-        mutiplier -= nqVal;
+        multiplier -= nqVal;
     }
-    if (mutiplier < 1.005){
-        mutiplier = 1.005;
+    if (multiplier < 1.005){
+        multiplier = 1.005;
     }
-    var count = structure === 'citizen' ? global['resource'][global.race.species].amount : (global[cat][structure] ? global[cat][structure].count : 0);
+    var count = structure === 'citizen' ? highPopAdjust(global['resource'][global.race.species].amount) : (global[cat][structure] ? global[cat][structure].count : 0);
     if (offset){
         count += offset;
     }
-    return Math.round((mutiplier ** count) * base);
+    return Math.round((multiplier ** count) * base);
 }
 
-export function spaceCostMultiplier(action,offset,base,mutiplier,sector,c_min){
+export function spaceCostMultiplier(action,offset,base,multiplier,sector,c_min){
     if (!sector){
         sector = 'space';
     }
     c_min = c_min || 1.005;
     if (global.race.universe === 'micro'){
-        mutiplier -= darkEffect('micro',true);
+        multiplier -= darkEffect('micro',true);
     }
     if (global.genes['creep'] && !global.race['no_crispr']){
-        mutiplier -= global.genes['creep'] * 0.01;
+        multiplier -= global.genes['creep'] * 0.01;
     }
     else if (global.genes['creep'] && global.race['no_crispr']){
-        mutiplier -= global.genes['creep'] * 0.002;
+        multiplier -= global.genes['creep'] * 0.002;
     }
-    if (global.race['small']){ mutiplier -= traits.small.vars()[1]; }
-    if (global.race['compact']){ mutiplier -= traits.compact.vars()[1]; }
+    if (global.race['small']){ multiplier -= traits.small.vars()[1]; }
+    if (global.race['compact']){ multiplier -= traits.compact.vars()[1]; }
     if (global.prestige.Harmony.count > 0 && global.stats.achieve[`ascended`]){
-        mutiplier -= harmonyEffect();
+        multiplier -= harmonyEffect();
     }
     let nqVal = govActive('noquestions',0);
     if (nqVal){
-        mutiplier -= nqVal;
+        multiplier -= nqVal;
     }
-    if (mutiplier < c_min){
-        mutiplier = c_min;
+    if (multiplier < c_min){
+        multiplier = c_min;
     }
     var count = action === 'citizen' ? global['resource'][global.race.species].amount : (global[sector][action] ? global[sector][action].count : 0);
     if (offset && typeof offset === 'number'){
         count += offset;
     }
-    return Math.round((mutiplier ** count) * base);
+    return Math.round((multiplier ** count) * base);
 }
 
 export function harmonyEffect(){
@@ -2604,6 +2621,30 @@ export function format_emblem(achieve,size,baseIcon,fool,universe){
     return emblem;
 }
 
+export function binary_limit_test(f, start=1, startIsMin=true){
+    if (start !== Math.floor(start) || start < 1){ return 0; }
+
+    let num = start;
+    while (f(num)){ num *= 2; }
+
+    let test = Math.floor(num/2);
+    if (num === start){
+        num = 0;
+        if (startIsMin){ test = 0; }
+    }
+    else {
+        num = test;
+    }
+
+    while (test > 1){
+        test = Math.floor(test/2);
+        if (f(num + test)){
+            num += test;
+        }
+    }
+    return num;
+}
+
 export function fibonacci(num, memo){
     memo = memo || {};
     if (memo[num]) return memo[num];
@@ -2633,7 +2674,8 @@ export function sLevel(level){
     }
 }
 
-export function calcGenomeScore(genome,wiki){
+export function calcGenomeScore(genome,wiki,tRanks){
+    if (!tRanks){ tRanks = genome.ranks || {}; }
     let genes = 0;
 
     if (wiki){
@@ -2653,7 +2695,8 @@ export function calcGenomeScore(genome,wiki){
     let oppose_genus = [];
     active_genus.forEach(function(g){
         Object.keys(genus_def[g].traits).forEach(function (t){
-            genes -= traits[t].val;
+            let value = traits[t].val;
+            genes -= value;
         });
         oppose_genus = oppose_genus.concat(genus_def[g].oppose);
     });
@@ -2672,9 +2715,6 @@ export function calcGenomeScore(genome,wiki){
     for (let i=0; i<genome.traitlist.length; i++){
         let taxonomy = traits[genome.traitlist[i]].taxonomy;
         let gene_cost = traits[genome.traitlist[i]].val;
-        let genus_origin = races[traits[genome.traitlist[i]].origin].type === 'hybrid' ? races[traits[genome.traitlist[i]].origin].hybrid : [races[traits[genome.traitlist[i]].origin].type];
-        if (active_genus.filter(x => genus_origin.includes(x)).length > 0){ active_genus.filter(x => genus_origin.includes(x)).length === 1 ? gene_cost-- : gene_cost -= 2; }
-        if (oppose_genus.filter(x => genus_origin.includes(x)).length > 0){ oppose_genus.filter(x => genus_origin.includes(x)).length === 1 ? gene_cost++ : gene_cost += 2; }
 
         if (traits[genome.traitlist[i]].val >= 0){
             if (complexity[taxonomy] > max_complexity){
@@ -2688,6 +2728,59 @@ export function calcGenomeScore(genome,wiki){
             }
             neg_complexity[taxonomy]++;
         }
+
+        if (tRanks[genome.traitlist[i]]){
+            if (traits[genome.traitlist[i]].val >= 0){
+                switch (tRanks[genome.traitlist[i]]){
+                    case 0.1:
+                        gene_cost -= 3;
+                        break;
+                    case 0.25:
+                        gene_cost -= 2;
+                        break;
+                    case 0.5:
+                        gene_cost--;
+                        break;
+                    case 2:
+                        gene_cost = Math.max(Math.round(gene_cost * 1.5), gene_cost + 1);;
+                        break;
+                    case 3:
+                        gene_cost = Math.max(Math.round(gene_cost * 2), gene_cost + 2);;
+                        break;
+                    case 4:
+                        gene_cost = Math.max(Math.round(gene_cost * 2.5), gene_cost + 3);;
+                        break;
+                }
+                if (gene_cost < 1){ gene_cost = 1; }
+            }
+            else {
+                switch (tRanks[genome.traitlist[i]]){
+                    case 0.1:
+                        gene_cost -= 3;
+                        break;
+                    case 0.25:
+                        gene_cost -= 2;
+                        break;
+                    case 0.5:
+                        gene_cost--;
+                        break;
+                    case 2:
+                        gene_cost++;
+                        break;
+                    case 3:
+                        gene_cost += 2;
+                        break;
+                    case 4:
+                        gene_cost += 3;
+                        break
+                }
+            }
+        }
+
+        let genus_origin = races[traits[genome.traitlist[i]].origin].type === 'hybrid' ? races[traits[genome.traitlist[i]].origin].hybrid : [races[traits[genome.traitlist[i]].origin].type];
+        if (active_genus.filter(x => genus_origin.includes(x)).length > 0){ active_genus.filter(x => genus_origin.includes(x)).length === 1 ? gene_cost-- : gene_cost -= 2; }
+        if (oppose_genus.filter(x => genus_origin.includes(x)).length > 0){ oppose_genus.filter(x => genus_origin.includes(x)).length === 1 ? gene_cost++ : gene_cost += 2; }
+
         genes -= gene_cost;
     }
 
@@ -3068,7 +3161,9 @@ const valAdjust = {
     blurry: true,
     playful: true,
     ghostly: true,
-    environmentalist: true
+    environmentalist: true,
+    catnip: true,
+    anise: true
 };
 
 function getTraitVals(trait, rank, species){
@@ -3123,6 +3218,9 @@ function getTraitVals(trait, rank, species){
             if (global.race['warlord']){
                 vals = [vals[0], +((vals[1] - 1) * 100).toFixed(0), global.resource.Soul_Gem.name];
             }
+        }
+        else if (trait === 'catnip' || trait === 'anise'){
+            vals = rank <= 2 ? [] : (rank === 3  ? [vals[0]] : [vals[0],vals[1]]);
         }
         else if (!valAdjust[trait]){
             vals = [];
@@ -3320,6 +3418,10 @@ export function getTraitDesc(info, trait, opts){
             if (trait === 'elemental'){
                 trait_desc = loc(`wiki_trait_effect_${trait}_${traits.elemental.vars()[0]}`, getTraitVals(trait, trank, species));
             }
+            else if (['catnip','anise'].includes(trait)){
+                let rank = trank;
+                trait_desc = loc(`wiki_trait_effect_${trait}${rank}`, getTraitVals(trait, trank, species));
+            }
             else {
                 if (global?.race?.universe === 'evil' && global?.civic?.govern?.type != 'theocracy' && ['spiritual','blasphemous'].includes(trait)){
                     let alt_trait = trait === 'spiritual' ? 'manipulator' : 'blasphemous_evil';
@@ -3352,9 +3454,12 @@ export function getTraitDesc(info, trait, opts){
                     if (trait === 'elemental'){
                         return loc(`wiki_trait_effect_${trait}_${traits.elemental.vars()[0]}`, getTraitVals(trait, rk, species));
                     }
+                    else if (['catnip','anise'].includes(trait)){
+                        return loc(`wiki_trait_effect_${trait}${rk}`, getTraitVals(trait, rk, species));
+                    }
                     else if (global?.race?.universe === 'evil' && global?.civic?.govern?.type != 'theocracy' && ['spiritual','blasphemous'].includes(trait)){
                         let alt_trait = trait === 'spiritual' ? 'manipulator' : 'blasphemous_evil';
-                        return loc(`wiki_trait_effect_${alt_trait}`, getTraitVals(trait, trank, species));
+                        return loc(`wiki_trait_effect_${alt_trait}`, getTraitVals(trait, rk, species));
                     }
                     let key = altTraitDesc[trait] && global.race.hasOwnProperty(altTraitDesc[trait]) ? altTraitDesc[trait] : 'effect';
                     return loc(`wiki_trait_${key}_${trait}`, getTraitVals(trait, rk, species));
