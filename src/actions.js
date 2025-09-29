@@ -7143,7 +7143,12 @@ export function planetGeology(geology){
 
 function srDesc(c_action,old){
     let desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc();
-    desc = desc + '. ';
+    if (desc.endsWith('</div>')){
+        desc = desc.slice(0, -6) + '. </div>'; // the period was sometimes spoken when outside the div
+    }
+    else {
+        desc = desc + '. ';
+    }
     if (c_action.cost && !old){
         if (checkAffordable(c_action)){
             desc = desc + loc('affordable') + '. ';
@@ -7260,7 +7265,13 @@ function srDesc(c_action,old){
     if (c_action.effect){
         let effect = typeof c_action.effect === 'string' ? c_action.effect : c_action.effect();
         if (effect){
-            desc = desc + effect + '. ';
+            desc = desc + effect;
+            if (desc.endsWith('</div>')){
+                desc = desc.slice(0, -6) + '. </div>';
+            }
+            else {
+                desc = desc + '. ';
+            }
         }
     }
     if (c_action.flair){
