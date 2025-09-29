@@ -60,7 +60,10 @@ export function defineGovernment(define){
             }
         }
     });
-    
+
+    let governmentHeading = $(`<h2 class="is-sr-only">${loc('tab_gov')}</h2>`);
+    $(`#r_govern0`).append(governmentHeading);
+
     government($(`#r_govern0`));
     taxRates($(`#r_govern0`));
 
@@ -489,7 +492,7 @@ function drawGovModal(){
 export function foreignGov(){
     if ($('#foreign').length === 0 && !global.race['cataclysm'] && (!global.tech['world_control'] || global.race['truepath']) && !global.tech['isolation']){
         let foreign = $('<div id="foreign" v-show="vis()" class="government is-child"></div>');
-        foreign.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_foreign')}</h2></div>`));
+        foreign.append($(`<div class="header"><h2 class="has-text-warning" aria-level="3">${loc('civics_foreign')}</h2></div>`));
         $('#r_govern0').append(foreign);
 
         var modal = {
@@ -498,7 +501,7 @@ export function foreignGov(){
 
         let govEnd = global.race['truepath'] ? 5 : 3;
         for (let i=0;i<govEnd;i++){
-            let gov = $(`<div id="gov${i}" class="foreign" v-show="gvis(${i})"><span class="has-text-caution">{{ '${i}' | gov }}</span><span v-if="f${i}.occ" class="has-text-advanced"> - ${loc('civics_garrison_occupy')}</span><span v-else-if="f${i}.anx" class="has-text-advanced"> - ${loc('civics_garrison_annex')}</span></span><span v-else-if="f${i}.buy" class="has-text-advanced"> - ${loc('civics_garrison_purchase')}</span></div>`);
+            let gov = $(`<div id="gov${i}" class="foreign" v-show="gvis(${i})"><span class="has-text-caution"  role="heading" aria-level="4">{{ '${i}' | gov }}</span><span v-if="f${i}.occ" class="has-text-advanced"> - ${loc('civics_garrison_occupy')}</span><span v-else-if="f${i}.anx" class="has-text-advanced"> - ${loc('civics_garrison_annex')}</span></span><span v-else-if="f${i}.buy" class="has-text-advanced"> - ${loc('civics_garrison_purchase')}</span></div>`);
             foreign.append(gov);
 
             let actions = $(`<div></div>`);
@@ -1174,10 +1177,10 @@ function hireMerc(num){
 export function buildGarrison(garrison,full){
     clearElement(garrison);
     if (global.tech['world_control'] && !global.race['truepath']){
-        garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success"><span class="defenseRating">${loc('rating')} {{ g.workers | hell | rating }}</span> - <span class="soldierRating"><span class="has-text-warning">${loc(`civics_garrison_soldier_rating`)}</span> {{ g.workers | single | rating(true) }}</span></div>`));
+        garrison.append($(`<div class="header"><h2 class="has-text-warning" ${!full? 'aria-level="3"': ''}>${loc('civics_garrison')}</h2> - <span class="has-text-success"><span class="defenseRating">${loc('rating')} {{ g.workers | hell | rating }}</span> - <span class="soldierRating"><span class="has-text-warning">${loc(`civics_garrison_soldier_rating`)}</span> {{ g.workers | single | rating(true) }}</span></div>`));
     }
     else {
-        garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success"><span class="defenseRating">${loc('rating')} {{ g.workers | hell | rating }}</span> / <span class="offenseRating">{{ g.raid | rating }}</span></span> - <span class="soldierRating"><span class="has-text-warning">${loc(`civics_garrison_soldier_rating`)}</span> {{ g.workers | single | rating }}</span></div>`));
+        garrison.append($(`<div class="header"><h2 class="has-text-warning" ${!full? 'aria-level="3"': ''}>${loc('civics_garrison')}</h2> - <span class="has-text-success"><span class="defenseRating">${loc('rating')} {{ g.workers | hell | rating }}</span> / <span class="offenseRating">{{ g.raid | rating }}</span></span> - <span class="soldierRating"><span class="has-text-warning">${loc(`civics_garrison_soldier_rating`)}</span> {{ g.workers | single | rating }}</span></div>`));
     }
 
     var soliders = $(`<div></div>`);
