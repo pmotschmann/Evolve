@@ -7143,7 +7143,12 @@ export function planetGeology(geology){
 
 function srDesc(c_action,old){
     let desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc();
-    desc = desc + '. ';
+    if (desc.endsWith('</div>')){
+        desc = desc.slice(0, -6) + '. </div>'; // the period was sometimes spoken when outside the div
+    }
+    else {
+        desc = desc + '. ';
+    }
     if (c_action.cost && !old){
         if (checkAffordable(c_action)){
             desc = desc + loc('affordable') + '. ';
@@ -7179,7 +7184,7 @@ function srDesc(c_action,old){
                                 num_on = getStructNumActive(actions[region][struct]);
                             }
                         }
-                        desc = desc + `${label}. `;
+                        desc = desc + `${label}: ${structs[region][struct].count}. `;
 
                         if (!global[region][struct]){
                             desc = desc + `${loc('insufficient')} ${label}. `;
@@ -7216,6 +7221,26 @@ function srDesc(c_action,old){
                     }
                 }
             }
+            else if (res === 'HellArmy'){
+                let res_cost = costs[res]();
+                if (res_cost > 0){
+                    let label = loc('fortress_troops');
+                    desc = desc + `${label}: ${res_cost}. `;
+                    if (global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size) < res_cost){
+                        desc = desc + `${loc('insufficient')} ${label}. `;
+                    }
+                }
+            }
+            else if (res === 'Troops'){
+                let res_cost = costs[res]();
+                if (res_cost > 0){
+                    let label = loc('fortress_troops');
+                    desc = desc + `${label}: ${res_cost}. `;
+                    if (garrisonSize() < res_cost){
+                        let label = global.tech['world_control'] && !global.race['truepath'] ? loc('civics_garrison_peacekeepers') : loc('civics_garrison_soldiers');
+                    }
+                }
+            }
             else if (res !== 'Morale' && res !== 'Army' && res !== 'Bool'){
                 let res_cost = costs[res]();
                 let f_res = res === 'Species' ? global.race.species : res;
@@ -7233,10 +7258,20 @@ function srDesc(c_action,old){
         });
     }
 
+    if (desc.endsWith('Affordable. Costs: ')){
+        desc = desc.slice(0, -19);
+    }
+
     if (c_action.effect){
         let effect = typeof c_action.effect === 'string' ? c_action.effect : c_action.effect();
         if (effect){
-            desc = desc + effect + '. ';
+            desc = desc + effect;
+            if (desc.endsWith('</div>')){
+                desc = desc.slice(0, -6) + '. </div>';
+            }
+            else {
+                desc = desc + '. ';
+            }
         }
     }
     if (c_action.flair){
