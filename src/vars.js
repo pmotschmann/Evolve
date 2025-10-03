@@ -1538,6 +1538,9 @@ if (typeof global.settings.tabLoad === 'undefined'){
 if (typeof global.settings.boring === 'undefined'){
     global.settings['boring'] = false;
 }
+if (typeof global.settings.prestigeLog === 'undefined'){
+    global.settings['prestigeLog'] = false;
+}
 if (!global.settings.hasOwnProperty('mtorder')){
     global.settings['mtorder'] = [];
 }

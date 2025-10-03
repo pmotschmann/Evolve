@@ -1757,6 +1757,11 @@ export function calcPrestige(type,inputs){
 }
 
 export function logPrestigeGains(reset, gains) {
+    // abort if player doesn't want prestige logging
+    if(!global.settings.prestigeLog) {
+        return;
+    }
+
     // make prestige message category available if it isn't already
     if (!global.settings.msgFilters.prestige.unlocked){
         global.settings.msgFilters.prestige.unlocked = true;
