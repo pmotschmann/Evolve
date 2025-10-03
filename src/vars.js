@@ -1972,6 +1972,9 @@ if (typeof global.settings.aberrantWinMsg === 'undefined'){
 if (typeof global.settings.solarNames === 'undefined'){
     global.settings['solarNames'] = false;
 }
+if (typeof global.settings.prestigeLog === 'undefined'){
+    global.settings['prestigeLog'] = false;
+}
 if (!global.settings.hasOwnProperty('mtorder')){
     global.settings['mtorder'] = [];
 }
