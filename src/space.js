@@ -7871,6 +7871,9 @@ export function ascendLab(hybrid,wiki){
         global.settings.spaceTabs = 0;
     }
 
+    if (document.getElementById('celestialLab')){
+        return;
+    }
     let unlockedTraits = {};
     let lab = $(`<div id="celestialLab" class="celestialLab"></div>`);
 
