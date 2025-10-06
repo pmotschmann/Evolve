@@ -1758,7 +1758,7 @@ export function calcPrestige(type,inputs){
 
 export function logPrestigeGains(reset, gains) {
     // abort if player doesn't want prestige logging
-    if(!global.settings.prestigeLog) {
+    if(!global.settings.prestigeLog){
         return;
     }
 
@@ -1770,7 +1770,7 @@ export function logPrestigeGains(reset, gains) {
 
     gains = deepClone(gains);
 
-    let prestigeReport = loc('prestige_report_list_start');
+    let prestigeReport = loc('prestige_report_list_start',[loc('wiki_resets_' + reset)]);
 
     // calculate number of gained servants and skilled servants
     if (['matrix','retired','eden'].includes(reset)){
@@ -1799,13 +1799,13 @@ export function logPrestigeGains(reset, gains) {
 
     let gainedRes = Object.keys(gains).filter((res) => ((gains[res] > 0) && !res.includes('pdebt')));
 
-    for(let i = 0; i < gainedRes.length; ++i) {
+    for(let i = 0; i < gainedRes.length; ++i){
         let res = gainedRes[i];
         let resCount = gains[res];
         let resourceName = '';
 
         // get proper resource name (reuse some wiki strings for the plurals)
-        switch (res) {
+        switch (res){
             case 'plasmid':
                 resourceName = loc('resource_' + (global.race.universe === 'antimatter' ? 'AntiPlasmid': 'Plasmid') + (resCount !== 1? '_plural': '') + '_name');
                 break;
@@ -1841,15 +1841,20 @@ export function logPrestigeGains(reset, gains) {
         prestigeReport = prestigeReport + loc('prestige_report_list_entry', [resCount, resourceName]); // add resource to list
 
         // make list grammatically correct
-        if ((i < gainedRes.length-1) && (gainedRes.length > 2)) {
-            prestigeReport = prestigeReport + loc('prestige_report_list_separator');
+        if ((i === gainedRes.length-2) && (gainedRes.length > 1)){
+            if (i === 0){
+                prestigeReport = prestigeReport + loc('prestige_report_list_and');
+            }
+            else {
+                prestigeReport = prestigeReport + loc('prestige_report_list_comma_and');
+            }
         }
-        if ((i === gainedRes.length-2) && (gainedRes.length > 1)) {
-            prestigeReport = prestigeReport + loc('prestige_report_list_and');
+        else if ((i < gainedRes.length-1) && (gainedRes.length > 2)){
+            prestigeReport = prestigeReport + loc('prestige_report_list_separator');
         }
     }
 
-    prestigeReport = prestigeReport + loc('prestige_report_list_end',[loc('wiki_resets_' + reset)]);
+    prestigeReport = prestigeReport + loc('prestige_report_list_end');
 
     messageQueue(prestigeReport,'success',false,['prestige']);
 }
