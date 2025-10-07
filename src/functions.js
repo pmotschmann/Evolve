@@ -1756,6 +1756,109 @@ export function calcPrestige(type,inputs){
     return gains;
 }
 
+export function logPrestigeGains(reset, gains) {
+    // abort if player doesn't want prestige logging
+    if(!global.settings.prestigeLog){
+        return;
+    }
+
+    // make prestige message category available if it isn't already
+    if (!global.settings.msgFilters.prestige.unlocked){
+        global.settings.msgFilters.prestige.unlocked = true;
+        global.settings.msgFilters.prestige.vis = true;
+    }
+
+    gains = deepClone(gains);
+
+    let prestigeReport = loc('prestige_report_list_start',[loc('wiki_resets_' + reset)]);
+
+    // calculate number of gained servants and skilled servants
+    if (['matrix','retired','eden'].includes(reset)){
+        let oldWomlingCount = global.race.servants.max ?? 0;
+        let oldSkilledCount = global.race.servants.smax ?? 0;
+
+        let newWomlingCount = Math.min(global.stats.matrix,100) + Math.min(global.stats.retire,100) + Math.min(global.stats.eden,100);
+        let newSkilledCount = Math.min(Math.min(global.stats.matrix, global.stats.retire),100);
+        newSkilledCount += global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 5 ? 2 : 0;
+        if (global.stats.achieve['overlord'] && global.stats.achieve.overlord.l >= 5){
+            universe_affixes.forEach(function(uni){
+                if (global.stats.achieve.overlord[uni] >= 5){
+                    newSkilledCount++;
+                    newWomlingCount += 2;
+                }
+            });
+        }
+
+        gains['servants'] = newWomlingCount - oldWomlingCount;
+        gains['skilledServants'] = newSkilledCount - oldSkilledCount;
+    }
+
+    if (reset === 'infusion'){
+        gains['plasmid'] = 0;  // DI gain data includes an unrewarded Plasmid count
+    }
+
+    let gainedRes = Object.keys(gains).filter((res) => ((gains[res] > 0) && !res.includes('pdebt')));
+
+    for(let i = 0; i < gainedRes.length; ++i){
+        let res = gainedRes[i];
+        let resCount = gains[res];
+        let resourceName = '';
+
+        // get proper resource name (reuse some wiki strings for the plurals)
+        switch (res){
+            case 'plasmid':
+                resourceName = loc('resource_' + (global.race.universe === 'antimatter' ? 'AntiPlasmid': 'Plasmid') + (resCount !== 1? '_plural': '') + '_name');
+                break;
+            case 'phage':
+                resourceName = loc('resource_Phage_name');
+                break;
+            case 'dark':
+                resourceName = loc('resource_Dark_name');
+                break;
+            case 'harmony':
+                resourceName = loc(resCount === 1 ? 'resource_Harmony_name' : 'wiki_p_res_harmony');
+                break;
+            case 'artifact':
+                resourceName = loc(resCount === 1 ? 'resource_Artifact_name' : 'wiki_events_artifacts');
+                break;
+            case 'supercoiled':
+                resourceName = loc('resource_Supercoiled' + (resCount !== 1 ? '_plural' : '') + '_name');
+                break;
+            case 'cores':
+                resourceName = loc(resCount === 1 ? 'resource_AICore_name' : 'wiki_calc_cores');
+                break;
+            case 'servants':
+                resourceName = loc(resCount === 1 ? 'prestige_report_singular_servant' : 'civics_servants');
+                break;
+            case 'skilledServants':
+                resourceName = loc(resCount === 1 ? 'prestige_report_singular_skilled_servant' : 'civics_skilled_servants');
+                break;
+            default:
+                resourceName = res; // fallback if an unhandled resource is added
+                break;
+        }
+
+        prestigeReport = prestigeReport + loc('prestige_report_list_entry', [resCount, resourceName]); // add resource to list
+
+        // make list grammatically correct
+        if ((i === gainedRes.length-2) && (gainedRes.length > 1)){
+            if (i === 0){
+                prestigeReport = prestigeReport + loc('prestige_report_list_and');
+            }
+            else {
+                prestigeReport = prestigeReport + loc('prestige_report_list_comma_and');
+            }
+        }
+        else if ((i < gainedRes.length-1) && (gainedRes.length > 2)){
+            prestigeReport = prestigeReport + loc('prestige_report_list_separator');
+        }
+    }
+
+    prestigeReport = prestigeReport + loc('prestige_report_list_end');
+
+    messageQueue(prestigeReport,'success',false,['prestige']);
+}
+
 export function adjustCosts(c_action, offset, wiki){
     let costs = c_action.cost || {};
     if ((costs['RNA'] || costs['DNA']) && global.genes['evolve']){
