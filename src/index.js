@@ -237,7 +237,7 @@ export function mainVue(){
     );
 }
 
-function tabLabel(lbl){
+export function tabLabel(lbl){
     switch (lbl){
         case 'city':
             if (global.resource[global.race.species]){
