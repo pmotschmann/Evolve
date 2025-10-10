@@ -1,4 +1,4 @@
-import { save, global, seededRandom, webWorker, keyMultiplier, sizeApproximation, p_on, support_on, int_on, gal_on } from './vars.js';
+import { save, global, seededRandom, webWorker, keyMultiplier, sizeApproximation, p_on, support_on, int_on, gal_on, srSpeak } from './vars.js';
 import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, calcGenomeScore, randomKey, getTraitDesc, deepClone, get_qlevel, timeFormat } from './functions.js';
 import { unlockAchieve, unlockFeat, universeAffix } from './achieve.js';
 import { races, traits, genus_def, genusVars, planetTraits, biomes, traitCostMod } from './races.js';
@@ -7713,11 +7713,22 @@ export function setUniverse(){
 
         $('#evolution').append(parent);
 
+        let srDescButton = $(`<a class="is-sr-only" role="button">${universe_types[universe].name} description</a>`);
+        $('#evolution').append(srDescButton);
+
         $('#'+id).on('click',function(){
             global.race['universe'] = universe;
             clearElement($('#evolution'));
             genPlanets();
             clearPopper();
+        });
+
+        srDescButton.on('click',function(){
+            let desc = '';
+            desc = desc + universe_types[universe].name + ' universe: ';
+            desc = desc + universe_types[universe].desc + '. ';
+            desc = desc + universe_types[universe].effect + '.';
+            srSpeak(desc);
         });
 
         popover(id,function(obj){
