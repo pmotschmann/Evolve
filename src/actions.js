@@ -6021,7 +6021,12 @@ export function drawCity(){
 
     let parent = $('#city');
     clearElement(parent);
-    parent.append($(`<h2 class="is-sr-only">${tabLabel('city')}</h2>`));
+    parent.append($(`<h2 class="is-sr-only" id="cityTabHeading">{{ tabLabel('city') }}</h2>`));
+
+    vBind({
+        el: '#cityTabHeading',
+        methods: {tabLabel: tabLabel}
+    });
 
     let city_buildings = {};
     Object.keys(actions.city).forEach(function (city_name) {
