@@ -394,7 +394,7 @@
   "cancel_all_routes": "清零所有路线",
   "gain": "%1 +%0/s",
   "spend": "%1 -%0/s",
-  "spend_power": "%1 -%0/s, 电力 -%2MW",
+  "spend_power": "%1 -%0/s，电力 -%2MW",
   "produce": "%1 +%0/s",
   "production": "%1产量 +%0%",
   "crafting": "%1产量 +%0%",
