@@ -7124,6 +7124,8 @@ export function cleanAddTrait(trait){
             global.civic.cement_worker.display = false;
             global.civic.cement_worker.workers = 0;
             global.civic.cement_worker.assigned = 0;
+            removeFromRQueue(['cement']);
+            removeFromQueue(['city-cement_plant', 'eden-eden_cement']);
             setPurgatory('tech','cement');
             setPurgatory('city','cement_plant');
             setPurgatory('eden','eden_cement');
@@ -7136,6 +7138,8 @@ export function cleanAddTrait(trait){
             global.civic.quarry_worker.workers = 0;
             global.civic.quarry_worker.assigned = 0;
             setResourceName('Stone');
+            removeFromRQueue(['hammer']);
+            removeFromQueue(['city-rock_quarry']);
             setPurgatory('tech','hammer');
             setPurgatory('city','rock_quarry');
             break;
