@@ -595,7 +595,7 @@
   "job_cement_worker_bd": "水泥工人",
   "job_banker": "银行家",
   "job_banker_desc": "银行家管理银行与税收，每位银行家使税收收入 +%0%。",
-  "job_banker_desc_fasting": "银行家管理银行，在饥饿的前提下，无法提供税收收入。",
+  "job_banker_desc_fasting": "银行家管理银行；饥肠辘辘的他们无法提供税收收入。",
   "job_entertainer": "艺人",
   "job_entertainer_desc": "艺人能缓解日常生活的沉闷，每雇佣一位艺人，士气 +%0%。",
   "job_entertainer_desc2": "艺人能缓解日常生活的沉闷，每雇佣一位艺人，士气 +%0%，士气上限 +%1%。",
