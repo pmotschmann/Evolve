@@ -17,7 +17,7 @@ Please do not open Github issues to ask gameplay questions, use Reddit or Discor
 Links for both can be found in the footer of the game.
 
 ## Contributing a Language file
-If you are interested in a contributing a new language for Evolve the process is fairly straight forward (although a bit tedious).
+If you are interested in contributing a new language for Evolve the process is fairly straight forward (although a bit tedious).
 
 Make a copy of strings/strings.json and name the copy as strings/strings.\<locale\>.json (EX: strings.es_US.json). The locale format is the language alpha-2 code joined with the country alpha-2 code.
 
