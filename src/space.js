@@ -7723,7 +7723,7 @@ export function ascendLab(hybrid,wiki){
             return;
         }
         let negative = '';
-        let trait_list_header = `<b-tab-item><template slot="header"><h2 class="is-sr-only">${loc(`genelab_traits_${tax}`)}}</h2><span aria-hidden="true">${loc(`genelab_traits_${tax}`)}</span></template>`;
+        let trait_list_header = `<b-tab-item><template slot="header"><h2 class="is-sr-only">${loc(`genelab_traits_${tax}`)}</h2><span aria-hidden="true">${loc(`genelab_traits_${tax}`)}</span></template>`;
         let trait_list = ``;
         Object.keys(taxomized[tax]).sort().forEach(function (trait){
             if (traits.hasOwnProperty(trait) && traits[trait].type === 'major'){
