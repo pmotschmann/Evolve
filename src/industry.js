@@ -980,7 +980,7 @@ function loadDroid(parent,bind){
                 return tooltip(type);
             },
             ariaProd(prod){
-                return `. ${global.interstellar.mining_droid[prod]} driod mining ${prod}.`;
+                return `. ${global.interstellar.mining_droid[prod]} droid mining ${prod}.`;
             },
             level(){
                 let on = global.interstellar.mining_droid.adam + global.interstellar.mining_droid.uran + global.interstellar.mining_droid.coal + global.interstellar.mining_droid.alum;
