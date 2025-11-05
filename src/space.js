@@ -6749,7 +6749,7 @@ export function checkRequirements(action_set,region,action){
     if (action_set[region][action].hasOwnProperty('path') && !action_set[region][action].path.includes(path)){
         return false;
     }
-    var isMet = true;
+    let isMet = true;
     Object.keys(action_set[region][action].reqs).forEach(function (req){
         if (!global.tech[req] || global.tech[req] < action_set[region][action].reqs[req]){
             isMet = false;
