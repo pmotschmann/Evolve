@@ -3,7 +3,7 @@ import { clearElement, popover, flib, calc_mastery, masteryType, calcPillar, svg
 import { races, genus_def } from './races.js';
 import { actions } from './actions.js';
 import { universe_affixes, universe_types, piracy } from './space.js';
-import { monsters } from './portal.js';
+import { monsters, towerSize } from './portal.js';
 import { loc } from './locale.js'
 
 const achieve_list = {
@@ -2684,7 +2684,7 @@ export const perkList = {
             {
                 desc(wiki){
                     let harmonic = calcPillar();
-                    return loc("perks_harmonic2",[loc("portal_west_tower"), loc("portal_east_tower"), wiki ? `12-${(Object.keys(races).length - 1) * 12}` : +(Object.keys(global.pillars).length * 12)]);
+                    return loc("perks_harmonic2",[loc("portal_west_tower"), loc("portal_east_tower"), wiki ? '4-750' : 1000-towerSize()]);
                 },
                 active(){
                     let harmonic = calcPillar();
