@@ -6290,23 +6290,21 @@ function fastLoop(){
         if (global.resource.Mana.display){
             if (global.race['casting']){
                 ritual_types.forEach(function (spell){
-                    if (global.race.casting[spell]){
-                        if (global.race.casting[spell] > 0){
-                            const consume_mana = manaCost(global.race.casting[spell]);
-                            const consume_mana_dt = consume_mana * time_multiplier;
-                            if (consume_mana_dt > global.resource.Mana.amount){
-                                active_rituals[spell] = maxRitualNum(global.resource.Mana.amount, time_multiplier);
-                            }
-                            else {
-                                active_rituals[spell] = global.race.casting[spell];
-                            }
-                            breakdown.p.consume.Mana[loc(`modal_pylon_spell_${spell}`)] = -(consume_mana);
-
-                            modRes('Mana', -(consume_mana_dt));
+                    if (global.race.casting[spell] && global.race.casting[spell] > 0){
+                        const consume_mana = manaCost(global.race.casting[spell]);
+                        const consume_mana_dt = consume_mana * time_multiplier;
+                        if (consume_mana_dt > global.resource.Mana.amount){
+                            active_rituals[spell] = maxRitualNum(global.resource.Mana.amount, time_multiplier);
                         }
                         else {
-                            active_rituals[spell] = 0;
+                            active_rituals[spell] = global.race.casting[spell];
                         }
+                        breakdown.p.consume.Mana[loc(`modal_pylon_spell_${spell}`)] = -(consume_mana);
+
+                        modRes('Mana', -(consume_mana_dt));
+                    }
+                    else {
+                        active_rituals[spell] = 0;
                     }
                 });
             }
