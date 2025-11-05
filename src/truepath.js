@@ -2771,8 +2771,8 @@ const tauCetiModules = {
         },
         tauceti_casino: {
             id: 'tauceti-tauceti_casino',
-            title(){ return loc('city_casino'); },
-            desc(){ return loc('city_casino'); },
+            title(){ return structName('casino'); },
+            desc(){ return structName('casino'); },
             type: 'gambling',
             category: 'commercial',
             reqs: { gambling: 1, isolation: 1 },
