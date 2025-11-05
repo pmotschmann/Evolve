@@ -1074,6 +1074,7 @@ const spaceProjects = {
                 if (global.race['high_pop']){
                     fab = highPopAdjust(fab);
                 }
+                fab = +fab.toFixed(2);
                 return `<div class="has-text-caution">${loc('space_used_support',[planetName().red])}</div><div>${loc('space_red_fabrication_effect1',[jobScale(1)])}</div>${c_worker}<div>${loc('space_red_fabrication_effect2',[fab])}</div>`;
             },
             s_type: 'red',
