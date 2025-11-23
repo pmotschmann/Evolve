@@ -3068,7 +3068,7 @@
   "tech_matrioshka_brain": "递归迭代计算机",
   "tech_matrioshka_brain_effect": "我们将在%0周围建造行星级别大小的计算机，即“递归迭代计算机”。",
   "tech_ignition_device": "点火装置",
-  "tech_ignition_device_effect": "如果想要给递归迭代计算机功能，您必须将%0转化为人造太阳。",
+  "tech_ignition_device_effect": "如果想要给递归迭代计算机供能，您必须将%0转化为人造太阳。",
   "tech_replicator": "物质复制器",
   "tech_replicator_effect": "学习如何使用前哨中发现的外星装置，将能量转化为物质。",
   "tech_replicator_effect_alt": "考古学家们发现了一个奇怪的外星装置；科学家们认为它可以将能量转化为物质。",
