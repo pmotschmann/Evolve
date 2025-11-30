@@ -7477,11 +7477,15 @@ function armada(parent,id){
 
         cols[0].append($(`<span></span>`));
         cols[0].append($(`<span id="armadagateway" class="has-text-danger">${galaxyProjects.gxy_gateway.info.name}</span>`));
+        cols[0].attr('aria-hidden', 'true');
 
         for (let i = 0; i < gatewayArmada.length; i++){
             const ship = gatewayArmada[i];
             if (global.galaxy.hasOwnProperty(ship)){
-                cols[i+1].append($(`<span id="armada${ship}" class="ship has-text-advanced">${typeof galaxyProjects.gxy_gateway[ship].title === 'string' ? galaxyProjects.gxy_gateway[ship].title : galaxyProjects.gxy_gateway[ship].title()}</span>`));
+                let shipTitle = typeof galaxyProjects.gxy_gateway[ship].title === 'string' ? galaxyProjects.gxy_gateway[ship].title : galaxyProjects.gxy_gateway[ship].title();
+                cols[i+1].append($(`<h4 class="is-sr-only">${shipTitle} class</h4>`));
+                cols[i+1].append($(`<span class="is-sr-only">${typeof galaxyProjects.gxy_gateway.info.name === 'string' ? galaxyProjects.gxy_gateway.info.name : galaxyProjects.gxy_gateway.info.name()}: </span>`));
+                cols[i+1].append($(`<span id="armada${ship}" class="ship has-text-advanced" aria-hidden="true">${shipTitle}</span>`));
                 cols[i+1].append($(`<span class="ship">{{ gateway.${ship} }}</span>`));
             }
         }
