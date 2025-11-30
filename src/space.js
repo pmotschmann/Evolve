@@ -7496,10 +7496,11 @@ function armada(parent,id){
                 for (let i = 0; i < gatewayArmada.length; i++){
                     const ship = gatewayArmada[i];
                     if (global.galaxy.hasOwnProperty(ship)){
+                        let areaLabel = typeof galaxyProjects[area].info.name === 'string' ? galaxyProjects[area].info.name : galaxyProjects[area].info.name();
                         let shipSpan = $(`<span class="ship"></span>`);
-                        let sub = $(`<span role="button" aria-label="remove ${ship}" class="sub has-text-danger" @click="sub('${area}','${ship}')"><span>&laquo;</span></span>`);
+                        let sub = $(`<span role="button" aria-label="remove ${loc('galaxy_' + ship)} from ${areaLabel}" class="sub has-text-danger" @click="sub('${area}','${ship}')"><span>&laquo;</span></span>`);
                         let count = $(`<span class="current">{{ ${r}.${ship} }}</span>`);
-                        let add = $(`<span role="button" aria-label="add ${ship}" class="add has-text-success" @click="add('${area}','${ship}')"><span>&raquo;</span></span>`);
+                        let add = $(`<span role="button" aria-label="add ${loc('galaxy_' + ship)} to ${areaLabel}" class="add has-text-success" @click="add('${area}','${ship}')"><span>&raquo;</span></span>`);
                         cols[i+1].append(shipSpan);
                         shipSpan.append(sub);
                         shipSpan.append(count);
