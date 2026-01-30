@@ -2479,13 +2479,12 @@ a {
     }
 }
 
-.add {
+.add, .current, .sub {
     display: inline-block;
-    margin-right: .25rem;
     padding: 0 .375rem;
-    border-radius: 0 .375rem .375rem 0;
     line-height: 1rem;
     cursor: pointer;
+    vertical-align: bottom;
 
     span:first-child {
         position: relative;
@@ -2493,27 +2492,21 @@ a {
     }
 }
 
+.add {
+    margin-right: .25rem;
+    border-radius: 0 .375rem .375rem 0;
+}
+
 .sub {
     outline: none;
-    display: inline-block;
     margin-left: .125rem;
-    padding: 0 .375rem;
     border-radius: .375rem 0 0 .375rem;
-    line-height: 1rem;
-    cursor: pointer;
-
-    span:first-child {
-        position: relative;
-        bottom: .0625rem;
-    }
 }
 
 .current {
     min-width: 5rem;
     text-align: center;
-    display: inline-block;
     font-size: .875rem;
-    line-height: 1rem;
     padding: 0 .125rem;
     cursor: default;
 }
@@ -3242,11 +3235,6 @@ a {
         padding: .25rem 0;
         border-top: 1px solid;
         border-bottom: 1px solid;
-
-        .current {
-            position: relative;
-            bottom: .0625rem;
-        }
 
         >div {
             margin-top: .25rem;
@@ -4116,14 +4104,6 @@ a {
             width: 3rem;
         }
 
-        .add,
-        .sub {
-            position: relative;
-            top: .0625rem;
-            padding: 0 .375rem;
-            line-height: 1rem;
-        }
-
         .mass {
             margin-left: 1rem;
         }
@@ -4387,11 +4367,6 @@ body .modal>div.popper.wide {
     .divide {
         margin-top: .5rem;
         padding-top: .5rem;
-    }
-
-    .current {
-        position: relative;
-        bottom: .0625rem;
     }
 
     .smelting {
