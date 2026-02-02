@@ -160,6 +160,9 @@ export const job_desc = {
         if (global.city.ptrait.includes('trashed') && global.race['scavenger']){
             scavenger *= 1 + (traits.scavenger.vars()[1] / 100);
         }
+        if (global.race['ocular_power'] && global.race['ocularPowerConfig'] && global.race.ocularPowerConfig.t){
+            scavenger *= 1 + (traits.ocular_power.vars()[1] / 500);
+        }
         if (global.race['high_pop'] && !servant){
             scavenger *= traits.high_pop.vars()[1] / 100;
         }
