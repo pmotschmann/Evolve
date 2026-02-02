@@ -5241,7 +5241,7 @@
   "civics_garrison_wounded_desc": "Verwundete Soldaten sind im Kampf weniger effektiv und sterben mit größerer Wahrscheinlichkeit. Verwundete Soldaten heilen mit der Zeit.",
   "civics_garrison_crew_desc": "Militäres Personal, das Besatzungsschiffen zugeteilt ist.",
   "civics_garrison_defensive_rate": "Defensive Bewertung",
-  "civics_garrison_offensive_rate": "Beleidigende Bewertung",
+  "civics_garrison_offensive_rate": "Offensive Bewertung",
   "civics_rival_unlocked": "Eine rivalisierende Region hat sich vereinigt und ein mächtiges neues Land namens %0 geschaffen.",
   "civics_mad_reset_desc": "Dadurch wird das Spiel zurückgesetzt. Sie erhalten einige %0 und Sie können dadurch einige andere kleinere Boni erhalten. Exportieren Sie einen Speicherstand, bevor Sie fortfahren.",
   "civics_mad_arm_missiles": "Raketen bewaffnen",
