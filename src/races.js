@@ -2,7 +2,7 @@ import { global, seededRandom, save, webWorker, power_generated, keyMultiplier, 
 import { loc } from './locale.js';
 import { defineIndustry } from './industry.js';
 import { setJobName, jobScale, loadFoundry } from './jobs.js';
-import { vBind, clearElement, popover, removeFromQueue, removeFromRQueue, calc_mastery, gameLoop, getEaster, getHalloween, randomKey, modRes, messageQueue } from './functions.js';
+import { vBind, clearElement, popover, removeFromQueue, removeFromRQueue, calc_mastery, gameLoop, getEaster, getHalloween, randomKey, modRes, messageQueue, convert_divisor, ambush_divisor_to_percentage, hoovedRename } from './functions.js';
 import { setResourceName, drawResourceTab, atomic_mass } from './resources.js';
 import { buildGarrison, govEffect, govTitle, armyRating, govCivics } from './civics.js';
 import { govActive, removeTask, defineGovernor } from './governor.js';
@@ -733,6 +733,10 @@ export const traits = {
     fast_growth: { // Greatly increases odds of population growth each cycle
         name: loc('trait_fast_growth_name'),
         desc: loc('trait_fast_growth'),
+        desc_function: function(vals, species) {
+            //Delete all values from the display
+            return [];
+        },
         type: 'genus',
         origin: 'insectoid',
         taxonomy: 'utility',
@@ -891,6 +895,10 @@ export const traits = {
     spores: { // Birthrate increased when it's windy
         name: loc('trait_spores_name'),
         desc: loc('trait_spores'),
+        desc_function: function(vals, species) {
+            //Delete all values from the display
+            return [];
+        },
         type: 'genus',
         origin: 'fungi',
         taxonomy: 'utility',
@@ -960,6 +968,10 @@ export const traits = {
     elusive: { // Spies are never caught
         name: loc('trait_elusive_name'),
         desc: loc('trait_elusive'),
+        desc_function: function (vals, species) {
+            vals[0] = ambush_divisor_to_percentage(vals[0]);
+            return vals;
+        },
         type: 'genus',
         origin: 'fey',
         taxonomy: 'utility',
@@ -1374,6 +1386,10 @@ export const traits = {
     darkness: {
         name: loc('trait_darkness_name'),
         desc: loc('trait_darkness'),
+        desc_function: function(vals, species) {
+            //Delete all values from the display
+            return [];
+        },
         type: 'genus',
         origin: 'eldritch',
         taxonomy: 'utility',
@@ -1401,6 +1417,10 @@ export const traits = {
     unfathomable: {
         name: loc('trait_unfathomable_name'),
         desc: loc('trait_unfathomable'),
+        desc_function: function(vals, species) {
+            //Delete all values from the display
+            return [];
+        },
         type: 'genus',
         origin: 'eldritch',
         taxonomy: 'utility',
@@ -1691,6 +1711,10 @@ export const traits = {
     playful: { // Hunters are Happy
         name: loc('trait_playful_name'),
         desc: loc('trait_playful'),
+        desc_function: function (vals, species) {
+            if (global.race['warlord']) vals = [vals[0] * 100, global.resource.Furs.name];
+            return vals;
+        },
         type: 'major',
         origin: 'vulpine',
         taxonomy: 'production',
@@ -1777,6 +1801,10 @@ export const traits = {
     hooved: { // You require special footwear
         name: loc('trait_hooved_name'),
         desc: loc('trait_hooved'),
+        desc_function: function (vals, species) {
+            vals.unshift(hoovedRename(false, species));
+            return vals;
+        },
         type: 'major',
         origin: 'centaur',
         taxonomy: 'utility',
@@ -2304,6 +2332,11 @@ export const traits = {
     chameleon: { // Barracks have less soldiers
         name: loc('trait_chameleon_name'),
         desc: loc('trait_chameleon'),
+        desc_function: function(vals, species) { 
+            //vals[1] represents the addition to the ambush chance divisor, and needs conversion before display
+            vals[1] = ambush_divisor_to_percentage(vals[1]);
+            return vals;
+        },
         type: 'major',
         origin: 'gecko',
         taxonomy: 'combat',
@@ -2435,6 +2468,10 @@ export const traits = {
     selenophobia: { // Moon phase directly affects productivity, on average this is slightly negative
         name: loc('trait_selenophobia_name'),
         desc: loc('trait_selenophobia'),
+        desc_function: function (vals, species) {
+            vals = [14 - vals[0], vals[0]];
+            return vals;
+        },
         type: 'major',
         origin: 'arraak',
         taxonomy: 'production',
@@ -2646,6 +2683,10 @@ export const traits = {
     catnip: { // Attract Cats
         name: loc('trait_catnip_name'),
         desc: loc('trait_catnip'),
+        desc_function: function(vals, species) {
+            vals = vals[0] > 1 ? vals[1] === 4 ? vals : [vals[0]] : [];
+            return vals;
+        },
         type: 'major',
         origin: 'entish',
         taxonomy: 'production',
@@ -2777,6 +2818,10 @@ export const traits = {
     anise: { // Attract Dogs
         name: loc('trait_anise_name'),
         desc: loc('trait_anise'),
+        desc_function: function(vals, species) {
+            vals = vals[0] > 1 ? vals[1] === 3 ? vals : [vals[0]] : [];
+            return vals;
+        },
         type: 'major',
         origin: 'pinguicula',
         taxonomy: 'production',
@@ -3094,6 +3139,10 @@ export const traits = {
     hivemind: { // Jobs with low citizen counts assigned to them have reduced output, but those with high numbers have increased output.
         name: loc('trait_hivemind_name'),
         desc: loc('trait_hivemind'),
+        desc_function: function (vals, species) {
+            if (global.race['high_pop']) vals[0] *= traits.high_pop.vars()[0];
+            return vals;
+        },
         type: 'major',
         origin: 'antid',
         taxonomy: 'production',
@@ -3146,6 +3195,10 @@ export const traits = {
     blood_thirst: { // Combat causes a temporary increase in morale
         name: loc('trait_blood_thirst_name'),
         desc: loc('trait_blood_thirst'),
+        desc_function: function (vals, species) {
+            vals[0] = Math.ceil(Math.log2(vals[0]));
+            return vals;
+        },
         type: 'major',
         origin: 'sharkin',
         taxonomy: 'combat',
@@ -3278,6 +3331,12 @@ export const traits = {
     environmentalist: { // Use renewable energy instead of dirtly coal & oil power.
         name: loc('trait_environmentalist_name'),
         desc: loc('trait_environmentalist'),
+        desc_function: function (vals, species) {
+            let coal = -(actions.city.coal_power.powered(true));
+            let oil = -(actions.city.oil_power.powered(true));
+            vals = [coal + vals[0], oil + vals[0] - 1, oil + vals[0] + 1, coal, oil, vals[1]];
+            return vals;
+        },
         type: 'major',
         origin: 'dryad',
         taxonomy: 'utility',
@@ -3357,6 +3416,10 @@ export const traits = {
     revive: { // Soldiers sometimes self res
         name: loc('trait_revive_name'),
         desc: loc('trait_revive'),
+        desc_function: function(vals, species) {
+            //Delete all values from the display
+            return [];
+        },
         type: 'major',
         origin: 'phoenix',
         taxonomy: 'combat',
@@ -3462,6 +3525,11 @@ export const traits = {
     blurry: { // Increased success chance of spies // Warlord improves Reapers
         name: loc('trait_blurry_name'),
         desc: loc('trait_blurry'),
+        desc_function: function(vals, species) {
+            //Requires different adjustments in warlord and in normal play
+            global.race['warlord']?vals[0] = +((100/(100-vals[0])-1)*100).toFixed(1):vals[0] = convert_divisor(vals[0]);
+            return vals;
+        },
         type: 'major',
         origin: 'yeti',
         taxonomy: 'utility',
@@ -3542,6 +3610,10 @@ export const traits = {
     ghostly: { // More souls from hunting and soul wells, increased soul gem drop chance
         name: loc('trait_ghostly_name'),
         desc: loc('trait_ghostly'),
+        desc_function: function (vals, species) {
+            if (global.race['warlord']) vals = [vals[0], +((vals[1] - 1) * 100).toFixed(0), global.resource.Soul_Gem.name];
+            return vals;
+        },
         type: 'major',
         origin: 'wendigo',
         taxonomy: 'utility',
@@ -3710,6 +3782,10 @@ export const traits = {
     terrifying: { // No one will trade with you
         name: loc('trait_terrifying_name'),
         desc: loc('trait_terrifying'),
+        desc_function: function(vals, species) {
+            //Delete all values from the display
+            return [];
+        },
         type: 'major',
         origin: 'balorg',
         taxonomy: 'resource',
@@ -4028,6 +4104,10 @@ export const traits = {
     imitation: { // You are an imitation of another species
         name: loc('trait_imitation_name'),
         desc: loc('trait_imitation'),
+        desc_function: function(vals, species) {
+            vals.push(races[global.race['srace'] || 'protoplasm'].name);
+            return vals;
+        },
         type: 'major',
         origin: 'synth',
         taxonomy: 'utility',
@@ -4242,6 +4322,11 @@ export const traits = {
     anthropophagite: {
         name: loc('trait_anthropophagite_name'),
         desc: loc('trait_anthropophagite'),
+        desc_function: function (vals, species) {
+            //vals[0] stores the number of tens of thousands of food that are got when a pop dies
+            vals[0] = 10000 * vals[0];
+            return vals;
+        },
         type: 'major',
         origin: 'ghast',
         taxonomy: 'utility',
@@ -4268,6 +4353,10 @@ export const traits = {
     living_tool: {
         name: loc('trait_living_tool_name'),
         desc: loc('trait_living_tool'),
+        desc_function: function(vals, species) {
+            //Delete all values from the display
+            return [];
+        },
         type: 'major',
         origin: 'shoggoth',
         taxonomy: 'resource',
@@ -4430,6 +4519,11 @@ export const traits = {
     living_materials: {
         name: loc('trait_living_materials_name'),
         desc: loc('trait_living_materials'),
+        desc_function: function (vals, species) {
+            //Get current names for affected resources
+            vals = [global.resource.Lumber.name, global.resource.Plywood.name, global.resource.Furs.name, loc('resource_Amber_name')];
+            return vals;
+        },
         type: 'major',
         origin: 'lichen',
         taxonomy: 'resource',
@@ -4485,6 +4579,24 @@ export const traits = {
     elemental: {
         name: loc('trait_elemental_name'),
         desc: loc('trait_elemental'),
+        desc_function: function (vals, species) {
+            //Pick the right display values based on which element is currently active
+            switch (vals[0]){
+                case 'electric':
+                    vals = [loc(`element_electric`), vals[1], vals[5]];
+                    break;
+                case 'acid':
+                    vals = [loc(`element_acid`), vals[2], vals[5]];
+                    break;
+                case 'fire':
+                    vals = [loc(`element_fire`), vals[3], vals[5]];
+                    break;
+                case 'frost':
+                    vals = [loc(`element_frost`), vals[4], vals[5], loc('city_biolab')];
+                    break;
+            }
+            return vals;
+        },
         type: 'major',
         origin: 'wyvern',
         taxonomy: 'utility',
@@ -4919,6 +5031,10 @@ export const traits = {
     promiscuous: { // Organics Growth Bonus, Synths Population Discount
         name: loc('trait_promiscuous_name'),
         desc: loc('trait_promiscuous'),
+        desc_function: function(vals, species) {
+            //Delete all values from the display
+            return [];
+        },
         type: 'minor',
         vars(r){ return [1,0.02]; },
     },
@@ -4960,6 +5076,11 @@ export const traits = {
     fibroblast: { // Healing Bonus
         name: loc('trait_fibroblast_name'),
         desc: loc('trait_fibroblast'),
+        desc_function: function(vals, species) {
+            //Multiply by 5 for display
+            vals[0] = vals[0] * 5;
+            return vals;
+        },
         type: 'minor',
         vars(r){ return [2]; },
     },
