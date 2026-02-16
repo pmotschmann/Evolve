@@ -2168,7 +2168,7 @@
   "tech_study_corrupt_gem_result": "失われた都市の場所など、地獄の次元について多くのことを学びます。",
   "tech_corrupt_gem_analysis": "腐敗した宝石の分析",
   "tech_corrupt_gem_analysis_effect": "腐敗したソウルジェムを分析してその秘密を解き明かします。",
-  "tech_corrupt_gem_analysis_result": "ある科学者が、腐敗した宝石に触れた後に狂気に陥り、激しい口論の末に亡くなりました。しかし、彼のつぶやきによって、地獄次元の新たな場所が明らかになった可能性があります。",
+  "tech_corrupt_gem_analysis_result": "ある科学者が、腐敗した宝石に触れた後に狂気に陥り、激しい口論の末に亡くなりました。しかし、彼のつぶやきによって、地獄界の新たな場所が明らかになった可能性があります。",
   "tech_soul_binding": "魂の束縛",
   "tech_soul_binding_effect": "宝石からの知識があなたの心に浸透し、神へと昇るための禁断の儀式を教えます。",
   "tech_soul_capacitor": "魂のキャパシター",
@@ -7181,7 +7181,7 @@
   "portal_gate_open": "門は開いています。",
   "portal_gate_mission_title": "門の調査",
   "portal_gate_mission_effect": "古代の門を調査します。",
-  "portal_gate_mission_result": "門には複雑な施錠機構が備わっており、突破は不可能と思われます。幸いなことに、『無限文書』には門を開ける「鍵」の作り方が記されています。",
+  "portal_gate_mission_result": "門には複雑な施錠機構が備わっており、突破は不可能と思われます。幸いなことに、『地獄文書』には門を開ける「鍵」の作り方が記されています。",
   "portal_west_tower": "西塔",
   "portal_east_tower": "東塔",
   "portal_tower_effect": "門を開くための力を供給する",
@@ -11640,4 +11640,5 @@
   "wiki_achievements_completed": "完了",
   "wiki_search_placeholder": "結果が見つかりませんでした。",
   "wiki_search_regex_support": "正規表現対応"
+
 }
