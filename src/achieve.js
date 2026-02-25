@@ -1058,8 +1058,7 @@ export const perkList = {
             if (global.stats.achieve.blackhole) {
                 bonus = global.stats.achieve.blackhole.l * 5;
                 if (wiki) {
-                    let re = new RegExp(`(.*\\b${bonus}\\b)(.*)`)
-                    console.log(re)
+                    let re = new RegExp(`(.*\\b${bonus}\\b/?)(.*)`)
                     let [, done, avail] = "5/10/15/20/25".match(re)
                     bonus = done
                     if (avail) {
