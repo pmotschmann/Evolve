@@ -1,6 +1,6 @@
 import * as esbuild from "esbuild"
 
-const params = {
+let ctx = await esbuild.context({
     logLevel: "info",
     bundle: true,
     minify: true,
@@ -12,7 +12,14 @@ const params = {
         { in: "./src/wiki/wiki.js", out: "wiki/wiki" },
     ],
     outdir: "."
-}
+})
 
-esbuild.build(params)
-    .catch(() => process.exit(1));
+
+try {
+    await ctx.serve({ port: 8000, servedir: "." })
+    await ctx.watch()
+} catch (err) {
+    ctx.dispose()
+    console.error("Error:", err.message)
+    process.exit(1)
+}
