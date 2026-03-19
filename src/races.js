@@ -9168,8 +9168,8 @@ function psychicBoost(parent){
     if (global.tech.psychic >= 4){
         let channel = $(`<div class="gap">${loc('psychic_channel')}</div>`);
         let psy = $(`<span class="current">{{ c.boost }}</span>`);
-        let sub = $(`<span role="button" class="sub" @click="sub" aria-label="Decresae Energy reserved for ${loc(`psychic_attack`)}"><span>&laquo;</span></span>`);
-        let add = $(`<span role="button" class="add" @click="add" aria-label="Increase Energy reserved for ${loc(`psychic_attack`)}"><span>&raquo;</span></span>`);
+        let sub = $(`<span tabindex="0" role="button" class="sub" @click="sub" aria-label="Decresae Energy reserved for ${loc(`psychic_attack`)}"><span>&laquo;</span></span>`);
+        let add = $(`<span tabindex="0" role="button" class="add" @click="add" aria-label="Increase Energy reserved for ${loc(`psychic_attack`)}"><span>&raquo;</span></span>`);
         channel.append(sub);
         channel.append(psy);
         channel.append(add);
@@ -9292,8 +9292,8 @@ function psychicAssault(parent){
     if (global.tech.psychic >= 4){
         let channel = $(`<div class="gap">${loc('psychic_channel')}</div>`);
         let psy = $(`<span class="current">{{ assault }}</span>`);
-        let sub = $(`<span role="button" class="sub" @click="sub" aria-label="Decresae Energy reserved for ${loc(`psychic_attack`)}"><span>&laquo;</span></span>`);
-        let add = $(`<span role="button" class="add" @click="add" aria-label="Increase Energy reserved for ${loc(`psychic_attack`)}"><span>&raquo;</span></span>`);
+        let sub = $(`<span tabindex="0" role="button" class="sub" @click="sub" aria-label="Decresae Energy reserved for ${loc(`psychic_attack`)}"><span>&laquo;</span></span>`);
+        let add = $(`<span tabindex="0" role="button" class="add" @click="add" aria-label="Increase Energy reserved for ${loc(`psychic_attack`)}"><span>&raquo;</span></span>`);
         channel.append(sub);
         channel.append(psy);
         channel.append(add);
@@ -9364,8 +9364,8 @@ function psychicFinance(parent){
     if (global.tech.psychic >= 4){
         let channel = $(`<div class="gap">${loc('psychic_channel')}</div>`);
         let psy = $(`<span class="current">{{ cash }}</span>`);
-        let sub = $(`<span role="button" class="sub" @click="sub" aria-label="Decresae Energy reserved for ${loc(`psychic_profit`)}"><span>&laquo;</span></span>`);
-        let add = $(`<span role="button" class="add" @click="add" aria-label="Increase Energy reserved for ${loc(`psychic_profit`)}"><span>&raquo;</span></span>`);
+        let sub = $(`<span tabindex="0" role="button" class="sub" @click="sub" aria-label="Decresae Energy reserved for ${loc(`psychic_profit`)}"><span>&laquo;</span></span>`);
+        let add = $(`<span tabindex="0" role="button" class="add" @click="add" aria-label="Increase Energy reserved for ${loc(`psychic_profit`)}"><span>&raquo;</span></span>`);
         channel.append(sub);
         channel.append(psy);
         channel.append(add);
