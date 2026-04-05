@@ -9553,7 +9553,7 @@
   "wiki_achieve_iron_will": "此成就根据您在大灾变模式中的进度逐级获得；您必须进行播种重置才能获得金星成就。",
   "wiki_achieve_failed_history": "在大灾变剧情模式中，进行大灾变重置。",
   "wiki_achieve_banana": "您需要完成以下的目标；成就等级随着目标完成而提升。",
-  "wiki_achieve_banana1": "使用士兵占领一个敌对国家。",
+  "wiki_achieve_banana1": "使用士兵占领一个敌对国家（若本周目使用的种族拥有 [团结] 特质，则该任务无法完成）。",
   "wiki_achieve_banana2": "建造世界对撞机。",
   "wiki_achieve_banana3": "使黑洞中普通物质的质量（通过ARPA项目增加的黑洞质量不计入此）达到 12 个太阳质量，且不包含奇异物质。",
   "wiki_achieve_banana4": "使用 %0 条贸易路线出口一种货物。",
