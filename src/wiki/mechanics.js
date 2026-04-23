@@ -1729,7 +1729,7 @@ function spyCostCalc(info){
             <h2 class="has-text-caution">${loc('wiki_calc_spy_cost_total')}</h2>
         </div>
         <div>
-            <span v-show="i.infiltrator.val">(</span><span>{{ s.base.val, 'unrest' | generic }}</span><span v-show="i.infiltrator.val"> / 3)</span>^({{ i.spies.val, 'spies' | generic }} + 1) + 500<span v-show="s.total.vis"> = {{ | calcTotal }}</span>
+            <span v-show="i.infiltrator.val">(</span><span>{{ s.base.val, 'Base' | generic }}</span><span v-show="i.infiltrator.val"> / 3)</span>^({{ i.spies.val, 'spies' | generic }} + 1) + 500<span v-show="s.total.vis"> = {{ | calcTotal }}</span>
         </div>
     `);
     
