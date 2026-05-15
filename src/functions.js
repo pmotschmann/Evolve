@@ -1,7 +1,7 @@
 import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame, atrack, p_on, quantum_level, tmp_vars } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits, genus_def, traitSkin, fathomCheck } from './races.js';
-import { actions, actionDesc } from './actions.js';
+import { actions, actionDesc, structName } from './actions.js';
 import { jobScale } from './jobs.js';
 import { universe_affixes } from './space.js';
 import { arpaAdjustCosts, arpaProjectCosts } from './arpa.js';
@@ -13,6 +13,7 @@ import { universeLevel, universeAffix, alevel } from './achieve.js';
 import { astrologySign, astroVal } from './seasons.js';
 import { shipCosts, TPShipDesc } from './truepath.js';
 import { mechCost, mechDesc } from './portal.js';
+import { faithTempleCount } from './resources.js';
 
 var popperRef = false;
 export function popover(id,content,opts){
@@ -1754,6 +1755,90 @@ export function calcPrestige(type,inputs){
     }
 
     return gains;
+}
+
+export function getTradeRouteCount(getBreakdown = false){
+    let count = 0;
+    let breakdown = {};
+
+    if (global.race['banana']){
+        count++;
+        if (getBreakdown)
+            breakdown[loc('base')] = 1;
+    }
+
+    if (global.city['trade']){
+        let routes = global.race['nomadic'] || global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
+        if (global.tech['trade'] && global.tech['trade'] >= 3){
+            routes--;
+        }
+        if (global.race['flier']){
+            routes += traits.flier.vars()[1];
+        }
+
+        const r_count = routes * global.city.trade.count;
+        count += r_count;
+        if (getBreakdown)
+            breakdown[loc('city_trade')] = r_count;
+    }
+
+    if (global.city['trade'] && global.tech['fanaticism'] && global.tech['fanaticism'] >= 3){
+        const r_count = faithTempleCount();
+        count += r_count;
+        if (getBreakdown)
+            breakdown[global.race['cataclysm'] ? loc('space_red_ziggurat_title') : structName('temple')] = r_count;
+    }
+
+    if (global.city['wharf']){
+        const r_count = global.city.wharf.count * 2;
+        count += r_count;
+        if (getBreakdown)
+            breakdown[loc('city_wharf')] = r_count;
+    }
+
+    if (global.space['gps'] && global.space.gps.count >= 4){
+        const r_count = global.space.gps.count * 2;
+        count += r_count;
+        if (getBreakdown)
+            breakdown[loc('space_home_gps_title')] = r_count;
+    }
+
+    if (global.city['storage_yard'] && global.tech['trade'] && global.tech['trade'] >= 3){
+        const r_count = global.city.storage_yard.count;
+        count += r_count;
+        if (getBreakdown)
+            breakdown[loc('city_storage_yard')] = r_count;
+    }
+
+    if (global.portal['bazaar'] && global.portal['spire']){
+        const r_count = global.portal.bazaar.count * global.portal.spire.count;
+        count += r_count;
+        if (getBreakdown)
+            breakdown[loc('portal_bazaar_title')] = r_count;
+    }
+
+    if (global.tech['railway']){
+        let routes = 0;
+        if (global.race['cataclysm'] || global.race['orbit_decayed']){
+            routes = global.space['gps'] ? Math.floor(global.space.gps.count / 3) : 0;
+        }
+        else if (global.race['warlord']){
+            routes = 5;
+        }
+        else {
+            routes = global.city['storage_yard'] ? Math.floor(global.city.storage_yard.count / 6) : 0;
+        }
+        if (global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 2){
+            routes++;
+        }
+
+        const r_count = global.tech['railway'] * routes
+        count += r_count;
+        if (getBreakdown)
+            breakdown[loc('arpa_projects_railway_title')] = r_count;
+    }
+
+    return getBreakdown ? {count: count, breakdown: breakdown} : {count: count};
 }
 
 export function adjustCosts(c_action, offset, wiki){
