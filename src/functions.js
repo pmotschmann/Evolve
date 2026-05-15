@@ -1768,13 +1768,13 @@ export function getTradeRouteCount(getBreakdown = false){
     }
 
     if (global.city['trade']){
-        let routes = global.race['nomadic'] || global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
-        if (global.tech['trade'] && global.tech['trade'] >= 3){
+        let routes = 2;
+        if (global.tech.trade >= 2) //Diplomacy
+            routes++;
+        if (global.race['nomadic'] || global.race['xenophobic'])
             routes--;
-        }
-        if (global.race['flier']){
+        if (global.race['flier'])
             routes += traits.flier.vars()[1];
-        }
 
         const r_count = routes * global.city.trade.count;
         count += r_count;
