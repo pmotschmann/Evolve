@@ -7322,6 +7322,7 @@ export function cleanAddTrait(trait){
             calc_mastery(true);
             break;
         case 'nomadic':
+        case 'xenophobic':
             const routes = Object.keys(global.resource)
                                  .filter(res => !isNaN(global.resource[res].trade) && global.resource[res].trade != 0)
 
@@ -7428,6 +7429,28 @@ export function cleanRemoveTrait(trait,rank){
                 checkPurgatory('eden','eden_cement');
                 global.resource.Cement.display = true;
                 global.civic.cement_worker.display = true;
+            }
+            
+            const routes = Object.keys(global.resource)
+                                 .filter(res => !isNaN(global.resource[res].trade) && global.resource[res].trade != 0)
+
+            const usedRoutes = routes.map(res => global.resource[res].trade)
+                                     .reduce((val, agg) => Math.abs(val) + agg);
+                                     
+            const maxRoutes = getTradeRouteCount().count;
+            let lostRoutes = usedRoutes - maxRoutes;
+            
+            let ix = 0;
+            while (lostRoutes > 0) {
+                const res = routes[ix];
+                const cnt = Math.min(Math.abs(global.resource[res].trade), lostRoutes);
+                if (global.resource[res].trade > 0)
+                    global.resource[res].trade -= cnt;
+                else
+                    global.resource[res].trade += cnt;
+
+                lostRoutes -= cnt;
+                ix++;
             }
             break;
         case 'sappy':
