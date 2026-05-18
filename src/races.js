@@ -7327,7 +7327,7 @@ export function cleanAddTrait(trait){
                                  .filter(res => !isNaN(global.resource[res].trade) && global.resource[res].trade != 0)
 
             const usedRoutes = routes.map(res => global.resource[res].trade)
-                                     .reduce((val, agg) => Math.abs(val) + agg);
+                                     .reduce((agg, val) => agg + Math.abs(val), 0);
                                      
             const maxRoutes = getTradeRouteCount().count;
             let lostRoutes = usedRoutes - maxRoutes;
@@ -7435,9 +7435,9 @@ export function cleanRemoveTrait(trait,rank){
                                  .filter(res => !isNaN(global.resource[res].trade) && global.resource[res].trade != 0)
 
             const usedRoutes = routes.map(res => global.resource[res].trade)
-                                     .reduce((val, agg) => Math.abs(val) + agg);
+                                     .reduce((agg, val) => agg + Math.abs(val), 0);
                                      
-            const maxRoutes = getTradeRouteCount().count;
+            const maxRoutes = getTradeRouteCount().count;  
             let lostRoutes = usedRoutes - maxRoutes;
             
             let ix = 0;
