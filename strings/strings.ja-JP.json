@@ -9778,7 +9778,7 @@
   "wiki_mechanics_occupying_para13": "%1が%0人以上のとき、その国に対する新しい%2スパイ活動が表示されます。",
   "wiki_mechanics_occupying_para14": "その国の%2には、%0%1が必要です。",
   "wiki_mechanics_occupying_para14_note1": "((%0 * 15384) * (1 + (0.016 * (100 - %1))) * (1 - (0.0025 * %2)))",
-  "wiki_mechanics_occupying_para15": "%0された周辺国家は、%2政治体制を使用しない限り、%1からの%2を-%3減少させます。",
+  "wiki_mechanics_occupying_para15": "%0された周辺国家は、%4政治体制を使用しない限り、%2からの%1を-%3減少させます。",
   "wiki_mechanics_occupying_para16": "これらの方法を組み合わせて全ての周辺国家を占領すると、%0を研究することで統一することができます。",
   "wiki_mechanics_occupying_para17": "統一すると、全ての%0ペナルティが消滅します。",
   "wiki_mechanics_occupying_para18": "全ての周辺国家を包囲により占領し、統一すると、実績%0が解除されます。",
