@@ -1,5 +1,5 @@
 import { global, seededRandom, p_on, breakdown } from './vars.js';
-import { vBind, popover, tagEvent, calcQueueMax, calcRQueueMax, clearElement, adjustCosts, decodeStructId, timeCheck, arpaTimeCheck, hoovedRename } from './functions.js';
+import { vBind, popover, tagEvent, calcQueueMax, calcRQueueMax, clearElement, adjustCosts, decodeStructId, timeCheck, arpaTimeCheck, hoovedRename, deepClone } from './functions.js';
 import { races } from './races.js';
 import { actions, checkCityRequirements, housingLabel, wardenLabel, updateQueueNames, checkAffordable, drawTech, drawCity } from './actions.js';
 import { govCivics, govTitle } from './civics.js';
@@ -417,6 +417,38 @@ function dragSpyopList(gov){
     }
 }
 
+function getKeyByValue(obj, value) {
+    return Object.keys(obj).find(key => obj[key] === value);
+}
+function createGovConfigName(task,name){
+    if(!name || name=="name"){
+        let config=global.race.governor.config.saves[task]
+        name=0;
+        Object.keys(config).forEach(elm=>{
+            if(typeof elm=="number"){
+                name=Math.max(name,parseInt(elm))
+            }
+        })
+        name=name+1
+    }
+    return name
+}
+function createGovConfig(task,name){
+    let config;
+    name=createGovConfigName(task,name)
+
+    if(!global.race.governor.config.saves[task]){
+        config={}
+    }
+    else{
+        config=global.race.governor.config.saves[task]
+    }
+    
+    global.race.governor.config.saves.name=name;
+    config[name]=deepClone(global.race.governor.config[task])
+    global.race.governor.config.saves[task]=config
+}
+
 export function drawnGovernOffice(){
     clearSpyopDrag();
     let govern = $(`<div id="govOffice" class="govOffice"></div>`);
@@ -459,7 +491,31 @@ export function drawnGovernOffice(){
         global.race.governor['config'] = {};
     }
 
-    let options = $(`<div class="options"><div>`);
+    let config=$(`<div id="saveLoadTasks" class="govTask"></div>`);
+    govern.append(config);
+
+    let config_opt=``;
+    Object.keys(gov_tasks).forEach(function(task){
+        if(gov_tasks[task].req()){//v-show="activeTask('${task}')" 
+            config_opt+=`<b-dropdown-item v-on:click="setTask('${task}',10);">{{ '${task}' | label }}</b-dropdown-item>`
+        }
+    })
+    config.append(/*html*/`
+        <span>${loc(`gov_task`,["Load / Save"])}</span>
+        <b-dropdown hoverable>
+            <button class="button is-primary" slot="trigger">
+                <span>{{ t.t10 | label }}</span>
+                <i class="fas fa-sort-down"></i>
+            </button>
+            <b-dropdown-item v-on:click="setTask('none',10)">{{ 'none' | label }}</b-dropdown-item>
+            ${config_opt}
+        </b-dropdown>
+        <b-button v-on:click="loadConfig(t.t10,c.saves.name)">Load</b-button>
+        <b-button v-on:click="saveConfig(t.t10,c.saves.name)">Save</b-button>
+        <b-input v-model="c.saves.name" :controls="false"></b-input>`)//:v-html="c.saves.name"
+
+
+    let options = $(`<div class="options"></div>`);
     govern.append(options);
 
     //Configs
@@ -700,21 +756,28 @@ export function drawnGovernOffice(){
                         }
                     });
                 }
-                tagEvent('govtask',{
-                    'task': t
-                });
+                if(n!==10){
+                    tagEvent('govtask',{
+                        'task': t
+                    });
+                }
                 vBind({el: `#race`},'update');
             },
             showTask(t){
-                return Object.values(global.race.governor.tasks).includes(t) 
+                return (Object.values(global.race.governor.tasks).includes(t) 
                 || (Object.values(global.race.governor.tasks).includes('combo_storage') && ['storage','bal_storage'].includes(t))
-                || (Object.values(global.race.governor.tasks).includes('combo_spy') && ['spy','spyop'].includes(t));
+                || (Object.values(global.race.governor.tasks).includes('combo_spy') && ['spy','spyop'].includes(t))) && Object.keys(global.race.governor.tasks).map(key=>{
+                    if(key!="t10"){
+                        return global.race.governor.tasks[key]
+                    }
+                }).includes(t);
             },
             activeTask(t){
                 let activeTasks = [];
                 if (global.race.hasOwnProperty('governor')){
                     Object.keys(global.race.governor.tasks).forEach(function(ts){
-                        if (global.race.governor.tasks[ts] !== 'none'){
+                        // console.log(ts,"t10")
+                        if (global.race.governor.tasks[ts] !== 'none' && ts !== "t10"){
                             activeTasks.push(global.race.governor.tasks[ts]);
                         }
                     });
@@ -760,7 +823,27 @@ export function drawnGovernOffice(){
             },
             trashLabel(r){
                 return loc(global.race.governor.config.trash[r].s ? `gov_task_trash_max` : `gov_task_trash_min`,[global.resource[r].name]);
-            }
+            },
+            saveConfig(t,n){
+                // console.log(global.race.governor.config)
+                // if(!global.race.governor.config.saves){
+                //     global.race.governor.config.saves={name:'0'}
+                // }
+                createGovConfig(t,n)
+            },
+            loadConfig(t,n){
+                let saves=global.race.governor.config.saves
+                if(!saves.hasOwnProperty(t)){
+                    console.log("you have no save for the task ",t)
+                    return
+                }
+                if(!saves[t].hasOwnProperty(n)){
+                    console.log("you have no save for the task ",t," named ",n)
+                    return
+                }
+                global.race.governor.config[t]=global.race.governor.config.saves[t][n]
+                console.log("here is config",global.race.governor.config[t],global.race.governor.config.saves[t][n])
+            },
         },
         filters: {
             label(t){
@@ -779,7 +862,16 @@ export function drawnGovernOffice(){
     {
         elm: `#govOffice .bg`,
     });
-    
+    popover(`saveLoadTasks`,function(){
+        let gov=global.race.governor
+        // console.log(gov.config.saves)
+        let desc=`<div>Current Saves: ${gov.tasks.t10}</div><div>${gov.config.saves[gov.tasks.t10]?Object.keys(gov.config.saves[gov.tasks.t10]).join(', '):'None'}</div>`
+        //'Hey there'+
+        return desc
+    },{
+        elm:`#saveLoadTasks`,
+    })
+
     Object.keys(global.civic.foreign).forEach(function (gov){
         dragSpyopList(gov);
     });

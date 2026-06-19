@@ -1317,6 +1317,7 @@ export function index(){
                 <b-dropdown-item v-on:click="setTheme('gruvboxDarkRG')">{{ 'theme_gruvboxDarkRG' | label }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="setTheme('orangeSoda')">{{ 'theme_orangeSoda' | label }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="setTheme('dracula')">{{ 'theme_dracula' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setTheme('custom')">{{ 'theme_dracula' | label }}</b-dropdown-item>
                 ${hideEgg}
             </b-dropdown>
 
@@ -1502,4 +1503,5 @@ export function index(){
             </span>
         </div>
     `);
+    // document.documentElement.style.setProperty('--customTheme-html-background','#0f0');
 }

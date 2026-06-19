@@ -1,7 +1,7 @@
 import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, support_on, active_rituals } from './vars.js';
 import { vBind, clearElement, modRes, flib, calc_mastery, calcPillar, eventActive, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect, hoovedRename, messageQueue } from './functions.js';
 import { traits, fathomCheck } from './races.js';
-import { templeCount, actions } from './actions.js';
+import { templeCount, actions, BHStorageMulti } from './actions.js';
 import { workerScale } from './jobs.js';
 import { hellSupression } from './portal.js';
 import { syndicate } from './truepath.js';
@@ -2662,8 +2662,7 @@ export function crateValue(){
     if (global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 3){
         create_value *= 1.1;
     }
-    create_value *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole.l * 0.05) : 1;
-    return Math.round(spatialReasoning(create_value));
+    return Math.round(spatialReasoning(BHStorageMulti(create_value)));
 }
 
 export function containerValue(){
@@ -2684,8 +2683,7 @@ export function containerValue(){
     if (fathom > 0){
         container_value *= 1 + (traits.pack_rat.vars(1)[0] / 100 * fathom);
     }
-    container_value *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole.l * 0.05) : 1;
-    return Math.round(spatialReasoning(container_value));
+    return Math.round(spatialReasoning(BHStorageMulti(container_value)));
 }
 
 function initMarket(){

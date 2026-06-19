@@ -105,6 +105,7 @@ if (!global['version']){
     global['version'] = '0.2.0';
 }
 
+
 if (convertVersion(global['version']) < 2060){
     Object.keys(global.resource).forEach(function (res){
         if (global.resource[res].crates){
@@ -1998,6 +1999,12 @@ if (!global.civic['d_job']){
     else {
         global.civic['d_job'] = 'unemployed';
     }
+}
+if(!global.race.governor?.tasks){
+    global.race.governor.tasks.t10='none';
+}
+if(!global.race.governor.config?.saves){
+    global.race.governor.config.saves={name:"0"}
 }
 
 global.settings.animated = true;

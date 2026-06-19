@@ -5,7 +5,7 @@ import { spatialReasoning, unlockContainers } from './resources.js';
 import { armyRating, garrisonSize, soldierDeath } from './civics.js';
 import { jobScale, job_desc, loadFoundry, limitCraftsmen } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
-import { actions, payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, buildTemplate, casinoEffect, housingLabel, structName, initStruct } from './actions.js';
+import { actions, payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, buildTemplate, casinoEffect, housingLabel, structName, initStruct, BHStorageMulti } from './actions.js';
 import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, incrementStruct, planetName } from './space.js';
 import { defineGovernor, removeTask, govActive } from './governor.js';
 import { defineIndustry, nf_resources, addSmelter, setupRituals, cancelRituals } from './industry.js';
@@ -1865,8 +1865,8 @@ const tauCetiModules = {
                 Brick(offset){ return tauEnabled() ? spaceCostMultiplier('colony', offset, wom_recycle(880000), 1.225, 'tauceti') : 0; },
             },
             effect(){
-                let pop = $(this)[0].citizens();
-                let containers = global.tech['isolation'] ? 900 : 250;
+                let pop = this.citizens();
+                let containers = this.caps.Containers();
                 let fuel = +($(this)[0].support_fuel().a).toFixed(1);
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].home])}</div>`;
                 
@@ -1902,6 +1902,17 @@ const tauCetiModules = {
                     desc += `<div class="has-text-caution">${loc('spend',[fuel,global.resource[$(this)[0].support_fuel().r].name])}</div>`;
                 }
                 return desc;
+            },
+            caps:{
+                Containers(count){
+                    return (global.tech['isolation'] ? 900 : 250) * (count ?? 1);
+                },
+                Crates(count){
+                    return this.Containers(count);
+                },
+                Pop(count){
+                    return actions.tauceti.tau_home.colony.citizens()* (count ?? 1);
+                },
             },
             s_type: 'tau_home',
             support(){ return -2; },
@@ -5498,9 +5509,6 @@ export function tpStorageMultiplier(type,heavy,wiki){
     if (global.race['pack_rat']){
         multiplier *= 1 + (traits.pack_rat.vars()[1] / 100);
     }
-    if (global.stats.achieve['blackhole']){
-        multiplier *= 1 + global.stats.achieve.blackhole.l * 0.05;
-    }
     if (global.tech['world_control']){
         multiplier *= 3;
     }
@@ -5529,7 +5537,7 @@ export function tpStorageMultiplier(type,heavy,wiki){
         }
         break;
     }
-    return multiplier;
+    return BHStorageMulti(multiplier);
 }
 
 export function jumpGateShutdown(){
