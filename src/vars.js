@@ -79,6 +79,16 @@ export function seededRandom(min, max, alt, useSeed) {
     return min + rnd * (max - min);
 }
 
+// Wrap game state in a Vue 3 reactive proxy so that the game's direct mutations
+// to `global` (the loops mutate it in place) are tracked and the UI updates.
+// Vue 3's reactive() returns a proxy and does NOT instrument the original object
+// in place the way Vue 2 did, so every consumer must share this same proxy --
+// achieved here by making `global` itself reactive at its single source. Guarded
+// so non-Vue contexts (e.g. debug-console) still work with a plain object.
+function makeReactive(state){
+    return (typeof Vue !== 'undefined' && Vue && typeof Vue.reactive === 'function') ? Vue.reactive(state) : state;
+}
+
 {
     let global_data = save.getItem('evolved') || false;
     if (global_data) {
@@ -95,10 +105,11 @@ export function seededRandom(min, max, alt, useSeed) {
     else {
         newGameData();
     }
+    global = makeReactive(global);
 }
 
 export function setGlobal(gameState) {
-    global = gameState;
+    global = makeReactive(gameState);
 }
 
 if (!global['version']){
