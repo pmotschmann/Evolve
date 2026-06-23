@@ -1,8 +1,8 @@
 import { global, keyMultiplier, p_on, support_on, tmp_vars } from './vars.js';
 import { vBind, clearElement, popover, darkEffect, eventActive, easterEgg, getHalloween } from './functions.js';
 import { loc } from './locale.js';
-import { highPopAdjust } from './prod.js';
-import { racialTrait, servantTrait, races, traits, biomes, planetTraits, fathomCheck } from './races.js';
+import { highPopAdjust, teamster } from './prod.js';
+import { racialTrait, servantTrait, races, traits, biomes, planetTraits, fathomCheck, traitRank } from './races.js';
 import { armyRating } from './civics.js';
 import { govActive } from './governor.js';
 import { craftingRatio, craftCost, craftingPopover } from './resources.js';
@@ -155,18 +155,10 @@ export const job_desc = {
         }
         return desc;
     },
-    scavenger: function(servant){
-        let scavenger = traits.scavenger.vars()[0];
-        if (global.city.ptrait.includes('trashed') && global.race['scavenger']){
-            scavenger *= 1 + (traits.scavenger.vars()[1] / 100);
-        }
-        if (global.race['high_pop'] && !servant){
-            scavenger *= traits.high_pop.vars()[1] / 100;
-        }
-        if (!servant){
-            scavenger = +workerScale(scavenger,'scavenger').toFixed(2);
-        }
-        let desc = loc('job_scavenger_desc',[races[global.race.species].home,scavenger]);
+    scavenger: function(servant) {
+        let bonus = scavengerBonus(servant).toFixed(2);
+
+        let desc = loc('job_scavenger_desc',[races[global.race.species].home, bonus]);
         if (global.civic.d_job === 'scavenger' && !servant){
             desc = desc + ' ' + loc('job_default',[jobName('scavenger')]);
         }
@@ -407,6 +399,51 @@ export function defineJobs(define){
         if (global.race['servants']){
             loadServants();
         }
+    }
+}
+
+export function scavengerBonus(servant = false){
+    if (!servant) {
+        let rank = 0;
+        if (global.race['scavenger']) {
+            rank = traitRank('scavenger');
+        }
+        if (global.city.ptrait.includes('trashed') && rank < 1) {
+            rank = 1;
+        }
+
+        let bonus = traits.scavenger.vars(rank)[0];
+        bonus = workerScale(bonus, 'scavenger');
+        if (global.city.ptrait.includes('trashed') && global.race['scavenger']){
+            bonus *= 1 + (traits.scavenger.vars()[1] / 100);
+        }
+        if (global.city.ptrait.includes('trashed')){
+            bonus *= planetTraits.trashed.vars()[1];
+        }
+        bonus = highPopAdjust(bonus);
+        if (global.race['gravity_well']){
+            bonus = teamster(bonus);
+        }
+
+        return bonus;
+    }
+    else {
+        let rank = 1;
+        if (global.race['scavenger']) {
+            let scavRank = traitRank('scavenger');
+            if (scavRank > rank)
+                rank = scavRank;
+        }
+
+        let bonus = traits.scavenger.vars(rank)[0];
+        if (global.city.ptrait.includes('trashed') && global.race['scavenger']){
+            bonus *= 1 + (traits.scavenger.vars()[1] / 100);
+        }
+        if (global.city.ptrait.includes('trashed')){
+            bonus *= planetTraits.trashed.vars()[1];
+        }
+        bonus *= servantTrait(global.race.servants.jobs.scavenger ?? 0, 'scavenger');
+        return bonus;
     }
 }
 

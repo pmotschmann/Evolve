@@ -2,9 +2,9 @@ import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resiz
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat, checkAdept } from './achieve.js';
 import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, resetResBuffer, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone, addATime, exceededATimeThreshold, loopTimers, calcQuantumLevel, drawPet } from './functions.js';
-import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, cleanRemoveTrait } from './races.js';
+import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, cleanRemoveTrait, traitRank } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
-import { defineJobs, job_desc, loadFoundry, farmerValue, jobName, jobScale, workerScale, limitCraftsmen, loadServants} from './jobs.js';
+import {defineJobs, job_desc, loadFoundry, farmerValue, jobName, jobScale, workerScale, limitCraftsmen, loadServants, scavengerBonus } from './jobs.js';
 import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, luxGoodPrice, smelterUnlocked, smelterFuelConfig, setupRituals, maxRitualNum, ritual_types } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
 import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, checkPowerRequirements, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct, casino_vault, casinoEarn, doCallbacks, cLabels } from './actions.js';
@@ -1032,21 +1032,14 @@ function fastLoop(){
         global_multiplier *= 1 + (bonus / 100);
     }
     if ((global.city.ptrait.includes('trashed') || global.race['scavenger'] || (global.race['servants'] && global.race.servants['force_scavenger'])) && global.civic['scavenger']){
-        let scavenger = global.city.ptrait.includes('trashed') || global.race['scavenger'] ? workerScale(global.civic.scavenger.workers,'scavenger') : 0;
-        if (global.race['servants']){ scavenger += jobScale(global.race.servants.jobs.scavenger); }
+        let popScavenger = workerScale(global.civic.scavenger.workers,'scavenger') * scavengerBonus(false);
+        let servantScavenger = global.race['servants'] ?  global.race.servants.jobs.scavenger * scavengerBonus(true) : 0;
+
+        let scavenger = popScavenger + servantScavenger;
+
         if (scavenger > 0){
-            let bonus = (scavenger * traits.scavenger.vars()[0]);
-            if (global.city.ptrait.includes('trashed') && global.race['scavenger']){
-                bonus *= 1 + (traits.scavenger.vars()[1] / 100);
-            }
-            if (global.city.ptrait.includes('trashed')){
-                bonus *= planetTraits.trashed.vars()[1];
-            }
-            if (global.race['high_pop']){
-                bonus = highPopAdjust(bonus);
-            }
-            breakdown.p['Global'][jobName('scavenger')] = bonus+'%';
-            global_multiplier *= 1 + (bonus / 100);
+            breakdown.p['Global'][jobName('scavenger')] = scavenger+'%';
+            global_multiplier *= 1 + (scavenger / 100);
         }
     }
     if (global.race['unfathomable'] && global.city['surfaceDwellers'] && global.city['captive_housing']){
