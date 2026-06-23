@@ -1042,6 +1042,9 @@ function fastLoop(){
             if (global.city.ptrait.includes('trashed')){
                 bonus *= planetTraits.trashed.vars()[1];
             }
+            if (global.race['ocular_power'] && global.race['ocularPowerConfig'] && global.race.ocularPowerConfig.t){
+                bonus *= 1 + (traits.ocular_power.vars()[1] / 500);
+            }
             if (global.race['high_pop']){
                 bonus = highPopAdjust(bonus);
             }

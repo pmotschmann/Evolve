@@ -6653,7 +6653,7 @@ export function racialTrait(workers,type){
         modifier *= 1.25;
     }
     if (global.race['ocular_power'] && global.race['ocularPowerConfig'] && global.race.ocularPowerConfig.t 
-        && ['farmer','miner','lumberjack','scavenger','factory'].includes(type)){
+        && ['farmer','miner','lumberjack','factory'].includes(type)){
         let labor = 20 * (traits.ocular_power.vars()[1] / 100);
         modifier *= 1 + (labor / 100);
     }
