@@ -3969,7 +3969,7 @@ function fastLoop(){
                     upperBound *= 3;
                 }
 
-                upperBound *= (3 - (2 ** time_multiplier));
+                upperBound *= time_multiplier;
                 if(Math.rand(0, upperBound) <= lowerBound){
                     global['resource'][global.race.species].amount++;
                     global.civic[global.civic.d_job].workers++;
