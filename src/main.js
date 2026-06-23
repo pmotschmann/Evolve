@@ -8476,7 +8476,7 @@ function midLoop(){
             }
 
             let catchVar = Math.round(40 / traits.unfathomable.vars()[1]);
-            if (usedCap < global.city.captive_housing.raceCap && Math.rand(0,(catchVar * usedCap) - hunt) <= 0){
+            if (usedCap < global.city.captive_housing.raceCap && Math.rand(0,(catchVar * usedCap)) - hunt <= 0){
                 let k = Math.rand(0,global.city.surfaceDwellers.length);
                 global.city.captive_housing[`jailrace${k}`]++;
             }
