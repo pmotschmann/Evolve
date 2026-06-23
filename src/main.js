@@ -3000,7 +3000,7 @@ function fastLoop(){
                         workers /= traits.high_pop.vars()[0];
                     }
 
-                    if (global.race['sky_lover'] && ['miner','coal_miner','crystal_miner','pit_miner'].includes(job)){
+                    if (global.race['sky_lover'] && ['miner','coal_miner','crystal_miner','pit_miner','elysium_miner'].includes(job)){
                         workers *= 1 + (traits.sky_lover.vars()[0] / 100);
                     }
 
