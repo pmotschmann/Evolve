@@ -2270,7 +2270,7 @@
   "tech_scarletite_avail": "Scarletite is now available for manufacture; however, it requires constructing a special forge at the ruins.",
   "tech_pillars": "Pillars Research",
   "tech_pillars_effect": "Research the Circle of Pillars",
-  "tech_pillars_msg": "One of the pillars has a symbol that looks like a %0. It contains an open socket on the base. According to the Codex Infernium, something should happen if you permanently fuse a Harmony Crystal into the pillar using Scarletite.",
+  "tech_pillars_msg": "One of the pillars has symbols that look like %0. It contains an open socket on the base. According to the Codex Infernium, something should happen if you permanently fuse a Harmony Crystal into the pillar using Scarletite.",
   "tech_reclaimer": "Reclaimers",
   "tech_reclaimer_desc": "Reclaim bones from the dead",
   "tech_reclaimer_effect": "Create a class of worker whose purpose is to strip the flesh from dead things and collect the bones.",
