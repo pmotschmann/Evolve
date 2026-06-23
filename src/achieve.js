@@ -1054,7 +1054,18 @@ export const perkList = {
     blackhole: {
         name: loc(`achieve_blackhole_name`),
         desc(wiki){
-            let bonus = wiki ? "5/10/15/20/25" : global.stats.achieve['blackhole'] ? global.stats.achieve.blackhole.l * 5 : 5;
+            let bonus = 0;
+            if (global.stats.achieve.blackhole) {
+                bonus = global.stats.achieve.blackhole.l * 5;
+                if (wiki) {
+                    let re = new RegExp(`(.*\\b${bonus}\\b/?)(.*)`)
+                    let [, done, avail] = "5/10/15/20/25".match(re)
+                    bonus = done
+                    if (avail) {
+                        bonus += `<span class="has-text-danger">${avail}</span>`
+                    }
+                }
+            }
             return loc("achieve_perks_blackhole",[bonus]);
         },
         active(){
