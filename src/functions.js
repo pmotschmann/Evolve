@@ -3139,109 +3139,15 @@ export function getShrineBonus(type) {
 	return shrine_bonus;
 }
 
-const valAdjust = {
-    promiscuous: false,
-    revive: false,
-    fast_growth: false,
-    spores: false,
-    terrifying: false,
-    fibroblast: true,
-    hivemind: true,
-    imitation: true,
-    elusive: true,
-    chameleon: true,
-    blood_thirst: true,
-    selenophobia: true,
-    hooved: true,
-    anthropophagite: true,
-    unfathomable: false,
-    darkness: false,
-    living_tool: false,
-    living_materials: true,
-    blurry: true,
-    playful: true,
-    ghostly: true,
-    environmentalist: true,
-    catnip: true,
-    anise: true
-};
-
 function getTraitVals(trait, rank, species){
+    //Get values from the trait
     let vals = traits[trait].hasOwnProperty('vars') ? traits[trait].vars(rank) : [];
-    if (valAdjust.hasOwnProperty(trait)){
-        if (trait === 'fibroblast'){
-            vals = [vals[0] * 5];
-        }
-        else if (trait === 'hivemind' && global.race['high_pop']){
-            vals = [vals[0] * traits.high_pop.vars()[0]];
-        }
-        else if (trait === 'imitation'){
-            vals.push(races[global.race['srace'] || 'protoplasm'].name);
-        }
-        else if (trait === 'elusive'){
-            vals = [Math.round(((1/30)/(1/(30+vals[0]))-1)*100)];
-        }
-        else if (trait === 'chameleon'){
-            vals = [vals[0], Math.round(((1/30)/(1/(30+vals[1]))-1)*100)];
-        }
-        else if (trait === 'blood_thirst'){
-            vals = [Math.ceil(Math.log2(vals[0]))];
-        }
-        else if (trait === 'selenophobia'){
-            vals = [14 - vals[0], vals[0]];
-        }
-        else if (trait === 'hooved'){
-            vals.unshift(hoovedRename(false, species));
-        }
-        else if (trait === 'anthropophagite'){
-            vals = [vals[0] * 10000];
-        }
-        else if (trait === 'living_materials'){
-            vals = [global.resource.Lumber.name, global.resource.Plywood.name, global.resource.Furs.name, loc('resource_Amber_name')];
-        }
-        else if (trait === 'environmentalist'){
-            let coal = -(actions.city.coal_power.powered(true));
-            let oil = -(actions.city.oil_power.powered(true));
-            vals = [coal + vals[0], oil + vals[0] - 1, oil + vals[0] + 1, coal, oil, vals[1]];
-        }
-        else if (trait === 'blurry'){
-            if (global.race['warlord']){
-                vals = [+((100/(100-vals[0])-1)*100).toFixed(1)];
-            }
-        }
-        else if (trait === 'playful'){
-            if (global.race['warlord']){
-                vals = [vals[0] * 100, global.resource.Furs.name];
-            }
-        }
-        else if (trait === 'ghostly'){
-            if (global.race['warlord']){
-                vals = [vals[0], +((vals[1] - 1) * 100).toFixed(0), global.resource.Soul_Gem.name];
-            }
-        }
-        else if (trait === 'catnip' || trait === 'anise'){
-            vals = rank <= 2 ? [] : (rank === 3  ? [vals[0]] : [vals[0],vals[1]]);
-        }
-        else if (!valAdjust[trait]){
-            vals = [];
-        }
+
+    //Use the desc_function system to modify trait values for descriptions, if this trait has a description function
+    if (traits[trait].hasOwnProperty('desc_function')) {
+        vals = traits[trait].desc_function(vals, species);
     }
-    else if (trait === 'elemental'){
-        switch (traits.elemental.vars(rank)[0]){
-            case 'electric':
-                vals = [loc(`element_electric`), traits.elemental.vars(rank)[1], traits.elemental.vars(rank)[5]];
-                break;
-            case 'acid':
-                vals = [loc(`element_acid`), traits.elemental.vars(rank)[2], traits.elemental.vars(rank)[5]];
-                break;
-            case 'fire':
-                vals = [loc(`element_fire`), traits.elemental.vars(rank)[3], traits.elemental.vars(rank)[5]];
-                break;
-            case 'frost':
-                vals = [loc(`element_frost`), traits.elemental.vars(rank)[4], traits.elemental.vars(rank)[5], loc('city_biolab')];
-                break;
-        }
-    }
+
     return vals;
 }
 
@@ -3374,6 +3280,16 @@ const altTraitDesc = {
     ghostly: 'warlord',
     playful: 'warlord',
 };
+
+export function convert_divisor (input) {
+    //The input value is used to multiply a divisor, use X/(1+X) to indicate a percentage change in descriptions.
+    return +(100 * input / (100 + input)).toFixed(2);
+}
+
+export function ambush_divisor_to_percentage(input) {
+    //The input is a change to the base ambush divisor of 30. Convert to a percentage change in ambush frequency.
+    return +(100 * (1 - (30 / (input + 30)))).toFixed(2);
+}
 
 export function getTraitDesc(info, trait, opts){
     let fanatic = opts['fanatic'] || false;
