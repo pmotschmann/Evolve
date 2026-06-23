@@ -1,7 +1,7 @@
 import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level, callback_queue, active_rituals } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat, checkAdept } from './achieve.js';
-import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, resetResBuffer, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone, addATime, exceededATimeThreshold, loopTimers, calcQuantumLevel, drawPet } from './functions.js';
+import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, resetResBuffer, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone, addATime, exceededATimeThreshold, loopTimers, calcQuantumLevel, drawPet, getTradeRouteCount } from './functions.js';
 import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, cleanRemoveTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobName, jobScale, workerScale, limitCraftsmen, loadServants} from './jobs.js';
@@ -9858,65 +9858,10 @@ function midLoop(){
             breakdown.c.Asphodel_Powder[loc('eden_encampment_title')] = powder+'v';
         }
 
-        breakdown['t_route'] = {};
-        global.city.market.mtrade = 0;
-        if (global.race['banana']){
-            global.city.market.mtrade++;
-            breakdown.t_route[loc('base')] = 1;
-        }
-        if (global.city['trade']){
-            let routes = global.race['nomadic'] || global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
-            if (global.tech['trade'] && global.tech['trade'] >= 3){
-                routes--;
-            }
-            if (global.race['flier']){
-                routes += traits.flier.vars()[1];
-            }
-            global.city.market.mtrade += routes * global.city.trade.count;
-            breakdown.t_route[loc('city_trade')] = routes * global.city.trade.count;
-            if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 3){
-                let r_count = faithTempleCount();
-                global.city.market.mtrade += r_count;
-                breakdown.t_route[global.race['cataclysm'] ? loc('space_red_ziggurat_title') : structName('temple')] = r_count;
-            }
-        }
-        if (global.city['wharf']){
-            let r_count = global.city.wharf.count * 2;
-            global.city.market.mtrade += r_count;
-            breakdown.t_route[loc('city_wharf')] = r_count;
-        }
-        if (global.space['gps'] && global.space.gps.count >= 4){
-            let r_count = global.space.gps.count * 2;
-            global.city.market.mtrade += global.space.gps.count * 2;
-            breakdown.t_route[loc('space_home_gps_title')] = r_count;
-        }
-        if (global.city['storage_yard'] && global.tech['trade'] && global.tech['trade'] >= 3){
-            let r_count = global.city.storage_yard.count;
-            global.city.market.mtrade += r_count;
-            breakdown.t_route[loc('city_storage_yard')] = r_count;
-        }
-        if (global.portal['bazaar'] && global.portal['spire']){
-            let r_count = global.portal.bazaar.count * global.portal.spire.count;
-            global.city.market.mtrade += r_count;
-            breakdown.t_route[loc('portal_bazaar_title')] = r_count;
-        }
-        if (global.tech['railway']){
-            let routes = 0;
-            if (global.race['cataclysm'] || global.race['orbit_decayed']){
-                routes = global.space['gps'] ? Math.floor(global.space.gps.count / 3) : 0;
-            }
-            else if (global.race['warlord']){
-                routes = 5;
-            }
-            else {
-                routes = global.city['storage_yard'] ? Math.floor(global.city.storage_yard.count / 6) : 0;
-            }
-            if (global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 2){
-                routes++;
-            }
-            global.city.market.mtrade += global.tech['railway'] * routes;
-            breakdown.t_route[loc('arpa_projects_railway_title')] = global.tech['railway'] * routes;
-        }
+        var routes = getTradeRouteCount(true);
+        breakdown['t_route'] = routes.breakdown;
+        global.city.market.mtrade = routes.count;
+
         if (p_on['titan_spaceport']){
             let water = p_on['titan_spaceport'] * spatialReasoning(250);
             caps['Water'] += water;

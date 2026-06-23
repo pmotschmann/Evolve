@@ -2,7 +2,7 @@ import { global, seededRandom, save, webWorker, power_generated, keyMultiplier, 
 import { loc } from './locale.js';
 import { defineIndustry } from './industry.js';
 import { setJobName, jobScale, loadFoundry } from './jobs.js';
-import { vBind, clearElement, popover, removeFromQueue, removeFromRQueue, calc_mastery, gameLoop, getEaster, getHalloween, randomKey, modRes, messageQueue } from './functions.js';
+import { vBind, clearElement, popover, removeFromQueue, removeFromRQueue, calc_mastery, gameLoop, getEaster, getHalloween, randomKey, modRes, messageQueue, getTradeRouteCount } from './functions.js';
 import { setResourceName, drawResourceTab, atomic_mass } from './resources.js';
 import { buildGarrison, govEffect, govTitle, armyRating, govCivics } from './civics.js';
 import { govActive, removeTask, defineGovernor } from './governor.js';
@@ -7321,6 +7321,30 @@ export function cleanAddTrait(trait){
             }
             calc_mastery(true);
             break;
+        case 'nomadic':
+        case 'xenophobic':
+            const routes = Object.keys(global.resource)
+                                 .filter(res => !isNaN(global.resource[res].trade) && global.resource[res].trade != 0)
+
+            const usedRoutes = routes.map(res => global.resource[res].trade)
+                                     .reduce((agg, val) => agg + Math.abs(val), 0);
+                                     
+            const maxRoutes = getTradeRouteCount().count;
+            let lostRoutes = usedRoutes - maxRoutes;
+            
+            let ix = 0;
+            while (lostRoutes > 0) {
+                const res = routes[ix];
+                const cnt = Math.min(Math.abs(global.resource[res].trade), lostRoutes);
+                if (global.resource[res].trade > 0)
+                    global.resource[res].trade -= cnt;
+                else
+                    global.resource[res].trade += cnt;
+
+                lostRoutes -= cnt;
+                ix++;
+            }
+            break;
         default:
             break;
     }
@@ -7405,6 +7429,28 @@ export function cleanRemoveTrait(trait,rank){
                 checkPurgatory('eden','eden_cement');
                 global.resource.Cement.display = true;
                 global.civic.cement_worker.display = true;
+            }
+            
+            const routes = Object.keys(global.resource)
+                                 .filter(res => !isNaN(global.resource[res].trade) && global.resource[res].trade != 0)
+
+            const usedRoutes = routes.map(res => global.resource[res].trade)
+                                     .reduce((agg, val) => agg + Math.abs(val), 0);
+                                     
+            const maxRoutes = getTradeRouteCount().count;  
+            let lostRoutes = usedRoutes - maxRoutes;
+            
+            let ix = 0;
+            while (lostRoutes > 0) {
+                const res = routes[ix];
+                const cnt = Math.min(Math.abs(global.resource[res].trade), lostRoutes);
+                if (global.resource[res].trade > 0)
+                    global.resource[res].trade -= cnt;
+                else
+                    global.resource[res].trade += cnt;
+
+                lostRoutes -= cnt;
+                ix++;
             }
             break;
         case 'sappy':
