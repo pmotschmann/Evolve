@@ -7,6 +7,19 @@ export function combatPage(content){
     infoBoxBuilder(mainContent,{ name: 'basics', template: 'combat', label: loc('wiki_combat_basics'), paragraphs: 4, h_level: 2});
     sideMenu('add',`combat-gameplay`,`basics`,loc('wiki_combat_basics'));
 
+    infoBoxBuilder(mainContent,{ name: 'rating', template: 'combat', label: loc('wiki_combat_rating'), paragraphs: 7, break: [5], h_level: 2,
+        para_data: {
+            1: [loc('wiki_combat_rating')],
+            2: [loc('wiki_combat_rating')],
+            3: [loc('wiki_combat_rating'), '1'],
+            4: [loc('wiki_combat_rating')],
+            5: [loc('wiki_combat_rating'), loc('wiki_combat_roll')],
+            6: [loc('wiki_combat_roll')],
+            7: [loc('wiki_combat_roll'), '5', '15']
+        }
+    });
+    sideMenu('add',`combat-gameplay`,`rating`,loc('wiki_combat_rating'));
+
     infoBoxBuilder(mainContent,{ name: 'campaign', template: 'combat', label: loc('wiki_combat_campaign'), paragraphs: 14, break: [5,11], h_level: 2,
         para_data: {
             1: [5, loc('civics_garrison_tactic_ambush'), loc('civics_garrison_tactic_raid'), loc('civics_garrison_tactic_pillage'), loc('civics_garrison_tactic_assault'), loc('civics_garrison_tactic_siege')],
@@ -19,6 +32,24 @@ export function combatPage(content){
         }
     });
     sideMenu('add',`combat-gameplay`,`campaign`,loc('wiki_combat_campaign'));
+
+    infoBoxBuilder(mainContent,{ name: 'healing', template: 'combat', label: loc('wiki_combat_healing'), paragraphs: 9, break: [2, 3, 4, 7, 8, 9], h_level: 2,
+        para_data: {
+            1: [loc('civics_garrison_soldiers')],
+            2: [loc('wiki_combat_healing_base'), loc('wiki_combat_healing_potential'), loc('wiki_combat_healing_difficulty')],
+            3: [loc('wiki_combat_healing_base'), '1'],
+            4: [loc('wiki_combat_healing_potential')],
+            5: [loc('wiki_combat_healing_potential'), loc('tech_operating_base'), loc('wiki_challenges_scenarios_truepath'), loc('city_boot_camp'), loc('genelab_genus_synthetic'), loc('city_hospital')],
+            6: [loc('wiki_combat_healing_potential')],
+            7: [loc('rejuvenated'), loc('sign_cancer'), loc('wiki_mechanics_tech_levels_medical'), loc('trait_fibroblast_name'), loc('trait_cannibalize_name'), loc('trait_high_pop_name'), loc('governor_soldier'), loc('wiki_tech_tree_banquet'), loc('race_troll')],
+            8: [loc('wiki_combat_healing_difficulty'), '20'],
+            9: [loc('wiki_combat_healing_potential'), loc('wiki_combat_healing_difficulty'), loc('wiki_combat_healing_base')]
+        },
+        data_link: {
+            7: [false, false, 'wiki.html#mechanics-gameplay-tech_levels', false, false, false, false, false, false]
+        }
+    });
+    sideMenu('add',`combat-gameplay`,`healing`,loc('wiki_combat_healing'));
 
     infoBoxBuilder(mainContent,{ name: 'loot', template: 'combat', label: loc('wiki_combat_loot'), paragraphs: 30, break: [3,5,10,13,16,19,22,26,27,28,29,30], h_level: 2,
         para_data: {
@@ -35,17 +66,17 @@ export function combatPage(content){
             12: [5],
             13: [loc('civics_garrison_tactic_raid'),4,loc('wiki_combat_loot_money'),loc('wiki_combat_loot_basic'),loc('wiki_combat_loot_common'),loc('wiki_combat_loot_rare')],
             14: [loc('trait_beast_of_burden_name'),loc('wiki_combat_loot_money'),loc('wiki_combat_loot_basic'),loc('wiki_combat_loot_common'),loc('wiki_combat_loot_rare')],
-            15: [10],
+            15: [10, 4],
             16: [loc('civics_garrison_tactic_pillage'),5,loc('wiki_combat_loot_money'),loc('wiki_combat_loot_basic'),loc('wiki_combat_loot_common'),loc('wiki_combat_loot_rare')],
             17: [loc('trait_beast_of_burden_name'),loc('wiki_combat_loot_money'),loc('wiki_combat_loot_basic'),loc('wiki_combat_loot_common'),loc('wiki_combat_loot_rare')],
-            18: [25],
+            18: [25, 30],
             19: [loc('civics_garrison_tactic_assault'),5,loc('wiki_combat_loot_money'),loc('wiki_combat_loot_basic'),loc('wiki_combat_loot_common'),loc('wiki_combat_loot_rare')],
             20: [loc('trait_beast_of_burden_name'),loc('wiki_combat_loot_money'),loc('wiki_combat_loot_basic'),loc('wiki_combat_loot_common'),loc('wiki_combat_loot_rare')],
-            21: [50],
+            21: [50, 100],
             22: [loc('civics_garrison_tactic_siege'),5,loc('wiki_combat_loot_money'),loc('wiki_combat_loot_basic'),loc('wiki_combat_loot_common'),loc('wiki_combat_loot_rare')],
             23: [loc('trait_beast_of_burden_name'),loc('wiki_combat_loot_money'),loc('wiki_combat_loot_basic'),loc('wiki_combat_loot_common'),loc('wiki_combat_loot_rare')],
             24: [loc('civics_garrison_tactic_siege')],
-            25: [999],
+            25: [999, 400],
             28: [`base loot * log(looters + 1)`],
             29: [loc('civics_gov_eco_rate')],
             30: [`floor(loot * economic rating / 100)`]
@@ -67,6 +98,7 @@ export function combatPage(content){
             23: ['warning','caution','caution','caution','caution'],
             28: ['advanced'],
             30: ['advanced'],
+            32: ['advanced'],
         }
     });
     sideMenu('add',`combat-gameplay`,`loot`,loc('wiki_combat_loot'));

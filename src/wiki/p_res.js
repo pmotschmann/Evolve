@@ -134,6 +134,8 @@ export function pResPage(content){
     section = infoBoxBuilder(mainContent,{ name: 'servants', template: 'p_res', paragraphs: 5, h_level: 2, break: [3,4,5],
         para_data: {
             1: [loc('wiki_resets_matrix'),loc('wiki_resets_retired'),loc('wiki_resets_eden')],
+            2: [loc('wiki_mechanics_job_type_basic')],
+            4: [loc('wiki_mechanics_job_type_basic')],
             5: [loc('achieve_overlord_name')],
         },
         data_link: {

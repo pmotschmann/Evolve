@@ -1,5 +1,5 @@
 import { global, set_alevel, set_ulevel } from './vars.js';
-import { clearElement, popover, flib, calc_mastery, masteryType, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, calcQueueMax, calcRQueueMax, messageQueue, eventActive, easterEgg, getHalloween, trickOrTreat, harmonyEffect } from './functions.js';
+import { clearElement, popover, flib, calc_mastery, masteryType, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, calcQueueMax, calcRQueueMax, messageQueue, eventActive, easterEgg, getHalloween, trickOrTreat, harmonyEffect, convertDivisor } from './functions.js';
 import { races, genus_def } from './races.js';
 import { actions } from './actions.js';
 import { universe_affixes, universe_types, piracy } from './space.js';
@@ -1530,7 +1530,7 @@ export const perkList = {
             },
             {
                 desc(){
-                    return loc("achieve_perks_technophobe4",[10]);
+                    return loc("achieve_perks_technophobe4",[-convertDivisor(-10)]);
                 },
                 active(){
                     return global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 5 ? true : false;

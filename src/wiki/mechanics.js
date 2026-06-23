@@ -52,13 +52,25 @@ export function mechanicsPage(content){
         });
         sideMenu('add',`mechanics-gameplay`,`spack`,loc('wiki_mechanics_spack'));
     }
+
+    { // Job Types
+        infoBoxBuilder(mainContent,{ name: 'job_types', template: 'mechanics', label: loc('wiki_mechanics_job_types'), paragraphs: 4, break: [3,4], h_level: 2,
+            para_data: {
+                2: [loc('wiki_mechanics_job_type_basic'), loc('wiki_mechanics_job_type_mining')],
+                3: [loc('job_farmer'), loc('job_lumberjack'), loc('job_quarry_worker'), loc('job_hunter'), loc('job_forager'), loc('job_crystal_miner'), loc('job_scavenger'), loc('wiki_mechanics_job_type_basic')],
+                4: [loc('job_quarry_worker'), loc('job_crystal_miner'), loc('job_miner'), loc('job_pit_miner'), loc('job_coal_miner'), loc('job_elysium_miner'), loc('wiki_mechanics_job_type_mining')]
+            }
+        });
+        sideMenu('add',`mechanics-gameplay`,`job_types`,loc('wiki_mechanics_job_types'));
+    }
     
     { // Default Job
         infoBoxBuilder(mainContent,{ name: 'job', template: 'mechanics', label: loc('wiki_mechanics_job'), paragraphs: 9, break: [5], h_level: 2,
             para_data: {
                 1: [loc('wiki_mechanics_job')],
                 2: ['*'],
-                3: [loc('wiki_mechanics_job')]
+                3: [loc('wiki_mechanics_job'), loc('wiki_mechanics_job_type_basic')],
+                4: [loc('wiki_mechanics_job_type_basic')]
             }
         });
         sideMenu('add',`mechanics-gameplay`,`job`,loc('wiki_mechanics_job'));
@@ -82,6 +94,38 @@ export function mechanicsPage(content){
         let subSection = createCalcSection(stress,'mechanics','job_stress',loc('wiki_mechanics_job_stress'));
         jobStressCalc(subSection);
         sideMenu('add',`mechanics-gameplay`,`job_stress`,loc('wiki_mechanics_job_stress'));
+    }
+
+    { // Starvation
+        infoBoxBuilder(mainContent,{ name: 'starvation', template: 'mechanics', label: loc('wiki_mechanics_starvation'), paragraphs: 7, break: [3,6], h_level: 2,
+            para_data: {
+                2: [loc('wiki_mechanics_starvation'), loc('wiki_mechanics_starvation_threshold'), loc('wiki_mechanics_starvation_penalty')],
+                3: [loc('wiki_mechanics_starvation_threshold'), '1.25', loc('wiki_mechanics_starvation')],
+                4: ['1', loc('wiki_mechanics_starvation_threshold'), loc('wiki_mechanics_starvation')],
+                5: ['1', '10', '0.25'],
+                6: [loc('wiki_mechanics_starvation_penalty'), '50'],
+                7: [loc('wiki_mechanics_starvation_penalty')],
+                8: [loc('wiki_mechanics_starvation_penalty')]
+            }
+        });
+        sideMenu('add',`mechanics-gameplay`,`starvation`,loc('wiki_mechanics_starvation'));
+    }
+
+    { //Population Growth
+        infoBoxBuilder(mainContent,{ name: 'pop_growth', template: 'mechanics', label: loc('wiki_mechanics_pop_growth'), paragraphs: 8, break: [2,3,5,6,8], h_level: 2,
+            para_data: {
+                1: [loc('wiki_challenges_scenarios_fasting'), loc('trait_artifical_name'), loc('trait_spongy_name'), loc('trait_parasite_name'), loc('tech_vaccine_campaign'), loc('wiki_resets_matrix')],
+                2: [loc('wiki_mechanics_pop_growth_lower_bound'), loc('wiki_mechanics_pop_growth_upper_bound')],
+                3: [loc('wiki_mechanics_pop_growth_lower_bound'), 0, 1, loc('tech_aphrodisiac'), 2, loc('tech_fertility_clinic')],
+                5: [loc('wiki_mechanics_pop_growth_valentines_day'), loc('trait_fast_growth_name'), loc('trait_spores_name'), loc('tech_fertility_clinic'),
+                    loc('arpa_genepool_replication_title'), loc('trait_promiscuous_name'), loc('wiki_challenges_scenarios_fasting'), loc('city_banquet'),
+                    loc('sign_libra'), loc('trait_high_pop_name'), loc('biome_taiga_name'), loc('planet_toxic'), loc('trait_parasite_name'), loc('evo_challenge_cataclysm'), loc('evo_challenge_orbit_decay')
+                ],
+                6: [loc('wiki_mechanics_pop_growth_upper_bound'), `3 - 2 ^ 0.25`, `1.81`],
+                8: [`0`, loc('wiki_mechanics_pop_growth_upper_bound'), loc('wiki_mechanics_pop_growth_lower_bound')]
+            }
+        });
+        sideMenu('add',`mechanics-gameplay`,`pop_growth`,loc('wiki_mechanics_pop_growth'));
     }
 
     { // Multiplier Keys
@@ -321,6 +365,26 @@ export function mechanicsPage(content){
         sideMenu('add',`mechanics-gameplay`,`occupying`,loc('wiki_mechanics_occupying'));
     }
 
+    { //Tech Levels
+        infoBoxBuilder(mainContent,{ name: 'tech_levels', template: 'mechanics', label: loc('wiki_mechanics_tech_levels'), paragraphs: 5, break: [2,3,4,5], h_level: 2,
+            para_data: {
+                2: [loc('tech_science'), loc('tech_library'), loc('tech_thesis'), loc('tech_research_grant'),
+                        global.race.universe === 'magic' ? loc('tech_magic_tomes') : loc('tech_scientific_journal'), loc('tech_adjunct_professor'), loc('tech_tesla_coil'),
+                        loc('tech_internet'), loc('tech_observatory'), loc('tech_world_collider'), global.race.universe === 'magic' ? loc('tech_sanctum') : loc('tech_laboratory'),
+                        loc('tech_virtual_assistant'), loc('tech_dimensional_readings'), loc('tech_quantum_entanglement'), global.race.universe === 'magic' ? loc('tech_expedition_wiz') : loc('tech_expedition'),
+                        loc('tech_subspace_sensors'), loc('tech_alien_database'), loc('tech_orichalcum_capacitor'), loc('tech_advanced_biotech'), loc('tech_codex_infinium'),
+                        loc('tech_spirit_box'), loc('tech_spirit_researcher'), loc('tech_dimensional_tap'), loc('wiki_mechanics_tech_levels_science')],
+                3: [global.race.universe === 'magic' ? loc('tech_sages') : loc('tech_mad_science'), loc('tech_electricity'), loc('tech_industrialization'),
+                        loc('tech_electronics'), loc('tech_fission'), loc('tech_arpa'), loc('tech_rocketry'), loc('tech_robotics'), loc('tech_lasers'), loc('tech_artificial_intelligence'),
+                        loc('tech_quantum_computing'), loc('tech_virtual_reality'), loc('tech_plasma'), loc('tech_shields'), loc('tech_ai_core'), loc('tech_metaphysics'),
+                        loc('tech_orichalcum_analysis'), loc('tech_cybernetics'), loc('tech_divinity'), loc('wiki_mechanics_tech_levels_high_tech')],
+                4: [loc('tech_hospital'), global.race['artifical'] ? loc('tech_repair_subroutines') : loc('tech_bac_tanks'), loc('tech_medkit'), loc('wiki_mechanics_tech_levels_medical')],
+                5: [loc('tech_armor'), loc('tech_plate_armor'), loc('tech_kevlar'), loc('tech_nanoweave_vest'), loc('wiki_mechanics_tech_levels_armor')]
+            }
+        });
+        sideMenu('add',`mechanics-gameplay`,`tech_levels`,loc('wiki_mechanics_tech_levels'));
+    }
+
     { // Religion
         infoBoxBuilder(mainContent,{ name: 'religion', template: 'mechanics', label: loc('wiki_mechanics_religion'), paragraphs: 20, break: [3,6,8,15,20], h_level: 2,
             para_data: {
@@ -442,20 +506,42 @@ export function mechanicsPage(content){
     }
 
     { // CRISPR Mutation
-        let crispr_mutation = infoBoxBuilder(mainContent,{ name: 'crispr_mutation', template: 'mechanics', label: loc('wiki_mechanics_crispr_mutation'), paragraphs: 5, break: [3], h_level: 2,
+        let crispr_mutation = infoBoxBuilder(mainContent,{ name: 'crispr_mutation', template: 'mechanics', label: loc('wiki_mechanics_crispr_mutation'), paragraphs: 13, break: [3, 4, 5, 6, 7, 8, 9, 10], h_level: 2,
             para_data: {
                 1: [loc('tab_arpa_crispr'),loc('arpa_genepool_mutation_title'),loc('resource_Plasmid_plural_name')],
                 3: [loc('tech_arpa'),loc('tab_arpa_genetics'),],
                 4: ['5x',loc('wiki_mechanics_crispr_mutation_para4_note1')],
-                5: [loc('wiki_mechanics_custom'),loc('race_sludge'),'10x']
+                5: [loc('wiki_mechanics_custom'),loc('race_sludge'),'10x', loc('wiki_mechanics_custom_hybrid'), loc('race_ultra_sludge')],
+                6: ['1', '2x', '0.5', '3x', '0.25', '4x', '0.1'],
+                7: ['10'],
+                8: ['10'],
+                9: ['10'],
+                11: [loc('wiki_mechanics_crispr_mutation')],
+                12: [loc('wiki_mechanics_crispr_mutation')],
+                13: [loc('trait_shapeshifter_name'), loc('trait_imitation_name'), loc('wiki_mechanics_crispr_mutation')]
             },
             data_link: {
                 1: [false,'wiki.html#crispr-prestige-mutation','wiki.html#resources-prestige-plasmids'],
                 4: [false,'wiki.html#traits-species'],
-                5: ['wiki.html#custom-species','wiki.html#races-species-sludge']
+                5: ['wiki.html#custom-species','wiki.html#races-species-sludge', false, false, 'wiki.html#races-species-sludge'],
+                13: ['#traits-species-major_shapeshifter', '#traits-species-major_imitation', false]
             }
         });
         sideMenu('add',`mechanics-gameplay`,`crispr_mutation`,loc('wiki_mechanics_crispr_mutation'));
+    }
+
+    { // Traits from Multiple Sources
+        let trait_sources = infoBoxBuilder(mainContent,{ name: 'trait_sources', template: 'mechanics', label: loc('wiki_mechanics_trait_sources'), paragraphs: 3, h_level: 2,
+            para_data: {
+                2: [loc('tech_fanaticism'), loc('tech_deify'), loc('trait_imitation_name'), '4'],
+                3: ['5', loc('evo_challenge_warlord')]
+            },
+            data_link: {
+                2: ['wiki.html#civilized-tech-alt_fanaticism', 'wiki.html#early_space-tech-deify_alt', '#traits-species-major_imitation', false],
+                3: [false, 'wiki.html#challenges-gameplay-scenarios_warlord']
+            }
+        });
+        sideMenu('add',`mechanics-gameplay`,`trait_sources`,loc('wiki_mechanics_trait_sources'));
     }
 
     { // Planets 
@@ -482,16 +568,6 @@ export function mechanicsPage(content){
             }
         },planets);
         sideMenu('add',`mechanics-gameplay`,`planet`,loc('wiki_menu_planets'));
-    }
-    
-    { // Soul Gem
-        infoBoxBuilder(mainContent,{ name: 'soul_gem', template: 'hell', label: loc('wiki_hell_soul_gem'), paragraphs: 4, h_level: 2,
-            para_data: {
-                1: [loc('wiki_hell_soul_gem'),loc('tab_portal')],
-                3: [loc('tech_demon_attractor')]
-            }
-        });
-        sideMenu('add',`mechanics-gameplay`,`soul_gem`,loc('wiki_hell_soul_gem'));
     }
 
     { // Quantum Level
@@ -664,7 +740,7 @@ export function mechanicsPage(content){
                 2: ['1%',loc(`harmonic`)],
                 3: ['3%'],
                 4: [loc(`harmonic`),'2%','6%'],
-                5: [loc(`wiki_hell_pillar_para5d1`),12]
+                5: [loc(`wiki_hell_pillar_para5d1`),4,2]
             },
             data_link: {
                 5: ['wiki.html#hell-structures-west_tower']

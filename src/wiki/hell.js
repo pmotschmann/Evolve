@@ -19,13 +19,52 @@ export function hellPage(content){
         data_color: { 3: ['caution'] } });
     sideMenu('add',`hell-gameplay`,'siege',loc('wiki_hell_siege'));
 
-    infoBoxBuilder(mainContent,{ name: 'strategy', template: 'hell', paragraphs: 3 });
+    infoBoxBuilder(mainContent,{ name: 'strategy', template: 'hell', paragraphs: 12, break: [4, 6, 12],
+        para_data: {
+            4: [loc('resource_Soul_Gem_name')],
+            5: [[`1`], [`30`], [`10`], [`15`], [`25`], loc('wiki_hell_strategy_ambush_odds')],
+            6: [loc('wiki_combat_rating')],
+            7: [loc('wiki_hell_strategy_patrol_armor')],
+            8: [loc('wiki_hell_strategy_patrol_armor')],
+            11: [loc('trait_instinct_name')],
+            12: [loc('wiki_hell_strategy_patrol_armor'), loc('wiki_mechanics_tech_levels_armor'), loc('trait_armored_name'), loc('trait_scales_name')]
+        },
+        data_link: {
+            6: ['wiki.html#combat-gameplay-rating'],
+            12: [false, 'wiki.html#mechanics-gameplay-tech_levels', false, false]
+        }
+    });
     sideMenu('add',`hell-gameplay`,'strategy',loc('wiki_hell_strategy'));
 
-    let soul = infoBoxBuilder(mainContent,{ name: 'soul_gem', template: 'hell', paragraphs: 4,
+    let soul = infoBoxBuilder(mainContent,{ name: 'soul_gem', template: 'hell', break: [2, 4, 5, 10, 15, 19, 24], paragraphs: 27,
         para_data: {
-            1: [loc('wiki_hell_soul_gem'),loc('tab_portal')],
-            3: [loc('tech_demon_attractor')]
+            1: [loc('wiki_hell_soul_gem'),loc('tab_portal'), loc('portal_soul_forge_title')],
+            2: [loc('resource_Soul_Gem_name')],
+            3: [loc('wiki_hell_soul_gem')],
+            4: [loc('resource_Soul_Gem_name'), '35', '1', '3', loc('tech_demon_attractor'), '5'],
+            5: [loc('resource_Soul_Gem_name'), '1', '10000'],
+            6: [loc('achieve_technophobe_name'), '10'],
+            7: [loc('trait_ghostly_name')],
+            8: [loc('tech_demon_attractor'), '5.2'],
+            9: ['12'],
+            10: [loc('wiki_hell_soul_gem')],
+            11: ['10000'],
+            12: [loc('tech_demon_attractor'), '22'],
+            13: [loc('trait_chicken_name')],
+            14: [loc('tech_dist_evil'), '10'],
+            15: [loc('wiki_hell_soul_gem'), loc('portal_war_drone_title')],
+            16: [loc('portal_war_drone_title'), '25-75', '50-125', loc('tech_advanced_predators')],
+            17: ['50', '100'],
+            18: [loc('portal_war_drone_title'), loc('resource_Soul_Gem_name')],
+            19: [loc('portal_gun_emplacement_title'), loc('portal_soul_forge_title'), loc('wiki_hell_soul_gem')],
+            20: [loc('portal_gun_emplacement_title')],
+            21: ['1', '7500'],
+            22: [loc('achieve_technophobe_name'), '10'],
+            23: [loc('tech_demon_attractor'), '6'],
+            24: [loc('tech_gate_turret'), loc('wiki_hell_soul_gem')],
+            25: [loc('tech_gate_turret')],
+            26: ['1', '3000'],
+            27: [loc('achieve_technophobe_name'), '10'],
         }
     });
     let soul_extra = $(`<div></div>`);
@@ -69,7 +108,7 @@ export function hellPage(content){
             2: ['1%',loc(`harmonic`)],
             3: ['3%'],
             4: [loc(`harmonic`),'2%','6%'],
-            5: [loc(`wiki_hell_pillar_para5d1`),12],
+            5: [loc(`wiki_hell_pillar_para5d1`),4,2],
             6: [loc(`harmonic`),`${((harmonic[0] - 1) * 100).toFixed(0)}%`,`${((harmonic[1] - 1) * 100).toFixed(0)}%`],
         },
         data_link: {
@@ -174,7 +213,7 @@ export function hellPage(content){
                     3: [(mechWeaponPower('small') * 100).toFixed(2)],
                     4: [mechSize('small'),s_cost.c,s_cost.s],
                     5: [loc(`portal_mech_equip_jumpjet`)],
-                    7: [`1%`],
+                    7: [`1`],
                     8: [loc(`portal_spire_status_fog`),loc(`portal_spire_status_dark`)],
                     9: [`100%`],
                     10: [`8%`],
@@ -367,7 +406,7 @@ export function hellPage(content){
             para_data: {
                 1: [`75%`],
                 2: [loc(`portal_mech_equip_ablative`)],
-                3: [global.race['warlord'] ? `${loc(`portal_mech_equip_stoneskin`)}, ${loc(`portal_mech_equip_shields`)}, ${loc(`portal_mech_equip_manashield`)}` : loc(`portal_mech_equip_shields`)]
+                3: [global.race['warlord'] ? `${loc(`portal_mech_equip_stoneskin`)}, ${loc(`portal_mech_equip_shields`)}, ${loc(`portal_mech_equip_manashield`)}` : loc(`portal_mech_equip_shields`), `25%`]
             }
         });
 
@@ -409,7 +448,7 @@ export function hellPage(content){
             },    
             para_data: {
                 1: [`50%`,loc(`portal_mech_chassis_spider`),loc(`portal_mech_equip_grapple`)],
-                2: [global.race['warlord'] ? `${loc(`portal_mech_equip_echo`)}, ${loc(`portal_mech_equip_flare`)}` : loc(`portal_mech_equip_flare`)]
+                2: [global.race['warlord'] ? `${loc(`portal_mech_equip_echo`)}, ${loc(`portal_mech_equip_flare`)}` : loc(`portal_mech_equip_flare`), `25%`]
             }
         });
 
@@ -531,7 +570,7 @@ export function hellPage(content){
             para_data: {
                 1: [`90%`],
                 2: global.race['warlord'] ? [`${loc(`portal_mech_equip_infrared`)}, ${loc(`portal_mech_equip_darkvision`)}`] : [loc(`portal_mech_equip_infrared`)],
-                3: [loc(`portal_mech_equip_flare`)]
+                3: [loc(`portal_mech_equip_flare`),`75%`]
             }
         });
 

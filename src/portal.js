@@ -1906,12 +1906,15 @@ const fortressModules = {
             powered(){ return powerCostMod(5); },
             support(){ return 1; },
             effect(){
+                //Make sure to handle interaction with Hivemind correctly
+                let guard_posts_on = Math.max(global.portal?.guard_post?.on, 1);
+                let rating = Math.round(armyRating(jobScale(guard_posts_on), 'hellArmy', 0) / guard_posts_on);
                 let holy = global.race['holy'] ? 1 + (traits.holy.vars()[1] / 100) : 1;
                 let unicornFathom = fathomCheck('unicorn');
                 if (unicornFathom > 0){
                     holy *= 1 + (traits.holy.vars(1)[1] / 100 * unicornFathom);
                 }
-                let rating = Math.round(holy * armyRating(jobScale(1),'hellArmy',0));
+                rating *= holy;
                 return `<div>${loc('portal_guard_post_effect1',[rating])}</div><div class="has-text-caution">${loc('portal_guard_post_effect2',[jobScale(1),$(this)[0].powered()])}</div>`;
             },
             action(args){

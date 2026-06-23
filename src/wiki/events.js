@@ -2,7 +2,7 @@ import { global } from './../vars.js';
 import { races } from './../races.js';
 import { govTitle } from './../civics.js';
 import { housingLabel } from './../actions.js';
-import { clearElement, eventActive } from './../functions.js';
+import { clearElement, eventActive, rName } from './../functions.js';
 import { loc } from './../locale.js';
 import { swissKnife } from './../tech.js';
 import { sideMenu, infoBoxBuilder, getSolarName } from './functions.js';
@@ -445,6 +445,41 @@ export function mainEventsPage(content){
             ]
         }, section);
         sideMenu('add',`major-events`,`m_curious`,loc('wiki_events_m_curious'));
+    }
+
+    { //Kelptomaniac
+        let section = infoBoxBuilder(mainContent,{ name: 'klepto', template: 'events', label: loc('wiki_events_klepto'), paragraphs: 5, break: [2, 4], h_level: 2,
+            para_data: {
+                3: [
+                    loc('resource_Money_name'),rName('Food'),rName('Lumber'),rName('Stone'),rName('Chrysotile'),rName('Crystal'),rName('Furs'),rName('Copper'),rName('Iron'),
+                    rName('Cement'),rName('Coal'),rName('Uranium'),rName('Aluminium'),rName('Steel'),rName('Titanium'),rName('Alloy'),rName('Polymer'),rName('Iridium'),
+                    rName('Neutronium'),rName('Adamantite'),rName('Infernite'),rName('Elerium'),rName('Nano_Tube'),rName('Graphene'),rName('Stanene'),
+                    rName('Bolognium'),rName('Vitreloy'),rName('Orichalcum'),rName('Asphodel_Powder'),rName('Elysanite'),rName('Unobtainium'),rName('Quantium'),
+                    rName('Plywood'),rName('Brick'),rName('Wrought_Iron'),rName('Sheet_Metal'),rName('Mythril'),rName('Aerogel'),rName('Nanoweave'),rName('Scarletite')
+                ],
+                4: [4, 10]
+            }
+        });
+        sideMenu('add',`major-events`,`klepto`,loc('wiki_events_klepto'));
+    }
+
+    { //Feast
+        let section = infoBoxBuilder(mainContent,{ name: 'chicken_feast', template: 'events', label: loc('wiki_events_chicken_feast'), paragraphs: 2, break: [2], h_level: 2,
+            para_data: {
+                2: [2, 10, loc('trait_high_pop_name')]
+            }
+        });
+        sideMenu('add',`major-events`,`chicken_feast`,loc('wiki_events_chicken_feast'));
+    }
+
+    { //Brawl
+        let section = infoBoxBuilder(mainContent,{ name: 'brawl', template: 'events', label: loc('wiki_events_brawl'), paragraphs: 2, break: [2], h_level: 2,
+            para_data: {
+                1: [loc('soldiers')],
+                2: [1, 20, loc('soldiers')]
+            }
+        });
+        sideMenu('add',`major-events`,`brawl`,loc('wiki_events_brawl'));
     }
 }
 
@@ -1210,6 +1245,25 @@ export function minorEventsPage(content){
         }, section);
 
         sideMenu('add',`minor-events`,`pet`,loc('wiki_events_pet'));
+    }
+
+    { //Chicken
+        let section = infoBoxBuilder(mainContent,{ name: 'chicken', template: 'events', label: loc('wiki_events_chicken'), paragraphs: 2, break: [2], h_level: 2,
+            para_data: {
+                2: [1]
+            }
+        });
+        sideMenu('add',`major-events`,`chicken`,loc('wiki_events_chicken'));
+    }
+
+    { //Fight
+        let section = infoBoxBuilder(mainContent,{ name: 'fight', template: 'events', label: loc('wiki_events_fight'), paragraphs: 2, break: [2], h_level: 2,
+            para_data: {
+                1: [loc('soldiers')],
+                2: [1, 8, loc('soldiers')]
+            }
+        });
+        sideMenu('add',`major-events`,`fight`,loc('wiki_events_fight'));
     }
 }
 

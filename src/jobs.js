@@ -711,7 +711,7 @@ export function loadServants(){
         });
 
         popover('servants', function(){
-                return loc('civics_servants_desc');
+                return loc('civics_servants_desc', [loc('wiki_mechanics_job_type_basic')]);
             },
             {
                 elm: `#servants .serveHeader`
@@ -1026,7 +1026,7 @@ export function loadFoundry(servants){
 
         if (servants){
             popover('servantFoundry', function(){
-                    return loc('civics_skilled_servants_desc');
+                    return loc('civics_skilled_servants_desc', loc('wiki_mechanics_job_type_basic'));
                 },
                 {
                     elm: `#skilledServants .foundry`,

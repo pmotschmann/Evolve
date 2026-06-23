@@ -1,6 +1,6 @@
 import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame, atrack, p_on, quantum_level, tmp_vars } from './vars.js';
 import { loc } from './locale.js';
-import { races, traits, genus_def, traitSkin, fathomCheck } from './races.js';
+import { races, traits, genus_def, traitSkin, fathomCheck} from './races.js';
 import { actions, actionDesc } from './actions.js';
 import { jobScale } from './jobs.js';
 import { universe_affixes } from './space.js';
@@ -3139,110 +3139,57 @@ export function getShrineBonus(type) {
 	return shrine_bonus;
 }
 
-const valAdjust = {
-    promiscuous: false,
-    revive: false,
-    fast_growth: false,
-    spores: false,
-    terrifying: false,
-    fibroblast: true,
-    hivemind: true,
-    imitation: true,
-    elusive: true,
-    chameleon: true,
-    blood_thirst: true,
-    selenophobia: true,
-    hooved: true,
-    anthropophagite: true,
-    unfathomable: false,
-    darkness: false,
-    living_tool: false,
-    living_materials: true,
-    blurry: true,
-    playful: true,
-    ghostly: true,
-    environmentalist: true,
-    catnip: true,
-    anise: true
-};
-
 function getTraitVals(trait, rank, species){
+    //Get values from the trait
     let vals = traits[trait].hasOwnProperty('vars') ? traits[trait].vars(rank) : [];
-    if (valAdjust.hasOwnProperty(trait)){
-        if (trait === 'fibroblast'){
-            vals = [vals[0] * 5];
-        }
-        else if (trait === 'hivemind' && global.race['high_pop']){
-            vals = [vals[0] * traits.high_pop.vars()[0]];
-        }
-        else if (trait === 'imitation'){
-            vals.push(races[global.race['srace'] || 'protoplasm'].name);
-        }
-        else if (trait === 'elusive'){
-            vals = [Math.round(((1/30)/(1/(30+vals[0]))-1)*100)];
-        }
-        else if (trait === 'chameleon'){
-            vals = [vals[0], Math.round(((1/30)/(1/(30+vals[1]))-1)*100)];
-        }
-        else if (trait === 'blood_thirst'){
-            vals = [Math.ceil(Math.log2(vals[0]))];
-        }
-        else if (trait === 'selenophobia'){
-            vals = [14 - vals[0], vals[0]];
-        }
-        else if (trait === 'hooved'){
-            vals.unshift(hoovedRename(false, species));
-        }
-        else if (trait === 'anthropophagite'){
-            vals = [vals[0] * 10000];
-        }
-        else if (trait === 'living_materials'){
-            vals = [global.resource.Lumber.name, global.resource.Plywood.name, global.resource.Furs.name, loc('resource_Amber_name')];
-        }
-        else if (trait === 'environmentalist'){
-            let coal = -(actions.city.coal_power.powered(true));
-            let oil = -(actions.city.oil_power.powered(true));
-            vals = [coal + vals[0], oil + vals[0] - 1, oil + vals[0] + 1, coal, oil, vals[1]];
-        }
-        else if (trait === 'blurry'){
-            if (global.race['warlord']){
-                vals = [+((100/(100-vals[0])-1)*100).toFixed(1)];
-            }
-        }
-        else if (trait === 'playful'){
-            if (global.race['warlord']){
-                vals = [vals[0] * 100, global.resource.Furs.name];
-            }
-        }
-        else if (trait === 'ghostly'){
-            if (global.race['warlord']){
-                vals = [vals[0], +((vals[1] - 1) * 100).toFixed(0), global.resource.Soul_Gem.name];
-            }
-        }
-        else if (trait === 'catnip' || trait === 'anise'){
-            vals = rank <= 2 ? [] : (rank === 3  ? [vals[0]] : [vals[0],vals[1]]);
-        }
-        else if (!valAdjust[trait]){
-            vals = [];
-        }
+    if (traits[trait] == traits.hooved) vals[1] = species;
+
+    //Use the desc_function system to modify trait values for descriptions, if this trait has a description function
+    if (traits[trait].hasOwnProperty('desc_function')) {
+        vals = traits[trait].desc_function(vals);
     }
-    else if (trait === 'elemental'){
-        switch (traits.elemental.vars(rank)[0]){
-            case 'electric':
-                vals = [loc(`element_electric`), traits.elemental.vars(rank)[1], traits.elemental.vars(rank)[5]];
-                break;
-            case 'acid':
-                vals = [loc(`element_acid`), traits.elemental.vars(rank)[2], traits.elemental.vars(rank)[5]];
-                break;
-            case 'fire':
-                vals = [loc(`element_fire`), traits.elemental.vars(rank)[3], traits.elemental.vars(rank)[5]];
-                break;
-            case 'frost':
-                vals = [loc(`element_frost`), traits.elemental.vars(rank)[4], traits.elemental.vars(rank)[5], loc('city_biolab')];
-                break;
-        }
-    }
+
     return vals;
+}
+
+function getExtraData(trait, rank, species) {
+    //Get trait data in case it's needed to format the extra data
+    let vals = traits[trait].hasOwnProperty('vars') ? traits[trait].vars(rank) : [];
+    if (traits[trait] == traits.hooved) vals[1] = species;
+    return traits[trait].desc_extra(vals);
+}
+
+
+export function warningText(input) {
+    return `<span class="has-text-warning">${loc(input)}</span>`
+}
+
+export function warningTextNoLoc(input) {
+    return `<span class="has-text-warning">${input}</span>`
+}
+
+export function linkText(input, link) {
+    return `<span class="has-text-warning"><a href="${link}" target="_blank">${loc(input)}</a></span>`
+}
+
+export function linkTextNoColor(input, link) {
+    return `<a href="${link}" style="color: inherit;" target="_blank">${loc(input)}</a>`
+}
+
+export function rName(r){
+    let res = global.hasOwnProperty('resource') && global.resource.hasOwnProperty(r) ? global.resource[r].name : loc(`resource_${r}_name`);
+    return `<span class="has-text-warning">${res}</span>`;
+}
+
+export function rNameNoColor(r){
+    let res = global.hasOwnProperty('resource') && global.resource.hasOwnProperty(r) ? global.resource[r].name : loc(`resource_${r}_name`);
+    return `<span style="color: inherit;">${res}</span>`;
+}
+
+
+export function convertDivisor (input) {
+    //The input value is a percentage used to multiply a divisor, use X/(1+X) to indicate a percentage change in descriptions.
+    return +(100 * input / (100 + input)).toFixed(2);
 }
 
 export function hoovedRename(style, species=global.race.species){
@@ -3306,74 +3253,13 @@ export function hoovedRename(style, species=global.race.species){
     }
 }
 
-const traitExtra = {
-    infiltrator: [
-        loc(`wiki_trait_effect_infiltrator_ex1`),
-        loc(`wiki_trait_effect_infiltrator_ex2`,[
-            [
-                `<span class="has-text-warning">${loc('tech_steel')}</span>`, `<span class="has-text-warning">${loc('tech_electricity')}</span>`, `<span class="has-text-warning">${loc('tech_electronics')}</span>`, `<span class="has-text-warning">${loc('tech_fission')}</span>`,
-                `<span class="has-text-warning">${loc('tech_rocketry')}</span>`, `<span class="has-text-warning">${loc('tech_artificial_intelligence')}</span>`, `<span class="has-text-warning">${loc('tech_quantum_computing')}</span>`,
-                `<span class="has-text-warning">${loc('tech_virtual_reality')}</span>`, `<span class="has-text-warning">${loc('tech_shields')}</span>`, `<span class="has-text-warning">${loc('tech_ai_core')}</span>`, `<span class="has-text-warning">${loc('tech_graphene_processing')}</span>`,
-                `<span class="has-text-warning">${loc('tech_nanoweave')}</span>`, `<span class="has-text-warning">${loc('tech_orichalcum_analysis')}</span>`, `<span class="has-text-warning">${loc('tech_infernium_fuel')}</span>`
-            ].join(', ')
-        ])
-    ],
-    heavy: [
-        loc(`wiki_trait_effect_heavy_ex1`,[rName('Stone'),rName('Cement'),rName('Wrought_Iron')])
-    ],
-    sniper: [
-        loc(`wiki_trait_effect_sniper_ex1`),
-    ],
-    hooved: [
-        function(opts){return loc(`wiki_trait_effect_hooved_ex1`,[hoovedRename(false, opts.species)])},
-        loc(`wiki_trait_effect_hooved_ex2`,[
-            `<span class="has-text-warning">${global.resource.hasOwnProperty('Lumber') ? global.resource.Lumber.name : loc('resource_Lumber_name')}</span>`,
-            `<span class="has-text-warning">${global.resource.hasOwnProperty('Copper') ? global.resource.Copper.name : loc('resource_Copper_name')}</span>`,
-            `<span class="has-text-warning">${global.resource.hasOwnProperty('Iron') ? global.resource.Iron.name : loc('resource_Iron_name')}</span>`,
-            `<span class="has-text-warning">${global.resource.hasOwnProperty('Steel') ? global.resource.Steel.name : loc('resource_Steel_name')}</span>`,
-            `<span class="has-text-warning">${global.resource.hasOwnProperty('Adamantite') ? global.resource.Adamantite.name : loc('resource_Adamantite_name')}</span>`,
-            `<span class="has-text-warning">${global.resource.hasOwnProperty('Orichalcum') ? global.resource.Orichalcum.name : loc('resource_Orichalcum_name')}</span>`,
-            12,75,150,500,5000
-        ]),
-        loc(`wiki_trait_effect_hooved_ex3`),
-        function(opts){return loc(`wiki_trait_effect_hooved_ex4`,[`<span class="has-text-warning">${5}</span>`,hoovedRename(false, opts.species)])},
-        loc(`wiki_trait_effect_hooved_ex5`,[
-            `<span class="has-text-warning">${global.resource.hasOwnProperty('Lumber') ? global.resource.Lumber.name : loc('resource_Lumber_name')}</span>`,
-            `<span class="has-text-warning">${global.resource.hasOwnProperty('Copper') ? global.resource.Copper.name : loc('resource_Copper_name')}</span>`
-        ]),
-    ],
-    instinct: [
-        loc(`wiki_trait_effect_instinct_ex1`,[6.67,loc('galaxy_chthonian'),10])
-    ],
-    logical: [
-        loc(`wiki_trait_effect_logical_ex1`,[
-            global.tech.hasOwnProperty('science') ? global.tech.science : 0,
-            global.tech.hasOwnProperty('high_tech') ? global.tech.high_tech : 0
-        ]),
-    ],
-    high_pop: [
-        loc(`wiki_trait_effect_high_pop_ex1`)
-    ],
-    flier: [
-        loc(`wiki_trait_effect_flier_ex1`)
-    ],
-    unfathomable: [
-        loc(`wiki_trait_effect_unfathomable_ex1`),
-        loc(`wiki_trait_effect_unfathomable_ex2`)
-    ]
-};
-
-function rName(r){
-    let res = global.hasOwnProperty('resource') && global.resource.hasOwnProperty(r) ? global.resource[r].name : loc(`resource_${r}_name`);
-    return `<span class="has-text-warning">${res}</span>`;
-}
-
 const altTraitDesc = {
     befuddle: 'warlord',
     blurry: 'warlord',
     ghostly: 'warlord',
     playful: 'warlord',
 };
+
 
 export function getTraitDesc(info, trait, opts){
     let fanatic = opts['fanatic'] || false;
@@ -3388,7 +3274,7 @@ export function getTraitDesc(info, trait, opts){
     let traitDesc = traitSkin('desc', trait, species);
 
     if (tpage && ['genus','major'].includes(traits[trait].type)){
-        rank = `<span><span role="button" @click="down()">&laquo;</span><span class="has-text-warning">${loc(`wiki_trait_rank`)} {{ rank }}</span><span role="button" @click="up()">&raquo;</span></span>`;
+        rank = `<span style="width: 105px; display: inline-block; text-align:center;"><span style="float: left;" role="button" @click="down()">&laquo;</span><span class="has-text-warning">${loc(`wiki_trait_rank`)} {{ rank }}</span><span style="float: right;" role="button" @click="up()">&raquo;</span></span>`;
     }
     if (tpage || rpage){
         info.append(`<div class="type"><h2 class="has-text-warning">${traitName}</h2>${rank}</div>`);
@@ -3435,13 +3321,20 @@ export function getTraitDesc(info, trait, opts){
             info.append(`<div class="has-text-${color} effect">${trait_desc}</div>`);
         }
     }
-    if (traitExtra[trait] && (tpage || rpage)){
-        traitExtra[trait].forEach(function(te){
-            if (typeof te !== 'string'){
-                te = te(opts);
-            }
-            info.append(`<div class="effect">${te}</div>`);
-        });
+    if (traits[trait].hasOwnProperty('desc_extra') && (tpage || rpage)) {
+        if (tpage && ['genus','major'].includes(traits[trait].type)) {
+            info.append(`<div class="effect" v-html="getTraitExtra(rank)"></div>`);
+        }
+        else {
+            let extraData = getExtraData(trait, trank, species);
+
+            extraData.forEach(function(te){
+                if (typeof te !== 'string'){
+                    te = te(opts);
+                }
+                info.append(`<div class="effect">${te}</div>`);
+            });
+        }
     }
 
     if (tpage && ['genus','major'].includes(traits[trait].type)){
@@ -3463,6 +3356,19 @@ export function getTraitDesc(info, trait, opts){
                     }
                     let key = altTraitDesc[trait] && global.race.hasOwnProperty(altTraitDesc[trait]) ? altTraitDesc[trait] : 'effect';
                     return loc(`wiki_trait_${key}_${trait}`, getTraitVals(trait, rk, species));
+                },
+                getTraitExtra(rk) {
+                    let accumulator = '';
+                    let extraData = getExtraData(trait, rk, species);
+
+                    extraData.forEach(function(te){
+                        if (typeof te !== 'string'){
+                            te = te(opts);
+                        }
+                        accumulator += `<div class="effect">${te}</div>`;
+                    });
+
+                    return accumulator;
                 },
                 up(){
                     switch (data.rank){
