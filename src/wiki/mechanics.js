@@ -11,6 +11,7 @@ import { actions, structName } from './../actions.js';
 import { astroVal, astrologySign } from './../seasons.js';
 import { shipAttackPower, sensorRange, shipCrewSize, shipPower } from './../truepath.js';
 import { sideMenu, infoBoxBuilder, createRevealSection, createCalcSection, getSolarName } from './functions.js';
+import { towerSize } from '../portal.js';
 
 export function mechanicsPage(content){
     let mainContent = sideMenu('create',content);
@@ -664,7 +665,7 @@ export function mechanicsPage(content){
                 2: ['1%',loc(`harmonic`)],
                 3: ['3%'],
                 4: [loc(`harmonic`),'2%','6%'],
-                5: [loc(`wiki_hell_pillar_para5d1`),12]
+                5: [loc(`wiki_hell_pillar_para5d1`),4,12,`${(Math.abs(1000 - towerSize()))}`]
             },
             data_link: {
                 5: ['wiki.html#hell-structures-west_tower']

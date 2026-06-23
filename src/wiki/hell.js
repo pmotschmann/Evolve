@@ -69,7 +69,7 @@ export function hellPage(content){
             2: ['1%',loc(`harmonic`)],
             3: ['3%'],
             4: [loc(`harmonic`),'2%','6%'],
-            5: [loc(`wiki_hell_pillar_para5d1`),12],
+            5: [loc(`wiki_hell_pillar_para5d1`),4,12,`${(Math.abs(1000 - towerSize()))}%`],
             6: [loc(`harmonic`),`${((harmonic[0] - 1) * 100).toFixed(0)}%`,`${((harmonic[1] - 1) * 100).toFixed(0)}%`],
         },
         data_link: {

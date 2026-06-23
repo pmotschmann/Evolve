@@ -10940,7 +10940,7 @@
   "wiki_hell_pillar_para2": "This provides a stacking permanent bonus that gives you +%0 production bonus for each pillared species, called %1.",
   "wiki_hell_pillar_para3": "An additional +%0 bonus is gained if you have ever pillared your current species.",
   "wiki_hell_pillar_para4": "%0 also provides a storage bonus of %1 for each pillared species and %2 if the current species is pillared.",
-  "wiki_hell_pillar_para5": "Additionally, each activated pillar discounts the number of %0 segments you need to build to open the ancient gate by %1.",
+  "wiki_hell_pillar_para5": "Additionally, each activated pillar discounts the number of %0 segments you need to build to open the ancient gate by between %1 and %2, based on it's completed challenge level. You are currently receiving a total discount from pillars of %3 segments.",
   "wiki_hell_pillar_para5d1": "Tower",
   "wiki_hell_pillar_para6": "Your current %0 bonus is: %1 Production, %2 Storage.",
   "wiki_hell_spire": "The Hell Spire",
