@@ -6759,6 +6759,7 @@
   "space_dwarf_mass_relay_effect": "Construct part of the Mass Relay",
   "space_dwarf_mass_relay_effect2": "Triples speed of ships leaving from %0",
   "space_dwarf_mass_relay_charged": "Charged: %0%",
+  "shipyard_new_ship": "The shipyard has completed the %0.",
   "space_titan_info_desc": "The moon %0 is the largest moon orbiting the 2nd gas giant in the %1 system. It averages around 9.54AU from the sun and has a dense planet-like atmosphere.",
   "space_titan_mission_effect": "Launch a mission to study the moon %0.",
   "space_titan_mission_action": "%0 is the most %1-like planetoid you've discovered so far. Although challenging due to the cold temperatures and lack of liquid water, it would be possible to set up a permanent colony here.",
