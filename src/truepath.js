@@ -4404,6 +4404,7 @@ function buildTPShip(ship, queue){
     ship.name = name;
 
     global.space.shipyard.ships.push(ship);
+    messageQueue(`The shipyard has completed the ${ship.name}.`,'info',false,['progress']);
     drawShips();
     updateCosts();
     if (!queue){
