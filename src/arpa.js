@@ -2164,6 +2164,9 @@ function genetics(){
                             global.resource.Genes.amount -= cost;
                             global.race.minor[t] ? global.race.minor[t]++ : global.race.minor[t] = 1;
                             global.race[t] ? global.race[t]++ : global.race[t] = 1;
+                            if (global.settings.arpaMsg){
+                                messageQueue(loc('arpa_notify_minor_gene',[sizeApproximation(cost),traitSkin('name',t),global.race.minor[t]]),'success',false,['arpa']);
+                            }
                             redraw = true;
                         }
                         else {
@@ -2193,6 +2196,9 @@ function genetics(){
                             global.prestige.Phage.count -= cost;
                             global.genes.minor[t] ? global.genes.minor[t]++ : global.genes.minor[t] = 1;
                             global.race[t] ? global.race[t]++ : global.race[t] = 1;
+                            if (global.settings.arpaMsg){
+                                messageQueue(loc('arpa_notify_minor_phage',[sizeApproximation(cost),traitSkin('name',t),global.genes.minor[t]]),'success',false,['arpa']);
+                            }
                             redraw = true;
                         }
                         else {
@@ -2218,6 +2224,9 @@ function genetics(){
                     let res = global.race.universe === 'antimatter' ? 'AntiPlasmid' : 'Plasmid';
                     if (global.prestige[res].count >= cost){
                         global.prestige[res].count -= cost;
+                        if (global.settings.arpaMsg){
+                            messageQueue(loc('arpa_notify_trait_remove',[cost,loc(res === 'AntiPlasmid' ? 'resource_AntiPlasmid_plural_name' : 'resource_Plasmid_plural_name'),traitSkin('name',t)]),'warning',false,['arpa']);
+                        }
                         let rank = global.race[t];
                         delete global.race[t];
                         if (!global.race['modified']){
@@ -2257,6 +2266,9 @@ function genetics(){
                     let res = global.race.universe === 'antimatter' ? 'AntiPlasmid' : 'Plasmid';
                     if (global.prestige[res].count >= cost){
                         global.prestige[res].count -= cost;
+                        if (global.settings.arpaMsg){
+                            messageQueue(loc('arpa_notify_trait_gain',[cost,loc(res === 'AntiPlasmid' ? 'resource_AntiPlasmid_plural_name' : 'resource_Plasmid_plural_name'),traitSkin('name',t)]),'success',false,['arpa']);
+                        }
                         global.race[t] = 1;
                         if (!global.race.hasOwnProperty('modified')){
                             global.race['modified'] = {

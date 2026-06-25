@@ -58,7 +58,7 @@ export var hell_graphs = {};
 export var message_logs = {
     view: 'all'
 };
-export const message_filters = ['all','progress','queue','building_queue','research_queue','combat','spy','events','major_events','minor_events','achievements','hell'];
+export const message_filters = ['all','progress','queue','building_queue','research_queue','combat','spy','events','major_events','minor_events','achievements','hell','arpa'];
 export var callback_queue = new Map();
 export var active_rituals = {};
 
@@ -1531,6 +1531,9 @@ if (typeof global.settings.expose === 'undefined'){
 }
 if (typeof global.settings.alwaysPower === 'undefined'){
     global.settings['alwaysPower'] = false;
+}
+if (typeof global.settings.arpaMsg === 'undefined'){
+    global.settings['arpaMsg'] = true;
 }
 if (typeof global.settings.tabLoad === 'undefined'){
     global.settings['tabLoad'] = false;
