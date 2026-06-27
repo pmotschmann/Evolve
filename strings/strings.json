@@ -141,6 +141,8 @@
   "settings17": "Always power on new structures, even when remaining electricity or support is insufficient.",
   "enable_reset": "Enable Reset Buttons",
   "reset_warn": "Warning: This completely resets all your progress and cannot be undone. This is NOT a prestige mechanic; you are wiping out your game data. Keep this button disabled.",
+  "reset_prestige_gained": "Prestige gained: %0",
+  "reset_prestige_gained_pair": "%0 and %1",
   "reset_soft": "Soft Reset Game",
   "reset_hard": "Hard Reset Game",
   "pause": "Pause Game",

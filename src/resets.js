@@ -1,5 +1,6 @@
 import { global, save, seededRandom, webWorker, clearSavedMessages, clearStates } from './vars.js';
-import { tagEvent, calcPrestige, updateResetStats } from './functions.js';
+import { tagEvent, calcPrestige, updateResetStats, messageQueue } from './functions.js';
+import { loc } from './locale.js';
 import { races, planetTraits } from './races.js';
 import { unlockAchieve, unlockFeat, checkAchievements, universeAffix, alevel } from './achieve.js';
 
@@ -23,6 +24,7 @@ export function warhead(){
         let geo = global.city.geology;
 
         let gains = calcPrestige('mad');
+    logPrestigeGains(gains);
 
         global.stats.mad++;
         updateResetStats();
@@ -102,6 +104,7 @@ export function bioseed(){
     let atmo = global.city.ptrait;
 
     let gains = calcPrestige('bioseed');
+    logPrestigeGains(gains);
 
     global.stats.bioseed++;
     updateResetStats();
@@ -240,6 +243,7 @@ export function cataclysm_end(){
         clearSavedMessages();
 
         let gains = calcPrestige('cataclysm');
+    logPrestigeGains(gains);
 
         global.stats.cataclysm++;
         updateResetStats();
@@ -375,6 +379,7 @@ export function big_bang(){
     let atmo = global.city.ptrait;
 
     let gains = calcPrestige('bigbang');
+    logPrestigeGains(gains);
 
     checkAchievements();
 
@@ -473,6 +478,7 @@ export function vacuumCollapse(){
         let atmo = global.city.ptrait;
 
         let gains = calcPrestige('vacuum');
+    logPrestigeGains(gains);
 
         checkAchievements();
 
@@ -544,6 +550,7 @@ export function ascend(){
     let geo = global.city.geology;
 
     let gains = calcPrestige('ascend');
+    logPrestigeGains(gains);
 
     global.stats.ascend++;
     updateResetStats();
@@ -682,6 +689,7 @@ export function descension(){
     grandDeathTour('di');
 
     let gains = calcPrestige('descend');
+    logPrestigeGains(gains);
     global.prestige.Artifact.count += gains.artifact;
     global.stats.artifact += gains.artifact;
 
@@ -760,6 +768,7 @@ export function apotheosis(){
     let geo = global.city.geology;
 
     let gains = calcPrestige('apotheosis');
+    logPrestigeGains(gains);
 
     global.stats.apotheosis++;
     updateResetStats();
@@ -856,6 +865,7 @@ export function terraform(planet){
     let geo = planet.geology;
 
     let gains = calcPrestige('terraform');
+    logPrestigeGains(gains);
 
     global.stats.terraform++;
     updateResetStats();
@@ -959,6 +969,7 @@ export function aiApocalypse(){
     let geo = global.city.geology;
 
     let gains = calcPrestige('ai');
+    logPrestigeGains(gains);
     checkAchievements();
 
     global.stats.aiappoc++;
@@ -1029,6 +1040,7 @@ export function matrix(){
     let geo = global.city.geology;
 
     let gains = calcPrestige('matrix');
+    logPrestigeGains(gains);
 
     unlockAchieve(`biome_${biome}`);
     atmo.forEach(function(a){
@@ -1114,6 +1126,7 @@ export function retirement(){
     let geo = global.city.geology;
 
     let gains = calcPrestige('retired');
+    logPrestigeGains(gains);
 
     unlockAchieve(`biome_${biome}`);
     atmo.forEach(function(a){
@@ -1199,6 +1212,7 @@ export function gardenOfEden(){
     let geo = global.city.geology;
 
     let gains = calcPrestige('eden');
+    logPrestigeGains(gains);
 
     unlockAchieve(`biome_${biome}`);
     atmo.forEach(function(a){
@@ -1261,6 +1275,53 @@ export function gardenOfEden(){
     window.location.reload();
 }
 
+function formatPrestigeGain(value){
+    let amount = Number(value);
+    if (!isFinite(amount)){
+        return value.toString();
+    }
+    if (Math.floor(amount) === amount){
+        return amount.toString();
+    }
+    return (+amount.toFixed(3)).toString();
+}
+
+function prestigeGainList(items){
+    if (items.length <= 1){
+        return items[0] || '';
+    }
+    if (items.length === 2){
+        return loc('reset_prestige_gained_pair',[items[0],items[1]]);
+    }
+    return loc('reset_prestige_gained_pair',[
+        items.slice(0,-1).join(', '),
+        items[items.length - 1]
+    ]);
+}
+
+function logPrestigeGains(gains){
+    let prestigeResources = [
+        ['plasmid', global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_name') : loc('resource_Plasmid_name')],
+        ['phage', loc('resource_Phage_name')],
+        ['dark', loc('resource_Dark_name')],
+        ['harmony', loc('resource_Harmony_name')],
+        ['artifact', loc('resource_Artifact_name')],
+        ['supercoiled', loc('resource_Supercoiled_name')],
+        ['cores', loc('resource_AICore_name')]
+    ];
+
+    let earned = [];
+    prestigeResources.forEach(function(resource){
+        let key = resource[0];
+        if (gains.hasOwnProperty(key) && gains[key] > 0){
+            earned.push(`${formatPrestigeGain(gains[key])} ${resource[1]}`);
+        }
+    });
+
+    if (earned.length > 0){
+        messageQueue(loc('reset_prestige_gained',[prestigeGainList(earned)]),'success',false,['major_events']);
+    }
+}
 function resetCommon(args){
     global.city = {
         calendar: {
