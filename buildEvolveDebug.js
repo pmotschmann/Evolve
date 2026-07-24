@@ -1,7 +1,7 @@
 require("esbuild")
   .build({
     logLevel: "debug",
-    entryPoints: ["./src/main.js"],
+    entryPoints: ["./src/main-repaired.js"],
     bundle: true,
     minify: false,
     sourcemap : true,
