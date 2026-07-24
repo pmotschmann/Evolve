@@ -2,14 +2,19 @@ import { global } from './vars.js';
 import { cleanAddTrait } from './races.js';
 
 /**
- * Repair saves where Terrifying is active while local Trade state remains live.
+ * Repair an invalid Trade state left by an imitated Terrifying trait.
  *
- * Older Synth/Imitation saves can contain researched Trade technology and Trade
- * Posts even though Terrifying disables local trading. cleanAddTrait() owns the
- * canonical transition into purgatory, including route and market cleanup.
+ * Affected saves can retain researched Trade technology and Trade Posts while
+ * Terrifying is active. cleanAddTrait() owns the canonical transition into
+ * purgatory, including route, queue, and market cleanup.
  */
 export function repairTerrifyingTrade(){
-    if (global.race?.terrifying && (global.tech?.trade || global.city?.trade)){
+    const imitatedTerrifying = global.race?.imitation && global.race?.terrifying && (
+        global.race?.iTraits?.terrifying === 0 || global.race?.srace === 'balorg'
+    );
+    const activeLocalTrade = global.tech?.trade || global.city?.trade;
+
+    if (imitatedTerrifying && activeLocalTrade){
         cleanAddTrait('terrifying');
     }
 }
