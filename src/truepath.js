@@ -5875,11 +5875,11 @@ export const spacePlanetStats = {
     eridani_p2: { dist: 0.35, orbit: 90, size: 0.4, star: 'eridani' },
     eridani_p3: { dist: 0.5, orbit: 154, size: 0.52, star: 'eridani', hz: true },
     // Gliese 65 (M-type): 560,941.3 AU from the Sun (8.87 ly).
-    gliese65: { x: -138124.928, y: 10901.934, z: -543560.337, dist: 560941.3, orbit: -2, size: 1, startype: 'M', label: loc('star_gliese65'), zlabel: loc('star_gliese65') },
+    // The map carried only BL Cet; UV Cet joins it below, so this is component A now.
+    gliese65: { x: -138124.928, y: 10901.934, z: -543560.337, dist: 560941.3, orbit: -2, size: 1, startype: 'M', label: loc('star_gliese65'), zlabel: loc('star_gliese65') + ' A' },
     // gliese65 planets (M-type, 3, one in the habitable zone)
     gliese65_p1: { dist: 0.18, orbit: 51, size: 0.35, star: 'gliese65', hz: true },
-    gliese65_p2: { dist: 0.32, orbit: 121, size: 0.3, star: 'gliese65' },
-    gliese65_p3: { dist: 0.62, orbit: 326, size: 0.31, star: 'gliese65' },
+    gliese65_p2: { dist: 0.62, orbit: 326, size: 0.31, star: 'gliese65' },
     // YZ Ceti (M-type): 766,620.4 AU from the Sun (12.12 ly).
     yzceti: { x: -129026.649, y: 75381.207, z: -751915.278, dist: 766620.4, orbit: -2, size: 1, startype: 'M', label: loc('star_yzceti'), zlabel: loc('star_yzceti') },
     // yzceti planets (M-type, 3, none habitable)
@@ -6071,6 +6071,311 @@ export const spacePlanetStats = {
     // wolf1061 planets (M-type, 2, none habitable)
     wolf1061_p1: { dist: 0.33, orbit: 126, size: 0.38, star: 'wolf1061' },
     wolf1061_p2: { dist: 0.61, orbit: 318, size: 0.32, star: 'wolf1061' },
+    // Groombridge 1618 (K-type): 1,004,627.1 AU from the Sun (15.89 ly).
+    groombridge1618: { x: -597833.655, y: 150541.573, z: 793226.14, dist: 1004627.1, orbit: -2, size: 1.75, startype: 'K', label: loc('star_groombridge_1618'), zlabel: loc('star_groombridge_1618') },
+    // groombridge1618 planets (K-type, 2, habitable-zone planet at ~0.2 AU — a dim K6 dwarf)
+    groombridge1618_p1: { dist: 0.2, orbit: 41, size: 0.4, star: 'groombridge1618', hz: true },
+    groombridge1618_p2: { dist: 0.45, orbit: 139, size: 0.33, star: 'groombridge1618' },
+    // 40 Eridani A (K-type): 1,033,349.4 AU from the Sun (16.34 ly). Triple: a K0 dwarf with a
+    // white dwarf and a red dwarf orbiting each other some 400 AU out.
+    eridani40: { x: -760960.965, y: -288344.331, z: -636872.774, dist: 1033349.4, orbit: -2, size: 1.9, startype: 'K', label: loc('star_40_eridani'), zlabel: loc('star_40_eridani') + ' A' },
+    // eridani40 planets (K-type, 3, habitable-zone planet at ~0.68 AU). The inner one stands in for
+    // the much-disputed 40 Eridani A b; all three sit far inside the 400 AU to the B/C pair.
+    eridani40_p1: { dist: 0.22, orbit: 43, size: 0.38, star: 'eridani40' },
+    eridani40_p2: { dist: 0.68, orbit: 232, size: 0.52, star: 'eridani40', hz: true },
+    eridani40_p3: { dist: 1.3, orbit: 613, size: 0.9, star: 'eridani40' },
+    // 40 Eridani B (D-type white dwarf): companion, 418.7 AU from 40 Eridani A.
+    eridani40b: { x: -761042.474, y: -288672.923, z: -636626.477, dist: 1033349.4, orbit: -2, size: 1.2, startype: 'D', zlabel: loc('star_40_eridani') + ' B' },
+    // 40 Eridani C (M-type): companion, 392 AU from 40 Eridani A and 46.8 AU from the white dwarf.
+    eridani40c: { x: -761061.01, y: -288630.021, z: -636623.769, dist: 1033349.4, orbit: -2, size: 1, startype: 'M', zlabel: loc('star_40_eridani') + ' C' },
+    // 36 Ophiuchi A (K-type): 1,227,744 AU from the Sun (19.41 ly). A triple of K dwarfs.
+    ophiuchi36: { x: 1218355.571, y: -36598.555, z: 147056.784, dist: 1227744, orbit: -2, size: 1.9, startype: 'K', label: loc('star_36_ophiuchi'), zlabel: loc('star_36_ophiuchi') + ' A' },
+    // ophiuchi36 planets (K-type, 2, habitable-zone planet at ~0.55 AU). Held well inside the 29 AU
+    // to component B, which is close enough to bound anything much wider.
+    ophiuchi36_p1: { dist: 0.55, orbit: 161, size: 0.5, star: 'ophiuchi36', hz: true },
+    ophiuchi36_p2: { dist: 0.95, orbit: 367, size: 0.62, star: 'ophiuchi36' },
+    // 36 Ophiuchi B (K-type): companion, 29 AU from 36 Ophiuchi A.
+    ophiuchi36b: { x: 1218358.479, y: -36609.241, z: 147030.032, dist: 1227744, orbit: -2, size: 1.85, startype: 'K', zlabel: loc('star_36_ophiuchi') + ' B' },
+    // ophiuchi36b planets (K-type, 1, habitable-zone planet at ~0.52 AU)
+    ophiuchi36b_p1: { dist: 0.52, orbit: 151, size: 0.47, star: 'ophiuchi36b', hz: true },
+    // 36 Ophiuchi C (K-type): distant companion, 4,364 AU from 36 Ophiuchi A.
+    ophiuchi36c: { x: 1218779.549, y: -33227.176, z: 144318.453, dist: 1227744, orbit: -2, size: 1.6, startype: 'K', zlabel: loc('star_36_ophiuchi') + ' C' },
+    // ophiuchi36c planets (K-type, 1, habitable-zone planet at ~0.39 AU)
+    ophiuchi36c_p1: { dist: 0.39, orbit: 106, size: 0.36, star: 'ophiuchi36c', hz: true },
+    // HR 7703 A (K-type): 1,240,114.7 AU from the Sun (19.61 ly).
+    hr7703: { x: 1059390.403, y: 97030.649, z: -637308.014, dist: 1240114.7, orbit: -2, size: 1.9, startype: 'K', label: loc('star_hr_7703'), zlabel: loc('star_hr_7703') + ' A' },
+    // hr7703 planets (K-type, 2, habitable-zone planet at ~0.5 AU)
+    hr7703_p1: { dist: 0.5, orbit: 149, size: 0.46, star: 'hr7703', hz: true },
+    hr7703_p2: { dist: 0.9, orbit: 360, size: 0.55, star: 'hr7703' },
+    // HR 7703 B (M-type): companion, 178.7 AU from HR 7703 A.
+    hr7703b: { x: 1059353.659, y: 96877.48, z: -637392.387, dist: 1240114.7, orbit: -2, size: 1, startype: 'M', zlabel: loc('star_hr_7703') + ' B' },
+    // 82 Eridani (G-type): 1,246,130.8 AU from the Sun (19.70 ly).
+    eridani82: { x: -229324.232, y: -656542.819, z: -1034023.178, dist: 1246130.8, orbit: -2, size: 2, startype: 'G', label: loc('star_82_eridani'), zlabel: loc('star_82_eridani') },
+    // eridani82 planets (G-type, 3, habitable-zone planet at ~1.35 AU). These are the real HD 20794
+    // b, c and d; the star's 0.8 solar masses reproduces their published 18.3, 89.6 and 647 day
+    // periods through the same Kepler relation the rest of the table uses.
+    eridani82_p1: { dist: 0.126, orbit: 18, size: 0.35, star: 'eridani82' },
+    eridani82_p2: { dist: 0.36, orbit: 88, size: 0.4, star: 'eridani82' },
+    eridani82_p3: { dist: 1.35, orbit: 640, size: 0.45, star: 'eridani82', hz: true },
+    // Delta Pavonis (G-type): 1,258,062 AU from the Sun (19.89 ly). A G8 subgiant, so it is drawn
+    // slightly larger than the G dwarfs and its habitable zone sits further out.
+    deltapavonis: { x: 917575.298, y: -534741.764, z: -674408.559, dist: 1258062, orbit: -2, size: 2.2, startype: 'G', label: loc('star_delta_pavonis'), zlabel: loc('star_delta_pavonis') },
+    // deltapavonis planets (G-type, 3, habitable-zone planet at ~1.1 AU)
+    deltapavonis_p1: { dist: 0.6, orbit: 166, size: 0.4, star: 'deltapavonis' },
+    deltapavonis_p2: { dist: 1.1, orbit: 411, size: 0.58, star: 'deltapavonis', hz: true },
+    deltapavonis_p3: { dist: 2.1, orbit: 1084, size: 1.1, star: 'deltapavonis' },
+    // Lalande 21185 (M-type): 525,177 AU from the Sun (8.30 ly).
+    lalande21185: { x: -217487.254, y: -19480.634, z: 477630.322, dist: 525177, orbit: -2, size: 1, startype: 'M', label: loc('star_lalande21185'), zlabel: loc('star_lalande21185') },
+    // lalande21185 planets (M-type, 2, habitable-zone planet at ~0.39 AU) — real detected planets, at their published semi-major axes
+    lalande21185_p1: { dist: 0.079, orbit: 12, size: 0.35, star: 'lalande21185' },
+    lalande21185_p2: { dist: 0.51, orbit: 200, size: 0.36, star: 'lalande21185', hz: true },
+    // Ross 154 (M-type): 613,834.8 AU from the Sun (9.71 ly).
+    ross154: { x: 592249.371, y: 118420.349, z: -109592.027, dist: 613834.8, orbit: -2, size: 1, startype: 'M', label: loc('star_ross154'), zlabel: loc('star_ross154') },
+    // ross154 planets (M-type, 2, habitable-zone planet at ~0.25 AU)
+    ross154_p1: { dist: 0.25, orbit: 83, size: 0.44, star: 'ross154', hz: true },
+    ross154_p2: { dist: 0.601, orbit: 310, size: 0.45, star: 'ross154' },
+    // Ross 248 (M-type): 651,744.3 AU from the Sun (10.31 ly).
+    ross248: { x: -213144.088, y: 585898.378, z: -189903.322, dist: 651744.3, orbit: -2, size: 1, startype: 'M', label: loc('star_ross248'), zlabel: loc('star_ross248') },
+    // ross248 planets (M-type, 1, habitable-zone planet at ~0.12 AU)
+    ross248_p1: { dist: 0.122, orbit: 39, size: 0.27, star: 'ross248', hz: true },
+    // Lacaille 9352 (M-type): 678,200.6 AU from the Sun (10.72 ly).
+    lacaille9352: { x: 275218.805, y: 24566.519, z: -619360.258, dist: 678200.6, orbit: -2, size: 1, startype: 'M', label: loc('star_lacaille9352'), zlabel: loc('star_lacaille9352') },
+    // lacaille9352 planets (M-type, 2, none habitable) — real detected planets, at their published semi-major axes
+    lacaille9352_p1: { dist: 0.068, orbit: 10, size: 0.28, star: 'lacaille9352' },
+    lacaille9352_p2: { dist: 0.12, orbit: 23, size: 0.29, star: 'lacaille9352' },
+    // EZ Aquarii (M-type): 702,536.8 AU from the Sun (11.11 ly).
+    ezaquarii: { x: 260754.881, y: 280307.529, z: -589060.731, dist: 702536.8, orbit: -2, size: 1, startype: 'M', label: loc('star_ezaquarii'), zlabel: loc('star_ezaquarii') },
+    // ezaquarii planets (M-type, 1, habitable-zone planet at ~0.12 AU)
+    ezaquarii_p1: { dist: 0.122, orbit: 39, size: 0.49, star: 'ezaquarii', hz: true },
+    // Struve 2398 (M-type): 726,693.7 AU from the Sun (11.49 ly).
+    struve2398: { x: 8230.584, y: 662621.062, z: 298243.672, dist: 726693.7, orbit: -2, size: 1, startype: 'M', label: loc('star_struve2398'), zlabel: loc('star_struve2398') + ' A' },
+    // struve2398 planets (M-type, 2, habitable-zone planet at ~0.31 AU)
+    struve2398_p1: { dist: 0.309, orbit: 104, size: 0.28, star: 'struve2398', hz: true },
+    struve2398_p2: { dist: 0.741, orbit: 388, size: 0.29, star: 'struve2398' },
+    // Struve 2398 B (M-type): M3.5 dwarf companion, 45 AU from Struve 2398 A.
+    struve2398b: { x: 8273.129, y: 662626.622, z: 298230.14, dist: 726693.7, orbit: -2, size: 1, startype: 'M', zlabel: loc('star_struve2398') + ' B' },
+    // struve2398b planets (M-type, 2, habitable-zone planet at ~0.25 AU)
+    struve2398b_p1: { dist: 0.25, orbit: 83, size: 0.46, star: 'struve2398b', hz: true },
+    struve2398b_p2: { dist: 0.601, orbit: 310, size: 0.47, star: 'struve2398b' },
+    // Groombridge 34 (M-type): 734,805.2 AU from the Sun (11.62 ly).
+    groombridge34: { x: -312946.227, y: 622849.542, z: -232511.796, dist: 734805.2, orbit: -2, size: 1, startype: 'M', label: loc('star_groombridge34'), zlabel: loc('star_groombridge34') + ' A' },
+    // groombridge34 planets (M-type, 2, none habitable) — real detected planets, at their published semi-major axes
+    groombridge34_p1: { dist: 0.072, orbit: 11, size: 0.33, star: 'groombridge34' },
+    groombridge34_p2: { dist: 5.4, orbit: 6905, size: 0.34, star: 'groombridge34' },
+    // Groombridge 34 B (M-type): M3.5 dwarf companion, 125.7 AU from Groombridge 34 A.
+    groombridge34b: { x: -313058.463, y: 622807.066, z: -232474.486, dist: 734805.2, orbit: -2, size: 1, startype: 'M', zlabel: loc('star_groombridge34') + ' B' },
+    // groombridge34b planets (M-type, 2, habitable-zone planet at ~0.25 AU)
+    groombridge34b_p1: { dist: 0.25, orbit: 83, size: 0.33, star: 'groombridge34b', hz: true },
+    groombridge34b_p2: { dist: 0.601, orbit: 310, size: 0.34, star: 'groombridge34b' },
+    // Gliese 1061 (M-type): 757,876.5 AU from the Sun (11.98 ly).
+    gliese1061: { x: -142241.102, y: -434411.095, z: -604509.111, dist: 757876.5, orbit: -2, size: 1, startype: 'M', label: loc('star_gliese1061'), zlabel: loc('star_gliese1061') },
+    // gliese1061 planets (M-type, 3, none habitable) — real detected planets, at their published semi-major axes
+    gliese1061_p1: { dist: 0.021, orbit: 3, size: 0.33, star: 'gliese1061' },
+    gliese1061_p2: { dist: 0.035, orbit: 7, size: 0.34, star: 'gliese1061' },
+    gliese1061_p3: { dist: 0.054, orbit: 13, size: 0.35, star: 'gliese1061' },
+    // Luyten's Star (M-type): 780,930.7 AU from the Sun (12.35 ly).
+    luytensstar: { x: -648982.214, y: -410976.247, z: 140617.84, dist: 780930.7, orbit: -2, size: 1, startype: 'M', label: loc('star_luytensstar'), zlabel: loc('star_luytensstar') },
+    // luytensstar planets (M-type, 2, none habitable) — real detected planets, at their published semi-major axes
+    luytensstar_p1: { dist: 0.036, orbit: 5, size: 0.46, star: 'luytensstar' },
+    luytensstar_p2: { dist: 0.091, orbit: 18, size: 0.47, star: 'luytensstar' },
+    // Lacaille 8760 (M-type): 818,795.8 AU from the Sun (12.95 ly).
+    lacaille8760: { x: 585078.569, y: 39930.09, z: -571415.051, dist: 818795.8, orbit: -2, size: 1, startype: 'M', label: loc('star_lacaille8760'), zlabel: loc('star_lacaille8760') },
+    // lacaille8760 planets (M-type, 2, habitable-zone planet at ~0.44 AU)
+    lacaille8760_p1: { dist: 0.44, orbit: 152, size: 0.36, star: 'lacaille8760', hz: true },
+    lacaille8760_p2: { dist: 1.057, orbit: 567, size: 0.37, star: 'lacaille8760' },
+    // SCR 1845-6357 (M-type): 826,166 AU from the Sun (13.06 ly).
+    scr1845: { x: 665907.921, y: -361272.051, z: -329544.131, dist: 826166, orbit: -2, size: 1, startype: 'M', label: loc('star_scr1845'), zlabel: loc('star_scr1845') + ' A' },
+    // scr1845 planets (M-type, 1, habitable-zone planet at ~0.05 AU)
+    scr1845_p1: { dist: 0.051, orbit: 15, size: 0.27, star: 'scr1845', hz: true },
+    // SCR 1845-6357 B (T-type): brown dwarf companion, 1.4 AU from SCR 1845-6357 A.
+    scr1845b: { x: 665907.12, y: -361273.178, z: -329544.514, dist: 826166, orbit: -2, size: 1, startype: 'T', zlabel: loc('star_scr1845') + ' B' },
+    // DEN 1048-3956 (M-type): 834,351.9 AU from the Sun (13.19 ly).
+    den1048: { x: 120425.2, y: -788470.43, z: 244857.613, dist: 834351.9, orbit: -2, size: 1, startype: 'M', label: loc('star_den1048'), zlabel: loc('star_den1048') },
+    // den1048 planets (M-type, 1, habitable-zone planet at ~0.05 AU)
+    den1048_p1: { dist: 0.051, orbit: 15, size: 0.37, star: 'den1048', hz: true },
+    // Ross 614 (M-type): 848,945.5 AU from the Sun (13.42 ly).
+    ross614: { x: -708412.737, y: -458791.644, z: -91488.11, dist: 848945.5, orbit: -2, size: 1, startype: 'M', label: loc('star_ross614'), zlabel: loc('star_ross614') },
+    // ross614 planets (M-type, 2, habitable-zone planet at ~0.16 AU)
+    ross614_p1: { dist: 0.157, orbit: 51, size: 0.3, star: 'ross614', hz: true },
+    ross614_p2: { dist: 0.377, orbit: 189, size: 0.31, star: 'ross614' },
+    // Gliese 1 (M-type): 896,425.4 AU from the Sun (14.17 ly).
+    gliese1: { x: 209403.756, y: -61814.687, z: -869429.465, dist: 896425.4, orbit: -2, size: 1, startype: 'M', label: loc('star_gliese1'), zlabel: loc('star_gliese1') },
+    // gliese1 planets (M-type, 2, habitable-zone planet at ~0.39 AU)
+    gliese1_p1: { dist: 0.389, orbit: 134, size: 0.45, star: 'gliese1', hz: true },
+    gliese1_p2: { dist: 0.934, orbit: 497, size: 0.46, star: 'gliese1' },
+    // Gliese 687 (M-type): 938,464 AU from the Sun (14.84 ly).
+    gliese687: { x: -119088.111, y: 787217.482, z: 496811.094, dist: 938464, orbit: -2, size: 1, startype: 'M', label: loc('star_gliese687'), zlabel: loc('star_gliese687') },
+    // gliese687 planets (M-type, 2, none habitable) — real detected planets, at their published semi-major axes
+    gliese687_p1: { dist: 0.164, orbit: 40, size: 0.27, star: 'gliese687' },
+    gliese687_p2: { dist: 1.17, orbit: 770, size: 0.28, star: 'gliese687' },
+    // Gliese 674 (M-type): 939,077.1 AU from the Sun (14.85 ly).
+    gliese674: { x: 891786.742, y: -272579.855, z: -110825.959, dist: 939077.1, orbit: -2, size: 1, startype: 'M', label: loc('star_gliese674'), zlabel: loc('star_gliese674') },
+    // gliese674 planets (M-type, 1, none habitable) — real detected planets, at their published semi-major axes
+    gliese674_p1: { dist: 0.039, orbit: 5, size: 0.26, star: 'gliese674' },
+    // LHS 292 (M-type): 940,430.5 AU from the Sun (14.87 ly).
+    lhs292: { x: -110597.972, y: -697913.901, z: 620559.241, dist: 940430.5, orbit: -2, size: 1, startype: 'M', label: loc('star_lhs292'), zlabel: loc('star_lhs292') },
+    // lhs292 planets (M-type, 1, habitable-zone planet at ~0.07 AU)
+    lhs292_p1: { dist: 0.067, orbit: 21, size: 0.31, star: 'lhs292', hz: true },
+    // Gliese 876 (M-type): 963,683.1 AU from the Sun (15.24 ly).
+    gliese876: { x: 299935.23, y: 383955.508, z: -831445.83, dist: 963683.1, orbit: -2, size: 1, startype: 'M', label: loc('star_gliese876'), zlabel: loc('star_gliese876') },
+    // gliese876 planets (M-type, 4, habitable-zone planet at ~0.25 AU) — real detected planets, at their published semi-major axes
+    gliese876_p1: { dist: 0.021, orbit: 2, size: 0.27, star: 'gliese876' },
+    gliese876_p2: { dist: 0.13, orbit: 31, size: 0.28, star: 'gliese876' },
+    gliese876_p3: { dist: 0.208, orbit: 63, size: 0.29, star: 'gliese876', hz: true },
+    gliese876_p4: { dist: 0.334, orbit: 129, size: 0.3, star: 'gliese876', hz: true },
+    // Gliese 1245 (M-type): 967,775.5 AU from the Sun (15.30 ly).
+    gliese1245: { x: 184953.099, y: 939081.762, z: 143203.637, dist: 967775.5, orbit: -2, size: 1, startype: 'M', label: loc('star_gliese1245'), zlabel: loc('star_gliese1245') + ' A' },
+    // gliese1245 planets (M-type, 1, habitable-zone planet at ~0.10 AU)
+    gliese1245_p1: { dist: 0.096, orbit: 30, size: 0.37, star: 'gliese1245', hz: true },
+    // Gliese 1245 B (M-type): M6 dwarf companion, 35.6 AU from Gliese 1245 A.
+    gliese1245b: { x: 184926.336, y: 939090.367, z: 143181.763, dist: 967775.5, orbit: -2, size: 1, startype: 'M', zlabel: loc('star_gliese1245') + ' B' },
+    // gliese1245b planets (M-type, 1, habitable-zone planet at ~0.07 AU)
+    gliese1245b_p1: { dist: 0.071, orbit: 22, size: 0.33, star: 'gliese1245b', hz: true },
+    // LHS 288 (M-type): 996,593.7 AU from the Sun (15.76 ly).
+    lhs288: { x: 311628.137, y: -945967.647, z: -35102.573, dist: 996593.7, orbit: -2, size: 1, startype: 'M', label: loc('star_lhs288'), zlabel: loc('star_lhs288') },
+    // lhs288 planets (M-type, 1, habitable-zone planet at ~0.10 AU)
+    lhs288_p1: { dist: 0.096, orbit: 30, size: 0.39, star: 'lhs288', hz: true },
+    // Gliese 1002 (M-type): 999,587.1 AU from the Sun (15.81 ly).
+    gliese1002: { x: -16284.807, y: 378551.276, z: -924990.911, dist: 999587.1, orbit: -2, size: 1, startype: 'M', label: loc('star_gliese1002'), zlabel: loc('star_gliese1002') },
+    // gliese1002 planets (M-type, 2, habitable-zone planet at ~0.10 AU) — real detected planets, at their published semi-major axes
+    gliese1002_p1: { dist: 0.046, orbit: 10, size: 0.49, star: 'gliese1002' },
+    gliese1002_p2: { dist: 0.074, orbit: 20, size: 0.5, star: 'gliese1002', hz: true },
+    // Gliese 412 (M-type): 1,011,659.4 AU from the Sun (16.00 ly).
+    gliese412: { x: -448966.251, y: 91321.181, z: 901967.006, dist: 1011659.4, orbit: -2, size: 1, startype: 'M', label: loc('star_gliese412'), zlabel: loc('star_gliese412') + ' A' },
+    // gliese412 planets (M-type, 2, habitable-zone planet at ~0.44 AU)
+    gliese412_p1: { dist: 0.44, orbit: 152, size: 0.37, star: 'gliese412', hz: true },
+    gliese412_p2: { dist: 1.057, orbit: 567, size: 0.38, star: 'gliese412' },
+    // Gliese 412 B (M-type): M6 dwarf companion, 153 AU from Gliese 412 A.
+    gliese412b: { x: -448837.812, y: 91274.378, z: 902035.664, dist: 1011659.4, orbit: -2, size: 1, startype: 'M', zlabel: loc('star_gliese412') + ' B' },
+    // gliese412b planets (M-type, 1, habitable-zone planet at ~0.07 AU)
+    gliese412b_p1: { dist: 0.071, orbit: 22, size: 0.25, star: 'gliese412b', hz: true },
+    // Gliese 832 (M-type): 1,024,535.5 AU from the Sun (16.20 ly).
+    gliese832: { x: 694603.235, y: -132841.054, z: -741318.088, dist: 1024535.5, orbit: -2, size: 1, startype: 'M', label: loc('star_gliese832'), zlabel: loc('star_gliese832') },
+    // gliese832 planets (M-type, 2, habitable-zone planet at ~0.25 AU) — real detected planets, at their published semi-major axes
+    gliese832_p1: { dist: 0.163, orbit: 44, size: 0.28, star: 'gliese832', hz: true },
+    gliese832_p2: { dist: 3.56, orbit: 4476, size: 0.29, star: 'gliese832' },
+    // Gliese 1005 (M-type): 1,028,598.2 AU from the Sun (16.26 ly).
+    gliese1005: { x: 25989.848, y: 243959.963, z: -998910.614, dist: 1028598.2, orbit: -2, size: 1, startype: 'M', label: loc('star_gliese1005'), zlabel: loc('star_gliese1005') },
+    // gliese1005 planets (M-type, 2, habitable-zone planet at ~0.18 AU)
+    gliese1005_p1: { dist: 0.184, orbit: 60, size: 0.34, star: 'gliese1005', hz: true },
+    gliese1005_p2: { dist: 0.443, orbit: 224, size: 0.35, star: 'gliese1005' },
+    // Gliese 682 (M-type): 1,032,902.3 AU from the Sun (16.33 ly).
+    gliese682: { x: 995446.58, y: -248457.356, z: -119340.785, dist: 1032902.3, orbit: -2, size: 1, startype: 'M', label: loc('star_gliese682'), zlabel: loc('star_gliese682') },
+    // gliese682 planets (M-type, 2, habitable-zone planet at ~0.25 AU)
+    gliese682_p1: { dist: 0.25, orbit: 83, size: 0.34, star: 'gliese682', hz: true },
+    gliese682_p2: { dist: 0.601, orbit: 310, size: 0.35, star: 'gliese682' },
+    // Gliese 316.1 (M-type): 1,062,430.4 AU from the Sun (16.80 ly).
+    gliese3161: { x: -757530.872, y: -395194.328, z: 631448.157, dist: 1062430.4, orbit: -2, size: 1, startype: 'M', label: loc('star_gliese3161'), zlabel: loc('star_gliese3161') + ' A' },
+    // gliese3161 planets (M-type, 1, habitable-zone planet at ~0.05 AU)
+    gliese3161_p1: { dist: 0.055, orbit: 17, size: 0.42, star: 'gliese3161', hz: true },
+    // Gliese 316.1 B (M-type): M7 dwarf companion, 13.6 AU from Gliese 316.1 A.
+    gliese3161b: { x: -757524.185, y: -395206.107, z: 631448.807, dist: 1062430.4, orbit: -2, size: 1, startype: 'M', zlabel: loc('star_gliese3161') + ' B' },
+    // gliese3161b planets (M-type, 1, habitable-zone planet at ~0.06 AU)
+    gliese3161b_p1: { dist: 0.063, orbit: 19, size: 0.31, star: 'gliese3161b', hz: true },
+    // Gliese 3379 (M-type): 1,074,220.3 AU from the Sun (16.99 ly).
+    gliese3379: { x: -961744.94, y: -439556.081, z: -189173.069, dist: 1074220.3, orbit: -2, size: 1, startype: 'M', label: loc('star_gliese3379'), zlabel: loc('star_gliese3379') },
+    // gliese3379 planets (M-type, 2, habitable-zone planet at ~0.25 AU)
+    gliese3379_p1: { dist: 0.25, orbit: 83, size: 0.29, star: 'gliese3379', hz: true },
+    gliese3379_p2: { dist: 0.601, orbit: 310, size: 0.3, star: 'gliese3379' },
+    // Gliese 445 (M-type): 1,083,749.9 AU from the Sun (17.14 ly).
+    gliese445: { x: -512495.776, y: 683891.836, z: 666448.693, dist: 1083749.9, orbit: -2, size: 1, startype: 'M', label: loc('star_gliese445'), zlabel: loc('star_gliese445') },
+    // gliese445 planets (M-type, 2, habitable-zone planet at ~0.18 AU)
+    gliese445_p1: { dist: 0.184, orbit: 60, size: 0.43, star: 'gliese445', hz: true },
+    gliese445_p2: { dist: 0.443, orbit: 224, size: 0.44, star: 'gliese445' },
+    // UCAC4 195-119117 (M-type): 1,098,737 AU from the Sun (17.37 ly).
+    ucac4195: { x: 930476.996, y: -580671.582, z: 65239.27, dist: 1098737, orbit: -2, size: 1, startype: 'M', label: loc('star_ucac4195'), zlabel: loc('star_ucac4195') },
+    // ucac4195 planets (M-type, 1, habitable-zone planet at ~0.06 AU)
+    ucac4195_p1: { dist: 0.063, orbit: 19, size: 0.37, star: 'ucac4195', hz: true },
+    // Gliese 3323 (M-type): 1,108,672.8 AU from the Sun (17.53 ly).
+    gliese3323: { x: -880844.557, y: -437838.537, z: -511434.918, dist: 1108672.8, orbit: -2, size: 1, startype: 'M', label: loc('star_gliese3323'), zlabel: loc('star_gliese3323') },
+    // gliese3323 planets (M-type, 2, habitable-zone planet at ~0.18 AU) — real detected planets, at their published semi-major axes
+    gliese3323_p1: { dist: 0.033, orbit: 5, size: 0.33, star: 'gliese3323' },
+    gliese3323_p2: { dist: 0.126, orbit: 34, size: 0.34, star: 'gliese3323', hz: true },
+    // Gliese 526 (M-type): 1,121,027.5 AU from the Sun (17.73 ly).
+    gliese526: { x: 335066.997, y: -49623.998, z: 1068630.103, dist: 1121027.5, orbit: -2, size: 1, startype: 'M', label: loc('star_gliese526'), zlabel: loc('star_gliese526') },
+    // gliese526 planets (M-type, 2, habitable-zone planet at ~0.39 AU)
+    gliese526_p1: { dist: 0.389, orbit: 134, size: 0.25, star: 'gliese526', hz: true },
+    gliese526_p2: { dist: 0.934, orbit: 497, size: 0.26, star: 'gliese526' },
+    // Stein 2051 (M-type): 1,138,051.7 AU from the Sun (18.00 ly).
+    stein2051: { x: -958344.288, y: 596456.243, z: 144836.944, dist: 1138051.7, orbit: -2, size: 1, startype: 'M', label: loc('star_stein2051'), zlabel: loc('star_stein2051') + ' A' },
+    // stein2051 planets (M-type, 2, habitable-zone planet at ~0.18 AU)
+    stein2051_p1: { dist: 0.184, orbit: 60, size: 0.39, star: 'stein2051', hz: true },
+    stein2051_p2: { dist: 0.443, orbit: 224, size: 0.4, star: 'stein2051' },
+    // Stein 2051 B (D-type): white dwarf companion, 49.8 AU from Stein 2051 A.
+    stein2051b: { x: -958347.129, y: 596440.249, z: 144884.009, dist: 1138051.7, orbit: -2, size: 1.2, startype: 'D', zlabel: loc('star_stein2051') + ' B' },
+    // Gliese 251 (M-type): 1,151,912.6 AU from the Sun (18.21 ly).
+    gliese251: { x: -1110494.37, y: -56961.286, z: 300766.1, dist: 1151912.6, orbit: -2, size: 1, startype: 'M', label: loc('star_gliese251'), zlabel: loc('star_gliese251') },
+    // gliese251 planets (M-type, 1, none habitable) — real detected planets, at their published semi-major axes
+    gliese251_p1: { dist: 0.082, orbit: 14, size: 0.5, star: 'gliese251' },
+    // Gliese 1224 (M-type): 1,159,239.1 AU from the Sun (18.33 ly).
+    gliese1224: { x: 828810.56, y: 481669.937, z: -651845.416, dist: 1159239.1, orbit: -2, size: 1, startype: 'M', label: loc('star_gliese1224'), zlabel: loc('star_gliese1224') },
+    // gliese1224 planets (M-type, 2, habitable-zone planet at ~0.18 AU)
+    gliese1224_p1: { dist: 0.184, orbit: 60, size: 0.28, star: 'gliese1224', hz: true },
+    gliese1224_p2: { dist: 0.443, orbit: 224, size: 0.29, star: 'gliese1224' },
+    // LSR 1835+3259 (M-type): 1,173,339.1 AU from the Sun (18.55 ly).
+    lsr1835: { x: 531613.187, y: 985085.729, z: 351736.048, dist: 1173339.1, orbit: -2, size: 1, startype: 'M', label: loc('star_lsr1835'), zlabel: loc('star_lsr1835') },
+    // lsr1835 planets (M-type, 1, habitable-zone planet at ~0.05 AU)
+    lsr1835_p1: { dist: 0.051, orbit: 15, size: 0.37, star: 'lsr1835', hz: true },
+    // Gliese 205 (M-type): 1,176,551 AU from the Sun (18.60 ly).
+    gliese205: { x: -989078.348, y: -502540.926, z: -391725.589, dist: 1176551, orbit: -2, size: 1, startype: 'M', label: loc('star_gliese205'), zlabel: loc('star_gliese205') },
+    // gliese205 planets (M-type, 2, habitable-zone planet at ~0.25 AU)
+    gliese205_p1: { dist: 0.25, orbit: 83, size: 0.4, star: 'gliese205', hz: true },
+    gliese205_p2: { dist: 0.601, orbit: 310, size: 0.41, star: 'gliese205' },
+    // Gliese 229 (M-type): 1,188,339.3 AU from the Sun (18.79 ly).
+    gliese229: { x: -745335.438, y: -845782.332, z: -375869.169, dist: 1188339.3, orbit: -2, size: 1, startype: 'M', label: loc('star_gliese229'), zlabel: loc('star_gliese229') + ' A' },
+    // gliese229 planets (M-type, 2, habitable-zone planet at ~0.44 AU) — real detected planets, at their published semi-major axes
+    gliese229_p1: { dist: 0.0393, orbit: 4, size: 0.34, star: 'gliese229' },
+    gliese229_p2: { dist: 0.339, orbit: 103, size: 0.35, star: 'gliese229', hz: true },
+    // Gliese 229 B (T-type): brown dwarf companion, 44.8 AU from Gliese 229 A.
+    gliese229b: { x: -745301.32, y: -845811.323, z: -375871.586, dist: 1188339.3, orbit: -2, size: 1, startype: 'T', zlabel: loc('star_gliese229') + ' B' },
+    // Ross 47 (M-type): 1,194,517.9 AU from the Sun (18.89 ly).
+    ross47: { x: -1145524.905, y: -279422.463, z: -191229.485, dist: 1194517.9, orbit: -2, size: 1, startype: 'M', label: loc('star_ross47'), zlabel: loc('star_ross47') },
+    // ross47 planets (M-type, 2, habitable-zone planet at ~0.18 AU)
+    ross47_p1: { dist: 0.184, orbit: 60, size: 0.29, star: 'ross47', hz: true },
+    ross47_p2: { dist: 0.443, orbit: 224, size: 0.3, star: 'ross47' },
+    // Gliese 693 (M-type): 1,214,721.5 AU from the Sun (19.21 ly).
+    gliese693: { x: 1068695.749, y: -491444.967, z: -303182.245, dist: 1214721.5, orbit: -2, size: 1, startype: 'M', label: loc('star_gliese693'), zlabel: loc('star_gliese693') },
+    // gliese693 planets (M-type, 2, habitable-zone planet at ~0.25 AU)
+    gliese693_p1: { dist: 0.25, orbit: 83, size: 0.27, star: 'gliese693', hz: true },
+    gliese693_p2: { dist: 0.601, orbit: 310, size: 0.28, star: 'gliese693' },
+    // Gliese 754 (M-type): 1,218,806.3 AU from the Sun (19.27 ly).
+    gliese754: { x: 1104389.603, y: -148146.062, z: -493827.043, dist: 1218806.3, orbit: -2, size: 1, startype: 'M', label: loc('star_gliese754'), zlabel: loc('star_gliese754') },
+    // gliese754 planets (M-type, 2, habitable-zone planet at ~0.16 AU)
+    gliese754_p1: { dist: 0.157, orbit: 51, size: 0.31, star: 'gliese754', hz: true },
+    gliese754_p2: { dist: 0.377, orbit: 189, size: 0.32, star: 'gliese754' },
+    // Gliese 908 (M-type): 1,218,941.7 AU from the Sun (19.27 ly).
+    gliese908: { x: -41398.594, y: 664742.204, z: -1020893.164, dist: 1218941.7, orbit: -2, size: 1, startype: 'M', label: loc('star_gliese908'), zlabel: loc('star_gliese908') },
+    // gliese908 planets (M-type, 2, habitable-zone planet at ~0.44 AU)
+    gliese908_p1: { dist: 0.44, orbit: 152, size: 0.41, star: 'gliese908', hz: true },
+    gliese908_p2: { dist: 1.057, orbit: 567, size: 0.42, star: 'gliese908' },
+    // Gliese 752 (M-type): 1,220,057.8 AU from the Sun (19.29 ly).
+    gliese752: { x: 926948.333, y: 790205.838, z: -69875.759, dist: 1220057.8, orbit: -2, size: 1, startype: 'M', label: loc('star_gliese752'), zlabel: loc('star_gliese752') + ' A' },
+    // gliese752 planets (M-type, 2, habitable-zone planet at ~0.31 AU)
+    gliese752_p1: { dist: 0.309, orbit: 104, size: 0.5, star: 'gliese752', hz: true },
+    gliese752_p2: { dist: 0.741, orbit: 388, size: 0.24, star: 'gliese752' },
+    // Gliese 752 B (M-type): M8 dwarf companion, 444.7 AU from Gliese 752 A.
+    gliese752b: { x: 927095.567, y: 790000.638, z: -70241.737, dist: 1220057.8, orbit: -2, size: 1, startype: 'M', zlabel: loc('star_gliese752') + ' B' },
+    // gliese752b planets (M-type, 1, habitable-zone planet at ~0.05 AU)
+    gliese752b_p1: { dist: 0.055, orbit: 17, size: 0.5, star: 'gliese752b', hz: true },
+    // Gliese 588 (M-type): 1,220,527.1 AU from the Sun (19.30 ly).
+    gliese588: { x: 1060129.542, y: -547762.98, z: 256451.649, dist: 1220527.1, orbit: -2, size: 1, startype: 'M', label: loc('star_gliese588'), zlabel: loc('star_gliese588') },
+    // gliese588 planets (M-type, 2, habitable-zone planet at ~0.25 AU)
+    gliese588_p1: { dist: 0.25, orbit: 83, size: 0.48, star: 'gliese588', hz: true },
+    gliese588_p2: { dist: 0.601, orbit: 310, size: 0.49, star: 'gliese588' },
+    // Gliese 661 (M-type): 1,232,977.5 AU from the Sun (19.50 ly).
+    gliese661: { x: 319345.938, y: 945459.439, z: 724125.777, dist: 1232977.5, orbit: -2, size: 1, startype: 'M', label: loc('star_gliese661'), zlabel: loc('star_gliese661') },
+    // gliese661 planets (M-type, 2, habitable-zone planet at ~0.31 AU)
+    gliese661_p1: { dist: 0.309, orbit: 104, size: 0.25, star: 'gliese661', hz: true },
+    gliese661_p2: { dist: 0.741, orbit: 388, size: 0.26, star: 'gliese661' },
+    // QY Aurigae (M-type): 1,248,465.2 AU from the Sun (19.74 ly).
+    qyaurigae: { x: -1173685.128, y: 21423.911, z: 425052.508, dist: 1248465.2, orbit: -2, size: 1, startype: 'M', label: loc('star_qyaurigae'), zlabel: loc('star_qyaurigae') },
+    // qyaurigae planets (M-type, 2, habitable-zone planet at ~0.16 AU)
+    qyaurigae_p1: { dist: 0.157, orbit: 51, size: 0.49, star: 'qyaurigae', hz: true },
+    qyaurigae_p2: { dist: 0.377, orbit: 189, size: 0.5, star: 'qyaurigae' },
+    // Gliese 65 B (M-type): M6 dwarf companion, 11 AU from Gliese 65 A.
+    gliese65b: { x: -138135.223, y: 10899.179, z: -543557.776, dist: 560941.3, orbit: -2, size: 1, startype: 'M', zlabel: loc('star_gliese65') + ' B' },
+    // gliese65b planets (M-type, 1, habitable-zone planet at ~0.07 AU)
+    gliese65b_p1: { dist: 0.32, orbit: 121, size: 0.3, star: 'gliese65' }
 };
 
 export function setOrbits(){
@@ -7032,6 +7337,25 @@ var mapScale, mapShift;
 // the same answer as projecting absolute coordinates, without feeding hundreds of thousands of AU
 // through the canvas transform and losing precision.
 var mapYaw = 0, mapPitch = 0;
+// The world point at the centre of the viewport (see recenterOn/refocus in buildSolarMap). Also what
+// distant-star culling measures from.
+var mapFocus = { x: 0, y: 0, z: 0 };
+
+// Below this scale the map is showing whole systems as points and planet names give way to star
+// names; at or above it a system's own planets are made out individually.
+const labelMinScale = 4;
+// Once a system's planets are legible, stars further than this from the point being looked at are
+// skipped — about a light year, so anything cut is at least a quarter of a million pixels off screen
+// at that zoom. Culling them costs nothing visually and saves drawing a hundred systems' worth of
+// orbits and bodies that could never be seen.
+const STAR_CULL_AU = 63000;
+// A true distance through space, which needs mapFocus to be at the right depth — see refocus(). A
+// screen-plane distance would instead keep any star that merely lines up with the view: Lalande
+// 21185 sits only 45,000 AU to the side of Tau Ceti while being 1.2 million AU beyond it, and would
+// have had its whole system drawn over Tau Ceti's.
+function starCulled(pos){
+    return mapScale >= labelMinScale && dist3(pos, mapFocus) > STAR_CULL_AU;
+}
 let camCY = 1, camSY = 0, camCP = 1, camSP = 0;
 function camUpdate(){
     camCY = Math.cos(mapYaw); camSY = Math.sin(mapYaw);
@@ -7039,7 +7363,9 @@ function camUpdate(){
 }
 function pX(p){ return p.x * camCY - p.y * camSY; }
 function pY(p){ return (p.x * camSY + p.y * camCY) * camCP - (p.z || 0) * camSP; }
-// Depth toward the viewer, for painter's-algorithm ordering. Larger = nearer.
+// Depth for painter's-algorithm ordering. This axis completes a right-handed frame with screen-right
+// and screen-down, and the canvas y axis points down, so it runs INTO the screen: larger = further
+// away. Sort descending and draw in that order, so the last thing painted is the nearest.
 function pD(p){ return (p.x * camSY + p.y * camCY) * camSP + (p.z || 0) * camCP; }
 // A world point expressed relative to a frame origin, ready to project.
 function rel(p, o){ return { x: p.x - o.x, y: p.y - o.y, z: (p.z || 0) - (o.z || 0) }; }
@@ -7410,6 +7736,9 @@ export function drawMap() {
     ctx.scale(mapScale, mapScale);
     camUpdate();
     const ORIGIN = { x: 0, y: 0, z: 0 };
+    // The home system hangs off the Sun at the origin, so one test covers its orbits, bodies and
+    // labels alike.
+    const homeCulled = starCulled(ORIGIN);
 
     // Calculate positions
     let planetLocation = {};
@@ -7421,6 +7750,7 @@ export function drawMap() {
     ctx.lineWidth = 1 / mapScale;
     ctx.strokeStyle = "#c0c0c0";
     for (let [id, planet] of Object.entries(spacePlanetStats)) {
+        if (homeCulled){ break; }
         if (planet.star){ continue; }   // Tau Ceti orbits are drawn separately in a star-local frame
         if (actions.space[id] && actions.space[id].info.showDest && !actions.space[id].info.showDest().r){ continue; }
         if (!planet.moon && !planet.startype) {
@@ -7521,6 +7851,7 @@ export function drawMap() {
     {
         let bodies = [];
         for (let [id, planet] of Object.entries(spacePlanetStats)) {
+            if (homeCulled){ break; }
             // Stars other than the Sun (which sits at the origin) are drawn in their own translated
             // frame below, along with Tau-Ceti-style orbiting bodies (planet.star).
             if (planet.star || (planet.startype && id !== 'spc_sun')){ continue; }
@@ -7550,7 +7881,7 @@ export function drawMap() {
             }
             bodies.push({ id, planet, bx, by, size, d: pD(p) });
         }
-        bodies.sort((a,b) => a.d - b.d);
+        bodies.sort((a,b) => b.d - a.d);   // furthest first, so nearer bodies paint over them
         for (let b of bodies){
             drawBody(ctx, b.bx, b.by, b.size, setColor(b.id), { star: !!b.planet.startype, gate: !!b.planet.gate, kind: bodyKind(b.planet), seed: texSeed(b.id) });
         }
@@ -7594,11 +7925,11 @@ export function drawMap() {
     ctx.fillStyle = "#ffa500";
     ctx.font = `${25 / mapScale}px serif`;
     ctx.textAlign = 'center';   // labels are centered horizontally above the item they label
-    // Planet labels clutter once zoomed out past this scale, so they are hidden below it; star
+    // Planet labels clutter once zoomed out past labelMinScale, so they are hidden below it; star
     // labels are kept (stars stay visible at any zoom).
-    const labelMinScale = 4;
     // Planet names
     for (let [id, planet] of Object.entries(spacePlanetStats)) {
+        if (homeCulled){ break; }
         if (planet.star || planet.startype){ continue; }   // all star labels handled separately (below)
         if (mapScale < labelMinScale){ continue; }   // zoomed out: planet names give way to star labels
         if (actions.space[id] && (actions.space[id].info.showDest ? actions.space[id].info.showDest().l : global.settings.space[id.substring(4)]) ){
@@ -7629,7 +7960,7 @@ export function drawMap() {
     // per-star name (zlabel) when zoomed in — opposite zoom ranges, so exactly one shows.
     {
         let sunText = mapScale < labelMinScale ? spacePlanetStats.spc_sun.label : spacePlanetStats.spc_sun.zlabel;
-        if (sunText){
+        if (sunText && !homeCulled){
             // Sit just above the drawn dot (its radius + a small screen-constant gap) so the label
             // stays close to the star at any zoom.
             ctx.fillText(sunText, pX(planetLocation.spc_sun), pY(planetLocation.spc_sun) - (Math.max(spacePlanetStats.spc_sun.size / 10, 1 / mapScale) + 2 / mapScale));
@@ -7644,21 +7975,15 @@ export function drawMap() {
     // Systems are drawn back to front, so with the map tilted a near system covers a far one rather
     // than whichever happened to come last in the table.
     let starOrder = Object.entries(spacePlanetStats)
-        .filter(([starId, star]) => star.startype && starId !== 'spc_sun')
+        .filter(([starId, star]) => star.startype && starId !== 'spc_sun' && !starCulled(genXYcoord(starId)))
         .map(entry => ({ entry, d: pD(genXYcoord(entry[0])) }))
-        .sort((a,b) => a.d - b.d)
+        .sort((a,b) => b.d - a.d)
         .map(s => s.entry);
     for (let [starId, star] of starOrder) {
         let sc = genXYcoord(starId);
         ctx.save();
         ctx.translate(pX(sc), pY(sc));
         ctx.shadowColor = 'transparent';
-
-        // The star (minimum on-screen radius so it stays visible when zoomed far out). An invisible
-        // barycenter (hidden) is not drawn — only its orbiting bodies/planets are.
-        if (!star.hidden){
-            drawBody(ctx, 0, 0, Math.max(star.size / 10, 1 / mapScale), setColor(starId), { star: true });
-        }
 
         // Orbits of bodies around this star. Traced through orbitPoint in the star's own frame, so
         // the eccentricity, off-centre focus and inclination all come from the one place that
@@ -7672,18 +7997,26 @@ export function drawMap() {
         }
         ctx.setLineDash([]);
 
-        // Bodies orbiting this star, back to front. A body with `bodystar` renders as a star (color
-        // by its spectral type, keeps the zoom-out minimum radius) rather than a plain planet dot.
+        // The star and everything orbiting it, drawn back to front. The star goes in the same sorted
+        // list rather than being painted first: it sits at the centre of these orbits, so half of
+        // every orbit passes in front of it and half behind, and drawing it up front would let a
+        // planet on the far side show through it. An invisible barycenter (hidden) is left out —
+        // only its orbiting bodies are drawn. A body with `bodystar` renders as a star (color by its
+        // spectral type, keeps the zoom-out minimum radius) rather than a plain planet dot.
         let members = [];
+        if (!star.hidden){
+            members.push({ id: starId, planet: star, q: { x: 0, y: 0, z: 0 }, isStar: true,
+                pr: Math.max(star.size / 10, 1 / mapScale) });
+        }
         for (let [id, planet] of Object.entries(spacePlanetStats)) {
             if (planet.star !== starId || (planet.unlock && !global.tech[planet.unlock])){ continue; }
             let q = rel(genXYcoord(id), sc);
             members.push({ id, planet, q, pr: planet.bodystar ? Math.max(planet.size / 10, 1 / mapScale) : planet.size / 10 });
         }
-        members.sort((a,b) => pD(a.q) - pD(b.q));
+        members.sort((a,b) => pD(b.q) - pD(a.q));   // furthest first
         for (let m of members){
             let px = pX(m.q), py = pY(m.q);
-            drawBody(ctx, px, py, m.pr, setColor(m.id), { star: !!m.planet.bodystar, kind: bodyKind(m.planet), seed: texSeed(m.id) });
+            drawBody(ctx, px, py, m.pr, setColor(m.id), { star: m.isStar || !!m.planet.bodystar, kind: bodyKind(m.planet), seed: texSeed(m.id) });
             // Tau Ceti's jump gate rides alongside the home planet like a moon.
             if (m.id === 'tau_home' && tauJumpGate()){
                 drawBody(ctx, px + m.pr * 0.9, py + m.pr * 0.9, m.pr * 0.35, '31a557', { gate: true, seed: texSeed('tau_home_jump_gate') });
@@ -7746,7 +8079,6 @@ function buildSolarMap(parentNode) {
     // the Sun throws a distant system clean off screen — its projected position moves by a share of
     // its hundreds of thousands of AU — so the map tracks the world point sitting at the middle of
     // the viewport and turns about that instead. Panning slides the focus, rotating pivots on it.
-    let mapFocus = { x: 0, y: 0, z: 0 };
 
     // Inverse of pX/pY/pD: a projected point at a given depth, back in world space. The camera basis
     // is orthonormal, so this is just the transpose applied to (px, py, depth).
@@ -7757,12 +8089,22 @@ function buildSolarMap(parentNode) {
             z: depth * camCP - py * camSP
         };
     }
-    // Re-read the focus after a pan, holding the depth it already had: the viewport centre now sits
-    // over a different world point, and that is the one later rotations should pivot on.
+    // Re-read the focus after a pan. Sideways it simply follows the viewport centre, but the depth
+    // along the view axis is unconstrained under an orthographic camera, so it is taken from the
+    // star nearest the new centre. Carrying the old depth instead left the focus stranded on the
+    // plane the player started from, which made rotation pivot about empty space a long way in front
+    // of whatever they had just scrolled to.
     function refocus(){
         let px = (canvasOffset.x - mapShift.x) / mapScale;
         let py = (canvasOffset.y - mapShift.y) / mapScale;
-        mapFocus = unproject(px, py, pD(mapFocus));
+        let depth = pD(mapFocus), best = Infinity;
+        for (let [id, body] of Object.entries(spacePlanetStats)){
+            if (!body.startype || body.hidden){ continue; }
+            let p = genXYcoord(id);
+            let off = Math.hypot(pX(p) - px, pY(p) - py);
+            if (off < best){ best = off; depth = pD(p); }
+        }
+        mapFocus = unproject(px, py, depth);
     }
     function recenterOn(pt){
         mapFocus = pt;
