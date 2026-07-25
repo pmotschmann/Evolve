@@ -1,7 +1,7 @@
 import { global, tmp_vars, save, message_logs, message_filters, webWorker } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats, alevel } from './achieve.js';
-import { vBind, initMessageQueue, clearElement, flib, tagEvent, gameLoop, popover, clearPopper, powerGrid, easterEgg, trickOrTreat, drawIcon } from './functions.js';
+import { vBind, initMessageQueue, clearElement, clearTabPanels, flushTabPanelClears, flib, tagEvent, gameLoop, popover, clearPopper, powerGrid, easterEgg, trickOrTreat, drawIcon } from './functions.js';
 import { tradeRatio, atomic_mass, supplyValue, marketItem, containerItem, loadEjector, loadSupply, loadAlchemy, initResourceTabs, drawResourceTab, tradeSummery } from './resources.js';
 import { defineJobs, } from './jobs.js';
 import { clearSpyopDrag } from './governor.js';
@@ -344,21 +344,34 @@ export function initTabs(){
     }
 }
 
+// Panel each main tab draws into, so the outgoing panels can be told apart from the incoming one.
+// Evolution (0) and Settings (7) own no lazily-drawn panel.
+function mainTabPanel(tab){
+    switch (tab){
+        case 1: case 'mTabCivil':       return `#mTabCivil`;
+        case 2: case 'mTabCivic':       return `#mTabCivic`;
+        case 3: case 'mTabResearch':    return `#mTabResearch`;
+        case 4: case 'mTabResource':    return `#mTabResource`;
+        case 5: case 'mTabArpa':        return `#mTabArpa`;
+        case 6: case 'mTabStats':       return `#mTabStats`;
+        case 0: case 7:                 return false;
+        default:                        return `#mTabObserve`;
+    }
+}
+
 export function loadTab(tab){
     if (!global.settings.tabLoad){
-        clearResDrag();
-        clearGrids();
-        clearMechDrag();
-        clearGeneticsDrag();
-        clearSpyopDrag();
-        clearShipDrag();
-        clearElement($(`#mTabCivil`));
-        clearElement($(`#mTabCivic`));
-        clearElement($(`#mTabResearch`));
-        clearElement($(`#mTabResource`));
-        clearElement($(`#mTabArpa`));
-        clearElement($(`#mTabStats`));
-        clearElement($(`#mTabObserve`));
+        // Everything but the tab being opened is torn down after the slide finishes, so the tab
+        // being left keeps its content while it animates away.
+        clearTabPanels({
+            [`#mTabCivil`]: [],
+            [`#mTabCivic`]: [clearGrids,clearMechDrag,clearSpyopDrag,clearShipDrag],
+            [`#mTabResearch`]: [clearResDrag],
+            [`#mTabResource`]: [],
+            [`#mTabArpa`]: [clearGeneticsDrag],
+            [`#mTabStats`]: [],
+            [`#mTabObserve`]: []
+        },mainTabPanel(tab));
     }
     else {
         tagEvent('page_view',{ page_title: `Evolve - All Tabs` });
@@ -395,14 +408,9 @@ export function loadTab(tab){
                         swapTab(tab){
                             global.settings.spaceTabs = tab;
                             if (!global.settings.tabLoad){
-                                clearElement($(`#city`));
-                                clearElement($(`#space`));
-                                clearElement($(`#interstellar`));
-                                clearElement($(`#galaxy`));
-                                clearElement($(`#portal`));
-                                clearElement($(`#outerSol`));
-                                clearElement($(`#tauCeti`));
-                                clearElement($(`#eden`));
+                                // Indexed to match the b-tab-item order above, so panels[tab] is the incoming one.
+                                let panels = [`#city`,`#space`,`#interstellar`,`#galaxy`,`#portal`,`#outerSol`,`#tauceti`,`#eden`];
+                                clearTabPanels(Object.fromEntries(panels.map(p => [p,[]])),panels[tab]);
                                 switch (tab){
                                     case 0:
                                         drawCity();
@@ -478,18 +486,18 @@ export function loadTab(tab){
                     methods: {
                         swapTab(tab){
                             if (!global.settings.tabLoad){
-                                clearGrids();
-                                clearSpyopDrag();
-                                clearMechDrag();
-                                clearShipDrag();
-                                clearElement($(`#civic`));
-                                clearElement($(`#industry`));
-                                clearElement($(`#powerGrid`));
-                                clearElement($(`#military`));
-                                clearElement($(`#mechLab`));
-                                clearElement($(`#dwarfShipYard`));
-                                clearElement($(`#psychicPowers`));
-                                clearElement($(`#supernatural`));
+                                // Indexed to match the b-tab-item order above, so panels[tab] is the incoming one.
+                                let panels = [`#civic`,`#industry`,`#powerGrid`,`#military`,`#mechLab`,`#dwarfShipYard`,`#psychicPowers`,`#supernatural`];
+                                clearTabPanels({
+                                    [`#civic`]: [clearSpyopDrag],
+                                    [`#industry`]: [],
+                                    [`#powerGrid`]: [clearGrids],
+                                    [`#military`]: [],
+                                    [`#mechLab`]: [clearMechDrag],
+                                    [`#dwarfShipYard`]: [clearShipDrag],
+                                    [`#psychicPowers`]: [],
+                                    [`#supernatural`]: []
+                                },panels[tab]);
                                 switch (tab){
                                     case 0:
                                         {
@@ -641,11 +649,9 @@ export function loadTab(tab){
                     methods: {
                         swapTab(tab){
                             if (!global.settings.tabLoad){
-                                clearElement($(`#market`));
-                                clearElement($(`#resStorage`));
-                                clearElement($(`#resEjector`));
-                                clearElement($(`#resCargo`));
-                                clearElement($(`#resAlchemy`));
+                                // Indexed to match the b-tab-item order above, so panels[tab] is the incoming one.
+                                let panels = [`#market`,`#resStorage`,`#resEjector`,`#resCargo`,`#resAlchemy`];
+                                clearTabPanels(Object.fromEntries(panels.map(p => [p,[]])),panels[tab]);
                                 switch (tab){
                                     case 0:
                                         {
@@ -795,6 +801,9 @@ export function loadTab(tab){
 }
 
 export function index(){
+    // Settle any tab teardown still waiting on a slide before the DOM is thrown away, so a pending
+    // timer can't fire after the rebuild and empty a panel that was just redrawn.
+    flushTabPanelClears();
     clearElement($('body'));
 
     $('html').addClass(global.settings.font);

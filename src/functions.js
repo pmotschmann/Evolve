@@ -1096,6 +1096,81 @@ function unmountApp(el){
     }
 }
 
+// How long a tab slide takes — keep in sync with the `.slide-*-enter-active` transition duration
+// in evolve.less. The teardown of an outgoing panel is held off for this long so the panel still
+// has its content while it slides out of view.
+const tabSlideTime = 300;
+
+// Tab panels waiting on a slide to finish before they are torn down, keyed by selector.
+let pendingPanelClear = {};
+
+function runPanelClear(sel,cleanup){
+    delete pendingPanelClear[sel];
+    if (cleanup){
+        cleanup.forEach(function(fn){ fn(); });
+    }
+    clearElement($(sel));
+    // The popover's anchor may have just been torn down along with the panel.
+    if ($(`#popper`).length > 0 && $(`#${$(`#popper`).data('id')}`).length === 0){
+        clearPopper();
+    }
+}
+
+/**
+ * Tear down the lazily-drawn tab panels of a tab group.
+ *
+ * Panels other than the one being switched to are cleared only once the slide animation has
+ * finished, so the outgoing panel keeps its content while it animates away instead of sliding
+ * out blank. The panels overlap for the length of the transition, which is the same situation
+ * the `tabLoad` (draw every tab up front) setting produces permanently.
+ *
+ * @param panels   selector -> array of extra teardown functions (drag handlers, grids, ...) that
+ *                 belong to that panel. Use an empty array when the panel needs no extra teardown.
+ * @param incoming selector of the panel about to be redrawn; it is cleared immediately (it has to
+ *                 be empty before anything is appended to it), as is every panel when animations
+ *                 are off.
+ */
+export function clearTabPanels(panels,incoming){
+    Object.keys(panels).forEach(function(sel){
+        let pending = pendingPanelClear[sel];
+        if (sel === incoming){
+            if (pending){
+                clearTimeout(pending.timer);
+                runPanelClear(sel,pending.cleanup);
+            }
+            else {
+                runPanelClear(sel,panels[sel]);
+            }
+        }
+        else if (pending){
+            // Already waiting on an earlier switch — leave that timer to finish the job.
+        }
+        else if (global.settings.animated){
+            let cleanup = panels[sel];
+            pendingPanelClear[sel] = {
+                cleanup: cleanup,
+                timer: setTimeout(function(){ runPanelClear(sel,cleanup); },tabSlideTime)
+            };
+        }
+        else {
+            runPanelClear(sel,panels[sel]);
+        }
+    });
+}
+
+// Run every outstanding panel teardown right now. Call this before rebuilding the UI wholesale, so
+// a pending timer can't fire after the rebuild and wipe freshly drawn content.
+export function flushTabPanelClears(){
+    Object.keys(pendingPanelClear).forEach(function(sel){
+        let pending = pendingPanelClear[sel];
+        if (pending){
+            clearTimeout(pending.timer);
+            runPanelClear(sel,pending.cleanup);
+        }
+    });
+    pendingPanelClear = {};
+}
+
 export function clearElement(elm,remove){
     // Unmount nested Vue apps deepest-first. Document order (`.find` default) unmounts a parent
     // app before its nested child app; the parent's unmount detaches the child's DOM, so the

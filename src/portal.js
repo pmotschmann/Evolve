@@ -1,5 +1,5 @@
 import { global, seededRandom, keyMultiplier, p_on, support_on, gal_on, spire_on, hell_reports, hell_graphs, sizeApproximation, keyMap } from './vars.js';
-import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost, calcPrestige, get_qlevel, shrineBonusActive, getShrineBonus, buildQueue, timeCheck } from './functions.js';
+import { vBind, clearElement, clearTabPanels, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost, calcPrestige, get_qlevel, shrineBonusActive, getShrineBonus, buildQueue, timeCheck } from './functions.js';
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { traits, races, fathomCheck, traitCostMod, orbitLength } from './races.js';
 import { spatialReasoning, unlockContainers, drawResourceTab } from './resources.js';
@@ -7760,8 +7760,9 @@ export function drawHellObservations(startup){
         methods: {
             swapTab(tab){
                 if (!global.settings.tabLoad){
-                    clearElement($(`#h_Report`));
-                    clearElement($(`#h_Analysis`));
+                    // Indexed to match the b-tab-item order above, so panels[tab] is the incoming one.
+                    let panels = [`#h_Report`,`#h_Analysis`];
+                    clearTabPanels(Object.fromEntries(panels.map(p => [p,[]])),panels[tab]);
                     switch (tab){
                         case 0:
                             drawHellReports();
