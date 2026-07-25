@@ -1106,6 +1106,7 @@ let pendingPanelClear = {};
 
 function runPanelClear(sel,cleanup){
     delete pendingPanelClear[sel];
+    $(sel).removeClass('tabFading');
     if (cleanup){
         cleanup.forEach(function(fn){ fn(); });
     }
@@ -1147,6 +1148,8 @@ export function clearTabPanels(panels,incoming){
         }
         else if (global.settings.animated){
             let cleanup = panels[sel];
+            // Out of flow while it is retained, so it can't displace the incoming panel (see .tabFading).
+            $(sel).addClass('tabFading');
             pendingPanelClear[sel] = {
                 cleanup: cleanup,
                 timer: setTimeout(function(){ runPanelClear(sel,cleanup); },tabSlideTime)

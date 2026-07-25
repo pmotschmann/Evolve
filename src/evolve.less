@@ -2936,6 +2936,13 @@ a {
             transform: translate3d(0, 0, 0) !important;
         }
 
+        // Tab transition 
+        .tabFading {
+            position: absolute !important;
+            width: 100%;
+            pointer-events: none;
+        }
+
         // Clip the off-screen tabs only while a slide is in flight, so the incoming/outgoing tab
         // parked at ±100% can't spawn a horizontal scrollbar. Scoped to the active transition via
         // :has() (and a direct-child match, so a sub-tab slide doesn't clip its parent) — the rest
@@ -3723,6 +3730,8 @@ a {
     }
 
     .mechList {
+        bottom: auto;
+
         .mechRow {
             .gearList {
                 display: inline-flex;
@@ -5047,6 +5056,8 @@ span.inline {
 
     #shipList {
         margin-top: .25rem;
+        bottom: auto;
+
         .shipRow {
             display: grid;
             padding-top: .25rem;
