@@ -5815,11 +5815,24 @@ export function erisWar(){
 // Sun at the origin — rather than by a distance + orbital angle. They therefore need no
 // global.space.position entry and never move. `dist` is retained for reference/UI only.
 //
-// The z coordinates were produced by rotating each system rigidly about the origin (see the header
-// on genXYcoord). Because those are rotations, every star's distance from the Sun is exactly its
-// `dist`, and every separation quoted in the comments below — Epsilon Eridani to Tau Ceti, Ross 128
-// to Wolf 359, and so on — still holds: stars the table places relative to one another share a tilt.
-// Distances between unrelated systems, which nothing documents, did change when the map went 3D.
+// Star coordinates are real. Each was built from its galactic longitude and latitude and its
+// parallax, as published by SIMBAD (CDS) — mostly Gaia DR3, with Hipparcos-2 for the bright stars —
+// through the standard galactic Cartesian convention:
+//
+//   x = d cos(b) cos(l)   toward the galactic centre
+//   y = d cos(b) sin(l)   toward the direction of galactic rotation
+//   z = d sin(b)          toward the north galactic pole
+//
+// with d = 206264.806 / parallax_in_arcsec AU. `dist` is that same distance, so it is now the true
+// distance from the Sun for every star, and separations between stars are true as well.
+//
+// Close companions take their PRIMARY's parallax and keep their own l and b. Component parallaxes
+// disagree by far more than a tight pair is wide — Sirius A and B differ by 4.7 mas, some 6800 AU of
+// radial error on a pair about 20 AU apart — so giving each component its own distance would fling
+// binaries apart. Angular separations are sound, so this reproduces the real projected separation at
+// the right distance; the results check out against the published orbits (Alpha Centauri A-B 22 AU,
+// Epsilon Indi A-B 1464 AU, Gliese 570 A-D 1541 AU). Proxima is the exception and keeps its own
+// parallax: it is a genuinely wide companion 14000 AU out, where the difference is real.
 //
 // `inc` is an orbital inclination in degrees, tilting a body's orbit about the line of nodes (the x
 // axis). It keeps the orbit the same size and every point on it the same distance from the primary,
@@ -5848,179 +5861,182 @@ export const spacePlanetStats = {
     spc_kuiper: { dist: 39.5, orbit: 90498, size: 0.5, belt: true, inc: 10 },
     spc_eris: { dist: 68, orbit: 204060, size: 0.5, inc: 44 },
     // Tau Ceti system. Planets orbit the tauceti star (star: 'tauceti') rather than the Sun,
-    // with distances (AU) taken from the area descriptions and Kepler-derived orbital periods.
-    tauceti: { x: 483429.358, y: -360643.823, z: 450102.085, dist: 752568.8, orbit: -2, size: 2, startype: 'G', label: loc('star_tauceti'), zlabel: loc('star_tauceti') },
+    // Tau Ceti (G-type): 753,314.5 AU from the Sun (11.91 ly).
+    tauceti: { x: -213157.815, y: 25792.379, z: -722067.292, dist: 753314.5, orbit: -2, size: 2, startype: 'G', label: loc('star_tauceti'), zlabel: loc('star_tauceti') },
     tau_home: { dist: 0.5, orbit: 129, size: 0.6, star: 'tauceti', unlock: 'tau_home', hz: true, inc: 0 },
     tau_red: { dist: 1.24, orbit: 504, size: 0.5, star: 'tauceti', unlock: 'tau_red', hz: true, inc: 2.2 },
     tau_gas: { dist: 5.6, orbit: 4839, size: 1.25, star: 'tauceti', unlock: 'tau_gas', inc: 1.5 },
     tau_gas2: { dist: 8.2, orbit: 8576, size: 1.1, star: 'tauceti', unlock: 'tau_gas2', inc: 2.8 },
     tau_roid: { dist: 15, orbit: 21217, size: 0.5, star: 'tauceti', belt: true, unlock: 'tau_roid', inc: 9 },
-    // Epsilon Eridani: 657707.2 AU from the Sun and 344663.9 AU from Tau Ceti triangulated fixed coordinates).
-    eridani: { x: 555650.075, y: -38922.743, z: 349738.153, dist: 657707.2, orbit: -2, size: 1.9, startype: 'K', label: loc('star_eridani'), zlabel: loc('star_eridani') },
+    // Epsilon Eridani (K-type): 664,133.6 AU from the Sun (10.50 ly).
+    eridani: { x: -427082.379, y: -121211.607, z: -493945.105, dist: 664133.6, orbit: -2, size: 1.9, startype: 'K', label: loc('star_eridani'), zlabel: loc('star_eridani') },
     // eridani planets (K-type, 3, habitable-zone planet at ~0.5 AU)
     eridani_p1: { dist: 0.27, orbit: 61, size: 0.46, star: 'eridani' },
     eridani_p2: { dist: 0.35, orbit: 90, size: 0.4, star: 'eridani' },
     eridani_p3: { dist: 0.5, orbit: 154, size: 0.52, star: 'eridani', hz: true },
-    // Gliese 65 (M-type): 554624.2 AU from the Sun and 322529 AU from Eridani, sitting roughly (triangulated fixed coordinates).
-    gliese65: { x: 344066.107, y: -281666.35, z: 331497.488, dist: 554624.2, orbit: -2, size: 1, startype: 'M', label: loc('star_gliese65'), zlabel: loc('star_gliese65') },
+    // Gliese 65 (M-type): 560,941.3 AU from the Sun (8.87 ly).
+    gliese65: { x: -138124.928, y: 10901.934, z: -543560.337, dist: 560941.3, orbit: -2, size: 1, startype: 'M', label: loc('star_gliese65'), zlabel: loc('star_gliese65') },
     // gliese65 planets (M-type, 3, one in the habitable zone)
     gliese65_p1: { dist: 0.18, orbit: 51, size: 0.35, star: 'gliese65', hz: true },
     gliese65_p2: { dist: 0.32, orbit: 121, size: 0.3, star: 'gliese65' },
     gliese65_p3: { dist: 0.62, orbit: 326, size: 0.31, star: 'gliese65' },
-    // YZ Ceti (M-type): 766481.85 AU from the Sun, ~101186 AU from Tau Ceti and ~442688 AU from Eridani (triangulated fixed coordinates).
-    yzceti: { x: 427730.308, y: -445008.959, z: 454431.772, dist: 766481.85, orbit: -2, size: 1, startype: 'M', label: loc('star_yzceti'), zlabel: loc('star_yzceti') },
+    // YZ Ceti (M-type): 766,620.4 AU from the Sun (12.12 ly).
+    yzceti: { x: -129026.649, y: 75381.207, z: -751915.278, dist: 766620.4, orbit: -2, size: 1, startype: 'M', label: loc('star_yzceti'), zlabel: loc('star_yzceti') },
     // yzceti planets (M-type, 3, none habitable)
     yzceti_p1: { dist: 0.38, orbit: 156, size: 0.46, star: 'yzceti' },
     yzceti_p2: { dist: 0.7, orbit: 391, size: 0.21, star: 'yzceti' },
     yzceti_p3: { dist: 1.12, orbit: 790, size: 0.31, star: 'yzceti' },
-    // Alpha Centauri: 276363.5 AU from the Sun
-    alphacentauri: { x: -220600.762, y: 164570.688, z: -25071.429, dist: 276363.5, orbit: -2, size: 2, startype: 'G', label: loc('star_alpha_centauri'), zlabel: loc('star_alpha_centauri') + ' A' },
+    // Alpha Centauri A (G-type): 277,940 AU from the Sun (4.39 ly).
+    alphacentauri: { x: 199021.346, y: -193985.2, z: -3296.913, dist: 277940, orbit: -2, size: 2, startype: 'G', label: loc('star_alpha_centauri'), zlabel: loc('star_alpha_centauri') + ' A' },
     // alphacentauri planets (G-type, 3, habitable-zone planet at ~1 AU)
     alphacentauri_p1: { dist: 1, orbit: 365, size: 0.61, star: 'alphacentauri', hz: true },
     alphacentauri_p2: { dist: 1.6, orbit: 739, size: 0.66, star: 'alphacentauri' },
     alphacentauri_p3: { dist: 2.8, orbit: 1711, size: 1.18, star: 'alphacentauri' },
-    // Alpha Centauri B (K-type): binary companion, 17.5 AU from Alpha Centauri.
-    alphacentaurib: { x: -220596.007, y: 164553.894, z: -25070.167, dist: 276349.590, orbit: -2, size: 1.5, startype: 'K', zlabel: loc('star_alpha_centauri') + ' B' },
+    // Alpha Centauri B (K-type): companion, 22.2 AU from Alpha Centauri A.
+    alphacentaurib: { x: 199007.422, y: -193999.315, z: -3306.891, dist: 277940, orbit: -2, size: 1.5, startype: 'K', zlabel: loc('star_alpha_centauri') + ' B' },
     // alphacentaurib planets (K-type, 4, habitable-zone planet at ~0.5 AU)
     alphacentaurib_p1: { dist: 0.35, orbit: 90, size: 0.39, star: 'alphacentaurib' },
     alphacentaurib_p2: { dist: 0.5, orbit: 154, size: 0.51, star: 'alphacentaurib', hz: true },
     alphacentaurib_p3: { dist: 0.8, orbit: 312, size: 0.68, star: 'alphacentaurib' },
     alphacentaurib_p4: { dist: 1.4, orbit: 723, size: 1.12, star: 'alphacentaurib' },
-    // Proxima Centauri (M-type): 12950 AU from Alpha Centauri
-    proximacentauri: { x: -209076.127, y: 158778.736, z: -23914.465, dist: 263619.831, orbit: -2, size: 1, startype: 'M', zlabel: loc('star_proxima_centauri') },
+    // Proxima Centauri (M-type): companion, 14,024.7 AU from Alpha Centauri A.
+    proximacentauri: { x: 186242.736, y: -193265.541, z: -9031.026, dist: 268550.7, orbit: -2, size: 1, startype: 'M', zlabel: loc('star_proxima_centauri') },
     // proximacentauri planets (M-type, 1, none habitable)
     proximacentauri_p1: { dist: 0.35, orbit: 138, size: 0.29, star: 'proximacentauri' },
-    // Barnard's Star (M-type): 359841.7 AU from the Sun
-    barnardsstar: { x: -303854.871, y: 8099.308, z: 192594.569, dist: 359841.7, orbit: -2, size: 1, startype: 'M', label: loc('star_barnards_star'), zlabel: loc('star_barnards_star') },
+    // Barnard's Star (M-type): 377,100.4 AU from the Sun (5.96 ly).
+    barnardsstar: { x: 313522.226, y: 188447.979, z: 91628.876, dist: 377100.4, orbit: -2, size: 1, startype: 'M', label: loc('star_barnards_star'), zlabel: loc('star_barnards_star') },
     // barnardsstar planets (M-type, 3, one in the habitable zone)
     barnardsstar_p1: { dist: 0.24, orbit: 78, size: 0.31, star: 'barnardsstar', hz: true },
     barnardsstar_p2: { dist: 0.45, orbit: 201, size: 0.31, star: 'barnardsstar' },
     barnardsstar_p3: { dist: 0.86, orbit: 532, size: 0.22, star: 'barnardsstar' },
-    // Sirius (A-type): 544505.7 AU from the Sun
-    sirius: { x: 391195.355, y: 311132.693, z: -215984.024, dist: 544505.7, orbit: -2, size: 3, startype: 'A', label: loc('star_sirius'), zlabel: loc('star_sirius') + ' A' },
+    // Sirius A (A-type): 543,932.9 AU from the Sun (8.60 ly).
+    sirius: { x: -364922.001, y: -394498.07, z: -84060.919, dist: 543932.9, orbit: -2, size: 3, startype: 'A', label: loc('star_sirius'), zlabel: loc('star_sirius') + ' A' },
     // sirius planets (A-type, 5, habitable-zone planet at ~4.5 AU)
     sirius_p1: { dist: 3.15, orbit: 1444, size: 0.34, star: 'sirius' },
     sirius_p2: { dist: 4.5, orbit: 2465, size: 0.62, star: 'sirius', hz: true },
     sirius_p3: { dist: 7.2, orbit: 4990, size: 0.68, star: 'sirius' },
-    sirius_p4: { dist: 12.6, orbit: 11551, size: 1.26, star: 'sirius' },
-    sirius_p5: { dist: 22.5, orbit: 27564, size: 1.19, star: 'sirius' },
-    // Sirius B (D-type white dwarf): binary companion, 20 AU from Sirius.
-    siriusb: { x: 391210.272, y: 311143.403, z: -215991.949, dist: 544525.680, orbit: -2, size: 1.2, startype: 'D', zlabel: loc('star_sirius') + ' B' },
-    // Procyon (F-type): 724742.74 AU from the Sun and ~331383.2 AU from Sirius
-    procyon: { x: 327061.852, y: 588230.171, z: -268826.803, dist: 724742.74, orbit: -2, size: 2.5, startype: 'F', label: loc('star_procyon'), zlabel: loc('star_procyon') + ' A' },
+    // Sirius B (D-type): companion, 16.3 AU from Sirius A.
+    siriusb: { x: -364913.661, y: -394507.91, z: -84050.947, dist: 543932.9, orbit: -2, size: 1.2, startype: 'D', zlabel: loc('star_sirius') + ' B' },
+    // siriusb planets (D-type, 1, none habitable). Kept at 0.8 AU — comfortably inside the 16.3 AU
+    // to Sirius A, so it stays a plausible circumstellar orbit rather than crossing the companion.
+    // A white dwarf's habitable zone sits hundredths of an AU out, far inside this, so it is cold.
+    // Period from the same Kepler relation as the other systems, on Sirius B's ~1.02 solar masses.
+    siriusb_p1: { dist: 0.8, orbit: 259, size: 0.42, star: 'siriusb' },
+    // Procyon A (F-type): 724,855.2 AU from the Sun (11.46 ly).
+    procyon: { x: -587528.977, y: -391866.327, z: 163296.042, dist: 724855.2, orbit: -2, size: 2.5, startype: 'F', label: loc('star_procyon'), zlabel: loc('star_procyon') + ' A' },
     // procyon planets (F-type, 5, habitable-zone planet at ~1.9 AU)
     procyon_p1: { dist: 1.33, orbit: 491, size: 0.41, star: 'procyon' },
     procyon_p2: { dist: 1.9, orbit: 839, size: 0.5, star: 'procyon', hz: true },
     procyon_p3: { dist: 3.04, orbit: 1698, size: 0.8, star: 'procyon' },
     procyon_p4: { dist: 5.32, orbit: 3931, size: 1.3, star: 'procyon' },
     procyon_p5: { dist: 9.5, orbit: 9380, size: 1.18, star: 'procyon' },
-    // Procyon B (D-type white dwarf): binary companion, 21 AU from Procyon.
-    procyonb: { x: 327078.083, y: 588216.99, z: -268828.747, dist: 724740.088, orbit: -2, size: 1, startype: 'D', zlabel: loc('star_procyon') + ' B' },
-    // Wolf 359 (M-type): 498972.1 AU from the Sun
-    wolf359: { x: 84133.888, y: 477146.988, z: 119270.27, dist: 498972.1, orbit: -2, size: 1, startype: 'M', label: loc('star_wolf359'), zlabel: loc('star_wolf359') },
+    // Procyon B (D-type): companion, 16.8 AU from Procyon A.
+    procyonb: { x: -587529.648, y: -391871.902, z: 163280.248, dist: 724855.2, orbit: -2, size: 1, startype: 'D', zlabel: loc('star_procyon') + ' B' },
+    // Wolf 359 (M-type): 496,808.9 AU from the Sun (7.86 ly).
+    wolf359: { x: -121170.806, y: -249036.778, z: 412452.866, dist: 496808.9, orbit: -2, size: 1, startype: 'M', label: loc('star_wolf359'), zlabel: loc('star_wolf359') },
     // wolf359 planets (M-type, 1, one in the habitable zone)
     wolf359_p1: { dist: 0.22, orbit: 69, size: 0.48, star: 'wolf359', hz: true },
-    // Ross 128 (M-type): 701976 AU from the Sun and ~239683.7 AU from Wolf 359
-    ross128: { x: -32361.049, y: 681805.03, z: 163905.364, dist: 701976, orbit: -2, size: 1, startype: 'M', label: loc('star_ross128'), zlabel: loc('star_ross128') },
+    // Ross 128 (M-type): 696,122.6 AU from the Sun (11.01 ly).
+    ross128: { x: 905.425, y: -352688.658, z: 600163.744, dist: 696122.6, orbit: -2, size: 1, startype: 'M', label: loc('star_ross128'), zlabel: loc('star_ross128') },
     // ross128 planets (M-type, 2, none habitable)
     ross128_p1: { dist: 0.4, orbit: 169, size: 0.35, star: 'ross128' },
     ross128_p2: { dist: 0.76, orbit: 442, size: 0.21, star: 'ross128' },
-    // 61 Cygni (K-type): 720948.3 AU from the Sun
-    cygni: { x: -473325.607, y: -504015.183, z: 204200.922, dist: 720948.3, orbit: -2, size: 1.9, startype: 'K', label: loc('star_61cygni'), zlabel: loc('star_61cygni') + ' A' },
+    // 61 Cygni A (K-type): 721,218.5 AU from the Sun (11.40 ly).
+    cygni: { x: 95890.548, y: 711066.78, z: -73110.388, dist: 721218.5, orbit: -2, size: 1.9, startype: 'K', label: loc('star_61cygni'), zlabel: loc('star_61cygni') + ' A' },
     // cygni planets (K-type, 2, habitable-zone planet at ~0.5 AU)
     cygni_p1: { dist: 0.5, orbit: 154, size: 0.46, star: 'cygni', hz: true },
     cygni_p2: { dist: 0.8, orbit: 312, size: 0.81, star: 'cygni' },
-    // 61 Cygni B (K-type): the binary companion, 84 AU from 61 Cygni.
-    cygnib: { x: -473333.195, y: -504096.637, z: 204219.992, dist: 721015.630, orbit: -2, size: 1.75, startype: 'K', zlabel: loc('star_61cygni') + ' B' },
+    // 61 Cygni B (K-type): companion, 107.5 AU from 61 Cygni A.
+    cygnib: { x: 95921.541, y: 711052.121, z: -73212.235, dist: 721218.5, orbit: -2, size: 1.75, startype: 'K', zlabel: loc('star_61cygni') + ' B' },
     // cygnib planets (K-type, 4, habitable-zone planet at ~0.5 AU)
     cygnib_p1: { dist: 0.25, orbit: 55, size: 0.35, star: 'cygnib' },
     cygnib_p2: { dist: 0.35, orbit: 90, size: 0.5, star: 'cygnib' },
     cygnib_p3: { dist: 0.5, orbit: 154, size: 0.61, star: 'cygnib', hz: true },
     cygnib_p4: { dist: 0.8, orbit: 312, size: 0.65, star: 'cygnib' },
-    // Sigma Draconis (K-type): 1188932 AU from the Sun
-    sigmadraconis: { x: -852074.146, y: -426037.074, z: -711351.785, dist: 1188932, orbit: -2, size: 1.9, startype: 'K', label: loc('star_sigma_draconis'), zlabel: loc('star_sigma_draconis') },
+    // Sigma Draconis (K-type): 1,188,887.9 AU from the Sun (18.80 ly).
+    sigmadraconis: { x: -216244.617, y: 1081871.754, z: 442996.974, dist: 1188887.9, orbit: -2, size: 1.9, startype: 'K', label: loc('star_sigma_draconis'), zlabel: loc('star_sigma_draconis') },
     // sigmadraconis planets (K-type, 2, habitable-zone planet at ~0.5 AU)
     sigmadraconis_p1: { dist: 0.35, orbit: 90, size: 0.51, star: 'sigmadraconis' },
     sigmadraconis_p2: { dist: 0.5, orbit: 154, size: 0.53, star: 'sigmadraconis', hz: true },
-    // Altair (A-type): 1056126 AU from the Sun
-    altair: { x: -841256.971, y: -626638.15, z: -122529.452, dist: 1056126, orbit: -2, size: 2.5, startype: 'A', label: loc('star_altair'), zlabel: loc('star_altair') },
+    // Altair (A-type): 1,058,039.5 AU from the Sun (16.73 ly).
+    altair: { x: 702887.087, y: 773658.946, z: -163857.331, dist: 1058039.5, orbit: -2, size: 2.5, startype: 'A', label: loc('star_altair'), zlabel: loc('star_altair') },
     // altair planets (A-type, 5, habitable-zone planet at ~4.5 AU)
     altair_p1: { dist: 3.15, orbit: 1444, size: 0.54, star: 'altair' },
     altair_p2: { dist: 4.5, orbit: 2465, size: 0.63, star: 'altair', hz: true },
     altair_p3: { dist: 7.2, orbit: 4990, size: 0.77, star: 'altair' },
     altair_p4: { dist: 12.6, orbit: 11551, size: 1.04, star: 'altair' },
     altair_p5: { dist: 22.5, orbit: 27564, size: 1.19, star: 'altair' },
-    // Kapteyn's Star (M-type): 811383.02 AU from the Sun
-    kapteynsstar: { x: 759480.204, y: 266040.128, z: 103705.713, dist: 811383.02, orbit: -2, size: 1, startype: 'M', label: loc('star_kapteyns_star'), zlabel: loc('star_kapteyns_star') },
+    // Kapteyn's Star (M-type): 811,431.7 AU from the Sun (12.83 ly).
+    kapteynsstar: { x: -218783.221, y: -618913.395, z: -476971.217, dist: 811431.7, orbit: -2, size: 1, startype: 'M', label: loc('star_kapteyns_star'), zlabel: loc('star_kapteyns_star') },
     // kapteynsstar planets (M-type, 1, one in the habitable zone)
     kapteynsstar_p1: { dist: 0.2, orbit: 60, size: 0.23, star: 'kapteynsstar', hz: true },
-    // Teegarden's Star (M-type): 790513.5 AU from the Sun
-    teegardensstar: { x: 604836.148, y: -218962.751, z: 459499.881, dist: 790513.5, orbit: -2, size: 1, startype: 'M', label: loc('star_teegardens_star'), zlabel: loc('star_teegardens_star') },
+    // Teegarden's Star (M-type): 790,321.7 AU from the Sun (12.50 ly).
+    teegardensstar: { x: -593895.814, y: 213075.04, z: -475915.162, dist: 790321.7, orbit: -2, size: 1, startype: 'M', label: loc('star_teegardens_star'), zlabel: loc('star_teegardens_star') },
     // teegardensstar planets (M-type, 1, one in the habitable zone)
     teegardensstar_p1: { dist: 0.23, orbit: 74, size: 0.43, star: 'teegardensstar', hz: true },
-    // TZ Arietis (M-type): 923319.7 AU from the Sun and 290909 AU from Teegarden's Star
-    tzarietis: { x: 555173.964, y: -490601.816, z: 551009.071, dist: 923319.7, orbit: -2, size: 1, startype: 'M', label: loc('star_tz_arietis'), zlabel: loc('star_tz_arietis') },
+    // TZ Arietis (M-type): 921,927.6 AU from the Sun (14.58 ly).
+    tzarietis: { x: -536255.491, y: 339547.226, z: -668646.616, dist: 921927.6, orbit: -2, size: 1, startype: 'M', label: loc('star_tz_arietis'), zlabel: loc('star_tz_arietis') },
     // tzarietis planets (M-type, 1, none habitable — the real TZ Arietis b orbits far inside the zone)
     tzarietis_p1: { dist: 0.29, orbit: 104, size: 0.38, star: 'tzarietis' },
-    // Eta Cassiopeiae (G-type): 1228141.7 AU from the Sun
-    etacassiopeiae: { x: 454550.575, y: -1019787.851, z: 511613.671, dist: 1228141.7, orbit: -2, size: 2, startype: 'G', label: loc('star_eta_cassiopeiae'), zlabel: loc('star_eta_cassiopeiae') + ' A' },
+    // Eta Cassiopeiae A (G-type): 1,221,714.9 AU from the Sun (19.32 ly).
+    etacassiopeiae: { x: -656022.661, y: 1025003.755, z: -107651.061, dist: 1221714.9, orbit: -2, size: 2, startype: 'G', label: loc('star_eta_cassiopeiae'), zlabel: loc('star_eta_cassiopeiae') + ' A' },
     // etacassiopeiae planets (G-type, 4, habitable-zone planet at ~1 AU)
     etacassiopeiae_p1: { dist: 0.7, orbit: 214, size: 0.37, star: 'etacassiopeiae' },
     etacassiopeiae_p2: { dist: 1, orbit: 365, size: 0.55, star: 'etacassiopeiae', hz: true },
     etacassiopeiae_p3: { dist: 1.6, orbit: 739, size: 0.83, star: 'etacassiopeiae' },
     etacassiopeiae_p4: { dist: 2.8, orbit: 1711, size: 1.18, star: 'etacassiopeiae' },
-    // Eta Cassiopeiae B (K-type): binary companion, 71 AU from Eta Cassiopeiae
-    etacassiopeiaeb: { x: 454619.882, y: -1019774.237, z: 511620.903, dist: 1228159.062, orbit: -2, size: 1.5, startype: 'K', zlabel: loc('star_eta_cassiopeiae') + ' B' },
+    // Eta Cassiopeiae B (K-type): companion, 76.9 AU from Eta Cassiopeiae A.
+    etacassiopeiaeb: { x: -655981.85, y: 1025035.83, z: -107594.324, dist: 1221714.9, orbit: -2, size: 1.5, startype: 'K', zlabel: loc('star_eta_cassiopeiae') + ' B' },
     // etacassiopeiaeb planets (K-type, 4, habitable-zone planet at ~0.5 AU)
     etacassiopeiaeb_p1: { dist: 0.5, orbit: 154, size: 0.52, star: 'etacassiopeiaeb', hz: true },
     etacassiopeiaeb_p2: { dist: 0.8, orbit: 312, size: 0.85, star: 'etacassiopeiaeb' },
     etacassiopeiaeb_p3: { dist: 1.4, orbit: 723, size: 1.05, star: 'etacassiopeiaeb' },
     etacassiopeiaeb_p4: { dist: 2.5, orbit: 1726, size: 1.1, star: 'etacassiopeiaeb' },
-    // 70 Ophiuchi (K-type): 1056126 AU from the Sun
-    ophiuchi: { x: -1040494.41, y: -53090.23, z: -173074.944, dist: 1056126, orbit: -2, size: 2, startype: 'K', label: loc('star_70_ophiuchi'), zlabel: loc('star_70_ophiuchi') + ' A' },
+    // 70 Ophiuchi A (K-type): 1,054,699.3 AU from the Sun (16.68 ly).
+    ophiuchi: { x: 896439.745, y: 515338.608, z: 207876.371, dist: 1054699.3, orbit: -2, size: 2, startype: 'K', label: loc('star_70_ophiuchi'), zlabel: loc('star_70_ophiuchi') + ' A' },
     // ophiuchi planets (K-type, 2, habitable-zone planet at ~0.5 AU)
     ophiuchi_p1: { dist: 0.35, orbit: 90, size: 0.45, star: 'ophiuchi' },
     ophiuchi_p2: { dist: 0.5, orbit: 154, size: 0.46, star: 'ophiuchi', hz: true },
-    // 70 Ophiuchi B (K-type): binary companion, 23.2 AU from 70 Ophiuchi 
-    ophiuchib: { x: -1040474.907, y: -53078.118, z: -173071.606, dist: 1056105.629, orbit: -2, size: 1.5, startype: 'K', zlabel: loc('star_70_ophiuchi') + ' B' },
+    // 70 Ophiuchi B (K-type): companion, 27.5 AU from 70 Ophiuchi A.
+    ophiuchib: { x: 896450.012, y: 515330.517, z: 207852.148, dist: 1054699.3, orbit: -2, size: 1.5, startype: 'K', zlabel: loc('star_70_ophiuchi') + ' B' },
     // ophiuchib planets (K-type, 4, habitable-zone planet at ~0.5 AU)
     ophiuchib_p1: { dist: 0.5, orbit: 154, size: 0.57, star: 'ophiuchib', hz: true },
     ophiuchib_p2: { dist: 0.8, orbit: 312, size: 0.81, star: 'ophiuchib' },
     ophiuchib_p3: { dist: 1.4, orbit: 723, size: 1.16, star: 'ophiuchib' },
     ophiuchib_p4: { dist: 2.5, orbit: 1726, size: 1.27, star: 'ophiuchib' },
-    // DX Cancri (M-type): 738655.78 AU from the Sun.
-    dxcancri: { x: 320617.292, y: 659448.507, z: -89132.368, dist: 738655.78, orbit: -2, size: 1, startype: 'M', label: loc('star_dx_cancri'), zlabel: loc('star_dx_cancri') },
+    // DX Cancri (M-type): 738,639.6 AU from the Sun (11.68 ly).
+    dxcancri: { x: -596219.327, y: -182448.568, z: 396009.416, dist: 738639.6, orbit: -2, size: 1, startype: 'M', label: loc('star_dx_cancri'), zlabel: loc('star_dx_cancri') },
     // dxcancri planets (M-type, 1, none habitable)
     dxcancri_p1: { dist: 0.36, orbit: 144, size: 0.31, star: 'dxcancri' },
-    // AD Leonis (M-type): 1024505 AU from the Sun
-    adleonis: { x: 214063.727, y: 976141.091, z: -225689.577, dist: 1024505, orbit: -2, size: 1, startype: 'M', label: loc('star_ad_leonis'), zlabel: loc('star_ad_leonis') },
+    // AD Leonis (M-type): 1,024,122.4 AU from the Sun (16.19 ly).
+    adleonis: { x: -477396.733, y: -352688.267, z: 834583.753, dist: 1024122.4, orbit: -2, size: 1, startype: 'M', label: loc('star_ad_leonis'), zlabel: loc('star_ad_leonis') },
     // adleonis planets (M-type, 2, none habitable)
     adleonis_p1: { dist: 0.34, orbit: 132, size: 0.22, star: 'adleonis' },
     adleonis_p2: { dist: 0.57, orbit: 287, size: 0.28, star: 'adleonis' },
-    // EV Lacertae (M-type): 1042213 AU from the Sun
-    evlacertae: { x: -29659.643, y: -849341.054, z: -603281.043, dist: 1042213, orbit: -2, size: 1, startype: 'M', label: loc('star_ev_lacertae'), zlabel: loc('star_ev_lacertae') },
+    // EV Lacertae (M-type): 1,041,966.2 AU from the Sun (16.48 ly).
+    evlacertae: { x: -186823.196, y: 997634.01, z: -235620.328, dist: 1041966.2, orbit: -2, size: 1, startype: 'M', label: loc('star_ev_lacertae'), zlabel: loc('star_ev_lacertae') },
     // evlacertae planets (M-type, 3, one in the habitable zone)
     evlacertae_p1: { dist: 0.25, orbit: 83, size: 0.22, star: 'evlacertae', hz: true },
     evlacertae_p2: { dist: 0.47, orbit: 215, size: 0.21, star: 'evlacertae' },
     evlacertae_p3: { dist: 0.89, orbit: 560, size: 0.32, star: 'evlacertae' },
-    // Kruger 60 (M-type): 866402.8 AU from the Sun
-    kruger60: { x: -200919.265, y: -784778.421, z: 307258.996, dist: 866402.8, orbit: -2, size: 1, startype: 'M', label: loc('star_kruger_60'), zlabel: loc('star_kruger_60') + ' A' },
+    // Kruger 60 A (M-type): 827,068.7 AU from the Sun (13.08 ly).
+    kruger60: { x: -209693.304, y: 800044.563, z: -54.443, dist: 827068.7, orbit: -2, size: 1, startype: 'M', label: loc('star_kruger_60'), zlabel: loc('star_kruger_60') + ' A' },
     // kruger60 planets (M-type, 2, one in the habitable zone)
     kruger60_p1: { dist: 0.24, orbit: 78, size: 0.31, star: 'kruger60', hz: true },
     kruger60_p2: { dist: 0.46, orbit: 208, size: 0.32, star: 'kruger60' },
-    // Kruger 60 B (M-type): binary companion, 9.5 AU from Kruger 60 
-    kruger60b: { x: -200927.416, y: -784782.704, z: 307261.337, dist: 866409.400, orbit: -2, size: 1, startype: 'M', zlabel: loc('star_kruger_60') + ' B' },
+    // Kruger 60 B (M-type): companion, 31.7 AU from Kruger 60 A.
+    kruger60b: { x: -209715.123, y: 800038.845, z: -32.203, dist: 827068.7, orbit: -2, size: 1, startype: 'M', zlabel: loc('star_kruger_60') + ' B' },
     // kruger60b planets (M-type, 3, one in the habitable zone)
     kruger60b_p1: { dist: 0.22, orbit: 69, size: 0.24, star: 'kruger60b', hz: true },
     kruger60b_p2: { dist: 0.4, orbit: 169, size: 0.25, star: 'kruger60b' },
     kruger60b_p3: { dist: 0.81, orbit: 486, size: 0.35, star: 'kruger60b' },
-    // YZ Canis Minoris (M-type): 1233201 AU from the Sun
-    yzcanisminoris: { x: 535422.254, y: 865174.982, z: 696835.682, dist: 1233201, orbit: -2, size: 1, startype: 'M', label: loc('star_yz_canis_minoris'), zlabel: loc('star_yz_canis_minoris') },
+    // YZ Canis Minoris (M-type): 1,235,289.5 AU from the Sun (19.53 ly).
+    yzcanisminoris: { x: -973702.123, y: -703704.877, z: 287478.163, dist: 1235289.5, orbit: -2, size: 1, startype: 'M', label: loc('star_yz_canis_minoris'), zlabel: loc('star_yz_canis_minoris') },
     // yzcanisminoris planets (M-type, 2, none habitable)
     yzcanisminoris_p1: { dist: 0.41, orbit: 175, size: 0.41, star: 'yzcanisminoris' },
     yzcanisminoris_p2: { dist: 0.81, orbit: 486, size: 0.33, star: 'yzcanisminoris' },
-    // Epsilon Indi (K-type): Distance from the Sun is deliberately inaccurate (430039 AU, closer than the real ~750672 AU) for gameplay reasons.
-    epsilonindi: { x: -137255.425, y: -323153.804, z: -248326.616, dist: 430039, orbit: -2, size: 2, startype: 'K', label: loc('star_epsilon_indi'), zlabel: loc('star_epsilon_indi') + ' A' },
+    // Epsilon Indi A (K-type): 750,482 AU from the Sun (11.87 ly).
+    epsilonindi: { x: 459040.021, y: -202531.303, z: -558109.846, dist: 750482, orbit: -2, size: 2, startype: 'K', label: loc('star_epsilon_indi'), zlabel: loc('star_epsilon_indi') + ' A' },
     // epsilonindi planets (K-type, 4, habitable-zone planet at ~0.5 AU)
     epsilonindi_p1: { dist: 0.5, orbit: 154, size: 0.59, star: 'epsilonindi', hz: true },
     epsilonindi_p2: { dist: 0.8, orbit: 312, size: 0.73, star: 'epsilonindi' },
@@ -6028,12 +6044,12 @@ export const spacePlanetStats = {
     epsilonindi_p4: { dist: 2.5, orbit: 1726, size: 1.26, star: 'epsilonindi' },
     // Epsilon Indi Ba & Bb (T-type brown dwarf binary, 2.65 AU apart) orbit an invisible barycenter
     // (`hidden`, not drawn) at their midpoint. They are bodies of it (so they orbit it) but still
-    // render as stars via `bodystar` + label. No planets here.
-    epsilonindib: { x: -135883.026, y: -323003.049, z: -247848.996, dist: 0, orbit: -2, size: 0, startype: 'T', hidden: true },
+    // Epsilon Indi Ba/Bb (T-type): companion, 1,463.8 AU from Epsilon Indi A.
+    epsilonindib: { x: 457885.928, y: -202710.048, z: -558992.292, dist: 750482, orbit: -2, size: 0, startype: 'T', hidden: true },
     epsilonindiba: { dist: 1.33, orbit: 4139, size: 1.2, star: 'epsilonindib', bodystar: 'T', zlabel: loc('star_epsilon_indi') + ' BA' },
     epsilonindibb: { dist: 1.33, orbit: 4139, size: 1.2, star: 'epsilonindib', bodystar: 'T', zlabel: loc('star_epsilon_indi') + ' BB' },
-    // Gliese 570 (K-type): 1201579 AU from the Sun
-    gliese570: { x: -795860.94, y: 593721.352, z: -676677.48, dist: 1201579, orbit: -2, size: 2, startype: 'K', label: loc('star_gliese_570'), zlabel: loc('star_gliese_570') + ' A' },
+    // Gliese 570 A (K-type): 1,214,148.7 AU from the Sun (19.20 ly).
+    gliese570: { x: 949177.543, y: -378832.087, z: 655519.159, dist: 1214148.7, orbit: -2, size: 2, startype: 'K', label: loc('star_gliese_570'), zlabel: loc('star_gliese_570') + ' A' },
     // gliese570 planets (K-type, 4, habitable-zone planet at ~0.5 AU)
     gliese570_p1: { dist: 0.35, orbit: 90, size: 0.32, star: 'gliese570' },
     gliese570_p2: { dist: 0.5, orbit: 154, size: 0.56, star: 'gliese570', hz: true },
@@ -6042,16 +6058,16 @@ export const spacePlanetStats = {
     // Gliese 570 B & C (M-type binary, 0.8 AU apart) orbit an invisible barycenter (`hidden`, not
     // drawn) at their midpoint. They are treated as bodies of it (so they orbit it) but still render
     // as stars via `bodystar` + label. Two circumbinary planets orbit the barycenter further out,
-    // with an orbit large enough to encircle both stars (dist 0.4 from center) without colliding.
-    gliese570bc: { x: -795887.158, y: 593542.248, z: -676618.815, dist: 0, orbit: -2, size: 0, startype: 'G', hidden: true },
+    // Gliese 570 B/C (G-type): companion, 146.6 AU from Gliese 570 A.
+    gliese570bc: { x: 949089.095, y: -378855.488, z: 655633.69, dist: 1214148.7, orbit: -2, size: 0, startype: 'G', hidden: true },
     gliese570b: { dist: 0.4, orbit: 337, size: 1, star: 'gliese570bc', bodystar: 'M', zlabel: loc('star_gliese_570') + ' B' },
     gliese570c: { dist: 0.4, orbit: 337, size: 1, star: 'gliese570bc', bodystar: 'M', zlabel: loc('star_gliese_570') + ' C' },
     gliese570bc_p1: { dist: 1.8, orbit: 1139, size: 0.5, star: 'gliese570bc' },
     gliese570bc_p2: { dist: 3, orbit: 2450, size: 0.7, star: 'gliese570bc' },
-    // Gliese 570 D (T-type brown dwarf): companion, 1500 AU from Gliese 570
-    gliese570d: { x: -794611.832, y: 593460.696, z: -675888.945, dist: 1200178.915, orbit: -2, size: 1, startype: 'T', zlabel: loc('star_gliese_570') + ' D' },
-    // Wolf 1061 (M-type): 891699.2 AU from the Sun
-    wolf1061: { x: -675653.498, y: 205294.877, z: 544494.103, dist: 891699.2, orbit: -2, size: 1, startype: 'M', label: loc('star_wolf_1061'), zlabel: loc('star_wolf_1061') },
+    // Gliese 570 D (T-type): companion, 1,540.6 AU from Gliese 570 A.
+    gliese570d: { x: 948312.726, y: -378790.836, z: 656793.425, dist: 1214148.7, orbit: -2, size: 1, startype: 'T', zlabel: loc('star_gliese_570') + ' D' },
+    // Wolf 1061 (M-type): 888,540.1 AU from the Sun (14.05 ly).
+    wolf1061: { x: 812336.061, y: 47574.594, z: 356861.682, dist: 888540.1, orbit: -2, size: 1, startype: 'M', label: loc('star_wolf_1061'), zlabel: loc('star_wolf_1061') },
     // wolf1061 planets (M-type, 2, none habitable)
     wolf1061_p1: { dist: 0.33, orbit: 126, size: 0.38, star: 'wolf1061' },
     wolf1061_p2: { dist: 0.61, orbit: 318, size: 0.32, star: 'wolf1061' },
