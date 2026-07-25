@@ -5815,7 +5815,8 @@ export function erisWar(){
 // global.space.position entry and never move. `dist` is retained for reference/UI only.
 export const spacePlanetStats = {
     spc_sun: { x: 0, y: 0, dist: 0, orbit: 0, size: 2, startype: 'G', label: loc('star_sun'), zlabel: loc('star_sun') },
-    spc_sun_gate: { dist: 0.3, orbit: 53, size: 0.1, belt: true },
+    // `gate` draws it on the solar map as an open ring rather than a world (see drawGate).
+    spc_sun_gate: { dist: 0.3, orbit: 53, size: 0.1, belt: true, gate: true },
     spc_home: { dist: 1, orbit: -1, size: 0.6, hz: true },
     spc_moon: { dist: 1.01, orbit: -1, size: 0.1, moon: true },
     spc_red: { dist: 1.524, orbit: 687, size: 0.5, hz: true },
@@ -6965,6 +6966,346 @@ function xShift(id){
 }
 
 var mapScale, mapShift;
+
+// --- Solar map body textures --------------------------------------------------------------------
+// Bodies keep the flat fill the map has always used — setColor() encodes syndicate strength,
+// habitable zone, gate/dwarf highlights and spectral type, and none of that should move — and get a
+// texture painted over the top. Planet textures are deliberately color-free: pure light and shadow
+// in the alpha channel, so one texture serves every body of a kind whatever color the game picked
+// for it, and the cache can't grow with the continuously-varying syndicate colors. Stars are the
+// exception, since for a star the color *is* the texture (core, disc, corona) — those are cached per
+// spectral color, of which there are seven.
+// Everything is generated once into an offscreen canvas and reused; nothing here runs at import
+// time, so the wiki bundle (which also imports this module) never touches the DOM for it.
+const bodyTexCache = {};
+
+// Deterministic per-body PRNG (mulberry32), so a planet's surface is identical on every redraw but
+// differs from its neighbours'.
+function texRand(seed){
+    let a = seed >>> 0;
+    return function(){
+        a = (a + 0x6D2B79F5) >>> 0;
+        let t = Math.imul(a ^ a >>> 15, 1 | a);
+        t = (t + Math.imul(t ^ t >>> 7, 61 | t)) ^ t;
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+}
+
+// FNV-1a over the body id, so each body gets a stable seed without storing one in the table.
+function texSeed(str){
+    let h = 2166136261;
+    for (let i=0; i<str.length; i++){
+        h ^= str.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+    }
+    return h >>> 0;
+}
+
+function hexRGBA(hex, a){
+    let n = parseInt(hex, 16);
+    return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
+}
+
+// f > 1 lightens toward white, f < 1 darkens. Lightening a near-white star just leaves it white.
+function hexShade(hex, f){
+    let n = parseInt(hex, 16);
+    let r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+    if (f >= 1){
+        let t = f - 1;
+        r += (255 - r) * t; g += (255 - g) * t; b += (255 - b) * t;
+    }
+    else {
+        r *= f; g *= f; b *= f;
+    }
+    return `rgb(${Math.round(r)},${Math.round(g)},${Math.round(b)})`;
+}
+
+const PLANET_TEX = 128;
+// Which surface a body gets. Nothing in the table marks gas giants, but the big non-moon bodies are
+// exactly the gas giants (Jupiter/Saturn/Tau Ceti's gas worlds and the large outer-system planets).
+function bodyKind(planet){
+    if (planet.belt){ return 'belt'; }
+    if (planet.size >= 1 && !planet.moon){ return 'gas'; }
+    return 'rock';
+}
+
+// Surfaces are drawn from a small pool rather than one per body: a texture is a megabyte-scale
+// canvas, and there are well over a hundred bodies on the map. Each body picks its variant from its
+// own seed, so it always gets the same face and its neighbours rarely match.
+const PLANET_VARIANTS = 8;
+
+// Color-free overlay for a planet, moon or belt body: surface detail, then the light and shade that
+// turn a flat disc into a lit ball. Lit from the upper left throughout, so the whole map reads as
+// one scene rather than each body having its own sun.
+function planetTexture(kind, seed){
+    let variant = (seed >>> 0) % PLANET_VARIANTS;
+    let key = `p:${kind}:${variant}`;
+    if (bodyTexCache[key]){ return bodyTexCache[key]; }
+
+    const S = PLANET_TEX, R = S / 2;
+    let c = document.createElement('canvas');
+    c.width = c.height = S;
+    let x = c.getContext('2d');
+    let rnd = texRand(texSeed(key));
+
+    x.save();
+    x.beginPath();
+    x.arc(R, R, R, 0, Math.PI * 2);
+    x.clip();
+
+    if (kind === 'gas'){
+        // Cloud bands of alternating brightness, varying in depth so they don't look striped.
+        for (let y = 0; y < S; ){
+            let h = S * (0.05 + rnd() * 0.1);
+            x.fillStyle = rnd() < 0.5
+                ? `rgba(255,255,255,${(0.05 + rnd() * 0.1).toFixed(3)})`
+                : `rgba(0,0,0,${(0.05 + rnd() * 0.12).toFixed(3)})`;
+            x.fillRect(0, y, S, h);
+            y += h;
+        }
+    }
+    else {
+        // Rocky: soft mottled patches. Belts get more, smaller ones so they read as rubble.
+        let blobs = kind === 'belt' ? 26 : 14;
+        for (let i = 0; i < blobs; i++){
+            let bx = rnd() * S, by = rnd() * S;
+            let br = S * (kind === 'belt' ? 0.03 + rnd() * 0.05 : 0.07 + rnd() * 0.14);
+            let g = x.createRadialGradient(bx, by, 0, bx, by, br);
+            g.addColorStop(0, rnd() < 0.6
+                ? `rgba(0,0,0,${(0.1 + rnd() * 0.18).toFixed(3)})`
+                : `rgba(255,255,255,${(0.07 + rnd() * 0.12).toFixed(3)})`);
+            g.addColorStop(1, 'rgba(0,0,0,0)');
+            x.fillStyle = g;
+            x.beginPath();
+            x.arc(bx, by, br, 0, Math.PI * 2);
+            x.fill();
+        }
+    }
+
+    // Highlight (upper left), terminator (lower right), then limb darkening all round.
+    let hi = x.createRadialGradient(R * 0.62, R * 0.6, 0, R * 0.62, R * 0.6, R * 1.15);
+    hi.addColorStop(0, 'rgba(255,255,255,0.38)');
+    hi.addColorStop(0.45, 'rgba(255,255,255,0.06)');
+    hi.addColorStop(1, 'rgba(255,255,255,0)');
+    x.fillStyle = hi;
+    x.fillRect(0, 0, S, S);
+
+    let sh = x.createRadialGradient(R * 1.35, R * 1.4, R * 0.1, R * 1.2, R * 1.3, R * 1.7);
+    sh.addColorStop(0, 'rgba(0,0,0,0.6)');
+    sh.addColorStop(0.6, 'rgba(0,0,0,0.22)');
+    sh.addColorStop(1, 'rgba(0,0,0,0)');
+    x.fillStyle = sh;
+    x.fillRect(0, 0, S, S);
+
+    let limb = x.createRadialGradient(R, R, R * 0.72, R, R, R);
+    limb.addColorStop(0, 'rgba(0,0,0,0)');
+    limb.addColorStop(1, 'rgba(0,0,0,0.45)');
+    x.fillStyle = limb;
+    x.fillRect(0, 0, S, S);
+
+    x.restore();
+    bodyTexCache[key] = c;
+    return c;
+}
+
+const STAR_TEX = 256;
+// Fraction of the texture's half-width taken up by the star's disc; the rest is corona. Bodies are
+// drawn scaled so the disc lands exactly on the radius the map asks for, and the corona spills out
+// around it — so this also sets how far the glow reaches (here, one disc radius beyond the edge).
+// Keep it modest: the corona scales with the disc, and a wide one swamps the view on a close-up.
+const STAR_CORE = 0.5;
+
+function starTexture(color){
+    let key = `s:${color}`;
+    if (bodyTexCache[key]){ return bodyTexCache[key]; }
+
+    const S = STAR_TEX, R = S / 2, disc = R * STAR_CORE;
+    let c = document.createElement('canvas');
+    c.width = c.height = S;
+    let x = c.getContext('2d');
+    let rnd = texRand(texSeed(color));
+
+    // Corona first so the disc paints over its inner edge. It starts essentially at the limb and
+    // falls away fast, which keeps the edge of the disc readable instead of blurring it into a blob.
+    let cor = x.createRadialGradient(R, R, disc * 0.97, R, R, R);
+    cor.addColorStop(0, hexRGBA(color, 0.34));
+    cor.addColorStop(0.22, hexRGBA(color, 0.1));
+    cor.addColorStop(1, hexRGBA(color, 0));
+    x.fillStyle = cor;
+    x.fillRect(0, 0, S, S);
+
+    // The disc brightens toward the middle and darkens at the limb, but never washes out to pure
+    // white — zoomed out a star is only a pixel or two across, and that pixel has to stay the color
+    // of its spectral class.
+    let body = x.createRadialGradient(R, R, 0, R, R, disc);
+    body.addColorStop(0, hexShade(color, 1.55));
+    body.addColorStop(0.5, hexShade(color, 1.12));
+    body.addColorStop(0.88, hexShade(color, 1));
+    body.addColorStop(1, hexShade(color, 0.7));
+    x.fillStyle = body;
+    x.beginPath();
+    x.arc(R, R, disc, 0, Math.PI * 2);
+    x.fill();
+
+    // Granulation: low-contrast convection cells over the disc, so a star closed in on reads as a
+    // surface rather than a plain gradient. Kept faint enough not to shift the star's color.
+    x.save();
+    x.beginPath();
+    x.arc(R, R, disc, 0, Math.PI * 2);
+    x.clip();
+    for (let i = 0; i < 45; i++){
+        let a = rnd() * Math.PI * 2;
+        let d = Math.sqrt(rnd()) * disc;
+        let bx = R + Math.cos(a) * d, by = R + Math.sin(a) * d;
+        let br = disc * (0.06 + rnd() * 0.14);
+        let g = x.createRadialGradient(bx, by, 0, bx, by, br);
+        g.addColorStop(0, rnd() < 0.5
+            ? `rgba(255,255,255,${(0.05 + rnd() * 0.07).toFixed(3)})`
+            : `rgba(0,0,0,${(0.04 + rnd() * 0.06).toFixed(3)})`);
+        g.addColorStop(1, 'rgba(0,0,0,0)');
+        x.fillStyle = g;
+        x.beginPath();
+        x.arc(bx, by, br, 0, Math.PI * 2);
+        x.fill();
+    }
+    x.restore();
+
+    bodyTexCache[key] = c;
+    return c;
+}
+
+// Glyphs engraved around the gate's ring. Constellation and planetary symbols, matching the
+// astrological signs the game already renders in the top bar — so this set is known to display here.
+// The U+FE0E on each forces the text form; several of these would otherwise come out as color emoji.
+const GATE_GLYPHS = ['♈︎','♉︎','♊︎','♋︎','♌︎','♍︎','♎︎','♏︎','♐︎','♑︎','♒︎','♓︎','☉︎','☽︎','☿︎','♀︎','♂︎','♃︎','♄︎','♅︎','♆︎'];
+const gateGlyphCache = {};
+
+// Nine distinct glyphs drawn from the pool. Seeded off the body, not Math.random: the map redraws on
+// every drag and zoom, and glyphs reshuffling each frame would strobe. Cached so the draw isn't
+// re-picking them every frame either.
+function gateGlyphs(seed){
+    if (gateGlyphCache[seed]){ return gateGlyphCache[seed]; }
+    let pool = GATE_GLYPHS.slice();
+    let rnd = texRand(seed);
+    let out = [];
+    for (let i = 0; i < 9; i++){
+        out.push(pool.splice(Math.floor(rnd() * pool.length), 1)[0]);
+    }
+    gateGlyphCache[seed] = out;
+    return out;
+}
+
+// Whether Tau Ceti's jump gate should appear beside the home planet on the map. The structure's own
+// `reqs: { tauceti: 3 }` is not consulted by condition() — that only covers the isolation/resettle
+// case — so the tech level is checked here alongside it. Optional chaining because drawMap runs for
+// saves that never reach Tau Ceti.
+function tauJumpGate(){
+    return global.tech['tauceti'] && global.tech.tauceti >= 3
+        && actions.tauceti?.tau_home?.jump_gate?.condition?.() ? true : false;
+}
+
+// The sun gate is a stargate, not a world, so it is drawn as an open ring with space showing through
+// the middle. Stroked as a path rather than blitted from a texture: the gate is only a few pixels
+// across at most useful zooms, and a ring texture scaled down that far smears back into the dot this
+// is meant to stop it being.
+function drawGate(ctx, x, y, r, color, seed){
+    let lw = r * 0.42;              // ring thickness
+    let mid = r - lw / 2;           // centreline the stroke is laid along
+
+    ctx.save();
+    // Halo, so a gate is picked out at a glance from the rocks sharing its orbit.
+    ctx.strokeStyle = hexRGBA(color, 0.25);
+    ctx.lineWidth = lw * 2.4;
+    ctx.beginPath();
+    ctx.arc(x, y, mid, 0, Math.PI * 2, true);
+    ctx.stroke();
+
+    // The ring, lit across the diagonal like every other body on the map.
+    let sheen = ctx.createLinearGradient(x - r, y - r, x + r, y + r);
+    sheen.addColorStop(0, hexShade(color, 1.5));
+    sheen.addColorStop(0.5, hexShade(color, 1));
+    sheen.addColorStop(1, hexShade(color, 0.55));
+    ctx.strokeStyle = sheen;
+    ctx.lineWidth = lw;
+    ctx.beginPath();
+    ctx.arc(x, y, mid, 0, Math.PI * 2, true);
+    ctx.stroke();
+
+    // Nine chevrons around the ring, as on the gate itself — only legible, and only worth the
+    // strokes, once the gate is more than a few pixels across.
+    if (r * mapScale >= 6){
+        ctx.strokeStyle = 'rgba(0,0,0,0.45)';
+        ctx.lineWidth = Math.max(lw * 0.22, 0.4 / mapScale);
+        for (let i = 0; i < 9; i++){
+            let a = (i / 9) * Math.PI * 2 - Math.PI / 2;
+            let ca = Math.cos(a), sa = Math.sin(a);
+            ctx.beginPath();
+            ctx.moveTo(x + ca * (mid - lw / 2), y + sa * (mid - lw / 2));
+            ctx.lineTo(x + ca * (mid + lw / 2), y + sa * (mid + lw / 2));
+            ctx.stroke();
+        }
+
+        // A glyph in each of the nine segments the notches divide the ring into — offset half a
+        // segment so they sit between the notches rather than on top of them, and turned to stand
+        // upright on the ring. Only once the band is wide enough to hold a readable character.
+        // textAlign/textBaseline/font are restored by the save() above, so the ship-name and label
+        // passes later in drawMap are unaffected.
+        if (r * mapScale >= 18){
+            let glyphs = gateGlyphs(seed);
+            ctx.fillStyle = 'rgba(0,0,0,0.72)';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            // Sized and drawn in screen pixels, undoing the map scale for the text only. Chrome
+            // renders nothing at all once the font-size *number* drops below about 0.01px, whatever
+            // the transform scales it up to afterwards — and the gate's radius is a fixed 0.01 map
+            // units at every zoom, so a size expressed in map units would always land under that
+            // floor and silently draw nothing.
+            ctx.font = `${lw * mapScale * 0.78}px serif`;
+            for (let i = 0; i < 9; i++){
+                let a = ((i + 0.5) / 9) * Math.PI * 2 - Math.PI / 2;
+                ctx.save();
+                ctx.translate(x + Math.cos(a) * mid, y + Math.sin(a) * mid);
+                ctx.rotate(a + Math.PI / 2);
+                ctx.scale(1 / mapScale, 1 / mapScale);
+                ctx.fillText(glyphs[i], 0, 0);
+                ctx.restore();
+            }
+        }
+    }
+    ctx.restore();
+}
+
+// Paint one map body at (x,y) with radius r in map units. Stars get their textured disc plus corona;
+// everything else keeps its flat fill with the lighting overlay on top. The overlay is skipped once
+// a body is down to a couple of pixels, where it would cost a scale-down of a 128px texture to show
+// nothing.
+function drawBody(ctx, x, y, r, color, opts){
+    opts = opts || {};
+    if (opts.gate){
+        drawGate(ctx, x, y, r, color, opts.seed);
+        return;
+    }
+    ctx.fillStyle = "#" + color;
+    if (opts.star){
+        // The flat disc goes down first even though the texture's own disc is opaque. Zoomed out a
+        // star is a pixel or two across, and scaling a 256px texture down that far averages its disc
+        // against the transparent corona surrounding it — on its own the star all but disappears.
+        // The solid dot underneath keeps it visible and on-color at every zoom.
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2, true);
+        ctx.fill();
+        let half = r / STAR_CORE;
+        ctx.drawImage(starTexture(color), x - half, y - half, half * 2, half * 2);
+        return;
+    }
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2, true);
+    ctx.fill();
+    if (r * mapScale >= 2.5){
+        ctx.drawImage(planetTexture(opts.kind, opts.seed), x - r, y - r, r * 2, r * 2);
+    }
+}
+
 export function drawMap() {
     let canvas = document.getElementById("mapCanvas");
     let ctx = canvas.getContext("2d");
@@ -7090,28 +7431,26 @@ export function drawMap() {
         }
         if (actions.space[id] && actions.space[id].info.showDest && !actions.space[id].info.showDest().r){ continue; }
         let color = setColor(id);
-        ctx.fillStyle = "#" + color;
-        ctx.beginPath();
+        let bx = planetLocation[id].x, by = planetLocation[id].y;
         let size = planet.size / 10;
         if (planet.moon) {
             switch (id){
                 case 'spc_moon':
-                    ctx.arc(planetLocation[id].x + 0.05, planetLocation[id].y + 0.05, size, 0, Math.PI * 2, true);
+                    bx += 0.05; by += 0.05;
                     break;
                 case 'spc_titan':
-                    ctx.arc(planetLocation[id].x - 0.2, planetLocation[id].y - 0.2, size, 0, Math.PI * 2, true);
+                    bx -= 0.2; by -= 0.2;
                     break;
                 default:
-                    ctx.arc(planetLocation[id].x + 0.2, planetLocation[id].y + 0.2, size, 0, Math.PI * 2, true);
+                    bx += 0.2; by += 0.2;
                     break;
             }
         }
-        else {
+        else if (planet.startype) {
             // The Sun (a star) keeps a minimum on-screen radius so it stays visible when zoomed out.
-            let size = planet.startype ? Math.max(planet.size / 10, 1 / mapScale) : planet.size / 10;
-            ctx.arc(planetLocation[id].x, planetLocation[id].y, size, 0, Math.PI * 2, true);
+            size = Math.max(planet.size / 10, 1 / mapScale);
         }
-        ctx.fill();
+        drawBody(ctx, bx, by, size, color, { star: !!planet.startype, gate: !!planet.gate, kind: bodyKind(planet), seed: texSeed(id) });
     }
 
     // Ships
@@ -7210,10 +7549,7 @@ export function drawMap() {
         // The star (minimum on-screen radius so it stays visible when zoomed far out). An invisible
         // barycenter (hidden) is not drawn — only its orbiting bodies/planets are.
         if (!star.hidden){
-            ctx.fillStyle = "#" + setColor(starId);
-            ctx.beginPath();
-            ctx.arc(0, 0, Math.max(star.size / 10, 1 / mapScale), 0, Math.PI * 2, true);
-            ctx.fill();
+            drawBody(ctx, 0, 0, Math.max(star.size / 10, 1 / mapScale), setColor(starId), { star: true });
         }
 
         // Orbits of bodies around this star. Normally elliptical and off-center (star at a focus); for
@@ -7237,13 +7573,15 @@ export function drawMap() {
         for (let [id, planet] of Object.entries(spacePlanetStats)) {
             if (planet.star !== starId || (planet.unlock && !global.tech[planet.unlock])){ continue; }
             let cx = star.hidden ? 0 : planet.dist / 3;
-            ctx.fillStyle = "#" + setColor(id);
             let pos = global.space.position.hasOwnProperty(id) ? global.space.position[id] : 0;
             let px = Math.cos(pos * (Math.PI / 180)) * planet.dist * e + cx;
             let py = Math.sin(pos * (Math.PI / 180)) * planet.dist;
-            ctx.beginPath();
-            ctx.arc(px, py, planet.bodystar ? Math.max(planet.size / 10, 1 / mapScale) : planet.size / 10, 0, Math.PI * 2, true);
-            ctx.fill();
+            let pr = planet.bodystar ? Math.max(planet.size / 10, 1 / mapScale) : planet.size / 10;
+            drawBody(ctx, px, py, pr, setColor(id), { star: !!planet.bodystar, kind: bodyKind(planet), seed: texSeed(id) });
+            // Tau Ceti's jump gate rides alongside the home planet like a moon.
+            if (id === 'tau_home' && tauJumpGate()){
+                drawBody(ctx, px + pr * 0.9, py + pr * 0.9, pr * 0.35, '31a557', { gate: true, seed: texSeed('tau_home_jump_gate') });
+            }
         }
 
         // Names
