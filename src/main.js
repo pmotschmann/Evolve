@@ -12469,12 +12469,15 @@ function longLoop(){
                             let sf = span > 0 ? (trip - a.tn) / span : 1;
                             ship.xy.x = a.x + (b.x - a.x) * sf;
                             ship.xy.y = a.y + (b.y - a.y) * sf;
+                            ship.xy.z = (a.z || 0) + ((b.z || 0) - (a.z || 0)) * sf;
                         }
                         else {
-                            let mx = Math.abs(ship.origin.x - ship.destination.x) * trip;
-                            let my = Math.abs(ship.origin.y - ship.destination.y) * trip;
-                            if (ship.origin.x <= ship.destination.x){ ship.xy.x = ship.origin.x + mx; } else { ship.xy.x = ship.origin.x - mx; }
-                            if (ship.origin.y <= ship.destination.y){ ship.xy.y = ship.origin.y + my; } else { ship.xy.y = ship.origin.y - my; }
+                            // Straight interpolation on each axis. `|| 0` covers ships that were
+                            // already under way in a save written before the map had a z.
+                            let o = ship.origin, d = ship.destination;
+                            ship.xy.x = o.x + (d.x - o.x) * trip;
+                            ship.xy.y = o.y + (d.y - o.y) * trip;
+                            ship.xy.z = (o.z || 0) + ((d.z || 0) - (o.z || 0)) * trip;
                         }
                     }
                     if (ship.transit === 0){
