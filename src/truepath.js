@@ -5944,6 +5944,10 @@ export const spacePlanetStats = {
     teegardensstar: { x: 727115.6, y: -310184.619, dist: 790513.5, orbit: -2, size: 1, startype: 'M', label: loc('star_teegardens_star'), zlabel: loc('star_teegardens_star') },
     // teegardensstar planets (M-type, 1, one in the habitable zone)
     teegardensstar_p1: { dist: 0.23, orbit: 74, size: 0.43, star: 'teegardensstar', hz: true },
+    // TZ Arietis (M-type): 923319.7 AU from the Sun and 290909 AU from Teegarden's Star
+    tzarietis: { x: 701805.312, y: -599990.477, dist: 923319.7, orbit: -2, size: 1, startype: 'M', label: loc('star_tz_arietis'), zlabel: loc('star_tz_arietis') },
+    // tzarietis planets (M-type, 1, none habitable — the real TZ Arietis b orbits far inside the zone)
+    tzarietis_p1: { dist: 0.29, orbit: 104, size: 0.38, star: 'tzarietis' },
     // Eta Cassiopeiae (G-type): 1228141.7 AU from the Sun
     etacassiopeiae: { x: 500000, y: -1121753.999, dist: 1228141.7, orbit: -2, size: 2, startype: 'G', label: loc('star_eta_cassiopeiae'), zlabel: loc('star_eta_cassiopeiae') + ' A' },
     // etacassiopeiae planets (G-type, 4, habitable-zone planet at ~1 AU)
