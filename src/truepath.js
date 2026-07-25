@@ -8069,6 +8069,8 @@ function buildSolarMap(parentNode) {
     let dragOffset = {};
     let spin = {};
     let drag = false;       // false | 'pan' | 'rotate'
+    let press = false;      // the in-flight left press, for telling a click from a pan
+    const CLICK_SLOP_PX = 3;
     mapShift = {};
     mapScale = 20.0;
     // The map always opens looking straight down, however it was left last time.
@@ -8117,9 +8119,45 @@ function buildSolarMap(parentNode) {
         mapShift.y = canvasOffset.y - pY(pt) * mapScale;
     }
 
+    // The star under a click, or false. Only bodies actually on screen are candidates — culled stars
+    // aren't drawn, so they can't be clicked. `bodystar` bodies (a binary orbiting an invisible
+    // barycenter) draw as stars and are picked like them. The grab radius never drops below a few
+    // pixels, since zoomed out a star is a single dot and would otherwise be impossible to hit.
+    const CLICK_GRAB_PX = 10;
+    function starAt(e){
+        let rect = document.getElementById("mapCanvas").getBoundingClientRect();
+        let cx = e.clientX - rect.left, cy = e.clientY - rect.top;
+        let best = false, bestD = Infinity;
+        for (let [id, body] of Object.entries(spacePlanetStats)){
+            if ((!body.startype && !body.bodystar) || body.hidden){ continue; }
+            let p = genXYcoord(id);
+            if (starCulled(p)){ continue; }
+            let d = Math.hypot(mapShift.x + pX(p) * mapScale - cx, mapShift.y + pY(p) * mapScale - cy);
+            if (d <= Math.max(CLICK_GRAB_PX, body.size / 10 * mapScale) && d < bestD){
+                bestD = d;
+                best = p;
+            }
+        }
+        return best;
+    }
+
     currentNode.append(
       $(`<canvas id="mapCanvas" style="width: 100%; height: 75vh"></canvas>`)
-        .on("mouseup mouseover mouseout", () => drag = false)
+        // A left press that ends without the pointer really moving is a click, not a pan: if it
+        // landed on a star, centre the view on it. The slop allows for the shake of an ordinary
+        // click, which would otherwise pan a pixel and count as a drag.
+        .on("mouseup", (e) => {
+            if (drag === 'pan' && press && !press.moved){
+                let hit = starAt(e);
+                if (hit){
+                    recenterOn(hit);
+                    drawMap();
+                }
+            }
+            drag = false;
+            press = false;
+        })
+        .on("mouseover mouseout", () => { drag = false; press = false; })
         // Right-drag (or shift-drag, for anyone on a trackpad without a right button) orbits the
         // camera; plain left-drag still pans, exactly as it did before the map had a third axis.
         .on("contextmenu", () => false)
@@ -8131,11 +8169,15 @@ function buildSolarMap(parentNode) {
                 return false;
             }
             drag = 'pan';
+            press = { x: e.clientX, y: e.clientY, moved: false };
             dragOffset.x = e.clientX - mapShift.x;
             dragOffset.y = e.clientY - mapShift.y;
         })
         .on("mousemove", (e) => {
             if (drag === 'pan') {
+                if (press && (Math.abs(e.clientX - press.x) > CLICK_SLOP_PX || Math.abs(e.clientY - press.y) > CLICK_SLOP_PX)){
+                    press.moved = true;
+                }
                 mapShift.x = e.clientX - dragOffset.x;
                 mapShift.y = e.clientY - dragOffset.y;
                 refocus();
