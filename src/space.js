@@ -229,7 +229,7 @@ const spaceProjects = {
             support: 'moon_base',
             zone: 'inner',
             syndicate(){ return global.tech['resettle'] ? false : true; },
-            nav(){ global.tech['resettle'] ? false : true; }
+            nav(){ return global.tech['resettle'] ? false : true; }
         },
         moon_mission: {
             id: 'space-moon_mission',
