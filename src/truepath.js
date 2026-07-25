@@ -7361,6 +7361,11 @@ function camUpdate(){
     camCY = Math.cos(mapYaw); camSY = Math.sin(mapYaw);
     camCP = Math.cos(mapPitch); camSP = Math.sin(mapPitch);
 }
+// Fold an angle back into (-pi, pi] so a long drag can't wind the camera up indefinitely.
+function wrapAngle(a){
+    a = (a + Math.PI) % (Math.PI * 2);
+    return (a < 0 ? a + Math.PI * 2 : a) - Math.PI;
+}
 function pX(p){ return p.x * camCY - p.y * camSY; }
 function pY(p){ return (p.x * camSY + p.y * camCY) * camCP - (p.z || 0) * camSP; }
 // Depth for painter's-algorithm ordering. This axis completes a right-handed frame with screen-right
@@ -8137,10 +8142,8 @@ function buildSolarMap(parentNode) {
                 drawMap();
             }
             else if (drag === 'rotate') {
-                mapYaw = spin.yaw + (e.clientX - spin.x) * ROTATE_RATE;
-                // Clamped to a quarter turn either way: at 90 degrees the reference plane is exactly
-                // edge-on, and past that the map would simply be upside down.
-                mapPitch = Math.min(Math.PI / 2, Math.max(-Math.PI / 2, spin.pitch + (e.clientY - spin.y) * ROTATE_RATE));
+                mapYaw = wrapAngle(spin.yaw + (e.clientX - spin.x) * ROTATE_RATE);
+                mapPitch = wrapAngle(spin.pitch + (e.clientY - spin.y) * ROTATE_RATE);
                 camUpdate();
                 recenterOn(mapFocus);
                 drawMap();
