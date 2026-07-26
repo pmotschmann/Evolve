@@ -5437,17 +5437,17 @@ function drawShips(){
         if (global.space.shipyard.expand){
             let ship_class = `${loc(`outer_shipyard_engine_${ship.engine}`)} ${loc(`outer_shipyard_class_${ship.class}`)}`;
             let desc = $(`<div id="shipReg${i}" class="shipRow ship${i}"></div>`);
-            let row1 = $(`<div class="row1"><span class="name has-text-caution">${ship.name}</span> <span v-show="scrapAllowed(${i})">| </span><a class="scrap${i}" v-show="scrapAllowed(${i})" @click="scrap(${i})" role="button">${loc(`outer_shipyard_scrap`)}</a> | <span class="has-text-warning">${ship_class}</span> | <span class="has-text-danger">${loc(`outer_shipyard_weapon_${ship.weapon}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_power_${ship.power}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_armor_${ship.armor}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_sensor_${ship.sensor}`)}</span></div>`);
+            let row1 = $(`<div class="row1"><span class="name has-text-caution">${ship.name}</span> <span v-show="scrapAllowed(${i})">| </span><a class="scrap${i}" v-show="scrapAllowed(${i})" @click="scrap(${i})" role="button">${loc(`outer_shipyard_scrap`)}</a><span v-show="fleetAllowed(${i})"> | <a class="fleetToggle" @click="toggleFleet(${i})" role="button" v-html="fleetText(${i})"></a></span> | <span class="has-text-warning">${ship_class}</span> | <span class="has-text-danger">${loc(`outer_shipyard_weapon_${ship.weapon}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_power_${ship.power}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_armor_${ship.armor}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_sensor_${ship.sensor}`)}</span></div>`);
             let row2 = $(`<div class="row2"></div>`);
             let row3 = $(`<div class="row3"></div>`);
             let row4 = $(`<div class="location">${dispatch}</div>`);
 
-            row2.append(`<span class="has-text-warning">${loc(`crew`)}</span> <span class="pad" v-html="crewText(${i})"></span>`);
-            row2.append(`<span class="has-text-warning">${loc(`firepower`)}</span> <span class="pad" v-html="fireText(${i})"></span>`);
-            row2.append(`<span class="has-text-warning">${loc(`outer_shipyard_sensors`)}</span> <span class="pad" v-html="sensorText(${i})"></span>`);
-            row2.append(`<span class="has-text-warning">${loc(`speed`)}</span> <span class="pad" v-html="speedText(${i})"></span>`);
-            row2.append(`<span class="has-text-warning">${loc(`outer_shipyard_fuel`)}</span> <span class="pad" v-bind:class="{ 'has-text-danger': !fueled }" v-html="fuelText(${i})"></span>`);
-            row2.append(`<span class="has-text-warning">${loc(`outer_shipyard_hull`)}</span> <span class="pad" v-bind:class="hullDamage(${i})" v-html="hullText(${i})"></span>`);
+            row2.append(`<span class="shipStat"><span class="has-text-warning">${loc(`crew`)}</span> <span class="pad" v-html="crewText(${i})"></span></span><wbr>`);
+            row2.append(`<span class="shipStat"><span class="has-text-warning">${loc(`firepower`)}</span> <span class="pad" v-html="fireText(${i})"></span></span><wbr>`);
+            row2.append(`<span class="shipStat"><span class="has-text-warning">${loc(`outer_shipyard_sensors`)}</span> <span class="pad" v-html="sensorText(${i})"></span></span><wbr>`);
+            row2.append(`<span class="shipStat"><span class="has-text-warning">${loc(`speed`)}</span> <span class="pad" v-html="speedText(${i})"></span></span><wbr>`);
+            row2.append(`<span class="shipStat"><span class="has-text-warning">${loc(`outer_shipyard_fuel`)}</span> <span class="pad" v-bind:class="{ 'has-text-danger': !fueled }" v-html="fuelText(${i})"></span></span><wbr>`);
+            row2.append(`<span class="shipStat" v-show="hullShow(${i})"><span class="has-text-warning">${loc(`outer_shipyard_hull`)}</span> <span class="pad" v-bind:class="hullDamage(${i})" v-html="hullText(${i})"></span></span><wbr>`);
 
             row3.append(`<span v-show="show(${i})" class="has-text-caution" v-html="dest(${i})"></span>`);
 
@@ -5463,12 +5463,12 @@ function drawShips(){
             let row3 = $(`<div class="row3"></div>`);
             let row4 = $(`<div class="location">${dispatch}</div>`);
 
-            row1.append(`<span class="name has-text-caution">${ship.name}</span> | `);
-            row1.append(`<span class="has-text-warning">${loc(`firepower`)}</span> <span class="pad" v-html="fireText(${i})"></span>`);
-            row1.append(`<span class="has-text-warning">${loc(`outer_shipyard_sensors`)}</span> <span class="pad" v-html="sensorText(${i})"></span>`);
-            row1.append(`<span class="has-text-warning">${loc(`speed`)}</span> <span class="pad" v-html="speedText(${i})"></span>`);
-            row1.append(`<span class="has-text-warning">${loc(`outer_shipyard_fuel`)}</span> <span class="pad" v-bind:class="{ 'has-text-danger': !fueled }" v-html="fuelText(${i})"></span>`);
-            row1.append(`<span class="has-text-warning">${loc(`outer_shipyard_hull`)}</span> <span class="pad" v-bind:class="hullDamage(${i})" v-html="hullText(${i})"></span>`);
+            row1.append(`<span class="name has-text-caution">${ship.name}</span><span v-show="fleetAllowed(${i})"> | <a class="fleetToggle" @click="toggleFleet(${i})" role="button" v-html="fleetText(${i})"></a></span> | `);
+            row1.append(`<span class="shipStat"><span class="has-text-warning">${loc(`firepower`)}</span> <span class="pad" v-html="fireText(${i})"></span></span><wbr>`);
+            row1.append(`<span class="shipStat"><span class="has-text-warning">${loc(`outer_shipyard_sensors`)}</span> <span class="pad" v-html="sensorText(${i})"></span></span><wbr>`);
+            row1.append(`<span class="shipStat"><span class="has-text-warning">${loc(`speed`)}</span> <span class="pad" v-html="speedText(${i})"></span></span><wbr>`);
+            row1.append(`<span class="shipStat"><span class="has-text-warning">${loc(`outer_shipyard_fuel`)}</span> <span class="pad" v-bind:class="{ 'has-text-danger': !fueled }" v-html="fuelText(${i})"></span></span><wbr>`);
+            row1.append(`<span class="shipStat" v-show="hullShow(${i})"><span class="has-text-warning">${loc(`outer_shipyard_hull`)}</span> <span class="pad" v-bind:class="hullDamage(${i})" v-html="hullText(${i})"></span></span><wbr>`);
 
             row3.append(`<span v-show="show(${i})" class="has-text-caution" v-html="dest(${i})"></span>`);
 
@@ -5494,6 +5494,25 @@ function drawShips(){
                         return true;
                     }
                     return false;
+                },
+                // Fleets need the fleet_command tech, and a ship can only be shuffled in or out of
+                // one while it is actually sitting somewhere rather than crossing between places.
+                // There also has to be something to fleet with, so the option stays hidden while a
+                // ship is the only one where it is.
+                fleetAllowed(id){
+                    let s = global.space.shipyard.ships[id];
+                    if (!global.tech['syard_fleet'] || !s || s.transit > 0){ return false; }
+                    return global.space.shipyard.ships.some(o => o !== s && o.location === s.location && o.transit === s.transit);
+                },
+                fleetText(id){
+                    let s = global.space.shipyard.ships[id];
+                    return s && s.fleet ? loc('outer_shipyard_fleet_leave') : loc('outer_shipyard_fleet_join');
+                },
+                toggleFleet(id){
+                    let s = global.space.shipyard.ships[id];
+                    if (!global.tech['syard_fleet'] || !s || s.transit > 0){ return; }
+                    s.fleet = !s.fleet;
+                    drawShips();
                 },
                 pickDest(id){
                     let modal = this.$buefy.modal.open({
@@ -5532,6 +5551,11 @@ function drawShips(){
                 },
                 hullText(id){
                     return `${100 - global.space.shipyard.ships[id].damage}%`;
+                },
+                // An undamaged hull is the norm and says nothing worth the space, so the readout only
+                // appears once a ship has taken damage.
+                hullShow(id){
+                    return global.space.shipyard.ships[id].damage > 0;
                 },
                 hullDamage(id){
                     if (global.space.shipyard.ships[id].damage <= 10){
@@ -8382,59 +8406,80 @@ function solarModal(){
 }
 
 // Populate the ship dispatch modal with a button for each valid destination.
-function shipDispatchModal(id, modal){
-    let ship = global.space.shipyard.ships[id];
-    if (!ship){ return; }
-
-    $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${loc('outer_shipyard_dispatch',[ship.name])}</p>`));
-
-    // Ship stats — mirrors the fleet row readout so the player can weigh the ship before dispatching it.
-    let fuel = shipFuelUse(ship);
-    let fuelText = fuel.res ? `${fuel.burn} ${global.resource[fuel.res].name}/s` : `N/A`;
-    let speed = Math.round((149597870.7/225/24/3600) * shipSpeed(ship));
-    let hullClass = ship.damage <= 10 ? `has-text-success` : (ship.damage >= 65 ? `has-text-danger` : (ship.damage >= 40 ? `has-text-caution` : ``));
-    let stats = $(`<div class="shipDispatchStats"></div>`);
-    stats.append(`<span><span class="has-text-warning">${loc('crew')}</span> <span class="pad">${shipCrewSize(ship)}</span></span>`);
-    stats.append(`<span><span class="has-text-warning">${loc('firepower')}</span> <span class="pad">${shipAttackPower(ship)}</span></span>`);
-    stats.append(`<span><span class="has-text-warning">${loc('outer_shipyard_sensors')}</span> <span class="pad">${sensorRange(ship)}km</span></span>`);
-    stats.append(`<span><span class="has-text-warning">${loc('speed')}</span> <span class="pad">${speed}km/s</span></span>`);
-    stats.append(`<span><span class="has-text-warning">${loc('outer_shipyard_fuel')}</span> <span class="pad">${fuelText}</span></span>`);
-    stats.append(`<span><span class="has-text-warning">${loc('outer_shipyard_hull')}</span> <span class="pad ${hullClass}">${100 - ship.damage}%</span></span>`);
-    $('#modalBox').append(stats);
-
-    let list = $(`<div class="shipDispatch"></div>`);
-    $('#modalBox').append(list);
-
+// Everywhere a single ship could be sent.
+function shipDestinations(ship){
     const spaceRegions = spaceTech();
     let dests = [];
     if (ship.class === 'explorer'){
         if (ship.location !== 'tauceti'){
             dests.push({ region: 'tauceti', name: loc('tech_era_tauceti') });
         }
+        return dests;
     }
-    else {
-        Object.keys(spaceRegions).forEach(function(region){
-            if (ship.location !== region){
-                if (spaceRegions[region].info.nav()){
-                    if (region === 'spc_sun_gate'){
-                        let name = typeof spaceRegions.spc_sun_gate.info.desc === 'string' ? spaceRegions.spc_sun_gate.info.desc : spaceRegions.spc_sun_gate.info.desc();
-                        dests.push({ region: region, name: name });
-                    }
-                    else if (!global.race['orbit_decayed'] || (global.race['orbit_decayed'] && region !== 'spc_moon')){
-                        let name = typeof spaceRegions[region].info.name === 'string' ? spaceRegions[region].info.name : spaceRegions[region].info.name();
-                        dests.push({ region: region, name: name });
-                    }
+    Object.keys(spaceRegions).forEach(function(region){
+        if (ship.location !== region){
+            if (spaceRegions[region].info.nav()){
+                if (region === 'spc_sun_gate'){
+                    let name = typeof spaceRegions.spc_sun_gate.info.desc === 'string' ? spaceRegions.spc_sun_gate.info.desc : spaceRegions.spc_sun_gate.info.desc();
+                    dests.push({ region: region, name: name });
                 }
-            }
-        });
-        Object.keys(tauCetiModules).forEach(function(region){
-            if (ship.location !== region){
-                if (tauCetiModules[region].info.nav()){
-                    let name = typeof tauCetiModules[region].info.name === 'string' ? tauCetiModules[region].info.name : tauCetiModules[region].info.name();
+                else if (!global.race['orbit_decayed'] || (global.race['orbit_decayed'] && region !== 'spc_moon')){
+                    let name = typeof spaceRegions[region].info.name === 'string' ? spaceRegions[region].info.name : spaceRegions[region].info.name();
                     dests.push({ region: region, name: name });
                 }
             }
-        });
+        }
+    });
+    Object.keys(tauCetiModules).forEach(function(region){
+        if (ship.location !== region){
+            if (tauCetiModules[region].info.nav()){
+                let name = typeof tauCetiModules[region].info.name === 'string' ? tauCetiModules[region].info.name : tauCetiModules[region].info.name();
+                dests.push({ region: region, name: name });
+            }
+        }
+    });
+    return dests;
+}
+
+function shipDispatchModal(id, modal){
+    let ship = global.space.shipyard.ships[id];
+    if (!ship){ return; }
+
+    // Dispatching any member of a fleet moves the whole fleet, so the modal describes the group.
+    let crew = shipFleet(ship);
+    let group = crew.length ? crew : [ship];
+    let isFleet = crew.length > 1;
+
+    $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${isFleet ? loc('outer_shipyard_dispatch_fleet',[group.length]) : loc('outer_shipyard_dispatch',[ship.name])}</p>`));
+
+    // Stats — mirrors the fleet row readout so the player can weigh what is being sent. For a fleet
+    // the numbers that combine are summed, and the ones that gate the group are its worst: the
+    // slowest engine sets the pace and the most battered hull is what will fail first.
+    let slowest = fleetPace(group);
+    let fuel = shipFuelUse(slowest);
+    let fuelText = fuel.res ? `${fuel.burn} ${global.resource[fuel.res].name}/s` : `N/A`;
+    let speed = Math.round((149597870.7/225/24/3600) * shipSpeed(slowest));
+    let damage = Math.max(...group.map(s => s.damage));
+    let hullClass = damage <= 10 ? `has-text-success` : (damage >= 65 ? `has-text-danger` : (damage >= 40 ? `has-text-caution` : ``));
+    let sum = fn => group.reduce((t,s) => t + fn(s), 0);
+    let stats = $(`<div class="shipDispatchStats"></div>`);
+    stats.append(`<span><span class="has-text-warning">${loc('crew')}</span> <span class="pad">${sum(shipCrewSize)}</span></span>`);
+    stats.append(`<span><span class="has-text-warning">${loc('firepower')}</span> <span class="pad">${sum(shipAttackPower)}</span></span>`);
+    stats.append(`<span><span class="has-text-warning">${loc('outer_shipyard_sensors')}</span> <span class="pad">${Math.max(...group.map(sensorRange))}km</span></span>`);
+    stats.append(`<span><span class="has-text-warning">${loc('speed')}</span> <span class="pad">${speed}km/s</span></span>`);
+    stats.append(`<span><span class="has-text-warning">${loc('outer_shipyard_fuel')}</span> <span class="pad">${fuelText}</span></span>`);
+    stats.append(`<span><span class="has-text-warning">${loc('outer_shipyard_hull')}</span> <span class="pad ${hullClass}">${100 - damage}%</span></span>`);
+    $('#modalBox').append(stats);
+
+    let list = $(`<div class="shipDispatch"></div>`);
+    $('#modalBox').append(list);
+
+    // A fleet can only go where every one of its ships can go, or it would not arrive as a unit —
+    // an explorer, for instance, can only ever make for Tau Ceti.
+    let dests = shipDestinations(group[0]);
+    for (let i=1; i<group.length; i++){
+        let reachable = new Set(shipDestinations(group[i]).map(d => d.region));
+        dests = dests.filter(d => reachable.has(d.region));
     }
 
     if (dests.length === 0){
@@ -8445,7 +8490,7 @@ function shipDispatchModal(id, modal){
         // than one star and each destination says which it belongs to.
         let showSystem = global.tech['resettle'] && global.tech.resettle >= 3;
         dests.forEach(function(d){
-            let days = planShipTrip(ship, d.region).transit;
+            let days = planShipTrip(slowest, d.region).transit;
             let sysName = showSystem ? locSystemName(d.region) : '';
             let sys = sysName ? `<span class="dispatchSystem has-text-info">${sysName}</span>` : ``;
             $(`<button class="button is-info ${d.region}"><span class="dispatchName">${d.name}</span>${sys}<span class="dispatchDays has-text-caution">${loc('transit_time',[days])}</span></button>`)
@@ -8458,23 +8503,50 @@ function shipDispatchModal(id, modal){
     }
 }
 
-// Send a ship to a destination region.
+// --- Fleets ---------------------------------------------------------------------------------
+// A fleet is not a stored object: it is every ship flagged `fleet` that shares a location, so
+// membership needs no bookkeeping when ships are built, scrapped or arrive somewhere. Ships already
+// under way are matched on their transit too — a ship inbound to a place has its location set to
+// that destination the moment it leaves, and it should not be swept up by a fleet sitting there.
+// Requires the fleet_command tech (syard_fleet).
+export function shipFleet(ship){
+    if (!global.tech['syard_fleet'] || !ship || !ship.fleet){ return []; }
+    return global.space.shipyard.ships.filter(s => s.fleet && s.location === ship.location && s.transit === ship.transit);
+}
+
+// A fleet keeps pace with its slowest ship, so that is the one every trip is planned on.
+function fleetPace(group){
+    return group.reduce((a,b) => shipSpeed(a) <= shipSpeed(b) ? a : b);
+}
+
+// Ships parked at a shipyard are unmanned and draw a crew on departure; anywhere else, or already
+// under way, they are crewed.
+function shipManned(ship){
+    return ship.transit > 0 || (ship.location !== 'spc_dwarf' && ship.location !== 'tau_gas2');
+}
+
+// Send a ship to a destination region, or its whole fleet if it belongs to one. Every ship takes the
+// identical trip computed for the slowest, so the group stays together the whole way and arrives at
+// the same tick rather than trickling in.
 function sendShipTo(id, l){
     let ship = global.space.shipyard.ships[id];
     if (!ship || l === ship.location){ return; }
-    let crew = shipCrewSize(ship);
-    let manned = ship.transit > 0 || (ship.location !== 'spc_dwarf' && ship.location !== 'tau_gas2');
-    if (manned || global.civic.garrison.workers - global.civic.garrison.crew >= crew){
-        let trip = planShipTrip(ship, l);
-        ship.location = l;
-        ship.transit = trip.transit;
-        ship.dist = trip.dist;
-        ship.origin = trip.origin;
-        ship.destination = trip.destination;
-        ship.path = trip.path;
-        if (!manned){
-            global.civic.garrison.crew += crew;
-        }
-        drawShips();
+    let group = shipFleet(ship);
+    if (!group.length){ group = [ship]; }
+
+    // Crew for every unmanned ship has to be on hand up front — a fleet leaves together or not at all.
+    let need = group.reduce((t,s) => t + (shipManned(s) ? 0 : shipCrewSize(s)), 0);
+    if (need > global.civic.garrison.workers - global.civic.garrison.crew){ return; }
+
+    let trip = planShipTrip(fleetPace(group), l);
+    for (let s of group){
+        if (!shipManned(s)){ global.civic.garrison.crew += shipCrewSize(s); }
+        s.location = l;
+        s.transit = trip.transit;
+        s.dist = trip.dist;
+        s.origin = deepClone(trip.origin);
+        s.destination = deepClone(trip.destination);
+        s.path = trip.path ? deepClone(trip.path) : false;
     }
+    drawShips();
 }

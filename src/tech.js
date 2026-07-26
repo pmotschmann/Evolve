@@ -13299,6 +13299,26 @@ const techs = {
             drawShipYard();
         }
     },
+    fleet_command: {
+        id: 'tech-fleet_command',
+        title: loc('tech_fleet_command'),
+        desc: loc('tech_fleet_command'),
+        category: 'space_militarization',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { resettle: 8 },
+        grant: ['syard_fleet',1],
+        cost: {
+            Knowledge(){ return 21000000; }
+        },
+        effect: loc('tech_fleet_command_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     alien_outpost: {
         id: 'tech-alien_outpost',
         title: loc('tech_alien_outpost'),

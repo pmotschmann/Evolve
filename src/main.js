@@ -9946,8 +9946,8 @@ function midLoop(){
                 }
                 sci += p_on['mass_driver'] * brain;
             }
-            if (global.race['cataclysm'] && support_on['observatory']){
-                sci *= 1 + (support_on['observatory'] * 0.25);
+            if ((global.race['cataclysm'] || global.tech['resettle']) && support_on['observatory']){
+                sci *= 1 + (support_on['observatory'] * (global.tech['resettle'] ? 0.02 : 0.25));
             }
             if ((global.race['cataclysm'] || global.race['orbit_decayed']) && global.portal['sensor_drone'] && global.tech['science'] >= 14){
                 sci *= 1 + (p_on['sensor_drone'] * 0.02);
@@ -9962,7 +9962,7 @@ function midLoop(){
             caps['Knowledge'] += gain;
             breakdown.c.Knowledge[loc('tech_exotic_bd')] = gain+'v';
 
-            if (global.race['cataclysm'] || global.race['orbit_decayed']){
+            if (global.race['cataclysm'] || global.tech['resettle'] || global.race['orbit_decayed']){
                 lCaps['scientist'] += jobScale(support_on['exotic_lab']);
             }
         }
@@ -12957,11 +12957,11 @@ function longLoop(){
                 global.tech.resettle = 8;
                 global.settings.space.home = true;
                 renderSpace();
-                messageQueue(loc('scout_spc_home',[planetName().home]),'info',false,['progress']);
+                messageQueue(loc(global.race['orbit_decayed'] ? 'scout_spc_home_moonless' : 'scout_spc_home',[planetName().home]),'info',false,['progress']);
             }
 
             // Scout Moon
-            if (global.tech.luna === 2 && global.space.shipyard.ships.some(s => s.location === 'spc_moon' && s.transit === 0)){
+            if (!global.race['orbit_decayed'] && global.tech.luna === 2 && global.space.shipyard.ships.some(s => s.location === 'spc_moon' && s.transit === 0)){
                 global.tech.luna = 3;
                 global.settings.space.moon = true;
                 renderSpace();

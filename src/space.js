@@ -233,7 +233,7 @@ const spaceProjects = {
             support: 'moon_base',
             zone: 'inner',
             syndicate(){ return global.tech['resettle'] ? false : true; },
-            nav(){ return global.tech['resettle'] && global.tech.resettle < 7 ? false : true; }
+            nav(){ return global.race['orbit_decayed'] || (global.tech['resettle'] && global.tech.resettle < 7) ? false : true; }
         },
         moon_mission: {
             id: 'space-moon_mission',
@@ -433,7 +433,7 @@ const spaceProjects = {
                 if (global.race['cataclysm'] && global.space['satellite'] && global.space.satellite.count > 0){
                     gain *= 1 + (global.space.satellite.count * 0.25);
                 }
-                let synergy = global.race['cataclysm'] ? `<div>${loc('space_moon_observatory_cata_effect',[25])}</div>` : `<div>${loc('space_moon_observatory_effect',[5])}</div>`;
+                let synergy = global.race['cataclysm'] || global.tech['resettle'] ? `<div>${loc('space_moon_observatory_cata_effect',[global.tech['resettle'] ? 2 : 25])}</div>` : `<div>${loc('space_moon_observatory_effect',[5])}</div>`;
                 return `<div class="has-text-caution">${loc('space_used_support',[loc('space_moon_info_name')])}</div>${prof}<div>${loc('plus_max_resource',[gain,global.resource.Knowledge.name])}</div>${synergy}`;
             },
             s_type: 'moon',
@@ -1282,9 +1282,9 @@ const spaceProjects = {
 
                 let scientist = '';
                 let lab = '';
-                if (global.race['cataclysm'] || global.race['orbit_decayed']){
+                if (global.race['cataclysm'] || global.tech['resettle'] || global.race['orbit_decayed']){
                     scientist = `<div>${loc('city_wardenclyffe_effect1',[jobScale(1), global.civic.scientist.name])}</div>`;
-                    sci *= 1 + (wiki ? global.space.observatory.on : support_on['observatory']) * 0.25;
+                    sci *= 1 + (wiki ? global.space.observatory.on : support_on['observatory']) * (global.tech['resettle'] ? 0.02 : 0.25);
                     if (global.tech.science >= 15){
                         lab = `<div>${loc('city_wardenclyffe_effect4',[2])}</div>`;
                     }

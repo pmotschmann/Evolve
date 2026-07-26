@@ -1718,11 +1718,17 @@ const extraInformation = {
     vacuum_drive: [
         loc(`wiki_tech_ship_engine_unlock`,[loc('outer_shipyard_engine_vacuum')])
     ],
+    electrokinetic_thruster: [
+        loc(`wiki_tech_ship_engine_unlock`,[loc('outer_shipyard_engine_electrokinetic')])
+    ],
     ship_fusion: [
         loc(`wiki_tech_ship_power_unlock`,[loc('outer_shipyard_power_fusion')])
     ],
     ship_elerium: [
         loc(`wiki_tech_ship_power_unlock`,[loc('outer_shipyard_power_elerium')])
+    ],
+    ship_antimatter: [
+        loc(`wiki_tech_ship_power_unlock`,[loc('outer_shipyard_power_antimatter')])
     ],
     quantum_signatures: [
         loc(`wiki_tech_ship_sensor_unlock`,[loc('outer_shipyard_sensor_quantum')])
@@ -1788,6 +1794,12 @@ const extraInformation = {
     ],
     womling_recycling: [
         loc(`wiki_tech_womling_recycling`)
+    ],
+    womling_brigade: [
+        loc(`wiki_tech_building_unlock`,[loc('tau_red_womling_rangers')])
+    ],
+    womling_energy: [
+        loc(`wiki_tech_building_unlock`,[loc('tech_antimatter_reactor')])
     ],
     belt_mining: [
         loc(`wiki_tech_building_unlock`,[loc('tau_gas_ore_refinery_title')])
@@ -2108,9 +2120,18 @@ const extraInformation = {
     colonial_marines: [
         loc(`wiki_tech_building_unlock`,[loc('tau_home_marine_barracks')])
     ],
-    womling_brigade: [
-        loc(`wiki_tech_building_unlock`,[loc('tau_red_womling_rangers')])
+    drive_optimizations: [
+        loc(`wiki_tech_drive_optimizations`)
     ],
+    jump_jump_gate: [
+        loc(`wiki_tech_jump_jump_gate`)
+    ],
+    zombie_data: [
+        loc(`wiki_tech_zombie_data`)
+    ],
+    fleet_command: [
+        loc(`wiki_tech_fleet_command`)
+    ]
 };
 
 const extraInformationTP = {
