@@ -4377,6 +4377,23 @@ export function checkPathRequirements(era,region,action){
     }
 }
 
+export function trackInfestation(){
+    if (!global.race['zhorde']){
+        global.race['zhorde'] = {
+            earth: 9000000000,
+            moon: 0,
+            mars: 40000,
+            venus: 0,
+            mercury: 0,
+            titan: 25000,
+            enceladus: 0,
+            dwarf: 0,
+            tau_home: 0,
+            tau_red: 0
+        };
+    }
+}
+
 export function renderTauCeti(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 1 || global.settings.spaceTabs !== 6)){
         return;
@@ -5333,6 +5350,7 @@ const shipyardRanks = {
         tau_gas2: 16,
         tau_roid: 17,
         spc_sun_gate: 18,
+        spc_home: 19,
     },
     class: {
         corvette: 1,
@@ -6516,6 +6534,16 @@ function locSystem(loc){
     return spacePlanetStats[loc] && spacePlanetStats[loc].star ? spacePlanetStats[loc].star : 'sun';
 }
 
+// Display name of the star a location orbits. Empty when the location IS that star, so a destination
+// like Tau Ceti itself isn't labelled with its own name twice. locSystem returns a system key rather
+// than a table id, and the Sun's is 'sun' while its entry is spc_sun, hence the step across.
+function locSystemName(location){
+    let sys = locSystem(location);
+    if (location === sys){ return ''; }
+    let star = sys === 'sun' ? spacePlanetStats.spc_sun : spacePlanetStats[sys];
+    return star && star.label ? star.label : '';
+}
+
 // Find an active wormhole route (entry + exit gate) connecting fromLoc's system to toLoc's system,
 // or null when none applies (same system, no link, or either gate inactive).
 function findWormholeRoute(fromLoc, toLoc){
@@ -7387,6 +7415,9 @@ const ORBIT_STEPS = 96;
 // than its projected extent, so tilting the camera edge-on — which squashes a ring to a line but
 // leaves it perfectly visible — doesn't make orbits disappear.
 const ORBIT_MIN_PX = 3;
+// Ship markers are drawn at a constant size on screen, in pixels.
+const SHIP_DOT_PX = 3;
+const SHIP_LABEL_PX = 5;
 
 // How close an orbit comes to its primary, sampled from the same orbitPoint the body travels so the
 // eccentricity and off-centre focus are taken into account rather than assumed.
@@ -7963,7 +7994,10 @@ export function drawMap() {
             ctx.save();
             ctx.translate(pX(ref), pY(ref));
             ctx.beginPath();
-            ctx.arc(pX(here), pY(here), 0.1, 0, Math.PI * 2, true);
+            // A marker, not a body: sized in screen pixels rather than AU. The old fixed 0.1 map
+            // units was reasonable while planets were drawn at arbitrary sizes, but against real
+            // radii it is five times Earth and half the Sun.
+            ctx.arc(pX(here), pY(here), SHIP_DOT_PX / mapScale, 0, Math.PI * 2, true);
             ctx.fill();
             ctx.restore();
         }
@@ -7983,7 +8017,9 @@ export function drawMap() {
             let here = rel(ship.xy, ref);
             ctx.save();
             ctx.translate(pX(ref), pY(ref));
-            ctx.fillText(ship.name, pX(here) + 0.15, pY(here) - 0.15);
+            // Offset in screen pixels too, so the name sits by the dot at every zoom instead of
+            // drifting further out the further you zoom in.
+            ctx.fillText(ship.name, pX(here) + SHIP_LABEL_PX / mapScale, pY(here) - SHIP_LABEL_PX / mapScale);
             ctx.restore();
         }
     }
@@ -8405,9 +8441,14 @@ function shipDispatchModal(id, modal){
         list.append(`<span class="has-text-caution">${loc('outer_shipyard_dispatch_none')}</span>`);
     }
     else {
+        // Once the jump gates are running a ship can cross between systems, so the list spans more
+        // than one star and each destination says which it belongs to.
+        let showSystem = global.tech['resettle'] && global.tech.resettle >= 3;
         dests.forEach(function(d){
             let days = planShipTrip(ship, d.region).transit;
-            $(`<button class="button is-info ${d.region}"><span class="dispatchName">${d.name}</span><span class="dispatchDays has-text-caution">${loc('transit_time',[days])}</span></button>`)
+            let sysName = showSystem ? locSystemName(d.region) : '';
+            let sys = sysName ? `<span class="dispatchSystem has-text-info">${sysName}</span>` : ``;
+            $(`<button class="button is-info ${d.region}"><span class="dispatchName">${d.name}</span>${sys}<span class="dispatchDays has-text-caution">${loc('transit_time',[days])}</span></button>`)
                 .on('click', function(){
                     sendShipTo(id, d.region);
                     if (modal && modal.close){ modal.close(); }

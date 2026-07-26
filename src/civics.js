@@ -126,7 +126,7 @@ export function commisionGarrison(){
 }
 
 export function govRelationFactor(id){
-    if (global.race['truepath']){
+    if (global.race['truepath'] && !global.tech['resettle']){
         if (global.civic.foreign[`gov${id}`].hstl < 10){
             return 1 + (10 - global.civic.foreign[`gov${id}`].hstl) / 40;
         }

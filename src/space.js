@@ -26,7 +26,7 @@ const spaceProjects = {
                 return {r: true, l: global.settings.space.home || global.tech?.resettle >= 3};
             },
             syndicate(){ return false; },
-            nav(){ return false; }
+            nav(){ return global.tech['resettle'] && global.tech.resettle >= 7 ? true : false; }
         },
         test_launch: {
             id: 'space-test_launch',
@@ -64,6 +64,7 @@ const spaceProjects = {
             title: loc('space_home_satellite_title'),
             desc: loc('space_home_satellite_desc'),
             reqs: { space: 2 },
+            condition(){ return global.tech['resettle'] ? false : true; },
             cost: {
                 Money(offset){ return spaceCostMultiplier('satellite', offset, 72000, 1.22); },
                 Knowledge(offset){ return spaceCostMultiplier('satellite', offset, 28000, 1.22); },
@@ -109,6 +110,7 @@ const spaceProjects = {
             },
             reqs: { satellite: 1 },
             not_trait: ['terrifying'],
+            condition(){ return global.tech['resettle'] ? false : true; },
             cost: {
                 Money(offset){ return spaceCostMultiplier('gps', offset, 75000, 1.18); },
                 Knowledge(offset){ return spaceCostMultiplier('gps', offset, 50000, 1.18); },
@@ -144,6 +146,7 @@ const spaceProjects = {
             title: loc('space_home_propellant_depot_title'),
             desc: loc('space_home_propellant_depot_desc'),
             reqs: { space_explore: 1 },
+            condition(){ return global.tech['resettle'] ? false : true; },
             cost: {
                 Money(offset){ return spaceCostMultiplier('propellant_depot', offset, 55000, 1.35); },
                 Aluminium(offset){ return spaceCostMultiplier('propellant_depot', offset, 22000, 1.35); },
@@ -180,6 +183,7 @@ const spaceProjects = {
             title(){ return global.race['orbit_decayed'] ? loc('space_home_broadcast_beacon_title') : loc('space_home_nav_beacon_title'); },
             desc: `<div>${loc('space_home_nav_beacon_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
             reqs: { luna: 2 },
+            condition(){ return global.tech['resettle'] ? false : true; },
             cost: {
                 Money(offset){ return spaceCostMultiplier('nav_beacon', offset, 75000, 1.32); },
                 Copper(offset){ return spaceCostMultiplier('nav_beacon', offset, 38000, 1.32); },
@@ -229,7 +233,7 @@ const spaceProjects = {
             support: 'moon_base',
             zone: 'inner',
             syndicate(){ return global.tech['resettle'] ? false : true; },
-            nav(){ return global.tech['resettle'] ? false : true; }
+            nav(){ return global.tech['resettle'] && global.tech.resettle < 7 ? false : true; }
         },
         moon_mission: {
             id: 'space-moon_mission',
@@ -329,7 +333,7 @@ const spaceProjects = {
                 let values = production('iridium_mine','iridium');
                 let iridium = +(values.b).toFixed(3);
                 let rival = ``;
-                if (global.race['truepath']){
+                if (global.race['truepath'] && !global.tech['resettle']){
                     if (global.civic.foreign.gov3.hstl < 10){
                         rival = `<div class="has-text-success">${loc('space_rival_ally',[+(values.g * 100).toFixed(1)])}</div>`;
                     }
@@ -379,7 +383,7 @@ const spaceProjects = {
                 let values = production('helium_mine');
                 let helium = +(values.b).toFixed(3);
                 let rival = ``;
-                if (global.race['truepath']){
+                if (global.race['truepath'] && !global.tech['resettle']){
                     if (global.civic.foreign.gov3.hstl < 10){
                         rival = `<div class="has-text-success">${loc('space_rival_ally',[+(values.g * 100).toFixed(1)])}</div>`;
                     }
@@ -1001,7 +1005,7 @@ const spaceProjects = {
                 let copper = +(cop_val.b).toFixed(3);
                 let titanium = +(tit_val.b).toFixed(3);
                 let rival = ``;
-                if (global.race['truepath']){
+                if (global.race['truepath'] && !global.tech['resettle']){
                     if (global.civic.foreign.gov3.hstl < 10){
                         rival = `<div class="has-text-success">${loc('space_rival_ally',[+(cop_val.g * 100).toFixed(1)])}</div>`;
                     }
@@ -1102,7 +1106,7 @@ const spaceProjects = {
             special: true,
             action(args){
                 if (payCosts($(this)[0])){
-                    global.space.red_factory.count++;
+                    incrementStruct('red_factory');
                     if (powerOnNewStruct($(this)[0])){
                         global.city.factory.Alloy++;
                     }
@@ -7462,6 +7466,7 @@ export function zigguratBonus(){
 export function planetName(){
     let type = races[global.race.species].type === 'hybrid' ? global.race.maintype : races[global.race.species].type;
     let names = {
+        home: races[global.race.species].home,
         red: races[global.race.species].solar.red,
         hell: races[global.race.species].solar.hell,
         gas: races[global.race.species].solar.gas,

@@ -11,7 +11,7 @@ import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMul
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
-import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue } from './truepath.js';
+import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation } from './truepath.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
 import { defineGovernor, govern, govActive, removeTask } from './governor.js';
@@ -12940,13 +12940,45 @@ function longLoop(){
             global.tech['plague'] = 5;
         }
 
-        if (global.space['shipyard'] && global.tech['resettle'] && global.tech.resettle === 3){
-            if (global.space.shipyard.ships.some(s => s.location === 'spc_sun_gate' && s.transit === 0)){
+        if (global.space['shipyard'] && global.tech['resettle'] && global.tech.resettle >= 3){
+            trackInfestation();
+
+            // Scout Sun Gate
+            if (global.tech.resettle === 3 && global.space.shipyard.ships.some(s => s.location === 'spc_sun_gate' && s.transit === 0)){
                 global.tech.resettle = 4;
                 global.settings.showSpace = true;
                 global.settings.spaceTabs = 1;
                 renderSpace();
                 messageQueue(loc('scout_sun_gate'),'info',false,['progress']);
+            }
+
+            // Scout Earth
+            if (global.tech.resettle === 7 && global.space.shipyard.ships.some(s => s.location === 'spc_home' && s.transit === 0)){
+                global.tech.resettle = 8;
+                global.settings.space.home = true;
+                renderSpace();
+                messageQueue(loc('scout_spc_home',[planetName().home]),'info',false,['progress']);
+            }
+
+            // Scout Moon
+            if (global.tech.luna === 2 && global.space.shipyard.ships.some(s => s.location === 'spc_moon' && s.transit === 0)){
+                global.tech.luna = 3;
+                global.settings.space.moon = true;
+                renderSpace();
+                messageQueue(loc('scout_spc_moon'),'info',false,['progress']);
+            }
+
+            // Scout Mars
+            if (global.tech['mars'] && global.tech.mars === 5 && global.space.shipyard.ships.some(s => s.location === 'spc_red' && s.transit === 0)){
+                global.tech.mars = 6;
+                global.settings.space.red = true;
+                renderSpace();
+                messageQueue(loc('scout_spc_red',[planetName().red]),'info',false,['progress']);
+
+                if (global.space.hasOwnProperty('wonder_statue')){
+                    global.space.wonder_statue.count = 1;
+                    global.space.wonder_statue.razed = 0;
+                }
             }
         }
 

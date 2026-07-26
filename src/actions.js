@@ -6475,8 +6475,9 @@ export function setAction(c_action,action,type,old,prediction){
                 return loc(`action_options`,[t]);
             },
             count(v,t){
+                // Temples and ziggurats display an adjusted count that folds in the wish and ancients bonuses. 
                 if (['temple','ziggurat'].includes(t)){
-                    return templeCount(t === 'temple' ? false : true);
+                    v = templeCount(t === 'temple' ? false : true);
                 }
                 // Show "built/total" when some units are razed (e.g. 5/7 = 5 intact, 2 razed).
                 if (global[action] && global[action][t] && global[action][t].razed > 0){

@@ -95,7 +95,7 @@ export function production(id,val,wiki){
             switch (val){
                 case 'copper':
                 {
-                    let base = highPopAdjust(0.25);
+                    let base = highPopAdjust(global.tech['resettle'] ? 0.05 : 0.25);
                     let gov = govRelationFactor(3);
                     return {
                         b: base,
@@ -105,7 +105,7 @@ export function production(id,val,wiki){
                 }
                 case 'titanium':
                 {
-                    let base = highPopAdjust(0.02);
+                    let base = highPopAdjust(global.tech['resettle'] ? 0.01 :0.02);
                     let gov = govRelationFactor(3);
                     return {
                         b: base,
