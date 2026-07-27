@@ -7,7 +7,7 @@ import { loadFoundry, jobScale } from './jobs.js';
 import { defineIndustry, addSmelter } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
 import { actions, payCosts, powerOnNewStruct, initStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, templeCount, casinoEffect, wardenLabel, buildTemplate, structName } from './actions.js';
-import { outerTruthTech, syndicate, drawShipYard, genXYcoord } from './truepath.js';
+import { outerTruthTech, syndicate, drawShipYard, genXYcoord, infestationLabel, infestationMethods } from './truepath.js';
 import { production, highPopAdjust } from './prod.js';
 import { defineGovernor, govActive } from './governor.js';
 import { ascend, terraform, apotheosis } from './resets.js';
@@ -6937,20 +6937,31 @@ function space(zone){
             let noHome = global.race['orbit_decayed'] || global.race['cataclysm'] ? true : false;
 
             if ((noHome && region !== 'spc_home') || !noHome){
+                // The horde readout follows the support line when there is one.
+                let infest = infestationLabel(region);
+
                 if (spaceProjects[region].info['support']){
                     let support = spaceProjects[region].info['support'];
                     if (!global.space[support].hasOwnProperty('support')){
                         global.space[support]['support'] = 0;
                         global.space[support]['s_max'] = 0;
                     }
-                    parent.append(`<div id="${region}" class="space"><div id="sr${region}"><h3 class="name has-text-warning">${name}</h3> <span v-show="s_max">{{ support }}/{{ s_max }}</span></div></div>`);
+                    parent.append(`<div id="${region}" class="space"><div id="sr${region}"><h3 class="name has-text-warning">${name}</h3> <span v-show="s_max">{{ support }}/{{ s_max }}</span>${infest}</div></div>`);
                     vBind({
                         el: `#sr${region}`,
-                        data: global.space[support]
+                        data: global.space[support],
+                        methods: infestationMethods(region)
                     });
                 }
                 else {
-                    parent.append(`<div id="${region}" class="space"><div><h3 class="name has-text-warning">${name}</h3></div></div>`);
+                    parent.append(`<div id="${region}" class="space"><div id="sr${region}"><h3 class="name has-text-warning">${name}</h3>${infest}</div></div>`);
+                    if (infest){
+                        vBind({
+                            el: `#sr${region}`,
+                            data: global.race.zhorde,
+                            methods: infestationMethods(region)
+                        });
+                    }
                 }
 
                 if (global.race['truepath'] && spaceProjects[region].info.hasOwnProperty('syndicate') && spaceProjects[region].info.syndicate() && global.tech['syndicate']){

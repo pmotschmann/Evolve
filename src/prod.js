@@ -180,21 +180,22 @@ export function production(id,val,wiki){
         case 'g_factory':
         {
             if (global.race['truepath']){
-                if (global.tech['isolation']){
-                    return 1.8;
+                // The old isolation rate here belonged to the Tau Ceti refueling station, which used to
+                // masquerade as this factory; it has its own case now. Titan always runs on colonists.
+                let titan_colonists = p_on['ai_colonist'] ? global.civic.titan_colonist.workers + jobScale(p_on['ai_colonist']) : global.civic.titan_colonist.workers;
+                let gain = 0.05 * titan_colonists;
+                if (global.race['high_pop']){
+                    gain = highPopAdjust(gain);
                 }
-                else {
-                    let titan_colonists = p_on['ai_colonist'] ? global.civic.titan_colonist.workers + jobScale(p_on['ai_colonist']) : global.civic.titan_colonist.workers;
-                    let gain = 0.05 * titan_colonists;
-                    if (global.race['high_pop']){
-                        gain = highPopAdjust(gain);
-                    }
-                    return gain;
-                }
+                return gain;
             }
             else {
                 return 0.6;
             }
+        }
+        case 'refueling_station_graphene':
+        {
+            return 1.8;
         }
         case 'harvester':
         {

@@ -24,6 +24,9 @@ export function loadIndustry(industry,parent,bind){
         case 'graphene':
             loadGraphene(parent,bind);
             break;
+        case 'refuel_graphene':
+            loadGraphene(parent,bind,'tauceti','refueling_station');
+            break;
         case 'pylon':
             loadPylon(parent,bind);
             break;
@@ -72,10 +75,17 @@ export function defineIndustry(){
         $(`#industry`).append(droid);
         loadIndustry('droid',droid,'#iDroid');
     }
-    if ((global.interstellar['g_factory'] && global.interstellar.g_factory.count > 0) || (global.portal['twisted_lab'] && global.portal.twisted_lab.count > 0)  || (global.space['g_factory'] && (global.space.g_factory.count > 0 || (global.tauceti['refueling_station'] && global.tauceti.refueling_station.count > 0)))){
+    if ((global.interstellar['g_factory'] && global.interstellar.g_factory.count > 0) || (global.portal['twisted_lab'] && global.portal.twisted_lab.count > 0) || (global.space['g_factory'] && global.space.g_factory.count > 0)){
         var graphene = $(`<div id="iGraphene" class="industry"><h2 class="header has-text-advanced">${global.race['warlord'] ? loc('portal_twisted_lab_title') : loc('interstellar_g_factory_title')}</h2></div>`);
         $(`#industry`).append(graphene);
         loadIndustry('graphene',graphene,'#iGraphene');
+    }
+    // The refueling station is its own graphene plant with its own fuel allocation, so it gets its own
+    // panel rather than sharing the factory's.
+    if (global.tech['isolation'] && global.tauceti['refueling_station'] && global.tauceti.refueling_station.count > 0){
+        var refuelGraphene = $(`<div id="iRefuelGraphene" class="industry"><h2 class="header has-text-advanced">${loc('tau_gas_refueling_station_title')}</h2></div>`);
+        $(`#industry`).append(refuelGraphene);
+        loadIndustry('refuel_graphene',refuelGraphene,'#iRefuelGraphene');
     }
     if (global.race['casting'] && (global.city['pylon'] || global.space['pylon'] || global.tauceti['pylon'])){
         var casting = $(`<div id="iPylon" class="industry"><h2 class="header has-text-advanced">${loc('city_pylon')}</h2></div>`);
@@ -1014,10 +1024,12 @@ function loadDroid(parent,bind){
     });
 }
 
-function loadGraphene(parent,bind){
-    let graph_source = global.race['truepath'] ? 'space' : 'interstellar';
-    let graph_struct = 'g_factory';
-    if (global.race['warlord']){
+// Fuel allocation panel for a graphene plant. Defaults to the era's main factory; the Tau Ceti
+// refueling station passes its own source/struct because it is a separate plant with its own allocation.
+function loadGraphene(parent,bind,source,struct){
+    let graph_source = source || (global.race['truepath'] ? 'space' : 'interstellar');
+    let graph_struct = struct || 'g_factory';
+    if (!source && global.race['warlord']){
         graph_source = 'portal';
         graph_struct = 'twisted_lab';
     }
@@ -1185,7 +1197,8 @@ function loadGraphene(parent,bind){
     }
 
     ['wood','coal','oil'].forEach(function(type){
-        let id = parent.hasClass('modalBody') ? `specialModal` : `iGraphene`;
+        // Derive the container from the bind selector so a second plant's popovers get their own ids.
+        let id = parent.hasClass('modalBody') ? `specialModal` : (bind ? bind.replace('#','') : `iGraphene`);
         popover(`${id}${type}`,function(){
             return tooltip(type);
         }, {

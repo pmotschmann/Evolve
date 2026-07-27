@@ -3465,12 +3465,11 @@ const tauCetiModules = {
                     incrementStruct('refueling_station','tauceti');
                     if (powerOnNewStruct($(this)[0])) {
                         if (global.tech['isolation']){
-                            // Graphene allocation is stored on the Titan graphene factory even after isolation
                             if (global.race['kindling_kindred'] || global.race['smoldering']){
-                                global.space.g_factory.Oil++;
+                                global.tauceti.refueling_station.Oil++;
                             }
                             else {
-                                global.space.g_factory.Lumber++;
+                                global.tauceti.refueling_station.Lumber++;
                             }
                         }
                     }
@@ -3479,8 +3478,11 @@ const tauCetiModules = {
                 return false;
             },
             struct(){
+                // Carries its own graphene fuel allocation. It used to borrow the Titan factory's, which
+                // only worked while isolation kept Titan out of reach; the jump gate brings Titan back and
+                // both plants now run at the same time.
                 return {
-                    d: { count: 0, on: 0 },
+                    d: { count: 0, on: 0, Lumber: 0, Coal: 0, Oil: 0 },
                     p: ['refueling_station','tauceti']
                 };
             },
@@ -4377,21 +4379,188 @@ export function checkPathRequirements(era,region,action){
     }
 }
 
+// Structures the horde can raze, per infested region. A candidate MUST have a struct() definition on its
+// action — that is what creates the global[category][key] record holding the count/razed pair razing
+// works on — so anything without one is never a target. The remainder of the list is curated: orbital
+// structures (satellites, GPS, nav beacons, orbital stations/platforms) are out of reach of a ground
+// horde, and multi-segment megaprojects plus the powered "completed" forms they unlock (world_collider /
+// world_controller, mass_relay / m_relay, ai_core / ai_core2, jump_gate) are excluded so razing can never
+// unwind a finished project. `c` is the global category the structs live under.
+// spc_home is deliberately absent: Earth is a special location that never fights (see trackInfestation).
+const razeTargets = {
+    spc_moon: { c: 'space', s: ['moon_base','iridium_mine','helium_mine','observatory'] },
+    spc_red: { c: 'space', s: ['spaceport','red_tower','living_quarters','pylon','vr_center','garage','red_mine','fabrication','red_factory','biodome','exotic_lab','ziggurat','space_barracks'] },
+    spc_venus: { c: 'space', s: [] },
+    spc_hell: { c: 'space', s: ['geothermal','hell_smelter','spc_casino','swarm_plant'] },
+    spc_titan: { c: 'space', s: ['titan_spaceport','electrolysis','hydrogen_plant','titan_quarters','titan_mine','storehouse','titan_bank','g_factory','sam','decoder','ai_colonist'] },
+    spc_enceladus: { c: 'space', s: ['water_freighter','zero_g_lab','operating_base','munitions_depot'] },
+    spc_dwarf: { c: 'space', s: ['elerium_contain','e_reactor'] },
+    tau_home: { c: 'tauceti', s: ['colony','tau_housing','pylon','tau_farm','mining_pit','alien_outpost','fusion_generator','repository','tau_factory','infectious_disease_lab','tauceti_casino','tau_cultural_center','marine_barracks'] },
+    tau_red: { c: 'tauceti', s: ['overseer','womling_village','womling_farm','womling_mine','womling_fun','womling_lab','antimatter_reactor','womling_rangers'] }
+};
+
+// Ships shoot the horde from orbit, but bombardment is a blunt instrument against a scattered mob —
+// their firepower counts for a fraction of what the same fight is worth with boots on the ground.
+const orbitalStrikeRate = 0.05;
+// Survivors razed per day: one structure guaranteed per this many zombies still active, with the
+// remainder rolled as a fractional chance, and never more than razeCap in a single day.
+const zombiesPerRazing = 100000;
+const razeCap = 5;
+// Hordes that lie low. Nothing is known to be there until it tears down its first structure, so until
+// then it is absent from the UI and nobody engages it — the razing is how you find out.
+const hiddenInfestation = ['spc_red'];
+// Special cases that sit outside the system entirely: never fought, never counted on screen. Earth's
+// billions are a fact of the setting rather than something a fleet can work on.
+const inertInfestation = ['spc_home'];
+
+// True once a region's horde is known about, which for everywhere but hiddenInfestation is immediately.
+function infestationFound(region){
+    return !hiddenInfestation.includes(region) || (global.race['zfound'] ? global.race.zfound[region] : false);
+}
+
+// Zombies to display for a region, or 0 when there is nothing to show (empty, or still undiscovered).
+export function infestationCount(region){
+    if (!global.race['zhorde'] || !global.race.zhorde[region] || inertInfestation.includes(region) || !infestationFound(region)){
+        return 0;
+    }
+    return global.race.zhorde[region];
+}
+
+// The infestation readout that renders alongside a region's support line. Returns markup only when the
+// region currently has a visible horde; the v-show then hides it again if the horde is wiped out.
+export function infestationLabel(region){
+    if (infestationCount(region) <= 0){ return ``; }
+    return ` <span class="infestation has-text-caution" v-show="zombies()">${loc('space_infestation')} <span class="has-text-danger">{{ zombieCount() }}</span></span>`;
+}
+
+export function infestationMethods(region){
+    return {
+        zombies(){ return infestationCount(region); },
+        // Exact mode: the count ticks down a little every day, and rounding it to "40K" would hide that.
+        zombieCount(){ return sizeApproximation(infestationCount(region),1,false,true); }
+    };
+}
+
 export function trackInfestation(){
     if (!global.race['zhorde']){
         global.race['zhorde'] = {
-            earth: 9000000000,
-            moon: 0,
-            mars: 40000,
-            venus: 0,
-            mercury: 0,
-            titan: 25000,
-            enceladus: 0,
-            dwarf: 0,
-            tau_home: 0,
-            tau_red: 0
+            spc_home: 9000000000, // Earth
+            spc_moon: 0, // Moon
+            spc_red: 40000, // Mars
+            spc_venus: 0, // Venus
+            spc_hell: 0, // Mercury
+            spc_titan: 25000, // Titan (Saturn)
+            spc_enceladus: 0, // Enceladus (Saturn)
+            spc_dwarf: 0, // Ceres
+            tau_home: 0, // Tau Ceti Homeworld
+            tau_red: 0 // Tau Ceti Womling World
         };
     }
+
+    Object.keys(global.race.zhorde).forEach(function(region){
+        if (!inertInfestation.includes(region) && global.race.zhorde[region] > 0){
+            infestationCombat(region);
+        }
+    });
+}
+
+// One day of fighting in a single infested region: the fleet in orbit kills what it can, then whatever
+// horde is left goes looking for something to tear down. A horde nobody has found yet skips the fight
+// entirely and goes straight to the razing that gives it away.
+function infestationCombat(region){
+    if (infestationFound(region)){
+        let crew = 0;
+        let bombard = 0;
+        if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
+            global.space.shipyard.ships.forEach(function(ship){
+                if (ship.location === region && ship.transit === 0){
+                    crew += shipCrewSize(ship);
+                    let rating = shipAttackPower(ship);
+                    bombard += ship.damage > 0 ? Math.round(rating * (100 - ship.damage) / 100) : rating;
+                }
+            });
+        }
+
+        // Crews fight as a landed squad, so they rate exactly as soldiers do everywhere else.
+        let firepower = armyRating(crew,'army',0) + Math.round(bombard * orbitalStrikeRate);
+        let kills = Math.min(Math.floor(seededRandom(0,Math.round(firepower) + 1,true)),global.race.zhorde[region]);
+
+        global.race.zhorde[region] -= kills;
+
+        if (global.race['ocular_power'] && global.race['ocularPowerConfig'] && global.race.ocularPowerConfig.p){
+            global.race.ocularPowerConfig.ds += Math.round(kills * traits.ocular_power.vars()[1]);
+        }
+
+        if (global.race.zhorde[region] <= 0){
+            if (kills > 0){
+                messageQueue(loc('infestation_cleared',[regionName(region)]),'success',false,['combat']);
+            }
+            return;
+        }
+    }
+
+    let survivors = global.race.zhorde[region];
+    let razings = Math.min(Math.floor(survivors / zombiesPerRazing),razeCap);
+    if (razings < razeCap && seededRandom(0,1,true) < (survivors % zombiesPerRazing) / zombiesPerRazing){
+        razings++;
+    }
+    if (razings > 0){
+        razeStructures(region,razings);
+    }
+}
+
+// Pick `razings` structures at random from the region's target list and level them, moving each unit out
+// of count and into razed so rebuilding it later is discounted the way any other razed structure is.
+function razeStructures(region,razings){
+    if (!razeTargets.hasOwnProperty(region)){ return; }
+    let cat = razeTargets[region].c;
+    if (!global.hasOwnProperty(cat)){ return; }
+
+    let losses = {};
+    for (let i=0; i<razings; i++){
+        let standing = razeTargets[region].s.filter(s => global[cat][s]?.count > (losses[s] || 0));
+        if (standing.length === 0){ break; }
+        let target = standing[Math.floor(seededRandom(0,standing.length,true))];
+        losses[target] = (losses[target] || 0) + 1;
+    }
+
+    let ambush = Object.keys(losses).length > 0 && !infestationFound(region);
+
+    Object.keys(losses).forEach(function(s){
+        let lost = losses[s];
+        global[cat][s].count -= lost;
+        global[cat][s]['razed'] = (global[cat][s]['razed'] || 0) + lost;
+        if (global[cat][s].hasOwnProperty('on') && global[cat][s].on > global[cat][s].count){
+            global[cat][s].on = global[cat][s].count;
+        }
+        messageQueue(loc('infestation_razed',[lost,structTitle(cat,region,s),regionName(region)]),'danger',false,['combat']);
+    });
+
+    // A hidden horde that just leveled something has announced itself: report the ambush once, then
+    // redraw so its numbers appear. From tomorrow on it is fought like any other. Redrawing after the
+    // losses are applied keeps the rebuilt panel from showing counts that are already stale.
+    if (ambush){
+        if (!global.race['zfound']){ global.race['zfound'] = {}; }
+        global.race.zfound[region] = true;
+        messageQueue(loc('infestation_discovered',[regionName(region)]),'danger',false,['combat','progress']);
+        if (cat === 'tauceti'){ renderTauCeti(); }
+        else { renderSpace(); }
+    }
+}
+
+// Region and structure labels come off the action definitions, where `name`/`title` may be either a
+// plain string or a function depending on the entry.
+function regionName(region){
+    let cat = razeTargets.hasOwnProperty(region) && razeTargets[region].c === 'tauceti' ? 'tauceti' : 'space';
+    let info = actions[cat]?.[region]?.info;
+    if (!info || !info.name){ return region; }
+    return typeof info.name === 'function' ? info.name() : info.name;
+}
+
+function structTitle(cat,region,struct){
+    let title = actions[cat]?.[region]?.[struct]?.title;
+    if (!title){ return struct; }
+    return typeof title === 'function' ? title.call(actions[cat][region][struct]) : title;
 }
 
 export function salvageShip(qty, location, sLocation, eventStyle){
@@ -4462,26 +4631,36 @@ export function renderTauCeti(){
                 property = tauCetiModules[region].info.prop();
             }
 
+            // The horde readout follows the support line when there is one.
+            let infest = infestationLabel(region);
+
             if (tauCetiModules[region].info['support']){
                 let support = tauCetiModules[region].info['support'];
                 if (tauCetiModules[region].info['hide_support']){
-                    parent.append(`<div id="${region}" class="space"><div id="sr${region}"><h3 class="name has-text-warning">${name}</h3>${property}</div></div>`);
+                    parent.append(`<div id="${region}" class="space"><div id="sr${region}"><h3 class="name has-text-warning">${name}</h3>${infest}${property}</div></div>`);
                 }
                 else {
-                    parent.append(`<div id="${region}" class="space"><div id="sr${region}"><h3 class="name has-text-warning">${name}</h3> <span v-show="s_max">{{ support }}/{{ s_max }}</span>${property}</div></div>`);
+                    parent.append(`<div id="${region}" class="space"><div id="sr${region}"><h3 class="name has-text-warning">${name}</h3> <span v-show="s_max">{{ support }}/{{ s_max }}</span>${infest}${property}</div></div>`);
                 }
                 vBind({
                     el: `#sr${region}`,
                     data: global.tauceti[support],
-                    methods: {
+                    methods: Object.assign({
                         filter(){
                             return tauCetiModules[region].info.filter(...arguments);
                         }
-                    }
+                    },infestationMethods(region))
                 });
             }
             else {
-                parent.append(`<div id="${region}" class="space"><div><h3 class="name has-text-warning">${name}</h3>${property}</div></div>`);
+                parent.append(`<div id="${region}" class="space"><div id="sr${region}"><h3 class="name has-text-warning">${name}</h3>${infest}${property}</div></div>`);
+                if (infest){
+                    vBind({
+                        el: `#sr${region}`,
+                        data: global.race.zhorde,
+                        methods: infestationMethods(region)
+                    });
+                }
             }
 
             popover(region, function(){

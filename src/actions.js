@@ -7921,9 +7921,11 @@ function drawModal(c_action,type){
             loadIndustry('droid',body);
             break;
         case 'g_factory':
-        case 'refueling_station':
         case 'twisted_lab':
             loadIndustry('graphene',body);
+            break;
+        case 'refueling_station':
+            loadIndustry('refuel_graphene',body);
             break;
         case 'freighter':
         case 'super_freighter':
