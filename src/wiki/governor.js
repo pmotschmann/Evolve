@@ -1,7 +1,7 @@
 import { loc } from './../locale.js';
 import { sideMenu, subSideMenu, infoBoxBuilder } from './functions.js';
 import { govBoost } from './government.js';
-import { gmen, gov_traits, gov_tasks } from './../governor.js';
+import { gmen, gov_traits, gov_tasks, repairWaitCap, repairWaitCapFavoured } from './../governor.js';
 import { hoovedRename } from './../functions.js';
 import { hoovedReskin } from './../races.js';
 
@@ -308,6 +308,31 @@ export function governPage(content){
                 },
                 data_link: {
                     4: [false,'wiki.html#resets-prestige-infusion','wiki.html#hell-structures-spire']
+                }
+            });
+            subSideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
+        }
+
+        {
+            let task = 'repair';
+            infoBoxBuilder(govern,{ name: task, template: 'government', label: loc(`gov_task_${task}`), paragraphs: 7, break: [3,5,6,7], h_level: 3,
+                text: {
+                    1: `wiki_governor_task_${task}1`,
+                    2: `wiki_governor_task_${task}2`,
+                    3: `wiki_governor_task_${task}3`,
+                    4: `wiki_governor_task_${task}4`,
+                    5: `wiki_governor_task_${task}5`,
+                    6: `wiki_governor_task_${task}6`,
+                    7: `wiki_governor_task_unlock`
+                },
+                para_data: {
+                    // Read from the task itself so the documented limits cannot drift from the code.
+                    6: [repairWaitCap / 60, repairWaitCapFavoured / 60],
+                    7: [loc(`tech_reconstruction`)]
+                },
+                data_link: {
+                    6: ['plain','plain'],
+                    7: ['wiki.html#matrioshka-tp_tech-reconstruction']
                 }
             });
             subSideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));

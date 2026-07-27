@@ -14579,6 +14579,34 @@ const techs = {
             return false;
         }
     },
+    reconstruction: {
+        id: 'tech-reconstruction',
+        title: loc('tech_reconstruction'),
+        desc: loc('tech_reconstruction'),
+        category: 'government',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { resettle: 9, governor: 1 },
+        // Same gate as the governor tech itself — without a governor to hand it to, there is nothing
+        // for a reconstruction directive to direct.
+        condition(){
+            return global.genes['governor'] && global.civic.govern.type !== 'anarchy' ? true : false;
+        },
+        grant: ['gov_repair',1],
+        cost: {
+            Knowledge(){ return 20000000; }
+        },
+        effect: loc('tech_reconstruction_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        },
+        post(){
+            defineGovernor();
+        }
+    },
     element_zero: {
         id: 'tech-element_zero',
         title: loc('tech_element_zero'),

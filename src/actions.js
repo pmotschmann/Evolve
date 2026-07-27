@@ -1380,6 +1380,7 @@ export const actions = {
             desc(){
                 return $(this)[0].citizens() === 1 ? loc('city_basic_housing_desc') : loc('city_basic_housing_desc_plural',[$(this)[0].citizens()]);
             },
+            type: 'housing',
             category: 'residential',
             reqs: { housing: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -1434,6 +1435,7 @@ export const actions = {
             desc(){
                 return loc('city_cottage_desc',[$(this)[0].citizens()]);
             },
+            type: 'housing',
             category: 'residential',
             reqs: { housing: 2 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -1485,6 +1487,7 @@ export const actions = {
             desc(){
                 return `<div>${loc('city_apartment_desc',[$(this)[0].citizens()])}</div><div class="has-text-special">${loc('requires_power')}</div>`
             },
+            type: 'housing',
             category: 'residential',
             reqs: { housing: 3 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -1544,6 +1547,7 @@ export const actions = {
             id: 'city-lodge',
             title: loc('city_lodge'),
             desc(){ return global.race['detritivore'] ? loc('city_lodge_desc_alt') : loc('city_lodge_desc'); },
+            type: 'housing',
             category: 'residential',
             reqs: { housing: 1, currency: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -1588,6 +1592,7 @@ export const actions = {
             id: 'city-smokehouse',
             title(){ return global.race['hrt'] && ['wolven','vulpine'].includes(global.race['hrt']) ? loc('city_smokehouse_easter') : loc('city_smokehouse'); },
             desc: loc('city_smokehouse_desc'),
+            type: 'storage',
             category: 'trade',
             reqs: { hunting: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -1619,6 +1624,7 @@ export const actions = {
             id: 'city-soul_well',
             title: loc('city_soul_well'),
             desc: loc('city_soul_well_desc'),
+            type: 'farming',
             category: 'trade',
             reqs: { soul_eater: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -1659,6 +1665,7 @@ export const actions = {
             id: 'city-slave_pen',
             title(){ return loc('city_slave_housing',[global.resource.Slave.name]); },
             desc(){ return loc('city_slave_housing',[global.resource.Slave.name]); },
+            type: 'housing',
             category: 'commercial',
             reqs: { slaves: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -1692,6 +1699,7 @@ export const actions = {
             id: 'city-transmitter',
             title: loc('city_transmitter'),
             desc(){ return `<div>${loc('city_transmitter_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            type: 'farming',
             category: 'residential',
             reqs: { high_tech: 4 },
             trait: ['artifical'],
@@ -1729,6 +1737,7 @@ export const actions = {
             id: 'city-farm',
             title(){ return structName('farm'); },
             desc: loc('city_farm_desc'),
+            type: 'farming',
             category: 'residential',
             reqs: { agriculture: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -1788,6 +1797,7 @@ export const actions = {
             id: 'city-compost',
             title: loc('city_compost_heap'),
             desc: loc('city_compost_heap_desc'),
+            type: 'farming',
             category: 'residential',
             reqs: { compost: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -1849,6 +1859,7 @@ export const actions = {
                     return loc('city_mill_desc1',[bonus]);
                 }
             },
+            type: 'power',
             category: 'utility',
             reqs: { agriculture: 4 },
             not_tech: ['wind_plant'],
@@ -1895,6 +1906,7 @@ export const actions = {
             desc(){
                 return global.race['unfathomable'] ? loc('tech_watermill') : structName('windmill');
             },
+            type: 'power',
             wiki: false,
             category: 'utility',
             reqs: { wind_plant: 1 },
@@ -1929,6 +1941,7 @@ export const actions = {
             id: 'city-silo',
             title: loc('city_silo'),
             desc: loc('city_food_storage'),
+            type: 'storage',
             category: 'trade',
             reqs: { agriculture: 3 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -1962,6 +1975,7 @@ export const actions = {
             id: 'city-garrison',
             title(){ return global.race['flier'] ? loc('city_garrison_flier') : loc('city_garrison'); },
             desc: loc('city_garrison_desc'),
+            type: 'military',
             category: 'military',
             reqs: { military: 1, housing: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -2022,6 +2036,7 @@ export const actions = {
             id: 'city-hospital',
             title(){ return structName('hospital'); },
             desc: loc('city_hospital_desc'),
+            type: 'military',
             category: 'military',
             reqs: { medic: 1 },
             not_trait: ['cataclysm','artifical'],
@@ -2058,6 +2073,7 @@ export const actions = {
             id: 'city-boot_camp',
             title(){ return global.race['artifical'] ? loc('city_boot_camp_art') : loc('city_boot_camp'); },
             desc(){ return global.race['artifical'] ? loc('city_boot_camp_art_desc',[races[global.race.species].name]) : loc('city_boot_camp_desc'); },
+            type: 'military',
             category: 'military',
             reqs: { boot_camp: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -2110,6 +2126,7 @@ export const actions = {
                 let storage = global.tech['storage'] >= 3 ? (global.tech['storage'] >= 4 ? loc('city_shed_desc_size3') : loc('city_shed_desc_size2')) : loc('city_shed_desc_size1');
                 return loc('city_shed_desc',[storage]);
             },
+            type: 'storage',
             category: 'trade',
             reqs: { storage: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -2240,6 +2257,7 @@ export const actions = {
             id: 'city-storage_yard',
             title(){ return structName('storage_yard'); },
             desc: loc('city_storage_yard_desc'),
+            type: 'storage',
             category: 'trade',
             reqs: { container: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -2300,6 +2318,7 @@ export const actions = {
             id: 'city-warehouse',
             title: loc('city_warehouse'),
             desc: loc('city_warehouse_desc'),
+            type: 'storage',
             category: 'trade',
             reqs: { steel_container: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -2356,6 +2375,7 @@ export const actions = {
                 let planet = races[global.race.species].home;
                 return loc('city_bank_desc',[planet]);
             },
+            type: 'finance',
             category: 'commercial',
             reqs: { banking: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -2397,6 +2417,7 @@ export const actions = {
             id: 'city-pylon',
             title: loc('city_pylon'),
             desc: loc('city_pylon'),
+            type: 'religion',
             category: 'industrial',
             reqs: { magic: 2 },
             not_trait: ['cataclysm','orbit_decayed'],
@@ -2438,6 +2459,7 @@ export const actions = {
             id: 'city-conceal_ward',
             title: loc('city_conceal_ward'),
             desc: loc('city_conceal_ward'),
+            type: 'religion',
             category: 'industrial',
             reqs: { roguemagic: 3 },
             not_trait: ['cataclysm','orbit_decayed'],
@@ -2468,6 +2490,7 @@ export const actions = {
             id: 'city-graveyard',
             title: loc('city_graveyard'),
             desc: loc('city_graveyard_desc'),
+            type: 'storage',
             category: 'industrial',
             reqs: { reclaimer: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -2507,6 +2530,7 @@ export const actions = {
             id: 'city-lumber_yard',
             title(){ return structName('lumberyard'); },
             desc(){ return structName('lumberyard'); },
+            type: 'mining',
             category: 'industrial',
             reqs: { axe: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -2547,6 +2571,7 @@ export const actions = {
             id: 'city-sawmill',
             title(){ return structName('sawmill'); },
             desc(){ return structName('sawmill'); },
+            type: 'industry',
             category: 'industrial',
             reqs: { saw: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -2593,6 +2618,7 @@ export const actions = {
             id: 'city-rock_quarry',
             title(){ return global.race['flier'] ? loc('city_rock_quarry_alt') : loc('city_rock_quarry'); },
             desc(){ return global.race['flier'] ? loc('city_rock_quarry_desc_alt',[global.resource.Stone.name]) : loc('city_rock_quarry_desc'); },
+            type: 'mining',
             category: 'industrial',
             reqs: { mining: 1 },
             not_trait: ['cataclysm','sappy'],
@@ -2668,6 +2694,7 @@ export const actions = {
             id: 'city-cement_plant',
             title: loc('city_cement_plant'),
             desc: loc('city_cement_plant_desc'),
+            type: 'industry',
             category: 'industrial',
             reqs: { cement: 1 },
             not_trait: ['cataclysm','lone_survivor','flier'],
@@ -2715,6 +2742,7 @@ export const actions = {
             id: 'city-foundry',
             title: loc('city_foundry'),
             desc: loc('city_foundry_desc'),
+            type: 'industry',
             category: 'industrial',
             reqs: { foundry: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -2787,6 +2815,7 @@ export const actions = {
             id: 'city-factory',
             title(){ return structName('factory'); },
             desc: `<div>${loc('city_factory_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            type: 'industry',
             category: 'industrial',
             reqs: { high_tech: 3 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -2844,6 +2873,7 @@ export const actions = {
             id: 'city-smelter',
             title: loc('city_smelter'),
             desc: loc('city_smelter_desc'),
+            type: 'industry',
             category: 'industrial',
             reqs: { smelting: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -2910,6 +2940,7 @@ export const actions = {
             id: 'city-metal_refinery',
             title: loc('city_metal_refinery'),
             desc: loc('city_metal_refinery_desc'),
+            type: 'industry',
             category: 'industrial',
             reqs: { alumina: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -2961,6 +2992,7 @@ export const actions = {
             id: 'city-mine',
             title(){ return structName('mine'); },
             desc: loc('city_mine_desc'),
+            type: 'mining',
             category: 'industrial',
             reqs: { mining: 2 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -3008,6 +3040,7 @@ export const actions = {
             id: 'city-coal_mine',
             title(){ return structName('coal_mine'); },
             desc: loc('city_coal_mine_desc'),
+            type: 'mining',
             category: 'industrial',
             reqs: { mining: 4 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -3054,6 +3087,7 @@ export const actions = {
             id: 'city-oil_well',
             title(){ return global.race['blubber'] ? loc('tech_oil_refinery') : loc('city_oil_well'); },
             desc(){ return global.race['blubber'] ? loc('city_oil_well_blubber') : loc('city_oil_well_desc'); },
+            type: 'mining',
             category: 'industrial',
             reqs: { oil: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -3098,6 +3132,7 @@ export const actions = {
             id: 'city-oil_depot',
             title: loc('city_oil_depot'),
             desc: loc('city_oil_depot_desc'),
+            type: 'storage',
             category: 'trade',
             reqs: { oil: 2 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -3148,6 +3183,7 @@ export const actions = {
             id: 'city-trade',
             title: loc('city_trade'),
             desc: loc('city_trade_desc'),
+            type: 'finance',
             category: 'trade',
             reqs: { trade: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -3190,6 +3226,7 @@ export const actions = {
             id: 'city-wharf',
             title: loc('city_wharf'),
             desc: loc('city_wharf_desc'),
+            type: 'finance',
             category: 'trade',
             era: 'industrialized',
             reqs: { wharf: 1 },
@@ -3236,6 +3273,7 @@ export const actions = {
             id: 'city-tourist_center',
             title: loc('city_tourist_center'),
             desc: loc('city_tourist_center_desc'),
+            type: 'entertainment',
             category: 'commercial',
             reqs: { monument: 2 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -3298,6 +3336,7 @@ export const actions = {
                 let athVal = govActive('athleticism',0);
                 return athVal ? loc('city_stadium') : loc('city_amphitheatre_desc');
             },
+            type: 'entertainment',
             category: 'commercial',
             reqs: { theatre: 1 },
             not_trait: ['joyless','cataclysm'],
@@ -3340,6 +3379,7 @@ export const actions = {
             id: 'city-casino',
             title(){ return structName('casino'); },
             desc(){ return structName('casino'); },
+            type: 'gambling',
             category: 'commercial',
             reqs: { gambling: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -3383,6 +3423,7 @@ export const actions = {
                 let entity = global.race.gods !== 'none' ? races[global.race.gods.toLowerCase()].entity : races[global.race.species].entity;
                 return global.race.universe === 'evil' && global.civic.govern.type != 'theocracy' ? loc('city_temple_desc_evil',[entity]) : loc('city_temple_desc',[entity]);
             },
+            type: 'religion',
             category: 'commercial',
             reqs: { theology: 2 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -3473,6 +3514,7 @@ export const actions = {
             id: 'city-banquet',
             title: loc('city_banquet'),
             desc: loc(`city_banquet_desc`),
+            type: 'entertainment',
             category: 'commercial',
             reqs: { banquet:1 },
             queue_complete(){ return global.stats.achieve['endless_hunger'] ? global.stats.achieve['endless_hunger'].l - global.city['banquet'].level : 0},
@@ -3647,6 +3689,7 @@ export const actions = {
                 let planet = races[global.race.species].home;
                 return loc('city_university_desc',[planet]);
             },
+            type: 'science',
             category: 'science',
             reqs: { science: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -3752,6 +3795,7 @@ export const actions = {
                 let planet = races[global.race.species].home;
                 return loc('city_library_desc',[planet]);
             },
+            type: 'science',
             category: 'science',
             reqs: { science: 2 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -3848,6 +3892,7 @@ export const actions = {
             id: 'city-wardenclyffe',
             title(){ return wardenLabel(); },
             desc: loc('city_wardenclyffe_desc'),
+            type: 'science',
             category: 'science',
             reqs: { high_tech: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -3948,6 +3993,7 @@ export const actions = {
             id: 'city-biolab',
             title: loc('city_biolab'),
             desc: `<div>${loc('city_biolab_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            type: 'science',
             category: 'science',
             reqs: { genetics: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -4006,6 +4052,7 @@ export const actions = {
                     ? `<div>${loc('city_hydro_power_desc')}</div>`
                     : `<div>${loc(global.race.universe === 'magic' ? 'city_mana_engine_desc' : 'city_coal_power_desc')}</div><div class="has-text-special">${loc('requires_res',[loc(global.race.universe === 'magic' ? 'resource_Mana_name' : 'resource_Coal_name')])}</div>`;
             },
+            type: 'power',
             category: 'utility',
             reqs: { high_tech: 2 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -4065,6 +4112,7 @@ export const actions = {
                     ? `<div>${loc('city_wind_power_desc')}</div>`
                     : `<div>${loc('city_oil_power_desc')}</div><div class="has-text-special">${loc('requires_res',[global.resource.Oil.name])}</div>`
             },
+            type: 'power',
             category: 'utility',
             reqs: { oil: 3 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -4122,6 +4170,7 @@ export const actions = {
             id: 'city-fission_power',
             title: loc('city_fission_power'),
             desc(){ return `<div>${loc('city_fission_power_desc')}</div><div class="has-text-special">${loc('requires_res',[global.resource.Uranium.name])}</div>`; },
+            type: 'power',
             category: 'utility',
             reqs: { high_tech: 5 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -4158,6 +4207,7 @@ export const actions = {
             id: 'city-mass_driver',
             title: loc('city_mass_driver'),
             desc: `<div>${loc('city_mass_driver_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            type: 'mining',
             category: 'utility',
             reqs: { mass: 1 },
             not_trait: ['cataclysm','lone_survivor'],
@@ -4223,6 +4273,7 @@ export const actions = {
             desc(){
                 return `<div>${loc('star_dock_probe_desc')}</div>`;
             },
+            type: 'ship',
             reqs: { genesis: 4 },
             cost: {
                 Money(offset){ return costMultiplier('probes', offset, 350000, global.race['truepath'] ? 1.125 : 1.25,'starDock'); },
@@ -4254,6 +4305,7 @@ export const actions = {
             desc(){
                 return `<div>${loc('tech_geck_desc')}</div>`;
             },
+            type: 'ship',
             reqs: { geck: 1 },
             condition(){
                 return global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 5 ? true : false;
@@ -4294,6 +4346,7 @@ export const actions = {
                     return `<div>${label}</div><div class="has-text-special">${loc('star_dock_seeder_desc1')}</div>`;
                 }
             },
+            type: 'ship',
             reqs: { genesis: 5 },
             queue_size: 10,
             queue_complete(){ return 100 - global.starDock.seeder.count; },

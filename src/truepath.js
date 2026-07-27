@@ -70,6 +70,7 @@ const outerTruth = {
             id: 'space-titan_spaceport',
             title: loc('space_red_spaceport_title'),
             desc: `<div>${loc('space_red_spaceport_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            type: 'outpost',
             reqs: { titan: 1 },
             path: ['truepath'],
             cost: {
@@ -111,6 +112,7 @@ const outerTruth = {
             id: 'space-electrolysis',
             title: loc('space_electrolysis_title'),
             desc(){ return `<div>${loc('space_electrolysis_title')}</div><div class="has-text-special">${loc('space_electrolysis_req',[global.resource.Water.name])}</div>`; },
+            type: 'industry',
             reqs: { titan: 3 },
             path: ['truepath'],
             cost: {
@@ -153,6 +155,7 @@ const outerTruth = {
             id: 'space-hydrogen_plant',
             title: loc('space_hydrogen_plant_title'),
             desc(){ return `<div>${loc('space_hydrogen_plant_title')}</div><div class="has-text-special">${loc('space_hydrogen_plant_req')}</div>`; },
+            type: 'power',
             reqs: { titan_power: 1 },
             path: ['truepath'],
             cost: {
@@ -191,6 +194,7 @@ const outerTruth = {
             desc(){
                 return `<div>${loc('interstellar_habitat_title')}</div><div class="has-text-special">${loc('space_habitat_req',[planetName().titan, global.resource.Food.name, global.resource.Water.name])}</div>`;
             },
+            type: 'housing',
             reqs: { titan: 4 },
             path: ['truepath'],
             cost: {
@@ -248,6 +252,7 @@ const outerTruth = {
             desc(){
                 return `<div>${loc('space_red_mine_desc')}</div><div class="has-text-special">${loc('space_support',[planetName().titan])}</div>`;
             },
+            type: 'mining',
             reqs: { titan: 4 },
             condition(){ return global.space['titan_quarters'] && global.space.titan_quarters.count > 0 ? true : false; },
             path: ['truepath'],
@@ -290,6 +295,7 @@ const outerTruth = {
             id: 'space-storehouse',
             title: loc('space_storehouse_title'),
             desc: loc('space_storehouse_title'),
+            type: 'storage',
             reqs: { titan: 5 },
             path: ['truepath'],
             cost: {
@@ -390,6 +396,7 @@ const outerTruth = {
             desc(){
                 return loc('city_bank_desc',[planetName().titan]);
             },
+            type: 'finance',
             reqs: { titan: 6 },
             path: ['truepath'],
             cost: {
@@ -422,6 +429,7 @@ const outerTruth = {
             id: 'space-g_factory',
             title: loc('interstellar_g_factory_title'),
             desc(){ return `<div>${loc('interstellar_g_factory_title')}</div><div class="has-text-special">${loc('space_support',[planetName().titan])}</div>`; },
+            type: 'industry',
             reqs: { graphene: 1 },
             path: ['truepath'],
             cost: {
@@ -472,6 +480,7 @@ const outerTruth = {
             desc(){
                 return `<div>${loc('space_sam_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'military',
             reqs: { titan: 7 },
             path: ['truepath'],
             cost: {
@@ -509,6 +518,7 @@ const outerTruth = {
             desc(){
                 return `<div>${loc('space_decoder_title')}</div><div class="has-text-special">${loc('requires_power_support_combo',[planetName().titan, global.resource.Cipher.name])}</div>`;
             },
+            type: 'science',
             reqs: { titan: 8 },
             path: ['truepath'],
             cost: {
@@ -560,6 +570,7 @@ const outerTruth = {
                     return `<div>${loc('space_ai_core')}</div>`;
                 }
             },
+            type: 'megaproject',
             reqs: { titan: 9 },
             path: ['truepath'],
             condition(){
@@ -622,6 +633,7 @@ const outerTruth = {
             desc(){
                 return `<div>${loc('space_ai_core')}</div><div class="has-text-special">${loc('space_electrolysis_req',[global.resource[$(this)[0].p_fuel().r].name])}</div>`;
             },
+            type: 'megaproject',
             reqs: { titan_ai_core: 1 },
             path: ['truepath'],
             condition(){
@@ -667,6 +679,7 @@ const outerTruth = {
             desc(){
                 return `<div>${loc('space_ai_colonist_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'housing',
             reqs: { titan_ai_core: 3 },
             path: ['truepath'],
             cost: {
@@ -776,6 +789,7 @@ const outerTruth = {
             desc(){
                 return `<div>${loc('space_water_freighter_title')}</div><div class="has-text-special">${loc('space_support',[planetName().enceladus])}</div>`;
             },
+            type: 'ship',
             reqs: { enceladus: 2 },
             path: ['truepath'],
             cost: {
@@ -813,6 +827,7 @@ const outerTruth = {
             desc(){
                 return `<div>${loc('tech_zero_g_lab')}</div><div class="has-text-special">${loc('requires_power_support',[planetName().enceladus])}</div>`;
             },
+            type: 'science',
             reqs: { enceladus: 3 },
             path: ['truepath'],
             cost: {
@@ -864,6 +879,7 @@ const outerTruth = {
             desc(){
                 return `<div>${loc('tech_operating_base')}</div><div class="has-text-special">${loc('requires_power_support',[planetName().enceladus])}</div>`;
             },
+            type: 'military',
             reqs: { enceladus: 4 },
             path: ['truepath'],
             cost: {
@@ -913,6 +929,7 @@ const outerTruth = {
             id: 'space-munitions_depot',
             title: loc('tech_munitions_depot'),
             desc: loc('tech_munitions_depot'),
+            type: 'military',
             category: 'storage',
             era: 'solar',
             reqs: { enceladus: 5 },
@@ -1016,6 +1033,7 @@ const outerTruth = {
             desc(){
                 return `<div>${loc('tech_fob')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Helium_3.name])}</div>`;
             },
+            type: 'military',
             reqs: { triton: 2 },
             path: ['truepath'],
             queue_complete(){ return 1 - global.space.fob.count; },
@@ -1072,6 +1090,7 @@ const outerTruth = {
             desc(){
                 return `<div>${loc('space_lander_title')}</div><div class="has-text-special">${loc('requires_soldiers')}</div><div class="has-text-special">${loc('space_red_space_barracks_desc_req')}</div>`;
             },
+            type: 'military',
             reqs: { triton: 3 },
             path: ['truepath'],
             cost: {
@@ -1110,6 +1129,7 @@ const outerTruth = {
             desc(){
                 return `<div>${loc('space_crashed_ship_title')}</div>`;
             },
+            type: 'utility',
             reqs: { triton: 3 },
             path: ['truepath'],
             queue_complete(){ return 0; },
@@ -1182,6 +1202,7 @@ const outerTruth = {
             desc(){
                 return `<div>${loc('space_kuiper_mine',[global.resource.Orichalcum.name])}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Oil.name])}</div>`;
             },
+            type: 'mining',
             reqs: { kuiper: 1 },
             path: ['truepath'],
             cost: {
@@ -1221,6 +1242,7 @@ const outerTruth = {
             desc(){
                 return `<div>${loc('space_kuiper_mine',[global.resource.Uranium.name])}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Oil.name])}</div>`;
             },
+            type: 'mining',
             reqs: { kuiper: 1 },
             path: ['truepath'],
             cost: {
@@ -1257,6 +1279,7 @@ const outerTruth = {
             desc(){
                 return `<div>${loc('space_kuiper_mine',[global.resource.Neutronium.name])}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Oil.name])}</div>`;
             },
+            type: 'mining',
             reqs: { kuiper: 1 },
             path: ['truepath'],
             cost: {
@@ -1293,6 +1316,7 @@ const outerTruth = {
             desc(){
                 return `<div>${loc('space_kuiper_mine',[global.resource.Elerium.name])}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Oil.name])}</div>`;
             },
+            type: 'mining',
             reqs: { kuiper: 2 },
             path: ['truepath'],
             cost: {
@@ -1385,6 +1409,7 @@ const outerTruth = {
             desc(){
                 return `<div>${loc('space_drone_control',[planetName().titan])}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource[$(this)[0].p_fuel().r].name])}</div>`;
             },
+            type: 'military',
             reqs: { eris: 3 },
             path: ['truepath'],
             cost: {
@@ -1422,6 +1447,7 @@ const outerTruth = {
             desc(){
                 return `<div>${loc('space_shock_trooper_title')}</div><div class="has-text-special">${loc('space_support',[planetName().eris])}</div>`;
             },
+            type: 'military',
             reqs: { eris: 3 },
             path: ['truepath'],
             cost: {
@@ -1463,6 +1489,7 @@ const outerTruth = {
             desc(){
                 return `<div>${loc('space_tank_title')}</div><div class="has-text-special">${loc('space_support',[planetName().eris])}</div>`;
             },
+            type: 'military',
             reqs: { eris: 4 },
             path: ['truepath'],
             cost: {
@@ -1504,6 +1531,7 @@ const outerTruth = {
             desc(){
                 return `<div>${loc('space_digsite_title')}</div>`;
             },
+            type: 'utility',
             reqs: { eris: 3 },
             path: ['truepath'],
             queue_complete(){ return 0; },
@@ -1547,6 +1575,7 @@ const tauCetiModules = {
                     return `<div>${loc('tau_star_ringworld')}</div>`;
                 }
             },
+            type: 'megaproject',
             reqs: { matrix: 2 },
             path: ['truepath'],
             queue_size: 50,
@@ -1692,6 +1721,7 @@ const tauCetiModules = {
             id: 'tauceti-goe_facility',
             title: loc('tau_star_goe_facility'),
             desc(){ return `<div>${loc('tau_star_goe_facility')}</div>`; },
+            type: 'megaproject',
             reqs: { eden: 2 },
             condition(){
                 return global.tauceti.ringworld.count >= 1000 ? true : false;
@@ -1834,6 +1864,7 @@ const tauCetiModules = {
             id: 'tauceti-orbital_station',
             title: loc('tau_home_orbital_station'),
             desc: `<div>${loc('tau_home_orbital_station')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            type: 'outpost',
             reqs: { tau_home: 2 },
             path: ['truepath'],
             cost: {
@@ -1879,6 +1910,7 @@ const tauCetiModules = {
             desc(){
                 return `<div>${loc('tau_home_colony_desc',[races[global.race.species].home])}</div><div class="has-text-special">${loc('requires_power_support_combo',[races[global.race.species].home,global.resource.Food.name])}</div>`;
             },
+            type: 'housing',
             reqs: { tau_home: 2 },
             path: ['truepath'],
             cost: {
@@ -1964,6 +1996,7 @@ const tauCetiModules = {
             desc(){
                 return $(this)[0].citizens() === 1 ? loc('city_basic_housing_desc') : loc('city_basic_housing_desc_plural',[$(this)[0].citizens()]);
             },
+            type: 'housing',
             category: 'residential',
             reqs: { housing: 1, isolation: 1 },
             condition(){ return global.race['lone_survivor'] ? false : true; },
@@ -2004,6 +2037,7 @@ const tauCetiModules = {
             id: 'tauceti-pylon',
             title: loc('tau_home_pylon'),
             desc: loc('tau_home_pylon'),
+            type: 'religion',
             reqs: { magic: 2 },
             condition(){ return global.tech['isolation'] && global.tauceti.hasOwnProperty('pylon') ? true : false; },
             cost: {
@@ -2036,6 +2070,7 @@ const tauCetiModules = {
             id: `tauceti-cloning_facility`,
             title: loc('tau_home_cloning'),
             desc(){ return loc('tau_home_cloning_desc',[races[global.race.species].name]); },
+            type: 'housing',
             category: 'military',
             reqs: { cloning: 1 },
             path: ['truepath'],
@@ -2078,6 +2113,7 @@ const tauCetiModules = {
             desc(){
                 return `<div>${loc('tau_home_tau_farm')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'farming',
             reqs: { tau_home: 7 },
             path: ['truepath'],
             cost: {
@@ -2126,6 +2162,7 @@ const tauCetiModules = {
             desc(){
                 return `<div>${loc('tau_home_mining_pit')}</div><div class="has-text-special">${loc('space_support',[races[global.race.species].home])}</div>`;
             },
+            type: 'mining',
             reqs: { tau_home: 2 },
             path: ['truepath'],
             cost: {
@@ -2234,6 +2271,7 @@ const tauCetiModules = {
             desc(){
                 return `<div>${loc('tech_alien_outpost')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'science',
             reqs: { tau_home: 4 },
             path: ['truepath'],
             cost: {},
@@ -2279,6 +2317,7 @@ const tauCetiModules = {
                     return `<div>${loc('tau_jump_gate')}</div>`;
                 }
             },
+            type: 'megaproject',
             reqs: { tauceti: 3 },
             condition(){ return global.tech['isolation'] && !global.tech['resettle'] ? 0 : 1; },
             path: ['truepath'],
@@ -2323,6 +2362,7 @@ const tauCetiModules = {
             desc(){
                 return `<div>${loc('tech_fusion_generator')}</div><div class="has-text-special">${loc('requires_res',[global.resource.Helium_3.name])}</div>`;
             },
+            type: 'power',
             reqs: { tau_home: 6 },
             path: ['truepath'],
             cost: {
@@ -2363,6 +2403,7 @@ const tauCetiModules = {
             id: 'tauceti-repository',
             title: loc('tech_repository'),
             desc: loc('tech_repository'),
+            type: 'storage',
             reqs: { tau_home: 5 },
             path: ['truepath'],
             cost: {
@@ -2490,6 +2531,7 @@ const tauCetiModules = {
             desc(){
                 return `<div>${loc('tau_home_tau_factory')}</div><div class="has-text-special">${loc('requires_power_support',[races[global.race.species].home])}</div>`;
             },
+            type: 'industry',
             reqs: { tau_home: 8 },
             path: ['truepath'],
             cost: {
@@ -2546,6 +2588,7 @@ const tauCetiModules = {
             desc(){
                 return `<div>${$(this)[0].title()}</div><div class="has-text-special">${loc('requires_power_support',[races[global.race.species].home])}</div>`;
             },
+            type: 'science',
             reqs: { disease: 1 },
             path: ['truepath'],
             cost: {
@@ -2616,6 +2659,7 @@ const tauCetiModules = {
             id: 'tauceti-tauceti_casino',
             title: loc('city_casino'),
             desc: loc('city_casino'),
+            type: 'gambling',
             category: 'commercial',
             reqs: { gambling: 1, isolation: 1 },
             cost: {
@@ -2665,6 +2709,7 @@ const tauCetiModules = {
             desc(){
                 return `<div>${loc('tech_cultural_center')}</div><div class="has-text-special">${loc('space_electrolysis_req',[global.resource[$(this)[0].p_fuel().r].name])}</div>`;
             },
+            type: 'entertainment',
             category: 'commercial',
             reqs: { tau_culture: 1 },
             path: ['truepath'],
@@ -2719,6 +2764,7 @@ const tauCetiModules = {
             id: 'tauceti-marine_barracks',
             title: loc('tau_home_marine_barracks'),
             desc(){ return `<div>${loc('tau_home_marine_barracks')}</div><div class="has-text-special">${loc('space_support',[loc('tau_planet',[races[global.race.species].home])])}</div>`; },
+            type: 'military',
             reqs: { resettle: 2 },
             path: ['truepath'],
             cost: {
@@ -2800,6 +2846,7 @@ const tauCetiModules = {
             id: 'tauceti-orbital_platform',
             title: loc('tau_red_orbital_platform'),
             desc: `<div>${loc('tau_red_orbital_platform')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            type: 'outpost',
             reqs: { tau_red: 1, tauceti: 4 },
             path: ['truepath'],
             cost: {
@@ -2941,6 +2988,7 @@ const tauCetiModules = {
             id: 'tauceti-overseer',
             title(){ return $(this)[0].name(); },
             desc(){ return `<div>${$(this)[0].name()}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`; },
+            type: 'outpost',
             name(){
                 if (global.race['womling_lord']){
                     return loc('tau_red_overseer');
@@ -3004,6 +3052,7 @@ const tauCetiModules = {
             id: 'tauceti-womling_village',
             title: loc('tau_red_womling_village'),
             desc(){ return `<div>${loc('tau_red_womling_village')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`; },
+            type: 'housing',
             reqs: { tau_red: 5 },
             path: ['truepath'],
             cost: {
@@ -3043,6 +3092,7 @@ const tauCetiModules = {
             id: 'tauceti-womling_farm',
             title: loc('tau_red_womling_farm'),
             desc(){ return `<div>${loc('tau_red_womling_farm')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`; },
+            type: 'farming',
             reqs: { tau_red: 5 },
             path: ['truepath'],
             cost: {
@@ -3085,6 +3135,7 @@ const tauCetiModules = {
             id: 'tauceti-womling_mine',
             title: loc('tau_red_womling_mine'),
             desc(){ return `<div>${loc('tau_red_womling_mine')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`; },
+            type: 'mining',
             reqs: { tau_red: 5 },
             path: ['truepath'],
             cost: {
@@ -3135,6 +3186,7 @@ const tauCetiModules = {
             id: 'tauceti-womling_fun',
             title(){ return $(this)[0].name(); },
             desc(){ return `<div>${$(this)[0].name()}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`; },
+            type: 'entertainment',
             name(){
                 if (global.race['womling_lord']){
                     return loc('tau_red_womling_fun1');
@@ -3201,6 +3253,7 @@ const tauCetiModules = {
             id: 'tauceti-womling_lab',
             title: loc('interstellar_laboratory_title'),
             desc(){ return `<div>${loc('interstellar_laboratory_title')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`; },
+            type: 'science',
             reqs: { tau_red: 7 },
             path: ['truepath'],
             cost: {
@@ -3242,6 +3295,7 @@ const tauCetiModules = {
             desc(){
                 return `<div>${loc('tech_antimatter_reactor')}</div><div class="has-text-special">${loc('requires_res',[global.resource.Helium_3.name])}</div>`;
             },
+            type: 'power',
             reqs: { womling_energy: 1 },
             path: ['truepath'],
             cost: {
@@ -3277,6 +3331,7 @@ const tauCetiModules = {
             id: 'tauceti-womling_rangers',
             title: loc('tau_red_womling_rangers'),
             desc(){ return `<div>${loc('tau_red_womling_rangers')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`; },
+            type: 'military',
             reqs: { womling_military: 1 },
             path: ['truepath'],
             cost: {
@@ -3435,6 +3490,7 @@ const tauCetiModules = {
             desc(){
                 return `<div>${loc('tau_gas_refueling_station_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'industry',
             reqs: { tau_gas: 2 },
             path: ['truepath'],
             cost: {
@@ -3500,6 +3556,7 @@ const tauCetiModules = {
             desc(){
                 return `<div>${loc('tau_gas_ore_refinery_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'industry',
             reqs: { tau_gas: 4 },
             path: ['truepath'],
             cost: {
@@ -3553,6 +3610,7 @@ const tauCetiModules = {
             desc(){
                 return `<div>${loc('tau_gas_whaling_station_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'farming',
             reqs: { tau_whale: 1 },
             path: ['truepath'],
             cost: {
@@ -3599,6 +3657,7 @@ const tauCetiModules = {
             desc(){
                 return `<div>${loc('tau_gas_womling_station_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'outpost',
             reqs: { womling_technicians: 1 },
             path: ['truepath'],
             cost: {
@@ -3679,6 +3738,7 @@ const tauCetiModules = {
             id: 'tauceti-patrol_ship',
             title: loc('tau_roid_patrol_ship'),
             desc(){ return `<div>${loc('tau_roid_patrol_ship')}</div><div class="has-text-special">${loc('requires_res',[global.resource.Helium_3.name])}</div>`; },
+            type: 'ship',
             reqs: { tau_roid: 3 },
             path: ['truepath'],
             cost: {
@@ -3718,6 +3778,7 @@ const tauCetiModules = {
             id: 'tauceti-mining_ship',
             title(){ return loc('tau_roid_mining_ship'); },
             desc(){ return `<div>${loc('tau_roid_mining_ship')}</div>`; },
+            type: 'ship',
             reqs: { tau_roid: 4 },
             path: ['truepath'],
             cost: {
@@ -3760,6 +3821,7 @@ const tauCetiModules = {
             id: 'tauceti-whaling_ship',
             title: loc('tau_roid_whaling_ship'),
             desc(){ return `<div>${loc('tau_roid_whaling_ship')}</div>`; },
+            type: 'ship',
             reqs: { tau_whale: 2 },
             path: ['truepath'],
             cost: {
@@ -3800,6 +3862,7 @@ const tauCetiModules = {
             desc(){
                 return `<div>${loc('tau_roid_synthesizer_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'industry',
             reqs: { tau_roid: 4, m_ignite: 3 },
             path: ['truepath'],
             cost: {
@@ -3896,6 +3959,7 @@ const tauCetiModules = {
                     return `<div>${loc('tau_gas2_alien_station')}</div>`;
                 }
             },
+            type: 'outpost',
             reqs: { tau_gas2: 4 },
             condition(){ return global.tauceti.alien_station.count < 100 ? true : false; },
             path: ['truepath'],
@@ -3997,6 +4061,7 @@ const tauCetiModules = {
                     return `<div>${loc('tech_matrioshka_brain')}</div>`;
                 }
             },
+            type: 'megaproject',
             reqs: { tau_gas2: 7 },
             condition(){ return global.tauceti['matrioshka_brain'] ? true : false; },
             path: ['truepath'],
@@ -4059,6 +4124,7 @@ const tauCetiModules = {
                     return `<div>${loc('tech_ignition_device')}</div>`;
                 }
             },
+            type: 'megaproject',
             reqs: { tau_gas2: 8 },
             condition(){ return global.tauceti['ignition_device'] && global.tauceti.ignition_device.count < 10 ? true : false; },
             path: ['truepath'],
@@ -4133,6 +4199,7 @@ const tauCetiModules = {
             desc(){
                 return `<div>${loc('tau_shipyard_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'outpost',
             reqs: { resettle: 1 },
             path: ['truepath'],
             cost: {
@@ -4185,6 +4252,7 @@ const tauCetiModules = {
                     return `<div>${loc('space_dwarf_mass_relay_title')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
                 }
             },
+            type: 'megaproject',
             reqs: { m_ignite: 3 },
             path: ['truepath'],
             condition(){
@@ -4239,6 +4307,7 @@ const tauCetiModules = {
             desc(){
                 return `<div>${loc('space_dwarf_mass_relay_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'megaproject',
             reqs: { m_ignite: 4 },
             path: ['truepath'],
             condition(){
@@ -5791,15 +5860,17 @@ function drawShips(){
                 hullShow(id){
                     return global.space.shipyard.ships[id].damage > 0;
                 },
+                // Caution starts the moment the hull drops below the launch minimum, so a grounded ship
+                // is visible in the list without opening its dispatch modal.
                 hullDamage(id){
                     if (global.space.shipyard.ships[id].damage <= 10){
                         return `has-text-success`;
                     }
-                    else if (global.space.shipyard.ships[id].damage >= 40 && global.space.shipyard.ships[id].damage < 65){
-                        return `has-text-caution`;
-                    }
                     else if (global.space.shipyard.ships[id].damage >= 65){
                         return `has-text-danger`;
+                    }
+                    else if (!shipSpaceworthy(global.space.shipyard.ships[id])){
+                        return `has-text-caution`;
                     }
                     return ``;
                 },
@@ -8809,7 +8880,12 @@ function shipDispatchModal(id, modal){
         dests = dests.filter(d => reachable.has(d.region));
     }
 
-    if (dests.length === 0){
+    // A hull under the launch minimum grounds the ship — and with it the rest of its fleet — so say so
+    // rather than offering destinations that would be refused.
+    if (group.some(s => !shipSpaceworthy(s))){
+        list.append(`<span class="has-text-danger">${loc('outer_shipyard_dispatch_damaged',[minHullToLaunch])}</span>`);
+    }
+    else if (dests.length === 0){
         list.append(`<span class="has-text-caution">${loc('outer_shipyard_dispatch_none')}</span>`);
     }
     else {
@@ -8846,10 +8922,26 @@ function fleetPace(group){
     return group.reduce((a,b) => shipSpeed(a) <= shipSpeed(b) ? a : b);
 }
 
+// The two yards a ship can dock at: Ceres in Sol, and the Tau Ceti gas giant yard.
+const shipyardLocations = ['spc_dwarf','tau_gas2'];
+// Hull percentage a ship must have before it is cleared to leave for another destination.
+const minHullToLaunch = 75;
+
+// Docked at a yard, as opposed to out in the field or crossing to one. Ships here are in dry dock:
+// safe from the wear that finds them everywhere else, and repaired at double rate.
+export function atShipyard(ship){
+    return ship ? ship.transit === 0 && shipyardLocations.includes(ship.location) : false;
+}
+
+// A hull below minHullToLaunch% is not spaceworthy; the ship is grounded until it is patched up.
+export function shipSpaceworthy(ship){
+    return ship ? 100 - ship.damage >= minHullToLaunch : false;
+}
+
 // Ships parked at a shipyard are unmanned and draw a crew on departure; anywhere else, or already
 // under way, they are crewed.
 function shipManned(ship){
-    return ship.transit > 0 || (ship.location !== 'spc_dwarf' && ship.location !== 'tau_gas2');
+    return ship.transit > 0 || !shipyardLocations.includes(ship.location);
 }
 
 // Send a ship to a destination region, or its whole fleet if it belongs to one. Every ship takes the
@@ -8860,6 +8952,10 @@ function sendShipTo(id, l){
     if (!ship || l === ship.location){ return; }
     let group = shipFleet(ship);
     if (!group.length){ group = [ship]; }
+
+    // Nothing leaves port on a hull that battered, and a fleet moves as one, so a single damaged ship
+    // grounds the whole group until it is repaired or drops out of the fleet.
+    if (group.some(s => !shipSpaceworthy(s))){ return; }
 
     // Crew for every unmanned ship has to be on hand up front — a fleet leaves together or not at all.
     let need = group.reduce((t,s) => t + (shipManned(s) ? 0 : shipCrewSize(s)), 0);

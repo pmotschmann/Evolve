@@ -50,6 +50,7 @@ const fortressModules = {
                 let type = global.tech['turret'] ? (global.tech['turret'] >= 2 ? 'portal_turret_title3' : 'portal_turret_title2') : 'portal_turret_title1';
                 return `<div>${loc(type)}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'military',
             reqs: { portal: 2 },
             not_trait: ['warlord'],
             cost: {
@@ -95,6 +96,7 @@ const fortressModules = {
             desc(){
                 return loc('portal_carport_desc',[jobScale(1)]);
             },
+            type: 'outpost',
             reqs: { portal: 2 },
             not_trait: ['warlord'],
             cost: {
@@ -143,6 +145,7 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_war_droid_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'military',
             reqs: { portal: 5 },
             not_trait: ['warlord'],
             cost: {
@@ -178,6 +181,7 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_repair_droid_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'military',
             reqs: { portal: 6 },
             not_trait: ['warlord'],
             cost: {
@@ -234,6 +238,7 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_war_drone_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'military',
             reqs: { portal: 3 },
             not_trait: ['warlord'],
             powered(){ return powerCostMod(5); },
@@ -269,6 +274,7 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_sensor_drone_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'military',
             reqs: { infernite: 2 },
             not_trait: ['warlord'],
             powered(){ return powerCostMod(3); },
@@ -306,6 +312,7 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_attractor_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'military',
             reqs: { portal: 4 },
             not_trait: ['warlord'],
             powered(){ return powerCostMod(3); },
@@ -336,6 +343,7 @@ const fortressModules = {
             id: 'portal-minions',
             title: loc('portal_minions_title'),
             desc(){ return rankDesc(loc('portal_minions_title'),'minions'); },
+            type: 'military',
             reqs: { hellspawn: 3 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -396,6 +404,7 @@ const fortressModules = {
             id: 'portal-reaper',
             title: loc('portal_reaper_title'),
             desc(){ return rankDesc(loc('portal_reaper_title'),'reaper'); },
+            type: 'military',
             reqs: { hellspawn: 4 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -439,6 +448,7 @@ const fortressModules = {
             id: 'portal-corpse_pile',
             title: loc('portal_corpse_pile_title'),
             desc(){ return rankDesc(loc('portal_corpse_pile_desc'),'corpse_pile'); },
+            type: 'storage',
             reqs: { hellspawn: 7 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -482,6 +492,7 @@ const fortressModules = {
             id: 'portal-mortuary',
             title: loc('portal_mortuary_title'),
             desc(){ return `<div>${loc('portal_mortuary_desc',[loc('portal_corpse_pile_title')])}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            type: 'utility',
             reqs: { hellspawn: 9 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -520,6 +531,7 @@ const fortressModules = {
             id: 'portal-codex',
             title: loc('portal_codex_title'),
             desc: loc('portal_codex_title'),
+            type: 'science',
             reqs: { war_vault: 1 },
             trait: ['warlord'],
             condition(){ return global.portal?.codex?.count === 0 ? true : false; },
@@ -590,6 +602,7 @@ const fortressModules = {
             id: 'portal-throne',
             title: loc('portal_throne_of_evil_title'),
             desc: loc('portal_throne_of_evil_desc'),
+            type: 'utility',
             reqs: { hellspawn: 1 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -733,6 +746,7 @@ const fortressModules = {
             id: 'portal-incinerator',
             title: loc('portal_incinerator_title'),
             desc(){ return rankDesc(loc('portal_incinerator_desc'),'incinerator'); },
+            type: 'industry',
             reqs: { hellspawn: 1 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -795,6 +809,7 @@ const fortressModules = {
             id: 'portal-warehouse',
             title(){ return loc('city_shed_title3'); },
             desc(){ return rankDesc(loc('city_shed_title3'),'warehouse'); },
+            type: 'storage',
             reqs: { hellspawn: 1 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -925,6 +940,7 @@ const fortressModules = {
             id: 'portal-hovel',
             title: loc('portal_hovel_title'),
             desc(){ return rankDesc(loc('portal_hovel_title'),'hovel'); },
+            type: 'housing',
             reqs: { hellspawn: 1 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -974,6 +990,7 @@ const fortressModules = {
             id: 'portal-hell_casino',
             title(){ return structName('casino'); },
             desc(){ return `<div>${rankDesc(structName('casino'),'hell_casino')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            type: 'gambling',
             reqs: { hellspawn: 1, gambling: 1 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -1025,6 +1042,7 @@ const fortressModules = {
             id: 'portal-twisted_lab',
             title: loc('portal_twisted_lab_title'),
             desc(){ return `<div>${rankDesc(loc('portal_twisted_lab_title'),'twisted_lab')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            type: 'industry',
             reqs: { hellspawn: 1, science: 9 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -1085,6 +1103,7 @@ const fortressModules = {
             id: 'portal-demon_forge',
             title: loc('portal_demon_forge_title'),
             desc(){ return `<div>${rankDesc(loc('portal_demon_forge_title'),'demon_forge')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            type: 'industry',
             reqs: { hellspawn: 1 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -1151,6 +1170,7 @@ const fortressModules = {
             id: 'portal-hell_factory',
             title: loc('portal_factory_title'),
             desc(){ return `<div>${rankDesc(loc('portal_factory_title'),'hell_factory')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            type: 'industry',
             reqs: { hellspawn: 1 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -1209,6 +1229,7 @@ const fortressModules = {
             id: 'portal-pumpjack',
             title(){ return loc('portal_pumpjack_title'); },
             desc(){ return rankDesc(loc('portal_pumpjack_title'),'pumpjack'); },
+            type: 'mining',
             reqs: { hellspawn: 1, oil: 1 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -1266,6 +1287,7 @@ const fortressModules = {
             id: 'portal-dig_demon',
             title: loc('portal_dig_demon_title'),
             desc(){ return rankDesc(loc('portal_dig_demon_title'),'dig_demon'); },
+            type: 'mining',
             reqs: { hellspawn: 1 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -1334,6 +1356,7 @@ const fortressModules = {
             id: 'portal-tunneler',
             title: loc('portal_tunneler_title'),
             desc(){ return rankDesc(loc('portal_tunneler_desc'),'tunneler'); },
+            type: 'mining',
             reqs: { hellspawn: 2 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -1379,6 +1402,7 @@ const fortressModules = {
             id: 'portal-brute',
             title: loc('portal_brute_title'),
             desc(){ return rankDesc(loc('portal_brute_title'),'brute'); },
+            type: 'military',
             reqs: { hellspawn: 1 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -1514,6 +1538,7 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_soul_forge_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'industry',
             reqs: { hell_pit: 4 },
             queue_complete(){ return 1 - global.portal.soul_forge.count; },
             powered(){ return powerCostMod(30); },
@@ -1566,6 +1591,7 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_gun_emplacement_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'military',
             reqs: { hell_gun: 1 },
             powered(){ return powerCostMod(3); },
             cost: {
@@ -1601,6 +1627,7 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_soul_attractor_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'industry',
             reqs: { hell_pit: 5 },
             powered(){ return powerCostMod(4); },
             cost: {
@@ -1655,6 +1682,7 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_soul_capacitor_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'power',
             reqs: { forbidden: 2 },
             powered(){ return powerCostMod(125); },
             queue_complete(){ return 40 - global.portal.soul_capacitor.count; },
@@ -1707,6 +1735,7 @@ const fortressModules = {
                     return `<div>${loc('portal_absorption_chamber_title')}</div>`;
                 }
             },
+            type: 'industry',
             reqs: { forbidden: 3 },
             queue_size: 5,
             queue_complete(){ return 100 - global.portal.absorption_chamber.count; },
@@ -1768,6 +1797,7 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_shadow_mine_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'mining',
             reqs: { pitspawn: 1 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -1815,6 +1845,7 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_tavern_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'entertainment',
             reqs: { pitspawn: 2 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -1905,6 +1936,7 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_guard_post_title')}</div><div class="has-text-special">${loc('requires_soldiers')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'military',
             reqs: { hell_ruins: 2 },
             not_trait: ['warlord'],
             cost: {
@@ -1957,6 +1989,7 @@ const fortressModules = {
             id: 'portal-vault',
             title: loc('portal_vault_title'),
             desc: loc('portal_vault_title'),
+            type: 'storage',
             reqs: { hell_ruins: 2, hell_vault: 1 },
             not_trait: ['warlord'],
             wiki: global.race['warlord'] ? false : true,
@@ -2004,6 +2037,7 @@ const fortressModules = {
             id: 'portal-war_vault',
             title: loc('portal_vault_title'),
             desc: loc('portal_vault_title'),
+            type: 'storage',
             reqs: { hell_ruins: 2, war_vault: 1 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -2051,6 +2085,7 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_archaeology_title')}</div><div class="has-text-special">${loc('requires_security')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'science',
             reqs: { hell_ruins: 2 },
             not_trait: ['warlord'],
             cost: {
@@ -2091,6 +2126,7 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_arcology_title')}</div><div class="has-text-special">${loc('requires_security')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'housing',
             reqs: { housing: 4 },
             not_trait: ['warlord'],
             cost: {
@@ -2148,6 +2184,7 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_hell_forge_title')}</div><div class="has-text-special">${loc('requires_security')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'industry',
             reqs: { scarletite: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('hell_forge', offset, 250000000, 1.15, 'portal'); },
@@ -2197,6 +2234,7 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_inferno_power_title')}</div>`;
             },
+            type: 'power',
             reqs: { inferno_power: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('inferno_power', offset, 275000000, 1.16, 'portal'); },
@@ -2356,6 +2394,7 @@ const fortressModules = {
                     return `<div>${loc('portal_west_tower')}</div>`;
                 }
             },
+            type: 'military',
             reqs: { hell_gate: 2 },
             queue_size: 25,
             queue_complete(){ return towerSize() - global.portal.west_tower.count; },
@@ -2417,6 +2456,7 @@ const fortressModules = {
                     return `<div>${loc('portal_east_tower')}</div>`;
                 }
             },
+            type: 'military',
             reqs: { hell_gate: 2 },
             queue_size: 25,
             queue_complete(){ return towerSize() - global.portal.east_tower.count; },
@@ -2472,6 +2512,7 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_gate_turret_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'military',
             reqs: { hell_gate: 3 },
             powered(){ return powerCostMod(6); },
             cost: {
@@ -2517,6 +2558,7 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_infernite_mine_title')}</div><div class="has-text-special">${loc('requires_security')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'mining',
             reqs: { hell_gate: 4 },
             powered(){ return powerCostMod(5); },
             powerBalancer(){
@@ -2581,6 +2623,7 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_harbor_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'outpost',
             reqs: { hell_lake: 3 },
             powered(wiki){
                 let num_cooling_tower = wiki ? (global.portal?.cooling_tower?.on ?? 0) : p_on['cooling_tower'];
@@ -2712,6 +2755,7 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_cooling_tower_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'power',
             reqs: { hell_lake: 6 },
             powered(){ return powerCostMod(10); },
             cost: {
@@ -2744,6 +2788,7 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_bireme_title')}</div><div class="has-text-special">${loc('space_support',[loc('lake')])}</div>`;
             },
+            type: 'ship',
             reqs: { hell_lake: 4 },
             powered(){ return 0; },
             s_type: 'lake',
@@ -2785,6 +2830,7 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_transport_title')}</div><div class="has-text-special">${loc('space_support',[loc('lake')])}</div>`;
             },
+            type: 'ship',
             reqs: { hell_lake: 5 },
             powered(){ return 0; },
             s_type: 'lake',
@@ -2872,6 +2918,7 @@ const fortressModules = {
                     return `<div>${loc('portal_oven_title')}</div><div class="has-text-special">${loc('requires_segments', [100])}</div>` + (global.portal.hasOwnProperty('oven') && global.portal.oven.count >= 100 ? `<div class="has-text-special">${loc('requires_power')}</div>` : ``);
                 }
             },
+            type: 'industry',
             reqs: { dish:2 },
             condition(){
                 return global.portal.oven.count < 100;
@@ -2926,6 +2973,7 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_oven_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'industry',
             wiki: false,
             reqs: { dish: 3 },
             condition(){
@@ -2953,6 +3001,7 @@ const fortressModules = {
             id: 'portal-devilish_dish',
             title: loc('portal_devilish_dish_title'),
             desc: loc('portal_devilish_dish_title'),
+            type: 'industry',
             reqs: { dish: 3 },
             queue_complete(){ return 0; },
             cost: {},
@@ -2974,6 +3023,7 @@ const fortressModules = {
             id: 'portal-dish_soul_steeper',
             title: loc('portal_dish_soul_steeper_title'),
             desc: loc('portal_dish_soul_steeper_desc'),
+            type: 'industry',
             reqs: { dish: 5 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('dish_soul_steeper', offset, 750000000, spireCreep(1.3), 'portal'); },
@@ -3004,6 +3054,7 @@ const fortressModules = {
             id: 'portal-dish_life_infuser',
             title: loc('portal_dish_life_infuser_title'),
             desc: loc('portal_dish_life_infuser_desc'),
+            type: 'industry',
             reqs: { dish: 5 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 280000000, spireCreep(1.2), 'portal'); },
@@ -3082,6 +3133,7 @@ const fortressModules = {
             desc(){
                 return `<div>${global.race['warlord'] ? loc('portal_putrifier_desc') : loc('portal_purifier_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'utility',
             reqs: { hell_spire: 3 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('purifier', offset, 85000000, spireCreep(1.15), 'portal'); },
@@ -3119,6 +3171,7 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_port_title')}</div><div class="has-text-special">${loc('portal_spire_support')}</div>`;
             },
+            type: 'outpost',
             reqs: { hell_spire: 3 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('port', offset, 135000000, spireCreep(1.2), 'portal'); },
@@ -3161,6 +3214,7 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_base_camp_title')}</div><div class="has-text-special">${loc('portal_spire_support')}</div>`;
             },
+            type: 'outpost',
             reqs: { hell_spire: 4 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('base_camp', offset, 425000000, spireCreep(1.2), 'portal'); },
@@ -3204,6 +3258,7 @@ const fortressModules = {
                     return `<div>${loc('portal_bridge_title')}</div>`;
                 }
             },
+            type: 'utility',
             reqs: { hell_spire: 5 },
             not_trait: ['warlord'],
             queue_size: 1,
@@ -3247,6 +3302,7 @@ const fortressModules = {
             id: 'portal-sphinx',
             title(){ return global.race['warlord'] ? loc('portal_sphinx_warlord') : (global.tech.hell_spire === 7 ? loc('portal_sphinx_solve') : loc('portal_sphinx_title')); },
             desc(){ return global.race['warlord'] ? loc('portal_sphinx_warlord_desc') : loc('portal_sphinx_desc'); },
+            type: 'utility',
             reqs: { hell_spire: 6 },
             queue_complete(){ return 8 - global.tech.hell_spire; },
             cost: {
@@ -3361,6 +3417,7 @@ const fortressModules = {
             desc(){
                 return `<div>${$(this)[0].title()}</div><div class="has-text-special">${loc('portal_spire_support')}</div>`;
             },
+            type: 'military',
             reqs: { hell_spire: 9 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('mechbay', offset, 100000000, 1.2, 'portal'); },
@@ -3413,6 +3470,7 @@ const fortressModules = {
             id: 'portal-spire',
             title: loc('portal_spire_title'),
             desc: loc('portal_spire_title'),
+            type: 'megaproject',
             reqs: { hell_spire: 9 },
             queue_complete(){ return 0; },
             cost: {},
@@ -3477,6 +3535,7 @@ const fortressModules = {
                     return `<div>${loc('portal_waygate_title')}</div>`;
                 }
             },
+            type: 'megaproject',
             reqs: { waygate: 1 },
             condition(){
                 return global.tech['edenic'] && global.tech.edenic >= 2 ? false : true;
@@ -3597,6 +3656,7 @@ const fortressModules = {
             id: 'portal-bazaar',
             title: loc('portal_bazaar_title'),
             desc: loc('portal_bazaar_title'),
+            type: 'finance',
             reqs: { hellspawn: 8 },
             trait: ['warlord'],
             cost: {

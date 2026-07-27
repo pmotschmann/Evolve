@@ -20,7 +20,7 @@ const spaceProjects = {
             name(){
                 return races[global.race.species].home;
             },
-            desc: loc('space_home_info_desc'),
+            desc(){ return global.tech['resettle'] && global.tech.resettle >= 8 ? loc('space_home_info_desc_infested') : loc('space_home_info_desc'); },
             zone: 'inner',
             showDest(){
                 return {r: true, l: global.settings.space.home || global.tech?.resettle >= 3};
@@ -63,6 +63,7 @@ const spaceProjects = {
             id: 'space-satellite',
             title: loc('space_home_satellite_title'),
             desc: loc('space_home_satellite_desc'),
+            type: 'science',
             reqs: { space: 2 },
             condition(){ return global.tech['resettle'] ? false : true; },
             cost: {
@@ -108,6 +109,7 @@ const spaceProjects = {
                     return `<div>${loc('space_home_gps_desc')}</div>`;
                 }
             },
+            type: 'utility',
             reqs: { satellite: 1 },
             not_trait: ['terrifying'],
             condition(){ return global.tech['resettle'] ? false : true; },
@@ -145,6 +147,7 @@ const spaceProjects = {
             id: 'space-propellant_depot',
             title: loc('space_home_propellant_depot_title'),
             desc: loc('space_home_propellant_depot_desc'),
+            type: 'storage',
             reqs: { space_explore: 1 },
             condition(){ return global.tech['resettle'] ? false : true; },
             cost: {
@@ -182,6 +185,7 @@ const spaceProjects = {
             id: 'space-nav_beacon',
             title(){ return global.race['orbit_decayed'] ? loc('space_home_broadcast_beacon_title') : loc('space_home_nav_beacon_title'); },
             desc: `<div>${loc('space_home_nav_beacon_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            type: 'utility',
             reqs: { luna: 2 },
             condition(){ return global.tech['resettle'] ? false : true; },
             cost: {
@@ -260,6 +264,7 @@ const spaceProjects = {
             id: 'space-moon_base',
             title: loc('space_moon_base_title'),
             desc(){ return `<div>${loc('space_moon_base_desc')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Oil.name])}</div>`; },
+            type: 'outpost',
             reqs: { space: 3 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('moon_base', offset, 22000, 1.32); },
@@ -323,6 +328,7 @@ const spaceProjects = {
             id: 'space-iridium_mine',
             title: loc('space_moon_iridium_mine_title'),
             desc: `<div>${loc('space_moon_iridium_mine_desc')}</div><div class="has-text-special">${loc('space_support',[loc('space_moon_info_name')])}</div>`,
+            type: 'mining',
             reqs: { space: 3, luna: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('iridium_mine', offset, 42000, 1.35); },
@@ -372,6 +378,7 @@ const spaceProjects = {
             id: 'space-helium_mine',
             title: loc('space_moon_helium_mine_title'),
             desc: `<div>${loc('space_moon_helium_mine_desc')}</div><div class="has-text-special">${loc('space_support',[loc('space_moon_info_name')])}</div>`,
+            type: 'mining',
             reqs: { space: 3, luna: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('helium_mine', offset, 38000, 1.35); },
@@ -416,6 +423,7 @@ const spaceProjects = {
             id: 'space-observatory',
             title: loc('space_moon_observatory_title'),
             desc: `<div>${loc('space_moon_observatory_desc')}</div><div class="has-text-special">${loc('space_support',[loc('space_moon_info_name')])}</div>`,
+            type: 'science',
             reqs: { science: 9, luna: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('observatory', offset, 200000, 1.28); },
@@ -504,6 +512,7 @@ const spaceProjects = {
             id: 'space-spaceport',
             title: loc('space_red_spaceport_title'),
             desc(){ return `<div>${loc('space_red_spaceport_desc')}</div><div class="has-text-special">${loc('requires_power_space',[global.resource.Food.name])}</div>`; },
+            type: 'outpost',
             reqs: { space: 4 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('spaceport', offset, 47500, 1.32); },
@@ -564,6 +573,7 @@ const spaceProjects = {
             desc(){
                 return `<div>${loc('space_red_tower_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'utility',
             reqs: { mars: 3 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('red_tower', offset, 225000, 1.28); },
@@ -606,6 +616,7 @@ const spaceProjects = {
                     return `<div>${loc('space_terraformer')}</div>`;
                 }
             },
+            type: 'megaproject',
             reqs: { terraforming: 1 },
             condition(){
                 return global.space.terraformer.count >= 100 ? false : true;
@@ -731,6 +742,7 @@ const spaceProjects = {
             desc(){
                 return `<div>${loc('space_red_living_quarters_desc')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`;
             },
+            type: 'housing',
             reqs: { mars: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('living_quarters', offset, house_adjust(38000), 1.28); },
@@ -788,6 +800,7 @@ const spaceProjects = {
             id: 'space-pylon',
             title: loc('space_red_pylon'),
             desc: loc('space_red_pylon'),
+            type: 'religion',
             reqs: { magic: 2 },
             condition(){ return global.race['cataclysm'] || global.race['orbit_decayed'] ? true : false; },
             cost: {
@@ -822,6 +835,7 @@ const spaceProjects = {
             desc(){
                 return `<div>${loc('space_red_vr_center_desc')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`;
             },
+            type: 'entertainment',
             reqs: { mars: 1, broadcast: 3 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('vr_center', offset, 380000, 1.25); },
@@ -861,6 +875,7 @@ const spaceProjects = {
             desc(){
                 return `<div>${loc('space_red_garage_desc')}</div>`;
             },
+            type: 'storage',
             reqs: { mars: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('garage', offset, 75000, 1.28); },
@@ -993,6 +1008,7 @@ const spaceProjects = {
             desc(){
                 return `<div>${loc('space_red_mine_desc')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`;
             },
+            type: 'mining',
             reqs: { mars: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('red_mine', offset, 50000, 1.32); },
@@ -1044,6 +1060,7 @@ const spaceProjects = {
             desc(){
                 return `<div>${loc('space_red_fabrication_desc')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`;
             },
+            type: 'industry',
             reqs: { mars: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('fabrication', offset, 90000, 1.32); },
@@ -1083,6 +1100,7 @@ const spaceProjects = {
             id: 'space-red_factory',
             title(){ return structName('factory'); },
             desc(){ return `<div>${loc('space_red_factory_desc')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Helium_3.name])}</div>`; },
+            type: 'industry',
             reqs: { mars: 4 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('red_factory', offset, 75000, 1.32); },
@@ -1152,6 +1170,7 @@ const spaceProjects = {
                 }
                 return `<div>${desc}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`;
             },
+            type: 'farming',
             reqs: { mars: 2 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('biodome', offset, 45000, 1.28); },
@@ -1252,6 +1271,7 @@ const spaceProjects = {
             desc(){
                 return `<div>${loc('space_red_exotic_lab_desc')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`;
             },
+            type: 'science',
             reqs: { mars: 5 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('exotic_lab', offset, 750000, 1.28); },
@@ -1319,6 +1339,7 @@ const spaceProjects = {
                 let entity = global.race.old_gods !== 'none' ? races[global.race.old_gods.toLowerCase()].entity : races[global.race.species].entity;
                 return `<div>${loc('space_red_ziggurat_desc',[entity])}</div>`;
             },
+            type: 'religion',
             reqs: { theology: 4 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('ziggurat', offset, 600000, 1.28); },
@@ -1386,6 +1407,7 @@ const spaceProjects = {
             desc(){
                 return `<div>${loc('space_red_space_barracks_desc')}</div><div class="has-text-special">${loc('space_red_space_barracks_desc_req')}</div>`;
             },
+            type: 'military',
             reqs: { marines: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('space_barracks', offset, 350000, 1.28); },
@@ -1476,10 +1498,10 @@ const spaceProjects = {
             },
             zone: 'inner',
             showDest(){
-                return {r: true, l: global.settings.space.hell || global.tech?.resettle >= 7};
+                return {r: true, l: global.settings.space.hell || global.tech?.resettle >= 9};
             },
             syndicate(){ return false; },
-            nav(){ return global.tech?.resettle >= 7 ? true : false; }
+            nav(){ return global.tech?.resettle >= 9 ? true : false; }
         },
         hell_mission: {
             id: 'space-hell_mission',
@@ -1513,6 +1535,7 @@ const spaceProjects = {
             desc(){
                 return `<div>${loc('space_hell_geothermal_desc')}</div><div class="has-text-special">${loc('space_hell_geothermal_desc_req')}</div>`;
             },
+            type: 'power',
             reqs: { hell: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('geothermal', offset, 38000, 1.35); },
@@ -1568,6 +1591,7 @@ const spaceProjects = {
             desc(){
                 return loc('space_hell_smelter_title',[planetName().hell]);
             },
+            type: 'industry',
             reqs: { hell: 1, m_smelting: 1 },
             path: ['truepath'],
             cost: {
@@ -1600,6 +1624,7 @@ const spaceProjects = {
             id: 'space-spc_casino',
             title(){ return structName('casino'); },
             desc(){ return structName('casino'); },
+            type: 'gambling',
             category: 'commercial',
             reqs: { hell: 1, gambling: 1 },
             condition(){
@@ -1643,6 +1668,7 @@ const spaceProjects = {
             desc(){
                 return `<div>${loc('space_hell_swarm_plant_desc')}</div>`;
             },
+            type: 'industry',
             reqs: { solar: 4, hell: 1 },
             cost: {
                 Money(offset, wiki){ return spaceCostMultiplier('swarm_plant', offset, iron_adjust(75000, wiki), 1.28); },
@@ -1739,6 +1765,7 @@ const spaceProjects = {
             desc(){
                 return `<div>${loc('space_sun_swarm_control_desc')}</div>`;
             },
+            type: 'power',
             reqs: { solar: 3 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('swarm_control', offset, 100000, 1.3); },
@@ -1772,6 +1799,7 @@ const spaceProjects = {
             desc(){
                 return `<div>${loc('space_sun_swarm_satellite_desc')}</div><div class="has-text-special">${loc('space_sun_swarm_satellite_desc_req')}</div>`;
             },
+            type: 'power',
             reqs: { solar: 3 },
             cost: {
                 Money(offset,wiki){ return spaceCostMultiplier('swarm_satellite', offset, swarm_adjust(5000,wiki), 1.1); },
@@ -1818,6 +1846,7 @@ const spaceProjects = {
                     return `<div>${loc('tau_jump_gate')}</div>`;
                 }
             },
+            type: 'megaproject',
             reqs: { tauceti: 3 },
             path: ['truepath'],
             queue_size: 10,
@@ -1963,6 +1992,7 @@ const spaceProjects = {
             desc(){
                 return `<div>${loc('space_gas_mining_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'mining',
             reqs: { gas_giant: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('gas_mining', offset, 250000, 1.32); },
@@ -1997,6 +2027,7 @@ const spaceProjects = {
             desc(){
                 return `<div>${loc('space_gas_storage_desc')}</div>`;
             },
+            type: 'storage',
             reqs: { gas_giant: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('gas_storage', offset, 125000, 1.32); },
@@ -2030,6 +2061,7 @@ const spaceProjects = {
             desc(){
                 return `<div>${loc('space_gas_star_dock_title')}</div><div class="has-text-special">${loc('space_gas_star_dock_desc_req')}</div>`;
             },
+            type: 'outpost',
             reqs: { genesis: 3 },
             queue_complete(){ return 1 - global.space.star_dock.count; },
             cost: {
@@ -2108,6 +2140,7 @@ const spaceProjects = {
             desc(){
                 return `<div>${loc('space_gas_moon_outpost_desc')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Oil.name])}</div>`;
             },
+            type: 'outpost',
             reqs: { gas_moon: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('outpost', offset, 666000, 1.3); },
@@ -2149,6 +2182,7 @@ const spaceProjects = {
             desc(){
                 return `<div>${loc('space_gas_moon_drone_desc')}</div>`;
             },
+            type: 'mining',
             reqs: { gas_moon: 1, drone: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('drone', offset, 250000, 1.3); },
@@ -2181,6 +2215,7 @@ const spaceProjects = {
             desc(){
                 return `<div>${loc('space_gas_moon_oil_extractor_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'mining',
             reqs: { gas_moon: 2 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('oil_extractor', offset, 666000, 1.3); },
@@ -2270,6 +2305,7 @@ const spaceProjects = {
             desc(){
                 return `<div>${loc('space_belt_station_desc')}</div><div class="has-text-special">${loc('requires_power_space',[global.resource.Food.name])}</div>`;
             },
+            type: 'outpost',
             reqs: { asteroid: 2 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('space_station', offset, 250000, 1.3); },
@@ -2328,6 +2364,7 @@ const spaceProjects = {
             desc(){
                 return loc('space_belt_elerium_ship_title');
             },
+            type: 'mining',
             reqs: { asteroid: 5 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('elerium_ship', offset, 500000, 1.3); },
@@ -2364,6 +2401,7 @@ const spaceProjects = {
             desc(){
                 return loc('space_belt_iridium_ship_title');
             },
+            type: 'mining',
             reqs: { asteroid: 3 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('iridium_ship', offset, 120000, 1.3); },
@@ -2400,6 +2438,7 @@ const spaceProjects = {
             desc(){
                 return loc('space_belt_iron_ship_title');
             },
+            type: 'mining',
             reqs: { asteroid: 3 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('iron_ship', offset, 80000, 1.3); },
@@ -2483,6 +2522,7 @@ const spaceProjects = {
             desc(){
                 return `<div>${loc('space_dwarf_elerium_contain_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'storage',
             reqs: { dwarf: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('elerium_contain', offset, 800000, 1.28); },
@@ -2516,6 +2556,7 @@ const spaceProjects = {
             desc(){
                 return `<div>${loc('space_dwarf_reactor_title')}</div><div class="has-text-special">${loc('space_dwarf_reactor_desc_req')}</div>`;
             },
+            type: 'power',
             reqs: { elerium: 2 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('e_reactor', offset, 1250000, 1.28); },
@@ -2553,6 +2594,7 @@ const spaceProjects = {
                     return `<div>${loc('space_dwarf_collider_desc')}</div><div class="has-text-special">${loc('space_dwarf_collider_desc_req')}</div>` + (global.space.hasOwnProperty('world_collider') && global.space.world_collider.count >= 1859 ? `<div class="has-text-special">${loc('requires_power')}</div>` : ``);
                 }
             },
+            type: 'megaproject',
             reqs: { science: 10 },
             path: ['standard'],
             condition(){
@@ -2618,6 +2660,7 @@ const spaceProjects = {
             desc(){
                 return `<div>${loc('space_dwarf_collider_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'megaproject',
             wiki: false,
             reqs: { science: 11 },
             path: ['standard'],
@@ -2657,6 +2700,7 @@ const spaceProjects = {
             desc(){
                 return `<div>${loc('outer_shipyard_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'outpost',
             reqs: { shipyard: 1 },
             path: ['truepath'],
             cost: {
@@ -2715,6 +2759,7 @@ const spaceProjects = {
                     return `<div>${loc('space_dwarf_mass_relay_title')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
                 }
             },
+            type: 'megaproject',
             reqs: { outer: 5 },
             path: ['truepath'],
             condition(){
@@ -2769,6 +2814,7 @@ const spaceProjects = {
             desc(){
                 return `<div>${loc('space_dwarf_mass_relay_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'megaproject',
             reqs: { outer: 6 },
             path: ['truepath'],
             condition(){
@@ -2834,6 +2880,7 @@ const interstellarProjects = {
             id: 'interstellar-starport',
             title: loc('interstellar_alpha_starport_title'),
             desc(){ return `<div>${loc('interstellar_alpha_starport_desc')}</div><div class="has-text-special">${loc('requires_power_space',[global.resource.Food.name])}</div>`; },
+            type: 'outpost',
             reqs: { alpha: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('starport', offset, 1000000, 1.3, 'interstellar'); },
@@ -2886,6 +2933,7 @@ const interstellarProjects = {
             id: 'interstellar-habitat',
             title: loc('interstellar_habitat_title'),
             desc: `<div>${loc('interstellar_habitat_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            type: 'housing',
             reqs: { alpha: 3 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('habitat', offset, 800000, 1.25, 'interstellar'); },
@@ -2931,6 +2979,7 @@ const interstellarProjects = {
             id: 'interstellar-mining_droid',
             title: loc('interstellar_mining_droid_title'),
             desc: `<div>${loc('interstellar_mining_droid_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_alpha_name')])}</div>`,
+            type: 'mining',
             reqs: { alpha: 2 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('mining_droid', offset, 650000, 1.28, 'interstellar'); },
@@ -2974,6 +3023,7 @@ const interstellarProjects = {
             id: 'interstellar-processing',
             title: loc('interstellar_processing_title'),
             desc: `<div>${loc('interstellar_processing_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_alpha_name')])}</div>`,
+            type: 'industry',
             reqs: { droids: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('processing', offset, 350000, 1.28, 'interstellar'); },
@@ -3011,6 +3061,7 @@ const interstellarProjects = {
             id: 'interstellar-fusion',
             title: loc('interstellar_fusion_title'),
             desc(){ return `<div>${loc('interstellar_fusion_title')}</div><div class="has-text-special">${loc('requires_power_support_combo',[loc('interstellar_alpha_name'),global.resource.Deuterium.name])}</div>`; },
+            type: 'power',
             reqs: { fusion: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('fusion', offset, 990000, 1.28, 'interstellar'); },
@@ -3045,6 +3096,7 @@ const interstellarProjects = {
             id: 'interstellar-laboratory',
             title(){ return global.race.universe === 'magic' ? loc('tech_sanctum') : loc('interstellar_laboratory_title'); },
             desc: `<div>${loc(global.race.universe === 'magic' ? 'tech_sanctum' : 'interstellar_laboratory_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_alpha_name')])}</div>`,
+            type: 'science',
             reqs: { science: 12 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('laboratory', offset, 750000, 1.28, 'interstellar'); },
@@ -3110,6 +3162,7 @@ const interstellarProjects = {
             id: 'interstellar-exchange',
             title: loc('interstellar_exchange_title'),
             desc: `<div>${loc('interstellar_exchange_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_alpha_name')])}</div>`,
+            type: 'finance',
             reqs: { banking: 12 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('exchange', offset, traitCostMod('untrustworthy',680000), 1.28, 'interstellar'); },
@@ -3162,6 +3215,7 @@ const interstellarProjects = {
             id: 'interstellar-g_factory',
             title: loc('interstellar_g_factory_title'),
             desc: `<div>${loc('interstellar_g_factory_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_alpha_name')])}</div>`,
+            type: 'industry',
             reqs: { graphene: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('g_factory', offset, 950000, 1.28, 'interstellar'); },
@@ -3205,6 +3259,7 @@ const interstellarProjects = {
             id: 'interstellar-int_factory',
             title: loc('interstellar_int_factory_title'),
             desc(){ return `<div>${loc('interstellar_int_factory_title')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Deuterium.name])}</div>`; },
+            type: 'industry',
             reqs: { alpha: 4 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('int_factory', offset, 25000000, 1.26, 'interstellar'); },
@@ -3246,6 +3301,7 @@ const interstellarProjects = {
                 return loc('tech_luxury_condo');
             },
             desc: `<div>${loc('tech_luxury_condo')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            type: 'housing',
             reqs: { alpha: 5 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('luxury_condo', offset, traitCostMod('untrustworthy',25000000), 1.25, 'interstellar'); },
@@ -3289,6 +3345,7 @@ const interstellarProjects = {
             id: 'interstellar-zoo',
             title: loc('tech_zoo'),
             desc(){ return `<div>${loc('tech_zoo')}</div><div class="has-text-special">${loc('requires_power_support_combo',[loc('interstellar_alpha_name'),global.resource.Food.name])}</div>`; },
+            type: 'entertainment',
             reqs: { zoo: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('zoo', offset, 50000000, 1.24, 'interstellar'); },
@@ -3329,6 +3386,7 @@ const interstellarProjects = {
                 let storage = global.tech['storage'] >= 3 ? (global.tech['storage'] >= 4 ? loc('city_shed_desc_size3') : loc('city_shed_desc_size2')) : loc('city_shed_desc_size1');
                 return loc('city_shed_desc',[storage]);
             },
+            type: 'storage',
             reqs: { alpha: 2 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('warehouse', offset, 175000, 1.28, 'interstellar'); },
@@ -3467,6 +3525,7 @@ const interstellarProjects = {
             id: 'interstellar-xfer_station',
             title: loc('interstellar_xfer_station_title'),
             desc(){ return `<div>${loc('interstellar_xfer_station_desc')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Uranium.name])}</div>`; },
+            type: 'storage',
             reqs: { proxima: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('xfer_station', offset, 1200000, 1.28, 'interstellar'); },
@@ -3520,6 +3579,7 @@ const interstellarProjects = {
             id: 'interstellar-cargo_yard',
             title: loc('interstellar_cargo_yard_title'),
             desc: loc('interstellar_cargo_yard_title'),
+            type: 'storage',
             reqs: { proxima: 2 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('cargo_yard', offset, 275000, 1.28, 'interstellar'); },
@@ -3563,6 +3623,7 @@ const interstellarProjects = {
             id: 'interstellar-cruiser',
             title: loc('interstellar_cruiser_title'),
             desc: loc('interstellar_cruiser_title'),
+            type: 'ship',
             reqs: { cruiser: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('cruiser', offset, 875000, 1.28, 'interstellar'); },
@@ -3616,6 +3677,7 @@ const interstellarProjects = {
                     return `<div>${loc('interstellar_dyson_title')}</div>`;
                 }
             },
+            type: 'megaproject',
             reqs: { proxima: 3 },
             queue_size: 10,
             queue_complete(){ return 100 - global.interstellar.dyson.count; },
@@ -3669,6 +3731,7 @@ const interstellarProjects = {
                     return `<div>${loc('interstellar_dyson_sphere_title')}</div>`;
                 }
             },
+            type: 'megaproject',
             reqs: { proxima: 3, dyson: 1 },
             queue_size: 10,
             queue_complete(){ return 100 - global.interstellar.dyson_sphere.count; },
@@ -3722,6 +3785,7 @@ const interstellarProjects = {
                     return `<div>${loc('interstellar_orichalcum_sphere_desc')}</div>`;
                 }
             },
+            type: 'megaproject',
             reqs: { proxima: 3, dyson: 2 },
             queue_size: 10,
             queue_complete(){ return 100 - global.interstellar.orichalcum_sphere.count; },
@@ -3776,6 +3840,7 @@ const interstellarProjects = {
                     return `<div>${loc('interstellar_elysanite_sphere_desc')}</div>`;
                 }
             },
+            type: 'megaproject',
             reqs: { proxima: 3, dyson: 3 },
             queue_size: 50,
             queue_complete(){ return 1000 - global.interstellar.elysanite_sphere.count; },
@@ -3844,6 +3909,7 @@ const interstellarProjects = {
             id: 'interstellar-nexus',
             title: loc('interstellar_nexus_title'),
             desc(){ return `<div>${loc('interstellar_nexus_title')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Money.name])}</div>`; },
+            type: 'outpost',
             reqs: { nebula: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('nexus', offset, 900000, 1.24, 'interstellar'); },
@@ -3894,6 +3960,7 @@ const interstellarProjects = {
             id: 'interstellar-harvester',
             title: loc('interstellar_harvester_title'),
             desc: `<div>${loc('interstellar_harvester_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_nebula_name')])}</div>`,
+            type: 'mining',
             reqs: { nebula: 2 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('harvester', offset, 650000, 1.28, 'interstellar'); },
@@ -3929,6 +3996,7 @@ const interstellarProjects = {
             id: 'interstellar-elerium_prospector',
             title: loc('interstellar_elerium_prospector_title'),
             desc: `<div>${loc('interstellar_elerium_prospector_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_nebula_name')])}</div>`,
+            type: 'mining',
             reqs: { nebula: 3 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('elerium_prospector', offset, 825000, 1.28, 'interstellar'); },
@@ -3990,6 +4058,7 @@ const interstellarProjects = {
             id: 'interstellar-neutron_miner',
             title: loc('interstellar_neutron_miner_title'),
             desc(){ return `<div>${loc('interstellar_neutron_miner_desc')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Helium_3.name])}</div>`; },
+            type: 'mining',
             reqs: { neutron: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('neutron_miner', offset, 1000000, 1.32, 'interstellar'); },
@@ -4027,6 +4096,7 @@ const interstellarProjects = {
             id: 'interstellar-citadel',
             title: loc('interstellar_citadel_title'),
             desc: `<div>${loc('interstellar_citadel_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            type: 'power',
             reqs: { neutron: 1, high_tech: 15 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('citadel', offset, 5000000, 1.25, 'interstellar'); },
@@ -4087,6 +4157,7 @@ const interstellarProjects = {
             id: 'interstellar-stellar_forge',
             title: loc('interstellar_stellar_forge_title'),
             desc: `<div>${loc('interstellar_stellar_forge_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            type: 'industry',
             reqs: { star_forge: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('stellar_forge', offset, 1200000, 1.25, 'interstellar'); },
@@ -4182,6 +4253,7 @@ const interstellarProjects = {
             id: 'interstellar-far_reach',
             title: loc('interstellar_far_reach'),
             desc: `<div>${loc('interstellar_far_reach_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            type: 'science',
             reqs: { blackhole: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('far_reach', offset, 1000000, 1.32, 'interstellar'); },
@@ -4225,6 +4297,7 @@ const interstellarProjects = {
                     return `<div>${loc('interstellar_stellar_engine')}</div>`;
                 }
             },
+            type: 'megaproject',
             reqs: { blackhole: 3 },
             queue_size: 10,
             queue_complete(){ return 100 - global.interstellar.stellar_engine.count; },
@@ -4301,6 +4374,7 @@ const interstellarProjects = {
             id: 'interstellar-mass_ejector',
             title: loc('interstellar_mass_ejector'),
             desc: `<div>${loc('interstellar_mass_ejector')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            type: 'utility',
             reqs: { blackhole: 5 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('mass_ejector', offset, 750000, 1.25, 'interstellar'); },
@@ -4444,6 +4518,7 @@ const interstellarProjects = {
                     return `<div>${loc('interstellar_stargate')}</div>`;
                 }
             },
+            type: 'megaproject',
             reqs: { stargate: 3 },
             condition(){
                 return global.interstellar.stargate.count >= 200 ? false : true;
@@ -4502,6 +4577,7 @@ const interstellarProjects = {
             desc(){
                 return `<div>${loc('interstellar_stargate')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'megaproject',
             reqs: { stargate: 4 },
             condition(){
                 return global.interstellar.stargate.count >= 200 ? true : false;
@@ -4580,6 +4656,7 @@ const interstellarProjects = {
                     return `<div>${loc('interstellar_space_elevator')}</div>`;
                 }
             },
+            type: 'megaproject',
             reqs: { ascension: 4 },
             condition(){
                 return global.interstellar.space_elevator.count >= 100 ? false : true;
@@ -4634,6 +4711,7 @@ const interstellarProjects = {
                     return `<div>${loc('interstellar_gravity_dome')}</div>`;
                 }
             },
+            type: 'megaproject',
             reqs: { ascension: 5 },
             condition(){
                 return global.interstellar.gravity_dome.count >= 100 ? false : true;
@@ -4689,6 +4767,7 @@ const interstellarProjects = {
                     return `<div>${loc('interstellar_ascension_machine')}</div>`;
                 }
             },
+            type: 'megaproject',
             reqs: { ascension: 6 },
             condition(){
                 return global.interstellar.ascension_machine.count >= 100 ? false : true;
@@ -4743,6 +4822,7 @@ const interstellarProjects = {
             id: 'interstellar-ascension_trigger',
             title: loc('interstellar_ascension_machine'),
             desc(){ return `<div>${loc('interstellar_ascension_machine')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            type: 'megaproject',
             wiki: false,
             reqs: { ascension: 7 },
             condition(){
@@ -4854,6 +4934,7 @@ const interstellarProjects = {
             id: 'interstellar-thermal_collector',
             title: loc('interstellar_thermal_collector'),
             desc: loc('interstellar_thermal_collector'),
+            type: 'power',
             reqs: { ascension: 6 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('thermal_collector', offset, 5000000, 1.08, 'interstellar'); },
@@ -4983,6 +5064,7 @@ const galaxyProjects = {
             id: 'galaxy-starbase',
             title: loc('galaxy_starbase'),
             desc(){ return `<div>${loc('galaxy_starbase')}</div><div class="has-text-special">${loc('requires_power_space',[global.resource.Food.name])}</div>`; },
+            type: 'outpost',
             reqs: { gateway: 2 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('starbase', offset, 4200000, 1.25, 'galaxy'); },
@@ -5030,6 +5112,7 @@ const galaxyProjects = {
             id: 'galaxy-ship_dock',
             title: loc('galaxy_ship_dock'),
             desc: `<div>${loc('galaxy_ship_dock')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            type: 'outpost',
             reqs: { gateway: 4 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('ship_dock', offset, 3600000, 1.25, 'galaxy'); },
@@ -5081,6 +5164,7 @@ const galaxyProjects = {
             desc(){
                 return `<div>${loc('galaxy_bolognium_ship_desc')}</div><div class="has-text-special">${loc('galaxy_starbase_support',[global.resource.Helium_3.name])}</div>`;
             },
+            type: 'ship',
             reqs: { gateway: 3 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('bolognium_ship', offset, 1400000, 1.22, 'galaxy'); },
@@ -5124,6 +5208,7 @@ const galaxyProjects = {
             desc(){
                 return `<div>${loc('galaxy_scout_ship')}</div><div class="has-text-special">${loc('galaxy_starbase_support',[global.resource.Helium_3.name])}</div>`;
             },
+            type: 'ship',
             reqs: { andromeda: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('scout_ship', offset, 1600000, 1.25, 'galaxy'); },
@@ -5176,6 +5261,7 @@ const galaxyProjects = {
             desc(){
                 return `<div>${loc('galaxy_corvette_ship')}</div><div class="has-text-special">${loc('galaxy_starbase_support',[global.resource.Helium_3.name])}</div>`;
             },
+            type: 'ship',
             reqs: { andromeda: 2 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('corvette_ship', offset, 4500000, 1.25, 'galaxy'); },
@@ -5228,6 +5314,7 @@ const galaxyProjects = {
             desc(){
                 return `<div>${loc('galaxy_frigate_ship')}</div><div class="has-text-special">${loc('galaxy_starbase_support',[global.resource.Helium_3.name])}</div>`;
             },
+            type: 'ship',
             reqs: { andromeda: 3 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('frigate_ship', offset, 18000000, 1.25, 'galaxy'); },
@@ -5281,6 +5368,7 @@ const galaxyProjects = {
             desc(){
                 return `<div>${loc('galaxy_cruiser_ship')}</div><div class="has-text-special">${loc('galaxy_starbase_support',[global.resource.Deuterium.name])}</div>`;
             },
+            type: 'ship',
             reqs: { andromeda: 4 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('cruiser_ship', offset, 75000000, 1.25, 'galaxy'); },
@@ -5334,6 +5422,7 @@ const galaxyProjects = {
             desc(){
                 return `<div>${loc('galaxy_dreadnought')}</div><div class="has-text-special">${loc('galaxy_starbase_support',[global.resource.Deuterium.name])}</div>`;
             },
+            type: 'ship',
             reqs: { andromeda: 5 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('dreadnought', offset, 225000000, 1.25, 'galaxy'); },
@@ -5398,6 +5487,7 @@ const galaxyProjects = {
             id: 'galaxy-gateway_station',
             title: loc('galaxy_gateway_station'),
             desc(){ return `<div>${loc('galaxy_gateway_station_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            type: 'outpost',
             reqs: { stargate: 4 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('gateway_station', offset, 5000000, 1.25, 'galaxy'); },
@@ -5446,6 +5536,7 @@ const galaxyProjects = {
             id: 'galaxy-telemetry_beacon',
             title: loc('galaxy_telemetry_beacon'),
             desc(){ return `<div>${loc('galaxy_telemetry_beacon')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            type: 'science',
             reqs: { stargate: 5 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('telemetry_beacon', offset, 2250000, 1.25, 'galaxy'); },
@@ -5502,6 +5593,7 @@ const galaxyProjects = {
             id: 'galaxy-gateway_depot',
             title: loc('galaxy_gateway_depot'),
             desc: `<div>${loc('galaxy_gateway_depot')}</div>`,
+            type: 'storage',
             reqs: { gateway: 5 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('gateway_depot', offset, 4000000, 1.25, 'galaxy'); },
@@ -5560,6 +5652,7 @@ const galaxyProjects = {
             id: 'galaxy-defense_platform',
             title: loc('galaxy_defense_platform'),
             desc(){ return `<div>${loc('galaxy_defense_platform')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            type: 'military',
             reqs: { stargate: 6 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('defense_platform', offset, 750000, 1.25, 'galaxy'); },
@@ -5643,6 +5736,7 @@ const galaxyProjects = {
             id: 'galaxy-embassy',
             title: loc('galaxy_embassy'),
             desc(){ return `<div>${loc('galaxy_embassy')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Food.name])}</div>`; },
+            type: 'outpost',
             reqs: { xeno: 4 },
             queue_complete(){ return 1 - global.galaxy.embassy.count; },
             cost: {
@@ -5708,6 +5802,7 @@ const galaxyProjects = {
             desc(){
                 return `<div>${structName('dormitory')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'housing',
             reqs: { xeno: 6 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('dormitory', offset, 10000000, 1.25, 'galaxy'); },
@@ -5748,6 +5843,7 @@ const galaxyProjects = {
             desc(){
                 return `<div>${loc('galaxy_symposium')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'science',
             reqs: { xeno: 6 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('symposium', offset, 8000000, 1.25, 'galaxy'); },
@@ -5792,6 +5888,7 @@ const galaxyProjects = {
             desc(){
                 return `<div>${loc('galaxy_freighter')}</div><div class="has-text-special">${loc('galaxy_crew_fuel',[global.resource.Helium_3.name])}</div>`;
             },
+            type: 'ship',
             reqs: { xeno: 5 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('freighter', offset, 6000000, 1.2, 'galaxy'); },
@@ -5852,6 +5949,7 @@ const galaxyProjects = {
             desc(){
                 return loc('galaxy_consulate_desc',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].home]);
             },
+            type: 'outpost',
             reqs: { xeno: 8 },
             queue_complete(){ return 1 - global.galaxy.consulate.count; },
             cost: {
@@ -5897,6 +5995,7 @@ const galaxyProjects = {
             desc(){
                 return `<div>${loc('galaxy_resort')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'entertainment',
             reqs: { xeno: 9 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('resort', offset, traitCostMod('untrustworthy',33000000), 1.25, 'galaxy'); },
@@ -5937,6 +6036,7 @@ const galaxyProjects = {
             desc(){
                 return `<div>${loc('galaxy_vitreloy_plant')}</div><div class="has-text-special">${loc('galaxy_vitreloy_plant_desc')}</div>`;
             },
+            type: 'industry',
             reqs: { xeno: 10 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('vitreloy_plant', offset, 35000000, 1.25, 'galaxy'); },
@@ -5974,6 +6074,7 @@ const galaxyProjects = {
             desc(){
                 return `<div>${loc('galaxy_super_freighter')}</div><div class="has-text-special">${loc('galaxy_crew_fuel',[global.resource.Helium_3.name])}</div>`;
             },
+            type: 'ship',
             reqs: { xeno: 9 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('super_freighter', offset, 28000000, 1.2, 'galaxy'); },
@@ -6108,6 +6209,7 @@ const galaxyProjects = {
             id: 'galaxy-foothold',
             title: loc('galaxy_foothold'),
             desc(){ return `<div>${loc('galaxy_foothold')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Elerium.name])}</div>`; },
+            type: 'outpost',
             reqs: { conflict: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('foothold', offset, 25000000, 1.25, 'galaxy'); },
@@ -6152,6 +6254,7 @@ const galaxyProjects = {
             desc(){
                 return `<div>${loc('galaxy_armed_miner')}</div>`;
             },
+            type: 'mining',
             reqs: { conflict: 2 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('armed_miner', offset, 5000000, 1.25, 'galaxy'); },
@@ -6203,6 +6306,7 @@ const galaxyProjects = {
             desc(){
                 return `<div>${loc('galaxy_ore_processor')}</div>`;
             },
+            type: 'industry',
             reqs: { conflict: 3 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('ore_processor', offset, 3000000, 1.25, 'galaxy'); },
@@ -6235,6 +6339,7 @@ const galaxyProjects = {
             id: 'galaxy-scavenger',
             title: loc('galaxy_scavenger'),
             desc: loc('galaxy_scavenger_desc'),
+            type: 'ship',
             reqs: { conflict: 4 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('scavenger', offset, 7500000, 1.25, 'galaxy'); },
@@ -6374,6 +6479,7 @@ const galaxyProjects = {
             desc(){
                 return `<div>${loc('galaxy_minelayer')}</div>`;
             },
+            type: 'military',
             reqs: { chthonian: 2 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('minelayer', offset, 9000000, 1.25, 'galaxy'); },
@@ -6425,6 +6531,7 @@ const galaxyProjects = {
             desc(){
                 return `<div>${loc('galaxy_excavator')}</div>`;
             },
+            type: 'mining',
             reqs: { chthonian: 3 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('excavator', offset, 12000000, 1.25, 'galaxy'); },
@@ -6461,6 +6568,7 @@ const galaxyProjects = {
             desc(){
                 return `<div>${loc('galaxy_raider')}</div>`;
             },
+            type: 'ship',
             reqs: { chthonian: 3 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('raider', offset, 12000000, 1.25, 'galaxy'); },

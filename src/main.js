@@ -11,7 +11,7 @@ import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMul
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
-import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, randomCoord } from './truepath.js';
+import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, randomCoord, atShipyard } from './truepath.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
 import { defineGovernor, govern, govActive, removeTask } from './governor.js';
@@ -12512,9 +12512,13 @@ function longLoop(){
                         if (ship.path){ ship.path = false; }
                     }
                     if (ship.damage > 0 && (p_on['shipyard'] || p_on['adv_shipyard'])){
-                        ship.damage--;
+                        // In dry dock the crews have the yard's facilities, so repairs go twice as fast.
+                        ship.damage -= atShipyard(ship) ? 2 : 1;
+                        if (ship.damage < 0){ ship.damage = 0; }
                     }
-                    if (ship.location !== 'spc_dwarf' && Math.rand(0, 10) === 0){
+                    // Wear and tear finds ships everywhere except inside a yard; being under way counts
+                    // as exposed even on the leg home.
+                    if (!atShipyard(ship) && Math.rand(0, 10) === 0){
                         let dm = ship.location === 'spc_triton' ? 2 : 1;
                         switch (ship.armor){
                             case 'steel':
@@ -12986,7 +12990,7 @@ function longLoop(){
             }
 
             // Scout Moon
-            if (!global.race['orbit_decayed'] && global.tech.luna === 2 && global.space.shipyard.ships.some(s => s.location === 'spc_moon' && s.transit === 0)){
+            if (global.tech.resettle >= 7 && !global.race['orbit_decayed'] && global.tech.luna === 2 && global.space.shipyard.ships.some(s => s.location === 'spc_moon' && s.transit === 0)){
                 global.tech.luna = 3;
                 global.settings.space.moon = true;
                 renderSpace();
@@ -12994,7 +12998,7 @@ function longLoop(){
             }
 
             // Scout Mars
-            if (global.tech['mars'] && global.tech.mars === 5 && global.space.shipyard.ships.some(s => s.location === 'spc_red' && s.transit === 0)){
+            if (global.tech.resettle >= 7 && global.tech['mars'] && global.tech.mars === 5 && global.space.shipyard.ships.some(s => s.location === 'spc_red' && s.transit === 0)){
                 global.tech.mars = 6;
                 global.settings.space.red = true;
                 renderSpace();
@@ -13006,6 +13010,14 @@ function longLoop(){
                 }
 
                 salvageShip(2,planetName().red,'tau_gas2');
+            }
+
+            // Scout Mercury
+            if (global.tech.resettle >= 9 && global.tech['hell'] && global.tech.hell === 1 && global.space.shipyard.ships.some(s => s.location === 'spc_hell' && s.transit === 0)){
+                global.tech.hell = 2;
+                global.settings.space.hell = true;
+                renderSpace();
+                messageQueue(loc('scout_spc_hell',[planetName().hell]),'info',false,['progress']);
             }
 
             // Detect Signals
