@@ -8177,38 +8177,57 @@ export function drawMap() {
     }
     ctx.setLineDash([]);
 
+    // Ships under way, collapsed into what actually gets drawn. A fleet flies as one unit on identical
+    // trip data (see sendShipTo), so every member would otherwise stack a dot, a trail and a name on the
+    // exact same pixel; it draws once instead, labelled with its size. Ships not in a fleet, and a fleet
+    // that is down to a single ship, keep their own dot and name.
+    let shipMarks = [];
+    {
+        let fleets = {};
+        for (let ship of global.space.shipyard.ships) {
+            if (ship.transit <= 0){ continue; }
+            if (global.tech['syard_fleet'] && ship.fleet){
+                let key = `${ship.location}|${ship.transit}`;
+                if (fleets[key]){ fleets[key].count++; continue; }
+                fleets[key] = { ship, count: 1 };
+                shipMarks.push(fleets[key]);
+            }
+            else {
+                shipMarks.push({ ship, count: 1 });
+            }
+        }
+    }
+
     // Ship trail
     ctx.fillStyle = "#0000ff";
     ctx.strokeStyle = "#0000ff";
-    for (let ship of global.space.shipyard.ships) {
-        if (ship.transit > 0) {
-            // Draw in the ship's reference-star frame (see shipRefStar): a pure translation of every
-            // point, so the trail geometry is unchanged but the coordinates near the ship stay small.
-            let ref = shipRefStar(ship);
-            ctx.save();
-            ctx.translate(pX(ref), pY(ref));
-            ctx.beginPath();
-            ctx.setLineDash([0.1, 0.4]);
-            let here = rel(ship.xy, ref);
-            ctx.moveTo(pX(here), pY(here));
-            if (ship.path){
-                // Multi-leg wormhole route: draw the full remaining flight path through each
-                // waypoint still ahead of the ship (entry gate -> exit gate -> destination).
-                let trip = ship.dist > 0 ? 1 - (ship.transit / ship.dist) : 0;
-                for (let i=0; i<ship.path.length; i++){
-                    if (ship.path[i].tn > trip){
-                        let q = rel(ship.path[i], ref);
-                        ctx.lineTo(pX(q), pY(q));
-                    }
+    for (let { ship } of shipMarks) {
+        // Draw in the ship's reference-star frame (see shipRefStar): a pure translation of every
+        // point, so the trail geometry is unchanged but the coordinates near the ship stay small.
+        let ref = shipRefStar(ship);
+        ctx.save();
+        ctx.translate(pX(ref), pY(ref));
+        ctx.beginPath();
+        ctx.setLineDash([0.1, 0.4]);
+        let here = rel(ship.xy, ref);
+        ctx.moveTo(pX(here), pY(here));
+        if (ship.path){
+            // Multi-leg wormhole route: draw the full remaining flight path through each
+            // waypoint still ahead of the ship (entry gate -> exit gate -> destination).
+            let trip = ship.dist > 0 ? 1 - (ship.transit / ship.dist) : 0;
+            for (let i=0; i<ship.path.length; i++){
+                if (ship.path[i].tn > trip){
+                    let q = rel(ship.path[i], ref);
+                    ctx.lineTo(pX(q), pY(q));
                 }
             }
-            else {
-                let q = rel(ship.destination, ref);
-                ctx.lineTo(pX(q), pY(q));
-            }
-            ctx.stroke();
-            ctx.restore();
         }
+        else {
+            let q = rel(ship.destination, ref);
+            ctx.lineTo(pX(q), pY(q));
+        }
+        ctx.stroke();
+        ctx.restore();
     }
 
     let setColor = function(id){
@@ -8311,20 +8330,18 @@ export function drawMap() {
     // Ships
     ctx.fillStyle = "#0000ff";
     ctx.strokeStyle = "#0000ff";
-    for (let ship of global.space.shipyard.ships) {
-        if (ship.transit > 0) {
-            let ref = shipRefStar(ship);
-            let here = rel(ship.xy, ref);
-            ctx.save();
-            ctx.translate(pX(ref), pY(ref));
-            ctx.beginPath();
-            // A marker, not a body: sized in screen pixels rather than AU. The old fixed 0.1 map
-            // units was reasonable while planets were drawn at arbitrary sizes, but against real
-            // radii it is five times Earth and half the Sun.
-            ctx.arc(pX(here), pY(here), SHIP_DOT_PX / mapScale, 0, Math.PI * 2, true);
-            ctx.fill();
-            ctx.restore();
-        }
+    for (let { ship } of shipMarks) {
+        let ref = shipRefStar(ship);
+        let here = rel(ship.xy, ref);
+        ctx.save();
+        ctx.translate(pX(ref), pY(ref));
+        ctx.beginPath();
+        // A marker, not a body: sized in screen pixels rather than AU. The old fixed 0.1 map
+        // units was reasonable while planets were drawn at arbitrary sizes, but against real
+        // radii it is five times Earth and half the Sun.
+        ctx.arc(pX(here), pY(here), SHIP_DOT_PX / mapScale, 0, Math.PI * 2, true);
+        ctx.fill();
+        ctx.restore();
     }
 
     ctx.shadowOffsetX = 2;
@@ -8334,18 +8351,18 @@ export function drawMap() {
 
     ctx.fillStyle = "#009aff";
     ctx.font = `${20 / mapScale}px serif`;
-    // Ship names
-    for (let ship of global.space.shipyard.ships) {
-        if (ship.transit > 0) {
-            let ref = shipRefStar(ship);
-            let here = rel(ship.xy, ref);
-            ctx.save();
-            ctx.translate(pX(ref), pY(ref));
-            // Offset in screen pixels too, so the name sits by the dot at every zoom instead of
-            // drifting further out the further you zoom in.
-            ctx.fillText(ship.name, pX(here) + SHIP_LABEL_PX / mapScale, pY(here) - SHIP_LABEL_PX / mapScale);
-            ctx.restore();
-        }
+    // Ship names — a fleet is labelled by its size rather than by whichever member happens to be first.
+    for (let mark of shipMarks) {
+        let ship = mark.ship;
+        let ref = shipRefStar(ship);
+        let here = rel(ship.xy, ref);
+        ctx.save();
+        ctx.translate(pX(ref), pY(ref));
+        // Offset in screen pixels too, so the name sits by the dot at every zoom instead of
+        // drifting further out the further you zoom in.
+        let label = mark.count > 1 ? loc('outer_shipyard_fleet_map',[mark.count]) : ship.name;
+        ctx.fillText(label, pX(here) + SHIP_LABEL_PX / mapScale, pY(here) - SHIP_LABEL_PX / mapScale);
+        ctx.restore();
     }
 
     ctx.fillStyle = "#ffa500";

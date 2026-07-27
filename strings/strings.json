@@ -7996,6 +7996,7 @@
   "outer_shipyard_hull": "Hull",
   "outer_shipyard_arrive": "Arrive at %0 in %1 days",
   "outer_shipyard_fleet": "Fleet",
+  "outer_shipyard_fleet_map": "Fleet (%0)",
   "outer_shipyard_fleet_details": "Ship Details",
   "outer_shipyard_fleet_sort": "Auto Sort",
   "outer_shipyard_class_corvette": "Corvette",
