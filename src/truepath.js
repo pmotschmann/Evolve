@@ -4394,6 +4394,53 @@ export function trackInfestation(){
     }
 }
 
+export function salvageShip(qty, location, sLocation, eventStyle){
+    if (qty > 0){
+        let salvaged = 0;
+        for (let i=0; i<qty; i++){
+            if (global.race.inactive?.ships && global.race.inactive.ships.length > 0){
+                let idx = Math.floor(seededRandom(0,global.race.inactive.ships.length));
+                let ship = global.race.inactive.ships.splice(idx,1)[0];
+                ship.location = sLocation;
+                ship.xy = genXYcoord(sLocation);
+                ship.origin = deepClone(ship.xy);
+                ship.destination = deepClone(ship.xy);
+                ship.transit = 0;
+                ship.dist = 0;
+                ship.damage = Math.floor(seededRandom(75,90));
+                ship.fueled = false;
+                let num = 1;
+                let name = ship.name;
+                while (global.space.shipyard.ships.filter(s => s.name === name).length > 0){
+                    num++;
+                    name = ship.name + ` ${num}`;
+                }
+                ship.name = name;
+                global.space.shipyard.ships.push(ship);
+                salvaged++;
+            }
+        }
+        if (salvaged > 0){
+            if (eventStyle){
+                let key = `scout_salvage_ship${Math.rand(0,10)}`;
+                messageQueue(loc(key,[location]),'info',false,['progress']);
+            }
+            else {
+                if (salvaged === 1){
+                    messageQueue(loc('scout_spc_found_ship',[location]),'info',false,['progress']);
+                }
+                else {
+                    messageQueue(loc('scout_spc_found_ships',[location,salvaged]),'info',false,['progress']);
+                }
+            }
+            drawShipYard();
+        }
+        else {
+            messageQueue(loc('scout_salvage_ship_fail',[location]),'info',false,['progress']);
+        }
+    }
+}
+
 export function renderTauCeti(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 1 || global.settings.spaceTabs !== 6)){
         return;
@@ -5422,6 +5469,14 @@ function drawShips(){
         }
     });
     regionNames['tauceti'] = loc('tech_era_tauceti');
+    // Temporary coordinates are locations too, so a ship parked on one names it rather than showing
+    // a blank button. Included whether or not they are still active — a ship sitting on a signal
+    // that has gone quiet still has to say where it is.
+    if (global.race['tempCoordinates']){
+        Object.keys(global.race.tempCoordinates).forEach(function(key){
+            if (global.race.tempCoordinates[key]){ regionNames[key] = global.race.tempCoordinates[key].n; }
+        });
+    }
 
     for (let i=0; i<global.space.shipyard.ships.length; i++){
         let ship = global.space.shipyard.ships[i];
@@ -5606,6 +5661,8 @@ function tauEnableSoldiers(){
 }
 
 function calcLandingPoint(ship, planet) {
+    // A temp point sits still, so there is no orbit to lead — the landing point is the point itself.
+    if (tempCoord(planet) || !spacePlanetStats[planet]) { return genXYcoord(planet); }
     if (spacePlanetStats[planet].startype) { return genXYcoord(planet); }
     // Tau Ceti bodies orbit their star, which sits far from the home-system origin.
     // Mirror genXYcoord so the orbit center and eccentricity match the body's actual
@@ -6484,7 +6541,43 @@ export function orbitPoint(planet, deg){
     return { x: origin.x + u, y: origin.y + v * Math.cos(inc), z: origin.z + v * Math.sin(inc) };
 }
 
+// How far out of the plane a random point may stray by default, as a fraction of its distance from
+// the target. A twentieth is a couple of degrees — enough to look scattered rather than perfectly
+// flat, without lifting the point clear of the system it belongs to.
+const RANDOM_COORD_SPREAD = 0.05;
+
+// A random point lying between minAU and maxAU from a target, kept near that target's plane.
+//
+// `target` is either a spacePlanetStats id or any {x,y,z} point. Bearing around the target is
+// uniform, and the radius is drawn through a square root so points spread evenly across the annulus
+// instead of bunching against its inner edge.
+//
+// The out-of-plane axis is z. Bodies orbit in x/y and are tilted about x by their inclination (see
+// orbitPoint), so z is the normal to the orbital plane and the one to hold near zero — spreading in
+// x/y with a small z gives a point scattered across the system's disc, which is what staying "in the
+// plane" means here. Pass `spreadAU` to set that deviation explicitly in AU.
+export function randomCoord(target, minAU, maxAU, spreadAU){
+    let origin = typeof target === 'string' ? genXYcoord(target) : target;
+    let min = Math.min(minAU, maxAU);
+    let max = Math.max(minAU, maxAU);
+    let dist = Math.sqrt(Math.random() * (max * max - min * min) + min * min);
+    let bearing = Math.random() * Math.PI * 2;
+    let spread = spreadAU === undefined ? dist * RANDOM_COORD_SPREAD : Math.abs(spreadAU);
+    return {
+        x: origin.x + Math.cos(bearing) * dist,
+        y: origin.y + Math.sin(bearing) * dist,
+        z: (origin.z || 0) + (Math.random() * 2 - 1) * spread
+    };
+}
+
 export function genXYcoord(planet){
+    // Temporary coordinates are fixed points held outside the table.
+    let temp = tempCoord(planet);
+    if (temp){ return { x: temp.x, y: temp.y, z: temp.z || 0 }; }
+    // A location that is neither in the table nor a live temp point — a signal that expired while a
+    // ship sat on it, say. Fall back to the origin rather than throwing, which would take the map
+    // and the tick loop down with it.
+    if (!spacePlanetStats[planet]){ return { x: 0, y: 0, z: 0 }; }
     // Stars have fixed coordinates and are not positioned by distance/angle from the Sun.
     if (spacePlanetStats[planet].startype){
         return { x: spacePlanetStats[planet].x, y: spacePlanetStats[planet].y, z: spacePlanetStats[planet].z || 0 };
@@ -6553,7 +6646,33 @@ const jumpLinks = [
 
 // Which star system a location belongs to. Tau Ceti bodies carry star:'tauceti'; everything else
 // (including the Tau Ceti star region itself) resolves explicitly, defaulting to the Sun system.
+// --- Temporary coordinates ------------------------------------------------------------------
+// global.race.tempCoordinates holds ad-hoc points a ship can be sent to — detected signals and the
+// like — keyed by an id, each { n: display name, a: active, s: spacePlanetStats key of the star it
+// sits at, x, y, z }. They are fixed points rather than table entries, so they neither orbit nor appear in
+// spacePlanetStats, and every place that resolves a location has to know about them.
+//
+// `a` only gates whether the point is offered as a destination; a ship already sitting on an
+// inactive one still has to resolve, so this ignores it.
+function tempCoord(location){
+    let temps = global.race['tempCoordinates'];
+    return temps && typeof location === 'string' && temps.hasOwnProperty(location) ? temps[location] : false;
+}
+
+// The system a temp point belongs to, normalised to the keys locSystem hands out: 'sun' for the home
+// system, otherwise the star's own id. `s` is a spacePlanetStats key, so this is mostly a pass
+// through — it also tolerates `s` naming a body rather than its star, and falls back to the home
+// system for anything unrecognised, which at worst costs a wormhole shortcut rather than the trip.
+function tempSystem(entry){
+    let body = entry.s ? spacePlanetStats[entry.s] : false;
+    if (!body || entry.s === 'spc_sun'){ return 'sun'; }
+    if (body.star){ return body.star; }
+    return body.startype ? entry.s : 'sun';
+}
+
 function locSystem(loc){
+    let temp = tempCoord(loc);
+    if (temp){ return tempSystem(temp); }
     if (loc === 'tauceti'){ return 'tauceti'; }
     return spacePlanetStats[loc] && spacePlanetStats[loc].star ? spacePlanetStats[loc].star : 'sun';
 }
@@ -6562,6 +6681,8 @@ function locSystem(loc){
 // like Tau Ceti itself isn't labelled with its own name twice. locSystem returns a system key rather
 // than a table id, and the Sun's is 'sun' while its entry is spc_sun, hence the step across.
 function locSystemName(location){
+    // Temp points need no special case: their `s` is a table key, so locSystem resolves them to the
+    // same system keys everything else uses and the label lookup below covers them.
     let sys = locSystem(location);
     if (location === sys){ return ''; }
     let star = sys === 'sun' ? spacePlanetStats.spc_sun : spacePlanetStats[sys];
@@ -8406,6 +8527,16 @@ function solarModal(){
 }
 
 // Populate the ship dispatch modal with a button for each valid destination.
+// Active temporary coordinates, as destinations. Offered to every ship regardless of class — an
+// explorer is barred from the ordinary regions by its drive, not from a set of coordinates.
+function tempDestinations(ship){
+    let temps = global.race['tempCoordinates'];
+    if (!temps){ return []; }
+    return Object.keys(temps)
+        .filter(key => temps[key] && temps[key].a && ship.location !== key)
+        .map(key => ({ region: key, name: temps[key].n }));
+}
+
 // Everywhere a single ship could be sent.
 function shipDestinations(ship){
     const spaceRegions = spaceTech();
@@ -8414,7 +8545,7 @@ function shipDestinations(ship){
         if (ship.location !== 'tauceti'){
             dests.push({ region: 'tauceti', name: loc('tech_era_tauceti') });
         }
-        return dests;
+        return dests.concat(tempDestinations(ship));
     }
     Object.keys(spaceRegions).forEach(function(region){
         if (ship.location !== region){
@@ -8438,7 +8569,7 @@ function shipDestinations(ship){
             }
         }
     });
-    return dests;
+    return dests.concat(tempDestinations(ship));
 }
 
 function shipDispatchModal(id, modal){

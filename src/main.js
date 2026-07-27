@@ -11,7 +11,7 @@ import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMul
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
-import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation } from './truepath.js';
+import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, randomCoord } from './truepath.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
 import { defineGovernor, govern, govActive, removeTask } from './governor.js';
@@ -12979,6 +12979,28 @@ function longLoop(){
                     global.space.wonder_statue.count = 1;
                     global.space.wonder_statue.razed = 0;
                 }
+
+                salvageShip(2,planetName().red,'tau_gas2');
+            }
+
+            // Detect Signals
+            if (global.tech.mars >= 6 && global.tech.resettle === 8 && Math.rand(0,5) === 0){
+                global.tech.resettle = 9;
+                global.race['tempCoordinates'] = {};
+                for (let i=1; i<=5; i++){
+                    let c = randomCoord('spc_sun',0.4,5);
+                    global.race.tempCoordinates[`beacon${i}`] = {n: loc(`scout_beacon`,[i]), a: true, s: 'spc_sun', x: c.x, y: c.y, z: c.z};
+                }
+                messageQueue(loc('scout_signal_found'),'info',false,['progress']);
+                renderSpace();
+            }
+            else if (global.tech.resettle >= 9 && global.space.shipyard.ships.some(s => s.location.startsWith('beacon') && s.transit === 0 && global.race.tempCoordinates.hasOwnProperty(s.location) && global.race.tempCoordinates[s.location].a)){
+                global.space.shipyard.ships.forEach(s => {
+                    if (s.location.startsWith('beacon') && s.transit === 0 && global.race.tempCoordinates.hasOwnProperty(s.location) && global.race.tempCoordinates[s.location].a){
+                        global.race.tempCoordinates[s.location].a = false;
+                        salvageShip(1,global.race.tempCoordinates[s.location].n,'tau_gas2',true);
+                    }
+                });
             }
         }
 
