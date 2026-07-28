@@ -20,7 +20,7 @@ const spaceProjects = {
             name(){
                 return races[global.race.species].home;
             },
-            desc(){ return global.tech['resettle'] && global.tech.resettle >= 8 ? loc('space_home_info_desc_infested') : loc('space_home_info_desc'); },
+            desc(){ return global.tech['resettle'] && global.tech.resettle >= 8 ? (global.race['tidal_decay'] ? loc('space_home_info_desc_mystery') : loc('space_home_info_desc_infested')) : loc('space_home_info_desc'); },
             zone: 'inner',
             showDest(){
                 return {r: true, l: global.settings.space.home || global.tech?.resettle >= 3};
@@ -1720,7 +1720,7 @@ const spaceProjects = {
             },
             queue_complete(){ return global.tech.hell >= 3 ? 0 : 1; },
             cost: {
-                Helium_3(offset,wiki){ return +fuel_adjust(5000000,false,wiki).toFixed(0); }
+                Helium_3(offset,wiki){ return +fuel_adjust(12500000,false,wiki).toFixed(0); }
             },
             effect(){
                 return loc('space_hell_salvage_ship_effect');

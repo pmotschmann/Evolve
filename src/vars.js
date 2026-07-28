@@ -1333,7 +1333,7 @@ if (global['tauceti'] && global.tauceti['refueling_station'] && !global.tauceti.
 
 global['version'] = '1.5.0';
 delete global['revision'];
-global['beta'] = 13;
+global['beta'] = 14;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
@@ -1579,6 +1579,11 @@ delete global.settings.keyMap['d'];
 if (typeof global.settings.qAny === 'undefined'){
     global.settings['qAny'] = false;
 }
+// Standing orders for the fleet. Disengage hull %, whether a repaired ship flies itself back, and how
+// far it must be repaired first.
+if (typeof global.settings.fleetCmd === 'undefined'){
+    global.settings['fleetCmd'] = { flee: 25, ret: true, retHull: 100, quiet: false };
+}
 if (typeof global.settings.sPackOn === 'undefined'){
     global.settings['sPackOn'] = true;
 }
@@ -1617,7 +1622,7 @@ export function setupStats(){
         'sac','tsac','know','tknow','portals','dkills','attacks','cfood','tfood','cstone','tstone',
         'clumber','tlumber','mad','bioseed','cataclysm','blackhole','ascend','descend','apotheosis',
         'terraform','aiappoc','matrix','retire','eden','geck','dark','harmony','blood','cores','artifact',
-        'supercoiled','cattle','tcattle','murders','tmurders','psykill','tpsykill','pdebt','uDead'
+        'supercoiled','cattle','tcattle','murders','tmurders','psykill','tpsykill','pdebt','uDead','zkills'
     ].forEach(function(k){
         if (!global.stats.hasOwnProperty(k)){
             global.stats[k] = 0;
@@ -2478,6 +2483,7 @@ export function clearStates(){
     global.stats.cattle = 0;
     global.stats.murders = 0;
     global.stats.uDead = 0;
+    global.stats.zkills = 0;
     global.settings.at = 0;
 
     global.settings.showEvolve = true;

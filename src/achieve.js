@@ -45,16 +45,21 @@ const achieve_list = {
     ],
     challenge: [
         'joyless','steelen','dissipated','technophobe','wheelbarrow','iron_will','failed_history','banana','pathfinder',
-        'ashanddust','exodus','obsolete','bluepill','retired','gross','lamentis','overlord',`adam_eve`,'endless_hunger'
+        'ashanddust','exodus','obsolete','bluepill','retired','gross','lamentis','overlord',`adam_eve`,'endless_hunger',
+        'zombie_genocider'
     ],
 };
+
+// Undead destroyed for each rank of the Zombie Genocider achievement, lowest first.
+const zombieGenociderTiers = [53594,100004,200008,400016,800032];
 
 const flairData = {
     colonist: [flib('name')]
 };
 
 const descData = {
-    trade: [750,50]
+    trade: [750,50],
+    zombie_genocider: [zombieGenociderTiers[0].toLocaleString()]
 };
 
 export const achievements = {};
@@ -852,6 +857,15 @@ export function checkAchievements(){
 
     if (global.stats.dkills >= 666000000){
         unlockFeat('demon_slayer');
+    }
+
+    // Zombie Genocider ranks off the running kill count.
+    if (global.stats.zkills >= zombieGenociderTiers[0]){
+        let rank = 0;
+        for (let i=0; i<zombieGenociderTiers.length; i++){
+            if (global.stats.zkills >= zombieGenociderTiers[i]){ rank = i + 1; }
+        }
+        unlockAchieve('zombie_genocider',false,rank);
     }
 
     // total achievements feat
@@ -2866,6 +2880,9 @@ export function drawStats(){
     }
     if (global.stats.uDead > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_unstable")}</span> {{ format(s.uDead) }}</div>`);
+    }
+    if (global.stats.zkills > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_zombie_kills")}</span> {{ format(s.zkills) }}</div>`);
     }
 
     if (global.resource.hasOwnProperty('Thermite') && global.resource.Thermite.amount > 0){

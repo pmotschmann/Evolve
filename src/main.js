@@ -13031,7 +13031,7 @@ function longLoop(){
                 global.race['tempCoordinates'] = {};
                 let hulls = ['destroyer','destroyer','frigate','corvette','corvette'];
                 for (let i=hulls.length-1; i>0; i--){
-                    let j = Math.rand(0,i+1);
+                    let j = Math.floor(seededRandom(0,i+1,true));
                     let swap = hulls[i];
                     hulls[i] = hulls[j];
                     hulls[j] = swap;

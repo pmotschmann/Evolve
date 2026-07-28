@@ -10,6 +10,7 @@ import { jobScale } from './jobs.js';
 import { templeCount } from './actions.js';
 import { astrologySign, astroVal } from './seasons.js';
 import { warhead } from './resets.js';
+import { fleetCmd, fleetCmdUnlocked, fleetCmdRange } from './truepath.js';
 
 // Sets up government in civics tab
 export function defineGovernment(define){
@@ -83,7 +84,72 @@ export function defineGarrison(){
     $('#military').append($(`<div id="fortress"></div>`));
     
     buildGarrison(garrison,true);
+    defineFleetCommand();
     defineMad();
+}
+
+// Standing orders for the fleet, between the garrison and the MAD panel. Only appears once the surface
+// of Earth starts shooting at ships in orbit — before that there is nothing to disengage from.
+export function defineFleetCommand(){
+    if (!fleetCmdUnlocked() || $(`#military`).length === 0 || $(`#fleetCmd`).length > 0){ return; }
+
+    let cfg = fleetCmd();
+    let panel = $(`<div id="fleetCmd" class="fleetCmd tile is-child"></div>`);
+    // Sits below the garrison and above MAD. Called both while the tab is being built (before MAD
+    // exists) and the moment the surface opens fire (after it does), so place relative to MAD when it
+    // is already there rather than relying on append order.
+    if ($(`#mad`).length > 0){ panel.insertBefore($(`#mad`)); }
+    else { $('#military').append(panel); }
+
+    panel.append(`<div class="header has-text-warning" role="heading" aria-level="2">${loc('fleet_cmd')}</div>`);
+    panel.append(`<div class="fleetCmdSep"></div>`);
+
+    let fleeLabel = loc('fleet_cmd_flee',[fleetCmdRange.flee.min,fleetCmdRange.flee.max]);
+    panel.append(`<div class="fleetCmdOpt optFlee">
+        <span class="has-text-caution" aria-label="${fleeLabel}">${fleeLabel}</span>
+        <b-numberinput @update:model-value="pct('flee')" min="${fleetCmdRange.flee.min}" max="${fleetCmdRange.flee.max}" v-model="flee" :controls="false"></b-numberinput>
+    </div>`);
+
+    panel.append(`<div class="fleetCmdOpt optRet">
+        <b-checkbox class="patrol" v-model="ret">${loc('fleet_cmd_ret')}</b-checkbox>
+    </div>`);
+
+    let hullLabel = loc('fleet_cmd_ret_hull',[fleetCmdRange.retHull.min,fleetCmdRange.retHull.max]);
+    panel.append(`<div class="fleetCmdOpt optRetHull">
+        <span class="has-text-caution" aria-label="${hullLabel}">${hullLabel}</span>
+        <b-numberinput @update:model-value="pct('retHull')" min="${fleetCmdRange.retHull.min}" max="${fleetCmdRange.retHull.max}" v-model="retHull" :controls="false"></b-numberinput>
+    </div>`);
+
+    panel.append(`<div class="fleetCmdOpt optQuiet">
+        <b-checkbox class="patrol" v-model="quiet">${loc('fleet_cmd_quiet')}</b-checkbox>
+    </div>`);
+
+    panel.append(`<div class="fleetCmdSep"></div>`);
+
+    vBind({
+        el: '#fleetCmd',
+        data: cfg,
+        methods: {
+            // b-numberinput's min/max only bound its own +/- controls; a typed value goes straight
+            // through. Clamp on the model event and keep it a whole number — these drive an automatic
+            // order and a NaN would strand the fleet. It has to be @update:model-value, not :input:
+            // the latter binds a prop evaluated at render, so it only ever fires on a redraw, and this
+            // panel has no per-tick $forceUpdate to supply one.
+            pct(key){
+                let range = fleetCmdRange[key];
+                let val = Math.round(Number(cfg[key]));
+                if (isNaN(val)){ val = range.min; }
+                cfg[key] = Math.max(range.min,Math.min(range.max,val));
+            }
+        }
+    });
+
+    // Selected by class rather than position: the separators already shifted these indexes once, and
+    // they will again the next time an option is added.
+    popover('fleetCmdFlee',function(){ return loc('fleet_cmd_flee_desc'); },{ elm: `#fleetCmd .optFlee` });
+    popover('fleetCmdRet',function(){ return loc('fleet_cmd_ret_desc'); },{ elm: `#fleetCmd .optRet` });
+    popover('fleetCmdRetHull',function(){ return loc('fleet_cmd_ret_hull_desc'); },{ elm: `#fleetCmd .optRetHull` });
+    popover('fleetCmdQuiet',function(){ return loc('fleet_cmd_quiet_desc'); },{ elm: `#fleetCmd .optQuiet` });
 }
 
 export function commisionGarrison(){

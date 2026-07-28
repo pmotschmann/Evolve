@@ -6,7 +6,7 @@ import { payCosts, housingLabel, wardenLabel, structName, updateQueueNames, draw
 import { races, checkAltPurgatory, renderPsychicPowers, renderSupernatural, traitCostMod } from './races.js';
 import { drawResourceTab, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry, jobScale, jobName, limitCraftsmen } from './jobs.js';
-import { buildGarrison, checkControlling, govTitle } from './civics.js';
+import { buildGarrison, checkControlling, govTitle, defineFleetCommand } from './civics.js';
 import { renderSpace, planetName, int_fuel_adjust } from './space.js';
 import { drawHellObservations } from './portal.js';
 import { setOrbits, drawShipYard, jumpGateShutdown, jumpGateRestart } from './truepath.js';
@@ -13317,6 +13317,10 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            // Fleet Command brings the Fleet Tactical Command panel with it.
+            defineFleetCommand();
         }
     },
     alien_outpost: {

@@ -3755,6 +3755,43 @@ a {
         }
     }
 
+    .fleetCmd {
+        margin-top: 1rem;
+        max-width: 28rem;
+
+        .header {
+            margin-bottom: .25rem;
+        }
+
+        // Rules bracketing the options, so the block reads as its own group between the garrison above
+        // and MAD below.
+        .fleetCmdSep {
+            width: 100%;
+            border-bottom: .0625rem solid;
+            margin: .375rem 0;
+            opacity: 0.5;
+        }
+
+        .fleetCmdOpt {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: .25rem 0;
+
+            .b-numberinput {
+                max-width: 7rem;
+            }
+        }
+    }
+
+    .shipReturn {
+        margin-left: .5rem;
+
+        .retCancel {
+            margin-left: .25rem;
+        }
+    }
+
     .mad {
         margin-top: 1rem;
         max-width: 28rem;

@@ -9,7 +9,7 @@ import { universe_types } from './../space.js';
 import { swissKnife } from './../tech.js';
 import { actions, structName } from './../actions.js';
 import { astroVal, astrologySign } from './../seasons.js';
-import { shipAttackPower, sensorRange, shipCrewSize, shipPower } from './../truepath.js';
+import { shipAttackPower, sensorRange, shipCrewSize, shipPower, zWarfareVars } from './../truepath.js';
 import { sideMenu, infoBoxBuilder, createRevealSection, createCalcSection, getSolarName } from './functions.js';
 
 export function mechanicsPage(content){
@@ -871,6 +871,128 @@ export function mechanicsPage(content){
         tpShipsIntelCalc(intel_calc);
         
         sideMenu('add',`mechanics-gameplay`,`tp_ships`,loc('wiki_mechanics_tp_ships'));
+    }
+
+    { // Truepath Z-Warfare
+        // Every figure below is read from the live game constants, so retuning the systems retunes the
+        // documentation with them.
+        let z = zWarfareVars();
+        let pct = v => `${+(v * 100).toFixed(1)}%`;
+        // Fleet targets come back as region keys; getSolarName wants the bare planet.
+        let regionLabel = r => getSolarName(r.replace('spc_',''));
+
+        let zwar = infoBoxBuilder(mainContent,{ name: 'zwar', template: 'mechanics', label: loc('wiki_mechanics_zwar'), paragraphs: 3, h_level: 2,
+            para_data: {
+                2: [getSolarName('red'),getSolarName('home')],
+                3: [loc('wiki_mechanics_tp_ships')]
+            },
+            data_link: {
+                3: ['wiki.html#mechanics-gameplay-tp_ships']
+            }
+        });
+
+        { // Ground war against an established horde
+            let ground = infoBoxBuilder(zwar,{ name: 'zwar_ground', template: 'mechanics', label: loc('wiki_mechanics_zwar_ground'), paragraphs: 6, break: [3,5], h_level: 2,
+                para_data: {
+                    1: [loc('crew'),loc('civics_garrison')],
+                    2: [pct(z.orbitalStrike),loc('firepower')],
+                    4: [z.zombiesPerRazing.toLocaleString(),z.razeCap],
+                    5: [getSolarName('red')],
+                    6: [getSolarName('home')]
+                }
+            });
+
+            let ground_reveal = createRevealSection(ground,'mechanics','zwar_ground_targets',loc('wiki_mechanics_zwar_ground_targets'));
+            ground_reveal.append(`<div>${loc('wiki_mechanics_zwar_ground_targets_desc')}</div>`);
+        }
+
+        { // The infested fleet
+            let fleet = infoBoxBuilder(zwar,{ name: 'zwar_fleet', template: 'mechanics', label: loc('wiki_mechanics_zwar_fleet'), paragraphs: 6, break: [3,5], h_level: 2,
+                para_data: {
+                    1: [getSolarName('red'),getSolarName('home')],
+                    2: [z.delayMin,z.delayMax],
+                    3: [pct(z.oddsStart),pct(z.oddsEnd),z.rampDays],
+                    4: [pct(z.loadStart),z.rampDays],
+                    5: [pct(0.01),pct(0.02)],
+                    6: [z.targets.map(t => regionLabel(t)).join(', ')]
+                }
+            });
+
+            let hull_reveal = createRevealSection(fleet,'mechanics','zwar_fleet_hulls',loc('wiki_mechanics_zwar_fleet_hulls'));
+            Object.keys(z.hulls).forEach(function(cls){
+                let live = typeof z.hulls[cls].avail === 'function' ? z.hulls[cls].avail() : !!z.hulls[cls].avail;
+                hull_reveal.append(`<div><span class="has-text-caution">${loc('outer_shipyard_class_'+cls)}</span>: <span class="has-text-warning">${z.hulls[cls].horde().toLocaleString()}</span> <span class="has-text-${live ? 'success' : 'danger'}">${loc(live ? 'wiki_mechanics_zwar_hull_active' : 'wiki_mechanics_zwar_hull_inactive')}</span></div>`);
+            });
+
+            let parts_reveal = createRevealSection(fleet,'mechanics','zwar_fleet_parts',loc('wiki_mechanics_zwar_fleet_parts'));
+            Object.keys(z.parts).forEach(function(part){
+                let list = z.parts[part].map(v => loc(`outer_shipyard_${part}_${v}`)).join(', ');
+                parts_reveal.append(`<div><span class="has-text-caution">${loc('outer_shipyard_'+part)}</span>: <span class="has-text-warning">${list}</span></div>`);
+            });
+        }
+
+        { // Ship to ship combat
+            let combat = infoBoxBuilder(zwar,{ name: 'zwar_combat', template: 'mechanics', label: loc('wiki_mechanics_zwar_combat'), paragraphs: 8, break: [3,5,7], h_level: 2,
+                para_data: {
+                    2: [getSolarName('home')],
+                    4: [loc('space_scan_effectiveness'),z.speedWeight],
+                    5: [loc('outer_shipyard_sensor')],
+                    6: [z.damageDivisor,loc('outer_shipyard_armor'),loc('outer_shipyard_class')],
+                    8: [loc('crew')]
+                },
+                data_link: {
+                    4: ['wiki.html#mechanics-gameplay-tp_ships_sensors']
+                }
+            });
+
+            { // Accuracy table
+                let acc = createRevealSection(combat,'mechanics','zwar_combat_acc',loc('wiki_mechanics_zwar_combat_acc'));
+                let speeds = [10,25,50,100];
+                let head = speeds.map(s => `<span class="has-text-caution">${s}</span>`).join(' | ');
+                acc.append(`<div><span class="has-text-warning">${loc('wiki_mechanics_zwar_combat_acc_head',[loc('space_scan_effectiveness'),loc('speed')])}</span> ${head}</div>`);
+                [10,30,50,100,200,400].forEach(function(scan){
+                    let row = speeds.map(function(spd){
+                        return `<span class="has-text-warning">${pct(scan / (scan + spd * z.speedWeight))}</span>`;
+                    }).join(' | ');
+                    acc.append(`<div><span class="has-text-caution">${scan}</span>: ${row}</div>`);
+                });
+            }
+
+            { // Enemy sensor accuracy
+                let foe = createRevealSection(combat,'mechanics','zwar_combat_foe',loc('wiki_mechanics_zwar_combat_foe'));
+                Object.keys(z.sensorAccuracy).forEach(function(sensor){
+                    foe.append(`<div><span class="has-text-caution">${loc('outer_shipyard_sensor_'+sensor)}</span>: <span class="has-text-warning">${pct(z.sensorAccuracy[sensor])}</span></div>`);
+                });
+            }
+
+            { // Soak tables
+                let soak = createRevealSection(combat,'mechanics','zwar_combat_soak',loc('wiki_mechanics_zwar_combat_soak'));
+                soak.append(`<div><span class="has-text-warning">${loc('outer_shipyard_armor')}</span></div>`);
+                Object.keys(z.armorSoak).forEach(function(a){
+                    soak.append(`<div><span class="has-text-caution">${loc('outer_shipyard_armor_'+a)}</span>: <span class="has-text-warning">${pct(z.armorSoak[a])}</span></div>`);
+                });
+                soak.append(`<div><span class="has-text-warning">${loc('outer_shipyard_class')}</span></div>`);
+                z.classOrder.forEach(function(c){
+                    if (!z.classSoak.hasOwnProperty(c)){ return; }
+                    soak.append(`<div><span class="has-text-caution">${loc('outer_shipyard_class_'+c)}</span>: <span class="has-text-warning">${pct(z.classSoak[c])}</span></div>`);
+                });
+            }
+        }
+
+        { // Earth shooting back, and the standing orders
+            infoBoxBuilder(zwar,{ name: 'zwar_orders', template: 'mechanics', label: loc('wiki_mechanics_zwar_orders'), paragraphs: 6, break: [3], h_level: 2,
+                para_data: {
+                    1: [z.groundFireDay,getSolarName('home')],
+                    2: [z.groundFireMin,z.groundFireMax,loc('outer_shipyard_armor')],
+                    3: [loc('fleet_cmd'),loc('tab_military')],
+                    4: [loc('fleet_cmd_flee_plain'),z.fleetCmd.flee.min,z.fleetCmd.flee.max],
+                    5: [loc('fleet_cmd_ret')],
+                    6: [loc('fleet_cmd_ret_hull_plain'),z.fleetCmd.retHull.min,z.fleetCmd.retHull.max]
+                }
+            });
+        }
+
+        sideMenu('add',`mechanics-gameplay`,`zwar`,loc('wiki_mechanics_zwar'));
     }
 
     { // Seeded Randomness

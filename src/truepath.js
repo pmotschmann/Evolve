@@ -4531,6 +4531,405 @@ export function trackInfestation(){
             infestationCombat(region);
         }
     });
+
+    zFleetDay();
+    if (fleetCmdUnlocked()){ fleetCmdDay(); }
+}
+
+// --- Infested fleet -----------------------------------------------------------------------------
+// Once Mars is cleared the horde on Earth stops waiting to be visited and starts sending hulls of its
+// own. Ships lift from spc_home, cross to a colony and are gone on arrival, leaving their cargo of
+// infected behind as a new horde. Launches are rare and small at first and grow on both counts the
+// longer the campaign runs.
+
+// Where the infested can reach. spc_red and spc_hell are open from the start; the rest unlock as the
+// player pushes outward and the horde follows.
+function zFleetTargets(){
+    let targets = ['spc_red','spc_hell'];
+    if (global.tech['luna'] && global.tech.luna >= 3){ targets.push('spc_moon'); }
+    return targets;
+}
+
+// Hulls the horde flies, smallest first. `avail` gates the class: a function is called at every launch,
+// so a class can be unlocked on tech, horde size, elapsed time or anything else, and a plain false means
+// it never flies. `horde` is the infected a full hold delivers, and a bigger hull simply holds more of
+// them. Only the two smallest are in service; the rest are written out and switched off, waiting for a
+// condition to be dropped in where the false is.
+const zFleetHulls = {
+    corvette:      { avail(){ return true; },  horde(){ return 250; } },
+    frigate:       { avail(){ return true; },  horde(){ return 500; } },
+    destroyer:     { avail(){ return false; }, horde(){ return 1200; } },
+    cruiser:       { avail(){ return false; }, horde(){ return 2500; } },
+    battlecruiser: { avail(){ return false; }, horde(){ return 5000; } },
+    dreadnought:   { avail(){ return false; }, horde(){ return 10000; } }
+};
+
+// The classes cleared to fly right now.
+function zFleetClasses(){
+    return Object.keys(zFleetHulls).filter(function(cls){
+        let avail = zFleetHulls[cls].avail;
+        return typeof avail === 'function' ? avail() : avail ? true : false;
+    });
+}
+
+// Zombie ships are constructed with legacy tech only
+const zFleetParts = {
+    power: ['solar','diesel','fission','fusion','elerium'],
+    weapon: ['railgun','laser','p_laser','plasma','phaser','disruptor'],
+    armor: ['steel','alloy','neutronium'],
+    engine: ['ion','tie','pulse','photon','vacuum'],
+    sensor: ['visual','radar','lidar','quantum']
+};
+
+const zFleetDelayMin = 10;      // game days after the trigger before the first hull can lift
+const zFleetDelayMax = 25;
+const zFleetRampDays = 150;     // days of raiding before launches and cargoes reach full strength
+const zFleetOddsStart = 0.08;   // chance of a launch on the first day
+const zFleetOddsEnd = 0.55;     // ...and once the ramp is complete
+const zFleetLoadStart = 0.25;   // share of a hull's cargo that lands on the first day
+
+// One day of the infested fleet: arm the countdown when the conditions are met, advance anything under
+// way, then decide whether another hull lifts.
+function zFleetDay(){
+    // The whole system belongs to the resettlement arc; nothing here happens on a run that never went
+    // back to Sol.
+    if (!global.tech['resettle']){ return; }
+
+    if (!global.race['zfleet']){
+        // Mercury salvaged and Mars swept clean: the horde on Earth notices, and starts preparing.
+        if (global.tech['hell'] && global.tech.hell >= 3 && global.race.zhorde['spc_red'] === 0){
+            global.race['zfleet'] = { t: Math.floor(seededRandom(zFleetDelayMin,zFleetDelayMax + 1,true)), d: 0, s: [] };
+        }
+        return;
+    }
+
+    if (global.tech.resettle === 9){
+        global.tech.resettle = 10;
+    }
+
+    let fleet = global.race.zfleet;
+    if (!fleet.s){ fleet.s = []; }
+
+    zFleetMove(fleet);
+
+    if (fleet.t > 0){
+        fleet.t--;
+        if (fleet.t === 0){
+            messageQueue(loc('zfleet_first_launch',[regionName('spc_home')]),'danger',false,['combat','progress']);
+        }
+        return;
+    }
+
+    fleet.d++;
+    let ramp = Math.min(fleet.d / zFleetRampDays, 1);
+    if (seededRandom(0,1,true) < zFleetOddsStart + (zFleetOddsEnd - zFleetOddsStart) * ramp){
+        zFleetLaunch(fleet,ramp);
+    }
+
+    zGroundFire(fleet);
+}
+
+const zGroundFireDay = 50;      // days after the first hull lifts before the surface starts shooting back
+const zGroundFireMin = 2;       // hull points an unarmoured ship in orbit loses per day once it does
+const zGroundFireMax = 9;
+
+// Share of a hit each armour lets through. The ratio matches the 8 / 6 / 4 the wear-and-tear roll in
+// the main loop already uses, so neutronium plating turns aside half of what steel does wherever the
+// damage is coming from.
+const shipArmorSoak = { steel: 1, alloy: 0.75, neutronium: 0.5 };
+export function shipArmorFactor(ship){
+    return ship && shipArmorSoak.hasOwnProperty(ship.armor) ? shipArmorSoak[ship.armor] : 1;
+}
+
+// Share of a hit each hull size takes, smallest to largest. A bigger ship spreads the same round over
+// more structure, so a round that guts a corvette barely marks a dreadnought. Explorers are not a size
+// tier and fall through to taking it in full.
+const shipClassSoak = {
+    corvette: 1,
+    frigate: 0.85,
+    destroyer: 0.7,
+    cruiser: 0.55,
+    battlecruiser: 0.4,
+    dreadnought: 0.3
+};
+export function shipClassFactor(ship){
+    return ship && shipClassSoak.hasOwnProperty(ship.class) ? shipClassSoak[ship.class] : 1;
+}
+
+// Whatever taught the horde to fly also taught it to aim. Some weeks after the first launch, anything
+// of yours sitting over Earth starts taking fire from the ground.
+function zGroundFire(fleet){
+    if (typeof fleet.l !== 'number' || fleet.d - fleet.l < zGroundFireDay){ return; }
+    if (!global.space.hasOwnProperty('shipyard') || !global.space.shipyard.hasOwnProperty('ships')){ return; }
+
+    let hit = 0;
+    global.space.shipyard.ships.forEach(function(ship){
+        if (ship.location !== 'spc_home' || ship.transit > 0){ return; }
+        // Armour soaks part of every hit, but never all of it — a barrage that lands still scores.
+        let dmg = seededRandom(zGroundFireMin,zGroundFireMax + 1,true) * shipArmorFactor(ship);
+        ship.damage += Math.max(1,Math.floor(dmg));
+        if (ship.damage > 90){ ship.damage = 90; }
+        hit++;
+    });
+
+    if (hit > 0 && !fleet.gf){
+        fleet.gf = true;
+        messageQueue(loc('zfleet_ground_fire',[regionName('spc_home')]),'danger',false,['combat','progress']);
+    }
+}
+
+// --- Space combat -------------------------------------------------------------------------------
+// The horde's hulls are running a blockade, not looking for a battle: wherever they meet your ships
+// both sides trade a single volley and the survivors carry on.
+
+const zCombatSpeedWeight = 2;      // how hard a target's speed works against a firing solution
+const zCombatDamageDivisor = 50;  // firepower per point of hull damage
+
+// A defending fleet aims as one body: every dish at the location feeds the same firing solution, so
+// what matters is the scan total rather than which hull carries which sensor. The chance closes on a
+// certainty as that total climbs and falls away as the target gets faster — at the reference point of
+// 100 scan against a middling hull it is a coin toss, a slow target is comfortably hit at the same
+// scan, a fast one mostly is not, and enough scan overcomes even that.
+function playerAccuracy(scan,foe){
+    if (scan <= 0){ return 0; }
+    let evade = Math.max(1,shipSpeed(foe)) * zCombatSpeedWeight;
+    return scan / (scan + evade);
+}
+
+// The horde aims with whatever dish each hull was built with, one ship at a time. No shared solution —
+// these are scavenged wrecks flown by the dead, not a fleet.
+const zSensorAccuracy = { visual: 0.15, radar: 0.3, lidar: 0.45, quantum: 0.6 };
+function foeAccuracy(foe){
+    return zSensorAccuracy.hasOwnProperty(foe.sensor) ? zSensorAccuracy[foe.sensor] : 0.25;
+}
+
+// Firepower turned into hull damage. The target's plating soaks part of it and its size soaks the rest:
+// the same round means far less to a dreadnought than to a corvette. A hit still always scores.
+function combatDamage(attacker,defender){
+    let raw = shipAttackPower(attacker) / zCombatDamageDivisor;
+    return Math.max(1,Math.round(raw * shipArmorFactor(defender) * shipClassFactor(defender)));
+}
+
+// Your ships holding a location, able to shoot.
+function guardsAt(location){
+    if (!global.space.hasOwnProperty('shipyard') || !global.space.shipyard.hasOwnProperty('ships')){ return []; }
+    return global.space.shipyard.ships.filter(s => s.location === location && s.transit === 0);
+}
+
+// A ship shot out from under its crew. The hull is gone from the roster and the crew with it.
+function destroyPlayerShip(ship,location){
+    let crew = shipCrewSize(ship);
+    let idx = global.space.shipyard.ships.indexOf(ship);
+    if (idx >= 0){ global.space.shipyard.ships.splice(idx,1); }
+    global.civic.garrison.crew -= crew;
+    if (global.civic.garrison.crew < 0){ global.civic.garrison.crew = 0; }
+    soldierDeath(crew);
+    messageQueue(loc('zcombat_ship_lost',[ship.name,regionName(location),crew]),'danger',false,['combat']);
+}
+
+// One exchange at a location. Your ships fire, then whatever is left of theirs fires back — one volley
+// each, then the raiders press on. Returns true if any of the raiders were stopped here.
+function zEngage(location,foes){
+    let guards = guardsAt(location);
+    if (guards.length === 0 || foes.length === 0){ return false; }
+
+    let scan = guards.reduce((t,s) => t + (sensorRange(s) || 0), 0);
+    let downed = [];
+
+    guards.forEach(function(ship){
+        let live = foes.filter(f => f.damage < 100);
+        if (live.length === 0){ return; }
+        let foe = live[Math.floor(seededRandom(0,live.length,true))];
+        if (seededRandom(0,1,true) >= playerAccuracy(scan,foe)){ return; }
+        foe.damage += combatDamage(ship,foe);
+        if (foe.damage >= 100){
+            foe.damage = 100;
+            downed.push(foe);
+        }
+    });
+
+    // Return fire from everything still flying.
+    let lost = [];
+    foes.forEach(function(foe){
+        if (foe.damage >= 100){ return; }
+        let live = guards.filter(s => s.damage < 100);
+        if (live.length === 0){ return; }
+        let ship = live[Math.floor(seededRandom(0,live.length,true))];
+        if (seededRandom(0,1,true) >= foeAccuracy(foe)){ return; }
+        ship.damage += combatDamage(foe,ship);
+        if (ship.damage >= 100){
+            ship.damage = 100;
+            lost.push(ship);
+        }
+    });
+
+    messageQueue(loc('zcombat_engage',[guards.length,foes.length,regionName(location)]),'warning',false,['combat']);
+    lost.forEach(function(ship){ destroyPlayerShip(ship,location); });
+    downed.forEach(function(foe){
+        messageQueue(loc('zcombat_foe_destroyed',[foe.name,regionName(location)]),'success',false,['combat']);
+    });
+
+    return downed.length > 0;
+}
+
+// Strip out raiders that were shot down, so a wreck never reaches its target.
+function zCullDowned(list){
+    return list.filter(f => f.damage < 100);
+}
+
+// Every tunable the Z-warfare systems run on, gathered in one place so the wiki can document the live
+// numbers rather than repeating them. Read-only by convention — callers should not mutate what comes
+// back, they should change the constants above.
+export function zWarfareVars(){
+    return {
+        // Ground war against a horde already on a world
+        orbitalStrike: orbitalStrikeRate,
+        zombiesPerRazing: zombiesPerRazing,
+        razeCap: razeCap,
+        hidden: hiddenInfestation,
+        inert: inertInfestation,
+        // The infested fleet
+        delayMin: zFleetDelayMin,
+        delayMax: zFleetDelayMax,
+        rampDays: zFleetRampDays,
+        oddsStart: zFleetOddsStart,
+        oddsEnd: zFleetOddsEnd,
+        loadStart: zFleetLoadStart,
+        hulls: zFleetHulls,
+        parts: zFleetParts,
+        classOrder: shipClassSizes,
+        targets: zFleetTargets(),
+        // Ship to ship combat
+        speedWeight: zCombatSpeedWeight,
+        damageDivisor: zCombatDamageDivisor,
+        sensorAccuracy: zSensorAccuracy,
+        armorSoak: shipArmorSoak,
+        classSoak: shipClassSoak,
+        // Earth shooting back, and the standing orders that answer it
+        groundFireDay: zGroundFireDay,
+        groundFireMin: zGroundFireMin,
+        groundFireMax: zGroundFireMax,
+        fleetCmd: fleetCmdRange,
+        minHull: minHullToLaunch
+    };
+}
+
+// Advance every hull under way. One that arrives has to get past whatever is guarding the place first;
+// survive that and the ship is gone, because it was only ever a delivery, and what it delivers is a
+// horde on the ground.
+function zFleetMove(fleet){
+    let landings = {};
+    for (let i=fleet.s.length-1; i>=0; i--){
+        let ship = fleet.s[i];
+        if (ship.transit > 0){
+            ship.transit--;
+            let trip = ship.dist > 0 ? 1 - (ship.transit / ship.dist) : 1;
+            let o = ship.origin, d = ship.destination;
+            ship.xy.x = o.x + (d.x - o.x) * trip;
+            ship.xy.y = o.y + (d.y - o.y) * trip;
+            ship.xy.z = (o.z || 0) + ((d.z || 0) - (o.z || 0)) * trip;
+
+            // Nearest approach to a gate it has to run: whoever is holding that gate fires today.
+            // Ordered entry first, and a raider stopped at the entry never reaches the exit.
+            while (Array.isArray(ship.gates) && ship.gates.length > 0 && ship.transit <= ship.gates[0].t){
+                let gate = ship.gates.shift();
+                zEngage(gate.l,[ship]);
+                if (ship.damage >= 100){ break; }
+            }
+            if (ship.damage >= 100){
+                fleet.s.splice(i,1);
+                continue;
+            }
+        }
+        if (ship.transit <= 0){
+            fleet.s.splice(i,1);
+            if (!landings[ship.location]){ landings[ship.location] = []; }
+            landings[ship.location].push(ship);
+        }
+    }
+
+    // Everything arriving at the same world this day meets its defenders together, so a lone picket is
+    // not made to fight the same raid several times over.
+    Object.keys(landings).forEach(function(location){
+        let arrivals = landings[location];
+        zEngage(location,arrivals);
+
+        zCullDowned(arrivals).forEach(function(ship){
+            if (!global.race.zhorde.hasOwnProperty(ship.location)){ return; }
+            // A mauled hull spills part of its cargo on the way down: a percent of the horde for every
+            // two percent of hull it lost getting here.
+            let load = Math.max(0,Math.round(ship.load * (1 - ship.damage / 200)));
+            if (load <= 0){ return; }
+            global.race.zhorde[ship.location] += load;
+            messageQueue(loc('zfleet_landing',[ship.name,regionName(ship.location),load.toLocaleString()]),'danger',false,['combat']);
+            // A landing on a region whose horde was a secret gives the game away.
+            if (!global.race['zfound']){ global.race['zfound'] = {}; }
+            global.race.zfound[ship.location] = true;
+        });
+        renderSpace();
+    });
+}
+
+// Send one hull, drawn from whichever classes are cleared to fly. Early raids still land lighter than
+// late ones: the cargo ramp scales whatever the hull would otherwise deliver.
+function zFleetLaunch(fleet,ramp){
+    let targets = zFleetTargets();
+    if (targets.length === 0){ return; }
+    let target = targets[Math.floor(seededRandom(0,targets.length,true))];
+
+    let classes = zFleetClasses();
+    if (classes.length === 0){ return; }
+    let cls = classes[Math.floor(seededRandom(0,classes.length,true))];
+    let hull = zFleetHulls[cls];
+
+    let ship = {
+        class: cls,
+        name: `${loc(`outer_shipyard_class_${cls}`)} ${Math.floor(seededRandom(100,10000,true))}`,
+        location: 'spc_home',
+        xy: genXYcoord('spc_home'),
+        transit: 0, dist: 0, damage: 0, fueled: true
+    };
+    Object.keys(zFleetParts).forEach(function(part){
+        ship[part] = zFleetParts[part][Math.floor(seededRandom(0,zFleetParts[part].length,true))];
+    });
+
+    let trip = planShipTrip(ship,target);
+
+    // Anything you have parked over Earth gets a shot at the raider as it climbs out.
+    if (zEngage('spc_home',[ship])){ return; }
+
+    // The location is the destination the moment it leaves, matching how the player's ships track a
+    // journey, so the arrival check reads the same field either way.
+    ship.location = target;
+    ship.transit = Math.max(trip.transit,1);
+    ship.dist = ship.transit;
+    ship.origin = deepClone(trip.origin);
+    ship.destination = deepClone(trip.destination);
+
+    // A route through a wormhole runs both gates. The path's waypoints carry the fraction of the trip
+    // each one falls at, so work out which day of the crossing the raider is nearest each gate and note
+    // it — a picket stationed there gets its volley as the ship actually passes, rather than the moment
+    // it left Earth. Held as the transit reading the ship will show on that day.
+    ship.gates = [];
+    if (trip.path && trip.path.length >= 4){
+        let route = findWormholeRoute('spc_home',target);
+        if (route){
+            [[route.entry.location,trip.path[1].tn],[route.exit.location,trip.path[2].tn]].forEach(function(gate){
+                let elapsed = Math.round(gate[1] * ship.dist);
+                // Clamped to a day the ship will actually tick through: departure day is already past.
+                let at = Math.min(Math.max(ship.dist - elapsed,0),ship.dist - 1);
+                ship.gates.push({ l: gate[0], t: at });
+            });
+            // Highest remaining transit first, so the entry gate is passed before the exit gate.
+            ship.gates.sort(function(a,b){ return b.t - a.t; });
+        }
+    }
+    ship.load = Math.max(1,Math.round(hull.horde() * (zFleetLoadStart + (1 - zFleetLoadStart) * ramp)));
+
+    fleet.s.push(ship);
+    // Remember the day the first hull ever lifted; the surface batteries wake a while after it.
+    if (typeof fleet.l !== 'number'){ fleet.l = fleet.d; }
+    //messageQueue(loc('zfleet_launch',[ship.name,regionName(target),ship.transit]),'warning',false,['combat']);
 }
 
 // One day of fighting in a single infested region: the fleet in orbit kills what it can, then whatever
@@ -4555,6 +4954,7 @@ function infestationCombat(region){
         let kills = Math.min(Math.floor(seededRandom(0,Math.round(firepower) + 1,true)),global.race.zhorde[region]);
 
         global.race.zhorde[region] -= kills;
+        global.stats.zkills += kills;
 
         if (global.race['ocular_power'] && global.race['ocularPowerConfig'] && global.race.ocularPowerConfig.p){
             global.race.ocularPowerConfig.ds += Math.round(kills * traits.ocular_power.vars()[1]);
@@ -4562,7 +4962,7 @@ function infestationCombat(region){
 
         if (global.race.zhorde[region] <= 0){
             if (kills > 0){
-                messageQueue(loc('infestation_cleared',[regionName(region)]),'success',false,['combat']);
+                //messageQueue(loc('infestation_cleared',[regionName(region)]),'success',false,['combat']);
             }
             return;
         }
@@ -5873,6 +6273,7 @@ function drawShips(){
             row2.append(`<span class="shipStat" v-show="hullShow(${i})"><span class="has-text-warning">${loc(`outer_shipyard_hull`)}</span> <span class="pad" v-bind:class="hullDamage(${i})" v-html="hullText(${i})"></span></span><wbr>`);
 
             row3.append(`<span v-show="show(${i})" class="has-text-caution" v-html="dest(${i})"></span>`);
+            row3.append(`<span v-show="retShow(${i})" class="shipReturn has-text-info"><span v-html="retText(${i})"></span> <a class="retCancel" @click="retCancel(${i})" role="button">${loc(`outer_shipyard_return_cancel`)}</a></span>`);
 
             desc.append(row1);
             desc.append(row2);
@@ -5894,6 +6295,7 @@ function drawShips(){
             row1.append(`<span class="shipStat" v-show="hullShow(${i})"><span class="has-text-warning">${loc(`outer_shipyard_hull`)}</span> <span class="pad" v-bind:class="hullDamage(${i})" v-html="hullText(${i})"></span></span><wbr>`);
 
             row3.append(`<span v-show="show(${i})" class="has-text-caution" v-html="dest(${i})"></span>`);
+            row3.append(`<span v-show="retShow(${i})" class="shipReturn has-text-info"><span v-html="retText(${i})"></span> <a class="retCancel" @click="retCancel(${i})" role="button">${loc(`outer_shipyard_return_cancel`)}</a></span>`);
 
             desc.append(row1);
             desc.append(row3);
@@ -6003,6 +6405,23 @@ function drawShips(){
                 },
                 show(id){
                     return global.space.shipyard.ships[id].transit > 0 ? true : false;
+                },
+                // A ship pulled out of the line for repairs remembers where it was posted. Say so, and
+                // let the player call the arrangement off without having to re-order the ship by hand.
+                retShow(id){
+                    let s = global.space.shipyard.ships[id];
+                    return s && s['ret'] ? true : false;
+                },
+                retText(id){
+                    let s = global.space.shipyard.ships[id];
+                    return s && s['ret'] ? loc('outer_shipyard_return',[regionNames[s.ret] || s.ret]) : '';
+                },
+                retCancel(id){
+                    let s = global.space.shipyard.ships[id];
+                    if (s && s['ret']){
+                        delete s.ret;
+                        drawShips();
+                    }
                 }
             }
         });
@@ -8375,12 +8794,19 @@ export function drawMap() {
                 shipMarks.push({ ship, count: 1 });
             }
         }
+        // Infested hulls inbound from Earth. They never fleet up, and they are drawn in red so a raid
+        // reads as a threat at a glance rather than as one more ship of yours.
+        if (global.race['zfleet'] && global.race.zfleet.s){
+            for (let ship of global.race.zfleet.s){
+                if (ship.transit > 0){ shipMarks.push({ ship, count: 1, foe: true }); }
+            }
+        }
     }
 
     // Ship trail
-    ctx.fillStyle = "#0000ff";
-    ctx.strokeStyle = "#0000ff";
-    for (let { ship } of shipMarks) {
+    for (let { ship, foe } of shipMarks) {
+        ctx.fillStyle = foe ? "#ff0000" : "#0000ff";
+        ctx.strokeStyle = foe ? "#ff0000" : "#0000ff";
         // Draw in the ship's reference-star frame (see shipRefStar): a pure translation of every
         // point, so the trail geometry is unchanged but the coordinates near the ship stay small.
         let ref = shipRefStar(ship);
@@ -8507,9 +8933,9 @@ export function drawMap() {
     }
 
     // Ships
-    ctx.fillStyle = "#0000ff";
-    ctx.strokeStyle = "#0000ff";
-    for (let { ship } of shipMarks) {
+    for (let { ship, foe } of shipMarks) {
+        ctx.fillStyle = foe ? "#ff0000" : "#0000ff";
+        ctx.strokeStyle = foe ? "#ff0000" : "#0000ff";
         let ref = shipRefStar(ship);
         let here = rel(ship.xy, ref);
         ctx.save();
@@ -8528,10 +8954,10 @@ export function drawMap() {
     ctx.shadowBlur = 2;
     ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
 
-    ctx.fillStyle = "#009aff";
     ctx.font = `${20 / mapScale}px serif`;
     // Ship names — a fleet is labelled by its size rather than by whichever member happens to be first.
     for (let mark of shipMarks) {
+        ctx.fillStyle = mark.foe ? "#ff5555" : "#009aff";
         let ship = mark.ship;
         let ref = shipRefStar(ship);
         let here = rel(ship.xy, ref);
@@ -9030,8 +9456,15 @@ function fleetPace(group){
     return group.reduce((a,b) => shipSpeed(a) <= shipSpeed(b) ? a : b);
 }
 
-// The two yards a ship can dock at: Ceres in Sol, and the Tau Ceti gas giant yard.
-const shipyardLocations = ['spc_dwarf','tau_gas2'];
+// Where a damaged ship can be put back together. `avail` is called whenever a ship needs somewhere to go.
+const repairStations = {
+    spc_dwarf: { avail(){ return !global.tech['resettle'] && global.space['shipyard'] && global.space.shipyard.count > 0 ? true : false; } },
+    tau_gas2:  { avail(){ return global.tech['resettle'] && global.tauceti['adv_shipyard'] && global.tauceti.adv_shipyard.count > 0 ? true : false; } }
+};
+
+// Docking is about the place, not whether it is currently staffed, so this covers every station whether
+// or not its condition passes right now.
+const shipyardLocations = Object.keys(repairStations);
 // Hull percentage a ship must have before it is cleared to leave for another destination.
 const minHullToLaunch = 75;
 
@@ -9044,6 +9477,131 @@ export function atShipyard(ship){
 // A hull below minHullToLaunch% is not spaceworthy; the ship is grounded until it is patched up.
 export function shipSpaceworthy(ship){
     return ship ? 100 - ship.damage >= minHullToLaunch : false;
+}
+
+// --- Fleet Tactical Command ---------------------------------------------------------------------
+// Standing orders that run without the player: pull a badly damaged ship out of the line and send it
+// home, then put it back where it was once the yard is done with it.
+
+// Range each percentage option accepts. One definition drives the input's own limits, the clamp behind
+// it and the range shown in its label, so they cannot disagree.
+export const fleetCmdRange = {
+    flee: { min: 0, max: 50 },
+    retHull: { min: 75, max: 100 }
+};
+
+export function fleetCmd(){
+    if (!global.settings['fleetCmd']){
+        global.settings['fleetCmd'] = { flee: 25, ret: true, retHull: 100, quiet: false };
+    }
+    let cfg = global.settings.fleetCmd;
+    // Backfill anything added after a save was written, so a new option is bound to a real value rather
+    // than to undefined the first time the panel is drawn.
+    if (typeof cfg.quiet === 'undefined'){ cfg['quiet'] = false; }
+    // Pull anything saved under an older, wider range back inside the current one.
+    Object.keys(fleetCmdRange).forEach(function(key){
+        let val = Math.round(Number(cfg[key]));
+        if (isNaN(val)){ val = fleetCmdRange[key].min; }
+        cfg[key] = Math.max(fleetCmdRange[key].min,Math.min(fleetCmdRange[key].max,val));
+    });
+    return cfg;
+}
+
+// The panel and the standing orders it configures come with Fleet Command: the logistics that let ships
+// move as a group are the same ones that let them be given orders to follow on their own.
+export function fleetCmdUnlocked(){
+    return global.tech['syard_fleet'] ? true : false;
+}
+
+// The station a ship runs to: of those currently active, whichever it can reach soonest from where it
+// is. Judged on travel time rather than raw distance, so an open wormhole route counts for what it
+// actually saves a failing hull. False when there is nowhere active to run to.
+function repairYard(ship){
+    let best = false;
+    let bestDays = false;
+    Object.keys(repairStations).forEach(function(loc){
+        if (loc === ship.location){ return; }
+        let active = false;
+        try { active = repairStations[loc].avail(); }
+        catch (e){ active = false; }
+        if (!active){ return; }
+
+        let trip = planShipTrip(ship,loc);
+        if (!trip || typeof trip.transit !== 'number'){ return; }
+        if (bestDays === false || trip.transit < bestDays){
+            bestDays = trip.transit;
+            best = loc;
+        }
+    });
+    return best;
+}
+
+// Move a ship without any of the checks that apply to an order the player gives. A ship running for
+// repairs is by definition too damaged to launch normally, and it goes alone.
+function orderShipTo(ship,l){
+    if (!ship || l === ship.location){ return false; }
+    let trip = planShipTrip(ship,l);
+    if (!shipManned(ship)){ global.civic.garrison.crew += shipCrewSize(ship); }
+    ship.location = l;
+    ship.transit = trip.transit;
+    ship.dist = trip.dist;
+    ship.origin = deepClone(trip.origin);
+    ship.destination = deepClone(trip.destination);
+    ship.path = trip.path ? deepClone(trip.path) : false;
+    return true;
+}
+
+// One pass of the standing orders over the whole fleet.
+export function fleetCmdDay(){
+    if (!global.space.hasOwnProperty('shipyard') || !global.space.shipyard.hasOwnProperty('ships')){ return; }
+    let cfg = fleetCmd();
+    let moved = false;
+
+    global.space.shipyard.ships.forEach(function(ship){
+        let hull = 100 - ship.damage;
+
+        // Disengage: a hull that has fallen past the line breaks off, leaves whatever fleet it was
+        // flying with — the rest of the group carries on without it — and runs for a repair yard.
+        if (ship.transit === 0 && !atShipyard(ship) && hull < cfg.flee){
+            let yard = repairYard(ship);
+            if (yard && yard !== ship.location){
+                // Where it was is what it comes back to, unless it was already limping home from
+                // somewhere else, in which case that original posting is the one worth keeping.
+                if (!ship['ret']){ ship['ret'] = ship.location; }
+                ship.fleet = false;
+                if (orderShipTo(ship,yard)){
+                    if (!cfg.quiet){
+                        messageQueue(loc('fleet_cmd_disengage',[ship.name,hull,regionName(yard)]),'warning',false,['combat']);
+                    }
+                    moved = true;
+                }
+            }
+            return;
+        }
+
+        // Return on repair: patched up and still holding a posting to go back to.
+        if (ship['ret'] && ship.transit === 0 && atShipyard(ship)){
+            if (!cfg.ret){ return; }
+            if (hull < cfg.retHull){ return; }
+            let home = ship.ret;
+            delete ship.ret;
+            if (orderShipTo(ship,home)){
+                if (!cfg.quiet){
+                    messageQueue(loc('fleet_cmd_return',[ship.name,regionName(home)]),'success',false,['combat']);
+                }
+                moved = true;
+            }
+            return;
+        }
+
+        // Arriving back where it was posted retires the order.
+        if (ship['ret'] && ship.transit === 0 && ship.location === ship.ret){
+            delete ship.ret;
+            moved = true;
+        }
+    });
+
+    if (moved){ drawShips(); }
 }
 
 // Ships parked at a shipyard are unmanned and draw a crew on departure; anywhere else, or already
@@ -9072,6 +9630,9 @@ function sendShipTo(id, l){
     let trip = planShipTrip(fleetPace(group), l);
     for (let s of group){
         if (!shipManned(s)){ global.civic.garrison.crew += shipCrewSize(s); }
+        // An order from the player overrides the standing one: wherever it was posted before, this is
+        // where it is going now, and it will not wander back on its own.
+        if (s['ret']){ delete s.ret; }
         s.location = l;
         s.transit = trip.transit;
         s.dist = trip.dist;
