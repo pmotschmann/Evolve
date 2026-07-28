@@ -7,7 +7,7 @@ import { loadFoundry, jobScale } from './jobs.js';
 import { defineIndustry, addSmelter } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
 import { actions, payCosts, powerOnNewStruct, initStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, templeCount, casinoEffect, wardenLabel, buildTemplate, structName } from './actions.js';
-import { outerTruthTech, syndicate, drawShipYard, genXYcoord, infestationLabel, infestationMethods } from './truepath.js';
+import { outerTruthTech, syndicate, drawShipYard, genXYcoord, infestationLabel, infestationMethods, salvageShip, salvagePin } from './truepath.js';
 import { production, highPopAdjust } from './prod.js';
 import { defineGovernor, govActive } from './governor.js';
 import { ascend, terraform, apotheosis } from './resets.js';
@@ -1644,7 +1644,7 @@ const spaceProjects = {
             powered(){ return powerCostMod(global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 2 ? 2 : 3); },
             action(args){
                 if (payCosts($(this)[0])){
-                    global.space.spc_casino.count++;
+                    incrementStruct('spc_casino');
                     if (global.tech['theatre'] && !global.race['joyless']){
                         global.civic.entertainer.max += jobScale(1);
                         global.civic.entertainer.display = true;
@@ -1700,6 +1700,38 @@ const spaceProjects = {
                     d: { count: 0 },
                     p: ['swarm_plant','space']
                 };
+            }
+        },
+        salvage_hell: {
+            id: 'space-salvage_hell',
+            title(){
+                let ship = salvagePin('spc_hell');
+                return loc('space_sun_salvage_ship_title',[ship ? ship.name : '']);
+            },
+            desc(){
+                let ship = salvagePin('spc_hell');
+                return `<div>${loc('space_hell_salvage_ship_desc',[ship ? ship.name : '', planetName().hell])}</div>`;
+            },
+            reqs: { hell: 2 },
+            path: ['truepath'],
+            grant: ['hell',3],
+            condition(){
+                return global.tech['hell'] === 2 && salvagePin('spc_hell') ? true : false;
+            },
+            queue_complete(){ return global.tech.hell >= 3 ? 0 : 1; },
+            cost: {
+                Helium_3(offset,wiki){ return +fuel_adjust(5000000,false,wiki).toFixed(0); }
+            },
+            effect(){
+                return loc('space_hell_salvage_ship_effect');
+            },
+            action(args){
+                if (payCosts($(this)[0])){
+                    // Hand over the exact hull the button named, not another of the same class.
+                    salvageShip(1,planetName().hell,'tau_gas2',true,'cruiser','spc_hell');
+                    return true;
+                }
+                return false;
             }
         },
         firework: buildTemplate(`firework`,'space'),
@@ -1891,21 +1923,18 @@ const spaceProjects = {
         salvage_ship: {
             id: 'space-salvage_ship',
             title(){
-                let ship = global.race.inactive?.ships?.[global.race.salvage_ship];
+                let ship = salvagePin('spc_sun');
                 return loc('space_sun_salvage_ship_title',[ship ? ship.name : '']);
             },
             desc(){
-                let ship = global.race.inactive?.ships?.[global.race.salvage_ship];
+                let ship = salvagePin('spc_sun');
                 return `<div>${loc('space_sun_salvage_ship_desc',[ship ? ship.name : ''])}</div>`;
             },
             reqs: { resettle: 4 },
             path: ['truepath'],
             grant: ['resettle',5],
             condition(){
-                return global.tech['resettle'] === 4
-                    && global.race.inactive?.ships?.length > 0
-                    && typeof global.race.salvage_ship === 'number'
-                    && global.race.salvage_ship < global.race.inactive.ships.length ? true : false;
+                return global.tech['resettle'] === 4 && salvagePin('spc_sun') ? true : false;
             },
             queue_complete(){ return global.tech.resettle >= 4 ? 0 : 1; },
             cost: {
@@ -1916,27 +1945,8 @@ const spaceProjects = {
             },
             action(args){
                 if (payCosts($(this)[0])){
-                    let idx = global.race['salvage_ship'];
-                    if (global.race.inactive?.ships && typeof idx === 'number' && idx < global.race.inactive.ships.length){
-                        let ship = global.race.inactive.ships.splice(idx,1)[0];
-                        ship.location = 'tau_gas2';
-                        ship.xy = genXYcoord('tau_gas2');
-                        ship.origin = deepClone(ship.xy);
-                        ship.destination = deepClone(ship.xy);
-                        ship.transit = 0;
-                        ship.dist = 0;
-                        ship.damage = 90;
-                        ship.fueled = false;
-                        let num = 1;
-                        let name = ship.name;
-                        while (global.space.shipyard.ships.filter(s => s.name === name).length > 0){
-                            num++;
-                            name = ship.name + ` ${num}`;
-                        }
-                        ship.name = name;
-                        global.space.shipyard.ships.push(ship);
-                        drawShipYard();
-                    }
+                    // Salvage the specific ship that was targeted
+                    salvageShip(1,spaceProjects.spc_sun.info.name(),'tau_gas2',true,'corvette','spc_sun');
                     return true;
                 }
                 return false;
@@ -6950,6 +6960,7 @@ export function interstellarTech(){
 export function galaxyTech(){
     return galaxyProjects;
 }
+
 
 export function checkSpaceRequirements(era,region,action){
     switch (era){

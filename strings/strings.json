@@ -6755,6 +6755,8 @@
   "space_sun_salvage_ship_title": "Salvage %0",
   "space_sun_salvage_ship_desc": "The derelict hulk of the %0 drifts near the sun. Salvage it and tow it back to your shipyard.",
   "space_sun_salvage_ship_effect": "Recover a derelict ship, adding it to your fleet parked at the shipyard. Your techs will analyze the ship logs for information about the state of the solar system.",
+  "space_hell_salvage_ship_desc": "The crashed hulk of the %0 sits abandoned on the surface of %1. Salvage it and tow it back to your shipyard.",
+  "space_hell_salvage_ship_effect": "Recover a derelict ship, adding it to your fleet parked at the shipyard.",
   "space_sun_swarm_control_title": "Control Station",
   "space_sun_swarm_control_desc": "Swarm Control Station",
   "space_sun_swarm_control_effect1": "Controls up to %0 Swarm Satellites and transmits their power back to civilization.",

@@ -4632,31 +4632,151 @@ function structTitle(cat,region,struct){
     return typeof title === 'function' ? title.call(actions[cat][region][struct]) : title;
 }
 
-export function salvageShip(qty, location, sLocation, eventStyle){
-    if (qty > 0){
+// Hull classes ordered smallest to largest. Explorers are deliberately absent: they are a one-off Tau
+// Ceti hull rather than a size tier, so a class-targeted salvage never returns one.
+const shipClassSizes = ['corvette','frigate','destroyer','cruiser','battlecruiser','dreadnought'];
+
+// The wrecks a salvage would choose between. Asked for nothing in particular, the whole pool. Asked for
+// a class, that exact class if any survive and, failing that, each smaller class in turn down to
+// corvette — so the salvage is never a bigger hull than was requested, but the request is not wasted
+// just because the biggest wrecks are gone. Exported so a button can work out what it is offering
+// without taking it, and so both share one definition of what qualifies.
+export function salvageCandidates(maxClass){
+    let pool = global.race.inactive?.ships;
+    if (!pool || pool.length === 0){ return []; }
+    if (!maxClass){ return pool.slice(); }
+
+    let top = shipClassSizes.indexOf(maxClass);
+    if (top < 0){ return []; }
+    // Largest first, so the search settles for the biggest hull still within the request.
+    for (let i=top; i>=0; i--){
+        let hulls = pool.filter(s => s.class === shipClassSizes[i]);
+        if (hulls.length > 0){ return hulls; }
+    }
+    return [];
+}
+
+// A derelict predates the player's return to Sol, so it carries early-era equipment rather than
+// anything tech-gated — randomised within those tiers so each seeded wreck is its own ship.
+const derelictParts = {
+    power: ['solar','diesel','fission'],
+    weapon: ['railgun','laser','p_laser'],
+    armor: ['steel','alloy'],
+    engine: ['ion','tie','pulse'],
+    sensor: ['visual','radar','lidar']
+};
+
+// Build a random corvette. Salvage that must always have something to offer falls back on this when
+// nothing it can use is adrift. Not added to the wreck pool by the caller unless it wants it there.
+function newDerelict(){
+    let xy = genXYcoord('tau_gas2');
+    let ship = {
+        class: 'corvette',
+        name: getRandomShipName(),
+        location: 'tau_gas2', xy: deepClone(xy), origin: deepClone(xy), destination: deepClone(xy),
+        transit: 0, dist: 0, damage: 0, fueled: false
+    };
+    Object.keys(derelictParts).forEach(function(part){
+        ship[part] = derelictParts[part][Math.floor(seededRandom(0,derelictParts[part].length))];
+    });
+    return ship;
+}
+
+// Reserved wrecks, keyed by whoever reserved them — one shared store rather than a variable per
+// building, so any number of things can hold a hull aside. Being kept here instead of in the inactive
+// pool is what makes a pin safe: salvageCandidates only ever sees the pool, so an ordinary salvage
+// cannot carry off a hull that a button has already promised by name.
+export function salvagePins(){
+    if (!global.race['salvagePins']){ global.race['salvagePins'] = {}; }
+    return global.race.salvagePins;
+}
+
+// The wreck reserved under `key`, or false. Safe to call from a render path — it reserves nothing.
+export function salvagePin(key){
+    return salvagePins()[key] || false;
+}
+
+// Reserve the wreck that the `key` salvage will advertise and hand over, lifting it out of the pool so
+// nothing else can take it. Re-pinning an existing key keeps the hull already reserved. When nothing at
+// or below `maxClass` is adrift a fresh corvette is built, so a button that gates progress always has
+// an answer.
+export function pinSalvage(key,maxClass){
+    let pins = salvagePins();
+    if (pins[key]){ return pins[key]; }
+
+    if (!global.race.hasOwnProperty('inactive')){ global.race['inactive'] = {}; }
+    if (!global.race.inactive.ships){ global.race.inactive.ships = []; }
+
+    let choices = salvageCandidates(maxClass);
+    let ship;
+    if (choices.length > 0){
+        ship = choices[Math.floor(seededRandom(0,choices.length))];
+        global.race.inactive.ships.splice(global.race.inactive.ships.indexOf(ship),1);
+    }
+    else {
+        ship = newDerelict();
+    }
+    pins[key] = ship;
+    return ship;
+}
+
+// Take one derelict. With a pin key, the hull reserved under it is released and handed over — the only
+// way a reserved wreck ever leaves the store. Otherwise the pick is made from the unreserved pool.
+// Returns false when nothing suitable is left.
+function pickDerelict(maxClass,pin){
+    if (pin){
+        let pins = salvagePins();
+        let ship = pins[pin];
+        if (!ship){ return false; }
+        delete pins[pin];
+        return ship;
+    }
+
+    let pool = global.race.inactive?.ships;
+    if (!pool || pool.length === 0){ return false; }
+
+    let choices = salvageCandidates(maxClass);
+    if (choices.length === 0){ return false; }
+
+    let ship = choices[Math.floor(seededRandom(0,choices.length))];
+    return pool.splice(pool.indexOf(ship),1)[0];
+}
+
+// `maxClass` is either one class applied to every hull recovered, or a list naming a class per hull —
+// which is how a single find can ask for, say, a corvette and a frigate and still report as one haul.
+// A list sets how many are recovered and `qty` is ignored. Each entry still downgrades on its own if
+// its class is not among the wrecks.
+//
+// `pin` names a reserved wreck (see pinSalvage) to hand over rather than picking from the pool. It is
+// the only way a reserved hull is ever salvaged — without it the pick cannot see reserved wrecks at all.
+export function salvageShip(qty, location, sLocation, eventStyle, maxClass, pin){
+    let wants = Array.isArray(maxClass) ? maxClass : new Array(Math.max(qty,0)).fill(maxClass || false);
+    if (wants.length > 0){
         let salvaged = 0;
-        for (let i=0; i<qty; i++){
-            if (global.race.inactive?.ships && global.race.inactive.ships.length > 0){
-                let idx = Math.floor(seededRandom(0,global.race.inactive.ships.length));
-                let ship = global.race.inactive.ships.splice(idx,1)[0];
-                ship.location = sLocation;
-                ship.xy = genXYcoord(sLocation);
-                ship.origin = deepClone(ship.xy);
-                ship.destination = deepClone(ship.xy);
-                ship.transit = 0;
-                ship.dist = 0;
-                ship.damage = Math.floor(seededRandom(75,90));
-                ship.fueled = false;
-                let num = 1;
-                let name = ship.name;
-                while (global.space.shipyard.ships.filter(s => s.name === name).length > 0){
-                    num++;
-                    name = ship.name + ` ${num}`;
-                }
-                ship.name = name;
-                global.space.shipyard.ships.push(ship);
-                salvaged++;
+        for (let i=0; i<wants.length; i++){
+            // A pin only ever names one hull, so it applies to the first recovery; anything further
+            // falls through to the ordinary class search.
+            // Each request stands on its own: with a mixed list, finding no corvette says nothing about
+            // whether a frigate is out there, so a miss skips rather than abandoning the whole haul.
+            let ship = pickDerelict(wants[i], i === 0 ? pin : false);
+            if (!ship){ continue; }
+            ship.location = sLocation;
+            ship.xy = genXYcoord(sLocation);
+            ship.origin = deepClone(ship.xy);
+            ship.destination = deepClone(ship.xy);
+            ship.transit = 0;
+            ship.dist = 0;
+            ship.damage = Math.floor(seededRandom(75,90));
+            ship.fueled = false;
+            let num = 1;
+            let name = ship.name;
+            while (global.space.shipyard.ships.filter(s => s.name === name).length > 0){
+                num++;
+                name = ship.name + ` ${num}`;
             }
+            ship.name = name;
+            global.space.shipyard.ships.push(ship);
+            salvaged++;
         }
         if (salvaged > 0){
             if (eventStyle){
@@ -7196,22 +7316,10 @@ export function jumpGateRestart(){
     global.space.jump_gate.count = 100;
     global.space.jump_gate.razed = 0;
 
-    // Pin the derelict ship the spc_sun "Salvage" building offers: pick one inactive ship index now
-    // and store it so the choice (and its name on the button) stays fixed until it is salvaged. If
-    // there were no prior ships, seed a default derelict corvette so there is always one to salvage.
-    if (global.race.hasOwnProperty('inactive')){
-        if (!global.race.inactive.ships){ global.race.inactive.ships = []; }
-        if (global.race.inactive.ships.length === 0){
-            let xy = genXYcoord('tau_gas2');
-            global.race.inactive.ships.push({
-                class: 'corvette', armor: 'steel', weapon: 'railgun', engine: 'ion', power: 'solar', sensor: 'radar',
-                name: getRandomShipName(),
-                location: 'tau_gas2', xy: deepClone(xy), origin: deepClone(xy), destination: deepClone(xy),
-                transit: 0, dist: 0, damage: 0, fueled: false
-            });
-        }
-        global.race['salvage_ship'] = Math.floor(seededRandom(0, global.race.inactive.ships.length));
-    }
+    // Reserve the derelict the spc_sun "Salvage" building offers, so the choice (and the name on the
+    // button) stays fixed until it is salvaged. That salvage targets a corvette and the button is what
+    // grants the next resettle step, so pinSalvage builds one if none are adrift.
+    pinSalvage('spc_sun','corvette');
 
     //global.settings.showSpace = true;
     //global.settings.civTabs = 1;

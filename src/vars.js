@@ -1310,8 +1310,7 @@ if (convertVersion(global['version']) < 104009){
 // The Tau Ceti refueling station used to store its graphene fuel allocation on the Titan graphene
 // factory and mirror its count/on onto it every tick, which only held up while isolation kept Titan
 // unreachable. Now that the jump gate brings Titan back, both plants run at once and the station owns
-// its own allocation. Gated on the old shape rather than a version so it also catches saves already on
-// the current version: hand the allocation over, and clear the Titan factory fields the mirror wrote.
+// its own allocation.
 if (global['tauceti'] && global.tauceti['refueling_station'] && !global.tauceti.refueling_station.hasOwnProperty('Lumber')){
     global.tauceti.refueling_station['Lumber'] = 0;
     global.tauceti.refueling_station['Coal'] = 0;
@@ -1327,15 +1326,10 @@ if (global['tauceti'] && global.tauceti['refueling_station'] && !global.tauceti.
         old['Lumber'] = 0;
         old['Coal'] = 0;
         old['Oil'] = 0;
-        // count/on were the mirror of the refueling station, never a real Titan factory tally. The genuine
-        // pre-isolation count is preserved in global.race.inactive.space.g_factory and comes back as
-        // `razed` when the jump gate reopens, so zeroing these loses nothing.
         old['count'] = 0;
         old['on'] = 0;
     }
 }
-
-
 
 global['version'] = '1.5.0';
 delete global['revision'];
