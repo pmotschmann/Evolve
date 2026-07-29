@@ -37,7 +37,8 @@ const outerTruth = {
                 }
                 return 600;
             },
-            nav(){ return global.tech['resettle'] ? false : true; }
+            // Shut off for the resettlement arc until the outer distress signals reopen the long legs.
+            nav(){ return !global.tech['resettle'] || global.tech.resettle >= 12 ? true : false; }
         },
         titan_mission: {
             id: 'space-titan_mission',
@@ -482,6 +483,7 @@ const outerTruth = {
             },
             type: 'military',
             reqs: { titan: 7 },
+            condition(){ return !global.tech['resettle'] ? true : false; },
             path: ['truepath'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('sam', offset, 2500000, 1.28); },
@@ -520,6 +522,7 @@ const outerTruth = {
             },
             type: 'science',
             reqs: { titan: 8 },
+            condition(){ return !global.tech['resettle'] ? true : false; },
             path: ['truepath'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('decoder', offset, 12500000, 1.275); },
@@ -574,7 +577,7 @@ const outerTruth = {
             reqs: { titan: 9 },
             path: ['truepath'],
             condition(){
-                return global.space.ai_core.count >= 100 ? false : true;
+                return global.space.ai_core.count >= 100 || global.tech['resettle'] ? false : true;
             },
             queue_size: 10,
             queue_complete(){ return 100 - global.space.ai_core.count; },
@@ -637,7 +640,7 @@ const outerTruth = {
             reqs: { titan_ai_core: 1 },
             path: ['truepath'],
             condition(){
-                return global.space.hasOwnProperty('ai_core') && global.space.ai_core.count >= 100 ? true : false;
+                return !global.tech['resettle'] && global.space.hasOwnProperty('ai_core') && global.space.ai_core.count >= 100 ? true : false;
             },
             wiki: false,
             queue_complete(){ return 0; },
@@ -681,6 +684,7 @@ const outerTruth = {
             },
             type: 'housing',
             reqs: { titan_ai_core: 3 },
+            condition(){ return !global.tech['resettle'] ? true : false; },
             path: ['truepath'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('ai_colonist', offset, 112000000, 1.35); },
@@ -753,7 +757,8 @@ const outerTruth = {
                 }
                 return 600;
             },
-            nav(){ return global.tech['resettle'] ? false : true; }
+            // Shut off for the resettlement arc until the outer distress signals reopen the long legs.
+            nav(){ return !global.tech['resettle'] || global.tech.resettle >= 12 ? true : false; }
         },
         enceladus_mission: {
             id: 'space-enceladus_mission',
@@ -4475,9 +4480,10 @@ const orbitalStrikeRate = 0.05;
 // remainder rolled as a fractional chance, and never more than razeCap in a single day.
 const zombiesPerRazing = 100000;
 const razeCap = 5;
-// Hordes that lie low. Nothing is known to be there until it tears down its first structure, so until
-// then it is absent from the UI and nobody engages it — the razing is how you find out.
-const hiddenInfestation = ['spc_red'];
+// Hordes that lie low: absent from the UI and unengaged until something gives them away. On spc_red
+// that is the first structure it razes; on spc_titan it is putting support back into orbit there and
+// getting a proper look at the surface (see zTitanWatch).
+const hiddenInfestation = ['spc_red','spc_titan'];
 // Special cases that sit outside the system entirely: never fought, never counted on screen. Earth's
 // billions are a fact of the setting rather than something a fleet can work on.
 const inertInfestation = ['spc_home'];
@@ -4532,8 +4538,40 @@ export function trackInfestation(){
         }
     });
 
+    zTitanWatch();
     zFleetDay();
     if (fleetCmdUnlocked()){ fleetCmdDay(); }
+}
+
+// Regions the resettlement arc keeps off the board until Titan is properly reoccupied. Until then their
+// hordes are unknown and their ruins are not yours to worry about.
+const titanRegions = ['spc_titan','spc_enceladus'];
+
+// True once Titan has been reoccupied far enough to see what is down there.
+export function titanReclaimed(){
+    return global.tech['resettle'] && global.tech.resettle >= 13 ? true : false;
+}
+
+// Titan's support grid, whatever survived the razing. This is the baseline the reveal measures against.
+function titanSupportMax(){
+    return global.space['electrolysis'] && global.space.electrolysis['s_max'] > 0 ? global.space.electrolysis.s_max : 0;
+}
+
+// Titan's horde keeps its head down until you put more support back over it than the wreck you
+// inherited. Whatever plants came through the razing do not count — it takes a fresh one running
+// before you get a proper look at the surface, and before Titan joins the horde's own target list.
+function zTitanWatch(){
+    if (titanReclaimed()){ return; }
+    // Ordered behind the outer distress signals, so the stages cannot be leapfrogged.
+    if (!global.tech['resettle'] || global.tech.resettle < 12){ return; }
+    // Saves that reached the beacons before this existed get their baseline on the next day.
+    if (!(titanSupportMax() > 0)){ return; }
+
+    global.tech['resettle'] = 13;
+    if (!global.race['zfound']){ global.race['zfound'] = {}; }
+    global.race.zfound['spc_titan'] = true;
+    messageQueue(loc('zfleet_titan_found',[regionName('spc_titan')]),'danger',false,['combat','progress']);
+    renderSpace();
 }
 
 // --- Infested fleet -----------------------------------------------------------------------------
@@ -4547,6 +4585,9 @@ export function trackInfestation(){
 function zFleetTargets(){
     let targets = ['spc_red','spc_hell'];
     if (global.tech['luna'] && global.tech.luna >= 3){ targets.push('spc_moon'); }
+    // Titan only becomes worth raiding once you are established enough there to have found what was
+    // already on it (see zTitanWatch).
+    if (global.tech['resettle'] && global.tech.resettle >= 13){ targets.push('spc_titan'); }
     return targets;
 }
 
@@ -4558,7 +4599,7 @@ function zFleetTargets(){
 const zFleetHulls = {
     corvette:      { avail(){ return true; },  horde(){ return 250; } },
     frigate:       { avail(){ return true; },  horde(){ return 500; } },
-    destroyer:     { avail(){ return false; }, horde(){ return 1200; } },
+    destroyer:     { avail(){ return global.tech['resettle'] && global.tech.resettle >= 11 ? true : false; }, horde(){ return 1200; } },
     cruiser:       { avail(){ return false; }, horde(){ return 2500; } },
     battlecruiser: { avail(){ return false; }, horde(){ return 5000; } },
     dreadnought:   { avail(){ return false; }, horde(){ return 10000; } }
@@ -4697,7 +4738,7 @@ function playerAccuracy(scan,foe){
 }
 
 // The horde aims with whatever dish each hull was built with, one ship at a time. No shared solution —
-// these are scavenged wrecks flown by the dead, not a fleet.
+// these are scavenged ships flown by the dead, not a coordinated fleet.
 const zSensorAccuracy = { visual: 0.15, radar: 0.3, lidar: 0.45, quantum: 0.6 };
 function foeAccuracy(foe){
     return zSensorAccuracy.hasOwnProperty(foe.sensor) ? zSensorAccuracy[foe.sensor] : 0.25;
@@ -4870,6 +4911,70 @@ function zFleetMove(fleet){
     });
 }
 
+// The wrecks adrift in the outer system, dealt out to the beacons that find them. Twelve signals, one
+// per hull, in a fixed mix shuffled so which beacon is worth the long trip changes every run.
+const outerBeaconHulls = [
+    'battlecruiser',
+    'cruiser','cruiser',
+    'destroyer','destroyer','destroyer',
+    'frigate','frigate','frigate',
+    'corvette','corvette','corvette'
+];
+const outerBeaconMinAU = 2;
+const outerBeaconMaxAU = 19;
+
+// The horde fielding a real warship is what pushes the search outward. Twelve fresh distress signals
+// light up across the outer system, and with them the reach to go and answer them.
+function outerBeacons(){
+    if (!global.race['tempCoordinates']){ global.race['tempCoordinates'] = {}; }
+
+    let hulls = outerBeaconHulls.slice();
+    for (let i=hulls.length-1; i>0; i--){
+        let j = Math.floor(seededRandom(0,i+1,true));
+        let swap = hulls[i];
+        hulls[i] = hulls[j];
+        hulls[j] = swap;
+    }
+
+    // Numbered on from the five inner beacons, so the two sets never collide.
+    for (let i=0; i<hulls.length; i++){
+        let n = i + 6;
+        let c = randomCoord('spc_sun',outerBeaconMinAU,outerBeaconMaxAU);
+        global.race.tempCoordinates[`beacon${n}`] = {
+            n: loc(`scout_beacon`,[n]), a: true, s: 'spc_sun', x: c.x, y: c.y, z: c.z, d: hulls[i]
+        };
+    }
+
+    global.tech['resettle'] = 12;
+    // Snapshot Titan's surviving support now — the reveal wants a plant you put there, not one you found.
+    global.race['ztitan'] = titanSupportMax();
+    // The long-range legs need the outer system on the map before they can be flown.
+    global.settings.showOuter = true;
+    global.settings.space.titan = true;
+    global.settings.space.enceladus = true;
+
+    if (global.space.hasOwnProperty('wonder_gardens')){
+        global.space.wonder_gardens.count = 1;
+        global.space.wonder_gardens.razed = 0;
+    }
+    ['sam','decoder','ai_core','ai_core2','ai_colonist'].forEach(function(item){
+        if (global.space.hasOwnProperty(item)){
+            global.space[item].count = 0;
+            global.space[item].razed = 0;
+        }
+    });
+    if (global.space.hasOwnProperty('electrolysis')){
+        global.space.electrolysis.s_max = 0;
+        global.space.electrolysis.support = 0;
+        global.space.electrolysis.count = 0;
+        global.space.electrolysis.on = 0;
+    }
+
+    messageQueue(loc('scout_outer_signals'),'info',false,['progress']);
+    renderSpace();
+    drawShipYard();
+}
+
 // Send one hull, drawn from whichever classes are cleared to fly. Early raids still land lighter than
 // late ones: the cargo ramp scales whatever the hull would otherwise deliver.
 function zFleetLaunch(fleet,ramp){
@@ -4881,6 +4986,12 @@ function zFleetLaunch(fleet,ramp){
     if (classes.length === 0){ return; }
     let cls = classes[Math.floor(seededRandom(0,classes.length,true))];
     let hull = zFleetHulls[cls];
+
+    // The first hull heavier than a frigate triggers expansion of progression
+    if (cls === 'destroyer' && !fleet.dz){
+        fleet.dz = true;
+        outerBeacons();
+    }
 
     let ship = {
         class: cls,
@@ -9316,8 +9427,9 @@ function buildSolarMap(parentNode) {
     let bounds = document.getElementById("mapCanvas").getBoundingClientRect();
     canvasOffset.x = bounds.width / 2;
     canvasOffset.y = bounds.height / 2;
-    // Once adv shipyard is unlocked open the map focused on the Tau Ceti star instead of the Sun.
-    recenterOn(genXYcoord(global.tech['resettle'] ? 'tauceti' : 'spc_sun'));
+    // The map opens on wherever the campaign is being fought. The resettlement arc starts out of
+    // Tau Ceti, but from resettle 9 the work is back in the home system, so it swings back to the Sun.
+    recenterOn(genXYcoord(global.tech['resettle'] && global.tech.resettle < 9 ? 'tauceti' : 'spc_sun'));
 
     drawMap();
 }

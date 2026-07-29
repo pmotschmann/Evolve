@@ -10,7 +10,7 @@ import { loc } from './locale.js';
 import { jobScale } from './jobs.js';
 import { isStargateOn, checkSpaceRequirements } from './space.js';
 import { stabilize_blackhole } from './tech.js';
-import { shipCosts, checkPathRequirements } from './truepath.js';
+import { shipCosts, checkPathRequirements, titanReclaimed } from './truepath.js';
 import { checkEdenRequirements } from './edenic.js';
 
 export const gmen = {
@@ -973,6 +973,11 @@ function starvedGrids(targets,room){
     return starved;
 }
 
+// Regions held back until Titan is properly reoccupied. Their ruins are visible on the map long before
+// they are anyone's problem, so the governor leaves them alone rather than spending the queue on a
+// moon nobody has set foot on yet.
+const repairHeldRegions = ['spc_titan','spc_enceladus'];
+
 // Standing ruins the governor could act on: razed structures whose region is discovered and whose
 // requirements are still met.
 function repairQueueTargets(){
@@ -985,6 +990,7 @@ function repairQueueTargets(){
             if (!struct || typeof struct !== 'object' || !struct['razed'] || struct.razed <= 0){ return; }
             let target = index[`${cat}:${key}`];
             if (!target){ return; }
+            if (repairHeldRegions.includes(target.region) && !titanReclaimed()){ return; }
             try {
                 if (!repairRegions[cat].show(target.region) || !repairRegions[cat].req(target.region,target.qtype)){ return; }
             }

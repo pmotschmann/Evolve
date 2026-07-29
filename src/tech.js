@@ -14583,6 +14583,27 @@ const techs = {
             return false;
         }
     },
+    zombie_intelligence: {
+        id: 'tech-zombie_intelligence',
+        title: loc('tech_zombie_intelligence'),
+        desc: loc('tech_zombie_intelligence'),
+        category: 'progress',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { resettle: 10 },
+        grant: ['resettle',11],
+        cost: {
+            Knowledge(){ return 22500000; }
+        },
+        effect(){ return loc('tech_zombie_intelligence_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                messageQueue(loc('tech_zombie_intelligence_msg'),'info',false,['progress']);
+                return true;
+            }
+            return false;
+        }
+    },
     reconstruction: {
         id: 'tech-reconstruction',
         title: loc('tech_reconstruction'),
