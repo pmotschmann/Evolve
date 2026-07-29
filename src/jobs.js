@@ -745,8 +745,11 @@ export function craftsmanCap(res){
         case 'Quantium':
             let cap = 0;
             if (global.tech['isolation']){
+                if (global.tech['resettle'] && global.tech.resettle >= 12 && global.space.hasOwnProperty('zero_g_lab')){
+                    cap += getStructNumActive(actions.space.spc_enceladus.zero_g_lab);
+                }
                 if (global.tauceti.hasOwnProperty('infectious_disease_lab')){
-                    cap = getStructNumActive(actions.tauceti.tau_home.infectious_disease_lab);
+                    cap += getStructNumActive(actions.tauceti.tau_home.infectious_disease_lab);
                 }
             }
             else if (global.space.hasOwnProperty('zero_g_lab')){

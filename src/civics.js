@@ -124,6 +124,10 @@ export function defineFleetCommand(){
         <b-checkbox class="patrol" v-model="quiet">${loc('fleet_cmd_quiet')}</b-checkbox>
     </div>`);
 
+    panel.append(`<div class="fleetCmdOpt optZQuiet">
+        <b-checkbox class="patrol" v-model="zquiet">${loc('fleet_cmd_zquiet')}</b-checkbox>
+    </div>`);
+
     panel.append(`<div class="fleetCmdSep"></div>`);
 
     vBind({
@@ -150,6 +154,7 @@ export function defineFleetCommand(){
     popover('fleetCmdRet',function(){ return loc('fleet_cmd_ret_desc'); },{ elm: `#fleetCmd .optRet` });
     popover('fleetCmdRetHull',function(){ return loc('fleet_cmd_ret_hull_desc'); },{ elm: `#fleetCmd .optRetHull` });
     popover('fleetCmdQuiet',function(){ return loc('fleet_cmd_quiet_desc'); },{ elm: `#fleetCmd .optQuiet` });
+    popover('fleetCmdZQuiet',function(){ return loc('fleet_cmd_zquiet_desc'); },{ elm: `#fleetCmd .optZQuiet` });
 }
 
 export function commisionGarrison(){

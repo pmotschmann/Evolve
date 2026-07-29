@@ -907,14 +907,15 @@ export function mechanicsPage(content){
         }
 
         { // The infested fleet
-            let fleet = infoBoxBuilder(zwar,{ name: 'zwar_fleet', template: 'mechanics', label: loc('wiki_mechanics_zwar_fleet'), paragraphs: 6, break: [3,5], h_level: 2,
+            let fleet = infoBoxBuilder(zwar,{ name: 'zwar_fleet', template: 'mechanics', label: loc('wiki_mechanics_zwar_fleet'), paragraphs: 7, break: [3,5], h_level: 2,
                 para_data: {
                     1: [getSolarName('red'),getSolarName('home')],
                     2: [z.delayMin,z.delayMax],
                     3: [pct(z.oddsStart),pct(z.oddsEnd),z.rampDays],
                     4: [pct(z.loadStart),z.rampDays],
                     5: [pct(0.01),pct(0.02)],
-                    6: [z.targets.map(t => regionLabel(t)).join(', ')]
+                    6: [z.targets.map(t => regionLabel(t)).join(', ')],
+                    7: [pct(z.pairOdds),z.pairSize]
                 }
             });
 
