@@ -5549,6 +5549,24 @@ export function drawShipYard(){
         assemble.append(`<span><b-checkbox class="patrol" v-model="s.expand" @change="redraw()">${loc('outer_shipyard_fleet_details')}</b-checkbox></span>`);
         assemble.append(`<span><b-checkbox class="patrol" v-model="s.sort" @change="redraw()">${loc('outer_shipyard_fleet_sort')}</b-checkbox></span>`);
 
+        // Two star systems and dozens of locations make the flat list hard to read, so it can be
+        // narrowed to one system and folded up by location. Built from shipyardSystems(), which is
+        // stable, so these items do not need rebuilding as the campaign runs.
+        if (shipyardViewUnlocked()){
+            let systems = `<b-dropdown-item aria-role="listitem" class="sysAll" @click="setSys('all')">${systemLabel('all')}</b-dropdown-item>`;
+            shipyardSystems().forEach(function(sys){
+                systems += `<b-dropdown-item aria-role="listitem" class="sys_${sys}" @click="setSys('${sys}')">${systemLabel(sys)}</b-dropdown-item>`;
+            });
+            assemble.append(`<span class="shipView"><b-dropdown :triggers="['hover', 'click']" aria-role="list">
+                <template #trigger>
+                    <button class="button is-info">
+                        <span>${loc('outer_shipyard_view_system')}: {{ sysLabel() }}</span>
+                    </button>
+                </template>${systems}
+            </b-dropdown></span>`);
+            assemble.append(`<span><b-checkbox class="patrol" v-model="v.group" @change="redraw()">${loc('outer_shipyard_view_group')}</b-checkbox></span>`);
+        }
+
         plans.append(assemble);
         assemble.append(`<div><span>${loc(`outer_shipyard_park`,[global.tech['resettle'] ? tauCetiModules.tau_gas2.info.name() : planetName().dwarf])}</span><a href="#" class="solarMap" @click="trigModal">${loc(`outer_shipyard_map`)}</span></a>`);
 
@@ -5558,9 +5576,18 @@ export function drawShipYard(){
             el: '#shipPlans',
             data: {
                 b: global.space.shipyard.blueprint,
-                s: global.space.shipyard
+                s: global.space.shipyard,
+                v: shipyardView()
             },
             methods: {
+                sysLabel(){
+                    return systemLabel(shipyardView().sys);
+                },
+                setSys(sys){
+                    shipyardView().sys = sys;
+                    vBind({el: `#shipPlans`},'update');
+                    drawShips();
+                },
                 setVal(b,v){
                     if (b === 'class' && v === 'explorer'){
                         global.space.shipyard.blueprint.engine = 'emdrive';
@@ -6337,6 +6364,48 @@ function dragShipList(){
     }
 }
 
+// --- Ship list view options ---------------------------------------------------------------------
+// Filtering and grouping only earn their keep once the resettlement arc puts the fleet across two star
+// systems and dozens of locations. Before that every ship is within a few rows of every other and the
+// controls would be clutter.
+export function shipyardViewUnlocked(){
+    return global.tech['resettle'] ? true : false;
+}
+
+// Held under global.space.shipyard so it saves with the yard. Created and backfilled on read rather
+// than migrated, so an older save picks it up the first time the tab is drawn.
+export function shipyardView(){
+    let yard = global.space.shipyard;
+    if (!yard['view'] || typeof yard.view !== 'object'){ yard['view'] = {}; }
+    let v = yard.view;
+    if (typeof v['sys'] !== 'string'){ v['sys'] = 'all'; }
+    if (typeof v['group'] !== 'boolean'){ v['group'] = false; }
+    if (!v['fold'] || typeof v.fold !== 'object'){ v['fold'] = {}; }
+    return v;
+}
+
+// The view as it should actually be applied. Locked, it is the plain ungrouped list however the options
+// were last left — so a reset that takes the tech away cannot leave the list filtered with no way back.
+function activeShipyardView(){
+    return shipyardViewUnlocked() ? shipyardView() : { sys: 'all', group: false, fold: {} };
+}
+
+// Systems the fleet can be spread across: home, plus wherever the jump gate network reaches. Driven off
+// jumpGates so extending the network extends the filter with it, and stable enough to build the
+// dropdown from once when the tab is assembled.
+function shipyardSystems(){
+    let seen = { sun: true };
+    Object.keys(jumpGates).forEach(function(gate){ seen[jumpGates[gate].system] = true; });
+    return Object.keys(seen);
+}
+
+// Display name of a system key, the same label locSystemName puts on a location.
+function systemLabel(sys){
+    if (sys === 'all'){ return loc('outer_shipyard_system_all'); }
+    let star = sys === 'sun' ? spacePlanetStats.spc_sun : spacePlanetStats[sys];
+    return star && star.label ? star.label : sys;
+}
+
 const shipyardRanks = {
     // Lower number -> higher in the auto-sorted list
     location: {
@@ -6387,9 +6456,15 @@ const shipyardRanks = {
     }
 };
 
-function shipyardShipCompare(a,b){
+// A ship at a yard that can currently take it in comes first, whatever the location table says: those
+// are the ones being worked on, and they are what you came to the list to look at. Passed the yard list
+// rather than reading it per comparison, since a sort asks this O(n log n) times. Within the group the
+// existing tie-breakers still apply, so a docked ship sits above one still crossing to the same yard.
+function shipyardShipCompare(a,b,yards){
+    yards = yards || activeRepairYards();
     return (
-        (shipyardRanks.location[a.location] ?? 0) - (shipyardRanks.location[b.location] ?? 0)
+        (yards.includes(a.location) ? 0 : 1) - (yards.includes(b.location) ? 0 : 1)
+        || (shipyardRanks.location[a.location] ?? 0) - (shipyardRanks.location[b.location] ?? 0)
         || a.transit - b.transit
         || (shipyardRanks.class[a.class] ?? 0) - (shipyardRanks.class[b.class] ?? 0)
         || (shipyardRanks.engine[a.engine] ?? 0) - (shipyardRanks.engine[b.engine] ?? 0)
@@ -6410,8 +6485,9 @@ function drawShips(){
 
     let list = $('#shipList');
 
+    let repairYards = activeRepairYards();
     if (global.space.shipyard.sort){
-        global.space.shipyard.ships = global.space.shipyard.ships.sort(shipyardShipCompare);
+        global.space.shipyard.ships = global.space.shipyard.ships.sort(function(a,b){ return shipyardShipCompare(a,b,repairYards); });
     }
 
 
@@ -6439,8 +6515,107 @@ function drawShips(){
         });
     }
 
-    for (let i=0; i<global.space.shipyard.ships.length; i++){
-        let ship = global.space.shipyard.ships[i];
+    let view = activeShipyardView();
+
+    // What to draw and in what order, as [index, ship] pairs. The index is the ship's real place in the
+    // array — a row binds and acts on that, so it stays correct however the list is arranged on screen.
+    let entries = [];
+    global.space.shipyard.ships.forEach(function(ship,i){
+        if (view.sys !== 'all' && locSystem(ship.location) !== view.sys){ return; }
+        entries.push({ i: i, ship: ship });
+    });
+
+    if (view.group){
+        // One header per location, in the order the locations first come up in the list — so with Auto
+        // Sort on the groups follow the same ranking the ships do.
+        let order = [];
+        let byLoc = {};
+        entries.forEach(function(e){
+            if (!byLoc.hasOwnProperty(e.ship.location)){
+                byLoc[e.ship.location] = [];
+                order.push(e.ship.location);
+            }
+            byLoc[e.ship.location].push(e);
+        });
+        order.forEach(function(location,g){
+            drawShipGroup(list,g,location,regionNames,repairYards);
+            if (!view.fold[location]){
+                byLoc[location].forEach(function(e){ drawShipRow(list,e.i,e.ship,regionNames); });
+            }
+        });
+    }
+    else {
+        entries.forEach(function(e){ drawShipRow(list,e.i,e.ship,regionNames); });
+    }
+
+    // Hand-ordering moves a ship by its position in the list, which only means anything while the list
+    // and the array agree. Filtered or grouped they do not, so dragging is off until the view is plain.
+    if (view.sys === 'all' && !view.group){
+        dragShipList();
+    }
+}
+
+// The collapsed summary for one location: what is there, without the detail. Bound to the yard so the
+// figures track the ships themselves — a hull taking damage or a raid arriving updates the header even
+// while the group is shut.
+function drawShipGroup(list,g,location,regionNames,repairYards){
+    let yard = repairYards.includes(location)
+        ? `<span class="dispatchYard" title="${loc('outer_shipyard_repair_yard')}" aria-label="${loc('outer_shipyard_repair_yard')}">🛠️</span>`
+        : ``;
+    // The toggle has to be an inner element: Vue treats the element it mounts on as an inert container
+    // and never compiles directives written on it.
+    let head = $(`<div id="shipGrp${g}" class="shipGroup"></div>`);
+    head.append(`<a class="groupFold" @click="fold()" role="button" :aria-expanded="folded() ? 'false' : 'true'"><span class="groupArrow" v-html="arrow()"></span> <span class="name has-text-caution">${regionNames[location] || location}</span>${yard}</a>`);
+    head.append(`<span class="shipStat"><span class="has-text-warning">${loc('outer_shipyard_group_ships')}</span> <span class="pad" v-html="count()"></span></span><wbr>`);
+    head.append(`<span class="shipStat"><span class="has-text-warning">${loc('firepower')}</span> <span class="pad" v-html="fire()"></span></span><wbr>`);
+    head.append(`<span class="shipStat"><span class="has-text-warning">${loc('crew')}</span> <span class="pad" v-html="crew()"></span></span><wbr>`);
+    head.append(`<span class="shipStat" v-show="transit() > 0"><span class="has-text-warning">${loc('outer_shipyard_group_transit')}</span> <span class="pad" v-html="transit()"></span></span><wbr>`);
+    list.append(head);
+
+    // Ships of this group, read fresh on every render so the summary cannot go stale.
+    let here = function(){
+        return global.space.shipyard.ships.filter(function(s){ return s.location === location; });
+    };
+
+    // Bound to the view options behind a wrapper key rather than to the yard itself. Vue merges data
+    // onto the same instance as methods and data wins, so binding the yard would have let its own
+    // `count` (the number of yard structures) shadow the summary's count() and take the render down
+    // with it. The figures come from methods reading the reactive global, so they track the ships
+    // regardless of what is bound here.
+    vBind({
+        el: `#shipGrp${g}`,
+        data: { v: shipyardView() },
+        methods: {
+            folded(){
+                return shipyardView().fold[location] ? true : false;
+            },
+            arrow(){
+                return shipyardView().fold[location] ? `&#9656;` : `&#9662;`;
+            },
+            fold(){
+                let fold = shipyardView().fold;
+                if (fold[location]){ delete fold[location]; }
+                else { fold[location] = true; }
+                drawShips();
+            },
+            count(){
+                return here().length;
+            },
+            fire(){
+                return here().reduce(function(t,s){ return t + shipAttackPower(s); },0);
+            },
+            crew(){
+                return here().reduce(function(t,s){ return t + shipCrewSize(s); },0);
+            },
+            transit(){
+                return here().filter(function(s){ return s.transit > 0; }).length;
+            }
+        }
+    });
+}
+
+function drawShipRow(list,i,ship,regionNames){
+    {
         if (!ship['xy']){ ship['xy'] = genXYcoord(ship.location); }
         if (!ship.hasOwnProperty('dist')){ ship['dist'] = ship['transit']; }
         if (!ship.hasOwnProperty('origin')){ ship['origin'] = ship['xy']; }
@@ -6620,8 +6795,6 @@ function drawShips(){
         });
 
     }
-
-    dragShipList();
 }
 
 // The first Tau Ceti soldier building (marine barracks / womling rangers) re-enables the soldier
@@ -9712,11 +9885,14 @@ function shipDispatchModal(id, modal){
         // Once the jump gates are running a ship can cross between systems, so the list spans more
         // than one star and each destination says which it belongs to.
         let showSystem = global.tech['resettle'] && global.tech.resettle >= 3;
+        // Somewhere a battered hull can actually be put back together is worth picking out of the list.
+        let yards = activeRepairYards();
         dests.forEach(function(d){
             let days = planShipTrip(slowest, d.region).transit;
             let sysName = showSystem ? locSystemName(d.region) : '';
             let sys = sysName ? `<span class="dispatchSystem has-text-info">${sysName}</span>` : ``;
-            $(`<button class="button is-info ${d.region}"><span class="dispatchName">${d.name}</span>${sys}<span class="dispatchDays has-text-caution">${loc('transit_time',[days])}</span></button>`)
+            let yard = yards.includes(d.region) ? `<span class="dispatchYard" title="${loc('outer_shipyard_repair_yard')}" aria-label="${loc('outer_shipyard_repair_yard')}">🛠️</span>` : ``;
+            $(`<button class="button is-info ${d.region}"><span class="dispatchName">${d.name}${yard}</span>${sys}<span class="dispatchDays has-text-caution">${loc('transit_time',[days])}</span></button>`)
                 .on('click', function(){
                     sendShipTo(id, d.region);
                     if (modal && modal.close){ modal.close(); }
@@ -9751,6 +9927,15 @@ const repairStations = {
 // Docking is about the place, not whether it is currently staffed, so this covers every station whether
 // or not its condition passes right now.
 const shipyardLocations = Object.keys(repairStations);
+
+// The yards that could take a ship in right now. Read fresh every time rather than cached: a station's
+// condition turns on whether it has been built, and that changes as the campaign runs.
+function activeRepairYards(){
+    return shipyardLocations.filter(function(yard){
+        try { return repairStations[yard].avail() ? true : false; }
+        catch (e){ return false; }
+    });
+}
 // Hull percentage a ship must have before it is cleared to leave for another destination.
 const minHullToLaunch = 75;
 

@@ -4721,6 +4721,11 @@ span.inline {
             flex-direction: column;
             padding: .4rem .75rem;
 
+            .dispatchYard {
+                margin-left: .3rem;
+                font-size: .8rem;
+            }
+
             .dispatchSystem {
                 font-size: .75rem;
                 line-height: 1;
@@ -5138,6 +5143,39 @@ span.inline {
             button {
                 height: 1rem;
             }
+        }
+
+        // Collapsed-location header. Heavier top rule than a ship row so a group reads as a division of
+        // the list rather than one more entry in it.
+        .shipGroup {
+            padding-top: .35rem;
+            margin-top: .5rem;
+            margin-left: .5rem;
+            border-top: 2px solid;
+
+            .groupFold {
+                margin-right: .5rem;
+                white-space: nowrap;
+            }
+
+            .groupArrow {
+                display: inline-block;
+                min-width: .75rem;
+            }
+
+            .name {
+                display: inline-block;
+                min-width: 5rem;
+            }
+
+            .pad {
+                margin: 0 .5rem 0 0;
+            }
+        }
+
+        // A ship inside an open group sits in from its header.
+        .shipGroup ~ .shipRow {
+            margin-left: 1.25rem;
         }
     }
 
