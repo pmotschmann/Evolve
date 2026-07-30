@@ -7672,6 +7672,31 @@ const techs = {
             vBind({el: `#c_garrison`},'update');
         }
     },
+    disruptor_rifles_tp: {
+        id: 'tech-disruptor_rifles_tp',
+        title(){ return global.race.universe === 'magic' ? loc('tech_magic_missile') : loc('tech_disruptor_rifles'); },
+        desc(){ return global.race.universe === 'magic' ? loc('tech_magic_missile') : loc('tech_disruptor_rifles'); },
+        category: 'military',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { military: 8, resettle: 13 },
+        grant: ['military',9],
+        cost: {
+            Knowledge(){ return 23000000; },
+            Positronium(){ return 20000; }
+        },
+        effect(){ return global.race.universe === 'magic' ? loc('tech_magic_missile_effect') : loc('tech_disruptor_rifles_tp_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        },
+        post(){
+            vBind({el: `#garrison`},'update');
+            vBind({el: `#c_garrison`},'update');
+        }
+    },
     gauss_rifles: {
         id: 'tech-gauss_rifles',
         title(){ return global.race.universe === 'magic' ? loc('tech_magicword_kill') : loc('tech_gauss_rifles'); },
@@ -8194,6 +8219,27 @@ const techs = {
             Asphodel_Powder(){ return 50000; }
         },
         effect(){ return loc('tech_otherworldly_binder_effect',[global.resource.Asphodel_Powder.name, global.resource.Cement.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    geopolymer_cement: {
+        id: 'tech-geopolymer_cement',
+        title: loc('tech_geopolymer_cement'),
+        desc: loc('tech_geopolymer_cement'),
+        category: 'cement',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { cement: 5, resettle: 13 },
+        not_trait: ['flier'],
+        grant: ['cement',6],
+        cost: {
+            Knowledge(){ return 22000000; }
+        },
+        effect(){ return loc('tech_geopolymer_cement_effect',[global.resource.Cement.name]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;

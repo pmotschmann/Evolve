@@ -8641,6 +8641,13 @@ function xShift(id){
 }
 
 var mapScale, mapShift;
+// spacePlanetStats key of the star the pointer is resting on, or false. Only set once zoomed out past
+// the point where the star labels are still legible (see starNamesHidden and the hover label at the end
+// of drawMap).
+var mapHover = false;
+// Where the pointer was when it picked that star, in canvas-local pixels — the same frame mapShift is
+// in. The hover name is placed off this rather than off the star, so it clears the cursor.
+var mapHoverAt = { x: 0, y: 0 };
 
 // --- Solar map camera ---------------------------------------------------------------------------
 // Orthographic projection. `mapYaw` spins the map about the vertical (z) axis; `mapPitch` tips the
@@ -8655,6 +8662,9 @@ var mapYaw = 0, mapPitch = 0;
 // Whether orbit rings are drawn. A display preference rather than viewport state, so unlike the pan,
 // zoom and rotation it survives closing and reopening the map.
 var mapOrbits = true;
+// Whether ship markers are drawn — yours and the horde's alike, since either can bury the thing you are
+// trying to look at. Kept the same way mapOrbits is.
+var mapShips = true;
 // The world point at the centre of the viewport (see recenterOn/refocus in buildSolarMap). Also what
 // distant-star culling measures from.
 var mapFocus = { x: 0, y: 0, z: 0 };
@@ -8674,6 +8684,30 @@ const STAR_CULL_AU = 63000;
 function starCulled(pos){
     return mapScale >= labelMinScale && dist3(pos, mapFocus) > STAR_CULL_AU;
 }
+// Canvas will not accept a font larger than this — measured, not assumed. It matters because the map's
+// text is sized in world units (`25 / mapScale`) inside a transform that scales by mapScale, which
+// normally cancels out to a constant 25px on screen. Once the requested size passes the clamp the
+// cancelling stops and the labels start shrinking with the zoom instead: at the far zoom-out levels the
+// star names dwindle to a few pixels and then to nothing.
+const MAP_FONT_MAX_PX = 10000;
+const STAR_LABEL_PX = 25;
+// Height the drawn star labels actually come out at on screen, clamp included.
+function starLabelScreenPx(){
+    return Math.min(STAR_LABEL_PX / mapScale, MAP_FONT_MAX_PX) * mapScale;
+}
+// Zoomed out this far the star names are too small to read, which is the point at which naming whatever
+// the pointer is over stops being redundant and starts being the only way to tell what you are seeing.
+const STAR_LABEL_LEGIBLE_PX = 10;
+function starNamesHidden(){
+    return starLabelScreenPx() < STAR_LABEL_LEGIBLE_PX;
+}
+// The hover name is drawn in screen space instead, so it is this readable at any zoom.
+const HOVER_LABEL_PX = 16;
+// Clearance above the cursor. The name goes above rather than below because the arrow hangs down and to
+// the right of its hotspot, so anything under the pointer ends up behind it. Anchored to the cursor
+// rather than to the star: the grab radius lets the pointer sit either side of the dot, and measuring
+// from the dot put the label back under the arrow whenever the pointer was above it.
+const HOVER_LABEL_GAP_PX = 8;
 let camCY = 1, camSY = 0, camCP = 1, camSP = 0;
 function camUpdate(){
     camCY = Math.cos(mapYaw); camSY = Math.sin(mapYaw);
@@ -9164,8 +9198,10 @@ export function drawMap() {
     // trip data (see sendShipTo), so every member would otherwise stack a dot, a trail and a name on the
     // exact same pixel; it draws once instead, labelled with its size. Ships not in a fleet, and a fleet
     // that is down to a single ship, keep their own dot and name.
+    // Left empty when ships are hidden: the trail, dot and name passes all iterate it, so one test here
+    // takes every ship marker off the map at once.
     let shipMarks = [];
-    {
+    if (mapShips) {
         let fleets = {};
         for (let ship of global.space.shipyard.ships) {
             if (ship.transit <= 0){ continue; }
@@ -9549,6 +9585,30 @@ export function drawMap() {
         ctx.restore();
     }
 
+    // Out at the star field the names have shrunk away to nothing (see starNamesHidden), and there is no
+    // zoom level past it that brings them back — so the only way to tell one dot from another is to point
+    // at it. Uses zlabel, the name that tells a companion from its primary.
+    if (mapHover && spacePlanetStats[mapHover] && starNamesHidden()){
+        let body = spacePlanetStats[mapHover];
+        let name = body.zlabel || body.label;
+        let p = genXYcoord(mapHover);
+        if (name && !starCulled(p)){
+            // Drawn in screen space at a fixed pixel size, deliberately outside the map transform. Sized
+            // in world units it would need a font past the canvas clamp at these zooms and would come
+            // out a couple of pixels tall — the very thing that makes the ordinary labels unreadable
+            // here. Sits directly above the cursor, which is within a grab radius of the star anyway.
+            ctx.save();
+            ctx.setTransform(1,0,0,1,0,0);
+            ctx.font = `${HOVER_LABEL_PX}px serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'alphabetic';
+            ctx.fillStyle = "#ffffff";
+            ctx.shadowOffsetX = 2; ctx.shadowOffsetY = 2; ctx.shadowBlur = 3; ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+            ctx.fillText(name, mapHoverAt.x, mapHoverAt.y - HOVER_LABEL_GAP_PX);
+            ctx.restore();
+        }
+    }
+
     ctx.restore();
 }
 
@@ -9584,6 +9644,7 @@ function buildSolarMap(parentNode) {
     const CLICK_SLOP_PX = 3;
     mapShift = {};
     mapScale = 20.0;
+    mapHover = false;
     // The map always opens looking straight down, however it was left last time.
     mapYaw = 0;
     mapPitch = 0;
@@ -9630,10 +9691,10 @@ function buildSolarMap(parentNode) {
         mapShift.y = canvasOffset.y - pY(pt) * mapScale;
     }
 
-    // The star under a click, or false. Only bodies actually on screen are candidates — culled stars
-    // aren't drawn, so they can't be clicked. `bodystar` bodies (a binary orbiting an invisible
-    // barycenter) draw as stars and are picked like them. The grab radius never drops below a few
-    // pixels, since zoomed out a star is a single dot and would otherwise be impossible to hit.
+    // The id of the star under the pointer, or false. Only bodies actually on screen are candidates —
+    // culled stars aren't drawn, so they can't be picked. `bodystar` bodies (a binary orbiting an
+    // invisible barycenter) draw as stars and are picked like them. The grab radius never drops below a
+    // few pixels, since zoomed out a star is a single dot and would otherwise be impossible to hit.
     const CLICK_GRAB_PX = 10;
     function starAt(e){
         let rect = document.getElementById("mapCanvas").getBoundingClientRect();
@@ -9646,10 +9707,33 @@ function buildSolarMap(parentNode) {
             let d = Math.hypot(mapShift.x + pX(p) * mapScale - cx, mapShift.y + pY(p) * mapScale - cy);
             if (d <= Math.max(CLICK_GRAB_PX, body.size / 10 * mapScale) && d < bestD){
                 bestD = d;
-                best = p;
+                best = id;
             }
         }
         return best;
+    }
+
+    // Track what the pointer is over so drawMap can name it, repainting only when the answer changes —
+    // a mousemove that is still over the same star costs nothing.
+    function trackHover(e){
+        let over = starNamesHidden() ? starAt(e) : false;
+        let rect = document.getElementById("mapCanvas").getBoundingClientRect();
+        let at = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+        // Repaint when the star changes and, while one is hovered, as the pointer moves — the label has
+        // to follow the cursor to stay above it. Recording the position only on entry left it pinned
+        // where the pointer came in, which put it back under the arrow on the way across the star.
+        let shifted = over && (at.x !== mapHoverAt.x || at.y !== mapHoverAt.y);
+        mapHoverAt = at;
+        if (over !== mapHover || shifted){
+            mapHover = over;
+            drawMap();
+        }
+    }
+    function clearHover(){
+        if (mapHover){
+            mapHover = false;
+            drawMap();
+        }
     }
 
     currentNode.append(
@@ -9661,14 +9745,14 @@ function buildSolarMap(parentNode) {
             if (drag === 'pan' && press && !press.moved){
                 let hit = starAt(e);
                 if (hit){
-                    recenterOn(hit);
+                    recenterOn(genXYcoord(hit));
                     drawMap();
                 }
             }
             drag = false;
             press = false;
         })
-        .on("mouseover mouseout", () => { drag = false; press = false; })
+        .on("mouseover mouseout", () => { drag = false; press = false; clearHover(); })
         // Right-drag (or shift-drag, for anyone on a trackpad without a right button) orbits the
         // camera; plain left-drag still pans, exactly as it did before the map had a third axis.
         .on("contextmenu", () => false)
@@ -9700,6 +9784,9 @@ function buildSolarMap(parentNode) {
                 camUpdate();
                 recenterOn(mapFocus);
                 drawMap();
+            }
+            else {
+                trackHover(e);
             }
         })
         .on("wheel", (e) => {
@@ -9755,6 +9842,16 @@ function buildSolarMap(parentNode) {
         .on("click", function(){
             mapOrbits = !mapOrbits;
             $(this).val(loc(mapOrbits ? 'solar_map_hide_orbits' : 'solar_map_show_orbits'));
+            drawMap();
+        })
+        .appendTo(currentNode);
+
+    // Ship markers on or off, the same way. A busy campaign puts enough dots, trails and names over the
+    // inner system to hide the worlds underneath them.
+    $(`<input type="button" value="${loc(mapShips ? 'solar_map_hide_ships' : 'solar_map_show_ships')}" style="position: absolute; height: 30px; top: 130px; left: 2px;">`)
+        .on("click", function(){
+            mapShips = !mapShips;
+            $(this).val(loc(mapShips ? 'solar_map_hide_ships' : 'solar_map_show_ships'));
             drawMap();
         })
         .appendTo(currentNode);

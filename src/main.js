@@ -4999,7 +4999,7 @@ function fastLoop(){
             breakdown.p.consume.Stone[loc(global.tech['isolation'] ? 'job_cement_worker_bd' : 'city_cement_plant_bd')] = -(stone_cost);
             modRes('Stone', -(stone_cost * time_multiplier));
 
-            let cement_base = global.tech['cement'] >= 4 ? (global.tech.cement >= 7 ? 1.45 : 1.2) : 1;
+            let cement_base = global.tech['cement'] >= 4 ? (global.tech.cement >= (global.tech['isolation'] ? 6 : 7) ? 1.45 : 1.2) : 1;
             cement_base *= global.civic.cement_worker.impact;
             cement_base *= racialTrait(workerScale(global.civic.cement_worker.workers,'cement_worker'),'factory');
             if (global.city.biome === 'ashland'){
