@@ -2198,6 +2198,27 @@ const techs = {
             return false;
         }
     },
+    positronium_furnace: {
+        id: 'tech-positronium_furnace',
+        title(){ return loc('tech_positronium_furnace',[global.resource.Positronium.name]); },
+        desc(){ return loc('tech_positronium_furnace',[global.resource.Positronium.name]); },
+        category: 'mining',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { smelting: 6, resettle: 13 },
+        grant: ['smelting',7],
+        cost: {
+            Knowledge(){ return 23000000; },
+            Positronium(){ return 20000; }
+        },
+        effect(){ return loc('tech_positronium_furnace_effect',[global.resource.Positronium.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     infernium_fuel: {
         id: 'tech-infernium_fuel',
         title: loc('tech_infernium_fuel'),
@@ -12026,6 +12047,48 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.space.spc_titan.ai_core);
+                return true;
+            }
+            return false;
+        }
+    },
+    metalworks: {
+        id: 'tech-metalworks',
+        title(){ return loc('tech_metalworks',[planetName().titan]); },
+        desc(){ return loc('tech_metalworks',[planetName().titan]); },
+        category: 'mining',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { titan: 9, resettle: 13 },
+        grant: ['titan',10],
+        cost: {
+            Knowledge(){ return 23750000; }
+        },
+        effect(){ return loc('tech_metalworks_effect',[planetName().titan]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.space.spc_titan.metalworks);
+                return true;
+            }
+            return false;
+        }
+    },
+    positronium_electrolysis: {
+        id: 'tech-positronium_electrolysis',
+        title(){ return loc('tech_positronium_electrolysis',[global.resource.Positronium.name]); },
+        desc(){ return loc('tech_positronium_electrolysis',[global.resource.Positronium.name]); },
+        category: 'power_generation',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { titan: 10 },
+        grant: ['titan',11],
+        cost: {
+            Knowledge(){ return 25000000; },
+            Positronium(){ return 24000; }
+        },
+        effect(){ return loc('tech_positronium_electrolysis_effect',[loc('space_electrolysis_title'),planetName().titan,global.resource.Positronium.name]); },
+        action(){
+            if (payCosts($(this)[0])){
                 return true;
             }
             return false;

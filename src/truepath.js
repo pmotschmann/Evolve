@@ -127,6 +127,10 @@ const outerTruth = {
                 return `${support}<div class="has-text-caution">${loc('space_electrolysis_use',[$(this)[0].support_fuel().a,global.resource.Water.name,$(this)[0].powered()])}</div>`;
             },
             support(wiki){
+                // Positronium electrolysis splits water harder than the AI core ever managed at it. Either
+                // upgrade takes the plant to three and they do not stack — which matters on the resettle
+                // path, where the AI cores are gone by the time this tech is reachable.
+                if (global.tech['titan'] && global.tech.titan >= 11){ return 3; }
                 return global.tech['titan_ai_core'] && global.tech.titan_ai_core >= 2 && (wiki ? global.space.ai_core2.on : p_on['ai_core2']) ? 3 : 2;
             },
             support_fuel(){ return { r: 'Water', a: 35 }; },
@@ -472,6 +476,63 @@ const outerTruth = {
                 return {
                     d: { count: 0, on: 0, Lumber: 0, Coal: 0, Oil: 0 },
                     p: ['g_factory','space']
+                };
+            }
+        },
+        metalworks: {
+            id: 'space-metalworks',
+            title: loc('space_metalworks_title'),
+            desc(){ return `<div>${loc('space_metalworks_title')}</div><div class="has-text-special">${loc('space_support',[planetName().titan])}</div>`; },
+            type: 'industry',
+            reqs: { titan: 10 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('metalworks', offset, 425000000, 1.28); },
+                Coal(offset){ return spaceCostMultiplier('metalworks', offset, 4200000, 1.28); },
+                Graphene(offset){ return spaceCostMultiplier('metalworks', offset, 2600000, 1.28); },
+                Neutronium(offset){ return spaceCostMultiplier('metalworks', offset, 165000, 1.28); }
+            },
+            effect(wiki){
+                let desc = `<div class="has-text-caution">${loc('space_used_support',[planetName().titan])}</div>`;
+                desc += `<div>${loc('space_metalworks_effect',[1,planetName().titan])}</div>`;
+                let split = '<div class="aTable center">';
+                for (const res of $(this)[0].res()){
+                    let boost = +((production('metalworks',res,wiki) - 1) * 100).toFixed(2);
+                    split += `<span>${loc('space_metalworks_effect2',[global.resource[res].name,boost])}</span>`;
+                }
+                desc += split + '</div>';
+                return desc;
+            },
+            // Metals the works divides its pool between, in the order the UI lists them. The effect text,
+            // the industry panel and the production loop all read this one list.
+            res(){
+                return ['Steel','Iridium','Iron','Copper'];
+            },
+            s_type: 'titan',
+            support(){ return -1; },
+            powered(){ return 0; },
+            special: true,
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('metalworks');
+                    powerOnNewStruct($(this)[0]);
+                    global.settings.showIndustry = true;
+                    defineIndustry();
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                let d = { count: 0, on: 0 };
+                // Start with the pool split evenly and fully assigned; any remainder from an uneven
+                // split goes to the first metal so the shares always total 100.
+                let metals = $(this)[0].res();
+                let share = Math.floor(100 / metals.length);
+                metals.forEach(function(res){ d[res] = share; });
+                d[metals[0]] += 100 - (share * metals.length);
+                return {
+                    d: d,
+                    p: ['metalworks','space']
                 };
             }
         },
@@ -4504,7 +4565,7 @@ const razeTargets = {
     spc_red: { c: 'space', s: ['spaceport','red_tower','living_quarters','pylon','vr_center','garage','red_mine','fabrication','red_factory','biodome','exotic_lab','ziggurat','space_barracks'] },
     spc_venus: { c: 'space', s: [] },
     spc_hell: { c: 'space', s: ['geothermal','hell_smelter','spc_casino','swarm_plant'] },
-    spc_titan: { c: 'space', s: ['titan_spaceport','electrolysis','hydrogen_plant','titan_quarters','titan_mine','storehouse','titan_bank','g_factory','sam','decoder','ai_colonist'] },
+    spc_titan: { c: 'space', s: ['titan_spaceport','electrolysis','hydrogen_plant','titan_quarters','titan_mine','storehouse','titan_bank','g_factory','sam','decoder','ai_colonist','metalworks'] },
     spc_enceladus: { c: 'space', s: ['water_freighter','zero_g_lab','operating_base','munitions_depot'] },
     spc_dwarf: { c: 'space', s: ['elerium_contain','e_reactor'] },
     tau_home: { c: 'tauceti', s: ['colony','tau_housing','pylon','tau_farm','mining_pit','alien_outpost','fusion_generator','repository','tau_factory','infectious_disease_lab','tauceti_casino','tau_cultural_center','marine_barracks','data_decoder'] },

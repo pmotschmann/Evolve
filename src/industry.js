@@ -36,6 +36,9 @@ export function loadIndustry(industry,parent,bind){
         case 'titan_mine':
             loadTMine(parent,bind);
             break;
+        case 'metalworks':
+            loadMetalworks(parent,bind);
+            break;
         case 'nanite_factory':
             loadNFactory(parent,bind);
             break;
@@ -101,6 +104,11 @@ export function defineIndustry(){
         var ratio = $(`<div id="iTMine" class="industry"><h2 class="header has-text-advanced">${loc('city_mine')}</h2></div>`);
         $(`#industry`).append(ratio);
         loadIndustry('titan_mine',ratio,'#iTMine');
+    }
+    if (global.space['metalworks'] && global.space.metalworks.count > 0){
+        var metalworks = $(`<div id="iMetalworks" class="industry"><h2 class="header has-text-advanced">${loc('space_metalworks_title')}</h2></div>`);
+        $(`#industry`).append(metalworks);
+        loadIndustry('metalworks',metalworks,'#iMetalworks');
     }
     if (global.tech['tau_roid'] && global.tech.tau_roid >= 4 && global.tauceti['mining_ship']){
         var mining_ship = $(`<div id="iMiningShip" class="industry"><h2 class="header has-text-advanced">${loc('tau_roid_mining_ship')}</h2></div>`);
@@ -1448,6 +1456,67 @@ function loadTMine(parent,bind){
                     global.space.titan_mine.ratio += keyMult;
                     if (global.space.titan_mine.ratio > 100){
                         global.space.titan_mine.ratio = 100;
+                    }
+                }
+            }
+        }
+    });
+}
+
+// The metalworks divides one pool of refining capacity between its metals as whole percentages. The
+// shares always total 100, so raising one metal has to take the points from somewhere: adding past the
+// cap pulls from the first metal the way the factory pulls from Alloy, and that metal itself stops.
+function loadMetalworks(parent,bind){
+    let metals = actions.space.spc_titan.metalworks.res();
+    let dump = metals[0];
+
+    parent.append($(`<div>${loc('modal_metalworks_ratio')}</div>`));
+
+    let total = $(`<div><span class="has-text-warning">${loc('modal_metalworks_assigned')}:</span> <span :class="level()">{{ assigned() }}/100</span></div>`);
+    parent.append(total);
+
+    metals.forEach(function(res){
+        let row = $(`<div class="factory"><span class="${res}">${global.resource[res].name}</span></div>`);
+        parent.append(row);
+        row.append($(`<span class="sub" @click="subItem('${res}')" role="button" aria-label="Decrease ${res} share">&laquo;</span>`));
+        row.append($(`<span class="current">{{ ${res} }}%</span>`));
+        row.append($(`<span class="add" @click="addItem('${res}')" role="button" aria-label="Increase ${res} share">&raquo;</span>`));
+    });
+
+    vBind({
+        el: bind ? bind : '#specialModal',
+        data: global.space.metalworks,
+        methods: {
+            assigned(){
+                return metals.reduce((t,res) => t + global.space.metalworks[res], 0);
+            },
+            level(){
+                return colorRange(metals.reduce((t,res) => t + global.space.metalworks[res], 0),100);
+            },
+            subItem(item){
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global.space.metalworks[item] > 0){
+                        global.space.metalworks[item]--;
+                    }
+                    else {
+                        break;
+                    }
+                }
+            },
+            addItem(item){
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    let used = metals.reduce((t,res) => t + global.space.metalworks[res], 0);
+                    if (used < 100){
+                        global.space.metalworks[item]++;
+                    }
+                    else if (item !== dump && global.space.metalworks[dump] > 0){
+                        global.space.metalworks[dump]--;
+                        global.space.metalworks[item]++;
+                    }
+                    else {
+                        break;
                     }
                 }
             }

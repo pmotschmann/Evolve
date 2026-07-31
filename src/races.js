@@ -8939,7 +8939,7 @@ function majorWish(parent){
                         {
                             let wonders = [];
                             if (!global.race['lone_survivor']){
-                                let hasCity = global.race['cataclysm'] || global.race['orbit_decay'] || global.race['warlord'] ? false : true;
+                                let hasCity = global.race['cataclysm'] || global.race['orbit_decay'] || global.race['warlord'] || global.tech['isolation'] ? false : true;
                                 let hasMars = global.tech['mars'] && !global.race['warlord'] ? true : false;
                                 if (!global.city.hasOwnProperty('wonder_lighthouse') && hasCity){
                                     wonders.push('lighthouse');

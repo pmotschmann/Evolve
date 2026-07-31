@@ -5078,6 +5078,14 @@ function fastLoop(){
 
         let shrineMetal = getShrineBonus('metal');
 
+        // Titan metalworks. One refining pool split between four metals, so each gets its own multiplier
+        // and they are applied wherever that metal is produced — the same way the shrine metal bonus is.
+        let mworks = {};
+        for (const res of actions.space.spc_titan.metalworks.res()){
+            mworks[res] = production('metalworks',res);
+        }
+        let mworksOn = global.space['metalworks'] && support_on['metalworks'] > 0;
+
         // Smelters
         let iron_smelter = 0;
         let star_forge = 0;
@@ -5359,10 +5367,13 @@ function fastLoop(){
                 }
 
                 let delta = smelter_output;
-                delta *= hunger * global_multiplier * shrineMetal.mult;
+                delta *= hunger * global_multiplier * shrineMetal.mult * mworks.Steel;
 
                 breakdown.p['Steel'][loc('city_smelter')] = smelter_output + 'v';
                 breakdown.p['Steel'][loc('city_shrine')] = ((shrineMetal.mult - 1) * 100).toFixed(1) + '%';
+                if (mworksOn){
+                    breakdown.p['Steel'][loc('space_metalworks_title')] = ((mworks.Steel - 1) * 100).toFixed(1) + '%';
+                }
                 breakdown.p['Steel'][loc('hunger')] = ((hunger - 1) * 100) + '%';
                 modRes('Steel', delta * time_multiplier);
 
@@ -6472,7 +6483,7 @@ function fastLoop(){
                         breakdown.p['Copper'][`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
                     }
                 }
-                let delta = copper_base * shrineMetal.mult * tunneler * hunger * q_multiplier * global_multiplier;
+                let delta = copper_base * shrineMetal.mult * mworks.Copper * tunneler * hunger * q_multiplier * global_multiplier;
                 global.city.mine['cpow'] = +(delta * (cop_single - 1)).toFixed(5);
                 delta *= copper_power;
 
@@ -6503,7 +6514,7 @@ function fastLoop(){
                     if (forage_base > 0){
                         breakdown.p['Copper'][`ᄂ${loc('quarantine')}+1`] = ((q_multiplier - 1) * 100) + '%';
                     }
-                    modRes('Copper', forage_base * hunger * global_multiplier * q_multiplier * time_multiplier);
+                    modRes('Copper', forage_base * mworks.Copper * hunger * global_multiplier * q_multiplier * time_multiplier);
                 }
             }
 
@@ -6590,7 +6601,7 @@ function fastLoop(){
                 }
 
                 let eship_iron = e_ship['iron'] ? e_ship.iron * womling_technician : 0;
-                let delta = ((iron_base * tunneler * iron_power * q_multiplier) + (space_iron * qs_multiplier * zigVal) + (eship_iron) + (pit_miner) + (womling)) * smelter_mult * shrineMetal.mult;
+                let delta = ((iron_base * tunneler * iron_power * q_multiplier) + (space_iron * qs_multiplier * zigVal) + (eship_iron) + (pit_miner) + (womling)) * smelter_mult * shrineMetal.mult * mworks.Iron;
                 global.city.mine['ipow'] = +(iron_base * q_multiplier * hunger * global_multiplier * (iron_single - 1)).toFixed(5);
                 delta *= hunger * global_multiplier;
 
@@ -6603,6 +6614,9 @@ function fastLoop(){
 
                 breakdown.p['Iron'][loc('city_smelter')] = ((smelter_mult - 1) * 100) + '%';
                 breakdown.p['Iron'][loc('city_shrine')] = ((shrineMetal.mult - 1) * 100).toFixed(1) + '%';
+                if (mworksOn){
+                    breakdown.p['Iron'][loc('space_metalworks_title')] = ((mworks.Iron - 1) * 100).toFixed(1) + '%';
+                }
 
                 if (global.race['forager'] && global.tech['dowsing']){
                     let forage = global.tech.dowsing >= 2 ? 2 : 1;
@@ -6629,7 +6643,7 @@ function fastLoop(){
                     if (forage_base > 0){
                         breakdown.p['Iron'][`ᄂ${loc('quarantine')}+2`] = ((q_multiplier - 1) * 100) + '%';
                     }
-                    modRes('Iron', forage_base * hunger * global_multiplier * q_multiplier * time_multiplier);
+                    modRes('Iron', forage_base * mworks.Iron * hunger * global_multiplier * q_multiplier * time_multiplier);
                 }
 
                 breakdown.p['Iron'][loc('hunger')] = ((hunger - 1) * 100) + '%';
@@ -6776,7 +6790,7 @@ function fastLoop(){
                 breakdown.p['Copper'][`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
                 breakdown.p['Copper'][`ᄂ${loc('quarantine')}+1`] = ((qs_multiplier - 1) * 100) + '%';
             }
-            modRes('Copper', copper_base * shrineMetal.mult * time_multiplier * global_multiplier * qs_multiplier * hunger * synd * zigVal);
+            modRes('Copper', copper_base * shrineMetal.mult * mworks.Copper * time_multiplier * global_multiplier * qs_multiplier * hunger * synd * zigVal);
 
             let titanium_base = support_on['red_mine'] * workerScale(global.civic.colonist.workers,'colonist') * hunger * production('red_mine','titanium').f;
             titanium_base *= production('psychic_boost','Titanium');
@@ -6791,6 +6805,9 @@ function fastLoop(){
         if (shrineBonusActive()){
             breakdown.p['Copper'][loc('city_shrine')] = ((shrineMetal.mult - 1) * 100).toFixed(1) + '%';
             breakdown.p['Titanium'][loc('city_shrine')] = ((shrineMetal.mult - 1) * 100).toFixed(1) + '%';
+        }
+        if (mworksOn){
+            breakdown.p['Copper'][loc('space_metalworks_title')] = ((mworks.Copper - 1) * 100).toFixed(1) + '%';
         }
         breakdown.p['Copper'][loc('hunger')] = ((hunger - 1) * 100) + '%';
 
@@ -7092,7 +7109,7 @@ function fastLoop(){
 
             iridium_base *= production('psychic_boost','Iridium');
             let synd = syndicate('spc_moon');
-            let delta = iridium_base * tunneler * hunger * shrineMetal.mult * global_multiplier * synd * qs_multiplier * iridium_smelter_mult * zigVal;
+            let delta = iridium_base * tunneler * hunger * shrineMetal.mult * mworks.Iridium * global_multiplier * synd * qs_multiplier * iridium_smelter_mult * zigVal;
             if (global.race['gravity_well']){ delta = teamster(delta); }
 
             breakdown.p['Iridium'][global.race['warlord'] ? jobName('miner') : loc('space_moon_iridium_mine_title')] = iridium_base + 'v';
@@ -7113,7 +7130,7 @@ function fastLoop(){
             let iridium_base = support_on['iridium_ship'] * production('iridium_ship');
             iridium_base *= production('psychic_boost','Iridium');
             let synd = syndicate('spc_belt');
-            let delta = iridium_base * hunger * shrineMetal.mult * global_multiplier * synd * qs_multiplier * iridium_smelter_mult * zigVal;
+            let delta = iridium_base * hunger * shrineMetal.mult * mworks.Iridium * global_multiplier * synd * qs_multiplier * iridium_smelter_mult * zigVal;
             if (global.race['gravity_well']){ delta = teamster(delta); }
 
             breakdown.p['Iridium'][jobName('space_miner')] = iridium_base + 'v';
@@ -7133,7 +7150,7 @@ function fastLoop(){
             let base = gal_on['armed_miner'] * 0.65 * production('psychic_boost','Iridium');
             let foothold = 1 + ((gal_on['ore_processor'] ?? 0) * 0.1);
             let pirate = piracy('gxy_alien2');
-            let delta = base * global_multiplier * pirate * foothold * hunger * shrineMetal.mult * iridium_smelter_mult * zigVal;
+            let delta = base * global_multiplier * pirate * foothold * hunger * shrineMetal.mult * mworks.Iridium * iridium_smelter_mult * zigVal;
             if (global.race['gravity_well']){ delta = teamster(delta); }
 
             breakdown.p['Iridium'][loc('galaxy_armed_miner_bd')] = base + 'v';
@@ -7151,7 +7168,7 @@ function fastLoop(){
 
         // Iridium Extractor Ship
         if (global.resource.Iridium.display && e_ship['iridium'] && e_ship.iridium > 0){
-            let iridium_delta = e_ship.iridium * shrineMetal.mult * global_multiplier * iridium_smelter_mult * hunger * womling_technician;
+            let iridium_delta = e_ship.iridium * shrineMetal.mult * mworks.Iridium * global_multiplier * iridium_smelter_mult * hunger * womling_technician;
             if (global.race['gravity_well']){
                 iridium_delta = teamster(iridium_delta);
             }
@@ -7645,7 +7662,7 @@ function fastLoop(){
                     { // Copper
                         let copper_base = miner_base * production('psychic_boost','Copper');
                         copper_base *= production('mining_pit','copper');
-                        let delta = copper_base * shrineMetal.mult * global_multiplier * colony_val;
+                        let delta = copper_base * shrineMetal.mult * mworks.Copper * global_multiplier * colony_val;
 
                         breakdown.p['Copper'][jobName('pit_miner')] = copper_base + 'v';
                         if (copper_base > 0){
@@ -7822,7 +7839,7 @@ function fastLoop(){
                     if (global.race['lone_survivor']){
                         let copper_base = global.tauceti.womling_mine.miners * production('womling_mine','copper') * production('psychic_boost','Copper');
                         breakdown.p['Copper'][loc('tau_red_womlings')] = copper_base + 'v';
-                        let copper_delta = copper_base * prod * shrineMetal.mult * global_multiplier;
+                        let copper_delta = copper_base * prod * shrineMetal.mult * mworks.Copper * global_multiplier;
 
                         if (copper_delta > 0){
                             breakdown.p['Copper'][`ᄂ${loc('tau_red_womling_prod_label')}`] = -((1 - prod) * 100) + '%';
@@ -7840,7 +7857,7 @@ function fastLoop(){
 
                         let iridium_base = global.tauceti.womling_mine.miners * production('womling_mine','iridium') * production('psychic_boost','Iridium');
                         breakdown.p['Iridium'][loc('tau_red_womlings')] = iridium_base + 'v';
-                        let iridium_delta = iridium_base * prod * hunger * shrineMetal.mult * global_multiplier;
+                        let iridium_delta = iridium_base * prod * hunger * shrineMetal.mult * mworks.Iridium * global_multiplier;
 
                         if (iridium_base > 0){
                             breakdown.p['Iridium'][`ᄂ${loc('tau_red_womling_prod_label')}`] = -((1 - prod) * 100) + '%';
@@ -7864,6 +7881,9 @@ function fastLoop(){
 
         if (shrineBonusActive()){
             breakdown.p['Iridium'][loc('city_shrine')] = ((shrineMetal.mult - 1) * 100).toFixed(1) + '%';
+        }
+        if (mworksOn){
+            breakdown.p['Iridium'][loc('space_metalworks_title')] = ((mworks.Iridium - 1) * 100).toFixed(1) + '%';
         }
         breakdown.p['Iridium'][loc('hunger')] = ((hunger - 1) * 100) + '%';
 

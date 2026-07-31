@@ -7993,6 +7993,9 @@ function drawModal(c_action,type){
         case 'titan_mine':
             loadIndustry('titan_mine',body);
             break;
+        case 'metalworks':
+            loadIndustry('metalworks',body);
+            break;
         case 'mining_ship':
             loadIndustry('mining_ship',body);
             break;
