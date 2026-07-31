@@ -22,7 +22,7 @@ export const actions = {
     evolution: {
         rna: {
             id: 'evolution-rna',
-            title: loc('resource_RNA_name'),
+            title(){ return loc('resource_RNA_name'); },
             desc(){
                 let rna = global.race['rapid_mutation'] ? 2 : 1;
                 return loc('evo_rna',[rna]);
@@ -38,8 +38,8 @@ export const actions = {
         },
         dna: {
             id: 'evolution-dna',
-            title: loc('evo_dna_title'),
-            desc: loc('evo_dna_desc'),
+            title(){ return loc('evo_dna_title'); },
+            desc(){ return loc('evo_dna_desc'); },
             condition(){ return global.resource.hasOwnProperty('DNA') && global.resource.DNA.display && global.resource.DNA.amount < global.resource.DNA.max && !global.race['evoFinalMenu']; },
             cost: { RNA(){ return 2; } },
             action(args){
@@ -54,8 +54,8 @@ export const actions = {
         },
         membrane: {
             id: 'evolution-membrane',
-            title: loc('evo_membrane_title'),
-            desc: loc('evo_membrane_desc'),
+            title(){ return loc('evo_membrane_title'); },
+            desc(){ return loc('evo_membrane_desc'); },
             condition(){ return global.evolution.hasOwnProperty('membrane') && !global.race['evoFinalMenu']; },
             cost: { RNA(offset){ return evolveCosts('membrane',2,2,offset); } },
             effect(){
@@ -73,8 +73,8 @@ export const actions = {
         },
         organelles: {
             id: 'evolution-organelles',
-            title: loc('evo_organelles_title'),
-            desc: loc('evo_organelles_desc'),
+            title(){ return loc('evo_organelles_title'); },
+            desc(){ return loc('evo_organelles_desc'); },
             condition(){ return global.evolution.hasOwnProperty('organelles') && !global.race['evoFinalMenu']; },
             cost: {
                 RNA(offset){ return evolveCosts('organelles',12,8,offset); },
@@ -97,8 +97,8 @@ export const actions = {
         },
         nucleus: {
             id: 'evolution-nucleus',
-            title: loc('evo_nucleus_title'),
-            desc: loc('evo_nucleus_desc'),
+            title(){ return loc('evo_nucleus_title'); },
+            desc(){ return loc('evo_nucleus_desc'); },
             condition(){ return global.evolution.hasOwnProperty('nucleus') && !global.race['evoFinalMenu']; },
             cost: {
                 RNA(offset){ return evolveCosts('nucleus',38, global.tech['evo'] && global.tech.evo >= 4 ? 16 : 32, offset ); },
@@ -118,8 +118,8 @@ export const actions = {
         },
         eukaryotic_cell: {
             id: 'evolution-eukaryotic_cell',
-            title: loc('evo_eukaryotic_title'),
-            desc: loc('evo_eukaryotic_desc'),
+            title(){ return loc('evo_eukaryotic_title'); },
+            desc(){ return loc('evo_eukaryotic_desc'); },
             condition(){ return global.evolution.hasOwnProperty('eukaryotic_cell') && !global.race['evoFinalMenu']; },
             cost: {
                 RNA(offset){ return evolveCosts('eukaryotic_cell',20,20,offset); },
@@ -140,8 +140,8 @@ export const actions = {
         },
         mitochondria: {
             id: 'evolution-mitochondria',
-            title: loc('evo_mitochondria_title'),
-            desc: loc('evo_mitochondria_desc'),
+            title(){ return loc('evo_mitochondria_title'); },
+            desc(){ return loc('evo_mitochondria_desc'); },
             condition(){ return global.evolution.hasOwnProperty('mitochondria') && !global.race['evoFinalMenu']; },
             cost: {
                 RNA(offset){ return evolveCosts('mitochondria',75,50,offset); },
@@ -158,8 +158,8 @@ export const actions = {
         },
         sexual_reproduction: {
             id: 'evolution-sexual_reproduction',
-            title: loc('evo_sexual_reproduction_title'),
-            desc: loc('evo_sexual_reproduction_desc'),
+            title(){ return loc('evo_sexual_reproduction_title'); },
+            desc(){ return loc('evo_sexual_reproduction_desc'); },
             reqs: { evo: 1 },
             grant: ['evo',2],
             condition(){ return global.tech['evo'] && global.tech.evo === 1; },
@@ -178,8 +178,8 @@ export const actions = {
         },
         phagocytosis: {
             id: 'evolution-phagocytosis',
-            title: loc('evo_phagocytosis_title'),
-            desc: loc('evo_phagocytosis_desc'),
+            title(){ return loc('evo_phagocytosis_title'); },
+            desc(){ return loc('evo_phagocytosis_desc'); },
             reqs: { evo: 2 },
             grant: ['evo',3],
             condition(){ return global.tech['evo'] && global.tech.evo === 2; },
@@ -200,7 +200,7 @@ export const actions = {
         chloroplasts: {
             id: 'evolution-chloroplasts',
             title(){ return global.evolution['gselect'] ? loc('genelab_genus_plant') : loc('evo_chloroplasts_title'); },
-            desc: loc('evo_chloroplasts_desc'),
+            desc(){ return loc('evo_chloroplasts_desc'); },
             reqs: { evo: 2 },
             grant: ['evo',3],
             condition(){ return genus_condition(2); },
@@ -229,7 +229,7 @@ export const actions = {
         chitin: {
             id: 'evolution-chitin',
             title(){ return global.evolution['gselect'] ? loc('genelab_genus_fungi') : loc('evo_chitin_title'); },
-            desc: loc('evo_chitin_desc'),
+            desc(){ return loc('evo_chitin_desc'); },
             reqs: { evo: 2 },
             grant: ['evo',3],
             condition(){ return genus_condition(2); },
@@ -258,7 +258,7 @@ export const actions = {
         exterminate: {
             id: 'evolution-exterminate',
             title(){ return global.evolution['gselect'] ? loc('genelab_genus_synthetic') : loc('evo_exterminate_title'); },
-            desc: loc('evo_exterminate_desc'),
+            desc(){ return loc('evo_exterminate_desc'); },
             reqs: { evo: 2 },
             grant: ['evo',7],
             condition(){
@@ -281,8 +281,8 @@ export const actions = {
         },
         multicellular: {
             id: 'evolution-multicellular',
-            title: loc('evo_multicellular_title'),
-            desc: loc('evo_multicellular_desc'),
+            title(){ return loc('evo_multicellular_title'); },
+            desc(){ return loc('evo_multicellular_desc'); },
             reqs: { evo: 3 },
             grant: ['evo',4],
             condition(){ return global.tech['evo'] && global.tech.evo === 3; },
@@ -301,8 +301,8 @@ export const actions = {
         },
         spores: {
             id: 'evolution-spores',
-            title: loc('evo_spores_title'),
-            desc: loc('evo_spores_desc'),
+            title(){ return loc('evo_spores_title'); },
+            desc(){ return loc('evo_spores_desc'); },
             reqs: { evo: 4, evo_fungi: 1 },
             grant: ['evo',5],
             condition(){ return global.tech['evo'] && global.tech.evo === 4; },
@@ -321,8 +321,8 @@ export const actions = {
         },
         poikilohydric: {
             id: 'evolution-poikilohydric',
-            title: loc('evo_poikilohydric_title'),
-            desc: loc('evo_poikilohydric_desc'),
+            title(){ return loc('evo_poikilohydric_title'); },
+            desc(){ return loc('evo_poikilohydric_desc'); },
             reqs: { evo: 4, evo_plant: 1 },
             grant: ['evo',5],
             condition(){ return global.tech['evo'] && global.tech.evo === 4; },
@@ -341,8 +341,8 @@ export const actions = {
         },
         bilateral_symmetry: {
             id: 'evolution-bilateral_symmetry',
-            title: loc('evo_bilateral_symmetry_title'),
-            desc: loc('evo_bilateral_symmetry_desc'),
+            title(){ return loc('evo_bilateral_symmetry_title'); },
+            desc(){ return loc('evo_bilateral_symmetry_desc'); },
             reqs: { evo: 4, evo_animal: 1 },
             grant: ['evo',5],
             condition(){ return global.tech['evo'] && global.tech.evo === 4; },
@@ -370,8 +370,8 @@ export const actions = {
         },
         bryophyte: {
             id: 'evolution-bryophyte',
-            title: loc('evo_bryophyte_title'),
-            desc: loc('evo_bryophyte_desc'),
+            title(){ return loc('evo_bryophyte_title'); },
+            desc(){ return loc('evo_bryophyte_desc'); },
             reqs: { evo: 5 },
             grant: ['evo',7],
             condition(){
@@ -399,8 +399,8 @@ export const actions = {
         },
         athropods: {
             id: 'evolution-athropods',
-            title: loc('evo_athropods_title'),
-            desc: loc('evo_athropods_desc'),
+            title(){ return loc('evo_athropods_title'); },
+            desc(){ return loc('evo_athropods_desc'); },
             reqs: { evo: 5, evo_insectoid: 1 },
             grant: ['evo',7],
             condition(){ return genus_condition(5); },
@@ -421,8 +421,8 @@ export const actions = {
         },
         mammals: {
             id: 'evolution-mammals',
-            title: loc('evo_mammals_title'),
-            desc: loc('evo_mammals_desc'),
+            title(){ return loc('evo_mammals_title'); },
+            desc(){ return loc('evo_mammals_desc'); },
             reqs: { evo: 5, evo_mammals: 1 },
             grant: ['evo',6],
             condition(){ return global.tech['evo'] && global.tech.evo === 5; },
@@ -447,8 +447,8 @@ export const actions = {
         },
         humanoid: {
             id: 'evolution-humanoid',
-            title: loc('evo_humanoid_title'),
-            desc: loc('evo_humanoid_desc'),
+            title(){ return loc('evo_humanoid_title'); },
+            desc(){ return loc('evo_humanoid_desc'); },
             reqs: { evo: 6, evo_humanoid: 1 },
             grant: ['evo',7],
             condition(){ return genus_condition(6); },
@@ -469,8 +469,8 @@ export const actions = {
         },
         gigantism: {
             id: 'evolution-gigantism',
-            title: loc('evo_gigantism_title'),
-            desc: loc('evo_gigantism_desc'),
+            title(){ return loc('evo_gigantism_title'); },
+            desc(){ return loc('evo_gigantism_desc'); },
             reqs: { evo: 6, evo_giant: 1 },
             grant: ['evo',7],
             condition(){ return genus_condition(6); },
@@ -491,8 +491,8 @@ export const actions = {
         },
         dwarfism: {
             id: 'evolution-dwarfism',
-            title: loc('evo_dwarfism_title'),
-            desc: loc('evo_dwarfism_desc'),
+            title(){ return loc('evo_dwarfism_title'); },
+            desc(){ return loc('evo_dwarfism_desc'); },
             reqs: { evo: 6, evo_small: 1 },
             grant: ['evo',7],
             condition(){ return genus_condition(6); },
@@ -513,8 +513,8 @@ export const actions = {
         },
         animalism: {
             id: 'evolution-animalism',
-            title: loc('evo_animalism_title'),
-            desc: loc('evo_animalism_desc'),
+            title(){ return loc('evo_animalism_title'); },
+            desc(){ return loc('evo_animalism_desc'); },
             reqs: { evo: 6, evo_animalism: 1 },
             grant: ['evo',7],
             condition(){ return genus_condition(6) && global.tech['evo_animalism'] && global.tech.evo_animalism === 1; },
@@ -534,8 +534,8 @@ export const actions = {
         },
         carnivore: {
             id: 'evolution-carnivore',
-            title: loc('evo_carnivore_title'),
-            desc: loc('evo_carnivore_desc'),
+            title(){ return loc('evo_carnivore_title'); },
+            desc(){ return loc('evo_carnivore_desc'); },
             reqs: { evo_animalism: 2 },
             grant: ['evo_animalism',3],
             condition(){ return genus_condition(7) && global.tech['evo_animalism'] && global.tech.evo_animalism === 2; },
@@ -557,8 +557,8 @@ export const actions = {
         },
         herbivore: {
             id: 'evolution-herbivore',
-            title: loc('evo_herbivore_title'),
-            desc: loc('evo_herbivore_desc'),
+            title(){ return loc('evo_herbivore_title'); },
+            desc(){ return loc('evo_herbivore_desc'); },
             reqs: { evo_animalism: 2 },
             grant: ['evo_animalism',3],
             condition(){ return genus_condition(7) && global.tech['evo_animalism'] && global.tech.evo_animalism === 2; },
@@ -580,8 +580,8 @@ export const actions = {
         },
         omnivore: {
             id: 'evolution-omnivore',
-            title: loc('evo_omnivore_title'),
-            desc: loc('evo_omnivore_desc'),
+            title(){ return loc('evo_omnivore_title'); },
+            desc(){ return loc('evo_omnivore_desc'); },
             reqs: { evo_animalism: 2, locked: 1 },
             grant: ['evo_animalism',3],
             condition(){ return genus_condition(7) && global.tech['evo_animalism'] && global.tech.evo_animalism === 2; },
@@ -603,8 +603,8 @@ export const actions = {
         },
         celestial: {
             id: 'evolution-celestial',
-            title: loc('evo_celestial_title'),
-            desc: loc('evo_celestial_desc'),
+            title(){ return loc('evo_celestial_title'); },
+            desc(){ return loc('evo_celestial_desc'); },
             reqs: { evo: 6, evo_angelic: 1 },
             grant: ['evo',7],
             condition(){
@@ -628,8 +628,8 @@ export const actions = {
         },
         demonic: {
             id: 'evolution-demonic',
-            title: loc('evo_demonic_title'),
-            desc: loc('evo_demonic_desc'),
+            title(){ return loc('evo_demonic_title'); },
+            desc(){ return loc('evo_demonic_desc'); },
             reqs: { evo: 6, evo_demonic: 1 },
             grant: ['evo',7],
             condition(){
@@ -653,8 +653,8 @@ export const actions = {
         },
         eldritch: {
             id: 'evolution-eldritch',
-            title: loc('evo_eldritch_title'),
-            desc: loc('evo_eldritch_desc'),
+            title(){ return loc('evo_eldritch_title'); },
+            desc(){ return loc('evo_eldritch_desc'); },
             reqs: { evo: 5, evo_eldritch: 1 },
             grant: ['evo',7],
             condition(){
@@ -678,8 +678,8 @@ export const actions = {
         },
         aquatic: {
             id: 'evolution-aquatic',
-            title: loc('evo_aquatic_title'),
-            desc: loc('evo_aquatic_desc'),
+            title(){ return loc('evo_aquatic_title'); },
+            desc(){ return loc('evo_aquatic_desc'); },
             reqs: { evo: 5, evo_aquatic: 1 },
             grant: ['evo',7],
             condition(){
@@ -703,8 +703,8 @@ export const actions = {
         },
         fey: {
             id: 'evolution-fey',
-            title: loc('evo_fey_title'),
-            desc: loc('evo_fey_desc'),
+            title(){ return loc('evo_fey_title'); },
+            desc(){ return loc('evo_fey_desc'); },
             reqs: { evo: 5, evo_fey: 1 },
             grant: ['evo',7],
             condition(){
@@ -728,8 +728,8 @@ export const actions = {
         },
         heat: {
             id: 'evolution-heat',
-            title: loc('evo_heat_title'),
-            desc: loc('evo_heat_desc'),
+            title(){ return loc('evo_heat_title'); },
+            desc(){ return loc('evo_heat_desc'); },
             reqs: { evo: 5, evo_heat: 1 },
             grant: ['evo',7],
             condition(){
@@ -753,8 +753,8 @@ export const actions = {
         },
         polar: {
             id: 'evolution-polar',
-            title: loc('evo_polar_title'),
-            desc: loc('evo_polar_desc'),
+            title(){ return loc('evo_polar_title'); },
+            desc(){ return loc('evo_polar_desc'); },
             reqs: { evo: 5, evo_polar: 1 },
             grant: ['evo',7],
             condition(){
@@ -778,8 +778,8 @@ export const actions = {
         },
         sand: {
             id: 'evolution-sand',
-            title: loc('evo_sand_title'),
-            desc: loc('evo_sand_desc'),
+            title(){ return loc('evo_sand_title'); },
+            desc(){ return loc('evo_sand_desc'); },
             reqs: { evo: 5, evo_sand: 1 },
             grant: ['evo',7],
             condition(){
@@ -803,8 +803,8 @@ export const actions = {
         },
         eggshell: {
             id: 'evolution-eggshell',
-            title: loc('evo_eggshell_title'),
-            desc: loc('evo_eggshell_desc'),
+            title(){ return loc('evo_eggshell_title'); },
+            desc(){ return loc('evo_eggshell_desc'); },
             reqs: { evo: 5, evo_eggshell: 1 },
             grant: ['evo',6],
             condition(){ return global.tech['evo'] && global.tech.evo === 5 && !global.evolution['gselect']; },
@@ -825,7 +825,7 @@ export const actions = {
         endothermic: {
             id: 'evolution-endothermic',
             title(){ return global.evolution['gselect'] ? loc('genelab_genus_avian') : loc('evo_endothermic_title'); },
-            desc: loc('evo_endothermic_desc'),
+            desc(){ return loc('evo_endothermic_desc'); },
             reqs: { evo: 6, evo_eggshell: 2 },
             grant: ['evo',7],
             condition(){ return genus_condition(6); },
@@ -847,7 +847,7 @@ export const actions = {
         ectothermic: {
             id: 'evolution-ectothermic',
             title(){ return global.evolution['gselect'] ? loc('genelab_genus_reptilian') : loc('evo_ectothermic_title'); },
-            desc: loc('evo_ectothermic_desc'),
+            desc(){ return loc('evo_ectothermic_desc'); },
             reqs: { evo: 6, evo_eggshell: 2 },
             grant: ['evo',7],
             condition(){ return genus_condition(6); },
@@ -868,8 +868,8 @@ export const actions = {
         },
         sentience: {
             id: 'evolution-sentience',
-            title: loc('evo_sentience_title'),
-            desc: loc('evo_sentience_desc'),
+            title(){ return loc('evo_sentience_title'); },
+            desc(){ return loc('evo_sentience_desc'); },
             reqs: { evo: 7 },
             grant: ['evo',8],
             condition(){ return global.tech['evo'] && global.tech.evo === 7 && global.evolution['final'] === 100; },
@@ -929,8 +929,8 @@ export const actions = {
     city: {
         gift: {
             id: 'city-gift',
-            title: loc('city_gift'),
-            desc: loc('city_gift_desc'),
+            title(){ return loc('city_gift'); },
+            desc(){ return loc('city_gift_desc'); },
             wiki: false,
             category: 'outskirts',
             reqs: { primitive: 1 },
@@ -1302,7 +1302,7 @@ export const actions = {
         },
         slaughter: {
             id: 'city-slaughter',
-            title: loc('city_evil'),
+            title(){ return loc('city_evil'); },
             desc(){
                 if (global.race['soul_eater']){
                     return global.tech['primitive'] ? (global.resource.hasOwnProperty('furs') && global.resource.Furs.display ? loc('city_evil_desc3') : loc('city_evil_desc2')) : loc('city_evil_desc1');
@@ -1545,7 +1545,7 @@ export const actions = {
         },
         lodge: {
             id: 'city-lodge',
-            title: loc('city_lodge'),
+            title(){ return loc('city_lodge'); },
             desc(){ return global.race['detritivore'] ? loc('city_lodge_desc_alt') : loc('city_lodge_desc'); },
             type: 'housing',
             category: 'residential',
@@ -1591,7 +1591,7 @@ export const actions = {
         smokehouse: {
             id: 'city-smokehouse',
             title(){ return global.race['hrt'] && ['wolven','vulpine'].includes(global.race['hrt']) ? loc('city_smokehouse_easter') : loc('city_smokehouse'); },
-            desc: loc('city_smokehouse_desc'),
+            desc(){ return loc('city_smokehouse_desc'); },
             type: 'storage',
             category: 'trade',
             reqs: { hunting: 1 },
@@ -1622,8 +1622,8 @@ export const actions = {
         },
         soul_well: {
             id: 'city-soul_well',
-            title: loc('city_soul_well'),
-            desc: loc('city_soul_well_desc'),
+            title(){ return loc('city_soul_well'); },
+            desc(){ return loc('city_soul_well_desc'); },
             type: 'farming',
             category: 'trade',
             reqs: { soul_eater: 1 },
@@ -1697,7 +1697,7 @@ export const actions = {
         },
         transmitter: {
             id: 'city-transmitter',
-            title: loc('city_transmitter'),
+            title(){ return loc('city_transmitter'); },
             desc(){ return `<div>${loc('city_transmitter_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             type: 'farming',
             category: 'residential',
@@ -1736,7 +1736,7 @@ export const actions = {
         farm: {
             id: 'city-farm',
             title(){ return structName('farm'); },
-            desc: loc('city_farm_desc'),
+            desc(){ return loc('city_farm_desc'); },
             type: 'farming',
             category: 'residential',
             reqs: { agriculture: 1 },
@@ -1795,8 +1795,8 @@ export const actions = {
         },
         compost: {
             id: 'city-compost',
-            title: loc('city_compost_heap'),
-            desc: loc('city_compost_heap_desc'),
+            title(){ return loc('city_compost_heap'); },
+            desc(){ return loc('city_compost_heap_desc'); },
             type: 'farming',
             category: 'residential',
             reqs: { compost: 1 },
@@ -1939,8 +1939,8 @@ export const actions = {
         },
         silo: {
             id: 'city-silo',
-            title: loc('city_silo'),
-            desc: loc('city_food_storage'),
+            title(){ return loc('city_silo'); },
+            desc(){ return loc('city_food_storage'); },
             type: 'storage',
             category: 'trade',
             reqs: { agriculture: 3 },
@@ -1974,7 +1974,7 @@ export const actions = {
         garrison: {
             id: 'city-garrison',
             title(){ return global.race['flier'] ? loc('city_garrison_flier') : loc('city_garrison'); },
-            desc: loc('city_garrison_desc'),
+            desc(){ return loc('city_garrison_desc'); },
             type: 'military',
             category: 'military',
             reqs: { military: 1, housing: 1 },
@@ -2035,7 +2035,7 @@ export const actions = {
         hospital: {
             id: 'city-hospital',
             title(){ return structName('hospital'); },
-            desc: loc('city_hospital_desc'),
+            desc(){ return loc('city_hospital_desc'); },
             type: 'military',
             category: 'military',
             reqs: { medic: 1 },
@@ -2256,7 +2256,7 @@ export const actions = {
         storage_yard: {
             id: 'city-storage_yard',
             title(){ return structName('storage_yard'); },
-            desc: loc('city_storage_yard_desc'),
+            desc(){ return loc('city_storage_yard_desc'); },
             type: 'storage',
             category: 'trade',
             reqs: { container: 1 },
@@ -2316,8 +2316,8 @@ export const actions = {
         },
         warehouse: {
             id: 'city-warehouse',
-            title: loc('city_warehouse'),
-            desc: loc('city_warehouse_desc'),
+            title(){ return loc('city_warehouse'); },
+            desc(){ return loc('city_warehouse_desc'); },
             type: 'storage',
             category: 'trade',
             reqs: { steel_container: 1 },
@@ -2370,7 +2370,7 @@ export const actions = {
         },
         bank: {
             id: 'city-bank',
-            title: loc('city_bank'),
+            title(){ return loc('city_bank'); },
             desc(){
                 let planet = races[global.race.species].home;
                 return loc('city_bank_desc',[planet]);
@@ -2415,8 +2415,8 @@ export const actions = {
         },
         pylon: {
             id: 'city-pylon',
-            title: loc('city_pylon'),
-            desc: loc('city_pylon'),
+            title(){ return loc('city_pylon'); },
+            desc(){ return loc('city_pylon'); },
             type: 'religion',
             category: 'industrial',
             reqs: { magic: 2 },
@@ -2457,8 +2457,8 @@ export const actions = {
         },
         conceal_ward: {
             id: 'city-conceal_ward',
-            title: loc('city_conceal_ward'),
-            desc: loc('city_conceal_ward'),
+            title(){ return loc('city_conceal_ward'); },
+            desc(){ return loc('city_conceal_ward'); },
             type: 'religion',
             category: 'industrial',
             reqs: { roguemagic: 3 },
@@ -2488,8 +2488,8 @@ export const actions = {
         },
         graveyard: {
             id: 'city-graveyard',
-            title: loc('city_graveyard'),
-            desc: loc('city_graveyard_desc'),
+            title(){ return loc('city_graveyard'); },
+            desc(){ return loc('city_graveyard_desc'); },
             type: 'storage',
             category: 'industrial',
             reqs: { reclaimer: 1 },
@@ -2692,8 +2692,8 @@ export const actions = {
         },
         cement_plant: {
             id: 'city-cement_plant',
-            title: loc('city_cement_plant'),
-            desc: loc('city_cement_plant_desc'),
+            title(){ return loc('city_cement_plant'); },
+            desc(){ return loc('city_cement_plant_desc'); },
             type: 'industry',
             category: 'industrial',
             reqs: { cement: 1 },
@@ -2740,8 +2740,8 @@ export const actions = {
         },
         foundry: {
             id: 'city-foundry',
-            title: loc('city_foundry'),
-            desc: loc('city_foundry_desc'),
+            title(){ return loc('city_foundry'); },
+            desc(){ return loc('city_foundry_desc'); },
             type: 'industry',
             category: 'industrial',
             reqs: { foundry: 1 },
@@ -2814,7 +2814,7 @@ export const actions = {
         factory: {
             id: 'city-factory',
             title(){ return structName('factory'); },
-            desc: `<div>${loc('city_factory_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            desc(){ return `<div>${loc('city_factory_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             type: 'industry',
             category: 'industrial',
             reqs: { high_tech: 3 },
@@ -2871,8 +2871,8 @@ export const actions = {
         nanite_factory: buildTemplate(`nanite_factory`,'city'),
         smelter: {
             id: 'city-smelter',
-            title: loc('city_smelter'),
-            desc: loc('city_smelter_desc'),
+            title(){ return loc('city_smelter'); },
+            desc(){ return loc('city_smelter_desc'); },
             type: 'industry',
             category: 'industrial',
             reqs: { smelting: 1 },
@@ -2938,8 +2938,8 @@ export const actions = {
         },
         metal_refinery: {
             id: 'city-metal_refinery',
-            title: loc('city_metal_refinery'),
-            desc: loc('city_metal_refinery_desc'),
+            title(){ return loc('city_metal_refinery'); },
+            desc(){ return loc('city_metal_refinery_desc'); },
             type: 'industry',
             category: 'industrial',
             reqs: { alumina: 1 },
@@ -2991,7 +2991,7 @@ export const actions = {
         mine: {
             id: 'city-mine',
             title(){ return structName('mine'); },
-            desc: loc('city_mine_desc'),
+            desc(){ return loc('city_mine_desc'); },
             type: 'mining',
             category: 'industrial',
             reqs: { mining: 2 },
@@ -3039,7 +3039,7 @@ export const actions = {
         coal_mine: {
             id: 'city-coal_mine',
             title(){ return structName('coal_mine'); },
-            desc: loc('city_coal_mine_desc'),
+            desc(){ return loc('city_coal_mine_desc'); },
             type: 'mining',
             category: 'industrial',
             reqs: { mining: 4 },
@@ -3130,8 +3130,8 @@ export const actions = {
         },
         oil_depot: {
             id: 'city-oil_depot',
-            title: loc('city_oil_depot'),
-            desc: loc('city_oil_depot_desc'),
+            title(){ return loc('city_oil_depot'); },
+            desc(){ return loc('city_oil_depot_desc'); },
             type: 'storage',
             category: 'trade',
             reqs: { oil: 2 },
@@ -3181,8 +3181,8 @@ export const actions = {
         },
         trade: {
             id: 'city-trade',
-            title: loc('city_trade'),
-            desc: loc('city_trade_desc'),
+            title(){ return loc('city_trade'); },
+            desc(){ return loc('city_trade_desc'); },
             type: 'finance',
             category: 'trade',
             reqs: { trade: 1 },
@@ -3224,8 +3224,8 @@ export const actions = {
         },
         wharf: {
             id: 'city-wharf',
-            title: loc('city_wharf'),
-            desc: loc('city_wharf_desc'),
+            title(){ return loc('city_wharf'); },
+            desc(){ return loc('city_wharf_desc'); },
             type: 'finance',
             category: 'trade',
             era: 'industrialized',
@@ -3271,8 +3271,8 @@ export const actions = {
         },
         tourist_center: {
             id: 'city-tourist_center',
-            title: loc('city_tourist_center'),
-            desc: loc('city_tourist_center_desc'),
+            title(){ return loc('city_tourist_center'); },
+            desc(){ return loc('city_tourist_center_desc'); },
             type: 'entertainment',
             category: 'commercial',
             reqs: { monument: 2 },
@@ -3512,8 +3512,8 @@ export const actions = {
         meditation: buildTemplate(`meditation`,'city'),
         banquet: {
             id: 'city-banquet',
-            title: loc('city_banquet'),
-            desc: loc(`city_banquet_desc`),
+            title(){ return loc('city_banquet'); },
+            desc(){ return loc(`city_banquet_desc`); },
             type: 'entertainment',
             category: 'commercial',
             reqs: { banquet:1 },
@@ -3684,7 +3684,7 @@ export const actions = {
         },
         university: {
             id: 'city-university',
-            title: loc('city_university'),
+            title(){ return loc('city_university'); },
             desc(){
                 let planet = races[global.race.species].home;
                 return loc('city_university_desc',[planet]);
@@ -3790,7 +3790,7 @@ export const actions = {
         },
         library: {
             id: 'city-library',
-            title: loc('city_library'),
+            title(){ return loc('city_library'); },
             desc(){
                 let planet = races[global.race.species].home;
                 return loc('city_library_desc',[planet]);
@@ -3891,7 +3891,7 @@ export const actions = {
         wardenclyffe: {
             id: 'city-wardenclyffe',
             title(){ return wardenLabel(); },
-            desc: loc('city_wardenclyffe_desc'),
+            desc(){ return loc('city_wardenclyffe_desc'); },
             type: 'science',
             category: 'science',
             reqs: { high_tech: 1 },
@@ -3991,8 +3991,8 @@ export const actions = {
         },
         biolab: {
             id: 'city-biolab',
-            title: loc('city_biolab'),
-            desc: `<div>${loc('city_biolab_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            title(){ return loc('city_biolab'); },
+            desc(){ return `<div>${loc('city_biolab_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             type: 'science',
             category: 'science',
             reqs: { genetics: 1 },
@@ -4168,7 +4168,7 @@ export const actions = {
         },
         fission_power: {
             id: 'city-fission_power',
-            title: loc('city_fission_power'),
+            title(){ return loc('city_fission_power'); },
             desc(){ return `<div>${loc('city_fission_power_desc')}</div><div class="has-text-special">${loc('requires_res',[global.resource.Uranium.name])}</div>`; },
             type: 'power',
             category: 'utility',
@@ -4205,8 +4205,8 @@ export const actions = {
         },
         mass_driver: {
             id: 'city-mass_driver',
-            title: loc('city_mass_driver'),
-            desc: `<div>${loc('city_mass_driver_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            title(){ return loc('city_mass_driver'); },
+            desc(){ return `<div>${loc('city_mass_driver_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             type: 'mining',
             category: 'utility',
             reqs: { mass: 1 },
@@ -4242,8 +4242,8 @@ export const actions = {
         },
         replicator: {
             id: 'city-replicator',
-            title: loc('tech_replicator'),
-            desc: loc('tech_replicator'),
+            title(){ return loc('tech_replicator'); },
+            desc(){ return loc('tech_replicator'); },
             category: 'utility',
             reqs: { special_hack: 1 },
             cost: {},
@@ -4269,7 +4269,7 @@ export const actions = {
     starDock: {
         probes: {
             id: 'starDock-probes',
-            title: loc('star_dock_probe'),
+            title(){ return loc('star_dock_probe'); },
             desc(){
                 return `<div>${loc('star_dock_probe_desc')}</div>`;
             },
@@ -4301,7 +4301,7 @@ export const actions = {
         },
         geck: {
             id: 'starDock-geck',
-            title: loc('tech_geck'),
+            title(){ return loc('tech_geck'); },
             desc(){
                 return `<div>${loc('tech_geck_desc')}</div>`;
             },
@@ -4385,7 +4385,7 @@ export const actions = {
         },
         prep_ship: {
             id: 'starDock-prep_ship',
-            title: loc('star_dock_prep'),
+            title(){ return loc('star_dock_prep'); },
             desc(){
                 let label = global.race['cataclysm'] ? loc('star_dock_prep_cata_desc') : loc('star_dock_prep_desc');
                 return `<div>${label}</div><div class="has-text-danger">${loc('star_dock_genesis_desc2')}</div>`;
@@ -4415,7 +4415,7 @@ export const actions = {
         },
         launch_ship: {
             id: 'starDock-launch_ship',
-            title: loc('star_dock_genesis'),
+            title(){ return loc('star_dock_genesis'); },
             desc(){
                 let label = global.race['cataclysm'] ? loc('star_dock_prep_cata_effect') : loc('star_dock_genesis_desc1');
                 return `<div>${label}</div><div class="has-text-danger">${loc('star_dock_genesis_desc2')}</div>`;
@@ -4640,8 +4640,8 @@ export function buildTemplate(key, region){
         {
             let action = {
                 id: `${region}-bonfire`,
-                title: loc('city_bonfire'),
-                desc: loc('city_bonfire_desc'),
+                title(){ return loc('city_bonfire'); },
+                desc(){ return loc('city_bonfire_desc'); },
                 category: 'outskirts',
                 wiki: false,
                 reqs: { primitive: 3  },
@@ -4669,8 +4669,8 @@ export function buildTemplate(key, region){
         {
             let action = {
                 id: `${region}-firework`,
-                title: loc('city_firework'),
-                desc: loc('city_firework'),
+                title(){ return loc('city_firework'); },
+                desc(){ return loc('city_firework'); },
                 category: 'outskirts',
                 wiki: false,
                 reqs: { mining: 3 },
@@ -4708,7 +4708,7 @@ export function buildTemplate(key, region){
             }
             let action = {
                 id: `${region}-assembly`,
-                title: loc('city_assembly'),
+                title(){ return loc('city_assembly'); },
                 desc(){ return loc('city_assembly_desc',[races[global.race.species].name]); },
                 category: 'military',
                 reqs: {},
@@ -4789,8 +4789,8 @@ export function buildTemplate(key, region){
         {
             let action = {
                 id: `${region}-nanite_factory`,
-                title: loc('city_nanite_factory'),
-                desc: loc('city_nanite_factory'),
+                title(){ return loc('city_nanite_factory'); },
+                desc(){ return loc('city_nanite_factory'); },
                 category: 'industrial',
                 reqs: {},
                 trait: ['deconstructor'],
@@ -4824,8 +4824,8 @@ export function buildTemplate(key, region){
         {
             let action = {
                 id: `${region}-captive_housing`,
-                title: loc('city_captive_housing'),
-                desc: loc('city_captive_housing_desc'),
+                title(){ return loc('city_captive_housing'); },
+                desc(){ return loc('city_captive_housing_desc'); },
                 category: 'residential',
                 reqs: { unfathomable: 1 },
                 trait: ['unfathomable'],
@@ -4956,7 +4956,7 @@ export function buildTemplate(key, region){
         {
             let action = {
                 id: `${region}-s_alter`,
-                title: loc('city_s_alter'),
+                title(){ return loc('city_s_alter'); },
                 desc(){
                     return global.city.hasOwnProperty('s_alter') && global.city['s_alter'].count >= 1 ? `<div>${loc('city_s_alter')}</div><div class="has-text-special">${loc('city_s_alter_desc')}</div>` : loc('city_s_alter');
                 },
@@ -5065,7 +5065,7 @@ export function buildTemplate(key, region){
         {
             let action = {
                 id: `${region}-shrine`,
-                title: loc('city_shrine'),
+                title(){ return loc('city_shrine'); },
                 desc(){
                     return global.race['warlord'] ? loc('city_shrine_warlord_desc') : loc('city_shrine_desc');
                 },
@@ -5144,8 +5144,8 @@ export function buildTemplate(key, region){
         {
             let action = {
                 id: `${region}-meditation`,
-                title: loc('city_meditation'),
-                desc: loc('city_meditation'),
+                title(){ return loc('city_meditation'); },
+                desc(){ return loc('city_meditation'); },
                 category: 'commercial',
                 reqs: { primitive: 3 },
                 trait: ['calm'],
@@ -5305,8 +5305,8 @@ const challengeList = {
 };
 Object.keys(challengeList).forEach(challenge => actions.evolution[challenge] = {
     id: `evolution-${challenge}`,
-    title: loc(`evo_challenge_${challenge}`),
-    desc: loc(`evo_challenge_${challenge}`),
+    title(){ return loc(`evo_challenge_${challenge}`); },
+    desc(){ return loc(`evo_challenge_${challenge}`); },
     condition(){ return global.evolution.hasOwnProperty(challenge); },
     cost: {
         DNA(){ return 10; }
@@ -5364,7 +5364,7 @@ const advancedChallengeList = {
 };
 Object.keys(advancedChallengeList).forEach(challenge => actions.evolution[challenge] = {
     id: `evolution-${challenge}`,
-    title: loc(`evo_challenge_${challenge}`),
+    title(){ return loc(`evo_challenge_${challenge}`); },
     desc(){
         let desc = '';
         if (global.race.universe === 'micro'){
@@ -5400,7 +5400,7 @@ Object.keys(advancedChallengeList).forEach(challenge => actions.evolution[challe
 
 actions.evolution['bunker'] = {
     id: 'evolution-bunker',
-    title: loc('evo_bunker'),
+    title(){ return loc('evo_bunker'); },
     desc(){ return `<div>${loc('evo_bunker')}</div><div class="has-text-special">${loc('evo_challenge')}</div>`; },
     reqs: { evo: 6 },
     grant: ['evo_challenge',1],
@@ -8672,7 +8672,7 @@ function sentience(){
     if (global.race.species === 'custom' && global.custom.hasOwnProperty('race0')){
         global.race['untapped'] = calcGenomeScore({
             name: global.custom.race0.name,
-            desc: global.custom.race0.desc,
+            desc(){ return global.custom.race0.desc; },
             entity: global.custom.race0.entity,
             home: global.custom.race0.home,
             red: global.custom.race0.red,
@@ -8690,7 +8690,7 @@ function sentience(){
     if (global.race.species === 'hybrid' && global.custom.hasOwnProperty('race1')){
         global.race['untapped'] = calcGenomeScore({
             name: global.custom.race1.name,
-            desc: global.custom.race1.desc,
+            desc(){ return global.custom.race1.desc; },
             entity: global.custom.race1.entity,
             home: global.custom.race1.home,
             red: global.custom.race1.red,

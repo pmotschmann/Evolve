@@ -53,7 +53,7 @@ const edenicModules = {
         },
         encampment: {
             id: 'eden-encampment',
-            title: loc('eden_encampment_title'),
+            title(){ return loc('eden_encampment_title'); },
             desc(){ return `<div>${loc('eden_encampment_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             type: 'outpost',
             reqs: { edenic: 4 },
@@ -267,8 +267,8 @@ const edenicModules = {
         },
         ectoplasm_processor: {
             id: 'eden-ectoplasm_processor',
-            title: loc('eden_ectoplasm_processor_title'),
-            desc: `<div>${loc('eden_ectoplasm_processor_title')}</div><div class="has-text-special">${loc('space_support',[loc('eden_asphodel_name')])}</div>`,
+            title(){ return loc('eden_ectoplasm_processor_title'); },
+            desc(){ return `<div>${loc('eden_ectoplasm_processor_title')}</div><div class="has-text-special">${loc('space_support',[loc('eden_asphodel_name')])}</div>`; },
             type: 'industry',
             reqs: { asphodel: 2 },
             cost: {
@@ -305,7 +305,7 @@ const edenicModules = {
         research_station: {
             id: 'eden-research_station',
             title(){ return loc('eden_research_station_title'); },
-            desc: `<div>${loc('eden_research_station_title')}</div><div class="has-text-special">${loc('space_support',[loc('eden_asphodel_name')])}</div>`,
+            desc(){ return `<div>${loc('eden_research_station_title')}</div><div class="has-text-special">${loc('space_support',[loc('eden_asphodel_name')])}</div>`; },
             type: 'science',
             reqs: { asphodel: 3 },
             cost: {
@@ -538,7 +538,7 @@ const edenicModules = {
         },
         rune_gate: {
             id: 'eden-rune_gate',
-            title: loc('eden_rune_gate_title'),
+            title(){ return loc('eden_rune_gate_title'); },
             desc(wiki){
                 if (!global.eden.hasOwnProperty('rune_gate') || global.eden.rune_gate.count < 100 || wiki){
                     return `<div>${loc('eden_rune_gate_title')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
@@ -626,7 +626,7 @@ const edenicModules = {
         },
         rune_gate_open: {
             id: 'space-rune_gate_complete',
-            title: loc('eden_rune_gate_title'),
+            title(){ return loc('eden_rune_gate_title'); },
             desc(){
                 return `<div>${loc('eden_rune_gate_title')}</div>`;
             },
@@ -653,8 +653,8 @@ const edenicModules = {
         },
         bunker: {
             id: 'eden-bunker',
-            title: loc('eden_bunker_title'),
-            desc: `<div>${loc('eden_bunker_title')}</div><div class="has-text-special">${loc('space_support',[loc('eden_asphodel_name')])}</div>`,
+            title(){ return loc('eden_bunker_title'); },
+            desc(){ return `<div>${loc('eden_bunker_title')}</div><div class="has-text-special">${loc('space_support',[loc('eden_asphodel_name')])}</div>`; },
             type: 'military',
             reqs: { asphodel: 9 },
             cost: {
@@ -709,8 +709,8 @@ const edenicModules = {
         },
         bliss_den: {
             id: 'eden-bliss_den',
-            title: loc('eden_bliss_den_title'),
-            desc: `<div>${loc('eden_bliss_den_title')}</div><div class="has-text-special">${loc('space_support',[loc('eden_asphodel_name')])}</div>`,
+            title(){ return loc('eden_bliss_den_title'); },
+            desc(){ return `<div>${loc('eden_bliss_den_title')}</div><div class="has-text-special">${loc('space_support',[loc('eden_asphodel_name')])}</div>`; },
             type: 'entertainment',
             reqs: { asphodel: 10 },
             cost: {
@@ -755,8 +755,8 @@ const edenicModules = {
         },
         rectory: {
             id: 'eden-rectory',
-            title: loc('eden_rectory_title'),
-            desc: `<div>${loc('eden_rectory_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            title(){ return loc('eden_rectory_title'); },
+            desc(){ return `<div>${loc('eden_rectory_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             type: 'religion',
             reqs: { asphodel: 11 },
             not_trait: ['warlord'],
@@ -806,8 +806,8 @@ const edenicModules = {
         },
         corruptor: {
             id: 'eden-corruptor',
-            title: loc('eden_corruptor_title'),
-            desc: `<div>${loc('eden_corruptor_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            title(){ return loc('eden_corruptor_title'); },
+            desc(){ return `<div>${loc('eden_corruptor_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             type: 'industry',
             reqs: { asphodel: 11 },
             trait: ['warlord'],
@@ -862,7 +862,7 @@ const edenicModules = {
     eden_elysium: {
         info: {
             name: loc('eden_elysium_name'),
-            desc: loc('eden_elysium_desc'),
+            desc(){ return loc('eden_elysium_desc'); },
             prop(){
                 let soldier_title = global.tech['world_control'] && !global.race['truepath'] ? loc('civics_garrison_peacekeepers') : loc('civics_garrison_soldiers');
                 let desc = `<span class="pad"><span class="soldier">${soldier_title}</span> <span v-html="filter(workers,'stationed')"></span> / <span>{{ filter(max, 's_max') }}</span></span>`;
@@ -886,8 +886,8 @@ const edenicModules = {
         },
         survey_fields: {
             id: 'eden-survey_fields',
-            title: loc('eden_survey_fields'),
-            desc: loc('eden_survey_fields'),
+            title(){ return loc('eden_survey_fields'); },
+            desc(){ return loc('eden_survey_fields'); },
             reqs: { elysium: 2 },
             grant: ['elysium',3],
             cost: {
@@ -913,8 +913,8 @@ const edenicModules = {
         },
         fortress: { 
             id: 'eden-fortress',
-            title: loc('eden_fortress'),
-            desc: loc('eden_fortress'),
+            title(){ return loc('eden_fortress'); },
+            desc(){ return loc('eden_fortress'); },
             queue_complete(){ return 0; },
             reqs: { elysium: 3 },
             condition(){
@@ -933,8 +933,8 @@ const edenicModules = {
         },
         siege_fortress: { 
             id: 'eden-siege_fortress',
-            title: loc('eden_siege_fortress'),
-            desc: loc('eden_siege_fortress'),
+            title(){ return loc('eden_siege_fortress'); },
+            desc(){ return loc('eden_siege_fortress'); },
             queue_complete(){ return 0; },
             reqs: { elysium: 3 },
             condition(){
@@ -1011,8 +1011,8 @@ const edenicModules = {
         },
         raid_supplies: { 
             id: 'eden-raid_supplies',
-            title: loc('eden_raid_supplies'),
-            desc: loc('eden_raid_supplies'),
+            title(){ return loc('eden_raid_supplies'); },
+            desc(){ return loc('eden_raid_supplies'); },
             queue_complete(){ return 0; },
             reqs: { elysium: 3 },
             condition(){
@@ -1077,8 +1077,8 @@ const edenicModules = {
         },
         ambush_patrol: { 
             id: 'eden-ambush_patrol',
-            title: loc('eden_ambush_patrol'),
-            desc: loc('eden_ambush_patrol'),
+            title(){ return loc('eden_ambush_patrol'); },
+            desc(){ return loc('eden_ambush_patrol'); },
             queue_complete(){ return 0; },
             reqs: { elysium: 3 },
             condition(){
@@ -1136,8 +1136,8 @@ const edenicModules = {
         },
         ruined_fortress: { 
             id: 'eden-ruined_fortress',
-            title: loc('eden_ruined_fortress'),
-            desc: loc('eden_ruined_fortress'),
+            title(){ return loc('eden_ruined_fortress'); },
+            desc(){ return loc('eden_ruined_fortress'); },
             queue_complete(){ return 0; },
             reqs: { elysium: 4 },
             condition(){
@@ -1153,8 +1153,8 @@ const edenicModules = {
         },
         scout_elysium: {
             id: 'eden-scout_elysium',
-            title: loc('eden_scout_elysium_title'),
-            desc: loc('eden_scout_elysium_title'),
+            title(){ return loc('eden_scout_elysium_title'); },
+            desc(){ return loc('eden_scout_elysium_title'); },
             reqs: { elysium: 4 },
             grant: ['elysium',5],
             queue_complete(){ return global.tech.elysium >= 5 ? 0 : 1; },
@@ -1178,7 +1178,7 @@ const edenicModules = {
         },
         fire_support_base: {
             id: 'eden-fire_support_base',
-            title: loc('eden_fire_support_base_title'),
+            title(){ return loc('eden_fire_support_base_title'); },
             desc(wiki){
                 if (!global.eden.hasOwnProperty('fire_support_base') || global.eden.fire_support_base.count < 100 || wiki){
                     return `<div>${loc('eden_fire_support_base_title')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
@@ -1340,8 +1340,8 @@ const edenicModules = {
         },
         elysanite_mine: {
             id: 'eden-elysanite_mine',
-            title: loc('eden_elysanite_mine_title'),
-            desc: `<div>${loc('eden_elysanite_mine_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            title(){ return loc('eden_elysanite_mine_title'); },
+            desc(){ return `<div>${loc('eden_elysanite_mine_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             type: 'mining',
             reqs: { elysium: 6 },
             cost: {
@@ -1803,7 +1803,7 @@ const edenicModules = {
     eden_isle: {
         info: {
             name: loc('eden_isle_name'),
-            desc: loc('eden_isle_desc'),
+            desc(){ return loc('eden_isle_desc'); },
         },
         south_pier: {
             id: 'eden-south_pier',
@@ -2083,8 +2083,8 @@ const edenicModules = {
         },
         scout_palace: {
             id: 'eden-scout_palace',
-            title: loc('eden_scout_palace_title'),
-            desc: loc('eden_scout_palace_title'),
+            title(){ return loc('eden_scout_palace_title'); },
+            desc(){ return loc('eden_scout_palace_title'); },
             reqs: { palace: 1 },
             grant: ['palace',2],
             queue_complete(){ return global.tech.palace >= 2 ? 0 : 1; },
@@ -2189,8 +2189,8 @@ const edenicModules = {
         },
         apotheosis: {
             id: 'eden-apotheosis',
-            title: loc('eden_apotheosis'),
-            desc: loc('eden_apotheosis'),
+            title(){ return loc('eden_apotheosis'); },
+            desc(){ return loc('eden_apotheosis'); },
             reqs: { palace: 7 },
             condition(){
                 return global.eden.hasOwnProperty('apotheosis') && global.eden.apotheosis.count === 0;

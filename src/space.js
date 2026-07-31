@@ -30,8 +30,8 @@ const spaceProjects = {
         },
         test_launch: {
             id: 'space-test_launch',
-            title: loc('space_home_test_launch_title'),
-            desc: loc('space_home_test_launch_desc'),
+            title(){ return loc('space_home_test_launch_title'); },
+            desc(){ return loc('space_home_test_launch_desc'); },
             reqs: { space: 1 },
             grant: ['space',2],
             queue_complete(){ return global.tech.space >= 2 ? 0 : 1; },
@@ -61,8 +61,8 @@ const spaceProjects = {
         },
         satellite: {
             id: 'space-satellite',
-            title: loc('space_home_satellite_title'),
-            desc: loc('space_home_satellite_desc'),
+            title(){ return loc('space_home_satellite_title'); },
+            desc(){ return loc('space_home_satellite_desc'); },
             type: 'science',
             reqs: { space: 2 },
             condition(){ return global.tech['resettle'] ? false : true; },
@@ -100,7 +100,7 @@ const spaceProjects = {
         },
         gps: {
             id: 'space-gps',
-            title: loc('space_home_gps_title'),
+            title(){ return loc('space_home_gps_title'); },
             desc(){
                 if (global.space.hasOwnProperty('gps') && global.space['gps'].count < 4){
                     return `<div>${loc('space_home_gps_desc')}</div><div class="has-text-special">${loc('space_home_gps_desc_req')}</div>`;
@@ -145,8 +145,8 @@ const spaceProjects = {
         },
         propellant_depot: {
             id: 'space-propellant_depot',
-            title: loc('space_home_propellant_depot_title'),
-            desc: loc('space_home_propellant_depot_desc'),
+            title(){ return loc('space_home_propellant_depot_title'); },
+            desc(){ return loc('space_home_propellant_depot_desc'); },
             type: 'storage',
             reqs: { space_explore: 1 },
             condition(){ return global.tech['resettle'] ? false : true; },
@@ -184,7 +184,7 @@ const spaceProjects = {
         nav_beacon: {
             id: 'space-nav_beacon',
             title(){ return global.race['orbit_decayed'] ? loc('space_home_broadcast_beacon_title') : loc('space_home_nav_beacon_title'); },
-            desc: `<div>${loc('space_home_nav_beacon_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            desc(){ return `<div>${loc('space_home_nav_beacon_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             type: 'utility',
             reqs: { luna: 2 },
             condition(){ return global.tech['resettle'] ? false : true; },
@@ -241,8 +241,8 @@ const spaceProjects = {
         },
         moon_mission: {
             id: 'space-moon_mission',
-            title: loc('space_moon_mission_title'),
-            desc: loc('space_moon_mission_desc'),
+            title(){ return loc('space_moon_mission_title'); },
+            desc(){ return loc('space_moon_mission_desc'); },
             reqs: { space: 2, space_explore: 2 },
             grant: ['space',3],
             queue_complete(){ return global.tech.space >= 3 ? 0 : 1; },
@@ -262,7 +262,7 @@ const spaceProjects = {
         },
         moon_base: {
             id: 'space-moon_base',
-            title: loc('space_moon_base_title'),
+            title(){ return loc('space_moon_base_title'); },
             desc(){ return `<div>${loc('space_moon_base_desc')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Oil.name])}</div>`; },
             type: 'outpost',
             reqs: { space: 3 },
@@ -326,8 +326,8 @@ const spaceProjects = {
         },
         iridium_mine: {
             id: 'space-iridium_mine',
-            title: loc('space_moon_iridium_mine_title'),
-            desc: `<div>${loc('space_moon_iridium_mine_desc')}</div><div class="has-text-special">${loc('space_support',[loc('space_moon_info_name')])}</div>`,
+            title(){ return loc('space_moon_iridium_mine_title'); },
+            desc(){ return `<div>${loc('space_moon_iridium_mine_desc')}</div><div class="has-text-special">${loc('space_support',[loc('space_moon_info_name')])}</div>`; },
             type: 'mining',
             reqs: { space: 3, luna: 1 },
             cost: {
@@ -376,8 +376,8 @@ const spaceProjects = {
         },
         helium_mine: {
             id: 'space-helium_mine',
-            title: loc('space_moon_helium_mine_title'),
-            desc: `<div>${loc('space_moon_helium_mine_desc')}</div><div class="has-text-special">${loc('space_support',[loc('space_moon_info_name')])}</div>`,
+            title(){ return loc('space_moon_helium_mine_title'); },
+            desc(){ return `<div>${loc('space_moon_helium_mine_desc')}</div><div class="has-text-special">${loc('space_support',[loc('space_moon_info_name')])}</div>`; },
             type: 'mining',
             reqs: { space: 3, luna: 1 },
             cost: {
@@ -421,8 +421,8 @@ const spaceProjects = {
         },
         observatory: {
             id: 'space-observatory',
-            title: loc('space_moon_observatory_title'),
-            desc: `<div>${loc('space_moon_observatory_desc')}</div><div class="has-text-special">${loc('space_support',[loc('space_moon_info_name')])}</div>`,
+            title(){ return loc('space_moon_observatory_title'); },
+            desc(){ return `<div>${loc('space_moon_observatory_desc')}</div><div class="has-text-special">${loc('space_support',[loc('space_moon_info_name')])}</div>`; },
             type: 'science',
             reqs: { science: 9, luna: 1 },
             cost: {
@@ -510,7 +510,7 @@ const spaceProjects = {
         },
         spaceport: {
             id: 'space-spaceport',
-            title: loc('space_red_spaceport_title'),
+            title(){ return loc('space_red_spaceport_title'); },
             desc(){ return `<div>${loc('space_red_spaceport_desc')}</div><div class="has-text-special">${loc('requires_power_space',[global.resource.Food.name])}</div>`; },
             type: 'outpost',
             reqs: { space: 4 },
@@ -569,7 +569,7 @@ const spaceProjects = {
         },
         red_tower: {
             id: 'space-red_tower',
-            title: loc('space_red_tower_title'),
+            title(){ return loc('space_red_tower_title'); },
             desc(){
                 return `<div>${loc('space_red_tower_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
@@ -607,7 +607,7 @@ const spaceProjects = {
         captive_housing: buildTemplate(`captive_housing`,'space'),
         terraformer: {
             id: 'space-terraformer',
-            title: loc('space_terraformer'),
+            title(){ return loc('space_terraformer'); },
             desc(wiki){
                 if (!global.space.hasOwnProperty('terraformer') || global.space.terraformer.count < 100 || wiki){
                     return `<div>${loc('space_terraformer')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>` + (global.space.hasOwnProperty('terraformer') && global.space.terraformer.count >= 100 ? `<div class="has-text-special">${loc('requires_power')}</div>` : ``);
@@ -669,7 +669,7 @@ const spaceProjects = {
         },
         atmo_terraformer: {
             id: 'space-atmo_terraformer',
-            title: loc('space_terraformer'),
+            title(){ return loc('space_terraformer'); },
             desc(){ return `<div>${loc('space_terraformer')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             wiki: false,
             reqs: { terraforming: 2 },
@@ -711,8 +711,8 @@ const spaceProjects = {
         },
         terraform: {
             id: 'space-terraform',
-            title: loc('space_terraform'),
-            desc: loc('space_terraform'),
+            title(){ return loc('space_terraform'); },
+            desc(){ return loc('space_terraform'); },
             reqs: { terraforming: 3 },
             queue_complete(){ return 0; },
             no_multi: true,
@@ -798,8 +798,8 @@ const spaceProjects = {
         },
         pylon: {
             id: 'space-pylon',
-            title: loc('space_red_pylon'),
-            desc: loc('space_red_pylon'),
+            title(){ return loc('space_red_pylon'); },
+            desc(){ return loc('space_red_pylon'); },
             type: 'religion',
             reqs: { magic: 2 },
             condition(){ return global.race['cataclysm'] || global.race['orbit_decayed'] ? true : false; },
@@ -831,7 +831,7 @@ const spaceProjects = {
         },
         vr_center: {
             id: 'space-vr_center',
-            title: loc('space_red_vr_center_title'),
+            title(){ return loc('space_red_vr_center_title'); },
             desc(){
                 return `<div>${loc('space_red_vr_center_desc')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`;
             },
@@ -871,7 +871,7 @@ const spaceProjects = {
         },
         garage: {
             id: 'space-garage',
-            title: loc('space_red_garage_title'),
+            title(){ return loc('space_red_garage_title'); },
             desc(){
                 return `<div>${loc('space_red_garage_desc')}</div>`;
             },
@@ -1056,7 +1056,7 @@ const spaceProjects = {
         },
         fabrication: {
             id: 'space-fabrication',
-            title: loc('space_red_fabrication_title'),
+            title(){ return loc('space_red_fabrication_title'); },
             desc(){
                 return `<div>${loc('space_red_fabrication_desc')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`;
             },
@@ -1232,7 +1232,7 @@ const spaceProjects = {
         },
         red_university: {
             id: 'space-red_university',
-            title: loc('city_university'),
+            title(){ return loc('city_university'); },
             desc(){
                 return loc('city_university_desc',[planetName().red]);
             },
@@ -1267,7 +1267,7 @@ const spaceProjects = {
         },
         exotic_lab: {
             id: 'space-exotic_lab',
-            title: loc('space_red_exotic_lab_title'),
+            title(){ return loc('space_red_exotic_lab_title'); },
             desc(){
                 return `<div>${loc('space_red_exotic_lab_desc')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`;
             },
@@ -1334,7 +1334,7 @@ const spaceProjects = {
         },
         ziggurat: {
             id: 'space-ziggurat',
-            title: loc('space_red_ziggurat_title'),
+            title(){ return loc('space_red_ziggurat_title'); },
             desc(){
                 let entity = global.race.old_gods !== 'none' ? races[global.race.old_gods.toLowerCase()].entity : races[global.race.species].entity;
                 return `<div>${loc('space_red_ziggurat_desc',[entity])}</div>`;
@@ -1403,7 +1403,7 @@ const spaceProjects = {
         },
         space_barracks: {
             id: 'space-space_barracks',
-            title: loc('space_red_space_barracks_title'),
+            title(){ return loc('space_red_space_barracks_title'); },
             desc(){
                 return `<div>${loc('space_red_space_barracks_desc')}</div><div class="has-text-special">${loc('space_red_space_barracks_desc_req')}</div>`;
             },
@@ -1531,7 +1531,7 @@ const spaceProjects = {
         },
         geothermal: {
             id: 'space-geothermal',
-            title: loc('space_hell_geothermal_title'),
+            title(){ return loc('space_hell_geothermal_title'); },
             desc(){
                 return `<div>${loc('space_hell_geothermal_desc')}</div><div class="has-text-special">${loc('space_hell_geothermal_desc_req')}</div>`;
             },
@@ -1664,7 +1664,7 @@ const spaceProjects = {
         },
         swarm_plant: {
             id: 'space-swarm_plant',
-            title: loc('space_hell_swarm_plant_title'),
+            title(){ return loc('space_hell_swarm_plant_title'); },
             desc(){
                 return `<div>${loc('space_hell_swarm_plant_desc')}</div>`;
             },
@@ -1793,7 +1793,7 @@ const spaceProjects = {
         },
         swarm_control: {
             id: 'space-swarm_control',
-            title: loc('space_sun_swarm_control_title'),
+            title(){ return loc('space_sun_swarm_control_title'); },
             desc(){
                 return `<div>${loc('space_sun_swarm_control_desc')}</div>`;
             },
@@ -1827,7 +1827,7 @@ const spaceProjects = {
         },
         swarm_satellite: {
             id: 'space-swarm_satellite',
-            title: loc('space_sun_swarm_satellite_title'),
+            title(){ return loc('space_sun_swarm_satellite_title'); },
             desc(){
                 return `<div>${loc('space_sun_swarm_satellite_desc')}</div><div class="has-text-special">${loc('space_sun_swarm_satellite_desc_req')}</div>`;
             },
@@ -1998,7 +1998,7 @@ const spaceProjects = {
         },
         gas_mining: {
             id: 'space-gas_mining',
-            title: loc('space_gas_mining_title'),
+            title(){ return loc('space_gas_mining_title'); },
             desc(){
                 return `<div>${loc('space_gas_mining_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
@@ -2146,7 +2146,7 @@ const spaceProjects = {
         },
         outpost: {
             id: 'space-outpost',
-            title: loc('space_gas_moon_outpost_title'),
+            title(){ return loc('space_gas_moon_outpost_title'); },
             desc(){
                 return `<div>${loc('space_gas_moon_outpost_desc')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Oil.name])}</div>`;
             },
@@ -2188,7 +2188,7 @@ const spaceProjects = {
         },
         drone: {
             id: 'space-drone',
-            title: loc('space_gas_moon_drone_title'),
+            title(){ return loc('space_gas_moon_drone_title'); },
             desc(){
                 return `<div>${loc('space_gas_moon_drone_desc')}</div>`;
             },
@@ -2221,7 +2221,7 @@ const spaceProjects = {
         },
         oil_extractor: {
             id: 'space-oil_extractor',
-            title: loc('space_gas_moon_oil_extractor_title'),
+            title(){ return loc('space_gas_moon_oil_extractor_title'); },
             desc(){
                 return `<div>${loc('space_gas_moon_oil_extractor_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
@@ -2311,7 +2311,7 @@ const spaceProjects = {
         },
         space_station: {
             id: 'space-space_station',
-            title: loc('space_belt_station_title'),
+            title(){ return loc('space_belt_station_title'); },
             desc(){
                 return `<div>${loc('space_belt_station_desc')}</div><div class="has-text-special">${loc('requires_power_space',[global.resource.Food.name])}</div>`;
             },
@@ -2370,7 +2370,7 @@ const spaceProjects = {
         },
         elerium_ship: {
             id: 'space-elerium_ship',
-            title: loc('space_belt_elerium_ship_title'),
+            title(){ return loc('space_belt_elerium_ship_title'); },
             desc(){
                 return loc('space_belt_elerium_ship_title');
             },
@@ -2407,7 +2407,7 @@ const spaceProjects = {
         },
         iridium_ship: {
             id: 'space-iridium_ship',
-            title: loc('space_belt_iridium_ship_title'),
+            title(){ return loc('space_belt_iridium_ship_title'); },
             desc(){
                 return loc('space_belt_iridium_ship_title');
             },
@@ -2444,7 +2444,7 @@ const spaceProjects = {
         },
         iron_ship: {
             id: 'space-iron_ship',
-            title: loc('space_belt_iron_ship_title'),
+            title(){ return loc('space_belt_iron_ship_title'); },
             desc(){
                 return loc('space_belt_iron_ship_title');
             },
@@ -2528,7 +2528,7 @@ const spaceProjects = {
         },
         elerium_contain: {
             id: 'space-elerium_contain',
-            title: loc('space_dwarf_elerium_contain_title'),
+            title(){ return loc('space_dwarf_elerium_contain_title'); },
             desc(){
                 return `<div>${loc('space_dwarf_elerium_contain_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
@@ -2562,7 +2562,7 @@ const spaceProjects = {
         },
         e_reactor: {
             id: 'space-e_reactor',
-            title: loc('space_dwarf_reactor_title'),
+            title(){ return loc('space_dwarf_reactor_title'); },
             desc(){
                 return `<div>${loc('space_dwarf_reactor_title')}</div><div class="has-text-special">${loc('space_dwarf_reactor_desc_req')}</div>`;
             },
@@ -2598,7 +2598,7 @@ const spaceProjects = {
         },
         world_collider: {
             id: 'space-world_collider',
-            title: loc('space_dwarf_collider_title'),
+            title(){ return loc('space_dwarf_collider_title'); },
             desc(wiki){
                 if (!global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 || wiki){
                     return `<div>${loc('space_dwarf_collider_desc')}</div><div class="has-text-special">${loc('space_dwarf_collider_desc_req')}</div>` + (global.space.hasOwnProperty('world_collider') && global.space.world_collider.count >= 1859 ? `<div class="has-text-special">${loc('requires_power')}</div>` : ``);
@@ -2666,7 +2666,7 @@ const spaceProjects = {
         },
         world_controller: {
             id: 'space-world_controller',
-            title: loc('space_dwarf_collider_title'),
+            title(){ return loc('space_dwarf_collider_title'); },
             desc(){
                 return `<div>${loc('space_dwarf_collider_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
@@ -2706,7 +2706,7 @@ const spaceProjects = {
         },
         shipyard: {
             id: 'space-shipyard',
-            title: loc('outer_shipyard_title'),
+            title(){ return loc('outer_shipyard_title'); },
             desc(){
                 return `<div>${loc('outer_shipyard_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
@@ -2763,7 +2763,7 @@ const spaceProjects = {
         },
         mass_relay: {
             id: 'space-mass_relay',
-            title: loc('space_dwarf_mass_relay_title'),
+            title(){ return loc('space_dwarf_mass_relay_title'); },
             desc(wiki){
                 if (!global.space.hasOwnProperty('mass_relay') || global.space.mass_relay.count < 100 || wiki){
                     return `<div>${loc('space_dwarf_mass_relay_title')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
@@ -2820,7 +2820,7 @@ const spaceProjects = {
         },
         m_relay: {
             id: 'space-m_relay',
-            title: loc('space_dwarf_mass_relay_title'),
+            title(){ return loc('space_dwarf_mass_relay_title'); },
             desc(){
                 return `<div>${loc('space_dwarf_mass_relay_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
@@ -2867,8 +2867,8 @@ const interstellarProjects = {
         },
         alpha_mission: {
             id: 'interstellar-alpha_mission',
-            title: loc('space_mission_title', [loc('interstellar_alpha_name')]),
-            desc: loc('space_mission_desc', [loc('interstellar_alpha_name')]),
+            title(){ return loc('space_mission_title', [loc('interstellar_alpha_name')]); },
+            desc(){ return loc('space_mission_desc', [loc('interstellar_alpha_name')]); },
             reqs: { ftl: 2 },
             grant: ['alpha',1],
             queue_complete(){ return global.tech.alpha >= 1 ? 0 : 1; },
@@ -2888,7 +2888,7 @@ const interstellarProjects = {
         },
         starport: {
             id: 'interstellar-starport',
-            title: loc('interstellar_alpha_starport_title'),
+            title(){ return loc('interstellar_alpha_starport_title'); },
             desc(){ return `<div>${loc('interstellar_alpha_starport_desc')}</div><div class="has-text-special">${loc('requires_power_space',[global.resource.Food.name])}</div>`; },
             type: 'outpost',
             reqs: { alpha: 1 },
@@ -2941,8 +2941,8 @@ const interstellarProjects = {
         },
         habitat: {
             id: 'interstellar-habitat',
-            title: loc('interstellar_habitat_title'),
-            desc: `<div>${loc('interstellar_habitat_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            title(){ return loc('interstellar_habitat_title'); },
+            desc(){ return `<div>${loc('interstellar_habitat_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             type: 'housing',
             reqs: { alpha: 3 },
             cost: {
@@ -2987,8 +2987,8 @@ const interstellarProjects = {
         },
         mining_droid: {
             id: 'interstellar-mining_droid',
-            title: loc('interstellar_mining_droid_title'),
-            desc: `<div>${loc('interstellar_mining_droid_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_alpha_name')])}</div>`,
+            title(){ return loc('interstellar_mining_droid_title'); },
+            desc(){ return `<div>${loc('interstellar_mining_droid_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_alpha_name')])}</div>`; },
             type: 'mining',
             reqs: { alpha: 2 },
             cost: {
@@ -3031,8 +3031,8 @@ const interstellarProjects = {
         },
         processing: {
             id: 'interstellar-processing',
-            title: loc('interstellar_processing_title'),
-            desc: `<div>${loc('interstellar_processing_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_alpha_name')])}</div>`,
+            title(){ return loc('interstellar_processing_title'); },
+            desc(){ return `<div>${loc('interstellar_processing_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_alpha_name')])}</div>`; },
             type: 'industry',
             reqs: { droids: 1 },
             cost: {
@@ -3069,7 +3069,7 @@ const interstellarProjects = {
         },
         fusion: {
             id: 'interstellar-fusion',
-            title: loc('interstellar_fusion_title'),
+            title(){ return loc('interstellar_fusion_title'); },
             desc(){ return `<div>${loc('interstellar_fusion_title')}</div><div class="has-text-special">${loc('requires_power_support_combo',[loc('interstellar_alpha_name'),global.resource.Deuterium.name])}</div>`; },
             type: 'power',
             reqs: { fusion: 1 },
@@ -3105,7 +3105,7 @@ const interstellarProjects = {
         laboratory: {
             id: 'interstellar-laboratory',
             title(){ return global.race.universe === 'magic' ? loc('tech_sanctum') : loc('interstellar_laboratory_title'); },
-            desc: `<div>${loc(global.race.universe === 'magic' ? 'tech_sanctum' : 'interstellar_laboratory_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_alpha_name')])}</div>`,
+            desc(){ return `<div>${loc(global.race.universe === 'magic' ? 'tech_sanctum' : 'interstellar_laboratory_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_alpha_name')])}</div>`; },
             type: 'science',
             reqs: { science: 12 },
             cost: {
@@ -3170,8 +3170,8 @@ const interstellarProjects = {
         },
         exchange: {
             id: 'interstellar-exchange',
-            title: loc('interstellar_exchange_title'),
-            desc: `<div>${loc('interstellar_exchange_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_alpha_name')])}</div>`,
+            title(){ return loc('interstellar_exchange_title'); },
+            desc(){ return `<div>${loc('interstellar_exchange_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_alpha_name')])}</div>`; },
             type: 'finance',
             reqs: { banking: 12 },
             cost: {
@@ -3223,8 +3223,8 @@ const interstellarProjects = {
         },
         g_factory: {
             id: 'interstellar-g_factory',
-            title: loc('interstellar_g_factory_title'),
-            desc: `<div>${loc('interstellar_g_factory_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_alpha_name')])}</div>`,
+            title(){ return loc('interstellar_g_factory_title'); },
+            desc(){ return `<div>${loc('interstellar_g_factory_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_alpha_name')])}</div>`; },
             type: 'industry',
             reqs: { graphene: 1 },
             cost: {
@@ -3267,7 +3267,7 @@ const interstellarProjects = {
         },
         int_factory: {
             id: 'interstellar-int_factory',
-            title: loc('interstellar_int_factory_title'),
+            title(){ return loc('interstellar_int_factory_title'); },
             desc(){ return `<div>${loc('interstellar_int_factory_title')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Deuterium.name])}</div>`; },
             type: 'industry',
             reqs: { alpha: 4 },
@@ -3310,7 +3310,7 @@ const interstellarProjects = {
                 }
                 return loc('tech_luxury_condo');
             },
-            desc: `<div>${loc('tech_luxury_condo')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            desc(){ return `<div>${loc('tech_luxury_condo')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             type: 'housing',
             reqs: { alpha: 5 },
             cost: {
@@ -3353,7 +3353,7 @@ const interstellarProjects = {
         },
         zoo: {
             id: 'interstellar-zoo',
-            title: loc('tech_zoo'),
+            title(){ return loc('tech_zoo'); },
             desc(){ return `<div>${loc('tech_zoo')}</div><div class="has-text-special">${loc('requires_power_support_combo',[loc('interstellar_alpha_name'),global.resource.Food.name])}</div>`; },
             type: 'entertainment',
             reqs: { zoo: 1 },
@@ -3513,8 +3513,8 @@ const interstellarProjects = {
         },
         proxima_mission: {
             id: 'interstellar-proxima_mission',
-            title: loc('space_mission_title',[loc('interstellar_proxima_name')]),
-            desc: loc('space_mission_desc',[loc('interstellar_proxima_name')]),
+            title(){ return loc('space_mission_title',[loc('interstellar_proxima_name')]); },
+            desc(){ return loc('space_mission_desc',[loc('interstellar_proxima_name')]); },
             reqs: { alpha: 1 },
             grant: ['proxima',1],
             queue_complete(){ return global.tech.proxima >= 1 ? 0 : 1; },
@@ -3533,7 +3533,7 @@ const interstellarProjects = {
         },
         xfer_station: {
             id: 'interstellar-xfer_station',
-            title: loc('interstellar_xfer_station_title'),
+            title(){ return loc('interstellar_xfer_station_title'); },
             desc(){ return `<div>${loc('interstellar_xfer_station_desc')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Uranium.name])}</div>`; },
             type: 'storage',
             reqs: { proxima: 1 },
@@ -3587,8 +3587,8 @@ const interstellarProjects = {
         },
         cargo_yard: {
             id: 'interstellar-cargo_yard',
-            title: loc('interstellar_cargo_yard_title'),
-            desc: loc('interstellar_cargo_yard_title'),
+            title(){ return loc('interstellar_cargo_yard_title'); },
+            desc(){ return loc('interstellar_cargo_yard_title'); },
             type: 'storage',
             reqs: { proxima: 2 },
             cost: {
@@ -3631,8 +3631,8 @@ const interstellarProjects = {
         },
         cruiser: {
             id: 'interstellar-cruiser',
-            title: loc('interstellar_cruiser_title'),
-            desc: loc('interstellar_cruiser_title'),
+            title(){ return loc('interstellar_cruiser_title'); },
+            desc(){ return loc('interstellar_cruiser_title'); },
             type: 'ship',
             reqs: { cruiser: 1 },
             cost: {
@@ -3678,7 +3678,7 @@ const interstellarProjects = {
         },
         dyson: {
             id: 'interstellar-dyson',
-            title: loc('interstellar_dyson_title'),
+            title(){ return loc('interstellar_dyson_title'); },
             desc(wiki){
                 if (!global.interstellar.hasOwnProperty('dyson') || global.interstellar.dyson.count < 100 || wiki){
                     return `<div>${loc('interstellar_dyson_title')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
@@ -3732,7 +3732,7 @@ const interstellarProjects = {
         },
         dyson_sphere: {
             id: 'interstellar-dyson_sphere',
-            title: loc('interstellar_dyson_sphere_title'),
+            title(){ return loc('interstellar_dyson_sphere_title'); },
             desc(wiki){
                 if (!global.interstellar.hasOwnProperty('dyson_sphere') || global.interstellar.dyson_sphere.count < 100 || wiki){
                     return `<div>${loc('interstellar_dyson_sphere_title')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
@@ -3786,7 +3786,7 @@ const interstellarProjects = {
         },
         orichalcum_sphere: {
             id: 'interstellar-orichalcum_sphere',
-            title: loc('interstellar_dyson_sphere_title'),
+            title(){ return loc('interstellar_dyson_sphere_title'); },
             desc(wiki){
                 if (!global.interstellar.hasOwnProperty('orichalcum_sphere') || global.interstellar.orichalcum_sphere.count < 100 || wiki){
                     return `<div>${loc('interstellar_orichalcum_sphere_desc')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
@@ -3841,7 +3841,7 @@ const interstellarProjects = {
         },
         elysanite_sphere: {
             id: 'interstellar-elysanite_sphere',
-            title: loc('interstellar_dyson_sphere_title'),
+            title(){ return loc('interstellar_dyson_sphere_title'); },
             desc(wiki){
                 if (!global.interstellar.hasOwnProperty('elysanite_sphere') || global.interstellar.elysanite_sphere.count < 1000 || wiki){
                     return `<div>${loc('interstellar_elysanite_sphere_desc')}</div><div class="has-text-special">${loc('requires_segments',[1000])}</div>`;
@@ -3898,8 +3898,8 @@ const interstellarProjects = {
         },
         nebula_mission: {
             id: 'interstellar-nebula_mission',
-            title: loc('space_mission_title',[loc('interstellar_nebula_name')]),
-            desc: loc('space_mission_desc',[loc('interstellar_nebula_name')]),
+            title(){ return loc('space_mission_title',[loc('interstellar_nebula_name')]); },
+            desc(){ return loc('space_mission_desc',[loc('interstellar_nebula_name')]); },
             reqs: { alpha: 1 },
             grant: ['nebula',1],
             queue_complete(){ return global.tech.nebula >= 1 ? 0 : 1; },
@@ -3917,7 +3917,7 @@ const interstellarProjects = {
         },
         nexus: {
             id: 'interstellar-nexus',
-            title: loc('interstellar_nexus_title'),
+            title(){ return loc('interstellar_nexus_title'); },
             desc(){ return `<div>${loc('interstellar_nexus_title')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Money.name])}</div>`; },
             type: 'outpost',
             reqs: { nebula: 1 },
@@ -3968,8 +3968,8 @@ const interstellarProjects = {
         },
         harvester: {
             id: 'interstellar-harvester',
-            title: loc('interstellar_harvester_title'),
-            desc: `<div>${loc('interstellar_harvester_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_nebula_name')])}</div>`,
+            title(){ return loc('interstellar_harvester_title'); },
+            desc(){ return `<div>${loc('interstellar_harvester_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_nebula_name')])}</div>`; },
             type: 'mining',
             reqs: { nebula: 2 },
             cost: {
@@ -4004,8 +4004,8 @@ const interstellarProjects = {
         },
         elerium_prospector: {
             id: 'interstellar-elerium_prospector',
-            title: loc('interstellar_elerium_prospector_title'),
-            desc: `<div>${loc('interstellar_elerium_prospector_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_nebula_name')])}</div>`,
+            title(){ return loc('interstellar_elerium_prospector_title'); },
+            desc(){ return `<div>${loc('interstellar_elerium_prospector_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_nebula_name')])}</div>`; },
             type: 'mining',
             reqs: { nebula: 3 },
             cost: {
@@ -4045,8 +4045,8 @@ const interstellarProjects = {
         },
         neutron_mission: {
             id: 'interstellar-neutron_mission',
-            title: loc('space_mission_title', [loc('interstellar_neutron_name')]),
-            desc: loc('space_mission_desc', [loc('interstellar_neutron_name')]),
+            title(){ return loc('space_mission_title', [loc('interstellar_neutron_name')]); },
+            desc(){ return loc('space_mission_desc', [loc('interstellar_neutron_name')]); },
             reqs: { nebula: 1, high_tech: 14 },
             grant: ['neutron',1],
             queue_complete(){ return global.tech.neutron >= 1 ? 0 : 1; },
@@ -4066,7 +4066,7 @@ const interstellarProjects = {
         },
         neutron_miner: {
             id: 'interstellar-neutron_miner',
-            title: loc('interstellar_neutron_miner_title'),
+            title(){ return loc('interstellar_neutron_miner_title'); },
             desc(){ return `<div>${loc('interstellar_neutron_miner_desc')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Helium_3.name])}</div>`; },
             type: 'mining',
             reqs: { neutron: 1 },
@@ -4104,8 +4104,8 @@ const interstellarProjects = {
         },
         citadel: {
             id: 'interstellar-citadel',
-            title: loc('interstellar_citadel_title'),
-            desc: `<div>${loc('interstellar_citadel_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            title(){ return loc('interstellar_citadel_title'); },
+            desc(){ return `<div>${loc('interstellar_citadel_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             type: 'power',
             reqs: { neutron: 1, high_tech: 15 },
             cost: {
@@ -4165,8 +4165,8 @@ const interstellarProjects = {
         },
         stellar_forge: {
             id: 'interstellar-stellar_forge',
-            title: loc('interstellar_stellar_forge_title'),
-            desc: `<div>${loc('interstellar_stellar_forge_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            title(){ return loc('interstellar_stellar_forge_title'); },
+            desc(){ return `<div>${loc('interstellar_stellar_forge_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             type: 'industry',
             reqs: { star_forge: 1 },
             cost: {
@@ -4240,8 +4240,8 @@ const interstellarProjects = {
         },
         blackhole_mission: {
             id: 'interstellar-blackhole_mission',
-            title: loc('space_mission_title', [loc('interstellar_blackhole_name')]),
-            desc: loc('space_mission_desc', [loc('interstellar_blackhole_name')]),
+            title(){ return loc('space_mission_title', [loc('interstellar_blackhole_name')]); },
+            desc(){ return loc('space_mission_desc', [loc('interstellar_blackhole_name')]); },
             reqs: { nebula: 1 },
             grant: ['blackhole',1],
             queue_complete(){ return global.tech.blackhole >= 1 ? 0 : 1; },
@@ -4261,8 +4261,8 @@ const interstellarProjects = {
         },
         far_reach: {
             id: 'interstellar-far_reach',
-            title: loc('interstellar_far_reach'),
-            desc: `<div>${loc('interstellar_far_reach_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            title(){ return loc('interstellar_far_reach'); },
+            desc(){ return `<div>${loc('interstellar_far_reach_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             type: 'science',
             reqs: { blackhole: 1 },
             cost: {
@@ -4298,7 +4298,7 @@ const interstellarProjects = {
         },
         stellar_engine: {
             id: 'interstellar-stellar_engine',
-            title: loc('interstellar_stellar_engine'),
+            title(){ return loc('interstellar_stellar_engine'); },
             desc(wiki){
                 if (!global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki){
                     return `<div>${loc('interstellar_stellar_engine')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
@@ -4382,8 +4382,8 @@ const interstellarProjects = {
         },
         mass_ejector: {
             id: 'interstellar-mass_ejector',
-            title: loc('interstellar_mass_ejector'),
-            desc: `<div>${loc('interstellar_mass_ejector')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            title(){ return loc('interstellar_mass_ejector'); },
+            desc(){ return `<div>${loc('interstellar_mass_ejector')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             type: 'utility',
             reqs: { blackhole: 5 },
             cost: {
@@ -4473,8 +4473,8 @@ const interstellarProjects = {
         },
         jump_ship: {
             id: 'interstellar-jump_ship',
-            title: loc('interstellar_jump_ship'),
-            desc: loc('interstellar_jump_ship_desc'),
+            title(){ return loc('interstellar_jump_ship'); },
+            desc(){ return loc('interstellar_jump_ship_desc'); },
             reqs: { stargate: 1 },
             grant: ['stargate',2],
             queue_complete(){ return global.tech.stargate >= 2 ? 0 : 1; },
@@ -4497,8 +4497,8 @@ const interstellarProjects = {
         },
         wormhole_mission: {
             id: 'interstellar-wormhole_mission',
-            title: loc('space_mission_title', [loc('interstellar_wormhole_name')]),
-            desc: loc('space_mission_desc', [loc('interstellar_wormhole_name')]),
+            title(){ return loc('space_mission_title', [loc('interstellar_wormhole_name')]); },
+            desc(){ return loc('space_mission_desc', [loc('interstellar_wormhole_name')]); },
             reqs: { stargate: 2 },
             grant: ['stargate',3],
             queue_complete(){ return global.tech.stargate >= 3 ? 0 : 1; },
@@ -4519,7 +4519,7 @@ const interstellarProjects = {
         },
         stargate: {
             id: 'interstellar-stargate',
-            title: loc('interstellar_stargate'),
+            title(){ return loc('interstellar_stargate'); },
             desc(wiki){
                 if (!global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki){
                     return `<div>${loc('interstellar_stargate')}</div><div class="has-text-special">${loc('requires_segments',[200])}</div>` + (global.interstellar.hasOwnProperty('stargate') && global.interstellar.stargate.count >= 200 ? `<div class="has-text-special">${loc('requires_power')}</div>` : ``);
@@ -4583,7 +4583,7 @@ const interstellarProjects = {
         },
         s_gate: {
             id: 'interstellar-s_gate',
-            title: loc('interstellar_stargate'),
+            title(){ return loc('interstellar_stargate'); },
             desc(){
                 return `<div>${loc('interstellar_stargate')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
@@ -4619,8 +4619,8 @@ const interstellarProjects = {
         },
         sirius_mission: {
             id: 'interstellar-sirius_mission',
-            title: loc('space_mission_title', [loc('interstellar_sirius_name')]),
-            desc: loc('space_mission_desc', [loc('interstellar_sirius_name')]),
+            title(){ return loc('space_mission_title', [loc('interstellar_sirius_name')]); },
+            desc(){ return loc('space_mission_desc', [loc('interstellar_sirius_name')]); },
             reqs: { ascension: 2 },
             grant: ['ascension',3],
             queue_complete(){ return global.tech.ascension >= 3 ? 0 : 1; },
@@ -4638,8 +4638,8 @@ const interstellarProjects = {
         },
         sirius_b: {
             id: 'interstellar-sirius_b',
-            title: loc('interstellar_sirius_b'),
-            desc: loc('interstellar_sirius_b'),
+            title(){ return loc('interstellar_sirius_b'); },
+            desc(){ return loc('interstellar_sirius_b'); },
             reqs: { ascension: 3 },
             grant: ['ascension',4],
             queue_complete(){ return global.tech.ascension >= 4 ? 0 : 1; },
@@ -4657,7 +4657,7 @@ const interstellarProjects = {
         },
         space_elevator: {
             id: 'interstellar-space_elevator',
-            title: loc('interstellar_space_elevator'),
+            title(){ return loc('interstellar_space_elevator'); },
             desc(wiki){
                 if (!global.interstellar.hasOwnProperty('space_elevator') || global.interstellar.space_elevator.count < 100 || wiki){
                     return `<div>${loc('interstellar_space_elevator')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
@@ -4712,7 +4712,7 @@ const interstellarProjects = {
         },
         gravity_dome: {
             id: 'interstellar-gravity_dome',
-            title: loc('interstellar_gravity_dome'),
+            title(){ return loc('interstellar_gravity_dome'); },
             desc(wiki){
                 if (!global.interstellar.hasOwnProperty('gravity_dome') || global.interstellar.gravity_dome.count < 100 || wiki){
                     return `<div>${loc('interstellar_gravity_dome')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
@@ -4768,7 +4768,7 @@ const interstellarProjects = {
         },
         ascension_machine: {
             id: 'interstellar-ascension_machine',
-            title: loc('interstellar_ascension_machine'),
+            title(){ return loc('interstellar_ascension_machine'); },
             desc(wiki){
                 if (!global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 || wiki){
                     return `<div>${loc('interstellar_ascension_machine')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>` + (global.interstellar.hasOwnProperty('ascension_machine') && global.interstellar.ascension_machine.count >= 100 ? `<div class="has-text-special">${loc('requires_power')}</div>` : ``);
@@ -4830,7 +4830,7 @@ const interstellarProjects = {
         },
         ascension_trigger: {
             id: 'interstellar-ascension_trigger',
-            title: loc('interstellar_ascension_machine'),
+            title(){ return loc('interstellar_ascension_machine'); },
             desc(){ return `<div>${loc('interstellar_ascension_machine')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             type: 'megaproject',
             wiki: false,
@@ -4919,8 +4919,8 @@ const interstellarProjects = {
         },
         ascend: {
             id: 'interstellar-ascend',
-            title: loc('interstellar_ascend'),
-            desc: loc('interstellar_ascend'),
+            title(){ return loc('interstellar_ascend'); },
+            desc(){ return loc('interstellar_ascend'); },
             reqs: { ascension: 8 },
             condition(){
                 return !global.eden.hasOwnProperty('encampment') || !global.eden.encampment.asc;
@@ -4942,8 +4942,8 @@ const interstellarProjects = {
         },
         thermal_collector: {
             id: 'interstellar-thermal_collector',
-            title: loc('interstellar_thermal_collector'),
-            desc: loc('interstellar_thermal_collector'),
+            title(){ return loc('interstellar_thermal_collector'); },
+            desc(){ return loc('interstellar_thermal_collector'); },
             type: 'power',
             reqs: { ascension: 6 },
             cost: {
@@ -5008,8 +5008,8 @@ const galaxyProjects = {
         },
         gateway_mission: {
             id: 'galaxy-gateway_mission',
-            title: loc('galaxy_gateway_mission'),
-            desc: loc('galaxy_gateway_mission'),
+            title(){ return loc('galaxy_gateway_mission'); },
+            desc(){ return loc('galaxy_gateway_mission'); },
             reqs: { gateway: 1 },
             grant: ['gateway',2],
             queue_complete(){ return global.tech.gateway >= 2 ? 0 : 1; },
@@ -5072,7 +5072,7 @@ const galaxyProjects = {
         },
         starbase: {
             id: 'galaxy-starbase',
-            title: loc('galaxy_starbase'),
+            title(){ return loc('galaxy_starbase'); },
             desc(){ return `<div>${loc('galaxy_starbase')}</div><div class="has-text-special">${loc('requires_power_space',[global.resource.Food.name])}</div>`; },
             type: 'outpost',
             reqs: { gateway: 2 },
@@ -5120,8 +5120,8 @@ const galaxyProjects = {
         },
         ship_dock: {
             id: 'galaxy-ship_dock',
-            title: loc('galaxy_ship_dock'),
-            desc: `<div>${loc('galaxy_ship_dock')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            title(){ return loc('galaxy_ship_dock'); },
+            desc(){ return `<div>${loc('galaxy_ship_dock')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             type: 'outpost',
             reqs: { gateway: 4 },
             cost: {
@@ -5170,7 +5170,7 @@ const galaxyProjects = {
         },
         bolognium_ship: {
             id: 'galaxy-bolognium_ship',
-            title: loc('galaxy_bolognium_ship'),
+            title(){ return loc('galaxy_bolognium_ship'); },
             desc(){
                 return `<div>${loc('galaxy_bolognium_ship_desc')}</div><div class="has-text-special">${loc('galaxy_starbase_support',[global.resource.Helium_3.name])}</div>`;
             },
@@ -5214,7 +5214,7 @@ const galaxyProjects = {
         },
         scout_ship: {
             id: 'galaxy-scout_ship',
-            title: loc('galaxy_scout_ship'),
+            title(){ return loc('galaxy_scout_ship'); },
             desc(){
                 return `<div>${loc('galaxy_scout_ship')}</div><div class="has-text-special">${loc('galaxy_starbase_support',[global.resource.Helium_3.name])}</div>`;
             },
@@ -5267,7 +5267,7 @@ const galaxyProjects = {
         },
         corvette_ship: {
             id: 'galaxy-corvette_ship',
-            title: loc('galaxy_corvette_ship'),
+            title(){ return loc('galaxy_corvette_ship'); },
             desc(){
                 return `<div>${loc('galaxy_corvette_ship')}</div><div class="has-text-special">${loc('galaxy_starbase_support',[global.resource.Helium_3.name])}</div>`;
             },
@@ -5320,7 +5320,7 @@ const galaxyProjects = {
         },
         frigate_ship: {
             id: 'galaxy-frigate_ship',
-            title: loc('galaxy_frigate_ship'),
+            title(){ return loc('galaxy_frigate_ship'); },
             desc(){
                 return `<div>${loc('galaxy_frigate_ship')}</div><div class="has-text-special">${loc('galaxy_starbase_support',[global.resource.Helium_3.name])}</div>`;
             },
@@ -5374,7 +5374,7 @@ const galaxyProjects = {
         },
         cruiser_ship: {
             id: 'galaxy-cruiser_ship',
-            title: loc('galaxy_cruiser_ship'),
+            title(){ return loc('galaxy_cruiser_ship'); },
             desc(){
                 return `<div>${loc('galaxy_cruiser_ship')}</div><div class="has-text-special">${loc('galaxy_starbase_support',[global.resource.Deuterium.name])}</div>`;
             },
@@ -5428,7 +5428,7 @@ const galaxyProjects = {
         },
         dreadnought: {
             id: 'galaxy-dreadnought',
-            title: loc('galaxy_dreadnought'),
+            title(){ return loc('galaxy_dreadnought'); },
             desc(){
                 return `<div>${loc('galaxy_dreadnought')}</div><div class="has-text-special">${loc('galaxy_starbase_support',[global.resource.Deuterium.name])}</div>`;
             },
@@ -5495,7 +5495,7 @@ const galaxyProjects = {
         },
         gateway_station: {
             id: 'galaxy-gateway_station',
-            title: loc('galaxy_gateway_station'),
+            title(){ return loc('galaxy_gateway_station'); },
             desc(){ return `<div>${loc('galaxy_gateway_station_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             type: 'outpost',
             reqs: { stargate: 4 },
@@ -5544,7 +5544,7 @@ const galaxyProjects = {
         },
         telemetry_beacon: {
             id: 'galaxy-telemetry_beacon',
-            title: loc('galaxy_telemetry_beacon'),
+            title(){ return loc('galaxy_telemetry_beacon'); },
             desc(){ return `<div>${loc('galaxy_telemetry_beacon')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             type: 'science',
             reqs: { stargate: 5 },
@@ -5601,8 +5601,8 @@ const galaxyProjects = {
         },
         gateway_depot: {
             id: 'galaxy-gateway_depot',
-            title: loc('galaxy_gateway_depot'),
-            desc: `<div>${loc('galaxy_gateway_depot')}</div>`,
+            title(){ return loc('galaxy_gateway_depot'); },
+            desc(){ return `<div>${loc('galaxy_gateway_depot')}</div>`; },
             type: 'storage',
             reqs: { gateway: 5 },
             cost: {
@@ -5660,7 +5660,7 @@ const galaxyProjects = {
         },
         defense_platform: {
             id: 'galaxy-defense_platform',
-            title: loc('galaxy_defense_platform'),
+            title(){ return loc('galaxy_defense_platform'); },
             desc(){ return `<div>${loc('galaxy_defense_platform')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             type: 'military',
             reqs: { stargate: 6 },
@@ -5707,8 +5707,8 @@ const galaxyProjects = {
         },
         gorddon_mission: {
             id: 'galaxy-gorddon_mission',
-            title: loc('galaxy_gorddon_mission'),
-            desc: loc('galaxy_gorddon_mission_desc'),
+            title(){ return loc('galaxy_gorddon_mission'); },
+            desc(){ return loc('galaxy_gorddon_mission_desc'); },
             reqs: { xeno: 2 },
             grant: ['xeno',3],
             queue_complete(){ return global.tech.xeno >= 3 ? 0 : 1; },
@@ -5744,7 +5744,7 @@ const galaxyProjects = {
         },
         embassy: {
             id: 'galaxy-embassy',
-            title: loc('galaxy_embassy'),
+            title(){ return loc('galaxy_embassy'); },
             desc(){ return `<div>${loc('galaxy_embassy')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Food.name])}</div>`; },
             type: 'outpost',
             reqs: { xeno: 4 },
@@ -5849,7 +5849,7 @@ const galaxyProjects = {
         },
         symposium: {
             id: 'galaxy-symposium',
-            title: loc('galaxy_symposium'),
+            title(){ return loc('galaxy_symposium'); },
             desc(){
                 return `<div>${loc('galaxy_symposium')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
@@ -5894,7 +5894,7 @@ const galaxyProjects = {
         },
         freighter: {
             id: 'galaxy-freighter',
-            title: loc('galaxy_freighter'),
+            title(){ return loc('galaxy_freighter'); },
             desc(){
                 return `<div>${loc('galaxy_freighter')}</div><div class="has-text-special">${loc('galaxy_crew_fuel',[global.resource.Helium_3.name])}</div>`;
             },
@@ -5955,7 +5955,7 @@ const galaxyProjects = {
         },
         consulate: {
             id: 'galaxy-consulate',
-            title: loc('galaxy_consulate'),
+            title(){ return loc('galaxy_consulate'); },
             desc(){
                 return loc('galaxy_consulate_desc',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].home]);
             },
@@ -6001,7 +6001,7 @@ const galaxyProjects = {
         },
         resort: {
             id: 'galaxy-resort',
-            title: loc('galaxy_resort'),
+            title(){ return loc('galaxy_resort'); },
             desc(){
                 return `<div>${loc('galaxy_resort')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
@@ -6042,7 +6042,7 @@ const galaxyProjects = {
         },
         vitreloy_plant: {
             id: 'galaxy-vitreloy_plant',
-            title: loc('galaxy_vitreloy_plant'),
+            title(){ return loc('galaxy_vitreloy_plant'); },
             desc(){
                 return `<div>${loc('galaxy_vitreloy_plant')}</div><div class="has-text-special">${loc('galaxy_vitreloy_plant_desc')}</div>`;
             },
@@ -6080,7 +6080,7 @@ const galaxyProjects = {
         },
         super_freighter: {
             id: 'galaxy-super_freighter',
-            title: loc('galaxy_super_freighter'),
+            title(){ return loc('galaxy_super_freighter'); },
             desc(){
                 return `<div>${loc('galaxy_super_freighter')}</div><div class="has-text-special">${loc('galaxy_crew_fuel',[global.resource.Helium_3.name])}</div>`;
             },
@@ -6217,7 +6217,7 @@ const galaxyProjects = {
         },
         foothold: {
             id: 'galaxy-foothold',
-            title: loc('galaxy_foothold'),
+            title(){ return loc('galaxy_foothold'); },
             desc(){ return `<div>${loc('galaxy_foothold')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Elerium.name])}</div>`; },
             type: 'outpost',
             reqs: { conflict: 1 },
@@ -6260,7 +6260,7 @@ const galaxyProjects = {
         },
         armed_miner: {
             id: 'galaxy-armed_miner',
-            title: loc('galaxy_armed_miner'),
+            title(){ return loc('galaxy_armed_miner'); },
             desc(){
                 return `<div>${loc('galaxy_armed_miner')}</div>`;
             },
@@ -6312,7 +6312,7 @@ const galaxyProjects = {
         },
         ore_processor: {
             id: 'galaxy-ore_processor',
-            title: loc('galaxy_ore_processor'),
+            title(){ return loc('galaxy_ore_processor'); },
             desc(){
                 return `<div>${loc('galaxy_ore_processor')}</div>`;
             },
@@ -6347,8 +6347,8 @@ const galaxyProjects = {
         },
         scavenger: {
             id: 'galaxy-scavenger',
-            title: loc('galaxy_scavenger'),
-            desc: loc('galaxy_scavenger_desc'),
+            title(){ return loc('galaxy_scavenger'); },
+            desc(){ return loc('galaxy_scavenger_desc'); },
             type: 'ship',
             reqs: { conflict: 4 },
             cost: {
@@ -6485,7 +6485,7 @@ const galaxyProjects = {
         },
         minelayer: {
             id: 'galaxy-minelayer',
-            title: loc('galaxy_minelayer'),
+            title(){ return loc('galaxy_minelayer'); },
             desc(){
                 return `<div>${loc('galaxy_minelayer')}</div>`;
             },
@@ -6537,7 +6537,7 @@ const galaxyProjects = {
         },
         excavator: {
             id: 'galaxy-excavator',
-            title: loc('galaxy_excavator'),
+            title(){ return loc('galaxy_excavator'); },
             desc(){
                 return `<div>${loc('galaxy_excavator')}</div>`;
             },
@@ -6574,7 +6574,7 @@ const galaxyProjects = {
         },
         raider: {
             id: 'galaxy-raider',
-            title: loc('galaxy_raider'),
+            title(){ return loc('galaxy_raider'); },
             desc(){
                 return `<div>${loc('galaxy_raider')}</div>`;
             },
@@ -7405,7 +7405,7 @@ function armada(parent,id){
         for (let i = 0; i < gatewayArmada.length; i++){
             const ship = gatewayArmada[i];
             if (global.galaxy.hasOwnProperty(ship)){
-                cols[i+1].append($(`<span id="armada${ship}" class="ship has-text-advanced">${galaxyProjects.gxy_gateway[ship].title}</span>`));
+                cols[i+1].append($(`<span id="armada${ship}" class="ship has-text-advanced">${typeof galaxyProjects.gxy_gateway[ship].title === 'string' ? galaxyProjects.gxy_gateway[ship].title : galaxyProjects.gxy_gateway[ship].title()}</span>`));
                 cols[i+1].append($(`<span class="ship">{{ gateway.${ship} }}</span>`));
             }
         }
@@ -7629,32 +7629,32 @@ export const universe_affixes = ['l', 'h', 'a', 'e', 'm', 'mg'];
 export const universe_types = {
     standard: {
         name: loc('universe_standard'),
-        desc: loc('universe_standard_desc'),
+        desc(){ return loc('universe_standard_desc'); },
         effect: loc('universe_standard_effect')
     },
     heavy: {
         name: loc('universe_heavy'),
-        desc: loc('universe_heavy_desc'),
+        desc(){ return loc('universe_heavy_desc'); },
         effect: loc('universe_heavy_effect',[5])
     },
     antimatter: {
         name: loc('universe_antimatter'),
-        desc: loc('universe_antimatter_desc'),
+        desc(){ return loc('universe_antimatter_desc'); },
         effect: loc('universe_antimatter_effect')
     },
     evil: {
         name: loc('universe_evil'),
-        desc: loc('universe_evil_desc'),
+        desc(){ return loc('universe_evil_desc'); },
         effect: loc('universe_evil_effect')
     },
     micro: {
         name: loc('universe_micro'),
-        desc: loc('universe_micro_desc'),
+        desc(){ return loc('universe_micro_desc'); },
         effect: loc('universe_micro_effect',[75])
     },
     magic: {
         name: loc('universe_magic'),
-        desc: loc('universe_magic_desc'),
+        desc(){ return loc('universe_magic_desc'); },
         effect: loc('universe_magic_effect')
     }
 };
@@ -7881,7 +7881,7 @@ export function ascendLab(hybrid,wiki){
     let slot = hybrid ? 'race1' : 'race0';
     let genome = global.hasOwnProperty('custom') && global.custom.hasOwnProperty(slot) ? {
         name: global.custom[slot].name,
-        desc: global.custom[slot].desc,
+        desc(){ return global.custom[slot].desc; },
         entity: global.custom[slot].entity,
         home: global.custom[slot].home,
         red: global.custom[slot].red,
@@ -7900,7 +7900,7 @@ export function ascendLab(hybrid,wiki){
         fanaticism: global.custom[slot].hasOwnProperty('fanaticism') && global.custom[slot].fanaticism ? global.custom[slot].fanaticism : false,
     } : {
         name: 'Zombie',
-        desc: `Zombies aren't so much a species as they are the shambling remains of a race who succumbed to a nightmarish virus. Yet somehow they continue to drone on.`,
+        desc(){ return `Zombies aren't so much a species as they are the shambling remains of a race who succumbed to a nightmarish virus. Yet somehow they continue to drone on.`; },
         entity: 'rotting bipedal creatures',
         home: 'Grave',
         red: 'Brains',
@@ -8070,7 +8070,7 @@ export function ascendLab(hybrid,wiki){
 
                     global.custom[slot] = {
                         name: genome.name,
-                        desc: genome.desc,
+                        desc(){ return genome.desc; },
                         entity: genome.entity,
                         home: genome.home,
                         red: genome.red,

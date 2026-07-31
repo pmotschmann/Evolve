@@ -69,8 +69,8 @@ const outerTruth = {
         },
         titan_spaceport: {
             id: 'space-titan_spaceport',
-            title: loc('space_red_spaceport_title'),
-            desc: `<div>${loc('space_red_spaceport_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            title(){ return loc('space_red_spaceport_title'); },
+            desc(){ return `<div>${loc('space_red_spaceport_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             type: 'outpost',
             reqs: { titan: 1 },
             path: ['truepath'],
@@ -111,7 +111,7 @@ const outerTruth = {
         },
         electrolysis: {
             id: 'space-electrolysis',
-            title: loc('space_electrolysis_title'),
+            title(){ return loc('space_electrolysis_title'); },
             desc(){ return `<div>${loc('space_electrolysis_title')}</div><div class="has-text-special">${loc('space_electrolysis_req',[global.resource.Water.name])}</div>`; },
             type: 'industry',
             reqs: { titan: 3 },
@@ -158,7 +158,7 @@ const outerTruth = {
         },
         hydrogen_plant: {
             id: 'space-hydrogen_plant',
-            title: loc('space_hydrogen_plant_title'),
+            title(){ return loc('space_hydrogen_plant_title'); },
             desc(){ return `<div>${loc('space_hydrogen_plant_title')}</div><div class="has-text-special">${loc('space_hydrogen_plant_req')}</div>`; },
             type: 'power',
             reqs: { titan_power: 1 },
@@ -195,7 +195,7 @@ const outerTruth = {
         },
         titan_quarters: {
             id: 'space-titan_quarters',
-            title: loc('interstellar_habitat_title'),
+            title(){ return loc('interstellar_habitat_title'); },
             desc(){
                 return `<div>${loc('interstellar_habitat_title')}</div><div class="has-text-special">${loc('space_habitat_req',[planetName().titan, global.resource.Food.name, global.resource.Water.name])}</div>`;
             },
@@ -307,8 +307,8 @@ const outerTruth = {
         },
         storehouse: {
             id: 'space-storehouse',
-            title: loc('space_storehouse_title'),
-            desc: loc('space_storehouse_title'),
+            title(){ return loc('space_storehouse_title'); },
+            desc(){ return loc('space_storehouse_title'); },
             type: 'storage',
             reqs: { titan: 5 },
             path: ['truepath'],
@@ -406,7 +406,7 @@ const outerTruth = {
         },
         titan_bank: {
             id: 'space-titan_bank',
-            title: loc('city_bank'),
+            title(){ return loc('city_bank'); },
             desc(){
                 return loc('city_bank_desc',[planetName().titan]);
             },
@@ -441,7 +441,7 @@ const outerTruth = {
         },
         g_factory: {
             id: 'space-g_factory',
-            title: loc('interstellar_g_factory_title'),
+            title(){ return loc('interstellar_g_factory_title'); },
             desc(){ return `<div>${loc('interstellar_g_factory_title')}</div><div class="has-text-special">${loc('space_support',[planetName().titan])}</div>`; },
             type: 'industry',
             reqs: { graphene: 1 },
@@ -490,7 +490,7 @@ const outerTruth = {
         },
         metalworks: {
             id: 'space-metalworks',
-            title: loc('space_metalworks_title'),
+            title(){ return loc('space_metalworks_title'); },
             desc(){ return `<div>${loc('space_metalworks_title')}</div><div class="has-text-special">${loc('space_support',[planetName().titan])}</div>`; },
             type: 'industry',
             reqs: { titan: 10 },
@@ -547,7 +547,7 @@ const outerTruth = {
         },
         sam: {
             id: 'space-sam',
-            title: loc('space_sam_title'),
+            title(){ return loc('space_sam_title'); },
             desc(){
                 return `<div>${loc('space_sam_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
@@ -586,7 +586,7 @@ const outerTruth = {
         },
         decoder: {
             id: 'space-decoder',
-            title: loc('space_decoder_title'),
+            title(){ return loc('space_decoder_title'); },
             desc(){
                 return `<div>${loc('space_decoder_title')}</div><div class="has-text-special">${loc('requires_power_support_combo',[planetName().titan, global.resource.Cipher.name])}</div>`;
             },
@@ -634,7 +634,7 @@ const outerTruth = {
         },
         ai_core: {
             id: 'space-ai_core',
-            title: loc('space_ai_core'),
+            title(){ return loc('space_ai_core'); },
             desc(wiki){
                 if (!global.space.hasOwnProperty('ai_core') || global.space.ai_core.count < 100 || wiki){
                     return `<div>${loc('space_ai_core')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>` + (global.space.hasOwnProperty('ai_core') && global.space.ai_core.count >= 100 ? `<div class="has-text-special">${loc('requires_power')}</div>` : ``);
@@ -702,7 +702,7 @@ const outerTruth = {
         },
         ai_core2: {
             id: 'space-ai_core2',
-            title: loc('space_ai_core'),
+            title(){ return loc('space_ai_core'); },
             desc(){
                 return `<div>${loc('space_ai_core')}</div><div class="has-text-special">${loc('space_electrolysis_req',[global.resource[$(this)[0].p_fuel().r].name])}</div>`;
             },
@@ -748,7 +748,7 @@ const outerTruth = {
         },
         ai_colonist: {
             id: 'space-ai_colonist',
-            title: loc('space_ai_colonist_title'),
+            title(){ return loc('space_ai_colonist_title'); },
             desc(){
                 return `<div>${loc('space_ai_colonist_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
@@ -860,7 +860,7 @@ const outerTruth = {
         },
         water_freighter: {
             id: 'space-water_freighter',
-            title: loc('space_water_freighter_title'),
+            title(){ return loc('space_water_freighter_title'); },
             desc(){
                 return `<div>${loc('space_water_freighter_title')}</div><div class="has-text-special">${loc('space_support',[planetName().enceladus])}</div>`;
             },
@@ -898,7 +898,7 @@ const outerTruth = {
         },
         zero_g_lab: {
             id: 'space-zero_g_lab',
-            title: loc('tech_zero_g_lab'),
+            title(){ return loc('tech_zero_g_lab'); },
             desc(){
                 return `<div>${loc('tech_zero_g_lab')}</div><div class="has-text-special">${loc('requires_power_support',[planetName().enceladus])}</div>`;
             },
@@ -950,7 +950,7 @@ const outerTruth = {
         },
         operating_base: {
             id: 'space-operating_base',
-            title: loc('tech_operating_base'),
+            title(){ return loc('tech_operating_base'); },
             desc(){
                 return `<div>${loc('tech_operating_base')}</div><div class="has-text-special">${loc('requires_power_support',[planetName().enceladus])}</div>`;
             },
@@ -1002,8 +1002,8 @@ const outerTruth = {
         },
         munitions_depot: {
             id: 'space-munitions_depot',
-            title: loc('tech_munitions_depot'),
-            desc: loc('tech_munitions_depot'),
+            title(){ return loc('tech_munitions_depot'); },
+            desc(){ return loc('tech_munitions_depot'); },
             type: 'military',
             category: 'storage',
             era: 'solar',
@@ -1104,7 +1104,7 @@ const outerTruth = {
         },
         fob: {
             id: 'space-fob',
-            title: loc('space_fob_title'),
+            title(){ return loc('space_fob_title'); },
             desc(){
                 return `<div>${loc('tech_fob')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Helium_3.name])}</div>`;
             },
@@ -1161,7 +1161,7 @@ const outerTruth = {
         },
         lander: {
             id: 'space-lander',
-            title: loc('space_lander_title'),
+            title(){ return loc('space_lander_title'); },
             desc(){
                 return `<div>${loc('space_lander_title')}</div><div class="has-text-special">${loc('requires_soldiers')}</div><div class="has-text-special">${loc('space_red_space_barracks_desc_req')}</div>`;
             },
@@ -1200,7 +1200,7 @@ const outerTruth = {
         },
         crashed_ship: {
             id: 'space-crashed_ship',
-            title: loc('space_crashed_ship_title'),
+            title(){ return loc('space_crashed_ship_title'); },
             desc(){
                 return `<div>${loc('space_crashed_ship_title')}</div>`;
             },
@@ -1518,7 +1518,7 @@ const outerTruth = {
         },
         shock_trooper: {
             id: 'space-shock_trooper',
-            title: loc('space_shock_trooper_title'),
+            title(){ return loc('space_shock_trooper_title'); },
             desc(){
                 return `<div>${loc('space_shock_trooper_title')}</div><div class="has-text-special">${loc('space_support',[planetName().eris])}</div>`;
             },
@@ -1560,7 +1560,7 @@ const outerTruth = {
         },
         tank: {
             id: 'space-tank',
-            title: loc('space_tank_title'),
+            title(){ return loc('space_tank_title'); },
             desc(){
                 return `<div>${loc('space_tank_title')}</div><div class="has-text-special">${loc('space_support',[planetName().eris])}</div>`;
             },
@@ -1602,7 +1602,7 @@ const outerTruth = {
         },
         digsite: {
             id: 'space-digsite',
-            title: loc('space_digsite_title'),
+            title(){ return loc('space_digsite_title'); },
             desc(){
                 return `<div>${loc('space_digsite_title')}</div>`;
             },
@@ -1641,7 +1641,7 @@ const tauCetiModules = {
         },
         ringworld: {
             id: 'tauceti-ringworld',
-            title: loc('tau_star_ringworld'),
+            title(){ return loc('tau_star_ringworld'); },
             desc(wiki){
                 if (!global.tauceti.hasOwnProperty('ringworld') || global.tauceti.ringworld.count < 1000 || wiki){
                     return `<div>${loc('tau_star_ringworld')}</div><div class="has-text-special">${loc('requires_segments',[1000])}</div>`;
@@ -1708,7 +1708,7 @@ const tauCetiModules = {
         },
         matrix: {
             id: 'tauceti-matrix',
-            title: loc('tau_star_matrix'),
+            title(){ return loc('tau_star_matrix'); },
             desc(){ return `<div>${loc('tau_star_matrix')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             reqs: { matrix: 3 },
             condition(){
@@ -1747,8 +1747,8 @@ const tauCetiModules = {
         },
         blue_pill: {
             id: 'tauceti-blue_pill',
-            title: loc('tau_star_blue_pill'),
-            desc: loc('tau_star_blue_pill'),
+            title(){ return loc('tau_star_blue_pill'); },
+            desc(){ return loc('tau_star_blue_pill'); },
             wiki: false,
             reqs: { matrix: 4 },
             queue_complete(){ return 0; },
@@ -1794,7 +1794,7 @@ const tauCetiModules = {
         },
         goe_facility: {
             id: 'tauceti-goe_facility',
-            title: loc('tau_star_goe_facility'),
+            title(){ return loc('tau_star_goe_facility'); },
             desc(){ return `<div>${loc('tau_star_goe_facility')}</div>`; },
             type: 'megaproject',
             reqs: { eden: 2 },
@@ -1937,8 +1937,8 @@ const tauCetiModules = {
         },
         orbital_station: {
             id: 'tauceti-orbital_station',
-            title: loc('tau_home_orbital_station'),
-            desc: `<div>${loc('tau_home_orbital_station')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            title(){ return loc('tau_home_orbital_station'); },
+            desc(){ return `<div>${loc('tau_home_orbital_station')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             type: 'outpost',
             reqs: { tau_home: 2 },
             path: ['truepath'],
@@ -1981,7 +1981,7 @@ const tauCetiModules = {
         },
         colony: {
             id: 'tauceti-colony',
-            title: loc('tau_home_colony'),
+            title(){ return loc('tau_home_colony'); },
             desc(){
                 return `<div>${loc('tau_home_colony_desc',[races[global.race.species].home])}</div><div class="has-text-special">${loc('requires_power_support_combo',[races[global.race.species].home,global.resource.Food.name])}</div>`;
             },
@@ -2110,8 +2110,8 @@ const tauCetiModules = {
         captive_housing: buildTemplate(`captive_housing`,'tauceti'),
         pylon: {
             id: 'tauceti-pylon',
-            title: loc('tau_home_pylon'),
-            desc: loc('tau_home_pylon'),
+            title(){ return loc('tau_home_pylon'); },
+            desc(){ return loc('tau_home_pylon'); },
             type: 'religion',
             reqs: { magic: 2 },
             condition(){ return global.tech['isolation'] && global.tauceti.hasOwnProperty('pylon') ? true : false; },
@@ -2143,7 +2143,7 @@ const tauCetiModules = {
         },
         cloning_facility: {
             id: `tauceti-cloning_facility`,
-            title: loc('tau_home_cloning'),
+            title(){ return loc('tau_home_cloning'); },
             desc(){ return loc('tau_home_cloning_desc',[races[global.race.species].name]); },
             type: 'housing',
             category: 'military',
@@ -2184,7 +2184,7 @@ const tauCetiModules = {
         nanite_factory: buildTemplate(`nanite_factory`,'tauceti'),
         tau_farm: {
             id: 'tauceti-tau_farm',
-            title: loc('tau_home_tau_farm'),
+            title(){ return loc('tau_home_tau_farm'); },
             desc(){
                 return `<div>${loc('tau_home_tau_farm')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
@@ -2233,7 +2233,7 @@ const tauCetiModules = {
         },
         mining_pit: {
             id: 'tauceti-mining_pit',
-            title: loc('tau_home_mining_pit'),
+            title(){ return loc('tau_home_mining_pit'); },
             desc(){
                 return `<div>${loc('tau_home_mining_pit')}</div><div class="has-text-special">${loc('space_support',[races[global.race.species].home])}</div>`;
             },
@@ -2318,7 +2318,7 @@ const tauCetiModules = {
         },
         excavate: {
             id: 'tauceti-excavate',
-            title: loc('tau_home_excavate'),
+            title(){ return loc('tau_home_excavate'); },
             desc(){
                 return `<div>${loc('tau_home_excavate')}</div>`;
             },
@@ -2342,7 +2342,7 @@ const tauCetiModules = {
         },
         alien_outpost: {
             id: 'tauceti-alien_outpost',
-            title: loc('tech_alien_outpost'),
+            title(){ return loc('tech_alien_outpost'); },
             desc(){
                 return `<div>${loc('tech_alien_outpost')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
@@ -2383,7 +2383,7 @@ const tauCetiModules = {
         },
         data_decoder: {
             id: 'tauceti-data_decoder',
-            title: loc('tau_home_data_decoder'),
+            title(){ return loc('tau_home_data_decoder'); },
             desc(){ return `<div>${loc('tau_home_data_decoder')}</div><div class="has-text-special">${loc('requires_power_support',[loc('tau_planet',[races[global.race.species].home])])}</div>`; },
             type: 'science',
             reqs: { tau_home: 9 },
@@ -2471,7 +2471,7 @@ const tauCetiModules = {
         },
         fusion_generator: {
             id: 'tauceti-fusion_generator',
-            title: loc('tech_fusion_generator'),
+            title(){ return loc('tech_fusion_generator'); },
             desc(){
                 return `<div>${loc('tech_fusion_generator')}</div><div class="has-text-special">${loc('requires_res',[global.resource.Helium_3.name])}</div>`;
             },
@@ -2514,8 +2514,8 @@ const tauCetiModules = {
         },
         repository: {
             id: 'tauceti-repository',
-            title: loc('tech_repository'),
-            desc: loc('tech_repository'),
+            title(){ return loc('tech_repository'); },
+            desc(){ return loc('tech_repository'); },
             type: 'storage',
             reqs: { tau_home: 5 },
             path: ['truepath'],
@@ -2640,7 +2640,7 @@ const tauCetiModules = {
         },
         tau_factory: {
             id: 'tauceti-tau_factory',
-            title: loc('tau_home_tau_factory'),
+            title(){ return loc('tau_home_tau_factory'); },
             desc(){
                 return `<div>${loc('tau_home_tau_factory')}</div><div class="has-text-special">${loc('requires_power_support',[races[global.race.species].home])}</div>`;
             },
@@ -2770,8 +2770,8 @@ const tauCetiModules = {
         },
         tauceti_casino: {
             id: 'tauceti-tauceti_casino',
-            title: loc('city_casino'),
-            desc: loc('city_casino'),
+            title(){ return loc('city_casino'); },
+            desc(){ return loc('city_casino'); },
             type: 'gambling',
             category: 'commercial',
             reqs: { gambling: 1, isolation: 1 },
@@ -2818,7 +2818,7 @@ const tauCetiModules = {
         },
         tau_cultural_center: {
             id: 'tauceti-tau_cultural_center',
-            title: loc('tech_cultural_center'),
+            title(){ return loc('tech_cultural_center'); },
             desc(){
                 return `<div>${loc('tech_cultural_center')}</div><div class="has-text-special">${loc('space_electrolysis_req',[global.resource[$(this)[0].p_fuel().r].name])}</div>`;
             },
@@ -2846,7 +2846,7 @@ const tauCetiModules = {
                 let mon = 5 * modifier;
                 let bake = 15 * modifier;
 
-                let desc = `<div class="has-text-caution">${loc('tau_home_cultureal_effect1',[$(this)[0].p_fuel().a,global.resource[$(this)[0].p_fuel().r].name,$(this)[0].title])}</div>`;
+                let desc = `<div class="has-text-caution">${loc('tau_home_cultureal_effect1',[$(this)[0].p_fuel().a,global.resource[$(this)[0].p_fuel().r].name,typeof $(this)[0].title === 'string' ? $(this)[0].title : $(this)[0].title()])}</div>`;
                 desc += `<div>${loc('city_tourist_center_effect2',[cas,structName('casino')])}</div>`;
                 desc += `<div>${loc('city_tourist_center_effect2',[mon,loc(`arpa_project_monument_title`)])}</div>`;
                 desc += `<div>${loc('tau_home_cultureal_effect2',[womling,loc('tau_red_womlings')])}</div>`;
@@ -2875,7 +2875,7 @@ const tauCetiModules = {
         },
         marine_barracks: {
             id: 'tauceti-marine_barracks',
-            title: loc('tau_home_marine_barracks'),
+            title(){ return loc('tau_home_marine_barracks'); },
             desc(){ return `<div>${loc('tau_home_marine_barracks')}</div><div class="has-text-special">${loc('space_support',[loc('tau_planet',[races[global.race.species].home])])}</div>`; },
             type: 'military',
             reqs: { resettle: 2 },
@@ -2957,8 +2957,8 @@ const tauCetiModules = {
         },
         orbital_platform: {
             id: 'tauceti-orbital_platform',
-            title: loc('tau_red_orbital_platform'),
-            desc: `<div>${loc('tau_red_orbital_platform')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            title(){ return loc('tau_red_orbital_platform'); },
+            desc(){ return `<div>${loc('tau_red_orbital_platform')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             type: 'outpost',
             reqs: { tau_red: 1, tauceti: 4 },
             path: ['truepath'],
@@ -3163,7 +3163,7 @@ const tauCetiModules = {
         },
         womling_village: {
             id: 'tauceti-womling_village',
-            title: loc('tau_red_womling_village'),
+            title(){ return loc('tau_red_womling_village'); },
             desc(){ return `<div>${loc('tau_red_womling_village')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`; },
             type: 'housing',
             reqs: { tau_red: 5 },
@@ -3203,7 +3203,7 @@ const tauCetiModules = {
         },
         womling_farm: {
             id: 'tauceti-womling_farm',
-            title: loc('tau_red_womling_farm'),
+            title(){ return loc('tau_red_womling_farm'); },
             desc(){ return `<div>${loc('tau_red_womling_farm')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`; },
             type: 'farming',
             reqs: { tau_red: 5 },
@@ -3246,7 +3246,7 @@ const tauCetiModules = {
         },
         womling_mine: {
             id: 'tauceti-womling_mine',
-            title: loc('tau_red_womling_mine'),
+            title(){ return loc('tau_red_womling_mine'); },
             desc(){ return `<div>${loc('tau_red_womling_mine')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`; },
             type: 'mining',
             reqs: { tau_red: 5 },
@@ -3364,7 +3364,7 @@ const tauCetiModules = {
         },
         womling_lab: {
             id: 'tauceti-womling_lab',
-            title: loc('interstellar_laboratory_title'),
+            title(){ return loc('interstellar_laboratory_title'); },
             desc(){ return `<div>${loc('interstellar_laboratory_title')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`; },
             type: 'science',
             reqs: { tau_red: 7 },
@@ -3404,7 +3404,7 @@ const tauCetiModules = {
         },
         antimatter_reactor: {
             id: 'tauceti-antimatter_reactor',
-            title: loc('tech_antimatter_reactor'),
+            title(){ return loc('tech_antimatter_reactor'); },
             desc(){
                 return `<div>${loc('tech_antimatter_reactor')}</div><div class="has-text-special">${loc('requires_res',[global.resource.Helium_3.name])}</div>`;
             },
@@ -3442,7 +3442,7 @@ const tauCetiModules = {
         },
         womling_rangers: {
             id: 'tauceti-womling_rangers',
-            title: loc('tau_red_womling_rangers'),
+            title(){ return loc('tau_red_womling_rangers'); },
             desc(){ return `<div>${loc('tau_red_womling_rangers')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`; },
             type: 'military',
             reqs: { womling_military: 1 },
@@ -3849,7 +3849,7 @@ const tauCetiModules = {
         },
         patrol_ship: {
             id: 'tauceti-patrol_ship',
-            title: loc('tau_roid_patrol_ship'),
+            title(){ return loc('tau_roid_patrol_ship'); },
             desc(){ return `<div>${loc('tau_roid_patrol_ship')}</div><div class="has-text-special">${loc('requires_res',[global.resource.Helium_3.name])}</div>`; },
             type: 'ship',
             reqs: { tau_roid: 3 },
@@ -3932,7 +3932,7 @@ const tauCetiModules = {
         },
         whaling_ship: {
             id: 'tauceti-whaling_ship',
-            title: loc('tau_roid_whaling_ship'),
+            title(){ return loc('tau_roid_whaling_ship'); },
             desc(){ return `<div>${loc('tau_roid_whaling_ship')}</div>`; },
             type: 'ship',
             reqs: { tau_whale: 2 },
@@ -3971,7 +3971,7 @@ const tauCetiModules = {
         },
         synthesizer: {
             id: 'tauceti-synthesizer',
-            title: loc('tau_roid_synthesizer_title'),
+            title(){ return loc('tau_roid_synthesizer_title'); },
             desc(){
                 return `<div>${loc('tau_roid_synthesizer_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
@@ -4041,8 +4041,8 @@ const tauCetiModules = {
         },
         alien_station_survey: {
             id: 'tauceti-alien_station_survey',
-            title: loc('tau_gas2_alien_station'),
-            desc: loc('tau_gas2_alien_station'),
+            title(){ return loc('tau_gas2_alien_station'); },
+            desc(){ return loc('tau_gas2_alien_station'); },
             reqs: { tau_gas2: 3 },
             grant: ['tau_gas2',4],
             path: ['truepath'],
@@ -4063,7 +4063,7 @@ const tauCetiModules = {
         },
         alien_station: {
             id: 'tauceti-alien_station',
-            title: loc('tau_gas2_alien_station'),
+            title(){ return loc('tau_gas2_alien_station'); },
             desc(wiki){
                 if (!global.tauceti.hasOwnProperty('alien_station') || global.tauceti.alien_station.count < 100 || wiki){
                     return `<div>${loc('tau_gas2_alien_station')}</div>` + (global.tauceti.hasOwnProperty('alien_station') && global.tauceti.alien_station.count >= 100 ? `<div class="has-text-special">${loc('space_dwarf_reactor_desc_req')}</div>` : `<div class="has-text-special">${loc('tau_gas2_alien_station_repair')}</div>`);
@@ -4127,7 +4127,7 @@ const tauCetiModules = {
         },
         alien_space_station: {
             id: 'tauceti-alien_space_station',
-            title: loc('tau_gas2_alien_station'),
+            title(){ return loc('tau_gas2_alien_station'); },
             desc(){
                 return `<div>${loc('tau_gas2_alien_station')}</div><div class="has-text-special">${loc('space_dwarf_reactor_desc_req')}</div>`;
             },
@@ -4165,7 +4165,7 @@ const tauCetiModules = {
         },
         matrioshka_brain: {
             id: 'tauceti-matrioshka_brain',
-            title: loc('tech_matrioshka_brain'),
+            title(){ return loc('tech_matrioshka_brain'); },
             desc(wiki){
                 if (!global.tauceti.hasOwnProperty('matrioshka_brain') || global.tauceti.matrioshka_brain.count < 1000 || wiki){
                     return `<div>${loc('tech_matrioshka_brain')}</div><div class="has-text-special">${loc('requires_segments',[1000])}</div>`;
@@ -4228,7 +4228,7 @@ const tauCetiModules = {
         },
         ignition_device: {
             id: 'tauceti-ignition_device',
-            title: loc('tech_ignition_device'),
+            title(){ return loc('tech_ignition_device'); },
             desc(wiki){
                 if (!global.tauceti.hasOwnProperty('ignition_device') || global.tauceti.ignition_device.count < 10 || wiki){
                     return `<div>${loc('tech_ignition_device')}</div><div class="has-text-special">${loc('requires_segments',[10])}</div>`;
@@ -4308,7 +4308,7 @@ const tauCetiModules = {
         },
         adv_shipyard: {
             id: 'tauceti-adv_shipyard',
-            title: loc('tau_shipyard_title'),
+            title(){ return loc('tau_shipyard_title'); },
             desc(){
                 return `<div>${loc('tau_shipyard_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
@@ -4359,7 +4359,7 @@ const tauCetiModules = {
         },
         mass_relay: {
             id: 'tauceti-mass_relay',
-            title: loc('space_dwarf_mass_relay_title'),
+            title(){ return loc('space_dwarf_mass_relay_title'); },
             desc(wiki){
                 if (!global.tauceti.hasOwnProperty('mass_relay') || global.tauceti.mass_relay.count < 100 || wiki){
                     return `<div>${loc('space_dwarf_mass_relay_title')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
@@ -4416,7 +4416,7 @@ const tauCetiModules = {
         },
         tcm_relay: {
             id: 'tauceti-tcm_relay',
-            title: loc('space_dwarf_mass_relay_title'),
+            title(){ return loc('space_dwarf_mass_relay_title'); },
             desc(){
                 return `<div>${loc('space_dwarf_mass_relay_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
