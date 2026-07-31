@@ -2495,10 +2495,10 @@ const spaceProjects = {
             },
             zone: 'inner',
             showDest(){
-                return {r: global.settings.space.dwarf || global.tech?.resettle >= 3, l: global.settings.space.dwarf};
+                return {r: global.settings.space.dwarf || global.tech?.resettle >= 3, l: global.settings.space.dwarf || global.tech?.resettle >= 15};
             },
             syndicate(){ return false; },
-            nav(){ return global.tech['resettle'] ? false : true; }
+            nav(){ return !global.tech['resettle'] || global.tech.resettle >= 14 ? true : false; }
         },
         dwarf_mission: {
             id: 'space-dwarf_mission',
@@ -2534,6 +2534,7 @@ const spaceProjects = {
             },
             type: 'storage',
             reqs: { dwarf: 1 },
+            condition(){ return global.tech['resettle'] && global.tech.dwarf === 1 ? false : true; },
             cost: {
                 Money(offset){ return spaceCostMultiplier('elerium_contain', offset, 800000, 1.28); },
                 Cement(offset){ return spaceCostMultiplier('elerium_contain', offset, 120000, 1.28); },
@@ -2568,6 +2569,7 @@ const spaceProjects = {
             },
             type: 'power',
             reqs: { elerium: 2 },
+            condition(){ return global.tech['resettle'] && global.tech.dwarf === 1 ? false : true; },
             cost: {
                 Money(offset){ return spaceCostMultiplier('e_reactor', offset, 1250000, 1.28); },
                 Steel(offset){ return spaceCostMultiplier('e_reactor', offset, 350000, 1.28); },
@@ -2712,6 +2714,7 @@ const spaceProjects = {
             },
             type: 'outpost',
             reqs: { shipyard: 1 },
+            condition(){ return global.tech['resettle'] ? false : true; },
             path: ['truepath'],
             cost: {
                 Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('shipyard') ? global.space.shipyard.count : 0)) < 1 ? 10000000 : 0; },
@@ -2761,6 +2764,44 @@ const spaceProjects = {
                 };
             }
         },
+        repair_yard: {
+            id: 'space-repair_yard',
+            title(){ return loc('space_repair_yard_title'); },
+            desc(){
+                return `<div>${loc('space_repair_yard_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            type: 'outpost',
+            reqs: { dwarf: 2 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('repair_yard') ? global.space.repair_yard.count : 0)) < 1 ? 785000000 : 0; },
+                Iron(offset){ return ((offset || 0) + (global.space.hasOwnProperty('repair_yard') ? global.space.repair_yard.count : 0)) < 1 ? 1000000000 : 0; },
+                Stanene(offset){ return ((offset || 0) + (global.space.hasOwnProperty('repair_yard') ? global.space.repair_yard.count : 0)) < 1 ? 132000000 : 0; },
+                Elerium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('repair_yard') ? global.space.repair_yard.count : 0)) < 1 ? 64000 : 0; },
+                Orichalcum(offset){ return ((offset || 0) + (global.space.hasOwnProperty('repair_yard') ? global.space.repair_yard.count : 0)) < 1 ? 62500000 : 0; },
+                Bolognium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('repair_yard') ? global.space.repair_yard.count : 0)) < 1 ? 85000000 : 0; },
+            },
+            queue_complete(){ return 1 - global.space.repair_yard.count; },
+            effect(){
+                return `<div>${loc('space_repair_yard_effect',[planetName().dwarf])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            powered(){ return powerCostMod(25); },
+            action(args){
+                if (global.space.repair_yard.count < 1 && payCosts($(this)[0])){
+                    incrementStruct('repair_yard');
+                    powerOnNewStruct($(this)[0]);
+                    drawShipYard();
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['repair_yard','space']
+                };
+            }
+        },
         mass_relay: {
             id: 'space-mass_relay',
             title(){ return loc('space_dwarf_mass_relay_title'); },
@@ -2773,7 +2814,7 @@ const spaceProjects = {
             reqs: { outer: 5 },
             path: ['truepath'],
             condition(){
-                return global.space.mass_relay.count < 100 ? true : false;
+                return global.space.mass_relay.count < 100 && !global.tech['resettle'] ? true : false;
             },
             queue_size: 5,
             queue_complete(){ return 100 - global.space.mass_relay.count; },
@@ -2828,7 +2869,7 @@ const spaceProjects = {
             reqs: { outer: 6 },
             path: ['truepath'],
             condition(){
-                return global.space.mass_relay.count >= 100 ? true : false;
+                return global.space.mass_relay.count && !global.tech['resettle'] >= 100 ? true : false;
             },
             wiki: false,
             queue_complete(){ return 0; },
@@ -2848,6 +2889,39 @@ const spaceProjects = {
                     d: { count: 0, on: 0, charged: 0 },
                     p: ['m_relay','space']
                 };
+            }
+        },
+        salvage_dwarf: {
+            id: 'space-salvage_dwarf',
+            title(){
+                let ship = salvagePin('spc_dwarf');
+                return loc('space_sun_salvage_ship_title',[ship ? ship.name : '']);
+            },
+            desc(){
+                let ship = salvagePin('spc_dwarf');
+                return `<div>${loc('space_hell_salvage_ship_desc',[ship ? ship.name : '', planetName().dwarf])}</div>`;
+            },
+            reqs: { dwarf: 2 },
+            path: ['truepath'],
+            grant: ['dwarf',3],
+            condition(){
+                return global.tech['dwarf'] === 2 && salvagePin('spc_dwarf') ? true : false;
+            },
+            queue_complete(){ return global.tech.dwarf >= 3 ? 0 : 1; },
+            cost: {
+                Helium_3(offset,wiki){ return +fuel_adjust(18000000,false,wiki).toFixed(0); }
+            },
+            effect(){
+                return loc('space_hell_salvage_ship_effect');
+            },
+            action(args){
+                if (payCosts($(this)[0])){
+                    // Hand over the exact hull the button named, not another of the same class. The
+                    // wreck was reserved when the scout arrived, so this always has something to give.
+                    salvageShip(1,planetName().dwarf,'tau_gas2',true,'dreadnought','spc_dwarf');
+                    return true;
+                }
+                return false;
             }
         },
     },

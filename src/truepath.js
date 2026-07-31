@@ -4717,7 +4717,7 @@ const zFleetHulls = {
     corvette:      { avail(){ return true; },  horde(){ return 350; } },
     frigate:       { avail(){ return true; },  horde(){ return 825; } },
     destroyer:     { avail(){ return global.tech['resettle'] && global.tech.resettle >= 11 ? true : false; }, horde(){ return 1700; } },
-    cruiser:       { avail(){ return false; }, horde(){ return 4100; } },
+    cruiser:       { avail(){ return global.tech['resettle'] && global.tech.resettle >= 14 ? true : false; }, horde(){ return 4100; } },
     battlecruiser: { avail(){ return false; }, horde(){ return 10300; } },
     dreadnought:   { avail(){ return false; }, horde(){ return 24750; } }
 };
@@ -10132,7 +10132,13 @@ function fleetPace(group){
 
 // Where a damaged ship can be put back together. `avail` is called whenever a ship needs somewhere to go.
 const repairStations = {
-    spc_dwarf: { avail(){ return !global.tech['resettle'] && global.space['shipyard'] && global.space.shipyard.count > 0 ? true : false; } },
+    // Before the resettlement the shipyard itself does the repairs. Once it is gone the repair yard
+    // built in its place takes over, and unlike the shipyard it has to actually be running.
+    spc_dwarf: { avail(){
+        return global.tech['resettle']
+            ? (global.space['repair_yard'] && global.space.repair_yard.count > 0 && p_on['repair_yard'] ? true : false)
+            : (global.space['shipyard'] && global.space.shipyard.count > 0 ? true : false);
+    } },
     tau_gas2:  { avail(){ return global.tech['resettle'] && global.tauceti['adv_shipyard'] && global.tauceti.adv_shipyard.count > 0 ? true : false; } }
 };
 

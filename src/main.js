@@ -13090,6 +13090,18 @@ function longLoop(){
                 messageQueue(loc('scout_spc_hell',[planetName().hell]),'info',false,['progress']);
             }
 
+            // Scout Ceres
+            if (global.tech.resettle >= 14 && global.tech['dwarf'] && global.tech.dwarf === 1 && global.space.shipyard.ships.some(s => s.location === 'spc_dwarf' && s.transit === 0)){
+                global.tech.dwarf = 2;
+                global.settings.space.dwarf = true;
+                // Reserve the wreck the Ceres salvage will offer, the same way the sun gate one is
+                // reserved. It wants a cruiser and settles for smaller; pinSalvage builds a corvette if
+                // the wrecks hold nothing that size, so the button always has something to hand over.
+                pinSalvage('spc_dwarf','dreadnought');
+                renderSpace();
+                messageQueue(loc('scout_spc_dwarf',[planetName().dwarf,global.resource.Elerium.name]),'info',false,['progress']);
+            }
+
             // Detect Signals
             if (global.tech.mars >= 6 && global.tech.resettle === 8 && Math.rand(0,5) === 0){
                 global.tech.resettle = 9;

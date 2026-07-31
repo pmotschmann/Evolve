@@ -6,6 +6,7 @@ import { techList } from './../tech.js';
 import { checkControlling } from './../civics.js';
 import { races, traits } from './../races.js';
 import { getHalloween, svgIcons, svgViewBox } from './../functions.js';
+import { planetName } from './../space.js';
 import { actionDesc, sideMenu, getSolarName } from './functions.js';
 
 const isHalloween = getHalloween();
@@ -1745,6 +1746,9 @@ const extraInformation = {
     ],
     dual_replicator: [
         loc(`tech_dual_replicator_effect`)
+    ],
+    zombie_counter: [
+        loc(`wiki_tech_zombie_counter`,[planetName().dwarf])
     ],
     metalworks: [
         loc(`wiki_tech_building_unlock`,[loc('space_metalworks_title')])

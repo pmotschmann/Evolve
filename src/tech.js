@@ -14768,6 +14768,31 @@ const techs = {
             return false;
         }
     },
+    zombie_counter: {
+        id: 'tech-zombie_counter',
+        title(){ return loc('tech_zombie_counter'); },
+        desc(){ return loc('tech_zombie_counter'); },
+        category: 'progress',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { resettle: 13 },
+        grant: ['resettle',14],
+        cost: {
+            Knowledge(){ return 26000000; }
+        },
+        effect(){ return loc('tech_zombie_counter_effect',[planetName().dwarf]); },
+        action(){
+            if (payCosts($(this)[0])){
+                // Ceres becomes a destination again so there is somewhere in Sol to operate from.
+                initStruct(actions.space.spc_dwarf.repair_yard);
+                global.settings.space.dwarf = true;
+                messageQueue(loc('tech_zombie_counter_msg',[planetName().dwarf]),'info',false,['progress']);
+                renderSpace();
+                return true;
+            }
+            return false;
+        }
+    },
     reconstruction: {
         id: 'tech-reconstruction',
         title(){ return loc('tech_reconstruction'); },
