@@ -13,6 +13,7 @@ import { arpa } from './arpa.js';
 import { matrix, retirement, gardenOfEden } from './resets.js';
 import { traitCostMod } from './races.js';
 import { loadTab } from './index.js';
+import { zombieGenociderTask } from './achieve.js';
 import { loc } from './locale.js';
 
 const outerTruth = {
@@ -4934,6 +4935,12 @@ function zEngage(location,foes){
     downed.forEach(function(foe){
         zMessage(loc('zcombat_foe_destroyed',[foe.name,regionName(location)]),'success');
     });
+
+    // Anything shot down here is culled before it can deliver, so a single kill anywhere along the
+    // route — over Earth, at a wormhole gate, or on arrival — settles the interception task.
+    if (downed.length > 0){
+        zombieGenociderTask('z2');
+    }
 
     return downed.length > 0;
 }

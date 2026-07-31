@@ -299,6 +299,14 @@ function achieveDesc(achievement,showFlair,universe){
         checklist = checklist + `</div>`;
         popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`));
     }
+    else if (achievement === 'zombie_genocider'){
+        // Tasks 3 to 5 are not written yet, so only the ones that exist are listed.
+        let checklist = `<div class="list">`;
+        checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z1[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider1`,[(53594).toLocaleString()])}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z2[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider2`)}</div>`;
+        checklist = checklist + `</div>`;
+        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`));
+    }
     else if (achievement === 'pathfinder'){
         let path = `<div class="flexed">`;
         ['ashanddust','exodus','obsolete','bluepill','retired'].forEach(function (key){

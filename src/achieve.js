@@ -50,16 +50,28 @@ const achieve_list = {
     ],
 };
 
-// Undead destroyed for each rank of the Zombie Genocider achievement, lowest first.
-const zombieGenociderTiers = [53594,100004,200008,400016,800032];
+// Zombie Genocider is a checklist rather than a ladder: each task can be finished in any order and the
+// rank is however many are done. Tasks 3 to 5 are not defined yet, so the ceiling is currently 2.
+const zombieGenociderKills = 53594;
+export const zombieGenociderTasks = ['z1','z2','z3','z4','z5'];
+
+// Mark one of the tasks complete. Called from wherever the objective actually happens; the rank is
+// recounted by checkAchievements. Mirrors how the Banana Smoothie tasks record themselves.
+export function zombieGenociderTask(task){
+    if (!global.stats.hasOwnProperty('zombie_genocider') || !global.stats.zombie_genocider.hasOwnProperty(task)){ return; }
+    let affix = universeAffix();
+    global.stats.zombie_genocider[task][affix] = true;
+    if (affix !== 'm' && affix !== 'l'){
+        global.stats.zombie_genocider[task].l = true;
+    }
+}
 
 const flairData = {
     colonist: [flib('name')]
 };
 
 const descData = {
-    trade: [750,50],
-    zombie_genocider: [zombieGenociderTiers[0].toLocaleString()]
+    trade: [750,50]
 };
 
 export const achievements = {};
@@ -859,13 +871,30 @@ export function checkAchievements(){
         unlockFeat('demon_slayer');
     }
 
-    // Zombie Genocider ranks off the running kill count.
-    if (global.stats.zkills >= zombieGenociderTiers[0]){
-        let rank = 0;
-        for (let i=0; i<zombieGenociderTiers.length; i++){
-            if (global.stats.zkills >= zombieGenociderTiers[i]){ rank = i + 1; }
+    // Zombie Genocider: a checklist, ranked by how many of its tasks are done. Task 1 is the kill count;
+    // the rest record themselves from wherever the objective happens (see zombieGenociderTask).
+    {
+        if (global.stats.zkills >= zombieGenociderKills){
+            zombieGenociderTask('z1');
         }
-        unlockAchieve('zombie_genocider',false,rank);
+
+        let affix = universeAffix();
+        let slist = 0;
+        let ulist = 0;
+        zombieGenociderTasks.forEach(function(b){
+            if (global.stats.zombie_genocider[b].l){
+                slist++;
+            }
+            if (affix !== 'l' && global.stats.zombie_genocider[b][affix]){
+                ulist++;
+            }
+        });
+        if (slist > 0){
+            unlockAchieve('zombie_genocider',false,slist,'l');
+        }
+        if (ulist > 0 && affix !== 'l'){
+            unlockAchieve('zombie_genocider',false,ulist,affix);
+        }
     }
 
     // total achievements feat

@@ -13615,7 +13615,8 @@ const techs = {
         reqs: { tau_home: 9, replicator: 1 },
         grant: ['replicator',2],
         cost: {
-            Knowledge(){ return 30000000; }
+            Knowledge(){ return 30000000; },
+            Cipher(){ return 250000; }
         },
         effect(){ return loc('tech_dual_replicator_effect'); },
         action(){

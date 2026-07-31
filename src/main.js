@@ -6885,13 +6885,13 @@ function fastLoop(){
             breakdown.p['Coal'][loc('hunger')] = ((hunger - 1) * 100) + '%';
 
             if (global.interstellar['mining_droid'] && miner_droids['coal'] > 0){
-                let driod_base = miner_droids['coal'] * 3.75 * production('psychic_boost','Coal');
-                let driod_delta = driod_base * global_multiplier * zigVal;
-                breakdown.p['Coal'][loc('interstellar_mining_droid_title')] = driod_base + 'v';
-                if (driod_base > 0){
+                let droid_base = miner_droids['coal'] * 3.75 * production('psychic_boost','Coal');
+                let droid_delta = droid_base * global_multiplier * zigVal;
+                breakdown.p['Coal'][loc('interstellar_mining_droid_title')] = droid_base + 'v';
+                if (droid_base > 0){
                     breakdown.p['Coal'][`ᄂ${loc('space_red_ziggurat_title')}+1`] = ((zigVal - 1) * 100) + '%';
                 }
-                modRes('Coal', driod_delta * time_multiplier);
+                modRes('Coal', droid_delta * time_multiplier);
             }
 
             modRes('Coal', delta * time_multiplier);
@@ -6975,13 +6975,13 @@ function fastLoop(){
 
         // Space Uranium
         if (global.interstellar['mining_droid'] && miner_droids['uran'] > 0){
-            let driod_base = miner_droids['uran'] * 0.12 * production('psychic_boost','Uranium');
-            let driod_delta = driod_base * global_multiplier * zigVal;
-            breakdown.p['Uranium'][loc('interstellar_mining_droid_title')] = driod_base + 'v';
-            if (driod_base > 0){
+            let droid_base = miner_droids['uran'] * 0.12 * production('psychic_boost','Uranium');
+            let droid_delta = droid_base * global_multiplier * zigVal;
+            breakdown.p['Uranium'][loc('interstellar_mining_droid_title')] = droid_base + 'v';
+            if (droid_base > 0){
                 breakdown.p['Uranium'][`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
             }
-            modRes('Uranium', driod_delta * time_multiplier);
+            modRes('Uranium', droid_delta * time_multiplier);
         }
 
         // Kuiper Uranium
@@ -7432,10 +7432,10 @@ function fastLoop(){
 
         // Adamantite
         if (global.resource.Adamantite.display && global.interstellar['mining_droid'] && miner_droids['adam'] > 0){
-            let driod_base = miner_droids['adam'] * 0.075 * production('psychic_boost','Adamantite');
-            let driod_delta = driod_base * shrineMetal.mult * global_multiplier * zigVal;
-            breakdown.p['Adamantite'][loc('interstellar_mining_droid_title')] = driod_base + 'v';
-            if (driod_base > 0){
+            let droid_base = miner_droids['adam'] * 0.075 * production('psychic_boost','Adamantite');
+            let droid_delta = droid_base * shrineMetal.mult * global_multiplier * zigVal;
+            breakdown.p['Adamantite'][loc('interstellar_mining_droid_title')] = droid_base + 'v';
+            if (droid_base > 0){
                 if (global.interstellar['processing'] && int_on['processing']){
                     let rate = 0.12;
                     if (global.tech['ai_core'] && global.tech['ai_core'] >= 2 && p_on['citadel'] > 0){
@@ -7448,11 +7448,11 @@ function fastLoop(){
                         bonus *= 0.5;
                         breakdown.p['Adamantite'][`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
                     }
-                    driod_delta *= 1 + bonus;
+                    droid_delta *= 1 + bonus;
                 }
                 breakdown.p['Adamantite'][`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
             }
-            modRes('Adamantite', driod_delta * time_multiplier);
+            modRes('Adamantite', droid_delta * time_multiplier);
         }
 
         if (p_on['s_gate'] && global.resource.Adamantite.display && global.galaxy['armed_miner'] && gal_on['armed_miner'] > 0){
