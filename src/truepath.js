@@ -2311,6 +2311,44 @@ const tauCetiModules = {
                 };
             }
         },
+        data_decoder: {
+            id: 'tauceti-data_decoder',
+            title: loc('tau_home_data_decoder'),
+            desc(){ return `<div>${loc('tau_home_data_decoder')}</div><div class="has-text-special">${loc('requires_power_support',[loc('tau_planet',[races[global.race.species].home])])}</div>`; },
+            type: 'science',
+            reqs: { tau_home: 9 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('data_decoder', offset, 780000000, 1.25, 'tauceti'); },
+                Water(offset){ return spaceCostMultiplier('data_decoder', offset, 128000, 1.25, 'tauceti'); },
+                Orichalcum(offset){ return spaceCostMultiplier('data_decoder', offset, 24500000, 1.25, 'tauceti'); },
+                Positronium(offset){ return spaceCostMultiplier('data_decoder', offset, 13500, 1.25, 'tauceti'); },
+            },
+            effect(wiki){
+                let desc = `<div class="has-text-caution">${loc('space_used_support',[loc('tau_planet',[races[global.race.species].home])])}</div>`;
+                let quantum_lv = +(get_qlevel(wiki)).toFixed(2);
+                desc = desc + `<div>${loc('tau_home_data_decoder_effect',[global.resource.Cipher.name,loc('tech_alien_outpost'),quantum_lv])}</div>`;
+                desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            s_type: 'tau_home',
+            support(){ return -1; },
+            powered(){ return powerCostMod(6); },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('data_decoder','tauceti');
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['data_decoder','tauceti']
+                };
+            }
+        },
         jump_gate: {
             id: 'tauceti-jump_gate',
             title(){ return global.tech['resettle'] ? loc('tau_jump_gate_target',[actions.space.spc_sun.info.name()]) : loc('tau_jump_gate'); },
@@ -4469,7 +4507,7 @@ const razeTargets = {
     spc_titan: { c: 'space', s: ['titan_spaceport','electrolysis','hydrogen_plant','titan_quarters','titan_mine','storehouse','titan_bank','g_factory','sam','decoder','ai_colonist'] },
     spc_enceladus: { c: 'space', s: ['water_freighter','zero_g_lab','operating_base','munitions_depot'] },
     spc_dwarf: { c: 'space', s: ['elerium_contain','e_reactor'] },
-    tau_home: { c: 'tauceti', s: ['colony','tau_housing','pylon','tau_farm','mining_pit','alien_outpost','fusion_generator','repository','tau_factory','infectious_disease_lab','tauceti_casino','tau_cultural_center','marine_barracks'] },
+    tau_home: { c: 'tauceti', s: ['colony','tau_housing','pylon','tau_farm','mining_pit','alien_outpost','fusion_generator','repository','tau_factory','infectious_disease_lab','tauceti_casino','tau_cultural_center','marine_barracks','data_decoder'] },
     tau_red: { c: 'tauceti', s: ['overseer','womling_village','womling_farm','womling_mine','womling_fun','womling_lab','antimatter_reactor','womling_rangers'] }
 };
 
@@ -4605,12 +4643,12 @@ function zFleetTargets(){
 // them. Only the two smallest are in service; the rest are written out and switched off, waiting for a
 // condition to be dropped in where the false is.
 const zFleetHulls = {
-    corvette:      { avail(){ return true; },  horde(){ return 250; } },
-    frigate:       { avail(){ return true; },  horde(){ return 600; } },
-    destroyer:     { avail(){ return global.tech['resettle'] && global.tech.resettle >= 11 ? true : false; }, horde(){ return 1250; } },
-    cruiser:       { avail(){ return false; }, horde(){ return 3000; } },
-    battlecruiser: { avail(){ return false; }, horde(){ return 7500; } },
-    dreadnought:   { avail(){ return false; }, horde(){ return 18000; } }
+    corvette:      { avail(){ return true; },  horde(){ return 350; } },
+    frigate:       { avail(){ return true; },  horde(){ return 825; } },
+    destroyer:     { avail(){ return global.tech['resettle'] && global.tech.resettle >= 11 ? true : false; }, horde(){ return 1700; } },
+    cruiser:       { avail(){ return false; }, horde(){ return 4100; } },
+    battlecruiser: { avail(){ return false; }, horde(){ return 10300; } },
+    dreadnought:   { avail(){ return false; }, horde(){ return 24750; } }
 };
 
 // The classes cleared to fly right now.
@@ -4634,7 +4672,7 @@ const zFleetDelayMin = 10;      // game days after the trigger before the first 
 const zFleetDelayMax = 25;
 const zFleetRampDays = 150;     // days of raiding before launches and cargoes reach full strength
 const zFleetOddsStart = 0.08;   // chance of a launch on the first day
-const zFleetOddsEnd = 0.55;     // ...and once the ramp is complete
+const zFleetOddsEnd = 0.40;     // ...and once the ramp is complete.
 const zFleetLoadStart = 0.25;   // share of a hull's cargo that lands on the first day
 
 // The one scripted sortie: days after Titan comes under threat, then where it goes and what flies it.

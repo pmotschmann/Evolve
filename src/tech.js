@@ -13521,6 +13521,27 @@ const techs = {
             return false;
         }
     },
+    data_decoder: {
+        id: 'tech-data_decoder',
+        title: loc('tech_data_decoder'),
+        desc: loc('tech_data_decoder'),
+        category: 'science',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { tau_home: 8, resettle: 13 },
+        grant: ['tau_home',9],
+        cost: {
+            Knowledge(){ return 24000000; }
+        },
+        effect(){ return loc('tech_data_decoder_effect',[global.resource.Cipher.name, loc('tech_alien_outpost')]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.tauceti.tau_home.data_decoder);
+                return true;
+            }
+            return false;
+        }
+    },
     weasels: {
         id: 'tech-weasels',
         title: loc('tech_weasels'),

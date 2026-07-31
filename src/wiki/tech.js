@@ -1740,6 +1740,9 @@ const extraInformation = {
     alien_outpost: [
         loc(`wiki_tech_building_unlock`,[loc('tech_alien_outpost')])
     ],
+    data_decoder: [
+        loc(`wiki_tech_building_unlock`,[loc('tech_data_decoder')])
+    ],
     jumpgates: [
         loc(`wiki_tech_building_unlock`,[loc('tau_jump_gate')]),
         loc(`wiki_tech_building_unlock`,[loc('tau_jump_gate')])

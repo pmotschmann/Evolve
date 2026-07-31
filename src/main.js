@@ -5673,12 +5673,20 @@ function fastLoop(){
             let base = production('alien_outpost');
             let colony_val = 1 + ((support_on['colony'] || 0) * 0.5);
 
+            // Each decoder reads the outpost that much better, and how much better is exactly how far
+            // your own computing has come — one quantum level of extra yield per running decoder.
+            let decoders = Math.min(support_on['data_decoder'] || 0, p_on['data_decoder'] || 0);
+            let decoder_val = 1 + (decoders * quantum_level / 100);
+
             breakdown.p['Cipher'][loc('tech_alien_outpost')] = base + 'v';
             if (base > 0){
                 breakdown.p['Cipher'][`ᄂ${loc('tau_home_colony')}`] = ((colony_val - 1) * 100) + '%';
+                if (decoders > 0){
+                    breakdown.p['Cipher'][`ᄂ${loc('tech_data_decoder')}`] = +((decoder_val - 1) * 100).toFixed(2) + '%';
+                }
             }
 
-            let delta = base * global_multiplier * colony_val;
+            let delta = base * global_multiplier * colony_val * decoder_val;
             modRes('Cipher', delta * time_multiplier);
         }
 
