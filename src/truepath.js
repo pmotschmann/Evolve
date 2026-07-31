@@ -3223,7 +3223,7 @@ const tauCetiModules = {
                 if (global.tech['isolation']){
                     desc = desc + `<div>${loc('tau_red_womling_generate',[global.resource.Furs.name])}</div>`;
                 }
-                desc = desc + `<div>${loc('tau_red_womling_farm_effect2',[food / 2 * farmers])}</div>`;
+                desc = desc + `<div>${loc('tau_red_womling_farm_effect2',[food / 2 * farmers,global.resource.Food.name])}</div>`;
                 return desc;
             },
             s_type: 'tau_red',

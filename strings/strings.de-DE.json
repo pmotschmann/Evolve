@@ -1221,7 +1221,7 @@
   "city_trick_desc": "Sammle %0 Bonbons von deinen Nachbarn",
   "city_trick_conjure": "Süßigkeiten heraufbeschwören",
   "city_trick_conjure_desc": "Erschaffe %0 Bonbons mit Magie",
-  "city_food_fasting": "Food won't help you now. You will have to live without.",
+  "city_food_fasting": "%0 won't help you now. You will have to live without.",
   "city_lumber": "Holz sammeln",
   "city_lumber_desc": "Ernte %0 Holz vom Land",
   "city_lumber_conjure": "Holz heraufbeschwören",

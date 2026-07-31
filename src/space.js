@@ -4123,7 +4123,7 @@ const interstellarProjects = {
                 if (global.tech['ai_core']){
                     let cement = +(quantum_lv / 1.75).toFixed(1);
                     if (!global.race['flier']){
-                        desc = desc + `<div>${loc('interstellar_citadel_effect2',[cement])}</div>`;
+                        desc = desc + `<div>${loc('interstellar_citadel_effect2',[cement,global.resource.Cement.name])}</div>`;
                     }
                     if (global.tech['ai_core'] >= 2){
                         desc = desc + `<div>${loc('interstellar_citadel_effect3',[2])}</div>`;
@@ -7812,7 +7812,7 @@ export function ascendLab(hybrid,wiki){
         $(`#city`).append(lab);
     }
 
-    let labStatus = `<div><h3 class="has-text-danger">${loc('genelab_title')}</h3> - <span class="has-text-warning">${loc('genelab_genes')} {{ g.genes }}</span> - <span class="has-text-warning">${loc('trait_untapped_name')}: {{ untapped(g.genes) }}</span></div>`;
+    let labStatus = `<div><h3 class="has-text-danger">${loc('genelab_title')}</h3> - <span class="has-text-warning">${loc('genelab_genes',[global.resource.Genes.name])} {{ g.genes }}</span> - <span class="has-text-warning">${loc('trait_untapped_name')}: {{ untapped(g.genes) }}</span></div>`;
     lab.append(labStatus);
 
     if (isWiki){

@@ -1221,7 +1221,7 @@
   "city_trick_desc": "Reúna %0 Doces de seus vizinhos",
   "city_trick_conjure": "Invocar Doces",
   "city_trick_conjure_desc": "Crie %0 doces com magia",
-  "city_food_fasting": "Food won't help you now. You will have to live without.",
+  "city_food_fasting": "%0 won't help you now. You will have to live without.",
   "city_lumber": "Coletar Madeira",
   "city_lumber_desc": "Coleta %0 madeira do terreno",
   "city_lumber_conjure": "Invocar Madeira",

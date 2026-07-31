@@ -1098,7 +1098,7 @@ export const actions = {
                 let gain = $(this)[0].val(false);
                 let hallowed = getHalloween();
                 if(global.race['fasting']){
-                    return loc('city_food_fasting');
+                    return loc('city_food_fasting',[global.resource.Food.name]);
                 }
                 if (hallowed.active){
                     return global.tech['conjuring'] ? loc('city_trick_conjure_desc',[gain]) : loc('city_trick_desc',[gain]);
@@ -1562,7 +1562,7 @@ export const actions = {
             },
             effect(){
                 let pop = $(this)[0].citizens();
-                return global.race['carnivore'] && !global.race['artifical'] ? `<div>${loc('plus_max_resource',[pop,loc('citizen')])}</div><div>${loc('city_lodge_effect',[5])}</div>` : loc('plus_max_resource',[pop,loc('citizen')]);
+                return global.race['carnivore'] && !global.race['artifical'] ? `<div>${loc('plus_max_resource',[pop,loc('citizen')])}</div><div>${loc('city_lodge_effect',[5,global.resource.Food.name])}</div>` : loc('plus_max_resource',[pop,loc('citizen')]);
             },
             action(args){
                 if (payCosts($(this)[0])){
@@ -1825,7 +1825,7 @@ export const actions = {
                 generated = +(generated).toFixed(2);
                 let store = BHStorageMulti(spatialReasoning(200));
                 let wood = global.race['kindling_kindred'] || global.race['smoldering'] ? `` : `<div class="has-text-caution">${loc('city_compost_heap_effect2',[0.5,global.resource.Lumber.name])}</div>`;
-                return `<div>${loc('city_compost_heap_effect',[generated])}</div><div>${loc('city_compost_heap_effect3',[store])}</div>${wood}`;
+                return `<div>${loc('city_compost_heap_effect',[generated,global.resource.Food.name])}</div><div>${loc('city_compost_heap_effect3',[store,global.resource.Food.name])}</div>${wood}`;
             },
             switchable(){ return true; },
             action(args){
@@ -2759,7 +2759,7 @@ export const actions = {
                     desc = desc + `<div>${loc('city_crafted_mats',[skill])}</div>`;
                 }
                 if (global.tech['foundry'] >= 6){
-                    desc = desc + `<div>${loc('city_foundry_effect2',[2])}</div>`;
+                    desc = desc + `<div>${loc('city_foundry_effect2',[2,global.resource.Brick.name])}</div>`;
                 }
                 return desc;
             },

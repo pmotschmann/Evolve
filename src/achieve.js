@@ -1098,7 +1098,7 @@ export const perkList = {
         name: loc(`achieve_creator_name`),
         desc(wiki){
             let bonus = wiki ? "1.5/2/2.5/3/3.5" : 1 + (global.stats.achieve['creator'] ? global.stats.achieve['creator'].l * 0.5 : 0.5);
-            return loc("achieve_perks_creator",[bonus]);
+            return loc("achieve_perks_creator",[bonus,global.resource.Genes.name]);
         },
         active(){
             return global.stats.achieve['creator'] && global.stats.achieve.creator.l >= 1 ? true : false;
@@ -1470,7 +1470,7 @@ export const perkList = {
                             }
                         }
                     }
-                    return loc("achieve_perks_ascended1",[genes]);
+                    return loc("achieve_perks_ascended1",[genes,global.resource.Genes.name]);
                 },
                 active(){
                     return global.stats.achieve['ascended'] && global.stats.achieve['ascended'].l >= 1 ? true : false;
@@ -1654,7 +1654,7 @@ export const perkList = {
             },
             {
                 desc(){
-                    return loc("achieve_perks_lamentis3",[`10%`]);
+                    return loc("achieve_perks_lamentis3",[`10%`,global.resource.Cement.name]);
                 },
                 active(){
                     return global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 3 ? true : false;
@@ -2711,7 +2711,7 @@ export const perkList = {
             let rank = checkAdept() || 1;
             let res = wiki ? "100/200/300/400/500" : rank * 100;
             let cap = wiki ? "60/120/180/240/300" : rank * 60;
-            return loc("achieve_perks_adept",[res,cap]);
+            return loc("achieve_perks_adept",[res,cap,global.resource.Lumber.name,global.resource.Stone.name,global.resource.Food.name]);
         },
         active(){
             return checkAdept() > 0;

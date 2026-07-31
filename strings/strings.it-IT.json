@@ -1221,7 +1221,7 @@
     "city_trick_desc": "Raccogliere %0 caramelle dai propri vicini",
     "city_trick_conjure": "Caramelle evocative",
     "city_trick_conjure_desc": "Creare %0 caramelle con la magia",
-  "city_food_fasting": "Food won't help you now. You will have to live without.",
+  "city_food_fasting": "%0 won't help you now. You will have to live without.",
     "city_lumber": "Raccogliere il legname",
     "city_lumber_desc": "Raccogliere %0 legname dal terreno",
     "city_lumber_conjure": "Legname Conjure",

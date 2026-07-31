@@ -68,7 +68,7 @@ const techs = {
             return global.race['kindling_kindred'] ? loc('tech_bone_tools') : loc('tech_wooden_tools');
         },
         desc() {
-            return global.race['kindling_kindred'] ? loc('tech_bone_tools_desc') : loc('tech_wooden_tools_desc');
+            return global.race['kindling_kindred'] ? loc('tech_bone_tools_desc') : loc('tech_wooden_tools_desc',[global.resource.Lumber.name]);
         },
         category: 'stone_gathering',
         era: 'primitive',
@@ -1393,7 +1393,7 @@ const techs = {
         cost: {
             Knowledge(){ return 5200; }
         },
-        effect: loc('tech_carpentry_effect'),
+        effect(){ return loc('tech_carpentry_effect',[global.resource.Plywood.name]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -4771,7 +4771,7 @@ const techs = {
         cost: {
             Knowledge(){ return 300000; }
         },
-        effect(){ return global.race['artifical'] ? loc('tech_code_sequencer_effect') : loc('tech_dna_sequencer_effect'); },
+        effect(){ return global.race['artifical'] ? loc('tech_code_sequencer_effect') : loc('tech_dna_sequencer_effect',[global.resource.Genes.name]); },
         action(){
             if (payCosts($(this)[0])){
                 global.arpa.sequence.auto = true;
@@ -4795,7 +4795,7 @@ const techs = {
         cost: {
             Knowledge(){ return 800000; }
         },
-        effect(){ return global.race['artifical'] ? loc('tech_agile_development_effect') : loc('tech_rapid_sequencing_effect'); },
+        effect(){ return global.race['artifical'] ? loc('tech_agile_development_effect') : loc('tech_rapid_sequencing_effect',[global.resource.Genes.name]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
