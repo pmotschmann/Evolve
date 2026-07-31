@@ -1307,6 +1307,28 @@ if (convertVersion(global['version']) < 104009){
     }
 }
 
+// The replicator gained a second production line. A save from before that has neither field; start the
+// split at 100/0 so the second line is idle and the save behaves exactly as it did.
+if (global['race'] && global.race['replicator']){
+    if (!global.race.replicator.hasOwnProperty('res2')){
+        global.race.replicator['res2'] = global.race.replicator['res'];
+    }
+    if (!global.race.replicator.hasOwnProperty('ratio')){
+        global.race.replicator['ratio'] = 100;
+    }
+}
+
+// The Titan metalworks gained metals after it first shipped. A save built against the older list has no
+// share stored for the new ones, which would read as undefined in the industry panel's running total —
+// start them unassigned so the split the player already tuned is left exactly as it was.
+if (global['space'] && global.space['metalworks']){
+    ['Steel','Iridium','Iron','Copper','Aluminium','Titanium'].forEach(function(res){
+        if (!global.space.metalworks.hasOwnProperty(res)){
+            global.space.metalworks[res] = 0;
+        }
+    });
+}
+
 // The Tau Ceti refueling station used to store its graphene fuel allocation on the Titan graphene
 // factory and mirror its count/on onto it every tick, which only held up while isolation kept Titan
 // unreachable. Now that the jump gate brings Titan back, both plants run at once and the station owns
@@ -1333,7 +1355,7 @@ if (global['tauceti'] && global.tauceti['refueling_station'] && !global.tauceti.
 
 global['version'] = '1.5.0';
 delete global['revision'];
-global['beta'] = 14;
+global['beta'] = 15;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};

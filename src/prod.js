@@ -272,6 +272,14 @@ export function production(id,val,wiki){
                     let base = highPopAdjust(0.12);
                     return base * (100 - (global.space['titan_mine'] ? global.space.titan_mine.ratio : 50)) / 100;
                 }
+                case 'stone':
+                {
+                    return global.tech['resettle'] ? highPopAdjust(0.04) : 0;
+                }
+                case 'chrysotile':
+                {
+                    return global.tech['resettle'] && global.resource.Chrysotile.display ? highPopAdjust(0.03) : 0;
+                }
             }
         }
         case 'lander':

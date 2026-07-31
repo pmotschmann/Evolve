@@ -11,7 +11,7 @@ import { renderSpace, planetName, int_fuel_adjust } from './space.js';
 import { drawHellObservations } from './portal.js';
 import { setOrbits, drawShipYard, jumpGateShutdown, jumpGateRestart } from './truepath.js';
 import { arpa } from './arpa.js';
-import { setPowerGrid, defineIndustry, addSmelter, setupRituals } from './industry.js';
+import { setPowerGrid, defineIndustry, addSmelter, setupRituals, altReplicatorRes } from './industry.js';
 import { defineGovernor, removeTask } from './governor.js';
 import { big_bang, cataclysm_end, descension, aiApocalypse } from './resets.js';
 
@@ -4894,7 +4894,7 @@ const techs = {
                     }, 4000);
                 }
                 else {
-                    global.race['replicator'] = { res: 'Stone', pow: 1 };
+                    global.race['replicator'] = { res: 'Stone', res2: 'Stone', pow: 1, ratio: 100 };
                 }
                 return true;
             }
@@ -13605,6 +13605,39 @@ const techs = {
             return false;
         }
     },
+    dual_replicator: {
+        id: 'tech-dual_replicator',
+        title: loc('tech_dual_replicator'),
+        desc: loc('tech_dual_replicator'),
+        category: 'special',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { tau_home: 9, replicator: 1 },
+        grant: ['replicator',2],
+        cost: {
+            Knowledge(){ return 30000000; }
+        },
+        effect(){ return loc('tech_dual_replicator_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                // The second line starts with none of the power, so nothing changes until the player
+                // moves the split off 100/0 themselves. It still opens on a different resource to the
+                // first, because the two lines are never allowed to sit on the same one.
+                if (global.race['replicator']){
+                    if (!global.race.replicator.hasOwnProperty('res2') || global.race.replicator.res2 === global.race.replicator.res){
+                        global.race.replicator['res2'] = altReplicatorRes(global.race.replicator.res);
+                    }
+                    global.race.replicator['ratio'] = 100;
+                }
+                return true;
+            }
+            return false;
+        },
+        post(){
+            defineIndustry();
+            defineGovernor();
+        }
+    },
     weasels: {
         id: 'tech-weasels',
         title: loc('tech_weasels'),
@@ -14821,7 +14854,7 @@ const techs = {
         effect(){ return global.race.universe === 'antimatter' ? loc('tech_antireplicator_effect') : loc('tech_replicator_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.race['replicator'] = { res: 'Unobtainium', pow: 1 };
+                global.race['replicator'] = { res: 'Unobtainium', res2: 'Unobtainium', pow: 1, ratio: 100 };
                 return true;
             }
             return false;

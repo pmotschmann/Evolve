@@ -5,7 +5,7 @@ import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaT
 import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, cleanRemoveTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobName, jobScale, workerScale, limitCraftsmen, loadServants} from './jobs.js';
-import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, luxGoodPrice, smelterUnlocked, smelterFuelConfig, setupRituals, maxRitualNum, ritual_types } from './industry.js';
+import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, replicatorLines, luxGoodPrice, smelterUnlocked, smelterFuelConfig, setupRituals, maxRitualNum, ritual_types } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
 import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, checkPowerRequirements, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct, casino_vault, casinoEarn, doCallbacks, cLabels } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types } from './space.js';
@@ -3034,12 +3034,16 @@ function fastLoop(){
         }
 
         if (global.race['replicator'] && p_on['replicator']){
-            let res = global.race.replicator.res;
-            if (!['Asphodel_Powder','Elysanite'].includes(res)){
-                let vol = replicator(res,p_on['replicator']);
-                breakdown.p.consume[res][loc('tau_replicator_db')] = vol;
-                modRes(res, time_multiplier * vol);
-            }
+            // Both lines are fed from the power actually delivered, so a brownout thins them together.
+            replicatorLines(p_on['replicator']).forEach(function(line){
+                if (line.pow <= 0 || ['Asphodel_Powder','Elysanite'].includes(line.res)){ return; }
+                let vol = replicator(line.res,line.pow);
+                // The UI stops the two lines sharing a resource, but a save predating that rule can still
+                // have them matched — accumulate rather than overwrite so the tooltip stays honest.
+                let bd = breakdown.p.consume[line.res][loc('tau_replicator_db')] || 0;
+                breakdown.p.consume[line.res][loc('tau_replicator_db')] = bd + vol;
+                modRes(line.res, time_multiplier * vol);
+            });
         }
 
         // Stargate
@@ -5388,7 +5392,7 @@ function fastLoop(){
                     if (global.city.biome === 'oceanic'){
                         delta *= biomes.oceanic.vars()[1];
                     }
-                    delta *= shrineMetal.mult;
+                    delta *= shrineMetal.mult * mworks.Titanium;
                     let divisor = global.tech['titanium'] >= 3 ? 10 : 25;
                     modRes('Titanium', (delta * time_multiplier) / divisor);
                     breakdown.p['Titanium'][loc('resource_Steel_name')] = (titanium / divisor) + 'v';
@@ -6184,7 +6188,7 @@ function fastLoop(){
 
                 // Factors for rock quarries and rock quarry power are applied quadratically on purpose
                 let delta = (base * zigValStone + forage_alum_base);
-                delta *= rock_quarry * tunneler * shrineMetal.mult * hunger * q_multiplier * global_multiplier;
+                delta *= rock_quarry * tunneler * shrineMetal.mult * mworks.Aluminium * hunger * q_multiplier * global_multiplier;
                 global.city.metal_refinery['cnvay'] = +(delta * (power_single - 1)).toFixed(5);
                 global.city.rock_quarry['almcvy'] = global.city.metal_refinery['cnvay'];
                 delta *= power_mult;
@@ -6665,7 +6669,7 @@ function fastLoop(){
                     if (global.city.biome === 'oceanic'){
                         delta *= biomes.oceanic.vars()[0];
                     }
-                    delta *= shrineMetal.mult * production('psychic_boost','Titanium');
+                    delta *= shrineMetal.mult * mworks.Titanium * production('psychic_boost','Titanium');
                     let divisor = global.tech['titanium'] >= 3 ? 10 : 25;
                     modRes('Titanium', (delta * time_multiplier) / divisor);
                     breakdown.p['Titanium'][loc('resource_Iron_name')] = (iron / divisor) + 'v';
@@ -6690,7 +6694,7 @@ function fastLoop(){
                     }
                     base *= production('psychic_boost','Aluminium');
 
-                    let delta = base * shrineMetal.mult * hunger * global_multiplier;
+                    let delta = base * shrineMetal.mult * mworks.Aluminium * hunger * global_multiplier;
 
                     if (global.tech['alumina'] >= 2){
                         refinery += p_on['metal_refinery'] * 6;
@@ -6734,7 +6738,7 @@ function fastLoop(){
             // Aluminium Mining Droids
             if (global.interstellar['mining_droid'] && miner_droids['alum'] > 0){
                 let base = miner_droids['alum'] * 2.75 * production('psychic_boost','Aluminium');
-                let delta = base * shrineMetal.mult * global_multiplier * zigVal;
+                let delta = base * shrineMetal.mult * mworks.Aluminium * global_multiplier * zigVal;
                 delta *= 1 + (refinery / 100);
 
                 breakdown.p['Aluminium'][loc('interstellar_mining_droid_title')] = base + 'v';
@@ -6750,7 +6754,7 @@ function fastLoop(){
                 let synd = syndicate('spc_titan');
                 let titan_colonists = p_on['ai_colonist'] ? workerScale(global.civic.titan_colonist.workers,'titan_colonist') + jobScale(p_on['ai_colonist']) : workerScale(global.civic.titan_colonist.workers,'titan_colonist');
                 let alum_base = production('titan_mine','aluminium') * support_on['titan_mine'] * titan_colonists * production('psychic_boost','Aluminium');
-                let alum_delta = alum_base * shrineMetal.mult * global_multiplier * qs_multiplier * synd * zigVal;
+                let alum_delta = alum_base * shrineMetal.mult * mworks.Aluminium * global_multiplier * qs_multiplier * synd * zigVal;
                 alum_delta *= 1 + (refinery / 100);
                 breakdown.p['Aluminium'][`${loc('city_mine')}+0`] = +(alum_base).toFixed(3) + 'v';
                 if (alum_base > 0){
@@ -6763,7 +6767,7 @@ function fastLoop(){
 
             // Aluminium Extractor Ship
             if (global.resource.Aluminium.display && e_ship['aluminium'] && e_ship.aluminium > 0){
-                let alum_delta = e_ship.aluminium * shrineMetal.mult * global_multiplier * womling_technician;
+                let alum_delta = e_ship.aluminium * shrineMetal.mult * mworks.Aluminium * global_multiplier * womling_technician;
                 alum_delta *= 1 + (refinery / 100);
                 breakdown.p['Aluminium'][loc('tau_roid_mining_ship')] = e_ship.aluminium + 'v';
                 if (womling_technician > 1){
@@ -6800,14 +6804,11 @@ function fastLoop(){
                 breakdown.p['Titanium'][`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
                 breakdown.p['Titanium'][`ᄂ${loc('quarantine')}+0`] = ((qs_multiplier - 1) * 100) + '%';
             }
-            modRes('Titanium', titanium_base * shrineMetal.mult * time_multiplier * global_multiplier * qs_multiplier * synd * zigVal);
+            modRes('Titanium', titanium_base * shrineMetal.mult * mworks.Titanium * time_multiplier * global_multiplier * qs_multiplier * synd * zigVal);
         }
         if (shrineBonusActive()){
             breakdown.p['Copper'][loc('city_shrine')] = ((shrineMetal.mult - 1) * 100).toFixed(1) + '%';
             breakdown.p['Titanium'][loc('city_shrine')] = ((shrineMetal.mult - 1) * 100).toFixed(1) + '%';
-        }
-        if (mworksOn){
-            breakdown.p['Copper'][loc('space_metalworks_title')] = ((mworks.Copper - 1) * 100).toFixed(1) + '%';
         }
         breakdown.p['Copper'][loc('hunger')] = ((hunger - 1) * 100) + '%';
 
@@ -7483,6 +7484,37 @@ function fastLoop(){
             modRes('Adamantite', adam_delta * time_multiplier);
         }
 
+        // Stone from the Titan mines, once resettlement reopens regolith processing there.
+        if (global.tech['resettle'] && global.resource.Stone.display && global.space['titan_mine']){
+            let synd = syndicate('spc_titan');
+            let titan_colonists = p_on['ai_colonist'] ? workerScale(global.civic.titan_colonist.workers,'titan_colonist') + jobScale(p_on['ai_colonist']) : workerScale(global.civic.titan_colonist.workers,'titan_colonist');
+            let stone_base = production('titan_mine','stone') * support_on['titan_mine'] * titan_colonists * production('psychic_boost','Stone');
+            let stone_delta = stone_base * global_multiplier * qs_multiplier * synd * zigVal;
+            breakdown.p['Stone'][loc('city_mine')] = +(stone_base).toFixed(4) + 'v';
+            if (stone_base > 0){
+                breakdown.p['Stone'][`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
+                breakdown.p['Stone'][`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
+                breakdown.p['Stone'][`ᄂ${loc('quarantine')}`] = ((qs_multiplier - 1) * 100) + '%';
+            }
+            modRes('Stone', stone_delta * time_multiplier);
+        }
+
+        // Chrysotile from the Titan mines, once resettlement reopens them and for the races that can
+        // work it at all.
+        if (global.tech['resettle'] && global.resource.Chrysotile.display && global.space['titan_mine']){
+            let synd = syndicate('spc_titan');
+            let titan_colonists = p_on['ai_colonist'] ? workerScale(global.civic.titan_colonist.workers,'titan_colonist') + jobScale(p_on['ai_colonist']) : workerScale(global.civic.titan_colonist.workers,'titan_colonist');
+            let cry_base = production('titan_mine','chrysotile') * support_on['titan_mine'] * titan_colonists * production('psychic_boost','Chrysotile');
+            let cry_delta = cry_base * global_multiplier * qs_multiplier * synd * zigVal;
+            breakdown.p['Chrysotile'][loc('city_mine')] = +(cry_base).toFixed(4) + 'v';
+            if (cry_base > 0){
+                breakdown.p['Chrysotile'][`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
+                breakdown.p['Chrysotile'][`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
+                breakdown.p['Chrysotile'][`ᄂ${loc('quarantine')}`] = ((qs_multiplier - 1) * 100) + '%';
+            }
+            modRes('Chrysotile', cry_delta * time_multiplier);
+        }
+
         // Infernite
         if (global.resource.Infernite.display){
 
@@ -7688,7 +7720,7 @@ function fastLoop(){
                     if (global.race['lone_survivor']){ // Aluminium
                         let alum_base = miner_base * production('psychic_boost','Aluminium');
                         alum_base *= production('mining_pit','aluminium');
-                        let delta = alum_base * shrineMetal.mult * global_multiplier * colony_val;
+                        let delta = alum_base * shrineMetal.mult * mworks.Aluminium * global_multiplier * colony_val;
 
                         breakdown.p['Aluminium'][jobName('pit_miner')] = alum_base + 'v';
                         if (alum_base > 0){
@@ -7829,7 +7861,7 @@ function fastLoop(){
 
                     let titanium_base = global.tauceti.womling_mine.miners * production('womling_mine','titanium') * production('psychic_boost','Titanium');
                     breakdown.p['Titanium'][loc('tau_red_womlings')] = titanium_base + 'v';
-                    let titanium_delta = titanium_base * prod * shrineMetal.mult * global_multiplier;
+                    let titanium_delta = titanium_base * prod * shrineMetal.mult * mworks.Titanium * global_multiplier;
 
                     if (titanium_base > 0){
                         breakdown.p['Titanium'][`ᄂ${loc('tau_red_womling_prod_label')}`] = -((1 - prod) * 100) + '%';
@@ -7848,7 +7880,7 @@ function fastLoop(){
 
                         let alumina_base = global.tauceti.womling_mine.miners * production('womling_mine','aluminium') * production('psychic_boost','Aluminium');
                         breakdown.p['Aluminium'][loc('tau_red_womlings')] = alumina_base + 'v';
-                        let alumina_delta = alumina_base * prod * shrineMetal.mult * global_multiplier;
+                        let alumina_delta = alumina_base * prod * shrineMetal.mult * mworks.Aluminium * global_multiplier;
 
                         if (alumina_base > 0){
                             breakdown.p['Aluminium'][`ᄂ${loc('tau_red_womling_prod_label')}`] = -((1 - prod) * 100) + '%';
@@ -7882,8 +7914,13 @@ function fastLoop(){
         if (shrineBonusActive()){
             breakdown.p['Iridium'][loc('city_shrine')] = ((shrineMetal.mult - 1) * 100).toFixed(1) + '%';
         }
+        // Breakdown rows list in insertion order, so these metalworks lines are written here rather than
+        // up with the rest of their sources — this is past the pit miner, the last one added.
         if (mworksOn){
+            breakdown.p['Copper'][loc('space_metalworks_title')] = ((mworks.Copper - 1) * 100).toFixed(1) + '%';
             breakdown.p['Iridium'][loc('space_metalworks_title')] = ((mworks.Iridium - 1) * 100).toFixed(1) + '%';
+            breakdown.p['Aluminium'][loc('space_metalworks_title')] = ((mworks.Aluminium - 1) * 100).toFixed(1) + '%';
+            breakdown.p['Titanium'][loc('space_metalworks_title')] = ((mworks.Titanium - 1) * 100).toFixed(1) + '%';
         }
         breakdown.p['Iridium'][loc('hunger')] = ((hunger - 1) * 100) + '%';
 

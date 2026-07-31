@@ -1596,6 +1596,78 @@ function loadAlienSpaceStation(parent,bind){
     });
 }
 
+// Whether the replicator runs a second production line.
+export function dualReplicator(){
+    return global.race['replicator'] && global.tech['replicator'] && global.tech.replicator >= 2 ? true : false;
+}
+
+// The replicator's production lines for a given amount of delivered power, most significant first. One
+// line before the dual upgrade; after it the power is split by `ratio` — the share line one keeps — with
+// the rounding remainder going to line two. At the default 100/0 line two gets nothing and is inert.
+export function replicatorLines(pow){
+    if (!dualReplicator()){
+        return [{ res: global.race.replicator.res, pow: pow }];
+    }
+    let ratio = typeof global.race.replicator.ratio === 'number' ? global.race.replicator.ratio : 100;
+    let first = Math.floor(pow * ratio / 100);
+    return [
+        { res: global.race.replicator.res, pow: first },
+        { res: global.race.replicator.res2 || global.race.replicator.res, pow: pow - first }
+    ];
+}
+
+// A starting resource for one line that is not already on the other. Falls back to the same resource
+// only when there is genuinely nothing else unlocked to pick.
+export function altReplicatorRes(res){
+    let alt = replicatorRes().find(r => r !== res);
+    return alt ? alt : res;
+}
+
+// Resources the replicator will never offer. Anything with an atomic mass is fair game otherwise, so
+// long as the player has actually unlocked it.
+export function replicatorRes(){
+    let blacklist = ['Asphodel_Powder','Elysanite'];
+    if (global.race['fasting']){ blacklist.push('Food'); }
+    return Object.keys(atomic_mass).filter(res => global.resource[res].display && !blacklist.includes(res));
+}
+
+// The popup behind a replicator resource button: every unlocked resource as a button, the current one
+// highlighted. Picking leaves the popup open so a mis-click can be corrected without reopening it.
+// `field` is which line is being set — 'res' or 'res2'.
+function replicatorPicker(field){
+    $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${loc('modal_replicator_res')}</p>`));
+
+    let body = $(`<div id="replicatorPicker" class="modalBody"></div>`);
+    $('#modalBox').append(body);
+
+    // Whatever the other line is running is greyed out — the two lines can never share a resource.
+    let other = field === 'res' ? 'res2' : 'res';
+
+    let buttons = ``;
+    replicatorRes().forEach(function(res){
+        buttons += `<button class="button" :class="pickClass('${res}')" :disabled="taken('${res}')" @click="setVal('${res}')">${global.resource[res].name}</button>`;
+    });
+    body.append(`<div class="flexWrap resPicker">${buttons}</div>`);
+
+    vBind({
+        el: '#replicatorPicker',
+        data: global.race.replicator,
+        methods: {
+            taken(r){
+                return dualReplicator() && global.race.replicator[other] === r;
+            },
+            setVal(r){
+                if (global.resource[r].display && !(dualReplicator() && global.race.replicator[other] === r)){
+                    global.race.replicator[field] = r;
+                }
+            },
+            pickClass(r){
+                return global.race.replicator[field] === r ? 'is-info' : '';
+            }
+        }
+    });
+}
+
 function loadReplicator(parent,bind){
     if (global.race['replicator']){
         parent.append($(`<div>${global.race.universe === 'antimatter' ? loc('tech_antireplicator') : loc('tech_replicator')}</div>`));
@@ -1603,34 +1675,29 @@ function loadReplicator(parent,bind){
         let content = $(`<div class="doublePane"></div>`);
         parent.append(content);
         
-        if (bind){
-        let values = ``;
-            Object.keys(atomic_mass).forEach(function(res){
-                if (res !== 'Asphodel_Powder' && res !== 'Elysanite'){
-                    values += `<b-dropdown-item aria-role="listitem" v-on:click="setVal('${res}')" data-val="${res}" v-show="avail('${res}')">${global.resource[res].name}</b-dropdown-item>`;
-                }
-            });
+        let dual = dualReplicator();
 
-            content.append(`<div><b-dropdown :triggers="['hover', 'click']" aria-role="list" :scrollable="true" :max-height="200" class="dropList">
-                <template #trigger>
-                    <button class="button is-info">
-                        <span>{{ resName(res) }}</span>
-                    </button>
-                </template>${values}
-            </b-dropdown></div>`);
+        if (bind){
+            // The resource list is long enough that a scrolling dropdown buries most of it. The button
+            // opens a popup laying every unlocked resource out as its own button instead.
+            let picks = $(`<div></div>`);
+            content.append(picks);
+            picks.append(`<div><button class="button is-info" @click="pickRes('res')" aria-haspopup="dialog"><span>{{ resName(res) }}</span></button></div>`);
+            if (dual){
+                picks.append(`<div class="topPad"><button class="button is-info" @click="pickRes('res2')" aria-haspopup="dialog"><span>{{ resName(res2) }}</span></button></div>`);
+            }
         }
         else {
-            let scrollMenu = ``;
-            let blacklist = ['Asphodel_Powder', 'Elysanite'];
-            if(global.race['fasting']){
-                blacklist.push('Food');
-            }
-            Object.keys(atomic_mass).forEach(function(res){
-                if (global.resource[res].display && !blacklist.includes(res)){
-                    scrollMenu += `<b-radio-button v-model="res" native-value="${res}">${global.resource[res].name}</b-radio-button>`;
-                }
+            let lines = $(`<div class="left"></div>`);
+            content.append(lines);
+            // Each line gets its own strip; without the upgrade there is only ever the one.
+            [['res','hscrolltarget'],['res2','hscrolltarget2']].slice(0,dual ? 2 : 1).forEach(function(line){
+                let scrollMenu = ``;
+                replicatorRes().forEach(function(res){
+                    scrollMenu += `<b-radio-button v-model="${line[0]}" native-value="${res}" :disabled="taken('${res}','${line[0]}')">${global.resource[res].name}</b-radio-button>`;
+                });
+                lines.append(`<div id="${line[1]}" class="hscroll"><b-field class="buttonList">${scrollMenu}</b-field></div>`);
             });
-            content.append(`<div id="hscrolltarget" class="left hscroll"><b-field class="buttonList">${scrollMenu}</b-field></div>`);
         }
 
         let power = bind ? $(`<div></div>`) : $(`<div class="right"></div>`);
@@ -1643,7 +1710,16 @@ function loadReplicator(parent,bind){
         power.append(current);
         power.append(more);
 
-        parent.append(`<div class="topPad">{{ result(res) }}</div>`); 
+        if (dual){
+            // The split is the share the first line keeps; the second gets what is left.
+            parent.append(`<div class="topPad">{{ split() }}</div>`);
+            parent.append(`<div class="sliderbar"><span class="sub" role="button" @click="ratioSub" aria-label="Shift power to the second resource">&laquo;</span><b-slider v-model="ratio" format="percent"></b-slider><span class="add" role="button" @click="ratioAdd" aria-label="Shift power to the first resource">&raquo;</span></div>`);
+        }
+
+        parent.append(`<div class="topPad">{{ result(0) }}</div>`);
+        if (dual){
+            parent.append(`<div>{{ result(1) }}</div>`);
+        }
 
         vBind({
             el: bind ? bind : '#specialModal',
@@ -1670,24 +1746,63 @@ function loadReplicator(parent,bind){
                 avail(r){
                     return global.resource[r].display && !(global.race['fasting'] && r === 'Food');
                 },
+                taken(r,field){
+                    let other = field === 'res' ? 'res2' : 'res';
+                    return dualReplicator() && global.race.replicator[other] === r;
+                },
+                pickRes(field){
+                    this.$buefy.modal.open({
+                        hasModalCard: false,
+                        content: '<div id="modalBox" class="modalBox"></div>'
+                    });
+
+                    let checkExist = setInterval(function(){
+                        if ($('#modalBox').length > 0){
+                            clearInterval(checkExist);
+                            replicatorPicker(field);
+                        }
+                    }, 50);
+                },
+                ratioSub(){
+                    let keyMult = keyMultiplier();
+                    global.race.replicator.ratio -= keyMult;
+                    if (global.race.replicator.ratio < 0){
+                        global.race.replicator.ratio = 0;
+                    }
+                },
+                ratioAdd(){
+                    let keyMult = keyMultiplier();
+                    global.race.replicator.ratio += keyMult;
+                    if (global.race.replicator.ratio > 100){
+                        global.race.replicator.ratio = 100;
+                    }
+                },
+                split(){
+                    let lines = replicatorLines(global.race.replicator.pow);
+                    return loc(`tau_replicator_split`,[lines[0].pow,lines[1].pow]);
+                },
                 aria(){
                     return global.race.replicator.pow + 'MW';
                 },
                 resName(r){
                     return global.resource[r].name;
                 },
-                result(r){
-                    return loc(`tau_replicator`,[replicator(r,global.race.replicator.pow).toFixed(2),global.resource[r].name]);
+                result(i){
+                    // Projected at the power the player asked for, which is what the readout above shows.
+                    let line = replicatorLines(global.race.replicator.pow)[i];
+                    return loc(`tau_replicator`,[replicator(line.res,line.pow).toFixed(2),global.resource[line.res].name]);
                 }
             }
         });
 
         if (!bind){
-            const scrollContainer = document.getElementById('hscrolltarget');
-
-            scrollContainer.addEventListener("wheel", (evt) => {
-                evt.preventDefault();
-                scrollContainer.scrollLeft += evt.deltaY;
+            ['hscrolltarget','hscrolltarget2'].forEach(function(id){
+                const scrollContainer = document.getElementById(id);
+                if (!scrollContainer){ return; }
+                scrollContainer.addEventListener("wheel", (evt) => {
+                    evt.preventDefault();
+                    scrollContainer.scrollLeft += evt.deltaY;
+                });
             });
         }
     }

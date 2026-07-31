@@ -4,7 +4,7 @@ import { races } from './races.js';
 import { actions, checkCityRequirements, housingLabel, wardenLabel, updateQueueNames, checkAffordable, checkCosts, drawTech, drawCity } from './actions.js';
 import { govCivics, govTitle } from './civics.js';
 import { crateGovHook, atomic_mass } from './resources.js';
-import { gridDefs } from './industry.js';
+import { gridDefs, dualReplicator } from './industry.js';
 import { checkHellRequirements, mechSize, mechCost, validWeapons, validEquipment } from './portal.js';
 import { loc } from './locale.js';
 import { jobScale } from './jobs.js';
@@ -2117,6 +2117,13 @@ export const gov_tasks = {
             if(global.race['fasting']){
                 blacklist.push('Food');
             }
+
+            // How many lines the scheduler is responsible for. The second one only counts once the dual
+            // upgrade is in and the player has actually given it a share of the power — leaving the split
+            // at 100/0 is a deliberate "off", and reassigning an idle line would just churn the display.
+            let lines = dualReplicator() && global.race.replicator.ratio < 100 ? 2 : 1;
+            let picks = [];
+
             for (let idx = 0; global.race.governor.config.replicate.res.que && idx < global.queue.queue.length; idx++){
                 let struct = decodeStructId(global.queue.queue[idx].id);
                 let tc = false;
@@ -2142,44 +2149,62 @@ export const gov_tasks = {
                 else {
                     tc = timeCheck(struct.a,false,true);
                 }
+                // A single queued build usually wants several materials, so one entry can fill both lines.
+                // Never the same resource twice — two lines on one material is just a slower single line.
                 let resSorted = Object.keys(tc.s).sort(function(a,b){return tc.s[b]-tc.s[a]});
-                for (let i=0; i<resSorted.length; i++){
-                    if (global.resource[resSorted[i]] && global.resource[resSorted[i]].display && atomic_mass[resSorted[i]] && !blacklist.includes(resSorted[i])){
-                        global.race.replicator.res = resSorted[i];
+                for (let i=0; i<resSorted.length && picks.length < lines; i++){
+                    if (global.resource[resSorted[i]] && global.resource[resSorted[i]].display && atomic_mass[resSorted[i]] && !blacklist.includes(resSorted[i]) && !picks.includes(resSorted[i])){
+                        picks.push(resSorted[i]);
                         rBal = true;
-                        break;
                     }
                 }
-                if (!global.settings.qAny || rBal){
+                if (picks.length >= lines || !global.settings.qAny){
                     break;
                 }
             }
 
-            if (!rBal){
+            // Anything the queue did not account for falls back to the balancing rules, which are applied
+            // per line against what is already spoken for.
+            if (picks.length < lines){
                 let resSorted = Object.keys(atomic_mass).sort(function(a,b){return global.resource[a].diff-global.resource[b].diff});
-                delete resSorted['Asphodel_Powder']; delete resSorted['Elysanite'];
-                resSorted = resSorted.filter(item => global.resource[item] && global.resource[item].display);
+                resSorted = resSorted.filter(item => global.resource[item] && global.resource[item].display && !blacklist.includes(item));
 
-                if (global.race.governor.config.replicate.res.neg && resSorted[0] && global.resource[resSorted[0]].diff < 0 && ((global.resource[resSorted[0]].amount <= global.resource[resSorted[0]].max * 0.95) || global.resource[resSorted[0]].max === -1)){
-                    global.race.replicator.res = resSorted[0];
-                }
-                else if (global.resource[global.race.replicator.res].max !== -1 && global.race.governor.config.replicate.res.cap && global.resource[global.race.replicator.res].amount >= global.resource[global.race.replicator.res].max){
-                    let cappable = resSorted.filter(item => global.resource[item].max > 0);
-                    for (let i=0; i<cappable.length; i++){
-                        if (global.resource[cappable[i]].amount < global.resource[cappable[i]].max){
-                            global.race.replicator.res = cappable[i];
-                            rBal = true;
-                            break;
+                let fields = ['res','res2'];
+                for (let l = picks.length; l < lines; l++){
+                    let cur = global.race.replicator[fields[l]];
+                    let free = resSorted.filter(item => !picks.includes(item));
+                    let pick = null;
+
+                    if (global.race.governor.config.replicate.res.neg && free[0] && global.resource[free[0]].diff < 0 && ((global.resource[free[0]].amount <= global.resource[free[0]].max * 0.95) || global.resource[free[0]].max === -1)){
+                        pick = free[0];
+                    }
+                    else if (global.resource[cur] && global.resource[cur].max !== -1 && global.race.governor.config.replicate.res.cap && global.resource[cur].amount >= global.resource[cur].max){
+                        let cappable = free.filter(item => global.resource[item].max > 0);
+                        for (let i=0; i<cappable.length; i++){
+                            if (global.resource[cappable[i]].amount < global.resource[cappable[i]].max){
+                                pick = cappable[i];
+                                break;
+                            }
+                        }
+                        if (!pick){
+                            let uncappable = free.filter(item => global.resource[item].max === -1);
+                            if (uncappable.length > 0){
+                                pick = uncappable[0];
+                            }
                         }
                     }
-                    if (!rBal){
-                        let uncappable = resSorted.filter(item => global.resource[item].max === -1);
-                        if (uncappable.length > 0){
-                            global.race.replicator.res = uncappable[0];
-                        }
-                    }
+
+                    // Nothing to change for this line: keep what it already has, but reserve it so the
+                    // other line does not pick the same thing.
+                    picks.push(pick ? pick : cur);
                 }
             }
+
+            ['res','res2'].slice(0,lines).forEach(function(field,i){
+                if (picks[i]){
+                    global.race.replicator[field] = picks[i];
+                }
+            });
         }
     },
 };

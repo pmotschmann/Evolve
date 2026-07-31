@@ -271,7 +271,16 @@ const outerTruth = {
                 let alum_val = production('titan_mine','aluminium');
                 let adamantite = +(adam_val).toFixed(3);
                 let aluminium = +(alum_val).toFixed(3);
-                return `<div class="has-text-caution">${loc('space_used_support',[planetName().titan])}</div><div>${loc('space_red_mine_effect',[adamantite,global.resource.Adamantite.name])}</div><div>${loc('space_red_mine_effect',[aluminium,global.resource.Aluminium.name])}</div>`;
+                let desc = `<div class="has-text-caution">${loc('space_used_support',[planetName().titan])}</div><div>${loc('space_red_mine_effect',[adamantite,global.resource.Adamantite.name])}</div><div>${loc('space_red_mine_effect',[aluminium,global.resource.Aluminium.name])}</div>`;
+                if (global.tech['resettle']){
+                    let stone = +(production('titan_mine','stone')).toFixed(4);
+                    desc += `<div>${loc('space_red_mine_effect',[stone,global.resource.Stone.name])}</div>`;
+                }
+                if (global.tech['resettle'] && global.resource.Chrysotile.display){
+                    let chrysotile = +(production('titan_mine','chrysotile')).toFixed(4);
+                    desc += `<div>${loc('space_red_mine_effect',[chrysotile,global.resource.Chrysotile.name])}</div>`;
+                }
+                return desc;
             },
             s_type: 'titan',
             support(){ return -1; },
@@ -506,7 +515,7 @@ const outerTruth = {
             // Metals the works divides its pool between, in the order the UI lists them. The effect text,
             // the industry panel and the production loop all read this one list.
             res(){
-                return ['Steel','Iridium','Iron','Copper'];
+                return ['Steel','Iridium','Iron','Copper','Aluminium','Titanium'];
             },
             s_type: 'titan',
             support(){ return -1; },
@@ -524,12 +533,12 @@ const outerTruth = {
             },
             struct(){
                 let d = { count: 0, on: 0 };
-                // Start with the pool split evenly and fully assigned; any remainder from an uneven
-                // split goes to the first metal so the shares always total 100.
+                // Start with the pool split evenly and fully assigned; an uneven split hands the spare
+                // points out one each from the top of the list so the shares always total 100.
                 let metals = $(this)[0].res();
                 let share = Math.floor(100 / metals.length);
-                metals.forEach(function(res){ d[res] = share; });
-                d[metals[0]] += 100 - (share * metals.length);
+                let spare = 100 - (share * metals.length);
+                metals.forEach(function(res,i){ d[res] = share + (i < spare ? 1 : 0); });
                 return {
                     d: d,
                     p: ['metalworks','space']

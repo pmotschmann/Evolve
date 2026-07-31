@@ -1743,6 +1743,9 @@ const extraInformation = {
     data_decoder: [
         loc(`wiki_tech_building_unlock`,[loc('tech_data_decoder')])
     ],
+    dual_replicator: [
+        loc(`tech_dual_replicator_effect`)
+    ],
     metalworks: [
         loc(`wiki_tech_building_unlock`,[loc('space_metalworks_title')])
     ],
