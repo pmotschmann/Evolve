@@ -1355,7 +1355,7 @@ if (global['tauceti'] && global.tauceti['refueling_station'] && !global.tauceti.
 
 global['version'] = '1.5.0';
 delete global['revision'];
-global['beta'] = 16;
+global['beta'] = 17;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
