@@ -3001,6 +3001,19 @@ export function sLevel(level){
     }
 }
 
+export function getWeaselTechLevelRequirement(level){
+    if (isNaN(level))
+        level = global.tech.womling_tech ?? 0;
+
+    let exponent = 5;
+    if (global.stats.achieve.overlord && global.stats.achieve.overlord.l >= 5)
+        exponent -= 0.1;
+    if (global.race['lone_survivor'])
+        exponent -= 0.1;
+
+    return Math.round((level + 2) ** exponent);
+}
+
 export function calcGenomeScore(genome,wiki,tRanks){
     if (!tRanks){ tRanks = genome.ranks || {}; }
     let genes = 0;
