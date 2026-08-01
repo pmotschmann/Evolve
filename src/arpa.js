@@ -2594,6 +2594,9 @@ export function buildArpa(pro,num,update,queue){
                 drawTech();
             }
         }
+        else {
+            break;
+        }
     }
     if (update){
         let amounts = [1,10,25,100];
