@@ -42,7 +42,6 @@
   },
   "dependencies": {
     "esbuild": "0.25.0",
-    "node": "^16.1.0",
-    "npmcli": "^1.2.2"
+    "node": "^16.1.0"
   }
 }
