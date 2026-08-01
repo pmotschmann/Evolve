@@ -2225,14 +2225,14 @@ function fastLoop(){
         }
 
         if (global.city['mill'] && global.tech['agriculture'] && global.tech['agriculture'] >= 6){
-            let power = powerModifier(global.city.mill.on * actions.city.mill.powered());
+            let power = global.city.mill.on * actions.city.mill.powered();
             max_power += power;
             power_grid -= power;
             power_generated[loc('city_mill_title2')] = -(power);
         }
 
         if (global.city['windmill'] && global.tech['wind_plant']){
-            let power = powerModifier(global.city.windmill.count * actions.city.windmill.powered());
+            let power = global.city.windmill.count * actions.city.windmill.powered();
             max_power += power;
             power_grid -= power;
             power_generated[loc('city_mill_title2')] = -(power);
@@ -6290,23 +6290,21 @@ function fastLoop(){
         if (global.resource.Mana.display){
             if (global.race['casting']){
                 ritual_types.forEach(function (spell){
-                    if (global.race.casting[spell]){
-                        if (global.race.casting[spell] > 0){
-                            const consume_mana = manaCost(global.race.casting[spell]);
-                            const consume_mana_dt = consume_mana * time_multiplier;
-                            if (consume_mana_dt > global.resource.Mana.amount){
-                                active_rituals[spell] = maxRitualNum(global.resource.Mana.amount, time_multiplier);
-                            }
-                            else {
-                                active_rituals[spell] = global.race.casting[spell];
-                            }
-                            breakdown.p.consume.Mana[loc(`modal_pylon_spell_${spell}`)] = -(consume_mana);
-
-                            modRes('Mana', -(consume_mana_dt));
+                    if (global.race.casting[spell] && global.race.casting[spell] > 0){
+                        const consume_mana = manaCost(global.race.casting[spell]);
+                        const consume_mana_dt = consume_mana * time_multiplier;
+                        if (consume_mana_dt > global.resource.Mana.amount){
+                            active_rituals[spell] = maxRitualNum(global.resource.Mana.amount, time_multiplier);
                         }
                         else {
-                            active_rituals[spell] = 0;
+                            active_rituals[spell] = global.race.casting[spell];
                         }
+                        breakdown.p.consume.Mana[loc(`modal_pylon_spell_${spell}`)] = -(consume_mana);
+
+                        modRes('Mana', -(consume_mana_dt));
+                    }
+                    else {
+                        active_rituals[spell] = 0;
                     }
                 });
             }
