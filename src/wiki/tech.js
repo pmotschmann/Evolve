@@ -1010,6 +1010,9 @@ const extraInformation = {
     disruptor_rifles: [
         loc(`wiki_tech_bows`,[700])
     ],
+    disruptor_rifles_tp: [
+        loc(`wiki_tech_bows`,[700])
+    ],
     gauss_rifles: [
         loc(`wiki_tech_bows`,[800])
     ],
@@ -1078,6 +1081,9 @@ const extraInformation = {
     ],
     portland_cement: [
         loc(`wiki_tech_portland_cement`)
+    ],
+    geopolymer_cement: [
+        loc(`wiki_tech_geopolymer_cement`,[loc(`city_cement_plant`),8])
     ],
     screw_conveyor: [
         loc(`wiki_tech_power_upgrade`,[loc(`city_cement_plant`),2]),
@@ -2144,6 +2150,21 @@ const extraInformation = {
     ],
     zombie_data: [
         loc(`wiki_tech_zombie_data`)
+    ],
+    zombie_intelligence: [
+        loc(`wiki_tech_zombie_intelligence`)
+    ],
+    positronium_furnace: [
+        loc(`wiki_tech_positronium_furnace`,[25])
+    ],
+    weight_reduction: [
+        loc(`wiki_tech_weight_reduction`)
+    ],
+    womling_land_use_planning: [
+        loc(`wiki_tech_womling_land_use_planning`,[8,20,loc(`tau_red_orbital_platform`),3])
+    ],
+    womling_artisans: [
+        loc(`wiki_tech_building_unlock`,[loc(`tau_red_womling_craftworks`)])
     ],
     fleet_command: [
         loc(`wiki_tech_fleet_command`)
