@@ -6,20 +6,20 @@ import { payCosts, housingLabel, wardenLabel, structName, updateQueueNames, draw
 import { races, checkAltPurgatory, renderPsychicPowers, renderSupernatural, traitCostMod } from './races.js';
 import { drawResourceTab, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry, jobScale, jobName, limitCraftsmen } from './jobs.js';
-import { buildGarrison, checkControlling, govTitle } from './civics.js';
+import { buildGarrison, checkControlling, govTitle, defineFleetCommand } from './civics.js';
 import { renderSpace, planetName, int_fuel_adjust } from './space.js';
 import { drawHellObservations } from './portal.js';
-import { setOrbits, drawShipYard, jumpGateShutdown } from './truepath.js';
+import { setOrbits, drawShipYard, jumpGateShutdown, jumpGateRestart } from './truepath.js';
 import { arpa } from './arpa.js';
-import { setPowerGrid, defineIndustry, addSmelter, setupRituals } from './industry.js';
+import { setPowerGrid, defineIndustry, addSmelter, setupRituals, altReplicatorRes } from './industry.js';
 import { defineGovernor, removeTask } from './governor.js';
 import { big_bang, cataclysm_end, descension, aiApocalypse } from './resets.js';
 
 const techs = {
     club: {
         id: 'tech-club',
-        title: loc('tech_club'),
-        desc: loc('tech_club_desc'),
+        title(){ return loc('tech_club'); },
+        desc(){ return loc('tech_club_desc'); },
         category: 'agriculture',
         era: 'primitive',
         reqs: {},
@@ -38,8 +38,8 @@ const techs = {
     },
     bone_tools: {
         id: 'tech-bone_tools',
-        title: loc('tech_bone_tools'),
-        desc: loc('tech_bone_tools_desc'),
+        title(){ return loc('tech_bone_tools'); },
+        desc(){ return loc('tech_bone_tools_desc'); },
         category: 'stone_gathering',
         era: 'primitive',
         reqs: { primitive: 1 },
@@ -68,7 +68,7 @@ const techs = {
             return global.race['kindling_kindred'] ? loc('tech_bone_tools') : loc('tech_wooden_tools');
         },
         desc() {
-            return global.race['kindling_kindred'] ? loc('tech_bone_tools_desc') : loc('tech_wooden_tools_desc');
+            return global.race['kindling_kindred'] ? loc('tech_bone_tools_desc') : loc('tech_wooden_tools_desc',[global.resource.Lumber.name]);
         },
         category: 'stone_gathering',
         era: 'primitive',
@@ -304,8 +304,8 @@ const techs = {
     },
     housing: {
         id: 'tech-housing',
-        title: loc('tech_housing'),
-        desc: loc('tech_housing_desc'),
+        title(){ return loc('tech_housing'); },
+        desc(){ return loc('tech_housing_desc'); },
         category: 'housing',
         era: 'civilized',
         reqs: { primitive: 3 },
@@ -327,7 +327,7 @@ const techs = {
         title(){
             return housingLabel('medium');
         },
-        desc: loc('tech_cottage_desc'),
+        desc(){ return loc('tech_cottage_desc'); },
         category: 'housing',
         era: 'civilized',
         reqs: { housing: 1, cement: 1, mining: 3 },
@@ -370,8 +370,8 @@ const techs = {
     },
     arcology: {
         id: 'tech-arcology',
-        title: loc('tech_arcology'),
-        desc: loc('tech_arcology'),
+        title(){ return loc('tech_arcology'); },
+        desc(){ return loc('tech_arcology'); },
         category: 'housing',
         era: 'dimensional',
         reqs: { hell_ruins: 4, housing: 3, high_tech: 17 },
@@ -391,8 +391,8 @@ const techs = {
     },
     steel_beams: {
         id: 'tech-steel_beams',
-        title: loc('tech_steel_beams'),
-        desc: loc('tech_housing_cost'),
+        title(){ return loc('tech_steel_beams'); },
+        desc(){ return loc('tech_housing_cost'); },
         category: 'housing',
         era: 'discovery',
         reqs: { housing: 2, smelting: 2 },
@@ -416,8 +416,8 @@ const techs = {
     },
     mythril_beams: {
         id: 'tech-mythril_beams',
-        title: loc('tech_mythril_beams'),
-        desc: loc('tech_housing_cost'),
+        title(){ return loc('tech_mythril_beams'); },
+        desc(){ return loc('tech_housing_cost'); },
         category: 'housing',
         era: 'early_space',
         reqs: { housing_reduction: 1, space: 3 },
@@ -440,8 +440,8 @@ const techs = {
     },
     neutronium_walls: {
         id: 'tech-neutronium_walls',
-        title: loc('tech_neutronium_walls'),
-        desc: loc('tech_housing_cost'),
+        title(){ return loc('tech_neutronium_walls'); },
+        desc(){ return loc('tech_housing_cost'); },
         category: 'housing',
         era: 'deep_space',
         reqs: { housing_reduction: 2, gas_moon: 1 },
@@ -464,8 +464,8 @@ const techs = {
     },
     bolognium_alloy_beams: {
         id: 'tech-bolognium_alloy_beams',
-        title: loc('tech_bolognium_alloy_beams'),
-        desc: loc('tech_housing_cost'),
+        title(){ return loc('tech_bolognium_alloy_beams'); },
+        desc(){ return loc('tech_housing_cost'); },
         category: 'housing',
         era: 'intergalactic',
         reqs: { housing_reduction: 3, gateway: 3 },
@@ -489,8 +489,8 @@ const techs = {
     },
     aphrodisiac: {
         id: 'tech-aphrodisiac',
-        title: loc('tech_aphrodisiac'),
-        desc: loc('tech_aphrodisiac_desc'),
+        title(){ return loc('tech_aphrodisiac'); },
+        desc(){ return loc('tech_aphrodisiac_desc'); },
         category: 'housing',
         era: 'civilized',
         reqs: { housing: 2 },
@@ -509,8 +509,8 @@ const techs = {
     },
     fertility_clinic: {
         id: 'tech-fertility_clinic',
-        title: loc('tech_fertility_clinic'),
-        desc: loc('tech_fertility_clinic'),
+        title(){ return loc('tech_fertility_clinic'); },
+        desc(){ return loc('tech_fertility_clinic'); },
         category: 'housing',
         era: 'intergalactic',
         reqs: { reproduction: 1, xeno: 6 },
@@ -529,8 +529,8 @@ const techs = {
     },
     captive_housing: {
         id: 'tech-captive_housing',
-        title: loc('tech_captive_housing'),
-        desc: loc('tech_captive_housing'),
+        title(){ return loc('tech_captive_housing'); },
+        desc(){ return loc('tech_captive_housing'); },
         category: 'eldritch',
         era: 'civilized',
         reqs: { housing: 1 },
@@ -550,8 +550,8 @@ const techs = {
     },
     torture: {
         id: 'tech-torture',
-        title: loc('tech_torture'),
-        desc: loc('tech_torture'),
+        title(){ return loc('tech_torture'); },
+        desc(){ return loc('tech_torture'); },
         category: 'eldritch',
         era: 'civilized',
         reqs: { unfathomable: 1 },
@@ -571,8 +571,8 @@ const techs = {
     },
     thrall_quarters: {
         id: 'tech-thrall_quarters',
-        title: loc('tech_thrall_quarters'),
-        desc: loc('tech_thrall_quarters'),
+        title(){ return loc('tech_thrall_quarters'); },
+        desc(){ return loc('tech_thrall_quarters'); },
         category: 'eldritch',
         era: 'civilized',
         reqs: { unfathomable: 2, high_tech: 6 },
@@ -594,8 +594,8 @@ const techs = {
     },
     minor_wish: {
         id: 'tech-minor_wish',
-        title: loc('tech_minor_wish'),
-        desc: loc('tech_minor_wish'),
+        title(){ return loc('tech_minor_wish'); },
+        desc(){ return loc('tech_minor_wish'); },
         category: 'paranormal',
         era: 'civilized',
         reqs: { housing: 1 },
@@ -624,8 +624,8 @@ const techs = {
     },
     major_wish: {
         id: 'tech-major_wish',
-        title: loc('tech_major_wish'),
-        desc: loc('tech_major_wish'),
+        title(){ return loc('tech_major_wish'); },
+        desc(){ return loc('tech_major_wish'); },
         category: 'paranormal',
         era: 'civilized',
         reqs: { wish: 1, high_tech: 7 },
@@ -648,8 +648,8 @@ const techs = {
     },
     psychic_energy: {
         id: 'tech-psychic_energy',
-        title: loc('tech_psychic_energy'),
-        desc: loc('tech_psychic_energy'),
+        title(){ return loc('tech_psychic_energy'); },
+        desc(){ return loc('tech_psychic_energy'); },
         category: 'eldritch',
         era: 'civilized',
         reqs: { housing: 1 },
@@ -675,8 +675,8 @@ const techs = {
     },
     psychic_attack: {
         id: 'tech-psychic_attack',
-        title: loc('tech_psychic_attack'),
-        desc: loc('tech_psychic_attack'),
+        title(){ return loc('tech_psychic_attack'); },
+        desc(){ return loc('tech_psychic_attack'); },
         category: 'eldritch',
         era: 'civilized',
         reqs: { psychic: 1, military: 1 },
@@ -700,8 +700,8 @@ const techs = {
     },
     psychic_finance: {
         id: 'tech-psychic_finance',
-        title: loc('tech_psychic_finance'),
-        desc: loc('tech_psychic_finance'),
+        title(){ return loc('tech_psychic_finance'); },
+        desc(){ return loc('tech_psychic_finance'); },
         category: 'eldritch',
         era: 'civilized',
         reqs: { psychic: 2, high_tech: 4 },
@@ -724,8 +724,8 @@ const techs = {
     },
     psychic_channeling: {
         id: 'tech-psychic_channeling',
-        title: loc('tech_psychic_channeling'),
-        desc: loc('tech_psychic_channeling'),
+        title(){ return loc('tech_psychic_channeling'); },
+        desc(){ return loc('tech_psychic_channeling'); },
         category: 'eldritch',
         era: 'deep_space',
         reqs: { psychic: 3, high_tech: 10 },
@@ -748,8 +748,8 @@ const techs = {
     },
     psychic_efficiency: {
         id: 'tech-psychic_efficiency',
-        title: loc('tech_psychic_efficiency'),
-        desc: loc('tech_psychic_efficiency'),
+        title(){ return loc('tech_psychic_efficiency'); },
+        desc(){ return loc('tech_psychic_efficiency'); },
         category: 'eldritch',
         era: 'intergalactic',
         reqs: { psychic: 4, high_tech: 16 },
@@ -771,8 +771,8 @@ const techs = {
     },
     mind_break: {
         id: 'tech-mind_break',
-        title: loc('tech_mind_break'),
-        desc: loc('tech_mind_break'),
+        title(){ return loc('tech_mind_break'); },
+        desc(){ return loc('tech_mind_break'); },
         category: 'eldritch',
         era: 'civilized',
         reqs: { psychic: 2, high_tech: 1, unfathomable: 2 },
@@ -794,8 +794,8 @@ const techs = {
     },
     psychic_stun: {
         id: 'tech-psychic_stun',
-        title: loc('tech_psychic_stun'),
-        desc: loc('tech_psychic_stun'),
+        title(){ return loc('tech_psychic_stun'); },
+        desc(){ return loc('tech_psychic_stun'); },
         category: 'eldritch',
         era: 'civilized',
         reqs: { psychicthrall: 1, high_tech: 3, unfathomable: 2 },
@@ -817,8 +817,8 @@ const techs = {
     },
     spear: {
         id: 'tech-spear',
-        title: loc('tech_spear'),
-        desc: loc('tech_spear_desc'),
+        title(){ return loc('tech_spear'); },
+        desc(){ return loc('tech_spear_desc'); },
         category: 'foraging',
         era: 'civilized',
         reqs: { primitive: 3, storage: 1 },
@@ -838,8 +838,8 @@ const techs = {
     },
     bronze_spear: {
         id: 'tech-bronze_spear',
-        title: loc('tech_bronze_spear'),
-        desc: loc('tech_bronze_spear_desc'),
+        title(){ return loc('tech_bronze_spear'); },
+        desc(){ return loc('tech_bronze_spear_desc'); },
         category: 'foraging',
         era: 'civilized',
         reqs: { foraging: 1, mining: 2 },
@@ -859,8 +859,8 @@ const techs = {
     },
     iron_spear: {
         id: 'tech-iron_spear',
-        title: loc('tech_iron_spear'),
-        desc: loc('tech_iron_spear_desc'),
+        title(){ return loc('tech_iron_spear'); },
+        desc(){ return loc('tech_iron_spear_desc'); },
         category: 'foraging',
         era: 'civilized',
         reqs: { foraging: 2, mining: 3 },
@@ -880,8 +880,8 @@ const techs = {
     },
     steel_spear: {
         id: 'tech-steel_spear',
-        title: loc('tech_steel_spear'),
-        desc: loc('tech_steel_spear_desc'),
+        title(){ return loc('tech_steel_spear'); },
+        desc(){ return loc('tech_steel_spear_desc'); },
         category: 'foraging',
         era: 'civilized',
         reqs: { foraging: 3, smelting: 2 },
@@ -901,8 +901,8 @@ const techs = {
     },
     titanium_spear: {
         id: 'tech-titanium_spear',
-        title: loc('tech_titanium_spear'),
-        desc: loc('tech_titanium_spear_desc'),
+        title(){ return loc('tech_titanium_spear'); },
+        desc(){ return loc('tech_titanium_spear_desc'); },
         category: 'foraging',
         era: 'civilized',
         reqs: { foraging: 4, high_tech: 3},
@@ -922,8 +922,8 @@ const techs = {
     },
     dowsing_rod: {
         id: 'tech-dowsing_rod',
-        title: loc('tech_dowsing_rod'),
-        desc: loc('tech_dowsing_rod_desc'),
+        title(){ return loc('tech_dowsing_rod'); },
+        desc(){ return loc('tech_dowsing_rod_desc'); },
         category: 'foraging',
         era: 'civilized',
         reqs: { foraging: 1, mining: 2 },
@@ -943,8 +943,8 @@ const techs = {
     },
     metal_detector: {
         id: 'tech-metal_detector',
-        title: loc('tech_metal_detector'),
-        desc: loc('tech_metal_detector_desc'),
+        title(){ return loc('tech_metal_detector'); },
+        desc(){ return loc('tech_metal_detector_desc'); },
         category: 'foraging',
         era: 'civilized',
         reqs: { dowsing: 1, high_tech: 4 },
@@ -990,8 +990,8 @@ const techs = {
     },
     lodge: {
         id: 'tech-lodge',
-        title: loc('tech_lodge'),
-        desc: loc('tech_lodge'),
+        title(){ return loc('tech_lodge'); },
+        desc(){ return loc('tech_lodge'); },
         wiki: global.race['carnivore'] ? true : false,
         category: 'agriculture',
         era: 'civilized',
@@ -1037,8 +1037,8 @@ const techs = {
     },
     soul_well: {
         id: 'tech-soul_well',
-        title: loc('tech_soul_well'),
-        desc: loc('tech_soul_well'),
+        title(){ return loc('tech_soul_well'); },
+        desc(){ return loc('tech_soul_well'); },
         category: 'souls',
         era: 'civilized',
         reqs: { primitive: 3 },
@@ -1059,8 +1059,8 @@ const techs = {
     },
     compost: {
         id: 'tech-compost',
-        title: loc('tech_compost'),
-        desc: loc('tech_compost_desc'),
+        title(){ return loc('tech_compost'); },
+        desc(){ return loc('tech_compost_desc'); },
         category: 'compost',
         era: 'civilized',
         reqs: { primitive: 3 },
@@ -1081,8 +1081,8 @@ const techs = {
     },
     hot_compost: {
         id: 'tech-hot_compost',
-        title: loc('tech_hot_compost'),
-        desc: loc('tech_hot_compost'),
+        title(){ return loc('tech_hot_compost'); },
+        desc(){ return loc('tech_hot_compost'); },
         category: 'compost',
         era: 'civilized',
         reqs: { compost: 1 },
@@ -1101,8 +1101,8 @@ const techs = {
     },
     mulching: {
         id: 'tech-mulching',
-        title: loc('tech_mulching'),
-        desc: loc('tech_mulching'),
+        title(){ return loc('tech_mulching'); },
+        desc(){ return loc('tech_mulching'); },
         category: 'compost',
         era: 'civilized',
         reqs: { compost: 2, mining: 3 },
@@ -1121,8 +1121,8 @@ const techs = {
     },
     adv_mulching: {
         id: 'tech-adv_mulching',
-        title: loc('tech_adv_mulching'),
-        desc: loc('tech_adv_mulching'),
+        title(){ return loc('tech_adv_mulching'); },
+        desc(){ return loc('tech_adv_mulching'); },
         category: 'compost',
         era: 'discovery',
         reqs: { compost: 3, high_tech: 2 },
@@ -1141,8 +1141,8 @@ const techs = {
     },
     agriculture: {
         id: 'tech-agriculture',
-        title: loc('tech_agriculture'),
-        desc: loc('tech_agriculture_desc'),
+        title(){ return loc('tech_agriculture'); },
+        desc(){ return loc('tech_agriculture_desc'); },
         category: 'agriculture',
         era: 'civilized',
         reqs: { primitive: 3 },
@@ -1165,8 +1165,8 @@ const techs = {
     },
     farm_house: {
         id: 'tech-farm_house',
-        title: loc('tech_farm_house'),
-        desc: loc('tech_farm_house_desc'),
+        title(){ return loc('tech_farm_house'); },
+        desc(){ return loc('tech_farm_house_desc'); },
         category: 'housing',
         era: 'civilized',
         reqs: { agriculture: 1, housing: 1, currency: 1 },
@@ -1185,8 +1185,8 @@ const techs = {
     },
     irrigation: {
         id: 'tech-irrigation',
-        title: loc('tech_irrigation'),
-        desc: loc('tech_irrigation_desc'),
+        title(){ return loc('tech_irrigation'); },
+        desc(){ return loc('tech_irrigation_desc'); },
         category: 'agriculture',
         era: 'civilized',
         reqs: { agriculture: 1 },
@@ -1204,8 +1204,8 @@ const techs = {
     },
     silo: {
         id: 'tech-silo',
-        title: loc('tech_silo'),
-        desc: loc('tech_silo_desc'),
+        title(){ return loc('tech_silo'); },
+        desc(){ return loc('tech_silo_desc'); },
         category: 'storage',
         era: 'civilized',
         reqs: { agriculture: 2, storage: 1 },
@@ -1224,8 +1224,8 @@ const techs = {
     },
     mill: {
         id: 'tech-mill',
-        title: loc('tech_mill'),
-        desc: loc('tech_mill_desc'),
+        title(){ return loc('tech_mill'); },
+        desc(){ return loc('tech_mill_desc'); },
         category: 'agriculture',
         era: 'civilized',
         reqs: { agriculture: 3, mining: 3 },
@@ -1244,8 +1244,8 @@ const techs = {
     },
     windmill: {
         id: 'tech-windmill',
-        title: loc('tech_windmill'),
-        desc: loc('tech_windmill_desc'),
+        title(){ return loc('tech_windmill'); },
+        desc(){ return loc('tech_windmill_desc'); },
         category: 'agriculture',
         era: 'discovery',
         reqs: { agriculture: 4, high_tech: 1 },
@@ -1263,8 +1263,8 @@ const techs = {
     },
     windturbine: {
         id: 'tech-windturbine',
-        title: loc('tech_windturbine'),
-        desc: loc('tech_windturbine'),
+        title(){ return loc('tech_windturbine'); },
+        desc(){ return loc('tech_windturbine'); },
         category: 'power_generation',
         era: 'globalized',
         reqs: { agriculture: 5, high_tech: 4 },
@@ -1306,8 +1306,8 @@ const techs = {
     },
     gmfood: {
         id: 'tech-gmfood',
-        title: loc('tech_gmfood'),
-        desc: loc('tech_gmfood_desc'),
+        title(){ return loc('tech_gmfood'); },
+        desc(){ return loc('tech_gmfood_desc'); },
         category: 'agriculture',
         era: 'globalized',
         reqs: { agriculture: 6, genetics: 1 },
@@ -1325,8 +1325,8 @@ const techs = {
     },
     foundry: {
         id: 'tech-foundry',
-        title: loc('tech_foundry'),
-        desc: loc('tech_foundry'),
+        title(){ return loc('tech_foundry'); },
+        desc(){ return loc('tech_foundry'); },
         category: 'crafting',
         era: 'civilized',
         reqs: { mining: 2 },
@@ -1345,8 +1345,8 @@ const techs = {
     },
     artisans: {
         id: 'tech-artisans',
-        title: loc('tech_artisans'),
-        desc: loc('tech_artisans'),
+        title(){ return loc('tech_artisans'); },
+        desc(){ return loc('tech_artisans'); },
         category: 'crafting',
         era: 'civilized',
         reqs: { foundry: 1 },
@@ -1364,8 +1364,8 @@ const techs = {
     },
     apprentices: {
         id: 'tech-apprentices',
-        title: loc('tech_apprentices'),
-        desc: loc('tech_apprentices'),
+        title(){ return loc('tech_apprentices'); },
+        desc(){ return loc('tech_apprentices'); },
         category: 'crafting',
         era: 'civilized',
         reqs: { foundry: 2 },
@@ -1383,8 +1383,8 @@ const techs = {
     },
     carpentry: {
         id: 'tech-carpentry',
-        title: loc('tech_carpentry'),
-        desc: loc('tech_carpentry'),
+        title(){ return loc('tech_carpentry'); },
+        desc(){ return loc('tech_carpentry'); },
         category: 'crafting',
         era: 'civilized',
         reqs: { foundry: 3, saw: 1 },
@@ -1393,7 +1393,7 @@ const techs = {
         cost: {
             Knowledge(){ return 5200; }
         },
-        effect: loc('tech_carpentry_effect'),
+        effect(){ return loc('tech_carpentry_effect',[global.resource.Plywood.name]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -1403,8 +1403,8 @@ const techs = {
     },
     demonic_craftsman: {
         id: 'tech-demonic_craftsman',
-        title: loc('tech_master_craftsman'),
-        desc: loc('tech_master_craftsman'),
+        title(){ return loc('tech_master_craftsman'); },
+        desc(){ return loc('tech_master_craftsman'); },
         category: 'crafting',
         era: 'discovery',
         wiki: global.race['evil'] ? true : false,
@@ -1424,8 +1424,8 @@ const techs = {
     },
     master_craftsman: {
         id: 'tech-master_craftsman',
-        title: loc('tech_master_craftsman'),
-        desc: loc('tech_master_craftsman'),
+        title(){ return loc('tech_master_craftsman'); },
+        desc(){ return loc('tech_master_craftsman'); },
         category: 'crafting',
         era: 'discovery',
         wiki: global.race['evil'] ? false : true,
@@ -1445,8 +1445,8 @@ const techs = {
     },
     brickworks: {
         id: 'tech-brickworks',
-        title: loc('tech_brickworks'),
-        desc: loc('tech_brickworks'),
+        title(){ return loc('tech_brickworks'); },
+        desc(){ return loc('tech_brickworks'); },
         category: 'crafting',
         era: 'discovery',
         reqs: { foundry: 5 },
@@ -1464,8 +1464,8 @@ const techs = {
     },
     machinery: {
         id: 'tech-machinery',
-        title: loc('tech_machinery'),
-        desc: loc('tech_machinery'),
+        title(){ return loc('tech_machinery'); },
+        desc(){ return loc('tech_machinery'); },
         category: 'crafting',
         era: 'globalized',
         reqs: { foundry: 6, high_tech: 4 },
@@ -1483,8 +1483,8 @@ const techs = {
     },
     cnc_machine: {
         id: 'tech-cnc_machine',
-        title: loc('tech_cnc_machine'),
-        desc: loc('tech_cnc_machine'),
+        title(){ return loc('tech_cnc_machine'); },
+        desc(){ return loc('tech_cnc_machine'); },
         category: 'crafting',
         era: 'globalized',
         reqs: { foundry: 7, high_tech: 8 },
@@ -1502,8 +1502,8 @@ const techs = {
     },
     vocational_training: {
         id: 'tech-vocational_training',
-        title: loc('tech_vocational_training'),
-        desc: loc('tech_vocational_training'),
+        title(){ return loc('tech_vocational_training'); },
+        desc(){ return loc('tech_vocational_training'); },
         category: 'crafting',
         era: 'industrialized',
         reqs: { foundry: 1, high_tech: 3 },
@@ -1521,8 +1521,8 @@ const techs = {
     },
     stellar_forge: {
         id: 'tech-stellar_forge',
-        title: loc('tech_stellar_forge'),
-        desc: loc('tech_stellar_forge'),
+        title(){ return loc('tech_stellar_forge'); },
+        desc(){ return loc('tech_stellar_forge'); },
         category: 'crafting',
         era: 'intergalactic',
         reqs: { foundry: 8, high_tech: 15, gateway: 3, neutron: 1 },
@@ -1541,8 +1541,8 @@ const techs = {
     },
     stellar_smelting: {
         id: 'tech-stellar_smelting',
-        title: loc('tech_stellar_smelting'),
-        desc: loc('tech_stellar_smelting'),
+        title(){ return loc('tech_stellar_smelting'); },
+        desc(){ return loc('tech_stellar_smelting'); },
         category: 'crafting',
         era: 'intergalactic',
         reqs: { star_forge: 1, xeno: 4 },
@@ -1567,8 +1567,8 @@ const techs = {
     },
     assembly_line: {
         id: 'tech-assembly_line',
-        title: loc('tech_assembly_line'),
-        desc: loc('tech_assembly_line'),
+        title(){ return loc('tech_assembly_line'); },
+        desc(){ return loc('tech_assembly_line'); },
         category: 'crafting',
         era: 'globalized',
         reqs: { high_tech: 4 },
@@ -1587,8 +1587,8 @@ const techs = {
     },
     automation: {
         id: 'tech-automation',
-        title: loc('tech_automation'),
-        desc: loc('tech_automation'),
+        title(){ return loc('tech_automation'); },
+        desc(){ return loc('tech_automation'); },
         category: 'crafting',
         era: 'early_space',
         reqs: { high_tech: 8, factory: 1},
@@ -1606,8 +1606,8 @@ const techs = {
     },
     laser_cutters: {
         id: 'tech-laser_cutters',
-        title: loc('tech_laser_cutters'),
-        desc: loc('tech_laser_cutters'),
+        title(){ return loc('tech_laser_cutters'); },
+        desc(){ return loc('tech_laser_cutters'); },
         category: 'crafting',
         era: 'deep_space',
         reqs: { high_tech: 9, factory: 2 },
@@ -1626,8 +1626,8 @@ const techs = {
     },
     high_tech_factories: {
         id: 'tech-high_tech_factories',
-        title: loc('tech_high_tech_factories'),
-        desc: loc('tech_high_tech_factories'),
+        title(){ return loc('tech_high_tech_factories'); },
+        desc(){ return loc('tech_high_tech_factories'); },
         category: 'crafting',
         era: 'intergalactic',
         reqs: { high_tech: 17, alpha: 4, factory: 3 },
@@ -1647,8 +1647,8 @@ const techs = {
     },
     banquet:{
         id: 'tech-banquet',
-        title: loc('tech_banquet'),
-        desc: loc('tech_banquet'),
+        title(){ return loc('tech_banquet'); },
+        desc(){ return loc('tech_banquet'); },
         category: 'special',
         era: 'discovery',
         reqs: { high_tech: 2 },
@@ -1691,7 +1691,7 @@ const techs = {
     playwright: {
         id: 'tech-playwright',
         title(){ return global.race.universe === 'evil' ? loc('tech_gladiators') : loc('tech_playwright'); },
-        desc: loc('tech_playwright'),
+        desc(){ return loc('tech_playwright'); },
         category: 'entertainment',
         era: 'civilized',
         reqs: { theatre: 1, science: 2 },
@@ -1765,8 +1765,8 @@ const techs = {
     },
     radio: {
         id: 'tech-radio',
-        title: loc('tech_radio'),
-        desc: loc('tech_radio'),
+        title(){ return loc('tech_radio'); },
+        desc(){ return loc('tech_radio'); },
         category: 'entertainment',
         era: 'discovery',
         reqs: { theatre: 3, high_tech: 2 },
@@ -1784,8 +1784,8 @@ const techs = {
     },
     tv: {
         id: 'tech-tv',
-        title: loc('tech_tv'),
-        desc: loc('tech_tv'),
+        title(){ return loc('tech_tv'); },
+        desc(){ return loc('tech_tv'); },
         category: 'entertainment',
         era: 'globalized',
         reqs: { broadcast: 1, high_tech: 4 },
@@ -1803,8 +1803,8 @@ const techs = {
     },
     vr_center: {
         id: 'tech-vr_center',
-        title: loc('tech_vr_center'),
-        desc: loc('tech_vr_center'),
+        title(){ return loc('tech_vr_center'); },
+        desc(){ return loc('tech_vr_center'); },
         category: 'entertainment',
         era: 'interstellar',
         reqs: { broadcast: 2, high_tech: 12, stanene: 1 },
@@ -1824,8 +1824,8 @@ const techs = {
     },
     zoo: {
         id: 'tech-zoo',
-        title: loc('tech_zoo'),
-        desc: loc('tech_zoo'),
+        title(){ return loc('tech_zoo'); },
+        desc(){ return loc('tech_zoo'); },
         category: 'entertainment',
         era: 'dimensional',
         reqs: { hell_ruins: 2 },
@@ -1845,8 +1845,8 @@ const techs = {
     },
     casino: {
         id: 'tech-casino',
-        title: structName('casino'),
-        desc: structName('casino'),
+        title(){ return structName('casino'); },
+        desc(){ return structName('casino'); },
         category: 'entertainment',
         era: 'globalized',
         reqs: { high_tech: 4, currency: 5 },
@@ -1866,8 +1866,8 @@ const techs = {
     },
     dazzle: {
         id: 'tech-dazzle',
-        title: loc('tech_dazzle'),
-        desc: loc('tech_dazzle'),
+        title(){ return loc('tech_dazzle'); },
+        desc(){ return loc('tech_dazzle'); },
         category: 'banking',
         era: 'globalized',
         reqs: { gambling: 1 },
@@ -1885,8 +1885,8 @@ const techs = {
     },
     casino_vault: {
         id: 'tech-casino_vault',
-        title: loc('tech_casino_vault'),
-        desc: loc('tech_casino_vault'),
+        title(){ return loc('tech_casino_vault'); },
+        desc(){ return loc('tech_casino_vault'); },
         category: 'banking',
         era: 'early_space',
         reqs: { gambling: 2, space: 3 },
@@ -1905,8 +1905,8 @@ const techs = {
     },
     otb: {
         id: 'tech-otb',
-        title: loc('tech_otb'),
-        desc: loc('tech_otb'),
+        title(){ return loc('tech_otb'); },
+        desc(){ return loc('tech_otb'); },
         category: 'banking',
         era: 'deep_space',
         reqs: { gambling: 3, banking: 10, high_tech: 10 },
@@ -1924,8 +1924,8 @@ const techs = {
     },
     online_gambling: {
         id: 'tech-online_gambling',
-        title: loc('tech_online_gambling'),
-        desc: loc('tech_online_gambling'),
+        title(){ return loc('tech_online_gambling'); },
+        desc(){ return loc('tech_online_gambling'); },
         category: 'banking',
         era: 'interstellar',
         reqs: { gambling: 4, banking: 12 },
@@ -1943,8 +1943,8 @@ const techs = {
     },
     bolognium_vaults: {
         id: 'tech-bolognium_vaults',
-        title: loc('tech_bolognium_vaults'),
-        desc: loc('tech_bolognium_vaults'),
+        title(){ return loc('tech_bolognium_vaults'); },
+        desc(){ return loc('tech_bolognium_vaults'); },
         category: 'banking',
         era: 'intergalactic',
         reqs: { gambling: 5, gateway: 3 },
@@ -1986,8 +1986,8 @@ const techs = {
     },
     bayer_process: {
         id: 'tech-bayer_process',
-        title: loc('tech_bayer_process'),
-        desc: loc('tech_bayer_process_desc'),
+        title(){ return loc('tech_bayer_process'); },
+        desc(){ return loc('tech_bayer_process_desc'); },
         category: 'mining',
         era: 'civilized',
         reqs: { smelting: 2 },
@@ -2007,8 +2007,8 @@ const techs = {
     },
     elysis_process: {
         id: 'tech-elysis_process',
-        title: loc('tech_elysis_process'),
-        desc: loc('tech_elysis_process'),
+        title(){ return loc('tech_elysis_process'); },
+        desc(){ return loc('tech_elysis_process'); },
         category: 'mining',
         era: 'interstellar',
         reqs: { alumina: 1, stanene: 1, graphene: 1 },
@@ -2030,8 +2030,8 @@ const techs = {
     },
     smelting: {
         id: 'tech-smelting',
-        title: loc('tech_smelting'),
-        desc: loc('tech_smelting_desc'),
+        title(){ return loc('tech_smelting'); },
+        desc(){ return loc('tech_smelting_desc'); },
         category: 'mining',
         era: 'civilized',
         reqs: { mining: 3 },
@@ -2056,8 +2056,8 @@ const techs = {
     },
     steel: {
         id: 'tech-steel',
-        title: loc('tech_steel'),
-        desc: loc('tech_steel_desc'),
+        title(){ return loc('tech_steel'); },
+        desc(){ return loc('tech_steel_desc'); },
         category: 'mining',
         era: 'civilized',
         reqs: { smelting: 1, mining: 4 },
@@ -2084,8 +2084,8 @@ const techs = {
     },
     blast_furnace: {
         id: 'tech-blast_furnace',
-        title: loc('tech_blast_furnace'),
-        desc: loc('tech_blast_furnace'),
+        title(){ return loc('tech_blast_furnace'); },
+        desc(){ return loc('tech_blast_furnace'); },
         category: 'mining',
         era: 'discovery',
         reqs: { smelting: 2 },
@@ -2110,8 +2110,8 @@ const techs = {
     },
     bessemer_process: {
         id: 'tech-bessemer_process',
-        title: loc('tech_bessemer_process'),
-        desc: loc('tech_bessemer_process'),
+        title(){ return loc('tech_bessemer_process'); },
+        desc(){ return loc('tech_bessemer_process'); },
         category: 'mining',
         era: 'discovery',
         reqs: { smelting: 3 },
@@ -2133,8 +2133,8 @@ const techs = {
     },
     oxygen_converter: {
         id: 'tech-oxygen_converter',
-        title: loc('tech_oxygen_converter'),
-        desc: loc('tech_oxygen_converter'),
+        title(){ return loc('tech_oxygen_converter'); },
+        desc(){ return loc('tech_oxygen_converter'); },
         category: 'mining',
         era: 'industrialized',
         reqs: { smelting: 4, high_tech: 3 },
@@ -2156,8 +2156,8 @@ const techs = {
     },
     electric_arc_furnace: {
         id: 'tech-electric_arc_furnace',
-        title: loc('tech_electric_arc_furnace'),
-        desc: loc('tech_electric_arc_furnace'),
+        title(){ return loc('tech_electric_arc_furnace'); },
+        desc(){ return loc('tech_electric_arc_furnace'); },
         category: 'mining',
         era: 'globalized',
         reqs: { smelting: 5, high_tech: 4 },
@@ -2179,8 +2179,8 @@ const techs = {
     },
     hellfire_furnace: {
         id: 'tech-hellfire_furnace',
-        title: loc('tech_hellfire_furnace'),
-        desc: loc('tech_hellfire_furnace'),
+        title(){ return loc('tech_hellfire_furnace'); },
+        desc(){ return loc('tech_hellfire_furnace'); },
         category: 'mining',
         era: 'interstellar',
         reqs: { smelting: 6, infernite: 1 },
@@ -2198,10 +2198,31 @@ const techs = {
             return false;
         }
     },
+    positronium_furnace: {
+        id: 'tech-positronium_furnace',
+        title(){ return loc('tech_positronium_furnace',[global.resource.Positronium.name]); },
+        desc(){ return loc('tech_positronium_furnace',[global.resource.Positronium.name]); },
+        category: 'mining',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { smelting: 6, resettle: 13 },
+        grant: ['smelting',7],
+        cost: {
+            Knowledge(){ return 23000000; },
+            Positronium(){ return 20000; }
+        },
+        effect(){ return loc('tech_positronium_furnace_effect',[global.resource.Positronium.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     infernium_fuel: {
         id: 'tech-infernium_fuel',
-        title: loc('tech_infernium_fuel'),
-        desc: loc('tech_infernium_fuel'),
+        title(){ return loc('tech_infernium_fuel'); },
+        desc(){ return loc('tech_infernium_fuel'); },
         category: 'mining',
         era: 'dimensional',
         reqs: { smelting: 7, hell_ruins: 4 },
@@ -2225,8 +2246,8 @@ const techs = {
     },
     iridium_smelting_perk: {
         id: 'tech-iridium_smelting_perk',
-        title: loc('tech_iridium_smelting'),
-        desc: loc('tech_iridium_smelting'),
+        title(){ return loc('tech_iridium_smelting'); },
+        desc(){ return loc('tech_iridium_smelting'); },
         category: 'mining',
         era: 'early_space',
         path: ['standard'],
@@ -2250,8 +2271,8 @@ const techs = {
     },
     rotary_kiln: {
         id: 'tech-rotary_kiln',
-        title: loc('tech_rotary_kiln'),
-        desc: loc('tech_rotary_kiln'),
+        title(){ return loc('tech_rotary_kiln'); },
+        desc(){ return loc('tech_rotary_kiln'); },
         category: 'mining',
         era: 'industrialized',
         reqs: { smelting: 3, high_tech: 3 },
@@ -2270,8 +2291,8 @@ const techs = {
     },
     metal_working: {
         id: 'tech-metal_working',
-        title: loc('tech_metal_working'),
-        desc: loc('tech_metal_working_desc'),
+        title(){ return loc('tech_metal_working'); },
+        desc(){ return loc('tech_metal_working_desc'); },
         category: 'mining',
         era: 'civilized',
         reqs: { mining: 1 },
@@ -2290,8 +2311,8 @@ const techs = {
     },
     iron_mining: {
         id: 'tech-iron_mining',
-        title: loc('tech_iron_mining'),
-        desc: loc('tech_iron_mining_desc'),
+        title(){ return loc('tech_iron_mining'); },
+        desc(){ return loc('tech_iron_mining_desc'); },
         category: 'mining',
         era: 'civilized',
         reqs: { mining: 2 },
@@ -2317,8 +2338,8 @@ const techs = {
     },
     coal_mining: {
         id: 'tech-coal_mining',
-        title: loc('tech_coal_mining'),
-        desc: loc('tech_coal_mining_desc'),
+        title(){ return loc('tech_coal_mining'); },
+        desc(){ return loc('tech_coal_mining_desc'); },
         category: 'power_generation',
         era: 'civilized',
         reqs: { mining: 3 },
@@ -2341,8 +2362,8 @@ const techs = {
     },
     storage: {
         id: 'tech-storage',
-        title: loc('tech_storage'),
-        desc: loc('tech_storage_desc'),
+        title(){ return loc('tech_storage'); },
+        desc(){ return loc('tech_storage_desc'); },
         category: 'storage',
         era: 'civilized',
         reqs: { primitive: 3, currency: 1 },
@@ -2361,8 +2382,8 @@ const techs = {
     },
     reinforced_shed: {
         id: 'tech-reinforced_shed',
-        title: loc('tech_reinforced_shed'),
-        desc: loc('tech_reinforced_shed_desc'),
+        title(){ return loc('tech_reinforced_shed'); },
+        desc(){ return loc('tech_reinforced_shed_desc'); },
         category: 'storage',
         era: 'civilized',
         reqs: { storage: 1, cement: 1, mining: 3 },
@@ -2383,8 +2404,8 @@ const techs = {
     },
     barns: {
         id: 'tech-barns',
-        title: loc('tech_barns'),
-        desc: loc('tech_barns_desc'),
+        title(){ return loc('tech_barns'); },
+        desc(){ return loc('tech_barns_desc'); },
         category: 'storage',
         era: 'discovery',
         reqs: { storage: 2, smelting: 2, alumina: 1 },
@@ -2407,8 +2428,8 @@ const techs = {
     },
     warehouse: {
         id: 'tech-warehouse',
-        title: loc('tech_warehouse'),
-        desc: loc('tech_warehouse_desc'),
+        title(){ return loc('tech_warehouse'); },
+        desc(){ return loc('tech_warehouse_desc'); },
         category: 'storage',
         era: 'industrialized',
         reqs: { storage: 3, high_tech: 3, smelting: 2 },
@@ -2430,8 +2451,8 @@ const techs = {
     },
     cameras: {
         id: 'tech-cameras',
-        title: loc('tech_cameras'),
-        desc: loc('tech_cameras_desc'),
+        title(){ return loc('tech_cameras'); },
+        desc(){ return loc('tech_cameras_desc'); },
         category: 'storage',
         era: 'globalized',
         reqs: { storage: 4, high_tech: 4 },
@@ -2450,8 +2471,8 @@ const techs = {
     },
     pocket_dimensions: {
         id: 'tech-pocket_dimensions',
-        title: loc('tech_pocket_dimensions'),
-        desc: loc('tech_pocket_dimensions_desc'),
+        title(){ return loc('tech_pocket_dimensions'); },
+        desc(){ return loc('tech_pocket_dimensions_desc'); },
         category: 'storage',
         era: 'early_space',
         path: ['standard'],
@@ -2470,8 +2491,8 @@ const techs = {
     },
     ai_logistics: {
         id: 'tech-ai_logistics',
-        title: loc('tech_ai_logistics'),
-        desc: loc('tech_ai_logistics'),
+        title(){ return loc('tech_ai_logistics'); },
+        desc(){ return loc('tech_ai_logistics'); },
         category: 'storage',
         era: 'interstellar',
         reqs: { storage: 6, proxima: 2, science: 13 },
@@ -2489,8 +2510,8 @@ const techs = {
     },
     containerization: {
         id: 'tech-containerization',
-        title: loc('tech_containerization'),
-        desc: loc('tech_containerization_desc'),
+        title(){ return loc('tech_containerization'); },
+        desc(){ return loc('tech_containerization_desc'); },
         category: 'storage',
         era: 'civilized',
         reqs: { cement: 1, mining: 1, storage: 1, science: 1 },
@@ -2509,8 +2530,8 @@ const techs = {
     },
     reinforced_crates: {
         id: 'tech-reinforced_crates',
-        title: loc('tech_reinforced_crates'),
-        desc: loc('tech_reinforced_crates'),
+        title(){ return loc('tech_reinforced_crates'); },
+        desc(){ return loc('tech_reinforced_crates'); },
         category: 'storage',
         era: 'civilized',
         reqs: { container: 1, smelting: 2 },
@@ -2544,8 +2565,8 @@ const techs = {
     },
     cranes: {
         id: 'tech-cranes',
-        title: loc('tech_cranes'),
-        desc: loc('tech_cranes_desc'),
+        title(){ return loc('tech_cranes'); },
+        desc(){ return loc('tech_cranes_desc'); },
         category: 'storage',
         era: 'discovery',
         reqs: { container: 2, high_tech: 2 },
@@ -2721,8 +2742,8 @@ const techs = {
     },
     gantry_crane: {
         id: 'tech-gantry_crane',
-        title: loc('tech_gantry_crane'),
-        desc: loc('tech_gantry_crane_desc'),
+        title(){ return loc('tech_gantry_crane'); },
+        desc(){ return loc('tech_gantry_crane_desc'); },
         category: 'storage',
         era: 'discovery',
         reqs: { steel_container: 1, high_tech: 2 },
@@ -2886,8 +2907,8 @@ const techs = {
     },
     evil_planning: {
         id: 'tech-evil_planning',
-        title: loc('tech_urban_planning'),
-        desc: loc('tech_urban_planning'),
+        title(){ return loc('tech_urban_planning'); },
+        desc(){ return loc('tech_urban_planning'); },
         category: 'queues',
         era: 'civilized',
         wiki: global.race['terrifying'] ? true : false,
@@ -2911,8 +2932,8 @@ const techs = {
     },
     urban_planning: {
         id: 'tech-urban_planning',
-        title: loc('tech_urban_planning'),
-        desc: loc('tech_urban_planning'),
+        title(){ return loc('tech_urban_planning'); },
+        desc(){ return loc('tech_urban_planning'); },
         category: 'queues',
         era: 'civilized',
         wiki: global.race['terrifying'] ? false : true,
@@ -2940,8 +2961,8 @@ const techs = {
     },
     zoning_permits: {
         id: 'tech-zoning_permits',
-        title: loc('tech_zoning_permits'),
-        desc: loc('tech_zoning_permits'),
+        title(){ return loc('tech_zoning_permits'); },
+        desc(){ return loc('tech_zoning_permits'); },
         category: 'queues',
         era: 'industrialized',
         reqs: { queue: 1, high_tech: 3 },
@@ -2967,8 +2988,8 @@ const techs = {
     },
     urbanization: {
         id: 'tech-urbanization',
-        title: loc('tech_urbanization'),
-        desc: loc('tech_urbanization'),
+        title(){ return loc('tech_urbanization'); },
+        desc(){ return loc('tech_urbanization'); },
         category: 'queues',
         era: 'globalized',
         reqs: { queue: 2, high_tech: 6 },
@@ -2994,8 +3015,8 @@ const techs = {
     },
     assistant: {
         id: 'tech-assistant',
-        title: loc('tech_assistant'),
-        desc: loc('tech_assistant'),
+        title(){ return loc('tech_assistant'); },
+        desc(){ return loc('tech_assistant'); },
         category: 'queues',
         era: 'civilized',
         reqs: { queue: 1, science: 4 },
@@ -3027,8 +3048,8 @@ const techs = {
     },
     government: {
         id: 'tech-government',
-        title: loc('tech_government'),
-        desc: loc('tech_government_desc'),
+        title(){ return loc('tech_government'); },
+        desc(){ return loc('tech_government_desc'); },
         category: 'government',
         era: 'civilized',
         reqs: { currency: 1 },
@@ -3054,8 +3075,8 @@ const techs = {
     },
     theocracy: {
         id: 'tech-theocracy',
-        title: loc('govern_theocracy'),
-        desc: loc('govern_theocracy'),
+        title(){ return loc('govern_theocracy'); },
+        desc(){ return loc('govern_theocracy'); },
         category: 'government',
         era: 'civilized',
         reqs: { govern: 1, theology: 2 },
@@ -3073,8 +3094,8 @@ const techs = {
     },
     republic: {
         id: 'tech-republic',
-        title: loc('govern_republic'),
-        desc: loc('govern_republic'),
+        title(){ return loc('govern_republic'); },
+        desc(){ return loc('govern_republic'); },
         category: 'government',
         era: 'discovery',
         reqs: { govern: 1 },
@@ -3095,8 +3116,8 @@ const techs = {
     },
     socialist: {
         id: 'tech-socialist',
-        title: loc('govern_socialist'),
-        desc: loc('govern_socialist'),
+        title(){ return loc('govern_socialist'); },
+        desc(){ return loc('govern_socialist'); },
         category: 'government',
         era: 'discovery',
         reqs: { govern: 1 },
@@ -3117,8 +3138,8 @@ const techs = {
     },
     corpocracy: {
         id: 'tech-corpocracy',
-        title: loc('govern_corpocracy'),
-        desc: loc('govern_corpocracy'),
+        title(){ return loc('govern_corpocracy'); },
+        desc(){ return loc('govern_corpocracy'); },
         category: 'government',
         era: 'industrialized',
         reqs: { govern: 2, high_tech: 3 },
@@ -3136,8 +3157,8 @@ const techs = {
     },
     technocracy: {
         id: 'tech-technocracy',
-        title: loc('govern_technocracy'),
-        desc: loc('govern_technocracy'),
+        title(){ return loc('govern_technocracy'); },
+        desc(){ return loc('govern_technocracy'); },
         category: 'government',
         era: 'industrialized',
         reqs: { govern: 2, high_tech: 3 },
@@ -3155,8 +3176,8 @@ const techs = {
     },
     federation: {
         id: 'tech-federation',
-        title: loc('govern_federation'),
-        desc: loc('govern_federation'),
+        title(){ return loc('govern_federation'); },
+        desc(){ return loc('govern_federation'); },
         category: 'government',
         era: 'early_space',
         reqs: { govern: 2 },
@@ -3177,8 +3198,8 @@ const techs = {
     },
     magocracy: {
         id: 'tech-magocracy',
-        title: loc('govern_magocracy'),
-        desc: loc('govern_magocracy'),
+        title(){ return loc('govern_magocracy'); },
+        desc(){ return loc('govern_magocracy'); },
         category: 'government',
         era: 'industrialized',
         reqs: { govern: 2, high_tech: 3 },
@@ -3199,8 +3220,8 @@ const techs = {
     },
     governor: {
         id: 'tech-governor',
-        title: loc('tech_governor'),
-        desc: loc('tech_governor'),
+        title(){ return loc('tech_governor'); },
+        desc(){ return loc('tech_governor'); },
         category: 'government',
         era: 'civilized',
         reqs: { govern: 1 },
@@ -3225,8 +3246,8 @@ const techs = {
     },
     spy: {
         id: 'tech-spy',
-        title: loc('tech_spy'),
-        desc: loc('tech_spy'),
+        title(){ return loc('tech_spy'); },
+        desc(){ return loc('tech_spy'); },
         category: 'spies',
         era: 'civilized',
         reqs: { govern: 1 },
@@ -3248,8 +3269,8 @@ const techs = {
     },
     espionage: {
         id: 'tech-espionage',
-        title: loc('tech_espionage'),
-        desc: loc('tech_espionage'),
+        title(){ return loc('tech_espionage'); },
+        desc(){ return loc('tech_espionage'); },
         category: 'spies',
         era: 'discovery',
         reqs: { spy: 1, high_tech: 1 },
@@ -3275,8 +3296,8 @@ const techs = {
     },
     spy_training: {
         id: 'tech-spy_training',
-        title: loc('tech_spy_training'),
-        desc: loc('tech_spy_training'),
+        title(){ return loc('tech_spy_training'); },
+        desc(){ return loc('tech_spy_training'); },
         category: 'spies',
         era: 'discovery',
         reqs: { spy: 2, boot_camp: 1 },
@@ -3294,8 +3315,8 @@ const techs = {
     },
     spy_gadgets: {
         id: 'tech-spy_gadgets',
-        title: loc('tech_spy_gadgets'),
-        desc: loc('tech_spy_gadgets'),
+        title(){ return loc('tech_spy_gadgets'); },
+        desc(){ return loc('tech_spy_gadgets'); },
         category: 'spies',
         era: 'discovery',
         reqs: { spy: 3, high_tech: 2 },
@@ -3313,8 +3334,8 @@ const techs = {
     },
     code_breakers: {
         id: 'tech-code_breakers',
-        title: loc('tech_code_breakers'),
-        desc: loc('tech_code_breakers'),
+        title(){ return loc('tech_code_breakers'); },
+        desc(){ return loc('tech_code_breakers'); },
         category: 'spies',
         era: 'industrialized',
         reqs: { spy: 4, high_tech: 4 },
@@ -3332,8 +3353,8 @@ const techs = {
     },
     currency: {
         id: 'tech-currency',
-        title: loc('tech_currency'),
-        desc: loc('tech_currency_desc'),
+        title(){ return loc('tech_currency'); },
+        desc(){ return loc('tech_currency_desc'); },
         category: 'banking',
         era: 'civilized',
         reqs: { housing: 1 },
@@ -3353,8 +3374,8 @@ const techs = {
     },
     market: {
         id: 'tech-market',
-        title: loc('tech_market'),
-        desc: loc('tech_market_desc'),
+        title(){ return loc('tech_market'); },
+        desc(){ return loc('tech_market_desc'); },
         category: 'banking',
         era: 'civilized',
         reqs: { banking: 1, govern: 1 },
@@ -3378,8 +3399,8 @@ const techs = {
     },
     tax_rates: {
         id: 'tech-tax_rates',
-        title: loc('tech_tax_rates'),
-        desc: loc('tech_tax_rates_desc'),
+        title(){ return loc('tech_tax_rates'); },
+        desc(){ return loc('tech_tax_rates_desc'); },
         category: 'banking',
         era: 'civilized',
         reqs: { banking: 2, currency: 2, queue: 1 },
@@ -3402,8 +3423,8 @@ const techs = {
     },
     large_trades: {
         id: 'tech-large_trades',
-        title: loc('tech_large_trades'),
-        desc: loc('tech_large_trades_desc'),
+        title(){ return loc('tech_large_trades'); },
+        desc(){ return loc('tech_large_trades_desc'); },
         category: 'market',
         era: 'civilized',
         reqs: { currency: 3 },
@@ -3428,8 +3449,8 @@ const techs = {
     },
     corruption: {
         id: 'tech-corruption',
-        title: loc('tech_corruption'),
-        desc: loc('tech_corruption_desc'),
+        title(){ return loc('tech_corruption'); },
+        desc(){ return loc('tech_corruption_desc'); },
         category: 'banking',
         era: 'industrialized',
         reqs: { currency: 4, high_tech: 3 },
@@ -3448,8 +3469,8 @@ const techs = {
     },
     massive_trades: {
         id: 'tech-massive_trades',
-        title: loc('tech_massive_trades'),
-        desc: loc('tech_massive_trades_desc'),
+        title(){ return loc('tech_massive_trades'); },
+        desc(){ return loc('tech_massive_trades_desc'); },
         category: 'market',
         era: 'globalized',
         reqs: { currency: 5, high_tech: 4 },
@@ -3468,8 +3489,8 @@ const techs = {
     },
     trade: {
         id: 'tech-trade',
-        title: loc('tech_trade'),
-        desc: loc('tech_trade_desc'),
+        title(){ return loc('tech_trade'); },
+        desc(){ return loc('tech_trade_desc'); },
         category: 'market',
         era: 'civilized',
         reqs: { currency: 2, military: 1 },
@@ -3493,8 +3514,8 @@ const techs = {
     },
     diplomacy: {
         id: 'tech-diplomacy',
-        title: loc('tech_diplomacy'),
-        desc: loc('tech_diplomacy_desc'),
+        title(){ return loc('tech_diplomacy'); },
+        desc(){ return loc('tech_diplomacy_desc'); },
         category: 'market',
         era: 'discovery',
         reqs: { trade: 1, high_tech: 1 },
@@ -3513,8 +3534,8 @@ const techs = {
     },
     freight: {
         id: 'tech-freight',
-        title: loc('tech_freight'),
-        desc: loc('tech_freight_desc'),
+        title(){ return loc('tech_freight'); },
+        desc(){ return loc('tech_freight_desc'); },
         category: 'market',
         era: 'industrialized',
         reqs: { trade: 2, high_tech: 3 },
@@ -3538,8 +3559,8 @@ const techs = {
     },
     wharf: {
         id: 'tech-wharf',
-        title: loc('tech_wharf'),
-        desc: loc('tech_wharf_desc'),
+        title(){ return loc('tech_wharf'); },
+        desc(){ return loc('tech_wharf_desc'); },
         category: 'market',
         era: 'industrialized',
         reqs: { trade: 1, high_tech: 3, oil: 1 },
@@ -3559,8 +3580,8 @@ const techs = {
     },
     banking: {
         id: 'tech-banking',
-        title: loc('tech_banking'),
-        desc: loc('tech_banking_desc'),
+        title(){ return loc('tech_banking'); },
+        desc(){ return loc('tech_banking_desc'); },
         category: 'banking',
         era: 'civilized',
         reqs: { currency: 1 },
@@ -3579,8 +3600,8 @@ const techs = {
     },
     investing: {
         id: 'tech-investing',
-        title: loc('tech_investing'),
-        desc: loc('tech_investing_desc'),
+        title(){ return loc('tech_investing'); },
+        desc(){ return loc('tech_investing_desc'); },
         category: 'banking',
         era: 'civilized',
         reqs: { banking: 1 },
@@ -3600,8 +3621,8 @@ const techs = {
     },
     vault: {
         id: 'tech-vault',
-        title: loc('tech_vault'),
-        desc: loc('tech_vault_desc'),
+        title(){ return loc('tech_vault'); },
+        desc(){ return loc('tech_vault_desc'); },
         category: 'banking',
         era: 'civilized',
         reqs: { banking: 2, cement: 1 },
@@ -3622,8 +3643,8 @@ const techs = {
     },
     bonds: {
         id: 'tech-bonds',
-        title: loc('tech_bonds'),
-        desc: loc('tech_bonds'),
+        title(){ return loc('tech_bonds'); },
+        desc(){ return loc('tech_bonds'); },
         category: 'banking',
         era: 'civilized',
         reqs: { banking: 3 },
@@ -3642,8 +3663,8 @@ const techs = {
     },
     steel_vault: {
         id: 'tech-steel_vault',
-        title: loc('tech_steel_vault'),
-        desc: loc('tech_steel_vault'),
+        title(){ return loc('tech_steel_vault'); },
+        desc(){ return loc('tech_steel_vault'); },
         category: 'banking',
         era: 'civilized',
         reqs: { banking: 4, smelting: 2 },
@@ -3663,8 +3684,8 @@ const techs = {
     },
     eebonds: {
         id: 'tech-eebonds',
-        title: loc('tech_eebonds'),
-        desc: loc('tech_eebonds'),
+        title(){ return loc('tech_eebonds'); },
+        desc(){ return loc('tech_eebonds'); },
         category: 'banking',
         era: 'discovery',
         reqs: { banking: 5, high_tech: 1 },
@@ -3683,8 +3704,8 @@ const techs = {
     },
     swiss_banking: {
         id: 'tech-swiss_banking',
-        title: swissKnife(),
-        desc: swissKnife(),
+        title(){ return swissKnife(); },
+        desc(){ return swissKnife(); },
         category: 'banking',
         era: 'industrialized',
         reqs: { banking: 6 },
@@ -3703,8 +3724,8 @@ const techs = {
     },
     safety_deposit: {
         id: 'tech-safety_deposit',
-        title: loc('tech_safety_deposit'),
-        desc: loc('tech_safety_deposit'),
+        title(){ return loc('tech_safety_deposit'); },
+        desc(){ return loc('tech_safety_deposit'); },
         category: 'banking',
         era: 'globalized',
         reqs: { banking: 7, high_tech: 4 },
@@ -3723,8 +3744,8 @@ const techs = {
     },
     stock_market: {
         id: 'tech-stock_market',
-        title: loc('tech_stock_market'),
-        desc: loc('tech_stock_market'),
+        title(){ return loc('tech_stock_market'); },
+        desc(){ return loc('tech_stock_market'); },
         category: 'arpa',
         era: 'globalized',
         reqs: { banking: 8, high_tech: 6 },
@@ -3746,8 +3767,8 @@ const techs = {
     },
     hedge_funds: {
         id: 'tech-hedge_funds',
-        title: loc('tech_hedge_funds'),
-        desc: loc('tech_hedge_funds'),
+        title(){ return loc('tech_hedge_funds'); },
+        desc(){ return loc('tech_hedge_funds'); },
         category: 'banking',
         era: 'early_space',
         reqs: { banking: 9, stock_exchange: 1 },
@@ -3766,8 +3787,8 @@ const techs = {
     },
     four_oh_one: {
         id: 'tech-four_oh_one',
-        title: loc('tech_four_oh_one'),
-        desc: loc('tech_four_oh_one'),
+        title(){ return loc('tech_four_oh_one'); },
+        desc(){ return loc('tech_four_oh_one'); },
         category: 'banking',
         era: 'early_space',
         reqs: { banking: 10 },
@@ -3789,8 +3810,8 @@ const techs = {
     },
     exchange: {
         id: 'tech-exchange',
-        title: loc('tech_exchange'),
-        desc: loc('tech_exchange'),
+        title(){ return loc('tech_exchange'); },
+        desc(){ return loc('tech_exchange'); },
         category: 'banking',
         era: 'interstellar',
         reqs: { banking: 11, alpha: 2, graphene: 1 },
@@ -3810,8 +3831,8 @@ const techs = {
     },
     foreign_investment: {
         id: 'tech-foreign_investment',
-        title: loc('tech_foreign_investment'),
-        desc: loc('tech_foreign_investment'),
+        title(){ return loc('tech_foreign_investment'); },
+        desc(){ return loc('tech_foreign_investment'); },
         category: 'banking',
         era: 'intergalactic',
         reqs: { banking: 12, xeno: 10 },
@@ -3830,8 +3851,8 @@ const techs = {
     },
     crypto_currency: {
         id: 'tech-crypto_currency',
-        title: loc('tech_crypto_currency'),
-        desc: loc('tech_crypto_currency'),
+        title(){ return loc('tech_crypto_currency'); },
+        desc(){ return loc('tech_crypto_currency'); },
         category: 'banking',
         era: 'existential',
         reqs: { banking: 13, high_tech: 19 },
@@ -3851,8 +3872,8 @@ const techs = {
     },
     mythril_vault: {
         id: 'tech-mythril_vault',
-        title: loc('tech_mythril_vault'),
-        desc: loc('tech_mythril_vault'),
+        title(){ return loc('tech_mythril_vault'); },
+        desc(){ return loc('tech_mythril_vault'); },
         category: 'banking',
         era: 'early_space',
         reqs: { banking: 5, space: 3 },
@@ -3872,8 +3893,8 @@ const techs = {
     },
     neutronium_vault: {
         id: 'tech-neutronium_vault',
-        title: loc('tech_neutronium_vault'),
-        desc: loc('tech_neutronium_vault'),
+        title(){ return loc('tech_neutronium_vault'); },
+        desc(){ return loc('tech_neutronium_vault'); },
         category: 'banking',
         era: 'deep_space',
         reqs: { vault: 1, gas_moon: 1 },
@@ -3893,8 +3914,8 @@ const techs = {
     },
     adamantite_vault: {
         id: 'tech-adamantite_vault',
-        title: loc('tech_adamantite_vault'),
-        desc: loc('tech_adamantite_vault'),
+        title(){ return loc('tech_adamantite_vault'); },
+        desc(){ return loc('tech_adamantite_vault'); },
         category: 'banking',
         era: 'interstellar',
         reqs: { vault: 2, alpha: 2 },
@@ -3914,8 +3935,8 @@ const techs = {
     },
     graphene_vault: {
         id: 'tech-graphene_vault',
-        title: loc('tech_graphene_vault'),
-        desc: loc('tech_graphene_vault'),
+        title(){ return loc('tech_graphene_vault'); },
+        desc(){ return loc('tech_graphene_vault'); },
         category: 'banking',
         era: 'interstellar',
         path: ['standard','truepath'],
@@ -3936,8 +3957,8 @@ const techs = {
     },
     home_safe: {
         id: 'tech-home_safe',
-        title: loc('tech_home_safe'),
-        desc: loc('tech_home_safe'),
+        title(){ return loc('tech_home_safe'); },
+        desc(){ return loc('tech_home_safe'); },
         category: 'banking',
         era: 'discovery',
         reqs: { banking: 5 },
@@ -3957,8 +3978,8 @@ const techs = {
     },
     fire_proof_safe: {
         id: 'tech-fire_proof_safe',
-        title: loc('tech_fire_proof_safe'),
-        desc: loc('tech_fire_proof_safe'),
+        title(){ return loc('tech_fire_proof_safe'); },
+        desc(){ return loc('tech_fire_proof_safe'); },
         category: 'banking',
         era: 'early_space',
         reqs: { home_safe: 1, space: 3 },
@@ -3978,8 +3999,8 @@ const techs = {
     },
     tamper_proof_safe: {
         id: 'tech-tamper_proof_safe',
-        title: loc('tech_tamper_proof_safe'),
-        desc: loc('tech_tamper_proof_safe'),
+        title(){ return loc('tech_tamper_proof_safe'); },
+        desc(){ return loc('tech_tamper_proof_safe'); },
         category: 'banking',
         era: 'interstellar',
         reqs: { home_safe: 2, infernite: 1 },
@@ -4000,8 +4021,8 @@ const techs = {
     },
     monument: {
         id: 'tech-monument',
-        title: loc('tech_monument'),
-        desc: loc('tech_monument'),
+        title(){ return loc('tech_monument'); },
+        desc(){ return loc('tech_monument'); },
         category: 'arpa',
         era: 'globalized',
         reqs: { high_tech: 6 },
@@ -4023,8 +4044,8 @@ const techs = {
     },
     tourism: {
         id: 'tech-tourism',
-        title: loc('tech_tourism'),
-        desc: loc('tech_tourism'),
+        title(){ return loc('tech_tourism'); },
+        desc(){ return loc('tech_tourism'); },
         category: 'banking',
         era: 'early_space',
         reqs: { monuments: 2, monument: 1 },
@@ -4044,8 +4065,8 @@ const techs = {
     },
     xeno_tourism: {
         id: 'tech-xeno_tourism',
-        title: loc('tech_xeno_tourism'),
-        desc: loc('tech_xeno_tourism'),
+        title(){ return loc('tech_xeno_tourism'); },
+        desc(){ return loc('tech_xeno_tourism'); },
         category: 'banking',
         era: 'intergalactic',
         reqs: { monument: 2, xeno: 10, monuments: 10 },
@@ -4064,8 +4085,8 @@ const techs = {
     },
     science: {
         id: 'tech-science',
-        title: loc('tech_science'),
-        desc: loc('tech_science_desc'),
+        title(){ return loc('tech_science'); },
+        desc(){ return loc('tech_science_desc'); },
         category: 'science',
         era: 'civilized',
         reqs: { housing: 1 },
@@ -4084,8 +4105,8 @@ const techs = {
     },
     library: {
         id: 'tech-library',
-        title: loc('tech_library'),
-        desc: loc('tech_library_desc'),
+        title(){ return loc('tech_library'); },
+        desc(){ return loc('tech_library_desc'); },
         category: 'science',
         era: 'civilized',
         reqs: { science: 1, cement: 1 },
@@ -4104,8 +4125,8 @@ const techs = {
     },
     thesis: {
         id: 'tech-thesis',
-        title: loc('tech_thesis'),
-        desc: loc('tech_thesis_desc'),
+        title(){ return loc('tech_thesis'); },
+        desc(){ return loc('tech_thesis_desc'); },
         category: 'science',
         era: 'civilized',
         reqs: { science: 2 },
@@ -4123,8 +4144,8 @@ const techs = {
     },
     research_grant: {
         id: 'tech-research_grant',
-        title: loc('tech_research_grant'),
-        desc: loc('tech_research_grant_desc'),
+        title(){ return loc('tech_research_grant'); },
+        desc(){ return loc('tech_research_grant_desc'); },
         category: 'science',
         era: 'civilized',
         reqs: { science: 3 },
@@ -4161,8 +4182,8 @@ const techs = {
     },
     adjunct_professor: {
         id: 'tech-adjunct_professor',
-        title: loc('tech_adjunct_professor'),
-        desc: loc('tech_adjunct_professor'),
+        title(){ return loc('tech_adjunct_professor'); },
+        desc(){ return loc('tech_adjunct_professor'); },
         category: 'science',
         era: 'industrialized',
         reqs: { science: 5 },
@@ -4180,8 +4201,8 @@ const techs = {
     },
     tesla_coil: {
         id: 'tech-tesla_coil',
-        title: loc('tech_tesla_coil'),
-        desc: loc('tech_tesla_coil_desc'),
+        title(){ return loc('tech_tesla_coil'); },
+        desc(){ return loc('tech_tesla_coil_desc'); },
         category: 'science',
         era: 'industrialized',
         reqs: { science: 6, high_tech: 3 },
@@ -4199,8 +4220,8 @@ const techs = {
     },
     internet: {
         id: 'tech-internet',
-        title: loc('tech_internet'),
-        desc: loc('tech_internet'),
+        title(){ return loc('tech_internet'); },
+        desc(){ return loc('tech_internet'); },
         category: 'science',
         era: 'globalized',
         reqs: { science: 7, high_tech: 4 },
@@ -4221,8 +4242,8 @@ const techs = {
     },
     observatory: {
         id: 'tech-observatory',
-        title: loc('tech_observatory'),
-        desc: loc('tech_observatory'),
+        title(){ return loc('tech_observatory'); },
+        desc(){ return loc('tech_observatory'); },
         category: 'science',
         era: 'early_space',
         reqs: { science: 8, space: 3, luna: 1 },
@@ -4241,8 +4262,8 @@ const techs = {
     },
     world_collider: {
         id: 'tech-world_collider',
-        title: loc('tech_world_collider'),
-        desc: loc('tech_world_collider'),
+        title(){ return loc('tech_world_collider'); },
+        desc(){ return loc('tech_world_collider'); },
         category: 'science',
         era: 'deep_space',
         path: ['standard'],
@@ -4286,8 +4307,8 @@ const techs = {
     },
     virtual_assistant: {
         id: 'tech-virtual_assistant',
-        title: loc('tech_virtual_assistant'),
-        desc: loc('tech_virtual_assistant'),
+        title(){ return loc('tech_virtual_assistant'); },
+        desc(){ return loc('tech_virtual_assistant'); },
         category: 'science',
         era: 'interstellar',
         reqs: { science: 12, high_tech: 12 },
@@ -4305,8 +4326,8 @@ const techs = {
     },
     dimensional_readings: {
         id: 'tech-dimensional_readings',
-        title: loc('tech_dimensional_readings'),
-        desc: loc('tech_dimensional_readings'),
+        title(){ return loc('tech_dimensional_readings'); },
+        desc(){ return loc('tech_dimensional_readings'); },
         category: 'science',
         era: 'interstellar',
         reqs: { science: 13, infernite: 2 },
@@ -4324,8 +4345,8 @@ const techs = {
     },
     quantum_entanglement: {
         id: 'tech-quantum_entanglement',
-        title: loc('tech_quantum_entanglement'),
-        desc: loc('tech_quantum_entanglement'),
+        title(){ return loc('tech_quantum_entanglement'); },
+        desc(){ return loc('tech_quantum_entanglement'); },
         category: 'science',
         era: 'interstellar',
         reqs: { science: 14, neutron: 1 },
@@ -4364,8 +4385,8 @@ const techs = {
     },
     subspace_sensors: {
         id: 'tech-subspace_sensors',
-        title: loc('tech_subspace_sensors'),
-        desc: loc('tech_subspace_sensors'),
+        title(){ return loc('tech_subspace_sensors'); },
+        desc(){ return loc('tech_subspace_sensors'); },
         category: 'science',
         era: 'intergalactic',
         reqs: { science: 16, high_tech: 16 },
@@ -4383,8 +4404,8 @@ const techs = {
     },
     alien_database: {
         id: 'tech-alien_database',
-        title: loc('tech_alien_database'),
-        desc: loc('tech_alien_database'),
+        title(){ return loc('tech_alien_database'); },
+        desc(){ return loc('tech_alien_database'); },
         category: 'progress',
         era: 'intergalactic',
         reqs: { science: 17, conflict: 5 },
@@ -4402,8 +4423,8 @@ const techs = {
     },
     orichalcum_capacitor: {
         id: 'tech-orichalcum_capacitor',
-        title: loc('tech_orichalcum_capacitor'),
-        desc: loc('tech_orichalcum_capacitor'),
+        title(){ return loc('tech_orichalcum_capacitor'); },
+        desc(){ return loc('tech_orichalcum_capacitor'); },
         category: 'science',
         era: 'intergalactic',
         reqs: { science: 18, high_tech: 17 },
@@ -4422,8 +4443,8 @@ const techs = {
     },
     advanced_biotech: {
         id: 'tech-advanced_biotech',
-        title: loc('tech_advanced_biotech'),
-        desc: loc('tech_advanced_biotech'),
+        title(){ return loc('tech_advanced_biotech'); },
+        desc(){ return loc('tech_advanced_biotech'); },
         category: 'science',
         era: 'dimensional',
         reqs: { science: 19, high_tech: 18 },
@@ -4441,8 +4462,8 @@ const techs = {
     },
     codex_infinium: {
         id: 'tech-codex_infinium',
-        title: loc('tech_codex_infinium'),
-        desc: loc('tech_codex_infinium'),
+        title(){ return loc('tech_codex_infinium'); },
+        desc(){ return loc('tech_codex_infinium'); },
         category: 'science',
         era: 'dimensional',
         reqs: { science: 20, sphinx_bribe: 1 },
@@ -4462,8 +4483,8 @@ const techs = {
     },
     spirit_box: {
         id: 'tech-spirit_box',
-        title: loc('tech_spirit_box'),
-        desc: loc('tech_spirit_box'),
+        title(){ return loc('tech_spirit_box'); },
+        desc(){ return loc('tech_spirit_box'); },
         category: 'science',
         era: 'existential',
         reqs: { science: 21, asphodel: 3 },
@@ -4483,8 +4504,8 @@ const techs = {
     },
     spirit_researcher: {
         id: 'tech-spirit_researcher',
-        title: loc('tech_spirit_researcher'),
-        desc: loc('tech_spirit_researcher'),
+        title(){ return loc('tech_spirit_researcher'); },
+        desc(){ return loc('tech_spirit_researcher'); },
         category: 'science',
         era: 'existential',
         reqs: { science: 22, asphodel: 8 },
@@ -4503,8 +4524,8 @@ const techs = {
     },
     dimensional_tap: {
         id: 'tech-dimensional_tap',
-        title: loc('tech_dimensional_tap'),
-        desc: loc('tech_dimensional_tap'),
+        title(){ return loc('tech_dimensional_tap'); },
+        desc(){ return loc('tech_dimensional_tap'); },
         category: 'science',
         era: 'existential',
         reqs: { science: 23, ascension: 7 },
@@ -4525,8 +4546,8 @@ const techs = {
     },
     devilish_dish: {
         id: 'tech-devilish_dish',
-        title: loc('tech_devilish_dish'),
-        desc: loc('tech_devilish_dish'),
+        title(){ return loc('tech_devilish_dish'); },
+        desc(){ return loc('tech_devilish_dish'); },
         category: 'fasting',
         era: 'dimensional',
         reqs: { hell_ruins: 4},
@@ -4548,8 +4569,8 @@ const techs = {
     },
     hell_oven: {
         id: 'tech-hell_oven',
-        title: loc('tech_hell_oven'),
-        desc: loc('tech_hell_oven'),
+        title(){ return loc('tech_hell_oven'); },
+        desc(){ return loc('tech_hell_oven'); },
         category: 'fasting',
         era: 'dimensional',
         reqs: { hell_lake: 3, dish:1},
@@ -4569,8 +4590,8 @@ const techs = {
     },
     preparation_methods:{
         id: 'tech-preparation_methods',
-        title: loc('tech_preparation_methods'),
-        desc: loc('tech_preparation_methods'),
+        title(){ return loc('tech_preparation_methods'); },
+        desc(){ return loc('tech_preparation_methods'); },
         category: 'fasting',
         era: 'dimensional',
         reqs: { science: 21, dish:4},
@@ -4591,8 +4612,8 @@ const techs = {
     },
     final_ingredient: {
         id: 'tech-final_ingredient',
-        title: loc('tech_final_ingredient'),
-        desc: loc('tech_final_ingredient'),
+        title(){ return loc('tech_final_ingredient'); },
+        desc(){ return loc('tech_final_ingredient'); },
         category: 'fasting',
         era: 'dimensional',
         reqs: { dish_reset: 1},
@@ -4616,8 +4637,8 @@ const techs = {
     },
     bioscience: {
         id: 'tech-bioscience',
-        title: loc('tech_bioscience'),
-        desc: loc('tech_bioscience_desc'),
+        title(){ return loc('tech_bioscience'); },
+        desc(){ return loc('tech_bioscience_desc'); },
         category: 'science',
         era: 'globalized',
         reqs: { science: 8 },
@@ -4636,8 +4657,8 @@ const techs = {
     },
     genetics: {
         id: 'tech-genetics',
-        title: loc('tech_genetics'),
-        desc: loc('tech_genetics'),
+        title(){ return loc('tech_genetics'); },
+        desc(){ return loc('tech_genetics'); },
         category: 'arpa',
         era: 'globalized',
         reqs: { genetics: 1, high_tech: 6 },
@@ -4670,8 +4691,8 @@ const techs = {
     },
     crispr: {
         id: 'tech-crispr',
-        title: loc('tech_crispr'),
-        desc: loc('tech_crispr'),
+        title(){ return loc('tech_crispr'); },
+        desc(){ return loc('tech_crispr'); },
         category: 'genes',
         era: 'globalized',
         reqs: { genetics: 3 },
@@ -4695,7 +4716,7 @@ const techs = {
     },
     shotgun_sequencing: {
         id: 'tech-shotgun_sequencing',
-        title: loc('tech_shotgun_sequencing'),
+        title(){ return loc('tech_shotgun_sequencing'); },
         desc(){ return global.race['artifical'] ? loc('tech_shotgun_sequencing_desc_artifical') : loc('tech_shotgun_sequencing_desc'); },
         category: 'genes',
         era: 'early_space',
@@ -4718,8 +4739,8 @@ const techs = {
     },
     de_novo_sequencing: {
         id: 'tech-de_novo_sequencing',
-        title: loc('tech_de_novo_sequencing'),
-        desc: loc('tech_de_novo_sequencing'),
+        title(){ return loc('tech_de_novo_sequencing'); },
+        desc(){ return loc('tech_de_novo_sequencing'); },
         category: 'genes',
         era: 'early_space',
         reqs: { genetics: 5 },
@@ -4750,7 +4771,7 @@ const techs = {
         cost: {
             Knowledge(){ return 300000; }
         },
-        effect(){ return global.race['artifical'] ? loc('tech_code_sequencer_effect') : loc('tech_dna_sequencer_effect'); },
+        effect(){ return global.race['artifical'] ? loc('tech_code_sequencer_effect') : loc('tech_dna_sequencer_effect',[global.resource.Genes.name]); },
         action(){
             if (payCosts($(this)[0])){
                 global.arpa.sequence.auto = true;
@@ -4774,7 +4795,7 @@ const techs = {
         cost: {
             Knowledge(){ return 800000; }
         },
-        effect(){ return global.race['artifical'] ? loc('tech_agile_development_effect') : loc('tech_rapid_sequencing_effect'); },
+        effect(){ return global.race['artifical'] ? loc('tech_agile_development_effect') : loc('tech_rapid_sequencing_effect',[global.resource.Genes.name]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -4816,8 +4837,8 @@ const techs = {
     },
     electricity: {
         id: 'tech-electricity',
-        title: loc('tech_electricity'),
-        desc: loc('tech_electricity'),
+        title(){ return loc('tech_electricity'); },
+        desc(){ return loc('tech_electricity'); },
         category: 'power_generation',
         era: 'discovery',
         reqs: { high_tech: 1 },
@@ -4873,7 +4894,7 @@ const techs = {
                     }, 4000);
                 }
                 else {
-                    global.race['replicator'] = { res: 'Stone', pow: 1 };
+                    global.race['replicator'] = { res: 'Stone', res2: 'Stone', pow: 1, ratio: 100 };
                 }
                 return true;
             }
@@ -4886,8 +4907,8 @@ const techs = {
     },
     industrialization: {
         id: 'tech-industrialization',
-        title: loc('tech_industrialization'),
-        desc: loc('tech_industrialization'),
+        title(){ return loc('tech_industrialization'); },
+        desc(){ return loc('tech_industrialization'); },
         category: 'progress',
         era: 'industrialized',
         reqs: { high_tech: 2, cement: 2, steel_container: 1 },
@@ -4910,8 +4931,8 @@ const techs = {
     },
     electronics: {
         id: 'tech-electronics',
-        title: loc('tech_electronics'),
-        desc: loc('tech_electronics'),
+        title(){ return loc('tech_electronics'); },
+        desc(){ return loc('tech_electronics'); },
         category: 'progress',
         era: 'industrialized',
         reqs: { high_tech: 3, titanium: 1 },
@@ -4934,8 +4955,8 @@ const techs = {
     },
     fission: {
         id: 'tech-fission',
-        title: loc('tech_fission'),
-        desc: loc('tech_fission'),
+        title(){ return loc('tech_fission'); },
+        desc(){ return loc('tech_fission'); },
         category: 'progress',
         era: 'globalized',
         reqs: { high_tech: 4, uranium: 1 },
@@ -4956,8 +4977,8 @@ const techs = {
     },
     arpa: {
         id: 'tech-arpa',
-        title: loc('tech_arpa'),
-        desc: loc('tech_arpa_desc'),
+        title(){ return loc('tech_arpa'); },
+        desc(){ return loc('tech_arpa_desc'); },
         category: 'arpa',
         era: 'globalized',
         reqs: { high_tech: 5 },
@@ -4983,8 +5004,8 @@ const techs = {
     },
     rocketry: {
         id: 'tech-rocketry',
-        title: loc('tech_rocketry'),
-        desc: loc('tech_rocketry'),
+        title(){ return loc('tech_rocketry'); },
+        desc(){ return loc('tech_rocketry'); },
         category: 'arpa',
         era: 'globalized',
         reqs: { high_tech: 6 },
@@ -5010,8 +5031,8 @@ const techs = {
     },
     robotics: {
         id: 'tech-robotics',
-        title: loc('tech_robotics'),
-        desc: loc('tech_robotics'),
+        title(){ return loc('tech_robotics'); },
+        desc(){ return loc('tech_robotics'); },
         category: 'progress',
         era: 'globalized',
         reqs: { high_tech: 7 },
@@ -5029,8 +5050,8 @@ const techs = {
     },
     lasers: {
         id: 'tech-lasers',
-        title: loc('tech_lasers'),
-        desc: loc('tech_lasers_desc'),
+        title(){ return loc('tech_lasers'); },
+        desc(){ return loc('tech_lasers_desc'); },
         category: 'progress',
         era: 'deep_space',
         reqs: { high_tech: 8, space: 3, supercollider: 1, elerium: 1 },
@@ -5052,8 +5073,8 @@ const techs = {
     },
     artifical_intelligence: {
         id: 'tech-artifical_intelligence',
-        title: loc('tech_artificial_intelligence'),
-        desc: loc('tech_artificial_intelligence'),
+        title(){ return loc('tech_artificial_intelligence'); },
+        desc(){ return loc('tech_artificial_intelligence'); },
         category: 'progress',
         era: 'deep_space',
         reqs: { high_tech: 9 },
@@ -5074,8 +5095,8 @@ const techs = {
     },
     quantum_computing: {
         id: 'tech-quantum_computing',
-        title: loc('tech_quantum_computing'),
-        desc: loc('tech_quantum_computing'),
+        title(){ return loc('tech_quantum_computing'); },
+        desc(){ return loc('tech_quantum_computing'); },
         category: 'progress',
         era: 'deep_space',
         reqs: { high_tech: 10, nano: 1 },
@@ -5098,8 +5119,8 @@ const techs = {
     },
     virtual_reality: {
         id: 'tech-virtual_reality',
-        title: loc('tech_virtual_reality'),
-        desc: loc('tech_virtual_reality'),
+        title(){ return loc('tech_virtual_reality'); },
+        desc(){ return loc('tech_virtual_reality'); },
         category: 'progress',
         era: 'interstellar',
         reqs: { high_tech: 11, alpha: 2, infernite: 1, stanene: 1 },
@@ -5122,8 +5143,8 @@ const techs = {
     },
     plasma: {
         id: 'tech-plasma',
-        title: loc('tech_plasma'),
-        desc: loc('tech_plasma'),
+        title(){ return loc('tech_plasma'); },
+        desc(){ return loc('tech_plasma'); },
         category: 'progress',
         era: 'interstellar',
         path: ['standard','truepath'],
@@ -5144,8 +5165,8 @@ const techs = {
     },
     shields: {
         id: 'tech-shields',
-        title: loc('tech_shields'),
-        desc: loc('tech_shields'),
+        title(){ return loc('tech_shields'); },
+        desc(){ return loc('tech_shields'); },
         category: 'stellar_engine',
         era: 'interstellar',
         reqs: { high_tech: 13 },
@@ -5165,8 +5186,8 @@ const techs = {
     },
     ai_core: {
         id: 'tech-ai_core',
-        title: loc('tech_ai_core'),
-        desc: loc('tech_ai_core'),
+        title(){ return loc('tech_ai_core'); },
+        desc(){ return loc('tech_ai_core'); },
         category: 'ai_core',
         era: 'interstellar',
         reqs: { high_tech: 14, science: 15, blackhole: 3 },
@@ -5185,8 +5206,8 @@ const techs = {
     },
     metaphysics: {
         id: 'tech-metaphysics',
-        title: loc('tech_metaphysics'),
-        desc: loc('tech_metaphysics'),
+        title(){ return loc('tech_metaphysics'); },
+        desc(){ return loc('tech_metaphysics'); },
         category: 'progress',
         era: 'intergalactic',
         reqs: { high_tech: 15, xeno: 5 },
@@ -5206,8 +5227,8 @@ const techs = {
     },
     orichalcum_analysis: {
         id: 'tech-orichalcum_analysis',
-        title: loc('tech_orichalcum_analysis'),
-        desc: loc('tech_orichalcum_analysis'),
+        title(){ return loc('tech_orichalcum_analysis'); },
+        desc(){ return loc('tech_orichalcum_analysis'); },
         category: 'progress',
         era: 'intergalactic',
         reqs: { high_tech: 16, chthonian: 3 },
@@ -5227,8 +5248,8 @@ const techs = {
     },
     cybernetics: {
         id: 'tech-cybernetics',
-        title: loc('tech_cybernetics'),
-        desc: loc('tech_cybernetics'),
+        title(){ return loc('tech_cybernetics'); },
+        desc(){ return loc('tech_cybernetics'); },
         category: 'progress',
         era: 'dimensional',
         reqs: { high_tech: 17, hell_ruins: 4 },
@@ -5249,8 +5270,8 @@ const techs = {
     },
     divinity: {
         id: 'tech-divinity',
-        title: loc('tech_divinity'),
-        desc: loc('tech_divinity'),
+        title(){ return loc('tech_divinity'); },
+        desc(){ return loc('tech_divinity'); },
         category: 'progress',
         era: 'existential',
         reqs: { high_tech: 18, elysium: 15, isle: 2 },
@@ -5269,8 +5290,8 @@ const techs = {
     },
     blood_pact: {
         id: 'tech-blood_pact',
-        title: loc('tech_blood_pact'),
-        desc: loc('tech_blood_pact'),
+        title(){ return loc('tech_blood_pact'); },
+        desc(){ return loc('tech_blood_pact'); },
         category: 'hell_dimension',
         era: 'dimensional',
         reqs: { high_tech: 18, b_stone: 1 },
@@ -5314,8 +5335,8 @@ const techs = {
     },
     waygate: {
         id: 'tech-waygate',
-        title: loc('tech_waygate'),
-        desc: loc('tech_waygate'),
+        title(){ return loc('tech_waygate'); },
+        desc(){ return loc('tech_waygate'); },
         category: 'hell_dimension',
         era: 'dimensional',
         reqs: { hell_spire: 10, b_stone: 2 },
@@ -5334,8 +5355,8 @@ const techs = {
     },
     demonic_infusion: {
         id: 'tech-demonic_infusion',
-        title: loc('tech_demonic_infusion'),
-        desc: loc('tech_demonic_infusion'),
+        title(){ return loc('tech_demonic_infusion'); },
+        desc(){ return loc('tech_demonic_infusion'); },
         category: 'hell_dimension',
         era: 'dimensional',
         reqs: { hell_spire: 10, b_stone: 2, waygate: 3 },
@@ -5393,8 +5414,8 @@ const techs = {
     },
     gate_key: {
         id: 'tech-gate_key',
-        title: loc('tech_gate_key'),
-        desc: loc('tech_gate_key'),
+        title(){ return loc('tech_gate_key'); },
+        desc(){ return loc('tech_gate_key'); },
         category: 'hell_dimension',
         era: 'dimensional',
         reqs: { hell_gate: 1 },
@@ -5414,8 +5435,8 @@ const techs = {
     },
     gate_turret: {
         id: 'tech-gate_turret',
-        title: loc('tech_gate_turret'),
-        desc: loc('tech_gate_turret'),
+        title(){ return loc('tech_gate_turret'); },
+        desc(){ return loc('tech_gate_turret'); },
         category: 'hell_dimension',
         era: 'dimensional',
         reqs: { hell_gate: 2 },
@@ -5434,8 +5455,8 @@ const techs = {
     },
     infernite_mine: {
         id: 'tech-infernite_mine',
-        title: loc('tech_infernite_mine'),
-        desc: loc('tech_infernite_mine'),
+        title(){ return loc('tech_infernite_mine'); },
+        desc(){ return loc('tech_infernite_mine'); },
         category: 'hell_dimension',
         era: 'dimensional',
         reqs: { hell_gate: 3 },
@@ -5454,8 +5475,8 @@ const techs = {
     },
     study_corrupt_gem: {
         id: 'tech-study_corrupt_gem',
-        title: loc('tech_study_corrupt_gem'),
-        desc: loc('tech_study_corrupt_gem'),
+        title(){ return loc('tech_study_corrupt_gem'); },
+        desc(){ return loc('tech_study_corrupt_gem'); },
         category: 'hell_dimension',
         era: 'intergalactic',
         reqs: { high_tech: 16, corrupt: 1 },
@@ -5478,8 +5499,8 @@ const techs = {
     },
     soul_binding: {
         id: 'tech-soul_binding',
-        title: loc('tech_soul_binding'),
-        desc: loc('tech_soul_binding'),
+        title(){ return loc('tech_soul_binding'); },
+        desc(){ return loc('tech_soul_binding'); },
         category: 'hell_dimension',
         era: 'intergalactic',
         reqs: { corrupt: 2, science: 19 },
@@ -5498,8 +5519,8 @@ const techs = {
     },
     soul_capacitor: {
         id: 'tech-soul_capacitor',
-        title: loc('tech_soul_capacitor'),
-        desc: loc('tech_soul_capacitor'),
+        title(){ return loc('tech_soul_capacitor'); },
+        desc(){ return loc('tech_soul_capacitor'); },
         category: 'hell_dimension',
         era: 'intergalactic',
         reqs: { forbidden: 1 },
@@ -5519,8 +5540,8 @@ const techs = {
     },
     absorption_chamber: {
         id: 'tech-absorption_chamber',
-        title: loc('tech_absorption_chamber'),
-        desc: loc('tech_absorption_chamber'),
+        title(){ return loc('tech_absorption_chamber'); },
+        desc(){ return loc('tech_absorption_chamber'); },
         category: 'hell_dimension',
         era: 'intergalactic',
         reqs: { forbidden: 2 },
@@ -5540,8 +5561,8 @@ const techs = {
     },
     corrupt_gem_analysis: {
         id: 'tech-corrupt_gem_analysis',
-        title: loc('tech_corrupt_gem_analysis'),
-        desc: loc('tech_corrupt_gem_analysis'),
+        title(){ return loc('tech_corrupt_gem_analysis'); },
+        desc(){ return loc('tech_corrupt_gem_analysis'); },
         category: 'hell_dimension',
         era: 'dimensional',
         reqs: { high_tech: 16, corrupt: 1 },
@@ -5564,8 +5585,8 @@ const techs = {
     },
     hell_search: {
         id: 'tech-hell_search',
-        title: loc('tech_hell_search'),
-        desc: loc('tech_hell_search'),
+        title(){ return loc('tech_hell_search'); },
+        desc(){ return loc('tech_hell_search'); },
         category: 'hell_dimension',
         era: 'dimensional',
         reqs: { corrupt: 2 },
@@ -5594,8 +5615,8 @@ const techs = {
     },
     codex_infernium: {
         id: 'tech-codex_infernium',
-        title: loc('tech_codex_infernium'),
-        desc: loc('tech_codex_infernium'),
+        title(){ return loc('tech_codex_infernium'); },
+        desc(){ return loc('tech_codex_infernium'); },
         category: 'progress',
         era: 'dimensional',
         reqs: { hell_ruins: 3 },
@@ -5615,8 +5636,8 @@ const techs = {
     },
     lake_analysis: {
         id: 'tech-lake_analysis',
-        title: loc('tech_lake_analysis'),
-        desc: loc('tech_lake_analysis'),
+        title(){ return loc('tech_lake_analysis'); },
+        desc(){ return loc('tech_lake_analysis'); },
         category: 'hell_dimension',
         era: 'dimensional',
         reqs: { hell_lake: 2 },
@@ -5637,8 +5658,8 @@ const techs = {
     },
     lake_threat: {
         id: 'tech-lake_threat',
-        title: loc('tech_lake_threat'),
-        desc: loc('tech_lake_threat'),
+        title(){ return loc('tech_lake_threat'); },
+        desc(){ return loc('tech_lake_threat'); },
         category: 'hell_dimension',
         era: 'dimensional',
         reqs: { hell_lake: 3 },
@@ -5658,8 +5679,8 @@ const techs = {
     },
     lake_transport: {
         id: 'tech-lake_transport',
-        title: loc('tech_lake_transport'),
-        desc: loc('tech_lake_transport'),
+        title(){ return loc('tech_lake_transport'); },
+        desc(){ return loc('tech_lake_transport'); },
         category: 'hell_dimension',
         era: 'dimensional',
         reqs: { hell_lake: 4 },
@@ -5678,8 +5699,8 @@ const techs = {
     },
     cooling_tower: {
         id: 'tech-cooling_tower',
-        title: loc('tech_cooling_tower'),
-        desc: loc('tech_cooling_tower'),
+        title(){ return loc('tech_cooling_tower'); },
+        desc(){ return loc('tech_cooling_tower'); },
         category: 'hell_dimension',
         era: 'dimensional',
         reqs: { hell_lake: 5 },
@@ -5698,8 +5719,8 @@ const techs = {
     },
     miasma: {
         id: 'tech-miasma',
-        title: loc('tech_miasma'),
-        desc: loc('tech_miasma'),
+        title(){ return loc('tech_miasma'); },
+        desc(){ return loc('tech_miasma'); },
         category: 'hell_dimension',
         era: 'dimensional',
         reqs: { hell_spire: 2 },
@@ -5718,8 +5739,8 @@ const techs = {
     },
     incorporeal: {
         id: 'tech-incorporeal',
-        title: loc('tech_incorporeal'),
-        desc: loc('tech_incorporeal'),
+        title(){ return loc('tech_incorporeal'); },
+        desc(){ return loc('tech_incorporeal'); },
         category: 'special',
         era: 'intergalactic',
         reqs: { science: 19 },
@@ -5739,8 +5760,8 @@ const techs = {
     },
     tech_ascension: {
         id: 'tech-tech_ascension',
-        title: loc('tech_ascension'),
-        desc: loc('tech_ascension'),
+        title(){ return loc('tech_ascension'); },
+        desc(){ return loc('tech_ascension'); },
         category: 'special',
         era: 'intergalactic',
         reqs: { ascension: 1 },
@@ -5761,8 +5782,8 @@ const techs = {
     },
     terraforming: {
         id: 'tech-terraforming',
-        title: loc('tech_terraforming'),
-        desc: loc('tech_terraforming'),
+        title(){ return loc('tech_terraforming'); },
+        desc(){ return loc('tech_terraforming'); },
         category: 'special',
         era: 'intergalactic',
         reqs: { science: 19 },
@@ -5783,8 +5804,8 @@ const techs = {
     },
     cement_processing: {
         id: 'tech-cement_processing',
-        title: loc('tech_cement_processing'),
-        desc: loc('tech_cement_processing'),
+        title(){ return loc('tech_cement_processing'); },
+        desc(){ return loc('tech_cement_processing'); },
         category: 'ai_core',
         era: 'interstellar',
         reqs: { high_tech: 15 },
@@ -5803,8 +5824,8 @@ const techs = {
     },
     adamantite_processing_flier: {
         id: 'tech-adamantite_processing_flier',
-        title: loc('tech_adamantite_processing'),
-        desc: loc('tech_adamantite_processing'),
+        title(){ return loc('tech_adamantite_processing'); },
+        desc(){ return loc('tech_adamantite_processing'); },
         category: 'ai_core',
         era: 'interstellar',
         reqs: { high_tech: 15 },
@@ -5823,8 +5844,8 @@ const techs = {
     },
     adamantite_processing: {
         id: 'tech-adamantite_processing',
-        title: loc('tech_adamantite_processing'),
-        desc: loc('tech_adamantite_processing'),
+        title(){ return loc('tech_adamantite_processing'); },
+        desc(){ return loc('tech_adamantite_processing'); },
         category: 'ai_core',
         era: 'interstellar',
         reqs: { ai_core: 1 },
@@ -5843,8 +5864,8 @@ const techs = {
     },
     graphene_processing: {
         id: 'tech-graphene_processing',
-        title: loc('tech_graphene_processing'),
-        desc: loc('tech_graphene_processing'),
+        title(){ return loc('tech_graphene_processing'); },
+        desc(){ return loc('tech_graphene_processing'); },
         category: 'ai_core',
         era: 'intergalactic',
         reqs: { ai_core: 2 },
@@ -5862,8 +5883,8 @@ const techs = {
     },
     crypto_mining: {
         id: 'tech-crypto_mining',
-        title: loc('tech_crypto_mining'),
-        desc: loc('tech_crypto_mining'),
+        title(){ return loc('tech_crypto_mining'); },
+        desc(){ return loc('tech_crypto_mining'); },
         category: 'ai_core',
         era: 'existential',
         reqs: { ai_core: 3, banking: 14 },
@@ -5883,8 +5904,8 @@ const techs = {
     },
     fusion_power: {
         id: 'tech-fusion_power',
-        title: loc('tech_fusion_power'),
-        desc: loc('tech_fusion_power'),
+        title(){ return loc('tech_fusion_power'); },
+        desc(){ return loc('tech_fusion_power'); },
         category: 'power_generation',
         era: 'interstellar',
         reqs: { ram_scoop: 1 },
@@ -5903,8 +5924,8 @@ const techs = {
     },
     infernium_power: {
         id: 'tech-infernium_power',
-        title: loc('tech_infernium_power'),
-        desc: loc('tech_infernium_power'),
+        title(){ return loc('tech_infernium_power'); },
+        desc(){ return loc('tech_infernium_power'); },
         category: 'power_generation',
         era: 'dimensional',
         reqs: { smelting: 8, hell_ruins: 4 },
@@ -5923,8 +5944,8 @@ const techs = {
     },
     thermomechanics: {
         id: 'tech-thermomechanics',
-        title: loc('tech_thermomechanics'),
-        desc: loc('tech_thermomechanics_desc'),
+        title(){ return loc('tech_thermomechanics'); },
+        desc(){ return loc('tech_thermomechanics_desc'); },
         category: 'crafting',
         era: 'industrialized',
         reqs: { high_tech: 4 },
@@ -5942,8 +5963,8 @@ const techs = {
     },
     quantum_manufacturing: {
         id: 'tech-quantum_manufacturing',
-        title: loc('tech_quantum_manufacturing'),
-        desc: loc('tech_quantum_manufacturing'),
+        title(){ return loc('tech_quantum_manufacturing'); },
+        desc(){ return loc('tech_quantum_manufacturing'); },
         category: 'crafting',
         era: 'deep_space',
         reqs: { high_tech: 11 },
@@ -5961,8 +5982,8 @@ const techs = {
     },
     worker_drone: {
         id: 'tech-worker_drone',
-        title: loc('tech_worker_drone'),
-        desc: loc('tech_worker_drone'),
+        title(){ return loc('tech_worker_drone'); },
+        desc(){ return loc('tech_worker_drone'); },
         category: 'mining',
         era: 'deep_space',
         reqs: { nano: 1 },
@@ -5981,8 +6002,8 @@ const techs = {
     },
     uranium: {
         id: 'tech-uranium',
-        title: loc('tech_uranium'),
-        desc: loc('tech_uranium'),
+        title(){ return loc('tech_uranium'); },
+        desc(){ return loc('tech_uranium'); },
         category: 'power_generation',
         era: 'globalized',
         reqs: { high_tech: 4 },
@@ -6004,8 +6025,8 @@ const techs = {
     },
     uranium_storage: {
         id: 'tech-uranium_storage',
-        title: loc('tech_uranium_storage'),
-        desc: loc('tech_uranium_storage'),
+        title(){ return loc('tech_uranium_storage'); },
+        desc(){ return loc('tech_uranium_storage'); },
         category: 'storage',
         era: 'globalized',
         reqs: { uranium: 1 },
@@ -6024,8 +6045,8 @@ const techs = {
     },
     uranium_ash: {
         id: 'tech-uranium_ash',
-        title: loc('tech_uranium_ash'),
-        desc: loc('tech_uranium_ash'),
+        title(){ return loc('tech_uranium_ash'); },
+        desc(){ return loc('tech_uranium_ash'); },
         category: 'power_generation',
         era: 'globalized',
         reqs: { uranium: 2 },
@@ -6043,8 +6064,8 @@ const techs = {
     },
     breeder_reactor: {
         id: 'tech-breeder_reactor',
-        title: loc('tech_breeder_reactor'),
-        desc: loc('tech_breeder_reactor'),
+        title(){ return loc('tech_breeder_reactor'); },
+        desc(){ return loc('tech_breeder_reactor'); },
         category: 'power_generation',
         era: 'early_space',
         reqs: { high_tech: 5, uranium: 3, space: 3 },
@@ -6064,8 +6085,8 @@ const techs = {
     },
     mine_conveyor: {
         id: 'tech-mine_conveyor',
-        title: loc('tech_mine_conveyor'),
-        desc: loc('tech_mine_conveyor'),
+        title(){ return loc('tech_mine_conveyor'); },
+        desc(){ return loc('tech_mine_conveyor'); },
         category: 'mining',
         era: 'discovery',
         reqs: { high_tech: 2 },
@@ -6105,8 +6126,8 @@ const techs = {
     },
     oil_depot: {
         id: 'tech-oil_depot',
-        title: loc('tech_oil_depot'),
-        desc: loc('tech_oil_depot'),
+        title(){ return loc('tech_oil_depot'); },
+        desc(){ return loc('tech_oil_depot'); },
         category: 'storage',
         era: 'industrialized',
         reqs: { oil: 1 },
@@ -6151,8 +6172,8 @@ const techs = {
     },
     titanium_drills: {
         id: 'tech-titanium_drills',
-        title: loc('tech_titanium_drills'),
-        desc: loc('tech_titanium_drills'),
+        title(){ return loc('tech_titanium_drills'); },
+        desc(){ return loc('tech_titanium_drills'); },
         category: 'power_generation',
         era: 'industrialized',
         reqs: { oil: 3 },
@@ -6171,8 +6192,8 @@ const techs = {
     },
     alloy_drills: {
         id: 'tech-alloy_drills',
-        title: loc('tech_alloy_drills'),
-        desc: loc('tech_alloy_drills'),
+        title(){ return loc('tech_alloy_drills'); },
+        desc(){ return loc('tech_alloy_drills'); },
         category: 'power_generation',
         era: 'globalized',
         reqs: { oil: 4 },
@@ -6191,8 +6212,8 @@ const techs = {
     },
     fracking: {
         id: 'tech-fracking',
-        title: loc('tech_fracking'),
-        desc: loc('tech_fracking'),
+        title(){ return loc('tech_fracking'); },
+        desc(){ return loc('tech_fracking'); },
         category: 'power_generation',
         era: 'globalized',
         reqs: { oil: 5, high_tech: 6 },
@@ -6210,8 +6231,8 @@ const techs = {
     },
     mythril_drills: {
         id: 'tech-mythril_drills',
-        title: loc('tech_mythril_drills'),
-        desc: loc('tech_mythril_drills'),
+        title(){ return loc('tech_mythril_drills'); },
+        desc(){ return loc('tech_mythril_drills'); },
         category: 'power_generation',
         era: 'early_space',
         reqs: { oil: 6, space: 3 },
@@ -6230,8 +6251,8 @@ const techs = {
     },
     mass_driver: {
         id: 'tech-mass_driver',
-        title: loc('tech_mass_driver'),
-        desc: loc('tech_mass_driver'),
+        title(){ return loc('tech_mass_driver'); },
+        desc(){ return loc('tech_mass_driver'); },
         category: 'power_generation',
         era: 'early_space',
         reqs: { oil: 6, space: 3 },
@@ -6250,8 +6271,8 @@ const techs = {
     },
     orichalcum_driver: {
         id: 'tech-orichalcum_driver',
-        title: loc('tech_orichalcum_driver'),
-        desc: loc('tech_orichalcum_driver'),
+        title(){ return loc('tech_orichalcum_driver'); },
+        desc(){ return loc('tech_orichalcum_driver'); },
         category: 'science',
         era: 'intergalactic',
         reqs: { mass: 1, science: 19 },
@@ -6272,8 +6293,8 @@ const techs = {
     },
     polymer: {
         id: 'tech-polymer',
-        title: loc('tech_polymer'),
-        desc: loc('tech_polymer'),
+        title(){ return loc('tech_polymer'); },
+        desc(){ return loc('tech_polymer'); },
         category: 'crafting',
         era: 'globalized',
         reqs: { genetics: 1 },
@@ -6299,8 +6320,8 @@ const techs = {
     },
     fluidized_bed_reactor: {
         id: 'tech-fluidized_bed_reactor',
-        title: loc('tech_fluidized_bed_reactor'),
-        desc: loc('tech_fluidized_bed_reactor'),
+        title(){ return loc('tech_fluidized_bed_reactor'); },
+        desc(){ return loc('tech_fluidized_bed_reactor'); },
         category: 'crafting',
         era: 'globalized',
         reqs: { polymer: 1, high_tech: 6 },
@@ -6342,8 +6363,8 @@ const techs = {
     },
     nanoweave: {
         id: 'tech-nanoweave',
-        title: loc('tech_nanoweave'),
-        desc: loc('tech_nanoweave'),
+        title(){ return loc('tech_nanoweave'); },
+        desc(){ return loc('tech_nanoweave'); },
         category: 'crafting',
         era: 'intergalactic',
         reqs: { science: 18 },
@@ -6369,8 +6390,8 @@ const techs = {
     },
     stanene: {
         id: 'tech-stanene',
-        title: loc('tech_stanene'),
-        desc: loc('tech_stanene'),
+        title(){ return loc('tech_stanene'); },
+        desc(){ return loc('tech_stanene'); },
         category: 'crafting',
         era: 'interstellar',
         reqs: { infernite: 1 },
@@ -6396,8 +6417,8 @@ const techs = {
     },
     nano_tubes: {
         id: 'tech-nano_tubes',
-        title: loc('tech_nano_tubes'),
-        desc: loc('tech_nano_tubes'),
+        title(){ return loc('tech_nano_tubes'); },
+        desc(){ return loc('tech_nano_tubes'); },
         category: 'crafting',
         era: 'deep_space',
         reqs: { high_tech: 10 },
@@ -6423,8 +6444,8 @@ const techs = {
     },
     scarletite: {
         id: 'tech-scarletite',
-        title: loc('tech_scarletite'),
-        desc: loc('tech_scarletite'),
+        title(){ return loc('tech_scarletite'); },
+        desc(){ return loc('tech_scarletite'); },
         category: 'crafting',
         era: 'dimensional',
         reqs: { hell_ruins: 4 },
@@ -6464,8 +6485,8 @@ const techs = {
     },
     pillars: {
         id: 'tech-pillars',
-        title: loc('tech_pillars'),
-        desc: loc('tech_pillars'),
+        title(){ return loc('tech_pillars'); },
+        desc(){ return loc('tech_pillars'); },
         category: 'hell_dimension',
         era: 'dimensional',
         reqs: { scarletite: 1, fusable: 1 },
@@ -6484,8 +6505,8 @@ const techs = {
     },
     reclaimer: {
         id: 'tech-reclaimer',
-        title: loc('tech_reclaimer'),
-        desc: loc('tech_reclaimer_desc'),
+        title(){ return loc('tech_reclaimer'); },
+        desc(){ return loc('tech_reclaimer_desc'); },
         category: 'reclaimer',
         era: 'civilized',
         reqs: { primitive: 3 },
@@ -6512,8 +6533,8 @@ const techs = {
     },
     shovel: {
         id: 'tech-shovel',
-        title: loc('tech_shovel'),
-        desc: loc('tech_shovel'),
+        title(){ return loc('tech_shovel'); },
+        desc(){ return loc('tech_shovel'); },
         category: 'reclaimer',
         era: 'civilized',
         reqs: { reclaimer: 1, mining: 2 },
@@ -6537,8 +6558,8 @@ const techs = {
     },
     iron_shovel: {
         id: 'tech-iron_shovel',
-        title: loc('tech_iron_shovel'),
-        desc: loc('tech_iron_shovel'),
+        title(){ return loc('tech_iron_shovel'); },
+        desc(){ return loc('tech_iron_shovel'); },
         category: 'reclaimer',
         era: 'civilized',
         reqs: { reclaimer: 2, mining: 3 },
@@ -6562,8 +6583,8 @@ const techs = {
     },
     steel_shovel: {
         id: 'tech-steel_shovel',
-        title: loc('tech_steel_shovel'),
-        desc: loc('tech_steel_shovel'),
+        title(){ return loc('tech_steel_shovel'); },
+        desc(){ return loc('tech_steel_shovel'); },
         category: 'reclaimer',
         era: 'discovery',
         reqs: { reclaimer: 3, smelting: 2 },
@@ -6587,8 +6608,8 @@ const techs = {
     },
     titanium_shovel: {
         id: 'tech-titanium_shovel',
-        title: loc('tech_titanium_shovel'),
-        desc: loc('tech_titanium_shovel'),
+        title(){ return loc('tech_titanium_shovel'); },
+        desc(){ return loc('tech_titanium_shovel'); },
         category: 'reclaimer',
         era: 'industrialized',
         reqs: { reclaimer: 4, high_tech: 3 },
@@ -6612,8 +6633,8 @@ const techs = {
     },
     alloy_shovel: {
         id: 'tech-alloy_shovel',
-        title: loc('tech_alloy_shovel'),
-        desc: loc('tech_alloy_shovel'),
+        title(){ return loc('tech_alloy_shovel'); },
+        desc(){ return loc('tech_alloy_shovel'); },
         category: 'reclaimer',
         era: 'globalized',
         reqs: { reclaimer: 5, high_tech: 4 },
@@ -6637,8 +6658,8 @@ const techs = {
     },
     mythril_shovel: {
         id: 'tech-mythril_shovel',
-        title: loc('tech_mythril_shovel'),
-        desc: loc('tech_mythril_shovel'),
+        title(){ return loc('tech_mythril_shovel'); },
+        desc(){ return loc('tech_mythril_shovel'); },
         category: 'reclaimer',
         era: 'early_space',
         reqs: { reclaimer: 6, space: 3 },
@@ -6662,8 +6683,8 @@ const techs = {
     },
     adamantite_shovel: {
         id: 'tech-adamantite_shovel',
-        title: loc('tech_adamantite_shovel'),
-        desc: loc('tech_adamantite_shovel'),
+        title(){ return loc('tech_adamantite_shovel'); },
+        desc(){ return loc('tech_adamantite_shovel'); },
         category: 'reclaimer',
         era: 'interstellar',
         reqs: { reclaimer: 7, alpha: 2 },
@@ -6714,8 +6735,8 @@ const techs = {
     },
     copper_axes: {
         id: 'tech-copper_axes',
-        title: loc('tech_copper_axes'),
-        desc: loc('tech_copper_axes_desc'),
+        title(){ return loc('tech_copper_axes'); },
+        desc(){ return loc('tech_copper_axes_desc'); },
         category: 'lumber_gathering',
         era: 'civilized',
         reqs: { axe: 1, mining: 2 },
@@ -6735,8 +6756,8 @@ const techs = {
     },
     iron_saw: {
         id: 'tech-iron_saw',
-        title: loc('tech_iron_saw'),
-        desc: loc('tech_iron_saw_desc'),
+        title(){ return loc('tech_iron_saw'); },
+        desc(){ return loc('tech_iron_saw_desc'); },
         category: 'lumber_gathering',
         era: 'civilized',
         reqs: { axe: 1, mining: 3 },
@@ -6757,8 +6778,8 @@ const techs = {
     },
     steel_saw: {
         id: 'tech-steel_saw',
-        title: loc('tech_steel_saw'),
-        desc: loc('tech_steel_saw_desc'),
+        title(){ return loc('tech_steel_saw'); },
+        desc(){ return loc('tech_steel_saw_desc'); },
         category: 'lumber_gathering',
         era: 'discovery',
         reqs: { smelting: 2, saw: 1 },
@@ -6777,8 +6798,8 @@ const techs = {
     },
     iron_axes: {
         id: 'tech-iron_axes',
-        title: loc('tech_iron_axes'),
-        desc: loc('tech_iron_axes_desc'),
+        title(){ return loc('tech_iron_axes'); },
+        desc(){ return loc('tech_iron_axes_desc'); },
         category: 'lumber_gathering',
         era: 'civilized',
         reqs: { axe: 2, mining: 3 },
@@ -6798,8 +6819,8 @@ const techs = {
     },
     steel_axes: {
         id: 'tech-steel_axes',
-        title: loc('tech_steel_axes'),
-        desc: loc('tech_steel_axes_desc'),
+        title(){ return loc('tech_steel_axes'); },
+        desc(){ return loc('tech_steel_axes_desc'); },
         category: 'lumber_gathering',
         era: 'discovery',
         reqs: { axe: 3, smelting: 2 },
@@ -6819,8 +6840,8 @@ const techs = {
     },
     titanium_axes: {
         id: 'tech-titanium_axes',
-        title: loc('tech_titanium_axes'),
-        desc: loc('tech_titanium_axes_desc'),
+        title(){ return loc('tech_titanium_axes'); },
+        desc(){ return loc('tech_titanium_axes_desc'); },
         category: 'lumber_gathering',
         era: 'industrialized',
         reqs: { axe: 4, high_tech: 3 },
@@ -6840,8 +6861,8 @@ const techs = {
     },
     chainsaws: {
         id: 'tech-chainsaws',
-        title: loc('tech_chainsaws'),
-        desc: loc('tech_chainsaws_desc'),
+        title(){ return loc('tech_chainsaws'); },
+        desc(){ return loc('tech_chainsaws_desc'); },
         category: 'lumber_gathering',
         era: 'interstellar',
         reqs: { axe: 5, alpha: 2 },
@@ -6863,8 +6884,8 @@ const techs = {
     },
     copper_sledgehammer: {
         id: 'tech-copper_sledgehammer',
-        title: loc('tech_copper_sledgehammer'),
-        desc: loc('tech_copper_sledgehammer_desc'),
+        title(){ return loc('tech_copper_sledgehammer'); },
+        desc(){ return loc('tech_copper_sledgehammer_desc'); },
         category: 'stone_gathering',
         era: 'civilized',
         reqs: { mining: 2 },
@@ -6884,8 +6905,8 @@ const techs = {
     },
     iron_sledgehammer: {
         id: 'tech-iron_sledgehammer',
-        title: loc('tech_iron_sledgehammer'),
-        desc: loc('tech_iron_sledgehammer_desc'),
+        title(){ return loc('tech_iron_sledgehammer'); },
+        desc(){ return loc('tech_iron_sledgehammer_desc'); },
         category: 'stone_gathering',
         era: 'civilized',
         reqs: { hammer: 1, mining: 3 },
@@ -6905,8 +6926,8 @@ const techs = {
     },
     steel_sledgehammer: {
         id: 'tech-steel_sledgehammer',
-        title: loc('tech_steel_sledgehammer'),
-        desc: loc('tech_steel_sledgehammer_desc'),
+        title(){ return loc('tech_steel_sledgehammer'); },
+        desc(){ return loc('tech_steel_sledgehammer_desc'); },
         category: 'stone_gathering',
         era: 'discovery',
         reqs: { hammer: 2, smelting: 2 },
@@ -6926,8 +6947,8 @@ const techs = {
     },
     titanium_sledgehammer: {
         id: 'tech-titanium_sledgehammer',
-        title: loc('tech_titanium_sledgehammer'),
-        desc: loc('tech_titanium_sledgehammer_desc'),
+        title(){ return loc('tech_titanium_sledgehammer'); },
+        desc(){ return loc('tech_titanium_sledgehammer_desc'); },
         category: 'stone_gathering',
         era: 'industrialized',
         reqs: { hammer: 3, high_tech: 3 },
@@ -6947,8 +6968,8 @@ const techs = {
     },
     copper_pickaxe: {
         id: 'tech-copper_pickaxe',
-        title: loc('tech_copper_pickaxe'),
-        desc: loc('tech_copper_pickaxe_desc'),
+        title(){ return loc('tech_copper_pickaxe'); },
+        desc(){ return loc('tech_copper_pickaxe_desc'); },
         category: 'mining',
         era: 'civilized',
         reqs: { mining: 2 },
@@ -6968,8 +6989,8 @@ const techs = {
     },
     iron_pickaxe: {
         id: 'tech-iron_pickaxe',
-        title: loc('tech_iron_pickaxe'),
-        desc: loc('tech_iron_pickaxe_desc'),
+        title(){ return loc('tech_iron_pickaxe'); },
+        desc(){ return loc('tech_iron_pickaxe_desc'); },
         category: 'mining',
         era: 'civilized',
         reqs: { pickaxe: 1, mining: 3 },
@@ -6989,8 +7010,8 @@ const techs = {
     },
     steel_pickaxe: {
         id: 'tech-steel_pickaxe',
-        title: loc('tech_steel_pickaxe'),
-        desc: loc('tech_steel_pickaxe_desc'),
+        title(){ return loc('tech_steel_pickaxe'); },
+        desc(){ return loc('tech_steel_pickaxe_desc'); },
         category: 'mining',
         era: 'discovery',
         reqs: { pickaxe: 2, smelting: 2 },
@@ -7010,8 +7031,8 @@ const techs = {
     },
     jackhammer: {
         id: 'tech-jackhammer',
-        title: loc('tech_jackhammer'),
-        desc: loc('tech_jackhammer_desc'),
+        title(){ return loc('tech_jackhammer'); },
+        desc(){ return loc('tech_jackhammer_desc'); },
         category: 'mining',
         era: 'discovery',
         reqs: { pickaxe: 3, high_tech: 2 },
@@ -7031,8 +7052,8 @@ const techs = {
     },
     jackhammer_mk2: {
         id: 'tech-jackhammer_mk2',
-        title: loc('tech_jackhammer_mk2'),
-        desc: loc('tech_jackhammer_mk2'),
+        title(){ return loc('tech_jackhammer_mk2'); },
+        desc(){ return loc('tech_jackhammer_mk2'); },
         category: 'mining',
         era: 'globalized',
         reqs: { pickaxe: 4, high_tech: 4 },
@@ -7096,8 +7117,8 @@ const techs = {
     },
     copper_hoe: {
         id: 'tech-copper_hoe',
-        title: loc('tech_copper_hoe'),
-        desc: loc('tech_copper_hoe_desc'),
+        title(){ return loc('tech_copper_hoe'); },
+        desc(){ return loc('tech_copper_hoe_desc'); },
         category: 'agriculture',
         era: 'civilized',
         reqs: { mining: 2, agriculture: 1 },
@@ -7117,8 +7138,8 @@ const techs = {
     },
     iron_hoe: {
         id: 'tech-iron_hoe',
-        title: loc('tech_iron_hoe'),
-        desc: loc('tech_iron_hoe_desc'),
+        title(){ return loc('tech_iron_hoe'); },
+        desc(){ return loc('tech_iron_hoe_desc'); },
         category: 'agriculture',
         era: 'civilized',
         reqs: { hoe: 1, mining: 3, agriculture: 1 },
@@ -7138,8 +7159,8 @@ const techs = {
     },
     steel_hoe: {
         id: 'tech-steel_hoe',
-        title: loc('tech_steel_hoe'),
-        desc: loc('tech_steel_hoe_desc'),
+        title(){ return loc('tech_steel_hoe'); },
+        desc(){ return loc('tech_steel_hoe_desc'); },
         category: 'agriculture',
         era: 'discovery',
         reqs: { hoe: 2, smelting: 2, agriculture: 1 },
@@ -7159,8 +7180,8 @@ const techs = {
     },
     titanium_hoe: {
         id: 'tech-titanium_hoe',
-        title: loc('tech_titanium_hoe'),
-        desc: loc('tech_titanium_hoe_desc'),
+        title(){ return loc('tech_titanium_hoe'); },
+        desc(){ return loc('tech_titanium_hoe_desc'); },
         category: 'agriculture',
         era: 'industrialized',
         reqs: { hoe: 3, high_tech: 3, agriculture: 1 },
@@ -7180,8 +7201,8 @@ const techs = {
     },
     adamantite_hoe: {
         id: 'tech-adamantite_hoe',
-        title: loc('tech_adamantite_hoe'),
-        desc: loc('tech_adamantite_hoe_desc'),
+        title(){ return loc('tech_adamantite_hoe'); },
+        desc(){ return loc('tech_adamantite_hoe_desc'); },
         category: 'agriculture',
         era: 'interstellar',
         reqs: { hoe: 4, alpha: 2 },
@@ -7201,8 +7222,8 @@ const techs = {
     },
     cyber_limbs: {
         id: 'tech-cyber_limbs',
-        title: loc('tech_cyber_limbs'),
-        desc: loc('tech_cyber_limbs'),
+        title(){ return loc('tech_cyber_limbs'); },
+        desc(){ return loc('tech_cyber_limbs'); },
         category: 'mining',
         era: 'dimensional',
         reqs: { high_tech: 18 },
@@ -7270,8 +7291,8 @@ const techs = {
     },
     ceremonial_dagger: {
         id: 'tech-ceremonial_dagger',
-        title: loc('tech_ceremonial_dagger'),
-        desc: loc('tech_ceremonial_dagger'),
+        title(){ return loc('tech_ceremonial_dagger'); },
+        desc(){ return loc('tech_ceremonial_dagger'); },
         category: 'sacrifice',
         era: 'civilized',
         reqs: { mining: 1 },
@@ -7291,8 +7312,8 @@ const techs = {
     },
     last_rites: {
         id: 'tech-last_rites',
-        title: loc('tech_last_rites'),
-        desc: loc('tech_last_rites'),
+        title(){ return loc('tech_last_rites'); },
+        desc(){ return loc('tech_last_rites'); },
         category: 'sacrifice',
         era: 'civilized',
         reqs: { sacrifice: 1, theology: 2 },
@@ -7311,8 +7332,8 @@ const techs = {
     },
     ancient_infusion: {
         id: 'tech-ancient_infusion',
-        title: loc('tech_ancient_infusion'),
-        desc: loc('tech_ancient_infusion'),
+        title(){ return loc('tech_ancient_infusion'); },
+        desc(){ return loc('tech_ancient_infusion'); },
         category: 'sacrifice',
         era: 'early_space',
         reqs: { sacrifice: 2, theology: 4 },
@@ -7331,8 +7352,8 @@ const techs = {
     },
     garrison: {
         id: 'tech-garrison',
-        title: loc('tech_garrison'),
-        desc: loc('tech_garrison_desc'),
+        title(){ return loc('tech_garrison'); },
+        desc(){ return loc('tech_garrison_desc'); },
         category: 'military',
         era: 'civilized',
         reqs: { science: 1, housing: 1 },
@@ -7351,8 +7372,8 @@ const techs = {
     },
     mercs: {
         id: 'tech-mercs',
-        title: loc('tech_mercs'),
-        desc: loc('tech_mercs_desc'),
+        title(){ return loc('tech_mercs'); },
+        desc(){ return loc('tech_mercs_desc'); },
         category: 'military',
         era: 'civilized',
         reqs: { military: 1 },
@@ -7376,8 +7397,8 @@ const techs = {
     },
     signing_bonus: {
         id: 'tech-signing_bonus',
-        title: loc('tech_signing_bonus'),
-        desc: loc('tech_signing_bonus_desc'),
+        title(){ return loc('tech_signing_bonus'); },
+        desc(){ return loc('tech_signing_bonus_desc'); },
         category: 'military',
         era: 'industrialized',
         reqs: { mercs: 1, high_tech: 3 },
@@ -7396,8 +7417,8 @@ const techs = {
     },
     hospital: {
         id: 'tech-hospital',
-        title: loc('tech_hospital'),
-        desc: loc('tech_hospital'),
+        title(){ return loc('tech_hospital'); },
+        desc(){ return loc('tech_hospital'); },
         category: 'military',
         era: 'civilized',
         reqs: { military: 1, alumina: 1 },
@@ -7437,8 +7458,8 @@ const techs = {
     },
     boot_camp: {
         id: 'tech-boot_camp',
-        title: loc('tech_boot_camp'),
-        desc: loc('tech_boot_camp_desc'),
+        title(){ return loc('tech_boot_camp'); },
+        desc(){ return loc('tech_boot_camp_desc'); },
         category: 'military',
         era: 'discovery',
         reqs: { high_tech: 1 },
@@ -7457,8 +7478,8 @@ const techs = {
     },
     vr_training: {
         id: 'tech-vr_training',
-        title: loc('tech_vr_training'),
-        desc: loc('tech_vr_training'),
+        title(){ return loc('tech_vr_training'); },
+        desc(){ return loc('tech_vr_training'); },
         category: 'military',
         era: 'interstellar',
         path: ['standard','truepath'],
@@ -7479,7 +7500,7 @@ const techs = {
     bows: {
         id: 'tech-bows',
         title(){ return global.race['blubber'] ? loc('tech_harpoon') : loc('tech_bows'); },
-        desc: loc('tech_bows_desc'),
+        desc(){ return loc('tech_bows_desc'); },
         category: 'military',
         era: 'civilized',
         reqs: { military: 1 },
@@ -7552,8 +7573,8 @@ const techs = {
     },
     bunk_beds: {
         id: 'tech-bunk_beds',
-        title: loc('tech_bunk_beds'),
-        desc: loc('tech_bunk_beds'),
+        title(){ return loc('tech_bunk_beds'); },
+        desc(){ return loc('tech_bunk_beds'); },
         category: 'military',
         era: 'globalized',
         reqs: { military: 4, high_tech: 4 },
@@ -7672,6 +7693,31 @@ const techs = {
             vBind({el: `#c_garrison`},'update');
         }
     },
+    disruptor_rifles_tp: {
+        id: 'tech-disruptor_rifles_tp',
+        title(){ return global.race.universe === 'magic' ? loc('tech_magic_missile') : loc('tech_disruptor_rifles'); },
+        desc(){ return global.race.universe === 'magic' ? loc('tech_magic_missile') : loc('tech_disruptor_rifles'); },
+        category: 'military',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { military: 8, resettle: 13 },
+        grant: ['military',9],
+        cost: {
+            Knowledge(){ return 23000000; },
+            Positronium(){ return 20000; }
+        },
+        effect(){ return global.race.universe === 'magic' ? loc('tech_magic_missile_effect') : loc('tech_disruptor_rifles_tp_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        },
+        post(){
+            vBind({el: `#garrison`},'update');
+            vBind({el: `#c_garrison`},'update');
+        }
+    },
     gauss_rifles: {
         id: 'tech-gauss_rifles',
         title(){ return global.race.universe === 'magic' ? loc('tech_magicword_kill') : loc('tech_gauss_rifles'); },
@@ -7698,8 +7744,8 @@ const techs = {
     },
     cyborg_soldiers: {
         id: 'tech-cyborg_soldiers',
-        title: loc('tech_cyborg_soldiers'),
-        desc: loc('tech_cyborg_soldiers'),
+        title(){ return loc('tech_cyborg_soldiers'); },
+        desc(){ return loc('tech_cyborg_soldiers'); },
         category: 'military',
         era: 'dimensional',
         reqs: { military: 10, high_tech: 18 },
@@ -7724,8 +7770,8 @@ const techs = {
     },
     ethereal_weapons: {
         id: 'tech-ethereal_weapons',
-        title: loc('tech_ethereal_weapons'),
-        desc: loc('tech_ethereal_weapons'),
+        title(){ return loc('tech_ethereal_weapons'); },
+        desc(){ return loc('tech_ethereal_weapons'); },
         category: 'military',
         era: 'existential',
         reqs: { military: 11, asphodel: 5 },
@@ -7749,8 +7795,8 @@ const techs = {
     },
     space_marines: {
         id: 'tech-space_marines',
-        title: loc('tech_space_marines'),
-        desc: loc('tech_space_marines_desc'),
+        title(){ return loc('tech_space_marines'); },
+        desc(){ return loc('tech_space_marines_desc'); },
         category: 'military',
         era: 'early_space',
         reqs: { space: 3, mars: 2 },
@@ -7770,8 +7816,8 @@ const techs = {
     },
     hammocks: {
         id: 'tech-hammocks',
-        title: loc('tech_hammocks'),
-        desc: loc('tech_hammocks'),
+        title(){ return loc('tech_hammocks'); },
+        desc(){ return loc('tech_hammocks'); },
         category: 'military',
         era: 'intergalactic',
         reqs: { marines: 1, nanoweave: 1 },
@@ -7790,8 +7836,8 @@ const techs = {
     },
     cruiser: {
         id: 'tech-cruiser',
-        title: loc('tech_cruiser'),
-        desc: loc('tech_cruiser'),
+        title(){ return loc('tech_cruiser'); },
+        desc(){ return loc('tech_cruiser'); },
         category: 'military',
         era: 'interstellar',
         reqs: { high_tech: 14, proxima: 2, aerogel: 1 },
@@ -7810,8 +7856,8 @@ const techs = {
     },
     armor: {
         id: 'tech-armor',
-        title: loc('tech_armor'),
-        desc: loc('tech_armor_desc'),
+        title(){ return loc('tech_armor'); },
+        desc(){ return loc('tech_armor_desc'); },
         category: 'military',
         era: 'civilized',
         reqs: { military: 1 },
@@ -7832,8 +7878,8 @@ const techs = {
     },
     plate_armor: {
         id: 'tech-plate_armor',
-        title: loc('tech_plate_armor'),
-        desc: loc('tech_plate_armor_desc'),
+        title(){ return loc('tech_plate_armor'); },
+        desc(){ return loc('tech_plate_armor_desc'); },
         category: 'military',
         era: 'civilized',
         reqs: { armor: 1, mining: 3 },
@@ -7852,8 +7898,8 @@ const techs = {
     },
     kevlar: {
         id: 'tech-kevlar',
-        title: loc('tech_kevlar'),
-        desc: loc('tech_kevlar_desc'),
+        title(){ return loc('tech_kevlar'); },
+        desc(){ return loc('tech_kevlar_desc'); },
         category: 'military',
         era: 'globalized',
         reqs: { armor: 2, polymer: 1 },
@@ -7872,8 +7918,8 @@ const techs = {
     },
     nanoweave_vest: {
         id: 'tech-nanoweave_vest',
-        title: loc('tech_nanoweave_vest'),
-        desc: loc('tech_nanoweave_vest'),
+        title(){ return loc('tech_nanoweave_vest'); },
+        desc(){ return loc('tech_nanoweave_vest'); },
         category: 'military',
         era: 'intergalactic',
         reqs: { armor: 3, nanoweave: 1 },
@@ -7892,8 +7938,8 @@ const techs = {
     },
     laser_turret: {
         id: 'tech-laser_turret',
-        title: loc('tech_laser_turret'),
-        desc: loc('tech_laser_turret'),
+        title(){ return loc('tech_laser_turret'); },
+        desc(){ return loc('tech_laser_turret'); },
         category: 'hell_dimension',
         era: 'interstellar',
         reqs: { high_tech: 9, portal: 2 },
@@ -7917,8 +7963,8 @@ const techs = {
     },
     plasma_turret: {
         id: 'tech-plasma_turret',
-        title: loc('tech_plasma_turret'),
-        desc: loc('tech_plasma_turret'),
+        title(){ return loc('tech_plasma_turret'); },
+        desc(){ return loc('tech_plasma_turret'); },
         category: 'hell_dimension',
         era: 'interstellar',
         reqs: { high_tech: 13, turret: 1 },
@@ -7963,8 +8009,8 @@ const techs = {
     },
     dynamite: {
         id: 'tech-dynamite',
-        title: loc('tech_dynamite'),
-        desc: loc('tech_dynamite'),
+        title(){ return loc('tech_dynamite'); },
+        desc(){ return loc('tech_dynamite'); },
         category: 'mining',
         era: 'civilized',
         reqs: { explosives: 1 },
@@ -7983,8 +8029,8 @@ const techs = {
     },
     anfo: {
         id: 'tech-anfo',
-        title: loc('tech_anfo'),
-        desc: loc('tech_anfo'),
+        title(){ return loc('tech_anfo'); },
+        desc(){ return loc('tech_anfo'); },
         category: 'mining',
         era: 'industrialized',
         reqs: { explosives: 2, oil: 1 },
@@ -8003,8 +8049,8 @@ const techs = {
     },
     super_tnt: {
         id: 'tech-super_tnt',
-        title: loc('tech_super_tnt'),
-        desc: loc('tech_super_tnt'),
+        title(){ return loc('tech_super_tnt'); },
+        desc(){ return loc('tech_super_tnt'); },
         category: 'mining',
         era: 'existential',
         reqs: { explosives: 3, science: 23 },
@@ -8024,8 +8070,8 @@ const techs = {
     },
     mad: {
         id: 'tech-mad',
-        title: loc('tech_mad'),
-        desc: loc('tech_mad_desc'),
+        title(){ return loc('tech_mad'); },
+        desc(){ return loc('tech_mad_desc'); },
         category: 'special',
         era: 'globalized',
         reqs: { uranium: 1, explosives: 3, high_tech: 7 },
@@ -8057,8 +8103,8 @@ const techs = {
     },
     cement: {
         id: 'tech-cement',
-        title: loc('tech_cement'),
-        desc: loc('tech_cement_desc'),
+        title(){ return loc('tech_cement'); },
+        desc(){ return loc('tech_cement_desc'); },
         category: 'cement',
         era: 'civilized',
         reqs: { mining: 1, storage: 1, science: 1 },
@@ -8078,8 +8124,8 @@ const techs = {
     },
     rebar: {
         id: 'tech-rebar',
-        title: loc('tech_rebar'),
-        desc: loc('tech_rebar'),
+        title(){ return loc('tech_rebar'); },
+        desc(){ return loc('tech_rebar'); },
         category: 'cement',
         era: 'civilized',
         reqs: { mining: 3, cement: 1 },
@@ -8099,8 +8145,8 @@ const techs = {
     },
     steel_rebar: {
         id: 'tech-steel_rebar',
-        title: loc('tech_steel_rebar'),
-        desc: loc('tech_steel_rebar'),
+        title(){ return loc('tech_steel_rebar'); },
+        desc(){ return loc('tech_steel_rebar'); },
         category: 'cement',
         era: 'civilized',
         reqs: { smelting: 2, cement: 2 },
@@ -8120,8 +8166,8 @@ const techs = {
     },
     portland_cement: {
         id: 'tech-portland_cement',
-        title: loc('tech_portland_cement'),
-        desc: loc('tech_portland_cement'),
+        title(){ return loc('tech_portland_cement'); },
+        desc(){ return loc('tech_portland_cement'); },
         category: 'cement',
         era: 'industrialized',
         reqs: { cement: 3, high_tech: 3 },
@@ -8140,8 +8186,8 @@ const techs = {
     },
     screw_conveyor: {
         id: 'tech-screw_conveyor',
-        title: loc('tech_screw_conveyor'),
-        desc: loc('tech_screw_conveyor'),
+        title(){ return loc('tech_screw_conveyor'); },
+        desc(){ return loc('tech_screw_conveyor'); },
         category: 'cement',
         era: 'globalized',
         reqs: { cement: 4, high_tech: 4 },
@@ -8160,8 +8206,8 @@ const techs = {
     },
     adamantite_screws: {
         id: 'tech-adamantite_screws',
-        title: loc('tech_adamantite_screws'),
-        desc: loc('tech_adamantite_screws'),
+        title(){ return loc('tech_adamantite_screws'); },
+        desc(){ return loc('tech_adamantite_screws'); },
         category: 'cement',
         era: 'interstellar',
         reqs: { cement: 5, alpha: 2 },
@@ -8181,8 +8227,8 @@ const techs = {
     },
     otherworldly_binder: {
         id: 'tech-otherworldly_binder',
-        title: loc('tech_otherworldly_binder'),
-        desc: loc('tech_otherworldly_binder'),
+        title(){ return loc('tech_otherworldly_binder'); },
+        desc(){ return loc('tech_otherworldly_binder'); },
         category: 'cement',
         era: 'existential',
         reqs: { cement: 6, science: 22 },
@@ -8201,10 +8247,31 @@ const techs = {
             return false;
         }
     },
+    geopolymer_cement: {
+        id: 'tech-geopolymer_cement',
+        title(){ return loc('tech_geopolymer_cement'); },
+        desc(){ return loc('tech_geopolymer_cement'); },
+        category: 'cement',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { cement: 5, resettle: 13 },
+        not_trait: ['flier'],
+        grant: ['cement',6],
+        cost: {
+            Knowledge(){ return 22000000; }
+        },
+        effect(){ return loc('tech_geopolymer_cement_effect',[global.resource.Cement.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     hunter_process: {
         id: 'tech-hunter_process',
-        title: loc('tech_hunter_process'),
-        desc: loc('tech_hunter_process'),
+        title(){ return loc('tech_hunter_process'); },
+        desc(){ return loc('tech_hunter_process'); },
         category: 'mining',
         era: 'industrialized',
         reqs: { high_tech: 3, smelting: 2 },
@@ -8224,8 +8291,8 @@ const techs = {
     },
     kroll_process: {
         id: 'tech-kroll_process',
-        title: loc('tech_kroll_process'),
-        desc: loc('tech_kroll_process'),
+        title(){ return loc('tech_kroll_process'); },
+        desc(){ return loc('tech_kroll_process'); },
         category: 'mining',
         era: 'globalized',
         reqs: { titanium: 1, high_tech: 4 },
@@ -8244,8 +8311,8 @@ const techs = {
     },
     cambridge_process: {
         id: 'tech-cambridge_process',
-        title: loc('tech_cambridge_process'),
-        desc: loc('tech_cambridge_process'),
+        title(){ return loc('tech_cambridge_process'); },
+        desc(){ return loc('tech_cambridge_process'); },
         category: 'mining',
         era: 'early_space',
         reqs: { titanium: 2, supercollider: 1 },
@@ -8264,8 +8331,8 @@ const techs = {
     },
     pynn_partical: {
         id: 'tech-pynn_partical',
-        title: loc('tech_pynn_partical'),
-        desc: loc('tech_pynn_partical'),
+        title(){ return loc('tech_pynn_partical'); },
+        desc(){ return loc('tech_pynn_partical'); },
         category: 'progress',
         era: 'early_space',
         path: ['standard'],
@@ -8284,8 +8351,8 @@ const techs = {
     },
     matter_compression: {
         id: 'tech-matter_compression',
-        title: loc('tech_matter_compression'),
-        desc: loc('tech_matter_compression'),
+        title(){ return loc('tech_matter_compression'); },
+        desc(){ return loc('tech_matter_compression'); },
         category: 'storage',
         era: 'early_space',
         path: ['standard'],
@@ -8304,8 +8371,8 @@ const techs = {
     },
     higgs_boson: {
         id: 'tech-higgs_boson',
-        title: loc('tech_higgs_boson'),
-        desc: loc('tech_higgs_boson'),
+        title(){ return loc('tech_higgs_boson'); },
+        desc(){ return loc('tech_higgs_boson'); },
         category: 'science',
         era: 'early_space',
         path: ['standard'],
@@ -8324,8 +8391,8 @@ const techs = {
     },
     dimensional_compression: {
         id: 'tech-dimensional_compression',
-        title: loc('tech_dimensional_compression'),
-        desc: loc('tech_dimensional_compression'),
+        title(){ return loc('tech_dimensional_compression'); },
+        desc(){ return loc('tech_dimensional_compression'); },
         category: 'storage',
         era: 'interstellar',
         reqs: { particles: 3, science: 11, supercollider: 3 },
@@ -8344,8 +8411,8 @@ const techs = {
     },
     theology: {
         id: 'tech-theology',
-        title: loc('tech_theology'),
-        desc: loc('tech_theology'),
+        title(){ return loc('tech_theology'); },
+        desc(){ return loc('tech_theology'); },
         category: 'religion',
         era: 'civilized',
         reqs: { theology: 1, housing: 1, cement: 1 },
@@ -8370,8 +8437,8 @@ const techs = {
     },
     fanaticism: {
         id: 'tech-fanaticism',
-        title: loc('tech_fanaticism'),
-        desc: loc('tech_fanaticism'),
+        title(){ return loc('tech_fanaticism'); },
+        desc(){ return loc('tech_fanaticism'); },
         category: 'religion',
         era: 'civilized',
         wiki: global.genes['transcendence'] ? false : true,
@@ -8400,8 +8467,8 @@ const techs = {
     },
     alt_fanaticism: {
         id: 'tech-alt_fanaticism',
-        title: loc('tech_fanaticism'),
-        desc: loc('tech_fanaticism'),
+        title(){ return loc('tech_fanaticism'); },
+        desc(){ return loc('tech_fanaticism'); },
         category: 'religion',
         era: 'civilized',
         wiki: global.genes['transcendence'] ? true : false,
@@ -8431,8 +8498,8 @@ const techs = {
     },
     ancient_theology: {
         id: 'tech-ancient_theology',
-        title: loc('tech_ancient_theology'),
-        desc: loc('tech_ancient_theology'),
+        title(){ return loc('tech_ancient_theology'); },
+        desc(){ return loc('tech_ancient_theology'); },
         category: 'religion',
         era: 'early_space',
         reqs: { theology: 3, mars: 2 },
@@ -8458,8 +8525,8 @@ const techs = {
     },
     study: {
         id: 'tech-study',
-        title: loc('tech_study'),
-        desc: loc('tech_study_desc'),
+        title(){ return loc('tech_study'); },
+        desc(){ return loc('tech_study_desc'); },
         category: 'religion',
         era: 'early_space',
         reqs: { theology: 4 },
@@ -8484,8 +8551,8 @@ const techs = {
     },
     study_alt: {
         id: 'tech-study_alt',
-        title: loc('tech_study'),
-        desc: loc('tech_study_desc'),
+        title(){ return loc('tech_study'); },
+        desc(){ return loc('tech_study_desc'); },
         category: 'religion',
         era: 'early_space',
         reqs: { theology: 4 },
@@ -8508,8 +8575,8 @@ const techs = {
     },
     encoding: {
         id: 'tech-encoding',
-        title: loc('tech_encoding'),
-        desc: loc('tech_encoding_desc'),
+        title(){ return loc('tech_encoding'); },
+        desc(){ return loc('tech_encoding_desc'); },
         category: 'religion',
         era: 'deep_space',
         reqs: { ancient_study: 1, mars: 5 },
@@ -8527,8 +8594,8 @@ const techs = {
     },
     deify: {
         id: 'tech-deify',
-        title: loc('tech_deify'),
-        desc: loc('tech_deify_desc'),
+        title(){ return loc('tech_deify'); },
+        desc(){ return loc('tech_deify_desc'); },
         category: 'religion',
         era: 'early_space',
         reqs: { theology: 4 },
@@ -8557,8 +8624,8 @@ const techs = {
     },
     deify_alt: {
         id: 'tech-deify_alt',
-        title: loc('tech_deify'),
-        desc: loc('tech_deify_desc'),
+        title(){ return loc('tech_deify'); },
+        desc(){ return loc('tech_deify_desc'); },
         category: 'religion',
         era: 'early_space',
         reqs: { theology: 4 },
@@ -8585,8 +8652,8 @@ const techs = {
     },
     infusion: {
         id: 'tech-infusion',
-        title: loc('tech_infusion'),
-        desc: loc('tech_infusion_desc'),
+        title(){ return loc('tech_infusion'); },
+        desc(){ return loc('tech_infusion_desc'); },
         category: 'religion',
         era: 'deep_space',
         reqs: { ancient_deify: 1, mars: 5 },
@@ -8604,8 +8671,8 @@ const techs = {
     },
     indoctrination: {
         id: 'tech-indoctrination',
-        title: loc('tech_indoctrination'),
-        desc: loc('tech_indoctrination'),
+        title(){ return loc('tech_indoctrination'); },
+        desc(){ return loc('tech_indoctrination'); },
         category: 'religion',
         era: 'civilized',
         reqs: { fanaticism: 1 },
@@ -8629,8 +8696,8 @@ const techs = {
     },
     missionary: {
         id: 'tech-missionary',
-        title: loc('tech_missionary'),
-        desc: loc('tech_missionary'),
+        title(){ return loc('tech_missionary'); },
+        desc(){ return loc('tech_missionary'); },
         category: 'religion',
         era: 'discovery',
         reqs: { fanaticism: 2 },
@@ -8649,8 +8716,8 @@ const techs = {
     },
     zealotry: {
         id: 'tech-zealotry',
-        title: loc('tech_zealotry'),
-        desc: loc('tech_zealotry'),
+        title(){ return loc('tech_zealotry'); },
+        desc(){ return loc('tech_zealotry'); },
         category: 'religion',
         era: 'discovery',
         reqs: { fanaticism: 3 },
@@ -8668,8 +8735,8 @@ const techs = {
     },
     anthropology: {
         id: 'tech-anthropology',
-        title: loc('tech_anthropology'),
-        desc: loc('tech_anthropology'),
+        title(){ return loc('tech_anthropology'); },
+        desc(){ return loc('tech_anthropology'); },
         category: 'religion',
         era: 'civilized',
         wiki: global.genes['transcendence'] ? false : true,
@@ -8691,8 +8758,8 @@ const techs = {
     },
     alt_anthropology: {
         id: 'tech-alt_anthropology',
-        title: loc('tech_anthropology'),
-        desc: loc('tech_anthropology'),
+        title(){ return loc('tech_anthropology'); },
+        desc(){ return loc('tech_anthropology'); },
         category: 'religion',
         era: 'civilized',
         wiki: global.genes['transcendence'] ? true : false,
@@ -8715,8 +8782,8 @@ const techs = {
     },
     mythology: {
         id: 'tech-mythology',
-        title: loc('tech_mythology'),
-        desc: loc('tech_mythology'),
+        title(){ return loc('tech_mythology'); },
+        desc(){ return loc('tech_mythology'); },
         category: 'religion',
         era: 'civilized',
         reqs: { anthropology: 1 },
@@ -8734,8 +8801,8 @@ const techs = {
     },
     archaeology: {
         id: 'tech-archaeology',
-        title: loc('tech_archaeology'),
-        desc: loc('tech_archaeology'),
+        title(){ return loc('tech_archaeology'); },
+        desc(){ return loc('tech_archaeology'); },
         category: 'science',
         era: 'discovery',
         reqs: { anthropology: 2 },
@@ -8753,8 +8820,8 @@ const techs = {
     },
     merchandising: {
         id: 'tech-merchandising',
-        title: loc('tech_merchandising'),
-        desc: loc('tech_merchandising'),
+        title(){ return loc('tech_merchandising'); },
+        desc(){ return loc('tech_merchandising'); },
         category: 'banking',
         era: 'discovery',
         reqs: { anthropology: 3 },
@@ -8772,8 +8839,8 @@ const techs = {
     },
     astrophysics: {
         id: 'tech-astrophysics',
-        title: loc('tech_astrophysics'),
-        desc: loc('tech_astrophysics_desc'),
+        title(){ return loc('tech_astrophysics'); },
+        desc(){ return loc('tech_astrophysics_desc'); },
         category: 'space_exploration',
         era: 'early_space',
         reqs: { space: 2 },
@@ -8792,8 +8859,8 @@ const techs = {
     },
     rover: {
         id: 'tech-rover',
-        title: loc('tech_rover'),
-        desc: loc('tech_rover'),
+        title(){ return loc('tech_rover'); },
+        desc(){ return loc('tech_rover'); },
         category: 'space_exploration',
         era: 'early_space',
         reqs: { space_explore: 1 },
@@ -8816,8 +8883,8 @@ const techs = {
     },
     probes: {
         id: 'tech-probes',
-        title: loc('tech_probes'),
-        desc: loc('tech_probes'),
+        title(){ return loc('tech_probes'); },
+        desc(){ return loc('tech_probes'); },
         category: 'space_exploration',
         era: 'early_space',
         reqs: { space_explore: 2 },
@@ -8842,8 +8909,8 @@ const techs = {
     },
     starcharts: {
         id: 'tech-starcharts',
-        title: loc('tech_starcharts'),
-        desc: loc('tech_starcharts'),
+        title(){ return loc('tech_starcharts'); },
+        desc(){ return loc('tech_starcharts'); },
         category: 'space_exploration',
         era: 'early_space',
         reqs: { space_explore: 3, science: 9 },
@@ -8867,7 +8934,7 @@ const techs = {
     },
     colonization: {
         id: 'tech-colonization',
-        title: loc('tech_colonization'),
+        title(){ return loc('tech_colonization'); },
         desc(){ return loc('tech_colonization_desc',[planetName().red]); },
         category: 'agriculture',
         era: 'early_space',
@@ -8907,8 +8974,8 @@ const techs = {
     },
     space_manufacturing: {
         id: 'tech-space_manufacturing',
-        title: loc('tech_space_manufacturing'),
-        desc: loc('tech_space_manufacturing_desc'),
+        title(){ return loc('tech_space_manufacturing'); },
+        desc(){ return loc('tech_space_manufacturing_desc'); },
         category: 'crafting',
         era: 'early_space',
         reqs: { mars: 3 },
@@ -8927,8 +8994,8 @@ const techs = {
     },
     exotic_lab: {
         id: 'tech-exotic_lab',
-        title: loc('tech_exotic_lab'),
-        desc: loc('tech_exotic_lab_desc'),
+        title(){ return loc('tech_exotic_lab'); },
+        desc(){ return loc('tech_exotic_lab_desc'); },
         category: 'science',
         era: 'deep_space',
         reqs: { mars: 4, asteroid: 5 },
@@ -8947,7 +9014,7 @@ const techs = {
     },
     hydroponics: {
         id: 'tech-hydroponics',
-        title: loc('tech_hydroponics'),
+        title(){ return loc('tech_hydroponics'); },
         desc(){ return loc('tech_hydroponics'); },
         category: 'agriculture',
         era: 'intergalactic',
@@ -8967,8 +9034,8 @@ const techs = {
     },
     dyson_sphere: {
         id: 'tech-dyson_sphere',
-        title: loc('tech_dyson_sphere'),
-        desc: loc('tech_dyson_sphere'),
+        title(){ return loc('tech_dyson_sphere'); },
+        desc(){ return loc('tech_dyson_sphere'); },
         category: 'power_generation',
         era: 'early_space',
         reqs: { solar: 1 },
@@ -8986,8 +9053,8 @@ const techs = {
     },
     dyson_swarm: {
         id: 'tech-dyson_swarm',
-        title: loc('tech_dyson_swarm'),
-        desc: loc('tech_dyson_swarm'),
+        title(){ return loc('tech_dyson_swarm'); },
+        desc(){ return loc('tech_dyson_swarm'); },
         category: 'power_generation',
         era: 'early_space',
         reqs: { solar: 2 },
@@ -9006,8 +9073,8 @@ const techs = {
     },
     swarm_plant: {
         id: 'tech-swarm_plant',
-        title: loc('tech_swarm_plant'),
-        desc: loc('tech_swarm_plant'),
+        title(){ return loc('tech_swarm_plant'); },
+        desc(){ return loc('tech_swarm_plant'); },
         category: 'power_generation',
         era: 'deep_space',
         reqs: { solar: 3, hell: 1, gas_moon: 1 },
@@ -9026,8 +9093,8 @@ const techs = {
     },
     space_sourced: {
         id: 'tech-space_sourced',
-        title: loc('tech_space_sourced'),
-        desc: loc('tech_space_sourced_desc'),
+        title(){ return loc('tech_space_sourced'); },
+        desc(){ return loc('tech_space_sourced_desc'); },
         category: 'power_generation',
         era: 'deep_space',
         reqs: { solar: 4, asteroid: 3 },
@@ -9045,8 +9112,8 @@ const techs = {
     },
     swarm_plant_ai: {
         id: 'tech-swarm_plant_ai',
-        title: loc('tech_swarm_plant_ai'),
-        desc: loc('tech_swarm_plant_ai'),
+        title(){ return loc('tech_swarm_plant_ai'); },
+        desc(){ return loc('tech_swarm_plant_ai'); },
         category: 'power_generation',
         era: 'deep_space',
         reqs: { solar: 4, high_tech: 10 },
@@ -9064,8 +9131,8 @@ const techs = {
     },
     swarm_control_ai: {
         id: 'tech-swarm_control_ai',
-        title: loc('tech_swarm_control_ai'),
-        desc: loc('tech_swarm_control_ai'),
+        title(){ return loc('tech_swarm_control_ai'); },
+        desc(){ return loc('tech_swarm_control_ai'); },
         category: 'power_generation',
         era: 'deep_space',
         reqs: { swarm: 1 },
@@ -9083,8 +9150,8 @@ const techs = {
     },
     quantum_swarm: {
         id: 'tech-quantum_swarm',
-        title: loc('tech_quantum_swarm'),
-        desc: loc('tech_quantum_swarm'),
+        title(){ return loc('tech_quantum_swarm'); },
+        desc(){ return loc('tech_quantum_swarm'); },
         category: 'power_generation',
         era: 'deep_space',
         reqs: { swarm: 2, high_tech: 11 },
@@ -9102,8 +9169,8 @@ const techs = {
     },
     perovskite_cell: {
         id: 'tech-perovskite_cell',
-        title: loc('tech_perovskite_cell'),
-        desc: loc('tech_perovskite_cell'),
+        title(){ return loc('tech_perovskite_cell'); },
+        desc(){ return loc('tech_perovskite_cell'); },
         category: 'power_generation',
         era: 'interstellar',
         reqs: { swarm: 3 },
@@ -9123,8 +9190,8 @@ const techs = {
     },
     swarm_convection: {
         id: 'tech-swarm_convection',
-        title: loc('tech_swarm_convection'),
-        desc: loc('tech_swarm_convection'),
+        title(){ return loc('tech_swarm_convection'); },
+        desc(){ return loc('tech_swarm_convection'); },
         category: 'power_generation',
         era: 'interstellar',
         reqs: { swarm: 4, stanene: 1 },
@@ -9144,8 +9211,8 @@ const techs = {
     },
     orichalcum_panels: {
         id: 'tech-orichalcum_panels',
-        title: loc('tech_orichalcum_panels'),
-        desc: loc('tech_orichalcum_panels'),
+        title(){ return loc('tech_orichalcum_panels'); },
+        desc(){ return loc('tech_orichalcum_panels'); },
         category: 'power_generation',
         era: 'intergalactic',
         reqs: { high_tech: 17, swarm: 5 },
@@ -9164,8 +9231,8 @@ const techs = {
     },
     dyson_net: {
         id: 'tech-dyson_net',
-        title: loc('tech_dyson_net'),
-        desc: loc('tech_dyson_net'),
+        title(){ return loc('tech_dyson_net'); },
+        desc(){ return loc('tech_dyson_net'); },
         category: 'power_generation',
         era: 'interstellar',
         reqs: { solar: 3, proxima: 2, stanene: 1 },
@@ -9184,8 +9251,8 @@ const techs = {
     },
     dyson_sphere2: {
         id: 'tech-dyson_sphere2',
-        title: loc('tech_dyson_sphere'),
-        desc: loc('tech_dyson_sphere'),
+        title(){ return loc('tech_dyson_sphere'); },
+        desc(){ return loc('tech_dyson_sphere'); },
         category: 'power_generation',
         era: 'intergalactic',
         reqs: { proxima: 3, piracy: 1 },
@@ -9204,8 +9271,8 @@ const techs = {
     },
     orichalcum_sphere: {
         id: 'tech-orichalcum_sphere',
-        title: loc('tech_orichalcum_sphere'),
-        desc: loc('tech_orichalcum_sphere'),
+        title(){ return loc('tech_orichalcum_sphere'); },
+        desc(){ return loc('tech_orichalcum_sphere'); },
         category: 'power_generation',
         era: 'intergalactic',
         reqs: { dyson: 1, science: 19 },
@@ -9228,8 +9295,8 @@ const techs = {
     },
     elysanite_sphere: {
         id: 'tech-elysanite_sphere',
-        title: loc('tech_elysanite_sphere'),
-        desc: loc('tech_elysanite_sphere'),
+        title(){ return loc('tech_elysanite_sphere'); },
+        desc(){ return loc('tech_elysanite_sphere'); },
         category: 'power_generation',
         era: 'existential',
         reqs: { high_tech: 19, dyson: 2 },
@@ -9252,8 +9319,8 @@ const techs = {
     },
     gps: {
         id: 'tech-gps',
-        title: loc('tech_gps'),
-        desc: loc('tech_gps'),
+        title(){ return loc('tech_gps'); },
+        desc(){ return loc('tech_gps'); },
         category: 'market',
         era: 'early_space',
         reqs: { space_explore: 1 },
@@ -9273,8 +9340,8 @@ const techs = {
     },
     nav_beacon: {
         id: 'tech-nav_beacon',
-        title: loc('tech_nav_beacon'),
-        desc: loc('tech_nav_beacon'),
+        title(){ return loc('tech_nav_beacon'); },
+        desc(){ return loc('tech_nav_beacon'); },
         category: 'space_exploration',
         era: 'early_space',
         reqs: { luna: 1 },
@@ -9293,8 +9360,8 @@ const techs = {
     },
     subspace_signal: {
         id: 'tech-subspace_signal',
-        title: loc('tech_subspace_signal'),
-        desc: loc('tech_subspace_signal'),
+        title(){ return loc('tech_subspace_signal'); },
+        desc(){ return loc('tech_subspace_signal'); },
         category: 'space_exploration',
         era: 'interstellar',
         reqs: { science: 13, luna: 2, stanene: 1 },
@@ -9314,8 +9381,8 @@ const techs = {
     },
     atmospheric_mining: {
         id: 'tech-atmospheric_mining',
-        title: loc('tech_atmospheric_mining'),
-        desc: loc('tech_atmospheric_mining'),
+        title(){ return loc('tech_atmospheric_mining'); },
+        desc(){ return loc('tech_atmospheric_mining'); },
         category: 'power_generation',
         era: 'early_space',
         reqs: { space: 5 },
@@ -9335,8 +9402,8 @@ const techs = {
     },
     helium_attractor: {
         id: 'tech-helium_attractor',
-        title: loc('tech_helium_attractor'),
-        desc: loc('tech_helium_attractor'),
+        title(){ return loc('tech_helium_attractor'); },
+        desc(){ return loc('tech_helium_attractor'); },
         category: 'power_generation',
         era: 'deep_space',
         reqs: { gas_giant: 1, elerium: 1 },
@@ -9355,8 +9422,8 @@ const techs = {
     },
     ram_scoops: {
         id: 'tech-ram_scoops',
-        title: loc('tech_ram_scoops'),
-        desc: loc('tech_ram_scoops'),
+        title(){ return loc('tech_ram_scoops'); },
+        desc(){ return loc('tech_ram_scoops'); },
         category: 'power_generation',
         era: 'interstellar',
         reqs: { nebula: 2 },
@@ -9374,8 +9441,8 @@ const techs = {
     },
     elerium_prospecting: {
         id: 'tech-elerium_prospecting',
-        title: loc('tech_elerium_prospecting'),
-        desc: loc('tech_elerium_prospecting'),
+        title(){ return loc('tech_elerium_prospecting'); },
+        desc(){ return loc('tech_elerium_prospecting'); },
         category: 'space_mining',
         era: 'interstellar',
         reqs: { nebula: 2 },
@@ -9394,8 +9461,8 @@ const techs = {
     },
     zero_g_mining: {
         id: 'tech-zero_g_mining',
-        title: loc('tech_zero_g_mining'),
-        desc: loc('tech_zero_g_mining'),
+        title(){ return loc('tech_zero_g_mining'); },
+        desc(){ return loc('tech_zero_g_mining'); },
         category: 'space_mining',
         era: 'early_space',
         reqs: { asteroid: 1, high_tech: 8 },
@@ -9416,8 +9483,8 @@ const techs = {
     },
     elerium_mining: {
         id: 'tech-elerium_mining',
-        title: loc('tech_elerium_mining'),
-        desc: loc('tech_elerium_mining'),
+        title(){ return loc('tech_elerium_mining'); },
+        desc(){ return loc('tech_elerium_mining'); },
         category: 'space_mining',
         era: 'deep_space',
         reqs: { asteroid: 4 },
@@ -9440,8 +9507,8 @@ const techs = {
     },
     laser_mining: {
         id: 'tech-laser_mining',
-        title: loc('tech_laser_mining'),
-        desc: loc('tech_laser_mining'),
+        title(){ return loc('tech_laser_mining'); },
+        desc(){ return loc('tech_laser_mining'); },
         category: 'space_mining',
         era: 'deep_space',
         reqs: { asteroid: 5, elerium: 1, high_tech: 9 },
@@ -9459,8 +9526,8 @@ const techs = {
     },
     plasma_mining: {
         id: 'tech-plasma_mining',
-        title: loc('tech_plasma_mining'),
-        desc: loc('tech_plasma_mining'),
+        title(){ return loc('tech_plasma_mining'); },
+        desc(){ return loc('tech_plasma_mining'); },
         category: 'space_mining',
         era: 'interstellar',
         reqs: { asteroid: 6, high_tech: 13 },
@@ -9479,8 +9546,8 @@ const techs = {
     },
     elerium_tech: {
         id: 'tech-elerium_tech',
-        title: loc('tech_elerium_tech'),
-        desc: loc('tech_elerium_tech'),
+        title(){ return loc('tech_elerium_tech'); },
+        desc(){ return loc('tech_elerium_tech'); },
         category: 'space_mining',
         era: 'deep_space',
         reqs: { asteroid: 5 },
@@ -9499,8 +9566,8 @@ const techs = {
     },
     elerium_reactor: {
         id: 'tech-elerium_reactor',
-        title: loc('tech_elerium_reactor'),
-        desc: loc('tech_elerium_reactor'),
+        title(){ return loc('tech_elerium_reactor'); },
+        desc(){ return loc('tech_elerium_reactor'); },
         category: 'power_generation',
         era: 'deep_space',
         reqs: { dwarf: 1, elerium: 1 },
@@ -9520,8 +9587,8 @@ const techs = {
     },
     neutronium_housing: {
         id: 'tech-neutronium_housing',
-        title: loc('tech_neutronium_housing'),
-        desc: loc('tech_neutronium_housing'),
+        title(){ return loc('tech_neutronium_housing'); },
+        desc(){ return loc('tech_neutronium_housing'); },
         category: 'housing',
         era: 'deep_space',
         reqs: { gas_moon: 1 },
@@ -9540,7 +9607,7 @@ const techs = {
     },
     unification: {
         id: 'tech-unification',
-        title: loc('tech_unification'),
+        title(){ return loc('tech_unification'); },
         desc(){ return loc('tech_unification_desc',[races[global.race.species].home]); },
         category: 'special',
         era: 'early_space',
@@ -9560,7 +9627,7 @@ const techs = {
     },
     unification2: {
         id: 'tech-unification2',
-        title: loc('tech_unification'),
+        title(){ return loc('tech_unification'); },
         desc(){ return loc('tech_unification_desc',[races[global.race.species].home]); },
         category: 'special',
         era: 'early_space',
@@ -9610,7 +9677,7 @@ const techs = {
     },
     unite: {
         id: 'tech-unite',
-        title: loc('tech_unite'),
+        title(){ return loc('tech_unite'); },
         desc(){ return loc('tech_unite_desc'); },
         category: 'special',
         era: 'globalized',
@@ -9661,8 +9728,8 @@ const techs = {
     },
     genesis: {
         id: 'tech-genesis',
-        title: loc('tech_genesis'),
-        desc: loc('tech_genesis'),
+        title(){ return loc('tech_genesis'); },
+        desc(){ return loc('tech_genesis'); },
         category: 'special',
         era: 'deep_space',
         reqs: { high_tech: 10, genesis: 1 },
@@ -9680,8 +9747,8 @@ const techs = {
     },
     star_dock: {
         id: 'tech-star_dock',
-        title: loc('tech_star_dock'),
-        desc: loc('tech_star_dock'),
+        title(){ return loc('tech_star_dock'); },
+        desc(){ return loc('tech_star_dock'); },
         category: 'special',
         era: 'deep_space',
         reqs: { genesis: 2, space: 5, high_tech: 10 },
@@ -9701,8 +9768,8 @@ const techs = {
     },
     interstellar: {
         id: 'tech-interstellar',
-        title: loc('tech_interstellar'),
-        desc: loc('tech_interstellar'),
+        title(){ return loc('tech_interstellar'); },
+        desc(){ return loc('tech_interstellar'); },
         category: 'space_exploration',
         era: 'deep_space',
         reqs: { genesis: 3 },
@@ -9767,8 +9834,8 @@ const techs = {
     },
     genetic_decay: {
         id: 'tech-genetic_decay',
-        title: loc('tech_genetic_decay'),
-        desc: loc('tech_genetic_decay'),
+        title(){ return loc('tech_genetic_decay'); },
+        desc(){ return loc('tech_genetic_decay'); },
         category: 'genes',
         era: 'early_space',
         reqs: { decay: 1 },
@@ -9786,8 +9853,8 @@ const techs = {
     },
     stabilize_decay: {
         id: 'tech-stabilize_decay',
-        title: loc('tech_stabilize_decay'),
-        desc: loc('tech_stabilize_decay'),
+        title(){ return loc('tech_stabilize_decay'); },
+        desc(){ return loc('tech_stabilize_decay'); },
         category: 'genes',
         era: 'dimensional',
         reqs: { decay: 2, high_tech: 18 },
@@ -9806,8 +9873,8 @@ const techs = {
     },
     tachyon: {
         id: 'tech-tachyon',
-        title: loc('tech_tachyon'),
-        desc: loc('tech_tachyon'),
+        title(){ return loc('tech_tachyon'); },
+        desc(){ return loc('tech_tachyon'); },
         category: 'progress',
         era: 'interstellar',
         reqs: { wsc: 1 },
@@ -9825,8 +9892,8 @@ const techs = {
     },
     warp_drive: {
         id: 'tech-warp_drive',
-        title: loc('tech_warp_drive'),
-        desc: loc('tech_warp_drive'),
+        title(){ return loc('tech_warp_drive'); },
+        desc(){ return loc('tech_warp_drive'); },
         category: 'space_exploration',
         era: 'interstellar',
         reqs: { ftl: 1 },
@@ -9847,8 +9914,8 @@ const techs = {
     },
     habitat: {
         id: 'tech-habitat',
-        title: loc('tech_habitat'),
-        desc: loc('tech_habitat_desc'),
+        title(){ return loc('tech_habitat'); },
+        desc(){ return loc('tech_habitat_desc'); },
         category: 'housing',
         era: 'interstellar',
         reqs: { alpha: 2, droids: 1 },
@@ -9867,8 +9934,8 @@ const techs = {
     },
     graphene: {
         id: 'tech-graphene',
-        title: loc('tech_graphene'),
-        desc: loc('tech_graphene'),
+        title(){ return loc('tech_graphene'); },
+        desc(){ return loc('tech_graphene'); },
         category: 'crafting',
         era: 'interstellar',
         reqs: { alpha: 3, infernite: 1 },
@@ -9888,8 +9955,8 @@ const techs = {
     },
     aerogel: {
         id: 'tech-aerogel',
-        title: loc('tech_aerogel'),
-        desc: loc('tech_aerogel'),
+        title(){ return loc('tech_aerogel'); },
+        desc(){ return loc('tech_aerogel'); },
         category: 'crafting',
         era: 'interstellar',
         reqs: { graphene: 1, science: 13 },
@@ -9914,8 +9981,8 @@ const techs = {
     },
     mega_manufacturing: {
         id: 'tech-mega_manufacturing',
-        title: loc('tech_mega_manufacturing'),
-        desc: loc('tech_mega_manufacturing'),
+        title(){ return loc('tech_mega_manufacturing'); },
+        desc(){ return loc('tech_mega_manufacturing'); },
         category: 'crafting',
         era: 'intergalactic',
         reqs: { high_tech: 16, alpha: 3 },
@@ -9934,8 +10001,8 @@ const techs = {
     },
     luxury_condo: {
         id: 'tech-luxury_condo',
-        title: loc('tech_luxury_condo'),
-        desc: loc('tech_luxury_condo'),
+        title(){ return loc('tech_luxury_condo'); },
+        desc(){ return loc('tech_luxury_condo'); },
         category: 'housing',
         era: 'intergalactic',
         reqs: { high_tech: 17, alpha: 4 },
@@ -9954,8 +10021,8 @@ const techs = {
     },
     stellar_engine: {
         id: 'tech-stellar_engine',
-        title: loc('tech_stellar_engine'),
-        desc: loc('tech_stellar_engine'),
+        title(){ return loc('tech_stellar_engine'); },
+        desc(){ return loc('tech_stellar_engine'); },
         category: 'stellar_engine',
         era: 'interstellar',
         reqs: { blackhole: 2 },
@@ -9974,8 +10041,8 @@ const techs = {
     },
     mass_ejector: {
         id: 'tech-mass_ejector',
-        title: loc('tech_mass_ejector'),
-        desc: loc('tech_mass_ejector'),
+        title(){ return loc('tech_mass_ejector'); },
+        desc(){ return loc('tech_mass_ejector'); },
         category: 'stellar_engine',
         era: 'interstellar',
         reqs: { blackhole: 4 },
@@ -9994,8 +10061,8 @@ const techs = {
     },
     asteroid_redirect: {
         id: 'tech-asteroid_redirect',
-        title: loc('tech_asteroid_redirect'),
-        desc: loc('tech_asteroid_redirect'),
+        title(){ return loc('tech_asteroid_redirect'); },
+        desc(){ return loc('tech_asteroid_redirect'); },
         category: 'stellar_engine',
         era: 'intergalactic',
         reqs: { blackhole: 5, gateway: 3 },
@@ -10016,8 +10083,8 @@ const techs = {
     },
     exotic_infusion: {
         id: 'tech-exotic_infusion',
-        title: loc('tech_exotic_infusion'),
-        desc: loc('tech_exotic_infusion'),
+        title(){ return loc('tech_exotic_infusion'); },
+        desc(){ return loc('tech_exotic_infusion'); },
         category: 'stellar_engine',
         era: 'interstellar',
         reqs: { whitehole: 1 },
@@ -10037,8 +10104,8 @@ const techs = {
     },
     infusion_check: {
         id: 'tech-infusion_check',
-        title: loc('tech_infusion_check'),
-        desc: loc('tech_infusion_check'),
+        title(){ return loc('tech_infusion_check'); },
+        desc(){ return loc('tech_infusion_check'); },
         category: 'stellar_engine',
         era: 'interstellar',
         reqs: { whitehole: 2 },
@@ -10058,8 +10125,8 @@ const techs = {
     },
     infusion_confirm: {
         id: 'tech-infusion_confirm',
-        title: loc('tech_infusion_confirm'),
-        desc: loc('tech_infusion_confirm'),
+        title(){ return loc('tech_infusion_confirm'); },
+        desc(){ return loc('tech_infusion_confirm'); },
         category: 'stellar_engine',
         era: 'interstellar',
         reqs: { whitehole: 3 },
@@ -10102,7 +10169,7 @@ const techs = {
     },
     stabilize_blackhole: {
         id: 'tech-stabilize_blackhole',
-        title: loc('tech_stabilize_blackhole'),
+        title(){ return loc('tech_stabilize_blackhole'); },
         desc(){ return `<div>${loc('tech_stabilize_blackhole')}</div><div class="has-text-danger">${loc('tech_stabilize_blackhole2')}</div>`; },
         category: 'stellar_engine',
         era: 'interstellar',
@@ -10133,8 +10200,8 @@ const techs = {
     },
     veil: {
         id: 'tech-veil',
-        title: loc('tech_veil'),
-        desc: loc('tech_veil'),
+        title(){ return loc('tech_veil'); },
+        desc(){ return loc('tech_veil'); },
         category: 'magic',
         era: 'interstellar',
         reqs: { blackhole: 2 },
@@ -10155,8 +10222,8 @@ const techs = {
     },
     mana_syphon: {
         id: 'tech-mana_syphon',
-        title: loc('tech_mana_syphon'),
-        desc: loc('tech_mana_syphon'),
+        title(){ return loc('tech_mana_syphon'); },
+        desc(){ return loc('tech_mana_syphon'); },
         category: 'magic',
         era: 'interstellar',
         reqs: { veil: 1 },
@@ -10180,8 +10247,8 @@ const techs = {
     },
     gravitational_waves: {
         id: 'tech-gravitational_waves',
-        title: loc('tech_gravitational_waves'),
-        desc: loc('tech_gravitational_waves'),
+        title(){ return loc('tech_gravitational_waves'); },
+        desc(){ return loc('tech_gravitational_waves'); },
         category: 'power_generation',
         era: 'interstellar',
         reqs: { blackhole: 4 },
@@ -10199,8 +10266,8 @@ const techs = {
     },
     gravity_convection: {
         id: 'tech-gravity_convection',
-        title: loc('tech_gravity_convection'),
-        desc: loc('tech_gravity_convection'),
+        title(){ return loc('tech_gravity_convection'); },
+        desc(){ return loc('tech_gravity_convection'); },
         category: 'power_generation',
         era: 'interstellar',
         reqs: { gravity: 1 },
@@ -10218,8 +10285,8 @@ const techs = {
     },
     wormholes: {
         id: 'tech-wormholes',
-        title: loc('tech_wormholes'),
-        desc: loc('tech_wormholes'),
+        title(){ return loc('tech_wormholes'); },
+        desc(){ return loc('tech_wormholes'); },
         category: 'space_exploration',
         era: 'intergalactic',
         reqs: { gravity: 1, science: 15 },
@@ -10237,8 +10304,8 @@ const techs = {
     },
     portal: {
         id: 'tech-portal',
-        title: loc('tech_portal'),
-        desc: loc('tech_portal_desc'),
+        title(){ return loc('tech_portal'); },
+        desc(){ return loc('tech_portal_desc'); },
         category: 'hell_dimension',
         era: 'interstellar',
         reqs: { wsc: 1 },
@@ -10256,8 +10323,8 @@ const techs = {
     },
     fortifications: {
         id: 'tech-fortifications',
-        title: loc('tech_fort'),
-        desc: loc('tech_fort_desc'),
+        title(){ return loc('tech_fort'); },
+        desc(){ return loc('tech_fort_desc'); },
         category: 'hell_dimension',
         era: 'interstellar',
         reqs: { portal: 1 },
@@ -10363,8 +10430,8 @@ const techs = {
     },
     war_drones: {
         id: 'tech-war_drones',
-        title: loc('tech_war_drones'),
-        desc: loc('tech_war_drones'),
+        title(){ return loc('tech_war_drones'); },
+        desc(){ return loc('tech_war_drones'); },
         category: 'hell_dimension',
         era: 'interstellar',
         reqs: { portal: 2, graphene: 1 },
@@ -10384,8 +10451,8 @@ const techs = {
     },
     demon_attractor: {
         id: 'tech-demon_attractor',
-        title: loc('tech_demon_attractor'),
-        desc: loc('tech_demon_attractor'),
+        title(){ return loc('tech_demon_attractor'); },
+        desc(){ return loc('tech_demon_attractor'); },
         category: 'hell_dimension',
         era: 'interstellar',
         reqs: { portal: 3, stanene: 1 },
@@ -10405,8 +10472,8 @@ const techs = {
     },
     combat_droids: {
         id: 'tech-combat_droids',
-        title: loc('tech_combat_droids'),
-        desc: loc('tech_combat_droids'),
+        title(){ return loc('tech_combat_droids'); },
+        desc(){ return loc('tech_combat_droids'); },
         category: 'hell_dimension',
         era: 'interstellar',
         reqs: { portal: 4 },
@@ -10429,8 +10496,8 @@ const techs = {
     },
     repair_droids: {
         id: 'tech-repair_droids',
-        title: loc('tech_repair_droids'),
-        desc: loc('tech_repair_droids'),
+        title(){ return loc('tech_repair_droids'); },
+        desc(){ return loc('tech_repair_droids'); },
         category: 'hell_dimension',
         era: 'interstellar',
         reqs: { portal: 5 },
@@ -10450,8 +10517,8 @@ const techs = {
     },
     advanced_predators: {
         id: 'tech-advanced_predators',
-        title: loc('tech_advanced_predators'),
-        desc: loc('tech_advanced_predators'),
+        title(){ return loc('tech_advanced_predators'); },
+        desc(){ return loc('tech_advanced_predators'); },
         category: 'hell_dimension',
         era: 'intergalactic',
         reqs: { portal: 6, xeno: 4 },
@@ -10471,8 +10538,8 @@ const techs = {
     },
     enhanced_droids: {
         id: 'tech-enhanced_droids',
-        title: loc('tech_enhanced_droids'),
-        desc: loc('tech_enhanced_droids'),
+        title(){ return loc('tech_enhanced_droids'); },
+        desc(){ return loc('tech_enhanced_droids'); },
         category: 'hell_dimension',
         era: 'interstellar',
         reqs: { portal: 5, military: 9 },
@@ -10490,8 +10557,8 @@ const techs = {
     },
     sensor_drone: {
         id: 'tech-sensor_drone',
-        title: loc('tech_sensor_drone'),
-        desc: loc('tech_sensor_drone'),
+        title(){ return loc('tech_sensor_drone'); },
+        desc(){ return loc('tech_sensor_drone'); },
         category: 'hell_dimension',
         era: 'interstellar',
         reqs: { portal: 3, infernite: 1, stanene: 1, graphene: 1 },
@@ -10510,8 +10577,8 @@ const techs = {
     },
     map_terrain: {
         id: 'tech-map_terrain',
-        title: loc('tech_map_terrain'),
-        desc: loc('tech_map_terrain'),
+        title(){ return loc('tech_map_terrain'); },
+        desc(){ return loc('tech_map_terrain'); },
         category: 'hell_dimension',
         era: 'interstellar',
         reqs: { infernite: 2 },
@@ -10529,8 +10596,8 @@ const techs = {
     },
     calibrated_sensors: {
         id: 'tech-calibrated_sensors',
-        title: loc('tech_calibrated_sensors'),
-        desc: loc('tech_calibrated_sensors'),
+        title(){ return loc('tech_calibrated_sensors'); },
+        desc(){ return loc('tech_calibrated_sensors'); },
         category: 'hell_dimension',
         era: 'interstellar',
         reqs: { infernite: 3 },
@@ -10549,8 +10616,8 @@ const techs = {
     },
     shield_generator: {
         id: 'tech-shield_generator',
-        title: loc('tech_shield_generator'),
-        desc: loc('tech_shield_generator'),
+        title(){ return loc('tech_shield_generator'); },
+        desc(){ return loc('tech_shield_generator'); },
         category: 'hell_dimension',
         era: 'intergalactic',
         reqs: { high_tech: 14, gateway: 3, infernite: 4 },
@@ -10569,8 +10636,8 @@ const techs = {
     },
     enhanced_sensors: {
         id: 'tech-enhanced_sensors',
-        title: loc('tech_enhanced_sensors'),
-        desc: loc('tech_enhanced_sensors'),
+        title(){ return loc('tech_enhanced_sensors'); },
+        desc(){ return loc('tech_enhanced_sensors'); },
         category: 'hell_dimension',
         era: 'intergalactic',
         reqs: { infernite: 5, xeno: 4 },
@@ -10589,8 +10656,8 @@ const techs = {
     },
     xeno_linguistics: {
         id: 'tech-xeno_linguistics',
-        title: loc('tech_xeno_linguistics'),
-        desc: loc('tech_xeno_linguistics'),
+        title(){ return loc('tech_xeno_linguistics'); },
+        desc(){ return loc('tech_xeno_linguistics'); },
         category: 'andromeda',
         era: 'intergalactic',
         reqs: { xeno: 1 },
@@ -10609,8 +10676,8 @@ const techs = {
     },
     xeno_culture: {
         id: 'tech-xeno_culture',
-        title: loc('tech_xeno_culture'),
-        desc: loc('tech_xeno_culture'),
+        title(){ return loc('tech_xeno_culture'); },
+        desc(){ return loc('tech_xeno_culture'); },
         category: 'progress',
         era: 'intergalactic',
         reqs: { xeno: 3 },
@@ -10633,8 +10700,8 @@ const techs = {
     },
     cultural_exchange: {
         id: 'tech-cultural_exchange',
-        title: loc('tech_cultural_exchange'),
-        desc: loc('tech_cultural_exchange'),
+        title(){ return loc('tech_cultural_exchange'); },
+        desc(){ return loc('tech_cultural_exchange'); },
         category: 'andromeda',
         era: 'intergalactic',
         reqs: { xeno: 5 },
@@ -10657,8 +10724,8 @@ const techs = {
     },
     shore_leave: {
         id: 'tech-shore_leave',
-        title: loc('tech_shore_leave'),
-        desc: loc('tech_shore_leave'),
+        title(){ return loc('tech_shore_leave'); },
+        desc(){ return loc('tech_shore_leave'); },
         category: 'science',
         era: 'intergalactic',
         reqs: { andromeda: 3, xeno: 6 },
@@ -10676,8 +10743,8 @@ const techs = {
     },
     xeno_gift: {
         id: 'tech-xeno_gift',
-        title: loc('tech_xeno_gift'),
-        desc: loc('tech_xeno_gift'),
+        title(){ return loc('tech_xeno_gift'); },
+        desc(){ return loc('tech_xeno_gift'); },
         category: 'andromeda',
         era: 'intergalactic',
         reqs: { high_tech: 16, xeno: 7 },
@@ -10699,7 +10766,7 @@ const techs = {
     },
     industrial_partnership: {
         id: 'tech-industrial_partnership',
-        title: loc('tech_industrial_partnership'),
+        title(){ return loc('tech_industrial_partnership'); },
         desc(){ return loc('tech_industrial_partnership'); },
         category: 'andromeda',
         era: 'intergalactic',
@@ -10719,7 +10786,7 @@ const techs = {
     },
     embassy_housing: {
         id: 'tech-embassy_housing',
-        title: loc('tech_embassy_housing'),
+        title(){ return loc('tech_embassy_housing'); },
         desc(){ return loc('tech_embassy_housing'); },
         category: 'andromeda',
         era: 'intergalactic',
@@ -10738,8 +10805,8 @@ const techs = {
     },
     advanced_telemetry: {
         id: 'tech-advanced_telemetry',
-        title: loc('tech_advanced_telemetry'),
-        desc: loc('tech_advanced_telemetry'),
+        title(){ return loc('tech_advanced_telemetry'); },
+        desc(){ return loc('tech_advanced_telemetry'); },
         category: 'science',
         era: 'intergalactic',
         reqs: { xeno: 5 },
@@ -10760,8 +10827,8 @@ const techs = {
     },
     defense_platform: {
         id: 'tech-defense_platform',
-        title: loc('galaxy_defense_platform'),
-        desc: loc('galaxy_defense_platform'),
+        title(){ return loc('galaxy_defense_platform'); },
+        desc(){ return loc('galaxy_defense_platform'); },
         category: 'andromeda',
         era: 'intergalactic',
         reqs: { stargate: 5, piracy: 1 },
@@ -10780,8 +10847,8 @@ const techs = {
     },
     scout_ship: {
         id: 'tech-scout_ship',
-        title: loc('galaxy_scout_ship'),
-        desc: loc('galaxy_scout_ship'),
+        title(){ return loc('galaxy_scout_ship'); },
+        desc(){ return loc('galaxy_scout_ship'); },
         category: 'andromeda_ships',
         era: 'intergalactic',
         reqs: { gateway: 3 },
@@ -10800,8 +10867,8 @@ const techs = {
     },
     corvette_ship: {
         id: 'tech-corvette_ship',
-        title: loc('galaxy_corvette_ship'),
-        desc: loc('galaxy_corvette_ship'),
+        title(){ return loc('galaxy_corvette_ship'); },
+        desc(){ return loc('galaxy_corvette_ship'); },
         category: 'andromeda_ships',
         era: 'intergalactic',
         reqs: { andromeda: 1, xeno: 1 },
@@ -10820,8 +10887,8 @@ const techs = {
     },
     frigate_ship: {
         id: 'tech-frigate_ship',
-        title: loc('galaxy_frigate_ship'),
-        desc: loc('galaxy_frigate_ship'),
+        title(){ return loc('galaxy_frigate_ship'); },
+        desc(){ return loc('galaxy_frigate_ship'); },
         category: 'andromeda_ships',
         era: 'intergalactic',
         reqs: { andromeda: 2, xeno: 6 },
@@ -10841,8 +10908,8 @@ const techs = {
     },
     cruiser_ship: {
         id: 'tech-cruiser_ship',
-        title: loc('galaxy_cruiser_ship'),
-        desc: loc('galaxy_cruiser_ship'),
+        title(){ return loc('galaxy_cruiser_ship'); },
+        desc(){ return loc('galaxy_cruiser_ship'); },
         category: 'andromeda_ships',
         era: 'intergalactic',
         reqs: { andromeda: 3, xeno: 10 },
@@ -10864,8 +10931,8 @@ const techs = {
     },
     dreadnought: {
         id: 'tech-dreadnought',
-        title: loc('galaxy_dreadnought'),
-        desc: loc('galaxy_dreadnought'),
+        title(){ return loc('galaxy_dreadnought'); },
+        desc(){ return loc('galaxy_dreadnought'); },
         category: 'andromeda_ships',
         era: 'intergalactic',
         reqs: { andromeda: 4, science: 18 },
@@ -10885,8 +10952,8 @@ const techs = {
     },
     ship_dock: {
         id: 'tech-ship_dock',
-        title: loc('galaxy_ship_dock'),
-        desc: loc('galaxy_ship_dock'),
+        title(){ return loc('galaxy_ship_dock'); },
+        desc(){ return loc('galaxy_ship_dock'); },
         category: 'andromeda_ships',
         era: 'intergalactic',
         reqs: { gateway: 3, xeno: 6 },
@@ -10905,8 +10972,8 @@ const techs = {
     },
     ore_processor: {
         id: 'tech-ore_processor',
-        title: loc('galaxy_ore_processor'),
-        desc: loc('galaxy_ore_processor'),
+        title(){ return loc('galaxy_ore_processor'); },
+        desc(){ return loc('galaxy_ore_processor'); },
         category: 'space_mining',
         era: 'intergalactic',
         reqs: { conflict: 2 },
@@ -10925,8 +10992,8 @@ const techs = {
     },
     scavenger: {
         id: 'tech-scavenger',
-        title: loc('galaxy_scavenger'),
-        desc: loc('galaxy_scavenger'),
+        title(){ return loc('galaxy_scavenger'); },
+        desc(){ return loc('galaxy_scavenger'); },
         category: 'science',
         era: 'intergalactic',
         reqs: { conflict: 3 },
@@ -10945,8 +11012,8 @@ const techs = {
     },
     coordinates: {
         id: 'tech-coordinates',
-        title: loc('tech_coordinates'),
-        desc: loc('tech_coordinates'),
+        title(){ return loc('tech_coordinates'); },
+        desc(){ return loc('tech_coordinates'); },
         category: 'andromeda',
         era: 'intergalactic',
         reqs: { science: 18, conflict: 5 },
@@ -10966,8 +11033,8 @@ const techs = {
     },
     chthonian_survey : {
         id: 'tech-chthonian_survey',
-        title: loc('tech_chthonian_survey'),
-        desc: loc('tech_chthonian_survey'),
+        title(){ return loc('tech_chthonian_survey'); },
+        desc(){ return loc('tech_chthonian_survey'); },
         category: 'space_mining',
         era: 'intergalactic',
         reqs: { chthonian: 2 },
@@ -10992,8 +11059,8 @@ const techs = {
     },
     gateway_depot: {
         id: 'tech-gateway_depot',
-        title: loc('galaxy_gateway_depot'),
-        desc: loc('galaxy_gateway_depot'),
+        title(){ return loc('galaxy_gateway_depot'); },
+        desc(){ return loc('galaxy_gateway_depot'); },
         category: 'storage',
         era: 'intergalactic',
         reqs: { gateway: 4 },
@@ -11012,8 +11079,8 @@ const techs = {
     },
     soul_forge: {
         id: 'tech-soul_forge',
-        title: loc('portal_soul_forge_title'),
-        desc: loc('portal_soul_forge_title'),
+        title(){ return loc('portal_soul_forge_title'); },
+        desc(){ return loc('portal_soul_forge_title'); },
         category: 'hell_dimension',
         era: 'intergalactic',
         reqs: { hell_pit: 3 },
@@ -11032,8 +11099,8 @@ const techs = {
     },
     soul_attractor: {
         id: 'tech-soul_attractor',
-        title: loc('portal_soul_attractor_title'),
-        desc: loc('portal_soul_attractor_title'),
+        title(){ return loc('portal_soul_attractor_title'); },
+        desc(){ return loc('portal_soul_attractor_title'); },
         category: 'hell_dimension',
         era: 'intergalactic',
         reqs: { hell_pit: 4, high_tech: 16 },
@@ -11052,8 +11119,8 @@ const techs = {
     },
     soul_absorption: {
         id: 'tech-soul_absorption',
-        title: loc('tech_soul_absorption'),
-        desc: loc('tech_soul_absorption'),
+        title(){ return loc('tech_soul_absorption'); },
+        desc(){ return loc('tech_soul_absorption'); },
         category: 'hell_dimension',
         era: 'intergalactic',
         reqs: { hell_pit: 5 },
@@ -11072,8 +11139,8 @@ const techs = {
     },
     soul_link: {
         id: 'tech-soul_link',
-        title: loc('tech_soul_link'),
-        desc: loc('tech_soul_link'),
+        title(){ return loc('tech_soul_link'); },
+        desc(){ return loc('tech_soul_link'); },
         category: 'hell_dimension',
         era: 'intergalactic',
         reqs: { hell_pit: 6 },
@@ -11092,8 +11159,8 @@ const techs = {
     },
     soul_bait: {
         id: 'tech-soul_bait',
-        title: loc('tech_soul_bait'),
-        desc: loc('tech_soul_bait'),
+        title(){ return loc('tech_soul_bait'); },
+        desc(){ return loc('tech_soul_bait'); },
         category: 'hell_dimension',
         era: 'existential',
         reqs: { hell_pit: 7, asphodel: 3 },
@@ -11112,8 +11179,8 @@ const techs = {
     },
     gun_emplacement: {
         id: 'tech-gun_emplacement',
-        title: loc('portal_gun_emplacement_title'),
-        desc: loc('portal_gun_emplacement_title'),
+        title(){ return loc('portal_gun_emplacement_title'); },
+        desc(){ return loc('portal_gun_emplacement_title'); },
         category: 'hell_dimension',
         era: 'intergalactic',
         reqs: { hell_pit: 4 },
@@ -11133,8 +11200,8 @@ const techs = {
     },
     advanced_emplacement: {
         id: 'tech-advanced_emplacement',
-        title: loc('tech_advanced_emplacement'),
-        desc: loc('tech_advanced_emplacement'),
+        title(){ return loc('tech_advanced_emplacement'); },
+        desc(){ return loc('tech_advanced_emplacement'); },
         category: 'hell_dimension',
         era: 'intergalactic',
         reqs: { hell_gun: 1, high_tech: 17 },
@@ -11153,8 +11220,8 @@ const techs = {
     },
     dial_it_to_11: {
         id: 'tech-dial_it_to_11',
-        title: loc('tech_dial_it_to_11'),
-        desc: loc('tech_dial_it_to_11'),
+        title(){ return loc('tech_dial_it_to_11'); },
+        desc(){ return loc('tech_dial_it_to_11'); },
         category: 'science',
         wiki: false,
         era: 'deep_space',
@@ -11185,8 +11252,8 @@ const techs = {
     },
     limit_collider: {
         id: 'tech-limit_collider',
-        title: loc('tech_limit_collider'),
-        desc: loc('tech_limit_collider'),
+        title(){ return loc('tech_limit_collider'); },
+        desc(){ return loc('tech_limit_collider'); },
         category: 'science',
         wiki: false,
         era: 'deep_space',
@@ -11205,8 +11272,8 @@ const techs = {
     },
     mana: {
         id: 'tech-mana',
-        title: loc('tech_mana'),
-        desc: loc('tech_mana'),
+        title(){ return loc('tech_mana'); },
+        desc(){ return loc('tech_mana'); },
         category: 'magic',
         era: 'civilized',
         reqs: { primitive: 3 },
@@ -11237,8 +11304,8 @@ const techs = {
     },
     ley_lines: {
         id: 'tech-ley_lines',
-        title: loc('tech_ley_lines'),
-        desc: loc('tech_ley_lines'),
+        title(){ return loc('tech_ley_lines'); },
+        desc(){ return loc('tech_ley_lines'); },
         category: 'magic',
         era: 'civilized',
         reqs: { magic: 1 },
@@ -11268,8 +11335,8 @@ const techs = {
     },
     rituals: {
         id: 'tech-rituals',
-        title: loc('tech_rituals'),
-        desc: loc('tech_rituals'),
+        title(){ return loc('tech_rituals'); },
+        desc(){ return loc('tech_rituals'); },
         category: 'magic',
         era: 'civilized',
         reqs: { magic: 2 },
@@ -11297,8 +11364,8 @@ const techs = {
     },
     crafting_ritual: {
         id: 'tech-crafting_ritual',
-        title: loc('tech_crafting_ritual'),
-        desc: loc('tech_crafting_ritual'),
+        title(){ return loc('tech_crafting_ritual'); },
+        desc(){ return loc('tech_crafting_ritual'); },
         category: 'magic',
         era: 'discovery',
         reqs: { magic: 3, foundry: 5 },
@@ -11325,8 +11392,8 @@ const techs = {
     },
     mana_nexus: {
         id: 'tech-mana_nexus',
-        title: loc('tech_mana_nexus'),
-        desc: loc('tech_mana_nexus'),
+        title(){ return loc('tech_mana_nexus'); },
+        desc(){ return loc('tech_mana_nexus'); },
         category: 'magic',
         era: 'early_space',
         reqs: { magic: 4, space: 3, luna: 1 },
@@ -11352,8 +11419,8 @@ const techs = {
     },
     clerics: {
         id: 'tech-clerics',
-        title: loc('tech_clerics'),
-        desc: loc('tech_clerics'),
+        title(){ return loc('tech_clerics'); },
+        desc(){ return loc('tech_clerics'); },
         category: 'magic',
         era: 'civilized',
         reqs: { magic: 3 },
@@ -11376,8 +11443,8 @@ const techs = {
     },
     conjuring: {
         id: 'tech-conjuring',
-        title: loc('tech_conjuring'),
-        desc: loc('tech_conjuring_desc'),
+        title(){ return loc('tech_conjuring'); },
+        desc(){ return loc('tech_conjuring_desc'); },
         category: 'magic',
         era: 'civilized',
         reqs: { magic: 1 },
@@ -11400,8 +11467,8 @@ const techs = {
     },
     res_conjuring: {
         id: 'tech-res_conjuring',
-        title: loc('tech_res_conjuring'),
-        desc: loc('tech_res_conjuring'),
+        title(){ return loc('tech_res_conjuring'); },
+        desc(){ return loc('tech_res_conjuring'); },
         category: 'magic',
         era: 'civilized',
         reqs: { conjuring: 1 },
@@ -11424,8 +11491,8 @@ const techs = {
     },
     alchemy: {
         id: 'tech-alchemy',
-        title: loc('tech_alchemy'),
-        desc: loc('tech_alchemy'),
+        title(){ return loc('tech_alchemy'); },
+        desc(){ return loc('tech_alchemy'); },
         category: 'magic',
         era: 'discovery',
         reqs: { magic: 3, high_tech: 1 },
@@ -11468,8 +11535,8 @@ const techs = {
     },
     transmutation: {
         id: 'tech-transmutation',
-        title: loc('tech_transmutation'),
-        desc: loc('tech_transmutation'),
+        title(){ return loc('tech_transmutation'); },
+        desc(){ return loc('tech_transmutation'); },
         category: 'magic',
         era: 'intergalactic',
         reqs: { alchemy: 1, high_tech: 16 },
@@ -11495,8 +11562,8 @@ const techs = {
     },
     secret_society: {
         id: 'tech-secret_society',
-        title: loc('tech_secret_society'),
-        desc: loc('tech_secret_society'),
+        title(){ return loc('tech_secret_society'); },
+        desc(){ return loc('tech_secret_society'); },
         category: 'magic',
         era: 'civilized',
         reqs: { magic: 1 },
@@ -11518,8 +11585,8 @@ const techs = {
     },
     cultists: {
         id: 'tech-cultists',
-        title: loc('tech_cultists'),
-        desc: loc('tech_cultists'),
+        title(){ return loc('tech_cultists'); },
+        desc(){ return loc('tech_cultists'); },
         category: 'magic',
         era: 'civilized',
         reqs: { roguemagic: 1, cleric: 1 },
@@ -11541,8 +11608,8 @@ const techs = {
     },
     conceal_ward: {
         id: 'tech-conceal_ward',
-        title: loc('tech_conceal_ward'),
-        desc: loc('tech_conceal_ward'),
+        title(){ return loc('tech_conceal_ward'); },
+        desc(){ return loc('tech_conceal_ward'); },
         category: 'magic',
         era: 'discovery',
         reqs: { roguemagic: 2, theatre: 3 },
@@ -11567,8 +11634,8 @@ const techs = {
     },
     subtle_rituals: {
         id: 'tech-subtle_rituals',
-        title: loc('tech_subtle_rituals'),
-        desc: loc('tech_subtle_rituals'),
+        title(){ return loc('tech_subtle_rituals'); },
+        desc(){ return loc('tech_subtle_rituals'); },
         category: 'magic',
         era: 'discovery',
         reqs: { roguemagic: 3, magic: 4 },
@@ -11591,8 +11658,8 @@ const techs = {
     },
     pylon_camouflage: {
         id: 'tech-pylon_camouflage',
-        title: loc('tech_pylon_camouflage'),
-        desc: loc('tech_pylon_camouflage'),
+        title(){ return loc('tech_pylon_camouflage'); },
+        desc(){ return loc('tech_pylon_camouflage'); },
         category: 'magic',
         era: 'industrialized',
         reqs: { roguemagic: 4, high_tech: 3 },
@@ -11615,8 +11682,8 @@ const techs = {
     },
     fake_tech: {
         id: 'tech-fake_tech',
-        title: loc('tech_fake_tech'),
-        desc: loc('tech_fake_tech'),
+        title(){ return loc('tech_fake_tech'); },
+        desc(){ return loc('tech_fake_tech'); },
         category: 'magic',
         era: 'industrialized',
         reqs: { roguemagic: 5, high_tech: 4 },
@@ -11638,8 +11705,8 @@ const techs = {
     },
     concealment: {
         id: 'tech-concealment',
-        title: loc('tech_concealment'),
-        desc: loc('tech_concealment'),
+        title(){ return loc('tech_concealment'); },
+        desc(){ return loc('tech_concealment'); },
         category: 'magic',
         era: 'early_space',
         reqs: { roguemagic: 6, magic: 5 },
@@ -11661,8 +11728,8 @@ const techs = {
     },
     improved_concealment: {
         id: 'tech-improved_concealment',
-        title: loc('tech_improved_concealment'),
-        desc: loc('tech_improved_concealment'),
+        title(){ return loc('tech_improved_concealment'); },
+        desc(){ return loc('tech_improved_concealment'); },
         category: 'magic',
         era: 'intergalactic',
         reqs: { roguemagic: 7, forbidden: 1 },
@@ -11684,8 +11751,8 @@ const techs = {
     },
     outerplane_summon: {
         id: 'tech-outerplane_summon',
-        title: loc('tech_outerplane_summon'),
-        desc: loc('tech_outerplane_summon'),
+        title(){ return loc('tech_outerplane_summon'); },
+        desc(){ return loc('tech_outerplane_summon'); },
         category: 'magic',
         era: 'dimensional',
         reqs: { roguemagic: 8, forbidden: 4, hell_spire: 10, b_stone: 2, waygate: 3 },
@@ -11708,8 +11775,8 @@ const techs = {
     },
     dark_bomb: {
         id: 'tech-dark_bomb',
-        title: loc('tech_dark_bomb'),
-        desc: loc('tech_dark_bomb'),
+        title(){ return loc('tech_dark_bomb'); },
+        desc(){ return loc('tech_dark_bomb'); },
         category: 'hell_dimension',
         era: 'dimensional',
         reqs: { hell_spire: 10, b_stone: 2, waygate: 2, sphinx_bribe: 1 },
@@ -11746,8 +11813,8 @@ const techs = {
     },
     bribe_sphinx: {
         id: 'tech-bribe_sphinx',
-        title: loc('portal_sphinx_bribe'),
-        desc: loc('portal_sphinx_bribe'),
+        title(){ return loc('portal_sphinx_bribe'); },
+        desc(){ return loc('portal_sphinx_bribe'); },
         category: 'hell_dimension',
         era: 'dimensional',
         reqs: { hell_spire: 8 },
@@ -11772,8 +11839,8 @@ const techs = {
     },
     alien_biotech: {
         id: 'tech-alien_biotech',
-        title: loc('tech_alien_biotech'),
-        desc: loc('tech_alien_biotech'),
+        title(){ return loc('tech_alien_biotech'); },
+        desc(){ return loc('tech_alien_biotech'); },
         category: 'science',
         era: 'solar',
         reqs: { genetics: 8, kuiper: 1 },
@@ -11794,8 +11861,8 @@ const techs = {
     },
     zero_g_lab: {
         id: 'tech-zero_g_lab',
-        title: loc('tech_zero_g_lab'),
-        desc: loc('tech_zero_g_lab'),
+        title(){ return loc('tech_zero_g_lab'); },
+        desc(){ return loc('tech_zero_g_lab'); },
         category: 'science',
         era: 'solar',
         path: ['truepath'],
@@ -11815,8 +11882,8 @@ const techs = {
     },
     operating_base: {
         id: 'tech-operating_base',
-        title: loc('tech_operating_base'),
-        desc: loc('tech_operating_base'),
+        title(){ return loc('tech_operating_base'); },
+        desc(){ return loc('tech_operating_base'); },
         category: 'space_militarization',
         era: 'solar',
         path: ['truepath'],
@@ -11836,8 +11903,8 @@ const techs = {
     },
     munitions_depot: {
         id: 'tech-munitions_depot',
-        title: loc('tech_munitions_depot'),
-        desc: loc('tech_munitions_depot'),
+        title(){ return loc('tech_munitions_depot'); },
+        desc(){ return loc('tech_munitions_depot'); },
         category: 'space_militarization',
         era: 'solar',
         path: ['truepath'],
@@ -11857,8 +11924,8 @@ const techs = {
     },
     fob: {
         id: 'tech-fob',
-        title: loc('tech_fob'),
-        desc: loc('tech_fob'),
+        title(){ return loc('tech_fob'); },
+        desc(){ return loc('tech_fob'); },
         category: 'space_militarization',
         era: 'solar',
         path: ['truepath'],
@@ -11880,8 +11947,8 @@ const techs = {
     },
     bac_tanks_tp: {
         id: 'tech-bac_tanks_tp',
-        title: loc('tech_bac_tanks'),
-        desc: loc('tech_bac_tanks_desc'),
+        title(){ return loc('tech_bac_tanks'); },
+        desc(){ return loc('tech_bac_tanks_desc'); },
         category: 'military',
         era: 'solar',
         path: ['truepath'],
@@ -11900,8 +11967,8 @@ const techs = {
     },
     medkit: {
         id: 'tech-medkit',
-        title: loc('tech_medkit'),
-        desc: loc('tech_medkit'),
+        title(){ return loc('tech_medkit'); },
+        desc(){ return loc('tech_medkit'); },
         category: 'military',
         era: 'solar',
         path: ['truepath'],
@@ -11922,8 +11989,8 @@ const techs = {
     },
     sam_site: {
         id: 'tech-sam_site',
-        title: loc('tech_sam_site'),
-        desc: loc('tech_sam_site'),
+        title(){ return loc('tech_sam_site'); },
+        desc(){ return loc('tech_sam_site'); },
         category: 'space_militarization',
         era: 'solar',
         path: ['truepath'],
@@ -11943,8 +12010,8 @@ const techs = {
     },
     data_cracker: {
         id: 'tech-data_cracker',
-        title: loc('tech_data_cracker'),
-        desc: loc('tech_data_cracker'),
+        title(){ return loc('tech_data_cracker'); },
+        desc(){ return loc('tech_data_cracker'); },
         category: 'science',
         era: 'solar',
         path: ['truepath'],
@@ -11965,8 +12032,8 @@ const techs = {
     },
     ai_core_tp: {
         id: 'tech-ai_core_tp',
-        title: loc('tech_ai_core'),
-        desc: loc('tech_ai_core'),
+        title(){ return loc('tech_ai_core'); },
+        desc(){ return loc('tech_ai_core'); },
         category: 'ai_core',
         era: 'solar',
         path: ['truepath'],
@@ -11985,10 +12052,52 @@ const techs = {
             return false;
         }
     },
+    metalworks: {
+        id: 'tech-metalworks',
+        title(){ return loc('tech_metalworks',[planetName().titan]); },
+        desc(){ return loc('tech_metalworks',[planetName().titan]); },
+        category: 'mining',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { titan: 9, resettle: 13 },
+        grant: ['titan',10],
+        cost: {
+            Knowledge(){ return 23750000; }
+        },
+        effect(){ return loc('tech_metalworks_effect',[planetName().titan]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.space.spc_titan.metalworks);
+                return true;
+            }
+            return false;
+        }
+    },
+    positronium_electrolysis: {
+        id: 'tech-positronium_electrolysis',
+        title(){ return loc('tech_positronium_electrolysis',[global.resource.Positronium.name]); },
+        desc(){ return loc('tech_positronium_electrolysis',[global.resource.Positronium.name]); },
+        category: 'power_generation',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { titan: 10 },
+        grant: ['titan',11],
+        cost: {
+            Knowledge(){ return 25000000; },
+            Positronium(){ return 24000; }
+        },
+        effect(){ return loc('tech_positronium_electrolysis_effect',[loc('space_electrolysis_title'),planetName().titan,global.resource.Positronium.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     ai_optimizations: {
         id: 'tech-ai_optimizations',
-        title: loc('tech_ai_optimizations'),
-        desc: loc('tech_ai_optimizations'),
+        title(){ return loc('tech_ai_optimizations'); },
+        desc(){ return loc('tech_ai_optimizations'); },
         category: 'ai_core',
         era: 'solar',
         path: ['truepath'],
@@ -12009,8 +12118,8 @@ const techs = {
     },
     synthetic_life: {
         id: 'tech-synthetic_life',
-        title: loc('tech_synthetic_life'),
-        desc: loc('tech_synthetic_life'),
+        title(){ return loc('tech_synthetic_life'); },
+        desc(){ return loc('tech_synthetic_life'); },
         category: 'ai_core',
         era: 'solar',
         path: ['truepath'],
@@ -12032,8 +12141,8 @@ const techs = {
     },
     protocol66: {
         id: 'tech-protocol66',
-        title: loc('tech_protocol66'),
-        desc: loc('tech_protocol66'),
+        title(){ return loc('tech_protocol66'); },
+        desc(){ return loc('tech_protocol66'); },
         category: 'ai_core',
         era: 'solar',
         path: ['truepath'],
@@ -12054,8 +12163,8 @@ const techs = {
     },
     protocol66a: {
         id: 'tech-protocol66a',
-        title: loc('tech_protocol66'),
-        desc: loc('tech_protocol66'),
+        title(){ return loc('tech_protocol66'); },
+        desc(){ return loc('tech_protocol66'); },
         category: 'ai_core',
         era: 'solar',
         path: ['truepath'],
@@ -12107,8 +12216,8 @@ const techs = {
     },
     terraforming_tp: {
         id: 'tech-terraforming_tp',
-        title: loc('tech_terraforming'),
-        desc: loc('tech_terraforming'),
+        title(){ return loc('tech_terraforming'); },
+        desc(){ return loc('tech_terraforming'); },
         category: 'special',
         era: 'solar',
         reqs: { dig_control: 1, eris: 2, titan_ai_core: 2 },
@@ -12129,8 +12238,8 @@ const techs = {
     },
     quantium: {
         id: 'tech-quantium',
-        title: loc('tech_quantium'),
-        desc: loc('tech_quantium'),
+        title(){ return loc('tech_quantium'); },
+        desc(){ return loc('tech_quantium'); },
         category: 'crafting',
         era: 'solar',
         path: ['truepath'],
@@ -12157,8 +12266,8 @@ const techs = {
     },
     anitgrav_bunk: {
         id: 'tech-anitgrav_bunk',
-        title: loc('tech_anitgrav_bunk'),
-        desc: loc('tech_anitgrav_bunk'),
+        title(){ return loc('tech_anitgrav_bunk'); },
+        desc(){ return loc('tech_anitgrav_bunk'); },
         category: 'military',
         era: 'solar',
         path: ['truepath'],
@@ -12178,8 +12287,8 @@ const techs = {
     },
     higgs_boson_tp: {
         id: 'tech-higgs_boson_tp',
-        title: loc('tech_higgs_boson'),
-        desc: loc('tech_higgs_boson'),
+        title(){ return loc('tech_higgs_boson'); },
+        desc(){ return loc('tech_higgs_boson'); },
         category: 'science',
         era: 'early_space',
         path: ['truepath'],
@@ -12198,8 +12307,8 @@ const techs = {
     },
     long_range_probes: {
         id: 'tech-long_range_probes',
-        title: loc('tech_long_range_probes'),
-        desc: loc('tech_long_range_probes'),
+        title(){ return loc('tech_long_range_probes'); },
+        desc(){ return loc('tech_long_range_probes'); },
         category: 'space_exploration',
         era: 'solar',
         path: ['truepath'],
@@ -12226,8 +12335,8 @@ const techs = {
     },
     strange_signal: {
         id: 'tech-strange_signal',
-        title: loc('tech_strange_signal'),
-        desc: loc('tech_strange_signal'),
+        title(){ return loc('tech_strange_signal'); },
+        desc(){ return loc('tech_strange_signal'); },
         category: 'space_exploration',
         era: 'solar',
         path: ['truepath'],
@@ -12247,8 +12356,8 @@ const techs = {
     },
     data_analysis: {
         id: 'tech-data_analysis',
-        title: loc('tech_data_analysis'),
-        desc: loc('tech_data_analysis'),
+        title(){ return loc('tech_data_analysis'); },
+        desc(){ return loc('tech_data_analysis'); },
         category: 'space_exploration',
         era: 'solar',
         path: ['truepath'],
@@ -12272,8 +12381,8 @@ const techs = {
     },
     mass_relay: {
         id: 'tech-mass_relay',
-        title: loc('tech_mass_relay'),
-        desc: loc('tech_mass_relay'),
+        title(){ return loc('tech_mass_relay'); },
+        desc(){ return loc('tech_mass_relay'); },
         category: 'space_exploration',
         era: 'solar',
         path: ['truepath'],
@@ -12294,8 +12403,8 @@ const techs = {
     },
     nav_data: {
         id: 'tech-nav_data',
-        title: loc('tech_nav_data'),
-        desc: loc('tech_nav_data'),
+        title(){ return loc('tech_nav_data'); },
+        desc(){ return loc('tech_nav_data'); },
         category: 'space_exploration',
         era: 'solar',
         path: ['truepath'],
@@ -12320,8 +12429,8 @@ const techs = {
     },
     sensor_logs: {
         id: 'tech-sensor_logs',
-        title: loc('tech_sensor_logs'),
-        desc: loc('tech_sensor_logs'),
+        title(){ return loc('tech_sensor_logs'); },
+        desc(){ return loc('tech_sensor_logs'); },
         category: 'space_exploration',
         era: 'solar',
         path: ['truepath'],
@@ -12342,8 +12451,8 @@ const techs = {
     },
     dronewar: {
         id: 'tech-dronewar',
-        title: loc('tech_dronewar'),
-        desc: loc('tech_dronewar'),
+        title(){ return loc('tech_dronewar'); },
+        desc(){ return loc('tech_dronewar'); },
         category: 'space_militarization',
         era: 'solar',
         path: ['truepath'],
@@ -12365,8 +12474,8 @@ const techs = {
     },
     drone_tank: {
         id: 'tech-drone_tank',
-        title: loc('tech_drone_tank'),
-        desc: loc('tech_drone_tank'),
+        title(){ return loc('tech_drone_tank'); },
+        desc(){ return loc('tech_drone_tank'); },
         category: 'space_militarization',
         era: 'solar',
         path: ['truepath'],
@@ -12387,8 +12496,8 @@ const techs = {
     },
     stanene_tp: {
         id: 'tech-stanene_tp',
-        title: loc('tech_stanene'),
-        desc: loc('tech_stanene'),
+        title(){ return loc('tech_stanene'); },
+        desc(){ return loc('tech_stanene'); },
         category: 'crafting',
         era: 'solar',
         path: ['truepath'],
@@ -12415,8 +12524,8 @@ const techs = {
     },
     graphene_tp: {
         id: 'tech-graphene_tp',
-        title: loc('tech_graphene'),
-        desc: loc('tech_graphene'),
+        title(){ return loc('tech_graphene'); },
+        desc(){ return loc('tech_graphene'); },
         category: 'crafting',
         era: 'solar',
         path: ['truepath'],
@@ -12437,8 +12546,8 @@ const techs = {
     },
     virtual_reality_tp: {
         id: 'tech-virtual_reality_tp',
-        title: loc('tech_virtual_reality'),
-        desc: loc('tech_virtual_reality'),
+        title(){ return loc('tech_virtual_reality'); },
+        desc(){ return loc('tech_virtual_reality'); },
         category: 'progress',
         era: 'solar',
         path: ['truepath'],
@@ -12462,8 +12571,8 @@ const techs = {
     },
     electrolysis: {
         id: 'tech-electrolysis',
-        title: loc('tech_electrolysis'),
-        desc: loc('tech_electrolysis'),
+        title(){ return loc('tech_electrolysis'); },
+        desc(){ return loc('tech_electrolysis'); },
         category: 'power_generation',
         era: 'solar',
         path: ['truepath'],
@@ -12505,8 +12614,8 @@ const techs = {
     },
     adamantite_vault_tp: {
         id: 'tech-adamantite_vault_tp',
-        title: loc('tech_adamantite_vault'),
-        desc: loc('tech_adamantite_vault'),
+        title(){ return loc('tech_adamantite_vault'); },
+        desc(){ return loc('tech_adamantite_vault'); },
         category: 'banking',
         era: 'solar',
         path: ['truepath'],
@@ -12548,8 +12657,8 @@ const techs = {
     },
     hydrogen_plant: {
         id: 'tech-hydrogen_plant',
-        title: loc('tech_hydrogen_plant'),
-        desc: loc('tech_hydrogen_plant'),
+        title(){ return loc('tech_hydrogen_plant'); },
+        desc(){ return loc('tech_hydrogen_plant'); },
         category: 'power_generation',
         era: 'solar',
         path: ['truepath'],
@@ -12569,8 +12678,8 @@ const techs = {
     },
     water_mining: {
         id: 'tech-water_mining',
-        title: loc('tech_water_mining'),
-        desc: loc('tech_water_mining'),
+        title(){ return loc('tech_water_mining'); },
+        desc(){ return loc('tech_water_mining'); },
         category: 'power_generation',
         era: 'solar',
         path: ['truepath'],
@@ -12594,8 +12703,8 @@ const techs = {
     },
     mercury_smelting: {
         id: 'tech-mercury_smelting',
-        title: loc('tech_mercury_smelting'),
-        desc: loc('tech_mercury_smelting'),
+        title(){ return loc('tech_mercury_smelting'); },
+        desc(){ return loc('tech_mercury_smelting'); },
         category: 'mining',
         era: 'solar',
         path: ['truepath'],
@@ -12616,8 +12725,8 @@ const techs = {
     },
     iridium_smelting: {
         id: 'tech-iridium_smelting',
-        title: loc('tech_iridium_smelting'),
-        desc: loc('tech_iridium_smelting'),
+        title(){ return loc('tech_iridium_smelting'); },
+        desc(){ return loc('tech_iridium_smelting'); },
         category: 'mining',
         era: 'solar',
         path: ['truepath'],
@@ -12640,8 +12749,8 @@ const techs = {
     },
     adamantite_crates: {
         id: 'tech-adamantite_crates',
-        title: loc('tech_adamantite_crates'),
-        desc: loc('tech_adamantite_crates_desc'),
+        title(){ return loc('tech_adamantite_crates'); },
+        desc(){ return loc('tech_adamantite_crates_desc'); },
         category: 'storage',
         era: 'solar',
         path: ['truepath'],
@@ -12748,8 +12857,8 @@ const techs = {
     },
     reinforced_shelving: {
         id: 'tech-reinforced_shelving',
-        title: loc('tech_reinforced_shelving'),
-        desc: loc('tech_reinforced_shelving'),
+        title(){ return loc('tech_reinforced_shelving'); },
+        desc(){ return loc('tech_reinforced_shelving'); },
         category: 'storage',
         era: 'solar',
         path: ['truepath'],
@@ -12770,8 +12879,8 @@ const techs = {
     },
     garage_shelving: {
         id: 'tech-garage_shelving',
-        title: loc('tech_garage_shelving'),
-        desc: loc('tech_garage_shelving'),
+        title(){ return loc('tech_garage_shelving'); },
+        desc(){ return loc('tech_garage_shelving'); },
         category: 'storage',
         era: 'solar',
         path: ['truepath'],
@@ -12791,8 +12900,8 @@ const techs = {
     },
     warehouse_shelving: {
         id: 'tech-warehouse_shelving',
-        title: loc('tech_warehouse_shelving'),
-        desc: loc('tech_warehouse_shelving'),
+        title(){ return loc('tech_warehouse_shelving'); },
+        desc(){ return loc('tech_warehouse_shelving'); },
         category: 'storage',
         era: 'solar',
         path: ['truepath'],
@@ -12813,8 +12922,8 @@ const techs = {
     },
     elerium_extraction: {
         id: 'tech-elerium_extraction',
-        title: loc('tech_elerium_extraction'),
-        desc: loc('tech_elerium_extraction'),
+        title(){ return loc('tech_elerium_extraction'); },
+        desc(){ return loc('tech_elerium_extraction'); },
         category: 'mining',
         era: 'solar',
         path: ['truepath'],
@@ -12836,8 +12945,8 @@ const techs = {
     },
     orichalcum_panels_tp: {
         id: 'tech-orichalcum_panels_tp',
-        title: loc('tech_orichalcum_panels'),
-        desc: loc('tech_orichalcum_panels'),
+        title(){ return loc('tech_orichalcum_panels'); },
+        desc(){ return loc('tech_orichalcum_panels'); },
         category: 'power_generation',
         era: 'solar',
         path: ['truepath'],
@@ -12879,8 +12988,8 @@ const techs = {
     },
     ship_lasers: {
         id: 'tech-ship_lasers',
-        title: loc('tech_ship_lasers'),
-        desc: loc('tech_ship_lasers'),
+        title(){ return loc('tech_ship_lasers'); },
+        desc(){ return loc('tech_ship_lasers'); },
         category: 'space_militarization',
         era: 'solar',
         path: ['truepath'],
@@ -12900,8 +13009,8 @@ const techs = {
     },
     pulse_lasers: {
         id: 'tech-pulse_lasers',
-        title: loc('tech_pulse_lasers'),
-        desc: loc('tech_pulse_lasers'),
+        title(){ return loc('tech_pulse_lasers'); },
+        desc(){ return loc('tech_pulse_lasers'); },
         category: 'space_militarization',
         era: 'solar',
         path: ['truepath'],
@@ -12921,8 +13030,8 @@ const techs = {
     },
     ship_plasma: {
         id: 'tech-ship_plasma',
-        title: loc('tech_ship_plasma'),
-        desc: loc('tech_ship_plasma'),
+        title(){ return loc('tech_ship_plasma'); },
+        desc(){ return loc('tech_ship_plasma'); },
         category: 'space_militarization',
         era: 'solar',
         reqs: { high_tech: 13, syard_weapon: 3 },
@@ -12942,8 +13051,8 @@ const techs = {
     },
     ship_phaser: {
         id: 'tech-ship_phaser',
-        title: loc('tech_ship_phaser'),
-        desc: loc('tech_ship_phaser'),
+        title(){ return loc('tech_ship_phaser'); },
+        desc(){ return loc('tech_ship_phaser'); },
         category: 'space_militarization',
         era: 'solar',
         path: ['truepath'],
@@ -12963,8 +13072,8 @@ const techs = {
     },
     ship_disruptor: {
         id: 'tech-ship_disruptor',
-        title: loc('tech_ship_disruptor'),
-        desc: loc('tech_ship_disruptor'),
+        title(){ return loc('tech_ship_disruptor'); },
+        desc(){ return loc('tech_ship_disruptor'); },
         category: 'space_militarization',
         era: 'solar',
         path: ['truepath'],
@@ -12984,8 +13093,8 @@ const techs = {
     },
     destroyer_ship: {
         id: 'tech-destroyer_ship',
-        title: loc('tech_destroyer_ship'),
-        desc: loc('tech_destroyer_ship'),
+        title(){ return loc('tech_destroyer_ship'); },
+        desc(){ return loc('tech_destroyer_ship'); },
         category: 'space_militarization',
         era: 'solar',
         path: ['truepath'],
@@ -13004,8 +13113,8 @@ const techs = {
     },
     cruiser_ship_tp: {
         id: 'tech-cruiser_ship_tp',
-        title: loc('tech_cruiser_ship'),
-        desc: loc('tech_cruiser_ship'),
+        title(){ return loc('tech_cruiser_ship'); },
+        desc(){ return loc('tech_cruiser_ship'); },
         category: 'space_militarization',
         era: 'solar',
         path: ['truepath'],
@@ -13025,8 +13134,8 @@ const techs = {
     },
     h_cruiser_ship: {
         id: 'tech-h_cruiser_ship',
-        title: loc('tech_h_cruiser_ship'),
-        desc: loc('tech_h_cruiser_ship'),
+        title(){ return loc('tech_h_cruiser_ship'); },
+        desc(){ return loc('tech_h_cruiser_ship'); },
         category: 'space_militarization',
         era: 'solar',
         path: ['truepath'],
@@ -13045,8 +13154,8 @@ const techs = {
     },
     dreadnought_ship: {
         id: 'tech-dreadnought_ship',
-        title: loc('tech_dreadnought_ship'),
-        desc: loc('tech_dreadnought_ship'),
+        title(){ return loc('tech_dreadnought_ship'); },
+        desc(){ return loc('tech_dreadnought_ship'); },
         category: 'space_militarization',
         era: 'solar',
         path: ['truepath'],
@@ -13064,10 +13173,31 @@ const techs = {
             return false;
         }
     },
+    weight_reduction: {
+        id: 'tech-weight_reduction',
+        title(){ return loc('tech_weight_reduction'); },
+        desc(){ return loc('tech_weight_reduction'); },
+        category: 'space_militarization',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { syard_class: 6, m_ignite: 4, resettle: 2 },
+        grant: ['syard_mass',1],
+        cost: {
+            Knowledge(){ return 19120000; },
+            Cipher(){ return 22000; }
+        },
+        effect: loc('tech_weight_reduction_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     pulse_engine: {
         id: 'tech-pulse_engine',
-        title: loc('outer_shipyard_engine_pulse'),
-        desc: loc('outer_shipyard_engine_pulse'),
+        title(){ return loc('outer_shipyard_engine_pulse'); },
+        desc(){ return loc('outer_shipyard_engine_pulse'); },
         category: 'space_militarization',
         era: 'solar',
         path: ['truepath'],
@@ -13087,8 +13217,8 @@ const techs = {
     },
     photon_engine: {
         id: 'tech-photon_engine',
-        title: loc('outer_shipyard_engine_photon'),
-        desc: loc('outer_shipyard_engine_photon'),
+        title(){ return loc('outer_shipyard_engine_photon'); },
+        desc(){ return loc('outer_shipyard_engine_photon'); },
         category: 'space_militarization',
         era: 'solar',
         path: ['truepath'],
@@ -13108,8 +13238,8 @@ const techs = {
     },
     vacuum_drive: {
         id: 'tech-vacuum_drive',
-        title: loc('outer_shipyard_engine_vacuum'),
-        desc: loc('outer_shipyard_engine_vacuum'),
+        title(){ return loc('outer_shipyard_engine_vacuum'); },
+        desc(){ return loc('outer_shipyard_engine_vacuum'); },
         category: 'space_militarization',
         era: 'solar',
         path: ['truepath'],
@@ -13127,10 +13257,52 @@ const techs = {
             return false;
         }
     },
+    drive_optimizations: {
+        id: 'tech-drive_optimizations',
+        title(){ return loc('outer_shipyard_engine_optimizations'); },
+        desc(){ return loc('outer_shipyard_engine_optimizations'); },
+        category: 'space_militarization',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { syard_engine: 5, m_ignite: 4, resettle: 2 },
+        grant: ['syard_engine',6],
+        cost: {
+            Knowledge(){ return 18950000; },
+            Cipher(){ return 35000; }
+        },
+        effect: loc('outer_shipyard_engine_optimizations_desc'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    electrokinetic_thruster: {
+        id: 'tech-electrokinetic_thruster',
+        title(){ return loc('outer_shipyard_engine_electrokinetic'); },
+        desc(){ return loc('outer_shipyard_engine_electrokinetic'); },
+        category: 'space_militarization',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { syard_engine: 6 },
+        grant: ['syard_engine',7],
+        cost: {
+            Knowledge(){ return 19600000; },
+            Cipher(){ return 48000; }
+        },
+        effect: loc('outer_shipyard_engine_electrokinetic_desc'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     ship_fusion: {
         id: 'tech-ship_fusion',
-        title: loc('tech_fusion_generator'),
-        desc: loc('tech_fusion_generator'),
+        title(){ return loc('tech_fusion_generator'); },
+        desc(){ return loc('tech_fusion_generator'); },
         category: 'space_militarization',
         era: 'solar',
         path: ['truepath'],
@@ -13150,8 +13322,8 @@ const techs = {
     },
     ship_elerium: {
         id: 'tech-ship_elerium',
-        title: loc('tech_elerium_generator'),
-        desc: loc('tech_elerium_generator'),
+        title(){ return loc('tech_elerium_generator'); },
+        desc(){ return loc('tech_elerium_generator'); },
         category: 'space_militarization',
         era: 'solar',
         path: ['truepath'],
@@ -13169,10 +13341,31 @@ const techs = {
             return false;
         }
     },
+    ship_antimatter: {
+        id: 'tech-ship_antimatter',
+        title(){ return loc('tech_antimatter_generator'); },
+        desc(){ return loc('tech_antimatter_generator'); },
+        category: 'space_militarization',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { syard_power: 5, m_ignite: 4, resettle: 2, womling_energy: 1 },
+        grant: ['syard_power',6],
+        cost: {
+            Knowledge(){ return 19450000; },
+            Cipher(){ return 55000; }
+        },
+        effect: loc('tech_antimatter_generator_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     quantum_signatures: {
         id: 'tech-quantum_signatures',
-        title: loc('tech_quantum_signatures'),
-        desc: loc('tech_quantum_signatures'),
+        title(){ return loc('tech_quantum_signatures'); },
+        desc(){ return loc('tech_quantum_signatures'); },
         category: 'progress',
         era: 'solar',
         path: ['truepath'],
@@ -13192,8 +13385,8 @@ const techs = {
     },
     interstellar_drive: {
         id: 'tech-interstellar_drive',
-        title: loc('tech_interstellar_drive'),
-        desc: loc('tech_interstellar_drive'),
+        title(){ return loc('tech_interstellar_drive'); },
+        desc(){ return loc('tech_interstellar_drive'); },
         category: 'progress',
         era: 'tauceti',
         path: ['truepath'],
@@ -13215,10 +13408,34 @@ const techs = {
             drawShipYard();
         }
     },
+    fleet_command: {
+        id: 'tech-fleet_command',
+        title(){ return loc('tech_fleet_command'); },
+        desc(){ return loc('tech_fleet_command'); },
+        category: 'space_militarization',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { resettle: 8 },
+        grant: ['syard_fleet',1],
+        cost: {
+            Knowledge(){ return 21000000; }
+        },
+        effect: loc('tech_fleet_command_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        },
+        post(){
+            // Fleet Command brings the Fleet Tactical Command panel with it.
+            defineFleetCommand();
+        }
+    },
     alien_outpost: {
         id: 'tech-alien_outpost',
-        title: loc('tech_alien_outpost'),
-        desc: loc('tech_alien_outpost'),
+        title(){ return loc('tech_alien_outpost'); },
+        desc(){ return loc('tech_alien_outpost'); },
         category: 'science',
         era: 'tauceti',
         path: ['truepath'],
@@ -13242,8 +13459,8 @@ const techs = {
     },
     jumpgates: {
         id: 'tech-jumpgates',
-        title: loc('tech_jumpgates'),
-        desc: loc('tech_jumpgates'),
+        title(){ return loc('tech_jumpgates'); },
+        desc(){ return loc('tech_jumpgates'); },
         category: 'progress',
         era: 'tauceti',
         path: ['truepath'],
@@ -13262,8 +13479,8 @@ const techs = {
     },
     system_survey: {
         id: 'tech-system_survey',
-        title: loc('tech_system_survey'),
-        desc: loc('tech_system_survey'),
+        title(){ return loc('tech_system_survey'); },
+        desc(){ return loc('tech_system_survey'); },
         category: 'progress',
         era: 'tauceti',
         path: ['truepath'],
@@ -13285,8 +13502,8 @@ const techs = {
     },
     repository: {
         id: 'tech-repository',
-        title: loc('tech_repository'),
-        desc: loc('tech_repository'),
+        title(){ return loc('tech_repository'); },
+        desc(){ return loc('tech_repository'); },
         category: 'storage',
         era: 'tauceti',
         path: ['truepath'],
@@ -13306,8 +13523,8 @@ const techs = {
     },
     fusion_generator: {
         id: 'tech-fusion_generator',
-        title: loc('tech_fusion_power'),
-        desc: loc('tech_fusion_power'),
+        title(){ return loc('tech_fusion_power'); },
+        desc(){ return loc('tech_fusion_power'); },
         category: 'power_generation',
         era: 'tauceti',
         path: ['truepath'],
@@ -13327,8 +13544,8 @@ const techs = {
     },
     tau_cultivation: {
         id: 'tech-tau_cultivation',
-        title: loc('tech_tau_cultivation'),
-        desc: loc('tech_tau_cultivation'),
+        title(){ return loc('tech_tau_cultivation'); },
+        desc(){ return loc('tech_tau_cultivation'); },
         category: 'agriculture',
         era: 'tauceti',
         path: ['truepath'],
@@ -13348,8 +13565,8 @@ const techs = {
     },
     tau_manufacturing: {
         id: 'tech-tau_manufacturing',
-        title: loc('tech_tau_manufacturing'),
-        desc: loc('tech_tau_manufacturing'),
+        title(){ return loc('tech_tau_manufacturing'); },
+        desc(){ return loc('tech_tau_manufacturing'); },
         category: 'crafting',
         era: 'tauceti',
         path: ['truepath'],
@@ -13367,10 +13584,65 @@ const techs = {
             return false;
         }
     },
+    data_decoder: {
+        id: 'tech-data_decoder',
+        title(){ return loc('tech_data_decoder'); },
+        desc(){ return loc('tech_data_decoder'); },
+        category: 'science',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { tau_home: 8, resettle: 13 },
+        grant: ['tau_home',9],
+        cost: {
+            Knowledge(){ return 24000000; }
+        },
+        effect(){ return loc('tech_data_decoder_effect',[global.resource.Cipher.name, loc('tech_alien_outpost')]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.tauceti.tau_home.data_decoder);
+                return true;
+            }
+            return false;
+        }
+    },
+    dual_replicator: {
+        id: 'tech-dual_replicator',
+        title(){ return loc('tech_dual_replicator'); },
+        desc(){ return loc('tech_dual_replicator'); },
+        category: 'special',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { tau_home: 9, replicator: 1 },
+        grant: ['replicator',2],
+        cost: {
+            Knowledge(){ return 30000000; },
+            Cipher(){ return 250000; }
+        },
+        effect(){ return loc('tech_dual_replicator_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                // The second line starts with none of the power, so nothing changes until the player
+                // moves the split off 100/0 themselves. It still opens on a different resource to the
+                // first, because the two lines are never allowed to sit on the same one.
+                if (global.race['replicator']){
+                    if (!global.race.replicator.hasOwnProperty('res2') || global.race.replicator.res2 === global.race.replicator.res){
+                        global.race.replicator['res2'] = altReplicatorRes(global.race.replicator.res);
+                    }
+                    global.race.replicator['ratio'] = 100;
+                }
+                return true;
+            }
+            return false;
+        },
+        post(){
+            defineIndustry();
+            defineGovernor();
+        }
+    },
     weasels: {
         id: 'tech-weasels',
-        title: loc('tech_weasels'),
-        desc: loc('tech_weasels'),
+        title(){ return loc('tech_weasels'); },
+        desc(){ return loc('tech_weasels'); },
         category: 'womling',
         era: 'tauceti',
         path: ['truepath'],
@@ -13390,8 +13662,8 @@ const techs = {
     },
     jeff: {
         id: 'tech-jeff',
-        title: loc('tech_jeff'),
-        desc: loc('tech_jeff'),
+        title(){ return loc('tech_jeff'); },
+        desc(){ return loc('tech_jeff'); },
         category: 'womling',
         era: 'tauceti',
         path: ['truepath'],
@@ -13411,8 +13683,8 @@ const techs = {
     },
     womling_fun: {
         id: 'tech-womling_fun',
-        title: loc('tech_womling_fun'),
-        desc: loc('tech_womling_fun'),
+        title(){ return loc('tech_womling_fun'); },
+        desc(){ return loc('tech_womling_fun'); },
         category: 'womling',
         era: 'tauceti',
         path: ['truepath'],
@@ -13431,8 +13703,8 @@ const techs = {
     },
     womling_lab: {
         id: 'tech-womling_lab',
-        title: loc('tech_womling_lab'),
-        desc: loc('tech_womling_lab'),
+        title(){ return loc('tech_womling_lab'); },
+        desc(){ return loc('tech_womling_lab'); },
         category: 'womling',
         era: 'tauceti',
         path: ['truepath'],
@@ -13453,8 +13725,8 @@ const techs = {
     },
     womling_mining: {
         id: 'tech-womling_mining',
-        title: loc('tech_womling_mining'),
-        desc: loc('tech_womling_mining'),
+        title(){ return loc('tech_womling_mining'); },
+        desc(){ return loc('tech_womling_mining'); },
         category: 'womling',
         era: 'tauceti',
         path: ['truepath'],
@@ -13473,8 +13745,8 @@ const techs = {
     },
     womling_firstaid: {
         id: 'tech-womling_firstaid',
-        title: loc('tech_womling_firstaid'),
-        desc: loc('tech_womling_firstaid'),
+        title(){ return loc('tech_womling_firstaid'); },
+        desc(){ return loc('tech_womling_firstaid'); },
         category: 'womling',
         era: 'tauceti',
         path: ['truepath'],
@@ -13493,8 +13765,8 @@ const techs = {
     },
     womling_logistics: {
         id: 'tech-womling_logistics',
-        title: loc('tech_womling_logistics'),
-        desc: loc('tech_womling_logistics'),
+        title(){ return loc('tech_womling_logistics'); },
+        desc(){ return loc('tech_womling_logistics'); },
         category: 'womling',
         era: 'tauceti',
         path: ['truepath'],
@@ -13513,8 +13785,8 @@ const techs = {
     },
     womling_repulser: {
         id: 'tech-womling_repulser',
-        title: loc('tech_womling_repulser'),
-        desc: loc('tech_womling_repulser'),
+        title(){ return loc('tech_womling_repulser'); },
+        desc(){ return loc('tech_womling_repulser'); },
         category: 'womling',
         era: 'tauceti',
         path: ['truepath'],
@@ -13533,8 +13805,8 @@ const techs = {
     },
     womling_farming: {
         id: 'tech-womling_farming',
-        title: loc('tech_womling_farming'),
-        desc: loc('tech_womling_farming'),
+        title(){ return loc('tech_womling_farming'); },
+        desc(){ return loc('tech_womling_farming'); },
         category: 'womling',
         era: 'tauceti',
         path: ['truepath'],
@@ -13553,8 +13825,8 @@ const techs = {
     },
     womling_housing: {
         id: 'tech-womling_housing',
-        title: loc('tech_womling_housing'),
-        desc: loc('tech_womling_housing'),
+        title(){ return loc('tech_womling_housing'); },
+        desc(){ return loc('tech_womling_housing'); },
         category: 'womling',
         era: 'tauceti',
         path: ['truepath'],
@@ -13573,8 +13845,8 @@ const techs = {
     },
     womling_support: {
         id: 'tech-womling_support',
-        title: loc('tech_womling_support'),
-        desc: loc('tech_womling_support'),
+        title(){ return loc('tech_womling_support'); },
+        desc(){ return loc('tech_womling_support'); },
         category: 'womling',
         era: 'tauceti',
         path: ['truepath'],
@@ -13594,8 +13866,8 @@ const techs = {
     },
     womling_recycling: {
         id: 'tech-womling_recycling',
-        title: loc('tech_womling_recycling'),
-        desc: loc('tech_womling_recycling'),
+        title(){ return loc('tech_womling_recycling'); },
+        desc(){ return loc('tech_womling_recycling'); },
         category: 'womling',
         era: 'tauceti',
         path: ['truepath'],
@@ -13612,10 +13884,53 @@ const techs = {
             return false;
         }
     },
+    womling_brigade: {
+        id: 'tech-womling_brigade',
+        title(){ return loc('tech_womling_brigade'); },
+        desc(){ return loc('tech_womling_brigade'); },
+        category: 'womling',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { womling_tech: 9, resettle: 2 },
+        grant: ['womling_military',1],
+        cost: {
+            Knowledge(){ return 18750000; }
+        },
+        effect(){ return `<div>${loc('tech_womling_brigade_effect')}</div>`; },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.tauceti.tau_red.womling_rangers);
+                return true;
+            }
+            return false;
+        }
+    },
+    womling_energy: {
+        id: 'tech-womling_energy',
+        title(){ return loc('tech_antimatter_reactor'); },
+        desc(){ return loc('tech_antimatter_reactor'); },
+        category: 'womling',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { womling_tech: 10, m_ignite: 3 },
+        grant: ['womling_energy',1],
+        cost: {
+            Knowledge(){ return 19500000; }
+        },
+        effect(){ return `<div>${loc('tech_antimatter_reactor_effect')}</div>`; },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.tauceti.tau_red.antimatter_reactor);
+                return true;
+            }
+            return false;
+        },
+        flair(){ return loc('tech_antimatter_reactor_flair'); }
+    },
     asteroid_analysis: {
         id: 'tech-asteroid_analysis',
-        title: loc('tech_asteroid_analysis'),
-        desc: loc('tech_asteroid_analysis'),
+        title(){ return loc('tech_asteroid_analysis'); },
+        desc(){ return loc('tech_asteroid_analysis'); },
         category: 'progress',
         era: 'tauceti',
         path: ['truepath'],
@@ -13635,8 +13950,8 @@ const techs = {
     },
     shark_repellent: {
         id: 'tech-shark_repellent',
-        title: loc('tech_shark_repellent'),
-        desc: loc('tech_shark_repellent'),
+        title(){ return loc('tech_shark_repellent'); },
+        desc(){ return loc('tech_shark_repellent'); },
         category: 'progress',
         era: 'tauceti',
         path: ['truepath'],
@@ -13656,8 +13971,8 @@ const techs = {
     },
     belt_mining: {
         id: 'tech-belt_mining',
-        title: loc('tech_belt_mining'),
-        desc: loc('tech_belt_mining'),
+        title(){ return loc('tech_belt_mining'); },
+        desc(){ return loc('tech_belt_mining'); },
         category: 'space_mining',
         era: 'tauceti',
         path: ['truepath'],
@@ -13678,8 +13993,8 @@ const techs = {
     },
     adv_belt_mining: {
         id: 'tech-adv_belt_mining',
-        title: loc('tech_adv_belt_mining'),
-        desc: loc('tech_adv_belt_mining'),
+        title(){ return loc('tech_adv_belt_mining'); },
+        desc(){ return loc('tech_adv_belt_mining'); },
         category: 'space_mining',
         era: 'tauceti',
         path: ['truepath'],
@@ -13701,8 +14016,8 @@ const techs = {
     },
     space_whaling: {
         id: 'tech-space_whaling',
-        title: loc('tech_space_whaling'),
-        desc: loc('tech_space_whaling'),
+        title(){ return loc('tech_space_whaling'); },
+        desc(){ return loc('tech_space_whaling'); },
         category: 'whaling',
         era: 'tauceti',
         path: ['truepath'],
@@ -13744,8 +14059,8 @@ const techs = {
     },
     isolation_protocol: {
         id: 'tech-isolation_protocol',
-        title: loc('tech_isolation_protocol'),
-        desc: loc('tech_isolation_protocol'),
+        title(){ return loc('tech_isolation_protocol'); },
+        desc(){ return loc('tech_isolation_protocol'); },
         category: 'plague',
         era: 'tauceti',
         path: ['truepath'],
@@ -13770,8 +14085,8 @@ const techs = {
     },
     focus_cure: {
         id: 'tech-focus_cure',
-        title: loc('tech_focus_cure'),
-        desc: loc('tech_focus_cure'),
+        title(){ return loc('tech_focus_cure'); },
+        desc(){ return loc('tech_focus_cure'); },
         category: 'plague',
         era: 'tauceti',
         path: ['truepath'],
@@ -13792,8 +14107,8 @@ const techs = {
     },
     decode_virus: {
         id: 'tech-decode_virus',
-        title: loc('tech_decode_virus'),
-        desc: loc('tech_decode_virus'),
+        title(){ return loc('tech_decode_virus'); },
+        desc(){ return loc('tech_decode_virus'); },
         category: 'plague',
         era: 'tauceti',
         path: ['truepath'],
@@ -13818,8 +14133,8 @@ const techs = {
     },
     vaccine_campaign: {
         id: 'tech-vaccine_campaign',
-        title: loc('tech_vaccine_campaign'),
-        desc: loc('tech_vaccine_campaign'),
+        title(){ return loc('tech_vaccine_campaign'); },
+        desc(){ return loc('tech_vaccine_campaign'); },
         category: 'plague',
         era: 'tauceti',
         path: ['truepath'],
@@ -13842,8 +14157,8 @@ const techs = {
     },
     vax_strat1: {
         id: 'tech-vax_strat1',
-        title: loc('tech_vax_strat1'),
-        desc: loc('tech_vax_strat1'),
+        title(){ return loc('tech_vax_strat1'); },
+        desc(){ return loc('tech_vax_strat1'); },
         category: 'plague',
         era: 'tauceti',
         path: ['truepath'],
@@ -13866,8 +14181,8 @@ const techs = {
     },
     vax_strat2: {
         id: 'tech-vax_strat2',
-        title: loc('tech_vax_strat2'),
-        desc: loc('tech_vax_strat2'),
+        title(){ return loc('tech_vax_strat2'); },
+        desc(){ return loc('tech_vax_strat2'); },
         category: 'plague',
         era: 'tauceti',
         path: ['truepath'],
@@ -13890,8 +14205,8 @@ const techs = {
     },
     vax_strat3: {
         id: 'tech-vax_strat3',
-        title: loc('tech_vax_strat3'),
-        desc: loc('tech_vax_strat3'),
+        title(){ return loc('tech_vax_strat3'); },
+        desc(){ return loc('tech_vax_strat3'); },
         category: 'plague',
         era: 'tauceti',
         path: ['truepath'],
@@ -13914,8 +14229,8 @@ const techs = {
     },
     vax_strat4: {
         id: 'tech-vax_strat4',
-        title: loc('tech_vax_strat4'),
-        desc: loc('tech_vax_strat4'),
+        title(){ return loc('tech_vax_strat4'); },
+        desc(){ return loc('tech_vax_strat4'); },
         category: 'plague',
         era: 'tauceti',
         path: ['truepath'],
@@ -13938,8 +14253,8 @@ const techs = {
     },
     cloning: {
         id: 'tech-cloning',
-        title: loc('tech_cloning'),
-        desc: loc('tech_cloning'),
+        title(){ return loc('tech_cloning'); },
+        desc(){ return loc('tech_cloning'); },
         category: 'housing',
         era: 'tauceti',
         path: ['truepath'],
@@ -13964,8 +14279,8 @@ const techs = {
     },
     clone_degradation: {
         id: 'tech-clone_degradation',
-        title: loc('tech_clone_degradation'),
-        desc: loc('tech_clone_degradation'),
+        title(){ return loc('tech_clone_degradation'); },
+        desc(){ return loc('tech_clone_degradation'); },
         category: 'progress',
         era: 'tauceti',
         path: ['truepath'],
@@ -13987,8 +14302,8 @@ const techs = {
     },
     digital_paradise: {
         id: 'tech-digital_paradise',
-        title: loc('tech_digital_paradise'),
-        desc: loc('tech_digital_paradise'),
+        title(){ return loc('tech_digital_paradise'); },
+        desc(){ return loc('tech_digital_paradise'); },
         category: 'progress',
         era: 'tauceti',
         path: ['truepath'],
@@ -14010,8 +14325,8 @@ const techs = {
     },
     ringworld: {
         id: 'tech-ringworld',
-        title: loc('tech_ringworld'),
-        desc: loc('tech_ringworld'),
+        title(){ return loc('tech_ringworld'); },
+        desc(){ return loc('tech_ringworld'); },
         category: 'progress',
         era: 'tauceti',
         path: ['truepath'],
@@ -14035,8 +14350,8 @@ const techs = {
     },
     iso_gambling: {
         id: 'tech-iso_gambling',
-        title: loc('tech_iso_gambling'),
-        desc: loc('tech_iso_gambling'),
+        title(){ return loc('tech_iso_gambling'); },
+        desc(){ return loc('tech_iso_gambling'); },
         category: 'banking',
         era: 'tauceti',
         reqs: { gambling: 4, isolation: 1 },
@@ -14075,8 +14390,8 @@ const techs = {
     },
     cultural_center: {
         id: 'tech-cultural_center',
-        title: loc('tech_cultural_center'),
-        desc: loc('tech_cultural_center'),
+        title(){ return loc('tech_cultural_center'); },
+        desc(){ return loc('tech_cultural_center'); },
         category: 'banking',
         era: 'tauceti',
         path: ['truepath'],
@@ -14097,8 +14412,8 @@ const techs = {
     },
     outer_tau_survey: {
         id: 'tech-outer_tau_survey',
-        title: loc('tech_outer_tau_survey'),
-        desc: loc('tech_outer_tau_survey'),
+        title(){ return loc('tech_outer_tau_survey'); },
+        desc(){ return loc('tech_outer_tau_survey'); },
         category: 'progress',
         era: 'tauceti',
         path: ['truepath'],
@@ -14119,8 +14434,8 @@ const techs = {
     },
     alien_research: {
         id: 'tech-alien_research',
-        title: loc('tech_alien_research'),
-        desc: loc('tech_alien_research'),
+        title(){ return loc('tech_alien_research'); },
+        desc(){ return loc('tech_alien_research'); },
         category: 'progress',
         era: 'tauceti',
         path: ['truepath'],
@@ -14142,8 +14457,8 @@ const techs = {
     },
     womling_gene_therapy: {
         id: 'tech-womling_gene_therapy',
-        title: loc('tech_womling_gene_therapy'),
-        desc: loc('tech_womling_gene_therapy'),
+        title(){ return loc('tech_womling_gene_therapy'); },
+        desc(){ return loc('tech_womling_gene_therapy'); },
         category: 'womling',
         era: 'tauceti',
         path: ['truepath'],
@@ -14182,8 +14497,8 @@ const techs = {
     },
     advanced_refinery: {
         id: 'tech-advanced_refinery',
-        title: loc('tech_advanced_refinery'),
-        desc: loc('tech_advanced_refinery'),
+        title(){ return loc('tech_advanced_refinery'); },
+        desc(){ return loc('tech_advanced_refinery'); },
         category: 'space_mining',
         era: 'tauceti',
         path: ['truepath'],
@@ -14202,8 +14517,8 @@ const techs = {
     },
     advanced_pit_mining: {
         id: 'tech-advanced_pit_mining',
-        title: loc('tech_advanced_pit_mining'),
-        desc: loc('tech_advanced_pit_mining'),
+        title(){ return loc('tech_advanced_pit_mining'); },
+        desc(){ return loc('tech_advanced_pit_mining'); },
         category: 'space_mining',
         era: 'tauceti',
         path: ['truepath'],
@@ -14222,8 +14537,8 @@ const techs = {
     },
     useless_junk: {
         id: 'tech-useless_junk',
-        title: loc('tech_useless_junk'),
-        desc: loc('tech_useless_junk'),
+        title(){ return loc('tech_useless_junk'); },
+        desc(){ return loc('tech_useless_junk'); },
         category: 'womling',
         era: 'tauceti',
         path: ['truepath'],
@@ -14242,8 +14557,8 @@ const techs = {
     },
     advanced_asteroid_mining: {
         id: 'tech-advanced_asteroid_mining',
-        title: loc('tech_advanced_asteroid_mining'),
-        desc: loc('tech_advanced_asteroid_mining'),
+        title(){ return loc('tech_advanced_asteroid_mining'); },
+        desc(){ return loc('tech_advanced_asteroid_mining'); },
         category: 'space_mining',
         era: 'tauceti',
         path: ['truepath'],
@@ -14262,8 +14577,8 @@ const techs = {
     },
     advanced_material_synthesis: {
         id: 'tech-advanced_material_synthesis',
-        title: loc('tech_advanced_material_synthesis'),
-        desc: loc('tech_advanced_material_synthesis'),
+        title(){ return loc('tech_advanced_material_synthesis'); },
+        desc(){ return loc('tech_advanced_material_synthesis'); },
         category: 'crafting',
         era: 'tauceti',
         path: ['truepath'],
@@ -14282,8 +14597,8 @@ const techs = {
     },
     matrioshka_brain: {
         id: 'tech-matrioshka_brain',
-        title: loc('tech_matrioshka_brain'),
-        desc: loc('tech_matrioshka_brain'),
+        title(){ return loc('tech_matrioshka_brain'); },
+        desc(){ return loc('tech_matrioshka_brain'); },
         category: 'progress',
         era: 'tauceti',
         path: ['truepath'],
@@ -14304,8 +14619,8 @@ const techs = {
     },
     ignition_device: {
         id: 'tech-ignition_device',
-        title: loc('tech_ignition_device'),
-        desc: loc('tech_ignition_device'),
+        title(){ return loc('tech_ignition_device'); },
+        desc(){ return loc('tech_ignition_device'); },
         category: 'progress',
         era: 'tauceti',
         path: ['truepath'],
@@ -14321,6 +14636,229 @@ const techs = {
                 if (!global.tauceti.hasOwnProperty('matrioshka_brain')){
                     initStruct(actions.tauceti.tau_gas2.matrioshka_brain);
                 }
+                return true;
+            }
+            return false;
+        }
+    },
+    plague_inoculation: {
+        id: 'tech-plague_inoculation',
+        title(){ return loc('tech_plague_inoculation'); },
+        desc(){ return loc('tech_plague_inoculation'); },
+        category: 'progress',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { tau_gas2: 8, m_ignite: 2 },
+        grant: ['resettle',1],
+        cost: {
+            Knowledge(){ return 17500000; }
+        },
+        effect(){ return loc('tech_plague_inoculation_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.tauceti.tau_gas2.adv_shipyard);
+                return true;
+            }
+            return false;
+        }
+    },
+    colonial_marines: {
+        id: 'tech-colonial_marines',
+        title(){ return loc('tech_colonial_marines'); },
+        desc(){ return loc('tech_colonial_marines'); },
+        category: 'military',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { resettle: 1 },
+        grant: ['resettle',2],
+        cost: {
+            Knowledge(){ return 18000000; }
+        },
+        effect(){ return loc('tech_colonial_marines_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.tauceti.tau_home.marine_barracks);
+                return true;
+            }
+            return false;
+        }
+    },
+    jump_jump_gate: {
+        id: 'tech-jump_jump_gate',
+        title(){ return loc('tech_jump_jump_gate'); },
+        desc(){ return loc('tech_jump_jump_gate'); },
+        category: 'progress',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { resettle: 2, m_ignite: 3 },
+        grant: ['resettle',3],
+        cost: {
+            Knowledge(){ return 19750000; },
+            Positronium(){ return 15000; }
+        },
+        effect(){ return loc('tech_jump_jump_gate_effect',[actions.space.spc_sun.info.name(),global.resource.Positronium.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                jumpGateRestart();
+                return true;
+            }
+            return false;
+        }
+    },
+    analyze_ship: {
+        id: 'tech-analyze_ship',
+        title(){ return loc('tech_analyze_ship'); },
+        desc(){ return loc('tech_analyze_ship'); },
+        category: 'progress',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { resettle: 5 },
+        grant: ['resettle',6],
+        cost: {
+            Knowledge(){ return 19820000; }
+        },
+        effect(){ return loc('tech_analyze_ship_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                messageQueue(loc('tech_analyze_ship_msg'),'info',false,['progress']);
+                return true;
+            }
+            return false;
+        }
+    },
+    zombie_data: {
+        id: 'tech-zombie_data',
+        title(){ return loc('tech_zombie_data'); },
+        desc(){ return loc('tech_zombie_data'); },
+        category: 'progress',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { resettle: 6 },
+        grant: ['resettle',7],
+        cost: {
+            Knowledge(){ return 19900000; }
+        },
+        effect(){ return loc('tech_zombie_data_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                messageQueue(loc('tech_zombie_data_msg',[races[global.race.species].home, races[global.race.species].solar.red]),'info',false,['progress']);
+                return true;
+            }
+            return false;
+        }
+    },
+    zombie_intelligence: {
+        id: 'tech-zombie_intelligence',
+        title(){ return loc('tech_zombie_intelligence'); },
+        desc(){ return loc('tech_zombie_intelligence'); },
+        category: 'progress',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { resettle: 10 },
+        grant: ['resettle',11],
+        cost: {
+            Knowledge(){ return 22500000; }
+        },
+        effect(){ return loc('tech_zombie_intelligence_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                messageQueue(loc('tech_zombie_intelligence_msg'),'info',false,['progress']);
+                return true;
+            }
+            return false;
+        }
+    },
+    zombie_counter: {
+        id: 'tech-zombie_counter',
+        title(){ return loc('tech_zombie_counter'); },
+        desc(){ return loc('tech_zombie_counter'); },
+        category: 'progress',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { resettle: 13 },
+        grant: ['resettle',14],
+        cost: {
+            Knowledge(){ return 26000000; }
+        },
+        effect(){ return loc('tech_zombie_counter_effect',[planetName().dwarf]); },
+        action(){
+            if (payCosts($(this)[0])){
+                // Ceres becomes a destination again so there is somewhere in Sol to operate from.
+                initStruct(actions.space.spc_dwarf.repair_yard);
+                global.settings.space.dwarf = true;
+                messageQueue(loc('tech_zombie_counter_msg',[planetName().dwarf]),'info',false,['progress']);
+                renderSpace();
+                return true;
+            }
+            return false;
+        }
+    },
+    reconstruction: {
+        id: 'tech-reconstruction',
+        title(){ return loc('tech_reconstruction'); },
+        desc(){ return loc('tech_reconstruction'); },
+        category: 'government',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { resettle: 9, governor: 1 },
+        // Same gate as the governor tech itself — without a governor to hand it to, there is nothing
+        // for a reconstruction directive to direct.
+        condition(){
+            return global.genes['governor'] && global.civic.govern.type !== 'anarchy' ? true : false;
+        },
+        grant: ['gov_repair',1],
+        cost: {
+            Knowledge(){ return 20000000; }
+        },
+        effect: loc('tech_reconstruction_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        },
+        post(){
+            defineGovernor();
+        }
+    },
+    element_zero: {
+        id: 'tech-element_zero',
+        title(){ return loc('tech_element_zero'); },
+        desc(){ return loc('tech_element_zero'); },
+        category: 'progress',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { tau_gas2: 8, m_ignite: 2 },
+        grant: ['m_ignite',3],
+        cost: {
+            Knowledge(){ return 17500000; }
+        },
+        effect(){ return loc('tech_element_zero_effect',[global.resource.Positronium.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.tauceti.tau_gas2.mass_relay);
+                initStruct(actions.tauceti.tau_roid.synthesizer);
+                global.resource.Positronium.display = true;
+                return true;
+            }
+            return false;
+        }
+    },
+    patrol_routes: {
+        id: 'tech-patrol_routes',
+        title(){ return loc('tech_patrol_routes'); },
+        desc(){ return loc('tech_patrol_routes'); },
+        category: 'space_mining',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { m_ignite: 3 },
+        grant: ['m_ignite',4],
+        cost: {
+            Knowledge(){ return 18500000; }
+        },
+        effect(){ return loc('tech_patrol_routes_effect',[loc(`space_belt_info_name`)]); },
+        action(){
+            if (payCosts($(this)[0])){
                 return true;
             }
             return false;
@@ -14342,7 +14880,7 @@ const techs = {
         effect(){ return global.race.universe === 'antimatter' ? loc('tech_antireplicator_effect') : loc('tech_replicator_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.race['replicator'] = { res: 'Unobtainium', pow: 1 };
+                global.race['replicator'] = { res: 'Unobtainium', res2: 'Unobtainium', pow: 1, ratio: 100 };
                 return true;
             }
             return false;
@@ -14354,8 +14892,8 @@ const techs = {
     },
     womling_unlock: {
         id: 'tech-womling_unlock',
-        title: loc('tech_womling_unlock'),
-        desc: loc('tech_womling_unlock'),
+        title(){ return loc('tech_womling_unlock'); },
+        desc(){ return loc('tech_womling_unlock'); },
         category: 'womling',
         era: 'tauceti',
         path: ['truepath'],
@@ -14378,8 +14916,8 @@ const techs = {
     },
     garden_of_eden: {
         id: 'tech-garden_of_eden',
-        title: loc('tech_garden_of_eden'),
-        desc: loc('tech_garden_of_eden'),
+        title(){ return loc('tech_garden_of_eden'); },
+        desc(){ return loc('tech_garden_of_eden'); },
         category: 'special',
         era: 'tauceti',
         path: ['truepath'],
@@ -14399,8 +14937,8 @@ const techs = {
     },
     asphodel_flowers: {
         id: 'tech-asphodel_flowers',
-        title: loc('tech_asphodel_flowers'),
-        desc: loc('tech_asphodel_flowers'),
+        title(){ return loc('tech_asphodel_flowers'); },
+        desc(){ return loc('tech_asphodel_flowers'); },
         category: 'edenic',
         era: 'existential',
         reqs: { edenic: 4 },
@@ -14421,8 +14959,8 @@ const techs = {
     },
     ghost_traps: {
         id: 'tech-ghost_traps',
-        title: loc('tech_ghost_traps'),
-        desc: loc('tech_ghost_traps'),
+        title(){ return loc('tech_ghost_traps'); },
+        desc(){ return loc('tech_ghost_traps'); },
         category: 'edenic',
         era: 'existential',
         reqs: { asphodel: 1 },
@@ -14442,8 +14980,8 @@ const techs = {
     },
     research_station: {
         id: 'tech-research_station',
-        title: loc('tech_research_station'),
-        desc: loc('tech_research_station'),
+        title(){ return loc('tech_research_station'); },
+        desc(){ return loc('tech_research_station'); },
         category: 'science',
         era: 'existential',
         reqs: { asphodel: 2 },
@@ -14463,8 +15001,8 @@ const techs = {
     },
     soul_engine: {
         id: 'tech-soul_engine',
-        title: loc('tech_soul_engine'),
-        desc: loc('tech_soul_engine'),
+        title(){ return loc('tech_soul_engine'); },
+        desc(){ return loc('tech_soul_engine'); },
         category: 'power_generation',
         era: 'existential',
         reqs: { asphodel: 3 },
@@ -14485,8 +15023,8 @@ const techs = {
     },
     railway_to_hell: {
         id: 'tech-railway_to_hell',
-        title: loc('tech_railway_to_hell'),
-        desc: loc('tech_railway_to_hell'),
+        title(){ return loc('tech_railway_to_hell'); },
+        desc(){ return loc('tech_railway_to_hell'); },
         category: 'hell_dimension',
         era: 'existential',
         reqs: { asphodel: 4, hell_lake: 6 },
@@ -14527,8 +15065,8 @@ const techs = {
     },
     asphodel_mech: {
         id: 'tech-asphodel_mech',
-        title: loc('tech_asphodel_mech'),
-        desc: loc('tech_asphodel_mech'),
+        title(){ return loc('tech_asphodel_mech'); },
+        desc(){ return loc('tech_asphodel_mech'); },
         category: 'military',
         era: 'existential',
         reqs: { asphodel: 5, military: 12 },
@@ -14548,8 +15086,8 @@ const techs = {
     },
     asphodel_storage: {
         id: 'tech-asphodel_storage',
-        title: loc('tech_asphodel_storage'),
-        desc: loc('tech_asphodel_storage'),
+        title(){ return loc('tech_asphodel_storage'); },
+        desc(){ return loc('tech_asphodel_storage'); },
         category: 'storage',
         era: 'existential',
         reqs: { asphodel: 6, },
@@ -14569,8 +15107,8 @@ const techs = {
     },
     asphodel_stabilizer: {
         id: 'tech-asphodel_stabilizer',
-        title: loc('tech_asphodel_stabilizer'),
-        desc: loc('tech_asphodel_stabilizer'),
+        title(){ return loc('tech_asphodel_stabilizer'); },
+        desc(){ return loc('tech_asphodel_stabilizer'); },
         category: 'storage',
         era: 'existential',
         reqs: { asphodel: 7, },
@@ -14590,8 +15128,8 @@ const techs = {
     },
     edenic_bunker: {
         id: 'tech-edenic_bunker',
-        title: loc('tech_edenic_bunker'),
-        desc: loc('tech_edenic_bunker'),
+        title(){ return loc('tech_edenic_bunker'); },
+        desc(){ return loc('tech_edenic_bunker'); },
         category: 'military',
         era: 'existential',
         reqs: { asphodel: 8, },
@@ -14611,8 +15149,8 @@ const techs = {
     },
     bliss_den: {
         id: 'tech-bliss_den',
-        title: loc('tech_bliss_den'),
-        desc: loc('tech_bliss_den'),
+        title(){ return loc('tech_bliss_den'); },
+        desc(){ return loc('tech_bliss_den'); },
         category: 'entertainment',
         era: 'existential',
         reqs: { asphodel: 9, },
@@ -14632,8 +15170,8 @@ const techs = {
     },
     hallowed_housing: {
         id: 'tech-hallowed_housing',
-        title: loc('tech_hallowed_housing'),
-        desc: loc('tech_hallowed_housing'),
+        title(){ return loc('tech_hallowed_housing'); },
+        desc(){ return loc('tech_hallowed_housing'); },
         category: 'housing',
         era: 'existential',
         reqs: { asphodel: 10, theology: 2 },
@@ -14654,8 +15192,8 @@ const techs = {
     },
     outer_plane_study: {
         id: 'tech-outer_plane_study',
-        title: loc('tech_outer_plane_study'),
-        desc: loc('tech_outer_plane_study'),
+        title(){ return loc('tech_outer_plane_study'); },
+        desc(){ return loc('tech_outer_plane_study'); },
         category: 'edenic',
         era: 'existential',
         reqs: { asphodel: 3, science: 22 },
@@ -14676,8 +15214,8 @@ const techs = {
     },
     camouflage: {
         id: 'tech-camouflage',
-        title: loc('tech_camouflage'),
-        desc: loc('tech_camouflage'),
+        title(){ return loc('tech_camouflage'); },
+        desc(){ return loc('tech_camouflage'); },
         category: 'edenic',
         era: 'existential',
         reqs: { elysium: 3, },
@@ -14697,8 +15235,8 @@ const techs = {
     },
     celestial_tactics: {
         id: 'tech-celestial_tactics',
-        title: loc('tech_celestial_tactics'),
-        desc: loc('tech_celestial_tactics'),
+        title(){ return loc('tech_celestial_tactics'); },
+        desc(){ return loc('tech_celestial_tactics'); },
         category: 'military',
         era: 'existential',
         reqs: { celestial_warfare: 1, },
@@ -14720,8 +15258,8 @@ const techs = {
     },
     active_camouflage: {
         id: 'tech-active_camouflage',
-        title: loc('tech_active_camouflage'),
-        desc: loc('tech_active_camouflage'),
+        title(){ return loc('tech_active_camouflage'); },
+        desc(){ return loc('tech_active_camouflage'); },
         category: 'military',
         era: 'existential',
         reqs: { celestial_warfare: 2, },
@@ -14743,8 +15281,8 @@ const techs = {
     },
     special_ops_training: {
         id: 'tech-special_ops_training',
-        title: loc('tech_special_ops_training'),
-        desc: loc('tech_special_ops_training'),
+        title(){ return loc('tech_special_ops_training'); },
+        desc(){ return loc('tech_special_ops_training'); },
         category: 'military',
         era: 'existential',
         reqs: { celestial_warfare: 3, },
@@ -14766,8 +15304,8 @@ const techs = {
     },
     spectral_training: {
         id: 'tech-spectral_training',
-        title: loc('tech_spectral_training'),
-        desc: loc('tech_spectral_training'),
+        title(){ return loc('tech_spectral_training'); },
+        desc(){ return loc('tech_spectral_training'); },
         category: 'military',
         era: 'existential',
         reqs: { celestial_warfare: 4, },
@@ -14786,8 +15324,8 @@ const techs = {
     },
     elysanite_mining: {
         id: 'tech-elysanite_mining',
-        title: loc('tech_elysanite_mining'),
-        desc: loc('tech_elysanite_mining'),
+        title(){ return loc('tech_elysanite_mining'); },
+        desc(){ return loc('tech_elysanite_mining'); },
         category: 'mining',
         era: 'existential',
         reqs: { elysium: 5 },
@@ -14808,8 +15346,8 @@ const techs = {
     },
     sacred_smelter: {
         id: 'tech-sacred_smelter',
-        title: loc('eden_sacred_smelter_title'),
-        desc: loc('eden_sacred_smelter_title'),
+        title(){ return loc('eden_sacred_smelter_title'); },
+        desc(){ return loc('eden_sacred_smelter_title'); },
         category: 'mining',
         era: 'existential',
         reqs: { elysium: 6 },
@@ -14829,8 +15367,8 @@ const techs = {
     },
     fire_support_base: {
         id: 'tech-fire_support_base',
-        title: loc('eden_fire_support_base_title'),
-        desc: loc('eden_fire_support_base_title'),
+        title(){ return loc('eden_fire_support_base_title'); },
+        desc(){ return loc('eden_fire_support_base_title'); },
         category: 'military',
         era: 'existential',
         reqs: { elysium: 7 },
@@ -14850,8 +15388,8 @@ const techs = {
     },
     pillbox: {
         id: 'tech-pillbox',
-        title: loc('eden_pillbox_title'),
-        desc: loc('eden_pillbox_title'),
+        title(){ return loc('eden_pillbox_title'); },
+        desc(){ return loc('eden_pillbox_title'); },
         category: 'military',
         era: 'existential',
         reqs: { elysium: 8 },
@@ -14871,8 +15409,8 @@ const techs = {
     },
     elerium_cannon: {
         id: 'tech-elerium_cannon',
-        title: loc('tech_elerium_cannon'),
-        desc: loc('tech_elerium_cannon'),
+        title(){ return loc('tech_elerium_cannon'); },
+        desc(){ return loc('tech_elerium_cannon'); },
         category: 'military',
         era: 'existential',
         reqs: { elysium: 9, isle: 1 },
@@ -15064,8 +15602,8 @@ const techs = {
     },
     spirit_syphon: {
         id: 'tech-spirit_syphon',
-        title: loc('tech_spirit_syphon'),
-        desc: loc('tech_spirit_syphon'),
+        title(){ return loc('tech_spirit_syphon'); },
+        desc(){ return loc('tech_spirit_syphon'); },
         category: 'edenic',
         era: 'existential',
         reqs: { high_tech: 19, isle: 3 },
@@ -15086,8 +15624,8 @@ const techs = {
     },
     spirit_capacitor: {
         id: 'tech-spirit_capacitor',
-        title: loc('tech_spirit_capacitor'),
-        desc: loc('tech_spirit_capacitor'),
+        title(){ return loc('tech_spirit_capacitor'); },
+        desc(){ return loc('tech_spirit_capacitor'); },
         category: 'edenic',
         era: 'existential',
         reqs: { isle: 4 },
@@ -15107,8 +15645,8 @@ const techs = {
     },
     suction_force: {
         id: 'tech-suction_force',
-        title: loc('tech_suction_force'),
-        desc: loc('tech_suction_force'),
+        title(){ return loc('tech_suction_force'); },
+        desc(){ return loc('tech_suction_force'); },
         category: 'edenic',
         era: 'existential',
         reqs: { isle: 5 },
@@ -15211,8 +15749,8 @@ const techs = {
     },
     might: {
         id: 'tech-might',
-        title: loc('tech_might'),
-        desc: loc('tech_might'),
+        title(){ return loc('tech_might'); },
+        desc(){ return loc('tech_might'); },
         category: 'evil',
         era: 'civilized',
         reqs: { military: 1 },
@@ -15236,8 +15774,8 @@ const techs = {
     },
     executions: {
         id: 'tech-executions',
-        title: loc('tech_executions'),
-        desc: loc('tech_executions'),
+        title(){ return loc('tech_executions'); },
+        desc(){ return loc('tech_executions'); },
         category: 'evil',
         era: 'industrialized',
         reqs: { evil: 1, high_tech: 3 },
@@ -15258,8 +15796,8 @@ const techs = {
     },
     secret_police: {
         id: 'tech-secret_police',
-        title: loc('tech_secret_police'),
-        desc: loc('tech_secret_police'),
+        title(){ return loc('tech_secret_police'); },
+        desc(){ return loc('tech_secret_police'); },
         category: 'evil',
         era: 'globalized',
         reqs: { evil: 2, high_tech: 6 },
@@ -15280,8 +15818,8 @@ const techs = {
     },
     ai_tracking: {
         id: 'tech-ai_tracking',
-        title: loc('tech_ai_tracking'),
-        desc: loc('tech_ai_tracking'),
+        title(){ return loc('tech_ai_tracking'); },
+        desc(){ return loc('tech_ai_tracking'); },
         category: 'evil',
         era: 'deep_space',
         reqs: { evil: 3, high_tech: 10 },
@@ -15302,8 +15840,8 @@ const techs = {
     },
     predictive_arrests: {
         id: 'tech-predictive_arrests',
-        title: loc('tech_predictive_arrests'),
-        desc: loc('tech_predictive_arrests'),
+        title(){ return loc('tech_predictive_arrests'); },
+        desc(){ return loc('tech_predictive_arrests'); },
         category: 'evil',
         era: 'intergalactic',
         reqs: { evil: 4, high_tech: 16 },
@@ -15324,8 +15862,8 @@ const techs = {
     },
     hellspawn_tunnelers: {
         id: 'tech-hellspawn_tunnelers',
-        title: loc('tech_hellspawn_tunnelers'),
-        desc: loc('tech_hellspawn_tunnelers'),
+        title(){ return loc('tech_hellspawn_tunnelers'); },
+        desc(){ return loc('tech_hellspawn_tunnelers'); },
         category: 'evil',
         era: 'dimensional',
         reqs: { evil: 1, hellspawn: 1 },
@@ -15349,8 +15887,8 @@ const techs = {
     },
     hell_minions: {
         id: 'tech-hell_minions',
-        title: loc('tech_minion_spawn'),
-        desc: loc('tech_minion_spawn'),
+        title(){ return loc('tech_minion_spawn'); },
+        desc(){ return loc('tech_minion_spawn'); },
         category: 'evil',
         era: 'dimensional',
         reqs: { hellspawn: 2 },
@@ -15374,8 +15912,8 @@ const techs = {
     },
     reapers: {
         id: 'tech-reapers',
-        title: loc('tech_reapers'),
-        desc: loc('tech_reapers'),
+        title(){ return loc('tech_reapers'); },
+        desc(){ return loc('tech_reapers'); },
         category: 'evil',
         era: 'dimensional',
         reqs: { hellspawn: 3 },
@@ -15399,8 +15937,8 @@ const techs = {
     },
     hellfire: {
         id: 'tech-hellfire',
-        title: loc('tech_hellfire'),
-        desc: loc('tech_hellfire'),
+        title(){ return loc('tech_hellfire'); },
+        desc(){ return loc('tech_hellfire'); },
         category: 'evil',
         era: 'dimensional',
         reqs: { hellspawn: 5 },
@@ -15423,8 +15961,8 @@ const techs = {
     },
     corpse_retrieval: {
         id: 'tech-corpse_retrieval',
-        title: loc('tech_corpse_retrieval'),
-        desc: loc('tech_corpse_retrieval'),
+        title(){ return loc('tech_corpse_retrieval'); },
+        desc(){ return loc('tech_corpse_retrieval'); },
         category: 'evil',
         era: 'dimensional',
         reqs: { hellspawn: 6 },
@@ -15448,8 +15986,8 @@ const techs = {
     },
     spire_bazaar: {
         id: 'tech-spire_bazaar',
-        title: loc('tech_spire_bazaar'),
-        desc: loc('tech_spire_bazaar'),
+        title(){ return loc('tech_spire_bazaar'); },
+        desc(){ return loc('tech_spire_bazaar'); },
         category: 'evil',
         era: 'dimensional',
         reqs: { hellspawn: 7, hell_spire: 10 },
@@ -15473,8 +16011,8 @@ const techs = {
     },
     mortuary: {
         id: 'tech-mortuary',
-        title: loc('tech_mortuary'),
-        desc: loc('tech_mortuary'),
+        title(){ return loc('tech_mortuary'); },
+        desc(){ return loc('tech_mortuary'); },
         category: 'evil',
         era: 'existential',
         reqs: { hellspawn: 8, asphodel: 3 },
@@ -15499,8 +16037,8 @@ const techs = {
     },
     ghost_miners: {
         id: 'tech-ghost_miners',
-        title: loc('tech_ghost_miners'),
-        desc: loc('tech_ghost_miners'),
+        title(){ return loc('tech_ghost_miners'); },
+        desc(){ return loc('tech_ghost_miners'); },
         category: 'evil',
         era: 'dimensional',
         reqs: { hellspawn: 2, hell_pit: 5 },
@@ -15524,8 +16062,8 @@ const techs = {
     },
     tavern: {
         id: 'tech-tavern',
-        title: loc('tech_tavern'),
-        desc: loc('tech_tavern'),
+        title(){ return loc('tech_tavern'); },
+        desc(){ return loc('tech_tavern'); },
         category: 'evil',
         era: 'dimensional',
         reqs: { pitspawn: 1 },
@@ -15549,8 +16087,8 @@ const techs = {
     },
     energized_dead: {
         id: 'tech-energized_dead',
-        title: loc('tech_energized_dead'),
-        desc: loc('tech_energized_dead'),
+        title(){ return loc('tech_energized_dead'); },
+        desc(){ return loc('tech_energized_dead'); },
         category: 'evil',
         era: 'existential',
         reqs: { pitspawn: 2, asphodel: 3 },
@@ -15574,8 +16112,8 @@ const techs = {
     },
     corruptor: {
         id: 'tech-corruptor',
-        title: loc('tech_corruptor'),
-        desc: loc('tech_corruptor'),
+        title(){ return loc('tech_corruptor'); },
+        desc(){ return loc('tech_corruptor'); },
         category: 'evil',
         era: 'existential',
         reqs: { asphodel: 10, theology: 2 },

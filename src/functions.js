@@ -13,6 +13,7 @@ import { universeLevel, universeAffix, alevel } from './achieve.js';
 import { astrologySign, astroVal } from './seasons.js';
 import { shipCosts, TPShipDesc } from './truepath.js';
 import { mechCost, mechDesc } from './portal.js';
+import { big_bang } from './resets.js';
 
 var popperRef = false;
 export function popover(id,content,opts){
@@ -39,7 +40,7 @@ export function popover(id,content,opts){
                 popper.append(typeof content === 'function' ? content({ this: this, popper: popper }) : content);
             }
 
-            popperRef = Popper.createPopper(opts['self'] ? this : $(opts.elm)[0],
+            popperRef = window.Popper.createPopper(opts['self'] ? this : $(opts.elm)[0],
                 document.querySelector(`#popper`),
                 {
                     placement: opts['placement'],
@@ -69,7 +70,7 @@ export function popover(id,content,opts){
         });
     }
     if (opts['unbind']){
-        if ('ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/ && global.settings.touch) ? true : false){
+        if ('ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/) && global.settings.touch) {
             $(opts.elm).on('touchend',function(e){
                 clearPopper();
                 if (opts.hasOwnProperty('out') && typeof opts['out'] === 'function'){
@@ -88,7 +89,7 @@ export function popover(id,content,opts){
     }
 }
 
-if ('ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/ && global.settings.touch) ? true : false){
+if ('ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/) && global.settings.touch) {
     $(document).on('touchend',function(e){
         if ($(`.popper`).length === 1){
             clearPopper();
@@ -116,16 +117,11 @@ export function gameLoop(act){
                 if (webWorker.w){
                     webWorker.w.postMessage({ loop: 'clear' });
                 }
-                if (global.settings.at > 0){
-                    global.settings.at = atrack.t;
-                }
                 webWorker.s = false;
             }
             break;
         case 'start':
             {
-                addATime(Date.now());
-
                 const timers = loopTimers();
 
                 // Used to calculate resource increase.
@@ -139,11 +135,11 @@ export function gameLoop(act){
     }
 }
 
-// Computes the relative to default duration of a single loop (common for all three loop types).
+// Computes the real-time duration of a single loop (common for all three loop types).
 // Note that these values are not tied to the time_multiplier from fastLoop - the relative speed of time in the game
 // is controlled by loop lengths.
 export function loopTimers(){
-    // Here come any speed modifiers not related to accelerated time.
+    // Here come any speed modifiers affecting the passage of game time.
     let modifier = 1.0;
     if (global.race['slow']){
         modifier *= 1 + (traits.slow.vars()[0] / 100);
@@ -158,48 +154,16 @@ export function loopTimers(){
     const baseMidTimer = webWorker.midRatio * webWorkerMainTimer;
     // Long loop (game day) takes 5000ms without any modifiers.
     const baseLongTimer = webWorker.longRatio * webWorkerMainTimer;
-    // The constant by which the time is accelerated when atrack.t > 0.
-    const timeAccelerationFactor = 2;
 
-    const aTimeMultiplier = atrack.t > 0 ? 1 / timeAccelerationFactor : 1;
     return {
         webWorkerMainTimer,
-        mainTimer: Math.ceil(webWorkerMainTimer * aTimeMultiplier),
-        longTimer: Math.ceil(baseLongTimer * aTimeMultiplier),
+        mainTimer: webWorkerMainTimer,
+        longTimer: baseLongTimer,
         baseLongTimer,
-        timeAccelerationFactor,
     };
 }
 
-// Adds accelerated time if enough time has passed since `global.stats.current`. Returns true if there was accelerated
-// time added. If the parameter is true, it will only add the time if a threshold of 120s has been reached.
-export function addATime(currentTimestamp){
-    // The second case is used for the initialization of atrack.t.
-    if (exceededATimeThreshold(currentTimestamp) || global.stats.hasOwnProperty('current') && global.settings.at > 0){
-        let timeDiff = currentTimestamp - global.stats.current;
-        // Removing any accelerated time if the value is larger than the cap.
-        if (global.settings.at > 11520){
-            global.settings.at = 0;
-        }
-        // Accelerated time is added only if it is over the threshold.
-        if (timeDiff >= 120000){
-            const timers = loopTimers();
-            const gameDayDuration = timers.baseLongTimer;
-            // The number of days during which the time is accelerated (at) should take as long as 2 / 3 of paused time.
-            // at * gameDayDuration / timeAccelerationFactor = 2 / 3 * timeDiff
-            global.settings.at += Math.floor(2 / 3 * timeDiff * timers.timeAccelerationFactor / gameDayDuration);
-        }
-        // Accelerated time is capped at 8*60*60/2.5 game days.
-        if (global.settings.at > 11520){
-            global.settings.at = 11520;
-        }
-        atrack.t = global.settings.at;
-        // Updating the current date so that it won't be counted twice (e.g., when unpausing).
-        global.stats.current = currentTimestamp;
-    }
-}
-
-// Takes the current Date.now, returns whether the minimum threshold to count accelerated time has passed.
+// Takes the current Date.now, returns whether the minimum threshold to count offline time has passed.
 export function exceededATimeThreshold(currentTimestamp){
     return global.stats.hasOwnProperty('current') && currentTimestamp - global.stats.current >= 120000;
 }
@@ -208,7 +172,6 @@ window.exportGame = function exportGame(){
     if (global.race['noexport']){
         return `Export is not available during ${global.race['noexport']} Creation`;
     }
-    addATime(Date.now());
     return LZString.compressToBase64(JSON.stringify(global));
 }
 
@@ -264,7 +227,7 @@ export function powerGrid(type,reset){
         case 'power':
             power_structs = [
                 'city:transmitter','prtl_ruins:arcology','city:apartment','eden_asphodel:rectory','eden_asphodel:corruptor','int_alpha:habitat','int_alpha:luxury_condo','spc_red:spaceport','spc_titan:titan_spaceport','spc_titan:electrolysis',
-                'int_alpha:starport','eden_asphodel:encampment','spc_dwarf:shipyard','spc_titan:ai_core2','spc_eris:drone_control','spc_titan:ai_colonist','int_blackhole:s_gate','gxy_gateway:starbase','spc_triton:fob',
+                'int_alpha:starport','eden_asphodel:encampment','tau_gas2:adv_shipyard','spc_dwarf:shipyard','spc_dwarf:repair_yard','spc_titan:ai_core2','spc_eris:drone_control','spc_titan:ai_colonist','int_blackhole:s_gate','gxy_gateway:starbase','spc_triton:fob',
                 'prtl_wasteland:demon_forge','prtl_wasteland:twisted_lab','spc_enceladus:operating_base','spc_enceladus:zero_g_lab','spc_titan:sam','gxy_gateway:ship_dock','prtl_ruins:hell_forge','int_neutron:stellar_forge','int_neutron:citadel',
                 'prtl_badlands:mortuary','tau_home:orbital_station','tau_red:orbital_platform','tau_gas:refueling_station','tau_home:tau_farm','tau_gas:ore_refinery','tau_gas:whaling_station',
                 'city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','gxy_stargate:telemetry_beacon','int_nebula:nexus','gxy_stargate:gateway_depot',
@@ -274,8 +237,8 @@ export function powerGrid(type,reset){
                 'int_blackhole:far_reach','prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','gxy_stargate:gateway_station','gxy_alien1:vitreloy_plant','gxy_alien2:foothold',
                 'gxy_gorddon:symposium','int_blackhole:mass_ejector','city:casino','spc_hell:spc_casino','tau_home:tauceti_casino','prtl_wasteland:hell_casino','prtl_fortress:repair_droid','gxy_stargate:defense_platform','prtl_ruins:guard_post',
                 'prtl_lake:cooling_tower','prtl_lake:harbor','prtl_spire:purifier','prtl_ruins:archaeology','prtl_pit:gun_emplacement','prtl_gate:gate_turret','prtl_pit:soul_attractor',
-                'prtl_gate:infernite_mine','int_sirius:ascension_trigger','spc_kuiper:orichalcum_mine','spc_kuiper:elerium_mine','spc_kuiper:uranium_mine','spc_kuiper:neutronium_mine','spc_dwarf:m_relay',
-                'tau_home:tau_factory','tau_home:infectious_disease_lab','tau_home:alien_outpost','tau_gas:womling_station','spc_red:atmo_terraformer','tau_star:matrix','tau_home:tau_cultural_center',
+                'prtl_gate:infernite_mine','int_sirius:ascension_trigger','spc_kuiper:orichalcum_mine','spc_kuiper:elerium_mine','spc_kuiper:uranium_mine','spc_kuiper:neutronium_mine','spc_dwarf:m_relay','tau_gas2:tcm_relay',
+                'tau_home:tau_factory','tau_home:infectious_disease_lab','tau_home:alien_outpost','tau_home:data_decoder','tau_gas:womling_station','tau_roid:synthesizer','spc_red:atmo_terraformer','tau_star:matrix','tau_home:tau_cultural_center',
                 'eden_elysium:sacred_smelter','prtl_pit:soul_capacitor','prtl_lake:oven_complete','eden_elysium:elysanite_mine','eden_elysium:elerium_containment','eden_elysium:pillbox','eden_elysium:archive',
                 'eden_elysium:restaurant','eden_elysium:eden_cement','eden_isle:spirit_battery','eden_isle:spirit_vacuum','city:replicator'
             ];
@@ -308,7 +271,7 @@ export function powerGrid(type,reset){
             power_structs = ['prtl_spire:port','prtl_spire:base_camp','prtl_spire:mechbay'];
             break;
         case 'titan':
-            power_structs = ['spc_titan:titan_quarters','spc_titan:titan_mine','spc_titan:g_factory','spc_titan:decoder'];
+            power_structs = ['spc_titan:titan_quarters','spc_titan:titan_mine','spc_titan:g_factory','spc_titan:decoder','spc_titan:metalworks'];
             break;
         case 'enceladus':
             power_structs = ['spc_enceladus:water_freighter','spc_enceladus:operating_base','spc_enceladus:zero_g_lab'];
@@ -317,13 +280,13 @@ export function powerGrid(type,reset){
             power_structs = ['spc_eris:shock_trooper','spc_eris:tank'];
             break;
         case 'tau_home':
-            power_structs = ['tau_home:colony','tau_home:tau_factory','tau_home:mining_pit','tau_home:infectious_disease_lab'];
+            power_structs = ['tau_home:colony','tau_home:tau_factory','tau_home:mining_pit','tau_home:infectious_disease_lab','tau_home:marine_barracks','tau_home:data_decoder'];
             break;
         case 'tau_red':
-            power_structs = ['tau_red:womling_village','tau_red:womling_farm','tau_red:overseer','tau_red:womling_mine','tau_red:womling_fun','tau_red:womling_lab'];
+            power_structs = ['tau_red:womling_village','tau_red:womling_farm','tau_red:overseer','tau_red:womling_mine','tau_red:womling_fun','tau_red:womling_lab','tau_red:womling_rangers'];
             break;
         case 'tau_roid':
-            power_structs = ['tau_roid:mining_ship','tau_roid:whaling_ship'];
+            power_structs = ['tau_roid:mining_ship','tau_roid:whaling_ship','tau_roid:synthesizer'];
             break;
         case 'asphodel':
             power_structs = ['eden_asphodel:soul_engine','eden_asphodel:bunker','eden_asphodel:asphodel_harvester','eden_asphodel:ectoplasm_processor','eden_asphodel:research_station','eden_asphodel:bliss_den'];
@@ -362,6 +325,10 @@ export function initMessageQueue(filters){
 }
 
 export function messageQueue(msg,color,dnr,tags,reload){
+    // While simulating offline time most per-loop messages are suppressed to avoid flooding the
+    // log, but intentional random-event notifications (tagged 'events') are allowed through so the
+    // player can see the major/minor events that fired while they were away.
+    if (webWorker.offline && !(Array.isArray(tags) && tags.includes('events'))){ return; }
     tags = tags || [];
     if (!reload && !tags.includes('all')){
         tags.push('all');
@@ -449,7 +416,7 @@ export function buildQueue(){
     clearDragQueue();
     clearElement($('#buildQueue'));
     $('#buildQueue').append($(`
-        <h2 class="has-text-success">${loc('building_queue')} ({{ | used_q }}/{{ max }})</h2>
+        <h2 class="has-text-success">${loc('building_queue')} ({{ used_q() }}/{{ max }})</h2>
         <span id="pausequeue" class="${global.queue.pause ? 'pause' : 'play'}" role="button" @click="pauseQueue()" :aria-label="pausedesc()"></span>
     `));
 
@@ -461,7 +428,7 @@ export function buildQueue(){
     let queue = $(`<ul class="buildList"></ul>`);
     $('#buildQueue').append(queue);
 
-    queue.append($(`<li v-for="(item, index) in queue"><a v-bind:id="setID(index)" class="has-text-warning queued" v-bind:class="{ 'qany': item.qa }" @click="remove(index)" role="link"><span v-bind:class="setData(index,'res')" v-bind="setData(index,'data')">{{ item.label }}{{ item.q | count }}</span> [<span v-bind:class="{ 'has-text-danger': item.cna, 'has-text-success': !item.cna }">{{ item.time | time }}{{ item.t_max | max_t(item.time) }}</span>]</a></li>`));
+    queue.append($(`<li v-for="(item, index) in queue"><a v-bind:id="setID(index)" class="has-text-warning queued" v-bind:class="{ 'qany': item.qa }" @click="remove(index)" role="link"><span v-bind:class="setData(index,'res')" v-bind="setData(index,'data')">{{ item.label }}{{ count(item.q) }}</span> [<span v-bind:class="{ 'has-text-danger': item.cna, 'has-text-success': !item.cna }">{{ time(item.time) }}{{ max_t(item.t_max, item.time) }}</span>]</a></li>`));
 
     try {
         vBind({
@@ -541,9 +508,7 @@ export function buildQueue(){
                 },
                 pausedesc(){
                     return global.queue.pause ? loc('queue_play') : loc('queue_pause');
-                }
-            },
-            filters: {
+                },
                 time(time){
                     return timeFormat(time);
                 },
@@ -582,15 +547,17 @@ function clearDragQueue(){
 
 function dragQueue(){
     let el = $('#buildQueue .buildList')[0];
-    Sortable.create(el,{
-        onEnd(e){
-            let order = global.queue.queue;
-            order.splice(e.newDraggableIndex, 0, order.splice(e.oldDraggableIndex, 1)[0]);
-            global.queue.queue = order;
-            buildQueue();
-            resizeGame();
-        }
-    });
+    if (el){
+        Sortable.create(el,{
+            onEnd(e){
+                let order = global.queue.queue;
+                order.splice(e.newDraggableIndex, 0, order.splice(e.oldDraggableIndex, 1)[0]);
+                global.queue.queue = order;
+                buildQueue();
+                resizeGame();
+            }
+        });
+    }
     resizeGame();
     attachQueuePopovers();
 }
@@ -1109,18 +1076,119 @@ export function arpaTimeCheck(project, remain, track, detailed){
     return detailed ? { t: allRemainingSegmentsTime, r: bottleneck, s: shorted } : allRemainingSegmentsTime;
 }
 
-export function clearElement(elm,remove){
-    elm.find('.vb').each(function(){
+function unmountApp(el){
+    if (el && el.__vue_app__){
+        // Stop the mount-element v-show effect (see vBind create) before unmounting so it doesn't keep
+        // reacting to global state and toggling a now-detached element.
         try {
-            $(this)[0].__vue__.$destroy();
+            if (typeof el.__vue_vshow_stop__ === 'function'){ el.__vue_vshow_stop__(); }
         }
         catch(e){}
+        delete el.__vue_vshow_stop__;
+        try {
+            el.__vue_app__.unmount();
+        }
+        catch(e){}
+        delete el.__vue_app__;
+        delete el.__vue_bind__;
+        delete el.__vue_proxy__;
+        $(el).removeClass('vb');
+    }
+}
+
+// How long a tab slide takes — keep in sync with the `.slide-*-enter-active` transition duration
+// in evolve.less. The teardown of an outgoing panel is held off for this long so the panel still
+// has its content while it slides out of view.
+const tabSlideTime = 300;
+
+// Tab panels waiting on a slide to finish before they are torn down, keyed by selector.
+let pendingPanelClear = {};
+
+function runPanelClear(sel,cleanup){
+    delete pendingPanelClear[sel];
+    $(sel).removeClass('tabFading');
+    if (cleanup){
+        cleanup.forEach(function(fn){ fn(); });
+    }
+    clearElement($(sel));
+    // The popover's anchor may have just been torn down along with the panel.
+    if ($(`#popper`).length > 0 && $(`#${$(`#popper`).data('id')}`).length === 0){
+        clearPopper();
+    }
+}
+
+/**
+ * Tear down the lazily-drawn tab panels of a tab group.
+ *
+ * Panels other than the one being switched to are cleared only once the slide animation has
+ * finished, so the outgoing panel keeps its content while it animates away instead of sliding
+ * out blank. The panels overlap for the length of the transition, which is the same situation
+ * the `tabLoad` (draw every tab up front) setting produces permanently.
+ *
+ * @param panels   selector -> array of extra teardown functions (drag handlers, grids, ...) that
+ *                 belong to that panel. Use an empty array when the panel needs no extra teardown.
+ * @param incoming selector of the panel about to be redrawn; it is cleared immediately (it has to
+ *                 be empty before anything is appended to it), as is every panel when animations
+ *                 are off.
+ */
+export function clearTabPanels(panels,incoming){
+    Object.keys(panels).forEach(function(sel){
+        let pending = pendingPanelClear[sel];
+        if (sel === incoming){
+            if (pending){
+                clearTimeout(pending.timer);
+                runPanelClear(sel,pending.cleanup);
+            }
+            else {
+                runPanelClear(sel,panels[sel]);
+            }
+        }
+        else if (pending){
+            // Already waiting on an earlier switch — leave that timer to finish the job.
+        }
+        else if (global.settings.animated){
+            let cleanup = panels[sel];
+            // Out of flow while it is retained, so it can't displace the incoming panel (see .tabFading).
+            $(sel).addClass('tabFading');
+            pendingPanelClear[sel] = {
+                cleanup: cleanup,
+                timer: setTimeout(function(){ runPanelClear(sel,cleanup); },tabSlideTime)
+            };
+        }
+        else {
+            runPanelClear(sel,panels[sel]);
+        }
+    });
+}
+
+// Run every outstanding panel teardown right now. Call this before rebuilding the UI wholesale, so
+// a pending timer can't fire after the rebuild and wipe freshly drawn content.
+export function flushTabPanelClears(){
+    Object.keys(pendingPanelClear).forEach(function(sel){
+        let pending = pendingPanelClear[sel];
+        if (pending){
+            clearTimeout(pending.timer);
+            runPanelClear(sel,pending.cleanup);
+        }
+    });
+    pendingPanelClear = {};
+}
+
+export function clearElement(elm,remove){
+    // Unmount nested Vue apps deepest-first. Document order (`.find` default) unmounts a parent
+    // app before its nested child app; the parent's unmount detaches the child's DOM, so the
+    // child's later unmount() throws ("nextSibling of null") and its reactive effect is orphaned
+    // (still subscribed to the global proxy → a per-rebuild heap/CPU leak). Reversing to
+    // deepest-first keeps each element's DOM attached when its own app is unmounted.
+    let vbs = elm.find('.vb').get();
+    for (let i = vbs.length - 1; i >= 0; i--){
+        unmountApp(vbs[i]);
+    }
+    // Also unmount any Vue app mounted directly on the element(s) itself, after its descendants.
+    elm.each(function(){
+        unmountApp(this);
     });
     if (remove){
-        try {
-            elm[0].__vue__.$destroy();
-        }
-        catch(e){}
         elm.remove();
     }
     else {
@@ -1130,20 +1198,256 @@ export function clearElement(elm,remove){
 
 export function vBind(bind,action){
     action = action || 'create';
-    if ($(bind.el).length > 0 && typeof $(bind.el)[0].__vue__ !== "undefined"){
-        try {
-            if (action === 'update'){
-                $(bind.el)[0].__vue__.$forceUpdate();
+    if (action === 'native'){
+        return vBindNative(bind,'create');
+    }
+    if (action === 'update'){
+        // During offline catch-up the whole UI sits behind the progress modal and reactivity is
+        // suppressed; skip the ~70 forced re-renders per simulated tick and refresh once at the end.
+        if (webWorker.offline){ return; }
+        // An 'update' call carries only { el } — no data/methods/template — so it can
+        // only refresh a binding that already exists. Refresh a live one; otherwise
+        // rebuild it from the config stashed at create time (see __vue_bind__ below).
+        if ($(bind.el).length === 0){ return; }
+        let el = $(bind.el)[0];
+        let app = el.__vue_app__;
+        // A live app: force a re-render. $forceUpdate bypasses reactivity and re-runs
+        // the render function, so method-based interpolations (e.g. the fortress
+        // {{ filter(on,'army') }} panels, which read non-reactive values like p_on)
+        // are re-evaluated even when the bound data object itself didn't change.
+        //
+        // The component proxy is preferred from app._instance, but Vue 3.5 does NOT populate
+        // app._instance for a multi-root (fragment) root component — app.mount() still returns a
+        // valid proxy though, which we stash as __vue_proxy__ at create time. Without this
+        // fallback, a fragment-root panel (e.g. #fort, updated every game tick) fails the
+        // liveness test every tick and gets needlessly re-created, orphaning the live app each
+        // time — a fast heap leak that froze the Hell Dimension tab.
+        let proxy = (app && app._instance && app._instance.proxy) ? app._instance.proxy : (app ? el.__vue_proxy__ : null);
+        if (proxy){
+            try {
+                proxy.$forceUpdate();
             }
-            else {
-                $(bind.el)[0].__vue__.$destroy();
+            catch(e){
+                console.warn('Error during vBind update:', e);
+            }
+            return;
+        }
+        // The app is still mounted (Vue keeps _container set until unmount) but we couldn't get a
+        // proxy to force-update. It's live and its reactive bindings update on their own — do NOT
+        // re-create it, which would orphan the live app and leak. Skip instead.
+        if (app && app._container){
+            return;
+        }
+        // No live app. It was torn down (unmounted -> _instance null / detached) but the
+        // element still stands, so the update would otherwise silently no-op and the panel
+        // would go stale forever. If the original create config was stashed on the element,
+        // re-mount from it so it starts rendering again; otherwise there's nothing to do.
+        if (typeof app !== "undefined"){ delete el.__vue_app__; delete el.__vue_proxy__; }
+        $(el).removeClass('vb');
+        if (el.__vue_bind__){
+            // Unmount clears the element's innerHTML (its template); restore it so create
+            // has the markup to compile again, then re-mount from the stashed config. Guard
+            // the remount so a mount failure can never take down the game loop; drop the stash
+            // on failure so we don't retry (and re-throw) every tick — the next full re-render
+            // re-creates it. (create clears the stale _vnode that would otherwise crash mount.)
+            if (typeof el.__vue_template__ === 'string'){ el.innerHTML = el.__vue_template__; }
+            try {
+                return vBind(el.__vue_bind__, 'create');
+            }
+            catch(e){
+                console.warn('Error during vBind rebuild:', e);
+                delete el.__vue_app__;
+                delete el.__vue_bind__;
+                $(el).removeClass('vb');
             }
         }
-        catch(e){}
+        return;
+    }
+    // create / destroy: tear down any existing app on the element first.
+    if ($(bind.el).length > 0 && typeof $(bind.el)[0].__vue_app__ !== "undefined"){
+        unmountApp($(bind.el)[0]);
     }
     if (action === 'create'){
-        new Vue(bind);
-        $(bind.el).addClass('vb');
+        if ($(bind.el).length > 0) {
+            const el = $(bind.el)[0];
+            const vueOptions = { ...bind };
+
+            // The panel's template is the element's innerHTML, which Vue consumes on mount
+            // and clears on unmount. Capture it (read-only — normal create still lets Vue read
+            // innerHTML as before) so a later self-heal rebuild can restore it before
+            // re-mounting, instead of mounting a now-blank element. See the 'update' branch.
+            const template = el.innerHTML;
+
+            // Vue 3 removed the `filters` option. A lot of (mostly wiki) templates still declare
+            // helper functions in a `filters` block and call them as ordinary methods in
+            // interpolations, e.g. {{ generic(x) }} / {{ stressDiv(job) }}. Merge any filters into
+            // methods (methods win on name clashes) so those calls resolve instead of throwing
+            // "X is not a function".
+            if (vueOptions.filters && typeof vueOptions.filters === 'object') {
+                vueOptions.methods = Object.assign({}, vueOptions.filters, vueOptions.methods || {});
+                delete vueOptions.filters;
+            }
+
+            // Bind Vue's reactivity directly to the original data object so that
+            // mutations made elsewhere (the game loop mutates `global` directly and
+            // refreshes via vBind(...,'update')) and structural changes such as
+            // deleting array elements propagate without any copy/sync layer.
+            if (vueOptions.data && typeof vueOptions.data === 'object') {
+                const originalData = vueOptions.data;
+                vueOptions.data = function() {
+                    return Vue.reactive(originalData);
+                };
+            }
+
+            const app = Vue.createApp(vueOptions);
+            if (!bind.hasOwnProperty('buefy') || bind.buefy) {
+                app.use(Buefy.default);
+            }
+
+            // Every create mounts a brand-new app, so mount must always do a clean
+            // patch(null, ...). If a prior app was torn down but its unmount threw (the
+            // documented "nextSibling of null" on detached DOM), Vue's internal _vnode
+            // pointer can be left on the element; the fresh mount would then diff against
+            // that stale, detached tree and crash. Clear it to enforce the clean-mount path.
+            el._vnode = null;
+            // Stash the proxy app.mount() returns — it exposes $forceUpdate and is valid even when
+            // Vue 3.5 leaves app._instance unset (fragment-root components). vBind('update') uses it.
+            el.__vue_proxy__ = app.mount(bind.el);
+            el.__vue_app__ = app;
+
+            // Vue 3 ignores directives written on the element you mount onto: it treats that element as
+            // an inert container and compiles only its innerHTML as the template. So a `v-show` left on
+            // the mount element never takes effect and the panel renders unconditionally (the bug behind
+            // #mad, #govType, #foreign, the syndicate/ground overlays, per-resource eject rows, etc.).
+            // Vue leaves the unprocessed directive behind as a literal DOM attribute, so honor it here:
+            // drive the element's own `display` from a reactive effect that evaluates the same expression
+            // against the component proxy, reproducing what a compiled v-show would do. Only v-show is
+            // handled — the one mount-element directive the codebase actually relies on.
+            if (typeof Vue.watchEffect === 'function' && el.getAttribute && el.getAttribute('v-show') !== null){
+                const vShowExpr = el.getAttribute('v-show');
+                el.removeAttribute('v-show');
+                const proxy = el.__vue_proxy__;
+                let evalVShow = null;
+                try {
+                    // A Function-constructor body runs in sloppy mode even though this module is strict,
+                    // so `with` is legal here — it resolves the raw template expression's bare identifiers
+                    // and method calls against the proxy exactly as Vue's compiled render function would.
+                    evalVShow = new Function('$ctx', `with($ctx){ return (${vShowExpr}); }`);
+                }
+                catch(e){ evalVShow = null; }
+                if (evalVShow && proxy){
+                    el.__vue_vshow_stop__ = Vue.watchEffect(() => {
+                        let show = true;
+                        try { show = evalVShow(proxy); } catch(e){ show = true; }
+                        el.style.display = show ? '' : 'none';
+                    });
+                }
+            }
+
+            // Stash the original (unmutated) bind config and template so a later
+            // vBind('update') can self-heal — re-mounting the panel from these if its
+            // app has since been torn down.
+            el.__vue_bind__ = bind;
+            if (typeof template === 'string' && template.length > 0){ el.__vue_template__ = template; }
+            $(el).addClass('vb');
+
+            return app;
+        }
+    }
+}
+
+// Helper function to forcefully clean up Vue proxy references
+export function clearVueProxies(element) {
+    if (typeof element === 'string') {
+        element = $(element)[0];
+    }
+    
+    if (element && element.__vue_app__) {
+        try {
+            const app = element.__vue_app__;
+            if (app._instance && app._instance.proxy) {
+                const proxy = app._instance.proxy;
+                
+                // Clear sync interval
+                if (proxy._syncInterval) {
+                    clearInterval(proxy._syncInterval);
+                    delete proxy._syncInterval;
+                }
+                
+                // Clear reactive data
+                if (proxy.$data) {
+                    const data = proxy.$data;
+                    for (const key in data) {
+                        if (data.hasOwnProperty(key)) {
+                            try {
+                                if (Array.isArray(data[key])) {
+                                    data[key].length = 0; // Clear arrays
+                                }
+                                delete data[key];
+                            } catch(e) {
+                                data[key] = null;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Force unmount
+            vBind({el: element}, 'destroy');
+            
+        } catch(e) {
+            console.warn('Error clearing Vue proxies:', e);
+        }
+    }
+}
+
+// Alternative vBind implementation using Vue 3 native reactive system
+function vBindNative(bind, action) {
+    action = action || 'create';
+    if (action === 'create') {
+        if ($(bind.el).length > 0) {
+            const vueOptions = { ...bind };
+
+            // Vue 3 removed `filters`; merge them into methods so templates that call them as
+            // functions (e.g. {{ generic(x) }}) keep working. See vBind for details.
+            if (vueOptions.filters && typeof vueOptions.filters === 'object') {
+                vueOptions.methods = Object.assign({}, vueOptions.filters, vueOptions.methods || {});
+                delete vueOptions.filters;
+            }
+
+            // Use Vue 3 native reactive system
+            if (vueOptions.data && typeof vueOptions.data === 'object') {
+                const originalData = vueOptions.data;
+                
+                // Convert to Vue 3 reactive data
+                vueOptions.data = function() {
+                    return Vue.reactive(originalData);
+                };
+                
+                // No custom sync logic needed - Vue 3 reactive handles this natively
+                // The reactive object will automatically sync with the original data
+                const originalMounted = vueOptions.mounted;
+                vueOptions.mounted = function() {
+                    // Vue 3 reactive objects automatically maintain reactivity
+                    // No manual watchers or intervals needed
+                    
+                    if (originalMounted) {
+                        originalMounted.call(this);
+                    }
+                };
+            }
+
+            const app = Vue.createApp(vueOptions);
+            if (!bind.hasOwnProperty('buefy') || bind.buefy) {
+                app.use(Buefy.default);
+            }
+            
+            $(bind.el)[0].__vue_proxy__ = app.mount(bind.el);
+            $(bind.el)[0].__vue_app__ = app;
+            $(bind.el).addClass('vb');
+
+            return app;
+        }
     }
 }
 
@@ -1782,7 +2086,30 @@ export function adjustCosts(c_action, offset, wiki){
     costs = dictatorAdjust(costs, offset, wiki);
     costs = lMatAdjust(costs, c_action, offset, wiki);
     costs = nexusAdjust(costs, c_action, offset, wiki);
+    costs = razedAdjust(costs, c_action, offset, wiki);
     return craftAdjust(costs, offset, wiki);
+}
+
+// A structure whose razed count exceeds its built count is being rebuilt, so it costs half the
+// normal price. The razed/count fields live in global[category][key] (e.g. global.space.moon_base),
+// which we resolve from c_action.id (authored as "category-key"). Skipped in the wiki, which
+// documents baseline costs rather than a live save's razed state.
+function razedAdjust(costs, c_action, offset, wiki){
+    if (!wiki && c_action && c_action['id']){
+        let parts = c_action.id.split('-');
+        let cat = parts.shift();
+        let key = parts.join('-');
+        let struct = global[cat] && global[cat][key];
+        if (struct && typeof struct === 'object' && typeof struct['razed'] !== 'undefined' && struct.razed > 0){
+            let adjustRate = struct.razed > struct.count ? 0.25 : 0.5;
+            var newCosts = {};
+            Object.keys(costs).forEach(function (res){
+                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * adjustRate); }
+            });
+            return newCosts;
+        }
+    }
+    return costs;
 }
 
 function bloatAdjust(costs, offset, wiki){

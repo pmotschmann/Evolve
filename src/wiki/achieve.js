@@ -170,7 +170,7 @@ function achieveDesc(achievement,showFlair,universe){
                 return 0;
             }            
         }).forEach(function (key){
-            if (key !== 'protoplasm' 
+            if (key !== 'protoplasm' && key != 'hellspawn' 
                 && (key !== 'custom' || (key === 'custom' && global.stats.achieve['ascended']))
                 && (key !== 'hybrid' || (key === 'hybrid' && global.stats.achieve['what_is_best']))
             ){
@@ -296,6 +296,14 @@ function achieveDesc(achievement,showFlair,universe){
         checklist = checklist + `<div class="has-text-${global.stats.endless_hunger.b3[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger3`,[80])}</div>`;
         checklist = checklist + `<div class="has-text-${global.stats.endless_hunger.b4[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger4`,[1200])}</div>`;
         checklist = checklist + `<div class="has-text-${global.stats.endless_hunger.b5[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger5`)}</div>`;
+        checklist = checklist + `</div>`;
+        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`));
+    }
+    else if (achievement === 'zombie_genocider'){
+        // Tasks 3 to 5 are not written yet, so only the ones that exist are listed.
+        let checklist = `<div class="list">`;
+        checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z1[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider1`,[(53594).toLocaleString()])}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z2[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider2`)}</div>`;
         checklist = checklist + `</div>`;
         popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`));
     }

@@ -74,7 +74,7 @@ const calcInfo = {
     },
     exclude: { // Things that are one-offs, disappearing after they're clicked. Automatically excludes creep. Does not add a calculator.
         planetary: ['food','lumber','stone','chrysotile','slaughter','slave_market',''],
-        space: ['test_launch','moon_mission','terraform','red_mission','hell_mission','sun_mission','gas_mission','gas_moon_mission','belt_mission','dwarf_mission','titan_mission','enceladus_mission','triton_mission','kuiper_mission','eris_mission','crashed_ship','digsite'],
+        space: ['test_launch','moon_mission','terraform','red_mission','hell_mission','sun_mission','gas_mission','gas_moon_mission','belt_mission','dwarf_mission','titan_mission','enceladus_mission','triton_mission','kuiper_mission','eris_mission','crashed_ship','digsite','salvage_ship','salvage_hell','salvage_dwarf'],
         starDock: ['prep_ship','launch_ship'],
         interstellar: ['alpha_mission','proxima_mission','nebula_mission','neutron_mission','blackhole_mission','jump_ship','wormhole_mission','sirius_mission','sirius_b','ascend'],
         intergalactic: ['gateway_mission','gorddon_mission','alien2_mission','chthonian_mission'],
@@ -203,7 +203,7 @@ const effectInputs ={
 
 function addCalcInputs(parent,key,section,region,path){
     let hasMax = calcInfo.max[section] && calcInfo.max[section][key] ? calcInfo.max[section][key] : false;
-    let inputs = {
+    let inputs = Vue.reactive({
         owned: 0,
         costVis: false,
         creepVis: false,
@@ -211,7 +211,7 @@ function addCalcInputs(parent,key,section,region,path){
             isWiki: true,
             truepath: path === 'truepath'
         }
-    };
+    });
     let resources = {};
     
     let action = false;
@@ -338,7 +338,7 @@ function addCalcInputs(parent,key,section,region,path){
         parent.append($(`
             <div class="extra">
                 <div>
-                    <div class="calcInput"><span>{{ | ownedLabel }}</span> <b-field><span class="button has-text-danger calcInputButton" role="button" @click="less('owned')">-</span><b-numberinput :input="val('owned')" min="0" v-model="i.owned" :controls="false"></b-numberinput><span class="button has-text-success calcInputButton" role="button" @click="more('owned')">+</span></b-field></div>
+                    <div class="calcInput"><span>{{ ownedLabel() }}</span> <b-field><span class="button has-text-danger calcInputButton" role="button" @click="less('owned')">-</span><b-numberinput :input="val('owned')" min="0" v-model="i.owned" :controls="false"></b-numberinput><span class="button has-text-success calcInputButton" role="button" @click="more('owned')">+</span></b-field></div>
                 </div>
                 <div class="calcButton">
                     <button class="button" @click="importInputs()">${loc('wiki_calc_import')}</button>

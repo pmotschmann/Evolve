@@ -1,7 +1,7 @@
 import { global, tmp_vars, save, message_logs, message_filters, webWorker } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats, alevel } from './achieve.js';
-import { vBind, initMessageQueue, clearElement, flib, tagEvent, gameLoop, popover, clearPopper, powerGrid, easterEgg, trickOrTreat, drawIcon } from './functions.js';
+import { vBind, initMessageQueue, clearElement, clearTabPanels, flushTabPanelClears, flib, tagEvent, gameLoop, popover, clearPopper, powerGrid, easterEgg, trickOrTreat, drawIcon } from './functions.js';
 import { tradeRatio, atomic_mass, supplyValue, marketItem, containerItem, loadEjector, loadSupply, loadAlchemy, initResourceTabs, drawResourceTab, tradeSummery } from './resources.js';
 import { defineJobs, } from './jobs.js';
 import { clearSpyopDrag } from './governor.js';
@@ -14,10 +14,16 @@ import { renderFortress, buildFortress, drawMechLab, clearMechDrag, drawHellObse
 import { renderEdenic } from './edenic.js';
 import { drawShipYard, clearShipDrag, renderTauCeti } from './truepath.js';
 import { arpa, clearGeneticsDrag } from './arpa.js';
+import { driveSaveGame, driveLoadGame, driveConfigured } from './googledrive.js';
+
+// main.js registers its offline-time handler here so unpausing can trigger the catch-up without
+// index.js importing main.js (which would pull the whole game bootstrap into the wiki bundle).
+let offlineHandler = null;
+export function registerOfflineHandler(fn){ offlineHandler = fn; }
 
 export function mainVue(){
     vBind({
-        el: '#mainColumn div:first-child',
+        el: '#mainColumn div.content',
         data: {
             s: global.settings
         },
@@ -29,13 +35,13 @@ export function mainVue(){
                 return tab;
             },
             saveImport(){
-                if ($('#importExport').val().length > 0){
-                    importGame($('#importExport').val());
+                if ($('#importExport textarea').val().length > 0){
+                    importGame($('#importExport textarea').val());
                 }
             },
             saveExport(){
-                $('#importExport').val(window.exportGame());
-                $('#importExport').select();
+                $('#importExport textarea').val(window.exportGame());
+                $('#importExport textarea').select();
                 document.execCommand('copy');
             },
             saveExportFile(){
@@ -112,6 +118,23 @@ export function mainVue(){
                     window.location.reload();
                 }
             },
+            driveOn(){
+                return driveConfigured();
+            },
+            driveSave(){
+                driveSaveGame();
+            },
+            driveLoad(){
+                this.$buefy.dialog.confirm({
+                    title: loc('google_drive'),
+                    message: loc('drive_confirm_load'),
+                    ariaModal: true,
+                    confirmText: loc('drive_load'),
+                    onConfirm() {
+                        driveLoadGame();
+                    }
+                });
+            },
             restoreGame(){
                 let restore_data = save.getItem('evolveBak') || false;
                 this.$buefy.dialog.confirm({
@@ -169,7 +192,7 @@ export function mainVue(){
                 $(`html`).removeClass('large_all');
                 $('html').addClass(f);
             },
-            q_merge(merge){
+            qu_merge(merge){
                 global.settings.q_merge = merge;
             },
             toggleTabLoad(){
@@ -186,10 +209,10 @@ export function mainVue(){
                 }
                 if (!global.settings.pause && !webWorker.s){
                     gameLoop('start');
+                    // Unpausing counts as returning to the game: credit offline time for the pause.
+                    if (offlineHandler){ offlineHandler(); }
                 }
-            }
-        },
-        filters: {
+            },
             namecase(name){
                 return name.replace(/(?:^|\s)\w/g, function(match) {
                     return match.toUpperCase();
@@ -212,11 +235,17 @@ export function mainVue(){
                     case 'sln':
                         return loc(`sln`);
                 }
+            },
+            resetGame(){
+                window.reset();
+            },
+            softResetGame(){
+                window.soft_reset();
             }
         }
     });
 
-    ['1','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17'].forEach(function(k){
+    ['1','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18'].forEach(function(k){
         popover(`settings${k}`, function(){
                 return loc(`settings${k}`);
             },
@@ -315,21 +344,34 @@ export function initTabs(){
     }
 }
 
+// Panel each main tab draws into, so the outgoing panels can be told apart from the incoming one.
+// Evolution (0) and Settings (7) own no lazily-drawn panel.
+function mainTabPanel(tab){
+    switch (tab){
+        case 1: case 'mTabCivil':       return `#mTabCivil`;
+        case 2: case 'mTabCivic':       return `#mTabCivic`;
+        case 3: case 'mTabResearch':    return `#mTabResearch`;
+        case 4: case 'mTabResource':    return `#mTabResource`;
+        case 5: case 'mTabArpa':        return `#mTabArpa`;
+        case 6: case 'mTabStats':       return `#mTabStats`;
+        case 0: case 7:                 return false;
+        default:                        return `#mTabObserve`;
+    }
+}
+
 export function loadTab(tab){
     if (!global.settings.tabLoad){
-        clearResDrag();
-        clearGrids();
-        clearMechDrag();
-        clearGeneticsDrag();
-        clearSpyopDrag();
-        clearShipDrag();
-        clearElement($(`#mTabCivil`));
-        clearElement($(`#mTabCivic`));
-        clearElement($(`#mTabResearch`));
-        clearElement($(`#mTabResource`));
-        clearElement($(`#mTabArpa`));
-        clearElement($(`#mTabStats`));
-        clearElement($(`#mTabObserve`));
+        // Everything but the tab being opened is torn down after the slide finishes, so the tab
+        // being left keeps its content while it animates away.
+        clearTabPanels({
+            [`#mTabCivil`]: [],
+            [`#mTabCivic`]: [clearGrids,clearMechDrag,clearSpyopDrag,clearShipDrag],
+            [`#mTabResearch`]: [clearResDrag],
+            [`#mTabResource`]: [],
+            [`#mTabArpa`]: [clearGeneticsDrag],
+            [`#mTabStats`]: [],
+            [`#mTabObserve`]: []
+        },mainTabPanel(tab));
     }
     else {
         tagEvent('page_view',{ page_title: `Evolve - All Tabs` });
@@ -347,55 +389,15 @@ export function loadTab(tab){
                 if (!global.settings.tabLoad){
                     tagEvent('page_view',{ page_title: `Evolve - Civilization` });
                 }
-                $(`#mTabCivil`).append(`<b-tabs class="resTabs" v-model="s.spaceTabs" :animated="s.animated" @input="swapTab">
-                    <b-tab-item id="city" :visible="s.showCity">
-                        <template slot="header">
-                            <h2 class="is-sr-only">{{ 'city' | label }}</h2>
-                            <span aria-hidden="true">{{ 'city' | label }}</span>
-                        </template>
-                    </b-tab-item>
-                    <b-tab-item id="space" :visible="s.showSpace">
-                        <template slot="header">
-                            <h2 class="is-sr-only">{{ 'local_space' | label }}</h2>
-                            <span aria-hidden="true">{{ 'local_space' | label }}</span>
-                        </template>
-                    </b-tab-item>
-                    <b-tab-item id="interstellar" :visible="s.showDeep">
-                        <template slot="header">
-                            <h2 class="is-sr-only">{{ 'tab_interstellar' | label }}</h2>
-                            <span aria-hidden="true">{{ 'tab_interstellar' | label }}</span>
-                        </template>
-                    </b-tab-item>
-                    <b-tab-item id="galaxy" :visible="s.showGalactic">
-                        <template slot="header">
-                            <h2 class="is-sr-only">{{ 'tab_galactic' | label }}</h2>
-                            <span aria-hidden="true">{{ 'tab_galactic' | label }}</span>
-                        </template>
-                    </b-tab-item>
-                    <b-tab-item id="portal" :visible="s.showPortal">
-                        <template slot="header">
-                            <h2 class="is-sr-only">{{ 'tab_portal' | label }}</h2>
-                            <span aria-hidden="true">{{ 'tab_portal' | label }}</span>
-                        </template>
-                    </b-tab-item>
-                    <b-tab-item id="outerSol" :visible="s.showOuter">
-                        <template slot="header">
-                            <h2 class="is-sr-only">{{ 'outer_local_space' | label }}</h2>
-                            <span aria-hidden="true">{{ 'outer_local_space' | label }}</span>
-                        </template>
-                    </b-tab-item>
-                    <b-tab-item id="tauceti" :visible="s.showTau">
-                        <template slot="header">
-                            <h2 class="is-sr-only">{{ 'tab_tauceti' | label }}</h2>
-                            <span aria-hidden="true">{{ 'tab_tauceti' | label }}</span>
-                        </template>
-                    </b-tab-item>
-                    <b-tab-item id="eden" :visible="s.showEden">
-                        <template slot="header">
-                            <h2 class="is-sr-only">{{ 'tab_eden' | label }}</h2>
-                            <span aria-hidden="true">{{ 'tab_eden' | label }}</span>
-                        </template>
-                    </b-tab-item>
+                $(`#mTabCivil`).append(`<b-tabs class="resTabs" v-model="s.spaceTabs" :animated="s.animated" @update:model-value="swapTab($event)">
+                    <b-tab-item id="city" :visible="s.showCity" :label="label('city')"></b-tab-item>
+                    <b-tab-item id="space" :visible="s.showSpace" :label="label('local_space')"></b-tab-item>
+                    <b-tab-item id="interstellar" :visible="s.showDeep" :label="label('tab_interstellar')"></b-tab-item>
+                    <b-tab-item id="galaxy" :visible="s.showGalactic" :label="label('tab_galactic')"></b-tab-item>
+                    <b-tab-item id="portal" :visible="s.showPortal" :label="label('tab_portal')"></b-tab-item>
+                    <b-tab-item id="outerSol" :visible="s.showOuter" :label="label('outer_local_space')"></b-tab-item>
+                    <b-tab-item id="tauceti" :visible="s.showTau" :label="label('tab_tauceti')"></b-tab-item>
+                    <b-tab-item id="eden" :visible="s.showEden" :label="label('tab_eden')"></b-tab-item>
                 </b-tabs>`);
                 vBind({
                     el: `#mTabCivil`,
@@ -404,15 +406,11 @@ export function loadTab(tab){
                     },
                     methods: {
                         swapTab(tab){
+                            global.settings.spaceTabs = tab;
                             if (!global.settings.tabLoad){
-                                clearElement($(`#city`));
-                                clearElement($(`#space`));
-                                clearElement($(`#interstellar`));
-                                clearElement($(`#galaxy`));
-                                clearElement($(`#portal`));
-                                clearElement($(`#outerSol`));
-                                clearElement($(`#tauCeti`));
-                                clearElement($(`#eden`));
+                                // Indexed to match the b-tab-item order above, so panels[tab] is the incoming one.
+                                let panels = [`#city`,`#space`,`#interstellar`,`#galaxy`,`#portal`,`#outerSol`,`#tauceti`,`#eden`];
+                                clearTabPanels(Object.fromEntries(panels.map(p => [p,[]])),panels[tab]);
                                 switch (tab){
                                     case 0:
                                         drawCity();
@@ -435,9 +433,7 @@ export function loadTab(tab){
                                 }
                             }
                             return tab;
-                        }
-                    },
-                    filters: {
+                        },
                         label(lbl){
                             return tabLabel(lbl);
                         }
@@ -472,55 +468,15 @@ export function loadTab(tab){
                 if (!global.settings.tabLoad){
                     tagEvent('page_view',{ page_title: `Evolve - Civics` });
                 }
-                $(`#mTabCivic`).append(`<b-tabs class="resTabs" v-model="s.govTabs" :animated="s.animated" @input="swapTab">
-                    <b-tab-item id="civic">
-                        <template slot="header">
-                            <h2 class="is-sr-only">{{ 'tab_gov' | label }}</h2>
-                            <span aria-hidden="true">{{ 'tab_gov' | label }}</span>
-                        </template>
-                    </b-tab-item>
-                    <b-tab-item id="industry" class="industryTab" :visible="s.showIndustry">
-                        <template slot="header">
-                            <h2 class="is-sr-only">{{ 'tab_industry' | label }}</h2>
-                            <span aria-hidden="true">{{ 'tab_industry' | label }}</span>
-                        </template>
-                    </b-tab-item>
-                    <b-tab-item id="powerGrid" class="powerGridTab" :visible="s.showPowerGrid">
-                        <template slot="header">
-                            <h2 class="is-sr-only">{{ 'tab_power_grid' | label }}</h2>
-                            <span aria-hidden="true">{{ 'tab_power_grid' | label }}</span>
-                        </template>
-                    </b-tab-item>
-                    <b-tab-item id="military" class="militaryTab" :visible="s.showMil">
-                        <template slot="header">
-                            <h2 class="is-sr-only">{{ 'tab_military' | label }}</h2>
-                            <span aria-hidden="true">{{ 'tab_military' | label }}</span>
-                        </template>
-                    </b-tab-item>
-                    <b-tab-item id="mechLab" class="mechTab" :visible="s.showMechLab">
-                        <template slot="header">
-                            <h2 class="is-sr-only">{{ 'tab_mech' | label }}</h2>
-                            <span aria-hidden="true">{{ 'tab_mech' | label }}</span>
-                        </template>
-                    </b-tab-item>
-                    <b-tab-item id="dwarfShipYard" class="ShipYardTab" :visible="s.showShipYard">
-                        <template slot="header">
-                            <h2 class="is-sr-only">{{ 'tab_shipyard' | label }}</h2>
-                            <span aria-hidden="true">{{ 'tab_shipyard' | label }}</span>
-                        </template>
-                    </b-tab-item>
-                    <b-tab-item id="psychicPowers" class="psychicTab" :visible="s.showPsychic">
-                        <template slot="header">
-                            <h2 class="is-sr-only">{{ 'tab_psychic' | label }}</h2>
-                            <span aria-hidden="true">{{ 'tab_psychic' | label }}</span>
-                        </template>
-                    </b-tab-item>
-                    <b-tab-item id="supernatural" class="supernaturalTab" :visible="s.showWish">
-                        <template slot="header">
-                            <h2 class="is-sr-only">{{ 'tab_supernatural' | label }}</h2>
-                            <span aria-hidden="true">{{ 'tab_supernatural' | label }}</span>
-                        </template>
-                    </b-tab-item>
+                $(`#mTabCivic`).append(`<b-tabs class="resTabs" v-model="s.govTabs" :animated="s.animated" @update:model-value="swapTab(s.govTabs)">
+                    <b-tab-item id="civic" :label="label('tab_gov')"></b-tab-item>
+                    <b-tab-item id="industry" class="industryTab" :visible="s.showIndustry" :label="label('tab_industry')"></b-tab-item>
+                    <b-tab-item id="powerGrid" class="powerGridTab" :visible="s.showPowerGrid" :label="label('tab_power_grid')"></b-tab-item>
+                    <b-tab-item id="military" class="militaryTab" :visible="s.showMil" :label="label('tab_military')"></b-tab-item>
+                    <b-tab-item id="mechLab" class="mechTab" :visible="s.showMechLab" :label="label('tab_mech')"></b-tab-item>
+                    <b-tab-item id="dwarfShipYard" class="ShipYardTab" :visible="s.showShipYard" :label="label('tab_shipyard')"></b-tab-item>
+                    <b-tab-item id="psychicPowers" class="psychicTab" :visible="s.showPsychic" :label="label('tab_psychic')"></b-tab-item>
+                    <b-tab-item id="supernatural" class="supernaturalTab" :visible="s.showWish" :label="label('tab_supernatural')"></b-tab-item>
                 </b-tabs>`);
                 vBind({
                     el: `#mTabCivic`,
@@ -530,18 +486,18 @@ export function loadTab(tab){
                     methods: {
                         swapTab(tab){
                             if (!global.settings.tabLoad){
-                                clearGrids();
-                                clearSpyopDrag();
-                                clearMechDrag();
-                                clearShipDrag();
-                                clearElement($(`#civic`));
-                                clearElement($(`#industry`));
-                                clearElement($(`#powerGrid`));
-                                clearElement($(`#military`));
-                                clearElement($(`#mechLab`));
-                                clearElement($(`#dwarfShipYard`));
-                                clearElement($(`#psychicPowers`));
-                                clearElement($(`#supernatural`));
+                                // Indexed to match the b-tab-item order above, so panels[tab] is the incoming one.
+                                let panels = [`#civic`,`#industry`,`#powerGrid`,`#military`,`#mechLab`,`#dwarfShipYard`,`#psychicPowers`,`#supernatural`];
+                                clearTabPanels({
+                                    [`#civic`]: [clearSpyopDrag],
+                                    [`#industry`]: [],
+                                    [`#powerGrid`]: [clearGrids],
+                                    [`#military`]: [],
+                                    [`#mechLab`]: [clearMechDrag],
+                                    [`#dwarfShipYard`]: [clearShipDrag],
+                                    [`#psychicPowers`]: [],
+                                    [`#supernatural`]: []
+                                },panels[tab]);
                                 switch (tab){
                                     case 0:
                                         {
@@ -601,9 +557,7 @@ export function loadTab(tab){
                                 }
                             }
                             return tab;
-                        }
-                    },
-                    filters: {
+                        },
                         label(lbl){
                             return tabLabel(lbl);
                         }
@@ -649,29 +603,21 @@ export function loadTab(tab){
                 if (!global.settings.tabLoad){
                     tagEvent('page_view',{ page_title: `Evolve - Research` });
                 }
-                $(`#mTabResearch`).append(`<div id="resQueue" class="resQueue" v-show="rq.display"></div>
-                <b-tabs class="resTabs" v-model="s.resTabs" :animated="s.animated">
-                    <b-tab-item id="tech">
-                        <template slot="header">
-                            <h2 class="is-sr-only">{{ 'new_sr' | label }}</h2>
-                            <span aria-hidden="true">{{ 'new' | label }}</span>
-                        </template>
-                    </b-tab-item>
-                    <b-tab-item id="oldTech">
-                        <template slot="header">
-                            <h2 class="is-sr-only">{{ 'old_sr' | label }}</h2>
-                            <span aria-hidden="true">{{ 'old' | label }}</span>
-                        </template>
-                    </b-tab-item>
-                </b-tabs>`);
+                let queue = $(`<div id="resQueue" class="resQueue" v-show="rq.display"></div>`);
+                $(`#mTabResearch`).append(queue);
+                let tabs = $(`<div id="resContent"><b-tabs class="resTabs" v-model="s.resTabs" :animated="s.animated">
+                    <b-tab-item id="tech" :label="label_f('new')"></b-tab-item>
+                    <b-tab-item id="oldTech" :label="label_f('old')"></b-tab-item>
+                </b-tabs></div>`);
+                $(`#mTabResearch`).append(tabs);
                 vBind({
-                    el: `#mTabResearch`,
+                    el: `#resContent`,
                     data: {
                         s: global.settings,
                         rq: global.r_queue
                     },
-                    filters: {
-                        label(lbl){
+                    methods: {
+                        label_f(lbl){
                             return tabLabel(lbl);
                         }
                     }
@@ -688,32 +634,12 @@ export function loadTab(tab){
                 if (!global.settings.tabLoad){
                     tagEvent('page_view',{ page_title: `Evolve - Resources` });
                 }
-                $(`#mTabResource`).append(`<b-tabs class="resTabs" v-model="s.marketTabs" :animated="s.animated" @input="swapTab">
-                    <b-tab-item id="market" :visible="s.showMarket">
-                        <template slot="header">
-                            {{ 'tab_market' | label }}
-                        </template>
-                    </b-tab-item>
-                    <b-tab-item id="resStorage" :visible="s.showStorage">
-                        <template slot="header">
-                            {{ 'tab_storage' | label }}
-                        </template>
-                    </b-tab-item>
-                    <b-tab-item id="resEjector" :visible="s.showEjector">
-                        <template slot="header">
-                            {{ 'tab_ejector' | label }}
-                        </template>
-                    </b-tab-item>
-                    <b-tab-item id="resCargo" :visible="s.showCargo">
-                        <template slot="header">
-                            {{ 'tab_cargo' | label }}
-                        </template>
-                    </b-tab-item>
-                    <b-tab-item id="resAlchemy" :visible="s.showAlchemy">
-                        <template slot="header">
-                            {{ 'tab_alchemy' | label }}
-                        </template>
-                    </b-tab-item>
+                $(`#mTabResource`).append(`<b-tabs class="resTabs" v-model="s.marketTabs" :animated="s.animated" @update:model-value="swapTab(s.marketTabs)">
+                    <b-tab-item id="market" :visible="s.showMarket" :label="label('tab_market')"></b-tab-item>
+                    <b-tab-item id="resStorage" :visible="s.showStorage" :label="label('tab_storage')"></b-tab-item>
+                    <b-tab-item id="resEjector" :visible="s.showEjector" :label="label('tab_ejector')"></b-tab-item>
+                    <b-tab-item id="resCargo" :visible="s.showCargo" :label="label('tab_cargo')"></b-tab-item>
+                    <b-tab-item id="resAlchemy" :visible="s.showAlchemy" :label="label('tab_alchemy')"></b-tab-item>
                 </b-tabs>`);
                 vBind({
                     el: `#mTabResource`,
@@ -723,11 +649,9 @@ export function loadTab(tab){
                     methods: {
                         swapTab(tab){
                             if (!global.settings.tabLoad){
-                                clearElement($(`#market`));
-                                clearElement($(`#resStorage`));
-                                clearElement($(`#resEjector`));
-                                clearElement($(`#resCargo`));
-                                clearElement($(`#resAlchemy`));
+                                // Indexed to match the b-tab-item order above, so panels[tab] is the incoming one.
+                                let panels = [`#market`,`#resStorage`,`#resEjector`,`#resCargo`,`#resAlchemy`];
+                                clearTabPanels(Object.fromEntries(panels.map(p => [p,[]])),panels[tab]);
                                 switch (tab){
                                     case 0:
                                         {
@@ -757,9 +681,7 @@ export function loadTab(tab){
                                 }
                             }
                             return tab;
-                        }
-                    },
-                    filters: {
+                        },
                         label(lbl){
                             return tabLabel(lbl);
                         }
@@ -821,7 +743,7 @@ export function loadTab(tab){
                     data: {
                         s: global.settings
                     },
-                    filters: {
+                    methods: {
                         label(lbl){
                             return tabLabel(lbl);
                         }
@@ -840,28 +762,16 @@ export function loadTab(tab){
                     tagEvent('page_view',{ page_title: `Evolve - Stats` });
                 }
                 $(`#mTabStats`).append(`<b-tabs class="resTabs" v-model="s.statsTabs" :animated="s.animated">
-                    <b-tab-item id="stats">
-                        <template slot="header">
-                            {{ 'tab_stats' | label }}
-                        </template>
-                    </b-tab-item>
-                    <b-tab-item id="achieve">
-                        <template slot="header">
-                            {{ 'tab_achieve' | label }}
-                        </template>
-                    </b-tab-item>
-                    <b-tab-item id="perks">
-                        <template slot="header">
-                            {{ 'tab_perks' | label }}
-                        </template>
-                    </b-tab-item>
+                    <b-tab-item id="stats" :label="label('tab_stats')"></b-tab-item>
+                    <b-tab-item id="achieve" :label="label('tab_achieve')"></b-tab-item>
+                    <b-tab-item id="perks" :label="label('tab_perks')"></b-tab-item>
                 </b-tabs>`);
                 vBind({
                     el: `#mTabStats`,
                     data: {
                         s: global.settings
                     },
-                    filters: {
+                    methods: {
                         label(lbl){
                             return tabLabel(lbl);
                         }
@@ -891,6 +801,9 @@ export function loadTab(tab){
 }
 
 export function index(){
+    // Settle any tab teardown still waiting on a slide before the DOM is thrown away, so a pending
+    // timer can't fire after the rebuild and empty a panel that was just redrawn.
+    flushTabPanelClears();
     clearElement($('body'));
 
     $('html').addClass(global.settings.font);
@@ -899,8 +812,8 @@ export function index(){
     $('body').append(`<div id="topBar" class="topBar">
         <h2 class="is-sr-only">Top Bar</h2>
         <span class="planetWrap">
-            <span class="planet">{{ race.species | planet }}</span>
-            <span class="universe" v-show="showUniverse()">{{ race.universe | universe }}</span>
+            <span class="planet">{{ planet(race.species) }}</span>
+            <span class="universe" v-show="showUniverse()">{{ universe(race.universe) }}</span>
             <span class="pet" id="playerPet" v-show="showPet()" @click="petPet()"></span>
             <span class="simulation" v-show="showSim()">${loc(`evo_challenge_simulation`)}</span>
         </span>
@@ -914,8 +827,7 @@ export function index(){
                 <span class="season">{{ season() }}</span>
                 <b-tooltip :label="weather()" :aria-label="weather()" position="is-bottom" size="is-small" multilined animated><i id="weather" class="weather wi"></i></b-tooltip>
                 <b-tooltip :label="temp()" :aria-label="temp()" position="is-bottom" size="is-small" multilined animated><i id="temp" class="temp wi"></i></b-tooltip>
-                <b-tooltip :label="atRemain()" v-show="s.at" :aria-label="atRemain()" position="is-bottom" size="is-small" multilined animated><span class="atime has-text-caution">{{ s.at | remain }}</span></b-tooltip>
-                <span role="button" class="atime" style="padding: 0 0.5rem; margin-left: 0.5rem; cursor: pointer" @click="pause" :aria-label="pausedesc()">
+                <span role="button" class="atime" id="pauseBtn" @click="pause" :aria-label="pausedesc()">
                     <span id="pausegame"></span>
                 </span>
             </span>
@@ -933,8 +845,8 @@ export function index(){
         <div id="race" class="race colHeader">
             <h2 class="is-sr-only">Race Info</h2>
             <div class="name">{{ name() }}</div>
-            <div class="morale-contain"><span id="morale" v-show="city.morale.current" class="morale">${loc('morale')} <span class="has-text-warning">{{ city.morale.current | mRound }}%</span></div>
-            <div class="power"><span id="powerStatus" class="has-text-warning" v-show="city.powered"><span>MW</span> <span id="powerMeter" class="meter">{{ city.power | replicate | approx }}</span></span></div>
+            <div class="morale-contain"><span id="morale" v-show="city.morale.current" class="morale">${loc('morale')} <span class="has-text-warning">{{ mRound(city.morale.current) }}%</span></div>
+            <div class="power"><span id="powerStatus" class="has-text-warning" v-show="city.powered"><span>MW</span> <span id="powerMeter" class="meter">{{ approx(replicate(city.power)) }}</span></span></div>
         </div>
         <div id="sideQueue">
             <div id="buildQueue" class="bldQueue standardqueuestyle has-text-info" v-show="display"></div>
@@ -1001,12 +913,13 @@ export function index(){
                 }
             },
             trigModal(){
-                let modal = {
-                    template: '<div id="modalBox" class="modalBox"></div>'
-                };
                 this.$buefy.modal.open({
-                    parent: this,
-                    component: modal
+                    hasModalCard: false,
+                    customClass: 'evolve-modal',
+                    content: '<div id="modalBox" class="modalBox"></div>',
+                    onCancel: () => {
+                        // Modal closed
+                    }
                 });
 
                 let checkExist = setInterval(function(){
@@ -1162,67 +1075,47 @@ export function index(){
     mainColumn.append(content);
 
     content.append(`<h2 class="is-sr-only">Tab Navigation</h2>`);
-    let tabs = $(`<b-tabs id="mainTabs" v-model="s.civTabs" :animated="s.animated" @input="swapTab"></b-tabs>`);
+    let tabs = $(`<b-tabs id="mainTabs" v-model="s.civTabs" :animated="s.animated" @update:model-value="swapTab(s.civTabs)"></b-tabs>`);
     content.append(tabs);
 
     // Evolution Tab
-    let evolution = $(`<b-tab-item id="evolution" class="tab-item sticky" :visible="s.showEvolve">
-        <template slot="header">
-            {{ 'tab_evolve' | label }}
-        </template>
+    // header-class tags each nav header so the mobile layout can render it as an icon tab.
+    let evolution = $(`<b-tab-item id="evolution" class="tab-item sticky" header-class="micon micon-evolve" :visible="s.showEvolve" :label="label('tab_evolve')">
     </b-tab-item>`);
     tabs.append(evolution);
 
     // City Tab
-    let city = $(`<b-tab-item :visible="s.showCiv">
-        <template slot="header">
-            {{ 'tab_civil' | label }}
-        </template>
+    let city = $(`<b-tab-item header-class="micon micon-city" :visible="s.showCiv" :label="label('tab_civil')">
         <div id="mTabCivil"></div>
     </b-tab-item>`);
     tabs.append(city);
 
     // Civics Tab
-    let civic = $(`<b-tab-item :visible="s.showCivic">
-        <template slot="header">
-            {{ 'tab_civics' | label }}
-        </template>
+    let civic = $(`<b-tab-item header-class="micon micon-civics" :visible="s.showCivic" :label="label('tab_civics')">
         <div id="mTabCivic"></div>
     </b-tab-item>`);
     tabs.append(civic);
 
     // Research Tab
-    let research = $(`<b-tab-item :visible="s.showResearch">
-        <template slot="header">
-            {{ 'tab_research' | label }}
-        </template>
+    let research = $(`<b-tab-item header-class="micon micon-research" :visible="s.showResearch" :label="label('tab_research')">
         <div id="mTabResearch"></div>
     </b-tab-item>`);
     tabs.append(research);
 
     // Resources Tab
-    let resources = $(`<b-tab-item :visible="s.showResources">
-        <template slot="header">
-            {{ 'tab_resources' | label }}
-        </template>
+    let resources = $(`<b-tab-item header-class="micon micon-resources" :visible="s.showResources" :label="label('tab_resources')">
         <div id="mTabResource"></div>
     </b-tab-item>`);
     tabs.append(resources);
 
     // ARPA Tab
-    let arpa = $(`<b-tab-item :visible="s.showGenetics">
-        <template slot="header">
-            {{ 'tech_arpa' | label }}
-        </template>
+    let arpa = $(`<b-tab-item header-class="micon micon-arpa" :visible="s.showGenetics" :label="label('tech_arpa')">
         <div id="mTabArpa"></div>
     </b-tab-item>`);
     tabs.append(arpa);
 
     // Stats Tab
-    let stats = $(`<b-tab-item :visible="s.showAchieve">
-        <template slot="header">
-            {{ 'tab_stats' | label }}
-        </template>
+    let stats = $(`<b-tab-item header-class="micon micon-stats" :visible="s.showAchieve" :label="label('tab_stats')">
         <div id="mTabStats"></div>
     </b-tab-item>`);
     tabs.append(stats);
@@ -1264,7 +1157,7 @@ export function index(){
     if (irank < 2){ irank = 2; }
     for (let i=0; i<icons.length; i++){
         if (global.stats.feat[icons[i].f] && global.stats.feat[icons[i].f] >= icons[i].r){
-            iconlist = iconlist + `<b-dropdown-item v-on:click="icon('${icons[i].i}')">${drawIcon(icons[i].i, 16, irank)} {{ '${icons[i].i}' | label }}</b-dropdown-item>`;
+            iconlist = iconlist + `<b-dropdown-item v-on:click="icon('${icons[i].i}')">${drawIcon(icons[i].i, 16, irank)} {{ label('${icons[i].i}') }}</b-dropdown-item>`;
         }
         else if (global.settings.icon === icons[i].i){
             global.settings.icon = 'star';
@@ -1295,125 +1188,116 @@ export function index(){
         });
     }
 
-    // Settings Tab
-    let settings = $(`<b-tab-item id="settings" class="settings sticky">
-        <template slot="header">
-            {{ 'tab_settings' | label }}
-        </template>
+    // Settings Tab (header-class lets the mobile layout drop this tab from the top bar; it is
+    // reached from the footer nav instead)
+    let settings = $(`<b-tab-item id="settings" class="settings sticky" header-class="mobileSettingsTab" :label="label('tab_settings')">
         <div class="theme">
-            <span>{{ 'theme' | label }} </span>
-            <b-dropdown hoverable>
-                <button class="button is-primary" slot="trigger">
-                    <span>{{ 'theme_' + s.theme | label }}</span>
-                    <i class="fas fa-sort-down"></i>
-                </button>
-                <b-dropdown-item v-on:click="setTheme('dark')">{{ 'theme_dark' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="setTheme('light')">{{ 'theme_light' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="setTheme('night')">{{ 'theme_night' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="setTheme('darkNight')">{{ 'theme_darkNight' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="setTheme('redgreen')">{{ 'theme_redgreen' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="setTheme('gruvboxLight')">{{ 'theme_gruvboxLight' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="setTheme('gruvboxDark')">{{ 'theme_gruvboxDark' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="setTheme('gruvboxDarkRG')">{{ 'theme_gruvboxDarkRG' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="setTheme('orangeSoda')">{{ 'theme_orangeSoda' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="setTheme('dracula')">{{ 'theme_dracula' | label }}</b-dropdown-item>
+            <span>{{ label('theme') }} </span>
+            <b-dropdown aria-role="list">
+                <template #trigger="{ active }">
+                    <b-button :label="label('theme_' + s.theme)" type="is-info"/>
+                </template>
+                <b-dropdown-item v-on:click="setTheme('dark')">{{ label('theme_dark') }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setTheme('light')">{{ label('theme_light') }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setTheme('night')">{{ label('theme_night') }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setTheme('darkNight')">{{ label('theme_darkNight') }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setTheme('redgreen')">{{ label('theme_redgreen') }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setTheme('gruvboxLight')">{{ label('theme_gruvboxLight') }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setTheme('gruvboxDark')">{{ label('theme_gruvboxDark') }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setTheme('gruvboxDarkRG')">{{ label('theme_gruvboxDarkRG') }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setTheme('orangeSoda')">{{ label('theme_orangeSoda') }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setTheme('dracula')">{{ label('theme_dracula') }}</b-dropdown-item>
                 ${hideEgg}
             </b-dropdown>
 
-            <span>{{ 'units' | label }} </span>
-            <b-dropdown hoverable>
-                <button class="button is-primary" slot="trigger">
-                    <span>{{ s.affix | notation }}</span>
-                    <i class="fas fa-sort-down"></i>
-                </button>
-                <b-dropdown-item v-on:click="numNotation('si')">{{ 'metric' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="numNotation('sci')">{{ 'scientific' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="numNotation('eng')">{{ 'engineering' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="numNotation('sln')">{{ 'sln' | label }}</b-dropdown-item>
+            <span>{{ label('units') }} </span>
+            <b-dropdown  aria-role="list">
+                <template #trigger="{ active }">
+                    <b-button :label="notation(s.affix)" type="is-info"/>
+                </template>
+                <b-dropdown-item v-on:click="numNotation('si')">{{ label('metric') }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="numNotation('sci')">{{ label('scientific') }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="numNotation('eng')">{{ label('engineering') }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="numNotation('sln')">{{ label('sln') }}</b-dropdown-item>
                 ${hideTreat}
             </b-dropdown>
 
-            <span>{{ 'icons' | label }} </span>
-            <b-dropdown hoverable>
-                <button class="button is-primary" slot="trigger">
-                    <span>{{ s.icon | label }}</span>
-                    <i class="fas fa-sort-down"></i>
-                </button>
-                <b-dropdown-item v-on:click="icon('star')">${drawIcon('star',16,irank)} {{ 'star' | label }}</b-dropdown-item>
+            <span>{{ label('icons') }} </span>
+            <b-dropdown aria-role="list">
+                <template #trigger="{ active }">
+                    <b-button :label="label(s.icon)" type="is-info"/>
+                </template>
+                <b-dropdown-item v-on:click="icon('star')">${drawIcon('star',16,irank)} {{ label('star') }}</b-dropdown-item>
                 ${iconlist}
             </b-dropdown>
         </div>
         <div id="localization" class="localization">
-            <span>{{ 'locale' | label }} </span>
-            <b-dropdown hoverable>
-                <button class="button is-primary" slot="trigger">
-                    <span>${current_locale}</span>
-                    <i class="fas fa-sort-down"></i>
-                </button>
+            <span>{{ label('locale') }} </span>
+            <b-dropdown :triggers="['hover']" aria-role="list">
+                <template #trigger>
+                    <b-button label="${current_locale}" type="is-info"/>
+                </template>
                 ${localelist}
             </b-dropdown>
 
-            <span>{{ 'font' | label }} </span>
-            <b-dropdown hoverable>
-                <button class="button is-primary" slot="trigger">
-                    <span>{{ s.font | label }}</span>
-                    <i class="fas fa-sort-down"></i>
-                </button>
-                <b-dropdown-item v-on:click="font('standard')">{{ 'standard' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="font('large_log')">{{ 'large_log' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="font('large_all')">{{ 'large_all' | label }}</b-dropdown-item>
+            <span>{{ label('font') }} </span>
+            <b-dropdown aria-role="list">
+                <template #trigger="{ active }">
+                    <b-button type="is-info"/>{{ label(s.font) }}</b-button>
+                </template>
+                <b-dropdown-item v-on:click="font('standard')">{{ label('standard') }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="font('large_log')">{{ label('large_log') }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="font('large_all')">{{ label('large_all') }}</b-dropdown-item>
             </b-dropdown>
         </div>
 
         <div class="queue">
-            <span>{{ 'queuestyle' | label }} </span>
-            <b-dropdown hoverable>
-                <button class="button is-primary" slot="trigger">
-                    <span>{{ s.queuestyle | label }}</span>
-                    <i class="fas fa-sort-down"></i>
-                </button>
-                <b-dropdown-item v-on:click="setQueueStyle('standardqueuestyle')">{{ 'standardqueuestyle' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="setQueueStyle('listqueuestyle')">{{ 'listqueuestyle' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="setQueueStyle('bulletlistqueuestyle')">{{ 'bulletlistqueuestyle' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="setQueueStyle('numberedlistqueuestyle')">{{ 'numberedlistqueuestyle' | label }}</b-dropdown-item>
+            <span>{{ label('queuestyle') }} </span>
+            <b-dropdown aria-role="list">
+                <template #trigger="{ active }">
+                    <b-button :label="label(s.queuestyle)" type="is-info"/>
+                </template>
+                <b-dropdown-item v-on:click="setQueueStyle('standardqueuestyle')">{{ label('standardqueuestyle') }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setQueueStyle('listqueuestyle')">{{ label('listqueuestyle') }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setQueueStyle('bulletlistqueuestyle')">{{ label('bulletlistqueuestyle') }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setQueueStyle('numberedlistqueuestyle')">{{ label('numberedlistqueuestyle') }}</b-dropdown-item>
             </b-dropdown>
 
-            <span class="settings15" aria-label="${loc('settings15')}">{{ 'q_merge' | label }} </span>
-            <b-dropdown hoverable>
-                <button class="button is-primary" slot="trigger">
-                    <span>{{ s.q_merge | label }}</span>
-                    <i class="fas fa-sort-down"></i>
-                </button>
-                <b-dropdown-item v-on:click="q_merge('merge_never')">{{ 'merge_never' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="q_merge('merge_nearby')">{{ 'merge_nearby' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="q_merge('merge_all')">{{ 'merge_all' | label }}</b-dropdown-item>
+            <span class="settings15" aria-label="${loc('settings15')}">{{ label('q_merge') }} </span>
+            <b-dropdown aria-role="list">
+                <template #trigger="{ active }">
+                    <b-button :label="label(s.q_merge)" type="is-info"/>
+                </template>
+                <b-dropdown-item v-on:click="qu_merge('merge_never')">{{ label('merge_never') }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="qu_merge('merge_nearby')">{{ label('merge_nearby') }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="qu_merge('merge_all')">{{ label('merge_all') }}</b-dropdown-item>
             </b-dropdown>
 
-            <span>{{ 'q_resize' | label }} </span>
-            <b-dropdown hoverable>
-                <button class="button is-primary" slot="trigger">
-                    <span>{{ 'q_resize_' + s.q_resize | label }}</span>
-                    <i class="fas fa-sort-down"></i>
-                </button>
-                <b-dropdown-item v-on:click="setQueueResize('auto')">{{ 'q_resize_auto' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="setQueueResize('grow')">{{ 'q_resize_grow' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="setQueueResize('shrink')">{{ 'q_resize_shrink' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="setQueueResize('manual')">{{ 'q_resize_manual' | label }}</b-dropdown-item>
+            <span>{{ label('q_resize') }} </span>
+            <b-dropdown aria-role="list">
+                <template #trigger="{ active }">
+                    <b-button :label="label('q_resize_' + s.q_resize)" type="is-info"/>
+                </template>
+                <b-dropdown-item v-on:click="setQueueResize('auto')">{{ label('q_resize_auto') }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setQueueResize('grow')">{{ label('q_resize_grow') }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setQueueResize('shrink')">{{ label('q_resize_shrink') }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setQueueResize('manual')">{{ label('q_resize_manual') }}</b-dropdown-item>
             </b-dropdown>
         </div>
 
-        <b-switch class="setting" v-model="s.pause" @input="unpause"><span class="settings12" aria-label="${loc('settings12')}">{{ 'pause' | label }}</span></b-switch>
-        <b-switch class="setting" v-model="s.mKeys"><span class="settings1" aria-label="${loc('settings1')}">{{ 'm_keys' | label }}</span></b-switch>
-        <b-switch class="setting" v-model="s.cLabels"><span class="settings5" aria-label="${loc('settings5')}">{{ 'c_cat' | label }}</span></b-switch>
-        <b-switch class="setting" v-model="s.alwaysPower"><span class="settings17" aria-label="${loc('settings17')}">{{ 'always_power' | label }}</span></b-switch>
-        <b-switch class="setting" v-model="s.qKey"><span class="settings6" aria-label="${loc('settings6')}">{{ 'q_key' | label }}</span></b-switch>
-        <b-switch class="setting" v-model="s.qAny"><span class="settings7" aria-label="${loc('settings7')}">{{ 'q_any' | label }}</span></b-switch>
-        <b-switch class="setting" v-model="s.qAny_res"><span class="settings14" aria-label="${loc('settings14')}">{{ 'q_any_res' | label }}</span></b-switch>
-        <b-switch class="setting" v-model="s.sPackOn" @input="stringPackOn"><span class="settings13" aria-label="${loc('settings13')}">{{ 's_pack_on' | label }}</span></b-switch>
-        <b-switch class="setting" v-model="s.expose"><span class="settings8" aria-label="${loc('settings8')}">{{ 'expose' | label }}</span></b-switch>
-        <b-switch class="setting" v-model="s.tabLoad" @input="toggleTabLoad"><span class="settings11" aria-label="${loc('settings11')}">{{ 'tabLoad' | label }}</span></b-switch>
-        <b-switch class="setting" v-model="s.boring"><span class="settings10" aria-label="${loc('settings10')}">{{ 'boring' | label }}</span></b-switch>
-        <b-switch class="setting" v-model="s.touch"><span class="settings16" aria-label="${loc('settings16')}">{{ 'touch' | label }}</span></b-switch>
+        <b-switch class="setting" v-model="s.pause" @update:model-value="unpause"><span class="settings12" aria-label="${loc('settings12')}">{{ label('pause') }}</span></b-switch>
+        <b-switch class="setting" v-model="s.pauseOnLoad"><span class="settings18" aria-label="${loc('settings18')}">{{ label('pause_load') }}</span></b-switch>
+        <b-switch class="setting" v-model="s.mKeys"><span class="settings1" aria-label="${loc('settings1')}">{{ label('m_keys') }}</span></b-switch>
+        <b-switch class="setting" v-model="s.cLabels"><span class="settings5" aria-label="${loc('settings5')}">{{ label('c_cat') }}</span></b-switch>
+        <b-switch class="setting" v-model="s.alwaysPower"><span class="settings17" aria-label="${loc('settings17')}">{{ label('always_power') }}</span></b-switch>
+        <b-switch class="setting" v-model="s.qKey"><span class="settings6" aria-label="${loc('settings6')}">{{ label('q_key') }}</span></b-switch>
+        <b-switch class="setting" v-model="s.qAny"><span class="settings7" aria-label="${loc('settings7')}">{{ label('q_any') }}</span></b-switch>
+        <b-switch class="setting" v-model="s.qAny_res"><span class="settings14" aria-label="${loc('settings14')}">{{ label('q_any_res') }}</span></b-switch>
+        <b-switch class="setting" v-model="s.sPackOn" @update:model-value="stringPackOn"><span class="settings13" aria-label="${loc('settings13')}">{{ label('s_pack_on') }}</span></b-switch>
+        <b-switch class="setting" v-model="s.expose"><span class="settings8" aria-label="${loc('settings8')}">{{ label('expose') }}</span></b-switch>
+        <b-switch class="setting" v-model="s.tabLoad" @update:model-value="toggleTabLoad"><span class="settings11" aria-label="${loc('settings11')}">{{ label('tabLoad') }}</span></b-switch>
+        <b-switch class="setting" v-model="s.boring"><span class="settings10" aria-label="${loc('settings10')}">{{ label('boring') }}</span></b-switch>
+        <b-switch class="setting" v-model="s.touch"><span class="settings16" aria-label="${loc('settings16')}">{{ label('touch') }}</span></b-switch>
         <div>
             <div>${loc('key_mappings')}</div>
             <div class="keyMap"><span>${loc('multiplier',[10])}</span> <b-input v-model="s.keyMap.x10" id="x10Key"></b-input></div>
@@ -1432,37 +1316,41 @@ export function index(){
             <div class="keyMap"><span>${loc('tab_settings')}</span> <b-input v-model="s.keyMap.settings" id="settingshKey"></b-input></div>
         </div>
         <div class="stringPack setting">
-            <button id="stringPack" class="button" @click="importStringFile">{{ 'load_string_pack' | label }}</button>
+            <button id="stringPack" class="button" @click="importStringFile">{{ label('load_string_pack') }}</button>
             <input type="file" class="fileImport" id="stringPackFile" accept="text/plain, application/json">
-            <button class="button right" @click="clearStringFile">{{ 'clear_string_pack' | label }}</button>
+            <button class="button right" @click="clearStringFile">{{ label('clear_string_pack') }}</button>
         </div>
         <div class="stringPack setting">
-            <span>{{  | sPack}}</span>
+            <span>{{ sPack() }}</span>
         </div>
         <div class="importExport">
             <b-field label="${loc('import_export')}">
                 <b-input id="importExport" type="textarea"></b-input>
             </b-field>
-            <button class="button" @click="saveImport">{{ 'import' | label }}</button>
-            <button class="button" @click="saveExport">{{ 'export' | label }}</button>
-            <button class="button" @click="saveExportFile">{{ 'export_file' | label }}</button>
-            <button class="button right" @click="restoreGame"><span class="settings9" aria-label="${loc('settings9')}">{{ 'restore' | label }}</span></button>
+            <button class="button" @click="saveImport">{{ label('import') }}</button>
+            <button class="button" @click="saveExport">{{ label('export') }}</button>
+            <button class="button" @click="saveExportFile">{{ label('export_file') }}</button>
+            <button class="button right" @click="restoreGame"><span class="settings9" aria-label="${loc('settings9')}">{{ label('restore') }}</span></button>
+        </div>
+        <div class="importExport">
+            <b-field label="${loc('google_drive')}"></b-field>
+            <button class="button" @click="driveSave">{{ label('drive_save') }}</button>
+            <button class="button" @click="driveLoad">{{ label('drive_load') }}</button>
+            <span class="drive-note" v-show="!driveOn()">${loc('drive_setup_hint')}</span>
         </div>
         <div class="reset">
-            <b-collapse :open="false">
-                <b-switch v-model="s.disableReset" slot="trigger">{{ 'enable_reset' | label }}</b-switch>
-                <div class="notification">
-                    <div class="content">
-                        <h4 class="has-text-danger">
-                            {{ 'reset_warn' | label }}
-                        </h4>
-                        <p>
-                            <button class="button" :disabled="!s.disableReset" @click="soft_reset()"><span class="settings4" aria-label="${loc('settings4')}">{{ 'reset_soft' | label }}</span></button>
-                            <button class="button right" :disabled="!s.disableReset" @click="reset()"><span class="settings3" aria-label="${loc('settings3')}">{{ 'reset_hard' | label }}</span></button>
-                        </p>
-                    </div>
+            <b-switch v-model="s.disableReset">{{ label('enable_reset') }}</b-switch>
+            <div class="notification" v-show="s.disableReset">
+                <div class="content">
+                    <h4 class="has-text-danger">
+                        {{ label('reset_warn') }}
+                    </h4>
+                    <p>
+                        <button class="button" :disabled="!s.disableReset" @click="softResetGame()"><span class="settings4" aria-label="${loc('settings4')}">{{ label('reset_soft') }}</span></button>
+                        <button class="button right" :disabled="!s.disableReset" @click="resetGame()"><span class="settings3" aria-label="${loc('settings3')}">{{ label('reset_hard') }}</span></button>
+                    </p>
                 </div>
-            </b-collapse>
+            </div>
         </div>
     </b-tab-item>`);
 
@@ -1470,7 +1358,7 @@ export function index(){
 
     // (Hidden Last Tab) Hell Observation Tab
     let observe = $(`<b-tab-item disabled>
-        <template slot="header"></template>
+        <template #header></template>
         <div id="mTabObserve"></div>
     </b-tab-item>`);
     tabs.append(observe);
@@ -1479,6 +1367,41 @@ export function index(){
     columns.append(`<div id="queueColumn" class="queueCol column"></div>`);
 
     let egg15 = easterEgg(15,8);
+    
+    // Bottom Mobile navigation bar
+    $('body').append(`
+        <div id="mobileNav">
+            <button class="mobile-nav-btn is-active" data-panel="resources">${loc('mobile_nav_resources')}</button>
+            <button class="mobile-nav-btn" data-panel="game">${loc('mobile_nav_game')}</button>
+            <button class="mobile-nav-btn" data-panel="queue">${loc('mobile_nav_queue')}</button>
+            <button class="mobile-nav-btn" data-panel="settings">${loc('mobile_nav_settings')}</button>
+        </div>
+    `);
+
+    // civTabs index of the Settings tab (matches quickMap.settings in main.js).
+    const SETTINGS_TAB = 7;
+    let lastGameTab = global.settings.civTabs === SETTINGS_TAB ? 1 : global.settings.civTabs;
+    $('#mobileNav').on('click', '.mobile-nav-btn', function () {
+        const panel = $(this).data('panel');
+        // The Settings panel and the Game panel both show the main column but on different tabs, so
+        // switch civTabs to (or away from) the settings tab as needed, remembering the game tab.
+        if (panel === 'settings'){
+            if (global.settings.civTabs !== SETTINGS_TAB){ lastGameTab = global.settings.civTabs; }
+            global.settings.civTabs = SETTINGS_TAB;
+            if (!global.settings.tabLoad){ loadTab(SETTINGS_TAB); }
+        }
+        else if (panel === 'game' && global.settings.civTabs === SETTINGS_TAB){
+            global.settings.civTabs = lastGameTab;
+            if (!global.settings.tabLoad){ loadTab(lastGameTab); }
+        }
+        $('#main')
+            .toggleClass('mobile-panel-game', panel === 'game')
+            .toggleClass('mobile-panel-queue', panel === 'queue')
+            .toggleClass('mobile-panel-settings', panel === 'settings');
+        $('#mobileNav .mobile-nav-btn').removeClass('is-active');
+        $(this).addClass('is-active');
+    });
+
     // Bottom Bar
     $('body').append(`
         <div class="promoBar">
@@ -1486,7 +1409,7 @@ export function index(){
                 <h1>
                     <span class="has-text-warning">${egg15.length > 0 ? `Ev${egg15}lve` : `Evolve`}</span>
                     by
-                    <span class="has-text-success">Demagorddon</span>
+                    <span class="has-text-success">Demagorddon</span><span id="petFootSlot" class="footPet"></span>
                 </h1>
             </span>
             <span class="right">
@@ -1500,6 +1423,51 @@ export function index(){
                     <li><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PTRJZBW9J662C&currency_code=USD&source=url" target="_blank">Donate</a></li>
                 </ul>
             </span>
+            <span id="pauseFootSlot" class="footPause"></span>
+            <span class="version footVersion"><a href="wiki.html#changelog" target="_blank"></a></span>
         </div>
     `);
+
+    if ('visualViewport' in window) {
+        const $navBar = $('#mobileNav');
+        const $promoBar = $('.promoBar');
+
+        const syncFixedToViewport = () => {
+            const vv = window.visualViewport;
+            if (vv.scale !== 1) {
+                return;
+            }
+            const offsetFromBottom = window.innerHeight - (vv.height + vv.offsetTop);
+            const translateY = -Math.round(Math.max(0, offsetFromBottom));
+            $navBar.css('transform', `translateY(${translateY}px)`);
+            $promoBar.css('transform', `translateY(${translateY}px)`);
+        };
+
+        syncFixedToViewport();
+        window.visualViewport.addEventListener('resize', syncFixedToViewport);
+    }
+
+    // Mobile self-scrolling panels (#settings, #evolution, resTabs/govTabs2 sections) get
+    // their height set here instead of a CSS calc(): measure each panel's actual
+    // top position and size it to reach exactly to the bottom bar, on any screen/nesting.
+    const sizeScrollPanels = () => {
+        if (window.innerWidth > 768) {
+            return;
+        }
+        const remPx = parseFloat(getComputedStyle(document.documentElement).fontSize);
+        const barsPx = 3.7 * remPx;
+        document.querySelectorAll('#settings, #evolution, .resTabs > section, .govTabs2 > section').forEach((el) => {
+            if (!el.offsetParent) {
+                return;
+            }
+            const top = el.getBoundingClientRect().top;
+            el.style.height = `${Math.max(0, window.innerHeight - top - barsPx)}px`;
+        });
+    };
+
+    sizeScrollPanels();
+    window.addEventListener('resize', sizeScrollPanels);
+    // Re-measure after any click (tab switches, panel switches) — delayed past the 300ms
+    // slide-transition so we measure the settled position, not mid-animation.
+    document.addEventListener('click', () => setTimeout(sizeScrollPanels, 400));
 }

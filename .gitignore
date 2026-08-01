@@ -7,3 +7,5 @@ node_modules/*
 docs
 dist
 *.map
+*.md
+!README.md

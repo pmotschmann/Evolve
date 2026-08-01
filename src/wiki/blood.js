@@ -81,9 +81,9 @@ function bloodDesc(info,trait){
 }
 
 function addCalcInputs(parent,key){
-    let inputs = {
+    let inputs = Vue.reactive({
         owned: 0,
-    };
+    });
     let resources = {};
     
     let action = bloodPool[key];

@@ -1068,7 +1068,8 @@ Misc ---------> Main template
         }
 
         .main>div.popper,
-        body .modal>div.popper {
+        body .modal>div.popper,
+        #offlineModal>div.popper {
             background-color: @modal-child-popper-background;
             border: .0625rem solid @modal-child-popper-border;
             color: @popper;
@@ -1295,10 +1296,18 @@ Misc ---------> Main template
 
         // UI Bars
         .topBar,
-        .promoBar {
+        .promoBar,
+        #mobileNav {
             background-color: @bars-background;
         }
-        
+
+        // The race/name header sits directly above the scrolling resource list, which is tucked up
+        // under it by a negative top margin. Give the header an opaque, page-colored background so the
+        // resource rows scrolling behind it are hidden instead of bleeding through as overlapping text.
+        #race {
+            background-color: @html-background;
+        }
+
         // Play/Pause
         .play {
             display: inline-block;
@@ -1498,6 +1507,13 @@ Misc ---------> Main template
                     box-shadow: 0 0 6px @has-text-caution;
                     > span {
                         text-shadow: 1px 1px @has-text-caution;
+                    }
+                }
+
+                .fire {
+                    box-shadow: 0 0 6px @has-text-danger, 0 0 12px @has-text-caution;
+                    > span {
+                        text-shadow: 1px 1px @has-text-danger;
                     }
                 }
 
@@ -2867,6 +2883,9 @@ a {
 
         .tab-content {
             padding: 0 .25rem 0 0;
+            // Positioning context so the outgoing tab (which we absolutely-position during the
+            // transition) slides across the incoming one instead of stacking below it.
+            position: relative;
         }
 
         >.tab-content {
@@ -2875,6 +2894,62 @@ a {
 
         .tab-item {
             padding: 0 0 0 1rem;
+        }
+
+        // Directional slide when switching tabs (main tabs and every nested sub-tab group). Buefy
+        // computes the transition name from the direction of travel — `slide-next` when moving to
+        // a tab further right, `slide-prev` when moving left — so the slide direction follows the
+        // click. The incoming tab stays in normal flow (so it defines the container height) and
+        // slides in via `transform`; the outgoing tab is absolutely positioned so the two overlap
+        // and slide across each other. We re-declare everything here because the bundled Buefy 0.9
+        // CSS uses Vue 2 transition class names (`-enter`), while the game runs Buefy 3 on Vue 3,
+        // which emits `-enter-from`/`-leave-from` — so the original slide only half-applied.
+        // Gated by the b-tabs :animated setting: with animations off Buefy emits no transition
+        // wrapper and none of these classes ever appear.
+        .slide-next-enter-active,
+        .slide-prev-enter-active,
+        .slide-next-leave-active,
+        .slide-prev-leave-active {
+            transition: transform 300ms cubic-bezier(.785, .135, .15, .86) !important;
+            backface-visibility: hidden;
+        }
+
+        .slide-next-leave-active,
+        .slide-prev-leave-active {
+            position: absolute !important;
+            top: 0;
+            width: 100%; // left stays at its static position so it stays horizontally aligned
+        }
+
+        // Advancing right (next): incoming enters from the left, outgoing exits to the right.
+        .slide-next-enter-from { transform: translate3d(-100%, 0, 0) !important; }
+        .slide-next-leave-to   { transform: translate3d(100%, 0, 0) !important; }
+
+        // Going back left (prev): incoming enters from the right, outgoing exits to the left.
+        .slide-prev-enter-from { transform: translate3d(100%, 0, 0) !important; }
+        .slide-prev-leave-to   { transform: translate3d(-100%, 0, 0) !important; }
+
+        .slide-next-enter-to,
+        .slide-prev-enter-to,
+        .slide-next-leave-from,
+        .slide-prev-leave-from {
+            transform: translate3d(0, 0, 0) !important;
+        }
+
+        // Tab transition 
+        .tabFading {
+            position: absolute !important;
+            width: 100%;
+            pointer-events: none;
+        }
+
+        // Clip the off-screen tabs only while a slide is in flight, so the incoming/outgoing tab
+        // parked at ±100% can't spawn a horizontal scrollbar. Scoped to the active transition via
+        // :has() (and a direct-child match, so a sub-tab slide doesn't clip its parent) — the rest
+        // of the time overflow stays visible, so dropdown/tooltip menus aren't clipped.
+        .tab-content:has(> .slide-next-leave-active),
+        .tab-content:has(> .slide-prev-leave-active) {
+            overflow: hidden;
         }
 
         .tabs {
@@ -2916,6 +2991,62 @@ a {
                     padding: 0 .25rem;
                     border-radius: 0 .25rem 0 .4375rem;
                     overflow: hidden;
+                }
+            }
+
+            // Damaged structures get a cracked-glass overlay and red tint so the button reads as
+            // broken. Severity is set via :class="damaged()" -> "damaged mild" or "damaged severe".
+            // Base (.damaged) = mild: fewer cracks and a muted red halfway to the normal button
+            // color. .severe (damaged count exceeds built count) = full red with denser cracks.
+            a.button.damaged {
+                position: relative;
+                overflow: hidden;
+
+                &::before {
+                    content: "";
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    z-index: 1;
+                    pointer-events: none;
+                    border-radius: inherit;
+                    background: rgba(150, 25, 20, 0.16);
+                    box-shadow: inset 0 0 0 .0625rem rgba(225, 65, 45, 0.42);
+                }
+
+                &::after {
+                    content: "";
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    z-index: 1;
+                    pointer-events: none;
+                    opacity: 0.85;
+                    background-repeat: no-repeat;
+                    background-size: 100% 100%;
+                    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 64' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='%23000' stroke-opacity='.55' stroke-width='2.6' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpath d='M92 30 L58 6 M92 30 L128 4 M92 30 L164 22 M92 30 L178 52 M92 30 L112 62 M92 30 L58 58 M92 30 L12 34 M58 6 L66 22 M164 22 L150 32 M112 62 L104 46 M12 34 L34 40'/%3E%3C/g%3E%3Cg fill='none' stroke='%23fff' stroke-opacity='.9' stroke-width='1.1' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpath d='M92 30 L58 6 M92 30 L128 4 M92 30 L164 22 M92 30 L178 52 M92 30 L112 62 M92 30 L58 58 M92 30 L12 34 M58 6 L66 22 M164 22 L150 32 M112 62 L104 46 M12 34 L34 40'/%3E%3C/g%3E%3C/svg%3E");
+                }
+
+                &.severe::before {
+                    background: rgba(150, 25, 20, 0.32);
+                    box-shadow: inset 0 0 0 .0625rem rgba(225, 65, 45, 0.85);
+                }
+
+                &.severe::after {
+                    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 64' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='%23000' stroke-opacity='.55' stroke-width='2.6' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpath d='M52 30 L16 6 M52 30 L60 4 M52 30 L6 30 M52 30 L26 60 M52 30 L70 60 M52 30 L98 42 M150 34 L186 10 M150 34 L140 4 M150 34 L194 34 M150 34 L176 60 M150 34 L124 62 M150 34 L100 24 M98 42 L100 24 M16 6 L24 20 M186 10 L178 22 M26 60 L38 50 M176 60 L166 50 M6 30 L22 34 M194 34 L180 30'/%3E%3C/g%3E%3Cg fill='none' stroke='%23fff' stroke-opacity='.9' stroke-width='1.1' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpath d='M52 30 L16 6 M52 30 L60 4 M52 30 L6 30 M52 30 L26 60 M52 30 L70 60 M52 30 L98 42 M150 34 L186 10 M150 34 L140 4 M150 34 L194 34 M150 34 L176 60 M150 34 L124 62 M150 34 L100 24 M98 42 L100 24 M16 6 L24 20 M186 10 L178 22 M26 60 L38 50 M176 60 L166 50 M6 30 L22 34 M194 34 L180 30'/%3E%3C/g%3E%3C/svg%3E");
+                }
+
+                .aTitle {
+                    position: relative;
+                    z-index: 2;
+                }
+
+                span.count {
+                    z-index: 2;
                 }
             }
 
@@ -3599,6 +3730,8 @@ a {
     }
 
     .mechList {
+        bottom: auto;
+
         .mechRow {
             .gearList {
                 display: inline-flex;
@@ -3619,6 +3752,43 @@ a {
 
         .pad {
             margin-right: .25rem;
+        }
+    }
+
+    .fleetCmd {
+        margin-top: 1rem;
+        max-width: 28rem;
+
+        .header {
+            margin-bottom: .25rem;
+        }
+
+        // Rules bracketing the options, so the block reads as its own group between the garrison above
+        // and MAD below.
+        .fleetCmdSep {
+            width: 100%;
+            border-bottom: .0625rem solid;
+            margin: .375rem 0;
+            opacity: 0.5;
+        }
+
+        .fleetCmdOpt {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: .25rem 0;
+
+            .b-numberinput {
+                max-width: 7rem;
+            }
+        }
+    }
+
+    .shipReturn {
+        margin-left: .5rem;
+
+        .retCancel {
+            margin-left: .25rem;
         }
     }
 
@@ -3714,6 +3884,12 @@ a {
     .importExport,
     .stringPack {
         margin-top: 1rem;
+    }
+
+    .drive-note {
+        margin-left: .5rem;
+        font-size: .85rem;
+        opacity: .7;
     }
     
     #customFile,
@@ -4042,6 +4218,60 @@ a {
     }
 }
 
+#offlineModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000000;
+
+    .offlineBox {
+        background: #282f2f;
+        border: 0.0625rem solid #999;
+        border-radius: 0.25rem;
+        padding: 1.5rem 2rem;
+        min-width: 20rem;
+        max-width: 90%;
+        text-align: center;
+        box-shadow: 0 0 1rem rgba(0, 0, 0, 0.5);
+    }
+
+    .offlineTitle {
+        font-size: 1.4rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .offlineMsg {
+        color: #dbdbdb;
+        margin-bottom: 0.75rem;
+    }
+
+    .offlineBar {
+        width: 100%;
+        height: 1rem;
+        background: #10100d;
+        border-radius: 0.25rem;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+    }
+
+    .offlineProg {
+        width: 0%;
+        height: 100%;
+        background: #ffd700;
+        transition: width 0.1s linear;
+    }
+
+    .button {
+        margin-top: 0.5rem;
+    }
+}
+
 .popper {
     z-index: 100000;
 
@@ -4208,7 +4438,8 @@ a {
 }
 
 .main>div.popper,
-body .modal>div.popper {
+body .modal>div.popper,
+#offlineModal>div.popper {
     margin-top: .125rem;
     text-align: center;
     padding: .5rem .75rem;
@@ -4221,6 +4452,12 @@ body .modal>div.popper {
 
         span {
             display: flex;
+        }
+
+        // Cells are flex rows, so text-align does nothing to them — add "center" alongside "aTable" on
+        // any table whose cells should sit centred in their column instead of flush left.
+        &.center span {
+            justify-content: center;
         }
     }
 
@@ -4436,6 +4673,17 @@ body .modal>div.popper.wide {
         }
     }
 
+    // A grid of buttons to pick one option out of many, for lists too long to sit in a dropdown.
+    .resPicker {
+        justify-content: flex-start;
+
+        .button {
+            margin: .125rem;
+            height: 1.8rem;
+            font-size: .875rem;
+        }
+    }
+
     .fanatic section {
         display: flex;
         flex-wrap: wrap;
@@ -4463,6 +4711,47 @@ span.inline {
     .trade-header {
         border-top: 0;
         padding-top: 0;
+    }
+
+    .shipDispatchStats {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: .35rem 1rem;
+        padding: .5rem;
+
+        .pad {
+            margin-left: .25rem;
+        }
+    }
+
+    .shipDispatch {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: .5rem;
+        padding: .5rem;
+
+        .button {
+            margin: 0;
+            height: auto;
+            flex-direction: column;
+            padding: .4rem .75rem;
+
+            .dispatchYard {
+                margin-left: .3rem;
+                font-size: .8rem;
+            }
+
+            .dispatchSystem {
+                font-size: .75rem;
+                line-height: 1;
+            }
+
+            .dispatchDays {
+                font-size: .8rem;
+            }
+        }
     }
 }
 
@@ -4555,7 +4844,10 @@ span.inline {
         }
 
         .atime {
-            margin-left: 1rem;
+            // These were inline on the element; moved here so the footer copy (mobile) can restyle it.
+            padding: 0 0.5rem;
+            margin-left: 0.5rem;
+            cursor: pointer;
         }
 
         .infoTimer {
@@ -4595,103 +4887,112 @@ span.inline {
         }
     }
 
-    .pet {
-        .black {
-            fill: #000000;
-            filter: drop-shadow(0px 0px 2px #fff);
-        }
-        .black.stripe {
-            fill: url(#PetGradient);
-            #PetGradient {
-                .stop1 { stop-color: #000; }
-                .stop2 { stop-color: #4e4e4e; }
-            }
-        }
-        .black.patched {
-            fill: url(#PetGradient);
-            #PetGradient {
-                .stop1 { stop-color: #000; }
-                .stop2 { stop-color: #424242; }
-            }
-        }
-        .orange {
-            fill: #e25f08;
-            filter: drop-shadow(0px 0px 2px #000);
-        }
-        .orange.stripe {
-            fill: url(#PetGradient);
-            #PetGradient {
-                .stop1 { stop-color: #e25f08; }
-                .stop2 { stop-color: #ccb9ad; }
-            }
-        }
-        .gray {
-            fill: #575757;
-            filter: drop-shadow(0px 0px 2px #000);
-        }
-        .gray.stripe {
-            fill: url(#PetGradient);
-            #PetGradient {
-                .stop1 { stop-color: #575757; }
-                .stop2 { stop-color: #202020; }
-            }
-        }
-        .gray.patched {
-            fill: url(#PetGradient);
-            #PetGradient {
-                .stop1 { stop-color: #575757; }
-                .stop2 { stop-color: #665237; }
-            }
-        }
-        .white {
-            fill: #f0efef;
-            filter: drop-shadow(0px 0px 2px #000);
-        }
-        .white.stripe {
-            fill: url(#PetGradient);
-            #PetGradient {
-                .stop1 { stop-color: #f0efef; }
-                .stop2 { stop-color: #f5dec4; }
-            }
-        }
-        .white.patched {
-            fill: url(#PetGradient);
-            #PetGradient {
-                .stop1 { stop-color: #f0efef; }
-                .stop2 { stop-color: #b8ab9b; }
-            }
-        }
-        .cream {
-            fill: #bd8754;
-            filter: drop-shadow(0px 0px 2px #000);
-        }
-        .cream.stripe {
-            fill: url(#PetGradient);
-            #PetGradient {
-                .stop1 { stop-color: #bd8754; }
-                .stop2 { stop-color: #f5dec4; }
-            }
-        }
-        .brown {
-            fill: #996f48;
-            filter: drop-shadow(0px 0px 2px #000);
-        }
-        .brown.patched {
-            fill: url(#PetGradient);
-            #PetGradient {
-                .stop1 { stop-color: #996f48; }
-                .stop2 { stop-color: #af9a85; }
-            }
-        }
-    }
-
     .version {
         margin-right: 1rem;
     }
 }
 
+// Player-pet coat colors. Kept at the top level (not scoped to .topBar) so the icon keeps its color
+// wherever the single #playerPet node lives — the header on desktop, the footer on mobile. Without
+// this the svg falls back to its default black fill once it moves out of the top bar.
+.pet {
+    .black {
+        fill: #000000;
+        filter: drop-shadow(0px 0px 2px #fff);
+    }
+    .black.stripe {
+        fill: url(#PetGradient);
+        #PetGradient {
+            .stop1 { stop-color: #000; }
+            .stop2 { stop-color: #4e4e4e; }
+        }
+    }
+    .black.patched {
+        fill: url(#PetGradient);
+        #PetGradient {
+            .stop1 { stop-color: #000; }
+            .stop2 { stop-color: #424242; }
+        }
+    }
+    .orange {
+        fill: #e25f08;
+        filter: drop-shadow(0px 0px 2px #000);
+    }
+    .orange.stripe {
+        fill: url(#PetGradient);
+        #PetGradient {
+            .stop1 { stop-color: #e25f08; }
+            .stop2 { stop-color: #ccb9ad; }
+        }
+    }
+    .gray {
+        fill: #575757;
+        filter: drop-shadow(0px 0px 2px #000);
+    }
+    .gray.stripe {
+        fill: url(#PetGradient);
+        #PetGradient {
+            .stop1 { stop-color: #575757; }
+            .stop2 { stop-color: #202020; }
+        }
+    }
+    .gray.patched {
+        fill: url(#PetGradient);
+        #PetGradient {
+            .stop1 { stop-color: #575757; }
+            .stop2 { stop-color: #665237; }
+        }
+    }
+    .white {
+        fill: #f0efef;
+        filter: drop-shadow(0px 0px 2px #000);
+    }
+    .white.stripe {
+        fill: url(#PetGradient);
+        #PetGradient {
+            .stop1 { stop-color: #f0efef; }
+            .stop2 { stop-color: #f5dec4; }
+        }
+    }
+    .white.patched {
+        fill: url(#PetGradient);
+        #PetGradient {
+            .stop1 { stop-color: #f0efef; }
+            .stop2 { stop-color: #b8ab9b; }
+        }
+    }
+    .cream {
+        fill: #bd8754;
+        filter: drop-shadow(0px 0px 2px #000);
+    }
+    .cream.stripe {
+        fill: url(#PetGradient);
+        #PetGradient {
+            .stop1 { stop-color: #bd8754; }
+            .stop2 { stop-color: #f5dec4; }
+        }
+    }
+    .brown {
+        fill: #996f48;
+        filter: drop-shadow(0px 0px 2px #000);
+    }
+    .brown.patched {
+        fill: url(#PetGradient);
+        #PetGradient {
+            .stop1 { stop-color: #996f48; }
+            .stop2 { stop-color: #af9a85; }
+        }
+    }
+}
+
 .promoBar {
     bottom: 0;
+
+    // The footer version is only used in the mobile layout (where it replaces the header version);
+    // on desktop the version lives in the top bar, so hide the footer copy.
+    .footVersion {
+        display: none;
+    }
 
     .left {
         display: inline-block;
@@ -4819,6 +5120,12 @@ span.inline {
 
     #shipList {
         margin-top: .25rem;
+
+        .shipStat {
+            white-space: nowrap;
+        }
+        bottom: auto;
+
         .shipRow {
             display: grid;
             padding-top: .25rem;
@@ -4853,6 +5160,39 @@ span.inline {
             button {
                 height: 1rem;
             }
+        }
+
+        // Collapsed-location header. Heavier top rule than a ship row so a group reads as a division of
+        // the list rather than one more entry in it.
+        .shipGroup {
+            padding-top: .35rem;
+            margin-top: .5rem;
+            margin-left: .5rem;
+            border-top: 2px solid;
+
+            .groupFold {
+                margin-right: .5rem;
+                white-space: nowrap;
+            }
+
+            .groupArrow {
+                display: inline-block;
+                min-width: .75rem;
+            }
+
+            .name {
+                display: inline-block;
+                min-width: 5rem;
+            }
+
+            .pad {
+                margin: 0 .5rem 0 0;
+            }
+        }
+
+        // A ship inside an open group sits in from its header.
+        .shipGroup ~ .shipRow {
+            margin-left: 1.25rem;
         }
     }
 
@@ -5509,4 +5849,759 @@ div.bigbang {
     z-index: 999;
     position: absolute;
     top: 1rem;
+}
+
+// Mobile layout
+// At narrow widths: stack columns, show one panel at a time via #mobileNav.
+// .mobile-panel-game and .mobile-panel-queue on #main control which panel is visible
+#mobileNav {
+    display: none; // Hidden on desktop
+}
+
+@media only screen and (max-width: 48rem) {
+
+    html {
+        // Mobile browsers by default will scale up the font size based on screen width, and font size translates to layout dimensions in most places
+        // this ends up causing nearly the entire UI to become massively overscaled and entirely unusable on narrow screens, unless the user manually adjusts their browser's font size settings
+        // So, we'll just override whatever the browser's auto font scaling chose
+        // vw units are purely viewport-width-relative and immune to font scaling
+        // clamp makes sure we don't go below 12px or above 16px
+        font-size: ~"clamp(12px, 4.2vw, 16px)" !important;
+        -moz-text-size-adjust: none;
+        -webkit-text-size-adjust: none;
+        text-size-adjust: none;
+        // Ideally, this would be user configurable, perhaps with a mobile-specific settings menu you can access from it's own little settings cog somewhere
+        // but for now, this will at least make the UI usable on mobile by default
+    }
+
+    // Header bar: the version tag makes the single-line bar overflow and wrap on a narrow screen, so
+    // drop it here (it moves to the footer, below) and let the calendar slide over into its place on
+    // the right instead of sitting centered.
+    .topBar {
+        .version {
+            display: none;
+        }
+
+        // Keep the planet info and the calendar each on a single line. Their trailing inline bits —
+        // the optional player-pet icon and the pause control — otherwise wrap to a second row once the
+        // content reaches the screen edge, which is the "pushed onto the next line" look being fixed.
+        // Trimming the calendar's inner spacing buys a little width so the one-line fit holds at more
+        // phone widths; on a genuinely tiny screen the calendar's rightmost icons clip at the edge
+        // (the fixed bar doesn't scroll the page) rather than wrapping, which reads far better.
+        .planetWrap {
+            white-space: nowrap;
+        }
+
+        .calendar {
+            margin: 0 0.5rem 0 auto; // was `0 auto` (centered) → pin to the right
+            white-space: nowrap;
+
+            .infoTimer {
+                margin-right: 0.25rem;
+            }
+        }
+    }
+
+    // Footer: on desktop the author (left) and links (right, absolutely positioned) share one line;
+    // on a narrow screen they overlap. Give the bar two rows instead — external links across the top,
+    // then author on the left and the version (relocated from the header) on the right.
+    .promoBar {
+        bottom: 0; // stays at bottom
+        height: 2.4rem; // two 1.2rem rows
+        flex-wrap: wrap;
+        align-content: center;
+
+        .right {
+            order: 1; // links first → top row
+            position: static; // was absolute; participate in the flow so it takes a full row
+            width: 100%;
+            margin: 0;
+            text-align: center;
+        }
+
+        .left {
+            order: 2; // author → bottom-left
+            width: auto;
+            margin-left: .5rem;
+        }
+
+        // The player pet is relocated here (see placeMobileBits) beside the author name on mobile.
+        .footPet {
+            margin-left: .4rem;
+
+            .pet {
+                cursor: pointer;
+            }
+
+            svg {
+                vertical-align: middle;
+            }
+        }
+
+        // The pause button is relocated here, centered in the space between the author/pet group on
+        // the left and the version on the right (its two auto margins split the free space evenly).
+        .footPause {
+            order: 3;
+            margin: 0 auto;
+
+            .atime {
+                cursor: pointer;
+                padding: 0 .5rem;
+            }
+        }
+
+        .footVersion {
+            order: 4;
+            display: inline-block;
+            margin-right: .5rem; // version sits at the far right; .footPause's auto margins push it there
+        }
+    }
+
+    // Bottom navigation bar for switching between active panels on mobile
+    #mobileNav {
+        display: flex;
+        position: fixed;
+        bottom: 2.4rem; // promoBar height (now two rows) — sit directly above it
+        left: 0;
+        right: 0;
+        z-index: 30;
+        height: 2.4rem;
+        border-top: 1px solid;
+
+        .mobile-nav-btn {
+            flex: 1;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            border: none;
+            border-top: 2px solid transparent;
+            background: transparent;
+            color: inherit;
+            opacity: 0.75;
+            transition: opacity 0.15s;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.7); // dark glow — helps text pop on any background
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+
+            &.is-active {
+                opacity: 1;
+                border-top-color: currentColor; // underline-style active indicator using text color
+            }
+        }
+    }
+
+    // Stack columns vertically, full width, minimal side margins
+    .main {
+        margin: 0.75rem;
+
+        .content {
+            .settings {
+                margin-left: 0;
+            }
+
+            .tabs ul {
+                width: calc(100vw - 2rem)
+            }
+        }
+
+        .tabs ul {
+            margin-left: 0;
+        }
+        
+        .resources {
+            margin-top:-0.75rem;
+            // svh (not vh) so the bottom clears the fixed footer + mobileNav even while the mobile
+            // browser URL bar is showing; the deduction is generous enough that the last rows stay
+            // reachable even when the race-info header (morale + power) is at its tallest.
+            height: ~"calc(100svh - 7.5rem)";
+            padding-top:0.75rem;
+            padding-bottom: 0.5rem;
+
+            .vscroll {
+                top: 0.5rem;
+            }
+        }
+
+        .resTabs {
+            > section {
+                position: static !important;
+                overflow-y: auto !important;
+                overflow-x: hidden !important;
+                // Desktop sizes this scroller as `100vh - 10rem`, which only reserves room for the
+                // top chrome. On mobile the fixed footer + mobileNav (~4.8rem) also sit over the
+                // bottom, so the scroller must stop above them or its last rows hide underneath.
+                // svh keeps the fit correct while the browser URL bar is showing.
+                height: ~"calc(100svh - 13rem)" !important;
+            }
+
+            > .tab-content {
+                padding-bottom: 0.5rem !important;
+            }
+        }
+
+        .govTabs2 {
+            > section {
+                position: static !important;
+                overflow-y: auto !important;
+                overflow-x: hidden !important;
+            }
+        }
+
+        .civics {
+            padding: 0;
+        }
+
+        .job .controls {
+            flex: none;
+            white-space: nowrap;
+        }
+
+        .theme,
+        .localization,
+        .queue {
+            span, .dropdown {
+                vertical-align: middle;
+                margin-right: 0.2rem;
+            }
+        }
+
+        #mainTabs {
+            > .tab-content {
+
+                #settings,
+                #evolution {
+                    position: static !important;
+                    overflow-y: auto !important;
+                    overflow-x: hidden !important;
+                }
+
+                // Settings opens as a full-screen panel (top tab bar hidden), so its scroller only has
+                // to clear the fixed footer + mobileNav at the bottom. The desktop height is 100vh-based
+                // and leaves the last rows hidden under the footer; svh reserves the right space and
+                // keeps the bottom reachable while the browser URL bar is showing.
+                #settings {
+                    height: ~"calc(100svh - 6.5rem)" !important;
+                }
+
+                // Evolution keeps the (single) icon tab bar above it, so it deducts more than settings.
+                // Same fix: svh-based height so the bottom clears the fixed footer + mobileNav instead
+                // of the desktop 100vh height that runs the last rows under the footer.
+                #evolution {
+                    height: ~"calc(100svh - 10rem)" !important;
+                }
+            }
+        }
+    }
+
+    #r_civics {
+        nav.tabs {
+            overflow-x: clip; // government/governor doesn't need to scroll
+        }
+    }
+
+    .main > .columns {
+        display: block;
+
+        > :first-child {
+            min-width: unset;
+        }
+    }
+
+    .leftColumn,
+    #mainColumn,
+    #queueColumn {
+        width: 100% !important;
+        min-width: unset !important;
+    }
+
+    // Reduce tab content padding, it wastes a load of horizontal space, which comes at a premium on mobile (at least in portrait)
+    .b-tabs .tab-content > .tab-item {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    #mainTabs > .tab-content > .tab-item {
+        padding-top: 0.25rem !important;
+    }
+
+    .resTabs {
+        margin-top: -0.25rem;
+    }
+
+    // Allow the tab bar to scroll horizontally so all tabs stay reachable on one line. The nested
+    // sub-tab bars (.resTabs .tabs) already scroll, but the main tab bar sits outside .resTabs and
+    // defaults to overflow:hidden, which clips the tabs past the screen edge (e.g. Stats) with no way
+    // to reach them — so enable horizontal scrolling here too.
+    .b-tabs .tabs {
+        overflow-x: auto;
+        overflow-y: hidden;
+        // Swipe to scroll; no persistent scrollbar taking a row under the tabs.
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
+        ul {
+            flex-wrap: nowrap;
+        }
+
+        li,
+        a {
+            white-space: nowrap;
+        }
+    }
+
+    // --- Main tab bar as icon tabs ---
+    // Render the main tabs (Civilization / Civics / Research / …) as a compact icon over a tiny
+    // label, each flexing to an equal share of the width, so the whole set fits on screen without
+    // horizontal scrolling. The nested sub-tab bars keep their scrollable text labels.
+    #mainTabs > nav.tabs {
+        > ul {
+            width: 100%;
+            margin-left: 0;
+        }
+
+        // Only the icon-tagged tabs appear here; the empty Buefy placeholder tab and the Settings
+        // header (moved to the footer nav on mobile) are dropped from the bar.
+        li:not(.micon) {
+            display: none;
+        }
+
+        li.micon {
+            flex: 1 1 0;
+            min-width: 0;
+
+            a {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 0.05rem;
+                padding: 0.28rem 0.1rem;
+                font-size: 0.55rem;
+                line-height: 1.05;
+                text-align: center;
+                overflow: hidden;
+                text-overflow: ellipsis;
+
+                // The emoji glyph sits above the label.
+                &::before {
+                    font-size: 1.2rem;
+                    line-height: 1;
+                }
+            }
+
+            // Make the selected tab read clearly: a filled top accent plus a subtle background.
+            &.is-active a {
+                border-top: 2px solid currentColor;
+                background: rgba(255, 255, 255, 0.06);
+            }
+        }
+    }
+
+    // Per-tab glyphs.
+    #mainTabs .micon-evolve    > a::before { content: "🦠"; }
+    #mainTabs .micon-city      > a::before { content: "🏛️"; }
+    #mainTabs .micon-civics    > a::before { content: "⚖️"; }
+    #mainTabs .micon-research  > a::before { content: "🔬"; }
+    #mainTabs .micon-resources > a::before { content: "📦"; }
+    #mainTabs .micon-arpa      > a::before { content: "🧬"; }
+    #mainTabs .micon-stats     > a::before { content: "📊"; }
+
+    // --- Sub-tab bars ---
+    // The per-panel sub-navigation (Hala System / Tau Ceti, Government / Industry / …, Projects /
+    // Genetics / …) all live inside .resTabs. Give them the same fill-the-width, touch-friendly feel
+    // as the main tab bar: each tab flexes to an equal share so a short group (New / Completed)
+    // spreads across the screen and a longer one (Government … Supernatural) still fits, only falling
+    // back to horizontal scrolling when the labels genuinely can't fit at a readable size. The
+    // selected sub-tab gets the same subtle highlight as the active main tab.
+    .resTabs > nav.tabs {
+        > ul {
+            width: 100%;
+            margin-left: 0;
+        }
+
+        li {
+            flex: 1 1 auto;
+
+            a {
+                justify-content: center;
+                text-align: center;
+            }
+
+            &.is-active a {
+                background: rgba(255, 255, 255, 0.06);
+            }
+        }
+    }
+
+    // --- Ship Yard ---
+    .ShipYardTab {
+        margin-left: 0; // reclaim the desktop left margin on the narrow mobile panel
+
+        // The ship list is a sticky, 100vh, self-scrolling sidebar on desktop; on mobile that makes
+        // it float over the construct-ship options above it. Make it a normal in-flow block that
+        // scrolls with the rest of the panel.
+        #shipList {
+            position: static;
+            height: auto;
+            overflow: visible;
+        }
+
+        // Let the designer's stat readouts wrap onto multiple lines instead of one overflowing row.
+        .stats {
+            flex-wrap: wrap;
+        }
+
+        // Give the ship stats the width and keep the destination button compact against the right
+        // edge (was a fixed 10rem column with the button left-aligned inside it, wasting space).
+        #shipList .shipRow {
+            grid-template-columns: 1fr auto;
+            margin-left: 0;
+
+            .location {
+                justify-self: end;
+                align-self: center;
+                margin-left: .5rem;
+            }
+        }
+    }
+
+    // --- Storage tab ---
+    #resStorage {
+        // The two Construct buttons use big left margins on desktop to line up over the crate /
+        // container columns of the rows below; those columns don't line up on mobile, so drop the
+        // margins and center the pair. (One tooltip wrapper is flex:1 and would otherwise stretch, so
+        // center via text-align on inline-flex wrappers rather than justify-content.)
+        .storage-header {
+            text-align: center;
+
+            .crate,
+            .container {
+                display: inline-flex;
+                vertical-align: top;
+                margin-left: 0;
+            }
+
+            .crate {
+                margin-right: .5rem;
+            }
+        }
+
+        // Each row is: resource name | Crate « n » | Container « n ». The desktop min-widths make the
+        // crate/container groups too wide for the phone, so the « n » wraps (the » drops to a second
+        // line). Trim the widths and keep each group on one line.
+        .market-item {
+            margin-left: 0;
+
+            .res {
+                width: 6.5rem;
+                min-width: 0;
+            }
+
+            .trade {
+                margin-left: .5rem;
+                min-width: 0;
+                white-space: nowrap;
+
+                .current {
+                    width: auto;
+                    min-width: 2.2rem;
+                    display: inline-block;
+                    text-align: center;
+                }
+            }
+        }
+
+        // The unused-crate/container totals row: its desktop left margins (11.5rem / 2rem) push it off
+        // and force it to wrap on mobile. Center it and keep both counts on one line.
+        #crateTotal {
+            justify-content: center;
+            flex-wrap: nowrap;
+
+            .crtTotal {
+                margin-left: 0;
+                white-space: nowrap;
+            }
+
+            .cntTotal {
+                margin-left: 1rem;
+                white-space: nowrap;
+            }
+
+            .crtTotal span:nth-child(2),
+            .cntTotal span:nth-child(2) {
+                width: auto;
+                margin-left: .25rem;
+            }
+        }
+    }
+
+    // --- Hell observations ---
+    // The Reports / Analysis tabs fill the width on mobile, so a right-floated Close button covers the
+    // second tab. Give the tabs the left two-thirds and pin the Close button in the right third. Bulma
+    // makes the tab <ul> flex-shrink:0, so it keeps its full width and overflows the 66% nav — override
+    // it (and the tab items) so the tabs actually fit within the left two-thirds.
+    #hellObservations {
+        position: relative;
+
+        #hellTabs > nav.tabs {
+            width: 66%;
+
+            > ul {
+                flex-shrink: 1;
+                min-width: 0;
+            }
+
+            li {
+                flex: 1 1 0;
+                min-width: 0;
+            }
+        }
+
+        .observeClose {
+            position: absolute;
+            top: .25rem;
+            right: 0;
+            width: 32%;
+            margin: 0;
+        }
+    }
+
+    // Disable drag-to-resize on mobile — midLoop would fight it and it's not touch-friendly
+    .bldQueue,
+    .msgQueue {
+        resize: none;
+    }
+
+    // Default panel: Resources — race + resource list only
+    .leftColumn {
+        display: block;
+        height: auto;
+        padding-bottom: 4.9rem; // promoBar (2.4) + mobileNav (2.4) + 0.1 gap
+
+        #sideQueue {
+            display: none;
+        }
+    }
+
+    #mainColumn,
+    #queueColumn {
+        display: none;
+    }
+
+    // Game panel
+    #main.mobile-panel-game {
+        .leftColumn {
+            display: none;
+        }
+
+        #mainColumn {
+            display: block;
+            padding-bottom: 4.9rem;
+        }
+    }
+
+    // Queue panel — show only build queue + message log, full natural height
+    #main.mobile-panel-queue {
+        .leftColumn {
+            display: block;
+            height: auto;
+            padding-top: 0.75rem;
+            padding-bottom: 4.9rem;
+
+            #race,
+            #resources {
+                display: none;
+            }
+
+            #sideQueue {
+                display: block;
+            }
+        }
+
+        #mainColumn {
+            display: none;
+        }
+    }
+
+    // Settings panel — reached from the footer nav (the Settings tab is removed from the top tab bar
+    // on mobile, see .mobileSettingsTab). Shows the main column with the settings tab active and the
+    // top tab bar hidden, so settings reads as its own full-screen page.
+    #main.mobile-panel-settings {
+        .leftColumn {
+            display: none;
+        }
+
+        #mainColumn {
+            display: block;
+            padding-bottom: 4.9rem;
+        }
+
+        #mainTabs > nav.tabs {
+            display: none;
+        }
+    }
+
+    // The Settings tab lives in the footer nav on mobile, so drop its header from the top tab bar.
+    .mobileSettingsTab {
+        display: none !important;
+    }
+
+    // Resource list height
+    .resources {
+        height: ~"calc(100svh - 9.2rem)";
+    }
+
+    // --- Action-button grid ---
+    // Desktop lays the building/tech/etc. action buttons out as fixed-width (12.625rem) inline
+    // blocks that wrap. On a narrow screen that wraps too, but the leftover width all collects into
+    // one dead strip on the right. Instead, lay the buttons of each tab panel out as a grid that
+    // fills the width: as many columns as fit at the current button width (~3 on a small tablet /
+    // phone in landscape), stretching (1fr) to consume the row so there's no right-side gap. As the
+    // screen narrows the column count drops to 2. It is floored at 2 — the min() second arm caps a
+    // column at half the row so two always fit and a button is never stranded alone across the row.
+    // auto-fill (not auto-fit) keeps a lone trailing button at column width rather than ballooning it.
+    // Buttons only ever grow past their desktop width here, never shrink below it (until the 2-column
+    // floor forces it on the very narrowest phones).
+    #mainColumn {
+        #evolution, #city, #space, #outerSol, #interstellar, #galaxy,
+        #tauceti, #eden, #portal, #tech, #oldTech,
+        #blood, #genes {
+            display: grid;
+            grid-template-columns: ~"repeat(auto-fill, minmax(min(12.625rem, calc((100% - 0.375rem) / 2)), 1fr))";
+            gap: 0.375rem;
+            align-content: start;
+            align-items: start;
+
+            // Section/era/region headers, support & syndicate readouts, sr-only labels, etc. are not
+            // buttons — give each its own full-width row so it heads the buttons that follow it.
+            // The value is escaped because LESS otherwise evaluates `1 / -1` as arithmetic (= -1),
+            // which mis-places the item and spawns a phantom column that overflows the panel.
+            > *:not(.action) {
+                grid-column: ~"1 / -1";
+            }
+
+            // The button fills its column (which is >= its old fixed width); grid `gap` replaces the
+            // per-button margin so the spacing stays even in both axes.
+            > .action {
+                // Grid items default to min-width:auto (their min-content). On the narrowest phones a
+                // column can be a touch narrower than a button's widest title word, and that automatic
+                // minimum would make the item refuse to shrink — overflowing its cell and, in the last
+                // column, spilling past the panel's clipped right edge. min-width:0 lets the item track
+                // its column so the title wraps instead.
+                width: auto;
+                min-width: 0;
+
+                a.button,
+                span.oldTech {
+                    width: 100%;
+                    min-width: 0;
+                    margin: 0;
+                }
+
+                // The title is a flex child of the button; it needs min-width:0 to actually shrink and
+                // let overflow-wrap break a long word rather than force the button wider than its cell.
+                .aTitle {
+                    min-width: 0;
+                    overflow-wrap: anywhere;
+                }
+
+                // span.on's .375rem inset compensated for the button's now-removed right margin.
+                span.on {
+                    right: 0;
+                }
+            }
+        }
+    }
+
+    // On the evolution grid the challenge section headers should run the full width of the window,
+    // not be capped to the action-button width (.actionWidth caps them at 12–38rem). Drop the cap so
+    // their divider lines reach both edges across the whole row.
+    #mainColumn #evolution > .challenge {
+        max-width: none;
+    }
+
+    // --- Touch-target sizing ---
+    // The desktop UI is tuned for a mouse cursor; fingers need larger, well-spaced hit
+    // areas. Enlarge the controls that get tapped most, without altering the calc() heights
+    // the layout above depends on.
+
+    // Kill the 300ms tap delay / double-tap-zoom on the interactive controls
+    .button,
+    .add,
+    .sub,
+    .b-tabs .tabs a,
+    .mobile-nav-btn,
+    .switch,
+    .b-checkbox.checkbox {
+        touch-action: manipulation;
+    }
+
+    // Increment / decrement arrows (resource trade, crafting, market, ejector, storage…)
+    // Widen the tap zone horizontally; leave height alone so the .current box stays aligned.
+    .add,
+    .sub {
+        padding-left: 0.55rem !important;
+        padding-right: 0.55rem !important;
+    }
+
+    // Action / settings / modal buttons — give them a finger-sized minimum height.
+    .button {
+        min-height: 2.1rem;
+    }
+
+    // Tab bar links — taller hit area makes tab switching reliable on touch.
+    .b-tabs .tabs a {
+        padding-top: 0.55rem;
+        padding-bottom: 0.55rem;
+    }
+
+    // The "construct" button injected into action popovers when touch mode is on:
+    // make it a full-width, easy-to-hit target instead of a small inline link.
+    .touchButton {
+        display: block;
+        width: 100%;
+        min-height: 2.4rem;
+        line-height: 2.4rem;
+        margin-bottom: 0.4rem;
+        text-align: center;
+        font-weight: 700;
+    }
+
+    // Per-building on/off toggles and settings switches — a bit more vertical room to tap.
+    .switch,
+    .b-checkbox.checkbox {
+        min-height: 1.6rem;
+    }
+
+    // --- Responsive modals (market buy/sell, mech lab, spy ops, etc.) ---
+    // Desktop modals assume a wide viewport; clamp them to the screen and let their body
+    // scroll rather than overflowing off-screen.
+    .modal .animation-content {
+        width: 96vw !important;
+        max-width: 96vw !important;
+        margin: 0 auto !important;
+    }
+
+    .modal-card {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .modal-card-body {
+        max-height: 78vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    // Wide modal content (trade rows, mech loadouts) may still exceed the viewport width;
+    // let it scroll sideways within the modal instead of forcing the page to scroll.
+    .modalBox {
+        max-width: 96vw;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
 }

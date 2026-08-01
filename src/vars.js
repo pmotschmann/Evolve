@@ -68,15 +68,29 @@ Math.rand = function(min, max) {
 
 global['seed'] = 2;
 global['warseed'] = 2;
+global['hellseed'] = 2;
 export function seededRandom(min, max, alt, useSeed) {
     max = max || 1;
     min = min || 0;
 
-    let seed = useSeed || global[alt ? 'warseed' : 'seed'];
+    // alt selects the RNG stream: 'hell' -> hellseed, truthy -> warseed, else the standard seed.
+    // Each stream advances only its own seed, so they never disturb one another.
+    let seedKey = alt === 'hell' ? 'hellseed' : (alt ? 'warseed' : 'seed');
+    let seed = useSeed || global[seedKey];
     let newSeed = (seed * 9301 + 49297) % 233280;
     let rnd = newSeed / 233280;
-    if (!useSeed){ global[alt ? 'warseed' : 'seed'] = newSeed; }
+    if (!useSeed){ global[seedKey] = newSeed; }
     return min + rnd * (max - min);
+}
+
+// Wrap game state in a Vue 3 reactive proxy so that the game's direct mutations
+// to `global` (the loops mutate it in place) are tracked and the UI updates.
+// Vue 3's reactive() returns a proxy and does NOT instrument the original object
+// in place the way Vue 2 did, so every consumer must share this same proxy --
+// achieved here by making `global` itself reactive at its single source. Guarded
+// so non-Vue contexts (e.g. debug-console) still work with a plain object.
+function makeReactive(state){
+    return (typeof Vue !== 'undefined' && Vue && typeof Vue.reactive === 'function') ? Vue.reactive(state) : state;
 }
 
 {
@@ -95,14 +109,36 @@ export function seededRandom(min, max, alt, useSeed) {
     else {
         newGameData();
     }
+    global = makeReactive(global);
 }
 
 export function setGlobal(gameState) {
-    global = gameState;
+    global = makeReactive(gameState);
+}
+
+// Temporarily drop the Vue reactive wrapper so a bulk operation (offline catch-up) can mutate
+// game state thousands of times without firing a reactivity trigger on every change.
+// restoreReactivity() re-wraps the same underlying object; Vue returns the cached proxy for that
+// target, so every already-mounted component keeps its binding and simply needs one refresh.
+export function suppressReactivity(){
+    if (typeof Vue !== 'undefined' && Vue && typeof Vue.toRaw === 'function'){
+        global = Vue.toRaw(global);
+    }
+}
+export function restoreReactivity(){
+    global = makeReactive(global);
 }
 
 if (!global['version']){
     global['version'] = '0.2.0';
+}
+
+// Offline hell RNG stream. hellseed was added after the versioned migrations below, so an existing
+// save can be past that gate and never receive one; without a valid numeric seed every
+// seededRandom(...,'hell') call returns NaN and all hell combat (kills, soul gems) silently stops.
+// Runs ungated on every load, and self-heals a null/NaN seed left by an earlier build.
+if (!global.hasOwnProperty('hellseed') || typeof global['hellseed'] !== 'number' || isNaN(global['hellseed'])){
+    global['hellseed'] = (global.hasOwnProperty('warseed') ? global['warseed'] : global['seed']) + 2;
 }
 
 if (convertVersion(global['version']) < 2060){
@@ -547,6 +583,10 @@ if (convertVersion(global['version']) < 100000){
     if (!global.hasOwnProperty('warseed')){
         global['warseed'] = global.seed + 1;
         Math.war = global.hasOwnProperty('warseed') ? global.warseed : global.seed;
+    }
+
+    if (!global.hasOwnProperty('hellseed')){
+        global['hellseed'] = global.seed + 2;
     }
 
     if (global.portal.hasOwnProperty('bireme')){
@@ -1267,11 +1307,55 @@ if (convertVersion(global['version']) < 104009){
     }
 }
 
+// The replicator gained a second production line. A save from before that has neither field; start the
+// split at 100/0 so the second line is idle and the save behaves exactly as it did.
+if (global['race'] && global.race['replicator']){
+    if (!global.race.replicator.hasOwnProperty('res2')){
+        global.race.replicator['res2'] = global.race.replicator['res'];
+    }
+    if (!global.race.replicator.hasOwnProperty('ratio')){
+        global.race.replicator['ratio'] = 100;
+    }
+}
 
+// The Titan metalworks gained metals after it first shipped. A save built against the older list has no
+// share stored for the new ones, which would read as undefined in the industry panel's running total —
+// start them unassigned so the split the player already tuned is left exactly as it was.
+if (global['space'] && global.space['metalworks']){
+    ['Steel','Iridium','Iron','Copper','Aluminium','Titanium'].forEach(function(res){
+        if (!global.space.metalworks.hasOwnProperty(res)){
+            global.space.metalworks[res] = 0;
+        }
+    });
+}
 
-global['version'] = '1.4.9';
+// The Tau Ceti refueling station used to store its graphene fuel allocation on the Titan graphene
+// factory and mirror its count/on onto it every tick, which only held up while isolation kept Titan
+// unreachable. Now that the jump gate brings Titan back, both plants run at once and the station owns
+// its own allocation.
+if (global['tauceti'] && global.tauceti['refueling_station'] && !global.tauceti.refueling_station.hasOwnProperty('Lumber')){
+    global.tauceti.refueling_station['Lumber'] = 0;
+    global.tauceti.refueling_station['Coal'] = 0;
+    global.tauceti.refueling_station['Oil'] = 0;
+
+    // Only an isolation save ever parked the station's allocation on the factory. Without isolation the
+    // station makes no graphene at all and the factory's allocation is genuinely Titan's — leave it be.
+    let old = (global.tech && global.tech['isolation'] && global['space'] && global.space['g_factory']) ? global.space.g_factory : false;
+    if (old){
+        global.tauceti.refueling_station['Lumber'] = old['Lumber'] || 0;
+        global.tauceti.refueling_station['Coal'] = old['Coal'] || 0;
+        global.tauceti.refueling_station['Oil'] = old['Oil'] || 0;
+        old['Lumber'] = 0;
+        old['Coal'] = 0;
+        old['Oil'] = 0;
+        old['count'] = 0;
+        old['on'] = 0;
+    }
+}
+
+global['version'] = '1.5.0';
 delete global['revision'];
-delete global['beta'];
+global['beta'] = 16;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
@@ -1517,6 +1601,11 @@ delete global.settings.keyMap['d'];
 if (typeof global.settings.qAny === 'undefined'){
     global.settings['qAny'] = false;
 }
+// Standing orders for the fleet. Disengage hull %, whether a repaired ship flies itself back, and how
+// far it must be repaired first.
+if (typeof global.settings.fleetCmd === 'undefined'){
+    global.settings['fleetCmd'] = { flee: 25, ret: true, retHull: 100, quiet: false };
+}
 if (typeof global.settings.sPackOn === 'undefined'){
     global.settings['sPackOn'] = true;
 }
@@ -1538,6 +1627,9 @@ if (typeof global.settings.tabLoad === 'undefined'){
 if (typeof global.settings.boring === 'undefined'){
     global.settings['boring'] = false;
 }
+if (typeof global.settings.pauseOnLoad === 'undefined'){
+    global.settings['pauseOnLoad'] = false;
+}
 if (!global.settings.hasOwnProperty('mtorder')){
     global.settings['mtorder'] = [];
 }
@@ -1552,7 +1644,7 @@ export function setupStats(){
         'sac','tsac','know','tknow','portals','dkills','attacks','cfood','tfood','cstone','tstone',
         'clumber','tlumber','mad','bioseed','cataclysm','blackhole','ascend','descend','apotheosis',
         'terraform','aiappoc','matrix','retire','eden','geck','dark','harmony','blood','cores','artifact',
-        'supercoiled','cattle','tcattle','murders','tmurders','psykill','tpsykill','pdebt','uDead'
+        'supercoiled','cattle','tcattle','murders','tmurders','psykill','tpsykill','pdebt','uDead','zkills'
     ].forEach(function(k){
         if (!global.stats.hasOwnProperty(k)){
             global.stats[k] = 0;
@@ -1588,6 +1680,25 @@ export function setupStats(){
             b4: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
             b5: { l: false, h: false, a: false, e: false, m: false, mg: false }
         };
+    }
+    if (!global.stats.hasOwnProperty('zombie_genocider')){
+        global.stats['zombie_genocider'] = {
+            z1: { l: false, h: false, a: false, e: false, m: false, mg: false },
+            z2: { l: false, h: false, a: false, e: false, m: false, mg: false },
+            z3: { l: false, h: false, a: false, e: false, m: false, mg: false },
+            z4: { l: false, h: false, a: false, e: false, m: false, mg: false },
+            z5: { l: false, h: false, a: false, e: false, m: false, mg: false }
+        };
+    }
+    else if (global.stats.zombie_genocider.hasOwnProperty('b1')){
+        // The tasks were keyed b1..b5 for a moment before settling on z1..z5; carry the progress over
+        // rather than leaving a save with keys nothing reads.
+        ['1','2','3','4','5'].forEach(function(n){
+            if (global.stats.zombie_genocider.hasOwnProperty('b' + n)){
+                global.stats.zombie_genocider['z' + n] = global.stats.zombie_genocider['b' + n];
+                delete global.stats.zombie_genocider['b' + n];
+            }
+        });
     }
     if (!global.stats.hasOwnProperty('endless_hunger')){
         global.stats['endless_hunger'] = {
@@ -1805,9 +1916,9 @@ if (!global.settings['q_resize']){
 $('html').addClass(global.settings.theme);
 $('html').addClass(global.settings.queuestyle);
 
-if (!global.settings['at']){
-    global.settings['at'] = 0;
-}
+// Accelerated time was replaced by offline time; clear any leftover countdown from old saves.
+global.settings['at'] = 0;
+atrack.t = 0;
 
 if (!global.city['morale']){
     global.city['morale'] = {
@@ -2011,6 +2122,7 @@ function newGameData(){
     global['race'] = { species : 'protoplasm', gods: 'none', old_gods: 'none', seeded: false };
     global['seed'] = Math.rand(0,10000);
     global['warseed'] = Math.rand(0,10000);
+    global['hellseed'] = Math.rand(0,10000);
     global['new'] = true;
 }
 
@@ -2264,13 +2376,14 @@ window.soft_reset = function reset(source){
     global.new = true;
     global.seed = Math.rand(0,10000);
     global.warseed = Math.rand(0,10000);
+    global.hellseed = Math.rand(0,10000);
 
     global.stats['current'] = Date.now();
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
     window.location.reload();
 }
 
-export var webWorker = { w: false, s: false, mt: 250, midRatio: 4, longRatio: 20 };
+export var webWorker = { w: false, s: false, mt: 250, midRatio: 4, longRatio: 20, offline: false, offlineScale: 1 };
 export var intervals = {};
 
 export function clearSavedMessages(){
@@ -2411,6 +2524,7 @@ export function clearStates(){
     global.stats.cattle = 0;
     global.stats.murders = 0;
     global.stats.uDead = 0;
+    global.stats.zkills = 0;
     global.settings.at = 0;
 
     global.settings.showEvolve = true;

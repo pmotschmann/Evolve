@@ -7665,16 +7665,18 @@ export function shapeShift(genus,setup,forceClean){
         const base = races[global.race.species].type === 'hybrid' ? races[global.race.species].hybrid : [races[global.race.species].type];
         Object.keys(genus_def).forEach(function (gen) {
             if(!['synthetic', 'eldritch', 'hybrid', ...base, ...imitation].includes(gen) && global.stats.achieve[`genus_${gen}`] && global.stats.achieve[`genus_${gen}`].l > 0){
-                drop += `<b-dropdown-item v-on:click="setShape('${gen}')">{{ '${gen}' | genus }}</b-dropdown-item>`;
+                drop += `<b-dropdown-item v-on:click="setShape('${gen}')">{{ genus('${gen}') }}</b-dropdown-item>`;
             }
         });
 
         $('#sshifter').append(
             `<span>${loc(`trait_shapeshifter_name`)}</span>: <b-dropdown hoverable scrollable>
-            <button class="button is-primary" slot="trigger">
-                <span>{{ ss_genus | genus }}</span>
+            <template #trigger>
+            <button class="button is-primary">
+                <span>{{ genus(ss_genus) }}</span>
             </button>
-            <b-dropdown-item v-on:click="setShape('none')">{{ 'none' | genus }}</b-dropdown-item>${drop}
+            </template>
+            <b-dropdown-item v-on:click="setShape('none')">{{ genus('none') }}</b-dropdown-item>${drop}
         </b-dropdown>`);
 
         vBind({
@@ -7683,9 +7685,7 @@ export function shapeShift(genus,setup,forceClean){
             methods: {
                 setShape(s){
                     shapeShift(s);
-                }
-            },
-            filters: {
+                },
                 genus(g){
                     return loc(`genelab_genus_${g}`);
                 }
@@ -8099,18 +8099,18 @@ function minorWish(parent){
     let container = $(`<div id="minorWish" class="industry"></div>`);
     parent.append(container);
 
-    container.append($(`<div class="header"><span class="has-text-warning">${loc('tech_minor_wish')}</span> - <span v-html="$options.filters.wish(minor)"></span></div>`));
+    container.append($(`<div class="header"><span class="has-text-warning">${loc('tech_minor_wish')}</span> - <span v-html="wish(minor)"></span></div>`));
     let spells = $(`<div class="flexWrap"></div>`);
     container.append(spells);
 
-    spells.append(`<div><b-button id="wishMoney" v-html="$options.filters.money()" @click="money()"></b-button></div>`);
-    spells.append(`<div><b-button id="wishRes" v-html="$options.filters.label('resources')" @click="res()"></b-button></div>`);
-    spells.append(`<div><b-button id="wishKnow" v-html="$options.filters.know()" @click="know()"></b-button></div>`);
-    spells.append(`<div><b-button id="wishFame" v-html="$options.filters.label('fame')" @click="famous()"></b-button></div>`);
-    spells.append(`<div><b-button id="wishStrength" v-html="$options.filters.label('strength')" @click="strength()"></b-button></div>`);
-    spells.append(`<div><b-button id="wishInfluence" v-html="$options.filters.label('influence')" @click="influence()"></b-button></div>`);
-    spells.append(`<div><b-button id="wishExcite" v-html="$options.filters.label('event')" @click="excite()"></b-button></div>`);
-    spells.append(`<div><b-button id="wishLove" v-html="$options.filters.label('love')" @click="love()"></b-button></div>`);
+    spells.append(`<div><b-button id="wishMoney" v-html="money_f()" @click="money()"></b-button></div>`);
+    spells.append(`<div><b-button id="wishRes" v-html="label('resources')" @click="res()"></b-button></div>`);
+    spells.append(`<div><b-button id="wishKnow" v-html="know_f()" @click="know()"></b-button></div>`);
+    spells.append(`<div><b-button id="wishFame" v-html="label('fame')" @click="famous()"></b-button></div>`);
+    spells.append(`<div><b-button id="wishStrength" v-html="label('strength')" @click="strength()"></b-button></div>`);
+    spells.append(`<div><b-button id="wishInfluence" v-html="label('influence')" @click="influence()"></b-button></div>`);
+    spells.append(`<div><b-button id="wishExcite" v-html="label('event')" @click="excite()"></b-button></div>`);
+    spells.append(`<div><b-button id="wishLove" v-html="label('love')" @click="love()"></b-button></div>`);
 
     vBind({
         el: `#minorWish`,
@@ -8527,19 +8527,17 @@ function minorWish(parent){
                         }
                     }
                 }
-            }
-        },
-        filters: {
+            },
             wish(v){
                 return v === 0 ? `<span class="has-text-success">${loc(`power_available`)}</span>` : `<span class="has-text-danger">${v}</span>`;
             },
             label(v){
                 return loc(`wish_${v}`);
             },
-            know(){
+            know_f(){
                 return global.resource.Knowledge.name;
             },
-            money(){
+            money_f(){
                 return loc('resource_Money_name');
             },
         }
@@ -8577,18 +8575,18 @@ function majorWish(parent){
     let container = $(`<div id="majorWish" class="industry"></div>`);
     parent.append(container);
 
-    container.append($(`<div class="header"><span class="has-text-warning">${loc('tech_major_wish')}</span> - <span v-html="$options.filters.wish(major)"></span></div>`));
+    container.append($(`<div class="header"><span class="has-text-warning">${loc('tech_major_wish')}</span> - <span v-html="wish(major)"></span></div>`));
     let spells = $(`<div class="flexWrap"></div>`);
     container.append(spells);
 
-    spells.append(`<div><b-button id="wishBigMoney" v-html="$options.filters.money()" @click="money()"></b-button></div>`);
-    spells.append(`<div><b-button id="wishBigRes" v-html="$options.filters.label('resources')" @click="res()"></b-button></div>`)
-    spells.append(`<div><b-button id="wishPlasmid" v-html="$options.filters.label('plasmid')" @click="plasmid()"></b-button></div>`);
-    spells.append(`<div><b-button id="wishPower" v-html="$options.filters.label('power')" @click="power()"></b-button></div>`);
-    spells.append(`<div><b-button id="wishAdoration" v-html="$options.filters.label('adoration')" @click="adoration()"></b-button></div>`);
-    spells.append(`<div><b-button id="wishThrill" v-html="$options.filters.label('thrill')" @click="thrill()"></b-button></div>`);
-    spells.append(`<div><b-button id="wishPeace" v-html="$options.filters.label('peace')" @click="peace()"></b-button></div>`);
-    spells.append(`<div><b-button id="wishGreatness" v-html="$options.filters.label('greatness')" @click="greatness()"></b-button></div>`);
+    spells.append(`<div><b-button id="wishBigMoney" v-html="money_f()" @click="money()"></b-button></div>`);
+    spells.append(`<div><b-button id="wishBigRes" v-html="label('resources')" @click="res()"></b-button></div>`)
+    spells.append(`<div><b-button id="wishPlasmid" v-html="label('plasmid')" @click="plasmid()"></b-button></div>`);
+    spells.append(`<div><b-button id="wishPower" v-html="label('power')" @click="power()"></b-button></div>`);
+    spells.append(`<div><b-button id="wishAdoration" v-html="label('adoration')" @click="adoration()"></b-button></div>`);
+    spells.append(`<div><b-button id="wishThrill" v-html="label('thrill')" @click="thrill()"></b-button></div>`);
+    spells.append(`<div><b-button id="wishPeace" v-html="label('peace')" @click="peace()"></b-button></div>`);
+    spells.append(`<div><b-button id="wishGreatness" v-html="label('greatness')" @click="greatness()"></b-button></div>`);
 
     vBind({
         el: `#majorWish`,
@@ -8941,7 +8939,7 @@ function majorWish(parent){
                         {
                             let wonders = [];
                             if (!global.race['lone_survivor']){
-                                let hasCity = global.race['cataclysm'] || global.race['orbit_decay'] || global.race['warlord'] ? false : true;
+                                let hasCity = global.race['cataclysm'] || global.race['orbit_decay'] || global.race['warlord'] || global.tech['isolation'] ? false : true;
                                 let hasMars = global.tech['mars'] && !global.race['warlord'] ? true : false;
                                 if (!global.city.hasOwnProperty('wonder_lighthouse') && hasCity){
                                     wonders.push('lighthouse');
@@ -9000,15 +8998,13 @@ function majorWish(parent){
                     }
                 }
             },
-        },
-        filters: {
             wish(v){
                 return v === 0 ? `<span class="has-text-success">${loc(`power_available`)}</span>` : `<span class="has-text-danger">${v}</span>`;
             },
             label(v){
                 return loc(`wish_${v}`);
             },
-            money(){
+            money_f(){
                 return loc('resource_Money_name');
             },
         }
@@ -9046,16 +9042,16 @@ function ocularPower(parent){
     let container = $(`<div id="ocularPower" class="industry"></div>`);
     parent.append(container);
 
-    container.append($(`<div class="header"><span class="has-text-warning">${loc('trait_ocular_power_name')}</span> - <span v-html="$options.filters.max()"></span></div>`));
+    container.append($(`<div class="header"><span class="has-text-warning">${loc('trait_ocular_power_name')}</span> - <span v-html="max()"></span></div>`));
     let powers = $(`<div class="flexWrap"></div>`);
     container.append(powers);
 
-    powers.append(`<div id="oculardisintegration" class="chk"><b-checkbox v-model="d" @input="pow('d')">${loc(`ocular_disintegration`)}</b-checkbox></div>`);
-    powers.append(`<div id="ocularpetrification" class="chk"><b-checkbox v-model="p" @input="pow('p')">${loc(`ocular_petrification`)}</b-checkbox></div>`);
-    powers.append(`<div id="ocularwound" class="chk"><b-checkbox v-model="w" @input="pow('w')">${loc(`ocular_wound`)}</b-checkbox></div>`);
-    powers.append(`<div id="oculartelekinesis" class="chk"><b-checkbox v-model="t" @input="pow('t')">${loc(`ocular_telekinesis`)}</b-checkbox></div>`);
-    powers.append(`<div id="ocularfear" class="chk"><b-checkbox v-model="f" @input="pow('f')">${loc(`ocular_fear`)}</b-checkbox></div>`);
-    powers.append(`<div id="ocularcharm" class="chk"><b-checkbox v-model="c" @input="pow('c')">${loc(`ocular_charm`)}</b-checkbox></div>`);
+    powers.append(`<div id="oculardisintegration" class="chk"><b-checkbox v-model="d" @update:model-value="pow('d')">${loc(`ocular_disintegration`)}</b-checkbox></div>`);
+    powers.append(`<div id="ocularpetrification" class="chk"><b-checkbox v-model="p" @update:model-value="pow('p')">${loc(`ocular_petrification`)}</b-checkbox></div>`);
+    powers.append(`<div id="ocularwound" class="chk"><b-checkbox v-model="w" @update:model-value="pow('w')">${loc(`ocular_wound`)}</b-checkbox></div>`);
+    powers.append(`<div id="oculartelekinesis" class="chk"><b-checkbox v-model="t" @update:model-value="pow('t')">${loc(`ocular_telekinesis`)}</b-checkbox></div>`);
+    powers.append(`<div id="ocularfear" class="chk"><b-checkbox v-model="f" @update:model-value="pow('f')">${loc(`ocular_fear`)}</b-checkbox></div>`);
+    powers.append(`<div id="ocularcharm" class="chk"><b-checkbox v-model="c" @update:model-value="pow('c')">${loc(`ocular_charm`)}</b-checkbox></div>`);
 
     vBind({
         el: `#ocularPower`,
@@ -9079,9 +9075,7 @@ function ocularPower(parent){
                     });
                     renderSupernatural();
                 }
-            }
-        },
-        filters: {
+            },
             max(){
                 let active = 0;
                 ['d','p','w','t','f','c'].forEach(function(p){
@@ -9150,7 +9144,7 @@ function psychicBoost(parent){
     let container = $(`<div id="psychicBoost" class="industry"></div>`);
     parent.append(container);
 
-    container.append($(`<div class="header">${loc('psychic_boost_title')} <span v-html="$options.filters.boostTime()"></span></div>`));
+    container.append($(`<div class="header">${loc('psychic_boost_title')} <span v-html="boostTime()"></span></div>`));
 
     let content = $(`<div></div>`);
     container.append(content);
@@ -9163,7 +9157,7 @@ function psychicBoost(parent){
     });
     content.append(`<div id="psyhscrolltarget" class="left hscroll"><b-field class="buttonList">${scrollMenu}</b-field></div>`); 
 
-    container.append(`<div><b-button v-html="$options.filters.boost(b.r)" @click="boostVal()"></b-button></div>`);
+    container.append(`<div><b-button v-html="boost(b.r)" @click="boostVal()"></b-button></div>`);
 
     if (global.tech.psychic >= 4){
         let channel = $(`<div class="gap">${loc('psychic_channel')}</div>`);
@@ -9212,9 +9206,7 @@ function psychicBoost(parent){
                         break;
                     }
                 }
-            }
-        },
-        filters: {
+            },
             boost(r){
                 return loc(`psychic_boost_button`,[global.resource[r] ? global.resource[r].name : 'N/A',cost]);
             },
@@ -9244,7 +9236,7 @@ function psychicKill(parent){
     parent.append(container);
 
     container.append($(`<div class="header">${loc('psychic_murder_title')}</div>`));
-    container.append(`<div><b-button v-html="$options.filters.kill()" @click="murder()"></b-button></div>`);
+    container.append(`<div><b-button v-html="kill()" @click="murder()"></b-button></div>`);
 
     let cost = global.tech.psychic >= 5 ? 8 : 10;
     vBind({
@@ -9264,9 +9256,7 @@ function psychicKill(parent){
                         renderPsychicPowers();
                     }
                 }
-            }
-        },
-        filters: {
+            },
             kill(){
                 return loc(`psychic_murder_button`,[cost]);
             }
@@ -9286,8 +9276,8 @@ function psychicAssault(parent){
     let container = $(`<div id="psychicAssault" class="industry"></div>`);
     parent.append(container);
 
-    container.append($(`<div class="header">${loc('psychic_assault_title')} <span v-html="$options.filters.boostTime()"></span></div>`));
-    container.append(`<div><b-button v-html="$options.filters.boost()" @click="boostVal()"></b-button></div>`);
+    container.append($(`<div class="header">${loc('psychic_assault_title')} <span v-html="boostTime()"></span></div>`));
+    container.append(`<div><b-button v-html="btnLabel()" @click="boostVal()"></b-button></div>`);
 
     if (global.tech.psychic >= 4){
         let channel = $(`<div class="gap">${loc('psychic_channel')}</div>`);
@@ -9333,10 +9323,8 @@ function psychicAssault(parent){
                         break;
                     }
                 }
-            }
-        },
-        filters: {
-            boost(){
+            },
+            btnLabel(){
                 return loc(`psychic_boost_button`,[loc(`psychic_attack`),cost]);
             },
             boostTime(){
@@ -9358,8 +9346,8 @@ function psychicFinance(parent){
     let container = $(`<div id="psychicFinance" class="industry"></div>`);
     parent.append(container);
 
-    container.append($(`<div class="header">${loc('psychic_profit_title')} <span v-html="$options.filters.boostTime()"></span></div>`));
-    container.append(`<div><b-button v-html="$options.filters.boost()" @click="boostVal()"></b-button></div>`);
+    container.append($(`<div class="header">${loc('psychic_profit_title')} <span v-html="boostTime()"></span></div>`));
+    container.append(`<div><b-button v-html="btnLabel()" @click="boostVal()"></b-button></div>`);
 
     if (global.tech.psychic >= 4){
         let channel = $(`<div class="gap">${loc('psychic_channel')}</div>`);
@@ -9405,10 +9393,8 @@ function psychicFinance(parent){
                         break;
                     }
                 }
-            }
-        },
-        filters: {
-            boost(){
+            },
+            btnLabel(){
                 return loc(`psychic_boost_button`,[loc(`psychic_profit`),cost]);
             },
             boostTime(){
@@ -9431,7 +9417,7 @@ function psychicMindBreak(parent){
     parent.append(container);
 
     container.append($(`<div class="header">${loc('psychic_mind_break_title')}</div>`));
-    container.append(`<div><b-button v-html="$options.filters.break()" @click="breakMind()"></b-button></div>`);
+    container.append(`<div><b-button v-html="btnLabel()" @click="breakMind()"></b-button></div>`);
 
     let cost = global.tech.psychic >= 5 ? 64 : 80;
     vBind({
@@ -9457,10 +9443,8 @@ function psychicMindBreak(parent){
                         global.resource.Energy.amount -= cost;
                     }
                 }
-            }
-        },
-        filters: {
-            break(){
+            },
+            btnLabel(){
                 return loc(`psychic_mind_break_button`,[cost]);
             }
         }
@@ -9480,7 +9464,7 @@ function psychicCapture(parent){
     parent.append(container);
 
     container.append($(`<div class="header">${loc('psychic_stun_title')}</div>`));
-    container.append(`<div><b-button v-html="$options.filters.break()" @click="stun()"></b-button></div>`);
+    container.append(`<div><b-button v-html="btnLabel()" @click="stun()"></b-button></div>`);
 
     let cost = global.tech.psychic >= 5 ? 80 : 100;
     vBind({
@@ -9504,10 +9488,8 @@ function psychicCapture(parent){
                         global.resource.Energy.amount -= cost;
                     }
                 }
-            }
-        },
-        filters: {
-            break(){
+            },
+            btnLabel(){
                 return loc(`psychic_stun_button`,[cost]);
             }
         }

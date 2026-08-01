@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Console</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .console { background: #000; color: #0f0; padding: 10px; height: 400px; overflow-y: scroll; font-family: monospace; }
+        .error { color: #f00; }
+        .warn { color: #ff0; }
+        .info { color: #0ff; }
+        button { padding: 10px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Console Debug Tool</h1>
+    <button onclick="loadMainApp()">Load Main App</button>
+    <button onclick="clearConsole()">Clear Console</button>
+    <button onclick="testVue()">Test Vue Directly</button>
+    
+    <div id="console" class="console"></div>
+    
+    <script>
+        // Capture console output
+        const consoleDiv = document.getElementById('console');
+        const originalConsole = {
+            log: console.log,
+            error: console.error,
+            warn: console.warn,
+            info: console.info
+        };
+        
+        function addToConsole(message, type = 'log') {
+            const div = document.createElement('div');
+            div.className = type;
+            div.textContent = new Date().toLocaleTimeString() + ' [' + type.toUpperCase() + '] ' + message;
+            consoleDiv.appendChild(div);
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            originalConsole.log.apply(console, args);
+            addToConsole(args.join(' '), 'info');
+        };
+        
+        console.error = function(...args) {
+            originalConsole.error.apply(console, args);
+            addToConsole(args.join(' '), 'error');
+        };
+        
+        console.warn = function(...args) {
+            originalConsole.warn.apply(console, args);
+            addToConsole(args.join(' '), 'warn');
+        };
+        
+        console.info = function(...args) {
+            originalConsole.info.apply(console, args);
+            addToConsole(args.join(' '), 'info');
+        };
+        
+        // Global error handler
+        window.addEventListener('error', function(e) {
+            addToConsole('GLOBAL ERROR: ' + e.message + ' at ' + e.filename + ':' + e.lineno, 'error');
+            if (e.error && e.error.stack) {
+                addToConsole('Stack: ' + e.error.stack, 'error');
+            }
+        });
+        
+        window.addEventListener('unhandledrejection', function(e) {
+            addToConsole('UNHANDLED PROMISE REJECTION: ' + e.reason, 'error');
+        });
+        
+        function clearConsole() {
+            consoleDiv.innerHTML = '';
+        }
+        
+        function testVue() {
+            console.log('Testing Vue availability...');
+            if (typeof Vue !== 'undefined') {
+                console.log('Vue found:', Vue);
+                console.log('Vue version:', Vue.version);
+                console.log('Vue.createApp:', typeof Vue.createApp);
+                console.log('Vue.use:', typeof Vue.use);
+            } else {
+                console.error('Vue not found!');
+            }
+        }
+        
+        function loadMainApp() {
+            console.log('Loading main application...');
+            
+            // Load Vue 3
+            const vueScript = document.createElement('script');
+            vueScript.src = 'https://unpkg.com/vue@3.5.22/dist/vue.global.prod.js';
+            vueScript.onload = function() {
+                console.log('Vue 3.5.22 loaded successfully');
+                testVue();
+                
+                // Now load the main app
+                const iframe = document.createElement('iframe');
+                iframe.src = '/';
+                iframe.style.width = '100%';
+                iframe.style.height = '600px';
+                iframe.style.border = '1px solid #ccc';
+                iframe.onload = function() {
+                    console.log('Main app loaded in iframe');
+                    // Try to access iframe console
+                    try {
+                        const iframeWindow = iframe.contentWindow;
+                        const iframeConsole = iframeWindow.console;
+                        console.log('Iframe window accessible');
+                    } catch (e) {
+                        console.error('Cannot access iframe console:', e.message);
+                    }
+                };
+                iframe.onerror = function(e) {
+                    console.error('Iframe load error:', e);
+                };
+                document.body.appendChild(iframe);
+            };
+            vueScript.onerror = function() {
+                console.error('Failed to load Vue 3.5.22');
+            };
+            document.head.appendChild(vueScript);
+        }
+        
+        console.log('Debug console ready');
+    </script>
+</body>
+</html>

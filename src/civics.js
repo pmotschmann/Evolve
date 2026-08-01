@@ -10,6 +10,7 @@ import { jobScale } from './jobs.js';
 import { templeCount } from './actions.js';
 import { astrologySign, astroVal } from './seasons.js';
 import { warhead } from './resets.js';
+import { fleetCmd, fleetCmdUnlocked, fleetCmdRange } from './truepath.js';
 
 // Sets up government in civics tab
 export function defineGovernment(define){
@@ -29,38 +30,38 @@ export function defineGovernment(define){
     }
 
     var govern = $('<div id="government" class="government is-child"></div>');
-
-    var tabs = $(`<b-tabs class="resTabs govTabs2" v-show="vis()" v-model="s.govTabs2" :animated="s.animated">
-        <b-tab-item id="r_govern0">
-            <template slot="header">
-                <h2 class="is-sr-only">${loc('civics_government')}}</h2>
-                <span aria-hidden="true">${loc('civics_government')}</span>
-            </template>
-        </b-tab-item>
-        <b-tab-item id="r_govern1" :visible="s.showGovernor">
-            <template slot="header">
-                <h2 class="is-sr-only">${loc('governor')}}</h2>
-                <span aria-hidden="true">${loc('governor')}</span>
-            </template>
-        </b-tab-item>
-    </b-tabs>`);
-
-    govern.append(tabs);
     $('#r_civics').append(govern);
 
     vBind({
-        el: '#government .govTabs2',
+        el: '#government',
         data: {
             t: global.civic['taxes'],
             s: global.settings
         },
+        template: `<b-tabs class="resTabs govTabs2" v-show="vis()" v-model="s.govTabs2" :animated="s.animated">
+            <b-tab-item id="r_govern0" :label="govLabel"></b-tab-item>
+            <b-tab-item id="r_govern1" :visible="s.showGovernor" :label="governorLabel"></b-tab-item>
+        </b-tabs>`,
         methods: {
             vis(){
                 return global.tech['govern'] ? true : false;
             }
+        },
+        computed: {
+            govLabel(){
+                return loc('civics_government');
+            },
+            governorLabel(){
+                return loc('governor');
+            }
         }
     });
-    
+
+    // Populate the government tab synchronously. Vue 3's app.mount() renders the
+    // b-tabs immediately, so #r_govern0 already exists once vBind() returns.
+    // Deferring this via mounted()/$nextTick (a Vue 2->3 carryover) let the
+    // synchronous foreignGov()/garrison appends land in #r_govern0 first, so the
+    // system of government rendered AFTER foreign powers instead of before it.
     government($(`#r_govern0`));
     taxRates($(`#r_govern0`));
 
@@ -83,7 +84,77 @@ export function defineGarrison(){
     $('#military').append($(`<div id="fortress"></div>`));
     
     buildGarrison(garrison,true);
+    defineFleetCommand();
     defineMad();
+}
+
+// Standing orders for the fleet, between the garrison and the MAD panel. Only appears once the surface
+// of Earth starts shooting at ships in orbit — before that there is nothing to disengage from.
+export function defineFleetCommand(){
+    if (!fleetCmdUnlocked() || $(`#military`).length === 0 || $(`#fleetCmd`).length > 0){ return; }
+
+    let cfg = fleetCmd();
+    let panel = $(`<div id="fleetCmd" class="fleetCmd tile is-child"></div>`);
+    // Sits below the garrison and above MAD. Called both while the tab is being built (before MAD
+    // exists) and the moment the surface opens fire (after it does), so place relative to MAD when it
+    // is already there rather than relying on append order.
+    if ($(`#mad`).length > 0){ panel.insertBefore($(`#mad`)); }
+    else { $('#military').append(panel); }
+
+    panel.append(`<div class="header has-text-warning" role="heading" aria-level="2">${loc('fleet_cmd')}</div>`);
+    panel.append(`<div class="fleetCmdSep"></div>`);
+
+    let fleeLabel = loc('fleet_cmd_flee',[fleetCmdRange.flee.min,fleetCmdRange.flee.max]);
+    panel.append(`<div class="fleetCmdOpt optFlee">
+        <span class="has-text-caution" aria-label="${fleeLabel}">${fleeLabel}</span>
+        <b-numberinput @update:model-value="pct('flee')" min="${fleetCmdRange.flee.min}" max="${fleetCmdRange.flee.max}" v-model="flee" :controls="false"></b-numberinput>
+    </div>`);
+
+    panel.append(`<div class="fleetCmdOpt optRet">
+        <b-checkbox class="patrol" v-model="ret">${loc('fleet_cmd_ret')}</b-checkbox>
+    </div>`);
+
+    let hullLabel = loc('fleet_cmd_ret_hull',[fleetCmdRange.retHull.min,fleetCmdRange.retHull.max]);
+    panel.append(`<div class="fleetCmdOpt optRetHull">
+        <span class="has-text-caution" aria-label="${hullLabel}">${hullLabel}</span>
+        <b-numberinput @update:model-value="pct('retHull')" min="${fleetCmdRange.retHull.min}" max="${fleetCmdRange.retHull.max}" v-model="retHull" :controls="false"></b-numberinput>
+    </div>`);
+
+    panel.append(`<div class="fleetCmdOpt optQuiet">
+        <b-checkbox class="patrol" v-model="quiet">${loc('fleet_cmd_quiet')}</b-checkbox>
+    </div>`);
+
+    panel.append(`<div class="fleetCmdOpt optZQuiet">
+        <b-checkbox class="patrol" v-model="zquiet">${loc('fleet_cmd_zquiet')}</b-checkbox>
+    </div>`);
+
+    panel.append(`<div class="fleetCmdSep"></div>`);
+
+    vBind({
+        el: '#fleetCmd',
+        data: cfg,
+        methods: {
+            // b-numberinput's min/max only bound its own +/- controls; a typed value goes straight
+            // through. Clamp on the model event and keep it a whole number — these drive an automatic
+            // order and a NaN would strand the fleet. It has to be @update:model-value, not :input:
+            // the latter binds a prop evaluated at render, so it only ever fires on a redraw, and this
+            // panel has no per-tick $forceUpdate to supply one.
+            pct(key){
+                let range = fleetCmdRange[key];
+                let val = Math.round(Number(cfg[key]));
+                if (isNaN(val)){ val = range.min; }
+                cfg[key] = Math.max(range.min,Math.min(range.max,val));
+            }
+        }
+    });
+
+    // Selected by class rather than position: the separators already shifted these indexes once, and
+    // they will again the next time an option is added.
+    popover('fleetCmdFlee',function(){ return loc('fleet_cmd_flee_desc'); },{ elm: `#fleetCmd .optFlee` });
+    popover('fleetCmdRet',function(){ return loc('fleet_cmd_ret_desc'); },{ elm: `#fleetCmd .optRet` });
+    popover('fleetCmdRetHull',function(){ return loc('fleet_cmd_ret_hull_desc'); },{ elm: `#fleetCmd .optRetHull` });
+    popover('fleetCmdQuiet',function(){ return loc('fleet_cmd_quiet_desc'); },{ elm: `#fleetCmd .optQuiet` });
+    popover('fleetCmdZQuiet',function(){ return loc('fleet_cmd_zquiet_desc'); },{ elm: `#fleetCmd .optZQuiet` });
 }
 
 export function commisionGarrison(){
@@ -126,7 +197,7 @@ export function commisionGarrison(){
 }
 
 export function govRelationFactor(id){
-    if (global.race['truepath']){
+    if (global.race['truepath'] && !global.tech['resettle']){
         if (global.civic.foreign[`gov${id}`].hstl < 10){
             return 1 + (10 - global.civic.foreign[`gov${id}`].hstl) / 40;
         }
@@ -287,36 +358,34 @@ function government(govern){
     var gov = $('<div id="govType" class="govType" v-show="vis()"></div>');
     govern.append(gov);
     
-    var type = $(`<div>${loc('civics_government_type')} <span id="govLabel" class="has-text-warning">{{ type | govern }}</span></div>`);
+    var type = $(`<div>${loc('civics_government_type')} <span id="govLabel" class="has-text-warning">{{ govern(type) }}</span></div>`);
     gov.append(type);
     
     var setgov = $(`<div></div>`);
     gov.append(setgov);
 
-    var change = $(`<span class="change inline"><button class="button" @click="trigModal" :disabled="rev > 0">{{ type | set }}</button></span>`);
+    var change = $(`<span class="change inline"><button class="button" @click="trigModal" :disabled="rev > 0">{{ set(type) }}</button></span>`);
     setgov.append(change);
-
-    var modal = {
-        template: '<div id="modalBox" class="modalBox"></div>'
-    };
 
     vBind({
         el: '#govType',
         data: global.civic['govern'],
-        filters: {
+        methods: {
             govern(type){
                 if (global.race.universe === 'evil' && type === 'democracy'){ return loc(`govern_managed_democracy`); } 
                 return loc(`govern_${type}`);
             },
             set(g){
                 return g === 'anarchy' ? loc('civics_set_gov') : loc('civics_revolution');
-            }
-        },
-        methods: {
+            },
             trigModal(){
                 this.$buefy.modal.open({
-                    parent: this,
-                    component: modal
+                    hasModalCard: false,
+                    customClass: 'evolve-modal',
+                    content: '<div id="modalBox" class="modalBox"></div>',
+                    onCancel: () => {
+                        // Modal closed
+                    }
                 });
 
                 var checkExist = setInterval(function() {
@@ -492,25 +561,21 @@ export function foreignGov(){
         foreign.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_foreign')}</h2></div>`));
         $('#r_govern0').append(foreign);
 
-        var modal = {
-            template: '<div id="modalBox" class="modalBox"></div>'
-        };
-
         let govEnd = global.race['truepath'] ? 5 : 3;
         for (let i=0;i<govEnd;i++){
-            let gov = $(`<div id="gov${i}" class="foreign" v-show="gvis(${i})"><span class="has-text-caution">{{ '${i}' | gov }}</span><span v-if="f${i}.occ" class="has-text-advanced"> - ${loc('civics_garrison_occupy')}</span><span v-else-if="f${i}.anx" class="has-text-advanced"> - ${loc('civics_garrison_annex')}</span></span><span v-else-if="f${i}.buy" class="has-text-advanced"> - ${loc('civics_garrison_purchase')}</span></div>`);
+            let gov = $(`<div id="gov${i}" class="foreign" v-show="gvis(${i})"><span class="has-text-caution">{{ gov('${i}') }}</span><span v-if="f${i}.occ" class="has-text-advanced"> - ${loc('civics_garrison_occupy')}</span><span v-else-if="f${i}.anx" class="has-text-advanced"> - ${loc('civics_garrison_annex')}</span></span><span v-else-if="f${i}.buy" class="has-text-advanced"> - ${loc('civics_garrison_purchase')}</span></div>`);
             foreign.append(gov);
 
             let actions = $(`<div></div>`);
             actions.append($(`<button :label="battleAssessment(${i})" class="button gaction attack" @click="campaign(${i})"><span v-show="!f${i}.occ && !f${i}.anx && !f${i}.buy">${loc('civics_garrison_attack')}</span><span v-show="f${i}.occ || f${i}.anx || f${i}.buy">${loc('civics_garrison_unoccupy')}</span></button>`));
             actions.append($(`<span class="tspy inline"><button :label="spyDesc(${i})" v-show="t.spy >= 1 && !f${i}.occ && !f${i}.anx && !f${i}.buy" :disabled="spy_disabled(${i})" class="button gaction" @click="spy(${i})"><span v-show="f${i}.trn === 0">${loc('tech_spy')}: {{ f${i}.spy }}</span><span v-show="f${i}.trn > 0">${loc('civics_train')}: {{ f${i}.trn }}</span></button></span>`));
-            actions.append($(`<span class="sspy inline"><button :label="espDesc()" v-show="t.spy >= 2 && !f${i}.occ && !f${i}.anx && !f${i}.buy && f${i}.spy >= 1" :disabled="f${i}.sab > 0" class="button gaction" @click="trigModal(${i})"><span v-show="f${i}.sab === 0">${loc('tech_espionage')}</span><span v-show="f${i}.sab > 0">{{ f${i}.act | sab }}: {{ f${i}.sab }}</span></button></span>`));
+            actions.append($(`<span class="sspy inline"><button :label="espDesc()" v-show="t.spy >= 2 && !f${i}.occ && !f${i}.anx && !f${i}.buy && f${i}.spy >= 1" :disabled="f${i}.sab > 0" class="button gaction" @click="trigModal(${i})"><span v-show="f${i}.sab === 0">${loc('tech_espionage')}</span><span v-show="f${i}.sab > 0">{{ sab(f${i}.act) }}: {{ f${i}.sab }}</span></button></span>`));
             gov.append(actions);
 
-            gov.append($(`<div v-show="!f${i}.occ && !f${i}.anx && !f${i}.buy"><span class="has-text-advanced glabel">${loc('civics_gov_mil_rate')}:</span> <span class="glevel">{{ f${i}.mil | military(${i}) }}<span class="has-text-warning" v-show="f${i}.spy >= 2"> ({{ f${i}.mil }})</span></span></div>`));
-            gov.append($(`<div v-show="!f${i}.occ && !f${i}.anx && !f${i}.buy"><span class="has-text-advanced glabel">${loc('civics_gov_relations')}:</span> <span class="glevel">{{ f${i}.hstl | relation }}<span class="has-text-warning" v-show="f${i}.spy >= 1"> ({{ f${i}.hstl | hate }})</span></span></div>`));
-            gov.append($(`<div v-show="!f${i}.occ && !f${i}.anx && !f${i}.buy"><span class="has-text-advanced glabel">${loc('civics_gov_eco_rate')}:</span> <span class="glevel">{{ f${i}.eco | eco(${i}) }}<span class="has-text-warning" v-show="f${i}.spy >= 3"> ({{ f${i}.eco }})</span></span></div>`));
-            gov.append($(`<div v-show="f${i}.spy >= 2 && !f${i}.occ && !f${i}.anx && !f${i}.buy"><span class="has-text-advanced glabel">${loc('civics_gov_unrest')}:</span> <span class="glevel">{{ f${i}.unrest | discontent(${i}) }}<span class="has-text-warning" v-show="f${i}.spy >= 4"> ({{ f${i}.unrest | turmoil }})</span></span></div>`));
+            gov.append($(`<div v-show="!f${i}.occ && !f${i}.anx && !f${i}.buy"><span class="has-text-advanced glabel">${loc('civics_gov_mil_rate')}:</span> <span class="glevel">{{ military(f${i}.mil, ${i}) }}<span class="has-text-warning" v-show="f${i}.spy >= 2"> ({{ f${i}.mil }})</span></span></div>`));
+            gov.append($(`<div v-show="!f${i}.occ && !f${i}.anx && !f${i}.buy"><span class="has-text-advanced glabel">${loc('civics_gov_relations')}:</span> <span class="glevel">{{ relation(f${i}.hstl) }}<span class="has-text-warning" v-show="f${i}.spy >= 1"> ({{ hate(f${i}.hstl) }})</span></span></div>`));
+            gov.append($(`<div v-show="!f${i}.occ && !f${i}.anx && !f${i}.buy"><span class="has-text-advanced glabel">${loc('civics_gov_eco_rate')}:</span> <span class="glevel">{{ eco(f${i}.eco, ${i}) }}<span class="has-text-warning" v-show="f${i}.spy >= 3"> ({{ f${i}.eco }})</span></span></div>`));
+            gov.append($(`<div v-show="f${i}.spy >= 2 && !f${i}.occ && !f${i}.anx && !f${i}.buy"><span class="has-text-advanced glabel">${loc('civics_gov_unrest')}:</span> <span class="glevel">{{ discontent(f${i}.unrest, ${i}) }}<span class="has-text-warning" v-show="f${i}.spy >= 4"> ({{ turmoil(f${i}.unrest) }})</span></span></div>`));
         }
 
         let bindData = {
@@ -527,7 +592,7 @@ export function foreignGov(){
         vBind({
             el: `#foreign`,
             data: bindData,
-            filters: {
+            methods: {
                 military(m,i){
                     if (global.civic.foreign[`gov${i}`].spy >= 1){
                         if (m < 50){
@@ -629,8 +694,6 @@ export function foreignGov(){
                 turmoil(u){
                     return `${u}%`;
                 },
-            },
-            methods: {
                 campaign(gov){
                     war_campaign(gov);
                 },
@@ -639,8 +702,12 @@ export function foreignGov(){
                 },
                 trigModal(i){
                     this.$buefy.modal.open({
-                        parent: this,
-                        component: modal
+                        hasModalCard: false,
+                        customClass: 'evolve-modal',
+                        content: '<div id="modalBox" class="modalBox"></div>',
+                        onCancel: () => {
+                            // Modal closed
+                        }
                     });
 
                     var checkExist = setInterval(function() {
@@ -996,14 +1063,8 @@ function taxCap(min){
     }
     else {
         let cap = 30;
-        if (global.race['noble']){
-            cap = traits.noble.vars()[1];
-        }
-        else if (extreme || global.race['terrifying']){
+        if (extreme || global.race['terrifying']){
             cap += 20;
-        }
-        if (global.civic.govern.type === 'oligarchy'){
-            cap += govEffect.oligarchy()[1];
         }
         let aristoVal = govActive('aristocrat',1);
         if (aristoVal){
@@ -1011,6 +1072,13 @@ function taxCap(min){
         }
         if (global.race['wish'] && global.race['wishStats']){
             cap += global.race.wishStats.tax;
+        }
+        // The trait "Noble" overrides extreme taxation policy (/ terrifying), governors, and wish, but not oligarchy
+        if (global.race['noble']){
+            cap = traits.noble.vars()[1];
+        }
+        if (global.civic.govern.type === 'oligarchy'){
+            cap += govEffect.oligarchy()[1];
         }
         return cap;
     }
@@ -1022,30 +1090,14 @@ function adjustTax(a,n){
             {
                 let inc = n || keyMultiplier();
                 let cap = taxCap(false);
-                if (global.race['noble']){
-                    global.civic.taxes.tax_rate += inc;
-                    if (global.civic.taxes.tax_rate > (global.civic.govern.type === 'oligarchy' ? traits.noble.vars()[1] + 20 : traits.noble.vars()[1])){
-                        global.civic.taxes.tax_rate = global.civic.govern.type === 'oligarchy' ? traits.noble.vars()[1] + 20 : traits.noble.vars()[1];
-                    }
-                }
-                else if (global.civic.taxes.tax_rate < cap){
-                    global.civic.taxes.tax_rate += inc;
-                    if (global.civic.taxes.tax_rate > cap){
-                        global.civic.taxes.tax_rate = cap;
-                    }
-                }
+                global.civic.taxes.tax_rate = Math.min(cap, global.civic.taxes.tax_rate + inc);
             }
             break;
         case 'sub':
             {
                 let dec = n || keyMultiplier();
                 let min = taxCap(true);
-                if (global.civic.taxes.tax_rate > min){
-                    global.civic.taxes.tax_rate -= dec;
-                    if (global.civic.taxes.tax_rate < min){
-                        global.civic.taxes.tax_rate = min;
-                    }
-                }
+                global.civic.taxes.tax_rate = Math.max(min, global.civic.taxes.tax_rate - dec);
             }
             break;
     }
@@ -1058,7 +1110,7 @@ function taxRates(govern){
     var label = $(`<h3 id="taxRateLabel">${loc('civics_tax_rates')}</h3>`);
     tax_rates.append(label);
     
-    var tax_level = $('<span class="current" v-html="$options.filters.tax_level(tax_rate)"></span>');
+    var tax_level = $('<span class="current" v-html="tax_level(tax_rate)"></span>');
     var sub = $(`<span role="button" aria-label="decrease taxes" class="sub has-text-success" @click="sub">&laquo;</span>`);
     var add = $(`<span role="button" aria-label="increase taxes" class="add has-text-danger" @click="add">&raquo;</span>`);
     tax_rates.append(sub);
@@ -1068,7 +1120,7 @@ function taxRates(govern){
     vBind({
         el: '#tax_rates',
         data: global.civic['taxes'],
-        filters: {
+        methods: {
             tax_level(rate){
                 let egg = easterEgg(11,14);
                 let trick = trickOrTreat(2,14,false);
@@ -1081,9 +1133,7 @@ function taxRates(govern){
                 else {
                     return `${rate}%`;
                 }
-            }
-        },
-        methods: {
+            },
             add(){
                 adjustTax('add');
             },
@@ -1174,10 +1224,10 @@ function hireMerc(num){
 export function buildGarrison(garrison,full){
     clearElement(garrison);
     if (global.tech['world_control'] && !global.race['truepath']){
-        garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success"><span class="defenseRating">${loc('rating')} {{ g.workers | hell | rating }}</span> - <span class="soldierRating"><span class="has-text-warning">${loc(`civics_garrison_soldier_rating`)}</span> {{ g.workers | single | rating(true) }}</span></div>`));
+        garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success"><span class="defenseRating">${loc('rating')} {{ rating(hell(g.workers)) }}</span> - <span class="soldierRating"><span class="has-text-warning">${loc(`civics_garrison_soldier_rating`)}</span> {{ rating(single(g.workers), true) }}</span></div>`));
     }
     else {
-        garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success"><span class="defenseRating">${loc('rating')} {{ g.workers | hell | rating }}</span> / <span class="offenseRating">{{ g.raid | rating }}</span></span> - <span class="soldierRating"><span class="has-text-warning">${loc(`civics_garrison_soldier_rating`)}</span> {{ g.workers | single | rating }}</span></div>`));
+        garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success"><span class="defenseRating">${loc('rating')} {{ rating(hell(g.workers)) }}</span> / <span class="offenseRating">{{ rating(g.raid) }}</span></span> - <span class="soldierRating"><span class="has-text-warning">${loc(`civics_garrison_soldier_rating`)}</span> {{ rating(single(g.workers)) }}</span></div>`));
     }
 
     var soliders = $(`<div></div>`);
@@ -1189,10 +1239,10 @@ export function buildGarrison(garrison,full){
     var bunks = $('<div class="bunks"></div>');
     barracks.append(bunks);
     let soldier_title = global.tech['world_control'] && !global.race['truepath'] ? loc('civics_garrison_peacekeepers') : loc('civics_garrison_soldiers');
-    if (!global.tech['isolation']){
-        bunks.append($(`<div class="barracks"><span class="soldier">${soldier_title}</span> <span v-html="$options.filters.stationed(g.workers)"></span> / <span>{{ g.max | s_max }}<span></div>`));
+    if (!global.tech['isolation'] || global.tech['tau_soldiers']){
+        bunks.append($(`<div class="barracks"><span class="soldier">${soldier_title}</span> <span v-html="stationed(g.workers)"></span> / <span>{{ s_max(g.max) }}<span></div>`));
         bunks.append($(`<div class="barracks" v-show="g.crew > 0"><span class="crew">${loc('civics_garrison_crew')}</span> <span>{{ g.crew }}</span></div>`));
-        bunks.append($(`<div class="barracks"><span class="wounded">${loc('civics_garrison_wounded')}</span> <span v-html="$options.filters.wounded(g.wounded)"></span></div>`));
+        bunks.append($(`<div class="barracks"><span class="wounded">${loc('civics_garrison_wounded')}</span> <span v-html="wounded(g.wounded)"></span></div>`));
 
         barracks.append($(`<div class="hire"><button v-show="g.mercs" class="button first hmerc" @click="hire">${loc('civics_garrison_hire_mercenary')}</button><div>`));
     }
@@ -1203,7 +1253,7 @@ export function buildGarrison(garrison,full){
             egg8 = easterEgg(8,12);
         }
 
-        garrison.append($(`<div class="training"><span>${loc('civics_garrison_training')} - ${loc('arpa_to_complete')} {{ g.rate, g.progress | trainTime }}${egg8}</span> <progress class="progress" :value="g.progress" max="100">{{ g.progress }}%</progress></div>`));
+        garrison.append($(`<div class="training"><span>${loc('civics_garrison_training')} - ${loc('arpa_to_complete')} {{ trainTime(g.rate, g.progress) }}${egg8}</span> <progress class="progress" :value="g.progress" max="100">{{ g.progress }}%</progress></div>`));
     }
 
     var campaign = $('<div class="columns is-mobile battle"></div>');
@@ -1216,7 +1266,7 @@ export function buildGarrison(garrison,full){
         var tactics = $(`<div id="${full ? 'tactics' : 'c_tactics'}" v-show="g.display" class="tactics"><span>${loc('civics_garrison_campaign')}</span></div>`);
         wrap.append(tactics);
             
-        var strategy = $('<span class="current tactic">{{ g.tactic | tactics }}</span>');
+        var strategy = $('<span class="current tactic">{{ tactics(g.tactic) }}</span>');
         var last = $('<span role="button" aria-label="easier campaign" class="sub" @click="last">&laquo;</span>');
         var next = $('<span role="button" aria-label="harder campaign" class="add" @click="next">&raquo;</span>');
         tactics.append(last);
@@ -1305,9 +1355,7 @@ export function buildGarrison(garrison,full){
             },
             rvis(){
                 return global.tech['rival'] && !global.tech['isolation'] ? true : false;
-            }
-        },
-        filters: {
+            },
             tactics(val){
                 switch(val){
                     case 0:
@@ -1358,7 +1406,7 @@ export function buildGarrison(garrison,full){
 
     ['tactic','bat','soldier','crew','wounded','hmerc','defenseRating','offenseRating','soldierRating'].forEach(function(k){
         popover(full ? `garrison${k}` : `cGarrison${k}`,
-            function(){ return '<span v-html="label()"></span>'; },
+            function(){ return '<span><span v-html="label()"></span></span>'; },
             {
                 elm: `${full ? '#garrison' : '#c_garrison'} .${k}`,
                 in: function(obj){

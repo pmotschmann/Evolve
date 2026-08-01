@@ -9,6 +9,7 @@ import { fortressTech } from './portal.js';
 import { edenicTech } from './edenic.js';
 import { checkPathRequirements } from './truepath.js';
 import { highPopAdjust, production } from './prod.js';
+import { govEffect } from './civics.js';
 
 export function loadIndustry(industry,parent,bind){
     switch (industry){
@@ -24,6 +25,9 @@ export function loadIndustry(industry,parent,bind){
         case 'graphene':
             loadGraphene(parent,bind);
             break;
+        case 'refuel_graphene':
+            loadGraphene(parent,bind,'tauceti','refueling_station');
+            break;
         case 'pylon':
             loadPylon(parent,bind);
             break;
@@ -32,6 +36,9 @@ export function loadIndustry(industry,parent,bind){
             break;
         case 'titan_mine':
             loadTMine(parent,bind);
+            break;
+        case 'metalworks':
+            loadMetalworks(parent,bind);
             break;
         case 'nanite_factory':
             loadNFactory(parent,bind);
@@ -72,10 +79,17 @@ export function defineIndustry(){
         $(`#industry`).append(droid);
         loadIndustry('droid',droid,'#iDroid');
     }
-    if ((global.interstellar['g_factory'] && global.interstellar.g_factory.count > 0) || (global.portal['twisted_lab'] && global.portal.twisted_lab.count > 0)  || (global.space['g_factory'] && (global.space.g_factory.count > 0 || (global.tauceti['refueling_station'] && global.tauceti.refueling_station.count > 0)))){
+    if ((global.interstellar['g_factory'] && global.interstellar.g_factory.count > 0) || (global.portal['twisted_lab'] && global.portal.twisted_lab.count > 0) || (global.space['g_factory'] && global.space.g_factory.count > 0)){
         var graphene = $(`<div id="iGraphene" class="industry"><h2 class="header has-text-advanced">${global.race['warlord'] ? loc('portal_twisted_lab_title') : loc('interstellar_g_factory_title')}</h2></div>`);
         $(`#industry`).append(graphene);
         loadIndustry('graphene',graphene,'#iGraphene');
+    }
+    // The refueling station is its own graphene plant with its own fuel allocation, so it gets its own
+    // panel rather than sharing the factory's.
+    if (global.tech['isolation'] && global.tauceti['refueling_station'] && global.tauceti.refueling_station.count > 0){
+        var refuelGraphene = $(`<div id="iRefuelGraphene" class="industry"><h2 class="header has-text-advanced">${loc('tau_gas_refueling_station_title')}</h2></div>`);
+        $(`#industry`).append(refuelGraphene);
+        loadIndustry('refuel_graphene',refuelGraphene,'#iRefuelGraphene');
     }
     if (global.race['casting'] && (global.city['pylon'] || global.space['pylon'] || global.tauceti['pylon'])){
         var casting = $(`<div id="iPylon" class="industry"><h2 class="header has-text-advanced">${loc('city_pylon')}</h2></div>`);
@@ -91,6 +105,11 @@ export function defineIndustry(){
         var ratio = $(`<div id="iTMine" class="industry"><h2 class="header has-text-advanced">${loc('city_mine')}</h2></div>`);
         $(`#industry`).append(ratio);
         loadIndustry('titan_mine',ratio,'#iTMine');
+    }
+    if (global.space['metalworks'] && global.space.metalworks.count > 0){
+        var metalworks = $(`<div id="iMetalworks" class="industry"><h2 class="header has-text-advanced">${loc('space_metalworks_title')}</h2></div>`);
+        $(`#industry`).append(metalworks);
+        loadIndustry('metalworks',metalworks,'#iMetalworks');
     }
     if (global.tech['tau_roid'] && global.tech.tau_roid >= 4 && global.tauceti['mining_ship']){
         var mining_ship = $(`<div id="iMiningShip" class="industry"><h2 class="header has-text-advanced">${loc('tau_roid_mining_ship')}</h2></div>`);
@@ -182,7 +201,7 @@ export function smelterFuelConfig(){
 
 function loadSmelter(parent,bind){
     const fuel_config = smelterFuelConfig();
-    let fuel = $(`<div><span class="has-text-warning">${loc('modal_smelter_fuel')}:</span> <span :class="level()">{{s.count | on}}/{{ s.cap }}</span></div>`);
+    let fuel = $(`<div><span class="has-text-warning">${loc('modal_smelter_fuel')}:</span> <span :class="level()">{{ on_f(s.count) }}/{{ s.cap }}</span></div>`);
     parent.append(fuel);
 
     if (parent.hasClass('modalBody')){
@@ -215,7 +234,7 @@ function loadSmelter(parent,bind){
         }
 
         if (global.resource.Coal.display){
-            let coal = $(`<span :aria-label="buildLabel('coal') + ariaCount('Coal')" class="current coal">${global.resource.Coal.name} <span v-html="$options.filters.spook(s.Coal)"></span></span>`);
+            let coal = $(`<span :aria-label="buildLabel('coal') + ariaCount('Coal')" class="current coal">${global.resource.Coal.name} <span v-html="spook(s.Coal)"></span></span>`);
             let subCoal = $(`<span role="button" class="sub" @click="subFuel('Coal')" aria-label="Remove ${global.resource.Coal.name} fuel"><span>&laquo;</span></span>`);
             let addCoal = $(`<span role="button" class="add" @click="addFuel('Coal')" aria-label="Add ${global.resource.Coal.name} fuel"><span>&raquo;</span></span>`);
             fuelTypes.append(subCoal);
@@ -225,7 +244,7 @@ function loadSmelter(parent,bind){
     }
 
     if (global.race['forge']){
-        let oil = $(`<span :aria-label="buildLabel('oil') + ariaCount('Oil')" class="current oil infoOnly">${loc('trait_forge_name')} <span v-html="$options.filters.altspook(s.Oil)"></span></span>`);
+        let oil = $(`<span :aria-label="buildLabel('oil') + ariaCount('Oil')" class="current oil infoOnly">${loc('trait_forge_name')} <span v-html="altspook(s.Oil)"></span></span>`);
         fuelTypes.append(oil);
     }
     else if (global.resource.Oil.display){
@@ -257,23 +276,23 @@ function loadSmelter(parent,bind){
     if (!bind && 1 === 2){
         switch (fuel_config.l_type){
             case 'Food':
-                available.append(`<span :class="net('Lumber')">{{ food.diff | diffSize }}</span>`);
+                available.append(`<span :class="net('Lumber')">{{ diffSize(food.diff) }}</span>`);
                 break;
             case 'Furs':
-                available.append(`<span :class="net('Lumber')">{{ fur.diff | diffSize }}</span>`);
+                available.append(`<span :class="net('Lumber')">{{ diffSize(fur.diff) }}</span>`);
                 break;
             case 'Lumber':
             default:
-                available.append(`<span :class="net('Lumber')">{{ lum.diff | diffSize }}</span>`);
+                available.append(`<span :class="net('Lumber')">{{ diffSize(lum.diff) }}</span>`);
                 break;
         }
 
         if (global.resource.Coal.display){
-            available.append(`<span :class="net('Coal')">{{ coal.diff | diffSize }}</span>`);
+            available.append(`<span :class="net('Coal')">{{ diffSize(coal.diff) }}</span>`);
         }
 
         if (global.resource.Oil.display){
-            available.append(`<span :class="net('Oil')">{{ oil.diff | diffSize }}</span>`);
+            available.append(`<span :class="net('Oil')">{{ diffSize(oil.diff) }}</span>`);
         }
     }
 
@@ -282,7 +301,7 @@ function loadSmelter(parent,bind){
         let smelt = $(`<div id="${parent.hasClass('modalBody') ? `mSmelterMats` : `smelterMats`}" class="smelting"></div>`);
         parent.append(smelt);
 
-        smelt.append(`<div><span class="has-text-warning">${loc('modal_smelter_type')}:</span> <span :class="level()">{{s.count | son}}/{{ s.cap | on }}</span></div>`);
+        smelt.append(`<div><span class="has-text-warning">${loc('modal_smelter_type')}:</span> <span :class="level()">{{ son(s.count) }}/{{ on_f(s.cap) }}</span></div>`);
 
         let smeltTypes = $(`<div class="fuels"></div>`);
         smelt.append(smeltTypes);
@@ -434,10 +453,8 @@ function loadSmelter(parent,bind){
             level(){
                 let workers = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno;
                 return colorRange(workers,global.city.smelter.count);
-            }
-        },
-        filters: {
-            on(c){
+            },
+            on_f(c){
                 return global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno;
             },
             son(c){
@@ -571,13 +588,13 @@ export function addSmelter(num=1, product="Iron", fuel="Oil"){
 }
 
 function loadFactory(parent,bind){
-    let fuel = $(`<div><span class="has-text-warning">${loc('modal_factory_operate')}:</span> <span :class="level()">{{count | on}}/{{ on | max }}</span></div>`);
+    let fuel = $(`<div><span class="has-text-warning">${loc('modal_factory_operate')}:</span> <span :class="level()">{{ on_f(count) }}/{{ max_f(on) }}</span></div>`);
     parent.append(fuel);
 
     let lux = $(`<div class="factory"><span class="Lux" :aria-label="buildLabel('Lux') + ariaProd('Lux')">${loc('modal_factory_lux')}</span></div>`);
     parent.append(lux);
 
-    let luxCount = $(`<span class="current" v-html="$options.filters.spook(Lux)"></span>`);
+    let luxCount = $(`<span class="current" v-html="spook(Lux)"></span>`);
     let subLux = $(`<span class="sub" @click="subItem('Lux')" role="button" aria-label="Decrease Lux production">&laquo;</span>`);
     let addLux = $(`<span class="add" @click="addItem('Lux')" role="button" aria-label="Increase Lux production">&raquo;</span>`);
     lux.append(subLux);
@@ -702,13 +719,11 @@ function loadFactory(parent,bind){
                     max += p_on['hell_factory'] * actions.portal.prtl_wasteland.hell_factory.lines();
                 }
                 return colorRange(on,max);
-            }
-        },
-        filters: {
-            on(){
+            },
+            on_f(){
                 return global.city.factory.Lux + global.city.factory.Furs + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano + global.city.factory.Stanene;
             },
-            max(){
+            max_f(){
                 let max = global.space['red_factory'] ? global.space.red_factory.on + global.city.factory.on : global.city.factory.on;
                 if (global.interstellar['int_factory'] && p_on['int_factory']){
                     max += p_on['int_factory'] * 2;
@@ -796,10 +811,10 @@ export function luxGoodPrice(demand){
         demand *= 1 + (traits.toxic.vars(1)[0] / 100 * fathom);
     }
     if (global.civic.govern.type === 'corpocracy'){
-        demand *= 2.5;
+        demand *= 1 + (govEffect.corpocracy()[1] / 100);
     }
     if (global.civic.govern.type === 'socialist'){
-        demand *= 0.8;
+        demand *= 1 - (govEffect.socialist()[3] / 100);
     }
     if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2){
         demand *= 1.1;
@@ -824,7 +839,7 @@ export const nf_resources = [
 ];
 
 function loadNFactory(parent,bind){
-    let fuel = $(`<div><span class="has-text-warning">${loc('modal_factory_operate')}:</span> <span :class="level()">{{count | on}}/{{ count | max }}</span></div>`);
+    let fuel = $(`<div><span class="has-text-warning">${loc('modal_factory_operate')}:</span> <span :class="level()">{{ on_f(count) }}/{{ max_f(count) }}</span></div>`);
     parent.append(fuel);
 
     let rId = parent.hasClass('modalBody') ? `mNFactoryRes` : `NFactoryRes`;
@@ -877,17 +892,15 @@ function loadNFactory(parent,bind){
                 });
                 let max = global.city.nanite_factory.count;
                 return colorRange(on,max);
-            }
-        },
-        filters: {
-            on(){
+            },
+            on_f(){
                 let on = 0;
                 nf_resources.forEach(function(r){
                     on += global.city.nanite_factory[r];
                 });
                 return on;
             },
-            max(){
+            max_f(){
                 return global.city.nanite_factory.count * 50;
             }
         }
@@ -911,7 +924,7 @@ function loadNFactory(parent,bind){
 }
 
 function loadDroid(parent,bind){
-    let fuel = $(`<div><span class="has-text-warning">${loc('modal_factory_operate')}:</span> <span :class="level()">{{count | on}}/{{ on | max }}</span></div>`);
+    let fuel = $(`<div><span class="has-text-warning">${loc('modal_factory_operate')}:</span> <span :class="level()">{{ on_f(count) }}/{{ max_f(on) }}</span></div>`);
     parent.append(fuel);
 
     let adam = $(`<div class="factory"><span class="adam" :aria-label="buildLabel('adam') + ariaProd('adam')">${global.resource.Adamantite.name}</span></div>`);
@@ -986,13 +999,11 @@ function loadDroid(parent,bind){
                 let on = global.interstellar.mining_droid.adam + global.interstellar.mining_droid.uran + global.interstellar.mining_droid.coal + global.interstellar.mining_droid.alum;
                 let max = global.interstellar.mining_droid.on;
                 return colorRange(on,max);
-            }
-        },
-        filters: {
-            on(){
+            },
+            on_f(){
                 return global.interstellar.mining_droid.adam + global.interstellar.mining_droid.uran + global.interstellar.mining_droid.coal + global.interstellar.mining_droid.alum;
             },
-            max(){
+            max_f(){
                 return global.interstellar.mining_droid.on;
             }
         }
@@ -1022,15 +1033,17 @@ function loadDroid(parent,bind){
     });
 }
 
-function loadGraphene(parent,bind){
-    let graph_source = global.race['truepath'] ? 'space' : 'interstellar';
-    let graph_struct = 'g_factory';
-    if (global.race['warlord']){
+// Fuel allocation panel for a graphene plant. Defaults to the era's main factory; the Tau Ceti
+// refueling station passes its own source/struct because it is a separate plant with its own allocation.
+function loadGraphene(parent,bind,source,struct){
+    let graph_source = source || (global.race['truepath'] ? 'space' : 'interstellar');
+    let graph_struct = struct || 'g_factory';
+    if (!source && global.race['warlord']){
         graph_source = 'portal';
         graph_struct = 'twisted_lab';
     }
 
-    let fuel = $(`<div><span class="has-text-warning">${loc('modal_smelter_fuel')}:</span> <span :class="level()">{{count | on}}/{{ on | max }}</span></div>`);
+    let fuel = $(`<div><span class="has-text-warning">${loc('modal_smelter_fuel')}:</span> <span :class="level()">{{ on_f(count) }}/{{ on }}</span></div>`);
     parent.append(fuel);
 
     let fuelTypes = $('<div></div>');
@@ -1174,10 +1187,8 @@ function loadGraphene(parent,bind){
                 let on = global[graph_source][graph_struct].Lumber + global[graph_source][graph_struct].Coal + global[graph_source][graph_struct].Oil;
                 let max = global[graph_source][graph_struct].on;
                 return colorRange(on,max);
-            }
-        },
-        filters: {
-            on: function(c){
+            },
+            on_f(c){
                 return global[graph_source][graph_struct].Lumber + global[graph_source][graph_struct].Coal + global[graph_source][graph_struct].Oil;
             }
         }
@@ -1195,7 +1206,8 @@ function loadGraphene(parent,bind){
     }
 
     ['wood','coal','oil'].forEach(function(type){
-        let id = parent.hasClass('modalBody') ? `specialModal` : `iGraphene`;
+        // Derive the container from the bind selector so a second plant's popovers get their own ids.
+        let id = parent.hasClass('modalBody') ? `specialModal` : (bind ? bind.replace('#','') : `iGraphene`);
         popover(`${id}${type}`,function(){
             return tooltip(type);
         }, {
@@ -1206,7 +1218,7 @@ function loadGraphene(parent,bind){
 }
 
 function loadPylon(parent,bind){
-    let casting = $(`<div><span class="has-text-warning">${loc('modal_pylon_casting')}:</span> <span :class="level()">{{total | drain}}</span></div>`);
+    let casting = $(`<div><span class="has-text-warning">${loc('modal_pylon_casting')}:</span> <span :class="level()">{{ drain(total) }}</span></div>`);
     parent.append(casting);
 
     let spellTypes = $('<div class="pylon wrap"></div>');
@@ -1279,9 +1291,7 @@ function loadPylon(parent,bind){
             },
             level(){
                 return colorRange(global.race.casting.total,global.resource.Mana.gen,true);
-            }
-        },
-        filters: {
+            },
             drain: function(c){
                 let total = 0;
                 ritualList.forEach(function (spell){
@@ -1383,7 +1393,7 @@ function loadQuarry(parent,bind){
 function loadMechStation(parent,bind){
     let mech = $(`<div class="factory"><span>${global.race['warlord'] ? loc(`eden_demon_station_control`) : loc(`eden_mech_station_control`)}</span></div>`);
     parent.append(mech);
-    let mechPatrol = $(`<span class="current">{{ mode | patrolMode }}</span>`);
+    let mechPatrol = $(`<span class="current">{{ patrolMode(mode) }}</span>`);
     let mechDown = $(`<span class="sub" @click="lower()" role="button" aria-label="Decrease Patrol Aggression">&laquo;</span>`);
     let mechUp = $(`<span class="add" @click="higher()" role="button" aria-label="Increase Patrol Aggression">&raquo;</span>`);
     mech.append(mechDown);
@@ -1391,8 +1401,8 @@ function loadMechStation(parent,bind){
     mech.append(mechUp);
 
     let stats = $(`<div class="flexAround"></div>`);
-    stats.append($(`<span v-html="$options.filters.patrol(mechs)"></span>`));
-    stats.append($(`<span v-html="$options.filters.effect(effect)"></span>`));
+    stats.append($(`<span v-html="patrol(mechs)"></span>`));
+    stats.append($(`<span v-html="effectDesc(effect)"></span>`));
     parent.append(stats);
 
     vBind({
@@ -1409,15 +1419,13 @@ function loadMechStation(parent,bind){
                     global.eden.mech_station.mode++
                 }
             },
-        },
-        filters: {
             patrolMode(v){
                 return loc(`eden_mech_station_patrol${v}`);
             },
             patrol(v){
                 return loc(global.race['warlord'] ? `eden_demon_station_mechs` : `eden_mech_station_mechs`,[v]);
             },
-            effect(v){
+            effectDesc(v){
                 return loc(`eden_mech_station_effective`,[v]);
             }
         }
@@ -1449,6 +1457,67 @@ function loadTMine(parent,bind){
                     global.space.titan_mine.ratio += keyMult;
                     if (global.space.titan_mine.ratio > 100){
                         global.space.titan_mine.ratio = 100;
+                    }
+                }
+            }
+        }
+    });
+}
+
+// The metalworks divides one pool of refining capacity between its metals as whole percentages. The
+// shares always total 100, so raising one metal has to take the points from somewhere: adding past the
+// cap pulls from the first metal the way the factory pulls from Alloy, and that metal itself stops.
+function loadMetalworks(parent,bind){
+    let metals = actions.space.spc_titan.metalworks.res();
+    let dump = metals[0];
+
+    parent.append($(`<div>${loc('modal_metalworks_ratio')}</div>`));
+
+    let total = $(`<div><span class="has-text-warning">${loc('modal_metalworks_assigned')}:</span> <span :class="level()">{{ assigned() }}/100</span></div>`);
+    parent.append(total);
+
+    metals.forEach(function(res){
+        let row = $(`<div class="factory"><span class="${res}">${global.resource[res].name}</span></div>`);
+        parent.append(row);
+        row.append($(`<span class="sub" @click="subItem('${res}')" role="button" aria-label="Decrease ${res} share">&laquo;</span>`));
+        row.append($(`<span class="current">{{ ${res} }}%</span>`));
+        row.append($(`<span class="add" @click="addItem('${res}')" role="button" aria-label="Increase ${res} share">&raquo;</span>`));
+    });
+
+    vBind({
+        el: bind ? bind : '#specialModal',
+        data: global.space.metalworks,
+        methods: {
+            assigned(){
+                return metals.reduce((t,res) => t + global.space.metalworks[res], 0);
+            },
+            level(){
+                return colorRange(metals.reduce((t,res) => t + global.space.metalworks[res], 0),100);
+            },
+            subItem(item){
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global.space.metalworks[item] > 0){
+                        global.space.metalworks[item]--;
+                    }
+                    else {
+                        break;
+                    }
+                }
+            },
+            addItem(item){
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    let used = metals.reduce((t,res) => t + global.space.metalworks[res], 0);
+                    if (used < 100){
+                        global.space.metalworks[item]++;
+                    }
+                    else if (item !== dump && global.space.metalworks[dump] > 0){
+                        global.space.metalworks[dump]--;
+                        global.space.metalworks[item]++;
+                    }
+                    else {
+                        break;
                     }
                 }
             }
@@ -1528,6 +1597,78 @@ function loadAlienSpaceStation(parent,bind){
     });
 }
 
+// Whether the replicator runs a second production line.
+export function dualReplicator(){
+    return global.race['replicator'] && global.tech['replicator'] && global.tech.replicator >= 2 ? true : false;
+}
+
+// The replicator's production lines for a given amount of delivered power, most significant first. One
+// line before the dual upgrade; after it the power is split by `ratio` — the share line one keeps — with
+// the rounding remainder going to line two. At the default 100/0 line two gets nothing and is inert.
+export function replicatorLines(pow){
+    if (!dualReplicator()){
+        return [{ res: global.race.replicator.res, pow: pow }];
+    }
+    let ratio = typeof global.race.replicator.ratio === 'number' ? global.race.replicator.ratio : 100;
+    let first = Math.floor(pow * ratio / 100);
+    return [
+        { res: global.race.replicator.res, pow: first },
+        { res: global.race.replicator.res2 || global.race.replicator.res, pow: pow - first }
+    ];
+}
+
+// A starting resource for one line that is not already on the other. Falls back to the same resource
+// only when there is genuinely nothing else unlocked to pick.
+export function altReplicatorRes(res){
+    let alt = replicatorRes().find(r => r !== res);
+    return alt ? alt : res;
+}
+
+// Resources the replicator will never offer. Anything with an atomic mass is fair game otherwise, so
+// long as the player has actually unlocked it.
+export function replicatorRes(){
+    let blacklist = ['Asphodel_Powder','Elysanite'];
+    if (global.race['fasting']){ blacklist.push('Food'); }
+    return Object.keys(atomic_mass).filter(res => global.resource[res].display && !blacklist.includes(res));
+}
+
+// The popup behind a replicator resource button: every unlocked resource as a button, the current one
+// highlighted. Picking leaves the popup open so a mis-click can be corrected without reopening it.
+// `field` is which line is being set — 'res' or 'res2'.
+function replicatorPicker(field){
+    $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${loc('modal_replicator_res')}</p>`));
+
+    let body = $(`<div id="replicatorPicker" class="modalBody"></div>`);
+    $('#modalBox').append(body);
+
+    // Whatever the other line is running is greyed out — the two lines can never share a resource.
+    let other = field === 'res' ? 'res2' : 'res';
+
+    let buttons = ``;
+    replicatorRes().forEach(function(res){
+        buttons += `<button class="button" :class="pickClass('${res}')" :disabled="taken('${res}')" @click="setVal('${res}')">${global.resource[res].name}</button>`;
+    });
+    body.append(`<div class="flexWrap resPicker">${buttons}</div>`);
+
+    vBind({
+        el: '#replicatorPicker',
+        data: global.race.replicator,
+        methods: {
+            taken(r){
+                return dualReplicator() && global.race.replicator[other] === r;
+            },
+            setVal(r){
+                if (global.resource[r].display && !(dualReplicator() && global.race.replicator[other] === r)){
+                    global.race.replicator[field] = r;
+                }
+            },
+            pickClass(r){
+                return global.race.replicator[field] === r ? 'is-info' : '';
+            }
+        }
+    });
+}
+
 function loadReplicator(parent,bind){
     if (global.race['replicator']){
         parent.append($(`<div>${global.race.universe === 'antimatter' ? loc('tech_antireplicator') : loc('tech_replicator')}</div>`));
@@ -1535,32 +1676,29 @@ function loadReplicator(parent,bind){
         let content = $(`<div class="doublePane"></div>`);
         parent.append(content);
         
-        if (bind){
-        let values = ``;
-            Object.keys(atomic_mass).forEach(function(res){
-                if (res !== 'Asphodel_Powder' && res !== 'Elysanite'){
-                    values += `<b-dropdown-item aria-role="listitem" v-on:click="setVal('${res}')" data-val="${res}" v-show="avail('${res}')">${global.resource[res].name}</b-dropdown-item>`;
-                }
-            });
+        let dual = dualReplicator();
 
-            content.append(`<div><b-dropdown :triggers="['hover', 'click']" aria-role="list" :scrollable="true" :max-height="200" class="dropList">
-                <button class="button is-info" slot="trigger">
-                    <span>{{ res | resName }}</span>
-                </button>${values}
-            </b-dropdown></div>`);
+        if (bind){
+            // The resource list is long enough that a scrolling dropdown buries most of it. The button
+            // opens a popup laying every unlocked resource out as its own button instead.
+            let picks = $(`<div></div>`);
+            content.append(picks);
+            picks.append(`<div><button class="button is-info" @click="pickRes('res')" aria-haspopup="dialog"><span>{{ resName(res) }}</span></button></div>`);
+            if (dual){
+                picks.append(`<div class="topPad"><button class="button is-info" @click="pickRes('res2')" aria-haspopup="dialog"><span>{{ resName(res2) }}</span></button></div>`);
+            }
         }
         else {
-            let scrollMenu = ``;
-            let blacklist = ['Asphodel_Powder', 'Elysanite'];
-            if(global.race['fasting']){
-                blacklist.push('Food');
-            }
-            Object.keys(atomic_mass).forEach(function(res){
-                if (global.resource[res].display && !blacklist.includes(res)){
-                    scrollMenu += `<b-radio-button v-model="res" native-value="${res}">${global.resource[res].name}</b-radio-button>`;
-                }
+            let lines = $(`<div class="left"></div>`);
+            content.append(lines);
+            // Each line gets its own strip; without the upgrade there is only ever the one.
+            [['res','hscrolltarget'],['res2','hscrolltarget2']].slice(0,dual ? 2 : 1).forEach(function(line){
+                let scrollMenu = ``;
+                replicatorRes().forEach(function(res){
+                    scrollMenu += `<b-radio-button v-model="${line[0]}" native-value="${res}" :disabled="taken('${res}','${line[0]}')">${global.resource[res].name}</b-radio-button>`;
+                });
+                lines.append(`<div id="${line[1]}" class="hscroll"><b-field class="buttonList">${scrollMenu}</b-field></div>`);
             });
-            content.append(`<div id="hscrolltarget" class="left hscroll"><b-field class="buttonList">${scrollMenu}</b-field></div>`);
         }
 
         let power = bind ? $(`<div></div>`) : $(`<div class="right"></div>`);
@@ -1573,7 +1711,16 @@ function loadReplicator(parent,bind){
         power.append(current);
         power.append(more);
 
-        parent.append(`<div class="topPad">{{ res | result }}</div>`); 
+        if (dual){
+            // The split is the share the first line keeps; the second gets what is left.
+            parent.append(`<div class="topPad">{{ split() }}</div>`);
+            parent.append(`<div class="sliderbar"><span class="sub" role="button" @click="ratioSub" aria-label="Shift power to the second resource">&laquo;</span><b-slider v-model="ratio" format="percent"></b-slider><span class="add" role="button" @click="ratioAdd" aria-label="Shift power to the first resource">&raquo;</span></div>`);
+        }
+
+        parent.append(`<div class="topPad">{{ result(0) }}</div>`);
+        if (dual){
+            parent.append(`<div>{{ result(1) }}</div>`);
+        }
 
         vBind({
             el: bind ? bind : '#specialModal',
@@ -1600,26 +1747,63 @@ function loadReplicator(parent,bind){
                 avail(r){
                     return global.resource[r].display && !(global.race['fasting'] && r === 'Food');
                 },
+                taken(r,field){
+                    let other = field === 'res' ? 'res2' : 'res';
+                    return dualReplicator() && global.race.replicator[other] === r;
+                },
+                pickRes(field){
+                    this.$buefy.modal.open({
+                        hasModalCard: false,
+                        content: '<div id="modalBox" class="modalBox"></div>'
+                    });
+
+                    let checkExist = setInterval(function(){
+                        if ($('#modalBox').length > 0){
+                            clearInterval(checkExist);
+                            replicatorPicker(field);
+                        }
+                    }, 50);
+                },
+                ratioSub(){
+                    let keyMult = keyMultiplier();
+                    global.race.replicator.ratio -= keyMult;
+                    if (global.race.replicator.ratio < 0){
+                        global.race.replicator.ratio = 0;
+                    }
+                },
+                ratioAdd(){
+                    let keyMult = keyMultiplier();
+                    global.race.replicator.ratio += keyMult;
+                    if (global.race.replicator.ratio > 100){
+                        global.race.replicator.ratio = 100;
+                    }
+                },
+                split(){
+                    let lines = replicatorLines(global.race.replicator.pow);
+                    return loc(`tau_replicator_split`,[lines[0].pow,lines[1].pow]);
+                },
                 aria(){
                     return global.race.replicator.pow + 'MW';
-                }
-            },
-            filters: {
+                },
                 resName(r){
                     return global.resource[r].name;
                 },
-                result(r){
-                    return loc(`tau_replicator`,[replicator(r,global.race.replicator.pow).toFixed(2),global.resource[r].name]);
+                result(i){
+                    // Projected at the power the player asked for, which is what the readout above shows.
+                    let line = replicatorLines(global.race.replicator.pow)[i];
+                    return loc(`tau_replicator`,[replicator(line.res,line.pow).toFixed(2),global.resource[line.res].name]);
                 }
             }
         });
 
         if (!bind){
-            const scrollContainer = document.getElementById('hscrolltarget');
-
-            scrollContainer.addEventListener("wheel", (evt) => {
-                evt.preventDefault();
-                scrollContainer.scrollLeft += evt.deltaY;
+            ['hscrolltarget','hscrolltarget2'].forEach(function(id){
+                const scrollContainer = document.getElementById(id);
+                if (!scrollContainer){ return; }
+                scrollContainer.addEventListener("wheel", (evt) => {
+                    evt.preventDefault();
+                    scrollContainer.scrollLeft += evt.deltaY;
+                });
             });
         }
     }
@@ -1770,8 +1954,8 @@ export function setPowerGrid(){
             if (gridEnabled(c_action,region,parts[0],parts[1])){
                 idx++;
                 let circuit = $(`<div id="pg${c_action.id}${grid_type}" class="circuit" data-idx="${i}"></div>`);
-                circuit.append(`<span v-html="$options.filters.idx(${idx})"></span> <span class="struct has-text-warning">${title}${extra}</span>`);
-                circuit.append(`<span role="button" class="sub off" @click="power_off" aria-label="Powered Off"><span>{{ on | off }}</span></span> <span role="button" class="add on" @click="power_on" aria-label="Powered On"><span>{{ on }}</span></span>`);
+                circuit.append(`<span v-html="idx(${idx})"></span> <span class="struct has-text-warning">${title}${extra}</span>`);
+                circuit.append(`<span role="button" class="sub off" @click="power_off" aria-label="Powered Off"><span>{{ off(on) }}</span></span> <span role="button" class="add on" @click="power_on" aria-label="Powered On"><span>{{ on }}</span></span>`);
                 circuit.append(`<span role="button" class="sub is-sr-only" @click="higher" aria-label="Raise Power Priority"><span>&laquo;</span></span> <span role="button" class="add is-sr-only" @click="lower" aria-label="Lower Power Priority"><span>&raquo;</span></span>`);
                 grid.append(circuit);
 
@@ -1826,9 +2010,7 @@ export function setPowerGrid(){
                                 grids[grid_type].l = order;
                                 setPowerGrid(grid_type);
                             }
-                        }
-                    },
-                    filters: {
+                        },
                         off(c){
                             return global[region][parts[1]].count - c;
                         },
@@ -1904,13 +2086,15 @@ export function clearGrids(grids){
 
 function dragPowerGrid(grid_type){
     let el = $(`#grid${grid_type}`)[0];
-    let grids = gridDefs();
-    Sortable.create(el,{
-        onEnd(e){
-            let order = grids[grid_type].l;
-            order.splice(e.newDraggableIndex, 0, order.splice(e.oldDraggableIndex, 1)[0]);
-            grids[grid_type].l = order;
-            setPowerGrid();
-        }
-    });
+    if (el){
+        let grids = gridDefs();
+        Sortable.create(el,{
+            onEnd(e){
+                let order = grids[grid_type].l;
+                order.splice(e.newDraggableIndex, 0, order.splice(e.oldDraggableIndex, 1)[0]);
+                grids[grid_type].l = order;
+                setPowerGrid();
+            }
+        });
+    }
 }

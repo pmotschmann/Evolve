@@ -180,6 +180,12 @@ span, div {
             span {
                 display: flex;
             }
+
+            // Cells are flex rows, so text-align does nothing to them — add "center" alongside "aTable"
+            // on any table whose cells should sit centred in their column instead of flush left.
+            &.center span {
+                justify-content: center;
+            }
         }
 
         .para {

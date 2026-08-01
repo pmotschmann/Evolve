@@ -1,4 +1,4 @@
-import { global, p_on } from './vars.js';
+import { global, p_on, support_on } from './vars.js';
 import { biomes, traits, fathomCheck } from './races.js';
 import { govRelationFactor, govEffect } from './civics.js';
 import { jobScale, teamsterCap } from './jobs.js';
@@ -95,7 +95,7 @@ export function production(id,val,wiki){
             switch (val){
                 case 'copper':
                 {
-                    let base = highPopAdjust(0.25);
+                    let base = highPopAdjust(global.tech['resettle'] ? 0.05 : 0.25);
                     let gov = govRelationFactor(3);
                     return {
                         b: base,
@@ -105,7 +105,7 @@ export function production(id,val,wiki){
                 }
                 case 'titanium':
                 {
-                    let base = highPopAdjust(0.02);
+                    let base = highPopAdjust(global.tech['resettle'] ? 0.01 :0.02);
                     let gov = govRelationFactor(3);
                     return {
                         b: base,
@@ -180,21 +180,39 @@ export function production(id,val,wiki){
         case 'g_factory':
         {
             if (global.race['truepath']){
-                if (global.tech['isolation']){
-                    return 1.8;
+                // The old isolation rate here belonged to the Tau Ceti refueling station, which used to
+                // masquerade as this factory; it has its own case now. Titan always runs on colonists.
+                let titan_colonists = p_on['ai_colonist'] ? global.civic.titan_colonist.workers + jobScale(p_on['ai_colonist']) : global.civic.titan_colonist.workers;
+                let gain = 0.05 * titan_colonists;
+                if (global.race['high_pop']){
+                    gain = highPopAdjust(gain);
                 }
-                else {
-                    let titan_colonists = p_on['ai_colonist'] ? global.civic.titan_colonist.workers + jobScale(p_on['ai_colonist']) : global.civic.titan_colonist.workers;
-                    let gain = 0.05 * titan_colonists;
-                    if (global.race['high_pop']){
-                        gain = highPopAdjust(gain);
-                    }
-                    return gain;
-                }
+                return gain;
             }
             else {
                 return 0.6;
             }
+        }
+        case 'refueling_station_graphene':
+        {
+            return 1.8;
+        }
+        case 'metalworks':
+        {
+            // One pool of refining capacity, 1% of it per colonist per running works, divided between the
+            // four metals by whatever split the industry panel is set to. Returns the multiplier for the
+            // metal asked for, so raising one metal's share is always paid for out of the others.
+            let works = wiki ? (global.space?.metalworks?.on ?? 0) : (support_on['metalworks'] || 0);
+            if (!global.space['metalworks'] || works <= 0){ return 1; }
+            let share = global.space.metalworks.hasOwnProperty(val) ? global.space.metalworks[val] : 0;
+            if (share <= 0){ return 1; }
+            // Colonists counted exactly as the graphene factory above counts them, AI colonists included.
+            let titan_colonists = p_on['ai_colonist'] ? global.civic.titan_colonist.workers + jobScale(p_on['ai_colonist']) : global.civic.titan_colonist.workers;
+            let pool = 0.01 * titan_colonists * works;
+            if (global.race['high_pop']){
+                pool = highPopAdjust(pool);
+            }
+            return 1 + (pool * share / 100);
         }
         case 'harvester':
         {
@@ -225,10 +243,10 @@ export function production(id,val,wiki){
         {
             let vitreloy = 0.18;
             if (global.civic.govern.type === 'corpocracy'){
-                vitreloy *= global.tech['high_tech'] && global.tech['high_tech'] >= 16 ? 1.4 : 1.3;
+                vitreloy *= 1 + (govEffect.corpocracy()[4] / 100);
             }
             if (global.civic.govern.type === 'socialist'){
-                vitreloy *= 1.1;
+                vitreloy *= 1 + (govEffect.socialist()[1] / 100);
             }
             return vitreloy;
         }
@@ -253,6 +271,14 @@ export function production(id,val,wiki){
                 {
                     let base = highPopAdjust(0.12);
                     return base * (100 - (global.space['titan_mine'] ? global.space.titan_mine.ratio : 50)) / 100;
+                }
+                case 'stone':
+                {
+                    return global.tech['resettle'] ? highPopAdjust(0.04) : 0;
+                }
+                case 'chrysotile':
+                {
+                    return global.tech['resettle'] && global.resource.Chrysotile.display ? highPopAdjust(0.03) : 0;
                 }
             }
         }
@@ -549,6 +575,17 @@ export function production(id,val,wiki){
                 }
             }
         }
+        case `synthesizer`:
+        {
+            if (global.tauceti['patrol_ship']){
+                let patrol = 1;
+                if (global.tauceti.patrol_ship.support > global.tauceti.patrol_ship.s_max){
+                    patrol = flib('curve',global.tauceti.patrol_ship.s_max / global.tauceti.patrol_ship.support,1.4);
+                }
+                return patrol * 0.01;
+            }
+            return 0;
+        }
     }
 }
 
@@ -568,6 +605,10 @@ export function factoryBonus(factory){
     }
     if (global.civic.govern.type === 'socialist'){
         factory *= 1 + (govEffect.socialist()[1] / 100);
+    }
+    let dirtVal = govActive('dirty_jobs', 2);
+    if (dirtVal){
+        factory *= 1 + (dirtVal / 100);
     }
     if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2){
         factory *= 1.1;
