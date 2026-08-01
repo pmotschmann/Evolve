@@ -2093,6 +2093,7 @@ export const actions = {
                 if (milVal){
                     rate *= 1 + (milVal / 100);
                 }
+                rate = +rate.toFixed(2);
                 let effect = global.tech['spy'] && global.tech['spy'] >= 3 ? `<div>${loc('city_boot_camp_effect',[rate])}</div><div>${loc('city_boot_camp_effect2',[10])}</div>` : `<div>${loc('city_boot_camp_effect',[rate])}</div>`;
                 if (global.race['artifical'] && !global.race['orbit_decayed']){
                     let repair = global.tech['medic'] || 1;

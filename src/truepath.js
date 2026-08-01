@@ -423,7 +423,7 @@ const outerTruth = {
                 let vault = bank_vault() * 2;
                 vault = spatialReasoning(vault);
                 vault = (+(vault).toFixed(0)).toLocaleString();
-                return loc('plus_max_resource',[`\$${vault}`,global.resource.Money.name]);
+                return loc('plus_max_resource',[`\$${vault}`,loc('resource_Money_name')]);
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -2771,8 +2771,8 @@ const tauCetiModules = {
         },
         tauceti_casino: {
             id: 'tauceti-tauceti_casino',
-            title(){ return loc('city_casino'); },
-            desc(){ return loc('city_casino'); },
+            title(){ return structName('casino'); },
+            desc(){ return structName('casino'); },
             type: 'gambling',
             category: 'commercial',
             reqs: { gambling: 1, isolation: 1 },
