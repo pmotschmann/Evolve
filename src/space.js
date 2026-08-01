@@ -14,6 +14,8 @@ import { ascend, terraform, apotheosis } from './resets.js';
 import { loadTab } from './index.js';
 import { loc } from './locale.js';
 
+export const spaceSectors = ['space','interstellar','galaxy','portal','tauceti','eden'];
+
 const spaceProjects = {
     spc_home: {
         info: {
@@ -1250,14 +1252,14 @@ const spaceProjects = {
             },
             action(args){
                 if (payCosts($(this)[0])){
+                    incrementStruct('university','city');
+                    global.space.red_university.count = global.city.university.count;
                     let gain = global.tech['science'] && global.tech['science'] >= 8 ? 700 : 500;
                     if (global.tech['supercollider']){
                         let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
                         gain *= (global.tech['supercollider'] / ratio) + 1;
                     }
                     global['resource']['Knowledge'].max += gain;
-                    global.city.university.count++;
-                    global.space.red_university.count = global.city.university.count;
                     global.civic.professor.display = true;
                     global.civic.professor.max = jobScale(global.city.university.count);
                     return true;
@@ -1905,11 +1907,9 @@ const spaceProjects = {
                 }
             },
             action(args){
-                if (payCosts($(this)[0])){
-                    if (global.space.jump_gate.count < 100){
-                        global.space.jump_gate.count++;
-                        return true;
-                    }
+                if (global.space.jump_gate.count < 100 && payCosts($(this)[0])){
+                    incrementStruct('jump_gate','space');
+                    return true;
                 }
                 return false;
             },
@@ -2838,7 +2838,7 @@ const spaceProjects = {
             },
             action(args){
                 if (global.space.mass_relay.count < 100 && payCosts($(this)[0])){
-                    global.space.mass_relay.count++;
+                    incrementStruct('mass_relay','space');
                     if (global.space.mass_relay.count >= 100){
                         global.tech['outer'] = 6;
                         initStruct(spaceProjects.spc_dwarf.m_relay);
@@ -7052,7 +7052,7 @@ export function checkRequirements(action_set,region,action){
     if (action_set[region][action].hasOwnProperty('path') && !action_set[region][action].path.includes(path)){
         return false;
     }
-    var isMet = true;
+    let isMet = true;
     Object.keys(action_set[region][action].reqs).forEach(function (req){
         if (!global.tech[req] || global.tech[req] < action_set[region][action].reqs[req]){
             isMet = false;

@@ -7,7 +7,7 @@ import { defineResources, unlockCrates, unlockContainers, crateValue, containerV
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter, cancelRituals } from './industry.js';
 import { defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating, garrisonSize, govEffect } from './civics.js';
-import { spaceTech, interstellarTech, galaxyTech, incrementStruct, universe_affixes, renderSpace, piracy, fuel_adjust, isStargateOn } from './space.js';
+import { spaceTech, interstellarTech, galaxyTech, incrementStruct, universe_affixes, renderSpace, piracy, fuel_adjust, isStargateOn, spaceSectors, checkRequirements } from './space.js';
 import { renderFortress, fortressTech, warlordSetup } from './portal.js';
 import { edenicTech, renderEdenic } from './edenic.js';
 import { tauCetiTech, renderTauCeti, loneSurvivor } from './truepath.js';
@@ -5903,23 +5903,15 @@ export function storageMultipler(scale = 1, wiki = false){
 }
 
 export function checkCityRequirements(action){
-    if ((global.race['kindling_kindred'] || global.race['smoldering']) && action === 'lumber'){
+    if (action === 'lumber' && (global.race['kindling_kindred'] || global.race['smoldering'])){
         return false;
     }
-    else if ((global.race['kindling_kindred'] || global.race['smoldering']) && action === 'stone'){
+    else if (action === 'stone' && (global.race['kindling_kindred'] || global.race['smoldering'])){
         return true;
     }
-    let c_path = global.race['truepath'] ? 'truepath' : 'standard';
-    if (actions.city[action].hasOwnProperty('path') && !actions.city[action].path.includes(c_path)){
-        return false;
+    else {
+        return checkRequirements(actions, 'city', action);
     }
-    var isMet = true;
-    Object.keys(actions.city[action].reqs).forEach(function (req){
-        if (!global.tech[req] || global.tech[req] < actions.city[action].reqs[req]){
-            isMet = false;
-        }
-    });
-    return isMet;
 }
 
 function checkTechPath(tech){
@@ -8409,11 +8401,10 @@ export function structName(type){
 
 export function updateQueueNames(both, items){
     if (global.tech['queue'] && global.queue.display){
-        let deepScan = ['space','interstellar','galaxy','portal','tauceti'];
         for (let i=0; i<global.queue.queue.length; i++){
             let currItem = global.queue.queue[i];
             if (!items || items.indexOf(currItem.id) > -1){
-                if (deepScan.includes(currItem.action)){
+                if (spaceSectors.includes(currItem.action)){
                     let scan = true; Object.keys(actions[currItem.action]).forEach(function (region){
                         if (actions[currItem.action][region][currItem.type] && scan){
                             global.queue.queue[i].label = 
