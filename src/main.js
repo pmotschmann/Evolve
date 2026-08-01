@@ -11,7 +11,7 @@ import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMul
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types, spaceSectors } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
-import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, randomCoord, atShipyard, pinSalvage } from './truepath.js';
+import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, randomCoord, atShipyard, pinSalvage, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer } from './truepath.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
 import { defineGovernor, govern, govActive, removeTask } from './governor.js';
@@ -10516,14 +10516,16 @@ function midLoop(){
                 morale += 30 + (support_on['womling_fun'] * actions.tauceti.tau_red.womling_fun.val());
             }
 
-            let vil_pop = global.tech['womling_pop'] && global.tech.womling_pop >= 2 ? 6 : 5;
+            let vil_pop = womlingVillagePop();
             pop = support_on['womling_village'] * vil_pop;
             let farmers = support_on['womling_farm'] * 2;
             if (farmers > pop){ farmers = pop; }
-            let crop_per_farmer = global.tech['womling_pop'] ? 8 : 6;
-            if (global.tech['womling_gene']){ crop_per_farmer += 2; }
-            if (pop > farmers * crop_per_farmer){
-                pop = farmers * crop_per_farmer;
+            // Two farmers work a farm, so this is half whatever the farm advertises it can feed.
+            let crop_per_farmer = womlingFarmFood() / 2;
+            // Floored because a farm capped down to an odd number of farmers would otherwise leave a
+            // half a womling in the population.
+            if (pop > Math.floor(farmers * crop_per_farmer)){
+                pop = Math.floor(farmers * crop_per_farmer);
             }
             let unemployed = pop - farmers - injured;
 
@@ -10554,6 +10556,14 @@ function midLoop(){
             if (miners > unemployed){ miners = unemployed; }
             unemployed -= miners;
 
+            // Artisans are staffed last, after the jobs that feed and supply the colony.
+            let artisan = 0;
+            if (support_on['womling_craftworks']){
+                artisan = support_on['womling_craftworks'] * womlingArtisansPer();
+                if (artisan > unemployed){ artisan = unemployed; }
+                unemployed -= artisan;
+            }
+
             let heal_chance = global.tech['tech_womling_firstaid'] ? 3 : 4;
             if (Math.rand(0,10) === 0){
                 let raw = Math.rand(0,miners + scientist);
@@ -10573,6 +10583,9 @@ function midLoop(){
             }
             if (global.tauceti.hasOwnProperty('womling_lab')){
                 global.tauceti.womling_lab.scientist = scientist;
+            }
+            if (global.tauceti.hasOwnProperty('womling_craftworks')){
+                global.tauceti.womling_craftworks.artisan = artisan;
             }
 
             loyal -= miners;
@@ -10777,6 +10790,23 @@ function midLoop(){
         else if (global.race['servants']){
             global.race.servants['force_scavenger'] = not_scavanger_jobs_avail === 0 ? true : false;
             global.race.servants.used = total_servants;
+        }
+
+        // Womling artisans lend a skilled pair of hands each. They are temporary in the sense that the
+        // capacity follows the job — lose the craftworks or the population and it goes away — so the
+        // permanent allowance is kept in sbase and the total rebuilt from it every tick.
+        {
+            let artisans = womlingArtisans();
+            if (global.race['servants']){
+                if (!global.race.servants.hasOwnProperty('sbase')){
+                    global.race.servants['sbase'] = global.race.servants.smax || 0;
+                }
+                global.race.servants.smax = global.race.servants.sbase + artisans;
+            }
+            else if (artisans > 0){
+                // No servants of your own yet — the artisans alone are enough to open the workshop.
+                global.race['servants'] = { max: 0, used: 0, sbase: 0, smax: artisans, sused: 0, jobs: {}, sjobs: {}, force_scavenger: false };
+            }
         }
 
         if (global.race['servants'] && global.race.servants.hasOwnProperty('smax') && global.race.servants.smax > 0){
@@ -12667,7 +12697,10 @@ function longLoop(){
             }
         }
 
-        if (!global.race['warlord'] && (global.stats.matrix > 0 || global.stats.retire > 0) && !global.race['servants'] && Math.rand(0,25) === 0){
+        // Womling artisans can create the servants record before this ever fires, so the gate is on the
+        // prestige grant itself rather than on the record existing — otherwise an artisan workshop would
+        // quietly cost the player their prestige servants.
+        if (!global.race['warlord'] && (global.stats.matrix > 0 || global.stats.retire > 0) && !(global.race['servants'] && global.race.servants['prestige']) && Math.rand(0,25) === 0){
             let womlings = Math.min(global.stats.matrix,100) + Math.min(global.stats.retire,100) + Math.min(global.stats.eden,100);
             let skilled = Math.min(Math.min(global.stats.matrix, global.stats.retire),100);
             skilled += global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 5 ? 2 : 0;
@@ -12679,15 +12712,26 @@ function longLoop(){
                     }
                 });
             }
-            global.race['servants'] = {
-                max: womlings,
-                used: 0,
-                smax: skilled,
-                sused: 0,
-                jobs: {},
-                sjobs: {},
-                force_scavenger: false
-            };
+            if (global.race['servants']){
+                // A record already opened by the artisans: fold the prestige allowance into it rather
+                // than replacing it, so neither source is lost.
+                global.race.servants.max += womlings;
+                global.race.servants['sbase'] = (global.race.servants['sbase'] || 0) + skilled;
+                global.race.servants['prestige'] = true;
+            }
+            else {
+                global.race['servants'] = {
+                    max: womlings,
+                    used: 0,
+                    sbase: skilled,
+                    smax: skilled,
+                    sused: 0,
+                    jobs: {},
+                    sjobs: {},
+                    force_scavenger: false,
+                    prestige: true
+                };
+            }
             messageQueue((womlings + skilled) === 1 ? loc('civics_servants_msg1') : loc('civics_servants_msg2',[womlings + skilled]),'caution',false,['events','major_events']);
         }
 

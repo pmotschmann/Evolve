@@ -4,7 +4,7 @@ import { traits, fathomCheck } from './races.js';
 import { templeCount, actions } from './actions.js';
 import { workerScale } from './jobs.js';
 import { hellSupression } from './portal.js';
-import { syndicate } from './truepath.js';
+import { syndicate, womlingArtisans } from './truepath.js';
 import { govActive, defineGovernor } from './governor.js';
 import { govEffect } from './civics.js';
 import { highPopAdjust, production, teamster } from './prod.js';
@@ -258,6 +258,17 @@ export const craftingRatio = (function(){
                     multi: []
                 }
             };
+            // Womling artisans working a craftworks, a percent each on everything crafted.
+            {
+                let artisans = womlingArtisans();
+                if (artisans > 0){
+                    crafting.general.multi.push({
+                        name: loc(`tau_red_womling_craftworks`),
+                        manual: 1 + (artisans / 100),
+                        auto: 1 + (artisans / 100)
+                    });
+                }
+            }
             if (global.tech['foundry'] >= 2){
                 let skill = global.tech['foundry'] >= 5 ? (global.tech['foundry'] >= 8 ? 0.08 : 0.05) : 0.03;
                 crafting.general.add.push({

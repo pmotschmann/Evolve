@@ -283,7 +283,7 @@ export function powerGrid(type,reset){
             power_structs = ['tau_home:colony','tau_home:tau_factory','tau_home:mining_pit','tau_home:infectious_disease_lab','tau_home:marine_barracks','tau_home:data_decoder'];
             break;
         case 'tau_red':
-            power_structs = ['tau_red:womling_village','tau_red:womling_farm','tau_red:overseer','tau_red:womling_mine','tau_red:womling_fun','tau_red:womling_lab','tau_red:womling_rangers'];
+            power_structs = ['tau_red:womling_village','tau_red:womling_farm','tau_red:overseer','tau_red:womling_mine','tau_red:womling_fun','tau_red:womling_lab','tau_red:womling_craftworks','tau_red:womling_rangers'];
             break;
         case 'tau_roid':
             power_structs = ['tau_roid:mining_ship','tau_roid:whaling_ship','tau_roid:synthesizer'];

@@ -13927,6 +13927,47 @@ const techs = {
         },
         flair(){ return loc('tech_antimatter_reactor_flair'); }
     },
+    womling_land_use_planning: {
+        id: 'tech-womling_land_use_planning',
+        title(){ return loc('tech_womling_land_use_planning'); },
+        desc(){ return loc('tech_womling_land_use_planning'); },
+        category: 'womling',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { womling_tech: 11, resettle: 9, womling_pop: 2, womling_logistics: 2 },
+        grant: ['womling_pop',3],
+        cost: {
+            Knowledge(){ return 21000000; }
+        },
+        effect(){ return `<div>${loc('tech_womling_land_use_planning_effect',[8,20,loc('tau_red_orbital_platform'),3])}</div>`; },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    womling_artisans: {
+        id: 'tech-womling_artisans',
+        title(){ return loc('tech_womling_artisans'); },
+        desc(){ return loc('tech_womling_artisans'); },
+        category: 'womling',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { womling_tech: 12, womling_technicians: 1, resettle: 13 },
+        grant: ['womling_technicians',2],
+        cost: {
+            Knowledge(){ return 22500000; }
+        },
+        effect(){ return `<div>${loc('tech_womling_artisans_effect',[loc('tau_red_womling_craftworks')])}</div>`; },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.tauceti.tau_red.womling_craftworks);
+                return true;
+            }
+            return false;
+        }
+    },
     asteroid_analysis: {
         id: 'tech-asteroid_analysis',
         title(){ return loc('tech_asteroid_analysis'); },

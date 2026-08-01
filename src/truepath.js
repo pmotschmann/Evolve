@@ -2979,7 +2979,7 @@ const tauCetiModules = {
             },
             support_fuel(){ return { r: global.race['lone_survivor'] ? 'Helium_3' : 'Oil', a: global.tech['isolation'] ? (global.race['lone_survivor'] ? 8 : 32) : 125 }; },
             support(){
-                let sup = global.tech['womling_logistics'] ? 2.5 : 2;
+                let sup = global.tech['womling_pop'] && global.tech.womling_pop >= 3 ? 3 : (global.tech['womling_logistics'] ? 2.5 : 2);
                 if (global.race['lone_survivor']){ sup *= 2; }
                 return sup;
             },
@@ -3092,6 +3092,9 @@ const tauCetiModules = {
                 if (global.tauceti['womling_lab']){
                     desc = desc + `<div>${loc('job_scientist')}: ${global.tauceti['womling_lab'] ? global.tauceti.womling_lab.scientist : 0}</div>`;
                 }
+                if (global.tauceti['womling_craftworks']){
+                    desc = desc + `<div>${loc('job_artisan')}: ${womlingArtisans()}</div>`;
+                }
                 return desc;
             },
             action(){
@@ -3176,7 +3179,7 @@ const tauCetiModules = {
                 Wrought_Iron(offset){ return spaceCostMultiplier('womling_village', offset, wom_recycle(400000), 1.28, 'tauceti'); },
             },
             effect(){
-                let pop = global.tech['womling_pop'] && global.tech.womling_pop >= 2 ? 6 : 5;
+                let pop = womlingVillagePop();
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), planetName().red])}</div>`;
                 desc = desc + `<div>${loc('tau_red_womling_village_effect',[pop])}</div>`;
                 if (global.tech['tau_junksale']){
@@ -3215,8 +3218,7 @@ const tauCetiModules = {
                 Water(offset){ return spaceCostMultiplier('womling_farm', offset, 5000, 1.28, 'tauceti'); },
             },
             effect(){
-                let food = global.tech['womling_pop'] ? 16 : 12;
-                if (global.tech['womling_gene']){ food += 4; }
+                let food = womlingFarmFood();
                 let farmers = global.tauceti.hasOwnProperty('womling_farm') ? global.tauceti.womling_farm.farmers : 0;
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), planetName().red])}</div>`;
                 desc = desc + `<div>${loc('tau_red_womling_farm_effect',[food])}</div>`;
@@ -3480,6 +3482,45 @@ const tauCetiModules = {
             soldiers(){
                 return jobScale(5);
             }
+        },
+        womling_craftworks: {
+            id: 'tauceti-womling_craftworks',
+            title(){ return loc('tau_red_womling_craftworks'); },
+            desc(){ return `<div>${loc('tau_red_womling_craftworks')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`; },
+            type: 'industry',
+            reqs: { womling_technicians: 2 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('womling_craftworks', offset, 78000000, 1.28, 'tauceti'); },
+                Stone(offset){ return spaceCostMultiplier('womling_craftworks', offset, 6400000, 1.28, 'tauceti'); },
+                Adamantite(offset){ return spaceCostMultiplier('womling_craftworks', offset, 1850000, 1.28, 'tauceti'); },
+                Orichalcum(offset){ return spaceCostMultiplier('womling_craftworks', offset, 3100000, 1.28, 'tauceti'); },
+                Quantium(offset){ return spaceCostMultiplier('womling_craftworks', offset, wom_recycle(120000), 1.28, 'tauceti'); },
+            },
+            effect(){
+                let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), planetName().red])}</div>`;
+                desc = desc + `<div>${loc('tau_red_womling_employ',[womlingArtisansPer()])}</div>`;
+                desc = desc + `<div>${loc('tau_red_womling_craftworks_effect',[1])}</div>`;
+                desc = desc + `<div>${loc('tau_red_womling_craftworks_effect2',[1])}</div>`;
+                return desc;
+            },
+            s_type: 'tau_red',
+            support(){ return -1; },
+            powered(){ return 0; },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('womling_craftworks','tauceti');
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count : 0, on: 0, artisan: 0 },
+                    p: ['womling_craftworks','tauceti']
+                };
+            },
         },
     },
     tau_gas: {
@@ -4548,6 +4589,33 @@ export function tauCetiTech(){
     return tauCetiModules;
 }
 
+// Womlings one village houses. Read by the game loop as well as the village's own effect text, so it
+// lives in one place rather than being restated in both.
+export function womlingVillagePop(){
+    if (global.tech['womling_pop']){
+        if (global.tech.womling_pop >= 3){ return 8; }
+        if (global.tech.womling_pop >= 2){ return 6; }
+    }
+    return 5;
+}
+
+// Womlings one farm can feed. Two farmers work a farm, so the loop halves this to get the per-farmer
+// figure it caps the population with.
+export function womlingFarmFood(){
+    let food = global.tech['womling_pop'] && global.tech.womling_pop >= 3 ? 20 : (global.tech['womling_pop'] ? 16 : 12);
+    if (global.tech['womling_gene']){ food += 4; }
+    return food;
+}
+
+// Womlings one craftworks puts to work as artisans.
+export const womlingArtisansPer = () => 5;
+
+// Womlings currently working the artisan job. Each one lends a skilled pair of hands to your own
+// crafters and adds a percent to everything crafted, so the loop and the UI both read this.
+export function womlingArtisans(){
+    return global.tauceti && global.tauceti.hasOwnProperty('womling_craftworks') ? (global.tauceti.womling_craftworks.artisan || 0) : 0;
+}
+
 export function tauEnabled(){
     if (global.tech['tauceti'] && global.tech.tauceti >= 4){
         return true;
@@ -4579,7 +4647,7 @@ const razeTargets = {
     spc_enceladus: { c: 'space', s: ['water_freighter','zero_g_lab','operating_base','munitions_depot'] },
     spc_dwarf: { c: 'space', s: ['elerium_contain','e_reactor'] },
     tau_home: { c: 'tauceti', s: ['colony','tau_housing','pylon','tau_farm','mining_pit','fusion_generator','repository','tau_factory','infectious_disease_lab','tauceti_casino','tau_cultural_center','marine_barracks','data_decoder'] },
-    tau_red: { c: 'tauceti', s: ['overseer','womling_village','womling_farm','womling_mine','womling_fun','womling_lab','antimatter_reactor','womling_rangers'] }
+    tau_red: { c: 'tauceti', s: ['overseer','womling_village','womling_farm','womling_mine','womling_fun','womling_lab','womling_craftworks','antimatter_reactor','womling_rangers'] }
 };
 
 // Ships shoot the horde from orbit, but bombardment is a blunt instrument against a scattered mob —
