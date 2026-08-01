@@ -8851,10 +8851,21 @@ var mapShips = true;
 // The world point at the centre of the viewport (see recenterOn/refocus in buildSolarMap). Also what
 // distant-star culling measures from.
 var mapFocus = { x: 0, y: 0, z: 0 };
+// Whether the map should be locked onto a star when zooming. Set when clicking a star, reset when panning away.
+// Zooming with scroll follows cursor when unlocked, and center of screen (where the locked star is) when locked.
+var starLockOn = false;
 
-// Below this scale the map is showing whole systems as points and planet names give way to star
+// Below this scale the map is showing planets as points and planet names give way to star
 // names; at or above it a system's own planets are made out individually.
-const labelMinScale = 4;
+const planetLabelMinScale = 4;
+// Below this scale the map is showing entire systems as points, with multiple systems
+// potentially on screen and system names becoming cluttered
+// Label sizes stop having constant size, instead decreasing
+// with zoom as the scale further decreases
+const systemLabelMinScale = 0.0015;
+// Below this scale the labels' sizes become too small to legibly read; completely stop drawing 
+// them at this point. Instead start displaying star names on hover.
+const systemLabelAbsMinScale = 0.0006;
 // Once a system's planets are legible, stars further than this from the point being looked at are
 // skipped — about a light year, so anything cut is at least a quarter of a million pixels off screen
 // at that zoom. Culling them costs nothing visually and saves drawing a hundred systems' worth of
@@ -8865,24 +8876,12 @@ const STAR_CULL_AU = 63000;
 // 21185 sits only 45,000 AU to the side of Tau Ceti while being 1.2 million AU beyond it, and would
 // have had its whole system drawn over Tau Ceti's.
 function starCulled(pos){
-    return mapScale >= labelMinScale && dist3(pos, mapFocus) > STAR_CULL_AU;
+    return mapScale >= planetLabelMinScale && dist3(pos, mapFocus) > STAR_CULL_AU;
 }
-// Canvas will not accept a font larger than this — measured, not assumed. It matters because the map's
-// text is sized in world units (`25 / mapScale`) inside a transform that scales by mapScale, which
-// normally cancels out to a constant 25px on screen. Once the requested size passes the clamp the
-// cancelling stops and the labels start shrinking with the zoom instead: at the far zoom-out levels the
-// star names dwindle to a few pixels and then to nothing.
-const MAP_FONT_MAX_PX = 10000;
-const STAR_LABEL_PX = 25;
-// Height the drawn star labels actually come out at on screen, clamp included.
-function starLabelScreenPx(){
-    return Math.min(STAR_LABEL_PX / mapScale, MAP_FONT_MAX_PX) * mapScale;
-}
-// Zoomed out this far the star names are too small to read, which is the point at which naming whatever
+// Zoomed out this far the star names would be too small to read, which is the point at which naming whatever
 // the pointer is over stops being redundant and starts being the only way to tell what you are seeing.
-const STAR_LABEL_LEGIBLE_PX = 10;
 function starNamesHidden(){
-    return starLabelScreenPx() < STAR_LABEL_LEGIBLE_PX;
+    return mapScale < systemLabelAbsMinScale;
 }
 // The hover name is drawn in screen space instead, so it is this readable at any zoom.
 const HOVER_LABEL_PX = 16;
@@ -9594,19 +9593,22 @@ export function drawMap() {
     ctx.shadowBlur = 2;
     ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
 
-    ctx.font = `${20 / mapScale}px serif`;
+    ctx.font = `20px serif`;
     // Ship names — a fleet is labelled by its size rather than by whichever member happens to be first.
     for (let mark of shipMarks) {
+        if (mapScale < planetLabelMinScale){ continue; }   // zoomed out: show only star labels
+
         ctx.fillStyle = mark.foe ? "#ff5555" : "#009aff";
         let ship = mark.ship;
         let ref = shipRefStar(ship);
         let here = rel(ship.xy, ref);
         ctx.save();
         ctx.translate(pX(ref), pY(ref));
+        ctx.scale(1 / mapScale, 1 / mapScale);
         // Offset in screen pixels too, so the name sits by the dot at every zoom instead of
         // drifting further out the further you zoom in.
         let label = mark.count > 1 ? loc('outer_shipyard_fleet_map',[mark.count]) : ship.name;
-        ctx.fillText(label, pX(here) + SHIP_LABEL_PX / mapScale, pY(here) - SHIP_LABEL_PX / mapScale);
+        ctx.fillText(label, pX(here) * mapScale + SHIP_LABEL_PX, pY(here) * mapScale - SHIP_LABEL_PX);
         ctx.restore();
     }
 
@@ -9619,55 +9621,71 @@ export function drawMap() {
             let here = rel({ x: beacon.x, y: beacon.y, z: beacon.z || 0 }, ref);
             ctx.save();
             ctx.translate(pX(ref), pY(ref));
-            ctx.fillText(beacon.n, pX(here) + BEACON_LABEL_PX / mapScale, pY(here) - BEACON_LABEL_PX / mapScale);
+            ctx.scale(1 / mapScale, 1 / mapScale);
+            ctx.fillText(beacon.n, pX(here) * mapScale + BEACON_LABEL_PX, pY(here) * mapScale - BEACON_LABEL_PX);
             ctx.restore();
         }
     }
 
     ctx.fillStyle = "#ffa500";
-    ctx.font = `${25 / mapScale}px serif`;
+    ctx.font = `25px serif`;
     ctx.textAlign = 'center';   // labels are centered horizontally above the item they label
     // Planet labels clutter once zoomed out past labelMinScale, so they are hidden below it; star
     // labels are kept (stars stay visible at any zoom).
     // Planet names
-    for (let [id, planet] of Object.entries(spacePlanetStats)) {
-        if (homeCulled){ break; }
-        if (planet.star || planet.startype){ continue; }   // all star labels handled separately (below)
-        if (mapScale < labelMinScale){ continue; }   // zoomed out: planet names give way to star labels
-        if (actions.space[id] && (actions.space[id].info.showDest ? actions.space[id].info.showDest().l : global.settings.space[id.substring(4)]) ){
-            if (global.race['orbit_decayed'] && ['spc_home'].includes(id)){
-                continue;
-            }
-            let nameRef = actions.space[id].info.name;
-            let nameText = typeof nameRef === "function" ? nameRef() : nameRef;
-            let lx = pX(planetLocation[id]), ly = pY(planetLocation[id]);
-            if (planet.moon) {
-                switch (id){
-                    case 'spc_moon':
-                        ctx.fillText(nameText, lx + 0.1, ly + 0.1);
-                        break;
-                    case 'spc_titan':
-                        ctx.fillText(nameText, lx - 0.3, ly - 0.3);
-                        break;
-                    default:
-                        ctx.fillText(nameText, lx + 0.25, ly + 0.2);
-                        break;
+
+    // If we're zoomed out too much then there's no point in drawing names - none will be legible anyway
+    if (!starNamesHidden()) {
+        // Scale the text to normal to prevent rendering bugs with font sizes below 0.01px. 
+        // Cap the scale to systemLabelMinScale to prevent text being cluttered with multiple systems on screen
+        ctx.save();
+        if (mapScale > systemLabelMinScale)
+            ctx.scale(1 / mapScale, 1 / mapScale);
+        else
+            ctx.scale(1 / systemLabelMinScale, 1 / systemLabelMinScale);
+        for (let [id, planet] of Object.entries(spacePlanetStats)) {
+            if (homeCulled){ break; }
+            if (planet.star || planet.startype){ continue; }   // all star labels handled separately (below)
+            if (mapScale < planetLabelMinScale){ continue; }   // zoomed out: planet names give way to star labels
+            if (actions.space[id] && (actions.space[id].info.showDest ? actions.space[id].info.showDest().l : global.settings.space[id.substring(4)]) ){
+                if (global.race['orbit_decayed'] && ['spc_home'].includes(id)){
+                    continue;
                 }
-            } else {
-                ctx.fillText(nameText, lx, ly - (0.2 * planet.size));
+                let nameRef = actions.space[id].info.name;
+                let nameText = typeof nameRef === "function" ? nameRef() : nameRef;
+                let lx = pX(planetLocation[id]), ly = pY(planetLocation[id]);
+                if (planet.moon) {
+                    switch (id){
+                        case 'spc_moon':
+                            ctx.fillText(nameText, (lx + 0.1) * mapScale, (ly + 0.1) * mapScale);
+                            break;
+                        case 'spc_titan':
+                            ctx.fillText(nameText, (lx - 0.3) * mapScale, (ly - 0.3) * mapScale);
+                            break;
+                        default:
+                            ctx.fillText(nameText, (lx + 0.25) * mapScale, (ly + 0.2) * mapScale);
+                            break;
+                    }
+                } else {
+                    ctx.fillText(nameText, lx * mapScale, (ly - (0.2 * planet.size)) * mapScale);
+                }
             }
         }
-    }
-    // The Sun's label (home frame, at the origin): the cluster name (label) when zoomed out, and the
-    // per-star name (zlabel) when zoomed in — opposite zoom ranges, so exactly one shows.
-    {
-        let sunText = mapScale < labelMinScale ? spacePlanetStats.spc_sun.label : spacePlanetStats.spc_sun.zlabel;
-        if (sunText && !homeCulled){
-            // Sit just above the drawn dot (its radius + a small screen-constant gap) so the label
-            // stays close to the star at any zoom.
-            ctx.fillText(sunText, pX(planetLocation.spc_sun), pY(planetLocation.spc_sun) - (Math.max(spacePlanetStats.spc_sun.size / 10, 1 / mapScale) + 2 / mapScale));
+        // The Sun's label (home frame, at the origin): the cluster name (label) when zoomed out, and the
+        // per-star name (zlabel) when zoomed in — opposite zoom ranges, so exactly one shows.
+        {
+            let sunText = mapScale < planetLabelMinScale ? spacePlanetStats.spc_sun.label : spacePlanetStats.spc_sun.zlabel;
+            if (sunText && !homeCulled){
+                // Sit just above the drawn dot (its radius + a small screen-constant gap) so the label
+                // stays close to the star at any zoom.
+                ctx.fillText(sunText, pX(planetLocation.spc_sun) * mapScale, (pY(planetLocation.spc_sun) - Math.max(spacePlanetStats.spc_sun.size * mapScale / 10, 1) + 2));
+            }
         }
+        // Undo text scaling
+        ctx.restore();
     }
+
+
     // --- Star systems ---
     // Every star beyond the Sun is drawn in a frame translated to the star, so its huge coordinates
     // (hundreds of thousands of AU from the origin) keep canvas precision. Drawing a star and its
@@ -9737,32 +9755,39 @@ export function drawMap() {
         }
 
         // Names
-        ctx.shadowOffsetX = 2; ctx.shadowOffsetY = 2; ctx.shadowBlur = 2; ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-        ctx.fillStyle = "#ffa500";
-        ctx.font = `${25 / mapScale}px serif`;
-        // Cluster name (label) when zoomed out; per-star name (zlabel, which distinguishes companions
-        // like "Sirius A" / "Sirius B") when zoomed in. Opposite zoom ranges, so at most one shows.
-        {
-            let starText = mapScale < labelMinScale ? star.label : star.zlabel;
-            // Sit just above the drawn dot (its radius + a small screen-constant gap) so the label
-            // stays close to the star at any zoom.
-            if (starText){ ctx.fillText(starText, 0, -(Math.max(star.size / 10, 1 / mapScale) + 2 / mapScale)); }
-        }
-        // Labels for bodies that are themselves stars (e.g. a binary orbiting an invisible barycenter):
-        // label when zoomed out, zlabel when zoomed in — drawn just above the body at its orbit position.
-        for (let [id, planet] of Object.entries(spacePlanetStats)) {
-            if (planet.star !== starId || !planet.bodystar){ continue; }
-            let bt = mapScale < labelMinScale ? planet.label : planet.zlabel;
-            if (!bt){ continue; }
-            let q = rel(genXYcoord(id), sc);
-            ctx.fillText(bt, pX(q), pY(q) - (Math.max(planet.size / 10, 1 / mapScale) + 2 / mapScale));
-        }
-        for (let [id, planet] of Object.entries(spacePlanetStats)) {
-            if (planet.star !== starId || (planet.unlock && !global.tech[planet.unlock])){ continue; }
-            if (mapScale < labelMinScale){ continue; }
-            if (!actions.tauceti[id] || !actions.tauceti[id].info){ continue; }
-            let q = rel(genXYcoord(id), sc);
-            ctx.fillText(actions.tauceti[id].info.name(), pX(q), pY(q) - (0.2 * planet.size));
+        // If we're zoomed out too much then there's no point in drawing names - none will be legible anyway
+        if (!starNamesHidden()) {
+            ctx.shadowOffsetX = 2; ctx.shadowOffsetY = 2; ctx.shadowBlur = 2; ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+            ctx.fillStyle = "#ffa500";
+            ctx.font = `25px serif`;
+            if (mapScale > systemLabelMinScale)
+                ctx.scale(1 / mapScale, 1 / mapScale);
+            else
+                ctx.scale(1 / systemLabelMinScale, 1 / systemLabelMinScale);
+            // Cluster name (label) when zoomed out; per-star name (zlabel, which distinguishes companions
+            // like "Sirius A" / "Sirius B") when zoomed in. Opposite zoom ranges, so at most one shows.
+            {
+                let starText = mapScale < planetLabelMinScale ? star.label : star.zlabel;
+                // Sit just above the drawn dot (its radius + a small screen-constant gap) so the label
+                // stays close to the star at any zoom.
+                if (starText){ ctx.fillText(starText, 0, -(Math.max(star.size / 10 * mapScale, 1) + 2)); }
+            }
+            // Labels for bodies that are themselves stars (e.g. a binary orbiting an invisible barycenter):
+            // label when zoomed out, zlabel when zoomed in — drawn just above the body at its orbit position.
+            for (let [id, planet] of Object.entries(spacePlanetStats)) {
+                if (planet.star !== starId || !planet.bodystar){ continue; }
+                let bt = mapScale < planetLabelMinScale ? planet.label : planet.zlabel;
+                if (!bt){ continue; }
+                let q = rel(genXYcoord(id), sc);
+                ctx.fillText(bt, pX(q) * mapScale, pY(q) * mapScale - (Math.max(planet.size / 10 * mapScale, 1) + 2));
+            }
+            for (let [id, planet] of Object.entries(spacePlanetStats)) {
+                if (planet.star !== starId || (planet.unlock && !global.tech[planet.unlock])){ continue; }
+                if (mapScale < planetLabelMinScale){ continue; }
+                if (!actions.tauceti[id] || !actions.tauceti[id].info){ continue; }
+                let q = rel(genXYcoord(id), sc);
+                ctx.fillText(actions.tauceti[id].info.name(), pX(q) * mapScale, (pY(q) - (0.2 * planet.size)) * mapScale);
+            }
         }
 
         ctx.restore();
@@ -9930,6 +9955,7 @@ function buildSolarMap(parentNode) {
                 if (hit){
                     recenterOn(genXYcoord(hit));
                     drawMap();
+                    starLockOn = hit; // Lock onto the star to allow zooming onto it instead of following cursor
                 }
             }
             drag = false;
@@ -9955,6 +9981,7 @@ function buildSolarMap(parentNode) {
             if (drag === 'pan') {
                 if (press && (Math.abs(e.clientX - press.x) > CLICK_SLOP_PX || Math.abs(e.clientY - press.y) > CLICK_SLOP_PX)){
                     press.moved = true;
+                    starLockOn = false; // Unlock from a star if one is locked into, making scroll zooming follow cursor again
                 }
                 mapShift.x = e.clientX - dragOffset.x;
                 mapShift.y = e.clientY - dragOffset.y;
@@ -9975,14 +10002,58 @@ function buildSolarMap(parentNode) {
         .on("wheel", (e) => {
             if(e.originalEvent.deltaY < 0) {
                 mapScale /= 0.8;
-                mapShift.x = canvasOffset.x + (mapShift.x - canvasOffset.x) / 0.8;
-                mapShift.y = canvasOffset.y + (mapShift.y - canvasOffset.y) / 0.8;
+
+                if (starLockOn) {
+                    // Zoom wrt center of screen, keeping locked star in the center
+                    mapShift.x = canvasOffset.x + (mapShift.x - canvasOffset.x) / 0.8;
+                    mapShift.y = canvasOffset.y + (mapShift.y - canvasOffset.y) / 0.8;
+                }
+                else {
+                    // Zoom wrt cursor position, moving center of screen as needed
+                    let rect = document.getElementById("mapCanvas").getBoundingClientRect();
+                    let cx = e.originalEvent.clientX - rect.left, cy = e.originalEvent.clientY - rect.top;
+
+                    //temporarily shift to cursor location
+                    mapShift.x += (canvasOffset.x - cx);
+                    mapShift.y += (canvasOffset.y - cy);
+                    
+                    //zoom, centered on cursor location
+                    mapShift.x = canvasOffset.x + (mapShift.x - canvasOffset.x) / 0.8;
+                    mapShift.y = canvasOffset.y + (mapShift.y - canvasOffset.y) / 0.8;
+
+                    //shift back to original location
+                    mapShift.x -= (canvasOffset.x - cx);
+                    mapShift.y -= (canvasOffset.y - cy);
+                    refocus();
+                }
                 drawMap();
             }
             else {
                 mapScale *= 0.8;
-                mapShift.x = canvasOffset.x + (mapShift.x - canvasOffset.x) * 0.8;
-                mapShift.y = canvasOffset.y + (mapShift.y - canvasOffset.y) * 0.8;
+
+                if (starLockOn) {
+                    // Zoom wrt center of screen, keeping locked star in the center
+                    mapShift.x = canvasOffset.x + (mapShift.x - canvasOffset.x) * 0.8;
+                    mapShift.y = canvasOffset.y + (mapShift.y - canvasOffset.y) * 0.8;
+                }
+                else {
+                    // Zoom wrt cursor position, moving center of screen as needed
+                    let rect = document.getElementById("mapCanvas").getBoundingClientRect();
+                    let cx = e.originalEvent.clientX - rect.left, cy = e.originalEvent.clientY - rect.top;
+
+                    //temporarily shift to cursor location
+                    mapShift.x += (canvasOffset.x - cx);
+                    mapShift.y += (canvasOffset.y - cy);
+                    
+                    //zoom, centered on cursor location
+                    mapShift.x = canvasOffset.x + (mapShift.x - canvasOffset.x) * 0.8;
+                    mapShift.y = canvasOffset.y + (mapShift.y - canvasOffset.y) * 0.8;
+
+                    //shift back to original location
+                    mapShift.x -= (canvasOffset.x - cx);
+                    mapShift.y -= (canvasOffset.y - cy);
+                    refocus();
+                }
                 drawMap();
             }
             return false;
