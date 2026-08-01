@@ -1935,6 +1935,7 @@ export const perkList = {
             desc += `<div>${loc("achieve_perks_overlord2")}</div>`;
             desc += `<div>${loc("achieve_perks_overlord3")}</div>`;
             desc += `<div>${loc("achieve_perks_overlord4")}</div>`;
+            desc += `<div>${loc("achieve_perks_overlord5",[loc('interstellar_laboratory_title')])}</div>`;
             return desc;
         },
         active(){
