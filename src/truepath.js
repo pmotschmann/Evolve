@@ -7295,7 +7295,7 @@ export const spacePlanetStats = {
     spc_gas_moon: { dist: 5.204, orbit: 4330, size: 0.123, moon: true, inc: 1.3 },
     spc_belt: { dist: 2.7, orbit: 1642, size: 0.054, belt: true, inc: 10 },
     spc_dwarf: { dist: 2.77, orbit: 1682, size: 0.052, inc: 10.6 },
-    spc_saturn: { dist: 9.539, orbit: 10751, size: 0.579, inc: 2.5 },
+    spc_saturn: { dist: 9.539, orbit: 10751, size: 0.579, inc: 2.5, rings: true },
     spc_titan: { dist: 9.536, orbit: 10751, size: 0.122, moon: true, inc: 2.5 },
     spc_enceladus: { dist: 9.542, orbit: 10751, size: 0.038, moon: true, inc: 2.5 },
     spc_uranus: { dist: 19.8, orbit: 30660, size: 0.382, inc: 0.77 },
@@ -8860,6 +8860,11 @@ var mapFocus = { x: 0, y: 0, z: 0 };
 // Whether the map should be locked onto a star when zooming. Set when clicking a star, reset when panning away.
 // Zooming with scroll follows cursor when unlocked, and center of screen (where the locked star is) when locked.
 var starLockOn = false;
+// Every body drawn big enough to make out, recorded in screen pixels as drawMap lays it down:
+// { id, x, y, r }. Hit-testing against what was actually painted is exact — the alternative is
+// re-deriving each body's projected size and its distance-based minimum outside the draw, and any
+// drift between the two shows up as a click that misses the thing under the pointer.
+var mapPickable = [];
 
 // Below this scale the map is showing planets as points and planet names give way to star
 // names; at or above it a system's own planets are made out individually.
@@ -9037,6 +9042,15 @@ function hexRGBA(hex, a){
     return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
 }
 
+// As hexShade, but keeps an alpha channel — for things drawn over the body they belong to.
+function hexShadeRGBA(hex, f, a){
+    let n = parseInt(hex, 16);
+    let r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+    let t = Math.max(0, f - 1);
+    r += (255 - r) * t; g += (255 - g) * t; b += (255 - b) * t;
+    return `rgba(${Math.round(r)},${Math.round(g)},${Math.round(b)},${a})`;
+}
+
 // f > 1 lightens toward white, f < 1 darkens. Lightening a near-white star just leaves it white.
 function hexShade(hex, f){
     let n = parseInt(hex, 16);
@@ -9052,15 +9066,53 @@ function hexShade(hex, f){
 }
 
 const PLANET_TEX = 128;
+
+// The Sol bodies are the ones players stare at for a whole run, so they get their own colour and
+// surface rather than the generic pool. Colour is only a fallback inside setColor — syndicate
+// strength, spectral type and the gate/dwarf highlights are all resolved first and still win, so
+// nothing the map already encodes is lost.
+const SOL_BODY_COLOR = {
+    spc_home:      '2f6fb5',   // Earth, ocean blue
+    spc_moon:      '9d9a93',   // Luna, grey regolith
+    spc_hell:      '8a8078',   // Mercury, dark grey-brown
+    spc_venus:     'd9b878',   // Venus, pale sulphur cloud
+    spc_red:       'b1512c',   // Mars, rust
+    spc_belt:      '766d64',   // asteroid rubble
+    spc_gas:       'c8a172',   // Jupiter, tan
+    spc_gas_moon:  'b0a189',   // Ganymede, dusty ice
+    spc_saturn:    'd7c391',   // Saturn, pale gold
+    spc_titan:     'c8791f',   // Titan, orange haze
+    spc_enceladus: 'e6f1f5',   // Enceladus, clean ice
+    spc_uranus:    'a5d9de',   // Uranus, pale cyan
+    spc_neptune:   '3a5ec4',   // Neptune, deep blue
+    spc_triton:    'd6c4c0',   // Triton, pink-grey ice
+    spc_kuiper:    '6a6a76',   // Kuiper rubble
+    spc_eris:      'c6c6d0',   // Eris, dirty ice
+};
+
+// Surface treatment per body. Anything not named here falls back to the generic pool below.
+const SOL_BODY_STYLE = {
+    spc_home: 'earth',      spc_moon: 'cratered',   spc_hell: 'cratered',
+    spc_venus: 'venus',     spc_red: 'mars',        spc_gas: 'jupiter',
+    spc_gas_moon: 'cratered', spc_saturn: 'saturn', spc_titan: 'haze',
+    spc_enceladus: 'ice',   spc_uranus: 'icegiant', spc_neptune: 'neptune',
+    spc_triton: 'ice',      spc_dwarf: 'cratered',  spc_eris: 'ice',
+};
+
 // Which surface a body gets. Nothing in the table marks gas giants, but the big non-moon bodies are
 // exactly the gas giants (Jupiter/Saturn/Tau Ceti's gas worlds and the large outer-system planets).
-function bodyKind(planet){
+function bodyKind(planet, id){
+    if (id && SOL_BODY_STYLE[id]){ return SOL_BODY_STYLE[id]; }
     if (planet.belt){ return 'belt'; }
     // Sizes are real radii on a square-root scale, so this is where the gas and ice giants start:
     // Neptune lands on 0.376 and the largest terrestrials well below it.
     if (planet.size >= 0.35 && !planet.moon){ return 'gas'; }
     return 'rock';
 }
+
+// Styles that describe one specific world rather than a class of them, so they get a single texture
+// each instead of a pool of random variants.
+const NAMED_STYLES = ['earth','mars','venus','jupiter','saturn','icegiant','neptune','haze','ice','cratered'];
 
 // Surfaces are drawn from a small pool rather than one per body: a texture is a megabyte-scale
 // canvas, and there are well over a hundred bodies on the map. Each body picks its variant from its
@@ -9070,8 +9122,98 @@ const PLANET_VARIANTS = 8;
 // Color-free overlay for a planet, moon or belt body: surface detail, then the light and shade that
 // turn a flat disc into a lit ball. Lit from the upper left throughout, so the whole map reads as
 // one scene rather than each body having its own sun.
+// Soft mottled patches, the shared base for every rocky surface.
+function texBlobs(x, rnd, S, count, minR, maxR, darkBias, strength){
+    for (let i = 0; i < count; i++){
+        let bx = rnd() * S, by = rnd() * S;
+        let br = S * (minR + rnd() * (maxR - minR));
+        let g = x.createRadialGradient(bx, by, 0, bx, by, br);
+        g.addColorStop(0, rnd() < darkBias
+            ? `rgba(0,0,0,${(strength * (0.5 + rnd())).toFixed(3)})`
+            : `rgba(255,255,255,${(strength * 0.6 * (0.5 + rnd())).toFixed(3)})`);
+        g.addColorStop(1, 'rgba(0,0,0,0)');
+        x.fillStyle = g;
+        x.beginPath();
+        x.arc(bx, by, br, 0, Math.PI * 2);
+        x.fill();
+    }
+}
+
+// Horizontal cloud belts. `contrast` sets how hard the banding reads — Jupiter is stark, Uranus is
+// almost smooth — and bands are drawn as soft-edged strips so they blend rather than stripe.
+function texBands(x, rnd, S, contrast, minH, maxH){
+    for (let y = 0; y < S; ){
+        let h = S * (minH + rnd() * (maxH - minH));
+        let dark = rnd() < 0.5;
+        let a = contrast * (0.4 + rnd() * 0.6);
+        let g = x.createLinearGradient(0, y, 0, y + h);
+        let col = dark ? '0,0,0' : '255,255,255';
+        g.addColorStop(0, `rgba(${col},0)`);
+        g.addColorStop(0.5, `rgba(${col},${a.toFixed(3)})`);
+        g.addColorStop(1, `rgba(${col},0)`);
+        x.fillStyle = g;
+        x.fillRect(0, y, S, h);
+        y += h;
+    }
+}
+
+// Impact craters: a dark floor, a bright rim catching the light from the upper left, and a shadow
+// opposite it. What makes a body read as airless rather than merely rough.
+function texCraters(x, rnd, S, count){
+    for (let i = 0; i < count; i++){
+        let cx = rnd() * S, cy = rnd() * S;
+        let cr = S * (0.02 + rnd() * 0.075);
+        x.beginPath();
+        x.arc(cx, cy, cr, 0, Math.PI * 2);
+        x.fillStyle = `rgba(0,0,0,${(0.10 + rnd() * 0.14).toFixed(3)})`;
+        x.fill();
+        x.beginPath();
+        x.arc(cx - cr * 0.12, cy - cr * 0.12, cr, Math.PI * 0.9, Math.PI * 1.9);
+        x.strokeStyle = `rgba(255,255,255,${(0.12 + rnd() * 0.16).toFixed(3)})`;
+        x.lineWidth = Math.max(1, cr * 0.22);
+        x.stroke();
+        x.beginPath();
+        x.arc(cx, cy, cr * 0.92, Math.PI * 1.9, Math.PI * 2.9);
+        x.strokeStyle = `rgba(0,0,0,${(0.10 + rnd() * 0.12).toFixed(3)})`;
+        x.lineWidth = Math.max(1, cr * 0.2);
+        x.stroke();
+    }
+}
+
+// Bright polar caps, sized as a fraction of the disc.
+function texPoles(x, S, size, alpha){
+    for (let s of [-1, 1]){
+        let cy = s < 0 ? 0 : S;
+        let g = x.createRadialGradient(S / 2, cy, 0, S / 2, cy, S * size);
+        g.addColorStop(0, `rgba(255,255,255,${alpha})`);
+        g.addColorStop(0.65, `rgba(255,255,255,${alpha * 0.5})`);
+        g.addColorStop(1, 'rgba(255,255,255,0)');
+        x.fillStyle = g;
+        x.fillRect(0, 0, S, S);
+    }
+}
+
+// An oval storm, as on Jupiter and Neptune.
+function texSpot(x, S, cx, cy, rx, ry, dark, alpha){
+    x.save();
+    x.translate(S * cx, S * cy);
+    x.scale(1, ry / rx);
+    let g = x.createRadialGradient(0, 0, 0, 0, 0, S * rx);
+    let col = dark ? '0,0,0' : '255,255,255';
+    g.addColorStop(0, `rgba(${col},${alpha})`);
+    g.addColorStop(0.7, `rgba(${col},${alpha * 0.45})`);
+    g.addColorStop(1, `rgba(${col},0)`);
+    x.fillStyle = g;
+    x.beginPath();
+    x.arc(0, 0, S * rx, 0, Math.PI * 2);
+    x.fill();
+    x.restore();
+}
+
 function planetTexture(kind, seed){
-    let variant = (seed >>> 0) % PLANET_VARIANTS;
+    // A style that describes one particular world only needs one texture; the generic classes keep
+    // their pool so neighbouring anonymous rocks don't all share a face.
+    let variant = NAMED_STYLES.includes(kind) ? 0 : (seed >>> 0) % PLANET_VARIANTS;
     let key = `p:${kind}:${variant}`;
     if (bodyTexCache[key]){ return bodyTexCache[key]; }
 
@@ -9086,33 +9228,71 @@ function planetTexture(kind, seed){
     x.arc(R, R, R, 0, Math.PI * 2);
     x.clip();
 
-    if (kind === 'gas'){
-        // Cloud bands of alternating brightness, varying in depth so they don't look striped.
-        for (let y = 0; y < S; ){
-            let h = S * (0.05 + rnd() * 0.1);
-            x.fillStyle = rnd() < 0.5
-                ? `rgba(255,255,255,${(0.05 + rnd() * 0.1).toFixed(3)})`
-                : `rgba(0,0,0,${(0.05 + rnd() * 0.12).toFixed(3)})`;
-            x.fillRect(0, y, S, h);
-            y += h;
-        }
-    }
-    else {
-        // Rocky: soft mottled patches. Belts get more, smaller ones so they read as rubble.
-        let blobs = kind === 'belt' ? 26 : 14;
-        for (let i = 0; i < blobs; i++){
-            let bx = rnd() * S, by = rnd() * S;
-            let br = S * (kind === 'belt' ? 0.03 + rnd() * 0.05 : 0.07 + rnd() * 0.14);
-            let g = x.createRadialGradient(bx, by, 0, bx, by, br);
-            g.addColorStop(0, rnd() < 0.6
-                ? `rgba(0,0,0,${(0.1 + rnd() * 0.18).toFixed(3)})`
-                : `rgba(255,255,255,${(0.07 + rnd() * 0.12).toFixed(3)})`);
-            g.addColorStop(1, 'rgba(0,0,0,0)');
-            x.fillStyle = g;
-            x.beginPath();
-            x.arc(bx, by, br, 0, Math.PI * 2);
-            x.fill();
-        }
+    switch (kind){
+        case 'earth':
+            // Continents as heavy mottling, then a thin bright veil of cloud over the top and caps.
+            texBlobs(x, rnd, S, 16, 0.09, 0.2, 0.72, 0.34);
+            texBlobs(x, rnd, S, 10, 0.05, 0.12, 0.0, 0.13);
+            texPoles(x, S, 0.2, 0.5);
+            break;
+        case 'mars':
+            // Dark maria and bright dust, with the caps that make it unmistakable.
+            texBlobs(x, rnd, S, 14, 0.08, 0.22, 0.7, 0.26);
+            texPoles(x, S, 0.17, 0.62);
+            break;
+        case 'venus':
+            // Total cloud cover: no surface, just slow swirls at very low contrast.
+            texBands(x, rnd, S, 0.07, 0.1, 0.2);
+            texBlobs(x, rnd, S, 9, 0.12, 0.26, 0.45, 0.09);
+            break;
+        case 'jupiter':
+            texBands(x, rnd, S, 0.16, 0.045, 0.09);
+            texSpot(x, S, 0.34, 0.63, 0.11, 0.062, true, 0.3);
+            break;
+        case 'saturn':
+            // Softer and finer than Jupiter — Saturn's banding is famously muted.
+            texBands(x, rnd, S, 0.085, 0.035, 0.07);
+            break;
+        case 'icegiant':
+            // Nearly featureless, just a hint of banding.
+            texBands(x, rnd, S, 0.045, 0.09, 0.18);
+            break;
+        case 'neptune':
+            texBands(x, rnd, S, 0.07, 0.07, 0.15);
+            texSpot(x, S, 0.62, 0.4, 0.1, 0.06, true, 0.26);
+            break;
+        case 'haze':
+            // Titan: a thick smog with no visible surface at all.
+            texBands(x, rnd, S, 0.05, 0.14, 0.26);
+            break;
+        case 'ice':
+            // Clean ice with fracture lines rather than craters.
+            texBlobs(x, rnd, S, 10, 0.06, 0.16, 0.35, 0.14);
+            for (let i = 0; i < 7; i++){
+                x.beginPath();
+                x.moveTo(rnd() * S, rnd() * S);
+                x.lineTo(rnd() * S, rnd() * S);
+                x.strokeStyle = `rgba(0,0,0,${(0.06 + rnd() * 0.08).toFixed(3)})`;
+                x.lineWidth = Math.max(1, S * 0.008);
+                x.stroke();
+            }
+            break;
+        case 'cratered':
+            texBlobs(x, rnd, S, 10, 0.08, 0.2, 0.6, 0.16);
+            texCraters(x, rnd, S, 22);
+            break;
+        case 'gas':
+            texBands(x, rnd, S, 0.12, 0.05, 0.15);
+            break;
+        default:
+            // Rocky: soft mottled patches. Belts get more, smaller ones so they read as rubble.
+            if (kind === 'belt'){
+                texBlobs(x, rnd, S, 26, 0.03, 0.08, 0.6, 0.28);
+            }
+            else {
+                texBlobs(x, rnd, S, 14, 0.07, 0.21, 0.6, 0.28);
+            }
+            break;
     }
 
     // Highlight (upper left), terminator (lower right), then limb darkening all round.
@@ -9312,6 +9492,96 @@ function drawGate(ctx, x, y, r, color, seed){
 // everything else keeps its flat fill with the lighting overlay on top. The overlay is skipped once
 // a body is down to a couple of pixels, where it would cost a scale-down of a 128px texture to show
 // nothing.
+// A ring system, as seen from a little above its plane. Bands are stroked ellipses at fractions of
+// the body's own radius, with a gap between the middle and outer band standing in for the Cassini
+// division. Half the ring at a time: `near` picks the lower sweep, which passes in front of the body.
+// Saturn's real structure, inner to outer: the faint D and C rings, the bright B ring, the Cassini
+// division, the A ring with the Encke gap near its outer edge, and the wispy F ring beyond.
+// How far the ring plane leans out of the plane the body orbits in. This is a fixed property of the
+// world, not of the camera — it is what keeps the rings pinned to the planet while the view turns.
+//
+// The value is chosen for how it reads rather than from Saturn's real 26.7 degrees. The map opens
+// looking straight down on the orbital plane, so a ring lying near that plane would open out to a
+// flat circle from the default view and read as a halo. Leaning it to 70 degrees squashes it to
+// cos(70) = 0.34 of its width there, which is the familiar profile, and it still swings through
+// every angle correctly as the camera moves.
+const RING_TILT = 70 * Math.PI / 180;
+// Points per half ring. The ring is a real circle in space rather than a screen-space ellipse, so it
+// has to be sampled and projected the way orbits are; two halves of this give ORBIT_STEPS' smoothness.
+const RING_HALF_STEPS = 48;
+const RING_BANDS = [
+    [1.11, 1.24, 0.10],   // D + inner C
+    [1.24, 1.52, 0.22],   // C
+    [1.52, 1.75, 0.62],   // B, the bright one
+    [1.75, 1.95, 0.50],   // outer B
+    // 1.95 - 2.03 Cassini division
+    [2.03, 2.22, 0.38],   // A
+    // 2.22 - 2.24 Encke gap
+    [2.24, 2.27, 0.30],   // outer A
+    [2.32, 2.34, 0.12],   // F, a thin thread
+];
+// A ring is a circle lying in the body's equatorial plane — the plane it orbits in, tipped by the
+// body's axial tilt. Each band is sampled and pushed through the same projection as everything else
+// on the map, so yawing or pitching the camera turns the rings with the rest of the scene instead of
+// leaving them pinned flat to the screen. Edge-on they close to a sliver; from above they open out.
+//
+// Offsets are taken relative to the body rather than in absolute coordinates, which is exact because
+// the projection is linear: pX(body + offset) === pX(body) + pX(offset).
+//
+// `near` selects which side of the body to draw, and the two halves have to meet exactly or the ring
+// shows a seam. Depth around the ring works out to rad * (A cos t + B sin t) — a plain sinusoid — so
+// the two angles where it crosses zero, which is precisely where the ring passes behind or in front
+// of the body, can be solved for rather than found by testing samples. Cutting at whichever samples
+// happened to straddle the crossing left a gap of up to one step at each end; each half now runs from
+// one crossing to the other, so they share their endpoints.
+function drawRings(ctx, x, y, r, color, near, tilt){
+    let lean = tilt || RING_TILT;
+    let ct = Math.cos(lean), st = Math.sin(lean);
+
+    let A = camSY * camSP;
+    let B = ct * camCY * camSP + st * camCP;
+    let cross = Math.atan2(-A, B);
+    // Which of the two arcs is the near one, judged from the middle of the first.
+    let mid = cross + Math.PI / 2;
+    let nearFirst = (A * Math.cos(mid) + B * Math.sin(mid)) < 0;
+    let start = (nearFirst === near) ? cross : cross + Math.PI;
+
+    for (let [inner, outer, alpha] of RING_BANDS){
+        let rad = r * (inner + outer) / 2;
+        ctx.strokeStyle = hexShadeRGBA(color, 1.5, alpha);
+        ctx.lineWidth = Math.max(r * (outer - inner), 0.4 / mapScale);
+        ctx.beginPath();
+        for (let i = 0; i <= RING_HALF_STEPS; i++){
+            let t = start + (i / RING_HALF_STEPS) * Math.PI;
+            // The circle, tipped out of the orbital plane by the body's lean.
+            let ox = rad * Math.cos(t);
+            let oy = rad * Math.sin(t) * ct;
+            let oz = rad * Math.sin(t) * st;
+            let px = x + (ox * camCY - oy * camSY);
+            let py = y + (ox * camSY + oy * camCY) * camCP - oz * camSP;
+            if (i === 0){ ctx.moveTo(px, py); }
+            else { ctx.lineTo(px, py); }
+        }
+        ctx.stroke();
+    }
+}
+
+// Saturn is flagged in the table. Past Sol, roughly a quarter of the gas giants carry rings too, and
+// which ones is decided by hashing the body's own id — stable for a given world, no flag to store for
+// each of the two dozen of them, and it holds if more systems are added later.
+function hasRings(planet, id){
+    if (planet.rings){ return true; }
+    if (!id || !planet.star || planet.startype || planet.bodystar){ return false; }
+    return bodyKind(planet, id) === 'gas' && texSeed(id + 'ring') % 4 === 0;
+}
+
+// Lean of a ringed world's ring plane, in radians. Saturn takes the tuned value; the rest vary
+// around it from their own id, staying inside the range that reads as a ring from the default view.
+function ringTilt(planet, id){
+    if (planet.rings || !id){ return RING_TILT; }
+    return (55 + (texSeed(id + 'tilt') % 1000) / 1000 * 30) * Math.PI / 180;
+}
+
 function drawBody(ctx, x, y, r, color, opts){
     opts = opts || {};
     if (opts.gate){
@@ -9331,12 +9601,34 @@ function drawBody(ctx, x, y, r, color, opts){
         ctx.drawImage(starTexture(color), x - half, y - half, half * 2, half * 2);
         return;
     }
+    // Rings straddle the body, so the far half goes down first and the near half last — that ordering
+    // is what reads as the planet sitting inside them rather than on top. Skipped at the same size the
+    // surface texture is, since a few pixels of ring is just a smudge.
+    let rings = opts.rings && r * mapScale >= 2.5;
+    if (rings){ drawRings(ctx, x, y, r, color, false, opts.ringTilt); }
     ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI * 2, true);
     ctx.fill();
     if (r * mapScale >= 2.5){
         ctx.drawImage(planetTexture(opts.kind, opts.seed), x - r, y - r, r * 2, r * 2);
     }
+    if (rings){ drawRings(ctx, x, y, r, color, true, opts.ringTilt); }
+}
+
+// Record a body for click-to-centre, converting from the projected space drawBody works in to the
+// screen pixels a mouse event arrives in. Only recorded once the map is zoomed in far enough to be
+// showing a single system's planets individually — the same threshold that puts their names on
+// screen, so what can be clicked is exactly what is labelled. Gating on each body's own drawn size
+// instead would be circular: a distant planet is a couple of pixels across until you are already
+// looking at it, which is what clicking it was meant to do.
+function addPickable(id, bx, by, size){
+    if (mapScale < planetLabelMinScale){ return; }
+    mapPickable.push({
+        id: id,
+        x: mapShift.x + bx * mapScale,
+        y: mapShift.y + by * mapScale,
+        r: size * mapScale
+    });
 }
 
 export function drawMap() {
@@ -9351,6 +9643,7 @@ export function drawMap() {
     ctx.translate(mapShift.x, mapShift.y);
     ctx.scale(mapScale, mapScale);
     camUpdate();
+    mapPickable = [];
     const ORIGIN = { x: 0, y: 0, z: 0 };
     // The home system hangs off the Sun at the origin, so one test covers its orbits, bodies and
     // labels alike.
@@ -9495,6 +9788,9 @@ export function drawMap() {
         else if (id === 'spc_sun_gate' || id === 'tau_home'){
             color = '31a557';
         }
+        else if (SOL_BODY_COLOR[id]){
+            color = SOL_BODY_COLOR[id];   // the named Sol bodies get their real colour
+        }
         else if (spacePlanetStats[id].hz){
             color = '3fa34d';   // habitable-zone planet (greenish)
         }
@@ -9548,7 +9844,8 @@ export function drawMap() {
         }
         bodies.sort((a,b) => b.d - a.d);   // furthest first, so nearer bodies paint over them
         for (let b of bodies){
-            drawBody(ctx, b.bx, b.by, b.size, setColor(b.id), { star: !!b.planet.startype, gate: !!b.planet.gate, kind: bodyKind(b.planet), seed: texSeed(b.id) });
+            drawBody(ctx, b.bx, b.by, b.size, setColor(b.id), { star: !!b.planet.startype, gate: !!b.planet.gate, kind: bodyKind(b.planet, b.id), seed: texSeed(b.id), rings: hasRings(b.planet, b.id), ringTilt: ringTilt(b.planet, b.id) });
+            addPickable(b.id, b.bx, b.by, b.size);
         }
     }
 
@@ -9753,7 +10050,9 @@ export function drawMap() {
         members.sort((a,b) => pD(b.q) - pD(a.q));   // furthest first
         for (let m of members){
             let px = pX(m.q), py = pY(m.q);
-            drawBody(ctx, px, py, m.pr, setColor(m.id), { star: m.isStar || !!m.planet.bodystar, kind: bodyKind(m.planet), seed: texSeed(m.id) });
+            drawBody(ctx, px, py, m.pr, setColor(m.id), { star: m.isStar || !!m.planet.bodystar, kind: bodyKind(m.planet, m.id), seed: texSeed(m.id), rings: hasRings(m.planet, m.id), ringTilt: ringTilt(m.planet, m.id) });
+            // Drawn in the star's own translated frame, so shift back to map coordinates to record it.
+            addPickable(m.id, pX(sc) + px, pY(sc) + py, m.pr);
             // Tau Ceti's jump gate rides alongside the home planet like a moon.
             if (m.id === 'tau_home' && tauJumpGate()){
                 drawBody(ctx, px + m.pr * 0.9, py + m.pr * 0.9, m.pr * 0.35, '31a557', { gate: true, seed: texSeed('tau_home_jump_gate') });
@@ -9927,6 +10226,26 @@ function buildSolarMap(parentNode) {
         return best;
     }
 
+    // The body under the pointer, or false. Unlike starAt this picks planets and moons as well, from
+    // whatever drawMap last laid down — which is empty until the map is zoomed in enough for planets
+    // to be told apart (see addPickable), so a click out at the star field can't land on a guess.
+    // Nearest centre wins, so a moon sitting on its planet is still reachable.
+    function bodyAt(e){
+        let rect = document.getElementById("mapCanvas").getBoundingClientRect();
+        let cx = e.clientX - rect.left, cy = e.clientY - rect.top;
+        let best = false, bestD = Infinity;
+        for (let body of mapPickable){
+            let d = Math.hypot(body.x - cx, body.y - cy);
+            // Eligibility is about detail, but the grab is about aim: a world you can see is worth
+            // hitting from the same distance a star is, or a small one takes several tries.
+            if (d <= Math.max(body.r, CLICK_GRAB_PX) && d < bestD){
+                bestD = d;
+                best = body.id;
+            }
+        }
+        return best;
+    }
+
     // Track what the pointer is over so drawMap can name it, repainting only when the answer changes —
     // a mousemove that is still over the same star costs nothing.
     function trackHover(e){
@@ -9953,15 +10272,21 @@ function buildSolarMap(parentNode) {
     currentNode.append(
       $(`<canvas id="mapCanvas" style="width: 100%; height: 75vh"></canvas>`)
         // A left press that ends without the pointer really moving is a click, not a pan: if it
-        // landed on a star, centre the view on it. The slop allows for the shake of an ordinary
+        // landed on a body, centre the view on it. The slop allows for the shake of an ordinary
         // click, which would otherwise pan a pixel and count as a drag.
+        //
+        // Stars are tried first and with their own generous grab radius, so a click meant for a star
+        // that happens to be crowded by its own planets still gets the star. Failing that, any body
+        // drawn large enough to see is a target — which means once you are zoomed in on a system you
+        // can hop from world to world without dragging.
         .on("mouseup", (e) => {
             if (drag === 'pan' && press && !press.moved){
-                let hit = starAt(e);
+                let hit = starAt(e) || bodyAt(e);
                 if (hit){
                     recenterOn(genXYcoord(hit));
                     drawMap();
-                    starLockOn = hit; // Lock onto the star to allow zooming onto it instead of following cursor
+                    // Lock on so zooming pulls in on it rather than following the cursor away.
+                    starLockOn = hit;
                 }
             }
             drag = false;
@@ -10132,7 +10457,11 @@ function buildSolarMap(parentNode) {
     canvasOffset.y = bounds.height / 2;
     // The map opens on wherever the campaign is being fought. The resettlement arc starts out of
     // Tau Ceti, but from resettle 9 the work is back in the home system, so it swings back to the Sun.
-    recenterOn(genXYcoord(global.tech['resettle'] && global.tech.resettle < 9 ? 'tauceti' : 'spc_sun'));
+    // Locked on as well as centred, so the first zoom pulls in on that star instead of drifting off
+    // toward wherever the pointer happened to be resting.
+    let openOn = global.tech['resettle'] && global.tech.resettle < 9 ? 'tauceti' : 'spc_sun';
+    recenterOn(genXYcoord(openOn));
+    starLockOn = openOn;
 
     drawMap();
     beaconAnimate();
