@@ -7117,6 +7117,7 @@ export function cleanAddTrait(trait){
                 break;
             }
             purgeLumber();
+            setResourceName('Useless');
             break;
         case 'smoldering':
             global.resource.Chrysotile.display = true;
@@ -7124,6 +7125,7 @@ export function cleanAddTrait(trait){
                 break;
             }
             purgeLumber();
+            setResourceName('Useless');
             break;
         case 'iron_wood':
             if (global.race['smoldering']){
@@ -7159,6 +7161,7 @@ export function cleanAddTrait(trait){
         case 'flier':
             setResourceName('Stone');
             setResourceName('Brick');
+            defineGovernor(); // Rename resource in storage balance config
             global.resource.Cement.display = false;
             global.civic.cement_worker.display = false;
             global.civic.cement_worker.workers = 0;
@@ -7175,6 +7178,7 @@ export function cleanAddTrait(trait){
             global.civic.quarry_worker.workers = 0;
             global.civic.quarry_worker.assigned = 0;
             setResourceName('Stone');
+            defineGovernor(); // Rename resource in storage balance config
             setPurgatory('tech','hammer');
             setPurgatory('city','rock_quarry');
             break;
@@ -7393,9 +7397,10 @@ export function cleanRemoveTrait(trait,rank){
             if ((global.tech['axe'] || global.tech['reclaimer']) && !global.race['orbit_decayed']){
                 global.civic.lumberjack.display = true;
             }
+            setResourceName('Useless');
             break;
         case 'smoldering':
-            releaseResource('Chrysotile')
+            releaseResource('Chrysotile');
             if (global.race['kindling_kindred']){
                 break;
             }
@@ -7415,6 +7420,7 @@ export function cleanRemoveTrait(trait,rank){
             if ((global.tech['axe'] || global.tech['reclaimer']) && !global.race['orbit_decayed']){
                 global.civic.lumberjack.display = true;
             }
+            setResourceName('Useless');
             break;
         case 'iron_wood':
             if (global.tech['foundry']){
@@ -7438,6 +7444,7 @@ export function cleanRemoveTrait(trait,rank){
         case 'flier':
             setResourceName('Stone');
             setResourceName('Brick');
+            defineGovernor(); // Rename resource in storage balance config
             checkPurgatory('tech','cement');
             if (global.tech['cement']){
                 checkPurgatory('city','cement_plant');
@@ -7448,6 +7455,7 @@ export function cleanRemoveTrait(trait,rank){
             break;
         case 'sappy':
             setResourceName('Stone');
+            defineGovernor(); // Rename resource in storage balance config
             checkPurgatory('tech','hammer');
             if (global.tech['mining'] >= 1) {
                 checkPurgatory('city','rock_quarry',{ count: 0, asbestos: 0 });
