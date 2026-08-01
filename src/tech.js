@@ -48,8 +48,8 @@ const techs = {
             return global.race['soul_eater'] && !global.race['evil'] ? false : true;
         },
         cost: {
-            Food(){ return global.race['evil'] && !global.race['smoldering'] || global.race['fasting'] ? 0 : 10; },
-            Lumber(){ return global.race['evil'] && !global.race['smoldering'] || global.race['fasting'] ? 10 : 0; }
+            Food(){ return (global.race['evil'] && !global.race['smoldering']) || global.race['fasting'] ? 0 : 10; },
+            Lumber(){ return global.race['evil'] && !global.race['smoldering'] && !global.race['fasting'] ? 10 : 0; }
         },
         action(){
             if (payCosts($(this)[0])){
