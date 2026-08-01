@@ -6,6 +6,7 @@ import { techList } from './../tech.js';
 import { checkControlling } from './../civics.js';
 import { races, traits } from './../races.js';
 import { getHalloween, svgIcons, svgViewBox } from './../functions.js';
+import { planetName } from './../space.js';
 import { actionDesc, sideMenu, getSolarName } from './functions.js';
 
 const isHalloween = getHalloween();
@@ -1009,6 +1010,9 @@ const extraInformation = {
     disruptor_rifles: [
         loc(`wiki_tech_bows`,[700])
     ],
+    disruptor_rifles_tp: [
+        loc(`wiki_tech_bows`,[700])
+    ],
     gauss_rifles: [
         loc(`wiki_tech_bows`,[800])
     ],
@@ -1077,6 +1081,9 @@ const extraInformation = {
     ],
     portland_cement: [
         loc(`wiki_tech_portland_cement`)
+    ],
+    geopolymer_cement: [
+        loc(`wiki_tech_geopolymer_cement`,[loc(`city_cement_plant`),8])
     ],
     screw_conveyor: [
         loc(`wiki_tech_power_upgrade`,[loc(`city_cement_plant`),2]),
@@ -1718,11 +1725,17 @@ const extraInformation = {
     vacuum_drive: [
         loc(`wiki_tech_ship_engine_unlock`,[loc('outer_shipyard_engine_vacuum')])
     ],
+    electrokinetic_thruster: [
+        loc(`wiki_tech_ship_engine_unlock`,[loc('outer_shipyard_engine_electrokinetic')])
+    ],
     ship_fusion: [
         loc(`wiki_tech_ship_power_unlock`,[loc('outer_shipyard_power_fusion')])
     ],
     ship_elerium: [
         loc(`wiki_tech_ship_power_unlock`,[loc('outer_shipyard_power_elerium')])
+    ],
+    ship_antimatter: [
+        loc(`wiki_tech_ship_power_unlock`,[loc('outer_shipyard_power_antimatter')])
     ],
     quantum_signatures: [
         loc(`wiki_tech_ship_sensor_unlock`,[loc('outer_shipyard_sensor_quantum')])
@@ -1733,6 +1746,21 @@ const extraInformation = {
     ],
     alien_outpost: [
         loc(`wiki_tech_building_unlock`,[loc('tech_alien_outpost')])
+    ],
+    data_decoder: [
+        loc(`wiki_tech_building_unlock`,[loc('tech_data_decoder')])
+    ],
+    dual_replicator: [
+        loc(`tech_dual_replicator_effect`)
+    ],
+    zombie_counter: [
+        loc(`wiki_tech_zombie_counter`,[planetName().dwarf])
+    ],
+    metalworks: [
+        loc(`wiki_tech_building_unlock`,[loc('space_metalworks_title')])
+    ],
+    positronium_electrolysis: [
+        loc(`wiki_tech_positronium_electrolysis`,[loc('space_electrolysis_title')])
     ],
     jumpgates: [
         loc(`wiki_tech_building_unlock`,[loc('tau_jump_gate')]),
@@ -1788,6 +1816,12 @@ const extraInformation = {
     ],
     womling_recycling: [
         loc(`wiki_tech_womling_recycling`)
+    ],
+    womling_brigade: [
+        loc(`wiki_tech_building_unlock`,[loc('tau_red_womling_rangers')])
+    ],
+    womling_energy: [
+        loc(`wiki_tech_building_unlock`,[loc('tech_antimatter_reactor')])
     ],
     belt_mining: [
         loc(`wiki_tech_building_unlock`,[loc('tau_gas_ore_refinery_title')])
@@ -2093,6 +2127,50 @@ const extraInformation = {
     ],
     ultimate_corruption: [
         loc(`wiki_tech_ultimate_corruption`)
+    ],
+    plague_inoculation: [
+        loc(`wiki_tech_building_unlock`,[loc('tau_shipyard_title')])
+    ],
+    element_zero: [
+        loc(`wiki_tech_building_unlock`,[loc('space_dwarf_mass_relay_title')]),
+        loc(`wiki_tech_building_unlock`,[loc('tau_roid_synthesizer_title')]),
+        loc(`wiki_tech_resource_unlock`,[loc(`resource_Positronium_name`)])
+    ],
+    patrol_routes: [
+        loc(`wiki_tech_patrol_routes`)
+    ],
+    colonial_marines: [
+        loc(`wiki_tech_building_unlock`,[loc('tau_home_marine_barracks')])
+    ],
+    drive_optimizations: [
+        loc(`wiki_tech_drive_optimizations`)
+    ],
+    jump_jump_gate: [
+        loc(`wiki_tech_jump_jump_gate`)
+    ],
+    zombie_data: [
+        loc(`wiki_tech_zombie_data`)
+    ],
+    zombie_intelligence: [
+        loc(`wiki_tech_zombie_intelligence`)
+    ],
+    positronium_furnace: [
+        loc(`wiki_tech_positronium_furnace`,[25])
+    ],
+    weight_reduction: [
+        loc(`wiki_tech_weight_reduction`)
+    ],
+    womling_land_use_planning: [
+        loc(`wiki_tech_womling_land_use_planning`,[8,20,loc(`tau_red_orbital_platform`),3])
+    ],
+    womling_artisans: [
+        loc(`wiki_tech_building_unlock`,[loc(`tau_red_womling_craftworks`)])
+    ],
+    fleet_command: [
+        loc(`wiki_tech_fleet_command`)
+    ],
+    reconstruction: [
+        loc(`wiki_tech_reconstruction`)
     ]
 };
 

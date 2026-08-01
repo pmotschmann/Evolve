@@ -1,5 +1,5 @@
 import { global, seededRandom, keyMultiplier, p_on, support_on, gal_on, spire_on, hell_reports, hell_graphs, sizeApproximation, keyMap } from './vars.js';
-import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost, calcPrestige, get_qlevel, shrineBonusActive, getShrineBonus, buildQueue, timeCheck } from './functions.js';
+import { vBind, clearElement, clearTabPanels, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost, calcPrestige, get_qlevel, shrineBonusActive, getShrineBonus, buildQueue, timeCheck } from './functions.js';
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { traits, races, fathomCheck, traitCostMod, orbitLength } from './races.js';
 import { spatialReasoning, unlockContainers, drawResourceTab } from './resources.js';
@@ -18,11 +18,20 @@ import { defineIndustry, addSmelter } from './industry.js';
 import { arpa } from './arpa.js';
 import { jobName } from './jobs.js';
 
+// Real-time throttle for the hell observation pie charts. bloodwar() drives these once per
+// in-game day, but many game days can elapse per real second (fast mode, time acceleration,
+// offline catch-up). Repainting the Chart.js canvases that often — each with its default
+// animation — pegs the main thread and is the dominant cause of the hell tab getting laggy
+// when left running. We cap actual canvas repaints to a few per real second; the data is
+// cumulative, so a skipped intermediate frame just corrects on the next repaint.
+let lastHellGraphUpdate = 0;
+const hellGraphUpdateInterval = 250;
+
 const fortressModules = {
     prtl_fortress: {
         info: {
             name: loc('portal_fortress_name'),
-            desc: loc('portal_fortress_desc'),
+            desc(){ return loc('portal_fortress_desc'); },
             repair(){
                 let repair = 200;
                 if (p_on['repair_droid']){
@@ -41,6 +50,7 @@ const fortressModules = {
                 let type = global.tech['turret'] ? (global.tech['turret'] >= 2 ? 'portal_turret_title3' : 'portal_turret_title2') : 'portal_turret_title1';
                 return `<div>${loc(type)}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'military',
             reqs: { portal: 2 },
             not_trait: ['warlord'],
             cost: {
@@ -82,10 +92,11 @@ const fortressModules = {
         },
         carport: {
             id: 'portal-carport',
-            title: loc('portal_carport_title'),
+            title(){ return loc('portal_carport_title'); },
             desc(){
                 return loc('portal_carport_desc',[jobScale(1)]);
             },
+            type: 'outpost',
             reqs: { portal: 2 },
             not_trait: ['warlord'],
             cost: {
@@ -130,10 +141,11 @@ const fortressModules = {
         },
         war_droid: {
             id: 'portal-war_droid',
-            title: loc('portal_war_droid_title'),
+            title(){ return loc('portal_war_droid_title'); },
             desc(){
                 return `<div>${loc('portal_war_droid_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'military',
             reqs: { portal: 5 },
             not_trait: ['warlord'],
             cost: {
@@ -165,10 +177,11 @@ const fortressModules = {
         },
         repair_droid: {
             id: 'portal-repair_droid',
-            title: loc('portal_repair_droid_title'),
+            title(){ return loc('portal_repair_droid_title'); },
             desc(){
                 return `<div>${loc('portal_repair_droid_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'military',
             reqs: { portal: 6 },
             not_trait: ['warlord'],
             cost: {
@@ -202,13 +215,13 @@ const fortressModules = {
     prtl_badlands: {
         info: {
             name: loc('portal_badlands_name'),
-            desc: loc('portal_badlands_desc'),
+            desc(){ return loc('portal_badlands_desc'); },
             support: 'minions',
             hide_support: true,
             prop(){
                 let desc = '';
                 if (global.portal['minions'] && global.portal.minions.count > 0){
-                    desc = ` <span class="has-text-danger">${loc('portal_minions_bd')}:</span> <span class="has-text-caution">{{ spawns | approx }}</span>`;
+                    desc = ` <span class="has-text-danger">${loc('portal_minions_bd')}:</span> <span class="has-text-caution">{{ filter(spawns, 'approx') }}</span>`;
                 }
                 return desc;
             },
@@ -221,10 +234,11 @@ const fortressModules = {
         },
         war_drone: {
             id: 'portal-war_drone',
-            title: loc('portal_war_drone_title'),
+            title(){ return loc('portal_war_drone_title'); },
             desc(){
                 return `<div>${loc('portal_war_drone_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'military',
             reqs: { portal: 3 },
             not_trait: ['warlord'],
             powered(){ return powerCostMod(5); },
@@ -256,10 +270,11 @@ const fortressModules = {
         },
         sensor_drone: {
             id: 'portal-sensor_drone',
-            title: loc('portal_sensor_drone_title'),
+            title(){ return loc('portal_sensor_drone_title'); },
             desc(){
                 return `<div>${loc('portal_sensor_drone_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'military',
             reqs: { infernite: 2 },
             not_trait: ['warlord'],
             powered(){ return powerCostMod(3); },
@@ -293,10 +308,11 @@ const fortressModules = {
         },
         attractor: {
             id: 'portal-attractor',
-            title: loc('portal_attractor_title'),
+            title(){ return loc('portal_attractor_title'); },
             desc(){
                 return `<div>${loc('portal_attractor_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'military',
             reqs: { portal: 4 },
             not_trait: ['warlord'],
             powered(){ return powerCostMod(3); },
@@ -325,8 +341,9 @@ const fortressModules = {
         },
         minions: {
             id: 'portal-minions',
-            title: loc('portal_minions_title'),
+            title(){ return loc('portal_minions_title'); },
             desc(){ return rankDesc(loc('portal_minions_title'),'minions'); },
+            type: 'military',
             reqs: { hellspawn: 3 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -385,8 +402,9 @@ const fortressModules = {
         },
         reaper: {
             id: 'portal-reaper',
-            title: loc('portal_reaper_title'),
+            title(){ return loc('portal_reaper_title'); },
             desc(){ return rankDesc(loc('portal_reaper_title'),'reaper'); },
+            type: 'military',
             reqs: { hellspawn: 4 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -428,8 +446,9 @@ const fortressModules = {
         },
         corpse_pile: {
             id: 'portal-corpse_pile',
-            title: loc('portal_corpse_pile_title'),
+            title(){ return loc('portal_corpse_pile_title'); },
             desc(){ return rankDesc(loc('portal_corpse_pile_desc'),'corpse_pile'); },
+            type: 'storage',
             reqs: { hellspawn: 7 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -471,8 +490,9 @@ const fortressModules = {
         },
         mortuary: {
             id: 'portal-mortuary',
-            title: loc('portal_mortuary_title'),
+            title(){ return loc('portal_mortuary_title'); },
             desc(){ return `<div>${loc('portal_mortuary_desc',[loc('portal_corpse_pile_title')])}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            type: 'utility',
             reqs: { hellspawn: 9 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -509,8 +529,9 @@ const fortressModules = {
         },
         codex: {
             id: 'portal-codex',
-            title: loc('portal_codex_title'),
-            desc: loc('portal_codex_title'),
+            title(){ return loc('portal_codex_title'); },
+            desc(){ return loc('portal_codex_title'); },
+            type: 'science',
             reqs: { war_vault: 1 },
             trait: ['warlord'],
             condition(){ return global.portal?.codex?.count === 0 ? true : false; },
@@ -575,12 +596,13 @@ const fortressModules = {
     prtl_wasteland: {
         info: {
             name: loc('portal_wasteland_name'),
-            desc: loc('portal_wasteland_desc'),
+            desc(){ return loc('portal_wasteland_desc'); },
         },
         throne: {
             id: 'portal-throne',
-            title: loc('portal_throne_of_evil_title'),
-            desc: loc('portal_throne_of_evil_desc'),
+            title(){ return loc('portal_throne_of_evil_title'); },
+            desc(){ return loc('portal_throne_of_evil_desc'); },
+            type: 'utility',
             reqs: { hellspawn: 1 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -722,8 +744,9 @@ const fortressModules = {
         },
         incinerator: {
             id: 'portal-incinerator',
-            title: loc('portal_incinerator_title'),
+            title(){ return loc('portal_incinerator_title'); },
             desc(){ return rankDesc(loc('portal_incinerator_desc'),'incinerator'); },
+            type: 'industry',
             reqs: { hellspawn: 1 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -786,6 +809,7 @@ const fortressModules = {
             id: 'portal-warehouse',
             title(){ return loc('city_shed_title3'); },
             desc(){ return rankDesc(loc('city_shed_title3'),'warehouse'); },
+            type: 'storage',
             reqs: { hellspawn: 1 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -914,8 +938,9 @@ const fortressModules = {
         },
         hovel: {
             id: 'portal-hovel',
-            title: loc('portal_hovel_title'),
+            title(){ return loc('portal_hovel_title'); },
             desc(){ return rankDesc(loc('portal_hovel_title'),'hovel'); },
+            type: 'housing',
             reqs: { hellspawn: 1 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -965,6 +990,7 @@ const fortressModules = {
             id: 'portal-hell_casino',
             title(){ return structName('casino'); },
             desc(){ return `<div>${rankDesc(structName('casino'),'hell_casino')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            type: 'gambling',
             reqs: { hellspawn: 1, gambling: 1 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -1014,8 +1040,9 @@ const fortressModules = {
         },
         twisted_lab: {
             id: 'portal-twisted_lab',
-            title: loc('portal_twisted_lab_title'),
+            title(){ return loc('portal_twisted_lab_title'); },
             desc(){ return `<div>${rankDesc(loc('portal_twisted_lab_title'),'twisted_lab')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            type: 'industry',
             reqs: { hellspawn: 1, science: 9 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -1074,8 +1101,9 @@ const fortressModules = {
         },
         demon_forge: {
             id: 'portal-demon_forge',
-            title: loc('portal_demon_forge_title'),
+            title(){ return loc('portal_demon_forge_title'); },
             desc(){ return `<div>${rankDesc(loc('portal_demon_forge_title'),'demon_forge')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            type: 'industry',
             reqs: { hellspawn: 1 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -1140,8 +1168,9 @@ const fortressModules = {
         },
         hell_factory: {
             id: 'portal-hell_factory',
-            title: loc('portal_factory_title'),
+            title(){ return loc('portal_factory_title'); },
             desc(){ return `<div>${rankDesc(loc('portal_factory_title'),'hell_factory')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            type: 'industry',
             reqs: { hellspawn: 1 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -1200,6 +1229,7 @@ const fortressModules = {
             id: 'portal-pumpjack',
             title(){ return loc('portal_pumpjack_title'); },
             desc(){ return rankDesc(loc('portal_pumpjack_title'),'pumpjack'); },
+            type: 'mining',
             reqs: { hellspawn: 1, oil: 1 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -1255,8 +1285,9 @@ const fortressModules = {
         },
         dig_demon: {
             id: 'portal-dig_demon',
-            title: loc('portal_dig_demon_title'),
+            title(){ return loc('portal_dig_demon_title'); },
             desc(){ return rankDesc(loc('portal_dig_demon_title'),'dig_demon'); },
+            type: 'mining',
             reqs: { hellspawn: 1 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -1323,8 +1354,9 @@ const fortressModules = {
         },
         tunneler: {
             id: 'portal-tunneler',
-            title: loc('portal_tunneler_title'),
+            title(){ return loc('portal_tunneler_title'); },
             desc(){ return rankDesc(loc('portal_tunneler_desc'),'tunneler'); },
+            type: 'mining',
             reqs: { hellspawn: 2 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -1368,8 +1400,9 @@ const fortressModules = {
         },
         brute: {
             id: 'portal-brute',
-            title: loc('portal_brute_title'),
+            title(){ return loc('portal_brute_title'); },
             desc(){ return rankDesc(loc('portal_brute_title'),'brute'); },
+            type: 'military',
             reqs: { hellspawn: 1 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -1450,12 +1483,12 @@ const fortressModules = {
     prtl_pit: {
         info: {
             name: loc('portal_pit_name'),
-            desc: loc('portal_pit_desc'),
+            desc(){ return loc('portal_pit_desc'); },
         },
         pit_mission: {
             id: 'portal-pit_mission',
-            title: loc('portal_pit_mission_title'),
-            desc: loc('portal_pit_mission_title'),
+            title(){ return loc('portal_pit_mission_title'); },
+            desc(){ return loc('portal_pit_mission_title'); },
             reqs: { hell_pit: 1 },
             grant: ['hell_pit',2],
             queue_complete(){ return global.tech.hell_pit >= 2 ? 0 : 1; },
@@ -1475,8 +1508,8 @@ const fortressModules = {
         },
         assault_forge: {
             id: 'portal-assault_forge',
-            title: loc('portal_assault_forge_title'),
-            desc: loc('portal_assault_forge_title'),
+            title(){ return loc('portal_assault_forge_title'); },
+            desc(){ return loc('portal_assault_forge_title'); },
             reqs: { hell_pit: 2 },
             grant: ['hell_pit',3],
             queue_complete(){ return global.tech.hell_pit >= 3 ? 0 : 1; },
@@ -1505,6 +1538,7 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_soul_forge_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'industry',
             reqs: { hell_pit: 4 },
             queue_complete(){ return 1 - global.portal.soul_forge.count; },
             powered(){ return powerCostMod(30); },
@@ -1553,10 +1587,11 @@ const fortressModules = {
         },
         gun_emplacement: {
             id: 'portal-gun_emplacement',
-            title: loc('portal_gun_emplacement_title'),
+            title(){ return loc('portal_gun_emplacement_title'); },
             desc(){
                 return `<div>${loc('portal_gun_emplacement_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'military',
             reqs: { hell_gun: 1 },
             powered(){ return powerCostMod(3); },
             cost: {
@@ -1569,7 +1604,11 @@ const fortressModules = {
                 let soldiers = global.tech.hell_gun >= 2 ? jobScale(2) : jobScale(1);
                 let min = global.tech.hell_gun >= 2 ? 35 : 20;
                 let max = global.tech.hell_gun >= 2 ? 75 : 40;
-                return `<div>${loc('portal_gun_emplacement_effect',[soldiers])}</div><div>${loc('portal_gun_emplacement_effect2',[min,max])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                let soldierEffect = loc('portal_gun_emplacement_effect',[soldiers]);
+                if (global.race['hivemind']){
+                    soldierEffect = loc('portal_gun_emplacement_effect_hivemind');
+                }
+                return `<div>${soldierEffect}</div><div>${loc('portal_gun_emplacement_effect2',[min,max])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(args){
                 if (payCosts($(this)[0])){
@@ -1592,6 +1631,7 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_soul_attractor_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'industry',
             reqs: { hell_pit: 5 },
             powered(){ return powerCostMod(4); },
             cost: {
@@ -1642,10 +1682,11 @@ const fortressModules = {
         },
         soul_capacitor: {
             id: 'portal-soul_capacitor',
-            title: loc('portal_soul_capacitor_title'),
+            title(){ return loc('portal_soul_capacitor_title'); },
             desc(){
                 return `<div>${loc('portal_soul_capacitor_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'power',
             reqs: { forbidden: 2 },
             powered(){ return powerCostMod(125); },
             queue_complete(){ return 40 - global.portal.soul_capacitor.count; },
@@ -1671,7 +1712,7 @@ const fortressModules = {
             },
             action(args){
                 if (global.portal.soul_capacitor.count < 40 && payCosts($(this)[0])){
-                    global.portal.soul_capacitor.count++;
+                    incrementStruct('soul_capacitor','portal');
                     powerOnNewStruct($(this)[0]);
                     return true;
                 }
@@ -1689,7 +1730,7 @@ const fortressModules = {
         },
         absorption_chamber: {
             id: 'portal-absorption_chamber',
-            title: loc('portal_absorption_chamber_title'),
+            title(){ return loc('portal_absorption_chamber_title'); },
             desc(wiki){
                 if (!global.interstellar.hasOwnProperty('absorption_chamber') || global.portal.absorption_chamber.count < 100 || wiki){
                     return `<div>${loc('portal_absorption_chamber_title')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
@@ -1698,6 +1739,7 @@ const fortressModules = {
                     return `<div>${loc('portal_absorption_chamber_title')}</div>`;
                 }
             },
+            type: 'industry',
             reqs: { forbidden: 3 },
             queue_size: 5,
             queue_complete(){ return 100 - global.portal.absorption_chamber.count; },
@@ -1755,10 +1797,11 @@ const fortressModules = {
         },
         shadow_mine: {
             id: 'portal-shadow_mine',
-            title: loc('portal_shadow_mine_title'),
+            title(){ return loc('portal_shadow_mine_title'); },
             desc(){
                 return `<div>${loc('portal_shadow_mine_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'mining',
             reqs: { pitspawn: 1 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -1802,10 +1845,11 @@ const fortressModules = {
         },
         tavern: {
             id: 'portal-tavern',
-            title: loc('portal_tavern_title'),
+            title(){ return loc('portal_tavern_title'); },
             desc(){
                 return `<div>${loc('portal_tavern_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'entertainment',
             reqs: { pitspawn: 2 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -1847,12 +1891,12 @@ const fortressModules = {
     prtl_ruins: {
         info: {
             name: loc('portal_ruins_name'),
-            desc: loc('portal_ruins_desc'),
+            desc(){ return loc('portal_ruins_desc'); },
             support: 'guard_post',
             prop(){
                 if (global.race['warlord']){ return ''; }
-                let desc = ` - <span class="has-text-advanced">${loc('portal_ruins_security')}:</span> <span class="has-text-caution">{{ on | filter('army') }}</span>`;
-                desc = desc + ` - <span class="has-text-advanced">${loc('portal_ruins_supressed')}:</span> <span class="has-text-caution">{{ on | filter('sup') }}</span>`;
+                let desc = ` - <span class="has-text-advanced">${loc('portal_ruins_security')}:</span> <span class="has-text-caution">{{ filter(on, 'army') }}</span>`;
+                desc = desc + ` - <span class="has-text-advanced">${loc('portal_ruins_supressed')}:</span> <span class="has-text-caution">{{ filter(on, 'sup') }}</span>`;
                 return desc;
             },
             filter(v,type){
@@ -1868,8 +1912,8 @@ const fortressModules = {
         },
         ruins_mission: {
             id: 'portal-ruins_mission',
-            title: loc('portal_ruins_mission_title'),
-            desc: loc('portal_ruins_mission_title'),
+            title(){ return loc('portal_ruins_mission_title'); },
+            desc(){ return loc('portal_ruins_mission_title'); },
             reqs: { hell_ruins: 1 },
             grant: ['hell_ruins',2],
             queue_complete(){ return global.tech.hell_ruins >= 2 ? 0 : 1; },
@@ -1892,10 +1936,11 @@ const fortressModules = {
         },
         guard_post: {
             id: 'portal-guard_post',
-            title: loc('portal_guard_post_title'),
+            title(){ return loc('portal_guard_post_title'); },
             desc(){
                 return `<div>${loc('portal_guard_post_title')}</div><div class="has-text-special">${loc('requires_soldiers')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'military',
             reqs: { hell_ruins: 2 },
             not_trait: ['warlord'],
             cost: {
@@ -1946,8 +1991,9 @@ const fortressModules = {
         },
         vault: {
             id: 'portal-vault',
-            title: loc('portal_vault_title'),
-            desc: loc('portal_vault_title'),
+            title(){ return loc('portal_vault_title'); },
+            desc(){ return loc('portal_vault_title'); },
+            type: 'storage',
             reqs: { hell_ruins: 2, hell_vault: 1 },
             not_trait: ['warlord'],
             wiki: global.race['warlord'] ? false : true,
@@ -1993,8 +2039,9 @@ const fortressModules = {
         },
         war_vault: {
             id: 'portal-war_vault',
-            title: loc('portal_vault_title'),
-            desc: loc('portal_vault_title'),
+            title(){ return loc('portal_vault_title'); },
+            desc(){ return loc('portal_vault_title'); },
+            type: 'storage',
             reqs: { hell_ruins: 2, war_vault: 1 },
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
@@ -2038,10 +2085,11 @@ const fortressModules = {
         },
         archaeology: {
             id: 'portal-archaeology',
-            title: loc('portal_archaeology_title'),
+            title(){ return loc('portal_archaeology_title'); },
             desc(){
                 return `<div>${loc('portal_archaeology_title')}</div><div class="has-text-special">${loc('requires_security')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'science',
             reqs: { hell_ruins: 2 },
             not_trait: ['warlord'],
             cost: {
@@ -2078,10 +2126,11 @@ const fortressModules = {
         },
         arcology: {
             id: 'portal-arcology',
-            title: loc('portal_arcology_title'),
+            title(){ return loc('portal_arcology_title'); },
             desc(){
                 return `<div>${loc('portal_arcology_title')}</div><div class="has-text-special">${loc('requires_security')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'housing',
             reqs: { housing: 4 },
             not_trait: ['warlord'],
             cost: {
@@ -2139,6 +2188,7 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_hell_forge_title')}</div><div class="has-text-special">${loc('requires_security')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'industry',
             reqs: { scarletite: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('hell_forge', offset, 250000000, 1.15, 'portal'); },
@@ -2184,10 +2234,11 @@ const fortressModules = {
         },
         inferno_power: {
             id: 'portal-inferno_power',
-            title: loc('portal_inferno_power_title'),
+            title(){ return loc('portal_inferno_power_title'); },
             desc(){
                 return `<div>${loc('portal_inferno_power_title')}</div>`;
             },
+            type: 'power',
             reqs: { inferno_power: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('inferno_power', offset, 275000000, 1.16, 'portal'); },
@@ -2232,8 +2283,8 @@ const fortressModules = {
         },
         ancient_pillars: {
             id: 'portal-ancient_pillars',
-            title: loc('portal_ancient_pillars_title'),
-            desc: loc('portal_ancient_pillars_desc'),
+            title(){ return loc('portal_ancient_pillars_title'); },
+            desc(){ return loc('portal_ancient_pillars_desc'); },
             reqs: { hell_ruins: 2 },
             queue_complete(){ return global.tech['pillars'] && global.tech.pillars === 1 && global.race.universe !== 'micro' ? 1 : 0; },
             cost: {
@@ -2300,8 +2351,8 @@ const fortressModules = {
             support: 'guard_post',
             hide_support: true,
             prop(){
-                let desc = ` - <span class="has-text-advanced">${loc('portal_ruins_security')}:</span> <span class="has-text-caution">{{ on | filter('army') }}</span>`;
-                desc = desc + ` - <span class="has-text-advanced">${loc('portal_ruins_supressed')}:</span> <span class="has-text-caution">{{ on | filter('sup') }}</span>`;
+                let desc = ` - <span class="has-text-advanced">${loc('portal_ruins_security')}:</span> <span class="has-text-caution">{{ filter(on, 'army') }}</span>`;
+                desc = desc + ` - <span class="has-text-advanced">${loc('portal_ruins_supressed')}:</span> <span class="has-text-caution">{{ filter(on, 'sup') }}</span>`;
                 return desc;
             },
             filter(v,type){
@@ -2317,8 +2368,8 @@ const fortressModules = {
         },
         gate_mission: {
             id: 'portal-gate_mission',
-            title: loc('portal_gate_mission_title'),
-            desc: loc('portal_gate_mission_title'),
+            title(){ return loc('portal_gate_mission_title'); },
+            desc(){ return loc('portal_gate_mission_title'); },
             reqs: { high_tech: 18 },
             grant: ['hell_gate',1],
             queue_complete(){ return global.tech.hell_gate >= 1 ? 0 : 1; },
@@ -2337,7 +2388,7 @@ const fortressModules = {
         },
         west_tower: {
             id: 'portal-west_tower',
-            title: loc('portal_west_tower'),
+            title(){ return loc('portal_west_tower'); },
             desc(wiki){
                 let size = towerSize();
                 if (!global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < size || wiki){
@@ -2347,6 +2398,7 @@ const fortressModules = {
                     return `<div>${loc('portal_west_tower')}</div>`;
                 }
             },
+            type: 'military',
             reqs: { hell_gate: 2 },
             queue_size: 25,
             queue_complete(){ return towerSize() - global.portal.west_tower.count; },
@@ -2398,7 +2450,7 @@ const fortressModules = {
         },
         east_tower: {
             id: 'portal-east_tower',
-            title: loc('portal_east_tower'),
+            title(){ return loc('portal_east_tower'); },
             desc(wiki){
                 let size = towerSize();
                 if (!global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < size || wiki){
@@ -2408,6 +2460,7 @@ const fortressModules = {
                     return `<div>${loc('portal_east_tower')}</div>`;
                 }
             },
+            type: 'military',
             reqs: { hell_gate: 2 },
             queue_size: 25,
             queue_complete(){ return towerSize() - global.portal.east_tower.count; },
@@ -2459,10 +2512,11 @@ const fortressModules = {
         },
         gate_turret: {
             id: 'portal-gate_turret',
-            title: loc('portal_gate_turret_title'),
+            title(){ return loc('portal_gate_turret_title'); },
             desc(){
                 return `<div>${loc('portal_gate_turret_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'military',
             reqs: { hell_gate: 3 },
             powered(){ return powerCostMod(6); },
             cost: {
@@ -2504,10 +2558,11 @@ const fortressModules = {
         },
         infernite_mine: {
             id: 'portal-infernite_mine',
-            title: loc('portal_infernite_mine_title'),
+            title(){ return loc('portal_infernite_mine_title'); },
             desc(){
                 return `<div>${loc('portal_infernite_mine_title')}</div><div class="has-text-special">${loc('requires_security')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'mining',
             reqs: { hell_gate: 4 },
             powered(){ return powerCostMod(5); },
             powerBalancer(){
@@ -2542,13 +2597,13 @@ const fortressModules = {
     prtl_lake: {
         info: {
             name: loc('portal_lake_name'),
-            desc: loc('portal_lake_desc'),
+            desc(){ return loc('portal_lake_desc'); },
             support: 'harbor',
         },
         lake_mission: {
             id: 'portal-lake_mission',
-            title: loc('portal_lake_mission_title'),
-            desc: loc('portal_lake_mission_title'),
+            title(){ return loc('portal_lake_mission_title'); },
+            desc(){ return loc('portal_lake_mission_title'); },
             reqs: { hell_lake: 1 },
             grant: ['hell_lake',2],
             queue_complete(){ return global.tech.hell_lake >= 2 ? 0 : 1; },
@@ -2572,6 +2627,7 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_harbor_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'outpost',
             reqs: { hell_lake: 3 },
             powered(wiki){
                 let num_cooling_tower = wiki ? (global.portal?.cooling_tower?.on ?? 0) : p_on['cooling_tower'];
@@ -2699,10 +2755,11 @@ const fortressModules = {
         },
         cooling_tower: {
             id: 'portal-cooling_tower',
-            title: loc('portal_cooling_tower_title'),
+            title(){ return loc('portal_cooling_tower_title'); },
             desc(){
                 return `<div>${loc('portal_cooling_tower_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'power',
             reqs: { hell_lake: 6 },
             powered(){ return powerCostMod(10); },
             cost: {
@@ -2731,10 +2788,11 @@ const fortressModules = {
         },
         bireme: {
             id: 'portal-bireme',
-            title: loc('portal_bireme_title'),
+            title(){ return loc('portal_bireme_title'); },
             desc(){
                 return `<div>${loc('portal_bireme_title')}</div><div class="has-text-special">${loc('space_support',[loc('lake')])}</div>`;
             },
+            type: 'ship',
             reqs: { hell_lake: 4 },
             powered(){ return 0; },
             s_type: 'lake',
@@ -2776,6 +2834,7 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_transport_title')}</div><div class="has-text-special">${loc('space_support',[loc('lake')])}</div>`;
             },
+            type: 'ship',
             reqs: { hell_lake: 5 },
             powered(){ return 0; },
             s_type: 'lake',
@@ -2857,12 +2916,13 @@ const fortressModules = {
         },
         oven: {
             id: 'portal-oven',
-            title: loc('portal_oven_title'),
+            title(){ return loc('portal_oven_title'); },
             desc(wiki){
                 if (!global.portal.hasOwnProperty('oven') || global.portal.oven.count < 100 || wiki){
                     return `<div>${loc('portal_oven_title')}</div><div class="has-text-special">${loc('requires_segments', [100])}</div>` + (global.portal.hasOwnProperty('oven') && global.portal.oven.count >= 100 ? `<div class="has-text-special">${loc('requires_power')}</div>` : ``);
                 }
             },
+            type: 'industry',
             reqs: { dish:2 },
             condition(){
                 return global.portal.oven.count < 100;
@@ -2888,7 +2948,7 @@ const fortressModules = {
             },
             action(args){
                 if (global.portal.oven.count < 100 && payCosts($(this)[0])){
-                    global.portal['oven'].count++;
+                    incrementStruct('oven','portal');
                     if (global.portal.oven.count >= 100){
                         global.tech['dish'] = 3;
                         initStruct(fortressModules.prtl_lake.oven_complete);
@@ -2913,10 +2973,11 @@ const fortressModules = {
         },
         oven_complete: {
             id: 'portal-oven_complete',
-            title: loc('portal_oven_title'),
+            title(){ return loc('portal_oven_title'); },
             desc(){
                 return `<div>${loc('portal_oven_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'industry',
             wiki: false,
             reqs: { dish: 3 },
             condition(){
@@ -2942,8 +3003,9 @@ const fortressModules = {
         },
         devilish_dish: {
             id: 'portal-devilish_dish',
-            title: loc('portal_devilish_dish_title'),
-            desc: loc('portal_devilish_dish_title'),
+            title(){ return loc('portal_devilish_dish_title'); },
+            desc(){ return loc('portal_devilish_dish_title'); },
+            type: 'industry',
             reqs: { dish: 3 },
             queue_complete(){ return 0; },
             cost: {},
@@ -2963,8 +3025,9 @@ const fortressModules = {
         },
         dish_soul_steeper: {
             id: 'portal-dish_soul_steeper',
-            title: loc('portal_dish_soul_steeper_title'),
-            desc: loc('portal_dish_soul_steeper_desc'),
+            title(){ return loc('portal_dish_soul_steeper_title'); },
+            desc(){ return loc('portal_dish_soul_steeper_desc'); },
+            type: 'industry',
             reqs: { dish: 5 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('dish_soul_steeper', offset, 750000000, spireCreep(1.3), 'portal'); },
@@ -2977,7 +3040,7 @@ const fortressModules = {
             },
             action(args){
                 if (payCosts($(this)[0])){
-                    global.portal['dish_soul_steeper'].count++;
+                    incrementStruct('dish_soul_steeper','portal');
                     global.portal['dish_soul_steeper'].on++;
                     return true;
                 }
@@ -2993,8 +3056,9 @@ const fortressModules = {
         },
         dish_life_infuser: {
             id: 'portal-dish_life_infuser',
-            title: loc('portal_dish_life_infuser_title'),
-            desc: loc('portal_dish_life_infuser_desc'),
+            title(){ return loc('portal_dish_life_infuser_title'); },
+            desc(){ return loc('portal_dish_life_infuser_desc'); },
+            type: 'industry',
             reqs: { dish: 5 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('dish_life_infuser', offset, 280000000, spireCreep(1.2), 'portal'); },
@@ -3008,7 +3072,7 @@ const fortressModules = {
             },
             action(args){
                 if (payCosts($(this)[0])){
-                    global.portal['dish_life_infuser'].count++;
+                    incrementStruct('dish_life_infuser','portal');
                     global.portal['dish_life_infuser'].on++;
                     return true;
                 }
@@ -3026,11 +3090,11 @@ const fortressModules = {
     prtl_spire: {
         info: {
             name: loc('portal_spire_name'),
-            desc: loc('portal_spire_desc'),
+            desc(){ return loc('portal_spire_desc'); },
             support: 'purifier',
             prop(){
-                let desc = ` - <span class="has-text-advanced">${loc('portal_spire_supply')}:</span> <span class="has-text-caution">{{ supply | filter }} / {{ sup_max | filter }}</span>`;
-                return desc + ` (<span class="has-text-success">+{{ diff | filter(2) }}/s</span>)`;
+                let desc = ` - <span class="has-text-advanced">${loc('portal_spire_supply')}:</span> <span class="has-text-caution">{{ filter(supply) }} / {{ filter(sup_max) }}</span>`;
+                return desc + ` (<span class="has-text-success">+{{ filter(diff, 2) }}/s</span>)`;
             },
             filter(v,fix){
                 let val = fix ? +(v).toFixed(fix) : Math.floor(v);
@@ -3039,8 +3103,8 @@ const fortressModules = {
         },
         spire_mission: {
             id: 'portal-spire_mission',
-            title: loc('portal_spire_mission_title'),
-            desc: loc('portal_spire_mission_title'),
+            title(){ return loc('portal_spire_mission_title'); },
+            desc(){ return loc('portal_spire_mission_title'); },
             reqs: { hell_spire: 1 },
             grant: ['hell_spire',2],
             queue_complete(){ return global.tech.hell_spire >= 2 ? 0 : 1; },
@@ -3073,6 +3137,7 @@ const fortressModules = {
             desc(){
                 return `<div>${global.race['warlord'] ? loc('portal_putrifier_desc') : loc('portal_purifier_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            type: 'utility',
             reqs: { hell_spire: 3 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('purifier', offset, 85000000, spireCreep(1.15), 'portal'); },
@@ -3106,10 +3171,11 @@ const fortressModules = {
         },
         port: {
             id: 'portal-port',
-            title: loc('portal_port_title'),
+            title(){ return loc('portal_port_title'); },
             desc(){
                 return `<div>${loc('portal_port_title')}</div><div class="has-text-special">${loc('portal_spire_support')}</div>`;
             },
+            type: 'outpost',
             reqs: { hell_spire: 3 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('port', offset, 135000000, spireCreep(1.2), 'portal'); },
@@ -3148,10 +3214,11 @@ const fortressModules = {
         },
         base_camp: {
             id: 'portal-base_camp',
-            title: loc('portal_base_camp_title'),
+            title(){ return loc('portal_base_camp_title'); },
             desc(){
                 return `<div>${loc('portal_base_camp_title')}</div><div class="has-text-special">${loc('portal_spire_support')}</div>`;
             },
+            type: 'outpost',
             reqs: { hell_spire: 4 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('base_camp', offset, 425000000, spireCreep(1.2), 'portal'); },
@@ -3186,7 +3253,7 @@ const fortressModules = {
         },
         bridge: {
             id: 'portal-bridge',
-            title: loc('portal_bridge_title'),
+            title(){ return loc('portal_bridge_title'); },
             desc(wiki){
                 if (!global.portal.hasOwnProperty('bridge') || global.portal.bridge.count < 10 || wiki){
                     return `<div>${loc('portal_bridge_title')}</div><div class="has-text-special">${loc('requires_segments',[10])}</div>`;
@@ -3195,6 +3262,7 @@ const fortressModules = {
                     return `<div>${loc('portal_bridge_title')}</div>`;
                 }
             },
+            type: 'utility',
             reqs: { hell_spire: 5 },
             not_trait: ['warlord'],
             queue_size: 1,
@@ -3238,6 +3306,7 @@ const fortressModules = {
             id: 'portal-sphinx',
             title(){ return global.race['warlord'] ? loc('portal_sphinx_warlord') : (global.tech.hell_spire === 7 ? loc('portal_sphinx_solve') : loc('portal_sphinx_title')); },
             desc(){ return global.race['warlord'] ? loc('portal_sphinx_warlord_desc') : loc('portal_sphinx_desc'); },
+            type: 'utility',
             reqs: { hell_spire: 6 },
             queue_complete(){ return 8 - global.tech.hell_spire; },
             cost: {
@@ -3282,8 +3351,8 @@ const fortressModules = {
         },
         bribe_sphinx: {
             id: 'portal-bribe_sphinx',
-            title: loc('portal_sphinx_bribe'),
-            desc: loc('portal_sphinx_desc'),
+            title(){ return loc('portal_sphinx_bribe'); },
+            desc(){ return loc('portal_sphinx_desc'); },
             reqs: { hell_spire: 7 },
             not_trait: ['warlord'],
             condition(){
@@ -3318,8 +3387,8 @@ const fortressModules = {
         },
         spire_survey: {
             id: 'portal-spire_survey',
-            title: loc('portal_spire_survey_title'),
-            desc: loc('portal_spire_survey_title'),
+            title(){ return loc('portal_spire_survey_title'); },
+            desc(){ return loc('portal_spire_survey_title'); },
             reqs: { hell_spire: 8 },
             grant: ['hell_spire',9],
             not_trait: ['warlord'],
@@ -3352,6 +3421,7 @@ const fortressModules = {
             desc(){
                 return `<div>${$(this)[0].title()}</div><div class="has-text-special">${loc('portal_spire_support')}</div>`;
             },
+            type: 'military',
             reqs: { hell_spire: 9 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('mechbay', offset, 100000000, 1.2, 'portal'); },
@@ -3402,8 +3472,9 @@ const fortressModules = {
         },
         spire: {
             id: 'portal-spire',
-            title: loc('portal_spire_title'),
-            desc: loc('portal_spire_title'),
+            title(){ return loc('portal_spire_title'); },
+            desc(){ return loc('portal_spire_title'); },
+            type: 'megaproject',
             reqs: { hell_spire: 9 },
             queue_complete(){ return 0; },
             cost: {},
@@ -3459,7 +3530,7 @@ const fortressModules = {
         },
         waygate: {
             id: 'portal-waygate',
-            title: loc('portal_waygate_title'),
+            title(){ return loc('portal_waygate_title'); },
             desc(wiki){
                 if (!global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) || wiki){
                     return `<div>${loc('portal_waygate_title')}</div><div class="has-text-special">${loc('requires_segments',[10])}</div>`;
@@ -3468,6 +3539,7 @@ const fortressModules = {
                     return `<div>${loc('portal_waygate_title')}</div>`;
                 }
             },
+            type: 'megaproject',
             reqs: { waygate: 1 },
             condition(){
                 return global.tech['edenic'] && global.tech.edenic >= 2 ? false : true;
@@ -3586,8 +3658,9 @@ const fortressModules = {
         },
         bazaar: {
             id: 'portal-bazaar',
-            title: loc('portal_bazaar_title'),
-            desc: loc('portal_bazaar_title'),
+            title(){ return loc('portal_bazaar_title'); },
+            desc(){ return loc('portal_bazaar_title'); },
+            type: 'finance',
             reqs: { hellspawn: 8 },
             trait: ['warlord'],
             cost: {
@@ -3714,7 +3787,7 @@ export function renderFortress(){
                 vBind({
                     el: `#sr${region}`,
                     data: global.portal[support],
-                    filters: {
+                    methods: {
                         filter(){
                             return fortressModules[region].info.filter(...arguments);
                         }
@@ -3783,8 +3856,8 @@ function buildEnemyFortress(parent){
     parent.append(fort);
 
     let enemy = $(`<div v-for="(e, index) of enemy" :key="index" class="enemyFortress">
-        <div class="fortRow"><span class="has-text-success">{{ e.r | species }}</span><span class="has-text-warning">${loc(`fortress_wall`)} {{ e.f }}%</span></div>
-        <div class="fortRow second"><span class="has-text-caution">${loc(`fortress_demon_kills`)} {{ e.k | kills }}</span><a class="button" v-on:click="attack(index)" role="button">${loc(`civics_garrison_attack`)}</a></div>
+        <div class="fortRow"><span class="has-text-success">{{ species(e.r) }}</span><span class="has-text-warning">${loc(`fortress_wall`)} {{ e.f }}%</span></div>
+        <div class="fortRow second"><span class="has-text-caution">${loc(`fortress_demon_kills`)} {{ kills(e.k) }}</span><a class="button" v-on:click="attack(index)" role="button">${loc(`civics_garrison_attack`)}</a></div>
     </div>`);
     fort.append(enemy);
 
@@ -3830,9 +3903,7 @@ function buildEnemyFortress(parent){
                     global.portal.throne.enemy.splice(idx,1);
                     renderFortress();
                 }
-            }
-        },
-        filters: {
+            },
             species(v){
                 return races[v].name;
             },
@@ -3883,11 +3954,11 @@ export function buildFortress(parent,full){
     let status = $('<div></div>');
     fort.append(status);
 
-    let defense = $(`<span class="defense has-text-success" :aria-label="defense()">${loc('fortress_defense')} {{ f.garrison | defensive }}</span>`);
+    let defense = $(`<span class="defense has-text-success" :aria-label="defense()">${loc('fortress_defense')} {{ defensive(f.garrison) }}</span>`);
     status.append(defense);
     let activity = $(`<span class="has-text-danger pad hostiles" :aria-label="hostiles()">${loc('fortress_spotted')} {{ f.threat }}</span>`);
     status.append(activity);
-    let threatLevel = $(`<span class="pad threatLevel" :class="threaten()" :aria-label="threatLevel()">{{ f.threat | threat }}</span>`);
+    let threatLevel = $(`<span class="pad threatLevel" :class="threaten()" :aria-label="threatLevel()">{{ threat(f.threat) }}</span>`);
     status.append(threatLevel);
 
     let wallStatus = $('<div></div>');
@@ -3900,7 +3971,7 @@ export function buildFortress(parent,full){
     
     station.append($(`<span>${loc('fortress_army')}</span>`));
     station.append($('<span role="button" aria-label="remove soldiers from the fortress" class="sub has-text-danger" @click="aLast"><span>&laquo;</span></span>'));
-    station.append($('<span class="current armyLabel">{{ f.garrison | patrolling }}</span>'));
+    station.append($('<span class="current armyLabel">{{ patrolling(f.garrison) }}</span>'));
     station.append($('<span role="button" aria-label="add soldiers to the fortress" class="add has-text-success" @click="aNext"><span>&raquo;</span></span>'));
     
     station.append($(`<span>${loc('fortress_patrol')}</span>`));
@@ -3919,7 +3990,7 @@ export function buildFortress(parent,full){
     station.append(bunks);
     bunks.append($(`<span class="has-text-warning">${loc('civics_garrison')}: </span>`));
     let soldier_title = global.tech['world_control'] && !global.race['truepath'] ? loc('civics_garrison_peacekeepers') : loc('civics_garrison_soldiers');
-    bunks.append($(`<span><span class="soldier">${soldier_title}</span> <span v-html="$options.filters.stationed(g.workers)"></span> / <span>{{ g.max | s_max }} | <span></span>`));
+    bunks.append($(`<span><span class="soldier">${soldier_title}</span> <span v-html="stationed(g.workers)"></span> / <span>{{ s_max(g.max) }} | </span></span>`));
     bunks.append($(`<span v-show="g.crew > 0"><span class="crew">${loc('civics_garrison_crew')}</span> <span>{{ g.crew }} | </span></span>`));
     bunks.append($(`<span><span class="wounded">${loc('civics_garrison_wounded')}</span> <span>{{ g.wounded }}</span></span>`));
 
@@ -3931,7 +4002,7 @@ export function buildFortress(parent,full){
     reports.append($(`<b-checkbox class="patrol" v-model="f.nocrew"${color} v-show="s.showGalactic">${loc('fortress_nocrew')}</b-checkbox>`));
 
     if (full){
-        fort.append($(`<div class="training"><span>${loc('civics_garrison_training')} - ${loc('arpa_to_complete')} {{ g.rate, g.progress | trainTime }}</span><button class="button observe right" @click="observation">${loc('hell_observation_button')}</button> <progress class="progress" :value="g.progress" max="100">{{ g.progress }}%</progress></div>`));
+        fort.append($(`<div class="training"><span>${loc('civics_garrison_training')} - ${loc('arpa_to_complete')} {{ trainTime(g.rate, g.progress) }}</span><button class="button observe right" @click="observation">${loc('hell_observation_button')}</button> <progress class="progress" :value="g.progress" max="100">{{ g.progress }}%</progress></div>`));
     }
 
     vBind({
@@ -4070,9 +4141,7 @@ export function buildFortress(parent,full){
                 if (!global.settings.tabLoad){
                     drawHellObservations();
                 }
-            }
-        },
-        filters: {
+            },
             defensive(v){
                 return fortressDefenseRating(v);
             },
@@ -4179,14 +4248,18 @@ function fortressDefenseRating(v){
 }
 
 function casualties(demons,pat_armor,ambush,report){
-    let casualties = Math.round(Math.log2((demons / global.portal.fortress.patrol_size) / (pat_armor || 1))) - Math.rand(0,pat_armor);
+    // Part of the hell war (called only from bloodwar); draw from the hellseed stream so
+    // casualties are reproducible during offline catch-up without disturbing the standard
+    // seed or the warseed. Mirrors Math.rand's integer-in-[min,max) behaviour.
+    const hellRand = (min, max) => Math.floor(seededRandom(min, max, 'hell'));
+    let casualties = Math.round(Math.log2((demons / global.portal.fortress.patrol_size) / (pat_armor || 1))) - hellRand(0,pat_armor);
     let dead = 0;
     if (casualties > 0){
         if (casualties > global.portal.fortress.patrol_size){
             casualties = global.portal.fortress.patrol_size;
         }
-        casualties = Math.rand(ambush ? 1 : 0,casualties + 1);
-        dead = Math.rand(0,casualties + 1);
+        casualties = hellRand(ambush ? 1 : 0,casualties + 1);
+        dead = hellRand(0,casualties + 1);
         let wounded = casualties - dead;
         if (global.race['instinct']){
             let reduction = Math.floor(dead * (traits.instinct.vars()[1] / 100));
@@ -4246,6 +4319,10 @@ function fortressData(dt){
 }
 
 export function bloodwar(){
+    // Hell combat draws from its own RNG stream (hellseed) so soul gem and kill outcomes are
+    // reproducible during offline catch-up without disturbing the standard seed or the warseed.
+    // Mirrors Math.rand's integer-in-[min,max) behaviour.
+    const hellRand = (min, max) => Math.floor(seededRandom(min, max, 'hell'));
     let day_report = {
         start: global.portal.fortress.threat,
         foundGems: 0,
@@ -4306,9 +4383,9 @@ export function bloodwar(){
         day_report.drones = {};
         for (let i=0; i<p_on['war_drone']; i++){
             let drone_report = { encounter: false, kills: 0 };
-            if (Math.rand(0,global.portal.fortress.threat) >= Math.rand(0,999)){
-                let demons = Math.rand(Math.floor(global.portal.fortress.threat / 50), Math.floor(global.portal.fortress.threat / 10));
-                let killed = global.tech.portal >= 7 ? Math.rand(50,125) : Math.rand(25,75);
+            if (hellRand(0,global.portal.fortress.threat) >= hellRand(0,999)){
+                let demons = hellRand(Math.floor(global.portal.fortress.threat / 50), Math.floor(global.portal.fortress.threat / 10));
+                let killed = global.tech.portal >= 7 ? hellRand(50,125) : hellRand(25,75);
                 if (demons < killed){
                     killed = demons;
                 }
@@ -4370,7 +4447,7 @@ export function bloodwar(){
     for (let i=0; i<global.portal.fortress.patrols; i++){
         let patrol_report = { encounter: false, droid: false, ambush: false, gem: 0, kills: 0, wounded: 0, died: 0};
         let hurt = brkpnt > (1 / global.portal.fortress.patrols * i) ? Math.ceil(wounded) : Math.floor(wounded);
-        if (Math.rand(0,global.portal.fortress.threat) >= Math.rand(0,999)){
+        if (hellRand(0,global.portal.fortress.threat) >= hellRand(0,999)){
             patrol_report.encounter = true;
             let pat_size = global.portal.fortress.patrol_size;
             if (terminators > 0){
@@ -4380,10 +4457,10 @@ export function bloodwar(){
             }
             let pat_rating = Math.round(armyRating(pat_size,'hellArmy',hurt));
 
-            let demons = Math.rand(Math.floor(global.portal.fortress.threat / 50), Math.floor(global.portal.fortress.threat / 10));
+            let demons = hellRand(Math.floor(global.portal.fortress.threat / 50), Math.floor(global.portal.fortress.threat / 10));
 
             if (global.race['blood_thirst']){
-                global.race['blood_thirst_count'] += Math.rand(0,Math.ceil(demons / 10));
+                global.race['blood_thirst_count'] += hellRand(0,Math.ceil(demons / 10));
                 if (global.race['blood_thirst_count'] > traits.blood_thirst.vars()[0]){
                     global.race['blood_thirst_count'] = traits.blood_thirst.vars()[0];
                 }
@@ -4398,9 +4475,9 @@ export function bloodwar(){
                 odds += Math.round(3 * traits.ocular_power.vars()[1] / 100);
             }
 
-            if (Math.rand(0,odds) === 0){
+            if (hellRand(0,odds) === 0){
                 patrol_report.ambush = true;
-                dead += casualties(Math.round(demons * (1 + Math.random() * 3)),0,true,patrol_report);
+                dead += casualties(Math.round(demons * (1 + seededRandom(0, 1, 'hell') * 3)),0,true,patrol_report);
                 let killed = Math.round(pat_rating / 2);
                 if (demons < killed){
                     killed = demons;
@@ -4436,7 +4513,7 @@ export function bloodwar(){
                     if (div < 5){ div = 5; }
                     let chances = Math.round(killed / div);
                     for (let j=0; j<chances; j++){
-                        if (Math.rand(0,gem_chance) === 0){
+                        if (hellRand(0,gem_chance) === 0){
                             patrol_report.gem++;
                             day_report.stats.gems.patrols++;
                             global.resource.Soul_Gem.amount++;
@@ -4463,7 +4540,7 @@ export function bloodwar(){
 
     let revive = 0;
     if (global.race['revive']){
-        revive = Math.round(Math.rand(0,(dead / traits.revive.vars()[6]) + 0.25));
+        revive = Math.round(hellRand(0,(dead / traits.revive.vars()[6]) + 0.25));
         day_report.revived = revive;
         day_report.stats.revived = revive;
         global.civic.garrison.workers += revive;
@@ -4496,7 +4573,7 @@ export function bloodwar(){
     if (global.portal.fortress.garrison > 0 && global.portal.fortress.siege > 0){
         global.portal.fortress.siege--;
     }
-    if (global.portal.fortress.siege <= 900 && global.portal.fortress.garrison > 0 && 1 > Math.rand(0,global.portal.fortress.siege)){
+    if (global.portal.fortress.siege <= 900 && global.portal.fortress.garrison > 0 && 1 > hellRand(0,global.portal.fortress.siege)){
         let siege_report = { destroyed: false, damage: 0, kills: 0, surveyors: 0, soldiers: 0};
         let defense = fortressDefenseRating(global.portal.fortress.garrison);
         let defend = defense / 35 > 1 ? defense / 35 : 1;
@@ -4506,7 +4583,7 @@ export function bloodwar(){
         let killed = 0;
         let destroyed = false;
         while (siege > 0 && global.portal.fortress.walls > 0){
-            let terminated = Math.round(Math.rand(1,defend + 1));
+            let terminated = Math.round(hellRand(1,defend + 1));
             if (terminated > siege){
                 terminated = siege;
             }
@@ -4569,7 +4646,7 @@ export function bloodwar(){
         if (global.race.universe === 'evil'){
             influx *= 1.1;
         }
-        let demon_spawn = Math.rand(Math.round(10 * influx),Math.round(50 * influx));
+        let demon_spawn = hellRand(Math.round(10 * influx),Math.round(50 * influx));
         global.portal.fortress.threat += demon_spawn;
         day_report.demons = demon_spawn;
     }
@@ -4600,11 +4677,11 @@ export function bloodwar(){
         // Higher exposure increases only chance of death, up to a limit
         let max_risk = jobScale(10);
         let exposure = Math.min(max_risk, global.civic.hell_surveyor.workers);
-        let risk = max_risk - Math.rand(0,exposure + 1);
+        let risk = max_risk - hellRand(0,exposure + 1);
 
         if (danger > risk){
             let cap = Math.round(danger);
-            let dead = Math.rand(0,cap + 1); // +1 for inclusive cap
+            let dead = hellRand(0,cap + 1); // +1 for inclusive cap
             if (dead > 0){
                 if (dead > global.civic.hell_surveyor.workers){
                     dead = global.civic.hell_surveyor.workers;
@@ -4637,7 +4714,7 @@ export function bloodwar(){
                 drone_kills_left -= max_search_chance;
 
                 // Each surveyor may search from 50% to 100% of 1 equal share of drone kills
-                let searched = Math.rand(min_search_chance, max_search_chance+1);
+                let searched = hellRand(min_search_chance, max_search_chance+1);
                 // Limit to 100 bodies per surveyor
                 let search_limit = highPopAdjust(100);
                 if (searched > search_limit){ searched = search_limit; }
@@ -4647,7 +4724,7 @@ export function bloodwar(){
                     if (div < 5){ div = 5; }
                     let chances = Math.round(searched / div);
                     for (let j=0; j<chances; j++){
-                        if (Math.rand(0,gem_chance) === 0){
+                        if (hellRand(0,gem_chance) === 0){
                             surv_report.gem++;
                             day_report.stats.gems.surveyors++;
                             global.resource.Soul_Gem.amount++;
@@ -4680,7 +4757,7 @@ export function bloodwar(){
         if (forgeOperating && global.tech.hell_pit >= 5 && p_on['soul_attractor']){
             let attract = global.blood['attract'] ? global.blood.attract * 5 : 0;
             if (global.tech['hell_pit'] && global.tech.hell_pit >= 8){ attract *= 2; }
-            let souls = p_on['soul_attractor'] * Math.rand(40 + attract, 120 + attract);
+            let souls = p_on['soul_attractor'] * hellRand(40 + attract, 120 + attract);
             global.portal.soul_forge.kills += souls;
             day_report.soul_attractors = souls;
             soulCapacitor(souls);
@@ -4688,7 +4765,7 @@ export function bloodwar(){
 
         if (forgeOperating && global.tech['asphodel'] && global.tech.asphodel >= 2 && support_on['ectoplasm_processor']){
             let attract = global.blood['attract'] ? global.blood.attract * 5 : 0;
-            let souls = global.civic.ghost_trapper.workers * Math.rand(150 + attract, 250 + attract);
+            let souls = global.civic.ghost_trapper.workers * hellRand(150 + attract, 250 + attract);
             if (p_on['ascension_trigger'] && global.eden.hasOwnProperty('encampment') && global.eden.encampment.asc){
                 let heatSink = actions.interstellar.int_sirius.ascension_trigger.heatSink();
                 heatSink = heatSink < 0 ? Math.abs(heatSink) : 0;
@@ -4706,7 +4783,7 @@ export function bloodwar(){
             let gunKills = 0;
             for (let i=0; i<p_on['gun_emplacement']; i++){
                 day_report.gun_emplacements[i+1] = { kills: 0, gem: false };
-                let kills = global.tech.hell_gun >= 2 ? Math.rand(35,75) : Math.rand(20,40);
+                let kills = global.tech.hell_gun >= 2 ? hellRand(35,75) : hellRand(20,40);
                 gunKills += kills;
                 day_report.gun_emplacements[i+1].kills = kills;
             }
@@ -4719,7 +4796,7 @@ export function bloodwar(){
                 gun_base *= 0.94 ** p_on['soul_attractor'];
             }
             for (let i=0; i<p_on['gun_emplacement']; i++){
-                if (Math.rand(0,Math.round(gun_base)) === 0){
+                if (hellRand(0,Math.round(gun_base)) === 0){
                     day_report.gun_emplacements[i+1].gem = true;
                     day_report.stats.gems.guns++;
                     global.resource.Soul_Gem.amount++;
@@ -4729,7 +4806,7 @@ export function bloodwar(){
 
         if (forgeOperating){
             day_report.soul_forge = { kills: 0, gem: false, gem_craft: false, corrupt: false };
-            let forgeKills = Math.rand(25,150);
+            let forgeKills = hellRand(25,150);
             day_report.stats.kills.soul_forge = forgeKills;
             day_report.soul_forge.kills = forgeKills;
             global.stats.dkills += forgeKills;
@@ -4739,7 +4816,7 @@ export function bloodwar(){
                 global.race.ocularPowerConfig.ds += Math.round(forgeKills * traits.ocular_power.vars()[1]);
             }
             let forge_base = global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 5 ? 4500 : 5000;
-            if (Math.rand(0,forge_base) === 0){
+            if (hellRand(0,forge_base) === 0){
                 day_report.soul_forge.gem = true;
                 day_report.stats.gems.soul_forge++;
                 global.resource.Soul_Gem.amount++;
@@ -4755,7 +4832,7 @@ export function bloodwar(){
             let gems = Math.floor(global.portal.soul_forge.kills / Math.round(cap));
             global.portal.soul_forge.kills -= Math.round(cap) * gems;
             let c_max = 10 - p_on['soul_attractor'] > 0 ? 10 - p_on['soul_attractor'] : 1;
-            if (global.tech.high_tech >= 16 && !global.tech['corrupt'] && Math.rand(0,c_max + 1) === 0){
+            if (global.tech.high_tech >= 16 && !global.tech['corrupt'] && hellRand(0,c_max + 1) === 0){
                 day_report.soul_forge.corrupt = true;
                 global.resource.Corrupt_Gem.amount++;                  
                 global.resource.Corrupt_Gem.display = true;
@@ -4778,7 +4855,7 @@ export function bloodwar(){
             let max = global.tech.hell_gun >= 2 ? 100 : 60;
             for (let i=0; i<p_on['gate_turret']; i++){
                 day_report.gate_turrets[i+1] = { kills: 0, gem: false };
-                let kills = Math.rand(min,max);
+                let kills = hellRand(min,max);
                 gunKills += kills;
                 day_report.gate_turrets[i+1].kills = kills;
             }
@@ -4790,7 +4867,7 @@ export function bloodwar(){
             global.stats.dkills += gunKills;
             let gun_base = global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 5 ? 2700 : 3000;
             for (let i=0; i<p_on['gate_turret']; i++){
-                if (Math.rand(0,Math.round(gun_base)) === 0){
+                if (hellRand(0,Math.round(gun_base)) === 0){
                     day_report.gate_turrets[i+1].gem = true;
                     day_report.stats.gems.turrets++;
                     global.resource.Soul_Gem.amount++;
@@ -4828,24 +4905,34 @@ export function bloodwar(){
     
     purgeReports();
     
-    Object.keys(global.portal.observe.graphs).forEach(function (id){
-        if (!!document.getElementById(global.portal.observe.graphs[id].chartID)){
-            let newData = [];
-            hell_graphs[id].data.forEach(function (dataPoint){
-                newData.push(dataPoint.length === 3 ? global.portal.observe.stats[dataPoint[0]][dataPoint[1]][dataPoint[2]] : global.portal.observe.stats[dataPoint[0]][dataPoint[1]]);
-            });
-            hell_graphs[id].graph.data.datasets[0].data = newData;
-            hell_graphs[id].graph.update();
-        }
-    });
+    let now = Date.now();
+    if (now - lastHellGraphUpdate >= hellGraphUpdateInterval){
+        lastHellGraphUpdate = now;
+        Object.keys(global.portal.observe.graphs).forEach(function (id){
+            if (!!document.getElementById(global.portal.observe.graphs[id].chartID)){
+                let newData = [];
+                hell_graphs[id].data.forEach(function (dataPoint){
+                    newData.push(dataPoint.length === 3 ? global.portal.observe.stats[dataPoint[0]][dataPoint[1]][dataPoint[2]] : global.portal.observe.stats[dataPoint[0]][dataPoint[1]]);
+                });
+                hell_graphs[id].graph.data.datasets[0].data = newData;
+                // 'none' skips Chart.js's per-update animation; the animation is what makes a
+                // once-per-game-day repaint expensive, and overlapping animations accumulate.
+                hell_graphs[id].graph.update('none');
+            }
+        });
+    }
 }
 
 export function hellguard(){
+    // Warlord hell combat; draw from the hellseed stream so outcomes are reproducible during
+    // offline catch-up without disturbing the standard seed or the warseed. Mirrors Math.rand's
+    // integer-in-[min,max) behaviour.
+    const hellRand = (min, max) => Math.floor(seededRandom(min, max, 'hell'));
     if (global.race['warlord'] && global.portal['minions'] && global.portal.minions.count > 0){
         if ((global.portal.throne.enemy.length === 0 || 
             (global.portal.throne.spawned.length >= 3 && global.portal.throne.enemy.length <= 1) ||
             (global.portal.throne.spawned.length >= 8 && global.portal.throne.enemy.length <= 2)
-        ) && Math.rand(0,10) === 0 && global.portal.minions.spawns > 0){
+        ) && hellRand(0,10) === 0 && global.portal.minions.spawns > 0){
             if (global.portal.throne.spawned.length === 0){
                 addHellEnemy(['basic']);
             }
@@ -4872,7 +4959,7 @@ export function hellguard(){
                 spawn += traits.infectious.vars()[1];
                 low_spawn += traits.infectious.vars()[0];
             }
-            global.portal.minions.spawns += Math.rand(global.portal.minions.on * low_spawn, global.portal.minions.on * spawn);
+            global.portal.minions.spawns += hellRand(global.portal.minions.on * low_spawn, global.portal.minions.on * spawn);
         }
 
         let forgeOperating = false;
@@ -4903,7 +4990,7 @@ export function hellguard(){
                 let reaper = 0.25 + (eRating * 0.01) - ((global.portal?.reaper?.count || 0) ** (1 + ((global.portal?.reaper?.rank || 1) - 1) / 25) / reapEffect);
                 if (reaper < 0.01){ reaper = 0.01; }
                 let bound = Math.round(global.portal.minions.spawns * (0.5 * eRating) * (eRating ** reaper) / rating);
-                let kills = Math.rand(e.s, bound);
+                let kills = hellRand(e.s, bound);
                 if (kills > global.portal.minions.spawns){ kills = global.portal.minions.spawns; }
                 global.portal.minions.spawns -= kills;
                 e.k += kills;
@@ -4911,12 +4998,12 @@ export function hellguard(){
                     global.portal.soul_forge.kills += kills;
                 }
 
-                if (e.f < 100 && Math.rand(0, 10) === 0){
+                if (e.f < 100 && hellRand(0, 10) === 0){
                     e.f++;
                 }
 
                 if (global.race['revive']){
-                    let revive = Math.round(Math.rand(0,(kills / (traits.revive.vars()[6] * 20))));
+                    let revive = Math.round(hellRand(0,(kills / (traits.revive.vars()[6] * 20))));
                     global.portal.minions.spawns += revive;
                 }
             });
@@ -4925,7 +5012,7 @@ export function hellguard(){
         if (forgeOperating && global.tech.hell_pit >= 5 && p_on['soul_attractor']){
             let attract = global.blood['attract'] ? global.blood.attract * 5 : 0;
             if (global.tech['hell_pit'] && global.tech.hell_pit >= 8){ attract *= 2; }
-            let souls = p_on['soul_attractor'] * Math.rand(40 + attract, 120 + attract);
+            let souls = p_on['soul_attractor'] * hellRand(40 + attract, 120 + attract);
             if (global.race['ghostly']){
                 souls *= 1 + (traits.ghostly.vars()[0] / 100);
                 souls = Math.round(souls);
@@ -4935,7 +5022,7 @@ export function hellguard(){
 
         if (forgeOperating && global.tech['asphodel'] && global.tech.asphodel >= 2 && support_on['ectoplasm_processor']){
             let attract = global.blood['attract'] ? global.blood.attract * 5 : 0;
-            let souls = global.civic.ghost_trapper.workers * Math.rand(150 + attract, 250 + attract);
+            let souls = global.civic.ghost_trapper.workers * hellRand(150 + attract, 250 + attract);
             if (global.portal['mortuary'] && global.portal['corpse_pile']){
                 let corpse = (global.portal?.corpse_pile?.count || 0) * (p_on['mortuary'] || 0);
                 if (corpse > 0){
@@ -6401,18 +6488,17 @@ export function drawMechLab(){
         let assemble = $(`<div id="mechAssembly" class="mechAssembly"></div>`);
         lab.append(assemble);
 
-        let title = $(`<div><span class="has-text-caution">${loc(global.race['warlord'] ? `portal_mech_spawn` : `portal_mech_assembly`)}</span> - <span>{{ b.size | slabel }} {{ b.chassis | clabel }}</span></div>`);
+        let title = $(`<div><span class="has-text-caution">${loc(global.race['warlord'] ? `portal_mech_spawn` : `portal_mech_assembly`)}</span> - <span>{{ slabel(b.size) }} {{ clabel(b.chassis) }}</span></div>`);
         assemble.append(title);
 
         title.append(` | <span><span class="has-text-warning">${loc(global.race['warlord'] ? `portal_mech_lair_space` : 'portal_mech_bay_space')}</span>: {{ m.bay }} / {{ m.max }}</span>`);
-        title.append(` | <span><span class="has-text-warning">${loc('portal_mech_sup_avail')}</span>: {{ p.supply | round }} / {{ p.sup_max }}</span>`);
+        title.append(` | <span><span class="has-text-warning">${loc('portal_mech_sup_avail')}</span>: {{ round(p.supply) }} / {{ p.sup_max }}</span>`);
 
         let infernal = global.blood['prepared'] && global.blood.prepared >= 3 ? `<b-checkbox class="patrol" v-model="b.infernal">${loc('portal_mech_infernal')} (${loc('portal_mech_infernal_effect',[25])})</b-checkbox>` : ``;
-        assemble.append(`<div><span class="has-text-warning">${loc(global.race['warlord'] ? `portal_mech_lair` : `portal_mech_space`)}</span> <span class="has-text-danger">{{ b.size | bay }}</span> | <span class="has-text-warning">${loc(`portal_mech_cost`)}</span> <span class="has-text-danger">{{ b.size | price }}</span> | <span class="has-text-warning">${loc(`portal_mech_soul`,[global.resource.Soul_Gem.name])}</span> <span class="has-text-danger">{{ b.size | soul }}</span>${infernal}</div>`)
-        assemble.append(`<div>{{ b.size | desc }}</div>`);
+        assemble.append(`<div><span class="has-text-warning">${loc(global.race['warlord'] ? `portal_mech_lair` : `portal_mech_space`)}</span> <span class="has-text-danger">{{ bay(b.size) }}</span> | <span class="has-text-warning">${loc(`portal_mech_cost`)}</span> <span class="has-text-danger">{{ price(b.size) }}</span> | <span class="has-text-warning">${loc(`portal_mech_soul`,[global.resource.Soul_Gem.name])}</span> <span class="has-text-danger">{{ soul(b.size) }}</span>${infernal}</div>`)
+        assemble.append(`<div>{{ desc(b.size) }}</div>`);
 
         let options = $(`<div class="bayOptions"></div>`);
-        assemble.append(options);
 
         let sizes = ``;
         let sizeTypes = global.race['warlord'] ? ['minion','fiend','cyberdemon','archfiend'] : ['small','medium','large','titan','collector'];
@@ -6421,10 +6507,12 @@ export function drawMechLab(){
         });
 
         options.append(`<b-dropdown :triggers="['hover', 'click']" aria-role="list">
-            <button class="button is-info" slot="trigger">
-                <span>${loc(`portal_mech_size`)}: {{ b.size | slabel }}</span>
-                <b-icon icon="menu-down"></b-icon>
-            </button>${sizes}
+            <template #trigger>
+                <button class="button is-info">
+                    <span>${loc(`portal_mech_size`)}: {{ slabel(b.size) }}</span>
+                    <b-icon icon="menu-down"></b-icon>
+                </button>
+            </template>${sizes}
         </b-dropdown>`);
 
         let chassis = ``;
@@ -6450,10 +6538,12 @@ export function drawMechLab(){
         });
 
         options.append(`<b-dropdown :triggers="['hover', 'click']" aria-role="list">
-            <button class="button is-info" slot="trigger">
-                <span>${loc(`portal_mech_type`)}: {{ b.chassis | clabel }}</span>
-                <b-icon icon="menu-down"></b-icon>
-            </button>${chassis}
+            <template #trigger>
+                <button class="button is-info">
+                    <span>${loc(`portal_mech_type`)}: {{ clabel(b.chassis) }}</span>
+                    <b-icon icon="menu-down"></b-icon>
+                </button>
+            </template>${chassis}
         </b-dropdown>`);
 
         for (let i=0; i<4; i++){
@@ -6464,10 +6554,12 @@ export function drawMechLab(){
             });
 
             options.append(`<b-dropdown :triggers="['hover', 'click']" aria-role="list" v-show="vis(${i})">
-                <button class="button is-info" slot="trigger">
-                    <span>${loc(`portal_mech_weapon`)}: {{ b.hardpoint[${i}] || 'laser' | wlabel }}</span>
-                    <b-icon icon="menu-down"></b-icon>
-                </button>${weapons}
+                <template #trigger>
+                    <button class="button is-info">
+                        <span>${loc(`portal_mech_weapon`)}: {{ wlabel(b.hardpoint[${i}] || 'laser') }}</span>
+                        <b-icon icon="menu-down"></b-icon>
+                    </button>
+                </template>${weapons}
             </b-dropdown>`);
         }
 
@@ -6476,18 +6568,22 @@ export function drawMechLab(){
             let equip = ``;
             let equipTypes = validEquipment(global.portal.mechbay.blueprint.size,global.portal.mechbay.blueprint.chassis,i);
             equipTypes.forEach(function(val,idx){
-                equip += `<b-dropdown-item aria-role="listitem" v-on:click="setEquip('${val}',${i})" class="equip r${i} a${idx}" data-val="${val}">{{ '${val}' | equipment }}</b-dropdown-item>`;
+                equip += `<b-dropdown-item aria-role="listitem" v-on:click="setEquip('${val}',${i})" class="equip r${i} a${idx}" data-val="${val}">{{ equipment('${val}') }}</b-dropdown-item>`;
             });
 
             options.append(`<b-dropdown :triggers="['hover', 'click']" aria-role="list" v-show="eVis(${i})">
-                <button class="button is-info" slot="trigger">
-                    <span>${loc(global.race['warlord'] ? `portal_mech_attribute` : `portal_mech_equipment`)}: {{ b.equip[${i}] || 'shields' | equipment }}</span>
-                    <b-icon icon="menu-down"></b-icon>
-                </button>${equip}
+                <template #trigger>
+                    <button class="button is-info">
+                        <span>${loc(global.race['warlord'] ? `portal_mech_attribute` : `portal_mech_equipment`)}: {{ equipment(b.equip[${i}] || 'shields') }}</span>
+                        <b-icon icon="menu-down"></b-icon>
+                    </button>
+                </template>${equip}
             </b-dropdown>`);
         }
 
-        assemble.append(`<div class="mechAssemble"><button class="button is-info" slot="trigger" v-on:click="build()"><span>${global.race['warlord'] ? loc('portal_mech_summon') : loc('portal_mech_construct')}</span></button></div>`);
+        assemble.append(options);
+
+        assemble.append(`<div class="mechAssemble"><button class="button is-info" v-on:click="build()"><span>${global.race['warlord'] ? loc('portal_mech_summon') : loc('portal_mech_construct')}</span></button></div>`);
 
         vBind({
             el: '#mechAssembly',
@@ -6655,13 +6751,15 @@ export function drawMechLab(){
                         clearPopper();
                     }
                 },
-                setWep(w,i){
+                setWep(w, i) {
                     global.portal.mechbay.blueprint.hardpoint[i] = w;
-                    vBind({el: `#mechAssembly`},'update');
+                    // force reactivity by creating a new array reference
+                    global.portal.mechbay.blueprint.hardpoint = [...global.portal.mechbay.blueprint.hardpoint];
                 },
-                setEquip(e,i){
+                setEquip(e, i) {
                     global.portal.mechbay.blueprint.equip[i] = e;
-                    vBind({el: `#mechAssembly`},'update');
+                    // same as above
+                    global.portal.mechbay.blueprint.equip = [...global.portal.mechbay.blueprint.equip];
                 },
                 vis(hp){
                     if (global.portal.mechbay.blueprint.size === 'collector'){
@@ -6699,9 +6797,7 @@ export function drawMechLab(){
                         case 'archfiend':
                             return true;
                     }
-                }
-            },
-            filters: {
+                },
                 bay(s){
                     return mechSize(s);
                 },
@@ -6857,11 +6953,11 @@ export function mechDesc(parent,obj){
     });
 
     if (tc && tc['t']){
-        desc.append($(`<div class="divider"></div><div id="popTimer" class="flair has-text-advanced">{{ t | timer }}</div>`));
+        desc.append($(`<div class="divider"></div><div id="popTimer" class="flair has-text-advanced">{{ timer(t) }}</div>`));
         vBind({
             el: '#popTimer',
             data: tc,
-            filters: {
+            methods: {
                 timer(t){
                     return loc('action_ready',[timeFormat(t)]);
                 }
@@ -6964,12 +7060,12 @@ function drawMechs(){
       <div v-for="(mech, index) of mechs" :key="index" class="mechRow" :class="index < active ? '' : 'inactive-row' ">
         <a class="scrap" @click="scrap(index)" role="button">${loc(global.race['warlord'] ? 'portal_mech_unsummon' : 'portal_mech_scrap')}</a>
         <span> | </span><span>${loc(global.race['warlord'] ? 'portal_demon' : 'portal_mech')} #{{index + 1}}: </span>
-        <span class="has-text-caution">{{ mech.infernal ? "${loc('portal_mech_infernal')} " : "" }}{{ mech | size }} {{ mech | chassis }}</span>
+        <span class="has-text-caution">{{ mech.infernal ? "${loc('portal_mech_infernal')} " : "" }}{{ size(mech) }} {{ chassis(mech) }}</span>
         <div :class="'gearList '+mech.size">
           <div>
             <template v-for="hp of mech.hardpoint">
               <span> | </span>
-              <span class="has-text-danger">{{ hp | weapon }}</span>
+              <span class="has-text-danger">{{ weapon(hp) }}</span>
             </template>
           </div>
         </div>
@@ -6977,7 +7073,7 @@ function drawMechs(){
           <div>
             <template v-for="eq of mech.equip">
               <span> | </span>
-              <span class="has-text-warning">{{ eq, mech.size | equipment }}</span>
+              <span class="has-text-warning">{{ equipment(eq, mech.size) }}</span>
             </template>
           </div>
         </div>
@@ -7001,9 +7097,7 @@ function drawMechs(){
                     global.portal.mechbay.bay -= size;
                     global.portal.mechbay.active--;
                 }
-            }
-        },
-        filters: {
+            },
             equipment(e,size){
                 if (e !== 'special'){
                     return loc(`portal_mech_equip_${e}`);
@@ -7082,16 +7176,18 @@ export function clearMechDrag(){
 
 function dragMechList(){
     let el = $('#mechList')[0];
-    Sortable.create(el,{
-        onEnd(e){
-            let items = e.from.querySelectorAll(':scope > .mechRow');
-            e.from.insertBefore(e.item, items[e.oldIndex + (e.oldIndex > e.newIndex)]);
+    if (el){
+        Sortable.create(el,{
+            onEnd(e){
+                let items = e.from.querySelectorAll(':scope > .mechRow');
+                e.from.insertBefore(e.item, items[e.oldIndex + (e.oldIndex > e.newIndex)]);
 
-            let order = global.portal.mechbay.mechs;
-            order.splice(e.newDraggableIndex, 0, order.splice(e.oldDraggableIndex, 1)[0]);
-            updateMechbay();
-        }
-    });
+                let order = global.portal.mechbay.mechs;
+                order.splice(e.newDraggableIndex, 0, order.splice(e.oldDraggableIndex, 1)[0]);
+                updateMechbay();
+            }
+        });
+    }
 }
 
 export function updateMechbay(){
@@ -7710,20 +7806,16 @@ export function drawHellObservations(startup){
     
     let observe = $(`<div id="hellObservations"></div>`);
     info.append(observe);
-    
-    observe.append(`<b-tabs id="hellTabs" class="resTabs" v-model="s.hellTabs" :animated="s.animated" @input="swapTab">
-        <b-tab-item id="h_Report">
-            <template slot="header">
-                <span>${loc('hell_tabs_reports')}</span>
-            </template>
-        </b-tab-item>
-        <b-tab-item id="h_Analysis">
-            <template slot="header">
-                <span>${loc('hell_tabs_analysis')}</span>
-            </template>
-        </b-tab-item>
+
+    // The observations panel is the last, hidden main tab; give it an explicit close button to return
+    // to the fortress (Civilization tab) — on mobile there is otherwise no obvious way back out.
+    observe.append(`<button class="button observeClose right" @click="closeObserve">${loc('hell_observation_close')}</button>`);
+
+    observe.append(`<b-tabs id="hellTabs" class="resTabs" v-model="s.hellTabs" :animated="s.animated" @update:model-value="swapTab($event)">
+        <b-tab-item id="h_Report" label="${loc('hell_tabs_reports')}"></b-tab-item>
+        <b-tab-item id="h_Analysis" label="${loc('hell_tabs_analysis')}"></b-tab-item>
     </b-tabs>`);
-    
+
     vBind({
         el: `#hellObservations`,
         data: {
@@ -7732,8 +7824,9 @@ export function drawHellObservations(startup){
         methods: {
             swapTab(tab){
                 if (!global.settings.tabLoad){
-                    clearElement($(`#h_Report`));
-                    clearElement($(`#h_Analysis`));
+                    // Indexed to match the b-tab-item order above, so panels[tab] is the incoming one.
+                    let panels = [`#h_Report`,`#h_Analysis`];
+                    clearTabPanels(Object.fromEntries(panels.map(p => [p,[]])),panels[tab]);
                     switch (tab){
                         case 0:
                             drawHellReports();
@@ -7744,6 +7837,13 @@ export function drawHellObservations(startup){
                     }
                 }
                 return tab;
+            },
+            closeObserve(){
+                // Return to the Civilization tab, where the fortress / observe button lives.
+                global.settings.civTabs = 1;
+                if (!global.settings.tabLoad){
+                    loadTab(1);
+                }
             }
         }
     });
@@ -7849,33 +7949,33 @@ function drawHellAnalysis(){
         clearElement(elem);
         
         elem.append(`
-            <div><h2 class="has-text-warning">${loc('hell_analysis_' + type)}</h2>${type === 'period' ? '<h2 id="resetHellObservation" class="text-button has-text-danger" @click="resetObservations()">{{ | resetLabel }}</h2>' : ''}</div>
-            <div><h2 class="has-text-alert">{{ st.${type}.start | startLabel }}</h2></div>
-            <div><h2>{{ st.${type}.days, s.display | time }}</h2></div>
-            <div><h2>{{ st.${type}.kills, 'kills', s.average | genericMulti }}</h2><h2 class="text-button has-text-advanced" aria-label="${loc('hell_analysis_toggle_bd',[loc('hell_analysis_toggle_bd_kills')])}" @click="toggleDropdown('dropKills')">{{ s.dropKills | dropdownLabel }}</h2></div>
+            <div><h2 class="has-text-warning">${loc('hell_analysis_' + type)}</h2>${type === 'period' ? '<h2 id="resetHellObservation" class="text-button has-text-danger" @click="resetObservations()">{{ resetLabel() }}</h2>' : ''}</div>
+            <div><h2 class="has-text-alert">{{ startLabel(st.${type}.start) }}</h2></div>
+            <div><h2>{{ time(st.${type}.days, s.display) }}</h2></div>
+            <div><h2>{{ genericMulti(st.${type}.kills, 'kills', s.average) }}</h2><h2 class="text-button has-text-advanced" aria-label="${loc('hell_analysis_toggle_bd',[loc('hell_analysis_toggle_bd_kills')])}" @click="toggleDropdown('dropKills')">{{ dropdownLabel(s.dropKills) }}</h2></div>
             <div v-show="s.dropKills">
-                <div v-show="p.war_drone"><h2>{{ st.${type}.kills.drones, 'kills_drones', s.average | genericSub }}</h2></div>
-                <div><h2>{{ st.${type}.kills.patrols, 'kills_patrols', s.average | genericSub }}</h2></div>
-                <div><h2>{{ st.${type}.kills.sieges, 'kills_sieges', s.average | genericSub }}</h2></div>
-                <div v-show="p.gun_emplacement"><h2>{{ st.${type}.kills.guns, 'kills_guns', s.average | genericSub }}</h2></div>
-                <div v-show="p.soul_forge"><h2>{{ st.${type}.kills.soul_forge, 'kills_soul_forge', s.average | genericSub }}</h2></div>
-                <div v-show="p.gate_turret"><h2>{{ st.${type}.kills.turrets, 'kills_turrets', s.average | genericSub }}</h2></div>
+                <div v-show="p.war_drone"><h2>{{ genericSub(st.${type}.kills.drones, 'kills_drones', s.average) }}</h2></div>
+                <div><h2>{{ genericSub(st.${type}.kills.patrols, 'kills_patrols', s.average) }}</h2></div>
+                <div><h2>{{ genericSub(st.${type}.kills.sieges, 'kills_sieges', s.average) }}</h2></div>
+                <div v-show="p.gun_emplacement"><h2>{{ genericSub(st.${type}.kills.guns, 'kills_guns', s.average) }}</h2></div>
+                <div v-show="p.soul_forge"><h2>{{ genericSub(st.${type}.kills.soul_forge, 'kills_soul_forge', s.average) }}</h2></div>
+                <div v-show="p.gate_turret"><h2>{{ genericSub(st.${type}.kills.turrets, 'kills_turrets', s.average) }}</h2></div>
             </div>
-            <div v-show="sg.display"><h2>{{ st.${type}.gems, 'gems', s.average | genericMulti }}</h2><h2 class="text-button has-text-advanced" aria-label="${loc('hell_analysis_toggle_bd',[global.resource.Soul_Gem.name])}" @click="toggleDropdown('dropGems')">{{ s.dropGems | dropdownLabel }}</h2></div>
+            <div v-show="sg.display"><h2>{{ genericMulti(st.${type}.gems, 'gems', s.average) }}</h2><h2 class="text-button has-text-advanced" aria-label="${loc('hell_analysis_toggle_bd',[global.resource.Soul_Gem.name])}" @click="toggleDropdown('dropGems')">{{ dropdownLabel(s.dropGems) }}</h2></div>
             <div v-show="sg.display && s.dropGems">
-                <div><h2>{{ st.${type}.gems.patrols, 'gems_patrols', s.average | genericSub }}</h2></div>
-                <div v-show="p.gun_emplacement"><h2>{{ st.${type}.gems.guns, 'gems_guns', s.average | genericSub }}</h2></div>
-                <div v-show="p.soul_forge"><h2>{{ st.${type}.gems.soul_forge, 'gems_soul_forge', s.average | genericSub }}</h2></div>
-                <div v-show="p.soul_forge"><h2>{{ st.${type}.gems.crafted, 'gems_crafted', s.average | genericSub }}</h2></div>
-                <div v-show="p.gate_turret"><h2>{{ st.${type}.gems.turrets, 'gems_turrets', s.average | genericSub }}</h2></div>
-                <div v-show="p.war_drone && p.carport"><h2>{{ st.${type}.gems.surveyors, 'gems_surveyors', s.average | genericSub }}</h2></div>
-                <div v-show="e.soul_compactor"><h2>{{ st.${type}.gems.compactor, 'gems_compactor', s.average | genericSub }}</h2></div>
+                <div><h2>{{ genericSub(st.${type}.gems.patrols, 'gems_patrols', s.average) }}</h2></div>
+                <div v-show="p.gun_emplacement"><h2>{{ genericSub(st.${type}.gems.guns, 'gems_guns', s.average) }}</h2></div>
+                <div v-show="p.soul_forge"><h2>{{ genericSub(st.${type}.gems.soul_forge, 'gems_soul_forge', s.average) }}</h2></div>
+                <div v-show="p.soul_forge"><h2>{{ genericSub(st.${type}.gems.crafted, 'gems_crafted', s.average) }}</h2></div>
+                <div v-show="p.gate_turret"><h2>{{ genericSub(st.${type}.gems.turrets, 'gems_turrets', s.average) }}</h2></div>
+                <div v-show="p.war_drone && p.carport"><h2>{{ genericSub(st.${type}.gems.surveyors, 'gems_surveyors', s.average) }}</h2></div>
+                <div v-show="e.soul_compactor"><h2>{{ genericSub(st.${type}.gems.compactor, 'gems_compactor', s.average) }}</h2></div>
             </div>
-            <div><h2>{{ st.${type}.wounded, 'wounded', s.average | generic }}</h2></div>
-            <div><h2>{{ st.${type}.died, 'died', s.average | generic }}</h2></div>
-            <div v-show="r.revive"><h2>{{ st.${type}.revived, 'revived', s.average | generic }}</h2></div>
-            <div><h2>{{ st.${type}.surveyors, 'surveyors', s.average | generic }}</h2></div>
-            <div><h2>{{ st.${type}.sieges, 'sieges', s.average | generic }}</h2></div>
+            <div><h2>{{ generic(st.${type}.wounded, 'wounded', s.average) }}</h2></div>
+            <div><h2>{{ generic(st.${type}.died, 'died', s.average) }}</h2></div>
+            <div v-show="r.revive"><h2>{{ generic(st.${type}.revived, 'revived', s.average) }}</h2></div>
+            <div><h2>{{ generic(st.${type}.surveyors, 'surveyors', s.average) }}</h2></div>
+            <div><h2>{{ generic(st.${type}.sieges, 'sieges', s.average) }}</h2></div>
         `);
     
         vBind({
@@ -7906,9 +8006,7 @@ function drawHellAnalysis(){
                 },
                 toggleDropdown(type){
                     global.portal.observe.settings[type] = !global.portal.observe.settings[type];
-                }
-            },
-            filters: {
+                },
                 generic(num, name, average){
                     if (!average){
                         let val = sizeApproximation(num, 5, global.portal.observe.settings.expanded);
@@ -7980,20 +8078,21 @@ function drawHellAnalysis(){
     stats = ($(`#hellAnalysis`));
     let graphs = $(`<div></div>`);
     stats.append(graphs);
-    graphs.append(`<div><h2 id="hellGraphCreator" class="text-button has-text-success" @click="createGraph()">${loc('hell_graph_create')}</h2></div>`);
+    graphs.append(`<div id="hellGraphCreator"><h2 class="text-button has-text-success" @click="createGraph()">${loc('hell_graph_create')}</h2></div>`);
     let graphArea = $(`<div id="hellGraphingArea" class="graphingArea"></div>`);
     graphs.append(graphArea);
-    
+
     vBind({
         el: '#hellGraphCreator',
         methods: {
             createGraph(){
-                let modal = {
-                    template: '<div id="modalBox" class="modalBox"></div>'
-                };
                 this.$buefy.modal.open({
-                    parent: this,
-                    component: modal
+                    hasModalCard: false,
+                    customClass: 'evolve-modal',
+                    content: '<div id="modalBox" class="modalBox"></div>',
+                    onCancel: () => {
+                        // Modal closed
+                    }
                 });
 
                 let checkExist = setInterval(function(){

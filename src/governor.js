@@ -1,15 +1,17 @@
 import { global, seededRandom, p_on, breakdown } from './vars.js';
-import { vBind, popover, tagEvent, calcQueueMax, calcRQueueMax, clearElement, adjustCosts, decodeStructId, timeCheck, arpaTimeCheck, hoovedRename } from './functions.js';
+import { vBind, popover, tagEvent, calcQueueMax, calcRQueueMax, clearElement, adjustCosts, decodeStructId, timeCheck, arpaTimeCheck, hoovedRename, buildQueue } from './functions.js';
 import { races } from './races.js';
-import { actions, checkCityRequirements, housingLabel, wardenLabel, updateQueueNames, checkAffordable, drawTech, drawCity } from './actions.js';
-import { govCivics, govTitle } from './civics.js';
+import { actions, checkCityRequirements, housingLabel, wardenLabel, updateQueueNames, checkAffordable, checkCosts, drawTech, drawCity } from './actions.js';
+import { govCivics, govTitle, govEffect } from './civics.js';
 import { crateGovHook, atomic_mass } from './resources.js';
+import { gridDefs, dualReplicator } from './industry.js';
 import { checkHellRequirements, mechSize, mechCost, validWeapons, validEquipment } from './portal.js';
 import { loc } from './locale.js';
 import { jobScale } from './jobs.js';
-import { isStargateOn } from './space.js';
+import { isStargateOn, checkSpaceRequirements } from './space.js';
 import { stabilize_blackhole } from './tech.js';
-import { shipCosts } from './truepath.js';
+import { shipCosts, checkPathRequirements, titanReclaimed } from './truepath.js';
+import { checkEdenRequirements } from './edenic.js';
 
 export const gmen = {
     soldier: {
@@ -190,7 +192,10 @@ export const gov_traits = {
         effect(b,wiki){
             let val = $(this)[0].vars(b)[1];
             let xeno = global.tech['monument'] && global.tech.monument >= 3 && isStargateOn(wiki) ? 3 : 1;
-            val = (global.civic.govern.type === 'corpocracy' ? (val * 2) : val) * xeno;
+            val *= xeno;
+            if (global.civic.govern.type === 'corpocracy'){
+                val *= 1 + (govEffect.corpocracy()[2] / 100);
+            }
             return loc(`gov_trait_pious_effect`,[$(this)[0].vars(b)[0],val]);
         },
         vars(b){ 
@@ -382,7 +387,7 @@ export function defineGovernor(){
     }
     if (global.genes['governor'] && global.tech['governor']){
         clearElement($('#r_govern1'));
-        if (global.race.hasOwnProperty('governor') && !global.race.governor.hasOwnProperty('candidates')){
+        if (global.race.hasOwnProperty('governor') && (!global.race.governor.hasOwnProperty('candidates') || global.race.governor.candidates.length === 0)){
             drawnGovernOffice();
         }
         else {
@@ -430,7 +435,7 @@ export function drawnGovernOffice(){
     governorTitle.append($(`<div><span class="has-text-warning">${loc(`governor_background`)}:</span> <span class="bg">${gmen[global.race.governor.g.bg].name}</span></div>`));
 
     govHeader.append(governorTitle);
-    govHeader.append($(`<div class="fire"><b-button v-on:click="fire" v-html="fireText()">${loc(`governor_fire`)}</b-button></div>`));
+    govHeader.append($(`<div class="fire"><b-button @click="fire" v-html="fireText()"></b-button></div>`));
 
     let cnt = [0,1,2];
     if (global.genes['governor'] && global.genes.governor >= 2){
@@ -439,18 +444,19 @@ export function drawnGovernOffice(){
     }
     if (govActive('organizer',0)){ cnt.push(cnt.length); }
     cnt.forEach(function(num){
-        let options = `<b-dropdown-item v-on:click="setTask('none',${num})">{{ 'none' | label }}</b-dropdown-item>`;
+        let options = `<b-dropdown-item @click="setTask('none',${num})" aria-role="listitem">{{ label('none') }}</b-dropdown-item>`;
         Object.keys(gov_tasks).forEach(function(task){
             if (gov_tasks[task].req()){
-                options += `<b-dropdown-item v-show="activeTask('${task}')" v-on:click="setTask('${task}',${num})">{{ '${task}' | label }}</b-dropdown-item>`;
+                options += `<b-dropdown-item v-show="activeTask('${task}')" @click="setTask('${task}',${num})" aria-role="listitem">{{ label('${task}') }}</b-dropdown-item>`;
             }
         });
 
-        govern.append(`<div class="govTask"><span>${loc(`gov_task`,[num+1])}</span><b-dropdown hoverable>
-            <button class="button is-primary" slot="trigger">
-                <span>{{ t.t${num} | label }}</span>
-                <i class="fas fa-sort-down"></i>
-            </button>
+        govern.append(`<div class="govTask"><span>${loc(`gov_task`,[num+1])}</span><b-dropdown hoverable aria-role="list">
+            <template #trigger="{ active }">
+                <b-button type="is-primary" icon-right="fas fa-sort-down">
+                    {{ label(t.t${num}) }}
+                </b-button>
+            </template>
             ${options}
         </b-dropdown></div>`);
     });
@@ -760,9 +766,7 @@ export function drawnGovernOffice(){
             },
             trashLabel(r){
                 return loc(global.race.governor.config.trash[r].s ? `gov_task_trash_max` : `gov_task_trash_min`,[global.resource[r].name]);
-            }
-        },
-        filters: {
+            },
             label(t){
                 return gov_tasks[t] ? (typeof gov_tasks[t].name === 'string' ? gov_tasks[t].name : gov_tasks[t].name()) : loc(`gov_task_${t}`);
             }
@@ -789,7 +793,7 @@ function appointGovernor(){
     let govern = $(`<div id="candidates" class="governor candidates"></div>`);
     $('#r_govern1').append(govern);
 
-    if (!global.race.hasOwnProperty('governor') || !global.race.governor.hasOwnProperty('candidates')){
+    if (!global.race.hasOwnProperty('governor') || !global.race.governor.hasOwnProperty('candidates') || global.race.governor.candidates.length === 0){
         global.race['governor'] = {
             candidates: genGovernor(10)
         };
@@ -799,19 +803,19 @@ function appointGovernor(){
     for (let i=0; i<global.race.governor.candidates.length; i++){
         let gov = global.race.governor.candidates[i];
         if ((global.race['warlord'] && gov.bg === 'soldier') || !global.race['warlord']){
-            govern.append($(`<div class="appoint ${gov.bg}"><span class="has-text-warning" role="heading" aria-level="3">${gov.t} ${gov.n}</span><span class="bg">${gmen[gov.bg].name}</span><span><button class="button" v-on:click="appoint(${i})">${loc(`governor_appoint`)}</button></span><div>`));
+            govern.append($(`<div class="appoint ${gov.bg}"><span class="has-text-warning" role="heading" aria-level="3">${gov.t} ${gov.n}</span><span class="bg">${gmen[gov.bg].name}</span><span><b-button @click="appoint(${i})">${loc(`governor_appoint`)}</b-button></span><div>`));
         }
     }
 
     vBind({
         el: '#candidates',
-        data: global.race.governor,
+        data: [],
         methods: {
             appoint(gi){
                 if (global.genes['governor'] && global.tech['governor']){
                     let gov = global.race.governor.candidates[gi];
                     global.race.governor['g'] = gov;
-                    delete global.race.governor.candidates;
+                    global.race.governor.candidates = [];
                     global.race.governor['tasks'] = {
                         t0: 'none', t1: 'none', t2: 'none', t3: 'none', t4: 'none', t5: 'none'
                     };
@@ -858,6 +862,228 @@ export function removeTask(task){
             }
         }
     }
+}
+
+// --- Rebuild Ruins ----------------------------------------------------------------------------
+// How each category decides whether one of its structures can be built right now: the settings flag
+// that reveals its region, and the requirement check that region's renderer uses. Anything razed in a
+// region the player has not (re)discovered stays off the list — the jump gate hides all of Sol again.
+const repairRegions = {
+    city:         { show(){ return true; }, req(region,key){ return checkCityRequirements(key); } },
+    space:        { show(region){ return global.settings.space[region.substring(4)]; }, req(region,key){ return checkSpaceRequirements('space',region,key); } },
+    interstellar: { show(region){ return global.settings.space[region.substring(4)]; }, req(region,key){ return checkSpaceRequirements('interstellar',region,key); } },
+    galaxy:       { show(region){ return global.settings.space[region.substring(4)]; }, req(region,key){ return checkSpaceRequirements('galaxy',region,key); } },
+    tauceti:      { show(region){ return global.settings.tau[region.substring(4)]; }, req(region,key){ return checkPathRequirements('tauceti',region,key); } },
+    portal:       { show(region){ return global.settings.portal[region.substring(5)]; }, req(region,key){ return checkHellRequirements(region,key); } },
+    eden:         { show(region){ return global.settings.eden[region.substring(5)]; }, req(region,key){ return checkEdenRequirements(region,key); } }
+};
+
+// Every structure type carried by the `type` key on struct-bearing actions. Ordering here is the
+// tie-break a governor with no opinion falls back on, so it runs roughly essentials-first.
+const structTypes = [
+    'housing','farming','mining','industry','power','storage','science','military',
+    'outpost','finance','entertainment','religion','gambling','ship','megaproject','utility'
+];
+
+// What each background reaches for first. Types a governor has no opinion on fall in behind these, in
+// the order declared above; anything with no type at all comes last.
+const govStructBias = {
+    soldier: ['military','industry'],
+    criminal: ['gambling','finance'],
+    entrepreneur: ['finance','industry'],
+    educator: ['science','entertainment'],
+    spiritual: ['religion','farming'],
+    bluecollar: ['industry','mining','housing'],
+    noble: ['finance','entertainment'],
+    media: ['entertainment','housing'],
+    sports: ['entertainment','gambling'],
+    bureaucrat: ['housing','storage','finance']
+};
+
+// Every action that owns a struct record, indexed by the "category:key" its count/razed live under —
+// which is how a razed tally is turned back into something queueable. The action registry is static,
+// so this is built once. Keyed by category as well as name because the same struct name exists in more
+// than one place (Titan's g_factory and Alpha Centauri's are different buildings).
+let repairIndex = false;
+function repairTargets(){
+    if (repairIndex){ return repairIndex; }
+    repairIndex = {};
+    Object.keys(repairRegions).forEach(function(cat){
+        if (!actions[cat]){ return; }
+        Object.keys(actions[cat]).forEach(function(region){
+            // city is a flat map of actions; every other category nests them under regions.
+            let group = cat === 'city' ? { [region]: actions[cat][region] } : actions[cat][region];
+            if (!group || typeof group !== 'object'){ return; }
+            Object.keys(group).forEach(function(key){
+                let c_action = group[key];
+                if (!c_action || typeof c_action.struct !== 'function' || !c_action['id']){ return; }
+                let p = c_action.struct().p;
+                repairIndex[`${p[1]}:${p[0]}`] = {
+                    id: c_action.id,
+                    // The queue resolves an entry through actions[action][qtype], and ids are authored
+                    // as "category-key", so the id's own prefix is the action the queue needs.
+                    action: c_action.id.split('-')[0],
+                    qtype: key,
+                    // What kind of building this is, declared on the action itself.
+                    kind: c_action['type'] || false,
+                    region: region,
+                    cat: p[1],
+                    key: p[0],
+                    c_action: c_action
+                };
+            });
+        });
+    });
+    return repairIndex;
+}
+
+// "category:key" of each region's support structure -> the grid it backs. gridDefs is read fresh
+// because it reflects live settings, and this only runs once a game day.
+function supportProviders(){
+    let grids = gridDefs();
+    let map = {};
+    Object.keys(grids).forEach(function(g){
+        if (grids[g].r && grids[g].rs){ map[`${grids[g].r}:${grids[g].rs}`] = g; }
+    });
+    return map;
+}
+
+// Support each region currently has spare — what its provider offers less what its consumers take.
+function supportHeadroom(){
+    let grids = gridDefs();
+    let room = {};
+    Object.keys(grids).forEach(function(g){
+        if (!grids[g].r || !grids[g].rs){ return; }
+        let provider = global[grids[g].r] ? global[grids[g].r][grids[g].rs] : false;
+        if (!provider || typeof provider['s_max'] === 'undefined'){ return; }
+        room[g] = provider.s_max - provider.support;
+    });
+    return room;
+}
+
+// Regions where a ruin could be rebuilt but would then sit dark for want of support. powerOnNewStruct
+// turns a new structure on only when `support - support() <= s_max`, so anything needing more headroom
+// than the region has left is exactly what the same test would refuse.
+function starvedGrids(targets,room){
+    let starved = {};
+    targets.forEach(function(t){
+        let c = t.c_action;
+        if (!c['s_type'] || typeof c.support !== 'function'){ return; }
+        let need = -c.support();
+        if (need <= 0 || !room.hasOwnProperty(c.s_type)){ return; }
+        if (room[c.s_type] < need){ starved[c.s_type] = true; }
+    });
+    return starved;
+}
+
+// Regions held back until Titan is properly reoccupied. Their ruins are visible on the map long before
+// they are anyone's problem, so the governor leaves them alone rather than spending the queue on a
+// moon nobody has set foot on yet.
+const repairHeldRegions = ['spc_titan','spc_enceladus'];
+
+// Standing ruins the governor could act on: razed structures whose region is discovered and whose
+// requirements are still met.
+function repairQueueTargets(){
+    let index = repairTargets();
+    let list = [];
+    Object.keys(repairRegions).forEach(function(cat){
+        if (!global[cat]){ return; }
+        Object.keys(global[cat]).forEach(function(key){
+            let struct = global[cat][key];
+            if (!struct || typeof struct !== 'object' || !struct['razed'] || struct.razed <= 0){ return; }
+            let target = index[`${cat}:${key}`];
+            if (!target){ return; }
+            if (repairHeldRegions.includes(target.region) && !titanReclaimed()){ return; }
+            try {
+                if (!repairRegions[cat].show(target.region) || !repairRegions[cat].req(target.region,target.qtype)){ return; }
+            }
+            catch (e){ return; }
+            list.push(Object.assign({ razed: struct.razed }, target));
+        });
+    });
+    return list;
+}
+
+// The build queue works strictly front to back: it stops at the first entry it cannot pay for, so a ruin
+// that needs days of income parked at the head stalls everything behind it — a casino holding up swarm
+// satellites that are affordable this instant. Split ruins into "can be paid for right now" and
+// "cannot" so a slow favourite can never block a repair that would go through immediately. The test is
+// checkAffordable, the same one the queue uses when it picks what to build, rather than a zero from
+// timeCheck — timeCheck ignores Morale, Army, Troops, Structs and prestige costs, so a ruin gated on
+// one of those reads as free. "Build Anything In Queue" makes the queue skip ahead to whatever it can
+// afford, so nothing blocks and the governor's preferences rule outright.
+function affordBand(target){
+    return global.settings.qAny || target.afford ? 0 : 1;
+}
+
+// Cost entries checkCosts treats as a threshold to clear rather than a stockpile to spend down. They
+// are re-tested unchanged for each copy in a run instead of accumulating.
+const thresholdCosts = ['Custom','Structs','Bool','Morale','Army','HellArmy','Troops','Supply'];
+
+// Price one more copy of a ruin and charge it to the pass budget, reporting whether the treasury could
+// actually cover it on top of everything charged so far. Each copy costs more than the last, and the
+// game expresses that through an offset handed to the cost functions (cost: { Money(offset){ … } }),
+// offset being how many are already committed but not yet built — so every copy has to be re-priced
+// rather than the first price simply multiplied. The budget is shared across the whole pass, so what
+// one ruin claims is money (and ore, and fuel) the next can no longer count on. `force` charges even
+// when it does not fit, for copies that get queued regardless of whether they can start this instant.
+function chargeCopy(c_action,offset,budget,force){
+    let costs = adjustCosts(c_action,offset);
+    let stock = Object.keys(costs).filter(function(res){
+        return !thresholdCosts.includes(res) && !global.prestige.hasOwnProperty(res);
+    });
+
+    let cumulative = {};
+    Object.keys(costs).forEach(function(res){
+        let price = costs[res];
+        if (!stock.includes(res)){ cumulative[res] = price; return; }
+        let taken = budget[res] || 0;
+        cumulative[res] = function(){ return (Number(price()) || 0) + taken; };
+    });
+
+    let fits = checkCosts(cumulative);
+    if (fits || force){
+        stock.forEach(function(res){
+            budget[res] = (budget[res] || 0) + (Number(costs[res]()) || 0);
+        });
+    }
+    return fits;
+}
+
+// A repair the treasury cannot reach for a quarter of an hour is not worth committing a queue slot to
+// yet; the task looks again every game day and picks it up once it is closer. A governor is given more
+// patience for the kinds of building they actually care about.
+export const repairWaitCap = 900;           // 15 minutes
+export const repairWaitCapFavoured = 3600;  // 60 minutes for a type the governor is biased toward
+
+// Is this the sort of building the sitting governor goes out of their way for?
+function govFavours(target){
+    let bias = govStructBias[global.race.governor.g.bg] || [];
+    return target.kind ? bias.includes(target.kind) : false;
+}
+
+// Ranks outside the ordinary type ordering, which runs from 0 up to about bias.length + structTypes.length.
+const rankSupportUrgent = -1;    // nothing in the region can switch on until this is back
+const rankSupportSpare = 900;    // the region already has spare support to cover what this would add
+const rankUntyped = 1000;        // no type declared on the action
+
+// Rank a ruin for the sitting governor: their preferred types first, then the remaining types in
+// structTypes order, then anything with no type declared. Support structures are pulled out of that
+// ordering in both directions — to the very front when the region cannot switch things on without
+// them, and to the back when the region is already carrying at least as much spare support as
+// rebuilding one would add, which makes it redundant for now.
+function repairRank(target,starved,providers,room){
+    let grid = providers[`${target.cat}:${target.key}`];
+    if (grid){
+        if (starved[grid]){ return rankSupportUrgent; }
+        let adds = typeof target.c_action.support === 'function' ? target.c_action.support() : 0;
+        if (adds > 0 && room.hasOwnProperty(grid) && room[grid] >= adds){ return rankSupportSpare; }
+    }
+    let bias = govStructBias[global.race.governor.g.bg] || [];
+    if (!target.kind){ return rankUntyped; }
+    let pref = bias.indexOf(target.kind);
+    if (pref >= 0){ return pref; }
+    return bias.length + structTypes.indexOf(target.kind);
 }
 
 export const gov_tasks = {
@@ -1296,6 +1522,114 @@ export const gov_tasks = {
             if (global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 && global.race.governor.config.trash.stab){
                 stabilize_blackhole();
             }
+        }
+    },
+    repair: { // Rebuild Ruins
+        name: loc(`gov_task_repair`),
+        req(){
+            return global.tech['gov_repair'] && global.tech['queue'] ? true : false;
+        },
+        task(){
+            if ( !$(this)[0].req() ){ return; }
+
+            let targets = repairQueueTargets();
+            if (targets.length === 0){ return; }
+
+            // Price each ruin in time-to-afford. timeCheck already sees the half-price rebuild discount
+            // razed structures get, and returns a negative number when a resource it needs has nothing
+            // banked and no income at all. Anything that far out — unreachable, or simply further away
+            // than the governor is willing to wait — is left out this pass rather than parked in the
+            // queue where it would block everything behind it. The task looks again tomorrow.
+            targets.forEach(function(t){
+                t.wait = timeCheck(t.c_action,false,false);
+                t.afford = checkAffordable(t.c_action);
+            });
+            targets = targets.filter(function(t){
+                if (t.wait < 0){ return false; }
+                return t.wait <= (govFavours(t) ? repairWaitCapFavoured : repairWaitCap);
+            });
+            if (targets.length === 0){ return; }
+
+            let providers = supportProviders();
+            let room = supportHeadroom();
+            let starved = starvedGrids(targets,room);
+            targets.sort(function(a,b){
+                // Ruins that can be paid for right now go ahead of ruins that cannot, and the governor's
+                // preferences order things inside each group rather than across them. Sort is stable,
+                // so equal pairs keep discovery order.
+                let band = affordBand(a) - affordBand(b);
+                if (band !== 0){ return band; }
+                let rank = repairRank(a,starved,providers,room) - repairRank(b,starved,providers,room);
+                return rank !== 0 ? rank : a.wait - b.wait;
+            });
+
+            // Count slots exactly the way the build buttons do, and note what is already queued so the
+            // governor never asks for more copies of something than were actually razed.
+            let used = 0;
+            let queued = {};
+            for (let i=0; i<global.queue.queue.length; i++){
+                used += Math.ceil(global.queue.queue[i].q / global.queue.queue[i].qs);
+                queued[global.queue.queue[i].id] = (queued[global.queue.queue[i].id] || 0) + global.queue.queue[i].q;
+            }
+
+            // Slots are handed out first and written afterwards, so a ruin that picks up copies in more
+            // than one round still lands as a single queue entry instead of being split across several.
+            let want = {};
+            let budget = {};
+            let free = global.queue.max - used;
+            let roomFor = function(target){
+                let cap = target.c_action['queue_complete'] ? target.c_action.queue_complete() : Number.MAX_SAFE_INTEGER;
+                return Math.min(target.razed,cap) - (queued[target.id] || 0) - (want[target.id] || 0);
+            };
+            let claim = function(target){
+                want[target.id] = (want[target.id] || 0) + 1;
+                free--;
+            };
+            let offsetOf = function(target){ return (queued[target.id] || 0) + (want[target.id] || 0); };
+
+            // Breadth before depth, and anything that can be built now before anything that cannot.
+            // One copy each of the repairs that can start immediately, so no single ruin swallows the
+            // queue and locks the player out of it...
+            for (let target of targets){
+                if (free <= 0){ break; }
+                if (affordBand(target) !== 0 || roomFor(target) <= 0){ continue; }
+                chargeCopy(target.c_action,offsetOf(target),budget,true);
+                claim(target);
+            }
+            // ...then top those up with the further copies the budget can genuinely cover. A second
+            // dredger that will go up this instant is a better use of a slot than a first casino that
+            // cannot start for days.
+            for (let target of targets){
+                if (free <= 0){ break; }
+                if (affordBand(target) !== 0){ continue; }
+                while (free > 0 && roomFor(target) > 0 && chargeCopy(target.c_action,offsetOf(target),budget,false)){
+                    claim(target);
+                }
+            }
+            // Only then line up one each of the repairs that cannot start yet, behind the quick work.
+            for (let target of targets){
+                if (free <= 0){ break; }
+                if (affordBand(target) === 0 || roomFor(target) <= 0){ continue; }
+                claim(target);
+            }
+
+            let added = false;
+            for (let target of targets){
+                let qty = want[target.id] || 0;
+                if (qty <= 0){ continue; }
+                let q_size = target.c_action['queue_size'] ? target.c_action['queue_size'] : 1;
+                let label = typeof target.c_action.title === 'string' ? target.c_action.title : target.c_action.title();
+                let last = global.queue.queue[global.queue.queue.length-1];
+                if (global.settings.q_merge !== 'merge_never' && last && last.id === target.id){
+                    last.q += q_size * qty;
+                }
+                else {
+                    global.queue.queue.push({ id: target.id, action: target.action, type: target.qtype, label: label, cna: false, time: 0, q: q_size * qty, qs: q_size, t_max: 0, bres: false });
+                }
+                added = true;
+            }
+
+            if (added){ buildQueue(); }
         }
     },
     mech: { // Mech Builder
@@ -1786,6 +2120,13 @@ export const gov_tasks = {
             if(global.race['fasting']){
                 blacklist.push('Food');
             }
+
+            // How many lines the scheduler is responsible for. The second one only counts once the dual
+            // upgrade is in and the player has actually given it a share of the power — leaving the split
+            // at 100/0 is a deliberate "off", and reassigning an idle line would just churn the display.
+            let lines = dualReplicator() && global.race.replicator.ratio < 100 ? 2 : 1;
+            let picks = [];
+
             for (let idx = 0; global.race.governor.config.replicate.res.que && idx < global.queue.queue.length; idx++){
                 let struct = decodeStructId(global.queue.queue[idx].id);
                 let tc = false;
@@ -1811,44 +2152,62 @@ export const gov_tasks = {
                 else {
                     tc = timeCheck(struct.a,false,true);
                 }
+                // A single queued build usually wants several materials, so one entry can fill both lines.
+                // Never the same resource twice — two lines on one material is just a slower single line.
                 let resSorted = Object.keys(tc.s).sort(function(a,b){return tc.s[b]-tc.s[a]});
-                for (let i=0; i<resSorted.length; i++){
-                    if (global.resource[resSorted[i]] && global.resource[resSorted[i]].display && atomic_mass[resSorted[i]] && !blacklist.includes(resSorted[i])){
-                        global.race.replicator.res = resSorted[i];
+                for (let i=0; i<resSorted.length && picks.length < lines; i++){
+                    if (global.resource[resSorted[i]] && global.resource[resSorted[i]].display && atomic_mass[resSorted[i]] && !blacklist.includes(resSorted[i]) && !picks.includes(resSorted[i])){
+                        picks.push(resSorted[i]);
                         rBal = true;
-                        break;
                     }
                 }
-                if (!global.settings.qAny || rBal){
+                if (picks.length >= lines || !global.settings.qAny){
                     break;
                 }
             }
 
-            if (!rBal){
+            // Anything the queue did not account for falls back to the balancing rules, which are applied
+            // per line against what is already spoken for.
+            if (picks.length < lines){
                 let resSorted = Object.keys(atomic_mass).sort(function(a,b){return global.resource[a].diff-global.resource[b].diff});
-                delete resSorted['Asphodel_Powder']; delete resSorted['Elysanite'];
-                resSorted = resSorted.filter(item => global.resource[item] && global.resource[item].display);
+                resSorted = resSorted.filter(item => global.resource[item] && global.resource[item].display && !blacklist.includes(item));
 
-                if (global.race.governor.config.replicate.res.neg && resSorted[0] && global.resource[resSorted[0]].diff < 0 && ((global.resource[resSorted[0]].amount <= global.resource[resSorted[0]].max * 0.95) || global.resource[resSorted[0]].max === -1)){
-                    global.race.replicator.res = resSorted[0];
-                }
-                else if (global.resource[global.race.replicator.res].max !== -1 && global.race.governor.config.replicate.res.cap && global.resource[global.race.replicator.res].amount >= global.resource[global.race.replicator.res].max){
-                    let cappable = resSorted.filter(item => global.resource[item].max > 0);
-                    for (let i=0; i<cappable.length; i++){
-                        if (global.resource[cappable[i]].amount < global.resource[cappable[i]].max){
-                            global.race.replicator.res = cappable[i];
-                            rBal = true;
-                            break;
+                let fields = ['res','res2'];
+                for (let l = picks.length; l < lines; l++){
+                    let cur = global.race.replicator[fields[l]];
+                    let free = resSorted.filter(item => !picks.includes(item));
+                    let pick = null;
+
+                    if (global.race.governor.config.replicate.res.neg && free[0] && global.resource[free[0]].diff < 0 && ((global.resource[free[0]].amount <= global.resource[free[0]].max * 0.95) || global.resource[free[0]].max === -1)){
+                        pick = free[0];
+                    }
+                    else if (global.resource[cur] && global.resource[cur].max !== -1 && global.race.governor.config.replicate.res.cap && global.resource[cur].amount >= global.resource[cur].max){
+                        let cappable = free.filter(item => global.resource[item].max > 0);
+                        for (let i=0; i<cappable.length; i++){
+                            if (global.resource[cappable[i]].amount < global.resource[cappable[i]].max){
+                                pick = cappable[i];
+                                break;
+                            }
+                        }
+                        if (!pick){
+                            let uncappable = free.filter(item => global.resource[item].max === -1);
+                            if (uncappable.length > 0){
+                                pick = uncappable[0];
+                            }
                         }
                     }
-                    if (!rBal){
-                        let uncappable = resSorted.filter(item => global.resource[item].max === -1);
-                        if (uncappable.length > 0){
-                            global.race.replicator.res = uncappable[0];
-                        }
-                    }
+
+                    // Nothing to change for this line: keep what it already has, but reserve it so the
+                    // other line does not pick the same thing.
+                    picks.push(pick ? pick : cur);
                 }
             }
+
+            ['res','res2'].slice(0,lines).forEach(function(field,i){
+                if (picks[i]){
+                    global.race.replicator[field] = picks[i];
+                }
+            });
         }
     },
 };

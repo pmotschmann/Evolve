@@ -279,12 +279,12 @@ export function getSolarName(planet) {
 export function createRevealSection(info,id,type,insert){
     let reveal = $(`<div></div>`);
     info.append(reveal);
-    reveal.append(`<span role="button" id="${id}${type}Button" class="has-text-info reveal" @click="show()">{{ vis | label }}</span>`);
+    reveal.append(`<span id="${id}${type}Button"><span role="button" class="has-text-info reveal" @click="show()">{{ label(vis) }}</span></span>`);
     let section = $(`<div id="${id}${type}Section" style="display: none;"></div>`);
     reveal.append(section);
     
     let modSection = document.getElementById(id + type + 'Section');
-    let modDisplay = { vis: false };
+    let modDisplay = Vue.reactive({ vis: false });
     
     vBind({
         el: `#${id}${type}Button`,
@@ -315,12 +315,12 @@ export function createCalcSection(info,id,type,insert){
     insert = insert || loc(`wiki_calc_insert_` + type);
     let calc = $(`<div></div>`);
     info.append(calc);
-    calc.append(`<span role="button" id="${id}${type}Button" class="has-text-info reveal" @click="show()">{{ vis | label }}</span>`);
+    calc.append(`<span id="${id}${type}Button"><span role="button" class="has-text-info reveal" @click="show()">{{ label(vis) }}</span></span>`);
     let section = $(`<div id="${id}${type}Section" style="display: none;"></div>`);
     calc.append(section);
     
     let modSection = document.getElementById(id + type + 'Section');
-    let modDisplay = { vis: false };
+    let modDisplay = Vue.reactive({ vis: false });
     
     vBind({
         el: `#${id}${type}Button`,

@@ -844,21 +844,21 @@ function decayCalc(info){
     calc.append(formula);
     calc.append(variables);
     
-    let inputs = {
+    let inputs = Vue.reactive({
         resource: { val: undefined },
         amount: { val: undefined }
-    };
+    });
     
-    let show = {
+    let show = Vue.reactive({
         result: { vis: false, val: undefined }
-    };
+    });
     
     formula.append(`
         <div>
             <h2 class="has-text-caution">${loc('wiki_calc_decay_rate')}</h2>
         </div>
         <div>
-            <span>{{ i.resource.val | base }} * 0.001 * ({{ i.amount.val, 'amount' | generic }} - 50)</span><span v-show="s.result.vis"> = {{ | calc }}</span>
+            <span>{{ base(i.resource.val) }} * 0.001 * ({{ generic(i.amount.val, 'amount') }} - 50)</span><span v-show="s.result.vis"> = {{ calc() }}</span>
         </div>
     `);
     
@@ -867,14 +867,14 @@ function decayCalc(info){
     
     let dropdown = `
         <div class="calcInput"><span>${loc('wiki_calc_decay_resource')}</span> <b-dropdown hoverable scrollable>
-            <button class="button is-primary" slot="trigger">
-                <span>{{ i.resource.val | resLabel }}</span>
+            <template #trigger><button class="button is-primary">
+                <span>{{ resLabel(i.resource.val) }}</span>
                 <i class="fas fa-sort-down"></i>
-            </button>
+            </button></template>
     `;
     Object.keys(tradeRatio).forEach(function (res){
         dropdown += `
-            <b-dropdown-item v-on:click="pickRes('${res}')">{{ '${res}' | resLabel }}</b-dropdown-item>
+            <b-dropdown-item v-on:click="pickRes('${res}')">{{ resLabel('${res}') }}</b-dropdown-item>
         `;
     });
     dropdown += `</b-dropdown></div>`;
@@ -942,45 +942,45 @@ function inflationCalc(info){
     calc.append(formula);
     calc.append(variables);
     
-    let inputs = {
+    let inputs = Vue.reactive({
         inflation: { val: undefined }
-    };
+    });
     
-    let show = {
+    let show = Vue.reactive({
         result: { vis: false,
                   cost: undefined, luxury: undefined, casino_prod: undefined, casino_store: undefined, bank_vault: undefined }
-    };
+    });
     
     formula.append(`
         <div>
             <h2 class="has-text-caution">${loc('wiki_calc_inflation_cost')}</h2>
         </div>
         <div>
-            <span>{{ i.inflation.val, 'inflation' | generic }} / 75</span><span v-show="s.result.vis"> = {{ 'cost' | calc }} = +{{ 'cost', true | calc }}%</span>
+            <span>{{ generic(i.inflation.val, 'inflation') }} / 75</span><span v-show="s.result.vis"> = {{ calc('cost') }} = +{{ calc('cost', true) }}%</span>
         </div>
         <div>
             <h2 class="has-text-caution">${loc('wiki_calc_inflation_luxury')}</h2>
         </div>
         <div>
-            <span>{{ i.inflation.val, 'inflation' | generic }} / 1250</span><span v-show="s.result.vis"> = {{ 'luxury' | calc }} = +{{ 'luxury', true | calc }}%</span>
+            <span>{{ generic(i.inflation.val, 'inflation') }} / 1250</span><span v-show="s.result.vis"> = {{ calc('luxury') }} = +{{ calc('luxury', true) }}%</span>
         </div>
         <div>
             <h2 class="has-text-caution">${loc('wiki_calc_inflation_casino_prod')}</h2>
         </div>
         <div>
-            <span>{{ i.inflation.val, 'inflation' | generic }} / 1250</span><span v-show="s.result.vis"> = {{ 'casino_prod' | calc }} = +{{ 'casino_prod', true | calc }}%</span>
+            <span>{{ generic(i.inflation.val, 'inflation') }} / 1250</span><span v-show="s.result.vis"> = {{ calc('casino_prod') }} = +{{ calc('casino_prod', true) }}%</span>
         </div>
         <div>
             <h2 class="has-text-caution">${loc('wiki_calc_inflation_casino_store')}</h2>
         </div>
         <div>
-            <span>{{ i.inflation.val, 'inflation' | generic }} / 100</span><span v-show="s.result.vis"> = {{ 'casino_store' | calc }} = +{{ 'casino_store', true | calc }}%</span>
+            <span>{{ generic(i.inflation.val, 'inflation') }} / 100</span><span v-show="s.result.vis"> = {{ calc('casino_store') }} = +{{ calc('casino_store', true) }}%</span>
         </div>
         <div>
             <h2 class="has-text-caution">${loc('wiki_calc_inflation_bank_vault')}</h2>
         </div>
         <div>
-            <span>{{ i.inflation.val, 'inflation' | generic }} / 125</span><span v-show="s.result.vis"> = {{ 'bank_vault' | calc }} = +{{ 'bank_vault', true | calc }}%</span>
+            <span>{{ generic(i.inflation.val, 'inflation') }} / 125</span><span v-show="s.result.vis"> = {{ calc('bank_vault') }} = +{{ calc('bank_vault', true) }}%</span>
         </div>
     `);
     

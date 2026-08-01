@@ -125,7 +125,8 @@ function initPage(){
                 { key: 'early_space' },
                 { key: 'deep_space' },
                 { key: 'solar' },
-                { key: 'tauceti' }
+                { key: 'tauceti' },
+                { key: 'matrioshka' }
             ]
         },
         {
@@ -152,9 +153,9 @@ function initPage(){
         }
     ];
 
-    let wikiMenu = `<template><b-menu class="sticky has-text-caution"><b-menu-list label="${loc('wiki_menu_evolve')}">`;
+    let wikiMenu = `<b-menu class="sticky has-text-caution"><b-menu-list label="${loc('wiki_menu_evolve')}">`;
     wikiMenu = wikiMenu + buiildMenu(menuItems,true,false);
-    wikiMenu = wikiMenu + `</b-menu-list></b-menu></template>`;
+    wikiMenu = wikiMenu + `</b-menu-list></b-menu>`;
     menu.append(wikiMenu);
 
     var menuData = {};
@@ -319,7 +320,7 @@ function buiildMenu(items,set,parent){
 
         if (items[i].hasOwnProperty('submenu')){
             let active = (!hash && set && i === 0) || (hash && hash.length > 1 && hash[1] === items[i].key) ? ` :active="true" expanded` : '';
-            menu = menu + `<b-menu-item${active}><template slot="label" slot-scope="props">${loc(`wiki_menu_${items[i].key}`)}</template>`;
+            menu = menu + `<b-menu-item${active} label="${loc(`wiki_menu_${items[i].key}`)}">`;
             menu = menu + buiildMenu(items[i].submenu,false,items[i].key);
             menu = menu + `</b-menu-item>`;
         }

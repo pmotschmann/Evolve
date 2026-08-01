@@ -76,8 +76,8 @@ export const arpaProjects = {
         }
     },
     stock_exchange: {
-        title: loc('arpa_projects_stock_exchange_title'),
-        desc: loc('arpa_projects_stock_exchange_desc'),
+        title(){ return loc('arpa_projects_stock_exchange_title'); },
+        desc(){ return loc('arpa_projects_stock_exchange_desc'); },
         reqs: { banking: 9 },
         grant: 'stock_exchange',
         effect(){
@@ -108,8 +108,8 @@ export const arpaProjects = {
         }
     },
     tp_depot: {
-        title: loc('galaxy_gateway_depot'),
-        desc: loc('arpa_projects_depot_desc'),
+        title(){ return loc('galaxy_gateway_depot'); },
+        desc(){ return loc('arpa_projects_depot_desc'); },
         reqs: { high_tech: 6, storage: 4 },
         grant: 'tp_depot',
         path: ['truepath'],
@@ -125,8 +125,8 @@ export const arpaProjects = {
     },
     launch_facility: {
         id: 'arpalaunch_facility',
-        title: loc('arpa_projects_launch_facility_title'),
-        desc: loc('arpa_projects_launch_facility_desc'),
+        title(){ return loc('arpa_projects_launch_facility_title'); },
+        desc(){ return loc('arpa_projects_launch_facility_desc'); },
         reqs: { high_tech: 7 },
         condition(){
             return global.race['cataclysm'] || global.race['lone_survivor'] || global.race['warlord'] ? false : true;
@@ -166,7 +166,7 @@ export const arpaProjects = {
                     return loc('arpa_project_monument_megalith');
             }
         },
-        desc: loc('arpa_projects_monument_desc'),
+        desc(){ return loc('arpa_projects_monument_desc'); },
         reqs: { monument: 1 },
         grant: 'monuments',
         effect(){
@@ -240,8 +240,8 @@ export const arpaProjects = {
         }
     },
     nexus: {
-        title: loc('arpa_projects_nexus_title'),
-        desc: loc('arpa_projects_nexus_desc'),
+        title(){ return loc('arpa_projects_nexus_title'); },
+        desc(){ return loc('arpa_projects_nexus_desc'); },
         reqs: { magic: 5 },
         grant: 'nexus',
         effect(){
@@ -257,7 +257,7 @@ export const arpaProjects = {
         }
     },
     syphon: {
-        title: loc('arpa_syphon_title'),
+        title(){ return loc('arpa_syphon_title'); },
         desc(){
             let desc = '';
             if (global.tech['syphon'] && global.tech.syphon >= 0){
@@ -320,8 +320,8 @@ function roid_eject_type(){
 export const genePool = {
     genetic_memory: {
         id: 'genes-genetic_memory',
-        title: loc('arpa_genepool_genetic_memory_title'),
-        desc: loc('arpa_genepool_genetic_memory_desc'),
+        title(){ return loc('arpa_genepool_genetic_memory_title'); },
+        desc(){ return loc('arpa_genepool_genetic_memory_desc'); },
         reqs: {},
         grant: ['creep',1],
         cost: { Plasmid(){ return 25; } },
@@ -334,8 +334,8 @@ export const genePool = {
     },
     animus: {
         id: 'genes-animus',
-        title: loc('arpa_genepool_animus_title'),
-        desc: loc('arpa_genepool_animus_desc'),
+        title(){ return loc('arpa_genepool_animus_title'); },
+        desc(){ return loc('arpa_genepool_animus_desc'); },
         reqs: { creep: 1 },
         grant: ['creep',2],
         cost: { Plasmid(){ return 75; } },
@@ -348,8 +348,8 @@ export const genePool = {
     },
     divine_remembrance: {
         id: 'genes-divine_remembrance',
-        title: loc('arpa_genepool_divine_remembrance_title'),
-        desc: loc('arpa_genepool_divine_remembrance_desc'),
+        title(){ return loc('arpa_genepool_divine_remembrance_title'); },
+        desc(){ return loc('arpa_genepool_divine_remembrance_desc'); },
         reqs: { creep: 2 },
         grant: ['creep',3],
         cost: { Plasmid(){ return 225; } },
@@ -362,8 +362,8 @@ export const genePool = {
     },
     divine_proportion: {
         id: 'genes-divine_proportion',
-        title: loc('arpa_genepool_divine_proportion_title'),
-        desc: loc('arpa_genepool_divine_proportion_desc'),
+        title(){ return loc('arpa_genepool_divine_proportion_title'); },
+        desc(){ return loc('arpa_genepool_divine_proportion_desc'); },
         reqs: { creep: 3 },
         grant: ['creep',4],
         cost: { Plasmid(){ return 618; } },
@@ -376,8 +376,8 @@ export const genePool = {
     },
     genetic_repository: {
         id: 'genes-genetic_repository',
-        title: loc('arpa_genepool_genetic_repository_title'),
-        desc: loc('arpa_genepool_genetic_repository_desc'),
+        title(){ return loc('arpa_genepool_genetic_repository_title'); },
+        desc(){ return loc('arpa_genepool_genetic_repository_desc'); },
         reqs: { creep: 4 },
         grant: ['creep',5],
         cost: { Plasmid(){ return 999; } },
@@ -390,8 +390,8 @@ export const genePool = {
     },
     spatial_reasoning: {
         id: 'genes-spatial_reasoning',
-        title: loc('arpa_genepool_spatial_reasoning_title'),
-        desc: loc('arpa_genepool_spatial_reasoning_desc'),
+        title(){ return loc('arpa_genepool_spatial_reasoning_title'); },
+        desc(){ return loc('arpa_genepool_spatial_reasoning_desc'); },
         reqs: {},
         grant: ['store',1],
         cost: { Plasmid(){ return 50; } },
@@ -404,8 +404,8 @@ export const genePool = {
     },
     spatial_superiority: {
         id: 'genes-spatial_superiority',
-        title: loc('arpa_genepool_spatial_superiority_title'),
-        desc: loc('arpa_genepool_spatial_superiority_desc'),
+        title(){ return loc('arpa_genepool_spatial_superiority_title'); },
+        desc(){ return loc('arpa_genepool_spatial_superiority_desc'); },
         reqs: { store: 1 },
         grant: ['store',2],
         cost: { Plasmid(){ return 125; } },
@@ -418,8 +418,8 @@ export const genePool = {
     },
     spatial_supremacy: {
         id: 'genes-spatial_supremacy',
-        title: loc('arpa_genepool_spatial_supremacy_title'),
-        desc: loc('arpa_genepool_spatial_supremacy_desc'),
+        title(){ return loc('arpa_genepool_spatial_supremacy_title'); },
+        desc(){ return loc('arpa_genepool_spatial_supremacy_desc'); },
         reqs: { store: 2 },
         grant: ['store',3],
         cost: { Plasmid(){ return 325; } },
@@ -432,8 +432,8 @@ export const genePool = {
     },
     dimensional_warping: {
         id: 'genes-dimensional_warping',
-        title: loc('arpa_genepool_dimensional_warping_title'),
-        desc: loc('arpa_genepool_dimensional_warping_desc'),
+        title(){ return loc('arpa_genepool_dimensional_warping_title'); },
+        desc(){ return loc('arpa_genepool_dimensional_warping_desc'); },
         reqs: { store: 3 },
         grant: ['store',4],
         cost: { Plasmid(){ return 500; } },
@@ -446,8 +446,8 @@ export const genePool = {
     },
     enhanced_muscle_fiber: {
         id: 'genes-enhanced_muscle_fiber',
-        title: loc('arpa_genepool_enhanced_muscle_fiber_title'),
-        desc: loc('arpa_genepool_enhanced_muscle_fiber_desc'),
+        title(){ return loc('arpa_genepool_enhanced_muscle_fiber_title'); },
+        desc(){ return loc('arpa_genepool_enhanced_muscle_fiber_desc'); },
         reqs: {},
         grant: ['enhance',1],
         cost: { Plasmid(){ return 25; } },
@@ -460,8 +460,8 @@ export const genePool = {
     },
     morphogenesis: {
         id: 'genes-morphogenesis',
-        title: loc('arpa_genepool_morphogenesis_title'),
-        desc: loc('arpa_genepool_morphogenesis_desc'),
+        title(){ return loc('arpa_genepool_morphogenesis_title'); },
+        desc(){ return loc('arpa_genepool_morphogenesis_desc'); },
         reqs: {},
         grant: ['evolve',1],
         cost: { Plasmid(){ return 10; } },
@@ -474,8 +474,8 @@ export const genePool = {
     },
     recombination: {
         id: 'genes-recombination',
-        title: loc('arpa_genepool_recombination_title'),
-        desc: loc('arpa_genepool_recombination_desc'),
+        title(){ return loc('arpa_genepool_recombination_title'); },
+        desc(){ return loc('arpa_genepool_recombination_desc'); },
         reqs: { evolve: 1 },
         grant: ['evolve',2],
         cost: { Plasmid(){ return 35; } },
@@ -488,8 +488,8 @@ export const genePool = {
     },
     homologous_recombination: {
         id: 'genes-homologous_recombination',
-        title: loc('arpa_genepool_homologous_recombination_title'),
-        desc: loc('arpa_genepool_homologous_recombination_desc'),
+        title(){ return loc('arpa_genepool_homologous_recombination_title'); },
+        desc(){ return loc('arpa_genepool_homologous_recombination_desc'); },
         reqs: { evolve: 2 },
         grant: ['evolve',3],
         cost: { Plasmid(){ return 70; } },
@@ -502,8 +502,8 @@ export const genePool = {
     },
     genetic_reshuffling: {
         id: 'genes-genetic_reshuffling',
-        title: loc('arpa_genepool_genetic_reshuffling_title'),
-        desc: loc('arpa_genepool_genetic_reshuffling_desc'),
+        title(){ return loc('arpa_genepool_genetic_reshuffling_title'); },
+        desc(){ return loc('arpa_genepool_genetic_reshuffling_desc'); },
         reqs: { evolve: 3 },
         grant: ['evolve',4],
         cost: { Plasmid(){ return 175; } },
@@ -516,8 +516,8 @@ export const genePool = {
     },
     recombinant_dna: {
         id: 'genes-recombinant_dna',
-        title: loc('arpa_genepool_recombinant_dna_title'),
-        desc: loc('arpa_genepool_recombinant_dna_desc'),
+        title(){ return loc('arpa_genepool_recombinant_dna_title'); },
+        desc(){ return loc('arpa_genepool_recombinant_dna_desc'); },
         reqs: { evolve: 4 },
         grant: ['evolve',5],
         cost: { Plasmid(){ return 440; } },
@@ -530,8 +530,8 @@ export const genePool = {
     },
     chimeric_dna: {
         id: 'genes-chimeric_dna',
-        title: loc('arpa_genepool_chimeric_dna_title'),
-        desc: loc('arpa_genepool_chimeric_dna_desc'),
+        title(){ return loc('arpa_genepool_chimeric_dna_title'); },
+        desc(){ return loc('arpa_genepool_chimeric_dna_desc'); },
         reqs: { evolve: 5 },
         grant: ['evolve',6],
         cost: { Plasmid(){ return 1100; } },
@@ -544,8 +544,8 @@ export const genePool = {
     },
     molecular_cloning: {
         id: 'genes-molecular_cloning',
-        title: loc('arpa_genepool_molecular_cloning_title'),
-        desc: loc('arpa_genepool_molecular_cloning_desc'),
+        title(){ return loc('arpa_genepool_molecular_cloning_title'); },
+        desc(){ return loc('arpa_genepool_molecular_cloning_desc'); },
         reqs: { evolve: 6 },
         grant: ['evolve',7],
         cost: { Plasmid(){ return 2750; } },
@@ -558,8 +558,8 @@ export const genePool = {
     },
     transgenes: {
         id: 'genes-transgenes',
-        title: loc('arpa_genepool_transgenes_title'),
-        desc: loc('arpa_genepool_transgenes_desc'),
+        title(){ return loc('arpa_genepool_transgenes_title'); },
+        desc(){ return loc('arpa_genepool_transgenes_desc'); },
         reqs: { evolve: 7 },
         grant: ['evolve',8],
         cost: { Plasmid(){ return 6875; } },
@@ -572,8 +572,8 @@ export const genePool = {
     },
     synthesis: {
         id: 'genes-synthesis',
-        title: loc('arpa_genepool_synthesis_title'),
-        desc: loc('arpa_genepool_synthesis_desc',[2,10]),
+        title(){ return loc('arpa_genepool_synthesis_title'); },
+        desc(){ return loc('arpa_genepool_synthesis_desc',[2,10]); },
         reqs: { evolve: 1 },
         grant: ['synthesis',1],
         cost: { Plasmid(){ return 25; } },
@@ -586,8 +586,8 @@ export const genePool = {
     },
     karyokinesis: {
         id: 'genes-karyokinesis',
-        title: loc('arpa_genepool_karyokinesis_title'),
-        desc: loc('arpa_genepool_synthesis_desc',[3,25]),
+        title(){ return loc('arpa_genepool_karyokinesis_title'); },
+        desc(){ return loc('arpa_genepool_synthesis_desc',[3,25]); },
         reqs: { synthesis: 1 },
         grant: ['synthesis',2],
         cost: { Plasmid(){ return 40; } },
@@ -600,8 +600,8 @@ export const genePool = {
     },
     cytokinesis: {
         id: 'genes-cytokinesis',
-        title: loc('arpa_genepool_cytokinesis_title'),
-        desc: loc('arpa_genepool_synthesis_desc',[4,50]),
+        title(){ return loc('arpa_genepool_cytokinesis_title'); },
+        desc(){ return loc('arpa_genepool_synthesis_desc',[4,50]); },
         reqs: { synthesis: 2 },
         grant: ['synthesis',3],
         cost: { Plasmid(){ return 55; } },
@@ -614,8 +614,8 @@ export const genePool = {
     },
     mitosis: {
         id: 'genes-mitosis',
-        title: loc('arpa_genepool_mitosis_title'),
-        desc: loc('arpa_genepool_mitosis_desc',[3]),
+        title(){ return loc('arpa_genepool_mitosis_title'); },
+        desc(){ return loc('arpa_genepool_mitosis_desc',[3]); },
         reqs: { synthesis: 3, evolve: 2 },
         grant: ['plasma',1],
         cost: { Plasmid(){ return 90; } },
@@ -628,8 +628,8 @@ export const genePool = {
     },
     metaphase: {
         id: 'genes-metaphase',
-        title: loc('arpa_genepool_metaphase_title'),
-        desc: loc('arpa_genepool_mitosis_desc',[5]),
+        title(){ return loc('arpa_genepool_metaphase_title'); },
+        desc(){ return loc('arpa_genepool_mitosis_desc',[5]); },
         reqs: { plasma: 1 },
         grant: ['plasma',2],
         cost: { Plasmid(){ return 165; } },
@@ -642,8 +642,8 @@ export const genePool = {
     },
     mutation: {
         id: 'genes-mutation',
-        title: loc('arpa_genepool_mutation_title'),
-        desc: loc('arpa_genepool_mutation_desc'),
+        title(){ return loc('arpa_genepool_mutation_title'); },
+        desc(){ return loc('arpa_genepool_mutation_desc'); },
         reqs: { synthesis: 3, creep: 5 },
         grant: ['mutation',1],
         cost: { Plasmid(){ return 1250; } },
@@ -658,8 +658,8 @@ export const genePool = {
     },
     transformation: {
         id: 'genes-transformation',
-        title: loc('arpa_genepool_transformation_title'),
-        desc: loc('arpa_genepool_transformation_desc'),
+        title(){ return loc('arpa_genepool_transformation_title'); },
+        desc(){ return loc('arpa_genepool_transformation_desc'); },
         reqs: { mutation: 1 },
         grant: ['mutation',2],
         cost: { Plasmid(){ return 1500; } },
@@ -674,8 +674,8 @@ export const genePool = {
     },
     metamorphosis: {
         id: 'genes-metamorphosis',
-        title: loc('arpa_genepool_metamorphosis_title'),
-        desc: loc('arpa_genepool_metamorphosis_desc'),
+        title(){ return loc('arpa_genepool_metamorphosis_title'); },
+        desc(){ return loc('arpa_genepool_metamorphosis_desc'); },
         reqs: { mutation: 2 },
         grant: ['mutation',3],
         cost: { Plasmid(){ return 1750; } },
@@ -690,8 +690,8 @@ export const genePool = {
     },
     replication: {
         id: 'genes-replication',
-        title: loc('arpa_genepool_replication_title'),
-        desc: loc('arpa_genepool_replication_desc'),
+        title(){ return loc('arpa_genepool_replication_title'); },
+        desc(){ return loc('arpa_genepool_replication_desc'); },
         reqs: { evolve: 1 },
         grant: ['birth',1],
         cost: { Plasmid(){ return 65; } },
@@ -704,8 +704,8 @@ export const genePool = {
     },
     artificer: {
         id: 'genes-artificer',
-        title: loc('arpa_genepool_artificer_title'),
-        desc: loc('arpa_genepool_artificer_desc'),
+        title(){ return loc('arpa_genepool_artificer_title'); },
+        desc(){ return loc('arpa_genepool_artificer_desc'); },
         reqs: { evolve: 1 },
         grant: ['crafty',1],
         cost: { Plasmid(){ return 45; } },
@@ -718,8 +718,8 @@ export const genePool = {
     },
     detail_oriented: {
         id: 'genes-detail_oriented',
-        title: loc('arpa_genepool_detail_oriented_title'),
-        desc: loc('arpa_genepool_crafting_desc',['50']),
+        title(){ return loc('arpa_genepool_detail_oriented_title'); },
+        desc(){ return loc('arpa_genepool_crafting_desc',['50']); },
         reqs: { crafty: 1 },
         grant: ['crafty',2],
         cost: { Plasmid(){ return 90; } },
@@ -732,8 +732,8 @@ export const genePool = {
     },
     rigorous: {
         id: 'genes-rigorous',
-        title: loc('arpa_genepool_rigorous_title'),
-        desc: loc('arpa_genepool_crafting_desc',['100']),
+        title(){ return loc('arpa_genepool_rigorous_title'); },
+        desc(){ return loc('arpa_genepool_crafting_desc',['100']); },
         reqs: { crafty: 2 },
         grant: ['crafty',3],
         cost: { Plasmid(){ return 135; } },
@@ -746,8 +746,8 @@ export const genePool = {
     },
     geographer: {
         id: 'genes-geographer',
-        title: loc('arpa_genepool_geographer_title'),
-        desc: loc('arpa_genepool_geographer_desc'),
+        title(){ return loc('arpa_genepool_geographer_title'); },
+        desc(){ return loc('arpa_genepool_geographer_desc'); },
         reqs: { store: 1 },
         grant: ['queue',1],
         cost: { Plasmid(){ return 75; } },
@@ -760,8 +760,8 @@ export const genePool = {
     },
     architect: {
         id: 'genes-architect',
-        title: loc('arpa_genepool_architect_title'),
-        desc: loc('arpa_genepool_architect_desc'),
+        title(){ return loc('arpa_genepool_architect_title'); },
+        desc(){ return loc('arpa_genepool_architect_desc'); },
         reqs: { queue: 1 },
         grant: ['queue',2],
         cost: { Plasmid(){ return 160; } },
@@ -778,8 +778,8 @@ export const genePool = {
     },
     precognition: {
         id: 'genes-precognition',
-        title: loc('arpa_genepool_precognition_title'),
-        desc: loc('arpa_genepool_precognition_desc'),
+        title(){ return loc('arpa_genepool_precognition_title'); },
+        desc(){ return loc('arpa_genepool_precognition_desc'); },
         reqs: { queue: 2 },
         grant: ['queue',3],
         condition(){ return global.stats.aiappoc > 0 ? true : false; },
@@ -797,8 +797,8 @@ export const genePool = {
     },
     governance: {
         id: 'genes-governance',
-        title: loc('arpa_genepool_governance_title'),
-        desc: loc('arpa_genepool_governance_desc'),
+        title(){ return loc('arpa_genepool_governance_title'); },
+        desc(){ return loc('arpa_genepool_governance_desc'); },
         reqs: { queue: 2 },
         grant: ['governor',1],
         cost: {
@@ -814,8 +814,8 @@ export const genePool = {
     },
     civil_service: {
         id: 'genes-civil_service',
-        title: loc('arpa_genepool_civil_service_title'),
-        desc: loc('arpa_genepool_civil_service_desc'),
+        title(){ return loc('arpa_genepool_civil_service_title'); },
+        desc(){ return loc('arpa_genepool_civil_service_desc'); },
         reqs: { governor: 1 },
         grant: ['governor',2],
         cost: {
@@ -841,8 +841,8 @@ export const genePool = {
     },
     bureaucratic_efficiency: {
         id: 'genes-bureaucratic_efficiency',
-        title: loc('arpa_genepool_bureaucratic_efficiency_title'),
-        desc: loc('arpa_genepool_bureaucratic_efficiency_desc'),
+        title(){ return loc('arpa_genepool_bureaucratic_efficiency_title'); },
+        desc(){ return loc('arpa_genepool_bureaucratic_efficiency_desc'); },
         reqs: { governor: 2 },
         grant: ['governor',3],
         cost: {
@@ -864,8 +864,8 @@ export const genePool = {
     },
     hardened_genes: {
         id: 'genes-hardened_genes',
-        title: loc('arpa_genepool_hardened_genes_title'),
-        desc: loc('arpa_genepool_hardened_genes_desc'),
+        title(){ return loc('arpa_genepool_hardened_genes_title'); },
+        desc(){ return loc('arpa_genepool_hardened_genes_desc'); },
         reqs: {},
         grant: ['challenge',1],
         cost: { Plasmid(){ return 5; } },
@@ -878,8 +878,8 @@ export const genePool = {
     },
     unlocked: {
         id: 'genes-unlocked',
-        title: loc('arpa_genepool_unlocked_title'),
-        desc: loc('arpa_genepool_unlocked_desc'),
+        title(){ return loc('arpa_genepool_unlocked_title'); },
+        desc(){ return loc('arpa_genepool_unlocked_desc'); },
         reqs: {challenge:1},
         grant: ['challenge',2],
         cost: { Plasmid(){ return 50; } },
@@ -895,8 +895,8 @@ export const genePool = {
     },
     universal: {
         id: 'genes-universal',
-        title: loc('arpa_genepool_universal_title'),
-        desc: loc('arpa_genepool_universal_desc'),
+        title(){ return loc('arpa_genepool_universal_title'); },
+        desc(){ return loc('arpa_genepool_universal_desc'); },
         reqs: {challenge:2},
         grant: ['challenge',3],
         condition(){
@@ -915,8 +915,8 @@ export const genePool = {
     },
     standard: {
         id: 'genes-standard',
-        title: loc('arpa_genepool_standard_title'),
-        desc: loc('arpa_genepool_standard_desc'),
+        title(){ return loc('arpa_genepool_standard_title'); },
+        desc(){ return loc('arpa_genepool_standard_desc'); },
         reqs: {challenge:3},
         grant: ['challenge',4],
         condition(){
@@ -935,8 +935,8 @@ export const genePool = {
     },
     mastered: {
         id: 'genes-mastered',
-        title: loc('arpa_genepool_mastered_title'),
-        desc: loc('arpa_genepool_mastered_desc'),
+        title(){ return loc('arpa_genepool_mastered_title'); },
+        desc(){ return loc('arpa_genepool_mastered_desc'); },
         reqs: {challenge:4},
         grant: ['challenge',5],
         cost: { Plasmid(){ return 4000; } },
@@ -949,8 +949,8 @@ export const genePool = {
     },
     negotiator: {
         id: 'genes-negotiator',
-        title: loc('arpa_genepool_negotiator_title'),
-        desc: loc('arpa_genepool_negotiator_desc'),
+        title(){ return loc('arpa_genepool_negotiator_title'); },
+        desc(){ return loc('arpa_genepool_negotiator_desc'); },
         reqs: {challenge:2},
         grant: ['trader',1],
         cost: { Plasmid(){ return 750; } },
@@ -965,8 +965,8 @@ export const genePool = {
     },
     haggler: {
         id: 'genes-haggler',
-        title: loc('arpa_genepool_haggler_title'),
-        desc: loc('arpa_genepool_haggler_desc'),
+        title(){ return loc('arpa_genepool_haggler_title'); },
+        desc(){ return loc('arpa_genepool_haggler_desc'); },
         reqs: {trader:1},
         condition(){
             return global.stats.achieve['godslayer'] ? true : false;
@@ -984,8 +984,8 @@ export const genePool = {
     },
     ancients: {
         id: 'genes-ancients',
-        title: loc('arpa_genepool_ancients_title'),
-        desc: loc('arpa_genepool_ancients_desc'),
+        title(){ return loc('arpa_genepool_ancients_title'); },
+        desc(){ return loc('arpa_genepool_ancients_desc'); },
         reqs: { evolve: 2 },
         condition(){
             return global.genes['old_gods'] ? true : false;
@@ -1003,8 +1003,8 @@ export const genePool = {
     },
     faith: {
         id: 'genes-faith',
-        title: loc('arpa_genepool_faith_title'),
-        desc: loc('arpa_genepool_faith_desc'),
+        title(){ return loc('arpa_genepool_faith_title'); },
+        desc(){ return loc('arpa_genepool_faith_desc'); },
         reqs: { ancients: 1 },
         grant: ['ancients',2],
         cost: { Plasmid(){ return 300; } },
@@ -1018,8 +1018,8 @@ export const genePool = {
     },
     devotion: {
         id: 'genes-devotion',
-        title: loc('arpa_genepool_devotion_title'),
-        desc: loc('arpa_genepool_devotion_desc'),
+        title(){ return loc('arpa_genepool_devotion_title'); },
+        desc(){ return loc('arpa_genepool_devotion_desc'); },
         reqs: { ancients: 2 },
         grant: ['ancients',3],
         cost: { Plasmid(){ return 600; } },
@@ -1032,8 +1032,8 @@ export const genePool = {
     },
     acolyte: {
         id: 'genes-acolyte',
-        title: loc('arpa_genepool_acolyte_title'),
-        desc: loc('arpa_genepool_acolyte_desc'),
+        title(){ return loc('arpa_genepool_acolyte_title'); },
+        desc(){ return loc('arpa_genepool_acolyte_desc'); },
         reqs: { ancients: 3 },
         grant: ['ancients',4],
         cost: { Plasmid(){ return 1000; } },
@@ -1046,8 +1046,8 @@ export const genePool = {
     },
     conviction: {
         id: 'genes-conviction',
-        title: loc('arpa_genepool_conviction_title'),
-        desc: loc('arpa_genepool_conviction_desc'),
+        title(){ return loc('arpa_genepool_conviction_title'); },
+        desc(){ return loc('arpa_genepool_conviction_desc'); },
         reqs: { ancients: 4 },
         grant: ['ancients',5],
         cost: { Plasmid(){ return 1500; } },
@@ -1060,8 +1060,8 @@ export const genePool = {
     },
     doctrine: {
         id: 'genes-doctrine',
-        title: loc('arpa_genepool_doctrine_title'),
-        desc: loc('arpa_genepool_doctrine_desc'),
+        title(){ return loc('arpa_genepool_doctrine_title'); },
+        desc(){ return loc('arpa_genepool_doctrine_desc'); },
         reqs: { ancients: 5 },
         condition(){
             return global.stats.achieve['godslayer'] ? true : false;
@@ -1077,8 +1077,8 @@ export const genePool = {
     },
     ideology: {
         id: 'genes-ideology',
-        title: loc('arpa_genepool_ideology_title'),
-        desc: loc('arpa_genepool_ideology_desc'),
+        title(){ return loc('arpa_genepool_ideology_title'); },
+        desc(){ return loc('arpa_genepool_ideology_desc'); },
         reqs: { ancients: 6 },
         grant: ['ancients',7],
         cost: { Supercoiled(){ return 75; } },
@@ -1091,8 +1091,8 @@ export const genePool = {
     },
     transcendence: {
         id: 'genes-transcendence',
-        title: loc('arpa_genepool_transcendence_title'),
-        desc: loc('arpa_genepool_transcendence_desc'),
+        title(){ return loc('arpa_genepool_transcendence_title'); },
+        desc(){ return loc('arpa_genepool_transcendence_desc'); },
         reqs: { ancients: 1, mutation: 3 },
         grant: ['transcendence',1],
         cost: { Plasmid(){ return 3000; } },
@@ -1107,8 +1107,8 @@ export const genePool = {
     },
     preeminence: {
         id: 'genes-preeminence',
-        title: loc('arpa_genepool_preeminence_title'),
-        desc: loc('arpa_genepool_preeminence_desc'),
+        title(){ return loc('arpa_genepool_preeminence_title'); },
+        desc(){ return loc('arpa_genepool_preeminence_desc'); },
         reqs: { transcendence: 1, challenge:5, ancients: 7 },
         grant: ['transcendence',2],
         cost: { 
@@ -1124,8 +1124,8 @@ export const genePool = {
     },
     bleeding_effect: {
         id: 'genes-bleeding_effect',
-        title: loc('arpa_genepool_bleeding_effect_title'),
-        desc: loc('arpa_genepool_bleeding_effect_desc',[2.5]),
+        title(){ return loc('arpa_genepool_bleeding_effect_title'); },
+        desc(){ return loc('arpa_genepool_bleeding_effect_desc',[2.5]); },
         reqs: { creep: 2 },
         grant: ['bleed',1],
         condition(){
@@ -1141,8 +1141,8 @@ export const genePool = {
     },
     synchronicity: {
         id: 'genes-synchronicity',
-        title: loc('arpa_genepool_synchronicity_title'),
-        desc: loc('arpa_genepool_synchronicity_desc',[25]),
+        title(){ return loc('arpa_genepool_synchronicity_title'); },
+        desc(){ return loc('arpa_genepool_synchronicity_desc',[25]); },
         reqs: { bleed: 1 },
         grant: ['bleed',2],
         cost: { Plasmid(){ return 500; } },
@@ -1155,8 +1155,8 @@ export const genePool = {
     },
     astral_awareness: {
         id: 'genes-astral_awareness',
-        title: loc('arpa_genepool_astral_awareness_title'),
-        desc: loc('arpa_genepool_astral_awareness_desc'),
+        title(){ return loc('arpa_genepool_astral_awareness_title'); },
+        desc(){ return loc('arpa_genepool_astral_awareness_desc'); },
         reqs: { bleed: 2 },
         grant: ['bleed',3],
         cost: { Plasmid(){ return 1000; } },
@@ -1169,8 +1169,8 @@ export const genePool = {
     },
     blood_remembrance: {
         id: 'genes-blood_remembrance',
-        title: loc('arpa_genepool_blood_remembrance_title'),
-        desc: loc('arpa_genepool_blood_remembrance_desc'),
+        title(){ return loc('arpa_genepool_blood_remembrance_title'); },
+        desc(){ return loc('arpa_genepool_blood_remembrance_desc'); },
         reqs: {},
         grant: ['blood',1],
         condition(){
@@ -1189,8 +1189,8 @@ export const genePool = {
     },
     blood_sacrifice: {
         id: 'genes-blood_sacrifice',
-        title: loc('arpa_genepool_blood_sacrifice_title'),
-        desc: loc('arpa_genepool_blood_sacrifice_desc'),
+        title(){ return loc('arpa_genepool_blood_sacrifice_title'); },
+        desc(){ return loc('arpa_genepool_blood_sacrifice_desc'); },
         reqs: { blood: 1 },
         grant: ['blood',2],
         cost: {
@@ -1207,8 +1207,8 @@ export const genePool = {
     },
     essence_absorber: {
         id: 'genes-essence_absorber',
-        title: loc('arpa_genepool_essence_absorber_title'),
-        desc: loc('arpa_genepool_essence_absorber_desc'),
+        title(){ return loc('arpa_genepool_essence_absorber_title'); },
+        desc(){ return loc('arpa_genepool_essence_absorber_desc'); },
         reqs: { blood: 2 },
         grant: ['blood',3],
         cost: {
@@ -1231,8 +1231,8 @@ export const genePool = {
 export const bloodPool = {
     purify: {
         id: 'blood-purify',
-        title: loc('arpa_blood_purify_title'),
-        desc: loc('arpa_blood_purify_desc'),
+        title(){ return loc('arpa_blood_purify_title'); },
+        desc(){ return loc('arpa_blood_purify_desc'); },
         reqs: {},
         grant: ['spire',1],
         cost: { Blood_Stone(){ return 10; } },
@@ -1245,8 +1245,8 @@ export const bloodPool = {
     },
     chum: {
         id: 'blood-chum',
-        title: loc('arpa_blood_chum_title'),
-        desc: loc('arpa_blood_chum_desc'),
+        title(){ return loc('arpa_blood_chum_title'); },
+        desc(){ return loc('arpa_blood_chum_desc'); },
         reqs: { spire: 1 },
         grant: ['spire',2],
         cost: { Blood_Stone(){ return 25; } },
@@ -1259,8 +1259,8 @@ export const bloodPool = {
     },
     lust: {
         id: 'blood-lust',
-        title: loc('arpa_blood_lust_title'),
-        desc: loc('arpa_blood_lust_desc'),
+        title(){ return loc('arpa_blood_lust_title'); },
+        desc(){ return loc('arpa_blood_lust_desc'); },
         reqs: {},
         grant: ['lust','*'],
         cost: {
@@ -1277,8 +1277,8 @@ export const bloodPool = {
     },
     illuminate: {
         id: 'blood-illuminate',
-        title: loc('arpa_blood_illuminate_title'),
-        desc: loc('arpa_blood_illuminate_desc'),
+        title(){ return loc('arpa_blood_illuminate_title'); },
+        desc(){ return loc('arpa_blood_illuminate_desc'); },
         reqs: {},
         grant: ['illuminate','*'],
         cost: {
@@ -1295,8 +1295,8 @@ export const bloodPool = {
     },
     greed: {
         id: 'blood-greed',
-        title: loc('arpa_blood_greed_title'),
-        desc: loc('arpa_blood_greed_desc'),
+        title(){ return loc('arpa_blood_greed_title'); },
+        desc(){ return loc('arpa_blood_greed_desc'); },
         reqs: {},
         grant: ['greed','*'],
         cost: {
@@ -1313,8 +1313,8 @@ export const bloodPool = {
     },
     hoarder: {
         id: 'blood-hoarder',
-        title: loc('arpa_blood_hoarder_title'),
-        desc: loc('arpa_blood_hoarder_desc'),
+        title(){ return loc('arpa_blood_hoarder_title'); },
+        desc(){ return loc('arpa_blood_hoarder_desc'); },
         reqs: {},
         grant: ['hoarder','*'],
         condition(){
@@ -1334,8 +1334,8 @@ export const bloodPool = {
     },
     artisan: {
         id: 'blood-artisan',
-        title: loc('arpa_blood_artisan_title'),
-        desc: loc('arpa_blood_artisan_desc'),
+        title(){ return loc('arpa_blood_artisan_title'); },
+        desc(){ return loc('arpa_blood_artisan_desc'); },
         reqs: {},
         grant: ['artisan','*'],
         cost: {
@@ -1352,8 +1352,8 @@ export const bloodPool = {
     },
     attract: {
         id: 'blood-attract',
-        title: loc('arpa_blood_attract_title'),
-        desc: loc('arpa_blood_attract_desc'),
+        title(){ return loc('arpa_blood_attract_title'); },
+        desc(){ return loc('arpa_blood_attract_desc'); },
         reqs: {},
         grant: ['attract','*'],
         condition(){
@@ -1373,8 +1373,8 @@ export const bloodPool = {
     },
     wrath: {
         id: 'blood-wrath',
-        title: loc('arpa_blood_wrath_title'),
-        desc: loc('arpa_blood_wrath_desc'),
+        title(){ return loc('arpa_blood_wrath_title'); },
+        desc(){ return loc('arpa_blood_wrath_desc'); },
         reqs: {},
         grant: ['wrath','*'],
         cost: {
@@ -1391,8 +1391,8 @@ export const bloodPool = {
     },
     prepared: {
         id: 'blood-prepared',
-        title: loc('arpa_blood_prepared_title'),
-        desc: loc('arpa_blood_prepared_desc'),
+        title(){ return loc('arpa_blood_prepared_title'); },
+        desc(){ return loc('arpa_blood_prepared_desc'); },
         reqs: {},
         grant: ['prepared',1],
         condition(){
@@ -1411,8 +1411,8 @@ export const bloodPool = {
     },
     compact: {
         id: 'blood-compact',
-        title: loc('arpa_blood_compact_title'),
-        desc: loc('arpa_blood_compact_desc'),
+        title(){ return loc('arpa_blood_compact_title'); },
+        desc(){ return loc('arpa_blood_compact_desc'); },
         reqs: { prepared: 1 },
         grant: ['prepared',2],
         condition(){
@@ -1428,8 +1428,8 @@ export const bloodPool = {
     },
     infernal: {
         id: 'blood-infernal',
-        title: loc('arpa_blood_infernal_title'),
-        desc: loc('arpa_blood_infernal_desc'),
+        title(){ return loc('arpa_blood_infernal_title'); },
+        desc(){ return loc('arpa_blood_infernal_desc'); },
         reqs: { prepared: 2 },
         grant: ['prepared',3],
         condition(){
@@ -1448,8 +1448,8 @@ export const bloodPool = {
     },
     unbound: {
         id: 'blood-unbound',
-        title: loc('arpa_blood_unbound_title'),
-        desc: loc('arpa_blood_unbound_desc'),
+        title(){ return loc('arpa_blood_unbound_title'); },
+        desc(){ return loc('arpa_blood_unbound_desc'); },
         reqs: {},
         grant: ['unbound',1],
         cost: { Blood_Stone(){ return 50; }, },
@@ -1462,8 +1462,8 @@ export const bloodPool = {
     },
     unbound_resistance: {
         id: 'blood-unbound_resistance',
-        title: loc('arpa_blood_unbound_resistance_title'),
-        desc: loc('arpa_blood_unbound_resistance_desc'),
+        title(){ return loc('arpa_blood_unbound_resistance_title'); },
+        desc(){ return loc('arpa_blood_unbound_resistance_desc'); },
         reqs: { unbound: 1 },
         grant: ['unbound',2],
         cost: { Blood_Stone(){ return 100; } },
@@ -1476,8 +1476,8 @@ export const bloodPool = {
     },
     shadow_war: {
         id: 'blood-shadow_war',
-        title: loc('arpa_blood_shadow_war_title'),
-        desc: loc('arpa_blood_shadow_war_desc'),
+        title(){ return loc('arpa_blood_shadow_war_title'); },
+        desc(){ return loc('arpa_blood_shadow_war_desc'); },
         reqs: { unbound: 2 },
         grant: ['unbound',3],
         condition(){
@@ -1496,8 +1496,8 @@ export const bloodPool = {
     },
     unbound_immunity: {
         id: 'blood-unbound_immunity',
-        title: loc('arpa_blood_unbound_immunity_title'),
-        desc: loc('arpa_blood_unbound_immunity_desc'),
+        title(){ return loc('arpa_blood_unbound_immunity_title'); },
+        desc(){ return loc('arpa_blood_unbound_immunity_desc'); },
         reqs: { unbound: 3 },
         grant: ['unbound',4],
         condition(){
@@ -1513,8 +1513,8 @@ export const bloodPool = {
     },
     blood_aware: {
         id: 'blood-blood_aware',
-        title: loc('arpa_blood_blood_aware_title'),
-        desc: loc('arpa_blood_blood_aware_desc'),
+        title(){ return loc('arpa_blood_blood_aware_title'); },
+        desc(){ return loc('arpa_blood_blood_aware_desc'); },
         reqs: {},
         grant: ['aware',1],
         condition(){
@@ -1791,7 +1791,7 @@ function genetics(){
         if (global.race['artifical']){
             label = global.tech.genetics > 2 ? loc('arpa_code_modification') : loc('arpa_decompile_source');
         }
-        let sequence = $(`<div><span class="seqlbl has-text-warning">${label}</span> - ${loc('arpa_to_complete')} <span v-html="$options.filters.timer(time)"></span></div>`);
+        let sequence = $(`<div><span class="seqlbl has-text-warning">${label}</span> - ${loc('arpa_to_complete')} <span v-html="timer(time)"></span></div>`);
         genome.append(sequence);
         let progress = $(`<progress class="progress" :value="progress" max="${global.arpa.sequence.max}">{{ progress }}%</progress>`);
         genome.append(progress);
@@ -1886,9 +1886,7 @@ function genetics(){
                 },
                 autoLabel(sr){
                     return loc(global.race['artifical'] ? 'arpa_auto_compile_label' : 'arpa_auto_seq_label') + (sr ? (global.arpa.sequence.boost ? loc('city_on') : loc('city_off')) : '');
-                }
-            },
-            filters: {
+                },
                 timer(val){
                     if (global.arpa.sequence.on && global.arpa.sequence.labs > 0){
                         if (global.arpa.sequence.boost){
@@ -2438,7 +2436,7 @@ function addProject(parent,project){
         parent.append(current);
 
         let title = typeof arpaProjects[project].title === 'string' ? arpaProjects[project].title : arpaProjects[project].title();
-        let head = $(`<div class="head"><span class="desc has-text-warning" role="heading" aria-level="3">${title}</span><a v-on:click="srDescAndEffect" class="is-sr-only" role="button">{{ projectName() }} description</a><span aria-hidden="true" v-show="rank" class="rank">{{ rank | level }}</span><span class="is-sr-only">{{ rank | level }}</span></div>`);
+        let head = $(`<div class="head"><span class="desc has-text-warning" role="heading" aria-level="3">${title}</span><a v-on:click="srDescAndEffect" class="is-sr-only" role="button">{{ projectName() }} description</a><span aria-hidden="true" v-show="rank" class="rank">{{ level(rank) }}</span><span class="is-sr-only">{{ level(rank) }}</span></div>`);
         current.append(head);
 
         let progress = $(`<div class="pbar"><progress class="progress" :value="complete" max="100"></progress><span class="progress-value has-text-danger">{{ complete }}%</span></div>`);
@@ -2451,7 +2449,7 @@ function addProject(parent,project){
         buy.append($(`<button :aria-label="arpaProjectSRCosts('1','${project}')" class="button x1" @click="build('${project}',1)">1%</button>`));
         buy.append($(`<button :aria-label="arpaProjectSRCosts('10','${project}')" class="button x10" @click="build('${project}',10)">10%</button>`));
         buy.append($(`<button :aria-label="arpaProjectSRCosts('25','${project}')" class="button x25" @click="build('${project}',25)">25%</button>`));
-        buy.append($(`<button :aria-label="arpaProjectSRCosts('100','${project}')" class="button x100" @click="build('${project}',100)">{{ complete | remain }}%</button>`));
+        buy.append($(`<button :aria-label="arpaProjectSRCosts('100','${project}')" class="button x100" @click="build('${project}',100)">{{ remain(complete) }}%</button>`));
 
         vBind({
             el: `#arpa${project}`,
@@ -2511,9 +2509,7 @@ function addProject(parent,project){
                         }
                     });
                     return cost;
-                }
-            },
-            filters: {
+                },
                 remain(val){
                     return 100 - val;
                 },
@@ -2524,7 +2520,7 @@ function addProject(parent,project){
         });
 
         popover(`popArpa${project}`, function(){
-                return arpaProjects[project].desc;
+                return typeof arpaProjects[project].desc === 'string' ? arpaProjects[project].desc : arpaProjects[project].desc();
             },
             {
                 elm: `#arpa${project} .head .desc`,
@@ -2597,6 +2593,9 @@ export function buildArpa(pro,num,update,queue){
                 }
                 drawTech();
             }
+        }
+        else {
+            break;
         }
     }
     if (update){

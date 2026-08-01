@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Vue + Buefy</title>
+</head>
+<body>
+    <div id="app">
+        <h1>Debug Test</h1>
+        <p>Vue available: <span id="vue-check"></span></p>
+        <p>Vue.use available: <span id="vue-use-check"></span></p>
+        <p>Buefy status: <span id="buefy-check"></span></p>
+    </div>
+
+    <script src="https://unpkg.com/vue@3.2.30/dist/vue.global.prod.js"></script>
+    <script>
+        document.getElementById('vue-check').textContent = typeof Vue !== 'undefined' ? 'Yes' : 'No';
+        document.getElementById('vue-use-check').textContent = typeof Vue.use !== 'undefined' ? 'Yes' : 'No';
+        
+        // Enhanced Vue 2 compatibility shim
+        if (typeof window !== 'undefined' && window.Vue) {
+            const originalVue = { ...window.Vue };
+            
+            function VueConstructor(options) {
+                if (options) {
+                    return originalVue.createApp(options);
+                }
+                return originalVue;
+            }
+            
+            // Copy all Vue 3 methods
+            Object.assign(VueConstructor, originalVue);
+            
+            // Essential Vue 2 compatibility methods
+            VueConstructor.use = function(plugin, options) {
+                console.log('Vue.use called with plugin:', plugin);
+                try {
+                    if (plugin && typeof plugin.install === 'function') {
+                        console.log('Installing plugin via install method');
+                        plugin.install(VueConstructor, options);
+                    } else if (typeof plugin === 'function') {
+                        console.log('Installing plugin as function');
+                        plugin.call(null, VueConstructor, options);
+                    }
+                } catch (error) {
+                    console.error('Plugin installation failed:', error);
+                }
+                return VueConstructor;
+            };
+            
+            VueConstructor.component = function(name, definition) {
+                VueConstructor._components = VueConstructor._components || {};
+                VueConstructor._components[name] = definition;
+                return VueConstructor;
+            };
+            
+            VueConstructor.directive = function(name, definition) {
+                VueConstructor._directives = VueConstructor._directives || {};
+                VueConstructor._directives[name] = definition;
+                return VueConstructor;
+            };
+            
+            VueConstructor.extend = function(options) {
+                const Component = function(props) {
+                    return { ...options, props: props || options.props };
+                };
+                Component.options = options;
+                Component.cid = Math.random().toString(36).substr(2, 9);
+                Component.super = VueConstructor;
+                return Component;
+            };
+            
+            VueConstructor.mixin = function(mixin) {
+                console.log('Vue.mixin called with:', mixin);
+                return VueConstructor;
+            };
+            
+            VueConstructor.config = {
+                productionTip: false,
+                devtools: false,
+                silent: false,
+                optionMergeStrategies: {},
+                keyCodes: {}
+            };
+            
+            VueConstructor.util = {
+                defineReactive: function(obj, key, val) {
+                    if (obj && typeof obj === 'object') {
+                        obj[key] = val;
+                    }
+                },
+                isPlainObject: function(obj) {
+                    return Object.prototype.toString.call(obj) === '[object Object]';
+                }
+            };
+            
+            VueConstructor.version = '2.6.14'; // Fake Vue 2 version for Buefy
+            
+            // Override createApp to register components
+            const originalCreateApp = originalVue.createApp;
+            VueConstructor.createApp = function(options) {
+                const app = originalCreateApp(options);
+                
+                // Register stored components
+                if (VueConstructor._components) {
+                    Object.keys(VueConstructor._components).forEach(name => {
+                        app.component(name, VueConstructor._components[name]);
+                    });
+                }
+                
+                // Register stored directives
+                if (VueConstructor._directives) {
+                    Object.keys(VueConstructor._directives).forEach(name => {
+                        app.directive(name, VueConstructor._directives[name]);
+                    });
+                }
+                
+                return app;
+            };
+            
+            window.Vue = VueConstructor;
+            console.log('Enhanced Vue compatibility shim installed');
+        }
+        
+        document.getElementById('vue-use-check').textContent = typeof Vue.use !== 'undefined' ? 'Yes' : 'No';
+    </script>
+    <script src="https://unpkg.com/buefy@0.9.22/dist/buefy.min.js"></script>
+    <script>
+        document.getElementById('buefy-check').textContent = typeof Buefy !== 'undefined' ? 'Loaded' : 'Failed';
+        console.log('Final Vue object:', Vue);
+        console.log('Buefy object:', typeof Buefy !== 'undefined' ? Buefy : 'Not available');
+    </script>
+</body>
+</html>
