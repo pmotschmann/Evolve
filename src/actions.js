@@ -6841,6 +6841,9 @@ export function setPlanet(opt){
 
     $('#evolution').append(parent);
 
+    let srDescButton = $(`<a class="is-sr-only" role="button">${title} description</a>`);
+    $('#evolution').append(srDescButton);
+
     let popper = false;
     let gecked = 0;
     popover(id,function(obj){
@@ -6883,6 +6886,7 @@ export function setPlanet(opt){
             }
             title = `${traits}${biomes[biome].label} ${num}`;
             $(`#${id} .aTitle`).html(title);
+            srDescButton.html(title + ' description');
             gecked++;
             global.race.geck--;
             if (!global.race.hasOwnProperty('gecked')){
@@ -6911,6 +6915,10 @@ export function setPlanet(opt){
         }
     });
 
+    srDescButton.on('click', function() {
+        srPlanetDesc(title, biome, orbit, trait, geology, gecked);
+    });
+
     return custom ? custom : (biome === 'eden' ? 'hellscape' : biome);
 }
 
@@ -6931,6 +6939,31 @@ function planetDesc(obj,title,biome,orbit,trait,geology,gecked){
         obj.popper.append($(`<div class="has-text-special">${loc(`rejuvenated`)}</div>`));
     }
     return undefined;
+}
+
+function srPlanetDesc(title,biome,orbit,trait,geology,gecked){
+    let desc = '';
+    desc = desc + `<div>${loc('set_planet',[title,biomes[biome].label,orbit])}</div>`;
+    desc = desc + `<div>${biomes[biome].desc}</div>`;
+    if (trait.length > 0){
+        trait.forEach(function(t){
+            desc = desc + `<div>${planetTraits[t].desc}</div>`;
+        });
+    }
+
+    let pg = planetGeology(geology);
+    if (pg.length > 0){
+        // modify geology text to have it be spoken better
+        pg = pg.replaceAll(': <span', '<span');
+        pg = pg.replaceAll('</span></div>', ',</span></div>'); // add commas after each list item
+        pg = pg.replace(/,(?!.*,)/, '.'); // replace trailing comma with period
+
+        desc = desc + `<div>${pg}</div>`;
+    }
+    if (gecked && gecked > 0){
+        desc = desc + `<div class="has-text-special">${loc(`rejuvenated`)}</div>`;
+    }
+    srSpeak(desc);
 }
 
 function buildPlanet(aspect,opt,args){
