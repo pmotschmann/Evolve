@@ -8776,6 +8776,9 @@ var mapShips = true;
 // The world point at the centre of the viewport (see recenterOn/refocus in buildSolarMap). Also what
 // distant-star culling measures from.
 var mapFocus = { x: 0, y: 0, z: 0 };
+// Whether the map should be locked onto a star when zooming. Set when clicking a star, reset when panning away.
+// Zooming with scroll follows cursor when unlocked, and center of screen (where the locked star is) when locked.
+var starLockOn = false;
 
 // Below this scale the map is showing planets as points and planet names give way to star
 // names; at or above it a system's own planets are made out individually.
@@ -9877,6 +9880,7 @@ function buildSolarMap(parentNode) {
                 if (hit){
                     recenterOn(genXYcoord(hit));
                     drawMap();
+                    starLockOn = hit; // Lock onto the star to allow zooming onto it instead of following cursor
                 }
             }
             drag = false;
@@ -9902,6 +9906,7 @@ function buildSolarMap(parentNode) {
             if (drag === 'pan') {
                 if (press && (Math.abs(e.clientX - press.x) > CLICK_SLOP_PX || Math.abs(e.clientY - press.y) > CLICK_SLOP_PX)){
                     press.moved = true;
+                    starLockOn = false; // Unlock from a star if one is locked into, making scroll zooming follow cursor again
                 }
                 mapShift.x = e.clientX - dragOffset.x;
                 mapShift.y = e.clientY - dragOffset.y;
@@ -9922,42 +9927,58 @@ function buildSolarMap(parentNode) {
         .on("wheel", (e) => {
             if(e.originalEvent.deltaY < 0) {
                 mapScale /= 0.8;
-                
-                let rect = document.getElementById("mapCanvas").getBoundingClientRect();
-                let cx = e.originalEvent.clientX - rect.left, cy = e.originalEvent.clientY - rect.top;
 
-                //temporarily shift to cursor location
-                mapShift.x += (canvasOffset.x - cx);
-                mapShift.y += (canvasOffset.y - cy);
-                
-                //zoom, centered on cursor location
-                mapShift.x = canvasOffset.x + (mapShift.x - canvasOffset.x) / 0.8;
-                mapShift.y = canvasOffset.y + (mapShift.y - canvasOffset.y) / 0.8;
+                if (starLockOn) {
+                    // Zoom wrt center of screen, keeping locked star in the center
+                    mapShift.x = canvasOffset.x + (mapShift.x - canvasOffset.x) / 0.8;
+                    mapShift.y = canvasOffset.y + (mapShift.y - canvasOffset.y) / 0.8;
+                }
+                else {
+                    // Zoom wrt cursor position, moving center of screen as needed
+                    let rect = document.getElementById("mapCanvas").getBoundingClientRect();
+                    let cx = e.originalEvent.clientX - rect.left, cy = e.originalEvent.clientY - rect.top;
 
-                //shift back to original location
-                mapShift.x -= (canvasOffset.x - cx);
-                mapShift.y -= (canvasOffset.y - cy);
-                refocus();
+                    //temporarily shift to cursor location
+                    mapShift.x += (canvasOffset.x - cx);
+                    mapShift.y += (canvasOffset.y - cy);
+                    
+                    //zoom, centered on cursor location
+                    mapShift.x = canvasOffset.x + (mapShift.x - canvasOffset.x) / 0.8;
+                    mapShift.y = canvasOffset.y + (mapShift.y - canvasOffset.y) / 0.8;
+
+                    //shift back to original location
+                    mapShift.x -= (canvasOffset.x - cx);
+                    mapShift.y -= (canvasOffset.y - cy);
+                    refocus();
+                }
                 drawMap();
             }
             else {
                 mapScale *= 0.8;
-                
-                let rect = document.getElementById("mapCanvas").getBoundingClientRect();
-                let cx = e.originalEvent.clientX - rect.left, cy = e.originalEvent.clientY - rect.top;
 
-                //temporarily shift to cursor location
-                mapShift.x += (canvasOffset.x - cx);
-                mapShift.y += (canvasOffset.y - cy);
-                
-                //zoom, centered on cursor location
-                mapShift.x = canvasOffset.x + (mapShift.x - canvasOffset.x) * 0.8;
-                mapShift.y = canvasOffset.y + (mapShift.y - canvasOffset.y) * 0.8;
+                if (starLockOn) {
+                    // Zoom wrt center of screen, keeping locked star in the center
+                    mapShift.x = canvasOffset.x + (mapShift.x - canvasOffset.x) * 0.8;
+                    mapShift.y = canvasOffset.y + (mapShift.y - canvasOffset.y) * 0.8;
+                }
+                else {
+                    // Zoom wrt cursor position, moving center of screen as needed
+                    let rect = document.getElementById("mapCanvas").getBoundingClientRect();
+                    let cx = e.originalEvent.clientX - rect.left, cy = e.originalEvent.clientY - rect.top;
 
-                //shift back to original location
-                mapShift.x -= (canvasOffset.x - cx);
-                mapShift.y -= (canvasOffset.y - cy);
-                refocus();
+                    //temporarily shift to cursor location
+                    mapShift.x += (canvasOffset.x - cx);
+                    mapShift.y += (canvasOffset.y - cy);
+                    
+                    //zoom, centered on cursor location
+                    mapShift.x = canvasOffset.x + (mapShift.x - canvasOffset.x) * 0.8;
+                    mapShift.y = canvasOffset.y + (mapShift.y - canvasOffset.y) * 0.8;
+
+                    //shift back to original location
+                    mapShift.x -= (canvasOffset.x - cx);
+                    mapShift.y -= (canvasOffset.y - cy);
+                    refocus();
+                }
                 drawMap();
             }
             return false;
