@@ -2090,8 +2090,8 @@ export function logPrestigeGains(reset, gains) {
 
     // calculate number of gained servants and skilled servants
     if (['matrix','retired','eden'].includes(reset)){
-        let oldWomlingCount = global.race.servants.max ?? 0;
-        let oldSkilledCount = global.race.servants.smax ?? 0;
+        let oldWomlingCount = global.race.servants?.max ?? 0;
+        let oldSkilledCount = global.race.servants?.sbase ?? 0;
 
         let newWomlingCount = Math.min(global.stats.matrix,100) + Math.min(global.stats.retire,100) + Math.min(global.stats.eden,100);
         let newSkilledCount = Math.min(Math.min(global.stats.matrix, global.stats.retire),100);
