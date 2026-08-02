@@ -828,6 +828,9 @@ const extraInformation = {
     nanoweave: [
         loc(`wiki_tech_resource_unlock`,[loc(`resource_Nanoweave_name`)])
     ],
+    aerographene: [
+        loc(`wiki_tech_resource_unlock`,[loc(`resource_Aerographene_name`)])
+    ],
     stanene: [
         loc(`wiki_tech_resource_unlock`,[loc(`resource_Stanene_name`)]),
         loc(`wiki_tech_factory_unlock`,[loc(`resource_Stanene_name`)])
@@ -1739,6 +1742,9 @@ const extraInformation = {
     ],
     quantum_signatures: [
         loc(`wiki_tech_ship_sensor_unlock`,[loc('outer_shipyard_sensor_quantum')])
+    ],
+    aerographene_armor: [
+        loc(`wiki_tech_ship_armor_unlock`,[loc('outer_shipyard_armor_aerographene')])
     ],
     interstellar_drive: [
         loc(`wiki_tech_ship_class_unlock`,[loc('outer_shipyard_class_explorer')]),

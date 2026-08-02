@@ -4877,9 +4877,45 @@ const zGroundFireMax = 9;
 // Share of a hit each armour lets through. The ratio matches the 8 / 6 / 4 the wear-and-tear roll in
 // the main loop already uses, so neutronium plating turns aside half of what steel does wherever the
 // damage is coming from.
-const shipArmorSoak = { steel: 1, alloy: 0.75, neutronium: 0.5 };
+const shipArmorSoak = { steel: 1, alloy: 0.75, neutronium: 0.5, aerographene: 0.75 };
 export function shipArmorFactor(ship){
     return ship && shipArmorSoak.hasOwnProperty(ship.armor) ? shipArmorSoak[ship.armor] : 1;
+}
+
+// Aerographene stops as much as alloy while weighing next to nothing, so it is the one plating that
+// makes a hull faster instead of slower. Applied to mass rather than to the finished speed so it
+// stacks with the class weights and the relay boost the same way every other mass term does.
+const AEROGRAPHENE_SPEED = 1.1;
+// Exported so the tech that unlocks the plating advertises the same number the ships actually fly at.
+export function aerographeneSpeedBonus(){
+    return Math.round((AEROGRAPHENE_SPEED - 1) * 100);
+}
+
+// Plating is described against steel, which is the zero point for both figures: it soaks a full hit
+// and carries no weight penalty. Both numbers are derived rather than written down — the soak from
+// the table combat reads, the speed by running shipSpeed twice on the design currently on the
+// drawing board. That last part matters: neutronium's weight costs a corvette about 5% and a
+// dreadnought about 17%, so any single fixed number would be wrong for most of the fleet.
+function armorDesc(armor){
+    let desc = loc(`outer_shipyard_armor_${armor}_desc`);
+    if (armor === 'steel'){ return `${desc} ${loc(`outer_shipyard_armor_baseline`)}`; }
+
+    let steel = loc(`outer_shipyard_armor_steel`);
+    let notes = [];
+
+    let soak = shipArmorSoak.hasOwnProperty(armor) ? shipArmorSoak[armor] : shipArmorSoak.steel;
+    let cut = Math.round((1 - soak / shipArmorSoak.steel) * 100);
+    if (cut > 0){ notes.push(loc(`outer_shipyard_armor_soak`,[cut,steel])); }
+
+    let bp = global.space.shipyard.blueprint;
+    let plain = shipSpeed(Object.assign({},bp,{ armor: 'steel' }));
+    let clad = shipSpeed(Object.assign({},bp,{ armor: armor }));
+    let delta = Math.round((clad / plain - 1) * 100);
+    if (delta !== 0){
+        notes.push(loc(delta > 0 ? `outer_shipyard_armor_faster` : `outer_shipyard_armor_slower`,[Math.abs(delta),steel]));
+    }
+
+    return notes.length ? `${desc} ${notes.join(' ')}` : desc;
 }
 
 // Share of a hit each hull size takes, smallest to largest. A bigger ship spreads the same round over
@@ -5713,7 +5749,7 @@ export function drawShipYard(){
             class: ['corvette','frigate','destroyer','cruiser','battlecruiser','dreadnought','explorer'],
             power: ['solar','diesel','fission','fusion','elerium','antimatter'],
             weapon: ['railgun','laser','p_laser','plasma','phaser','disruptor'],
-            armor : ['steel','alloy','neutronium'],
+            armor : ['steel','alloy','neutronium','aerographene'],
             engine: ['ion','tie','pulse','photon','vacuum','emdrive','electrokinetic'],
             sensor: ['visual','radar','lidar','quantum'],
         };
@@ -5904,7 +5940,7 @@ export function drawShipYard(){
             for (let i=0; i<$(`#shipPlans .${type}`).length; i++){
                 popover(`shipPlans${type}${i}`, function(obj){
                     let val = $(obj.this).attr(`data-val`);
-                    return loc(`outer_shipyard_${type}_${val}_desc`);
+                    return type === 'armor' ? armorDesc(val) : loc(`outer_shipyard_${type}_${val}_desc`);
                 },
                 {
                     elm: `#shipPlans .${type}.a${i}`,
@@ -6253,6 +6289,7 @@ export function shipSpeed(ship){
             mass = 1;
             break;
     }
+    if (ship.armor === 'aerographene'){ mass /= AEROGRAPHENE_SPEED; }
 
     let boost = 1;
     switch (ship.location){
@@ -6403,6 +6440,9 @@ export function shipCosts(bp){
             break;
         case 'neutronium':
             costs['Neutronium'] = Math.round(10000 ** h_inflate);
+            break;
+        case 'aerographene':
+            costs['Aerographene'] = Math.round(50000 ** h_inflate);
             break;
     }
 

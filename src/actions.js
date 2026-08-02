@@ -2805,6 +2805,7 @@ export const actions = {
                         Mythril: 0,
                         Aerogel: 0,
                         Nanoweave: 0,
+                        Aerographene: 0,
                         Scarletite: 0,
                         Quantium: 0,
                     },

@@ -9,7 +9,7 @@ import { loadFoundry, jobScale, jobName, limitCraftsmen } from './jobs.js';
 import { buildGarrison, checkControlling, govTitle, defineFleetCommand } from './civics.js';
 import { renderSpace, planetName, int_fuel_adjust } from './space.js';
 import { drawHellObservations } from './portal.js';
-import { setOrbits, drawShipYard, jumpGateShutdown, jumpGateRestart } from './truepath.js';
+import { setOrbits, drawShipYard, jumpGateShutdown, jumpGateRestart, aerographeneSpeedBonus } from './truepath.js';
 import { arpa } from './arpa.js';
 import { setPowerGrid, defineIndustry, addSmelter, setupRituals, altReplicatorRes } from './industry.js';
 import { defineGovernor, removeTask } from './governor.js';
@@ -9979,6 +9979,33 @@ const techs = {
             renderPsychicPowers();
         }
     },
+    aerographene: {
+        id: 'tech-aerographene',
+        title(){ return loc('tech_aerographene'); },
+        desc(){ return loc('tech_aerographene'); },
+        category: 'crafting',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { m_ignite: 4, resettle: 2 },
+        grant: ['aerographene',1],
+        cost: {
+            Knowledge(){ return 19120000; },
+            Cipher(){ return 20000; }
+        },
+        effect(){ return loc('tech_aerographene_effect',[global.resource.Graphene.name,global.resource.Nano_Tube.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.resource.Aerographene.display = true;
+                messageQueue(loc('tech_aerographene_avail',[global.resource.Aerographene.name]),'info',false,['progress']);
+                loadFoundry();
+                return true;
+            }
+            return false;
+        },
+        post(){
+            renderPsychicPowers();
+        }
+    },
     mega_manufacturing: {
         id: 'tech-mega_manufacturing',
         title(){ return loc('tech_mega_manufacturing'); },
@@ -12790,6 +12817,27 @@ const techs = {
             return false;
         }
     },
+    aerographene_crates: {
+        id: 'tech-aerographene_crates',
+        title(){ return loc('tech_crates',[global.resource.Aerographene.name]); },
+        desc(){ return loc('tech_crates',[global.resource.Aerographene.name]); },
+        category: 'storage',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { container: 8, aerographene: 1 },
+        grant: ['container',9],
+        cost: {
+            Knowledge(){ return 20250000; },
+            Aerographene(){ return 450000; }
+        },
+        effect(){ return loc('tech_aerographene_crates_effect',[global.resource.Aerographene.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     adamantite_containers_tp: {
         id: 'tech-adamantite_containers_tp',
         title(){ return loc('tech_containers',[global.resource.Adamantite.name]); },
@@ -13178,13 +13226,13 @@ const techs = {
         title(){ return loc('tech_weight_reduction'); },
         desc(){ return loc('tech_weight_reduction'); },
         category: 'space_militarization',
-        era: 'solar',
+        era: 'matrioshka',
         path: ['truepath'],
-        reqs: { syard_class: 6, m_ignite: 4, resettle: 2 },
+        reqs: { syard_class: 6, aerographene: 1 },
         grant: ['syard_mass',1],
         cost: {
             Knowledge(){ return 19120000; },
-            Cipher(){ return 22000; }
+            Aerographene(){ return 625000; }
         },
         effect: loc('tech_weight_reduction_effect'),
         action(){
@@ -13376,6 +13424,27 @@ const techs = {
             Quantium(){ return 10000; }
         },
         effect: loc('tech_quantum_signatures_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    aerographene_armor: {
+        id: 'tech-aerographene_armor',
+        title(){ return loc('tech_aerographene_armor'); },
+        desc(){ return loc('tech_aerographene_armor'); },
+        category: 'space_militarization',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { aerographene: 1, syard_armor: 3 },
+        grant: ['syard_armor',4],
+        cost: {
+            Knowledge(){ return 20750000; },
+            Aerographene(){ return 500000; }
+        },
+        effect(){ return loc('tech_aerographene_armor_effect',[global.resource.Aerographene.name,global.resource.Alloy.name,aerographeneSpeedBonus()]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;

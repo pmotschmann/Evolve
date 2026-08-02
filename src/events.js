@@ -557,7 +557,7 @@ export const events = {
                 'Cement','Coal','Uranium','Aluminium','Steel','Titanium','Alloy','Polymer','Iridium',
                 'Neutronium','Adamantite','Infernite','Elerium','Nano_Tube','Graphene','Stanene',
                 'Bolognium','Vitreloy','Orichalcum','Asphodel_Powder','Elysanite','Unobtainium','Quantium',
-                'Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril','Aerogel','Nanoweave','Scarletite'
+                'Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril','Aerogel','Nanoweave','Aerographene','Scarletite'
             ].forEach(function(r){
                 if (global.resource[r].display){
                     stealList.push(r);

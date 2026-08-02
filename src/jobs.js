@@ -834,7 +834,7 @@ export function loadFoundry(servants){
         element.append(foundry);
 
         let summer = eventActive('summer');
-        let list = ['Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril','Aerogel','Nanoweave'];
+        let list = ['Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril','Aerogel','Nanoweave','Aerographene'];
         if (!servants){
             list.push('Scarletite');
             list.push('Quantium');

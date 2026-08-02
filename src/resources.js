@@ -131,7 +131,8 @@ export const atomic_mass = {
     Aerogel: 7.84,
     Nanoweave: 23.71,
     Scarletite: 188.6,
-    Quantium: 241.35
+    Quantium: 241.35,
+    Aerographene: 4.62
 };
 
 export const supplyValue = {
@@ -185,6 +186,7 @@ export function craftCost(manual=false){
         Nanoweave: [{ r: 'Nano_Tube', a: 1000 },{ r: 'Vitreloy', a: 40 }],
         Scarletite: [{ r: 'Iron', a: 250000 },{ r: 'Adamantite', a: 7500 },{ r: 'Orichalcum', a: 500 }],
         Quantium: [{ r: 'Nano_Tube', a: 1000 },{ r: 'Graphene', a: 1000 },{ r: 'Elerium', a: 25 }],
+        Aerographene: [{ r: 'Graphene', a: 5000 },{ r: 'Nano_Tube', a: 5000 }],
         Thermite: [{ r: 'Iron', a: 180 },{ r: 'Aluminium', a: 60 }],
     };
     if (global.race['wasteful']){
@@ -242,6 +244,10 @@ export const craftingRatio = (function(){
                     multi: []
                 },
                 Nanoweave: {
+                    add: [],
+                    multi: []
+                },
+                Aerographene: {
                     add: [],
                     multi: []
                 },
@@ -752,6 +758,7 @@ export function defineResources(wiki){
     loadResource('Mythril',wiki,-1,0,false,false,'danger');
     loadResource('Aerogel',wiki,-1,0,false,false,'danger');
     loadResource('Nanoweave',wiki,-1,0,false,false,'danger');
+    loadResource('Aerographene',wiki,-1,0,false,false,'danger');
     loadResource('Scarletite',wiki,-1,0,false,false,'danger');
     loadResource('Quantium',wiki,-1,0,false,false,'danger');
     loadResource('Thermite',wiki,-1,0,false,false,'danger');

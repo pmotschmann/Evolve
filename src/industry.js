@@ -1627,7 +1627,7 @@ export function altReplicatorRes(res){
 // Resources the replicator will never offer. Anything with an atomic mass is fair game otherwise, so
 // long as the player has actually unlocked it.
 export function replicatorRes(){
-    let blacklist = ['Asphodel_Powder','Elysanite'];
+    let blacklist = ['Asphodel_Powder','Elysanite','Quantium'];
     if (global.race['fasting']){ blacklist.push('Food'); }
     return Object.keys(atomic_mass).filter(res => global.resource[res].display && !blacklist.includes(res));
 }
@@ -1809,13 +1809,19 @@ function loadReplicator(parent,bind){
     }
 }
 
+const replicator_complexity = {
+    Infernite: 4,
+    Elerium: 4,
+    Aerographene: 12
+};
+
 export function replicator(res,pow){
+    let mass = replicator_complexity[res] ? atomic_mass[res] * replicator_complexity[res] : atomic_mass[res];
     if (global.race['lone_survivor']){
-        return 17.5 * quantum_level / atomic_mass[res] * pow;
+        return 17.5 * quantum_level / mass * pow;
     }
     else {
         let qLevel = quantum_level || 1;
-        let mass = res === 'Infernite' || res === 'Elerium' ? atomic_mass[res] * 4 : atomic_mass[res];
         if (pow > 5000){
             pow = ((pow - 5000) ** 0.9) + 5000;
         }
