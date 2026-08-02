@@ -7048,6 +7048,21 @@ function calcLandingPoint(ship, planet) {
     // A temp point sits still, so there is no orbit to lead — the landing point is the point itself.
     if (tempCoord(planet) || !spacePlanetStats[planet]) { return genXYcoord(planet); }
     if (spacePlanetStats[planet].startype) { return genXYcoord(planet); }
+    // A moon rides with its planet, so the intercept is the planet's with the moon's own offset at
+    // the moment of arrival added on. The crossing arithmetic below measures a body's orbital radius
+    // against the ship's distance from the system centre, which for a moon would pit a 0.01 AU
+    // circle against a crossing several AU wide and never land on anything sensible.
+    if (spacePlanetStats[planet].parent) {
+        let parent = spacePlanetStats[planet].parent;
+        let pt = calcLandingPoint(ship, parent);
+        let speed = shipSpeed(ship) / 225;
+        let days = speed > 0 ? dist3(ship.xy, pt) / speed : 0;
+        let deg = (global.space.position[planet] || 0) + days * (360 / spacePlanetStats[planet].orbit);
+        // orbitPoint places the moon relative to where its planet is now, so subtract that to get
+        // the pure offset before carrying it to where the planet will be.
+        let offset = rel(orbitPoint(planet, deg % 360), genXYcoord(parent));
+        return { x: pt.x + offset.x, y: pt.y + offset.y, z: pt.z + offset.z };
+    }
     // Tau Ceti bodies orbit their star, which sits far from the home-system origin.
     // Mirror genXYcoord so the orbit center and eccentricity match the body's actual
     // rendered position; otherwise a ship already in Tau Ceti has its landing point
@@ -7327,20 +7342,29 @@ export const spacePlanetStats = {
     // `gate` draws it on the solar map as an open ring rather than a world (see drawGate).
     spc_sun_gate: { dist: 0.3, orbit: 53, size: 0.1, belt: true, gate: true, inc: 0 },
     spc_home: { dist: 1, orbit: -1, size: 0.191, hz: true, inc: 0 },
-    spc_moon: { dist: 1.01, orbit: -1, size: 0.1, moon: true, inc: 0 },
+    spc_moon: { dist: 0.00257, orbit: 27.32, size: 0.1, moon: true, parent: 'spc_home', inc: 5.14 },
     spc_red: { dist: 1.524, orbit: 687, size: 0.14, hz: true, inc: 1.85 },
     spc_hell: { dist: 0.4, orbit: 88, size: 0.118, inc: 7 },
     spc_venus: { dist: 0.7, orbit: 225, size: 0.187, inc: 3.4 },
     spc_gas: { dist: 5.203, orbit: 4330, size: 0.634, inc: 1.3 },
-    spc_gas_moon: { dist: 5.204, orbit: 4330, size: 0.123, moon: true, inc: 1.3 },
+    // The Galilean moons, in order out from Jupiter.
+    spc_io: { dist: 0.002819, orbit: 1.769, size: 0.102, moon: true, parent: 'spc_gas', inc: 1.35 },
+    spc_europa: { dist: 0.004486, orbit: 3.551, size: 0.095, moon: true, parent: 'spc_gas', inc: 1.77 },
+    spc_gas_moon: { dist: 0.007155, orbit: 7.155, size: 0.123, moon: true, parent: 'spc_gas', inc: 1.5 },
+    spc_callisto: { dist: 0.012585, orbit: 16.689, size: 0.118, moon: true, parent: 'spc_gas', inc: 1.49 },
     spc_belt: { dist: 2.7, orbit: 1642, size: 0.054, belt: true, inc: 10 },
     spc_dwarf: { dist: 2.77, orbit: 1682, size: 0.052, inc: 10.6 },
     spc_saturn: { dist: 9.539, orbit: 10751, size: 0.579, inc: 2.5, rings: true },
-    spc_titan: { dist: 9.536, orbit: 10751, size: 0.122, moon: true, inc: 2.5 },
-    spc_enceladus: { dist: 9.542, orbit: 10751, size: 0.038, moon: true, inc: 2.5 },
+    // Saturn's moons ride its equatorial plane, which its axial tilt carries some 27 degrees off the reference plane — the same plane the rings sit in.
+    spc_titan: { dist: 0.008168, orbit: 15.945, size: 0.122, moon: true, parent: 'spc_saturn', inc: 27 },
+    spc_enceladus: { dist: 0.001591, orbit: 1.37, size: 0.038, moon: true, parent: 'spc_saturn', inc: 27 },
     spc_uranus: { dist: 19.8, orbit: 30660, size: 0.382, inc: 0.77 },
+    // Uranus's two largest moons. They ride its equatorial plane, and Uranus is tipped on its side 
+    spc_titania: { dist: 0.0029139, orbit: 8.7062, size: 0.067, moon: true, parent: 'spc_uranus', inc: 97.8 },
+    spc_oberon: { dist: 0.0039006, orbit: 13.4632, size: 0.066, moon: true, parent: 'spc_uranus', inc: 97.8 },
     spc_neptune: { dist: 30.08, orbit: 60152, size: 0.376, inc: 1.77 },
-    spc_triton: { dist: 30.1, orbit: 60152, size: 0.088, moon: true, inc: 1.77 },
+    // Triton is retrograde and steeply inclined — the one moon here whose orbit is nothing like its planet's plane.
+    spc_triton: { dist: 0.002371, orbit: 5.877, size: 0.088, moon: true, parent: 'spc_neptune', inc: 130 },
     spc_kuiper: { dist: 39.5, orbit: 90498, size: 0.061, belt: true, inc: 10 },
     spc_eris: { dist: 68, orbit: 204060, size: 0.082, inc: 44 },
     // Tau Ceti system. Planets orbit the tauceti star (star: 'tauceti') rather than the Sun,
@@ -7870,11 +7894,9 @@ export function setOrbits(){
             global.space.position[o] = Math.rand(0,360);
         }
     });
-    global.space.position.spc_home = global.space.position.spc_moon;
-    global.space.position.spc_gas_moon = global.space.position.spc_gas;
-    global.space.position.spc_titan = global.space.position.spc_enceladus;
-    global.space.position.spc_saturn = global.space.position.spc_titan;
-    global.space.position.spc_neptune = global.space.position.spc_triton;
+    // Moons used to be pinned to their planet's orbital angle, which was what kept them alongside it
+    // while both circled the Sun. They now orbit the planet itself (see orbitPoint), so each keeps
+    // its own angle and advances at its own period.
     // Gliese 570 B & C are a binary — keep them on opposite sides of their barycenter (same period,
     // so the 180-degree offset is preserved as they advance).
     if (global.space.position.hasOwnProperty('gliese570b')){
@@ -7900,6 +7922,43 @@ function orbitIncline(id){
     return body.hasOwnProperty('inc') ? body.inc : (texSeed(id) % 600) / 100;
 }
 
+// A moon's real orbit is far smaller than its planet's drawn disc — Luna runs 384,000 km out around
+// an Earth the map draws 2.9 million km across — so at true scale every moon sits buried inside its
+// primary at every zoom, which is what the old fixed nudges were working around.
+//
+// Bodies are already drawn at symbolic sizes rather than true scale, and moon orbits get the same
+// treatment: one factor per planet, the least that lifts its moons clear of its disc, applied to
+// every moon of that planet. Spacing *within* a system therefore stays exactly real — the Galilean
+// moons keep Callisto 4.46 times as far out as Io — while each system is big enough to see. Applied
+// inside orbitPoint so the drawn position, the orbit ring, click targets and the coordinates ships
+// fly to are all the same number.
+//
+// Clearance is measured against the sum of the two discs, not the planet's alone: a moon drawn large
+// next to its planet still has to get past it. Luna is half Earth's drawn radius, where no other
+// moon here reaches a quarter of its primary's, so counting only the planet left the two touching.
+// Every moon is checked rather than just the innermost, since the one that needs the most room is
+// whichever has the worst size-to-distance ratio, not necessarily the closest in.
+const MOON_ORBIT_CLEARANCE = 1.4;
+const moonSpreadCache = {};
+function moonSpread(parent){
+    if (moonSpreadCache[parent] === undefined){
+        let planet = spacePlanetStats[parent].size / 10;
+        let want = 1;   // a planet with no moons, or moons already clear, is left alone
+        for (let body of Object.values(spacePlanetStats)){
+            if (body.parent !== parent){ continue; }
+            want = Math.max(want, (planet + body.size / 10) * MOON_ORBIT_CLEARANCE / body.dist);
+        }
+        moonSpreadCache[parent] = want;
+    }
+    return moonSpreadCache[parent];
+}
+
+// The radius a body's orbit is drawn at, moon exaggeration included.
+function orbitRadius(id){
+    let body = spacePlanetStats[id];
+    return body.parent ? body.dist * moonSpread(body.parent) : body.dist;
+}
+
 // Where a body sits at a given angle along its orbit, in AU from the Sun. Split out of genXYcoord so
 // the map can trace the exact path a body follows when it draws that body's orbit — the ring and the
 // dot on it are then guaranteed to agree, at any camera angle.
@@ -7908,7 +7967,17 @@ export function orbitPoint(planet, deg){
     let rad = deg * (Math.PI / 180);
     let inc = orbitIncline(planet) * (Math.PI / 180);
     let u, v, origin;
-    if (body.star){
+    if (body.parent){
+        // A moon: a circle centred on wherever its planet is right now, travelled at its own
+        // distance and its own period, rather than a second heliocentric orbit running a hair
+        // outside its planet's. No eccentricity or x-shift — the major moons are near enough
+        // circular, and borrowing the planet's would stretch the moon off its primary.
+        origin = genXYcoord(body.parent);
+        let r = body.dist * moonSpread(body.parent);
+        u = Math.cos(rad) * r;
+        v = Math.sin(rad) * r;
+    }
+    else if (body.star){
         // Bodies with a `star` (the Tau Ceti system) ride a clean circular orbit centered on that
         // star — no eccentricity or per-orbit x-shift — so the system reads as concentric rings.
         origin = genXYcoord(body.star);
@@ -8888,11 +8957,14 @@ var mapHoverAt = { x: 0, y: 0 };
 // the same answer as projecting absolute coordinates, without feeding hundreds of thousands of AU
 // through the canvas transform and losing precision.
 var mapYaw = 0, mapPitch = 0;
-// Whether orbit rings are drawn. A display preference rather than viewport state, so unlike the pan,
-// zoom and rotation it survives closing and reopening the map.
-var mapOrbits = true;
+// Whether orbit rings are drawn, kept separately for the two kinds. A moon's ring is a tight circle
+// sitting right on top of its planet, so it is the one most worth being able to clear away on its
+// own once you are zoomed into a system. Display preferences rather than viewport state, so unlike
+// the pan, zoom and rotation they survive closing and reopening the map.
+var mapPlanetOrbits = true;
+var mapMoonOrbits = true;
 // Whether ship markers are drawn — yours and the horde's alike, since either can bury the thing you are
-// trying to look at. Kept the same way mapOrbits is.
+// trying to look at. Kept the same way the orbit toggles are.
 var mapShips = true;
 // The world point at the centre of the viewport (see recenterOn/refocus in buildSolarMap). Also what
 // distant-star culling measures from.
@@ -8934,6 +9006,9 @@ function starCulled(pos){
 function starNamesHidden(){
     return mapScale < systemLabelAbsMinScale;
 }
+// A moon's name is set beside it rather than above it, where its planet is not, and by a fixed
+// number of screen pixels so the gap holds at any zoom.
+const MOON_LABEL_GAP_PX = 6;
 // The hover name is drawn in screen space instead, so it is this readable at any zoom.
 const HOVER_LABEL_PX = 16;
 // Clearance above the cursor. The name goes above rather than below because the arrow hangs down and to
@@ -9043,6 +9118,72 @@ function strokeOrbit(ctx, id, origin){
     ctx.stroke();
 }
 
+// Bisection steps used to pin down where an orbit passes its primary's depth. Unlike a planet's
+// rings, whose depth around the ring is a plain sinusoid that can be solved outright, an orbit is
+// not a clean circle — xPosition stretches it and xShift moves its centre off the star — so the
+// crossing is found numerically. Twelve halvings take an interval of under four degrees to well
+// under a thousandth of one, which is far finer than a pixel at any zoom and is what stops a seam
+// opening where the two halves meet.
+const ORBIT_CROSS_STEPS = 12;
+
+// One side of an orbit: the arc that passes in front of the body it circles, or the arc behind it.
+// Drawing a ring in two halves either side of its primary is what lets it cross over that body
+// instead of always vanishing behind it, the same way a planet's rings are laid down.
+//
+// `primary` is the position of the body being orbited and `origin` the frame to plot in; they differ
+// for a moon, whose ring is centred on its planet but drawn in the Sun's frame.
+function strokeOrbitSide(ctx, id, origin, primary, near){
+    let step = 360 / ORBIT_STEPS;
+    // Sampled once and reused. orbitPoint on a moon resolves its planet's position too, so this is
+    // the costly part of tracing a ring and it should not be repeated per lookup.
+    let pts = [], on = [];
+    for (let i = 0; i <= ORBIT_STEPS; i++){
+        let p = orbitPoint(id, i * step);
+        pts.push(p);
+        on.push((pD(rel(p, primary)) < 0) === near);
+    }
+    let crossing = (a, b, sideA) => {
+        for (let i = 0; i < ORBIT_CROSS_STEPS; i++){
+            let m = (a + b) / 2;
+            if (((pD(rel(orbitPoint(id, m), primary)) < 0) === near) === sideA){ a = m; } else { b = m; }
+        }
+        return orbitPoint(id, (a + b) / 2);
+    };
+    let plot = (p, move) => {
+        let q = rel(p, origin);
+        if (move){ ctx.moveTo(pX(q), pY(q)); } else { ctx.lineTo(pX(q), pY(q)); }
+    };
+    let drawing = false;
+    ctx.beginPath();
+    for (let i = 0; i <= ORBIT_STEPS; i++){
+        if (on[i]){
+            if (!drawing){
+                plot(i > 0 ? crossing((i - 1) * step, i * step, on[i - 1]) : pts[i], true);
+                drawing = true;
+                if (i > 0){ plot(pts[i], false); }
+            }
+            else { plot(pts[i], false); }
+        }
+        else if (drawing){
+            plot(crossing((i - 1) * step, i * step, on[i - 1]), false);
+            drawing = false;
+        }
+    }
+    ctx.stroke();
+}
+
+// One side of every orbit sharing a primary, in the map's orbit style.
+function strokeOrbitGroup(ctx, ids, origin, primary, near){
+    ctx.strokeStyle = "#c0c0c0";
+    ctx.lineWidth = 1 / mapScale;
+    for (let id of ids){
+        let planet = spacePlanetStats[id];
+        ctx.setLineDash(planet.belt || (global.race['orbit_decayed'] && id === 'spc_home') ? [0.01, 0.01] : []);
+        strokeOrbitSide(ctx, id, origin, primary, near);
+    }
+    ctx.setLineDash([]);
+}
+
 // --- Solar map body textures --------------------------------------------------------------------
 // Bodies keep the flat fill the map has always used — setColor() encodes syndicate strength,
 // habitable zone, gate/dwarf highlights and spectral type, and none of that should move — and get a
@@ -9119,11 +9260,16 @@ const SOL_BODY_COLOR = {
     spc_red:       'b1512c',   // Mars, rust
     spc_belt:      '766d64',   // asteroid rubble
     spc_gas:       'c8a172',   // Jupiter, tan
+    spc_io:        'd9c15c',   // Io, sulphur yellow
+    spc_europa:    'd8cbb4',   // Europa, cracked ice
     spc_gas_moon:  'b0a189',   // Ganymede, dusty ice
+    spc_callisto:  '6f6257',   // Callisto, dark cratered rock
     spc_saturn:    'd7c391',   // Saturn, pale gold
     spc_titan:     'c8791f',   // Titan, orange haze
     spc_enceladus: 'e6f1f5',   // Enceladus, clean ice
     spc_uranus:    'a5d9de',   // Uranus, pale cyan
+    spc_titania:   '8d8177',   // Titania, grey-brown ice
+    spc_oberon:    '7d6f66',   // Oberon, darker and redder, the most cratered of the pair
     spc_neptune:   '3a5ec4',   // Neptune, deep blue
     spc_triton:    'd6c4c0',   // Triton, pink-grey ice
     spc_kuiper:    '6a6a76',   // Kuiper rubble
@@ -9134,8 +9280,10 @@ const SOL_BODY_COLOR = {
 const SOL_BODY_STYLE = {
     spc_home: 'earth',      spc_moon: 'cratered',   spc_hell: 'cratered',
     spc_venus: 'venus',     spc_red: 'mars',        spc_gas: 'jupiter',
+    spc_io: 'venus',        spc_europa: 'ice',      spc_callisto: 'cratered',
     spc_gas_moon: 'cratered', spc_saturn: 'saturn', spc_titan: 'haze',
     spc_enceladus: 'ice',   spc_uranus: 'icegiant', spc_neptune: 'neptune',
+    spc_titania: 'cratered', spc_oberon: 'cratered',
     spc_triton: 'ice',      spc_dwarf: 'cratered',  spc_eris: 'ice',
 };
 
@@ -9540,12 +9688,8 @@ function drawGate(ctx, x, y, r, color, seed){
 // How far the ring plane leans out of the plane the body orbits in. This is a fixed property of the
 // world, not of the camera — it is what keeps the rings pinned to the planet while the view turns.
 //
-// The value is chosen for how it reads rather than from Saturn's real 26.7 degrees. The map opens
-// looking straight down on the orbital plane, so a ring lying near that plane would open out to a
-// flat circle from the default view and read as a halo. Leaning it to 70 degrees squashes it to
-// cos(70) = 0.34 of its width there, which is the familiar profile, and it still swings through
-// every angle correctly as the camera moves.
-const RING_TILT = 70 * Math.PI / 180;
+// The value is chosen for Saturn's real 26.7 degrees.
+const RING_TILT = 26.7 * Math.PI / 180;
 // Points per half ring. The ring is a real circle in space rather than a screen-space ellipse, so it
 // has to be sampled and projected the way orbits are; two halves of this give ORBIT_STEPS' smoothness.
 const RING_HALF_STEPS = 48;
@@ -9695,25 +9839,23 @@ export function drawMap() {
         planetLocation[id] = genXYcoord(id);
     }
 
-    // Draw orbits
-    ctx.lineWidth = 1 / mapScale;
-    ctx.strokeStyle = "#c0c0c0";
+    // Orbits, gathered by the body each one circles rather than drawn here. Half of every ring
+    // passes in front of its primary and half behind, so each is split and laid down either side of
+    // that body in the pass below — a planet's orbit around the Sun, a moon's around its planet.
+    let orbitsBy = {};
     for (let [id, planet] of Object.entries(spacePlanetStats)) {
-        if (homeCulled || !mapOrbits){ break; }
+        if (homeCulled){ break; }
         if (planet.star){ continue; }   // Tau Ceti orbits are drawn separately in a star-local frame
-        if (planet.dist * mapScale < ORBIT_MIN_PX){ continue; }
+        if (planet.startype){ continue; }
+        if (planet.parent ? !mapMoonOrbits : !mapPlanetOrbits){ continue; }
+        // Uses the parent-relative distance for a moon, so its ring only appears once you are zoomed
+        // in far enough for it to be more than a few pixels across.
+        if (orbitRadius(id) * mapScale < ORBIT_MIN_PX){ continue; }
         if (actions.space[id] && actions.space[id].info.showDest && !actions.space[id].info.showDest().r){ continue; }
-        if (!planet.moon && !planet.startype) {
-            if (planet.belt || (global.race['orbit_decayed'] && id === 'spc_home')){
-                ctx.setLineDash([0.01, 0.01]);
-            }
-            else {
-                ctx.setLineDash([]);
-            }
-            strokeOrbit(ctx, id, ORIGIN);
-        }
+        let primary = planet.parent || 'spc_sun';
+        if (!orbitsBy[primary]){ orbitsBy[primary] = []; }
+        orbitsBy[primary].push(id);
     }
-    ctx.setLineDash([]);
 
     // Ships under way, collapsed into what actually gets drawn. A fleet flies as one unit on identical
     // trip data (see sendShipTo), so every member would otherwise stack a dot, a trail and a name on the
@@ -9756,7 +9898,10 @@ export function drawMap() {
         }
     }
 
-    // Ship trail
+    // Ship trail. The width is set here rather than inherited: the canvas is scaled by mapScale, so
+    // the default of one unit is a bar mapScale pixels across, and this pass used to be relying on
+    // whatever the orbits happened to leave behind.
+    ctx.lineWidth = 1 / mapScale;
     for (let { ship, foe } of shipMarks) {
         ctx.fillStyle = foe ? "#ff0000" : "#0000ff";
         ctx.strokeStyle = foe ? "#ff0000" : "#0000ff";
@@ -9861,17 +10006,13 @@ export function drawMap() {
             let bx = pX(p), by = pY(p);
             let size = planet.size / 10 * homeScale;
             if (planet.moon) {
-                switch (id){
-                    case 'spc_moon':
-                        bx += 0.05; by += 0.05;
-                        break;
-                    case 'spc_titan':
-                        bx -= 0.2; by -= 0.2;
-                        break;
-                    default:
-                        bx += 0.2; by += 0.2;
-                        break;
-                }
+                // Moons used to be shoved a fixed distance off their planet so the two did not sit on
+                // the same dot. Their own orbit does that job now, so the nudge is gone — it was
+                // tens of millions of kilometres of it, which is what made the spacing wrong.
+                // Measure separation from the planet rather than from the Sun, or a moon out at
+                // Jupiter would be floored to a pixel while still buried in its primary.
+                let q = rel(p, planetLocation[planet.parent]);
+                size = visibleRadius(size, Math.hypot(pX(q), pY(q)) * mapScale);
             }
             else if (planet.startype) {
                 // The Sun keeps a minimum on-screen radius so it stays visible when zoomed out.
@@ -9884,7 +10025,10 @@ export function drawMap() {
         }
         bodies.sort((a,b) => b.d - a.d);   // furthest first, so nearer bodies paint over them
         for (let b of bodies){
+            let orbits = orbitsBy[b.id];
+            if (orbits){ strokeOrbitGroup(ctx, orbits, ORIGIN, planetLocation[b.id], false); }
             drawBody(ctx, b.bx, b.by, b.size, setColor(b.id), { star: !!b.planet.startype, gate: !!b.planet.gate, kind: bodyKind(b.planet, b.id), seed: texSeed(b.id), rings: hasRings(b.planet, b.id), ringTilt: ringTilt(b.planet, b.id) });
+            if (orbits){ strokeOrbitGroup(ctx, orbits, ORIGIN, planetLocation[b.id], true); }
             addPickable(b.id, b.bx, b.by, b.size);
         }
     }
@@ -9998,17 +10142,10 @@ export function drawMap() {
                 let nameText = typeof nameRef === "function" ? nameRef() : nameRef;
                 let lx = pX(planetLocation[id]), ly = pY(planetLocation[id]);
                 if (planet.moon) {
-                    switch (id){
-                        case 'spc_moon':
-                            ctx.fillText(nameText, (lx + 0.1) * mapScale, (ly + 0.1) * mapScale);
-                            break;
-                        case 'spc_titan':
-                            ctx.fillText(nameText, (lx - 0.3) * mapScale, (ly - 0.3) * mapScale);
-                            break;
-                        default:
-                            ctx.fillText(nameText, (lx + 0.25) * mapScale, (ly + 0.2) * mapScale);
-                            break;
-                    }
+                    // Sit clear of the moon by a screen-constant gap rather than the old fixed map
+                    // offset, which drifted further from the body the further you zoomed in and, at
+                    // the zoom where a moon separates from its planet, put the name off-screen.
+                    ctx.fillText(nameText, lx * mapScale + MOON_LABEL_GAP_PX, ly * mapScale);
                 } else {
                     ctx.fillText(nameText, lx * mapScale, (ly - (0.2 * planet.size)) * mapScale);
                 }
@@ -10050,17 +10187,25 @@ export function drawMap() {
 
         // Orbits of bodies around this star. Traced through orbitPoint in the star's own frame, so
         // the eccentricity, off-centre focus and inclination all come from the one place that
-        // positions the bodies themselves.
-        ctx.lineWidth = 1 / mapScale;
-        ctx.strokeStyle = "#c0c0c0";
+        // positions the bodies themselves. Collected rather than drawn here so each can be split
+        // around the star below; a barycenter (hidden) has no disc to split against, so its
+        // companions' orbits are simply drawn whole.
+        let starOrbits = [];
         for (let [id, planet] of Object.entries(spacePlanetStats)) {
-            if (!mapOrbits){ break; }
+            if (!mapPlanetOrbits){ break; }   // everything out here circles its star, none are moons
             if (planet.star !== starId || (planet.unlock && !global.tech[planet.unlock])){ continue; }
             if (planet.dist * mapScale < ORBIT_MIN_PX){ continue; }
-            ctx.setLineDash(planet.belt ? [0.01, 0.01] : []);
-            strokeOrbit(ctx, id, sc);
+            starOrbits.push(id);
         }
-        ctx.setLineDash([]);
+        if (star.hidden){
+            ctx.lineWidth = 1 / mapScale;
+            ctx.strokeStyle = "#c0c0c0";
+            for (let id of starOrbits){
+                ctx.setLineDash(spacePlanetStats[id].belt ? [0.01, 0.01] : []);
+                strokeOrbit(ctx, id, sc);
+            }
+            ctx.setLineDash([]);
+        }
 
         // The star and everything orbiting it, drawn back to front. The star goes in the same sorted
         // list rather than being painted first: it sits at the centre of these orbits, so half of
@@ -10090,7 +10235,11 @@ export function drawMap() {
         members.sort((a,b) => pD(b.q) - pD(a.q));   // furthest first
         for (let m of members){
             let px = pX(m.q), py = pY(m.q);
+            // Every one of these orbits is centred on the star, so they split around it: the far
+            // arcs go down just before it is drawn and the near arcs just after.
+            if (m.isStar && starOrbits.length){ strokeOrbitGroup(ctx, starOrbits, sc, sc, false); }
             drawBody(ctx, px, py, m.pr, setColor(m.id), { star: m.isStar || !!m.planet.bodystar, kind: bodyKind(m.planet, m.id), seed: texSeed(m.id), rings: hasRings(m.planet, m.id), ringTilt: ringTilt(m.planet, m.id) });
+            if (m.isStar && starOrbits.length){ strokeOrbitGroup(ctx, starOrbits, sc, sc, true); }
             // Drawn in the star's own translated frame, so shift back to map coordinates to record it.
             addPickable(m.id, pX(sc) + px, pY(sc) + py, m.pr);
             // Tau Ceti's jump gate rides alongside the home planet like a moon.
@@ -10462,24 +10611,26 @@ function buildSolarMap(parentNode) {
             .appendTo(currentNode);
     }
 
-    // Orbit rings on or off. The label states what the click will do, so it flips with the setting.
-    $(`<input type="button" value="${loc(mapOrbits ? 'solar_map_hide_orbits' : 'solar_map_show_orbits')}" style="position: absolute; height: 30px; top: 98px; left: 2px;">`)
-        .on("click", function(){
-            mapOrbits = !mapOrbits;
-            $(this).val(loc(mapOrbits ? 'solar_map_hide_orbits' : 'solar_map_show_orbits'));
-            drawMap();
-        })
-        .appendTo(currentNode);
-
-    // Ship markers on or off, the same way. A busy campaign puts enough dots, trails and names over the
-    // inner system to hide the worlds underneath them.
-    $(`<input type="button" value="${loc(mapShips ? 'solar_map_hide_ships' : 'solar_map_show_ships')}" style="position: absolute; height: 30px; top: 130px; left: 2px;">`)
-        .on("click", function(){
-            mapShips = !mapShips;
-            $(this).val(loc(mapShips ? 'solar_map_hide_ships' : 'solar_map_show_ships'));
-            drawMap();
-        })
-        .appendTo(currentNode);
+    // What-is-drawn toggles, in a row along the bottom edge rather than stacked with the navigation
+    // buttons at the top: they are settings for the view rather than ways of moving around it, and a
+    // flex row sizes itself to whatever the labels translate to instead of needing fixed offsets.
+    // Each label states what the click will do, so it flips with the setting.
+    let mapToggles = $(`<div class="mapToggles" style="position: absolute; bottom: 2px; left: 2px; display: flex; flex-wrap: wrap; gap: 4px;"></div>`);
+    let toggle = function(get, set, onKey, offKey){
+        $(`<input type="button" value="${loc(get() ? onKey : offKey)}" style="height: 30px;">`)
+            .on("click", function(){
+                set(!get());
+                $(this).val(loc(get() ? onKey : offKey));
+                drawMap();
+            })
+            .appendTo(mapToggles);
+    };
+    toggle(() => mapPlanetOrbits, v => { mapPlanetOrbits = v; }, 'solar_map_hide_planet_orbits', 'solar_map_show_planet_orbits');
+    toggle(() => mapMoonOrbits, v => { mapMoonOrbits = v; }, 'solar_map_hide_moon_orbits', 'solar_map_show_moon_orbits');
+    // A busy campaign puts enough dots, trails and names over the inner system to hide the worlds
+    // underneath them.
+    toggle(() => mapShips, v => { mapShips = v; }, 'solar_map_hide_ships', 'solar_map_show_ships');
+    mapToggles.appendTo(currentNode);
 
     // Level the camera without disturbing where the player has panned and zoomed to.
     $(`<input type="button" value="${loc('solar_map_reset_view')}" style="position: absolute; height: 30px; top: 66px; left: 2px;">`)
