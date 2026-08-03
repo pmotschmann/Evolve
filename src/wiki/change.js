@@ -11,6 +11,7 @@ export const changeList = [
             `Upgraded Vue 2 to Vue 3.`,
             `Added new "Offline Time" feature, replaces "Accelerated Time"`,
             `Added option to Save or Load game from Google Drive.`,
+            `TruePath StarMap now supports WebGL rendering (default when supported).`,
         ]
     },
     {

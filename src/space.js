@@ -7703,34 +7703,34 @@ export const universe_affixes = ['l', 'h', 'a', 'e', 'm', 'mg'];
 
 export const universe_types = {
     standard: {
-        name: loc('universe_standard'),
+        name(){ return loc('universe_standard'); },
         desc(){ return loc('universe_standard_desc'); },
-        effect: loc('universe_standard_effect')
+        effect(){ return loc('universe_standard_effect'); }
     },
     heavy: {
-        name: loc('universe_heavy'),
+        name(){ return loc('universe_heavy'); },
         desc(){ return loc('universe_heavy_desc'); },
-        effect: loc('universe_heavy_effect',[5])
+        effect(){ return loc('universe_heavy_effect',[5]); }
     },
     antimatter: {
-        name: loc('universe_antimatter'),
+        name(){ return loc('universe_antimatter'); },
         desc(){ return loc('universe_antimatter_desc'); },
-        effect: loc('universe_antimatter_effect')
+        effect(){ return loc('universe_antimatter_effect'); }
     },
     evil: {
-        name: loc('universe_evil'),
+        name(){ return loc('universe_evil'); },
         desc(){ return loc('universe_evil_desc'); },
-        effect: loc('universe_evil_effect')
+        effect(){ return loc('universe_evil_effect'); }
     },
     micro: {
-        name: loc('universe_micro'),
+        name(){ return loc('universe_micro'); },
         desc(){ return loc('universe_micro_desc'); },
-        effect: loc('universe_micro_effect',[75])
+        effect(){ return loc('universe_micro_effect',[75]); }
     },
     magic: {
-        name: loc('universe_magic'),
+        name(){ return loc('universe_magic'); },
         desc(){ return loc('universe_magic_desc'); },
-        effect: loc('universe_magic_effect')
+        effect(){ return loc('universe_magic_effect'); }
     }
 };
 
@@ -7783,7 +7783,7 @@ export function setUniverse(){
         let id = `uni-${universe}`;
 
         let parent = $(`<div id="${id}" class="action"></div>`);
-        let element = $(`<a class="button is-dark" v-on:click="action" role="link"><span class="aTitle">${universe_types[universe].name}</span></a>`);
+        let element = $(`<a class="button is-dark" v-on:click="action" role="link"><span class="aTitle">${universe_types[universe].name()}</span></a>`);
         parent.append(element);
 
         $('#evolution').append(parent);
@@ -7800,16 +7800,16 @@ export function setUniverse(){
 
         srDescButton.on('click',function(){
             let desc = '';
-            desc = desc + universe_types[universe].name + ' universe: ';
-            desc = desc + universe_types[universe].desc + '. ';
-            desc = desc + universe_types[universe].effect + '.';
+            desc = desc + universe_types[universe].name() + ' universe: ';
+            desc = desc + universe_types[universe].desc() + '. ';
+            desc = desc + universe_types[universe].effect() + '.';
             srSpeak(desc);
         });
 
         popover(id,function(obj){
-            obj.popper.append($(`<div>${universe_types[universe].name}</div>`));
-            obj.popper.append($(`<div>${universe_types[universe].desc}</div>`));
-            obj.popper.append($(`<div>${universe_types[universe].effect}</div>`));
+            obj.popper.append($(`<div>${universe_types[universe].name()}</div>`));
+            obj.popper.append($(`<div>${universe_types[universe].desc()}</div>`));
+            obj.popper.append($(`<div>${universe_types[universe].effect()}</div>`));
             return undefined;
         },{
             classes: `has-background-light has-text-dark`

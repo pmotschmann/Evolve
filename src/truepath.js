@@ -14,6 +14,7 @@ import { matrix, retirement, gardenOfEden } from './resets.js';
 import { traitCostMod } from './races.js';
 import { loadTab } from './index.js';
 import { zombieGenociderTask, unlockFeat } from './achieve.js';
+import { createGLContext, webglSupported } from './glmap.js';
 import { loc } from './locale.js';
 
 const outerTruth = {
@@ -4254,7 +4255,7 @@ const tauCetiModules = {
                 }
                 return effectText;
             },
-            aura(){ return global.tech['m_ignite'] && global.tech.m_ignite >= 2 ? 'fire' : false; },
+            aura(){ return global.tech['m_ignite'] && global.tech.m_ignite >= 2 ? 'ignite' : false; },
             action(){
                 if (payCosts($(this)[0])){
                     if (global.tauceti.matrioshka_brain.count < 1000){
@@ -9985,11 +9986,43 @@ function addPickable(id, bx, by, size){
     });
 }
 
+// The map's drawing context, whichever backend is in use. Cached per canvas element: a canvas can
+// only ever hand out one kind of context, so switching renderers replaces the element (see
+// rebuildSolarMap) and this picks the new one up.
+//
+// Everything below this line is renderer-agnostic. drawMap and every helper it calls issue the same
+// Canvas 2D calls either way — the WebGL backend implements that API rather than reimplementing the
+// map — so there is one drawing routine to maintain, not two, and neither renderer can drift from
+// the other.
+var mapCtx = false;
+var mapCtxFor = false;
+var mapCtxGL = false;
+function mapRenderer(){
+    return webglSupported() && mapView().webgl ? 'webgl' : 'canvas';
+}
+function mapContext(canvas){
+    let want = mapRenderer();
+    if (mapCtxFor === canvas && mapCtx && mapCtxGL === (want === 'webgl')){ return mapCtx; }
+    // Closing the map and opening it again arrives here with a new canvas. Hand the old context
+    // back at that point rather than leaving it to be collected — see GLContext.destroy.
+    if (mapCtx && mapCtx.destroy && mapCtxFor !== canvas){ mapCtx.destroy(); }
+    mapCtx = want === 'webgl' ? createGLContext(canvas, drawMap) : false;
+    // A browser that reports WebGL but refuses the real context falls back rather than failing.
+    mapCtxGL = !!mapCtx;
+    if (!mapCtx){ mapCtx = canvas.getContext("2d"); }
+    mapCtxFor = canvas;
+    return mapCtx;
+}
+
 export function drawMap() {
     let canvas = document.getElementById("mapCanvas");
-    let ctx = canvas.getContext("2d");
+    if (!canvas){ return; }
+    let ctx = mapContext(canvas);
     canvas.width = canvas.getBoundingClientRect().width;
     canvas.height = canvas.getBoundingClientRect().height;
+    // Sizing the canvas resets the 2D context's state for free; WebGL needs the viewport and the
+    // frame's batch set up explicitly. No-op on the 2D path.
+    if (ctx.beginFrame){ ctx.beginFrame(); }
 
     ctx.save();
     ctx.fillStyle = "#000000";
@@ -10495,6 +10528,8 @@ export function drawMap() {
     }
 
     ctx.restore();
+    // Hand the frame's batched geometry to the GPU. No-op on the 2D path, which has already drawn.
+    if (ctx.endFrame){ ctx.endFrame(); }
 }
 
 // Left to itself the map only repaints on the long loop, which is far too slow for the beacon pulse
@@ -10519,8 +10554,30 @@ function beaconAnimate(){
     }, Math.round(1000 / BEACON_FPS));
 }
 
-function buildSolarMap(parentNode) {
-    let currentNode = $(`<div style="margin-top: 10px; margin-bottom: 10px;"></div>`).appendTo(parentNode);
+// Where the map was built, so switching renderers can rebuild it in place. A canvas element is
+// bound to the first kind of context it hands out for as long as it exists, so the only way to move
+// between 2D and WebGL is to replace the element — and the surrounding controls come with it.
+var mapHost = false;
+
+// Rebuild the map with the other renderer, holding the view exactly where the player left it. Only
+// the backend changes; what gets drawn, and the code that draws it, are the same either way.
+function rebuildSolarMap(){
+    if (!mapHost || !mapHost.length){ return; }
+    let keep = {
+        scale: mapScale, shift: { x: mapShift.x, y: mapShift.y },
+        yaw: mapYaw, pitch: mapPitch, focus: mapFocus, lock: starLockOn
+    };
+    if (mapCtx && mapCtx.destroy){ mapCtx.destroy(); }
+    mapCtx = false;
+    mapCtxFor = false;
+    buildSolarMap(mapHost, keep);
+}
+
+function buildSolarMap(parentNode, keep) {
+    // A rebuild replaces the previous map wholesale rather than stacking a second one under it.
+    parentNode.find('.solarMapHost').remove();
+    let currentNode = $(`<div class="solarMapHost" style="margin-top: 10px; margin-bottom: 10px;"></div>`).appendTo(parentNode);
+    mapHost = parentNode;
     let canvasOffset = {};
     let dragOffset = {};
     let spin = {};
@@ -10823,6 +10880,22 @@ function buildSolarMap(parentNode) {
     });
     mapToggles.appendTo(currentNode);
 
+    // Which backend paints the map, opposite the view toggles. Both draw the same scene from the
+    // same code, so this is a performance choice rather than a visual one: WebGL batches the frame
+    // onto the GPU, which tells on a busy star field, while the 2D renderer needs nothing of the
+    // hardware. Offered only where WebGL actually works — with no second option there is nothing to
+    // switch to, and a button that reported a mode the player could not leave would just mislead.
+    if (webglSupported()){
+        $(`<input type="button" value="${loc(mapRenderer() === 'webgl' ? 'solar_map_renderer_webgl' : 'solar_map_renderer_canvas')}" style="position: absolute; bottom: 2px; right: 2px; height: 30px;">`)
+            .on("click", function(){
+                mapView().webgl = !mapView().webgl;
+                // The canvas has to be replaced to change context type, so the whole map is rebuilt
+                // around the player's current view rather than merely repainted.
+                rebuildSolarMap();
+            })
+            .appendTo(currentNode);
+    }
+
     // Level the camera without disturbing where the player has panned and zoomed to.
     $(`<input type="button" value="${loc('solar_map_reset_view')}" style="position: absolute; height: 30px; top: 66px; left: 2px;">`)
         .on("click", () => {
@@ -10841,9 +10914,24 @@ function buildSolarMap(parentNode) {
     // Tau Ceti, but from resettle 9 the work is back in the home system, so it swings back to the Sun.
     // Locked on as well as centred, so the first zoom pulls in on that star instead of drifting off
     // toward wherever the pointer happened to be resting.
-    let openOn = global.tech['resettle'] && global.tech.resettle < 9 ? 'tauceti' : 'spc_sun';
-    recenterOn(genXYcoord(openOn));
-    starLockOn = openOn;
+    if (keep){
+        // A renderer switch is not a fresh open: the camera, including the rotation an ordinary open
+        // deliberately levels, is put back exactly as it was so the two can be compared frame for
+        // frame.
+        mapScale = keep.scale;
+        mapShift.x = keep.shift.x;
+        mapShift.y = keep.shift.y;
+        mapYaw = keep.yaw;
+        mapPitch = keep.pitch;
+        mapFocus = keep.focus;
+        starLockOn = keep.lock;
+        camUpdate();
+    }
+    else {
+        let openOn = global.tech['resettle'] && global.tech.resettle < 9 ? 'tauceti' : 'spc_sun';
+        recenterOn(genXYcoord(openOn));
+        starLockOn = openOn;
+    }
 
     drawMap();
     beaconAnimate();

@@ -1368,7 +1368,7 @@ if (global['tauceti'] && global.tauceti['refueling_station'] && !global.tauceti.
 
 global['version'] = '1.5.0';
 delete global['revision'];
-global['beta'] = 18;
+global['beta'] = 19;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
@@ -1654,7 +1654,11 @@ if (!global.settings.hasOwnProperty('resBar')){
 if (!global.settings.hasOwnProperty('mapView')){
     global.settings['mapView'] = {};
 }
-['planetOrbits','moonOrbits','ships','planetNames'].forEach(function(k){
+// `webgl` picks the backend that paints it: on by default, since both renderers draw the same scene
+// from the same code and the hardware-accelerated one is the better default wherever it is
+// available. It is ignored on a browser without WebGL, which falls back to the 2D canvas without
+// disturbing the setting — so a save that moves to a machine that can manage it gets it back.
+['planetOrbits','moonOrbits','ships','planetNames','webgl'].forEach(function(k){
     if (!global.settings.mapView.hasOwnProperty(k)){
         global.settings.mapView[k] = true;
     }

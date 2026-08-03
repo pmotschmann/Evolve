@@ -617,7 +617,7 @@ vBind({
             return races[species].home;
         },
         universe(universe){
-            return universe === 'standard' || universe === 'bigbang' ? '' : universe_types[universe].name;
+            return universe === 'standard' || universe === 'bigbang' ? '' : universe_types[universe].name();
         },
         remain(at){
             let minutes = Math.ceil(at * loopTimers().longTimer / 60000);
@@ -748,8 +748,8 @@ popover('topBarPlanet',
 
 popover('topBarUniverse',
     function(obj){
-        obj.popper.append($(`<div>${universe_types[global.race.universe].desc}</div>`));
-        obj.popper.append($(`<div>${universe_types[global.race.universe].effect}</div>`));
+        obj.popper.append($(`<div>${universe_types[global.race.universe].desc()}</div>`));
+        obj.popper.append($(`<div>${universe_types[global.race.universe].effect()}</div>`));
         return undefined;
     },
     {

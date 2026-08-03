@@ -45,7 +45,7 @@ export function universePage(content){
     let heavy_int = +((1.2 + (0.3 * darkEffect('heavy',false,true)) - 1) * 100).toFixed(3) + '%';
     infoBoxBuilder(mainContent,{ name: 'heavy', template: 'universe', paragraphs: 9, break: [5,8], h_level: 2,
         para_data: {
-            1: [universe_types.heavy.desc],
+            1: [universe_types.heavy.desc()],
             2: [loc('resource_Oil_name'),loc('resource_Helium_3_name'),loc('resource_Deuterium_name')],
             3: [loc('tab_space'),'75%'],
             4: [loc('tab_interstellar'),loc('tab_galactic'),'50%'],
