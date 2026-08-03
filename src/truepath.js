@@ -13,7 +13,7 @@ import { arpa } from './arpa.js';
 import { matrix, retirement, gardenOfEden } from './resets.js';
 import { traitCostMod } from './races.js';
 import { loadTab } from './index.js';
-import { zombieGenociderTask } from './achieve.js';
+import { zombieGenociderTask, unlockFeat } from './achieve.js';
 import { loc } from './locale.js';
 
 const outerTruth = {
@@ -5102,18 +5102,88 @@ export function zWarfareVars(){
 // Advance every hull under way. One that arrives has to get past whatever is guarding the place first;
 // survive that and the ship is gone, because it was only ever a delivery, and what it delivers is a
 // horde on the ground.
+// --- Ship motion ---------------------------------------------------------------------------------
+// A ship's `transit` is a whole number of days left to fly, and it has to stay whole: everything else
+// tests it against zero or against the day a gate is passed, and the fleet list counts an arrival
+// down in days. So the part of a day already flown is kept beside it in `tf`, and only decides where
+// the hull is drawn. Advancing by a fifth of a day five times therefore leaves a ship in exactly the
+// place one whole-day step would have, while letting the map move it between game days instead of
+// jumping a day's flight at a time.
+//
+// Whichever loop drives this must be the only one that does — it is what moves a ship, not merely
+// where it is drawn. Everything the loops do on the day boundary either side of it (arrivals, gate
+// crossings, landings) still reads the same integer `transit` it always did.
+
+// Where a ship sits along its route: 0 at the origin, 1 at the destination.
+function shipFlown(ship){
+    if (!(ship.dist > 0)){ return 1; }
+    return 1 - (Math.max(ship.transit - (ship.tf || 0), 0) / ship.dist);
+}
+
+// Put a ship at a given fraction of its journey.
+function placeShip(ship, flown){
+    if (ship.path){
+        // Multi-leg wormhole route: place the ship by elapsed-time fraction along the path so the
+        // near-instant inter-gate leg is crossed in its allotted time.
+        let path = ship.path;
+        let seg = path.length - 2;
+        for (let i=0; i<path.length-1; i++){
+            if (flown <= path[i+1].tn){ seg = i; break; }
+        }
+        let a = path[seg], b = path[seg+1];
+        let span = b.tn - a.tn;
+        let sf = span > 0 ? (flown - a.tn) / span : 1;
+        ship.xy.x = a.x + (b.x - a.x) * sf;
+        ship.xy.y = a.y + (b.y - a.y) * sf;
+        ship.xy.z = (a.z || 0) + ((b.z || 0) - (a.z || 0)) * sf;
+    }
+    else {
+        // Straight interpolation on each axis. `|| 0` covers ships that were already under way in a
+        // save written before the map had a z.
+        let o = ship.origin, d = ship.destination;
+        ship.xy.x = o.x + (d.x - o.x) * flown;
+        ship.xy.y = o.y + (d.y - o.y) * flown;
+        ship.xy.z = (o.z || 0) + ((d.z || 0) - (o.z || 0)) * flown;
+    }
+}
+
+// Whole days come off `transit` as the fractions accumulate. The epsilon guards the comparison: the
+// current fifth-of-a-day step happens to sum to exactly 1 in binary floating point, but that is luck
+// rather than a property of the arithmetic — change either loop ratio and a sum landing a fraction
+// short would strand every ship a day from its destination for ever.
+const SHIP_DAY_EPSILON = 1e-9;
+function advanceShip(ship, step){
+    ship.tf = (ship.tf || 0) + step;
+    while (ship.tf >= 1 - SHIP_DAY_EPSILON && ship.transit > 0){
+        ship.tf -= 1;
+        if (ship.tf < 0){ ship.tf = 0; }
+        ship.transit--;
+    }
+    if (ship.transit <= 0){ ship.tf = 0; }
+    placeShip(ship, shipFlown(ship));
+}
+
+// Move every hull under way — yours and the horde's — by `step` days. Pass 1 from longLoop, or
+// midRatio / longRatio from midLoop for the same speed in five smaller steps.
+export function moveShips(step){
+    if (global.space['shipyard'] && global.space.shipyard['ships']){
+        for (let ship of global.space.shipyard.ships){
+            // An unfuelled ship stays where it is, as it always has.
+            if (ship.transit > 0 && ship.fueled){ advanceShip(ship, step); }
+        }
+    }
+    if (global.race['zfleet'] && global.race.zfleet['s']){
+        for (let ship of global.race.zfleet.s){
+            if (ship.transit > 0){ advanceShip(ship, step); }
+        }
+    }
+}
+
 function zFleetMove(fleet){
     let landings = {};
     for (let i=fleet.s.length-1; i>=0; i--){
         let ship = fleet.s[i];
         if (ship.transit > 0){
-            ship.transit--;
-            let trip = ship.dist > 0 ? 1 - (ship.transit / ship.dist) : 1;
-            let o = ship.origin, d = ship.destination;
-            ship.xy.x = o.x + (d.x - o.x) * trip;
-            ship.xy.y = o.y + (d.y - o.y) * trip;
-            ship.xy.z = (o.z || 0) + ((d.z || 0) - (o.z || 0)) * trip;
-
             // Nearest approach to a gate it has to run: whoever is holding that gate fires today.
             // Ordered entry first, and a raider stopped at the entry never reaches the exit.
             while (Array.isArray(ship.gates) && ship.gates.length > 0 && ship.transit <= ship.gates[0].t){
@@ -5245,6 +5315,7 @@ function zFleetDispatch(fleet,ship,target,ramp,trip){
     // journey, so the arrival check reads the same field either way.
     ship.location = target;
     ship.transit = Math.max(trip.transit,1);
+    ship.tf = 0;   // a fresh journey starts at the top of a day
     ship.dist = ship.transit;
     ship.origin = deepClone(trip.origin);
     ship.destination = deepClone(trip.destination);
@@ -7884,10 +7955,86 @@ export const spacePlanetStats = {
     gliese65b_p1: { dist: 0.32, orbit: 121, size: 0.191, star: 'gliese65' }
 };
 
+// --- The cow -------------------------------------------------------------------------------------
+// Somewhere out in the star field, one run in one, there is a gas giant that is a cow. It is picked
+// fresh each TruePath game and never announced: the only way to it is to go looking, and the feat is
+// for whoever does.
+const COW_ID = 'cow_planet';
+const COW_GLYPHS = ['\u{1F404}', '\u{1F402}'];
+// Jupiter's size in this table, so it reads as a gas giant next to whatever else the system has.
+const COW_SIZE = 0.634;
+const AU_PER_LY = 63241.077;
+// Kept well clear of the two systems the campaign actually visits, so it cannot be stumbled over
+// while doing something else.
+const COW_MIN_SOL = 10 * AU_PER_LY;
+const COW_MIN_TAU = 5 * AU_PER_LY;
+// Orbit: outside whatever the star already has, and never closer in than a gas giant belongs.
+const COW_ORBIT_CLEAR = 1.8;
+const COW_ORBIT_MIN = 2.5;
+// Period per AU^1.5 for a system with nothing else in it to copy. The M dwarfs in the table run
+// about this, which is a star of roughly half a solar mass.
+const COW_PERIOD_K = 521;
+
+// Which M-type stars are far enough out to hide a cow behind.
+function cowCandidates(){
+    let sol = { x: 0, y: 0, z: 0 };
+    let tau = spacePlanetStats.tauceti;
+    return Object.keys(spacePlanetStats).filter(function(id){
+        let s = spacePlanetStats[id];
+        if (s.startype !== 'M' || s.hidden){ return false; }
+        let at = { x: s.x, y: s.y, z: s.z || 0 };
+        return dist3(at, sol) > COW_MIN_SOL && dist3(at, tau) > COW_MIN_TAU;
+    });
+}
+
+// Where the cow sits around its star, and how long it takes to get round. Both are read off whatever
+// else orbits that star so the newcomer is in scale with its neighbours: outside the outermost of
+// them, and on the same period-to-distance relation, which is what keeps it from looking bolted on.
+function cowOrbit(star){
+    let outer = 0, k = 0;
+    for (let body of Object.values(spacePlanetStats)){
+        if (body.star !== star || body.startype || body.bodystar || !body.dist){ continue; }
+        outer = Math.max(outer, body.dist);
+        if (body.orbit > 0){ k = body.orbit / Math.pow(body.dist, 1.5); }
+    }
+    let dist = +Math.max(outer * COW_ORBIT_CLEAR, COW_ORBIT_MIN).toFixed(2);
+    return { d: dist, o: Math.round((k || COW_PERIOD_K) * Math.pow(dist, 1.5)) };
+}
+
+// Makes sure the table matches whatever this run rolled, and returns the cow's id (or false when
+// there is no cow — a run that is not TruePath). Called from setOrbits, so the entry is in place
+// before anything asks the map to draw or a ship to fly.
+export function cowPlanet(){
+    if (!global.race['truepath']){
+        delete spacePlanetStats[COW_ID];
+        delete global.race['cow'];
+        return false;
+    }
+    if (!global.race['cow']){
+        let stars = cowCandidates();
+        if (stars.length === 0){ return false; }
+        let star = stars[Math.floor(Math.random() * stars.length)];
+        let orbit = cowOrbit(star);
+        global.race['cow'] = { s: star, e: COW_GLYPHS[Math.floor(Math.random() * COW_GLYPHS.length)], d: orbit.d, o: orbit.o };
+    }
+    let cow = global.race.cow;
+    if (!spacePlanetStats[COW_ID] || spacePlanetStats[COW_ID].star !== cow.s){
+        spacePlanetStats[COW_ID] = { dist: cow.d, orbit: cow.o, size: COW_SIZE, star: cow.s };
+    }
+    return COW_ID;
+}
+
+// The glyph to draw a body with, or false for anything that is not the cow.
+function cowGlyph(id){
+    return id === COW_ID && global.race['cow'] ? global.race.cow.e : false;
+}
+
 export function setOrbits(){
     if (!global.space['position']){
         global.space['position'] = {};
     }
+    // Before positions are handed out, so the cow gets an orbital angle like everything else.
+    cowPlanet();
     Object.keys(spacePlanetStats).forEach(function(o){
         // Stars have fixed coordinates, so they never need an orbital position.
         if (!spacePlanetStats[o].startype && !global.space.position.hasOwnProperty(o)){
@@ -8957,15 +9104,19 @@ var mapHoverAt = { x: 0, y: 0 };
 // the same answer as projecting absolute coordinates, without feeding hundreds of thousands of AU
 // through the canvas transform and losing precision.
 var mapYaw = 0, mapPitch = 0;
-// Whether orbit rings are drawn, kept separately for the two kinds. A moon's ring is a tight circle
-// sitting right on top of its planet, so it is the one most worth being able to clear away on its
-// own once you are zoomed into a system. Display preferences rather than viewport state, so unlike
-// the pan, zoom and rotation they survive closing and reopening the map.
-var mapPlanetOrbits = true;
-var mapMoonOrbits = true;
-// Whether ship markers are drawn — yours and the horde's alike, since either can bury the thing you are
-// trying to look at. Kept the same way the orbit toggles are.
-var mapShips = true;
+// What the map draws, as opposed to where it is looking. These live in global.settings (see mapView
+// in vars.js) so they are saved with everything else the player has set, rather than lasting only as
+// long as the page is open — unlike the pan, zoom and rotation, which are deliberately reset each
+// time the map opens.
+//
+// Orbit rings are split into the two kinds because a moon's ring is a tight circle sitting right on
+// top of its planet, and is the one most worth clearing away on its own once you are zoomed into a
+// system. Ships covers yours and the horde's alike, since either can bury the thing you are trying
+// to look at. Names covers planets and moons only — star names are deliberately excluded, because
+// zoomed out they are the only thing telling one dot from another.
+function mapView(){
+    return global.settings.mapView;
+}
 // The world point at the centre of the viewport (see recenterOn/refocus in buildSolarMap). Also what
 // distant-star culling measures from.
 var mapFocus = { x: 0, y: 0, z: 0 };
@@ -9756,6 +9907,7 @@ function drawRings(ctx, x, y, r, color, near, tilt){
 function hasRings(planet, id){
     if (planet.rings){ return true; }
     if (!id || !planet.star || planet.startype || planet.bodystar){ return false; }
+    if (cowGlyph(id)){ return false; }   // a cow is drawn as a glyph; there is nothing to hang rings on
     return bodyKind(planet, id) === 'gas' && texSeed(id + 'ring') % 4 === 0;
 }
 
@@ -9766,8 +9918,26 @@ function ringTilt(planet, id){
     return (55 + (texSeed(id + 'tilt') % 1000) / 1000 * 30) * Math.PI / 180;
 }
 
+// A body drawn as a glyph rather than a lit sphere. Text is laid out in pixels, so the map's scale
+// is undone and the glyph placed in screen space, sized from the projected radius — which leaves it
+// tracking zoom exactly as a drawn disc of the same size would.
+function drawGlyph(ctx, x, y, r, glyph){
+    ctx.save();
+    ctx.shadowColor = 'transparent';
+    ctx.scale(1 / mapScale, 1 / mapScale);
+    ctx.font = `${r * mapScale * 2}px serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(glyph, x * mapScale, y * mapScale);
+    ctx.restore();
+}
+
 function drawBody(ctx, x, y, r, color, opts){
     opts = opts || {};
+    if (opts.glyph){
+        drawGlyph(ctx, x, y, r, opts.glyph);
+        return;
+    }
     if (opts.gate){
         drawGate(ctx, x, y, r, color, opts.seed);
         return;
@@ -9847,7 +10017,7 @@ export function drawMap() {
         if (homeCulled){ break; }
         if (planet.star){ continue; }   // Tau Ceti orbits are drawn separately in a star-local frame
         if (planet.startype){ continue; }
-        if (planet.parent ? !mapMoonOrbits : !mapPlanetOrbits){ continue; }
+        if (planet.parent ? !mapView().moonOrbits : !mapView().planetOrbits){ continue; }
         // Uses the parent-relative distance for a moon, so its ring only appears once you are zoomed
         // in far enough for it to be more than a few pixels across.
         if (orbitRadius(id) * mapScale < ORBIT_MIN_PX){ continue; }
@@ -9864,7 +10034,7 @@ export function drawMap() {
     // Left empty when ships are hidden: the trail, dot and name passes all iterate it, so one test here
     // takes every ship marker off the map at once.
     let shipMarks = [];
-    if (mapShips) {
+    if (mapView().ships) {
         let fleets = {};
         for (let ship of global.space.shipyard.ships) {
             if (ship.transit <= 0){ continue; }
@@ -10024,11 +10194,20 @@ export function drawMap() {
             bodies.push({ id, planet, bx, by, size, d: pD(p) });
         }
         bodies.sort((a,b) => b.d - a.d);   // furthest first, so nearer bodies paint over them
+
+        // Every far half goes down before any body does. A body on the far side of its orbit is
+        // further out than its primary and so is drawn before it — laying that half down just ahead
+        // of the primary would put the ring line over the very world riding on it. Ahead of the whole
+        // pass, a body always paints over its own ring.
+        for (let primary of Object.keys(orbitsBy)){
+            strokeOrbitGroup(ctx, orbitsBy[primary], ORIGIN, planetLocation[primary], false);
+        }
         for (let b of bodies){
-            let orbits = orbitsBy[b.id];
-            if (orbits){ strokeOrbitGroup(ctx, orbits, ORIGIN, planetLocation[b.id], false); }
-            drawBody(ctx, b.bx, b.by, b.size, setColor(b.id), { star: !!b.planet.startype, gate: !!b.planet.gate, kind: bodyKind(b.planet, b.id), seed: texSeed(b.id), rings: hasRings(b.planet, b.id), ringTilt: ringTilt(b.planet, b.id) });
-            if (orbits){ strokeOrbitGroup(ctx, orbits, ORIGIN, planetLocation[b.id], true); }
+            drawBody(ctx, b.bx, b.by, b.size, setColor(b.id), { star: !!b.planet.startype, gate: !!b.planet.gate, kind: bodyKind(b.planet, b.id), seed: texSeed(b.id), rings: hasRings(b.planet, b.id), ringTilt: ringTilt(b.planet, b.id), glyph: cowGlyph(b.id) });
+            // The near half belongs in front of the primary, and still behind anything nearer than
+            // it — which is exactly where drawing it here puts it, since the bodies left to come are
+            // the nearer ones.
+            if (orbitsBy[b.id]){ strokeOrbitGroup(ctx, orbitsBy[b.id], ORIGIN, planetLocation[b.id], true); }
             addPickable(b.id, b.bx, b.by, b.size);
         }
     }
@@ -10132,6 +10311,7 @@ export function drawMap() {
             ctx.scale(1 / systemLabelMinScale, 1 / systemLabelMinScale);
         for (let [id, planet] of Object.entries(spacePlanetStats)) {
             if (homeCulled){ break; }
+            if (!mapView().planetNames){ break; }
             if (planet.star || planet.startype){ continue; }   // all star labels handled separately (below)
             if (mapScale < planetLabelMinScale){ continue; }   // zoomed out: planet names give way to star labels
             if (actions.space[id] && (actions.space[id].info.showDest ? actions.space[id].info.showDest().l : global.settings.space[id.substring(4)]) ){
@@ -10192,7 +10372,7 @@ export function drawMap() {
         // companions' orbits are simply drawn whole.
         let starOrbits = [];
         for (let [id, planet] of Object.entries(spacePlanetStats)) {
-            if (!mapPlanetOrbits){ break; }   // everything out here circles its star, none are moons
+            if (!mapView().planetOrbits){ break; }   // everything out here circles its star, none are moons
             if (planet.star !== starId || (planet.unlock && !global.tech[planet.unlock])){ continue; }
             if (planet.dist * mapScale < ORBIT_MIN_PX){ continue; }
             starOrbits.push(id);
@@ -10233,12 +10413,14 @@ export function drawMap() {
                 pr: Math.max(star.size / 10 * scale, 1 / mapScale) });
         }
         members.sort((a,b) => pD(b.q) - pD(a.q));   // furthest first
+        // Every one of these orbits is centred on the star, so they split around it. The far arcs go
+        // down before any body is drawn — a planet on the far side of its orbit comes before the star
+        // in the sorted order, and laying its ring just ahead of the star would paint the line over
+        // it. The near arcs follow the star, in the loop below.
+        if (starOrbits.length){ strokeOrbitGroup(ctx, starOrbits, sc, sc, false); }
         for (let m of members){
             let px = pX(m.q), py = pY(m.q);
-            // Every one of these orbits is centred on the star, so they split around it: the far
-            // arcs go down just before it is drawn and the near arcs just after.
-            if (m.isStar && starOrbits.length){ strokeOrbitGroup(ctx, starOrbits, sc, sc, false); }
-            drawBody(ctx, px, py, m.pr, setColor(m.id), { star: m.isStar || !!m.planet.bodystar, kind: bodyKind(m.planet, m.id), seed: texSeed(m.id), rings: hasRings(m.planet, m.id), ringTilt: ringTilt(m.planet, m.id) });
+            drawBody(ctx, px, py, m.pr, setColor(m.id), { star: m.isStar || !!m.planet.bodystar, kind: bodyKind(m.planet, m.id), seed: texSeed(m.id), rings: hasRings(m.planet, m.id), ringTilt: ringTilt(m.planet, m.id), glyph: cowGlyph(m.id) });
             if (m.isStar && starOrbits.length){ strokeOrbitGroup(ctx, starOrbits, sc, sc, true); }
             // Drawn in the star's own translated frame, so shift back to map coordinates to record it.
             addPickable(m.id, pX(sc) + px, pY(sc) + py, m.pr);
@@ -10276,6 +10458,7 @@ export function drawMap() {
                 ctx.fillText(bt, pX(q) * mapScale, pY(q) * mapScale - (Math.max(planet.size / 10 * mapScale, 1) + 2));
             }
             for (let [id, planet] of Object.entries(spacePlanetStats)) {
+                if (!mapView().planetNames){ break; }
                 if (planet.star !== starId || (planet.unlock && !global.tech[planet.unlock])){ continue; }
                 if (mapScale < planetLabelMinScale){ continue; }
                 if (!actions.tauceti[id] || !actions.tauceti[id].info){ continue; }
@@ -10476,6 +10659,10 @@ function buildSolarMap(parentNode) {
                     drawMap();
                     // Lock on so zooming pulls in on it rather than following the cursor away.
                     starLockOn = hit;
+                    // Finding the cow is the whole of it — there is nothing else to do out there.
+                    if (cowGlyph(hit)){
+                        unlockFeat('secret_cow', global.race.universe === 'micro' ? true : false);
+                    }
                 }
             }
             drag = false;
@@ -10616,20 +10803,24 @@ function buildSolarMap(parentNode) {
     // flex row sizes itself to whatever the labels translate to instead of needing fixed offsets.
     // Each label states what the click will do, so it flips with the setting.
     let mapToggles = $(`<div class="mapToggles" style="position: absolute; bottom: 2px; left: 2px; display: flex; flex-wrap: wrap; gap: 4px;"></div>`);
-    let toggle = function(get, set, onKey, offKey){
-        $(`<input type="button" value="${loc(get() ? onKey : offKey)}" style="height: 30px;">`)
+    // Each button reads and writes its own key in global.settings.mapView, so the row is rebuilt from
+    // the saved setting every time the map opens and the click is what persists the change.
+    [
+        ['planetOrbits', 'solar_map_hide_planet_orbits', 'solar_map_show_planet_orbits'],
+        ['moonOrbits', 'solar_map_hide_moon_orbits', 'solar_map_show_moon_orbits'],
+        // A busy campaign puts enough dots, trails and names over the inner system to hide the worlds
+        // underneath them.
+        ['ships', 'solar_map_hide_ships', 'solar_map_show_ships'],
+        ['planetNames', 'solar_map_hide_planet_names', 'solar_map_show_planet_names'],
+    ].forEach(function([key, onKey, offKey]){
+        $(`<input type="button" value="${loc(mapView()[key] ? onKey : offKey)}" style="height: 30px;">`)
             .on("click", function(){
-                set(!get());
-                $(this).val(loc(get() ? onKey : offKey));
+                mapView()[key] = !mapView()[key];
+                $(this).val(loc(mapView()[key] ? onKey : offKey));
                 drawMap();
             })
             .appendTo(mapToggles);
-    };
-    toggle(() => mapPlanetOrbits, v => { mapPlanetOrbits = v; }, 'solar_map_hide_planet_orbits', 'solar_map_show_planet_orbits');
-    toggle(() => mapMoonOrbits, v => { mapMoonOrbits = v; }, 'solar_map_hide_moon_orbits', 'solar_map_show_moon_orbits');
-    // A busy campaign puts enough dots, trails and names over the inner system to hide the worlds
-    // underneath them.
-    toggle(() => mapShips, v => { mapShips = v; }, 'solar_map_hide_ships', 'solar_map_show_ships');
+    });
     mapToggles.appendTo(currentNode);
 
     // Level the camera without disturbing where the player has panned and zoomed to.
@@ -10899,6 +11090,7 @@ function orderShipTo(ship,l){
     if (!shipManned(ship)){ global.civic.garrison.crew += shipCrewSize(ship); }
     ship.location = l;
     ship.transit = trip.transit;
+    ship.tf = 0;   // a fresh journey starts at the top of a day
     ship.dist = trip.dist;
     ship.origin = deepClone(trip.origin);
     ship.destination = deepClone(trip.destination);
@@ -10990,6 +11182,7 @@ function sendShipTo(id, l){
         if (s['ret']){ delete s.ret; }
         s.location = l;
         s.transit = trip.transit;
+        s.tf = 0;   // a fresh journey starts at the top of a day
         s.dist = trip.dist;
         s.origin = deepClone(trip.origin);
         s.destination = deepClone(trip.destination);

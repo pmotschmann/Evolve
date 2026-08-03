@@ -299,7 +299,13 @@ export const feats = {
         name: loc("feat_fool_name"),
         desc: loc("feat_fool_desc"),
         flair: loc("feat_fool_flair")
-    }
+    },
+    secret_cow: {
+        name: loc("feat_secret_cow_name"),
+        desc: loc("feat_secret_cow_desc"),
+        flair: loc("feat_secret_cow_flair"),
+        secret: true
+    },
 }
 
 {

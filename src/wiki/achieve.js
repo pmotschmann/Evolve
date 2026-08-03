@@ -144,6 +144,10 @@ export function featPage(){
     content.append(list);
 
     Object.keys(feats).forEach(function (feat){
+        // A secret feat is left off entirely until it has been earned. Listing it greyed out would
+        // give away both that it exists and what it is called, which is the whole of the secret.
+        if (feats[feat].secret && !global.stats.feat[feat]){ return; }
+
         let achieve = $(`<div class="achievement"></div>`);
         list.append(achieve);
 

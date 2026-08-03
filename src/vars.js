@@ -1649,6 +1649,16 @@ if (!global.settings.hasOwnProperty('mtorder')){
 if (!global.settings.hasOwnProperty('resBar')){
     global.settings['resBar'] = {};
 }
+// What the solar map draws. Kept here rather than in the map module so the choices survive a reload
+// along with everything else the player has set, instead of only until the page is closed.
+if (!global.settings.hasOwnProperty('mapView')){
+    global.settings['mapView'] = {};
+}
+['planetOrbits','moonOrbits','ships','planetNames'].forEach(function(k){
+    if (!global.settings.mapView.hasOwnProperty(k)){
+        global.settings.mapView[k] = true;
+    }
+});
 
 export function setupStats(){
     // Stat Counters

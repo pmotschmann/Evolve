@@ -4,7 +4,7 @@ import { clearElement } from './../functions.js';
 export const changeList = [
     {
         version: `1.5.0`,
-        date: `7/??/2026`,
+        date: `8/??/2026`,
         changes: [
             `Extended Truepath content`,
             `New Mobile UI`,
