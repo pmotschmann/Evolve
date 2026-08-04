@@ -7116,24 +7116,71 @@ function tauEnableSoldiers(){
     }
 }
 
-function calcLandingPoint(ship, planet) {
+// How far along its orbit a body has moved after `days`, in degrees. Matches the rate the position
+// update in main.js advances at: it runs on the mid loop, five of which make a game day, so its
+// 72/orbit per tick is 360/orbit per day — one full circuit in exactly `orbit` days.
+function orbitDegrees(id, days){
+    let orbit = spacePlanetStats[id].orbit === -1 ? orbitLength() : spacePlanetStats[id].orbit;
+    let now = global.space.position[id] || 0;
+    if (!(orbit > 0)){ return now; }
+    return (now + days * (360 / orbit)) % 360;
+}
+
+// Where a body will actually be `days` from now — a plain projection along the orbits it already
+// travels, for use where the arrival time is known rather than being solved for.
+//
+// A moon gets both of its motions: its planet carried around the star, and itself carried around the
+// planet. The planet's is much the larger of the two — a moon out at Saturn is swept far further by
+// its primary than it ever travels on its own — but its own circuit is quick enough to put it on the
+// far side of its planet during a long approach, so neither can be dropped.
+function bodyPointAt(loc, days){
+    // Temporary coordinates are fixed points in space, and stars do not orbit anything.
+    if (tempCoord(loc) || !spacePlanetStats[loc]){ return genXYcoord(loc); }
+    let body = spacePlanetStats[loc];
+    if (body.startype){ return genXYcoord(loc); }
+    if (body.parent){
+        let planetPt = orbitPoint(body.parent, orbitDegrees(body.parent, days));
+        // orbitPoint anchors a moon's circle to wherever its planet is *now*, so take the bare
+        // offset and carry it to where the planet will have got to.
+        let offset = rel(orbitPoint(loc, orbitDegrees(loc, days)), genXYcoord(body.parent));
+        return { x: planetPt.x + offset.x, y: planetPt.y + offset.y, z: planetPt.z + offset.z };
+    }
+    return orbitPoint(loc, orbitDegrees(loc, days));
+}
+
+// Passes used to settle a moon intercept, and how close in days counts as settled. Each pass re-aims
+// at where the moon will be given the current flight-time estimate; two or three close it at any
+// speed the game produces, and the cap stops a pathologically slow ship spinning here.
+const MOON_INTERCEPT_STEPS = 8;
+const MOON_INTERCEPT_TOL = 1e-4;
+
+// Where to aim a ship so it meets `planet` rather than where it used to be. `elapsed` is time the
+// ship has already committed to before this leg starts — the run to a wormhole and the jump through
+// it — which the target keeps moving during.
+function calcLandingPoint(ship, planet, elapsed) {
+    elapsed = elapsed || 0;
     // A temp point sits still, so there is no orbit to lead — the landing point is the point itself.
     if (tempCoord(planet) || !spacePlanetStats[planet]) { return genXYcoord(planet); }
     if (spacePlanetStats[planet].startype) { return genXYcoord(planet); }
-    // A moon rides with its planet, so the intercept is the planet's with the moon's own offset at
-    // the moment of arrival added on. The crossing arithmetic below measures a body's orbital radius
-    // against the ship's distance from the system centre, which for a moon would pit a 0.01 AU
-    // circle against a crossing several AU wide and never land on anything sensible.
+    // A moon is solved for directly rather than through the crossing arithmetic below, which
+    // measures a body's orbital radius against the ship's distance from the system centre — for a
+    // moon that would pit a 0.01 AU circle against a crossing several AU wide and never land on
+    // anything sensible.
+    //
+    // Where the moon is depends on when the ship arrives, and when the ship arrives depends on where
+    // the moon is, so the two are settled together: start from the flight time to where it stands
+    // now, then re-aim until the answer stops moving.
     if (spacePlanetStats[planet].parent) {
-        let parent = spacePlanetStats[planet].parent;
-        let pt = calcLandingPoint(ship, parent);
-        let speed = shipSpeed(ship) / 225;
-        let days = speed > 0 ? dist3(ship.xy, pt) / speed : 0;
-        let deg = (global.space.position[planet] || 0) + days * (360 / spacePlanetStats[planet].orbit);
-        // orbitPoint places the moon relative to where its planet is now, so subtract that to get
-        // the pure offset before carrying it to where the planet will be.
-        let offset = rel(orbitPoint(planet, deg % 360), genXYcoord(parent));
-        return { x: pt.x + offset.x, y: pt.y + offset.y, z: pt.z + offset.z };
+        let ship_speed = shipSpeed(ship) / 225;
+        if (!(ship_speed > 0)){ return genXYcoord(planet); }
+        let t = dist3(ship.xy, genXYcoord(planet)) / ship_speed;
+        for (let i = 0; i < MOON_INTERCEPT_STEPS; i++){
+            let next = dist3(ship.xy, bodyPointAt(planet, elapsed + t)) / ship_speed;
+            let settled = Math.abs(next - t) < MOON_INTERCEPT_TOL;
+            t = next;
+            if (settled){ break; }
+        }
+        return bodyPointAt(planet, elapsed + t);
     }
     // Tau Ceti bodies orbit their star, which sits far from the home-system origin.
     // Mirror genXYcoord so the orbit center and eccentricity match the body's actual
@@ -7175,7 +7222,9 @@ function calcLandingPoint(ship, planet) {
       ? orbitLength()
       : spacePlanetStats[planet].orbit;
     let planet_speed = 360 / planet_orbit;
-    let planet_degree = (global.space.position[planet] + (cross1_days * planet_speed)) % 360;
+    // `i` counts flight days from where the ship is now, but the planet has also been moving through
+    // whatever the ship spent getting here, so the angle is wound by elapsed as well.
+    let planet_degree = (global.space.position[planet] + ((elapsed + cross1_days) * planet_speed)) % 360;
     for (let i = cross1_days; i <= cross2_days; i++) {
         // orbitPoint rather than open-coded trig, so the landing point is on the same 3D orbit the
         // body travels and the map draws.
@@ -8145,7 +8194,9 @@ export function orbitPoint(planet, deg){
         origin = genXYcoord(body.parent);
         let r = body.dist * moonSpread(body.parent);
         u = Math.cos(rad) * r;
-        v = Math.sin(rad) * r;
+        // Flipping the sine sends the moon round the other way as its angle advances: same circle,
+        // same period, travelled backwards. See orbitDirection.
+        v = Math.sin(rad) * r * orbitDirection(planet);
     }
     else if (body.star){
         // Bodies with a `star` (the Tau Ceti system) ride a clean circular orbit centered on that
@@ -8346,15 +8397,24 @@ function planShipTrip(ship, l){
         let days = Math.round(transferWindow(ship.xy, dest) / speed);
         return { transit: days, dist: days, origin: deepClone(ship.xy), destination: { x: dest.x, y: dest.y, z: dest.z }, path: false };
     }
-    // Leg 1: current position -> entry gate (normal speed).
+    // Every leg after the first starts later than now, and both gates orbit — the sun gate every 60
+    // days, Tau Ceti's home every 129 — as does whatever is being flown to. So each leg is aimed at
+    // where its target will be once the legs before it are done, not at where it sits today.
+    //
+    // Leg 1: current position -> entry gate (normal speed). Nothing precedes it, so no offset.
     let entryPt = calcLandingPoint(ship, route.entry.location);
     let d1 = transferWindow(ship.xy, entryPt) / speed;
-    // Leg 2: entry gate -> exit gate through the wormhole (accelerated).
-    let exitPt = genXYcoord(route.exit.location);
+    // Leg 2: entry gate -> exit gate through the wormhole (accelerated). The ship comes out where
+    // that gate has moved to by then. d2 is measured from the gate's d1 position first and the
+    // projection refined with it — at 125000x speed the jump is a rounding error, so where it is
+    // measured from cannot shift the answer.
+    let exitPt = bodyPointAt(route.exit.location, d1);
     let d2 = transferWindow(entryPt, exitPt) / (speed * wormholeSpeedMult);
-    // Leg 3: exit gate -> final destination (normal speed). Compute the landing point in the exit
-    // gate's frame by treating the gate as the ship's position (final xy is snapped on arrival).
-    let destPt = calcLandingPoint(Object.assign({}, ship, { xy: exitPt }), l);
+    exitPt = bodyPointAt(route.exit.location, d1 + d2);
+    // Leg 3: exit gate -> final destination (normal speed). Computed in the exit gate's frame by
+    // treating the gate as the ship's position, and told how long the ship has already been under
+    // way, so the destination is led by the whole journey rather than by this leg alone.
+    let destPt = calcLandingPoint(Object.assign({}, ship, { xy: exitPt }), l, d1 + d2);
     let d3 = transferWindow(exitPt, destPt) / speed;
     let total = d1 + d2 + d3;
     let days = Math.max(1, Math.round(total));
@@ -9083,26 +9143,28 @@ export function calcAIDrift(wiki){
 }
 
 // --- Orbital shape ------------------------------------------------------------------------------
-// Heliocentric orbits are real ellipses with the Sun at a focus, built from each body's own
-// eccentricity (the `ecc` field). What stood here before stretched every orbit along x by
-// 1.075 + dist/100 and pushed its centre out by dist/3, which made the elongation a function of
-// distance rather than of the body: Neptune, the most circular planet in the system at e = 0.0086,
-// came out drawn more elongated than anything but Eris, and the two numbers disagreed with each
-// other besides — the axis ratio implied one eccentricity and the offset another, so the Sun did
-// not sit at a focus of the curve being drawn.
+// Heliocentric orbits are real ellipses with the Sun at a focus, built from each body's own eccentricity (the `ecc` field). 
 
-// How elliptical the home planet's orbit is under the `elliptical` planet trait. The trait is a
-// property of the world the run starts on rather than of Earth, so it replaces the real value
-// instead of adding to it; this is roughly Mercury's eccentricity, which is plainly elliptical
-// without being a comet.
+// How elliptical the home planet's orbit is under the `elliptical` planet trait.
 const ELLIPTICAL_TRAIT_ECC = 0.2;
+
+// Whether the world this run started on carries a given planet trait. Guarded because the wiki
+// imports this module and renders map pieces without a city to read the traits off.
+function homeTrait(trait){
+    return global.city && global.city.ptrait ? global.city.ptrait.includes(trait) : false;
+}
 
 function orbitEcc(id){
     let body = spacePlanetStats[id];
     // Stars are placed by fixed coordinates, not by an orbit.
     if (!body || body.orbit === -2){ return 0; }
-    if (id === 'spc_home' && global.city.ptrait.includes('elliptical')){ return ELLIPTICAL_TRAIT_ECC; }
+    if (id === 'spc_home' && homeTrait('elliptical')){ return ELLIPTICAL_TRAIT_ECC; }
     return body.hasOwnProperty('ecc') ? body.ecc : 0;
+}
+
+// Which way round a body travels: 1 the usual way, -1 backwards.
+function orbitDirection(id){
+    return id === 'spc_moon' && homeTrait('retrograde') ? -1 : 1;
 }
 
 // Solve Kepler's equation, M = E - e·sin(E), for the eccentric anomaly.
@@ -9559,9 +9621,45 @@ const SOL_BODY_STYLE = {
     spc_pluto: 'ice',       spc_haumea: 'ice',      spc_makemake: 'cratered',
 };
 
+// The homeworld biomes.
+const BIOME_LOOK = {
+    grassland: { color: '7fa650', style: 'bio_grassland' },   // open plains
+    oceanic:   { color: '2f6fb5', style: 'bio_oceanic'   },   // the familiar blue marble
+    forest:    { color: '3d7a3f', style: 'bio_forest'    },   // unbroken canopy
+    desert:    { color: 'd4ae66', style: 'bio_desert'    },   // sand
+    volcanic:  { color: '8c4632', style: 'bio_volcanic'  },   // basalt and vents
+    tundra:    { color: 'b3c4cc', style: 'bio_tundra'    },   // frozen ground
+    savanna:   { color: 'c6a651', style: 'bio_savanna'   },   // dry grass
+    swamp:     { color: '5e6b3c', style: 'bio_swamp'     },   // murky wetland
+    ashland:   { color: '8b8781', style: 'bio_ashland'   },   // grey ash
+    taiga:     { color: '5d7a63', style: 'bio_taiga'     },   // boreal forest
+    hellscape: { color: '7d2b1c', style: 'bio_hellscape' },   // burning crust
+    eden:      { color: '4fae72', style: 'bio_eden'      },   // paradise
+};
+
+// The biome the home world is currently wearing, or false. Guarded because the wiki imports this
+// module and draws map pieces with no city to read a biome off.
+function homeBiome(){
+    let biome = global.city && global.city.biome ? global.city.biome : false;
+    return biome && BIOME_LOOK[biome] ? biome : false;
+}
+
+// A Sol body's colour, with the home world answering for its biome first.
+function solBodyColor(id){
+    if (id === 'spc_home'){
+        let biome = homeBiome();
+        if (biome){ return BIOME_LOOK[biome].color; }
+    }
+    return SOL_BODY_COLOR[id];
+}
+
 // Which surface a body gets. Nothing in the table marks gas giants, but the big non-moon bodies are
 // exactly the gas giants (Jupiter/Saturn/Tau Ceti's gas worlds and the large outer-system planets).
 function bodyKind(planet, id){
+    if (id === 'spc_home'){
+        let biome = homeBiome();
+        if (biome){ return BIOME_LOOK[biome].style; }
+    }
     if (id && SOL_BODY_STYLE[id]){ return SOL_BODY_STYLE[id]; }
     if (planet.belt){ return 'belt'; }
     // Sizes are real radii on a square-root scale, so this is where the gas and ice giants start:
@@ -9571,8 +9669,10 @@ function bodyKind(planet, id){
 }
 
 // Styles that describe one specific world rather than a class of them, so they get a single texture
-// each instead of a pool of random variants.
-const NAMED_STYLES = ['earth','mars','venus','jupiter','saturn','icegiant','neptune','haze','ice','cratered'];
+// each instead of a pool of random variants. Every biome surface is one of these — there is only
+// ever one home world, so there is nothing for a pool of variants to tell apart.
+const NAMED_STYLES = ['earth','mars','venus','jupiter','saturn','icegiant','neptune','haze','ice','cratered']
+    .concat(Object.values(BIOME_LOOK).map(b => b.style));
 
 // Surfaces are drawn from a small pool rather than one per body: a texture is a megabyte-scale
 // canvas, and there are well over a hundred bodies on the map. Each body picks its variant from its
@@ -9694,6 +9794,81 @@ function planetTexture(kind, seed){
             texBlobs(x, rnd, S, 16, 0.09, 0.2, 0.72, 0.34);
             texBlobs(x, rnd, S, 10, 0.05, 0.12, 0.0, 0.13);
             texPoles(x, S, 0.2, 0.5);
+            break;
+
+        // --- home world biomes (see BIOME_LOOK) ---------------------------------------------------
+        // Each is built from the same primitives, varied on what the biome is made of: how much land
+        // against water, whether it bands or mottles, how far the ice reaches, and whether anything
+        // on the surface is giving off its own light.
+        case 'bio_grassland':
+            // Open plains: broad soft patches at low contrast under a thin veil, modest caps.
+            texBlobs(x, rnd, S, 14, 0.10, 0.22, 0.55, 0.22);
+            texBlobs(x, rnd, S, 8, 0.05, 0.12, 0.0, 0.10);
+            texPoles(x, S, 0.16, 0.42);
+            break;
+        case 'bio_oceanic':
+            // Nearly all water: a scattering of small islands and a great deal of weather.
+            texBlobs(x, rnd, S, 7, 0.05, 0.13, 0.85, 0.30);
+            texBlobs(x, rnd, S, 16, 0.06, 0.16, 0.0, 0.16);
+            texPoles(x, S, 0.18, 0.5);
+            break;
+        case 'bio_forest':
+            // Unbroken canopy: heavy dark mottling with cloud caught above it.
+            texBlobs(x, rnd, S, 20, 0.08, 0.20, 0.85, 0.34);
+            texBlobs(x, rnd, S, 7, 0.05, 0.11, 0.0, 0.10);
+            texPoles(x, S, 0.14, 0.35);
+            break;
+        case 'bio_desert':
+            // Dune fields run in belts, and there is little water to cloud over.
+            texBands(x, rnd, S, 0.10, 0.05, 0.12);
+            texBlobs(x, rnd, S, 12, 0.07, 0.18, 0.4, 0.16);
+            break;
+        case 'bio_volcanic':
+            // Dark basalt with a handful of vents burning through it.
+            texBlobs(x, rnd, S, 16, 0.07, 0.19, 0.8, 0.34);
+            texSpot(x, S, 0.35, 0.42, 0.07, 0.05, false, 0.50);
+            texSpot(x, S, 0.66, 0.62, 0.05, 0.04, false, 0.42);
+            texSpot(x, S, 0.50, 0.78, 0.04, 0.03, false, 0.36);
+            break;
+        case 'bio_tundra':
+            // Frozen ground throughout, with caps reaching most of the way to the equator.
+            texBlobs(x, rnd, S, 10, 0.09, 0.20, 0.3, 0.16);
+            texPoles(x, S, 0.42, 0.6);
+            break;
+        case 'bio_savanna':
+            // Dry grass in belts, broken by scattered scrub.
+            texBands(x, rnd, S, 0.08, 0.07, 0.15);
+            texBlobs(x, rnd, S, 13, 0.05, 0.14, 0.7, 0.20);
+            texPoles(x, S, 0.12, 0.30);
+            break;
+        case 'bio_swamp':
+            // Standing water broken by countless small islands, under a permanent haze.
+            texBlobs(x, rnd, S, 26, 0.04, 0.11, 0.7, 0.26);
+            texBands(x, rnd, S, 0.05, 0.12, 0.24);
+            texBlobs(x, rnd, S, 10, 0.06, 0.14, 0.0, 0.14);
+            break;
+        case 'bio_ashland':
+            // Ash laid down in drifts over a dead surface; nothing left to freeze at the poles.
+            texBands(x, rnd, S, 0.07, 0.06, 0.14);
+            texBlobs(x, rnd, S, 18, 0.05, 0.15, 0.6, 0.20);
+            break;
+        case 'bio_taiga':
+            // Conifer belts between long winters: dark forest, deep caps.
+            texBlobs(x, rnd, S, 16, 0.07, 0.17, 0.78, 0.28);
+            texPoles(x, S, 0.30, 0.55);
+            break;
+        case 'bio_hellscape':
+            // Cracked and burning: dark crust with fire showing through all over it.
+            texBlobs(x, rnd, S, 18, 0.06, 0.18, 0.85, 0.40);
+            for (let i = 0; i < 9; i++){
+                texSpot(x, S, rnd(), rnd(), 0.03 + rnd() * 0.04, 0.02 + rnd() * 0.03, false, 0.35 + rnd() * 0.25);
+            }
+            break;
+        case 'bio_eden':
+            // Everything in balance: soft varied ground, a bright veil of cloud, clean caps.
+            texBlobs(x, rnd, S, 15, 0.08, 0.20, 0.45, 0.20);
+            texBlobs(x, rnd, S, 12, 0.05, 0.13, 0.0, 0.16);
+            texPoles(x, S, 0.18, 0.55);
             break;
         case 'mars':
             // Dark maria and bright dust, with the caps that make it unmistakable.
@@ -10309,8 +10484,9 @@ export function drawMap() {
         else if (id === 'spc_sun_gate' || id === 'tau_home'){
             color = '31a557';
         }
-        else if (SOL_BODY_COLOR[id]){
-            color = SOL_BODY_COLOR[id];   // the named Sol bodies get their real colour
+        else if (solBodyColor(id)){
+            // The named Sol bodies get their real colour; the home world gets its biome's.
+            color = solBodyColor(id);
         }
         else if (spacePlanetStats[id].hz){
             color = '3fa34d';   // habitable-zone planet (greenish)
