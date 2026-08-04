@@ -7140,20 +7140,35 @@ function calcLandingPoint(ship, planet) {
     // rendered position; otherwise a ship already in Tau Ceti has its landing point
     // computed back near the home sun, producing a bogus multi-star transit distance.
     let star = spacePlanetStats[planet].star ? genXYcoord(spacePlanetStats[planet].star) : { x: 0, y: 0, z: 0 };
-    let ecc = spacePlanetStats[planet].star ? 1.2 : xPosition(1, planet);
-    let center_x = star.x + xShift(planet);
+    // The band the orbit sweeps out, as radii from the ellipse's own centre: the semi-minor axis at
+    // its narrowest and the semi-major at its widest. A body around another star still rides the
+    // stretched circle that branch of orbitPoint draws, so its bounds are taken the same way.
+    let semiMajor, semiMinor, center_x;
+    if (spacePlanetStats[planet].star){
+        semiMajor = spacePlanetStats[planet].dist * 1.2;
+        semiMinor = spacePlanetStats[planet].dist;
+        center_x = star.x + spacePlanetStats[planet].dist / 3;
+    }
+    else {
+        let ecc = orbitEcc(planet);
+        semiMajor = spacePlanetStats[planet].dist;
+        semiMinor = semiMajor * Math.sqrt(1 - ecc * ecc);
+        // The Sun sits at a focus, so the ellipse's centre is one focal distance off it, toward
+        // apoapsis (the -x side, since periapsis is drawn at +x).
+        center_x = star.x - semiMajor * ecc;
+    }
     let center_y = star.y;
     // Inclination tilts the orbit about its centre, so a body's distance from that centre is
     // unchanged and the crossing-window arithmetic below still holds in three dimensions.
     let ship_dist = dist3(ship.xy, { x: center_x, y: center_y, z: star.z });
     let ship_speed = shipSpeed(ship) / 225;
-    let cross1_dist = Math.abs(ship_dist - spacePlanetStats[planet].dist);
-    let cross2_dist = Math.abs(ship_dist + spacePlanetStats[planet].dist);
-    let cross1w_dist = Math.abs(ship_dist - spacePlanetStats[planet].dist * ecc);
-    let cross2w_dist = Math.abs(ship_dist + spacePlanetStats[planet].dist * ecc);
+    let cross1_dist = Math.abs(ship_dist - semiMinor);
+    let cross2_dist = Math.abs(ship_dist + semiMinor);
+    let cross1w_dist = Math.abs(ship_dist - semiMajor);
+    let cross2w_dist = Math.abs(ship_dist + semiMajor);
     let cross1_days = Math.floor(Math.min(cross1_dist, cross1w_dist, cross2_dist, cross2w_dist) / ship_speed);
     let cross2_days = Math.ceil(Math.max(cross1_dist, cross1w_dist, cross2_dist, cross2w_dist) / ship_speed);
-    if (ship_dist >= spacePlanetStats[planet].dist && ship_dist <= spacePlanetStats[planet].dist * ecc) {
+    if (ship_dist >= semiMinor && ship_dist <= semiMajor) {
         cross1_days = 0;
     }
     let planet_orbit = spacePlanetStats[planet].orbit === -1
@@ -7412,33 +7427,40 @@ export function erisWar(){
 export const spacePlanetStats = {
     spc_sun: { x: 0, y: 0, z: 0, dist: 0, orbit: 0, size: 2, startype: 'G', label: loc('star_sun'), zlabel: loc('star_sun') },
     // `gate` draws it on the solar map as an open ring rather than a world (see drawGate).
-    spc_sun_gate: { dist: 0.3, orbit: 53, size: 0.1, belt: true, gate: true, inc: 0 },
-    spc_home: { dist: 1, orbit: -1, size: 0.191, hz: true, inc: 0 },
+    // An artificial structure still has to obey Kepler: 60 days is the period of anything at 0.3 AU.
+    spc_sun_gate: { dist: 0.3, orbit: 60, size: 0.1, belt: true, gate: true, inc: 0, ecc: 0 },
+    spc_home: { dist: 1, orbit: -1, size: 0.191, hz: true, inc: 0, ecc: 0.0167 },
     spc_moon: { dist: 0.00257, orbit: 27.32, size: 0.1, moon: true, parent: 'spc_home', inc: 5.14 },
-    spc_red: { dist: 1.524, orbit: 687, size: 0.14, hz: true, inc: 1.85 },
-    spc_hell: { dist: 0.4, orbit: 88, size: 0.118, inc: 7 },
-    spc_venus: { dist: 0.7, orbit: 225, size: 0.187, inc: 3.4 },
-    spc_gas: { dist: 5.203, orbit: 4330, size: 0.634, inc: 1.3 },
+    spc_red: { dist: 1.524, orbit: 687, size: 0.14, hz: true, inc: 1.85, ecc: 0.0934 },
+    spc_hell: { dist: 0.387098, orbit: 88, size: 0.118, inc: 7, ecc: 0.2056 },
+    spc_venus: { dist: 0.723332, orbit: 225, size: 0.187, inc: 3.4, ecc: 0.0068 },
+    spc_gas: { dist: 5.203, orbit: 4330, size: 0.634, inc: 1.3, ecc: 0.0489 },
     // The Galilean moons, in order out from Jupiter.
     spc_io: { dist: 0.002819, orbit: 1.769, size: 0.102, moon: true, parent: 'spc_gas', inc: 1.35 },
     spc_europa: { dist: 0.004486, orbit: 3.551, size: 0.095, moon: true, parent: 'spc_gas', inc: 1.77 },
     spc_gas_moon: { dist: 0.007155, orbit: 7.155, size: 0.123, moon: true, parent: 'spc_gas', inc: 1.5 },
     spc_callisto: { dist: 0.012585, orbit: 16.689, size: 0.118, moon: true, parent: 'spc_gas', inc: 1.49 },
-    spc_belt: { dist: 2.7, orbit: 1642, size: 0.054, belt: true, inc: 10 },
-    spc_dwarf: { dist: 2.77, orbit: 1682, size: 0.052, inc: 10.6 },
-    spc_saturn: { dist: 9.539, orbit: 10751, size: 0.579, inc: 2.5, rings: true },
+    // The belt stands for a population rather than a body, so its distance, period and eccentricity
+    // are representative of the main belt rather than of any one rock.
+    spc_belt: { dist: 2.7, orbit: 1620, size: 0.054, belt: true, inc: 10, ecc: 0.08 },
+    spc_dwarf: { dist: 2.77, orbit: 1682, size: 0.052, inc: 10.6, ecc: 0.0785 },
+    spc_saturn: { dist: 9.539, orbit: 10751, size: 0.579, inc: 2.5, rings: true, ecc: 0.0565 },
     // Saturn's moons ride its equatorial plane, which its axial tilt carries some 27 degrees off the reference plane — the same plane the rings sit in.
     spc_titan: { dist: 0.008168, orbit: 15.945, size: 0.122, moon: true, parent: 'spc_saturn', inc: 27 },
     spc_enceladus: { dist: 0.001591, orbit: 1.37, size: 0.038, moon: true, parent: 'spc_saturn', inc: 27 },
-    spc_uranus: { dist: 19.8, orbit: 30660, size: 0.382, inc: 0.77 },
+    spc_uranus: { dist: 19.2184, orbit: 30660, size: 0.382, inc: 0.77, ecc: 0.0457 },
     // Uranus's two largest moons. They ride its equatorial plane, and Uranus is tipped on its side 
     spc_titania: { dist: 0.0029139, orbit: 8.7062, size: 0.067, moon: true, parent: 'spc_uranus', inc: 97.8 },
     spc_oberon: { dist: 0.0039006, orbit: 13.4632, size: 0.066, moon: true, parent: 'spc_uranus', inc: 97.8 },
-    spc_neptune: { dist: 30.08, orbit: 60152, size: 0.376, inc: 1.77 },
+    spc_neptune: { dist: 30.08, orbit: 60152, size: 0.376, inc: 1.77, ecc: 0.0086 },
     // Triton is retrograde and steeply inclined — the one moon here whose orbit is nothing like its planet's plane.
     spc_triton: { dist: 0.002371, orbit: 5.877, size: 0.088, moon: true, parent: 'spc_neptune', inc: 130 },
-    spc_kuiper: { dist: 39.5, orbit: 90498, size: 0.061, belt: true, inc: 10 },
-    spc_eris: { dist: 68, orbit: 204060, size: 0.082, inc: 44 },
+    spc_kuiper: { dist: 39.5, orbit: 90498, size: 0.061, belt: true, inc: 10, ecc: 0.05 },
+    // The dwarf planets of the Kuiper belt
+    spc_pluto: { dist: 39.482, orbit: 90560, size: 0.083, inc: 17.16, ecc: 0.2488 },
+    spc_haumea: { dist: 43.116, orbit: 103775, size: 0.067, inc: 28.21, ecc: 0.195 },
+    spc_makemake: { dist: 45.43, orbit: 111843, size: 0.064, inc: 28.98, ecc: 0.161 },
+    spc_eris: { dist: 68, orbit: 204060, size: 0.082, inc: 44, ecc: 0.436 },
     // Tau Ceti system. Planets orbit the tauceti star (star: 'tauceti') rather than the Sun,
     // Tau Ceti (G-type): 753,314.5 AU from the Sun (11.91 ly).
     tauceti: { x: -213157.815, y: 25792.379, z: -722067.292, dist: 753314.5, orbit: -2, size: 1.778, startype: 'G', label: loc('star_tauceti'), zlabel: loc('star_tauceti') },
@@ -8133,9 +8155,15 @@ export function orbitPoint(planet, deg){
         v = Math.sin(rad) * body.dist;
     }
     else {
+        // A true ellipse with the Sun at a focus. `dist` is the semi-major axis, so periapsis lands
+        // at dist·(1-ecc) on the +x side and apoapsis at dist·(1+ecc) opposite it, and the body is
+        // placed by eccentric anomaly rather than by the raw angle so its speed varies the way a
+        // real orbit's does.
         origin = { x: 0, y: 0, z: 0 };
-        u = xPosition(+(Math.cos(rad)).toFixed(5) * body.dist, planet) + xShift(planet);
-        v = +(Math.sin(rad)).toFixed(5) * body.dist;
+        let ecc = orbitEcc(planet);
+        let E = eccentricAnomaly(rad, ecc);
+        u = body.dist * (Math.cos(E) - ecc);
+        v = body.dist * Math.sqrt(1 - ecc * ecc) * Math.sin(E);
     }
     // Tilt about the line of nodes (the x axis). The orbit keeps its size and every point on it
     // keeps its distance from the primary; only its height above the reference plane changes.
@@ -9054,36 +9082,49 @@ export function calcAIDrift(wiki){
     return drift;
 }
 
-function xPosition(x,p){
-    if (spacePlanetStats[p].orbit !== -2){
-        let e = 1.075 + (spacePlanetStats[p].dist / 100);
-        if (global.city.ptrait.includes('elliptical')){
-            switch (p){
-                case 'spc_home':
-                    e = 1.5;
-                    break;
-                default:
-                    e = 1.275 + (spacePlanetStats[p].dist / 100);
-                    break;
-            }
-        }
-        x *= e;
-    }
-    return x;
+// --- Orbital shape ------------------------------------------------------------------------------
+// Heliocentric orbits are real ellipses with the Sun at a focus, built from each body's own
+// eccentricity (the `ecc` field). What stood here before stretched every orbit along x by
+// 1.075 + dist/100 and pushed its centre out by dist/3, which made the elongation a function of
+// distance rather than of the body: Neptune, the most circular planet in the system at e = 0.0086,
+// came out drawn more elongated than anything but Eris, and the two numbers disagreed with each
+// other besides — the axis ratio implied one eccentricity and the offset another, so the Sun did
+// not sit at a focus of the curve being drawn.
+
+// How elliptical the home planet's orbit is under the `elliptical` planet trait. The trait is a
+// property of the world the run starts on rather than of Earth, so it replaces the real value
+// instead of adding to it; this is roughly Mercury's eccentricity, which is plainly elliptical
+// without being a comet.
+const ELLIPTICAL_TRAIT_ECC = 0.2;
+
+function orbitEcc(id){
+    let body = spacePlanetStats[id];
+    // Stars are placed by fixed coordinates, not by an orbit.
+    if (!body || body.orbit === -2){ return 0; }
+    if (id === 'spc_home' && global.city.ptrait.includes('elliptical')){ return ELLIPTICAL_TRAIT_ECC; }
+    return body.hasOwnProperty('ecc') ? body.ecc : 0;
 }
 
-function xShift(id){
-    if (spacePlanetStats[id].orbit !== -2){
-        let x = spacePlanetStats[id].dist / 3;
-        if (global.city.ptrait.includes('elliptical') && id === 'spc_home'){
-            x += 0.15;
-        }
-        if (id === 'spc_eris'){
-            x += 25;
-        }
-        return x;
+// Solve Kepler's equation, M = E - e·sin(E), for the eccentric anomaly.
+//
+// The angle the game stores and advances at a constant rate (see the position update in main.js) is
+// the mean anomaly — the one that really does tick uniformly with time. Converting it to the
+// eccentric anomaly is what makes a body sweep equal areas in equal times, so it runs fastest at
+// perihelion and slowest at aphelion, as a real planet does. Newton's method settles this in three
+// or four passes at any eccentricity the map carries; the loop is capped so no input can spin it.
+const KEPLER_STEPS = 8;
+const KEPLER_TOL = 1e-10;
+function eccentricAnomaly(M, ecc){
+    if (!(ecc > 0)){ return M; }
+    // M near pi is where the plain guess converges slowest, so start from pi for the eccentric
+    // orbits where it matters.
+    let E = ecc < 0.8 ? M : Math.PI;
+    for (let i = 0; i < KEPLER_STEPS; i++){
+        let d = (E - ecc * Math.sin(E) - M) / (1 - ecc * Math.cos(E));
+        E -= d;
+        if (Math.abs(d) < KEPLER_TOL){ break; }
     }
-    return 0;
+    return E;
 }
 
 var mapScale, mapShift;
@@ -9105,6 +9146,17 @@ var mapHoverAt = { x: 0, y: 0 };
 // the same answer as projecting absolute coordinates, without feeding hundreds of thousands of AU
 // through the canvas transform and losing precision.
 var mapYaw = 0, mapPitch = 0;
+// Which way the camera faces by default, as a yaw, for the star the view is settling on.
+//
+// Sol opens turned half a turn. Its orbits are real ellipses with the Sun at a focus, so each one
+// runs long toward -x and short toward +x; a half turn puts that long side on the right of the
+// screen, which is the side it sat on while the orbits were still drawn as a stretch about an
+// offset centre, and the side the Tau Ceti system's orbits still favour. Every other star keeps
+// the plain top-down view, so nothing else moves.
+const SOL_DEFAULT_YAW = Math.PI;
+function mapDefaultYaw(target){
+    return target === 'spc_sun' ? SOL_DEFAULT_YAW : 0;
+}
 // What the map draws, as opposed to where it is looking. These live in global.settings (see mapView
 // in vars.js) so they are saved with everything else the player has set, rather than lasting only as
 // long as the page is open — unlike the pan, zoom and rotation, which are deliberately reset each
@@ -9129,6 +9181,12 @@ var starLockOn = false;
 // re-deriving each body's projected size and its distance-based minimum outside the draw, and any
 // drift between the two shows up as a click that misses the thing under the pointer.
 var mapPickable = [];
+// Which bodies drawMap actually put a name on this frame, as a set of ids. Recorded where the label
+// is drawn rather than worked out again afterwards, for the same reason mapPickable is: the
+// conditions that decide whether a name appears are spread across zoom, reveal state and the
+// planetNames toggle, and any second copy of them would eventually disagree with the first. The
+// hover label reads this to fill in only what is missing.
+var mapLabelled = {};
 
 // Below this scale the map is showing planets as points and planet names give way to star
 // names; at or above it a system's own planets are made out individually.
@@ -9158,6 +9216,42 @@ function starCulled(pos){
 function starNamesHidden(){
     return mapScale < systemLabelAbsMinScale;
 }
+// The name to show for a home-system body, or false if it has none.
+//
+// A body that is somewhere you can go is named by its space action — the same race-flavoured name
+// the map labels it with. Everything else in the Sol system is scenery with no action behind it,
+// and falls back to the real name of the world it stands for (see SOL_BODY_LABEL).
+//
+// Deliberately not gated on the reveal flags the label pass consults (showDest().l, or the sector's
+// settings entry). Those decide whether the name is printed beside the body, which is the very
+// thing hovering is here to make up for — Eris is drawn from the start but goes unlabelled, and
+// under that gate it was the one world you could see and still not identify. What matters instead
+// is whether the body is on the map at all, and that is already settled: showDest().r keeps an
+// undrawn body out of the draw, and only bodies that were drawn reach the pick list this reads.
+function bodyName(id){
+    let planet = spacePlanetStats[id];
+    if (!planet || planet.startype || planet.star){ return false; }
+    if (global.race['orbit_decayed'] && id === 'spc_home'){ return false; }
+    if (actions.space[id] && actions.space[id].info){
+        let nameRef = actions.space[id].info.name;
+        return typeof nameRef === 'function' ? nameRef() : nameRef;
+    }
+    return SOL_BODY_LABEL[id] ? planetName()[SOL_BODY_LABEL[id]] : false;
+}
+
+// The name to float beside the cursor for whatever it is resting on, or false for nothing to say.
+//
+// A star answers only once its own label has shrunk away, which is the case the hover label was
+// built for. A planet or moon answers whenever names are switched on and the map is not already
+// showing that one — pointing at a world the map has left unlabelled tells you what it is, and
+// pointing at one that is labelled anyway does not repeat it.
+function hoverName(id){
+    let body = spacePlanetStats[id];
+    if (!body){ return false; }
+    if (body.startype){ return starNamesHidden() ? (body.zlabel || body.label) : false; }
+    return mapView().planetNames && !mapLabelled[id] ? bodyName(id) : false;
+}
+
 // A moon's name is set beside it rather than above it, where its planet is not, and by a fixed
 // number of screen pixels so the gap holds at any zoom.
 const MOON_LABEL_GAP_PX = 6;
@@ -9272,8 +9366,9 @@ function strokeOrbit(ctx, id, origin){
 
 // Bisection steps used to pin down where an orbit passes its primary's depth. Unlike a planet's
 // rings, whose depth around the ring is a plain sinusoid that can be solved outright, an orbit is
-// not a clean circle — xPosition stretches it and xShift moves its centre off the star — so the
-// crossing is found numerically. Twelve halvings take an interval of under four degrees to well
+// not a clean circle — it is an ellipse with the star at a focus, and the angle it is sampled by is
+// the mean anomaly rather than a position angle — so the crossing is found numerically instead.
+// Twelve halvings take an interval of under four degrees to well
 // under a thousandth of one, which is far finer than a pixel at any zoom and is what stops a seam
 // opening where the two halves meet.
 const ORBIT_CROSS_STEPS = 12;
@@ -9425,7 +9520,29 @@ const SOL_BODY_COLOR = {
     spc_neptune:   '3a5ec4',   // Neptune, deep blue
     spc_triton:    'd6c4c0',   // Triton, pink-grey ice
     spc_kuiper:    '6a6a76',   // Kuiper rubble
+    spc_pluto:     'c8a582',   // Pluto, buff tan
+    spc_haumea:    'e6e8ec',   // Haumea, bright water ice — one of the most reflective bodies known
+    spc_makemake:  'c68a66',   // Makemake, red methane frost
     spc_eris:      'c6c6d0',   // Eris, dirty ice
+};
+
+// The Sol bodies the map draws purely as scenery. They have no space action behind them, so unlike
+// the places you can settle they carry no name of their own — these map each to its key in
+// planetName(), which names them the way it names everything else in the system: from the playing
+// genus, so a hive of insectoids and a host of angels see the same worlds by different names.
+const SOL_BODY_LABEL = {
+    spc_venus:     'venus',
+    spc_saturn:    'saturn',
+    spc_uranus:    'uranus',
+    spc_neptune:   'neptune',
+    spc_io:        'io',
+    spc_europa:    'europa',
+    spc_callisto:  'callisto',
+    spc_titania:   'titania',
+    spc_oberon:    'oberon',
+    spc_pluto:     'pluto',
+    spc_haumea:    'haumea',
+    spc_makemake:  'makemake',
 };
 
 // Surface treatment per body. Anything not named here falls back to the generic pool below.
@@ -9437,6 +9554,9 @@ const SOL_BODY_STYLE = {
     spc_enceladus: 'ice',   spc_uranus: 'icegiant', spc_neptune: 'neptune',
     spc_titania: 'cratered', spc_oberon: 'cratered',
     spc_triton: 'ice',      spc_dwarf: 'cratered',  spc_eris: 'ice',
+    // Pluto and Haumea are ice through and through; Makemake is taken as the old cratered surface
+    // its lack of any atmosphere implies.
+    spc_pluto: 'ice',       spc_haumea: 'ice',      spc_makemake: 'cratered',
 };
 
 // Which surface a body gets. Nothing in the table marks gas giants, but the big non-moon bodies are
@@ -9970,19 +10090,31 @@ function drawBody(ctx, x, y, r, color, opts){
     if (rings){ drawRings(ctx, x, y, r, color, true, opts.ringTilt); }
 }
 
-// Record a body for click-to-centre, converting from the projected space drawBody works in to the
-// screen pixels a mouse event arrives in. Only recorded once the map is zoomed in far enough to be
-// showing a single system's planets individually — the same threshold that puts their names on
-// screen, so what can be clicked is exactly what is labelled. Gating on each body's own drawn size
-// instead would be circular: a distant planet is a couple of pixels across until you are already
-// looking at it, which is what clicking it was meant to do.
-function addPickable(id, bx, by, size){
-    if (mapScale < planetLabelMinScale){ return; }
+// Record a body the pointer can address, converting from the projected space drawBody works in to
+// the screen pixels a mouse event arrives in.
+//
+// Click-to-centre still only takes bodies from the zoom where a system's planets are told apart
+// individually. Out past that they pile into a few pixels, and a click would centre on whichever
+// happened to be nearest — not something the player could have aimed at. Gating on each body's own
+// drawn size instead would be circular: a distant planet is a couple of pixels across until you are
+// already looking at it, which is what clicking it was meant to do.
+//
+// Naming is recorded at every zoom, because that threshold is also where the labels switch off:
+// below it a visitable world is drawn with no name against it, and pointing at one is the only way
+// left to ask what it is.
+function addPickable(id, bx, by, size, sep){
     mapPickable.push({
         id: id,
         x: mapShift.x + bx * mapScale,
         y: mapShift.y + by * mapScale,
-        r: size * mapScale
+        r: size * mapScale,
+        // Recorded for naming only — see above.
+        nameOnly: mapScale < planetLabelMinScale,
+        // A body that has not pulled far enough off whatever it circles to read as a dot of its own
+        // — the same test visibleRadius uses to decide whether to keep it visible at all. Its centre
+        // can still land nearer the pointer than its primary's, so without this the map would name
+        // something drawn inside another body's disc that cannot be picked out by eye.
+        merged: sep !== undefined && sep < BODY_SEPARATION_PX
     });
 }
 
@@ -10031,6 +10163,7 @@ export function drawMap() {
     ctx.scale(mapScale, mapScale);
     camUpdate();
     mapPickable = [];
+    mapLabelled = {};
     const ORIGIN = { x: 0, y: 0, z: 0 };
     // The home system hangs off the Sun at the origin, so one test covers its orbits, bodies and
     // labels alike.
@@ -10208,6 +10341,10 @@ export function drawMap() {
             let p = planetLocation[id];
             let bx = pX(p), by = pY(p);
             let size = planet.size / 10 * homeScale;
+            // How far this body reads from whatever it circles, on screen. Kept so the pick list can
+            // tell one standing clear of its primary from one buried in it — a moon against its
+            // planet, a planet against the Sun.
+            let sep;
             if (planet.moon) {
                 // Moons used to be shoved a fixed distance off their planet so the two did not sit on
                 // the same dot. Their own orbit does that job now, so the nudge is gone — it was
@@ -10215,16 +10352,18 @@ export function drawMap() {
                 // Measure separation from the planet rather than from the Sun, or a moon out at
                 // Jupiter would be floored to a pixel while still buried in its primary.
                 let q = rel(p, planetLocation[planet.parent]);
-                size = visibleRadius(size, Math.hypot(pX(q), pY(q)) * mapScale);
+                sep = Math.hypot(pX(q), pY(q)) * mapScale;
+                size = visibleRadius(size, sep);
             }
             else if (planet.startype) {
                 // The Sun keeps a minimum on-screen radius so it stays visible when zoomed out.
                 size = Math.max(size, 1 / mapScale);
             }
             else {
-                size = visibleRadius(size, Math.hypot(pX(p), pY(p)) * mapScale);
+                sep = Math.hypot(pX(p), pY(p)) * mapScale;
+                size = visibleRadius(size, sep);
             }
-            bodies.push({ id, planet, bx, by, size, d: pD(p) });
+            bodies.push({ id, planet, bx, by, size, sep, d: pD(p) });
         }
         bodies.sort((a,b) => b.d - a.d);   // furthest first, so nearer bodies paint over them
 
@@ -10241,7 +10380,7 @@ export function drawMap() {
             // it — which is exactly where drawing it here puts it, since the bodies left to come are
             // the nearer ones.
             if (orbitsBy[b.id]){ strokeOrbitGroup(ctx, orbitsBy[b.id], ORIGIN, planetLocation[b.id], true); }
-            addPickable(b.id, b.bx, b.by, b.size);
+            addPickable(b.id, b.bx, b.by, b.size, b.sep);
         }
     }
 
@@ -10354,6 +10493,7 @@ export function drawMap() {
                 let nameRef = actions.space[id].info.name;
                 let nameText = typeof nameRef === "function" ? nameRef() : nameRef;
                 let lx = pX(planetLocation[id]), ly = pY(planetLocation[id]);
+                mapLabelled[id] = true;   // so the hover label knows not to repeat this one
                 if (planet.moon) {
                     // Sit clear of the moon by a screen-constant gap rather than the old fixed map
                     // offset, which drifted further from the body the further you zoomed in and, at
@@ -10437,9 +10577,10 @@ export function drawMap() {
             let planet = spacePlanetStats[id];
             let q = rel(genXYcoord(id), sc);
             let pr = planet.size / 10 * scale;
+            let sep = Math.hypot(pX(q), pY(q)) * mapScale;   // how far it reads from its star
             pr = planet.bodystar ? Math.max(pr, 1 / mapScale)
-                                 : visibleRadius(pr, Math.hypot(pX(q), pY(q)) * mapScale);
-            members.push({ id, planet, q, pr });
+                                 : visibleRadius(pr, sep);
+            members.push({ id, planet, q, pr, sep });
         }
         if (!star.hidden){
             members.push({ id: starId, planet: star, q: { x: 0, y: 0, z: 0 }, isStar: true,
@@ -10456,7 +10597,7 @@ export function drawMap() {
             drawBody(ctx, px, py, m.pr, setColor(m.id), { star: m.isStar || !!m.planet.bodystar, kind: bodyKind(m.planet, m.id), seed: texSeed(m.id), rings: hasRings(m.planet, m.id), ringTilt: ringTilt(m.planet, m.id), glyph: cowGlyph(m.id) });
             if (m.isStar && starOrbits.length){ strokeOrbitGroup(ctx, starOrbits, sc, sc, true); }
             // Drawn in the star's own translated frame, so shift back to map coordinates to record it.
-            addPickable(m.id, pX(sc) + px, pY(sc) + py, m.pr);
+            addPickable(m.id, pX(sc) + px, pY(sc) + py, m.pr, m.sep);
             // Tau Ceti's jump gate rides alongside the home planet like a moon.
             if (m.id === 'tau_home' && tauJumpGate()){
                 drawBody(ctx, px + m.pr * 0.9, py + m.pr * 0.9, m.pr * 0.35, '31a557', { gate: true, seed: texSeed('tau_home_jump_gate') });
@@ -10503,12 +10644,13 @@ export function drawMap() {
         ctx.restore();
     }
 
-    // Out at the star field the names have shrunk away to nothing (see starNamesHidden), and there is no
-    // zoom level past it that brings them back — so the only way to tell one dot from another is to point
-    // at it. Uses zlabel, the name that tells a companion from its primary.
-    if (mapHover && spacePlanetStats[mapHover] && starNamesHidden()){
-        let body = spacePlanetStats[mapHover];
-        let name = body.zlabel || body.label;
+    // Whatever the pointer is resting on, named beside the cursor — but only where the map is not
+    // naming it already (see hoverName). Out at the star field the star names have shrunk away to
+    // nothing and there is no zoom past it that brings them back, so pointing is the only way to
+    // tell one dot from another; closer in, it is the worlds the map draws as scenery and never
+    // labels — Saturn, the Galilean moons, the outer dwarf planets — that pointing identifies.
+    if (mapHover && spacePlanetStats[mapHover]){
+        let name = hoverName(mapHover);
         let p = genXYcoord(mapHover);
         if (name && !starCulled(p)){
             // Drawn in screen space at a fixed pixel size, deliberately outside the map transform. Sized
@@ -10587,7 +10729,8 @@ function buildSolarMap(parentNode, keep) {
     mapShift = {};
     mapScale = 20.0;
     mapHover = false;
-    // The map always opens looking straight down, however it was left last time.
+    // The map always opens level, however it was left last time. Which way it faces is settled
+    // below, once the star it is opening on is known (see mapDefaultYaw).
     mapYaw = 0;
     mapPitch = 0;
     camUpdate();
@@ -10656,14 +10799,15 @@ function buildSolarMap(parentNode, keep) {
     }
 
     // The body under the pointer, or false. Unlike starAt this picks planets and moons as well, from
-    // whatever drawMap last laid down — which is empty until the map is zoomed in enough for planets
-    // to be told apart (see addPickable), so a click out at the star field can't land on a guess.
-    // Nearest centre wins, so a moon sitting on its planet is still reachable.
-    function bodyAt(e){
+    // whatever drawMap last laid down. Nearest centre wins, so a moon sitting on its planet is still
+    // reachable. `naming` includes the entries recorded for naming only — the ones out past the zoom
+    // where planets are told apart individually — which a click must not land on (see addPickable).
+    function bodyAt(e, naming){
         let rect = document.getElementById("mapCanvas").getBoundingClientRect();
         let cx = e.clientX - rect.left, cy = e.clientY - rect.top;
         let best = false, bestD = Infinity;
         for (let body of mapPickable){
+            if (body.nameOnly && !naming){ continue; }
             let d = Math.hypot(body.x - cx, body.y - cy);
             // Eligibility is about detail, but the grab is about aim: a world you can see is worth
             // hitting from the same distance a star is, or a small one takes several tries.
@@ -10675,10 +10819,40 @@ function buildSolarMap(parentNode, keep) {
         return best;
     }
 
+    // The body the pointer should be naming.
+    //
+    // Whatever it is over, except that one drawn too close to its primary to be told apart hands the
+    // name over to that primary: zoomed out that far it is a sub-pixel speck inside the other's disc,
+    // and its centre can still be the nearest to the pointer, so naming it would put a label on
+    // something the player cannot see. A moon defers to its planet, a planet to its star.
+    function nameTarget(e){
+        let id = bodyAt(e, true);
+        if (!id){ return false; }
+        // Keep walking up while what we landed on is buried in whatever it circles — zoomed right
+        // out a moon can be inside its planet which is itself inside the Sun. Bounded so no shape of
+        // data can loop.
+        for (let step = 0; step < 4; step++){
+            let hit = mapPickable.find(p => p.id === id);
+            let body = spacePlanetStats[id];
+            if (!hit || !hit.merged || !body || body.startype){ break; }
+            let up = body.parent || body.star || 'spc_sun';
+            if (up === id){ break; }
+            id = up;
+        }
+        return id;
+    }
+
     // Track what the pointer is over so drawMap can name it, repainting only when the answer changes —
     // a mousemove that is still over the same star costs nothing.
     function trackHover(e){
         let over = starNamesHidden() ? starAt(e) : false;
+        // Failing a star, any body the map has drawn but left unnamed. hoverName is the one test for
+        // whether there is anything to say, so a world whose name is already on the map is passed
+        // over here and costs no repaint.
+        if (!over){
+            let body = nameTarget(e);
+            if (body && hoverName(body)){ over = body; }
+        }
         let rect = document.getElementById("mapCanvas").getBoundingClientRect();
         let at = { x: e.clientX - rect.left, y: e.clientY - rect.top };
         // Repaint when the star changes and, while one is hovered, as the pointer moves — the label has
@@ -10839,6 +11013,10 @@ function buildSolarMap(parentNode, keep) {
       $(`<input type="button" value="${loc('space_sun_info_name')}" style="position: absolute; height: 30px; top: 2px; left: 2px;">`)
         .on("click", () => {
             mapScale = 20.0;
+            // This is the "back to the default view of Sol" control — it already restores the
+            // opening zoom, so it restores the opening bearing with it.
+            mapYaw = mapDefaultYaw('spc_sun');
+            camUpdate();
             recenterOn(genXYcoord('spc_sun'));
             drawMap();
         })
@@ -10849,6 +11027,8 @@ function buildSolarMap(parentNode, keep) {
         $(`<input type="button" value="${loc('tab_tauceti')}" style="position: absolute; height: 30px; top: 34px; left: 2px;">`)
             .on("click", () => {
                 mapScale = 20.0;
+                mapYaw = mapDefaultYaw('tauceti');
+                camUpdate();
                 recenterOn(genXYcoord('tauceti'));
                 drawMap();
             })
@@ -10896,10 +11076,13 @@ function buildSolarMap(parentNode, keep) {
             .appendTo(currentNode);
     }
 
-    // Level the camera without disturbing where the player has panned and zoomed to.
+    // Put the camera back to its default angle without disturbing where the player has panned and
+    // zoomed to. Which default that is depends on what is being looked at, so it is taken from the
+    // star nearest the focus — resetting while out at Sol should give Sol's opening view, not a
+    // bearing the map never opens on.
     $(`<input type="button" value="${loc('solar_map_reset_view')}" style="position: absolute; height: 30px; top: 66px; left: 2px;">`)
         .on("click", () => {
-            mapYaw = 0;
+            mapYaw = mapDefaultYaw(nearestStar(mapFocus));
             mapPitch = 0;
             camUpdate();
             recenterOn(mapFocus);
@@ -10929,6 +11112,10 @@ function buildSolarMap(parentNode, keep) {
     }
     else {
         let openOn = global.tech['resettle'] && global.tech.resettle < 9 ? 'tauceti' : 'spc_sun';
+        // Face the default way for whatever it is opening on, before centring — recenterOn projects
+        // through the camera, so the camera has to be pointing the right way first.
+        mapYaw = mapDefaultYaw(openOn);
+        camUpdate();
         recenterOn(genXYcoord(openOn));
         starLockOn = openOn;
     }
