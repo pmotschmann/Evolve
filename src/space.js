@@ -4,7 +4,7 @@ import { unlockAchieve, unlockFeat, universeAffix } from './achieve.js';
 import { races, traits, genus_def, genusVars, planetTraits, biomes, traitCostMod } from './races.js';
 import { spatialReasoning, unlockContainers, drawResourceTab, atomic_mass } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
-import { defineIndustry, addSmelter } from './industry.js';
+import { defineIndustry, addSmelter, addFactoryLines } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
 import { actions, payCosts, powerOnNewStruct, initStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, templeCount, casinoEffect, wardenLabel, buildTemplate, structName } from './actions.js';
 import { outerTruthTech, syndicate, drawShipYard, genXYcoord, infestationLabel, infestationMethods, salvageShip, salvagePin } from './truepath.js';
@@ -1129,7 +1129,7 @@ const spaceProjects = {
                 if (payCosts($(this)[0])){
                     incrementStruct('red_factory');
                     if (powerOnNewStruct($(this)[0])){
-                        global.city.factory.Alloy++;
+                        addFactoryLines(1);
                     }
                     global.settings.showIndustry = true;
                     defineIndustry();
@@ -3362,7 +3362,7 @@ const interstellarProjects = {
                 if (payCosts($(this)[0])){
                     incrementStruct('int_factory','interstellar');
                     if (powerOnNewStruct($(this)[0])){
-                        global.city.factory.Alloy += 2;
+                        addFactoryLines(2);
                         defineIndustry();
                     }
                     return true;

@@ -1368,7 +1368,7 @@ if (global['tauceti'] && global.tauceti['refueling_station'] && !global.tauceti.
 
 global['version'] = '1.5.0';
 delete global['revision'];
-global['beta'] = 19;
+global['beta'] = 20;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
@@ -2067,14 +2067,18 @@ if (!global['arpa']){
 }
 
 if (global.city['factory']){
-    if (!global.city.factory['Lux']){
-        global.city.factory['Lux'] = 0;
+    // Production lines shut down when factory capacity was lost,
+    if (!global.city.factory.hasOwnProperty('hold')){
+        global.city.factory['hold'] = {};
     }
-    if (!global.city.factory['Alloy']){
-        global.city.factory['Alloy'] = 0;
-    }
-    if (!global.city.factory['Polymer']){
-        global.city.factory['Polymer'] = 0;
+    // Ensure all resources at factory are initialize
+    ['Lux','Furs','Alloy','Polymer','Nano','Stanene'].forEach(function(res){
+        if (!global.city.factory.hold.hasOwnProperty(res)){
+            global.city.factory.hold[res] = 0;
+        }
+    });
+    if (!global.city.factory.hasOwnProperty('cap')){
+        global.city.factory['cap'] = 0;
     }
 }
 

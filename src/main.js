@@ -5,7 +5,7 @@ import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaT
 import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, cleanRemoveTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobName, jobScale, workerScale, limitCraftsmen, loadServants} from './jobs.js';
-import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, replicatorLines, luxGoodPrice, smelterUnlocked, smelterFuelConfig, setupRituals, maxRitualNum, ritual_types } from './industry.js';
+import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, replicatorLines, luxGoodPrice, smelterUnlocked, smelterFuelConfig, setupRituals, maxRitualNum, ritual_types, factoryLines } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
 import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, checkPowerRequirements, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct, casino_vault, casinoEarn, doCallbacks, cLabels } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types, spaceSectors } from './space.js';
@@ -4629,13 +4629,28 @@ function fastLoop(){
             let eff = max_factories > 0 ? on_factories / max_factories : 0;
             let remaining = max_factories;
 
-            ['Lux','Furs','Alloy','Polymer','Nano','Stanene'].forEach(function(res){
+            let hold = global.city.factory['hold'];
+            factoryLines.forEach(function(res){
                 remaining -= global.city.factory[res];
                 if (remaining < 0) {
+                    if (hold){ hold[res] -= remaining; }   // remaining is negative: banks what was cut
                     global.city.factory[res] += remaining;
                     remaining = 0;
                 }
             });
+
+            if (hold && remaining > 0 && max_factories > global.city.factory.cap){
+                let room = Math.min(remaining, max_factories - global.city.factory.cap);
+                factoryLines.forEach(function(res){
+                    if (room <= 0 || !hold[res]){ return; }
+                    let back = Math.min(hold[res], room);
+                    global.city.factory[res] += back;
+                    hold[res] -= back;
+                    room -= back;
+                    remaining -= back;
+                });
+            }
+            global.city.factory.cap = max_factories;
 
             let assembly = global.tech['factory'] || 0;
             let tauBonus = global.tech['isolation'] ? 1 + ((support_on['colony'] || 0) * 0.5) : 1;

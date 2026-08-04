@@ -8,7 +8,7 @@ import { production, highPopAdjust } from './prod.js';
 import { actions, payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, buildTemplate, casinoEffect, housingLabel, structName, initStruct } from './actions.js';
 import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, incrementStruct, planetName } from './space.js';
 import { defineGovernor, removeTask, govActive } from './governor.js';
-import { defineIndustry, nf_resources, addSmelter, setupRituals, cancelRituals } from './industry.js';
+import { defineIndustry, nf_resources, addSmelter, addFactoryLines, setupRituals, cancelRituals } from './industry.js';
 import { arpa } from './arpa.js';
 import { matrix, retirement, gardenOfEden } from './resets.js';
 import { traitCostMod } from './races.js';
@@ -2679,7 +2679,7 @@ const tauCetiModules = {
                     global.civic.craftsman.display = true; // Needed in Lone Survivor
                     incrementStruct('tau_factory','tauceti');
                     if (powerOnNewStruct($(this)[0])){
-                        global.city.factory.Alloy += $(this)[0].manufacturing();
+                        addFactoryLines($(this)[0].manufacturing());
                     }
                     return true;
                 }
