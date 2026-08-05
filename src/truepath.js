@@ -5459,8 +5459,17 @@ function infestationCombat(region){
     }
 
     let survivors = global.race.zhorde[region];
-    let razings = Math.min(Math.floor(survivors / zombiesPerRazing),razeCap);
-    if (razings < razeCap && seededRandom(0,1,true) < (survivors % zombiesPerRazing) / zombiesPerRazing){
+    let zombiesPerRazingFinal = zombiesPerRazing;
+    if (global.race['chicken']){ // Even zombies love chicken
+        zombiesPerRazingFinal *= 1 - (traits.chicken.vars()[2] / 100);
+        zombiesPerRazingFinal = Math.round(zombiesPerRazingFinal);
+    }
+    if (global.race['chameleon']){ // Good at hiding from zombies
+        zombiesPerRazingFinal *= 1 + (traits.chameleon.vars()[2] / 100);
+        zombiesPerRazingFinal = Math.round(zombiesPerRazingFinal);
+    }
+    let razings = Math.min(Math.floor(survivors / zombiesPerRazingFinal),razeCap);
+    if (razings < razeCap && seededRandom(0,1,true) < (survivors % zombiesPerRazingFinal) / zombiesPerRazingFinal){
         razings++;
     }
     if (razings > 0){

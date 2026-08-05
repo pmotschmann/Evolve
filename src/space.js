@@ -7694,6 +7694,14 @@ const advancedSolarBodies = truepathBodies.filter(b => b.adv).map(b => b.field);
 // Base TP3 outer solar locations
 const truepathSolarBodies = truepathBodies.map(b => b.field);
 
+// Every world the lab names, for hanging a popover on each field
+const labSolarBodies = ['home','red','hell','gas','gas_moon','dwarf'].concat(truepathSolarBodies);
+
+// Field label, wrapped so its popover has something to attach to
+function bodyLabel(field){
+    return `<span id="genelabBody-${field}">${loc(`genelab_${field}`)}</span>`;
+}
+
 // The genus whose names a genome falls back on. A hybrid has no naming set of its own, so it
 // borrows its first half's; anything the table does not cover lands on humanoid.
 function genomeNamer(genome){
@@ -7972,27 +7980,24 @@ export function ascendLab(hybrid,wiki){
         `);
     }
 
-    let name = $(`<div class="fields"><div class="name textInput">${loc('genelab_name')} <b-input v-model="g.name" maxlength="20"></b-input></div><div class="entity textInput">${loc('genelab_entity')} <b-input v-model="g.entity" maxlength="40"></b-input></div><div class="name textInput">${loc('genelab_home')} <b-input v-model="g.home" maxlength="20"></b-input></div> <div class="textInput">${loc('genelab_desc')} <b-input v-model="g.desc" maxlength="255"></b-input></div></div>`);
+    let name = $(`<div class="fields"><div class="name textInput">${loc('genelab_name')} <b-input v-model="g.name" maxlength="20"></b-input></div><div class="entity textInput">${loc('genelab_entity')} <b-input v-model="g.entity" maxlength="40"></b-input></div><div class="name textInput">${bodyLabel('home')} <b-input v-model="g.home" maxlength="20"></b-input></div> <div class="textInput">${loc('genelab_desc')} <b-input v-model="g.desc" maxlength="255"></b-input></div></div>`);
     lab.append(name);
 
     let planets = $(`<div class="fields">
-        <div class="name textInput">${loc('genelab_red')} <b-input v-model="g.red" maxlength="20"></b-input></div>
-        <div class="name textInput">${loc('genelab_hell')} <b-input v-model="g.hell" maxlength="20"></b-input></div>
-        <div class="name textInput">${loc('genelab_gas')} <b-input v-model="g.gas" maxlength="20"></b-input></div>
-        <div class="name textInput">${loc('genelab_gas_moon')} <b-input v-model="g.gas_moon" maxlength="20"></b-input></div>
-        <div class="name textInput">${loc('genelab_dwarf')} <b-input v-model="g.dwarf" maxlength="20"></b-input></div></div>`);
+        <div class="name textInput">${bodyLabel('red')} <b-input v-model="g.red" maxlength="20"></b-input></div>
+        <div class="name textInput">${bodyLabel('hell')} <b-input v-model="g.hell" maxlength="20"></b-input></div>
+        <div class="name textInput">${bodyLabel('gas')} <b-input v-model="g.gas" maxlength="20"></b-input></div>
+        <div class="name textInput">${bodyLabel('gas_moon')} <b-input v-model="g.gas_moon" maxlength="20"></b-input></div>
+        <div class="name textInput">${bodyLabel('dwarf')} <b-input v-model="g.dwarf" maxlength="20"></b-input></div></div>`);
     lab.append(planets);
 
     let tpHeader = $(`<div class="fields tpMode"><span class="has-text-caution">${loc('genelab_truepath')}</span> <button class="button tpmode" @click="advanced()">{{ advLabel() }}</button></div>`);
     lab.append(tpHeader);
 
-    // One block in solar order (see truepathBodies). The advanced entries hide themselves rather
-    // than living in a block of their own, so switching to Advanced opens them up in place among the
-    // four that are always shown instead of appending a second list underneath.
-    let tpPlanets = `<div class="fields">`;
+    let tpPlanets = `<div class="fields" :class="{ advFields: adv.on }">`;
     truepathBodies.forEach(function(body){
         let advOnly = body.adv ? ` v-show="adv.on"` : ``;
-        tpPlanets += `<div class="name textInput tp"${advOnly}>${loc(`genelab_${body.field}`)} <b-input v-model="g.${body.field}" maxlength="20"></b-input></div>`;
+        tpPlanets += `<div class="name textInput tp"${advOnly}>${bodyLabel(body.field)} <b-input v-model="g.${body.field}" maxlength="20"></b-input></div>`;
     });
     tpPlanets += `</div>`;
     lab.append($(tpPlanets));
@@ -8600,6 +8605,12 @@ export function ascendLab(hybrid,wiki){
             wide: true
         });
     }
+
+    // What each world you can rename actually is. Bound after the mount, since Vue builds the
+    // fields from the template and replaces whatever was there before it.
+    labSolarBodies.forEach(function(body){
+        popover(`genelabBody-${body}`, loc(`genelab_body_${body}`));
+    });
 
     Object.keys(unlockedTraits).sort().forEach(function (trait){
         if (traits.hasOwnProperty(trait) && traits[trait].type === 'major'){
