@@ -11911,7 +11911,7 @@ const techs = {
         desc(){ return loc('tech_alien_biotech'); },
         category: 'science',
         era: 'solar',
-        reqs: { genetics: 8, kuiper: 1 },
+        reqs: { genetics: 8, makemake: 1 },
         grant: ['biotech',1],
         path: ['truepath'],
         cost: {
@@ -12083,7 +12083,7 @@ const techs = {
         category: 'science',
         era: 'solar',
         path: ['truepath'],
-        reqs: { titan: 7, kuiper: 1 },
+        reqs: { titan: 7, makemake: 1 },
         grant: ['titan',8],
         cost: {
             Knowledge(){ return 2750000; },
@@ -12486,10 +12486,10 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.settings.space.eris = true;
-                global.settings.space.kuiper = true;
+                global.settings.space.makemake = true;
                 global.tech['eris_scan'] = 0;
                 initStruct(actions.space.spc_eris.drone_control);
-                messageQueue(loc('tech_nav_data_result',[planetName().eris]),'info',false,['progress']);
+                messageQueue(loc('tech_nav_data_result',[planetName().makemake, planetName().eris]),'info',false,['progress']);
                 return true;
             }
             return false;
@@ -13016,17 +13016,17 @@ const techs = {
         category: 'mining',
         era: 'solar',
         path: ['truepath'],
-        reqs: { kuiper: 1 },
-        grant: ['kuiper',2],
+        reqs: { makemake: 1 },
+        grant: ['makemake',2],
         cost: {
             Knowledge(){ return 2500000; },
             Orichalcum(){ return 100000; },
             Cipher(){ return 12000; }
         },
-        effect(){ return loc('tech_elerium_extraction_effect'); },
+        effect(){ return loc('tech_elerium_extraction_effect',[planetName().makemake]); },
         action(){
             if (payCosts($(this)[0])){
-                initStruct(actions.space.spc_kuiper.elerium_mine);
+                initStruct(actions.space.spc_makemake.elerium_mine);
                 return true;
             }
             return false;
@@ -13039,7 +13039,7 @@ const techs = {
         category: 'power_generation',
         era: 'solar',
         path: ['truepath'],
-        reqs: { kuiper: 1, swarm: 5 },
+        reqs: { makemake: 1, swarm: 5 },
         grant: ['swarm',6],
         cost: {
             Knowledge(){ return 2400000; },
@@ -13248,7 +13248,7 @@ const techs = {
         category: 'space_militarization',
         era: 'solar',
         path: ['truepath'],
-        reqs: { syard_class: 5, kuiper: 1 },
+        reqs: { syard_class: 5, makemake: 1 },
         grant: ['syard_class',6],
         cost: {
             Knowledge(){ return 2500000; },

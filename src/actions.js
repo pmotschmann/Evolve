@@ -5,7 +5,7 @@ import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from 
 import { races, traits, genus_def, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill, traitRank } from './races.js';
 import { defineResources, unlockCrates, unlockContainers, crateValue, containerValue, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus, faithTempleCount } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
-import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter, cancelRituals } from './industry.js';
+import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter, addFactoryLines, cancelRituals } from './industry.js';
 import { defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating, garrisonSize, govEffect } from './civics.js';
 import { spaceTech, interstellarTech, galaxyTech, incrementStruct, universe_affixes, renderSpace, piracy, fuel_adjust, isStargateOn, spaceSectors, checkRequirements } from './space.js';
 import { renderFortress, fortressTech, warlordSetup } from './portal.js';
@@ -2799,7 +2799,7 @@ export const actions = {
                         defineIndustry();
                     }
                     if (powerOnNewStruct($(this)[0])){
-                        global.city.factory.Alloy++;
+                        addFactoryLines(1);
                     }
                     return true;
                 }
@@ -2815,7 +2815,16 @@ export const actions = {
                         Alloy: 0,
                         Polymer: 0,
                         Nano: 0,
-                        Stanene: 0
+                        Stanene: 0,
+                        hold: {
+                            Lux: 0,
+                            Furs: 0,
+                            Alloy: 0,
+                            Polymer: 0,
+                            Nano: 0,
+                            Stanene: 0
+                        },
+                        cap: 0
                     },
                     p: ['factory','city']
                 };

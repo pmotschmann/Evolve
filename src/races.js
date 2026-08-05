@@ -6442,14 +6442,19 @@ export const genusVars = {
     eldritch: {}
 };
 
+// Solar planets/moons encountered in Truepath, unique on genus rather than race.
+const genusSolarBodies = [
+    'titan','enceladus','triton','eris',
+    'venus','saturn','uranus','neptune',
+    'io','europa','callisto','titania','oberon',
+    'pluto','haumea','makemake'
+];
 Object.keys(genusVars).forEach(function(k){
     let g = k === 'organism' ? 'humanoid' : k;
-    genusVars[k]['solar'] = {
-        titan: loc(`genus_${g}_solar_titan`),
-        enceladus: loc(`genus_${g}_solar_enceladus`),
-        triton: loc(`genus_${g}_solar_triton`),
-        eris: loc(`genus_${g}_solar_eris`),
-    }
+    genusVars[k]['solar'] = {};
+    genusSolarBodies.forEach(function(body){
+        genusVars[k].solar[body] = loc(`genus_${g}_solar_${body}`);
+    });
 });
 
 export function setJType(){

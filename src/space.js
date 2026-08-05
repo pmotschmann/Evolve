@@ -4,7 +4,7 @@ import { unlockAchieve, unlockFeat, universeAffix } from './achieve.js';
 import { races, traits, genus_def, genusVars, planetTraits, biomes, traitCostMod } from './races.js';
 import { spatialReasoning, unlockContainers, drawResourceTab, atomic_mass } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
-import { defineIndustry, addSmelter } from './industry.js';
+import { defineIndustry, addSmelter, addFactoryLines } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
 import { actions, payCosts, powerOnNewStruct, initStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, templeCount, casinoEffect, wardenLabel, buildTemplate, structName } from './actions.js';
 import { outerTruthTech, syndicate, drawShipYard, genXYcoord, infestationLabel, infestationMethods, salvageShip, salvagePin } from './truepath.js';
@@ -1129,7 +1129,7 @@ const spaceProjects = {
                 if (payCosts($(this)[0])){
                     incrementStruct('red_factory');
                     if (powerOnNewStruct($(this)[0])){
-                        global.city.factory.Alloy++;
+                        addFactoryLines(1);
                     }
                     global.settings.showIndustry = true;
                     defineIndustry();
@@ -2929,7 +2929,7 @@ const spaceProjects = {
     spc_titan: outerTruthTech().spc_titan,
     spc_enceladus: outerTruthTech().spc_enceladus,
     spc_triton: outerTruthTech().spc_triton,
-    spc_kuiper: outerTruthTech().spc_kuiper,
+    spc_makemake: outerTruthTech().spc_makemake,
     spc_eris: outerTruthTech().spc_eris,
 };
 
@@ -3362,7 +3362,7 @@ const interstellarProjects = {
                 if (payCosts($(this)[0])){
                     incrementStruct('int_factory','interstellar');
                     if (powerOnNewStruct($(this)[0])){
-                        global.city.factory.Alloy += 2;
+                        addFactoryLines(2);
                         defineIndustry();
                     }
                     return true;
@@ -7668,6 +7668,39 @@ export function zigguratBonus(){
     return bonus;
 }
 
+// Locations that fill out the solar system
+const truepathBodies = [
+    { field: 'venus',     adv: true },
+    { field: 'io',        adv: true },
+    { field: 'europa',    adv: true },
+    { field: 'callisto',  adv: true },
+    { field: 'saturn',    adv: true },
+    { field: 'titan' },
+    { field: 'enceladus' },
+    { field: 'uranus',    adv: true },
+    { field: 'titania',   adv: true },
+    { field: 'oberon',    adv: true },
+    { field: 'neptune',   adv: true },
+    { field: 'triton' },
+    { field: 'pluto',     adv: true },
+    { field: 'haumea',    adv: true },
+    { field: 'makemake' },
+    { field: 'eris' }
+];
+
+// All additional solar locations
+const advancedSolarBodies = truepathBodies.filter(b => b.adv).map(b => b.field);
+
+// Base TP3 outer solar locations
+const truepathSolarBodies = truepathBodies.map(b => b.field);
+
+// The genus whose names a genome falls back on. A hybrid has no naming set of its own, so it
+// borrows its first half's; anything the table does not cover lands on humanoid.
+function genomeNamer(genome){
+    let named = genome.genus === 'hybrid' && genome.hybrid ? genome.hybrid[0] : genome.genus;
+    return genusVars[named] ? named : 'humanoid';
+}
+
 export function planetName(){
     let type = races[global.race.species].type === 'hybrid' ? global.race.maintype : races[global.race.species].type;
     let names = {
@@ -7681,16 +7714,31 @@ export function planetName(){
         enceladus: genusVars[type].solar.enceladus,
         triton: genusVars[type].solar.triton,
         eris: genusVars[type].solar.eris,
+        venus: genusVars[type].solar.venus,
+        saturn: genusVars[type].solar.saturn,
+        uranus: genusVars[type].solar.uranus,
+        neptune: genusVars[type].solar.neptune,
+        io: genusVars[type].solar.io,
+        europa: genusVars[type].solar.europa,
+        callisto: genusVars[type].solar.callisto,
+        titania: genusVars[type].solar.titania,
+        oberon: genusVars[type].solar.oberon,
+        pluto: genusVars[type].solar.pluto,
+        haumea: genusVars[type].solar.haumea,
+        makemake: genusVars[type].solar.makemake,
     };
+    // Anything the custom race named for itself wins over its genus's default — the advanced bodies
+    // included, since the gene lab can now name those too.
+    let renameable = truepathSolarBodies;
     if (global.race.species === 'custom'){
-        for (let p of ['titan','enceladus','triton','eris']){
+        for (let p of renameable){
             if (global.custom.race0.hasOwnProperty(p)){
                 names[p] = global.custom.race0[p];
             }
         }
     }
     if (global.race.species === 'hybrid'){
-        for (let p of ['titan','enceladus','triton','eris']){
+        for (let p of renameable){
             if (global.custom.race1.hasOwnProperty(p)){
                 names[p] = global.custom.race1[p];
             }
@@ -7703,34 +7751,34 @@ export const universe_affixes = ['l', 'h', 'a', 'e', 'm', 'mg'];
 
 export const universe_types = {
     standard: {
-        name: loc('universe_standard'),
+        name(){ return loc('universe_standard'); },
         desc(){ return loc('universe_standard_desc'); },
-        effect: loc('universe_standard_effect')
+        effect(){ return loc('universe_standard_effect'); }
     },
     heavy: {
-        name: loc('universe_heavy'),
+        name(){ return loc('universe_heavy'); },
         desc(){ return loc('universe_heavy_desc'); },
-        effect: loc('universe_heavy_effect',[5])
+        effect(){ return loc('universe_heavy_effect',[5]); }
     },
     antimatter: {
-        name: loc('universe_antimatter'),
+        name(){ return loc('universe_antimatter'); },
         desc(){ return loc('universe_antimatter_desc'); },
-        effect: loc('universe_antimatter_effect')
+        effect(){ return loc('universe_antimatter_effect'); }
     },
     evil: {
-        name: loc('universe_evil'),
+        name(){ return loc('universe_evil'); },
         desc(){ return loc('universe_evil_desc'); },
-        effect: loc('universe_evil_effect')
+        effect(){ return loc('universe_evil_effect'); }
     },
     micro: {
-        name: loc('universe_micro'),
+        name(){ return loc('universe_micro'); },
         desc(){ return loc('universe_micro_desc'); },
-        effect: loc('universe_micro_effect',[75])
+        effect(){ return loc('universe_micro_effect',[75]); }
     },
     magic: {
-        name: loc('universe_magic'),
+        name(){ return loc('universe_magic'); },
         desc(){ return loc('universe_magic_desc'); },
-        effect: loc('universe_magic_effect')
+        effect(){ return loc('universe_magic_effect'); }
     }
 };
 
@@ -7783,7 +7831,7 @@ export function setUniverse(){
         let id = `uni-${universe}`;
 
         let parent = $(`<div id="${id}" class="action"></div>`);
-        let element = $(`<a class="button is-dark" v-on:click="action" role="link"><span class="aTitle">${universe_types[universe].name}</span></a>`);
+        let element = $(`<a class="button is-dark" v-on:click="action" role="link"><span class="aTitle">${universe_types[universe].name()}</span></a>`);
         parent.append(element);
 
         $('#evolution').append(parent);
@@ -7800,16 +7848,16 @@ export function setUniverse(){
 
         srDescButton.on('click',function(){
             let desc = '';
-            desc = desc + universe_types[universe].name + ' universe: ';
-            desc = desc + universe_types[universe].desc + '. ';
-            desc = desc + universe_types[universe].effect + '.';
+            desc = desc + universe_types[universe].name() + ' universe: ';
+            desc = desc + universe_types[universe].desc() + '. ';
+            desc = desc + universe_types[universe].effect() + '.';
             srSpeak(desc);
         });
 
         popover(id,function(obj){
-            obj.popper.append($(`<div>${universe_types[universe].name}</div>`));
-            obj.popper.append($(`<div>${universe_types[universe].desc}</div>`));
-            obj.popper.append($(`<div>${universe_types[universe].effect}</div>`));
+            obj.popper.append($(`<div>${universe_types[universe].name()}</div>`));
+            obj.popper.append($(`<div>${universe_types[universe].desc()}</div>`));
+            obj.popper.append($(`<div>${universe_types[universe].effect()}</div>`));
             return undefined;
         },{
             classes: `has-background-light has-text-dark`
@@ -7924,23 +7972,30 @@ export function ascendLab(hybrid,wiki){
         `);
     }
 
-    let name = $(`<div class="fields"><div class="name">${loc('genelab_name')} <b-input v-model="g.name" maxlength="20"></b-input></div><div class="entity">${loc('genelab_entity')} <b-input v-model="g.entity" maxlength="40"></b-input></div><div class="name">${loc('genelab_home')} <b-input v-model="g.home" maxlength="20"></b-input></div> <div>${loc('genelab_desc')} <b-input v-model="g.desc" maxlength="255"></b-input></div></div>`);
+    let name = $(`<div class="fields"><div class="name textInput">${loc('genelab_name')} <b-input v-model="g.name" maxlength="20"></b-input></div><div class="entity textInput">${loc('genelab_entity')} <b-input v-model="g.entity" maxlength="40"></b-input></div><div class="name textInput">${loc('genelab_home')} <b-input v-model="g.home" maxlength="20"></b-input></div> <div class="textInput">${loc('genelab_desc')} <b-input v-model="g.desc" maxlength="255"></b-input></div></div>`);
     lab.append(name);
 
     let planets = $(`<div class="fields">
-        <div class="name">${loc('genelab_red')} <b-input v-model="g.red" maxlength="20"></b-input></div>
-        <div class="name">${loc('genelab_hell')} <b-input v-model="g.hell" maxlength="20"></b-input></div>
-        <div class="name">${loc('genelab_gas')} <b-input v-model="g.gas" maxlength="20"></b-input></div>
-        <div class="name">${loc('genelab_gas_moon')} <b-input v-model="g.gas_moon" maxlength="20"></b-input></div>
-        <div class="name">${loc('genelab_dwarf')} <b-input v-model="g.dwarf" maxlength="20"></b-input></div></div>`);
+        <div class="name textInput">${loc('genelab_red')} <b-input v-model="g.red" maxlength="20"></b-input></div>
+        <div class="name textInput">${loc('genelab_hell')} <b-input v-model="g.hell" maxlength="20"></b-input></div>
+        <div class="name textInput">${loc('genelab_gas')} <b-input v-model="g.gas" maxlength="20"></b-input></div>
+        <div class="name textInput">${loc('genelab_gas_moon')} <b-input v-model="g.gas_moon" maxlength="20"></b-input></div>
+        <div class="name textInput">${loc('genelab_dwarf')} <b-input v-model="g.dwarf" maxlength="20"></b-input></div></div>`);
     lab.append(planets);
 
-    let tpPlanets = $(`<div class="fields">
-        <div class="name">${loc('genelab_titan')} <b-input v-model="g.titan" maxlength="20"></b-input></div>
-        <div class="name">${loc('genelab_enceladus')} <b-input v-model="g.enceladus" maxlength="20"></b-input></div>
-        <div class="name">${loc('genelab_triton')} <b-input v-model="g.triton" maxlength="20"></b-input></div>
-        <div class="name">${loc('genelab_eris')} <b-input v-model="g.eris" maxlength="20"></b-input></div></div>`);
-    lab.append(tpPlanets);
+    let tpHeader = $(`<div class="fields tpMode"><span class="has-text-caution">${loc('genelab_truepath')}</span> <button class="button tpmode" @click="advanced()">{{ advLabel() }}</button></div>`);
+    lab.append(tpHeader);
+
+    // One block in solar order (see truepathBodies). The advanced entries hide themselves rather
+    // than living in a block of their own, so switching to Advanced opens them up in place among the
+    // four that are always shown instead of appending a second list underneath.
+    let tpPlanets = `<div class="fields">`;
+    truepathBodies.forEach(function(body){
+        let advOnly = body.adv ? ` v-show="adv.on"` : ``;
+        tpPlanets += `<div class="name textInput tp"${advOnly}>${loc(`genelab_${body.field}`)} <b-input v-model="g.${body.field}" maxlength="20"></b-input></div>`;
+    });
+    tpPlanets += `</div>`;
+    lab.append($(tpPlanets));
 
     let genes = $(`<div class="sequence"></div>`);
     lab.append(genes);
@@ -7960,7 +8015,7 @@ export function ascendLab(hybrid,wiki){
     }
     else {
         let genus = `<div class="genus_selection">`;
-        genus += `<div id="geneLabGenus" class="genus"><div class="has-text-caution header">${loc('genelab_genus')}</div><button class="button" @click="genus()">{{ genus(g.genus) }}</button></div>`;
+        genus += `<div id="geneLabGenus" class="genus"><div class="has-text-caution header">${loc('genelab_genus')}</div><button class="button" @click="genus()">{{ genus_f(g.genus) }}</button></div>`;
         genus += `${fanatic}`;
         genus += `<div class="resetLab"><button class="button" @click="reset()">${loc('genelab_reset')}</button></div>`;
         genus += `</div>`;
@@ -7970,7 +8025,7 @@ export function ascendLab(hybrid,wiki){
     let slot = hybrid ? 'race1' : 'race0';
     let genome = global.hasOwnProperty('custom') && global.custom.hasOwnProperty(slot) ? {
         name: global.custom[slot].name,
-        desc(){ return global.custom[slot].desc; },
+        desc: global.custom[slot].desc,
         entity: global.custom[slot].entity,
         home: global.custom[slot].home,
         red: global.custom[slot].red,
@@ -7981,6 +8036,7 @@ export function ascendLab(hybrid,wiki){
         titan: global.custom[slot].titan || planetName().titan,
         enceladus: global.custom[slot].enceladus || planetName().enceladus,
         triton: global.custom[slot].triton || planetName().triton,
+        makemake: global.custom[slot].makemake || planetName().makemake,
         eris: global.custom[slot].eris || planetName().eris,
         genes: 0,
         genus: global.custom[slot].genus,
@@ -7989,7 +8045,7 @@ export function ascendLab(hybrid,wiki){
         fanaticism: global.custom[slot].hasOwnProperty('fanaticism') && global.custom[slot].fanaticism ? global.custom[slot].fanaticism : false,
     } : {
         name: 'Zombie',
-        desc(){ return `Zombies aren't so much a species as they are the shambling remains of a race who succumbed to a nightmarish virus. Yet somehow they continue to drone on.`; },
+        desc: `Zombies aren't so much a species as they are the shambling remains of a race who succumbed to a nightmarish virus. Yet somehow they continue to drone on.`,
         entity: 'rotting bipedal creatures',
         home: 'Grave',
         red: 'Brains',
@@ -8000,6 +8056,7 @@ export function ascendLab(hybrid,wiki){
         titan: 'Necromancer',
         enceladus: 'Skeleton',
         triton: 'Rot',
+        makemake: 'Shamble',
         eris: 'Zombieland',
         genes: 10,
         genus: dGenus,
@@ -8017,10 +8074,14 @@ export function ascendLab(hybrid,wiki){
         }
     }
 
+    advancedSolarBodies.forEach(function(body){
+        genome[body] = global.hasOwnProperty('custom') && global.custom.hasOwnProperty(slot) && global.custom[slot][body]
+            ? global.custom[slot][body]
+            : genusVars[genomeNamer(genome)].solar[body];
+    });
+
     // Wrap the closure data object in a reactive proxy at its source so programmatic
-    // mutations (e.g. geneEdit's genome.genes = ...) are tracked. Without this, direct
-    // writes to the raw object update the value but never re-render (the wiki has no
-    // per-tick $forceUpdate loop to mask it), so the genes-remaining count went stale.
+    // mutations (e.g. geneEdit's genome.genes = ...) are tracked.
     genome = Vue.reactive(genome);
 
     let taxomized = { utility: {}, resource: {}, production: {}, combat: {}, all: {} };;
@@ -8109,15 +8170,47 @@ export function ascendLab(hybrid,wiki){
 
     let tRanks = genome.ranks;
     let activeTab = Vue.reactive({ t: 0 });
+    // Whether the True Path field set is showing the whole system. Local to the lab: it decides what
+    // is on screen, not anything about the race, so there is nothing to carry into the save.
+    let advMode = Vue.reactive({ on: false });
+
+    // Re-price the genome and show the new total. Shared by everything that can change the price:
+    // the trait checkboxes, and the genus picker in its own modal — a genus brings its own traits,
+    // whose values come straight off the remaining genes, and it decides which traits count as
+    // opposed and so cost extra. Both make the number on screen wrong until this runs.
+    //
+    // Deferred to the next tick because v-model writes the new value *after* the change handler
+    // returns; pricing immediately would read the previous genus or trait list and leave the count
+    // one interaction behind.
+    function repriceGenome(){
+        Vue.nextTick(() => {
+            let newRanks = genome.traitlist.map(x => tRanks[x] ? { [x]: tRanks[x] } : { [x]: 1 });
+            let ranks = {};
+            newRanks.forEach(function(k){ Object.keys(k).forEach(function(t){ ranks[t] = k[t] }) });
+            tRanks = ranks;
+            genome.genes = calcGenomeScore(genome,(isWiki ? wikiVars : false),tRanks);
+            if (activeTab.t === 5){
+                summaryTab(5);
+            }
+        });
+    }
+
     vBind({
         el: '#celestialLab',
         data: {
             g: genome,
             w: wikiVars,
             err: error,
-            tt: activeTab
+            tt: activeTab,
+            adv: advMode
         },
         methods: {
+            advanced(){
+                advMode.on = !advMode.on;
+            },
+            advLabel(){
+                return advMode.on ? loc('genelab_advanced') : loc('genelab_basic');
+            },
             val(type){
                 if (type === 'technophobe'){
                     if (wikiVars['technophobe'] < 0){
@@ -8137,20 +8230,7 @@ export function ascendLab(hybrid,wiki){
                 }
             },
             geneEdit(){
-                // Defer to the next tick: on this same update:model-value event, v-model
-                // also updates g.traitlist, and that assignment can run after this handler.
-                // Recomputing now would read the pre-toggle trait list, leaving the genes
-                // count one interaction behind. nextTick runs after the model settles.
-                Vue.nextTick(() => {
-                    let newRanks = genome.traitlist.map(x => tRanks[x] ? { [x]: tRanks[x] } : { [x]: 1 });
-                    let ranks = {};
-                    newRanks.forEach(function(k){ Object.keys(k).forEach(function(t){ ranks[t] = k[t] }) });
-                    tRanks = ranks;
-                    genome.genes = calcGenomeScore(genome,(isWiki ? wikiVars : false),tRanks);
-                    if (activeTab.t === 5){
-                        summaryTab(5);
-                    }
-                });
+                repriceGenome();
             },
             setRace(){
                 if (genome.fanaticism && !genome.traitlist.includes(genome.fanaticism)){ return false; }
@@ -8159,7 +8239,12 @@ export function ascendLab(hybrid,wiki){
 
                     global.custom[slot] = {
                         name: genome.name,
-                        desc(){ return genome.desc; },
+                        // Stored as text, not as a function returning it. global.custom goes into the
+                        // save through JSON, which drops function-valued properties outright, so a
+                        // method here meant the description the player had just written was gone by
+                        // the next save — and customRace() hands this straight to the race's own
+                        // `desc`, which every stock race defines as a string.
+                        desc: genome.desc,
                         entity: genome.entity,
                         home: genome.home,
                         red: genome.red,
@@ -8170,12 +8255,20 @@ export function ascendLab(hybrid,wiki){
                         titan: genome.titan,
                         enceladus: genome.enceladus,
                         triton: genome.triton,
+                        makemake: genome.makemake,
                         eris: genome.eris,
                         genus: genome.genus,
                         traits: genome.traitlist,
                         fanaticism: genome.fanaticism,
                         ranks: tRanks
                     };
+                    // Carried whether or not the player ever opened Advanced: they hold the genus
+                    // defaults until edited, and storing them keeps the race's whole system in one
+                    // place rather than half in the save and half derived at read time.
+                    advancedSolarBodies.forEach(function(body){
+                        global.custom[slot][body] = genome[body];
+                    });
+
                     if (hybrid){
                         global.custom[slot]['hybrid'] = genome.hybrid;
                         apotheosis();
@@ -8198,24 +8291,33 @@ export function ascendLab(hybrid,wiki){
                 return false;
             },
             reset(){
+                // What the species is gets cleared outright; the worlds it shares a system with do
+                // not. Blanking those left the player retyping the whole solar system to get back to
+                // anything ordinary, so each comes back as a default instead — the outer bodies from
+                // the chosen genus, since those are the ones a genus names for itself, and the five
+                // inner worlds from the human set, the only race-level naming there is and the one
+                // that reads as the plain astronomical names.
+                //
+                // The genus itself is left alone. It is a choice about what the species is rather
+                // than a field to type in, and clearing it would throw away the pick the names being
+                // written here are meant to match.
                 genome.name = "";
                 genome.desc = "";
                 genome.entity = "";
                 genome.home = "";
-                genome.red = "";
-                genome.hell = "";
-                genome.gas = "";
-                genome.gas_moon = "";
-                genome.dwarf = "";
-                genome.titan = "";
-                genome.enceladus = "";
-                genome.triton = "";
-                genome.eris = "";
-                genome.genus = dGenus;
                 genome.traitlist = [];
                 genome.ranks = {};
-                genome.genes = calcGenomeScore(genome,(isWiki ? wikiVars : false), tRanks);
                 genome.fanaticism = false;
+
+                let named = genomeNamer(genome);
+                ['red','hell','gas','gas_moon','dwarf'].forEach(function(body){
+                    genome[body] = races.human.solar[body];
+                });
+                truepathSolarBodies.forEach(function(body){
+                    genome[body] = genusVars[named].solar[body];
+                });
+
+                genome.genes = calcGenomeScore(genome,(isWiki ? wikiVars : false), tRanks);
             },
             fanatic(){
                 this.$buefy.modal.open({
@@ -8235,13 +8337,17 @@ export function ascendLab(hybrid,wiki){
                         var body = $('<div id="specialModal" class="modalBody"></div>');
                         $('#modalBox').append(body);
 
-                        let traits = `<div class="fanatic"><template><section>`;
+                        // No <template> around the list. Vue mounts on #specialModal and compiles
+                        // what is inside it, and a bare <template> there comes back as a real,
+                        // inert <template> element with the options parked inside it as ordinary
+                        // children — present in the DOM, never rendered, so the picker looks empty.
+                        let traits = `<div class="fanatic"><section>`;
                         genome.traitlist.forEach(function (trait){
                             if (trait !== 'imitation'){
                                 traits += `<div class="field ${trait}"><b-radio v-model="fanaticism" native-value="${trait}">${loc(`trait_${trait}_name`)}</b-radio></div>`;
                             }
                         });
-                        traits += `</section></template></div>`;
+                        traits += `</section></div>`;
                         body.append($(traits));
 
                         vBind({
@@ -8269,25 +8375,33 @@ export function ascendLab(hybrid,wiki){
                         var body = $('<div id="specialModal" class="modalBody"></div>');
                         $('#modalBox').append(body);
 
-                        let genus = `<div class="genus_selection"><template><section>`;
+                        // See the fanaticism picker above: no <template> around a list Vue mounts on.
+                        let genus = `<div class="genus_selection"><section>`;
                         Object.keys(genus_def).forEach(function (type){
                             if (type !== 'hybrid'){
                                 if (isWiki || (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0)){
+                                    // Same handler the trait checkboxes use: picking a genus changes
+                                    // what the genome costs, so the genes remaining has to be redone.
                                     if (genome.genus === 'hybrid' && ((slot === 0 && type !== genome.hybrid[1]) || (slot === 1 && type !== genome.hybrid[0]))){
-                                        genus += `<div class="field ${type}"><b-radio v-model="hybrid[${slot}]" native-value="${type}">${loc(`genelab_genus_${type}`)}</b-radio></div>`;
+                                        genus += `<div class="field ${type}"><b-radio @update:model-value="geneEdit()" v-model="hybrid[${slot}]" native-value="${type}">${loc(`genelab_genus_${type}`)}</b-radio></div>`;
                                     }
                                     else if (genome.genus !== 'hybrid'){
-                                        genus += `<div class="field ${type}"><b-radio v-model="genus" native-value="${type}">${loc(`genelab_genus_${type}`)}</b-radio></div>`;
+                                        genus += `<div class="field ${type}"><b-radio @update:model-value="geneEdit()" v-model="genus" native-value="${type}">${loc(`genelab_genus_${type}`)}</b-radio></div>`;
                                     }
                                 }
                             }
                         });
-                        genus += `</section></template></div>`;
+                        genus += `</section></div>`;
                         body.append($(genus));
 
                         vBind({
                             el: '#specialModal',
-                            data: genome
+                            data: genome,
+                            methods: {
+                                geneEdit(){
+                                    repriceGenome();
+                                }
+                            }
                         });
 
                         Object.keys(genus_def).forEach(function (type){
@@ -8356,9 +8470,14 @@ export function ascendLab(hybrid,wiki){
                                 genome[type] = importCustom[type];
                             }
                         });
-                        ['name','home','red','hell','gas','gas_moon','dwarf','titan','enceladus','triton','eris'].forEach(function(field){
-                            if (!importCustom[field] && ['titan','enceladus','triton','eris'].includes(field)){
-                                genome[field] = loc(`genus_${genome.genus}_solar_${field}`)
+                        // Fields the genus names for itself, so an import that predates any of them
+                        // (every export before the advanced bodies existed) fills in rather than
+                        // arriving blank. Resolved through genusVars rather than a raw loc key: a
+                        // hybrid genome has no naming set under its own name.
+                        let genusNamed = truepathSolarBodies;
+                        ['name','home','red','hell','gas','gas_moon','dwarf'].concat(genusNamed).forEach(function(field){
+                            if (!importCustom[field] && genusNamed.includes(field)){
+                                genome[field] = genusVars[genomeNamer(genome)].solar[field];
                             }
                             else if (genome[field].length > 20){
                                 genome[field] = genome[field].substring(0, 20);
@@ -8812,17 +8931,18 @@ export function terraformLab(wiki){
     lab.append(pBiome);
 
     let dBiome = false;
-    let biome = `<div class="genus_selection"><div class="has-text-caution">${loc('wiki_planet_biome')}</div><template><section>`;
+    // The planet lab's three pickers carry the same inert-<template> problem the gene lab's did.
+    let biome = `<div class="genus_selection"><div class="has-text-caution">${loc('wiki_planet_biome')}</div><section>`;
     Object.keys(biomes).forEach(function (type){
         if (wiki || (global.stats.achieve[`biome_${type}`] && global.stats.achieve[`biome_${type}`].l > 0)){
             if (!dBiome){ dBiome = type; }
             biome = biome + `<div class="field ${type}"><b-radio v-model="p.biome" native-value="${type}">${biomes[type].label}</b-radio></div>`;
         }
     });
-    biome = biome + `</section></template></div>`;
+    biome = biome + `</section></div>`;
     pBiome.append($(biome));
 
-    let trait_list = `<div class="planet_selection"><div class="has-text-warning">${loc('wiki_planet_trait')}</div><template><section>`;
+    let trait_list = `<div class="planet_selection"><div class="has-text-warning">${loc('wiki_planet_trait')}</div><section>`;
     Object.keys(planetTraits).forEach(function (trait){
         if (
             wiki
@@ -8832,7 +8952,7 @@ export function terraformLab(wiki){
             trait_list = trait_list + `<div class="field t${trait}"><b-checkbox :input="pEdit()" v-model="p.traitlist" native-value="${trait}"><span class="has-text-success">${planetTraits[trait].label}</span></b-checkbox></div>`;
         }
     });
-    trait_list = trait_list + `</section></template></div>`;
+    trait_list = trait_list + `</section></div>`;
     pBiome.append($(trait_list));
 
     let geology = {};
@@ -8841,7 +8961,7 @@ export function terraformLab(wiki){
         geoList.push('Iridium');
     }
 
-    let geo_list = `<div class="res_selection"><div class="has-text-warning">${loc('planetlab_res')}</div><template><section>`;
+    let geo_list = `<div class="res_selection"><div class="has-text-warning">${loc('planetlab_res')}</div><section>`;
     geoList.forEach(function (res){
         geology[res] = 0;
         geo_list += `<div class="field t${res}"><div>${global.resource[res].name}</div><div>`;
@@ -8850,7 +8970,7 @@ export function terraformLab(wiki){
         geo_list += `<span role="button" aria-label="import ${res}" class="add has-text-success" @click="more('${res}')"><span>+</span></span>`;
         geo_list += `</div></div>`;
     });
-    geo_list = geo_list + `</section></template></div>`;
+    geo_list = geo_list + `</section></div>`;
     pBiome.append($(geo_list));
 
     let planet = {

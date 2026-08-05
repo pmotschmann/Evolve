@@ -1309,68 +1309,112 @@ if (convertVersion(global['version']) < 104009){
     }
 }
 
-// Skilled servant capacity is now a permanent allowance (sbase) plus whatever temporary help is on
-// loan, so Womling artisans can add to it without the total compounding every tick. A save from before
-// that has the whole figure in smax, and got its servants from the prestige grant — mark both so the
-// grant does not pay out a second time.
-if (global['race'] && global.race['servants']){
-    if (!global.race.servants.hasOwnProperty('sbase')){
-        global.race.servants['sbase'] = global.race.servants['smax'] || 0;
+if (convertVersion(global['version']) <= 105000){
+// The Kuiper Belt was replaced by the dwarf planet Makemake
+    if (global['tech'] && global.tech.hasOwnProperty('kuiper')){
+        global.tech['makemake'] = global.tech['kuiper'];
+        delete global.tech['kuiper'];
     }
-    if (!global.race.servants.hasOwnProperty('prestige')){
-        global.race.servants['prestige'] = true;
+    if (global['settings'] && global.settings['space'] && global.settings.space.hasOwnProperty('kuiper')){
+        if (global.settings.space['kuiper']){ global.settings.space['makemake'] = true; }
+        delete global.settings.space['kuiper'];
     }
-}
-
-// The replicator gained a second production line. A save from before that has neither field; start the
-// split at 100/0 so the second line is idle and the save behaves exactly as it did.
-if (global['race'] && global.race['replicator']){
-    if (!global.race.replicator.hasOwnProperty('res2')){
-        global.race.replicator['res2'] = global.race.replicator['res'];
-    }
-    if (!global.race.replicator.hasOwnProperty('ratio')){
-        global.race.replicator['ratio'] = 100;
-    }
-}
-
-// The Titan metalworks gained metals after it first shipped. A save built against the older list has no
-// share stored for the new ones, which would read as undefined in the industry panel's running total —
-// start them unassigned so the split the player already tuned is left exactly as it was.
-if (global['space'] && global.space['metalworks']){
-    ['Steel','Iridium','Iron','Copper','Aluminium','Titanium'].forEach(function(res){
-        if (!global.space.metalworks.hasOwnProperty(res)){
-            global.space.metalworks[res] = 0;
+    if (global['space']){
+        if (global.space['syndicate'] && global.space.syndicate.hasOwnProperty('spc_kuiper')){
+            global.space.syndicate['spc_makemake'] = global.space.syndicate['spc_kuiper'];
+            delete global.space.syndicate['spc_kuiper'];
         }
-    });
-}
+        if (global.space['shipyard']){
+            // Ships out at the belt, and any that were told to return there.
+            if (global.space.shipyard['ships']){
+                global.space.shipyard.ships.forEach(function(ship){
+                    if (ship['location'] === 'spc_kuiper'){ ship.location = 'spc_makemake'; }
+                    if (ship['ret'] === 'spc_kuiper'){ ship.ret = 'spc_makemake'; }
+                });
+            }
+            // Whether that location's row in the fleet list was folded up.
+            if (global.space.shipyard['view'] && global.space.shipyard.view['fold'] && global.space.shipyard.view.fold.hasOwnProperty('spc_kuiper')){
+                global.space.shipyard.view.fold['spc_makemake'] = global.space.shipyard.view.fold['spc_kuiper'];
+                delete global.space.shipyard.view.fold['spc_kuiper'];
+            }
+        }
+    }
+    // Power priority is a player-ordered list of "region:structure". Renamed in place
+    if (global['power'] && Array.isArray(global.power)){
+        for (let i=0; i<global.power.length; i++){
+            if (typeof global.power[i] === 'string' && global.power[i].startsWith('spc_kuiper:')){
+                global.power[i] = 'spc_makemake:' + global.power[i].split(':')[1];
+            }
+        }
+    }
+    // A queued mission keeps its place in the build queue. 
+    if (global['queue'] && Array.isArray(global.queue['queue'])){
+        global.queue.queue.forEach(function(item){
+            if (item['id'] === 'space-kuiper_mission'){ item['id'] = 'space-makemake_mission'; }
+            if (item['type'] === 'kuiper_mission'){ item['type'] = 'makemake_mission'; }
+        });
+    }
 
-// The Tau Ceti refueling station used to store its graphene fuel allocation on the Titan graphene
-// factory and mirror its count/on onto it every tick, which only held up while isolation kept Titan
-// unreachable. Now that the jump gate brings Titan back, both plants run at once and the station owns
-// its own allocation.
-if (global['tauceti'] && global.tauceti['refueling_station'] && !global.tauceti.refueling_station.hasOwnProperty('Lumber')){
-    global.tauceti.refueling_station['Lumber'] = 0;
-    global.tauceti.refueling_station['Coal'] = 0;
-    global.tauceti.refueling_station['Oil'] = 0;
+    // Skilled servant capacity is now a permanent allowance (sbase) plus whatever temporary help is on
+    // loan, so Womling artisans can add to it without the total compounding every tick. A save from before
+    // that has the whole figure in smax, and got its servants from the prestige grant — mark both so the
+    // grant does not pay out a second time.
+    if (global['race'] && global.race['servants']){
+        if (!global.race.servants.hasOwnProperty('sbase')){
+            global.race.servants['sbase'] = global.race.servants['smax'] || 0;
+        }
+        if (!global.race.servants.hasOwnProperty('prestige')){
+            global.race.servants['prestige'] = true;
+        }
+    }
 
-    // Only an isolation save ever parked the station's allocation on the factory. Without isolation the
-    // station makes no graphene at all and the factory's allocation is genuinely Titan's — leave it be.
-    let old = (global.tech && global.tech['isolation'] && global['space'] && global.space['g_factory']) ? global.space.g_factory : false;
-    if (old){
-        global.tauceti.refueling_station['Lumber'] = old['Lumber'] || 0;
-        global.tauceti.refueling_station['Coal'] = old['Coal'] || 0;
-        global.tauceti.refueling_station['Oil'] = old['Oil'] || 0;
-        old['Lumber'] = 0;
-        old['Coal'] = 0;
-        old['Oil'] = 0;
-        old['count'] = 0;
-        old['on'] = 0;
+    // The replicator gained a second production line. A save from before that has neither field; start the
+    // split at 100/0 so the second line is idle and the save behaves exactly as it did.
+    if (global['race'] && global.race['replicator']){
+        if (!global.race.replicator.hasOwnProperty('res2')){
+            global.race.replicator['res2'] = global.race.replicator['res'];
+        }
+        if (!global.race.replicator.hasOwnProperty('ratio')){
+            global.race.replicator['ratio'] = 100;
+        }
+    }
+
+    // The Titan metalworks gained metals after first draft version
+    if (global['space'] && global.space['metalworks']){
+        ['Steel','Iridium','Iron','Copper','Aluminium','Titanium'].forEach(function(res){
+            if (!global.space.metalworks.hasOwnProperty(res)){
+                global.space.metalworks[res] = 0;
+            }
+        });
+    }
+
+    // The Tau Ceti refueling station used to store its graphene fuel allocation on the Titan graphene
+    // factory and mirror its count/on onto it every tick, which only held up while isolation kept Titan
+    // unreachable.
+    if (global['tauceti'] && global.tauceti['refueling_station'] && !global.tauceti.refueling_station.hasOwnProperty('Lumber')){
+        global.tauceti.refueling_station['Lumber'] = 0;
+        global.tauceti.refueling_station['Coal'] = 0;
+        global.tauceti.refueling_station['Oil'] = 0;
+
+        // Only an isolation save ever parked the station's allocation on the factory. Without isolation the
+        // station makes no graphene at all and the factory's allocation is genuinely Titan's — leave it be.
+        let old = (global.tech && global.tech['isolation'] && global['space'] && global.space['g_factory']) ? global.space.g_factory : false;
+        if (old){
+            global.tauceti.refueling_station['Lumber'] = old['Lumber'] || 0;
+            global.tauceti.refueling_station['Coal'] = old['Coal'] || 0;
+            global.tauceti.refueling_station['Oil'] = old['Oil'] || 0;
+            old['Lumber'] = 0;
+            old['Coal'] = 0;
+            old['Oil'] = 0;
+            old['count'] = 0;
+            old['on'] = 0;
+        }
     }
 }
 
 global['version'] = '1.5.0';
 delete global['revision'];
-global['beta'] = 18;
+global['beta'] = 20;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
@@ -1656,7 +1700,11 @@ if (!global.settings.hasOwnProperty('resBar')){
 if (!global.settings.hasOwnProperty('mapView')){
     global.settings['mapView'] = {};
 }
-['planetOrbits','moonOrbits','ships','planetNames'].forEach(function(k){
+// `webgl` picks the backend that paints it: on by default, since both renderers draw the same scene
+// from the same code and the hardware-accelerated one is the better default wherever it is
+// available. It is ignored on a browser without WebGL, which falls back to the 2D canvas without
+// disturbing the setting — so a save that moves to a machine that can manage it gets it back.
+['planetOrbits','moonOrbits','ships','planetNames','webgl'].forEach(function(k){
     if (!global.settings.mapView.hasOwnProperty(k)){
         global.settings.mapView[k] = true;
     }
@@ -2065,14 +2113,18 @@ if (!global['arpa']){
 }
 
 if (global.city['factory']){
-    if (!global.city.factory['Lux']){
-        global.city.factory['Lux'] = 0;
+    // Production lines shut down when factory capacity was lost,
+    if (!global.city.factory.hasOwnProperty('hold')){
+        global.city.factory['hold'] = {};
     }
-    if (!global.city.factory['Alloy']){
-        global.city.factory['Alloy'] = 0;
-    }
-    if (!global.city.factory['Polymer']){
-        global.city.factory['Polymer'] = 0;
+    // Ensure all resources at factory are initialize
+    ['Lux','Furs','Alloy','Polymer','Nano','Stanene'].forEach(function(res){
+        if (!global.city.factory.hold.hasOwnProperty(res)){
+            global.city.factory.hold[res] = 0;
+        }
+    });
+    if (!global.city.factory.hasOwnProperty('cap')){
+        global.city.factory['cap'] = 0;
     }
 }
 
@@ -2440,7 +2492,7 @@ function setRegionStates(reset){
         space: [
             'moon','red','hell','sun','gas','gas_moon','belt','dwarf','alpha','proxima',
             'nebula','neutron','blackhole','sirius','stargate','gateway','gorddon',
-            'alien1','alien2','chthonian','titan','enceladus','triton','eris','kuiper'
+            'alien1','alien2','chthonian','titan','enceladus','triton','eris','makemake'
         ],
         portal: ['fortress','badlands','pit','ruins','gate','lake','spire','wasteland'],
         eden: ['asphodel','elysium','isle','palace'],

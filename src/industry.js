@@ -587,6 +587,37 @@ export function addSmelter(num=1, product="Iron", fuel="Oil"){
     }
 }
 
+// The factory's products, in the order its lines are handed out and taken away. Every factory
+// anywhere — city, Red Planet, interstellar, Tau Ceti, hell — feeds the one pool of lines in
+// global.city.factory, so this is the single order the whole game trims and restores by.
+export const factoryLines = ['Lux','Furs','Alloy','Polymer','Nano','Stanene'];
+
+// Put `num` factory lines to work.
+//
+// Lines that were shut down when factory capacity was lost are remembered in factory.hold (see the
+// factory block in main.js), and they are put back on the job they were doing before anything else:
+// a factory that is switched back on, or rebuilt after being razed, resumes what it was making
+// rather than starting over. Only once nothing is left to remember do new lines fall back to alloy,
+// which is what a genuinely new factory has always defaulted to.
+export function addFactoryLines(num){
+    if (!(num > 0) || !global.city['factory']){ return; }
+    let hold = global.city.factory['hold'];
+    if (hold){
+        for (let res of factoryLines){
+            if (num <= 0){ break; }
+            let back = Math.min(hold[res] || 0, num);
+            if (back > 0){
+                global.city.factory[res] += back;
+                hold[res] -= back;
+                num -= back;
+            }
+        }
+    }
+    if (num > 0){
+        global.city.factory.Alloy += num;
+    }
+}
+
 function loadFactory(parent,bind){
     let fuel = $(`<div><span class="has-text-warning">${loc('modal_factory_operate')}:</span> <span :class="level()">{{ on_f(count) }}/{{ max_f(on) }}</span></div>`);
     parent.append(fuel);

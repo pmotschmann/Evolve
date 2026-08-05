@@ -14,7 +14,7 @@ import { descension } from './resets.js';
 import { renderEdenic } from './edenic.js';
 import { loadTab } from './index.js';
 import { loc } from './locale.js';
-import { defineIndustry, addSmelter } from './industry.js';
+import { defineIndustry, addSmelter, addFactoryLines } from './industry.js';
 import { arpa } from './arpa.js';
 import { jobName } from './jobs.js';
 
@@ -1201,7 +1201,7 @@ const fortressModules = {
                 else if (payCosts($(this)[0])){
                     incrementStruct('hell_factory','portal');
                     if (powerOnNewStruct($(this)[0])){
-                        global.city.factory.Alloy += $(this)[0].lines();
+                        addFactoryLines($(this)[0].lines());
                         defineIndustry();
                     }
                     return true;
@@ -8667,7 +8667,7 @@ export function warlordSetup(){
         global.tech['housing'] = 3;
         global.tech['housing_reduction'] = 3;
         global.tech['infernite'] = 6;
-        global.tech['kuiper'] = 2;
+        global.tech['makemake'] = 2;
         global.tech['launch_facility'] = 1;
         global.tech['luna'] = 2;
         global.tech['marines'] = 2;

@@ -764,7 +764,7 @@ export function mechanicsPage(content){
         { // Current Syndicate Influence List
             let syndicate_influence_reveal = createRevealSection(syndicate_influence,'mechanics','syndicate_influence_current',loc('wiki_mechanics_syndicate_influence_current'));
             
-            ['moon','red','gas','gas_moon','belt','titan','enceladus','triton','kuiper','eris'].forEach(function(region){
+            ['moon','red','gas','gas_moon','belt','titan','enceladus','triton','makemake','eris'].forEach(function(region){
                 let influence = global.space['syndicate'] && global.space.syndicate['spc_'+region] ? global.space.syndicate['spc_'+region] : 0;
                 
                 syndicate_influence_reveal.append(`<div><span class="has-text-caution">${getSolarName(region)}</span>: <span class="has-text-warning">${influence}</span>`);
@@ -2683,7 +2683,7 @@ function syndicateCapCalc(info){
     })
     
     let regions = ``;
-    ['moon','red','gas','gas_moon','belt','titan','enceladus','triton','kuiper','eris'].forEach(function(region){
+    ['moon','red','gas','gas_moon','belt','titan','enceladus','triton','makemake','eris'].forEach(function(region){
         regions += `
             <div>
                 <span class="has-text-caution">${getSolarName(region)}</span>: <span class="has-text-warning">{{ calc('${region}') }}</span>
@@ -2728,7 +2728,7 @@ function syndicateCapCalc(info){
                         return inputs.triton1.val ? inputs.outer4.val ? 1500 : 1000 : 600;
                     case 'triton':
                         return inputs.triton1.val && inputs.outer4.val ? 5000 : 3000;
-                    case 'kuiper':
+                    case 'makemake':
                         return 2500;
                     case 'eris':
                         return 7500;
@@ -2817,7 +2817,7 @@ function syndicatePenaltyCalc(info){
                         <b-dropdown-item v-on:click="pickRegion('titan')">{{ regionLabel('titan') }}</b-dropdown-item>
                         <b-dropdown-item v-on:click="pickRegion('enceladus')">{{ regionLabel('enceladus') }}</b-dropdown-item>
                         <b-dropdown-item v-on:click="pickRegion('triton')">{{ regionLabel('triton') }}</b-dropdown-item>
-                        <b-dropdown-item v-on:click="pickRegion('kuiper')">{{ regionLabel('kuiper') }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickRegion('makemake')">{{ regionLabel('makemake') }}</b-dropdown-item>
                         <b-dropdown-item v-on:click="pickRegion('eris')">{{ regionLabel('eris') }}</b-dropdown-item>
                     </b-dropdown>
                 </div>
@@ -2846,7 +2846,7 @@ function syndicatePenaltyCalc(info){
                 return inputs.triton1.val ? inputs.outer4.val ? 1500 : 1000 : 600;
             case 'triton':
                 return inputs.triton1.val && inputs.outer4.val ? 5000 : 3000;
-            case 'kuiper':
+            case 'makemake':
                 return 2500;
             case 'eris':
                 return 7500;

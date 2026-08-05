@@ -5,7 +5,7 @@ import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaT
 import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, cleanRemoveTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobName, jobScale, workerScale, limitCraftsmen, loadServants} from './jobs.js';
-import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, replicatorLines, luxGoodPrice, smelterUnlocked, smelterFuelConfig, setupRituals, maxRitualNum, ritual_types } from './industry.js';
+import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, replicatorLines, luxGoodPrice, smelterUnlocked, smelterFuelConfig, setupRituals, maxRitualNum, ritual_types, factoryLines } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
 import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, checkPowerRequirements, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, start_iceage, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct, casino_vault, casinoEarn, doCallbacks, cLabels } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types, spaceSectors } from './space.js';
@@ -617,7 +617,7 @@ vBind({
             return races[species].home;
         },
         universe(universe){
-            return universe === 'standard' || universe === 'bigbang' ? '' : universe_types[universe].name;
+            return universe === 'standard' || universe === 'bigbang' ? '' : universe_types[universe].name();
         },
         remain(at){
             let minutes = Math.ceil(at * loopTimers().longTimer / 60000);
@@ -748,8 +748,8 @@ popover('topBarPlanet',
 
 popover('topBarUniverse',
     function(obj){
-        obj.popper.append($(`<div>${universe_types[global.race.universe].desc}</div>`));
-        obj.popper.append($(`<div>${universe_types[global.race.universe].effect}</div>`));
+        obj.popper.append($(`<div>${universe_types[global.race.universe].desc()}</div>`));
+        obj.popper.append($(`<div>${universe_types[global.race.universe].effect()}</div>`));
         return undefined;
     },
     {
@@ -4629,13 +4629,28 @@ function fastLoop(){
             let eff = max_factories > 0 ? on_factories / max_factories : 0;
             let remaining = max_factories;
 
-            ['Lux','Furs','Alloy','Polymer','Nano','Stanene'].forEach(function(res){
+            let hold = global.city.factory['hold'];
+            factoryLines.forEach(function(res){
                 remaining -= global.city.factory[res];
                 if (remaining < 0) {
+                    if (hold){ hold[res] -= remaining; }   // remaining is negative: banks what was cut
                     global.city.factory[res] += remaining;
                     remaining = 0;
                 }
             });
+
+            if (hold && remaining > 0 && max_factories > global.city.factory.cap){
+                let room = Math.min(remaining, max_factories - global.city.factory.cap);
+                factoryLines.forEach(function(res){
+                    if (room <= 0 || !hold[res]){ return; }
+                    let back = Math.min(hold[res], room);
+                    global.city.factory[res] += back;
+                    hold[res] -= back;
+                    room -= back;
+                    remaining -= back;
+                });
+            }
+            global.city.factory.cap = max_factories;
 
             let assembly = global.tech['factory'] || 0;
             let tauBonus = global.tech['isolation'] ? 1 + ((support_on['colony'] || 0) * 0.5) : 1;
@@ -6978,13 +6993,13 @@ function fastLoop(){
             modRes('Uranium', droid_delta * time_multiplier);
         }
 
-        // Kuiper Uranium
+        // Makemake Uranium
         if (global.space['uranium_mine'] && p_on['uranium_mine']){
-            let synd = syndicate('spc_kuiper');
+            let synd = syndicate('spc_makemake');
 
             let mine_base = p_on['uranium_mine'] * production('uranium_mine') * production('psychic_boost','Uranium');
             let mine_delta = mine_base * global_multiplier * qs_multiplier * synd * zigVal;
-            breakdown.p['Uranium'][loc('space_kuiper_mine',[global.resource.Uranium.name])] = mine_base + 'v';
+            breakdown.p['Uranium'][loc('space_makemake_mine',[global.resource.Uranium.name])] = mine_base + 'v';
             if (mine_base > 0){
                 breakdown.p['Uranium'][`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
                 breakdown.p['Uranium'][`ᄂ${loc('space_red_ziggurat_title')}+1`] = ((zigVal - 1) * 100) + '%';
@@ -7337,13 +7352,13 @@ function fastLoop(){
             modRes('Neutronium', delta * time_multiplier);
         }
 
-        // Kuiper Neutronium
+        // Makemake Neutronium
         if (global.space['neutronium_mine'] && p_on['neutronium_mine']){
-            let synd = syndicate('spc_kuiper');
+            let synd = syndicate('spc_makemake');
 
             let mine_base = p_on['neutronium_mine'] * production('neutronium_mine') * production('psychic_boost','Neutronium');
             let mine_delta = mine_base * global_multiplier * qs_multiplier * synd * zigVal;
-            breakdown.p['Neutronium'][loc('space_kuiper_mine',[global.resource.Neutronium.name])] = mine_base + 'v';
+            breakdown.p['Neutronium'][loc('space_makemake_mine',[global.resource.Neutronium.name])] = mine_base + 'v';
             if (mine_base > 0){
                 breakdown.p['Neutronium'][`ᄂ${loc('space_syndicate')}+1`] = -((1 - synd) * 100) + '%';
                 breakdown.p['Neutronium'][`ᄂ${loc('space_red_ziggurat_title')}+3`] = ((zigVal - 1) * 100) + '%';
@@ -7397,13 +7412,13 @@ function fastLoop(){
             modRes('Elerium', delta * time_multiplier);
         }
 
-        // Kuiper Elerium
+        // Makemake Elerium
         if (global.space['elerium_mine'] && p_on['elerium_mine']){
-            let synd = syndicate('spc_kuiper');
+            let synd = syndicate('spc_makemake');
 
             let mine_base = p_on['elerium_mine'] * production('elerium_mine') * production('psychic_boost','Elerium');
             let mine_delta = mine_base * global_multiplier * qs_multiplier * synd * hunger * zigVal;
-            breakdown.p['Elerium'][loc('space_kuiper_mine',[global.resource.Elerium.name])] = mine_base + 'v';
+            breakdown.p['Elerium'][loc('space_makemake_mine',[global.resource.Elerium.name])] = mine_base + 'v';
             if (mine_base > 0){
                 breakdown.p['Elerium'][`ᄂ${loc('space_syndicate')}+1`] = -((1 - synd) * 100) + '%';
                 breakdown.p['Elerium'][`ᄂ${loc('space_red_ziggurat_title')}+2`] = ((zigVal - 1) * 100) + '%';
@@ -7805,13 +7820,13 @@ function fastLoop(){
             modRes('Orichalcum', delta * time_multiplier);
         }
 
-        // Kuiper Orichalcum
+        // Makemake Orichalcum
         if (global.space['orichalcum_mine'] && p_on['orichalcum_mine']){
-            let synd = syndicate('spc_kuiper');
+            let synd = syndicate('spc_makemake');
 
             let mine_base = p_on['orichalcum_mine'] * production('orichalcum_mine') * production('psychic_boost','Orichalcum');
             let mine_delta = mine_base * global_multiplier * qs_multiplier * synd * zigVal;
-            breakdown.p['Orichalcum'][loc('space_kuiper_mine',[global.resource.Orichalcum.name])] = mine_base + 'v';
+            breakdown.p['Orichalcum'][loc('space_makemake_mine',[global.resource.Orichalcum.name])] = mine_base + 'v';
             if (mine_base > 0){
                 breakdown.p['Orichalcum'][`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
                 breakdown.p['Orichalcum'][`ᄂ${loc('space_red_ziggurat_title')}+1`] = ((zigVal - 1) * 100) + '%';
@@ -12847,7 +12862,7 @@ function longLoop(){
                     drawTech();
                     loadFoundry();
                 }
-                if (global.resource.Knowledge.max >= (actions.tech.alien_biotech.cost.Knowledge() * know_adjust) && global.tech['genetics'] && global.tech.genetics >= 8 && global.tech['kuiper'] && !global.tech['biotech']){
+                if (global.resource.Knowledge.max >= (actions.tech.alien_biotech.cost.Knowledge() * know_adjust) && global.tech['genetics'] && global.tech.genetics >= 8 && global.tech['makemake'] && !global.tech['biotech']){
                     messageQueue(loc(tech_source,[loc('tech_alien_biotech')]),'info',false,['progress']);
                     global.tech['biotech'] = 1;
                     drawTech();
