@@ -8667,7 +8667,7 @@ export function warlordSetup(){
         global.tech['housing'] = 3;
         global.tech['housing_reduction'] = 3;
         global.tech['infernite'] = 6;
-        global.tech['kuiper'] = 2;
+        global.tech['makemake'] = 2;
         global.tech['launch_facility'] = 1;
         global.tech['luna'] = 2;
         global.tech['marines'] = 2;

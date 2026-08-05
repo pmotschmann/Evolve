@@ -1605,7 +1605,7 @@ const extraInformation = {
     ],
     nav_data: [
         loc(`wiki_tech_destination_unlock`,[loc(`space_mission_title`,[getSolarName('eris')]),getSolarName('eris')]),
-        loc(`wiki_tech_destination_unlock`,[loc(`space_mission_title`,[loc(`space_kuiper_title`)]),loc(`space_kuiper_title`)]),
+        loc(`wiki_tech_destination_unlock`,[loc(`space_mission_title`,[getSolarName('makemake')]),getSolarName('makemake')]),
     ],
     dronewar: [
         loc(`wiki_tech_building_unlock`,[loc('space_drone_control',[getSolarName('eris')])]),
@@ -1684,7 +1684,7 @@ const extraInformation = {
         loc(`wiki_tech_warehouse_shelving2`)
     ],
     elerium_extraction: [
-        loc(`wiki_tech_building_unlock`,[loc('space_kuiper_mine',[global.resource.Elerium.name])])
+        loc(`wiki_tech_building_unlock`,[loc('space_makemake_mine',[global.resource.Elerium.name])])
     ],
     orichalcum_panels_tp: [
         loc(`wiki_tech_perovskite_cell`,[0.8])
@@ -2470,9 +2470,9 @@ const extraRequirements = {
         title: loc('wiki_tech_req_mission',[loc('space_mission_title',[getSolarName('triton')])]),
         link: 'wiki.html#space-tp_structures-triton_mission'
     },
-    kuiper1 : {
-        title: loc('wiki_tech_req_mission',[loc('space_mission_title',[loc(`space_kuiper_title`)])]),
-        link: 'wiki.html#space-tp_structures-kuiper_mission'
+    makemake1 : {
+        title: loc('wiki_tech_req_mission',[loc('space_mission_title',[getSolarName('makemake')])]),
+        link: 'wiki.html#space-tp_structures-makemake_mission'
     },
     eris2 : {
         title: loc('wiki_tech_req_eris2',[getSolarName('eris')])

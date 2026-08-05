@@ -269,10 +269,7 @@ export function getSolarName(planet) {
     if (['moon','belt'].includes(planet)){
         return loc('space_'+planet+'_info_name');
     }
-    else if (['kuiper'].includes(planet)){
-        return loc('space_'+planet+'_title');
-    }
-    
+
     return planetName()[planet];
 }
 

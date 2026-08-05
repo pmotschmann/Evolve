@@ -1226,48 +1226,48 @@ const outerTruth = {
             }
         },
     },
-    spc_kuiper: {
+    spc_makemake: {
         info: {
             name(){
-                return loc(`space_kuiper_title`);
+                return planetName().makemake;
             },
             desc(){
-                return loc('space_kuiper_desc');
+                return loc('space_makemake_info_desc',[planetName().makemake]);
             },
             zone: 'outer',
             showDest(){
-                return {r: global.settings.space.kuiper || global.tech?.resettle >= 3, l: global.settings.space.kuiper};
+                return {r: true, l: global.settings.space.makemake};
             },
-            syndicate(){ if (global.tech['resettle']){ return false; } return global.tech['kuiper'] ? true : false; },
+            syndicate(){ if (global.tech['resettle']){ return false; } return global.tech['makemake'] ? true : false; },
             syndicate_cap(){ return 2500; },
             nav(){ return global.tech['resettle'] ? false : true; }
         },
-        kuiper_mission: {
-            id: 'space-kuiper_mission',
+        makemake_mission: {
+            id: 'space-makemake_mission',
             title(){
-                return loc('space_mission_title',[loc(`space_kuiper_title`)]);
+                return loc('space_mission_title',[planetName().makemake]);
             },
             desc(){
-                return loc('space_mission_desc',[loc(`space_kuiper_title`)]);
+                return loc('space_mission_desc',[planetName().makemake]);
             },
             reqs: { outer: 7 },
-            grant: ['kuiper',1],
+            grant: ['makemake',1],
             path: ['truepath'],
-            queue_complete(){ return global.tech.kuiper >= 1 ? 0 : 1; },
+            queue_complete(){ return global.tech.makemake >= 1 ? 0 : 1; },
             cost: {
                 Helium_3(offset,wiki){ return +fuel_adjust(1000000,false,wiki).toFixed(0); },
                 Elerium(){ return 1000; }
             },
             effect(){
-                return loc('space_kuiper_mission_effect');
+                return loc('space_makemake_mission_effect',[planetName().makemake]);
             },
             action(){
                 if (payCosts($(this)[0])){
-                    initStruct(outerTruth.spc_kuiper.orichalcum_mine);
-                    initStruct(outerTruth.spc_kuiper.uranium_mine);
-                    initStruct(outerTruth.spc_kuiper.neutronium_mine);
-                    global.space.syndicate['spc_kuiper'] = 500;
-                    messageQueue(loc('space_kuiper_mission_action'),'info',false,['progress']);
+                    initStruct(outerTruth.spc_makemake.orichalcum_mine);
+                    initStruct(outerTruth.spc_makemake.uranium_mine);
+                    initStruct(outerTruth.spc_makemake.neutronium_mine);
+                    global.space.syndicate['spc_makemake'] = 500;
+                    messageQueue(loc('space_makemake_mission_action',[planetName().makemake]),'info',false,['progress']);
                     return true;
                 }
                 return false;
@@ -1275,12 +1275,12 @@ const outerTruth = {
         },
         orichalcum_mine: {
             id: 'space-orichalcum_mine',
-            title(){ return loc('space_kuiper_mine',[global.resource.Orichalcum.name]); },
+            title(){ return loc('space_makemake_mine',[global.resource.Orichalcum.name]); },
             desc(){
-                return `<div>${loc('space_kuiper_mine',[global.resource.Orichalcum.name])}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Oil.name])}</div>`;
+                return `<div>${loc('space_makemake_mine',[global.resource.Orichalcum.name])}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Oil.name])}</div>`;
             },
             type: 'mining',
-            reqs: { kuiper: 1 },
+            reqs: { makemake: 1 },
             path: ['truepath'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('orichalcum_mine', offset, 25000000, 1.25); },
@@ -1315,12 +1315,12 @@ const outerTruth = {
         },
         uranium_mine: {
             id: 'space-uranium_mine',
-            title(){ return loc('space_kuiper_mine',[global.resource.Uranium.name]); },
+            title(){ return loc('space_makemake_mine',[global.resource.Uranium.name]); },
             desc(){
-                return `<div>${loc('space_kuiper_mine',[global.resource.Uranium.name])}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Oil.name])}</div>`;
+                return `<div>${loc('space_makemake_mine',[global.resource.Uranium.name])}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Oil.name])}</div>`;
             },
             type: 'mining',
-            reqs: { kuiper: 1 },
+            reqs: { makemake: 1 },
             path: ['truepath'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('uranium_mine', offset, 5000000, 1.25); },
@@ -1352,12 +1352,12 @@ const outerTruth = {
         },
         neutronium_mine: {
             id: 'space-neutronium_mine',
-            title(){ return loc('space_kuiper_mine',[global.resource.Neutronium.name]); },
+            title(){ return loc('space_makemake_mine',[global.resource.Neutronium.name]); },
             desc(){
-                return `<div>${loc('space_kuiper_mine',[global.resource.Neutronium.name])}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Oil.name])}</div>`;
+                return `<div>${loc('space_makemake_mine',[global.resource.Neutronium.name])}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Oil.name])}</div>`;
             },
             type: 'mining',
-            reqs: { kuiper: 1 },
+            reqs: { makemake: 1 },
             path: ['truepath'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('neutronium_mine', offset, 8000000, 1.25); },
@@ -1389,12 +1389,12 @@ const outerTruth = {
         },
         elerium_mine: {
             id: 'space-elerium_mine',
-            title(){ return loc('space_kuiper_mine',[global.resource.Elerium.name]); },
+            title(){ return loc('space_makemake_mine',[global.resource.Elerium.name]); },
             desc(){
-                return `<div>${loc('space_kuiper_mine',[global.resource.Elerium.name])}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Oil.name])}</div>`;
+                return `<div>${loc('space_makemake_mine',[global.resource.Elerium.name])}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Oil.name])}</div>`;
             },
             type: 'mining',
-            reqs: { kuiper: 2 },
+            reqs: { makemake: 2 },
             path: ['truepath'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('elerium_mine', offset, 20000000, 1.25); },
@@ -6719,7 +6719,7 @@ const shipyardRanks = {
         spc_titan: 7,
         spc_enceladus: 8,
         spc_triton: 9,
-        spc_kuiper: 10,
+        spc_makemake: 10,
         spc_eris: 11,
         tauceti: 12,
         tau_home: 13,
@@ -7266,7 +7266,7 @@ export function syndicate(region,extra){
                 divisor = actions.space[region].info.syndicate_cap();
                 break;
             case 'spc_triton':
-            case 'spc_kuiper':
+            case 'spc_makemake':
             case 'spc_eris':
                 divisor = actions.space[region].info.syndicate_cap();
                 break;
@@ -7504,8 +7504,7 @@ export const spacePlanetStats = {
     spc_neptune: { dist: 30.08, orbit: 60152, size: 0.376, inc: 1.77, ecc: 0.0086 },
     // Triton is retrograde and steeply inclined — the one moon here whose orbit is nothing like its planet's plane.
     spc_triton: { dist: 0.002371, orbit: 5.877, size: 0.088, moon: true, parent: 'spc_neptune', inc: 130 },
-    spc_kuiper: { dist: 39.5, orbit: 90498, size: 0.061, belt: true, inc: 10, ecc: 0.05 },
-    // The dwarf planets of the Kuiper belt
+    // The dwarf planets of the Kuiper belt.
     spc_pluto: { dist: 39.482, orbit: 90560, size: 0.083, inc: 17.16, ecc: 0.2488 },
     spc_haumea: { dist: 43.116, orbit: 103775, size: 0.067, inc: 28.21, ecc: 0.195 },
     spc_makemake: { dist: 45.43, orbit: 111843, size: 0.064, inc: 28.98, ecc: 0.161 },
@@ -8501,7 +8500,7 @@ export function jumpGateShutdown(){
 
     [
         'spc_home','spc_moon','spc_red','spc_hell','spc_sun','spc_gas','spc_gas_moon','spc_belt',
-        'spc_dwarf','spc_titan','spc_enceladus','spc_triton','spc_kuiper','spc_eris'
+        'spc_dwarf','spc_titan','spc_enceladus','spc_triton','spc_makemake','spc_eris'
     ].forEach(function(sector){
         Object.keys(actions.space[sector]).forEach(function (k){
             if (global.space.hasOwnProperty(k) && global.space[k].hasOwnProperty('count')){
@@ -8615,7 +8614,7 @@ export function jumpGateRestart(){
     let regions = {
         space: [
             'home','moon','red','hell','gas','gas_moon','belt','dwarf',
-            'titan','enceladus','triton','eris','kuiper'
+            'titan','enceladus','triton','eris','makemake'
         ]
     };
     Object.keys(regions).forEach(function(r){
@@ -8680,7 +8679,7 @@ export function loneSurvivor(){
         global.tech['home_safe'] = 2;
         global.tech['housing'] = 3;
         global.tech['housing_reduction'] = 3;
-        global.tech['kuiper'] = 2;
+        global.tech['makemake'] = 2;
         global.tech['launch_facility'] = 1;
         global.tech['luna'] = 2;
         global.tech['m_smelting'] = 2;
@@ -9044,10 +9043,10 @@ export function loneSurvivor(){
         initStruct(actions.space.spc_home.nav_beacon);
         initStruct(actions.space.spc_home.propellant_depot);
         initStruct(actions.space.spc_home.satellite);
-        initStruct(actions.space.spc_kuiper.elerium_mine);
-        initStruct(actions.space.spc_kuiper.neutronium_mine);
-        initStruct(actions.space.spc_kuiper.orichalcum_mine);
-        initStruct(actions.space.spc_kuiper.uranium_mine);
+        initStruct(actions.space.spc_makemake.elerium_mine);
+        initStruct(actions.space.spc_makemake.neutronium_mine);
+        initStruct(actions.space.spc_makemake.orichalcum_mine);
+        initStruct(actions.space.spc_makemake.uranium_mine);
         initStruct(actions.space.spc_moon.helium_mine);
         initStruct(actions.space.spc_moon.iridium_mine);
         initStruct(actions.space.spc_moon.moon_base);
@@ -9581,17 +9580,13 @@ const SOL_BODY_COLOR = {
     spc_oberon:    '7d6f66',   // Oberon, darker and redder, the most cratered of the pair
     spc_neptune:   '3a5ec4',   // Neptune, deep blue
     spc_triton:    'd6c4c0',   // Triton, pink-grey ice
-    spc_kuiper:    '6a6a76',   // Kuiper rubble
     spc_pluto:     'c8a582',   // Pluto, buff tan
     spc_haumea:    'e6e8ec',   // Haumea, bright water ice — one of the most reflective bodies known
     spc_makemake:  'c68a66',   // Makemake, red methane frost
     spc_eris:      'c6c6d0',   // Eris, dirty ice
 };
 
-// The Sol bodies the map draws purely as scenery. They have no space action behind them, so unlike
-// the places you can settle they carry no name of their own — these map each to its key in
-// planetName(), which names them the way it names everything else in the system: from the playing
-// genus, so a hive of insectoids and a host of angels see the same worlds by different names.
+// The Sol bodies the map draws purely as scenery.
 const SOL_BODY_LABEL = {
     spc_venus:     'venus',
     spc_saturn:    'saturn',
@@ -9604,7 +9599,6 @@ const SOL_BODY_LABEL = {
     spc_oberon:    'oberon',
     spc_pluto:     'pluto',
     spc_haumea:    'haumea',
-    spc_makemake:  'makemake',
 };
 
 // Surface treatment per body. Anything not named here falls back to the generic pool below.
@@ -9616,8 +9610,6 @@ const SOL_BODY_STYLE = {
     spc_enceladus: 'ice',   spc_uranus: 'icegiant', spc_neptune: 'neptune',
     spc_titania: 'cratered', spc_oberon: 'cratered',
     spc_triton: 'ice',      spc_dwarf: 'cratered',  spc_eris: 'ice',
-    // Pluto and Haumea are ice through and through; Makemake is taken as the old cratered surface
-    // its lack of any atmosphere implies.
     spc_pluto: 'ice',       spc_haumea: 'ice',      spc_makemake: 'cratered',
 };
 

@@ -6993,13 +6993,13 @@ function fastLoop(){
             modRes('Uranium', droid_delta * time_multiplier);
         }
 
-        // Kuiper Uranium
+        // Makemake Uranium
         if (global.space['uranium_mine'] && p_on['uranium_mine']){
-            let synd = syndicate('spc_kuiper');
+            let synd = syndicate('spc_makemake');
 
             let mine_base = p_on['uranium_mine'] * production('uranium_mine') * production('psychic_boost','Uranium');
             let mine_delta = mine_base * global_multiplier * qs_multiplier * synd * zigVal;
-            breakdown.p['Uranium'][loc('space_kuiper_mine',[global.resource.Uranium.name])] = mine_base + 'v';
+            breakdown.p['Uranium'][loc('space_makemake_mine',[global.resource.Uranium.name])] = mine_base + 'v';
             if (mine_base > 0){
                 breakdown.p['Uranium'][`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
                 breakdown.p['Uranium'][`ᄂ${loc('space_red_ziggurat_title')}+1`] = ((zigVal - 1) * 100) + '%';
@@ -7352,13 +7352,13 @@ function fastLoop(){
             modRes('Neutronium', delta * time_multiplier);
         }
 
-        // Kuiper Neutronium
+        // Makemake Neutronium
         if (global.space['neutronium_mine'] && p_on['neutronium_mine']){
-            let synd = syndicate('spc_kuiper');
+            let synd = syndicate('spc_makemake');
 
             let mine_base = p_on['neutronium_mine'] * production('neutronium_mine') * production('psychic_boost','Neutronium');
             let mine_delta = mine_base * global_multiplier * qs_multiplier * synd * zigVal;
-            breakdown.p['Neutronium'][loc('space_kuiper_mine',[global.resource.Neutronium.name])] = mine_base + 'v';
+            breakdown.p['Neutronium'][loc('space_makemake_mine',[global.resource.Neutronium.name])] = mine_base + 'v';
             if (mine_base > 0){
                 breakdown.p['Neutronium'][`ᄂ${loc('space_syndicate')}+1`] = -((1 - synd) * 100) + '%';
                 breakdown.p['Neutronium'][`ᄂ${loc('space_red_ziggurat_title')}+3`] = ((zigVal - 1) * 100) + '%';
@@ -7412,13 +7412,13 @@ function fastLoop(){
             modRes('Elerium', delta * time_multiplier);
         }
 
-        // Kuiper Elerium
+        // Makemake Elerium
         if (global.space['elerium_mine'] && p_on['elerium_mine']){
-            let synd = syndicate('spc_kuiper');
+            let synd = syndicate('spc_makemake');
 
             let mine_base = p_on['elerium_mine'] * production('elerium_mine') * production('psychic_boost','Elerium');
             let mine_delta = mine_base * global_multiplier * qs_multiplier * synd * hunger * zigVal;
-            breakdown.p['Elerium'][loc('space_kuiper_mine',[global.resource.Elerium.name])] = mine_base + 'v';
+            breakdown.p['Elerium'][loc('space_makemake_mine',[global.resource.Elerium.name])] = mine_base + 'v';
             if (mine_base > 0){
                 breakdown.p['Elerium'][`ᄂ${loc('space_syndicate')}+1`] = -((1 - synd) * 100) + '%';
                 breakdown.p['Elerium'][`ᄂ${loc('space_red_ziggurat_title')}+2`] = ((zigVal - 1) * 100) + '%';
@@ -7820,13 +7820,13 @@ function fastLoop(){
             modRes('Orichalcum', delta * time_multiplier);
         }
 
-        // Kuiper Orichalcum
+        // Makemake Orichalcum
         if (global.space['orichalcum_mine'] && p_on['orichalcum_mine']){
-            let synd = syndicate('spc_kuiper');
+            let synd = syndicate('spc_makemake');
 
             let mine_base = p_on['orichalcum_mine'] * production('orichalcum_mine') * production('psychic_boost','Orichalcum');
             let mine_delta = mine_base * global_multiplier * qs_multiplier * synd * zigVal;
-            breakdown.p['Orichalcum'][loc('space_kuiper_mine',[global.resource.Orichalcum.name])] = mine_base + 'v';
+            breakdown.p['Orichalcum'][loc('space_makemake_mine',[global.resource.Orichalcum.name])] = mine_base + 'v';
             if (mine_base > 0){
                 breakdown.p['Orichalcum'][`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
                 breakdown.p['Orichalcum'][`ᄂ${loc('space_red_ziggurat_title')}+1`] = ((zigVal - 1) * 100) + '%';
@@ -12862,7 +12862,7 @@ function longLoop(){
                     drawTech();
                     loadFoundry();
                 }
-                if (global.resource.Knowledge.max >= (actions.tech.alien_biotech.cost.Knowledge() * know_adjust) && global.tech['genetics'] && global.tech.genetics >= 8 && global.tech['kuiper'] && !global.tech['biotech']){
+                if (global.resource.Knowledge.max >= (actions.tech.alien_biotech.cost.Knowledge() * know_adjust) && global.tech['genetics'] && global.tech.genetics >= 8 && global.tech['makemake'] && !global.tech['biotech']){
                     messageQueue(loc(tech_source,[loc('tech_alien_biotech')]),'info',false,['progress']);
                     global.tech['biotech'] = 1;
                     drawTech();

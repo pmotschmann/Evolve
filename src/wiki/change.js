@@ -11,7 +11,13 @@ export const changeList = [
             `Upgraded Vue 2 to Vue 3.`,
             `Added new "Offline Time" feature, replaces "Accelerated Time"`,
             `Added option to Save or Load game from Google Drive.`,
-            `TruePath StarMap now supports WebGL rendering (default when supported).`,
+            `Truepath Star Map now supports WebGL rendering (default when supported).`,
+            `Truepath Star Map now has a Z axis making it more realistic and rotatable.`,
+            `Truepath planets and ships are now tracked on 3 dimensions.`,
+            `The Kuiper Belt has been replaced with the dwarf planet Makemake on Truepath.`,
+            `Solar System orbits changed to be more realistic.`,
+            `The planet trait "Elliptical" will now change the actual orbit path of your homeworld on Truepath.`,
+            `The planet trait "Retrograde" will now cause the moon to actually orbit backwards on Truepath.`,
         ]
     },
     {

@@ -2929,7 +2929,7 @@ const spaceProjects = {
     spc_titan: outerTruthTech().spc_titan,
     spc_enceladus: outerTruthTech().spc_enceladus,
     spc_triton: outerTruthTech().spc_triton,
-    spc_kuiper: outerTruthTech().spc_kuiper,
+    spc_makemake: outerTruthTech().spc_makemake,
     spc_eris: outerTruthTech().spc_eris,
 };
 
@@ -7668,15 +7668,7 @@ export function zigguratBonus(){
     return bonus;
 }
 
-// The True Path bodies as the gene lab lists them: outward from the Sun, with each planet's moons
-// following the planet they circle. `adv` marks the ones that only appear once the lab is switched
-// to Advanced — nothing can be built on any of those, the solar map draws them as scenery, so most
-// players never need to touch them. They slot into place among the four that have always been
-// nameable rather than being tacked on the end, so the set reads as one walk outward either way.
-//
-// Jupiter and its moon Ganymede live in the basic block higher up the lab, which is why the three
-// Galilean moons here have no planet immediately above them; they still sit at Jupiter's distance,
-// between Venus and Saturn.
+// Locations that fill out the solar system
 const truepathBodies = [
     { field: 'venus',     adv: true },
     { field: 'io',        adv: true },
@@ -7692,13 +7684,15 @@ const truepathBodies = [
     { field: 'triton' },
     { field: 'pluto',     adv: true },
     { field: 'haumea',    adv: true },
-    { field: 'makemake',  adv: true },
+    { field: 'makemake' },
     { field: 'eris' }
 ];
 
-// The ones a custom race can only reach through Advanced. Derived from the table above rather than
-// written out again, so the display order and the stored field set cannot drift apart.
+// All additional solar locations
 const advancedSolarBodies = truepathBodies.filter(b => b.adv).map(b => b.field);
+
+// Base TP3 outer solar locations
+const truepathSolarBodies = truepathBodies.map(b => b.field);
 
 // The genus whose names a genome falls back on. A hybrid has no naming set of its own, so it
 // borrows its first half's; anything the table does not cover lands on humanoid.
@@ -7735,7 +7729,7 @@ export function planetName(){
     };
     // Anything the custom race named for itself wins over its genus's default — the advanced bodies
     // included, since the gene lab can now name those too.
-    let renameable = ['titan','enceladus','triton','eris'].concat(advancedSolarBodies);
+    let renameable = truepathSolarBodies;
     if (global.race.species === 'custom'){
         for (let p of renameable){
             if (global.custom.race0.hasOwnProperty(p)){
@@ -8042,6 +8036,7 @@ export function ascendLab(hybrid,wiki){
         titan: global.custom[slot].titan || planetName().titan,
         enceladus: global.custom[slot].enceladus || planetName().enceladus,
         triton: global.custom[slot].triton || planetName().triton,
+        makemake: global.custom[slot].makemake || planetName().makemake,
         eris: global.custom[slot].eris || planetName().eris,
         genes: 0,
         genus: global.custom[slot].genus,
@@ -8061,6 +8056,7 @@ export function ascendLab(hybrid,wiki){
         titan: 'Necromancer',
         enceladus: 'Skeleton',
         triton: 'Rot',
+        makemake: 'Shamble',
         eris: 'Zombieland',
         genes: 10,
         genus: dGenus,
@@ -8259,6 +8255,7 @@ export function ascendLab(hybrid,wiki){
                         titan: genome.titan,
                         enceladus: genome.enceladus,
                         triton: genome.triton,
+                        makemake: genome.makemake,
                         eris: genome.eris,
                         genus: genome.genus,
                         traits: genome.traitlist,
@@ -8316,7 +8313,7 @@ export function ascendLab(hybrid,wiki){
                 ['red','hell','gas','gas_moon','dwarf'].forEach(function(body){
                     genome[body] = races.human.solar[body];
                 });
-                ['titan','enceladus','triton','eris'].concat(advancedSolarBodies).forEach(function(body){
+                truepathSolarBodies.forEach(function(body){
                     genome[body] = genusVars[named].solar[body];
                 });
 
@@ -8477,7 +8474,7 @@ export function ascendLab(hybrid,wiki){
                         // (every export before the advanced bodies existed) fills in rather than
                         // arriving blank. Resolved through genusVars rather than a raw loc key: a
                         // hybrid genome has no naming set under its own name.
-                        let genusNamed = ['titan','enceladus','triton','eris'].concat(advancedSolarBodies);
+                        let genusNamed = truepathSolarBodies;
                         ['name','home','red','hell','gas','gas_moon','dwarf'].concat(genusNamed).forEach(function(field){
                             if (!importCustom[field] && genusNamed.includes(field)){
                                 genome[field] = genusVars[genomeNamer(genome)].solar[field];
