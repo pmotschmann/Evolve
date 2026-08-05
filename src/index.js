@@ -14,6 +14,7 @@ import { renderFortress, buildFortress, drawMechLab, clearMechDrag, drawHellObse
 import { renderEdenic } from './edenic.js';
 import { drawShipYard, clearShipDrag, renderTauCeti } from './truepath.js';
 import { arpa, clearGeneticsDrag } from './arpa.js';
+import { renderUnderground, renderSurface } from './iceage.js';
 import { driveSaveGame, driveLoadGame, driveConfigured } from './googledrive.js';
 
 // main.js registers its offline-time handler here so unpausing can trigger the catch-up without
@@ -398,6 +399,8 @@ export function loadTab(tab){
                     <b-tab-item id="outerSol" :visible="s.showOuter" :label="label('outer_local_space')"></b-tab-item>
                     <b-tab-item id="tauceti" :visible="s.showTau" :label="label('tab_tauceti')"></b-tab-item>
                     <b-tab-item id="eden" :visible="s.showEden" :label="label('tab_eden')"></b-tab-item>
+                    <b-tab-item id="underground" :visible="s.showUnderground" :label="label('tab_underground')"></b-tab-item>
+                    <b-tab-item id="surface" :visible="s.showSurface" :label="label('tab_surface')"></b-tab-item>
                 </b-tabs>`);
                 vBind({
                     el: `#mTabCivil`,
@@ -409,7 +412,7 @@ export function loadTab(tab){
                             global.settings.spaceTabs = tab;
                             if (!global.settings.tabLoad){
                                 // Indexed to match the b-tab-item order above, so panels[tab] is the incoming one.
-                                let panels = [`#city`,`#space`,`#interstellar`,`#galaxy`,`#portal`,`#outerSol`,`#tauceti`,`#eden`];
+                                let panels = [`#city`,`#space`,`#interstellar`,`#galaxy`,`#portal`,`#outerSol`,`#tauceti`,`#eden`,`#underground`,`#surface`];
                                 clearTabPanels(Object.fromEntries(panels.map(p => [p,[]])),panels[tab]);
                                 switch (tab){
                                     case 0:
@@ -430,6 +433,12 @@ export function loadTab(tab){
                                     case 7:
                                         renderEdenic();
                                         break;
+                                    case 8:
+                                        renderUnderground();
+                                        break;
+                                    case 9:
+                                        renderSurface();
+                                        break;
                                 }
                             }
                             return tab;
@@ -445,6 +454,8 @@ export function loadTab(tab){
                     renderFortress();
                     renderTauCeti();
                     renderEdenic();
+                    renderUnderground();
+                    renderSurface();
                 }
                 if (global.race['noexport']){
                     if (global.race['noexport'] === 'Race'){

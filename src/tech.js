@@ -24,10 +24,29 @@ const techs = {
         era: 'primitive',
         reqs: {},
         grant: ['primitive',1],
+        not_trait: ['iceage'],
         cost: {
             Lumber(){ return global.race['kindling_kindred'] || global.race['smoldering'] ? 0 : 5; },
             Stone(){ return global.race['kindling_kindred'] || global.race['smoldering'] ? 5 : 0; }
         },
+        action(){
+            if (payCosts($(this)[0])){
+                global.resource.Food.display = true;
+                return true;
+            }
+            return false;
+        }
+    },
+    rock: {
+        id: 'tech-rock',
+        title(){ return loc('tech_rock'); },
+        desc(){ return global.race['flier'] ? loc('tech_rock_desc_alt') : loc('tech_rock_desc'); },
+        category: 'agriculture',
+        era: 'primitive',
+        reqs: {},
+        grant: ['primitive',2],
+        trait: ['iceage'],
+        cost: {},
         action(){
             if (payCosts($(this)[0])){
                 global.resource.Food.display = true;
@@ -57,6 +76,7 @@ const techs = {
                 if (global.race['smoldering']){
                     global.resource.Chrysotile.display = true;
                 }
+                debugger;
                 return true;
             }
             return false;
@@ -4631,6 +4651,27 @@ const techs = {
             // Check affordability without paying the Demonic Essence to avoid breaking the backup save
             if (checkAffordable($(this)[0])){
                 descension();
+            }
+            return false;
+        }
+    },
+    giant_thrusters: {
+        id: 'tech-giant_thrusters',
+        title(){ return loc('tech_giant_thrusters'); },
+        desc(){ return loc('tech_giant_thrusters'); },
+        category: 'science',
+        era: 'intergalactic',
+        reqs: { thrusters: 1 },
+        grant: ['thrusters',2],
+        cost: {
+            Knowledge(){ return 20000000; }
+        },
+        effect(){return loc('tech_giant_thrusters_effect');},
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.city.giant_thrusters);
+                initStruct(actions.city.thruster_fuel);
+                return true;
             }
             return false;
         }

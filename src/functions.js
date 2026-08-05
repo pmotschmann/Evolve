@@ -1842,6 +1842,7 @@ export function getResetConstants(type, inputs){
             break;
         case 'ascend':
         case 'terraform':
+        case 'thrusters':
             rc.pop_divisor = 1.15;
             rc.k_inc = 30000;
             rc.k_mult = 1.008;
@@ -1981,9 +1982,12 @@ export function calcPrestige(type,inputs){
         new_dark = challenge_multiplier(new_dark,'vacuum',3,inputs);
         gains.dark = new_dark;
     }
+    else if(type === 'thrusters'){
+        gains.dark = 10;
+    }
 
 
-    if (['ascend','descend','terraform','apotheosis'].includes(type)){
+    if (['ascend','descend','terraform','apotheosis','thrusters'].includes(type)){
         let pr_gain = 1;
         if (challenge === undefined){
             pr_gain = alevel();
@@ -1995,7 +1999,7 @@ export function calcPrestige(type,inputs){
             pr_gain = challenge + 1;
         }
 
-        if (type === 'ascend' || type === 'terraform'){
+        if (type === 'ascend' || type === 'terraform' || type === 'thrusters'){
             switch (universe){
                 case 'micro':
                     pr_gain *= 0.25;

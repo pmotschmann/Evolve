@@ -11,11 +11,12 @@ import { spaceTech, interstellarTech, galaxyTech, incrementStruct, universe_affi
 import { renderFortress, fortressTech, warlordSetup } from './portal.js';
 import { edenicTech, renderEdenic } from './edenic.js';
 import { tauCetiTech, renderTauCeti, loneSurvivor } from './truepath.js';
+import { undergroundTech, surfaceTech, renderUnderground, renderSurface } from './iceage.js';
 import { arpa, gainGene, gainBlood } from './arpa.js';
 import { production, highPopAdjust } from './prod.js';
 import { techList, techPath } from './tech.js';
 import { defineGovernor, govActive, removeTask, gov_tasks } from './governor.js';
-import { bioseed } from './resets.js';
+import { bioseed, iceAge } from './resets.js';
 import { loadTab } from './index.js';
 
 export const actions = {
@@ -1199,57 +1200,7 @@ export const actions = {
             },
             touchlabel: loc(`harvest`)
         },
-        stone: {
-            id: 'city-stone',
-            title(){
-                if (global.tech['conjuring'] && global.tech['conjuring'] >= 2){
-                    return loc(`city_conjour`,[global.resource.Stone.name]);
-                }
-                else {
-                    return loc(`city_gather`,[global.resource.Stone.name]);
-                }                
-            },
-            desc(){
-                let gain = $(this)[0].val(false);
-                if (global.tech['conjuring'] && global.tech['conjuring'] >= 2){
-                    return loc('city_stone_conjour_desc',[gain,global.resource.Stone.name]);
-                }
-                else {
-                    return loc(global.race['sappy'] ? 'city_amber_desc' : 'city_stone_desc',[gain,global.resource.Stone.name]);
-                }                
-            },
-            category: 'outskirts',
-            reqs: { primitive: 2 },
-            not_trait: ['cataclysm','lone_survivor'],
-            queue_complete(){ return 0; },
-            cost: {
-                Mana(){ return global.tech['conjuring'] && global.tech['conjuring'] >= 2 ? 1 : 0; },
-            },
-            action(args){
-                if (!global.settings.pause){
-                    if (global['resource']['Stone'].amount < global['resource']['Stone'].max){
-                        modRes('Stone',$(this)[0].val(true),true);
-                    }
-                    global.stats.cstone++;
-                    global.stats.tstone++;
-                }
-                return false;
-            },
-            val(spend){
-                let gain = global.race['strong'] ? traits.strong.vars()[0] : 1;
-                if (global.genes['enhance']){
-                    gain *= 2;
-                }
-                if (global.tech['conjuring'] && global.tech['conjuring'] >= 2 && global.resource.Mana.amount >= 1){
-                    gain *= 10;
-                    if (global['resource']['Stone'].amount < global['resource']['Stone'].max && spend){
-                        modRes('Mana',-1,true);
-                    }
-                }
-                return gain;
-            },
-            touchlabel: loc(`harvest`)
-        },
+        stone: buildTemplate('stone'),
         chrysotile: {
             id: 'city-chrysotile',
             title(){
@@ -4252,6 +4203,115 @@ export const actions = {
                 };
             }
         },
+        giant_thrusters: {
+            id: 'city-giant_thrusters',
+            title(){ return loc('city_giant_thrusters'); },
+            desc(){ return loc('city_giant_thrusters_desc'); },
+            type: 'megaproject',
+            category: 'utility',
+            reqs: { thrusters: 2 },
+            queue_size: 5,
+            queue_complete(){ return 100 - global.city.giant_thrusters.count; },
+            cost: {
+                Money(offset){ return ((offset || 0) + (global.city.hasOwnProperty('giant_thrusters') ? global.city.giant_thrusters.count : 0)) < 100 ? 120000000 : 0; },
+                Steel(offset){ return ((offset || 0) + (global.city.hasOwnProperty('giant_thrusters') ? global.city.giant_thrusters.count : 0)) < 100 ? 2000000 : 0; },
+                Mythril(offset){ return ((offset || 0) + (global.city.hasOwnProperty('giant_thrusters') ? global.city.giant_thrusters.count : 0)) < 100 ? 200000 : 0; },
+                Infernite(offset){ return !global.race['truepath'] && ((offset || 0) + (global.city.hasOwnProperty('giant_thrusters') ? global.city.giant_thrusters.count : 0)) < 100 ? 800000 : 0; },
+                Unobtainium(offset){ return global.race['truepath'] && ((offset || 0) + (global.city.hasOwnProperty('giant_thrusters') ? global.city.giant_thrusters.count : 0)) < 100 ? 10000 : 0; }
+            },
+            effect(wiki){
+                let effectText = '';
+                let count = (wiki?.count ?? 0) + (global.city.hasOwnProperty('giant_thrusters') ? global.city.giant_thrusters.count : 0);
+                if (count < 100){
+                    let remain = 100 - count;
+                    effectText += `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                }
+                return effectText;
+            },
+            action(args){
+                if (payCosts($(this)[0])){
+                    if (global.city.giant_thrusters.count < 100){
+                        incrementStruct('giant_thrusters','city');
+                        if(global.city.thruster_fuel.count >= 500 && global.city.giant_thrusters.count >= 100){
+                            global.tech['thrusters'] = 3;
+                            drawCity();
+                        }
+                        return true;
+                    }
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['giant_thrusters','city']
+                };
+            }
+        },
+        thruster_fuel: {
+            id: 'city-thruster_fuel',
+            title(){ return loc('city_thruster_fuel'); },
+            desc(){ return loc('city_thruster_fuel_desc'); },
+            type: 'megaproject',
+            category: 'utility',
+            reqs: { thrusters: 2 },
+            queue_size: 5,
+            queue_complete(){ return 500 - global.city.thruster_fuel.count; },
+            cost: {
+                Oil(offset){ return ((offset || 0) + (global.city.hasOwnProperty('thruster_fuel') ? global.city.thruster_fuel.count : 0)) < 500 ? 6000000 : 0; },
+                Helium_3(offset){ return ((offset || 0) + (global.city.hasOwnProperty('thruster_fuel') ? global.city.thruster_fuel.count : 0)) < 500 ? 3000000 : 0; },
+                Deuterium(offset){ return !global.race['truepath'] && ((offset || 0) + (global.city.hasOwnProperty('thruster_fuel') ? global.city.thruster_fuel.count : 0)) < 500 ? 2000000 : 0; }
+            },
+            effect(wiki){
+                let effectText = '';
+                let count = (wiki?.count ?? 0) + (global.city.hasOwnProperty('thruster_fuel') ? global.city.thruster_fuel.count : 0);
+                if (count < 500){
+                    let remain = 500 - count;
+                    effectText += `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                }
+                return effectText;
+            },
+            action(args){
+                if (payCosts($(this)[0])){
+                    if (global.city.thruster_fuel.count < 500){
+                        incrementStruct('thruster_fuel','city');
+                        if(global.city.thruster_fuel.count >= 500 && global.city.giant_thrusters.count >= 100){
+                            global.tech['thrusters'] = 3;
+                            drawCity();
+                        }
+                        return true;
+                    }
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['thruster_fuel','city']
+                };
+            }
+        },
+        thruster_launch: {
+            id: 'city-thruster_launch',
+            title(){ return loc('city-thruster_launch'); },
+            desc(){ return loc('city-thruster_launch_desc'); },
+            type: 'megaproject',
+            category: 'utility',
+            reqs: { thrusters: 3 },
+            queue_complete(){ return 0; },
+            no_multi: true,
+            cost: {},
+            effect(){
+                return thrusterProjection();
+            },
+            action(args){
+                if (payCosts($(this)[0])){
+                    iceAge();
+                    return true;
+                }
+                return false;
+            }
+        },
         replicator: {
             id: 'city-replicator',
             title(){ return loc('tech_replicator'); },
@@ -4450,6 +4510,8 @@ export const actions = {
     portal: fortressTech(),
     tauceti: tauCetiTech(),
     eden: edenicTech(),
+    underground: undergroundTech(),
+    surface: surfaceTech()
 };
 
 export function setChallengeScreen(){
@@ -4648,6 +4710,61 @@ export function buildTemplate(key, region){
     };
 
     switch (key){
+        case 'stone':
+        {
+            let action = {
+                id: `${region}-stone`,
+                title(){
+                    if (global.tech['conjuring'] && global.tech['conjuring'] >= 2){
+                        return loc(`city_conjour`,[global.resource.Stone.name]);
+                    }
+                    else {
+                        return loc(`city_gather`,[global.resource.Stone.name]);
+                    }                
+                },
+                desc(){
+                    let gain = $(this)[0].val(false);
+                    if (global.tech['conjuring'] && global.tech['conjuring'] >= 2){
+                        return loc('city_stone_conjour_desc',[gain,global.resource.Stone.name]);
+                    }
+                    else {
+                        return loc(global.race['sappy'] ? 'city_amber_desc' : 'city_stone_desc',[gain,global.resource.Stone.name]);
+                    }                
+                },
+                category: 'outskirts',
+                reqs: { primitive: 2 },
+                not_trait: ['cataclysm','lone_survivor'],
+                queue_complete(){ return 0; },
+                cost: {
+                    Mana(){ return global.tech['conjuring'] && global.tech['conjuring'] >= 2 ? 1 : 0; },
+                },
+                action(args){
+                    if (!global.settings.pause){
+                        if (global['resource']['Stone'].amount < global['resource']['Stone'].max){
+                            modRes('Stone',$(this)[0].val(true),true);
+                        }
+                        global.stats.cstone++;
+                        global.stats.tstone++;
+                    }
+                    return false;
+                },
+                val(spend){
+                    let gain = global.race['strong'] ? traits.strong.vars()[0] : 1;
+                    if (global.genes['enhance']){
+                        gain *= 2;
+                    }
+                    if (global.tech['conjuring'] && global.tech['conjuring'] >= 2 && global.resource.Mana.amount >= 1){
+                        gain *= 10;
+                        if (global['resource']['Stone'].amount < global['resource']['Stone'].max && spend){
+                            modRes('Mana',-1,true);
+                        }
+                    }
+                    return gain;
+                },
+                touchlabel: loc(`harvest`)
+            }
+            return tKey(action,tName,region);
+        }
         case 'bonfire':
         {
             let action = {
@@ -6065,6 +6182,8 @@ export function gainTech(action){
     renderFortress();
     renderTauCeti();
     renderEdenic();
+    renderUnderground();
+    renderSurface();
 }
 
 export var cLabels = global.settings['cLabels'];
@@ -6717,6 +6836,8 @@ export function postBuild(c_action,action,type){
             renderFortress();
             renderTauCeti();
             renderEdenic();
+            renderUnderground();
+            renderSurface();
         }
     }
     if (c_action['post']){
@@ -8869,6 +8990,9 @@ function sentience(){
     if (global.race['cataclysm']){
         messageQueue(loc('cataclysm_sentience',[races[global.race.species].home,flib('name')]),'info',false,['progress']);
     }
+    else if(global.race['iceage']){
+        messageQueue(loc('iceage_sentience'),'info',false,['progress']);
+    }
     else {
         messageQueue(loc('sentience',[loc('genelab_genus_' + (global.race.maintype || races[global.race.species].type)),races[global.race.species].entity,flib('name')]),'info',false,['progress']);
     }
@@ -8877,7 +9001,7 @@ function sentience(){
         global.resource.Steel.display = true;
         global.resource.Steel.amount = 25;
         if (global.stats.achieve.technophobe.l >= 3){
-            if (!global.race['truepath'] && !global.race['lone_survivor']){
+            if (!global.race['truepath'] && !global.race['lone_survivor'] && !global.race['iceage']){
                 global.resource.Soul_Gem.display = true;
             }
             let gems = 1;
@@ -9027,6 +9151,9 @@ function sentience(){
     }
     else if (global.race['warlord']){
         warlordSetup();
+    }
+    else if(global.race['iceage']){
+        iceAgeStart();
     }
     else if (global.race['artifical']){
         aiStart();
@@ -9588,6 +9715,22 @@ function cataclysm(){
     }
 }
 
+function iceAgeStart(){
+    if(global.race['iceage']){
+        global.settings.showCity = false;
+        global.settings.showUnderground = true;
+
+        global.settings.civTabs = 1;
+        global.settings.spaceTabs = 8;
+
+        global.settings.showUnderground = true;
+        global.resource.Lumber.display = false;
+        global.resource.Steel.display = false;
+        global.resource.Stone.display = true;
+        renderUnderground();
+    }
+}
+
 export function fanaticism(god){
     if (['custom','hybrid','nano'].includes(god) && global.race['warlord']){
         randomMinorTrait(5);
@@ -9840,6 +9983,19 @@ export function start_cataclysm(){
         delete global.race['start_cataclysm'];
         sentience();
     }
+}
+
+export function start_iceage(){
+    if (global.race['start_iceage']){
+        delete global.race['start_iceage'];
+        sentience();
+    }
+}
+
+function thrusterProjection(){
+    let gains = calcPrestige('thrusters');
+    let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
+    return `<div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.plasmid,plasmidType])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.phage,loc('resource_Phage_name')])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.dark,loc('resource_Dark_name')])}</div><div>${loc('city_giant_thrusters_effect')}</div>`;
 }
 
 var callback_repeat = new Map();

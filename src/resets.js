@@ -1261,6 +1261,88 @@ export function gardenOfEden(){
     window.location.reload();
 }
 
+export function iceAge(){
+    if (webWorker.w){
+        webWorker.w.terminate();
+    }
+    if (!global['sim']){
+        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+    }
+
+    tagEvent('reset',{
+        'end': 'iceAge'
+    });
+
+    clearSavedMessages();
+
+    let gains = calcPrestige('thrusters');
+
+    global.stats.iceAge++;
+    updateResetStats();
+
+    global.prestige.Phage.count += gains.phage;
+    global.stats.phage += gains.phage;
+    if (global.race.universe === 'antimatter'){
+        global.prestige.AntiPlasmid.count += gains.plasmid;
+        global.stats.antiplasmid += gains.plasmid;
+    }
+    else {
+        global.prestige.Plasmid.count += gains.plasmid;
+        global.stats.plasmid += gains.plasmid;
+    }
+    global.stats.pdebt = gains.pdebt;
+    global.prestige.Dark.count = +(global.prestige.Dark.count + gains.dark).toFixed(3);
+    global.stats.dark = +(global.stats.dark + gains.dark).toFixed(3);
+
+    unlockAchieve(`squished`,true);
+    unlockAchieve(`extinct_${global.race.species}`);
+
+    let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
+    let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
+    let mainType = global.race.hasOwnProperty('maintype') ? global.race.maintype : false;
+    global['race'] = {
+        species : global.race.species,
+        gods: global.race.gods,
+        old_gods: global.race.old_gods,
+        universe: global.race.universe,
+        seeded: false,
+        ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
+    };
+    if (corruption > 0){
+        global.race['corruption'] = corruption;
+    }
+    if (srace){
+        global.race['srace'] = srace;
+    }
+    if (mainType){
+        global.race['maintype'] = mainType;
+    }
+            
+    resetCommon({
+        orbit: global.city.calendar.orbit, 
+        biome: global.city.biome, 
+        ptrait: global.city.ptrait, 
+        geology: global.city.geology
+    });
+
+    if (global.race.universe === 'antimatter') {
+        global.race['weak_mastery'] = 1;
+    }
+    else {
+        global.race['no_plasmid'] = 1;
+    }
+
+    let genes = ['crispr','trade','craft'];
+    for (let i=0; i<genes.length; i++){
+        global.race[`no_${genes[i]}`] = 1;
+    }
+
+    global.race['start_iceage'] = 1;
+    global.race['iceage'] = 1;
+    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    window.location.reload();
+}
+
 function resetCommon(args){
     global.city = {
         calendar: {

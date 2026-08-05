@@ -7,7 +7,7 @@ import { defineResources, resource_values, spatialReasoning, craftCost, plasmidB
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobName, jobScale, workerScale, limitCraftsmen, loadServants} from './jobs.js';
 import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, replicatorLines, luxGoodPrice, smelterUnlocked, smelterFuelConfig, setupRituals, maxRitualNum, ritual_types } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
-import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, checkPowerRequirements, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct, casino_vault, casinoEarn, doCallbacks, cLabels } from './actions.js';
+import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, checkPowerRequirements, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, start_iceage, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct, casino_vault, casinoEarn, doCallbacks, cLabels } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types, spaceSectors } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
@@ -13274,6 +13274,20 @@ function longLoop(){
             orbitDecayed();
         }
 
+        if(global.city.ptrait.includes('kamikaze') && !global.race['cataclysm'] && !global.race['orbit_decayed'] && !global.tech['thrusters'] && (global.tech['corrupt'] >= 2 || global.tech['tau_red'] >= 3) && Math.rand(0, 100) === 0){
+            let oddity = 0;
+            if((global.race.species === 'hybrid' ? global.custom.race1?.hybrid || [] :
+                races[global.race.species].hybrid || [races[global.race.species].type]).contains('primordial')){
+                    //overcomplicated check that just checks whether your current race has the primordial genus, including hybrid main or secondary genus
+                    oddity++;
+            }
+            if(global.civic.scientist.workers === 0){
+                oddity++;
+            }
+            messageQueue(loc(`event_odd_scientist_${oddity}`, [races[global.race.species].home]),'caution',false,['events','major_events']);
+            global.tech['thrusters'] = 1;
+        }
+
         if (global.race['living_materials']){
             const structSectors = ['city'].concat(spaceSectors);
             structSectors.forEach(function(sector){
@@ -13511,4 +13525,8 @@ popover('versionLog',getTopChange(changeLog),{ wide: true });
 
 if (global.race['start_cataclysm']){
     start_cataclysm();
+}
+
+if (global.race['start_iceage']){
+    start_iceage();
 }

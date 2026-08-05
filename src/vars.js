@@ -11,6 +11,8 @@ export var global = {
     portal: {},
     eden: {},
     tauceti: {},
+    underground: {},
+    surface: {},
     civic: {},
     race: {},
     genes: {},
@@ -1666,7 +1668,7 @@ export function setupStats(){
         'reset','plasmid','antiplasmid','universes','phage','starved','tstarved','died','tdied',
         'sac','tsac','know','tknow','portals','dkills','attacks','cfood','tfood','cstone','tstone',
         'clumber','tlumber','mad','bioseed','cataclysm','blackhole','ascend','descend','apotheosis',
-        'terraform','aiappoc','matrix','retire','eden','geck','dark','harmony','blood','cores','artifact',
+        'terraform','aiappoc','matrix','retire','eden','iceAge','geck','dark','harmony','blood','cores','artifact',
         'supercoiled','cattle','tcattle','murders','tmurders','psykill','tpsykill','pdebt','uDead','zkills'
     ].forEach(function(k){
         if (!global.stats.hasOwnProperty(k)){
@@ -2432,7 +2434,8 @@ function setRegionStates(reset){
             'showCiv','showCity','showIndustry','showPowerGrid','showMechLab','showShipYard',
             'showResearch','showCivic','showMil','showResources','showMarket','showStorage',
             'showGenetics','showSpace','showDeep','showGalactic','showPortal','showEden','showOuter',
-            'showTau','showEjector','showCargo','showAlchemy','showGovernor','arpa','showPsychic','showWish'
+            'showTau','showEjector','showCargo','showAlchemy','showGovernor','arpa','showPsychic',
+            'showWish','showUnderground','showSurface'
         ],
         space: [
             'moon','red','hell','sun','gas','gas_moon','belt','dwarf','alpha','proxima',
@@ -2441,7 +2444,8 @@ function setRegionStates(reset){
         ],
         portal: ['fortress','badlands','pit','ruins','gate','lake','spire','wasteland'],
         eden: ['asphodel','elysium','isle','palace'],
-        tau: ['home','red','roid','gas','gas2','star']
+        tau: ['home','red','roid','gas','gas2','star'],
+        iceAge:['underground','surface']
     };
     
     Object.keys(regions).forEach(function(r){
@@ -2488,6 +2492,8 @@ export function clearStates(){
     global.eden = {};
     global.starDock = {};
     global.tauceti = {};
+    global.underground = {};
+    global.surface = {};
     global.civic = { new: 0 };
     global.civic['foreign'] = {
         gov0: {
