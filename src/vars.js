@@ -2487,7 +2487,7 @@ function setRegionStates(reset){
             'showTau','showEjector','showCargo','showAlchemy','showGovernor','arpa','showPsychic','showWish'
         ],
         space: [
-            'moon','red','hell','sun','gas','gas_moon','belt','dwarf','alpha','proxima',
+            'moon','red','hell','venus','sun','gas','gas_moon','belt','dwarf','alpha','proxima',
             'nebula','neutron','blackhole','sirius','stargate','gateway','gorddon',
             'alien1','alien2','chthonian','titan','enceladus','triton','eris','makemake'
         ],

@@ -618,6 +618,42 @@ export function addFactoryLines(num){
     }
 }
 
+// Every factory line the empire can staff right now. Measured on `on` rather than p_on/support_on on
+// purpose: this is the size of the pool lines are assigned out of, and a factory that is switched on
+// but starved of power still holds its lines — the production tick scales output by how many are
+// actually running. The hold/cap accounting and the raze path both have to measure the pool the same
+// way, so they share this one definition.
+export function factoryCapacity(){
+    return (global.city['factory'] ? global.city.factory.on : 0)
+        + (global.space['red_factory'] ? global.space.red_factory.on : 0)
+        + (global.interstellar['int_factory'] ? global.interstellar.int_factory.on * 2 : 0)
+        + (global.portal['hell_factory'] ? global.portal.hell_factory.on * actions.portal.prtl_wasteland.hell_factory.lines() : 0)
+        + (global.tauceti['tau_factory'] ? global.tauceti.tau_factory.on * (global.tech['isolation'] ? 5 : 3) : 0);
+}
+
+// Bring the assigned lines back inside `max` capacity, banking everything taken out of service in
+// factory.hold so addFactoryLines can later put each one back on the job it was doing. Lines are
+// handed out from the front of factoryLines, so the overflow always comes off the back. Returns the
+// capacity left unassigned.
+export function trimFactoryLines(max){
+    if (!global.city['factory']){ return 0; }
+    let hold = global.city.factory['hold'];
+    let remaining = max;
+    factoryLines.forEach(function(res){
+        remaining -= global.city.factory[res];
+        if (remaining < 0){
+            if (hold){ hold[res] -= remaining; }   // remaining is negative: banks what was cut
+            global.city.factory[res] += remaining;
+            remaining = 0;
+        }
+    });
+    return remaining;
+}
+
+// Structures that put lines into the shared factory pool, whichever world they stand on. Razing one
+// has to bank its lines then and there, the same as switching it off would.
+export const factoryStructs = ['factory','red_factory','int_factory','hell_factory','tau_factory'];
+
 function loadFactory(parent,bind){
     let fuel = $(`<div><span class="has-text-warning">${loc('modal_factory_operate')}:</span> <span :class="level()">{{ on_f(count) }}/{{ max_f(on) }}</span></div>`);
     parent.append(fuel);

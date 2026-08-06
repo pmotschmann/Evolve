@@ -5,13 +5,13 @@ import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaT
 import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, cleanRemoveTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobName, jobScale, workerScale, limitCraftsmen, loadServants} from './jobs.js';
-import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, replicatorLines, luxGoodPrice, smelterUnlocked, smelterFuelConfig, setupRituals, maxRitualNum, ritual_types, factoryLines } from './industry.js';
+import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, replicatorLines, luxGoodPrice, smelterUnlocked, smelterFuelConfig, setupRituals, maxRitualNum, ritual_types, factoryLines, factoryCapacity, trimFactoryLines } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
 import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, checkPowerRequirements, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct, casino_vault, casinoEarn, doCallbacks, cLabels } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types, spaceSectors } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
-import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, randomCoord, atShipyard, pinSalvage, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, moveShips } from './truepath.js';
+import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, randomCoord, atShipyard, pinSalvage, beaconsActive, finalBeacons, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, moveShips } from './truepath.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
 import { defineGovernor, govern, govActive, removeTask } from './governor.js';
@@ -4621,23 +4621,11 @@ function fastLoop(){
                 + ((p_on['int_factory'] || 0) * 2)
                 + ((p_on['hell_factory'] || 0) * actions.portal.prtl_wasteland.hell_factory.lines())
                 + ((support_on['tau_factory'] || 0) * (global.tech['isolation'] ? 5 : 3));
-            let max_factories = global.city['factory'].on
-                + (global.space['red_factory'] ? global.space['red_factory'].on : 0)
-                + (global.interstellar['int_factory'] ? global.interstellar['int_factory'].on * 2 : 0)
-                + (global.portal['hell_factory'] ? global.portal['hell_factory'].on * actions.portal.prtl_wasteland.hell_factory.lines() : 0)
-                + (global.tauceti['tau_factory'] ? global.tauceti['tau_factory'].on * (global.tech['isolation'] ? 5 : 3) : 0);
+            let max_factories = factoryCapacity();
             let eff = max_factories > 0 ? on_factories / max_factories : 0;
-            let remaining = max_factories;
 
             let hold = global.city.factory['hold'];
-            factoryLines.forEach(function(res){
-                remaining -= global.city.factory[res];
-                if (remaining < 0) {
-                    if (hold){ hold[res] -= remaining; }   // remaining is negative: banks what was cut
-                    global.city.factory[res] += remaining;
-                    remaining = 0;
-                }
-            });
+            let remaining = trimFactoryLines(max_factories);
 
             if (hold && remaining > 0 && max_factories > global.city.factory.cap){
                 let room = Math.min(remaining, max_factories - global.city.factory.cap);
@@ -13148,9 +13136,13 @@ function longLoop(){
             }
 
             // Investigate Activity
-            if (global.tech.dwarf >= 3 && global.tech.resettle === 14){
-                //global.tech.resettle = 15;
-                //messageQueue(loc('scout_activity'),'info',false,['progress']);
+            if (global.tech.dwarf >= 3 && global.tech.resettle === 14 && !beaconsActive() && Math.rand(0,100) <= 10){
+                global.tech.resettle = 15;
+                global.tech['venus'] = 1;
+                global.settings.space.venus = true;
+                finalBeacons();
+                messageQueue(loc('scout_activity',[planetName().venus]),'info',false,['progress']);
+                renderSpace();
             }
 
             // Detect Signals

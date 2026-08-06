@@ -2090,10 +2090,7 @@ export function adjustCosts(c_action, offset, wiki){
     return craftAdjust(costs, offset, wiki);
 }
 
-// A structure whose razed count exceeds its built count is being rebuilt, so it costs half the
-// normal price. The razed/count fields live in global[category][key] (e.g. global.space.moon_base),
-// which we resolve from c_action.id (authored as "category-key"). Skipped in the wiki, which
-// documents baseline costs rather than a live save's razed state.
+// Razed buildings are cheaper to rebuild
 function razedAdjust(costs, c_action, offset, wiki){
     if (!wiki && c_action && c_action['id']){
         let parts = c_action.id.split('-');
@@ -2101,7 +2098,7 @@ function razedAdjust(costs, c_action, offset, wiki){
         let key = parts.join('-');
         let struct = global[cat] && global[cat][key];
         if (struct && typeof struct === 'object' && typeof struct['razed'] !== 'undefined' && struct.razed > 0){
-            let adjustRate = struct.razed > struct.count ? 0.25 : 0.5;
+            let adjustRate = global.tech['salvage'] ? (struct.razed > struct.count ? 0.15 : 0.35) : (struct.razed > struct.count ? 0.25 : 0.5);
             var newCosts = {};
             Object.keys(costs).forEach(function (res){
                 newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * adjustRate); }

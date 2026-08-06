@@ -14903,6 +14903,27 @@ const techs = {
             return false;
         }
     },
+    expert_salvage: {
+        id: 'tech-expert_salvage',
+        title(){ return loc('tech_expert_salvage'); },
+        desc(){ return loc('tech_expert_salvage'); },
+        category: 'progress',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { resettle: 14 },
+        grant: ['salvage',1],
+        cost: {
+            Knowledge(){ return 26500000; },
+            Cipher(){ return 100000; }
+        },
+        effect(){ return loc('tech_expert_salvage_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     reconstruction: {
         id: 'tech-reconstruction',
         title(){ return loc('tech_reconstruction'); },
@@ -14911,8 +14932,7 @@ const techs = {
         era: 'matrioshka',
         path: ['truepath'],
         reqs: { resettle: 9, governor: 1 },
-        // Same gate as the governor tech itself — without a governor to hand it to, there is nothing
-        // for a reconstruction directive to direct.
+        // Same gate as the governor tech itself — without a governor to hand it to, there is nothing for a reconstruction directive to direct.
         condition(){
             return global.genes['governor'] && global.civic.govern.type !== 'anarchy' ? true : false;
         },

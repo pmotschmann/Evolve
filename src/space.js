@@ -2931,6 +2931,7 @@ const spaceProjects = {
     spc_triton: outerTruthTech().spc_triton,
     spc_makemake: outerTruthTech().spc_makemake,
     spc_eris: outerTruthTech().spc_eris,
+    spc_venus: outerTruthTech().spc_venus,
 };
 
 const interstellarProjects = {

@@ -8,7 +8,7 @@ import { production, highPopAdjust } from './prod.js';
 import { actions, payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, buildTemplate, casinoEffect, housingLabel, structName, initStruct } from './actions.js';
 import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, incrementStruct, planetName } from './space.js';
 import { defineGovernor, removeTask, govActive } from './governor.js';
-import { defineIndustry, nf_resources, addSmelter, addFactoryLines, setupRituals, cancelRituals } from './industry.js';
+import { defineIndustry, nf_resources, addSmelter, addFactoryLines, factoryCapacity, trimFactoryLines, factoryStructs, setupRituals, cancelRituals } from './industry.js';
 import { arpa } from './arpa.js';
 import { matrix, retirement, gardenOfEden } from './resets.js';
 import { traitCostMod } from './races.js';
@@ -1627,7 +1627,28 @@ const outerTruth = {
                 };
             }
         },
-    }
+    },
+    spc_venus: {
+        info: {
+            name(){
+                return planetName().venus;
+            },
+            desc(){
+                if (global.tech['venus'] && global.tech.venus === 1){
+                    return `<div class="has-text-warning">${loc('space_venus_info_desc_not_scouted',[planetName().venus])}</div><div>${loc('space_venus_info_desc',[planetName().venus])}</div>`;
+                }
+                else {
+                    return loc('space_venus_info_desc',[planetName().venus]);
+                }
+            },
+            zone: 'inner',
+            showDest(){
+                return {r: true, l: global.tech['venus'] ? true : false};
+            },
+            syndicate(){ return false; },
+            nav(){ return global.tech['venus'] ? true : false; }
+        }
+    },
 };
 
 const tauCetiModules = {
@@ -4783,18 +4804,16 @@ function zFleetTargets(){
     return targets;
 }
 
-// Hulls the horde flies, smallest first. `avail` gates the class: a function is called at every launch,
-// so a class can be unlocked on tech, horde size, elapsed time or anything else, and a plain false means
-// it never flies. `horde` is the infected a full hold delivers, and a bigger hull simply holds more of
-// them. Only the two smallest are in service; the rest are written out and switched off, waiting for a
-// condition to be dropped in where the false is.
+// Hulls the horde flies, smallest first. `weight` is how often a class comes up relative to the others
+// once it is cleared to fly; the two heavy hulls turn up half as often as the four it builds routinely.
+// Called at every roll like avail and horde, so a rate can be moved on tech or horde size later.
 const zFleetHulls = {
-    corvette:      { avail(){ return true; },  horde(){ return 350; } },
-    frigate:       { avail(){ return true; },  horde(){ return 825; } },
-    destroyer:     { avail(){ return global.tech['resettle'] && global.tech.resettle >= 11 ? true : false; }, horde(){ return 1700; } },
-    cruiser:       { avail(){ return global.tech['resettle'] && global.tech.resettle >= 14 ? true : false; }, horde(){ return 4100; } },
-    battlecruiser: { avail(){ return false; }, horde(){ return 10300; } },
-    dreadnought:   { avail(){ return false; }, horde(){ return 24750; } }
+    corvette:      { weight(){ return 1; },   avail(){ return true; },  horde(){ return 350; } },
+    frigate:       { weight(){ return 1; },   avail(){ return true; },  horde(){ return 825; } },
+    destroyer:     { weight(){ return 1; },   avail(){ return global.tech['resettle'] && global.tech.resettle >= 11 ? true : false; }, horde(){ return 1700; } },
+    cruiser:       { weight(){ return 1; },   avail(){ return global.tech['resettle'] && global.tech.resettle >= 14 ? true : false; }, horde(){ return 4100; } },
+    battlecruiser: { weight(){ return 0.5; }, avail(){ return global.tech['resettle'] && global.tech.resettle >= 15 ? true : false; }, horde(){ return 10300; } },
+    dreadnought:   { weight(){ return 0.5; }, avail(){ return false; }, horde(){ return 24750; } }
 };
 
 // The classes cleared to fly right now.
@@ -4803,6 +4822,27 @@ function zFleetClasses(){
         let avail = zFleetHulls[cls].avail;
         return typeof avail === 'function' ? avail() : avail ? true : false;
     });
+}
+
+// How often a class comes up, read the same way avail is: a function is called, anything else is taken
+// as the rate itself, and a class that names no rate is drawn as often as an ordinary hull.
+function zFleetWeight(cls){
+    let weight = zFleetHulls[cls].weight;
+    if (typeof weight === 'function'){ weight = weight(); }
+    return weight === undefined ? 1 : weight;
+}
+
+// One class drawn from those cleared to fly, by weight rather than evenly. Each hull of a sortie is
+// rolled on its own, so a pair can still come up two heavy.
+function zFleetClass(avail){
+    let total = avail.reduce((sum,cls) => sum + zFleetWeight(cls),0);
+    if (!(total > 0)){ return avail[Math.floor(seededRandom(0,avail.length,true))]; }
+    let roll = seededRandom(0,total,true);
+    for (let cls of avail){
+        roll -= zFleetWeight(cls);
+        if (roll < 0){ return cls; }
+    }
+    return avail[avail.length - 1];
 }
 
 // Zombie ships are constructed with legacy tech only
@@ -5290,6 +5330,51 @@ function outerBeacons(){
     drawShipYard();
 }
 
+// True while any beacon still has someone waiting on it. Used to hold the arc back until the signals
+// already on the board have been run down, rather than piling a new set on top of an unfinished one.
+export function beaconsActive(){
+    let temps = global.race['tempCoordinates'];
+    if (!temps){ return false; }
+    return Object.keys(temps).some(key => key.startsWith('beacon') && temps[key] && temps[key].a);
+}
+
+// The last of the wrecks, scattered out past the gas giants where nobody was looking for them.
+const finalBeaconMinAU = 18;
+const finalBeaconMaxAU = 30;
+
+// One beacon for every hull still adrift.
+export function finalBeacons(){
+    let pool = global.race.inactive?.ships;
+    if (!pool || pool.length === 0){ return 0; }
+    if (!global.race['tempCoordinates']){ global.race['tempCoordinates'] = {}; }
+
+    // Shuffled so which beacon is worth the long haul is not simply the order the old fleet was built in.
+    let hulls = pool.map(s => s.class);
+    for (let i=hulls.length-1; i>0; i--){
+        let j = Math.floor(seededRandom(0,i+1,true));
+        let swap = hulls[i];
+        hulls[i] = hulls[j];
+        hulls[j] = swap;
+    }
+
+    // Numbered on from the highest beacon already issued
+    let last = 0;
+    Object.keys(global.race.tempCoordinates).forEach(function(key){
+        let match = key.match(/^beacon(\d+)$/);
+        if (match && Number(match[1]) > last){ last = Number(match[1]); }
+    });
+
+    for (let i=0; i<hulls.length; i++){
+        let n = last + i + 1;
+        let c = randomCoord('spc_sun',finalBeaconMinAU,finalBeaconMaxAU);
+        global.race.tempCoordinates[`beacon${n}`] = {
+            n: loc(`scout_beacon`,[n]), a: true, s: 'spc_sun', x: c.x, y: c.y, z: c.z, d: hulls[i]
+        };
+    }
+
+    return hulls.length;
+}
+
 // One raider hull of a given class, fitted out and sitting over Earth. Not yet under way: a sortie
 // wants its whole group built before any of it is shot at.
 function zFleetHull(cls){
@@ -5388,7 +5473,7 @@ function zFleetLaunch(fleet,ramp){
     let count = fleet.tw && seededRandom(0,1,true) < zPairOdds ? zPairSize : 1;
     let classes = [];
     for (let i=0; i<count; i++){
-        let cls = avail[Math.floor(seededRandom(0,avail.length,true))];
+        let cls = zFleetClass(avail);
         classes.push(cls);
         // The first hull heavier than a frigate triggers expansion of progression
         if (cls === 'destroyer' && !fleet.dz){
@@ -5503,6 +5588,13 @@ function razeStructures(region,razings){
         }
         zMessage(loc('infestation_razed',[lost,structTitle(cat,region,s),regionName(region)]),'danger');
     });
+
+    // A razed factory takes lines out of the shared pool, so bank what it was making here rather than
+    // leaving it to the next production tick. A factory rebuilt before that tick runs would find
+    // nothing held and start its line over on alloy, quietly losing the job it had been doing.
+    if (Object.keys(losses).some(s => factoryStructs.includes(s))){
+        trimFactoryLines(factoryCapacity());
+    }
 
     // A hidden horde that just leveled something has announced itself: report the ambush once, then
     // redraw so its numbers appear. From tomorrow on it is fought like any other. Redrawing after the
