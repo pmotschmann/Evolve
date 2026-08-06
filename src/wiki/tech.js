@@ -8,6 +8,7 @@ import { races, traits } from './../races.js';
 import { getHalloween, svgIcons, svgViewBox } from './../functions.js';
 import { planetName } from './../space.js';
 import { actionDesc, sideMenu, getSolarName } from './functions.js';
+import { shipCapacitorSaving } from './../truepath.js';
 
 const isHalloween = getHalloween();
 const standard_tech = techList('standard');
@@ -1707,6 +1708,12 @@ const extraInformation = {
     ship_disruptor: [
         loc(`wiki_tech_ship_weapon_unlock`,[loc('outer_shipyard_weapon_disruptor')])
     ],
+    ship_gauss: [
+        loc(`wiki_tech_ship_weapon_unlock`,[loc('outer_shipyard_weapon_gauss')])
+    ],
+    ship_capacitor: [
+        loc(`wiki_tech_ship_capacitor`,[shipCapacitorSaving()])
+    ],
     destroyer_ship: [
         loc(`wiki_tech_building_unlock`,[loc('outer_shipyard_class_destroyer')])
     ],
@@ -2177,6 +2184,9 @@ const extraInformation = {
     ],
     reconstruction: [
         loc(`wiki_tech_reconstruction`)
+    ],
+    expert_salvage: [
+        loc(`wiki_tech_expert_salvage`,[35,50,15,25])
     ]
 };
 

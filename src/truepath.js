@@ -5921,7 +5921,7 @@ export function drawShipYard(){
         let shipConfig = {
             class: ['corvette','frigate','destroyer','cruiser','battlecruiser','dreadnought','explorer'],
             power: ['solar','diesel','fission','fusion','elerium','antimatter'],
-            weapon: ['railgun','laser','p_laser','plasma','phaser','disruptor'],
+            weapon: ['railgun','laser','p_laser','plasma','phaser','disruptor','gauss'],
             armor : ['steel','alloy','neutronium','aerographene'],
             engine: ['ion','tie','pulse','photon','vacuum','emdrive','electrokinetic'],
             sensor: ['visual','radar','lidar','quantum'],
@@ -6277,6 +6277,20 @@ export function shipCrewSize(ship){
     }
 }
 
+// Share of a mount's draw that capacitor banks save. They hold the charge between shots, so the
+// reactor tops the bank up instead of carrying every discharge itself.
+const CAPACITOR_SAVING = 0.25;
+// Exported so the tech that fits the banks advertises the same number the ships actually draw at.
+export function shipCapacitorSaving(){
+    return Math.round(CAPACITOR_SAVING * 100);
+}
+
+// What a weapon mount pulls from the reactor, capacitors included.
+function weaponDraw(watts, use_inflate){
+    let banks = global.tech['syard_capacitor'] ? 1 - CAPACITOR_SAVING : 1;
+    return Math.round(watts * banks * use_inflate);
+}
+
 export function shipPower(ship, wiki){
     let watts = 0;
 
@@ -6334,22 +6348,25 @@ export function shipPower(ship, wiki){
 
     switch (ship.weapon){
         case 'railgun':
-            watts -= Math.round(10 * use_inflate);
+            watts -= weaponDraw(10, use_inflate);
             break;
         case 'laser':
-            watts -= Math.round(30 * use_inflate);
+            watts -= weaponDraw(30, use_inflate);
             break;
         case 'p_laser':
-            watts -= Math.round(18 * use_inflate);
+            watts -= weaponDraw(18, use_inflate);
             break;
         case 'plasma':
-            watts -= Math.round(50 * use_inflate);
+            watts -= weaponDraw(50, use_inflate);
             break;
         case 'phaser':
-            watts -= Math.round(65 * use_inflate);
+            watts -= weaponDraw(65, use_inflate);
             break;
         case 'disruptor':
-            watts -= Math.round(100 * use_inflate);
+            watts -= weaponDraw(100, use_inflate);
+            break;
+        case 'gauss':
+            watts -= weaponDraw(150, use_inflate);
             break;
     }
 
@@ -6412,6 +6429,9 @@ export function shipAttackPower(ship){
             break;
         case 'disruptor':
             rating = 156;
+            break;
+        case 'gauss':
+            rating = 210;
             break;
     }
 
@@ -6708,6 +6728,11 @@ export function shipCosts(bp){
         case 'disruptor':
             costs['Iridium'] = Math.round(costs['Iridium'] ** 1.2);
             costs['Quantium'] = Math.round(35000 ** h_inflate);
+            break;
+        case 'gauss':
+            costs['Iridium'] = Math.round(costs['Iridium'] ** 1.2);
+            costs['Quantium'] = Math.round(60000 ** h_inflate);
+            costs['Iron'] = Math.round(350000 ** h_inflate);
             break;
     }
 

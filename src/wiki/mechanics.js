@@ -3269,6 +3269,7 @@ function tpShipsCostsCalc(info){
                         <b-dropdown-item v-on:click="pickGeneric('weapon', 'plasma')">{{ genericLabel('weapon', 'plasma') }}</b-dropdown-item>
                         <b-dropdown-item v-on:click="pickGeneric('weapon', 'phaser')">{{ genericLabel('weapon', 'phaser') }}</b-dropdown-item>
                         <b-dropdown-item v-on:click="pickGeneric('weapon', 'disruptor')">{{ genericLabel('weapon', 'disruptor') }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('weapon', 'gauss')">{{ genericLabel('weapon', 'gauss') }}</b-dropdown-item>
                     </b-dropdown>
                 </div>
             </div>
@@ -3358,6 +3359,8 @@ function tpShipsCostsCalc(info){
                         return 1.15;
                     case 'disruptor':
                         return 1.2;
+                    case 'gauss':
+                        return 1.25;
                 }
 
         }
@@ -3576,6 +3579,9 @@ function tpShipsCostsCalc(info){
                                 break;
                             case 'disruptor':
                                 resVal = resource === 'Quantium' ? 35000 : 0;
+                                break;
+                            case 'gauss':
+                                resVal = resource === 'Quantium' ? 60000 : resource === 'Iron' ? 40000 : 0;
                                 break;
                         }
                         break;
@@ -3803,6 +3809,7 @@ function tpShipsPowerCalc(info){
                         <b-dropdown-item v-on:click="pickGeneric('weapon', 'plasma')">{{ genericLabel('weapon', 'plasma') }}</b-dropdown-item>
                         <b-dropdown-item v-on:click="pickGeneric('weapon', 'phaser')">{{ genericLabel('weapon', 'phaser') }}</b-dropdown-item>
                         <b-dropdown-item v-on:click="pickGeneric('weapon', 'disruptor')">{{ genericLabel('weapon', 'disruptor') }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('weapon', 'gauss')">{{ genericLabel('weapon', 'gauss') }}</b-dropdown-item>
                     </b-dropdown>
                 </div>
             </div>
@@ -4036,6 +4043,7 @@ function tpShipsFirepowerCalc(info){
                         <b-dropdown-item v-on:click="pickWeapon('plasma')">{{ weaponLabel('plasma') }}</b-dropdown-item>
                         <b-dropdown-item v-on:click="pickWeapon('phaser')">{{ weaponLabel('phaser') }}</b-dropdown-item>
                         <b-dropdown-item v-on:click="pickWeapon('disruptor')">{{ weaponLabel('disruptor') }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickWeapon('gauss')">{{ weaponLabel('gauss') }}</b-dropdown-item>
                     </b-dropdown>
                 </div>
             </div>
@@ -4098,6 +4106,8 @@ function tpShipsFirepowerCalc(info){
                         return 114;
                     case 'disruptor':
                         return 156;
+                    case 'gauss':
+                        return 210;
                     default:
                         return loc('wiki_calc_tp_ships_firepower_weapon');
                 }
