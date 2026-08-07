@@ -1003,7 +1003,7 @@ export function mechanicsPage(content){
         { // Earth shooting back, and the standing orders
             infoBoxBuilder(zwar,{ name: 'zwar_orders', template: 'mechanics', label: loc('wiki_mechanics_zwar_orders'), paragraphs: 6, break: [3], h_level: 2,
                 para_data: {
-                    1: [z.groundFireDay,getSolarName('home')],
+                    1: [z.groundFireDay,getSolarName('home'),z.groundFireTargets],
                     2: [z.groundFireMin,z.groundFireMax,loc('outer_shipyard_armor')],
                     3: [loc('fleet_cmd'),loc('tab_military')],
                     4: [loc('fleet_cmd_flee_plain'),z.fleetCmd.flee.min,z.fleetCmd.flee.max],

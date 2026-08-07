@@ -4914,6 +4914,7 @@ function zFleetDay(){
 const zGroundFireDay = 50;      // days after the first hull lifts before the surface starts shooting back
 const zGroundFireMin = 2;       // hull points an unarmoured ship in orbit loses per day once it does
 const zGroundFireMax = 9;
+const zGroundFireTargets = 2;   // ships the batteries can track and engage in one day
 
 // Share of a hit each armour lets through. The ratio matches the 8 / 6 / 4 the wear-and-tear roll in
 // the main loop already uses, so neutronium plating turns aside half of what steel does wherever the
@@ -4980,16 +4981,18 @@ function zGroundFire(fleet){
     if (typeof fleet.l !== 'number' || fleet.d - fleet.l < zGroundFireDay){ return; }
     if (!global.space.hasOwnProperty('shipyard') || !global.space.shipyard.hasOwnProperty('ships')){ return; }
 
+    // Everything parked over Earth is in range, but the batteries can only hold a firing solution on so
+    // a few targets per day. The same hull is never shot twice in one day.
+    let overhead = global.space.shipyard.ships.filter(s => s.location === 'spc_home' && s.transit === 0);
+
     let hit = 0;
-    global.space.shipyard.ships.forEach(function(ship){
-        if (ship.location !== 'spc_home' || ship.transit > 0){ return; }
-        // Armour soaks part of every hit, but never all of it — a barrage that lands still scores. A
-        // flagship's escort screens it here the same as it does under fire in orbit.
+    for (let i=0; i<zGroundFireTargets && overhead.length > 0; i++){
+        let ship = overhead.splice(Math.floor(seededRandom(0,overhead.length,true)),1)[0];
         let dmg = seededRandom(zGroundFireMin,zGroundFireMax + 1,true) * shipArmorFactor(ship) * (1 - fleetDamageSoak(ship));
         ship.damage += Math.max(1,Math.floor(dmg));
         if (ship.damage > 90){ ship.damage = 90; }
         hit++;
-    });
+    }
 
     if (hit > 0 && !fleet.gf){
         fleet.gf = true;
@@ -5140,6 +5143,7 @@ export function zWarfareVars(){
         groundFireDay: zGroundFireDay,
         groundFireMin: zGroundFireMin,
         groundFireMax: zGroundFireMax,
+        groundFireTargets: zGroundFireTargets,
         fleetCmd: fleetCmdRange,
         minHull: minHullToLaunch
     };
@@ -12069,10 +12073,14 @@ function orderFleetTo(group,l){
     return true;
 }
 
-// A ship that broke off from a fleet for repairs falls back in with it the moment the two are in the
-// same place again. The standing order is kept until it can be honoured rather than being spent on the
-// first attempt, so a ship still limping to the yard keeps its berth waiting for it. It is given up
-// only when there is no longer a fleet to go back to, or the ship has been put into another one.
+// Ship return to fleet check
+function rejoinTarget(ship){
+    if (!ship || !ship['rfid']){ return false; }
+    let flag = fleetFlagship(ship.rfid);
+    return flag && flag !== ship ? flag.location : false;
+}
+
+// A ship that broke off from a fleet for repairs falls back in with it the moment the two are in the same place again.
 function rejoinFleet(ship,cfg){
     if (!ship || !ship['rfid']){ return false; }
     if (ship.fid || !fleetFlagship(ship.rfid)){
@@ -12137,12 +12145,20 @@ export function fleetCmdDay(){
             return;
         }
 
-        // A ship that broke off on its own falls back in with the fleet it left as soon as the two are
-        // in the same place again — normally the moment it gets home, but equally at the yard if the
-        // fleet withdrew there as well.
-        if (ship['rfid'] && ship.transit === 0 && rejoinFleet(ship,cfg)){
-            moved = true;
-            return;
+        // A ship that broke off on its own falls back in with its fleet as soon as the two are in the same place
+        if (ship['rfid'] && ship.transit === 0){
+            if (rejoinFleet(ship,cfg)){
+                moved = true;
+                return;
+            }
+            let chase = rejoinTarget(ship);
+            if (chase && chase !== ship.location && !atShipyard(ship) && shipSpaceworthy(ship) && orderShipTo(ship,chase)){
+                if (!cfg.quiet){
+                    messageQueue(loc('fleet_cmd_regroup',[ship.name,regionName(chase)]),'success',false,['combat']);
+                }
+                moved = true;
+                return;
+            }
         }
 
         // Return on repair: patched up and still holding a posting to go back to. A fleet goes back
@@ -12152,11 +12168,18 @@ export function fleetCmdDay(){
             if (!cfg.ret){ return; }
             if (ship.fid && !ship.flag){ return; }
             if (fleet.some(s => 100 - s.damage < cfg.retHull)){ return; }
-            let home = ship.ret;
-            fleet.forEach(function(s){ delete s.ret; });
+            // A ship still holding a place in a fleet leaves dock making for the fleet rather than for where it was damaged. 
+            // If the fleet is gone, it falls back on its original posting.
+            let home = rejoinTarget(ship) || ship.ret;
             if (orderFleetTo(fleet,home)){
+                fleet.forEach(function(s){ delete s.ret; });
                 if (!cfg.quiet){
-                    messageQueue(loc(fleet.length > 1 ? 'fleet_cmd_return_fleet' : 'fleet_cmd_return',[ship.name,regionName(home),fleet.length]),'success',false,['combat']);
+                    if (fleet.length > 1){
+                        messageQueue(loc('fleet_cmd_return_fleet',[ship.name,regionName(home),fleet.length]),'success',false,['combat']);
+                    }
+                    else {
+                        messageQueue(loc('fleet_cmd_return',[ship.name,regionName(home)]),'success',false,['combat']);
+                    }
                 }
                 moved = true;
             }
