@@ -7,7 +7,7 @@ import { loadFoundry, jobScale } from './jobs.js';
 import { defineIndustry, addSmelter, addFactoryLines } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
 import { actions, payCosts, powerOnNewStruct, initStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, templeCount, casinoEffect, wardenLabel, buildTemplate, structName } from './actions.js';
-import { outerTruthTech, syndicate, drawShipYard, genXYcoord, infestationLabel, infestationMethods, salvageShip, salvagePin } from './truepath.js';
+import { outerTruthTech, syndicate, drawShipYard, infestationLabel, infestationMethods, salvageShip, salvagePin } from './truepath.js';
 import { production, highPopAdjust } from './prod.js';
 import { defineGovernor, govActive } from './governor.js';
 import { ascend, terraform, apotheosis } from './resets.js';

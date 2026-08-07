@@ -5150,7 +5150,7 @@ export function zWarfareVars(){
 // Put a ship at a given fraction of its journey.
 function placeShip(ship){
     if (!ship.inTransit) {
-        ship.location.position = genXYcoord(ship.location.name);
+        ship.location.position = genXYZcoord(ship.location.name);
         return;
     }
 
@@ -6150,7 +6150,7 @@ function TPShipInitTransit(ship, locationName) {
 
     // Current location of the ship
     ship.location = {
-        position: genXYcoord(locationName),
+        position: genXYZcoord(locationName),
         
         // Only if not in transit
         name: locationName
@@ -7304,14 +7304,14 @@ function orbitDegrees(id, days){
 // far side of its planet during a long approach, so neither can be dropped.
 function bodyPointAt(loc, days){
     // Temporary coordinates are fixed points in space, and stars do not orbit anything.
-    if (tempCoord(loc) || !spacePlanetStats[loc]){ return genXYcoord(loc); }
+    if (tempCoord(loc) || !spacePlanetStats[loc]){ return genXYZcoord(loc); }
     let body = spacePlanetStats[loc];
-    if (body.startype){ return genXYcoord(loc); }
+    if (body.startype){ return genXYZcoord(loc); }
     if (body.parent){
         let planetPt = orbitPoint(body.parent, orbitDegrees(body.parent, days));
         // orbitPoint anchors a moon's circle to wherever its planet is *now*, so take the bare
         // offset and carry it to where the planet will have got to.
-        let offset = rel(orbitPoint(loc, orbitDegrees(loc, days)), genXYcoord(body.parent));
+        let offset = rel(orbitPoint(loc, orbitDegrees(loc, days)), genXYZcoord(body.parent));
         return { x: planetPt.x + offset.x, y: planetPt.y + offset.y, z: planetPt.z + offset.z };
     }
     return orbitPoint(loc, orbitDegrees(loc, days));
@@ -7329,8 +7329,8 @@ const MOON_INTERCEPT_TOL = 1e-4;
 function calcLandingPoint(startingPosition, planet, speed, elapsed) {
     elapsed = elapsed || 0;
     // A temp point sits still, so there is no orbit to lead — the landing point is the point itself.
-    if (tempCoord(planet) || !spacePlanetStats[planet]) { return genXYcoord(planet); }
-    if (spacePlanetStats[planet].startype) { return genXYcoord(planet); }
+    if (tempCoord(planet) || !spacePlanetStats[planet]) { return genXYZcoord(planet); }
+    if (spacePlanetStats[planet].startype) { return genXYZcoord(planet); }
     // A moon is solved for directly rather than through the crossing arithmetic below, which
     // measures a body's orbital radius against the ship's distance from the system centre — for a
     // moon that would pit a 0.01 AU circle against a crossing several AU wide and never land on
@@ -7340,8 +7340,8 @@ function calcLandingPoint(startingPosition, planet, speed, elapsed) {
     // the moon is, so the two are settled together: start from the flight time to where it stands
     // now, then re-aim until the answer stops moving.
     if (spacePlanetStats[planet].parent) {
-        if (!(speed > 0)){ return genXYcoord(planet); }
-        let t = dist3(startingPosition, genXYcoord(planet)) / speed;
+        if (!(speed > 0)){ return genXYZcoord(planet); }
+        let t = dist3(startingPosition, genXYZcoord(planet)) / speed;
         for (let i = 0; i < MOON_INTERCEPT_STEPS; i++){
             let next = dist3(startingPosition, bodyPointAt(planet, elapsed + t)) / speed;
             let settled = Math.abs(next - t) < MOON_INTERCEPT_TOL;
@@ -7351,10 +7351,10 @@ function calcLandingPoint(startingPosition, planet, speed, elapsed) {
         return bodyPointAt(planet, elapsed + t);
     }
     // Tau Ceti bodies orbit their star, which sits far from the home-system origin.
-    // Mirror genXYcoord so the orbit center and eccentricity match the body's actual
+    // Mirror genXYZcoord so the orbit center and eccentricity match the body's actual
     // rendered position; otherwise a ship already in Tau Ceti has its landing point
     // computed back near the home sun, producing a bogus multi-star transit distance.
-    let star = spacePlanetStats[planet].star ? genXYcoord(spacePlanetStats[planet].star) : { x: 0, y: 0, z: 0 };
+    let star = spacePlanetStats[planet].star ? genXYZcoord(spacePlanetStats[planet].star) : { x: 0, y: 0, z: 0 };
     // The band the orbit sweeps out, as radii from the ellipse's own centre: the semi-minor axis at
     // its narrowest and the semi-major at its widest. A body around another star still rides the
     // stretched circle that branch of orbitPoint draws, so its bounds are taken the same way.
@@ -7401,7 +7401,7 @@ function calcLandingPoint(startingPosition, planet, speed, elapsed) {
         }
         planet_degree = (planet_degree + planet_speed) % 360;
     }
-    return genXYcoord(planet);
+    return genXYZcoord(planet);
 }
 
 export function syndicate(region,extra){
@@ -8343,7 +8343,7 @@ function orbitRadius(id){
     return body.parent ? body.dist * moonSpread(body.parent) : body.dist;
 }
 
-// Where a body sits at a given angle along its orbit, in AU from the Sun. Split out of genXYcoord so
+// Where a body sits at a given angle along its orbit, in AU from the Sun. Split out of genXYZcoord so
 // the map can trace the exact path a body follows when it draws that body's orbit — the ring and the
 // dot on it are then guaranteed to agree, at any camera angle.
 export function orbitPoint(planet, deg){
@@ -8356,7 +8356,7 @@ export function orbitPoint(planet, deg){
         // distance and its own period, rather than a second heliocentric orbit running a hair
         // outside its planet's. No eccentricity or x-shift — the major moons are near enough
         // circular, and borrowing the planet's would stretch the moon off its primary.
-        origin = genXYcoord(body.parent);
+        origin = genXYZcoord(body.parent);
         let r = body.dist * moonSpread(body.parent);
         u = Math.cos(rad) * r;
         // Flipping the sine sends the moon round the other way as its angle advances: same circle,
@@ -8366,7 +8366,7 @@ export function orbitPoint(planet, deg){
     else if (body.star){
         // Bodies with a `star` (the Tau Ceti system) ride a clean circular orbit centered on that
         // star — no eccentricity or per-orbit x-shift — so the system reads as concentric rings.
-        origin = genXYcoord(body.star);
+        origin = genXYZcoord(body.star);
         u = Math.cos(rad) * body.dist * 1.2 + body.dist / 3;
         v = Math.sin(rad) * body.dist;
     }
@@ -8402,7 +8402,7 @@ const RANDOM_COORD_SPREAD = 0.05;
 // x/y with a small z gives a point scattered across the system's disc, which is what staying "in the
 // plane" means here. Pass `spreadAU` to set that deviation explicitly in AU.
 export function randomCoord(target, minAU, maxAU, spreadAU){
-    let origin = typeof target === 'string' ? genXYcoord(target) : target;
+    let origin = typeof target === 'string' ? genXYZcoord(target) : target;
     let min = Math.min(minAU, maxAU);
     let max = Math.max(minAU, maxAU);
     let dist = Math.sqrt(Math.random() * (max * max - min * min) + min * min);
@@ -8415,7 +8415,7 @@ export function randomCoord(target, minAU, maxAU, spreadAU){
     };
 }
 
-export function genXYcoord(planet){
+export function genXYZcoord(planet){
     // Temporary coordinates are fixed points held outside the table.
     let temp = tempCoord(planet);
     if (temp){ return { x: temp.x, y: temp.y, z: temp.z }; }
@@ -8452,10 +8452,10 @@ function nearestStar(pt){
 function shipRefStar(ship){
     let originStar = nearestStar(ship.origin.position || ship.location.position);
     let destStar = nearestStar(ship.destination.position || ship.location.position);
-    if (originStar === destStar){ return genXYcoord(originStar); }
-    let dO = dist3(ship.location.position, genXYcoord(originStar));
-    let dD = dist3(ship.location.position, genXYcoord(destStar));
-    return genXYcoord(dO <= dD ? originStar : destStar);
+    if (originStar === destStar){ return genXYZcoord(originStar); }
+    let dO = dist3(ship.location.position, genXYZcoord(originStar));
+    let dD = dist3(ship.location.position, genXYZcoord(destStar));
+    return genXYZcoord(dO <= dD ? originStar : destStar);
 }
 
 // ---- Wormhole / jump gate network ----------------------------------------------------------
@@ -8563,7 +8563,7 @@ function findWormholeRoute(fromLoc, toLoc, interstellar){
     });
 
 
-    let toPos = genXYcoord(toLoc);
+    let toPos = genXYZcoord(toLoc);
 
     // Algorithm based on wikipedia pseudocode. Note that euclidean distance is a consistent heuristic
     let open_set = [fromSys];
@@ -8572,14 +8572,14 @@ function findWormholeRoute(fromLoc, toLoc, interstellar){
     g_score[fromSys] = 0;
 
     let f_score = {};
-    f_score[fromSys] = dist3(genXYcoord(fromLoc), toPos);
+    f_score[fromSys] = dist3(genXYZcoord(fromLoc), toPos);
 
     let total_path = [];
 
     while (open_set.length > 0){
         curSys = open_set.shift();
         let curStar = (curSys === 'sun' ? 'spc_sun' : curSys);
-        let curPos = genXYcoord(curStar);
+        let curPos = genXYZcoord(curStar);
 
         
         if (curSys === toSys) {
@@ -8594,7 +8594,7 @@ function findWormholeRoute(fromLoc, toLoc, interstellar){
             systemGateLinks[curSys].forEach(link => {
                 let exitSys = link.to.system;
                 let exitStar = (exitSys === 'sun' ? 'spc_sun' : exitSys);
-                let exitPos = genXYcoord(exitStar);
+                let exitPos = genXYZcoord(exitStar);
 
                 let tentative_g_score = g_score[curSys] + dist3(curPos, exitPos);
                 if (!f_score.hasOwnProperty(exitSys) || tentative_g_score < f_score[exitSys]) {
@@ -10636,7 +10636,7 @@ export function drawMap() {
     // Calculate positions
     let planetLocation = {};
     for (let [id, planet] of Object.entries(spacePlanetStats)) {
-        planetLocation[id] = genXYcoord(id);
+        planetLocation[id] = genXYZcoord(id);
     }
 
     // Orbits, gathered by the body each one circles rather than drawn here. Half of every ring
@@ -10853,7 +10853,7 @@ export function drawMap() {
     {
         let pulse = beaconPulse();
         for (let beacon of liveBeacons()){
-            let ref = genXYcoord(beacon.s || 'spc_sun');
+            let ref = genXYZcoord(beacon.s || 'spc_sun');
             if (starCulled(ref)){ continue; }
             let here = rel({ x: beacon.x, y: beacon.y, z: beacon.z }, ref);
             ctx.save();
@@ -10918,7 +10918,7 @@ export function drawMap() {
     {
         ctx.fillStyle = `rgb(${BEACON_COLOR})`;
         for (let beacon of liveBeacons()){
-            let ref = genXYcoord(beacon.s || 'spc_sun');
+            let ref = genXYZcoord(beacon.s || 'spc_sun');
             if (starCulled(ref)){ continue; }
             let here = rel({ x: beacon.x, y: beacon.y, z: beacon.z }, ref);
             ctx.save();
@@ -10992,12 +10992,12 @@ export function drawMap() {
     // Systems are drawn back to front, so with the map tilted a near system covers a far one rather
     // than whichever happened to come last in the table.
     let starOrder = Object.entries(spacePlanetStats)
-        .filter(([starId, star]) => star.startype && starId !== 'spc_sun' && !starCulled(genXYcoord(starId)))
-        .map(entry => ({ entry, d: pD(genXYcoord(entry[0])) }))
+        .filter(([starId, star]) => star.startype && starId !== 'spc_sun' && !starCulled(genXYZcoord(starId)))
+        .map(entry => ({ entry, d: pD(genXYZcoord(entry[0])) }))
         .sort((a,b) => b.d - a.d)
         .map(s => s.entry);
     for (let [starId, star] of starOrder) {
-        let sc = genXYcoord(starId);
+        let sc = genXYZcoord(starId);
         ctx.save();
         ctx.translate(pX(sc), pY(sc));
         ctx.shadowColor = 'transparent';
@@ -11039,7 +11039,7 @@ export function drawMap() {
         let members = [];
         for (let id of orbiting) {
             let planet = spacePlanetStats[id];
-            let q = rel(genXYcoord(id), sc);
+            let q = rel(genXYZcoord(id), sc);
             let pr = planet.size / 10 * scale;
             let sep = Math.hypot(pX(q), pY(q)) * mapScale;   // how far it reads from its star
             pr = planet.bodystar ? Math.max(pr, 1 / mapScale)
@@ -11092,7 +11092,7 @@ export function drawMap() {
                 if (planet.star !== starId || !planet.bodystar){ continue; }
                 let bt = mapScale < planetLabelMinScale ? planet.label : planet.zlabel;
                 if (!bt){ continue; }
-                let q = rel(genXYcoord(id), sc);
+                let q = rel(genXYZcoord(id), sc);
                 ctx.fillText(bt, pX(q) * mapScale, pY(q) * mapScale - (Math.max(planet.size / 10 * mapScale, 1) + 2));
             }
             for (let [id, planet] of Object.entries(spacePlanetStats)) {
@@ -11100,7 +11100,7 @@ export function drawMap() {
                 if (planet.star !== starId || (planet.unlock && !global.tech[planet.unlock])){ continue; }
                 if (mapScale < planetLabelMinScale){ continue; }
                 if (!actions.tauceti[id] || !actions.tauceti[id].info){ continue; }
-                let q = rel(genXYcoord(id), sc);
+                let q = rel(genXYZcoord(id), sc);
                 ctx.fillText(actions.tauceti[id].info.name(), pX(q) * mapScale, (pY(q) - (0.2 * planet.size)) * mapScale);
             }
         }
@@ -11115,7 +11115,7 @@ export function drawMap() {
     // labels — Saturn, the Galilean moons, the outer dwarf planets — that pointing identifies.
     if (mapHover && spacePlanetStats[mapHover]){
         let name = hoverName(mapHover);
-        let p = genXYcoord(mapHover);
+        let p = genXYZcoord(mapHover);
         if (name && !starCulled(p)){
             // Drawn in screen space at a fixed pixel size, deliberately outside the map transform. Sized
             // in world units it would need a font past the canvas clamp at these zooms and would come
@@ -11228,7 +11228,7 @@ function buildSolarMap(parentNode, keep) {
         let depth = pD(mapFocus), best = Infinity;
         for (let [id, body] of Object.entries(spacePlanetStats)){
             if (!body.startype || body.hidden){ continue; }
-            let p = genXYcoord(id);
+            let p = genXYZcoord(id);
             let off = Math.hypot(pX(p) - px, pY(p) - py);
             if (off < best){ best = off; depth = pD(p); }
         }
@@ -11251,7 +11251,7 @@ function buildSolarMap(parentNode, keep) {
         let best = false, bestD = Infinity;
         for (let [id, body] of Object.entries(spacePlanetStats)){
             if ((!body.startype && !body.bodystar) || body.hidden){ continue; }
-            let p = genXYcoord(id);
+            let p = genXYZcoord(id);
             if (starCulled(p)){ continue; }
             let d = Math.hypot(mapShift.x + pX(p) * mapScale - cx, mapShift.y + pY(p) * mapScale - cy);
             if (d <= Math.max(CLICK_GRAB_PX, body.size / 10 * mapScale) && d < bestD){
@@ -11350,7 +11350,7 @@ function buildSolarMap(parentNode, keep) {
             if (drag === 'pan' && press && !press.moved){
                 let hit = starAt(e) || bodyAt(e);
                 if (hit){
-                    recenterOn(genXYcoord(hit));
+                    recenterOn(genXYZcoord(hit));
                     drawMap();
                     // Lock on so zooming pulls in on it rather than following the cursor away.
                     starLockOn = hit;
@@ -11481,7 +11481,7 @@ function buildSolarMap(parentNode, keep) {
             // opening zoom, so it restores the opening bearing with it.
             mapYaw = mapDefaultYaw('spc_sun');
             camUpdate();
-            recenterOn(genXYcoord('spc_sun'));
+            recenterOn(genXYZcoord('spc_sun'));
             drawMap();
         })
     );
@@ -11493,7 +11493,7 @@ function buildSolarMap(parentNode, keep) {
                 mapScale = 20.0;
                 mapYaw = mapDefaultYaw('tauceti');
                 camUpdate();
-                recenterOn(genXYcoord('tauceti'));
+                recenterOn(genXYZcoord('tauceti'));
                 drawMap();
             })
             .appendTo(currentNode);
@@ -11580,7 +11580,7 @@ function buildSolarMap(parentNode, keep) {
         // through the camera, so the camera has to be pointing the right way first.
         mapYaw = mapDefaultYaw(openOn);
         camUpdate();
-        recenterOn(genXYcoord(openOn));
+        recenterOn(genXYZcoord(openOn));
         starLockOn = openOn;
     }
 
