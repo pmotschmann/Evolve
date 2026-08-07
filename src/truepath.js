@@ -6093,7 +6093,7 @@ export function drawShipYard(){
 
 export function buildTPShipQueue(action){
     if (payCosts(false, action.cost)){
-        buildTPShip(deepClone(action.bp,true));
+        buildTPShip(deepClone(action.bp), true);
         return true;
     }
     return false;
