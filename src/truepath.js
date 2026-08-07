@@ -4982,12 +4982,13 @@ function zGroundFire(fleet){
 
     let hit = 0;
     global.space.shipyard.ships.forEach(function(ship){
-        if (ship.location !== 'spc_home' || ship.transit > 0){ return; }
-        // Armour soaks part of every hit, but never all of it — a barrage that lands still scores.
-        let dmg = seededRandom(zGroundFireMin,zGroundFireMax + 1,true) * shipArmorFactor(ship);
-        ship.damage += Math.max(1,Math.floor(dmg));
-        if (ship.damage > 90){ ship.damage = 90; }
-        hit++;
+        if (!ship.inTransit && ship.location.name === 'spc_home') {
+            // Armour soaks part of every hit, but never all of it — a barrage that lands still scores.
+            let dmg = seededRandom(zGroundFireMin,zGroundFireMax + 1,true) * shipArmorFactor(ship);
+            ship.damage += Math.max(1,Math.floor(dmg));
+            if (ship.damage > 90){ ship.damage = 90; }
+            hit++;
+        }
     });
 
     if (hit > 0 && !fleet.gf){
@@ -5031,7 +5032,7 @@ function combatDamage(attacker,defender){
 // Your ships holding a location, able to shoot.
 function guardsAt(location){
     if (!global.space.hasOwnProperty('shipyard') || !global.space.shipyard.hasOwnProperty('ships')){ return []; }
-    return global.space.shipyard.ships.filter(s => s.location === location && s.transit === 0);
+    return global.space.shipyard.ships.filter(s => !s.inTransit && s.location.name === location);
 }
 
 // A ship shot out from under its crew. The hull is gone from the roster and the crew with it.
@@ -5143,65 +5144,64 @@ export function zWarfareVars(){
 // Advance every hull under way. One that arrives has to get past whatever is guarding the place first;
 // survive that and the ship is gone, because it was only ever a delivery, and what it delivers is a
 // horde on the ground.
-// --- Ship motion ---------------------------------------------------------------------------------
-// A ship's `transit` is a whole number of days left to fly, and it has to stay whole: everything else
-// tests it against zero or against the day a gate is passed, and the fleet list counts an arrival
-// down in days. So the part of a day already flown is kept beside it in `tf`, and only decides where
-// the hull is drawn. Advancing by a fifth of a day five times therefore leaves a ship in exactly the
-// place one whole-day step would have, while letting the map move it between game days instead of
-// jumping a day's flight at a time.
-//
-// Whichever loop drives this must be the only one that does — it is what moves a ship, not merely
-// where it is drawn. Everything the loops do on the day boundary either side of it (arrivals, gate
-// crossings, landings) still reads the same integer `transit` it always did.
 
-// Where a ship sits along its route: 0 at the origin, 1 at the destination.
-function shipFlown(ship){
-    if (!(ship.dist > 0)){ return 1; }
-    return 1 - (Math.max(ship.transit - (ship.tf || 0), 0) / ship.dist);
-}
+// --- Ship motion ---------------------------------------------------------------------------------
 
 // Put a ship at a given fraction of its journey.
-function placeShip(ship, flown){
-    if (ship.path){
-        // Multi-leg wormhole route: place the ship by elapsed-time fraction along the path so the
-        // near-instant inter-gate leg is crossed in its allotted time.
-        let path = ship.path;
-        let seg = path.length - 2;
-        for (let i=0; i<path.length-1; i++){
-            if (flown <= path[i+1].tn){ seg = i; break; }
-        }
-        let a = path[seg], b = path[seg+1];
-        let span = b.tn - a.tn;
-        let sf = span > 0 ? (flown - a.tn) / span : 1;
-        ship.xy.x = a.x + (b.x - a.x) * sf;
-        ship.xy.y = a.y + (b.y - a.y) * sf;
-        ship.xy.z = (a.z || 0) + ((b.z || 0) - (a.z || 0)) * sf;
+function placeShip(ship){
+    if (!ship.inTransit) {
+        ship.location.position = genXYcoord(ship.location.name);
+        return;
     }
-    else {
-        // Straight interpolation on each axis. `|| 0` covers ships that were already under way in a
-        // save written before the map had a z.
-        let o = ship.origin, d = ship.destination;
-        ship.xy.x = o.x + (d.x - o.x) * flown;
-        ship.xy.y = o.y + (d.y - o.y) * flown;
-        ship.xy.z = (o.z || 0) + ((d.z || 0) - (o.z || 0)) * flown;
-    }
+
+    let dist = ship.timeToNextStep / ship.path[0].totalTime; //Distance from destination  
+    let origin = ship.origin.position;
+    let destination = ship.path[0].destination.position;
+
+    // Straight interpolation on each axis.
+    ship.location.position.x = destination.x * (1 - dist) + origin.x * dist;
+    ship.location.position.y = destination.y * (1 - dist) + origin.y * dist;
+    ship.location.position.z = destination.z * (1 - dist) + origin.z * dist;
 }
 
-// Whole days come off `transit` as the fractions accumulate. The epsilon guards the comparison: the
-// current fifth-of-a-day step happens to sum to exactly 1 in binary floating point, but that is luck
-// rather than a property of the arithmetic — change either loop ratio and a sum landing a fraction
-// short would strand every ship a day from its destination for ever.
-const SHIP_DAY_EPSILON = 1e-9;
 function advanceShip(ship, step){
-    ship.tf = (ship.tf || 0) + step;
-    while (ship.tf >= 1 - SHIP_DAY_EPSILON && ship.transit > 0){
-        ship.tf -= 1;
-        if (ship.tf < 0){ ship.tf = 0; }
-        ship.transit--;
+    while (ship.path.length > 0) {
+        if (ship.timeToNextStep > step) {
+            // Just move forward along the path
+            ship.timeToNextStep -= step;
+            break;
+        }
+        else {
+            // Reached either a jump gate or the final destination
+            if (ship.path.length == 1) {
+                // Final destination - make ship stationary
+                TPShipInitTransit(ship, ship.destination.name);
+                break;
+            }
+            else {
+                // Reached a jump gate - advance onto the next path step
+
+                // If ship belongs to the enemy, engage any stationed forces at the gate before continuing
+                // Broken ships are removed later in zFleetMove
+                if (ship.enemy) {
+                    zEngage(ship.path[0].destination.name, [ship]);
+                }
+
+                ship.origin = {
+                    name:  ship.path[0].destination.name,
+                    position: ship.path[0].destination.position
+                }
+
+                ship.path.shift();
+                step -= ship.timeToNextStep;
+                ship.timeToNextStep = ship.path[0].totalTime;
+
+                // Continue the while loop to move the remaining `step` days along the new segment
+            }
+        }
     }
-    if (ship.transit <= 0){ ship.tf = 0; }
-    placeShip(ship, shipFlown(ship));
+
+    placeShip(ship);
 }
 
 // Move every hull under way — yours and the horde's — by `step` days. Pass 1 from longLoop, or
@@ -5210,12 +5210,12 @@ export function moveShips(step){
     if (global.space['shipyard'] && global.space.shipyard['ships']){
         for (let ship of global.space.shipyard.ships){
             // An unfuelled ship stays where it is, as it always has.
-            if (ship.transit > 0 && ship.fueled){ advanceShip(ship, step); }
+            if (ship.inTransit && ship.fueled){ advanceShip(ship, step); }
         }
     }
     if (global.race['zfleet'] && global.race.zfleet['s']){
         for (let ship of global.race.zfleet.s){
-            if (ship.transit > 0){ advanceShip(ship, step); }
+            if (ship.inTransit){ advanceShip(ship, step); }
         }
     }
 }
@@ -5224,20 +5224,11 @@ function zFleetMove(fleet){
     let landings = {};
     for (let i=fleet.s.length-1; i>=0; i--){
         let ship = fleet.s[i];
-        if (ship.transit > 0){
-            // Nearest approach to a gate it has to run: whoever is holding that gate fires today.
-            // Ordered entry first, and a raider stopped at the entry never reaches the exit.
-            while (Array.isArray(ship.gates) && ship.gates.length > 0 && ship.transit <= ship.gates[0].t){
-                let gate = ship.gates.shift();
-                zEngage(gate.l,[ship]);
-                if (ship.damage >= 100){ break; }
-            }
-            if (ship.damage >= 100){
-                fleet.s.splice(i,1);
-                continue;
-            }
+        if (ship.damage >= 100){
+            fleet.s.splice(i,1);
+            continue;
         }
-        if (ship.transit <= 0){
+        if (!ship.inTransit){
             fleet.s.splice(i,1);
             if (!landings[ship.location]){ landings[ship.location] = []; }
             landings[ship.location].push(ship);
@@ -5251,16 +5242,16 @@ function zFleetMove(fleet){
         zEngage(location,arrivals);
 
         zCullDowned(arrivals).forEach(function(ship){
-            if (!global.race.zhorde.hasOwnProperty(ship.location)){ return; }
+            if (!global.race.zhorde.hasOwnProperty(ship.location.name)){ return; }
             // A mauled hull spills part of its cargo on the way down: a percent of the horde for every
             // two percent of hull it lost getting here.
             let load = Math.max(0,Math.round(ship.load * (1 - ship.damage / 200)));
             if (load <= 0){ return; }
-            global.race.zhorde[ship.location] += load;
-            zMessage(loc('zfleet_landing',[ship.name,regionName(ship.location),load.toLocaleString()]),'danger');
+            global.race.zhorde[ship.location.name] += load;
+            zMessage(loc('zfleet_landing',[ship.name,regionName(ship.location.name),load.toLocaleString()]),'danger');
             // A landing on a region whose horde was a secret gives the game away.
             if (!global.race['zfound']){ global.race['zfound'] = {}; }
-            global.race.zfound[ship.location] = true;
+            global.race.zfound[ship.location.name] = true;
         });
         renderSpace();
     });
@@ -5381,56 +5372,15 @@ function zFleetHull(cls){
     let ship = {
         class: cls,
         name: `${loc(`outer_shipyard_class_${cls}`)} ${Math.floor(seededRandom(100,10000,true))}`,
-        location: 'spc_home',
-        xy: genXYcoord('spc_home'),
-        transit: 0, dist: 0, damage: 0, fueled: true
+        damage: 0, fueled: true
     };
+    TPShipInitTransit(ship, 'spc_home');
     Object.keys(zFleetParts).forEach(function(part){
         ship[part] = zFleetParts[part][Math.floor(seededRandom(0,zFleetParts[part].length,true))];
     });
     return ship;
 }
 
-// Put a built hull on course and add it to the fleet. Early raids still land lighter than late ones:
-// the cargo ramp scales whatever the hull would otherwise deliver. The trip is passed in so a whole
-// sortie can share one, rather than each hull flying its own.
-function zFleetDispatch(fleet,ship,target,ramp,trip){
-    let hull = zFleetHulls[ship.class];
-
-    // The location is the destination the moment it leaves, matching how the player's ships track a
-    // journey, so the arrival check reads the same field either way.
-    ship.location = target;
-    ship.transit = Math.max(trip.transit,1);
-    ship.tf = 0;   // a fresh journey starts at the top of a day
-    ship.dist = ship.transit;
-    ship.origin = deepClone(trip.origin);
-    ship.destination = deepClone(trip.destination);
-
-    // A route through a wormhole runs both gates. The path's waypoints carry the fraction of the trip
-    // each one falls at, so work out which day of the crossing the raider is nearest each gate and note
-    // it — a picket stationed there gets its volley as the ship actually passes, rather than the moment
-    // it left Earth. Held as the transit reading the ship will show on that day.
-    ship.gates = [];
-    if (trip.path && trip.path.length >= 4){
-        let route = findWormholeRoute('spc_home',target);
-        if (route){
-            [[route.entry.location,trip.path[1].tn],[route.exit.location,trip.path[2].tn]].forEach(function(gate){
-                let elapsed = Math.round(gate[1] * ship.dist);
-                // Clamped to a day the ship will actually tick through: departure day is already past.
-                let at = Math.min(Math.max(ship.dist - elapsed,0),ship.dist - 1);
-                ship.gates.push({ l: gate[0], t: at });
-            });
-            // Highest remaining transit first, so the entry gate is passed before the exit gate.
-            ship.gates.sort(function(a,b){ return b.t - a.t; });
-        }
-    }
-    ship.load = Math.max(1,Math.round(hull.horde() * (zFleetLoadStart + (1 - zFleetLoadStart) * ramp)));
-
-    fleet.s.push(ship);
-    // Remember the day the first hull ever lifted; the surface batteries wake a while after it.
-    if (typeof fleet.l !== 'number'){ fleet.l = fleet.d; }
-    //messageQueue(loc('zfleet_launch',[ship.name,regionName(target),ship.transit]),'warning',false,['combat']);
-}
 
 // Lift a group of hulls together for one target. Whatever you have parked over Earth gets a single
 // shot at the sortie as it climbs out, however many hulls are in it, and only what survives that flies.
@@ -5445,6 +5395,8 @@ function zFleetSortie(fleet,classes,target,ramp){
     // of yours. Planned per ship instead, hulls drawing different engines would arrive days apart and
     // fly as a group in name only.
     let trip = planShipTrip(fleetPace(flying),target);
+    if (!trip)
+        return;
 
     // Stamp the sortie on anything that lifted in company. Two raiders on the same leg would otherwise
     // be indistinguishable from two that merely happen to read the same remaining transit — and once a
@@ -5455,7 +5407,23 @@ function zFleetSortie(fleet,classes,target,ramp){
         flying.forEach(function(ship){ ship.zf = fleet.n; });
     }
 
-    flying.forEach(function(ship){ zFleetDispatch(fleet,ship,target,ramp,trip); });
+    // Put a built hull on course and add it to the fleet. Early raids still land lighter than late ones:
+    // the cargo ramp scales whatever the hull would otherwise deliver. 
+    flying.forEach(function(ship){ 
+        let hull = zFleetHulls[ship.class];
+        ship.load = Math.max(1,Math.round(hull.horde() * (zFleetLoadStart + (1 - zFleetLoadStart) * ramp)));
+        ship.enemy = true;
+
+        initializeShipTrip(ship, target, trip);
+
+        fleet.s.push(ship);
+    });
+
+    if (flying.length > 0) {
+        // Remember the day the first hull ever lifted; the surface batteries wake a while after it.
+        if (typeof fleet.l !== 'number'){ fleet.l = fleet.d; }
+    }
+
     return flying.length;
 }
 
@@ -5516,7 +5484,7 @@ function infestationCombat(region){
         let bombard = 0;
         if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
             global.space.shipyard.ships.forEach(function(ship){
-                if (ship.location === region && ship.transit === 0){
+                if (!ship.inTransit && ship.location.name === region){
                     crew += shipCrewSize(ship);
                     let rating = shipAttackPower(ship);
                     bombard += ship.damage > 0 ? Math.round(rating * (100 - ship.damage) / 100) : rating;
@@ -5660,13 +5628,13 @@ const derelictParts = {
 // Build a random corvette. Salvage that must always have something to offer falls back on this when
 // nothing it can use is adrift. Not added to the wreck pool by the caller unless it wants it there.
 function newDerelict(){
-    let xy = genXYcoord('tau_gas2');
     let ship = {
         class: 'corvette',
         name: getRandomShipName(),
-        location: 'tau_gas2', xy: deepClone(xy), origin: deepClone(xy), destination: deepClone(xy),
-        transit: 0, dist: 0, damage: 0, fueled: false
+        damage: 0, fueled: false
     };
+    TPShipInitTransit(ship, 'tau_gas2');
+
     Object.keys(derelictParts).forEach(function(part){
         ship[part] = derelictParts[part][Math.floor(seededRandom(0,derelictParts[part].length))];
     });
@@ -5752,11 +5720,7 @@ export function salvageShip(qty, location, sLocation, eventStyle, maxClass, pin)
             let ship = pickDerelict(wants[i], i === 0 ? pin : false);
             if (!ship){ continue; }
             ship.location = sLocation;
-            ship.xy = genXYcoord(sLocation);
-            ship.origin = deepClone(ship.xy);
-            ship.destination = deepClone(ship.xy);
-            ship.transit = 0;
-            ship.dist = 0;
+            TPShipInitTransit(ship, sLocation);
             ship.damage = Math.floor(seededRandom(75,90));
             ship.fueled = false;
             let num = 1;
@@ -6177,15 +6141,49 @@ export function TPShipDesc(parent,obj){
     return desc;
 }
 
+// Initialize ship variables related to transit. Used either when creating a new ship 
+// to place it at `locationName`, or when landing an existing ship at `locationName`
+// to cleanup after previous trip.
+function TPShipInitTransit(ship, locationName) {
+    // Whether ship is currently in transit
+    ship.inTransit = false;
+
+    // Current location of the ship
+    ship.location = {
+        position: genXYcoord(locationName),
+        
+        // Only if not in transit
+        name: locationName
+    };
+    
+    // Origin of the ship, either starting position or gate it just exited - only if in transit
+    ship.origin = {
+        name: "",
+        position: {x: 0, y: 0, z: 0}
+    };
+    // Final destination of the ship - only if in transit
+    ship.destination = {
+        name: "",
+        position: {x: 0, y: 0, z: 0}
+    };
+
+    // Path to destination, contains jump gates along the way as well 
+    // as the final destination - only if in transit
+    ship.path = [];
+    // Remaining days to get to next step along the path, used to 
+    // interpolate ship position - only if in transit
+    ship.timeToNextStep = 0;
+    // Sum of days for all steps along the path. Stored here to prevent 
+    // recalculating the sum every time something needs it 
+    ship.totalTime = 0;
+}
+
 function buildTPShip(ship, queue){
-    ship['location'] = global.tech['resettle'] ? 'tau_gas2' : 'spc_dwarf';
-    ship['xy'] = genXYcoord(global.tech['resettle'] ? 'tau_gas2' : 'spc_dwarf');
-    ship['origin'] = deepClone(ship['xy']);
-    ship['destination'] = deepClone(ship['xy']);
-    ship['transit'] = 0;
-    ship['dist'] = 0;
-    ship['damage'] = 0;
-    ship['fueled'] = false;
+    let locationName = global.tech['resettle'] ? 'tau_gas2' : 'spc_dwarf';
+    TPShipInitTransit(ship, locationName);
+
+    ship.damage = 0;
+    ship.fueled = false;
 
     if (ship.name.length === 0){
         ship.name = getRandomShipName();
@@ -6485,12 +6483,12 @@ export function shipSpeed(ship){
     if (ship.armor === 'aerographene'){ mass /= AEROGRAPHENE_SPEED; }
 
     let boost = 1;
-    switch (ship.location){
+    switch (ship.location?.name ?? ""){
         case 'spc_dwarf':
-            boost = p_on['m_relay'] && ship.transit === 0 && global.space['m_relay'] && global.space.m_relay.charged >= 10000 ? 3 : 1;
+            boost = p_on['m_relay'] && !ship.inTransit && global.space['m_relay'] && global.space.m_relay.charged >= 10000 ? 3 : 1;
             break;
         case 'tau_gas2':
-            boost = p_on['tcm_relay'] && ship.transit === 0 && global.tauceti['tcm_relay'] && global.tauceti.tcm_relay.charged >= 10000 ? 3 : 1;
+            boost = p_on['tcm_relay'] && !ship.inTransit && global.tauceti['tcm_relay'] && global.tauceti.tcm_relay.charged >= 10000 ? 3 : 1;
             break;
         default:
             boost = 1;
@@ -6890,9 +6888,10 @@ const shipyardRanks = {
 function shipyardShipCompare(a,b,yards){
     yards = yards || activeRepairYards();
     return (
-        (yards.includes(a.location) ? 0 : 1) - (yards.includes(b.location) ? 0 : 1)
-        || (shipyardRanks.location[a.location] ?? 0) - (shipyardRanks.location[b.location] ?? 0)
-        || a.transit - b.transit
+        (yards.includes(a.location.name) ? 0 : 1) - (yards.includes(b.location.name) ? 0 : 1)
+        || (shipyardRanks.location[a.location.name] ?? 0) - (shipyardRanks.location[b.location.name] ?? 0)
+        || a.inTransit - b.inTransit
+        || a.timeToNextStep - b.timeToNextStep
         || (shipyardRanks.class[a.class] ?? 0) - (shipyardRanks.class[b.class] ?? 0)
         || (shipyardRanks.engine[a.engine] ?? 0) - (shipyardRanks.engine[b.engine] ?? 0)
         || (shipyardRanks.power[a.power] ?? 0) - (shipyardRanks.power[b.power] ?? 0)
@@ -6948,8 +6947,11 @@ function drawShips(){
     // array — a row binds and acts on that, so it stays correct however the list is arranged on screen.
     let entries = [];
     global.space.shipyard.ships.forEach(function(ship,i){
-        if (view.sys !== 'all' && locSystem(ship.location) !== view.sys){ return; }
-        entries.push({ i: i, ship: ship });
+        // Which tab should the ship be drawn in
+        let shipDisplayLocation = (ship.inTransit ? ship.destination.name : ship.location.name);
+
+        if (view.sys !== 'all' && locSystem(shipDisplayLocation) !== view.sys){ return; }
+        entries.push({ i: i, ship: ship, dispLoc: shipDisplayLocation });
     });
 
     if (view.group){
@@ -6958,11 +6960,11 @@ function drawShips(){
         let order = [];
         let byLoc = {};
         entries.forEach(function(e){
-            if (!byLoc.hasOwnProperty(e.ship.location)){
-                byLoc[e.ship.location] = [];
-                order.push(e.ship.location);
+            if (!byLoc.hasOwnProperty(e.dispLoc)){
+                byLoc[e.dispLoc] = [];
+                order.push(e.dispLoc);
             }
-            byLoc[e.ship.location].push(e);
+            byLoc[e.dispLoc].push(e);
         });
         order.forEach(function(location,g){
             drawShipGroup(list,g,location,regionNames,repairYards);
@@ -7001,7 +7003,7 @@ function drawShipGroup(list,g,location,regionNames,repairYards){
 
     // Ships of this group, read fresh on every render so the summary cannot go stale.
     let here = function(){
-        return global.space.shipyard.ships.filter(function(s){ return s.location === location; });
+        return global.space.shipyard.ships.filter(function(s){ return (s.inTransit ? s.destination.name : s.location.name) === location; });
     };
 
     // Bound to the view options behind a wrapper key rather than to the yard itself. Vue merges data
@@ -7035,7 +7037,7 @@ function drawShipGroup(list,g,location,regionNames,repairYards){
                 return here().reduce(function(t,s){ return t + shipCrewSize(s); },0);
             },
             transit(){
-                return here().filter(function(s){ return s.transit > 0; }).length;
+                return here().filter(function(s){ return s.inTransit; }).length;
             }
         }
     });
@@ -7043,13 +7045,8 @@ function drawShipGroup(list,g,location,regionNames,repairYards){
 
 function drawShipRow(list,i,ship,regionNames){
     {
-        if (!ship['xy']){ ship['xy'] = genXYcoord(ship.location); }
-        if (!ship.hasOwnProperty('dist')){ ship['dist'] = ship['transit']; }
-        if (!ship.hasOwnProperty('origin')){ ship['origin'] = ship['xy']; }
-        if (!ship.hasOwnProperty('destination')){ ship['destination'] = genXYcoord(ship.location); }
-
         let dispatch = `<button id="ship${i}loc" class="button is-info" @click="pickDest(${i})">
-            <span>${regionNames[ship.location]}</span>
+            <span>${regionNames[ship.inTransit ? ship.destination.name : ship.location.name]}</span>
         </button>`;
 
         if (global.space.shipyard.expand){
@@ -7121,8 +7118,8 @@ function drawShipRow(list,i,ship,regionNames){
                 // ship is the only one where it is.
                 fleetAllowed(id){
                     let s = global.space.shipyard.ships[id];
-                    if (!global.tech['syard_fleet'] || !s || s.transit > 0){ return false; }
-                    return global.space.shipyard.ships.some(o => o !== s && o.location === s.location && o.transit === s.transit);
+                    if (!global.tech['syard_fleet'] || !s || s.inTransit){ return false; }
+                    return global.space.shipyard.ships.some(o => o !== s && !o.inTransit && o.location === s.location);
                 },
                 fleetText(id){
                     let s = global.space.shipyard.ships[id];
@@ -7130,7 +7127,7 @@ function drawShipRow(list,i,ship,regionNames){
                 },
                 toggleFleet(id){
                     let s = global.space.shipyard.ships[id];
-                    if (!global.tech['syard_fleet'] || !s || s.transit > 0){ return; }
+                    if (!global.tech['syard_fleet'] || !s || s.inTransit){ return; }
                     s.fleet = !s.fleet;
                     drawShips();
                 },
@@ -7192,14 +7189,16 @@ function drawShipRow(list,i,ship,regionNames){
                     return ``;
                 },
                 dest(id){
-                    let name = ship.class === 'explorer' ? loc('tech_era_tauceti') : regionNames[global.space.shipyard.ships[id].location];
+                    let s = global.space.shipyard.ships[id];
+                    let name = s.class === 'explorer' ? loc('tech_era_tauceti') : regionNames[s.destination.name];
                     return loc(`outer_shipyard_arrive`,[
                         name,
-                        global.space.shipyard.ships[id].transit
+                        // (Total time) minus (time already traversed on current step)
+                        s.inTransit ? Math.round(s.totalTime - (s.path[0].totalTime - s.timeToNextStep)) : 0
                     ]);
                 },
                 show(id){
-                    return global.space.shipyard.ships[id].transit > 0 ? true : false;
+                    return global.space.shipyard.ships[id].inTransit;
                 },
                 // A ship pulled out of the line for repairs remembers where it was posted. Say so, and
                 // let the player call the arrangement off without having to re-order the ship by hand.
@@ -7242,6 +7241,50 @@ function tauEnableSoldiers(){
     }
 }
 
+// Take a `ship` and send it on its merry way to `locationName`
+function initializeShipTrip(ship, locationName, trip){
+    // If a trip is already calculated then use that trip (for example when sending 
+    // a fleet to account for its slower speed). Otherwise calculate steps for new path.
+    let plannedTrip;
+    if (trip)
+        plannedTrip = trip;
+    else 
+        plannedTrip = planShipTrip(ship, locationName);
+
+    // We're already at the target location, or the location is unavailable (for any possible reason)
+    if (!plannedTrip)
+        return;
+
+    ship.path = plannedTrip.path;
+    ship.totalTime = plannedTrip.totalTime;
+
+    // Origin
+    if (!ship.inTransit){
+        // For a stationary ship lauching off - the location it was at before
+        ship.origin = deepClone(ship.location);
+    }
+    else if (!ship.path[0].inGate){
+        // For a ship travelling outside of a gate - just the xyz location it was at when changing course
+        ship.origin = {
+            position: deepClone(ship.location.position),
+            name: ""
+        }
+    }
+    else {
+        // A ship travelling inside a gate must first leave it before being able to change course.
+        // The first path step is unchanged, so origin stays as it was.
+    }
+
+    // Final destination. Landing point calculated in planShipTrip
+    ship.destination.name = locationName;
+    ship.destination.position = ship.path[ship.path.length - 1].destination.position;
+
+    // First step
+    ship.timeToNextStep = ship.path[0].totalTime;
+
+    // Liftoff
+    ship.inTransit = true;
+}
 // How far along its orbit a body has moved after `days`, in degrees. Matches the rate the position
 // update in main.js advances at: it runs on the mid loop, five of which make a game day, so its
 // 72/orbit per tick is 360/orbit per day — one full circuit in exactly `orbit` days.
@@ -7283,7 +7326,7 @@ const MOON_INTERCEPT_TOL = 1e-4;
 // Where to aim a ship so it meets `planet` rather than where it used to be. `elapsed` is time the
 // ship has already committed to before this leg starts — the run to a wormhole and the jump through
 // it — which the target keeps moving during.
-function calcLandingPoint(ship, planet, elapsed) {
+function calcLandingPoint(startingPosition, planet, speed, elapsed) {
     elapsed = elapsed || 0;
     // A temp point sits still, so there is no orbit to lead — the landing point is the point itself.
     if (tempCoord(planet) || !spacePlanetStats[planet]) { return genXYcoord(planet); }
@@ -7297,11 +7340,10 @@ function calcLandingPoint(ship, planet, elapsed) {
     // the moon is, so the two are settled together: start from the flight time to where it stands
     // now, then re-aim until the answer stops moving.
     if (spacePlanetStats[planet].parent) {
-        let ship_speed = shipSpeed(ship) / 225;
-        if (!(ship_speed > 0)){ return genXYcoord(planet); }
-        let t = dist3(ship.xy, genXYcoord(planet)) / ship_speed;
+        if (!(speed > 0)){ return genXYcoord(planet); }
+        let t = dist3(startingPosition, genXYcoord(planet)) / speed;
         for (let i = 0; i < MOON_INTERCEPT_STEPS; i++){
-            let next = dist3(ship.xy, bodyPointAt(planet, elapsed + t)) / ship_speed;
+            let next = dist3(startingPosition, bodyPointAt(planet, elapsed + t)) / speed;
             let settled = Math.abs(next - t) < MOON_INTERCEPT_TOL;
             t = next;
             if (settled){ break; }
@@ -7333,14 +7375,13 @@ function calcLandingPoint(ship, planet, elapsed) {
     let center_y = star.y;
     // Inclination tilts the orbit about its centre, so a body's distance from that centre is
     // unchanged and the crossing-window arithmetic below still holds in three dimensions.
-    let ship_dist = dist3(ship.xy, { x: center_x, y: center_y, z: star.z });
-    let ship_speed = shipSpeed(ship) / 225;
+    let ship_dist = dist3(startingPosition, { x: center_x, y: center_y, z: star.z });
     let cross1_dist = Math.abs(ship_dist - semiMinor);
     let cross2_dist = Math.abs(ship_dist + semiMinor);
     let cross1w_dist = Math.abs(ship_dist - semiMajor);
     let cross2w_dist = Math.abs(ship_dist + semiMajor);
-    let cross1_days = Math.floor(Math.min(cross1_dist, cross1w_dist, cross2_dist, cross2w_dist) / ship_speed);
-    let cross2_days = Math.ceil(Math.max(cross1_dist, cross1w_dist, cross2_dist, cross2w_dist) / ship_speed);
+    let cross1_days = Math.floor(Math.min(cross1_dist, cross1w_dist, cross2_dist, cross2w_dist) / speed);
+    let cross2_days = Math.ceil(Math.max(cross1_dist, cross1w_dist, cross2_dist, cross2w_dist) / speed);
     if (ship_dist >= semiMinor && ship_dist <= semiMajor) {
         cross1_days = 0;
     }
@@ -7355,7 +7396,7 @@ function calcLandingPoint(ship, planet, elapsed) {
         // orbitPoint rather than open-coded trig, so the landing point is on the same 3D orbit the
         // body travels and the map draws.
         let pt = orbitPoint(planet, planet_degree);
-        if (dist3(ship.xy, pt) / ship_speed <= i) {
+        if (dist3(startingPosition, pt) / speed <= i) {
             return pt;
         }
         planet_degree = (planet_degree + planet_speed) % 360;
@@ -7412,7 +7453,7 @@ export function syndicate(region,extra){
         let overkill = 0;
         if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
             global.space.shipyard.ships.forEach(function(ship){
-                if (ship.location === region && ship.transit === 0 && ship.fueled){
+                if (!ship.inTransit && ship.location.name === region && ship.fueled){
                     let rating = shipAttackPower(ship);
                     patrol += ship.damage > 0 ? Math.round(rating * (100 - ship.damage) / 100) : rating;
                     sensor += sensorRange(ship);
@@ -8390,10 +8431,6 @@ export function genXYcoord(planet){
     return orbitPoint(planet, global.space.position.hasOwnProperty(planet) ? global.space.position[planet] : 0);
 }
 
-function transferWindow(p1,p2){
-    return Math.ceil(dist3(p1,p2) * 225);
-}
-
 // The star nearest a point (absolute Sun-frame coords), scanning every star in spacePlanetStats.
 function nearestStar(pt){
     let best = 'spc_sun';
@@ -8414,11 +8451,11 @@ function nearestStar(pt){
 // reaches the point equidistant from the two — the halfway point between them — then swaps to the
 // destination star.
 function shipRefStar(ship){
-    let originStar = nearestStar(ship.origin || ship.xy);
-    let destStar = nearestStar(ship.destination || ship.xy);
+    let originStar = nearestStar(ship.origin.position || ship.location.position);
+    let destStar = nearestStar(ship.destination.position || ship.location.position);
     if (originStar === destStar){ return genXYcoord(originStar); }
-    let dO = dist3(ship.xy, genXYcoord(originStar));
-    let dD = dist3(ship.xy, genXYcoord(destStar));
+    let dO = dist3(ship.location.position, genXYcoord(originStar));
+    let dD = dist3(ship.location.position, genXYcoord(destStar));
     return genXYcoord(dO <= dD ? originStar : destStar);
 }
 
@@ -8494,62 +8531,197 @@ function locSystemName(location){
     return star && star.label ? star.label : '';
 }
 
-// Find an active wormhole route (entry + exit gate) connecting fromLoc's system to toLoc's system,
-// or null when none applies (same system, no link, or either gate inactive).
-function findWormholeRoute(fromLoc, toLoc){
+// Find an active wormhole route (series of gate locations if any) connecting 
+// fromLoc's system to toLoc's system, or null when cannot find a path.
+// Uses A* to find optimal route when more gates are involved.
+// Does not account for travel within a system, so solution might not be optimal in extreme edge cases
+function findWormholeRoute(fromLoc, toLoc, interstellar){
     let fromSys = locSystem(fromLoc);
     let toSys = locSystem(toLoc);
-    if (fromSys === toSys){ return null; }
-    for (let link of jumpLinks){
-        let entry = jumpGates[link.from];
-        let exit = jumpGates[link.to];
-        if (entry && exit && entry.system === fromSys && exit.system === toSys && entry.active() && exit.active()){
-            return { entry, exit };
+    if (fromSys === toSys){ 
+        // Travel directly to location, no gates involved
+        return [{
+            location: toLoc,
+            inGate: false
+        }];
+    }
+    let curSys;
+
+    let systemGateLinks = {};
+    jumpLinks.forEach(link => {
+        let from = jumpGates[link.from];
+        if (!from.active())
+            return;
+        
+        let to = jumpGates[link.to];
+        if (!to.active())
+            return;
+
+        if (!systemGateLinks.hasOwnProperty(from.system)){
+            systemGateLinks[from.system] = [];
+        }
+        systemGateLinks[from.system].push({from: from, to: to});
+    });
+
+
+    let toPos = genXYcoord(toLoc);
+
+    // Algorithm based on wikipedia pseudocode. Note that euclidean distance is a consistent heuristic
+    let open_set = [fromSys];
+    let came_from = {};
+    let g_score = {};
+    g_score[fromSys] = 0;
+
+    let f_score = {};
+    f_score[fromSys] = dist3(genXYcoord(fromLoc), toPos);
+
+    let total_path = [];
+
+    while (open_set.length > 0){
+        curSys = open_set.shift();
+        let curStar = (curSys === 'sun' ? 'spc_sun' : curSys);
+        let curPos = genXYcoord(curStar);
+
+        
+        if (curSys === toSys) {
+            while (curSys !== fromSys){
+                total_path.unshift(curSys); 
+                curSys = came_from[curSys];
+            }
+            break;
+        }
+
+        if (systemGateLinks[curSys]){
+            systemGateLinks[curSys].forEach(link => {
+                let exitSys = link.to.system;
+                let exitStar = (exitSys === 'sun' ? 'spc_sun' : exitSys);
+                let exitPos = genXYcoord(exitStar);
+
+                let tentative_g_score = g_score[curSys] + dist3(curPos, exitPos);
+                if (!f_score.hasOwnProperty(exitSys) || tentative_g_score < f_score[exitSys]) {
+                    came_from[exitSys] = curSys;
+                    g_score[exitSys] = tentative_g_score;
+                    f_score[exitSys] = tentative_g_score + dist3(exitPos, toPos);
+
+                    if (!open_set.includes(exitSys)) {
+                        open_set.push(exitSys);
+                        open_set.sort((a, b) => f_score[a] - f_score[b]);
+                    }
+                }
+            });
         }
     }
-    return null;
+
+    if (total_path.length === 0){
+        // Gate path not found, maybe interstellar?
+        if (interstellar){
+            // Go to best location to start journey, then launch from there
+            let bestVal = Infinity;
+            let bestSys = null;
+
+            Object.entries(f_score).forEach(([sys, val]) => {
+                if (val < bestVal){
+                    bestVal = val;
+                    bestSys = sys;
+                }
+            });
+
+            let curSys = bestPos;
+            while (curSys !== fromSys){
+                total_path.unshift(curSys); 
+                curSys = came_from[curSys];
+            }
+        }
+        else {
+            // Can't go interstellar
+            return null;
+        }
+    }
+     
+    // Gate path recorded in total_path
+    let route = [];
+    curSys = fromSys;
+    let curLoc = fromLoc;
+    total_path.forEach(system => {
+        let link = systemGateLinks[curSys].filter(link => link.to.system === system)[0];
+        route.push({
+            location: link.from.location,
+            inGate: false
+        });
+        route.push({
+            location: link.to.location,
+            inGate: true
+        });
+
+        curSys = system;
+    });
+    route.push({
+        location: toLoc,
+        inGate: false
+    });
+    return route;
 }
 
-// Plan a ship's trip to location l. Returns the total transit time (days, computed up front),
-// origin/destination coordinates, and — when an active wormhole route applies — a multi-leg path
-// of time-normalized waypoints: origin -> entry gate -> (wormhole, wormholeSpeedMult x speed) exit
-// gate -> final destination. Without a route it returns a plain single-leg trip (path: false).
-function planShipTrip(ship, l){
-    let speed = shipSpeed(ship);
-    let route = findWormholeRoute(ship.location, l);
-    if (!route){
-        let dest = calcLandingPoint(ship, l);
-        let days = Math.round(transferWindow(ship.xy, dest) / speed);
-        return { transit: days, dist: days, origin: deepClone(ship.xy), destination: { x: dest.x, y: dest.y, z: dest.z }, path: false };
+// Plan a ship's trip to `locationName`. Returns the total transit time (days, computed up front),
+// origin/destination coordinates, and a path of waypoints: 
+// [entry gate -> exit gate].. -> final destination. 
+// When not using any jump gates the returned path contains only the final destination.
+function planShipTrip(ship, locationName){
+    if (!ship.inTransit && ship.location === locationName) {
+        return false;
     }
-    // Every leg after the first starts later than now, and both gates orbit — the sun gate every 60
-    // days, Tau Ceti's home every 129 — as does whatever is being flown to. So each leg is aimed at
-    // where its target will be once the legs before it are done, not at where it sits today.
-    //
-    // Leg 1: current position -> entry gate (normal speed). Nothing precedes it, so no offset.
-    let entryPt = calcLandingPoint(ship, route.entry.location);
-    let d1 = transferWindow(ship.xy, entryPt) / speed;
-    // Leg 2: entry gate -> exit gate through the wormhole (accelerated). The ship comes out where
-    // that gate has moved to by then. d2 is measured from the gate's d1 position first and the
-    // projection refined with it — at 125000x speed the jump is a rounding error, so where it is
-    // measured from cannot shift the answer.
-    let exitPt = bodyPointAt(route.exit.location, d1);
-    let d2 = transferWindow(entryPt, exitPt) / (speed * wormholeSpeedMult);
-    exitPt = bodyPointAt(route.exit.location, d1 + d2);
-    // Leg 3: exit gate -> final destination (normal speed). Computed in the exit gate's frame by
-    // treating the gate as the ship's position, and told how long the ship has already been under
-    // way, so the destination is led by the whole journey rather than by this leg alone.
-    let destPt = calcLandingPoint(Object.assign({}, ship, { xy: exitPt }), l, d1 + d2);
-    let d3 = transferWindow(exitPt, destPt) / speed;
-    let total = d1 + d2 + d3;
-    let days = Math.max(1, Math.round(total));
-    let path = [
-        { x: ship.xy.x, y: ship.xy.y, z: ship.xy.z || 0, tn: 0 },
-        { x: entryPt.x, y: entryPt.y, z: entryPt.z || 0, tn: d1 / total },
-        { x: exitPt.x, y: exitPt.y, z: exitPt.z || 0, tn: (d1 + d2) / total },
-        { x: destPt.x, y: destPt.y, z: destPt.z || 0, tn: 1 }
-    ];
-    return { transit: days, dist: days, origin: deepClone(ship.xy), destination: { x: destPt.x, y: destPt.y, z: destPt.z || 0 }, path };
+
+    let speed = shipSpeed(ship) / 225;
+
+    // Check if the ship is currently travelling through a gate - it needs to exit first
+    // before being able to change course
+    let inGate = (ship.inTransit && ship.path[0].inGate);
+
+    // Onpy allow starworthy ships to cross interstellar space, other ships must use jump gates to travel
+    let interstellar = (ship.class === 'explorer');
+
+    let path = [];
+    let currentPosition = ship.location.position;
+    let currentTime = 0;
+    let route;
+    if (inGate){
+        path.push(ship.path[0]);
+        currentPosition = ship.path[0].destination.position;
+        currentTime = ship.timeToNextStep;
+
+        route = findWormholeRoute(ship.path[0].destination.name, locationName, interstellar);
+    }
+    else {
+        route = findWormholeRoute(ship.location.name, locationName, interstellar);
+    }
+
+    if (!route)
+        return false;
+
+    route.forEach(step => {
+        let currentSpeed = speed;
+        if (step.inGate)
+            currentSpeed *= wormholeSpeedMult;
+
+        let nextPosition = calcLandingPoint(currentPosition, step.location, currentSpeed, currentTime);
+        let time = dist3(currentPosition, nextPosition) / currentSpeed;
+
+        path.push({
+            destination: {
+                name: step.location,
+                position: nextPosition
+            },
+            totalTime: time
+        });
+        
+        currentPosition = nextPosition;
+        currentTime += time;
+    });
+
+    return {
+        path: path,
+        totalTime: currentTime
+    };
 }
 
 export function tpStorageMultiplier(type,heavy,wiki){
@@ -10496,12 +10668,16 @@ export function drawMap() {
     if (mapView().ships) {
         let fleets = {};
         for (let ship of global.space.shipyard.ships) {
-            if (ship.transit <= 0){ continue; }
+            if (!ship.inTransit){ continue; }
             if (global.tech['syard_fleet'] && ship.fleet){
-                let key = `${ship.location}|${ship.transit}`;
-                if (fleets[key]){ fleets[key].count++; continue; }
-                fleets[key] = { ship, count: 1 };
-                shipMarks.push(fleets[key]);
+                let key = fleetKey(ship);
+                if (fleets[key]){ 
+                    fleets[key].count++; 
+                }
+                else {
+                    fleets[key] = { ship, count: 1 };
+                    shipMarks.push(fleets[key]);
+                }
             }
             else {
                 shipMarks.push({ ship, count: 1 });
@@ -10515,14 +10691,18 @@ export function drawMap() {
             // one pixel. Anything that flew alone has no id and keeps its own mark.
             let raids = {};
             for (let ship of global.race.zfleet.s){
-                if (ship.transit <= 0){ continue; }
+                if (!ship.inTransit){ continue; }
                 if (!ship.zf){
                     shipMarks.push({ ship, count: 1, foe: true });
                     continue;
                 }
-                if (raids[ship.zf]){ raids[ship.zf].count++; continue; }
-                raids[ship.zf] = { ship, count: 1, foe: true };
-                shipMarks.push(raids[ship.zf]);
+                if (raids[ship.zf]){ 
+                    raids[ship.zf].count++; 
+                }
+                else {
+                    raids[ship.zf] = { ship, count: 1, foe: true };
+                    shipMarks.push(raids[ship.zf]);
+                }
             }
         }
     }
@@ -10541,21 +10721,12 @@ export function drawMap() {
         ctx.translate(pX(ref), pY(ref));
         ctx.beginPath();
         ctx.setLineDash([0.1, 0.4]);
-        let here = rel(ship.xy, ref);
+        let here = rel(ship.location.position, ref);
         ctx.moveTo(pX(here), pY(here));
-        if (ship.path){
-            // Multi-leg wormhole route: draw the full remaining flight path through each
-            // waypoint still ahead of the ship (entry gate -> exit gate -> destination).
-            let trip = ship.dist > 0 ? 1 - (ship.transit / ship.dist) : 0;
-            for (let i=0; i<ship.path.length; i++){
-                if (ship.path[i].tn > trip){
-                    let q = rel(ship.path[i], ref);
-                    ctx.lineTo(pX(q), pY(q));
-                }
-            }
-        }
-        else {
-            let q = rel(ship.destination, ref);
+        
+        // Draw the full remaining flight path through each waypoint still ahead of the ship.
+        for (let i=0; i<ship.path.length; i++){
+            let q = rel(ship.path[i].destination.position, ref);
             ctx.lineTo(pX(q), pY(q));
         }
         ctx.stroke();
@@ -10708,7 +10879,7 @@ export function drawMap() {
         ctx.fillStyle = foe ? "#ff0000" : "#0000ff";
         ctx.strokeStyle = foe ? "#ff0000" : "#0000ff";
         let ref = shipRefStar(ship);
-        let here = rel(ship.xy, ref);
+        let here = rel(ship.location.position, ref);
         ctx.save();
         ctx.translate(pX(ref), pY(ref));
         ctx.beginPath();
@@ -10733,7 +10904,7 @@ export function drawMap() {
         ctx.fillStyle = mark.foe ? "#ff5555" : "#009aff";
         let ship = mark.ship;
         let ref = shipRefStar(ship);
-        let here = rel(ship.xy, ref);
+        let here = rel(ship.location.position, ref);
         ctx.save();
         ctx.translate(pX(ref), pY(ref));
         ctx.scale(1 / mapScale, 1 / mapScale);
@@ -11430,7 +11601,7 @@ function tempDestinations(ship){
     let temps = global.race['tempCoordinates'];
     if (!temps){ return []; }
     return Object.keys(temps)
-        .filter(key => temps[key] && temps[key].a && ship.location !== key)
+        .filter(key => temps[key] && temps[key].a && (ship.inTransit ? ship.destination.name : ship.location.name) !== key)
         .map(key => ({ region: key, name: temps[key].n }));
 }
 
@@ -11439,13 +11610,16 @@ function shipDestinations(ship){
     const spaceRegions = spaceTech();
     let dests = [];
     if (ship.class === 'explorer'){
-        if (ship.location !== 'tauceti'){
+        if (ship.location.name !== 'tauceti'){
             dests.push({ region: 'tauceti', name: loc('tech_era_tauceti') });
         }
         return dests.concat(tempDestinations(ship));
     }
+
+    let currentShipLocation = ship.inTransit ? ship.destination.name : ship.location.name;
+
     Object.keys(spaceRegions).forEach(function(region){
-        if (ship.location !== region){
+        if (currentShipLocation !== region){
             if (spaceRegions[region].info.nav()){
                 if (region === 'spc_sun_gate'){
                     let name = typeof spaceRegions.spc_sun_gate.info.desc === 'string' ? spaceRegions.spc_sun_gate.info.desc : spaceRegions.spc_sun_gate.info.desc();
@@ -11459,7 +11633,7 @@ function shipDestinations(ship){
         }
     });
     Object.keys(tauCetiModules).forEach(function(region){
-        if (ship.location !== region){
+        if (currentShipLocation !== region){
             if (tauCetiModules[region].info.nav()){
                 let name = typeof tauCetiModules[region].info.name === 'string' ? tauCetiModules[region].info.name : tauCetiModules[region].info.name();
                 dests.push({ region: region, name: name });
@@ -11525,7 +11699,11 @@ function shipDispatchModal(id, modal){
         // Somewhere a battered hull can actually be put back together is worth picking out of the list.
         let yards = activeRepairYards();
         dests.forEach(function(d){
-            let days = planShipTrip(slowest, d.region).transit;
+            let trip = planShipTrip(slowest, d.region);
+            if (!trip)
+                return;
+
+            let days = trip ? Math.round(trip.totalTime) : 0;
             let sysName = showSystem ? locSystemName(d.region) : '';
             let sys = sysName ? `<span class="dispatchSystem has-text-info">${sysName}</span>` : ``;
             let yard = yards.includes(d.region) ? `<span class="dispatchYard" title="${loc('outer_shipyard_repair_yard')}" aria-label="${loc('outer_shipyard_repair_yard')}">🛠️</span>` : ``;
@@ -11547,7 +11725,15 @@ function shipDispatchModal(id, modal){
 // Requires the fleet_command tech (syard_fleet).
 export function shipFleet(ship){
     if (!global.tech['syard_fleet'] || !ship || !ship.fleet){ return []; }
-    return global.space.shipyard.ships.filter(s => s.fleet && s.location === ship.location && s.transit === ship.transit);
+
+    let key = fleetKey(ship);
+    return global.space.shipyard.ships.filter(s => s.fleet && fleetKey(s) === key);
+}
+
+// Identifier by which fleets are distinguished, `location` for stationary ships, 
+// and `destination | time` for ships in transit
+function fleetKey(ship){
+    return ship.inTransit ? `${ship.location.name}` : `${ship.destination.name} | ${ship.timeToNextStep}`;
 }
 
 // A fleet keeps pace with its slowest ship, so that is the one every trip is planned on.
@@ -11585,7 +11771,10 @@ const minHullToLaunch = 75;
 // Docked at a yard, as opposed to out in the field or crossing to one. Ships here are in dry dock:
 // safe from the wear that finds them everywhere else, and repaired at double rate.
 export function atShipyard(ship){
-    return ship ? ship.transit === 0 && shipyardLocations.includes(ship.location) : false;
+    if (!ship)
+        return false;
+
+    return !ship.inTransit && shipyardLocations.includes(ship.location.name);
 }
 
 // A hull below minHullToLaunch% is not spaceworthy; the ship is grounded until it is patched up.
@@ -11635,16 +11824,16 @@ function repairYard(ship){
     let best = false;
     let bestDays = false;
     Object.keys(repairStations).forEach(function(loc){
-        if (loc === ship.location){ return; }
+        if (!ship.inTransit && ship.location.name === loc){ return; }
         let active = false;
         try { active = repairStations[loc].avail(); }
         catch (e){ active = false; }
         if (!active){ return; }
 
         let trip = planShipTrip(ship,loc);
-        if (!trip || typeof trip.transit !== 'number'){ return; }
-        if (bestDays === false || trip.transit < bestDays){
-            bestDays = trip.transit;
+        if (!trip || typeof trip.totalTime !== 'number'){ return; }
+        if (bestDays === false || trip.totalTime < bestDays){
+            bestDays = trip.totalTime;
             best = loc;
         }
     });
@@ -11654,16 +11843,9 @@ function repairYard(ship){
 // Move a ship without any of the checks that apply to an order the player gives. A ship running for
 // repairs is by definition too damaged to launch normally, and it goes alone.
 function orderShipTo(ship,l){
-    if (!ship || l === ship.location){ return false; }
-    let trip = planShipTrip(ship,l);
+    if (!ship || (!ship.inTransit && l === ship.location.name) || (ship.inTransit && ship.destination.name == l)){ return false; }
     if (!shipManned(ship)){ global.civic.garrison.crew += shipCrewSize(ship); }
-    ship.location = l;
-    ship.transit = trip.transit;
-    ship.tf = 0;   // a fresh journey starts at the top of a day
-    ship.dist = trip.dist;
-    ship.origin = deepClone(trip.origin);
-    ship.destination = deepClone(trip.destination);
-    ship.path = trip.path ? deepClone(trip.path) : false;
+    initializeShipTrip(ship, l);
     return true;
 }
 
@@ -11678,12 +11860,12 @@ export function fleetCmdDay(){
 
         // Disengage: a hull that has fallen past the line breaks off, leaves whatever fleet it was
         // flying with — the rest of the group carries on without it — and runs for a repair yard.
-        if (ship.transit === 0 && !atShipyard(ship) && hull < cfg.flee){
+        if (!ship.inTransit && !atShipyard(ship) && hull < cfg.flee){
             let yard = repairYard(ship);
-            if (yard && yard !== ship.location){
+            if (yard && yard !== ship.location.name){
                 // Where it was is what it comes back to, unless it was already limping home from
                 // somewhere else, in which case that original posting is the one worth keeping.
-                if (!ship['ret']){ ship['ret'] = ship.location; }
+                if (!ship['ret']){ ship['ret'] = ship.location.name; }
                 ship.fleet = false;
                 if (orderShipTo(ship,yard)){
                     if (!cfg.quiet){
@@ -11696,7 +11878,7 @@ export function fleetCmdDay(){
         }
 
         // Return on repair: patched up and still holding a posting to go back to.
-        if (ship['ret'] && ship.transit === 0 && atShipyard(ship)){
+        if (ship['ret'] && !ship.inTransit && atShipyard(ship)){
             if (!cfg.ret){ return; }
             if (hull < cfg.retHull){ return; }
             let home = ship.ret;
@@ -11711,7 +11893,7 @@ export function fleetCmdDay(){
         }
 
         // Arriving back where it was posted retires the order.
-        if (ship['ret'] && ship.transit === 0 && ship.location === ship.ret){
+        if (ship['ret'] && !ship.inTransit && ship.location === ship.ret){
             delete ship.ret;
             moved = true;
         }
@@ -11723,7 +11905,7 @@ export function fleetCmdDay(){
 // Ships parked at a shipyard are unmanned and draw a crew on departure; anywhere else, or already
 // under way, they are crewed.
 function shipManned(ship){
-    return ship.transit > 0 || !shipyardLocations.includes(ship.location);
+    return ship.inTransit || !shipyardLocations.includes(ship.location);
 }
 
 // Send a ship to a destination region, or its whole fleet if it belongs to one. Every ship takes the
@@ -11731,7 +11913,7 @@ function shipManned(ship){
 // the same tick rather than trickling in.
 function sendShipTo(id, l){
     let ship = global.space.shipyard.ships[id];
-    if (!ship || l === ship.location){ return; }
+    if (!ship || (!ship.inTransit && l === ship.location.name) || (ship.inTransit && ship.destination.name === l)){ return; }
     let group = shipFleet(ship);
     if (!group.length){ group = [ship]; }
 
@@ -11744,18 +11926,15 @@ function sendShipTo(id, l){
     if (need > global.civic.garrison.workers - global.civic.garrison.crew){ return; }
 
     let trip = planShipTrip(fleetPace(group), l);
-    for (let s of group){
-        if (!shipManned(s)){ global.civic.garrison.crew += shipCrewSize(s); }
-        // An order from the player overrides the standing one: wherever it was posted before, this is
-        // where it is going now, and it will not wander back on its own.
-        if (s['ret']){ delete s.ret; }
-        s.location = l;
-        s.transit = trip.transit;
-        s.tf = 0;   // a fresh journey starts at the top of a day
-        s.dist = trip.dist;
-        s.origin = deepClone(trip.origin);
-        s.destination = deepClone(trip.destination);
-        s.path = trip.path ? deepClone(trip.path) : false;
+    if (trip) {
+        for (let s of group){
+            if (!shipManned(s)){ global.civic.garrison.crew += shipCrewSize(s); }
+            // An order from the player overrides the standing one: wherever it was posted before, this is
+            // where it is going now, and it will not wander back on its own.
+            if (s['ret']){ delete s.ret; }
+            initializeShipTrip(s, l, trip);
+        }
     }
+
     drawShips();
 }
