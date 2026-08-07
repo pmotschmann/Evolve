@@ -8220,7 +8220,7 @@ function cowCandidates(){
     return Object.keys(spacePlanetStats).filter(function(id){
         let s = spacePlanetStats[id];
         if (s.startype !== 'M' || s.hidden){ return false; }
-        let at = { x: s.x, y: s.y, z: s.z || 0 };
+        let at = { x: s.x, y: s.y, z: s.z };
         return dist3(at, sol) > COW_MIN_SOL && dist3(at, tau) > COW_MIN_TAU;
     });
 }
@@ -8293,10 +8293,9 @@ export function setOrbits(){
     }
 }
 
-// Distance between two points in AU. Coordinates saved before the map gained a z (a ship's stored
-// position, origin and destination) read as 0, which is where they were.
+// Distance between two points in AU. 
 export function dist3(a,b){
-    return Math.hypot(b.x - a.x, b.y - a.y, (b.z || 0) - (a.z || 0));
+    return Math.hypot(b.x - a.x, b.y - a.y, b.z - a.z);
 }
 
 // A body's orbital inclination in degrees. An explicit `inc` wins; everything else gets a small
@@ -8412,21 +8411,21 @@ export function randomCoord(target, minAU, maxAU, spreadAU){
     return {
         x: origin.x + Math.cos(bearing) * dist,
         y: origin.y + Math.sin(bearing) * dist,
-        z: (origin.z || 0) + (Math.random() * 2 - 1) * spread
+        z: (origin.z) + (Math.random() * 2 - 1) * spread
     };
 }
 
 export function genXYcoord(planet){
     // Temporary coordinates are fixed points held outside the table.
     let temp = tempCoord(planet);
-    if (temp){ return { x: temp.x, y: temp.y, z: temp.z || 0 }; }
+    if (temp){ return { x: temp.x, y: temp.y, z: temp.z }; }
     // A location that is neither in the table nor a live temp point — a signal that expired while a
     // ship sat on it, say. Fall back to the origin rather than throwing, which would take the map
     // and the tick loop down with it.
     if (!spacePlanetStats[planet]){ return { x: 0, y: 0, z: 0 }; }
     // Stars have fixed coordinates and are not positioned by distance/angle from the Sun.
     if (spacePlanetStats[planet].startype){
-        return { x: spacePlanetStats[planet].x, y: spacePlanetStats[planet].y, z: spacePlanetStats[planet].z || 0 };
+        return { x: spacePlanetStats[planet].x, y: spacePlanetStats[planet].y, z: spacePlanetStats[planet].z };
     }
     return orbitPoint(planet, global.space.position.hasOwnProperty(planet) ? global.space.position[planet] : 0);
 }
@@ -8437,7 +8436,7 @@ function nearestStar(pt){
     let bestDist = Infinity;
     for (let [id, body] of Object.entries(spacePlanetStats)){
         if (!body.startype){ continue; }
-        let d = dist3(pt, { x: body.x, y: body.y, z: body.z || 0 });
+        let d = dist3(pt, { x: body.x, y: body.y, z: body.z });
         if (d < bestDist){ bestDist = d; best = id; }
     }
     return best;
@@ -9632,13 +9631,13 @@ function wrapAngle(a){
     return (a < 0 ? a + Math.PI * 2 : a) - Math.PI;
 }
 function pX(p){ return p.x * camCY - p.y * camSY; }
-function pY(p){ return (p.x * camSY + p.y * camCY) * camCP - (p.z || 0) * camSP; }
+function pY(p){ return (p.x * camSY + p.y * camCY) * camCP - (p.z) * camSP; }
 // Depth for painter's-algorithm ordering. This axis completes a right-handed frame with screen-right
 // and screen-down, and the canvas y axis points down, so it runs INTO the screen: larger = further
 // away. Sort descending and draw in that order, so the last thing painted is the nearest.
-function pD(p){ return (p.x * camSY + p.y * camCY) * camSP + (p.z || 0) * camCP; }
+function pD(p){ return (p.x * camSY + p.y * camCY) * camSP + (p.z) * camCP; }
 // A world point expressed relative to a frame origin, ready to project.
-function rel(p, o){ return { x: p.x - o.x, y: p.y - o.y, z: (p.z || 0) - (o.z || 0) }; }
+function rel(p, o){ return { x: p.x - o.x, y: p.y - o.y, z: (p.z) - (o.z) }; }
 
 // Trace a body's orbit as a projected polyline. Sampling the same orbitPoint() the body itself is
 // positioned by guarantees the ring and the dot on it agree at every camera angle — an analytic
@@ -10856,7 +10855,7 @@ export function drawMap() {
         for (let beacon of liveBeacons()){
             let ref = genXYcoord(beacon.s || 'spc_sun');
             if (starCulled(ref)){ continue; }
-            let here = rel({ x: beacon.x, y: beacon.y, z: beacon.z || 0 }, ref);
+            let here = rel({ x: beacon.x, y: beacon.y, z: beacon.z }, ref);
             ctx.save();
             ctx.translate(pX(ref), pY(ref));
             let bx = pX(here), by = pY(here);
@@ -10921,7 +10920,7 @@ export function drawMap() {
         for (let beacon of liveBeacons()){
             let ref = genXYcoord(beacon.s || 'spc_sun');
             if (starCulled(ref)){ continue; }
-            let here = rel({ x: beacon.x, y: beacon.y, z: beacon.z || 0 }, ref);
+            let here = rel({ x: beacon.x, y: beacon.y, z: beacon.z }, ref);
             ctx.save();
             ctx.translate(pX(ref), pY(ref));
             ctx.scale(1 / mapScale, 1 / mapScale);

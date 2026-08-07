@@ -1408,6 +1408,78 @@ if (convertVersion(global['version']) <= 105000){
             old['on'] = 0;
         }
     }
+
+    // Truepath ships got their navigation reworked, notably changing 2D space to 3D. 
+    // Reconstruct what we can with the info we have, keep rest blank to refill itself over time
+    if (global.space && global.space.shipyard && global.space.shipyard.ships && Array.isArray(global.space.shipyard.ships)){
+        global.space.shipyard.ships.forEach(ship => {
+            if (ship.transit > 0) {
+                ship.inTransit = true;
+
+                ship.destination = {
+                    name: ship.location,
+                    position: {
+                        x: ship.destination.x,
+                        y: ship.destination.y,
+                        z: ship.destination.z || 0
+                    }
+                };
+                ship.origin = {
+                    name: "",
+                    position: {
+                        x: ship.origin.x,
+                        y: ship.origin.y,
+                        z: ship.origin.z || 0
+                    }
+                };
+                ship.location = {
+                    name: "",
+                    position: {
+                        x: ship.xy.x,
+                        y: ship.xy.y,
+                        z: ship.xy.z || 0
+                    }
+                };
+
+                ship.path = [{
+                    destination: {
+                       name: ship.destination.name,
+                       position: ship.destination.position 
+                    },
+                    totalTime: ship.transit
+                }];
+                ship.timeToNextStep = ship.transit;
+                if (ship.timeToNextStep > 2000){
+                    // Ship was likely within a gate during update, push it a bit so it's not stuck for several years 
+                    // (only applies to beta players so w/e)
+                    ship.timeToNextStep = 200;
+                }
+            }
+            else if (ship.transit === 0){
+                ship.inTransit = false;
+                ship.location = {
+                    name: ship.location,
+                    position: {} //Recovered in longLoop
+                };
+                ship.origin = {
+                    name: "",
+                    position: {}
+                };
+                ship.destination = {
+                    name: "",
+                    position: {}
+                };
+                ship.path = [];
+                ship.timeToNextStep = 0;
+            }
+
+            delete ship.dist;
+            delete ship.transit;
+            delete ship.xy;
+            if (ship.tf)
+                delete ship.tf;
+        })
+    }
 }
 
 global['version'] = '1.5.0';
