@@ -7845,7 +7845,7 @@ export function setUniverse(){
 
         $('#evolution').append(parent);
 
-        let srDescButton = $(`<a class="is-sr-only" role="button">${universe_types[universe].name} description</a>`);
+        let srDescButton = $(`<a class="is-sr-only" role="button">${universe_types[universe].name()} description</a>`);
         $('#evolution').append(srDescButton);
 
         $('#'+id).on('click',function(){
