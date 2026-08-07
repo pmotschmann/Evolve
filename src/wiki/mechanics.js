@@ -2934,7 +2934,7 @@ function syndicatePenaltyCalc(info){
                     inputs.ship_security.val = 0;
                     inputs.intel.val = 0;
                     global.space.shipyard.ships.forEach(function(ship){
-                        if (ship.location === 'spc_'+inputs.region.val && ship.transit === 0 && ship.fueled){
+                        if (!ship.inTransit && ship.location.name === 'spc_'+inputs.region.val && ship.fueled){
                             let rating = shipAttackPower(ship);
                             inputs.ship_security.val += ship.damage > 0 ? Math.round(rating * (100 - ship.damage) / 100) : rating;
                             inputs.intel.val += sensorRange(ship);

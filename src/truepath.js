@@ -1922,7 +1922,7 @@ const tauCetiModules = {
             effect(){
                 let explorer = 'Explorer';
                 if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
-                    let shipId = global.space.shipyard.ships.findIndex(x => x.location === 'tauceti' && x.class === 'explorer');
+                    let shipId = global.space.shipyard.ships.findIndex(x => !x.inTransit && x.location.name === 'tauceti' && x.class === 'explorer');
                     if (shipId !== -1){
                         explorer = global.space.shipyard.ships[shipId].name;
                     }
@@ -1932,7 +1932,7 @@ const tauCetiModules = {
             action(){
                 let shipId = -1;
                 if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
-                    shipId = global.space.shipyard.ships.findIndex(x => x.location === 'tauceti' && x.class === 'explorer');
+                    shipId = global.space.shipyard.ships.findIndex(x => !x.inTransit && x.location.name === 'tauceti' && x.class === 'explorer');
                 }
                 if (shipId >= 0 && payCosts($(this)[0])){
                     global.space.shipyard.ships.splice(shipId,1);
@@ -5241,8 +5241,8 @@ function zFleetMove(fleet){
         }
         if (!ship.inTransit){
             fleet.s.splice(i,1);
-            if (!landings[ship.location]){ landings[ship.location] = []; }
-            landings[ship.location].push(ship);
+            if (!landings[ship.location.name]){ landings[ship.location.name] = []; }
+            landings[ship.location.name].push(ship);
         }
     }
 
@@ -7216,17 +7216,19 @@ function drawShipRow(list,i,ship,regionNames){
             data: global.space.shipyard.ships[i],
             methods: {
                 scrap(id){
-                    if (global.space.shipyard.ships[id] && ['spc_dwarf','tau_gas2'].includes(global.space.shipyard.ships[id].location)){
+                    let s = global.space.shipyard.ships[id];
+                    if (this.scrapAllowed(id)){
+                        // A flagship being broken up takes its fleet apart with it.
+                        leaveFleet(s);
                         global.space.shipyard.ships.splice(id,1);
                         drawShips();
                         updateCosts();
                     }
                 },
+                // Only at a yard, and only while actually docked there rather than crossing to it.
                 scrapAllowed(id){
-                    if (global.space.shipyard.ships[id] && ['spc_dwarf','tau_gas2'].includes(global.space.shipyard.ships[id].location)){
-                        return true;
-                    }
-                    return false;
+                    let s = global.space.shipyard.ships[id];
+                    return s && !s.inTransit && shipyardLocations.includes(s.location.name) ? true : false;
                 },
                 // Which fleet a ship belongs to, shown against its name. A flagship reads as the
                 // command points it has spent of its rating; anything under one is named for the ship
@@ -8660,18 +8662,12 @@ const jumpGates = {
         system: 'tauceti',
         location: 'tau_home',
         active(){ return global.tech['resettle'] && global.tech.resettle >= 3 ? true : false; }
-    },
-    eridani_gate: {
-        system: 'eridani',
-        location: 'eridani_p3',
-        active() {return true;}
-    } // ONLY FOR TESTING, REMOVE LATER
+    }
 };
 // Directed wormhole links. Two entries = a two-way wormhole; a single entry = a one-way gate.
 const jumpLinks = [
     { from: 'spc_sun_gate', to: 'tau_home_gate' },
-    { from: 'tau_home_gate', to: 'spc_sun_gate' },
-    { from: 'tau_home_gate', to: 'eridani_gate' } // ONLY FOR TESTING, REMOVE LATER
+    { from: 'tau_home_gate', to: 'spc_sun_gate' }
 ];
 
 // Which star system a location belongs to. Tau Ceti bodies carry star:'tauceti'; everything else
@@ -8855,7 +8851,7 @@ function findWormholeRoute(fromLoc, toLoc, interstellar){
 // [entry gate -> exit gate].. -> final destination. 
 // When not using any jump gates the returned path contains only the final destination.
 function planShipTrip(ship, locationName){
-    if (!ship.inTransit && ship.location === locationName) {
+    if (!ship.inTransit && ship.location.name === locationName) {
         return false;
     }
 
@@ -11831,7 +11827,6 @@ function shipDestinations(ship){
             }
         }
     });
-    dests.push({region: 'eridani_p1', name: 'eridani_p1'}); // ONLY FOR TESTING, REMOVE LATER
     return dests.concat(tempDestinations(ship));
 }
 
@@ -12263,7 +12258,10 @@ function orderFleetTo(group,locationName){
 function rejoinTarget(ship){
     if (!ship || !ship['rfid']){ return false; }
     let flag = fleetFlagship(ship.rfid);
-    return flag && flag !== ship ? flag.location : false;
+    if (!flag || flag === ship){ return false; }
+    // A name, never the location object: what comes back is handed straight to orderShipTo as a
+    // destination. A fleet already under way is making for somewhere, and that is where to catch it.
+    return flag.inTransit ? flag.destination.name : flag.location.name;
 }
 
 // A ship that broke off from a fleet for repairs falls back in with it the moment the two are in the same place again.
@@ -12385,7 +12383,7 @@ export function fleetCmdDay(){
 // Ships parked at a shipyard are unmanned and draw a crew on departure; anywhere else, or already
 // under way, they are crewed.
 function shipManned(ship){
-    return ship.inTransit || !shipyardLocations.includes(ship.location);
+    return ship.inTransit || !shipyardLocations.includes(ship.location.name);
 }
 
 // Send a ship to a destination region, or its whole fleet if it belongs to one. Every ship takes the

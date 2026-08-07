@@ -3199,7 +3199,8 @@ function fastLoop(){
         if (global.civic.garrison.hasOwnProperty('crew')){
             if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
                 global.space.shipyard.ships.forEach(function(ship){
-                    if (ship.location !== 'spc_dwarf' && ship.location !== 'tau_gas2' || (ship.location === 'spc_dwarf' && ship.transit > 0) || (ship.location === 'tau_gas2' && ship.transit > 0)){
+                    // Anything not sitting in dry dock is crewed and counts against the military.
+                    if (!atShipyard(ship)){
                         crew_mil += shipCrewSize(ship);
                     }
                 });
@@ -4225,7 +4226,8 @@ function fastLoop(){
                 Elerium: 0
             };
             global.space.shipyard.ships.forEach(function(ship){
-                if ((ship.location !== 'spc_dwarf' && ship.location !== 'tau_gas2') || ship.transit !== 0){
+                // A ship in dry dock burns nothing; everything else is running its plant.
+                if (!atShipyard(ship)){
                     let fuel = shipFuelUse(ship);
                     if (fuel.res && fuel.burn > 0){
                         if (fuel.burn * time_multiplier < global.resource[fuel.res].amount + (global.resource[fuel.res].diff > 0 ? global.resource[fuel.res].diff * time_multiplier : 0)){
@@ -12631,7 +12633,8 @@ function longLoop(){
                     // Wear and tear finds ships everywhere except inside a yard; being under way counts
                     // as exposed even on the leg home.
                     if (!atShipyard(ship) && Math.rand(0, 10) === 0){
-                        let dm = ship.location === 'spc_triton' ? 2 : 1;
+                        // A ship under way wears by where it is bound; one parked, by where it sits.
+                        let dm = (ship.inTransit ? ship.destination.name : ship.location.name) === 'spc_triton' ? 2 : 1;
                         switch (ship.armor){
                             case 'steel':
                                 ship.damage += Math.rand(1, 8 * dm);
@@ -12645,10 +12648,10 @@ function longLoop(){
                         }
                         if (ship.damage > 90){ ship.damage = 90; }
                     }
-                    if (global.tech.hasOwnProperty('eris_scan') && ship.location === 'spc_eris' && ship.transit === 0){
+                    if (global.tech.hasOwnProperty('eris_scan') && !ship.inTransit && ship.location.name === 'spc_eris'){
                         eScan += sensorRange(ship);
                     }
-                    if (global.tech.hasOwnProperty('tauceti') && ship.location === 'tauceti' && ship.transit === 0){
+                    if (global.tech.hasOwnProperty('tauceti') && !ship.inTransit && ship.location.name === 'tauceti'){
                         tScan += sensorRange(ship);
                         tShip = ship.name;
                     }
@@ -13078,7 +13081,7 @@ function longLoop(){
             trackInfestation();
 
             // Scout Sun Gate
-            if (global.tech.resettle === 3 && global.space.shipyard.ships.some(s => s.location === 'spc_sun_gate' && s.transit === 0)){
+            if (global.tech.resettle === 3 && global.space.shipyard.ships.some(s => !s.inTransit && s.location.name === 'spc_sun_gate')){
                 global.tech.resettle = 4;
                 global.settings.showSpace = true;
                 global.settings.spaceTabs = 1;
@@ -13087,7 +13090,7 @@ function longLoop(){
             }
 
             // Scout Earth
-            if (global.tech.resettle === 7 && global.space.shipyard.ships.some(s => s.location === 'spc_home' && s.transit === 0)){
+            if (global.tech.resettle === 7 && global.space.shipyard.ships.some(s => !s.inTransit && s.location.name === 'spc_home')){
                 global.tech.resettle = 8;
                 global.settings.space.home = true;
                 renderSpace();
@@ -13095,7 +13098,7 @@ function longLoop(){
             }
 
             // Scout Moon
-            if (global.tech.resettle >= 7 && !global.race['orbit_decayed'] && global.tech.luna === 2 && global.space.shipyard.ships.some(s => s.location === 'spc_moon' && s.transit === 0)){
+            if (global.tech.resettle >= 7 && !global.race['orbit_decayed'] && global.tech.luna === 2 && global.space.shipyard.ships.some(s => !s.inTransit && s.location.name === 'spc_moon')){
                 global.tech.luna = 3;
                 global.settings.space.moon = true;
                 renderSpace();
@@ -13103,7 +13106,7 @@ function longLoop(){
             }
 
             // Scout Mars
-            if (global.tech.resettle >= 7 && global.tech['mars'] && global.tech.mars === 5 && global.space.shipyard.ships.some(s => s.location === 'spc_red' && s.transit === 0)){
+            if (global.tech.resettle >= 7 && global.tech['mars'] && global.tech.mars === 5 && global.space.shipyard.ships.some(s => !s.inTransit && s.location.name === 'spc_red')){
                 global.tech.mars = 6;
                 global.settings.space.red = true;
                 renderSpace();
@@ -13119,7 +13122,7 @@ function longLoop(){
             }
 
             // Scout Mercury
-            if (global.tech.resettle >= 9 && global.tech['hell'] && global.tech.hell === 1 && global.space.shipyard.ships.some(s => s.location === 'spc_hell' && s.transit === 0)){
+            if (global.tech.resettle >= 9 && global.tech['hell'] && global.tech.hell === 1 && global.space.shipyard.ships.some(s => !s.inTransit && s.location.name === 'spc_hell')){
                 global.tech.hell = 2;
                 global.settings.space.hell = true;
                 // Reserve the wreck the Mercury salvage will offer, the same way the sun gate one is
@@ -13131,7 +13134,7 @@ function longLoop(){
             }
 
             // Scout Ceres
-            if (global.tech.resettle >= 14 && global.tech['dwarf'] && global.tech.dwarf === 1 && global.space.shipyard.ships.some(s => s.location === 'spc_dwarf' && s.transit === 0)){
+            if (global.tech.resettle >= 14 && global.tech['dwarf'] && global.tech.dwarf === 1 && global.space.shipyard.ships.some(s => !s.inTransit && s.location.name === 'spc_dwarf')){
                 global.tech.dwarf = 2;
                 global.settings.space.dwarf = true;
                 // Reserve the wreck the Ceres salvage will offer, the same way the sun gate one is
@@ -13177,7 +13180,7 @@ function longLoop(){
                                      && global.race.tempCoordinates[s.location.name].a){
                                         
                         global.race.tempCoordinates[s.location.name].a = false;
-                        salvageShip(1,global.race.tempCoordinates[s.location.name].n,'tau_gas2',true,global.race.tempCoordinates[s.location].d);
+                        salvageShip(1,global.race.tempCoordinates[s.location.name].n,'tau_gas2',true,global.race.tempCoordinates[s.location.name].d);
                     }
                 });
             }
