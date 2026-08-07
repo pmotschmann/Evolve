@@ -11,7 +11,7 @@ import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMul
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types, spaceSectors } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
-import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, randomCoord, atShipyard, pinSalvage, beaconsActive, finalBeacons, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, moveShips } from './truepath.js';
+import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYZcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, randomCoord, atShipyard, pinSalvage, beaconsActive, finalBeacons, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, moveShips } from './truepath.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
 import { defineGovernor, govern, govActive, removeTask } from './governor.js';
@@ -12619,11 +12619,8 @@ function longLoop(){
                 // fifth-of-a-day steps so they cross the map smoothly instead of a day at a time. By
                 // the time this runs, `transit` is the same whole number of days it always was.
                 global.space.shipyard.ships.forEach(function(ship){
-                    if (ship.transit === 0){
-                        ship.xy = genXYcoord(ship.location);
-                        ship.origin = deepClone(ship.xy);
-                        ship.dist = 0;
-                        if (ship.path){ ship.path = false; }
+                    if (!ship.inTransit){
+                        ship.location.position = genXYZcoord(ship.location.name);
                     }
                     if (ship.damage > 0 && (p_on['shipyard'] || p_on['adv_shipyard'])){
                         // In dry dock the crews have the yard's facilities and work the hull daily;
@@ -13173,11 +13170,14 @@ function longLoop(){
                 messageQueue(loc('scout_signal_found'),'info',false,['progress']);
                 renderSpace();
             }
-            else if (global.tech.resettle >= 9 && global.space.shipyard.ships.some(s => s.location.startsWith('beacon') && s.transit === 0 && global.race.tempCoordinates.hasOwnProperty(s.location) && global.race.tempCoordinates[s.location].a)){
+            else if (global.tech.resettle >= 9){
                 global.space.shipyard.ships.forEach(s => {
-                    if (s.location.startsWith('beacon') && s.transit === 0 && global.race.tempCoordinates.hasOwnProperty(s.location) && global.race.tempCoordinates[s.location].a){
-                        global.race.tempCoordinates[s.location].a = false;
-                        salvageShip(1,global.race.tempCoordinates[s.location].n,'tau_gas2',true,global.race.tempCoordinates[s.location].d);
+                    if (!s.inTransit && s.location.name.startsWith('beacon') 
+                                     && global.race.tempCoordinates.hasOwnProperty(s.location.name) 
+                                     && global.race.tempCoordinates[s.location.name].a){
+                                        
+                        global.race.tempCoordinates[s.location.name].a = false;
+                        salvageShip(1,global.race.tempCoordinates[s.location.name].n,'tau_gas2',true,global.race.tempCoordinates[s.location].d);
                     }
                 });
             }
