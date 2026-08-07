@@ -8477,12 +8477,18 @@ const jumpGates = {
         system: 'tauceti',
         location: 'tau_home',
         active(){ return global.tech['resettle'] && global.tech.resettle >= 3 ? true : false; }
-    }
+    },
+    eridani_gate: {
+        system: 'eridani',
+        location: 'eridani_p3',
+        active() {return true;}
+    } // ONLY FOR TESTING, REMOVE LATER
 };
 // Directed wormhole links. Two entries = a two-way wormhole; a single entry = a one-way gate.
 const jumpLinks = [
     { from: 'spc_sun_gate', to: 'tau_home_gate' },
-    { from: 'tau_home_gate', to: 'spc_sun_gate' }
+    { from: 'tau_home_gate', to: 'spc_sun_gate' },
+    { from: 'tau_home_gate', to: 'eridani_gate' } // ONLY FOR TESTING, REMOVE LATER
 ];
 
 // Which star system a location belongs to. Tau Ceti bodies carry star:'tauceti'; everything else
@@ -11639,6 +11645,7 @@ function shipDestinations(ship){
             }
         }
     });
+    dests.push({region: 'eridani_p1', name: 'eridani_p1'}); // ONLY FOR TESTING, REMOVE LATER
     return dests.concat(tempDestinations(ship));
 }
 
