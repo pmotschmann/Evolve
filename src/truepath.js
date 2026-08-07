@@ -40,7 +40,7 @@ const outerTruth = {
                 return 600;
             },
             // Shut off for the resettlement arc until the outer distress signals reopen the long legs.
-            nav(){ return !global.tech['resettle'] || global.tech.resettle >= 12 ? true : false; }
+            nav(){ return (global.settings.space.titan && !global.tech['resettle']) || global.tech?.resettle >= 12 ? true : false; }
         },
         titan_mission: {
             id: 'space-titan_mission',
@@ -1055,7 +1055,7 @@ const outerTruth = {
             },
             syndicate(){ if (global.tech['resettle']){ return false; } return global.tech['triton'] && global.tech.triton >= 2 ? true : false; },
             syndicate_cap(){ return global.tech['outer'] && global.tech.outer >= 4 ? 5000 : 3000; },
-            nav(){ return global.tech['resettle'] ? false : true; },
+            nav(){ return global.tech['resettle'] || !global.settings.space.triton ? false : true; },
             extra(region){
                 if (global.tech['triton'] && global.tech.triton >= 3){
                     $(`#${region}`).append(`<div id="${region}resist" v-show="${region}" class="syndThreat has-text-caution">${loc('space_ground_resist')} <span class="has-text-danger" v-html="threat(enemy,troops)"></span></div>`);
@@ -1240,7 +1240,7 @@ const outerTruth = {
             },
             syndicate(){ if (global.tech['resettle']){ return false; } return global.tech['makemake'] ? true : false; },
             syndicate_cap(){ return 2500; },
-            nav(){ return global.tech['resettle'] ? false : true; }
+            nav(){ return global.tech['resettle'] || !global.settings.space.makemake ? false : true; }
         },
         makemake_mission: {
             id: 'space-makemake_mission',
@@ -1441,7 +1441,7 @@ const outerTruth = {
             },
             syndicate(){ if (global.tech['resettle']){ return false; } return global.tech['eris'] ? true : false; },
             syndicate_cap(){ return 7500; },
-            nav(){ return global.tech['resettle'] ? false : true; },
+            nav(){ return global.tech['resettle'] || !global.settings.space.eris ? false : true; },
             extra(region){
                 if (global.tech['eris'] && global.tech['eris'] === 1){
                     $(`#${region}`).append(`<div id="${region}scanned" v-show="${region}" class="syndThreat has-text-caution">${loc('space_scanned')} <span class="has-text-info">{{ eris_scan }}%</span></div>`);
@@ -4983,8 +4983,9 @@ function zGroundFire(fleet){
     let hit = 0;
     global.space.shipyard.ships.forEach(function(ship){
         if (ship.location !== 'spc_home' || ship.transit > 0){ return; }
-        // Armour soaks part of every hit, but never all of it — a barrage that lands still scores.
-        let dmg = seededRandom(zGroundFireMin,zGroundFireMax + 1,true) * shipArmorFactor(ship);
+        // Armour soaks part of every hit, but never all of it — a barrage that lands still scores. A
+        // flagship's escort screens it here the same as it does under fire in orbit.
+        let dmg = seededRandom(zGroundFireMin,zGroundFireMax + 1,true) * shipArmorFactor(ship) * (1 - fleetDamageSoak(ship));
         ship.damage += Math.max(1,Math.floor(dmg));
         if (ship.damage > 90){ ship.damage = 90; }
         hit++;
@@ -5021,11 +5022,12 @@ function foeAccuracy(foe){
     return zSensorAccuracy.hasOwnProperty(foe.sensor) ? zSensorAccuracy[foe.sensor] : 0.25;
 }
 
-// Firepower turned into hull damage. The target's plating soaks part of it and its size soaks the rest:
-// the same round means far less to a dreadnought than to a corvette. A hit still always scores.
+// Firepower turned into hull damage. The target's plating soaks part of it, its size soaks the rest,
+// and a flagship's escort screens what is left: the same round means far less to a dreadnought than to
+// a corvette. A hit still always scores.
 function combatDamage(attacker,defender){
     let raw = shipAttackPower(attacker) / zCombatDamageDivisor;
-    return Math.max(1,Math.round(raw * shipArmorFactor(defender) * shipClassFactor(defender)));
+    return Math.max(1,Math.round(raw * shipArmorFactor(defender) * shipClassFactor(defender) * (1 - fleetDamageSoak(defender))));
 }
 
 // Your ships holding a location, able to shoot.
@@ -5037,6 +5039,9 @@ function guardsAt(location){
 // A ship shot out from under its crew. The hull is gone from the roster and the crew with it.
 function destroyPlayerShip(ship,location){
     let crew = shipCrewSize(ship);
+    // Losing the flagship scatters the fleet it was holding together, so stand it down before the hull
+    // leaves the roster and the fleet id goes with it.
+    leaveFleet(ship);
     let idx = global.space.shipyard.ships.indexOf(ship);
     if (idx >= 0){ global.space.shipyard.ships.splice(idx,1); }
     global.civic.garrison.crew -= crew;
@@ -6439,6 +6444,12 @@ export function shipAttackPower(ship){
         rating = Math.round(rating * 1.25);
     }
 
+    // An escort shoots better under a flagship that knows how to lead one (see fleetHulls).
+    let led = fleetDamageBonus(ship);
+    if (led > 0){
+        rating = Math.round(rating * (1 + led));
+    }
+
     switch (ship.class){
         case 'corvette':
             return rating;
@@ -6496,6 +6507,9 @@ export function shipSpeed(ship){
             boost = 1;
             break;
     }
+    // A fleet led by a light hull is a courier group rather than a battle line, and the whole group
+    // moves at that pace — flagship included.
+    boost *= 1 + fleetSpeedBonus(ship);
     switch (ship.engine){
         case 'ion':
             return (global.tech.syard_engine >= 6 ? 30 : 12) / mass * boost;
@@ -6808,13 +6822,49 @@ export function shipyardView(){
     if (typeof v['sys'] !== 'string'){ v['sys'] = 'all'; }
     if (typeof v['group'] !== 'boolean'){ v['group'] = false; }
     if (!v['fold'] || typeof v.fold !== 'object'){ v['fold'] = {}; }
+    // Folded fleets, keyed by fleet id, kept apart from the folded locations so the two cannot collide.
+    if (!v['ffold'] || typeof v.ffold !== 'object'){ v['ffold'] = {}; }
     return v;
 }
 
 // The view as it should actually be applied. Locked, it is the plain ungrouped list however the options
 // were last left — so a reset that takes the tech away cannot leave the list filtered with no way back.
+// Folded fleets pass through either way: they are not one of the options the resettlement arc unlocks,
+// they belong to the fleets themselves, and a row's readout reads the same store to decide whether it
+// is speaking for one ship or for a whole fleet.
 function activeShipyardView(){
-    return shipyardViewUnlocked() ? shipyardView() : { sys: 'all', group: false, fold: {} };
+    return shipyardViewUnlocked() ? shipyardView() : { sys: 'all', group: false, fold: {}, ffold: shipyardView().ffold };
+}
+
+// The ships a row's readout describes. Normally the one it belongs to — but a folded flagship is
+// standing in for its whole fleet, whose ships have no rows of their own, so its figures become the
+// fleet's. Combined the way a fleet actually behaves rather than by summing everything blindly: it
+// aims with its best dish, keeps pace with its slowest hull, and is grounded by its worst.
+function rowGroup(ship){
+    if (!ship){ return []; }
+    if (global.tech['syard_fleet'] && ship.flag && ship.fid && shipyardView().ffold[ship.fid]){
+        let crew = fleetMembers(ship.fid);
+        if (crew.length > 1){ return crew; }
+    }
+    return [ship];
+}
+
+// Fuel burn for a group. Hulls in one fleet can run on different resources, so the burn is totalled per
+// resource rather than added into a single meaningless figure.
+function groupFuelText(group){
+    let burn = {};
+    let order = [];
+    group.forEach(function(s){
+        let fuel = shipFuelUse(s);
+        if (!fuel.res){ return; }
+        if (!burn.hasOwnProperty(fuel.res)){
+            burn[fuel.res] = 0;
+            order.push(fuel.res);
+        }
+        burn[fuel.res] += fuel.burn;
+    });
+    if (order.length === 0){ return `N/A`; }
+    return order.map(res => `${+burn[res].toFixed(2)} ${global.resource[res].name}/s`).join(`, `);
 }
 
 // Systems the fleet can be spread across: home, plus wherever the jump gate network reaches. Driven off
@@ -6899,6 +6949,47 @@ function shipyardShipCompare(a,b,yards){
     );
 }
 
+// Draw a fleet as the one thing it is: each flagship keeps whatever place the ordering gave it, and the
+// ships under its command are lifted out of wherever they landed and set down directly behind it. Both
+// orderings feed through here — Auto Sort can rank an escort above its own flagship, and by hand the
+// two can end up anywhere at all.
+//
+// The array is rearranged rather than just the drawn rows. Hand-ordering moves a ship by its position
+// in the list and only means anything while the list and the array agree, so reordering the rows alone
+// would have cost the player the ability to drag.
+function clusterFleets(ships){
+    if (!global.tech['syard_fleet']){ return ships; }
+
+    let escorts = {};
+    ships.forEach(function(s){
+        if (!s.fid || s.flag){ return; }
+        if (!escorts[s.fid]){ escorts[s.fid] = []; }
+        escorts[s.fid].push(s);
+    });
+    if (Object.keys(escorts).length === 0){ return ships; }
+
+    let placed = {};
+    let ordered = [];
+    ships.forEach(function(s){
+        // An escort is positioned by its flagship, so it is passed over here and picked up below.
+        if (s.fid && !s.flag && escorts.hasOwnProperty(s.fid)){ return; }
+        ordered.push(s);
+        if (s.flag && escorts.hasOwnProperty(s.fid) && !placed[s.fid]){
+            placed[s.fid] = true;
+            escorts[s.fid].forEach(function(e){ ordered.push(e); });
+        }
+    });
+
+    // Nothing should be left holding a fleet id with no flagship still flying, but a ship dropped here
+    // would vanish off the list entirely rather than merely sit in the wrong place, so put any back.
+    Object.keys(escorts).forEach(function(fid){
+        if (placed[fid]){ return; }
+        escorts[fid].forEach(function(e){ ordered.push(e); });
+    });
+
+    return ordered;
+}
+
 function drawShips(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 5)){
         return;
@@ -6916,6 +7007,7 @@ function drawShips(){
     if (global.space.shipyard.sort){
         global.space.shipyard.ships = global.space.shipyard.ships.sort(function(a,b){ return shipyardShipCompare(a,b,repairYards); });
     }
+    global.space.shipyard.ships = clusterFleets(global.space.shipyard.ships);
 
 
     const spaceRegions = spaceTech();
@@ -6944,11 +7036,24 @@ function drawShips(){
 
     let view = activeShipyardView();
 
+    // A fleet that has since been stood down leaves its fold state behind. Drop it, so a long game does
+    // not accumulate a record for every fleet that ever flew — fleet ids are never reused.
+    Object.keys(view.ffold).forEach(function(fid){
+        if (!global.space.shipyard.ships.some(s => s.flag && `${s.fid}` === fid)){ delete view.ffold[fid]; }
+    });
+
     // What to draw and in what order, as [index, ship] pairs. The index is the ship's real place in the
     // array — a row binds and acts on that, so it stays correct however the list is arranged on screen.
     let entries = [];
+    let collapsed = false;
     global.space.shipyard.ships.forEach(function(ship,i){
         if (view.sys !== 'all' && locSystem(ship.location) !== view.sys){ return; }
+        // A folded fleet shows its flagship and nothing else, the same way a folded location shows only
+        // its header. The flagship keeps its row, so there is always something left to unfold from.
+        if (ship.fid && !ship.flag && view.ffold[ship.fid]){
+            collapsed = true;
+            return;
+        }
         entries.push({ i: i, ship: ship });
     });
 
@@ -6976,8 +7081,9 @@ function drawShips(){
     }
 
     // Hand-ordering moves a ship by its position in the list, which only means anything while the list
-    // and the array agree. Filtered or grouped they do not, so dragging is off until the view is plain.
-    if (view.sys === 'all' && !view.group){
+    // and the array agree. Filtered, grouped, or with a fleet folded away they do not, so dragging is
+    // off until the view is plain and everything is on screen.
+    if (view.sys === 'all' && !view.group && !collapsed){
         dragShipList();
     }
 }
@@ -7052,10 +7158,14 @@ function drawShipRow(list,i,ship,regionNames){
             <span>${regionNames[ship.location]}</span>
         </button>`;
 
+        // A ship serving under a flagship is indented behind it, so a fleet reads as one block whether
+        // or not it is folded.
+        let escort = ship.fid && !ship.flag ? ` escort` : ``;
+
         if (global.space.shipyard.expand){
             let ship_class = `${loc(`outer_shipyard_engine_${ship.engine}`)} ${loc(`outer_shipyard_class_${ship.class}`)}`;
-            let desc = $(`<div id="shipReg${i}" class="shipRow ship${i}"></div>`);
-            let row1 = $(`<div class="row1"><span class="name has-text-caution">${ship.name}</span> <span v-show="scrapAllowed(${i})">| </span><a class="scrap${i}" v-show="scrapAllowed(${i})" @click="scrap(${i})" role="button">${loc(`outer_shipyard_scrap`)}</a><span v-show="fleetAllowed(${i})"> | <a class="fleetToggle" @click="toggleFleet(${i})" role="button" v-html="fleetText(${i})"></a></span> | <span class="has-text-warning">${ship_class}</span> | <span class="has-text-danger">${loc(`outer_shipyard_weapon_${ship.weapon}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_power_${ship.power}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_armor_${ship.armor}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_sensor_${ship.sensor}`)}</span></div>`);
+            let desc = $(`<div id="shipReg${i}" class="shipRow ship${i}${escort}"></div>`);
+            let row1 = $(`<div class="row1"><span class="name has-text-caution">${ship.name}</span> <span v-show="scrapAllowed(${i})">| </span><a class="scrap${i}" v-show="scrapAllowed(${i})" @click="scrap(${i})" role="button">${loc(`outer_shipyard_scrap`)}</a><a class="fleetFold" v-show="fleetFoldShow(${i})" @click="fleetFold(${i})" role="button" :aria-expanded="fleetFolded(${i}) ? 'false' : 'true'" :aria-label="fleetFoldLabel(${i})"><span class="groupArrow" v-html="fleetArrow(${i})"></span></a><span v-show="fleetTag(${i})" class="flagship" v-html="fleetTag(${i})"></span><span v-show="fleetShow(${i})"> | <a class="fleetToggle" @click="fleetAction(${i})" role="button" v-html="fleetText(${i})"></a></span> | <span class="has-text-warning">${ship_class}</span> | <span class="has-text-danger">${loc(`outer_shipyard_weapon_${ship.weapon}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_power_${ship.power}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_armor_${ship.armor}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_sensor_${ship.sensor}`)}</span></div>`);
             let row2 = $(`<div class="row2"></div>`);
             let row3 = $(`<div class="row3"></div>`);
             let row4 = $(`<div class="location">${dispatch}</div>`);
@@ -7064,7 +7174,7 @@ function drawShipRow(list,i,ship,regionNames){
             row2.append(`<span class="shipStat"><span class="has-text-warning">${loc(`firepower`)}</span> <span class="pad" v-html="fireText(${i})"></span></span><wbr>`);
             row2.append(`<span class="shipStat"><span class="has-text-warning">${loc(`outer_shipyard_sensors`)}</span> <span class="pad" v-html="sensorText(${i})"></span></span><wbr>`);
             row2.append(`<span class="shipStat"><span class="has-text-warning">${loc(`speed`)}</span> <span class="pad" v-html="speedText(${i})"></span></span><wbr>`);
-            row2.append(`<span class="shipStat"><span class="has-text-warning">${loc(`outer_shipyard_fuel`)}</span> <span class="pad" v-bind:class="{ 'has-text-danger': !fueled }" v-html="fuelText(${i})"></span></span><wbr>`);
+            row2.append(`<span class="shipStat"><span class="has-text-warning">${loc(`outer_shipyard_fuel`)}</span> <span class="pad" v-bind:class="{ 'has-text-danger': fuelShort(${i}) }" v-html="fuelText(${i})"></span></span><wbr>`);
             row2.append(`<span class="shipStat" v-show="hullShow(${i})"><span class="has-text-warning">${loc(`outer_shipyard_hull`)}</span> <span class="pad" v-bind:class="hullDamage(${i})" v-html="hullText(${i})"></span></span><wbr>`);
 
             row3.append(`<span v-show="show(${i})" class="has-text-caution" v-html="dest(${i})"></span>`);
@@ -7077,16 +7187,16 @@ function drawShipRow(list,i,ship,regionNames){
             list.append(desc);
         }
         else {
-            let desc = $(`<div id="shipReg${i}" class="shipRow ship${i} compact"></div>`);
+            let desc = $(`<div id="shipReg${i}" class="shipRow ship${i}${escort} compact"></div>`);
             let row1 = $(`<div class="row1"></div>`);
             let row3 = $(`<div class="row3"></div>`);
             let row4 = $(`<div class="location">${dispatch}</div>`);
 
-            row1.append(`<span class="name has-text-caution">${ship.name}</span><span v-show="fleetAllowed(${i})"> | <a class="fleetToggle" @click="toggleFleet(${i})" role="button" v-html="fleetText(${i})"></a></span> | `);
+            row1.append(`<span class="name has-text-caution">${ship.name}</span><a class="fleetFold" v-show="fleetFoldShow(${i})" @click="fleetFold(${i})" role="button" :aria-expanded="fleetFolded(${i}) ? 'false' : 'true'" :aria-label="fleetFoldLabel(${i})"><span class="groupArrow" v-html="fleetArrow(${i})"></span></a><span v-show="fleetTag(${i})" class="flagship" v-html="fleetTag(${i})"></span><span v-show="fleetShow(${i})"> | <a class="fleetToggle" @click="fleetAction(${i})" role="button" v-html="fleetText(${i})"></a></span> | `);
             row1.append(`<span class="shipStat"><span class="has-text-warning">${loc(`firepower`)}</span> <span class="pad" v-html="fireText(${i})"></span></span><wbr>`);
             row1.append(`<span class="shipStat"><span class="has-text-warning">${loc(`outer_shipyard_sensors`)}</span> <span class="pad" v-html="sensorText(${i})"></span></span><wbr>`);
             row1.append(`<span class="shipStat"><span class="has-text-warning">${loc(`speed`)}</span> <span class="pad" v-html="speedText(${i})"></span></span><wbr>`);
-            row1.append(`<span class="shipStat"><span class="has-text-warning">${loc(`outer_shipyard_fuel`)}</span> <span class="pad" v-bind:class="{ 'has-text-danger': !fueled }" v-html="fuelText(${i})"></span></span><wbr>`);
+            row1.append(`<span class="shipStat"><span class="has-text-warning">${loc(`outer_shipyard_fuel`)}</span> <span class="pad" v-bind:class="{ 'has-text-danger': fuelShort(${i}) }" v-html="fuelText(${i})"></span></span><wbr>`);
             row1.append(`<span class="shipStat" v-show="hullShow(${i})"><span class="has-text-warning">${loc(`outer_shipyard_hull`)}</span> <span class="pad" v-bind:class="hullDamage(${i})" v-html="hullText(${i})"></span></span><wbr>`);
 
             row3.append(`<span v-show="show(${i})" class="has-text-caution" v-html="dest(${i})"></span>`);
@@ -7115,24 +7225,84 @@ function drawShipRow(list,i,ship,regionNames){
                     }
                     return false;
                 },
-                // Fleets need the fleet_command tech, and a ship can only be shuffled in or out of
-                // one while it is actually sitting somewhere rather than crossing between places.
-                // There also has to be something to fleet with, so the option stays hidden while a
-                // ship is the only one where it is.
-                fleetAllowed(id){
+                // Which fleet a ship belongs to, shown against its name. A flagship reads as the
+                // command points it has spent of its rating; anything under one is named for the ship
+                // it answers to, which is what tells two fleets in the same orbit apart.
+                fleetTag(id){
+                    let s = global.space.shipyard.ships[id];
+                    if (!global.tech['syard_fleet'] || !s || !s.fid){ return ``; }
+                    let flag = shipFlagship(s);
+                    if (!flag){ return ``; }
+                    let mark = `<span class="flag has-text-caution" title="${loc('outer_shipyard_fleet_flagship')}" aria-label="${loc('outer_shipyard_fleet_flagship')}">⚑</span>`;
+                    if (!s.flag){ return `${mark} ${flag.name}`; }
+                    let tag = `${mark} ${loc('outer_shipyard_fleet_command',[fleetCommandUsed(s.fid),fleetCommandRating(s)])}`;
+                    // Folded, the ships underneath have no rows of their own, so the flagship says how
+                    // many are down there rather than leaving them unaccounted for.
+                    let hidden = shipyardView().ffold[s.fid] ? fleetEscortCount(s.fid) : 0;
+                    return hidden > 0 ? `${tag} <span class="has-text-info">${loc('outer_shipyard_fleet_hidden',[hidden])}</span>` : tag;
+                },
+                // A fleet folds away like a location does, so only a flagship with something under it
+                // carries the toggle.
+                fleetFoldShow(id){
+                    let s = global.space.shipyard.ships[id];
+                    return global.tech['syard_fleet'] && s && s.flag && fleetEscortCount(s.fid) > 0 ? true : false;
+                },
+                fleetFolded(id){
+                    let s = global.space.shipyard.ships[id];
+                    return s && s.fid && shipyardView().ffold[s.fid] ? true : false;
+                },
+                fleetArrow(id){
+                    return this.fleetFolded(id) ? `&#9656;` : `&#9662;`;
+                },
+                fleetFoldLabel(id){
+                    let s = global.space.shipyard.ships[id];
+                    return loc(this.fleetFolded(id) ? 'outer_shipyard_fleet_expand' : 'outer_shipyard_fleet_collapse',[s ? s.name : ``]);
+                },
+                fleetFold(id){
+                    let s = global.space.shipyard.ships[id];
+                    if (!s || !s.fid || !s.flag){ return; }
+                    let ffold = shipyardView().ffold;
+                    if (ffold[s.fid]){ delete ffold[s.fid]; }
+                    else { ffold[s.fid] = true; }
+                    drawShips();
+                },
+                // The link only appears when there is something it could actually do: leave a fleet,
+                // stand one down, or put this ship into one. A lone ship with nothing to lead and
+                // nothing to join gets no link at all.
+                fleetShow(id){
                     let s = global.space.shipyard.ships[id];
                     if (!global.tech['syard_fleet'] || !s || s.transit > 0){ return false; }
-                    return global.space.shipyard.ships.some(o => o !== s && o.location === s.location && o.transit === s.transit);
+                    if (s.fid){ return true; }
+                    return fleetsFor(s).length > 0 || fleetWorthForming(s);
                 },
                 fleetText(id){
                     let s = global.space.shipyard.ships[id];
-                    return s && s.fleet ? loc('outer_shipyard_fleet_leave') : loc('outer_shipyard_fleet_join');
+                    if (!s){ return ``; }
+                    if (s.flag){ return loc('outer_shipyard_fleet_disband'); }
+                    return s.fid ? loc('outer_shipyard_fleet_leave') : loc('outer_shipyard_fleet_join');
                 },
-                toggleFleet(id){
+                fleetAction(id){
                     let s = global.space.shipyard.ships[id];
                     if (!global.tech['syard_fleet'] || !s || s.transit > 0){ return; }
-                    s.fleet = !s.fleet;
-                    drawShips();
+                    // Already flying with someone: the link takes it back out, and does so directly —
+                    // there is nothing to choose between.
+                    if (s.fid){
+                        leaveFleet(s);
+                        drawShips();
+                        return;
+                    }
+                    // Otherwise it is a choice of who to serve under, so put it to the player.
+                    let modal = this.$buefy.modal.open({
+                        hasModalCard: false,
+                        content: '<div id="modalBox" class="modalBox"></div>'
+                    });
+
+                    let checkExist = setInterval(function(){
+                        if ($('#modalBox').length > 0) {
+                            clearInterval(checkExist);
+                            fleetJoinModal(id, modal);
+                        }
+                    }, 50);
                 },
                 pickDest(id){
                     let modal = this.$buefy.modal.open({
@@ -7147,49 +7317,54 @@ function drawShipRow(list,i,ship,regionNames){
                         }
                     }, 50);
                 },
+                // Every readout below speaks for whatever rowGroup hands back: the one ship normally,
+                // the whole fleet when a folded flagship is standing in for it.
                 crewText(id){
-                    return shipCrewSize(global.space.shipyard.ships[id]);
+                    return rowGroup(global.space.shipyard.ships[id]).reduce((t,s) => t + shipCrewSize(s),0);
                 },
                 fireText(id){
-                    return shipAttackPower(global.space.shipyard.ships[id]);
+                    return rowGroup(global.space.shipyard.ships[id]).reduce((t,s) => t + shipAttackPower(s),0);
                 },
+                // A fleet aims as one body, so what it is worth is the best dish it carries.
                 sensorText(id){
-                    return sensorRange(global.space.shipyard.ships[id]) + 'km';
+                    return Math.max(...rowGroup(global.space.shipyard.ships[id]).map(s => sensorRange(s) || 0)) + 'km';
                 },
+                // A fleet keeps pace with its slowest ship, which is what its trips are planned on.
                 speedText(id){
-                    let speed = (149597870.7/225/24/3600) * shipSpeed(global.space.shipyard.ships[id]);
+                    let speed = (149597870.7/225/24/3600) * shipSpeed(fleetPace(rowGroup(global.space.shipyard.ships[id])));
                     return Math.round(speed) + 'km/s';
                 },
                 fuelText(id){
-                    let fuel = shipFuelUse(global.space.shipyard.ships[id]);
-                    if (fuel.res){
-                        return `${fuel.burn} ${global.resource[fuel.res].name}/s`;
-                    }
-                    else {
-                        return `N/A`;
-                    }
+                    return groupFuelText(rowGroup(global.space.shipyard.ships[id]));
                 },
+                // The worst hull in the group: a fleet leaves together or not at all, so that is the
+                // one that decides whether it can.
                 hullText(id){
-                    return `${100 - global.space.shipyard.ships[id].damage}%`;
+                    return `${100 - Math.max(...rowGroup(global.space.shipyard.ships[id]).map(s => s.damage))}%`;
                 },
                 // An undamaged hull is the norm and says nothing worth the space, so the readout only
                 // appears once a ship has taken damage.
                 hullShow(id){
-                    return global.space.shipyard.ships[id].damage > 0;
+                    return rowGroup(global.space.shipyard.ships[id]).some(s => s.damage > 0);
                 },
-                // Caution starts the moment the hull drops below the launch minimum, so a grounded ship
-                // is visible in the list without opening its dispatch modal.
+                // Colorize hull damage at threshold
                 hullDamage(id){
-                    if (global.space.shipyard.ships[id].damage <= 10){
+                    let group = rowGroup(global.space.shipyard.ships[id]);
+                    let damage = Math.max(...group.map(s => s.damage));
+                    if (damage <= 10){
                         return `has-text-success`;
                     }
-                    else if (global.space.shipyard.ships[id].damage >= 65){
+                    else if (damage >= 65){
                         return `has-text-danger`;
                     }
-                    else if (!shipSpaceworthy(global.space.shipyard.ships[id])){
+                    else if (group.some(s => !shipSpaceworthy(s))){
                         return `has-text-caution`;
                     }
                     return ``;
+                },
+                // A fleet is only as fuelled as its worst-off ship — one dry hull holds up the group.
+                fuelShort(id){
+                    return rowGroup(global.space.shipyard.ships[id]).some(s => !s.fueled);
                 },
                 dest(id){
                     let name = ship.class === 'explorer' ? loc('tech_era_tauceti') : regionNames[global.space.shipyard.ships[id].location];
@@ -7215,6 +7390,8 @@ function drawShipRow(list,i,ship,regionNames){
                     let s = global.space.shipyard.ships[id];
                     if (s && s['ret']){
                         delete s.ret;
+                        // Calling off the return calls off the rejoin with it — the ship is staying put.
+                        if (s['rfid']){ delete s.rfid; }
                         drawShips();
                     }
                 }
@@ -10497,9 +10674,16 @@ export function drawMap() {
         let fleets = {};
         for (let ship of global.space.shipyard.ships) {
             if (ship.transit <= 0){ continue; }
-            if (global.tech['syard_fleet'] && ship.fleet){
-                let key = `${ship.location}|${ship.transit}`;
-                if (fleets[key]){ fleets[key].count++; continue; }
+            if (global.tech['syard_fleet'] && ship.fid){
+                // Keyed on the fleet itself, so two fleets crossing to the same place on the same
+                // schedule stay two marks rather than collapsing into one.
+                let key = `${ship.fid}`;
+                if (fleets[key]){
+                    fleets[key].count++;
+                    // The flagship is the one worth labelling the group with.
+                    if (ship.flag){ fleets[key].ship = ship; }
+                    continue;
+                }
                 fleets[key] = { ship, count: 1 };
                 shipMarks.push(fleets[key]);
             }
@@ -11510,9 +11694,8 @@ function shipDispatchModal(id, modal){
         dests = dests.filter(d => reachable.has(d.region));
     }
 
-    // A hull under the launch minimum grounds the ship — and with it the rest of its fleet — so say so
-    // rather than offering destinations that would be refused.
-    if (group.some(s => !shipSpaceworthy(s))){
+    // A hull under the launch minimum holds the ship in dry dock 
+    if (group.some(s => !shipCanLaunch(s))){
         list.append(`<span class="has-text-danger">${loc('outer_shipyard_dispatch_damaged',[minHullToLaunch])}</span>`);
     }
     else if (dests.length === 0){
@@ -11539,15 +11722,209 @@ function shipDispatchModal(id, modal){
     }
 }
 
+// Who a ship could serve under: a fleet of its own, or any flagship parked alongside with the command
+// points to spare for it. Every option says what it costs and what the fleet has left, so the choice
+// is made on the numbers rather than by trial and error.
+function fleetJoinModal(id, modal){
+    let ship = global.space.shipyard.ships[id];
+    if (!ship){ return; }
+
+    $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${loc('outer_shipyard_fleet_assign',[ship.name])}</p>`));
+
+    let cost = fleetCommandCost(ship);
+    let stats = $(`<div class="shipDispatchStats"></div>`);
+    stats.append(`<span><span class="has-text-warning">${loc('outer_shipyard_fleet_cost')}</span> <span class="pad">${cost}</span></span>`);
+    if (fleetCommandRating(ship) > 0){
+        stats.append(`<span><span class="has-text-warning">${loc('outer_shipyard_fleet_rating')}</span> <span class="pad">${fleetCommandRating(ship)}</span></span>`);
+    }
+    $('#modalBox').append(stats);
+
+    let list = $(`<div class="shipDispatch"></div>`);
+    $('#modalBox').append(list);
+
+    let redraw = function(){
+        if (modal && modal.close){ modal.close(); }
+        drawShips();
+    };
+
+    if (fleetWorthForming(ship)){
+        $(`<button class="button is-info fleetNew"><span class="dispatchName">${loc('outer_shipyard_fleet_form')}</span><span class="dispatchDays has-text-caution">${loc('outer_shipyard_fleet_command',[0,fleetCommandRating(ship)])}</span></button>`)
+            .on('click', function(){
+                if (formFleet(ship)){ redraw(); }
+            })
+            .appendTo(list);
+    }
+
+    let options = fleetsFor(ship);
+    options.forEach(function(flag){
+        let free = fleetCommandFree(flag.fid);
+        $(`<button class="button is-info fleetJoin"><span class="dispatchName"><span class="flag has-text-caution">⚑</span> ${flag.name}</span><span class="dispatchSystem has-text-info">${loc(`outer_shipyard_class_${flag.class}`)}</span><span class="dispatchDays has-text-caution">${loc('outer_shipyard_fleet_room',[free,fleetCommandRating(flag)])}</span></button>`)
+            .on('click', function(){
+                if (joinFleet(ship,flag.fid)){ redraw(); }
+            })
+            .appendTo(list);
+    });
+
+    if (options.length === 0 && !fleetWorthForming(ship)){
+        list.append(`<span class="has-text-caution">${loc('outer_shipyard_fleet_nowhere')}</span>`);
+    }
+}
+
 // --- Fleets ---------------------------------------------------------------------------------
-// A fleet is not a stored object: it is every ship flagged `fleet` that shares a location, so
-// membership needs no bookkeeping when ships are built, scrapped or arrive somewhere. Ships already
-// under way are matched on their transit too — a ship inbound to a place has its location set to
-// that destination the moment it leaves, and it should not be swept up by a fleet sitting there.
-// Requires the fleet_command tech (syard_fleet).
+// A fleet is a flagship and the ships that answer to it. Both carry the same `fid`, and the flagship
+// alone carries `flag`, so a fleet survives the ship list being re-sorted and any number of fleets can
+// share one orbit without running together. Ships under way are matched on their transit too — a ship
+// inbound to a place has its location set to that destination the moment it leaves, and it should not
+// be swept up by a fleet already sitting there. Requires the fleet_command tech (syard_fleet).
+//
+// What a hull is worth in charge of a fleet, and what it costs to put one under a flagship. Command
+// points are the whole limit on a fleet's size, and the flagship spends none of its rating on itself —
+// a cruiser leads ten points of escort, not nine. The three heavy hulls are built to lead: they steady
+// the ships around them (`buff`) and ride out fire better themselves (`soak`). A destroyer manages a
+// lesser version of the same. The two smallest can lead but are no good at it — no combat bonus at
+// all, just a group that travels faster (`speed`). Explorers are absent on purpose: a one-off Tau Ceti
+// hull that can only ever fly to one place neither leads nor joins.
+const fleetHulls = {
+    corvette:      { cmd: 1,  cost: 1,  buff: 0,    soak: 0,   speed: 0.1 },
+    frigate:       { cmd: 2,  cost: 2,  buff: 0,    soak: 0,   speed: 0.1 },
+    destroyer:     { cmd: 5,  cost: 3,  buff: 0.05, soak: 0.1, speed: 0 },
+    cruiser:       { cmd: 10, cost: 5,  buff: 0.1,  soak: 0.2, speed: 0 },
+    battlecruiser: { cmd: 15, cost: 8,  buff: 0.1,  soak: 0.2, speed: 0 },
+    dreadnought:   { cmd: 20, cost: 12, buff: 0.1,  soak: 0.2, speed: 0 }
+};
+
+// The command table, so the wiki documents the live numbers rather than repeating them. Read-only by
+// convention — callers should not mutate what comes back, they should change fleetHulls above.
+export function fleetVars(){
+    return { hulls: fleetHulls };
+}
+
+// Command points a hull has to spend when it leads, and what it takes up when it follows. Both are 0
+// for a hull that does not fleet at all.
+export function fleetCommandRating(ship){
+    return ship && fleetHulls.hasOwnProperty(ship.class) ? fleetHulls[ship.class].cmd : 0;
+}
+export function fleetCommandCost(ship){
+    return ship && fleetHulls.hasOwnProperty(ship.class) ? fleetHulls[ship.class].cost : 0;
+}
+
+function allShips(){
+    return global.space['shipyard'] && global.space.shipyard['ships'] ? global.space.shipyard.ships : [];
+}
+
+// The ship leading fleet `fid`, or false when it no longer exists.
+function fleetFlagship(fid){
+    if (!fid){ return false; }
+    return allShips().find(s => s.flag && s.fid === fid) || false;
+}
+
+// Every ship flying under a fleet id, flagship included.
+function fleetMembers(fid){
+    return fid ? allShips().filter(s => s.fid === fid) : [];
+}
+
+// Ships serving under a flagship, not counting the flagship itself.
+export function fleetEscortCount(fid){
+    return fleetMembers(fid).filter(s => !s.flag).length;
+}
+
+// Command points a fleet has spent and has left. The flagship is free, so only the escort counts.
+export function fleetCommandUsed(fid){
+    return fleetMembers(fid).reduce((t,s) => t + (s.flag ? 0 : fleetCommandCost(s)),0);
+}
+export function fleetCommandFree(fid){
+    let flag = fleetFlagship(fid);
+    return flag ? fleetCommandRating(flag) - fleetCommandUsed(fid) : 0;
+}
+
 export function shipFleet(ship){
-    if (!global.tech['syard_fleet'] || !ship || !ship.fleet){ return []; }
-    return global.space.shipyard.ships.filter(s => s.fleet && s.location === ship.location && s.transit === ship.transit);
+    if (!global.tech['syard_fleet'] || !ship || !ship.fid){ return []; }
+    return allShips().filter(s => s.fid === ship.fid && s.location === ship.location && s.transit === ship.transit);
+}
+
+// The flagship a ship answers to, which is itself when it is the one leading. False when it flies alone.
+export function shipFlagship(ship){
+    if (!global.tech['syard_fleet'] || !ship || !ship.fid){ return false; }
+    return fleetFlagship(ship.fid);
+}
+
+// Extra firepower an escort gets from being led. A flagship does not steady itself.
+function fleetDamageBonus(ship){
+    let flag = shipFlagship(ship);
+    if (!flag || flag === ship || ship.flag){ return 0; }
+    return fleetHulls.hasOwnProperty(flag.class) ? fleetHulls[flag.class].buff : 0;
+}
+
+// Share of an incoming hit a flagship shrugs off. Only the ship in command benefits.
+function fleetDamageSoak(ship){
+    if (!ship || !ship.flag || !shipFlagship(ship)){ return 0; }
+    return fleetHulls.hasOwnProperty(ship.class) ? fleetHulls[ship.class].soak : 0;
+}
+
+// Speed a fleet gains from being led by a light hull. Flagship and escort alike — the whole group
+// travels as fast as the arrangement lets it.
+function fleetSpeedBonus(ship){
+    let flag = shipFlagship(ship);
+    if (!flag){ return 0; }
+    return fleetHulls.hasOwnProperty(flag.class) ? fleetHulls[flag.class].speed : 0;
+}
+
+// A ship can be shuffled in or out of a fleet only while it is actually sitting somewhere rather than
+// crossing between places, and only if its hull is one that fleets at all.
+function fleetEligible(ship){
+    return global.tech['syard_fleet'] && ship && ship.transit === 0 && fleetHulls.hasOwnProperty(ship.class) ? true : false;
+}
+
+// Put a ship in charge of a fleet of its own.
+export function formFleet(ship){
+    if (!fleetEligible(ship) || ship.fid || fleetCommandRating(ship) <= 0){ return false; }
+    if (!global.space.shipyard['fid']){ global.space.shipyard['fid'] = 0; }
+    ship.fid = ++global.space.shipyard.fid;
+    ship.flag = true;
+    return true;
+}
+
+// Put a ship under a flagship, if that fleet has the points left to take it on.
+export function joinFleet(ship,fid){
+    if (!fleetEligible(ship) || ship.fid){ return false; }
+    let flag = fleetFlagship(fid);
+    if (!flag || flag === ship || flag.location !== ship.location || flag.transit !== ship.transit){ return false; }
+    let cost = fleetCommandCost(ship);
+    if (cost <= 0 || cost > fleetCommandFree(fid)){ return false; }
+    ship.fid = fid;
+    delete ship.flag;
+    return true;
+}
+
+// Take a ship out of its fleet. Standing the flagship down releases everyone with it — a fleet is the
+// ship holding it together, and without that there is nothing left to answer to.
+export function leaveFleet(ship){
+    if (!ship || !ship.fid){ return false; }
+    if (ship.flag){
+        fleetMembers(ship.fid).forEach(function(s){ delete s.fid; delete s.flag; });
+        return true;
+    }
+    delete ship.fid;
+    delete ship.flag;
+    return true;
+}
+
+// Flagships sitting where this ship is whose fleets have the points to take it on.
+export function fleetsFor(ship){
+    if (!fleetEligible(ship) || ship.fid){ return []; }
+    let cost = fleetCommandCost(ship);
+    if (cost <= 0){ return []; }
+    return allShips().filter(s =>
+        s.flag && s !== ship && s.location === ship.location && s.transit === ship.transit
+        && fleetCommandFree(s.fid) >= cost
+    );
+}
+
+// Whether forming a fleet here would achieve anything: something else has to be sitting alongside that
+// could actually be told to join.
+function fleetWorthForming(ship){
+    if (!fleetEligible(ship) || ship.fid || fleetCommandRating(ship) <= 0){ return false; }
+    return allShips().some(o => o !== ship && !o.fid && o.location === ship.location && o.transit === ship.transit && fleetCommandCost(o) > 0);
 }
 
 // A fleet keeps pace with its slowest ship, so that is the one every trip is planned on.
@@ -11588,9 +11965,15 @@ export function atShipyard(ship){
     return ship ? ship.transit === 0 && shipyardLocations.includes(ship.location) : false;
 }
 
-// A hull below minHullToLaunch% is not spaceworthy; the ship is grounded until it is patched up.
+// A hull below minHullToLaunch% is not spaceworthy — the threshold the yard and the standing orders
+// both measure a battered ship against.
 export function shipSpaceworthy(ship){
     return ship ? 100 - ship.damage >= minHullToLaunch : false;
+}
+
+// Whether a ship is in good enough condition to be sent somewhere
+export function shipCanLaunch(ship){
+    return ship ? shipSpaceworthy(ship) || !atShipyard(ship) : false;
 }
 
 // --- Fleet Tactical Command ---------------------------------------------------------------------
@@ -11652,7 +12035,7 @@ function repairYard(ship){
 }
 
 // Move a ship without any of the checks that apply to an order the player gives. A ship running for
-// repairs is by definition too damaged to launch normally, and it goes alone.
+// repairs is by definition too damaged to launch normally.
 function orderShipTo(ship,l){
     if (!ship || l === ship.location){ return false; }
     let trip = planShipTrip(ship,l);
@@ -11667,43 +12050,113 @@ function orderShipTo(ship,l){
     return true;
 }
 
+// The same, for a whole fleet. Every ship takes the identical trip computed for the slowest, exactly as
+// a dispatch by hand does, so the group stays together the whole way and arrives on the same tick
+// rather than trickling in one hull at a time.
+function orderFleetTo(group,l){
+    if (!group || group.length === 0 || l === group[0].location){ return false; }
+    let trip = planShipTrip(fleetPace(group),l);
+    group.forEach(function(ship){
+        if (!shipManned(ship)){ global.civic.garrison.crew += shipCrewSize(ship); }
+        ship.location = l;
+        ship.transit = trip.transit;
+        ship.tf = 0;
+        ship.dist = trip.dist;
+        ship.origin = deepClone(trip.origin);
+        ship.destination = deepClone(trip.destination);
+        ship.path = trip.path ? deepClone(trip.path) : false;
+    });
+    return true;
+}
+
+// A ship that broke off from a fleet for repairs falls back in with it the moment the two are in the
+// same place again. The standing order is kept until it can be honoured rather than being spent on the
+// first attempt, so a ship still limping to the yard keeps its berth waiting for it. It is given up
+// only when there is no longer a fleet to go back to, or the ship has been put into another one.
+function rejoinFleet(ship,cfg){
+    if (!ship || !ship['rfid']){ return false; }
+    if (ship.fid || !fleetFlagship(ship.rfid)){
+        delete ship.rfid;
+        return false;
+    }
+    // Not alongside it yet, or the berth is taken for now — try again another day.
+    if (!joinFleet(ship,ship.rfid)){ return false; }
+    delete ship.rfid;
+    if (!cfg.quiet){
+        let flag = shipFlagship(ship);
+        messageQueue(loc('fleet_cmd_rejoin',[ship.name,flag ? flag.name : ``]),'success',false,['combat']);
+    }
+    return true;
+}
+
 // One pass of the standing orders over the whole fleet.
 export function fleetCmdDay(){
     if (!global.space.hasOwnProperty('shipyard') || !global.space.shipyard.hasOwnProperty('ships')){ return; }
     let cfg = fleetCmd();
     let moved = false;
 
+    // A fleet is dealt with as a unit, through its flagship. An escort still flying with one takes no
+    // orders of its own beyond breaking off when it is shot up, so the two never contradict each other.
     global.space.shipyard.ships.forEach(function(ship){
         let hull = 100 - ship.damage;
+        // Only a flagship that still leads something needs to speak for a group.
+        let fleet = ship.flag && shipFlagship(ship) ? shipFleet(ship) : [ship];
 
-        // Disengage: a hull that has fallen past the line breaks off, leaves whatever fleet it was
-        // flying with — the rest of the group carries on without it — and runs for a repair yard.
+        // Disengage: a hull that has fallen past the line breaks off and runs for a repair yard. An
+        // escort goes alone, the rest of the fleet carrying on without it, and remembers the fleet so
+        // it can fall back in once it is patched up. A flagship cannot go alone — the fleet is only a
+        // fleet while it is there to lead it — so the whole formation withdraws with it and stays
+        // together at the yard.
         if (ship.transit === 0 && !atShipyard(ship) && hull < cfg.flee){
             let yard = repairYard(ship);
             if (yard && yard !== ship.location){
-                // Where it was is what it comes back to, unless it was already limping home from
-                // somewhere else, in which case that original posting is the one worth keeping.
-                if (!ship['ret']){ ship['ret'] = ship.location; }
-                ship.fleet = false;
-                if (orderShipTo(ship,yard)){
-                    if (!cfg.quiet){
-                        messageQueue(loc('fleet_cmd_disengage',[ship.name,hull,regionName(yard)]),'warning',false,['combat']);
+                if (fleet.length > 1){
+                    // Where each ship was is what it comes back to, unless it was already limping home
+                    // from somewhere else, in which case that original posting is the one worth keeping.
+                    fleet.forEach(function(s){ if (!s['ret']){ s['ret'] = s.location; } });
+                    if (orderFleetTo(fleet,yard)){
+                        if (!cfg.quiet){
+                            messageQueue(loc('fleet_cmd_disengage_fleet',[ship.name,hull,fleet.length,regionName(yard)]),'warning',false,['combat']);
+                        }
+                        moved = true;
                     }
-                    moved = true;
+                }
+                else {
+                    if (!ship['ret']){ ship['ret'] = ship.location; }
+                    // Remember the fleet it was serving with, so the trip home ends where it started.
+                    if (ship.fid && !ship.flag){ ship['rfid'] = ship.fid; }
+                    leaveFleet(ship);
+                    if (orderShipTo(ship,yard)){
+                        if (!cfg.quiet){
+                            messageQueue(loc('fleet_cmd_disengage',[ship.name,hull,regionName(yard)]),'warning',false,['combat']);
+                        }
+                        moved = true;
+                    }
                 }
             }
             return;
         }
 
-        // Return on repair: patched up and still holding a posting to go back to.
+        // A ship that broke off on its own falls back in with the fleet it left as soon as the two are
+        // in the same place again — normally the moment it gets home, but equally at the yard if the
+        // fleet withdrew there as well.
+        if (ship['rfid'] && ship.transit === 0 && rejoinFleet(ship,cfg)){
+            moved = true;
+            return;
+        }
+
+        // Return on repair: patched up and still holding a posting to go back to. A fleet goes back
+        // together, so it waits until every one of its ships is fit to fly and leaves on the flagship's
+        // order — an escort sitting in the yard with its fleet holds its place until then.
         if (ship['ret'] && ship.transit === 0 && atShipyard(ship)){
             if (!cfg.ret){ return; }
-            if (hull < cfg.retHull){ return; }
+            if (ship.fid && !ship.flag){ return; }
+            if (fleet.some(s => 100 - s.damage < cfg.retHull)){ return; }
             let home = ship.ret;
-            delete ship.ret;
-            if (orderShipTo(ship,home)){
+            fleet.forEach(function(s){ delete s.ret; });
+            if (orderFleetTo(fleet,home)){
                 if (!cfg.quiet){
-                    messageQueue(loc('fleet_cmd_return',[ship.name,regionName(home)]),'success',false,['combat']);
+                    messageQueue(loc(fleet.length > 1 ? 'fleet_cmd_return_fleet' : 'fleet_cmd_return',[ship.name,regionName(home),fleet.length]),'success',false,['combat']);
                 }
                 moved = true;
             }
@@ -11735,9 +12188,8 @@ function sendShipTo(id, l){
     let group = shipFleet(ship);
     if (!group.length){ group = [ship]; }
 
-    // Nothing leaves port on a hull that battered, and a fleet moves as one, so a single damaged ship
-    // grounds the whole group until it is repaired or drops out of the fleet.
-    if (group.some(s => !shipSpaceworthy(s))){ return; }
+    // Nothing leaves dry dock on a badly damaged hull
+    if (group.some(s => !shipCanLaunch(s))){ return; }
 
     // Crew for every unmanned ship has to be on hand up front — a fleet leaves together or not at all.
     let need = group.reduce((t,s) => t + (shipManned(s) ? 0 : shipCrewSize(s)), 0);
@@ -11747,8 +12199,10 @@ function sendShipTo(id, l){
     for (let s of group){
         if (!shipManned(s)){ global.civic.garrison.crew += shipCrewSize(s); }
         // An order from the player overrides the standing one: wherever it was posted before, this is
-        // where it is going now, and it will not wander back on its own.
+        // where it is going now, it will not wander back on its own, and it is no longer holding a
+        // berth open in a fleet it was told to leave.
         if (s['ret']){ delete s.ret; }
+        if (s['rfid']){ delete s.rfid; }
         s.location = l;
         s.transit = trip.transit;
         s.tf = 0;   // a fresh journey starts at the top of a day

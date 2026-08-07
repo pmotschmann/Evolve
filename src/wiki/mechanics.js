@@ -9,7 +9,7 @@ import { universe_types } from './../space.js';
 import { swissKnife } from './../tech.js';
 import { actions, structName } from './../actions.js';
 import { astroVal, astrologySign } from './../seasons.js';
-import { shipAttackPower, sensorRange, shipCrewSize, shipPower, zWarfareVars } from './../truepath.js';
+import { shipAttackPower, sensorRange, shipCrewSize, shipPower, zWarfareVars, fleetVars } from './../truepath.js';
 import { sideMenu, infoBoxBuilder, createRevealSection, createCalcSection, getSolarName } from './functions.js';
 
 export function mechanicsPage(content){
@@ -869,7 +869,27 @@ export function mechanicsPage(content){
         tpShipsScanCalc(scan_calc);
         let intel_calc = createCalcSection(tp_ships_sensors,'mechanics','tp_ships_intel',loc('space_scan_effectiveness'));
         tpShipsIntelCalc(intel_calc);
-        
+
+        { // Fleets
+            // Read from the live command table, so retuning the hulls retunes the documentation too.
+            let f = fleetVars();
+            let fpct = v => `${+(v * 100).toFixed(1)}%`;
+            let fleets = infoBoxBuilder(tp_ships,{ name: 'tp_ships_fleets', template: 'mechanics', label: loc('wiki_mechanics_tp_ships_fleets'), paragraphs: 5, break: [3], h_level: 2,
+                para_data: {
+                    1: [loc('tech_fleet_command')],
+                    2: [loc('outer_shipyard_fleet_flagship'),f.hulls.cruiser.cmd],
+                    3: [fpct(f.hulls.cruiser.buff),fpct(f.hulls.cruiser.soak),fpct(f.hulls.destroyer.buff),fpct(f.hulls.destroyer.soak)],
+                    4: [fpct(f.hulls.corvette.speed)],
+                    5: [loc('outer_shipyard_class_explorer')]
+                }
+            });
+
+            let fleet_reveal = createRevealSection(fleets,'mechanics','tp_ships_fleets_hulls',loc('wiki_mechanics_tp_ships_fleets_hulls'));
+            Object.keys(f.hulls).forEach(function(cls){
+                fleet_reveal.append(`<div><span class="has-text-caution">${loc('outer_shipyard_class_'+cls)}</span>: <span class="has-text-warning">${loc('wiki_mechanics_tp_ships_fleets_hull',[f.hulls[cls].cmd,f.hulls[cls].cost])}</span></div>`);
+            });
+        }
+
         sideMenu('add',`mechanics-gameplay`,`tp_ships`,loc('wiki_mechanics_tp_ships'));
     }
 

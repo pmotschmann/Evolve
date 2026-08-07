@@ -1353,6 +1353,50 @@ if (convertVersion(global['version']) <= 105000){
         });
     }
 
+    // Fleets are now led. They used to be a flat `fleet` flag — everything carrying it at one location
+    // flew as a single group — and are now a flagship with a command rating plus escorts that spend
+    // points from it. Each old group is rebuilt around the largest hull it contained, taking on as much
+    // of the rest as the new rating allows and releasing whatever no longer fits. The ratings below are
+    // a snapshot of how they stood at conversion: what an old save becomes should not shift later just
+    // because the live tables in truepath.js were retuned. Idempotent — a converted save has no `fleet`
+    // property left to find.
+    if (global['space'] && global.space['shipyard'] && Array.isArray(global.space.shipyard['ships'])){
+        let lead = { corvette: 1, frigate: 2, destroyer: 5, cruiser: 10, battlecruiser: 15, dreadnought: 20 };
+        let berth = { corvette: 1, frigate: 2, destroyer: 3, cruiser: 5, battlecruiser: 8, dreadnought: 12 };
+        let groups = {};
+        let legacy = false;
+        global.space.shipyard.ships.forEach(function(ship){
+            if (!ship.hasOwnProperty('fleet')){ return; }
+            legacy = true;
+            if (ship.fleet && lead.hasOwnProperty(ship.class)){
+                let key = `${ship.location}|${ship.transit}`;
+                if (!groups[key]){ groups[key] = []; }
+                groups[key].push(ship);
+            }
+            delete ship.fleet;
+        });
+        if (legacy){
+            if (!global.space.shipyard.hasOwnProperty('fid')){ global.space.shipyard['fid'] = 0; }
+            Object.keys(groups).forEach(function(key){
+                // Biggest hull first: it takes command, and the rest fall in behind it while the points last.
+                let crew = groups[key].sort((a,b) => lead[b.class] - lead[a.class]);
+                if (crew.length < 2){ return; }
+                let flag = crew.shift();
+                let fid = ++global.space.shipyard.fid;
+                flag['fid'] = fid;
+                flag['flag'] = true;
+                let free = lead[flag.class];
+                crew.forEach(function(ship){
+                    let cost = berth[ship.class];
+                    if (cost <= free){
+                        free -= cost;
+                        ship['fid'] = fid;
+                    }
+                });
+            });
+        }
+    }
+
     // Skilled servant capacity is now a permanent allowance (sbase) plus whatever temporary help is on
     // loan, so Womling artisans can add to it without the total compounding every tick. A save from before
     // that has the whole figure in smax, and got its servants from the prestige grant — mark both so the
@@ -1412,7 +1456,7 @@ if (convertVersion(global['version']) <= 105000){
 
 global['version'] = '1.5.0';
 delete global['revision'];
-global['beta'] = 21;
+global['beta'] = 22;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};

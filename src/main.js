@@ -12606,6 +12606,15 @@ function longLoop(){
                 let eScan = 0;
                 let tScan = 0;
                 let tShip = false;
+
+                // Repair cadence. A yard has the ship in dry dock and works it every day; a crew out in
+                // the field can only get to it every other day, on even ones. Ths means dry docked ships
+                // are effectively repaired 6 times faster
+                const yardRepair = 3;
+                const fieldRepair = 1;
+                let dayStep = webWorker.offline ? webWorker.offlineScale : 1;
+                let fieldDays = Math.floor(global.stats.days / 2) - Math.floor((global.stats.days - dayStep) / 2);
+
                 // Hulls under way are advanced by moveShips (see truepath.js), which midLoop drives in
                 // fifth-of-a-day steps so they cross the map smoothly instead of a day at a time. By
                 // the time this runs, `transit` is the same whole number of days it always was.
@@ -12617,8 +12626,9 @@ function longLoop(){
                         if (ship.path){ ship.path = false; }
                     }
                     if (ship.damage > 0 && (p_on['shipyard'] || p_on['adv_shipyard'])){
-                        // In dry dock the crews have the yard's facilities, so repairs go twice as fast.
-                        ship.damage -= atShipyard(ship) ? 2 : 1;
+                        // In dry dock the crews have the yard's facilities and work the hull daily;
+                        // anywhere else it is patched up every other day (see the cadence above).
+                        ship.damage -= atShipyard(ship) ? yardRepair * dayStep : fieldRepair * fieldDays;
                         if (ship.damage < 0){ ship.damage = 0; }
                     }
                     // Wear and tear finds ships everywhere except inside a yard; being under way counts

@@ -4755,6 +4755,12 @@ span.inline {
     }
 }
 
+// The flagship marker and the fleet it names, shown against a ship's name in the fleet list.
+.flagship {
+    margin-left: .5rem;
+    font-size: .85rem;
+}
+
 .industryTab,
 .psychicTab,
 .supernaturalTab  {
@@ -5193,6 +5199,27 @@ span.inline {
         // A ship inside an open group sits in from its header.
         .shipGroup ~ .shipRow {
             margin-left: 1.25rem;
+        }
+
+        // The fold toggle on a flagship's row, matching the one on a location header.
+        .fleetFold {
+            margin-left: .5rem;
+            white-space: nowrap;
+
+            .groupArrow {
+                display: inline-block;
+                min-width: .75rem;
+            }
+        }
+
+        // A ship serving under a flagship sits in from it, so a fleet reads as one block.
+        .shipRow.escort {
+            margin-left: 1.25rem;
+        }
+
+        // ...and further in again when the whole location is already indented under its own header.
+        .shipGroup ~ .shipRow.escort {
+            margin-left: 2.5rem;
         }
     }
 
