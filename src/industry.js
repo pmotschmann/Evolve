@@ -34,6 +34,9 @@ export function loadIndustry(industry,parent,bind){
         case 'rock_quarry':
             loadQuarry(parent,bind);
             break;
+        case 'mineshaft':
+            loadMineshaft(parent,bind);
+            break;
         case 'titan_mine':
             loadTMine(parent,bind);
             break;
@@ -1414,6 +1417,38 @@ function loadQuarry(parent,bind){
                     global.city.rock_quarry.asbestos += keyMult;
                     if (global.city.rock_quarry.asbestos > 100){
                         global.city.rock_quarry.asbestos = 100;
+                    }
+                }
+            }
+        }
+    });
+}
+
+function loadMineshaft(parent,bind){
+    parent.append($(`<div>${loc('modal_mineshaft_ratio')}</div>`));
+
+    let slider = $(`<div class="sliderbar"><span class="sub" role="button" @click="sub" aria-label="Divert less miners">&laquo;</span><b-slider v-model="ratio" format="percent"></b-slider><span class="add" role="button" @click="add" aria-label="Divert more miners">&raquo;</span></div>`);
+    parent.append(slider);
+
+    vBind({
+        el: bind ? bind : '#specialModal',
+        data: global.underground.mineshaft,
+        methods: {
+            sub(){
+                let keyMult = keyMultiplier();
+                if (global.underground.mineshaft.ratio > 0){
+                    global.underground.mineshaft.ratio -= keyMult;
+                    if (global.underground.mineshaft.ratio < 0){
+                        global.underground.mineshaft.ratio = 0;
+                    }
+                }
+            },
+            add(){
+                let keyMult = keyMultiplier();
+                if (global.underground.mineshaft.ratio < 100){
+                    global.underground.mineshaft.ratio += keyMult;
+                    if (global.underground.mineshaft.ratio > 100){
+                        global.underground.mineshaft.ratio = 100;
                     }
                 }
             }

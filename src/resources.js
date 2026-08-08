@@ -1162,8 +1162,10 @@ export function setResourceName(name){
             global.resource[name].name = loc(`resource_Program_name`);
         }
     }
-
-    if (global.race['sappy']){
+    if (global.race['iceage']){
+        //stone remains stone in ice age
+    }
+    else if (global.race['sappy']){
         switch(name){
             case 'Stone':
                 global['resource'][name].name = loc('resource_Amber_name');

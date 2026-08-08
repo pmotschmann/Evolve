@@ -1412,6 +1412,12 @@ if (convertVersion(global['version']) <= 105000){
     }
 }
 
+if(convertVersion(global['version']) && true){
+    //potentially unnecessary as these are only relevant for those that are already playing ice age or have completed it.
+    global.underground = global.underground || {};
+    global.surface = global.surface || {};
+}
+
 global['version'] = '1.5.0';
 delete global['revision'];
 global['beta'] = 20;

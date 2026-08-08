@@ -1084,69 +1084,7 @@ export const actions = {
             },
             touchlabel: loc(`open`)
         },
-        food: {
-            id: 'city-food',
-            title(){
-                let hallowed = getHalloween();
-                if (hallowed.active){
-                    return global.tech['conjuring'] ? loc('city_trick_conjure') : loc('city_trick');
-                }
-                else {
-                    return global.tech['conjuring'] ? loc('city_food_conjure') : loc('city_food');
-                }
-            },
-            desc(){
-                let gain = $(this)[0].val(false);
-                let hallowed = getHalloween();
-                if(global.race['fasting']){
-                    return loc('city_food_fasting',[global.resource.Food.name]);
-                }
-                if (hallowed.active){
-                    return global.tech['conjuring'] ? loc('city_trick_conjure_desc',[gain]) : loc('city_trick_desc',[gain]);
-                }
-                else {
-                    return global.tech['conjuring'] ? loc('city_food_conjure_desc',[gain]) : loc('city_food_desc',[gain]);
-                }
-            },
-            category: 'outskirts',
-            reqs: { primitive: 1 },
-            not_trait: ['cataclysm','artifical'],
-            condition(){
-                let hallowed = getHalloween();
-                if (hallowed && global.race['soul_eater'] && !global.race['evil']){
-                    return true;
-                }
-                return global.race['soul_eater'] ? false : true;
-            },
-            queue_complete(){ return 0; },
-            cost: {
-                Mana(){ return global.tech['conjuring'] ? 1 : 0; },
-            },
-            action(args){
-                if (!global.settings.pause){
-                    if(global['resource']['Food'].amount < global['resource']['Food'].max && !global.race['fasting']){
-                        modRes('Food',$(this)[0].val(true),true);
-                    }
-                    global.stats.cfood++;
-                    global.stats.tfood++;
-                }
-                return false;
-            },
-            val(spend){
-                let gain = global.race['strong'] ? traits.strong.vars()[0] : 1;
-                if (global.genes['enhance']){
-                    gain *= 2;
-                }
-                if (global.tech['conjuring'] && global.resource.Mana.amount >= 1){
-                    gain *= 10;
-                    if (global['resource']['Food'].amount < global['resource']['Food'].max && spend){
-                        modRes('Mana',-1,true);
-                    }
-                }
-                return gain;
-            },
-            touchlabel: loc(`harvest`)
-        },
+        food: buildTemplate('food'),
         lumber: {
             id: 'city-lumber',
             title(){
@@ -4736,6 +4674,9 @@ export function buildTemplate(key, region){
                     if (global.tech['conjuring'] && global.tech['conjuring'] >= 2){
                         return loc('city_stone_conjour_desc',[gain,global.resource.Stone.name]);
                     }
+                    else if(global.race['iceage']){
+                        return loc('city_stone_iceage_desc',[gain]);
+                    }
                     else {
                         return loc(global.race['sappy'] ? 'city_amber_desc' : 'city_stone_desc',[gain,global.resource.Stone.name]);
                     }                
@@ -4765,6 +4706,73 @@ export function buildTemplate(key, region){
                     if (global.tech['conjuring'] && global.tech['conjuring'] >= 2 && global.resource.Mana.amount >= 1){
                         gain *= 10;
                         if (global['resource']['Stone'].amount < global['resource']['Stone'].max && spend){
+                            modRes('Mana',-1,true);
+                        }
+                    }
+                    return gain;
+                },
+                touchlabel: loc(`harvest`)
+            }
+            return tKey(action,tName,region);
+        }
+        case 'food':
+        {
+            let action = {
+                id: `${region}-food`,
+                title(){
+                    let hallowed = getHalloween();
+                    if (hallowed.active){
+                        return global.tech['conjuring'] ? loc('city_trick_conjure') : loc('city_trick');
+                    }
+                    else {
+                        return global.tech['conjuring'] ? loc('city_food_conjure') : loc('city_food');
+                    }
+                },
+                desc(){
+                    let gain = $(this)[0].val(false);
+                    let hallowed = getHalloween();
+                    if(global.race['fasting']){
+                        return loc('city_food_fasting',[global.resource.Food.name]);
+                    }
+                    if (hallowed.active){
+                        return global.tech['conjuring'] ? loc('city_trick_conjure_desc',[gain]) : loc('city_trick_desc',[gain]);
+                    }
+                    else {
+                        return global.tech['conjuring'] ? loc('city_food_conjure_desc',[gain]) : loc('city_food_desc',[gain]);
+                    }
+                },
+                category: 'outskirts',
+                reqs: { primitive: 1 },
+                not_trait: ['cataclysm','artifical'],
+                condition(){
+                    let hallowed = getHalloween();
+                    if (hallowed && global.race['soul_eater'] && !global.race['evil']){
+                        return true;
+                    }
+                    return global.race['soul_eater'] ? false : true;
+                },
+                queue_complete(){ return 0; },
+                cost: {
+                    Mana(){ return global.tech['conjuring'] ? 1 : 0; },
+                },
+                action(args){
+                    if (!global.settings.pause){
+                        if(global['resource']['Food'].amount < global['resource']['Food'].max && !global.race['fasting']){
+                            modRes('Food',$(this)[0].val(true),true);
+                        }
+                        global.stats.cfood++;
+                        global.stats.tfood++;
+                    }
+                    return false;
+                },
+                val(spend){
+                    let gain = global.race['strong'] ? traits.strong.vars()[0] : 1;
+                    if (global.genes['enhance']){
+                        gain *= 2;
+                    }
+                    if (global.tech['conjuring'] && global.resource.Mana.amount >= 1){
+                        gain *= 10;
+                        if (global['resource']['Food'].amount < global['resource']['Food'].max && spend){
                             modRes('Mana',-1,true);
                         }
                     }
@@ -4851,11 +4859,15 @@ export function buildTemplate(key, region){
                 category: 'military',
                 reqs: {},
                 trait: ['artifical'],
+                condition(){
+                    return !global.race['iceage'] || global.underground['basic_housing']?.count >= 1;
+                },
                 queue_complete(){ return global.resource[global.race.species].max - global.resource[global.race.species].amount; },
                 cost: {
                     Money(offset){ return global['resource'][global.race.species].amount ? costMultiplier('citizen', offset, assemblyCostAdjust(125), 1.01) : 0; },
                     Copper(offset){ return global.race['deconstructor'] ? 0 : global['resource'][global.race.species].amount >= 5 ? costMultiplier('citizen', offset, assemblyCostAdjust(50), 1.01) : 0; },
-                    Aluminium(offset){ return global.race['deconstructor'] ? 0 : global['resource'][global.race.species].amount >= 5 ? costMultiplier('citizen', offset, assemblyCostAdjust(50), 1.01) : 0; },
+                    Iron(offset){ return global.race['deconstructor'] || !global.race['iceage'] ? 0 : global['resource'][global.race.species].amount >= 5 ? costMultiplier('citizen', offset, assemblyCostAdjust(50), 1.01) : 0},
+                    Aluminium(offset){ return global.race['deconstructor'] || global.race['iceage'] ? 0 : global['resource'][global.race.species].amount >= 5 ? costMultiplier('citizen', offset, assemblyCostAdjust(50), 1.01) : 0; },
                     Nanite(offset){ return global.race['deconstructor'] ? (global['resource'][global.race.species].amount >= 3 ? costMultiplier('citizen', offset, assemblyCostAdjust(500), 1.01) : 0) : 0; },
                 },
                 effect(){
@@ -8157,6 +8169,9 @@ function drawModal(c_action,type){
         case 'rock_quarry':
             loadIndustry('rock_quarry',body);
             break;
+        case 'mineshaft':
+            loadIndustry('mineshaft', body);
+            break
         case 'titan_mine':
             loadIndustry('titan_mine',body);
             break;
@@ -9728,6 +9743,7 @@ function iceAgeStart(){
     if(global.race['iceage']){
         global.settings.showCity = false;
         global.settings.showUnderground = true;
+        global.settings.showResearch = true;
 
         global.settings.civTabs = 1;
         global.settings.spaceTabs = 8;
@@ -9736,6 +9752,10 @@ function iceAgeStart(){
         global.resource.Lumber.display = false;
         global.resource.Steel.display = false;
         global.resource.Stone.display = true;
+
+        global.resource.Lumber.amount = 0;
+        global.resource.Stone.amount = 0;
+
         renderUnderground();
     }
 }

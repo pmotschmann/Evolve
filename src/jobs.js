@@ -42,6 +42,24 @@ export const job_desc = {
         }
         return desc;
     },
+    water_collector: function(servant){
+        let workers = servant && global.race['servants'] ? global.race.servants.jobs.water_collector : global.civic.water_collector.workers;
+        let impact = global.civic.water_collector.impact;
+        if (!servant){
+            workers = +workerScale(workers,'water_collector').toFixed(2);
+            impact = +workerScale(impact,'water_collector').toFixed(2);
+        }
+        let multiplier = 1;
+        if (!servant){
+            multiplier *= racialTrait(workers,'water');
+        }
+        let gain = +(impact * multiplier).toFixed(1);
+        let desc = loc('job_water_collector_desc',[gain]);
+        if (global.civic.d_job === 'water_collector' && !servant){
+            desc = desc + ' ' + loc('job_default',[jobName('water_collector')]);
+        }
+        return desc;
+    },
     farmer: function(servant){
         let farmer = +farmerValue(true,servant).toFixed(2);
         let farmhand = +farmerValue(false,servant).toFixed(2);
@@ -49,9 +67,18 @@ export const job_desc = {
             farmer = +workerScale(farmer,'farmer').toFixed(2);
             farmhand = +workerScale(farmhand,'farmer').toFixed(2);
         }
-        let desc = global.race['high_pop'] && !servant
-            ? loc('job_farmer_desc_hp',[farmer,global.resource.Food.name,jobScale(1),farmhand,jobScale(1) * global.city.farm.count])
-            : loc('job_farmer_desc',[farmer,global.resource.Food.name,global.city.farm.count,farmhand]);
+        let desc = loc('job_farmer_desc',[farmer,global.resource.Food.name,global.city.farm?.count,farmhand]);
+        if(global.race['high_pop'] && !servant){
+            desc = loc('job_farmer_desc_hp',[farmer,global.resource.Food.name,jobScale(1),farmhand,jobScale(1) * global.city.farm.count]);
+        }
+        if(global.race['iceage']){
+            if(!global.race['artifical']){
+                desc = loc('job_mushroom_farmer_desc', [farmer,global.resource.Food.name,global.underground.mushroom_farm.count,farmhand,actions.underground.mushroom_farm.mushroom_type(), loc('underground_mushroom_farm', [actions.underground.cave.mushroom_farm.mushroom_type()]), 1]);
+            }
+            else{
+                desc = loc('job_runner_desc', [farmer,global.resource.Food.name,global.underground.transmitter.count,farmhand, 1]);
+            }
+        }
         if (global.civic.d_job === 'farmer' && !servant){
             desc = desc + ' ' + loc('job_default',[jobName('farmer')]);
         }
@@ -381,6 +408,7 @@ export function defineJobs(define){
     loadJob('teamster',define,1,global.tech['teamster'] ? 6 : 4);
     loadJob('meditator',define,1,5);
     loadJob('torturer',define,1,3,'advanced');
+    loadJob('water_collector',define,1,5,'advanced');
     loadJob('miner',define,1,4,'advanced');
     loadJob('coal_miner',define,0.2,4,'advanced');
     loadJob('craftsman',define,1,5,'advanced');
@@ -422,7 +450,7 @@ export function workerScale(num,job){
         num *= 1 + (teacher / 100);
     }
     if (global.race['lone_survivor']){
-        if (['hunter','forager','farmer','lumberjack','quarry_worker','crystal_miner','scavenger'].includes(job)){
+        if (['hunter','forager','water_collector','farmer','lumberjack','quarry_worker','crystal_miner','scavenger'].includes(job)){
             num *= 80;
         }
         else if (['craftsman'].includes(job)){
@@ -464,6 +492,14 @@ export function setJobName(job){
     }
     else if (job === 'lumberjack' && global.race['evil'] && (!global.race['soul_eater'] || global.race.species === 'wendigo')){
         job_name = loc('job_reclaimer');
+    }
+    else if(job === 'farmer' && global.race['iceage']){
+        if(!global.race['artifical']){
+            job_name = loc('job_mushroom_farmer');
+        }
+        else{
+            job_name = loc('job_runner');
+        }
     }
     else {
         job_name = loc('job_' + job);

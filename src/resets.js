@@ -1307,6 +1307,7 @@ export function iceAge(){
         universe: global.race.universe,
         seeded: false,
         ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
+        truepath: global.race.truepath
     };
     if (corruption > 0){
         global.race['corruption'] = corruption;
@@ -1325,18 +1326,22 @@ export function iceAge(){
         geology: global.city.geology
     });
 
-    if (global.race.universe === 'antimatter') {
+    if (global.race.truepath){
+        global.race['nerfed'] = 1;
+        global.race['badgenes'] = 1;
+    }
+    else if (global.race.universe === 'antimatter') {
         global.race['weak_mastery'] = 1;
     }
     else {
         global.race['no_plasmid'] = 1;
     }
-
-    let genes = ['crispr','trade','craft'];
-    for (let i=0; i<genes.length; i++){
-        global.race[`no_${genes[i]}`] = 1;
+    if(!global.race.truepath){
+        global.race['no_crispr'] = 1;
     }
-
+    global.race['no_trade'] = 1;
+    global.race['no_craft'] = 1;
+    
     global.race['start_iceage'] = 1;
     global.race['iceage'] = 1;
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));

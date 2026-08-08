@@ -4514,7 +4514,9 @@ export const traits = {
                     element = 'fire';
                     break;
             }
-
+            if(global.race['iceage']){
+                element = 'frost'; // it be cold
+            }
             // [Element, Electric, Acid, Fire, Frost, Combat]
             // [Type, Power, Industry, Smelting, Bioscience, Combat]
             switch (r || traitRank('elemental') || 1){
