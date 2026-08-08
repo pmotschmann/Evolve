@@ -5140,6 +5140,7 @@ function zEngage(locationName,foes){
 
     zMessage(loc('zcombat_engage',[guards.length,foes.length,regionName(locationName)]),'warning');
     lost.forEach(function(ship){ destroyPlayerShip(ship,locationName); });
+    if (lost.length > 0){ drawShips(); }
     downed.forEach(function(foe){
         zMessage(loc('zcombat_foe_destroyed',[foe.name,regionName(locationName)]),'success');
     });
@@ -7471,11 +7472,16 @@ function drawShipRow(list,i,ship,regionNames){
                 },
                 // A fleet aims as one body, so what it is worth is the best dish it carries.
                 sensorText(id){
-                    return Math.max(...rowGroup(global.space.shipyard.ships[id]).map(s => sensorRange(s) || 0)) + 'km';
+                    let group = rowGroup(global.space.shipyard.ships[id]);
+                    // Math.max of nothing is -Infinity, and a row can outlive its ship by a frame.
+                    if (group.length === 0){ return `0km`; }
+                    return Math.max(...group.map(s => sensorRange(s) || 0)) + 'km';
                 },
                 // A fleet keeps pace with its slowest ship, which is what its trips are planned on.
                 speedText(id){
-                    let speed = (149597870.7/225/24/3600) * shipSpeed(fleetPace(rowGroup(global.space.shipyard.ships[id])));
+                    let pace = fleetPace(rowGroup(global.space.shipyard.ships[id]));
+                    if (!pace){ return `0km/s`; }
+                    let speed = (149597870.7/225/24/3600) * shipSpeed(pace);
                     return Math.round(speed) + 'km/s';
                 },
                 fuelText(id){
@@ -7484,7 +7490,9 @@ function drawShipRow(list,i,ship,regionNames){
                 // The worst hull in the group: a fleet leaves together or not at all, so that is the
                 // one that decides whether it can.
                 hullText(id){
-                    return `${100 - Math.max(...rowGroup(global.space.shipyard.ships[id]).map(s => s.damage))}%`;
+                    let group = rowGroup(global.space.shipyard.ships[id]);
+                    if (group.length === 0){ return `100%`; }
+                    return `${100 - Math.max(...group.map(s => s.damage))}%`;
                 },
                 // An undamaged hull is the norm and says nothing worth the space, so the readout only
                 // appears once a ship has taken damage.
@@ -7494,6 +7502,7 @@ function drawShipRow(list,i,ship,regionNames){
                 // Colorize hull damage at threshold
                 hullDamage(id){
                     let group = rowGroup(global.space.shipyard.ships[id]);
+                    if (group.length === 0){ return ``; }
                     let damage = Math.max(...group.map(s => s.damage));
                     if (damage <= 10){
                         return `has-text-success`;
@@ -12265,6 +12274,7 @@ function fleetWorthForming(ship){
 
 // A fleet keeps pace with its slowest ship, so that is the one every trip is planned on.
 function fleetPace(group){
+    if (!group || group.length === 0){ return false; }
     return group.reduce((a,b) => shipSpeed(a) <= shipSpeed(b) ? a : b);
 }
 
