@@ -4223,7 +4223,8 @@ function fastLoop(){
                 Oil: 0,
                 Helium_3: 0,
                 Uranium: 0,
-                Elerium: 0
+                Elerium: 0,
+                Positronium: 0
             };
             global.space.shipyard.ships.forEach(function(ship){
                 // A ship in dry dock burns nothing; everything else is running its plant.
@@ -4249,6 +4250,7 @@ function fastLoop(){
             breakdown.p.consume.Helium_3[loc('outer_shipyard_fleet')] = -(fuels.Helium_3);
             breakdown.p.consume.Uranium[loc('outer_shipyard_fleet')] = -(fuels.Uranium);
             breakdown.p.consume.Elerium[loc('outer_shipyard_fleet')] = -(fuels.Elerium);
+            breakdown.p.consume.Positronium[loc('outer_shipyard_fleet')] = -(fuels.Positronium);
         }
 
         if (global.race['emfield']){
@@ -10605,7 +10607,7 @@ function midLoop(){
             global.tauceti.overseer.loyal = loyal;
             global.tauceti.overseer.morale = morale;
             global.tauceti.overseer.pop = pop;
-            global.tauceti.overseer.working = farmers + miners + scientist;
+            global.tauceti.overseer.working = farmers + miners + scientist + artisan;
             global.tauceti.overseer.injured = injured;
             global.tauceti.overseer.prod = prod;
         }
