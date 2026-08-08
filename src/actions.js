@@ -6753,6 +6753,8 @@ function runAction(c_action,action,type){
                     let grant = false;
                     let add_queue = false;
                     let loopNum = global.settings.qKey && keyMap.q ? 1 : keyMult;
+                    // Get razed count before running the action, so we can adjust the queue if the player rebuilds a ruin by hand.
+                    let razedBefore = razedCount(c_action);
                     for (let i=0; i<loopNum; i++){
                         let res = false;
                         if ((global.settings.qKey && keyMap.q) || (!(res = c_action.action({isQueue: false})))){
@@ -6804,6 +6806,11 @@ function runAction(c_action,action,type){
                     }
                     if (grant){
                         postBuild(c_action,action,type);
+                        // Remove from queue if rebuilding by hand a razed structure
+                        let repaired = razedBefore - razedCount(c_action);
+                        if (repaired > 0 && dequeueStruct(c_action,repaired)){
+                            add_queue = true;
+                        }
                         if (global.tech['queue'] && c_action['queue_complete']) {
                             let buid_max = c_action.queue_complete();
                             for (let i=0, j=0; j<global.queue.queue.length; i++, j++){
@@ -6834,6 +6841,36 @@ function runAction(c_action,action,type){
     }
 }
 
+// Assist function for queues: returns the number of razed structures for a given action, if any.
+function razedCount(c_action){
+    if (!c_action || !c_action['id']){ return 0; }
+    let parts = c_action.id.split('-');
+    let cat = parts.shift();
+    let key = parts.join('-');
+    let struct = global[cat] && global[cat][key];
+    return struct && typeof struct === 'object' && struct['razed'] > 0 ? struct.razed : 0;
+}
+
+// Function to remove a number of structures from the queue, if they exist. Returns true if any were removed.
+function dequeueStruct(c_action,qty){
+    if (!global.tech['queue'] || !global.queue.hasOwnProperty('queue')){ return false; }
+    let changed = false;
+    for (let i=0; i<global.queue.queue.length && qty > 0; i++){
+        let item = global.queue.queue[i];
+        if (item.id !== c_action.id){ continue; }
+        let cut = Math.min(item.q,qty);
+        item.q -= cut;
+        qty -= cut;
+        changed = true;
+        if (item.q <= 0){
+            clearPopper(`q${item.id}${i}`);
+            global.queue.queue.splice(i--,1);
+        }
+    }
+    return changed;
+}
+
+// Called after a structure is built, to handle any post-build effects such as granting tech, removing the action from the list, and updating the description.
 export function postBuild(c_action,action,type){
     if (!checkAffordable(c_action)){
         let id = c_action.id;

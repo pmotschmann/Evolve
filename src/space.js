@@ -7,7 +7,7 @@ import { loadFoundry, jobScale } from './jobs.js';
 import { defineIndustry, addSmelter, addFactoryLines } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
 import { actions, payCosts, powerOnNewStruct, initStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, templeCount, casinoEffect, wardenLabel, buildTemplate, structName } from './actions.js';
-import { outerTruthTech, syndicate, drawShipYard, genXYcoord, infestationLabel, infestationMethods, salvageShip, salvagePin } from './truepath.js';
+import { outerTruthTech, syndicate, drawShipYard, infestationLabel, infestationMethods, salvageShip, salvagePin } from './truepath.js';
 import { production, highPopAdjust } from './prod.js';
 import { defineGovernor, govActive } from './governor.js';
 import { ascend, terraform, apotheosis } from './resets.js';
@@ -2931,6 +2931,7 @@ const spaceProjects = {
     spc_triton: outerTruthTech().spc_triton,
     spc_makemake: outerTruthTech().spc_makemake,
     spc_eris: outerTruthTech().spc_eris,
+    spc_venus: outerTruthTech().spc_venus,
 };
 
 const interstellarProjects = {
@@ -7476,11 +7477,15 @@ function armada(parent,id){
 
         cols[0].append($(`<span></span>`));
         cols[0].append($(`<span id="armadagateway" class="has-text-danger">${galaxyProjects.gxy_gateway.info.name}</span>`));
+        cols[0].attr('aria-hidden', 'true');
 
         for (let i = 0; i < gatewayArmada.length; i++){
             const ship = gatewayArmada[i];
             if (global.galaxy.hasOwnProperty(ship)){
-                cols[i+1].append($(`<span id="armada${ship}" class="ship has-text-advanced">${typeof galaxyProjects.gxy_gateway[ship].title === 'string' ? galaxyProjects.gxy_gateway[ship].title : galaxyProjects.gxy_gateway[ship].title()}</span>`));
+                let shipTitle = typeof galaxyProjects.gxy_gateway[ship].title === 'string' ? galaxyProjects.gxy_gateway[ship].title : galaxyProjects.gxy_gateway[ship].title();
+                cols[i+1].append($(`<h4 class="is-sr-only">${shipTitle} class</h4>`));
+                cols[i+1].append($(`<span class="is-sr-only">${typeof galaxyProjects.gxy_gateway.info.name === 'string' ? galaxyProjects.gxy_gateway.info.name : galaxyProjects.gxy_gateway.info.name()}: </span>`));
+                cols[i+1].append($(`<span id="armada${ship}" class="ship has-text-advanced" aria-hidden="true">${shipTitle}</span>`));
                 cols[i+1].append($(`<span class="ship">{{ gateway.${ship} }}</span>`));
             }
         }
@@ -7495,10 +7500,11 @@ function armada(parent,id){
                 for (let i = 0; i < gatewayArmada.length; i++){
                     const ship = gatewayArmada[i];
                     if (global.galaxy.hasOwnProperty(ship)){
+                        let areaLabel = typeof galaxyProjects[area].info.name === 'string' ? galaxyProjects[area].info.name : galaxyProjects[area].info.name();
                         let shipSpan = $(`<span class="ship"></span>`);
-                        let sub = $(`<span role="button" aria-label="remove ${ship}" class="sub has-text-danger" @click="sub('${area}','${ship}')"><span>&laquo;</span></span>`);
+                        let sub = $(`<span role="button" aria-label="remove ${loc('galaxy_' + ship)} from ${areaLabel}" class="sub has-text-danger" @click="sub('${area}','${ship}')"><span>&laquo;</span></span>`);
                         let count = $(`<span class="current">{{ ${r}.${ship} }}</span>`);
-                        let add = $(`<span role="button" aria-label="add ${ship}" class="add has-text-success" @click="add('${area}','${ship}')"><span>&raquo;</span></span>`);
+                        let add = $(`<span role="button" aria-label="add ${loc('galaxy_' + ship)} to ${areaLabel}" class="add has-text-success" @click="add('${area}','${ship}')"><span>&raquo;</span></span>`);
                         cols[i+1].append(shipSpan);
                         shipSpan.append(sub);
                         shipSpan.append(count);
@@ -7694,6 +7700,14 @@ const advancedSolarBodies = truepathBodies.filter(b => b.adv).map(b => b.field);
 // Base TP3 outer solar locations
 const truepathSolarBodies = truepathBodies.map(b => b.field);
 
+// Every world the lab names, for hanging a popover on each field
+const labSolarBodies = ['home','red','hell','gas','gas_moon','dwarf'].concat(truepathSolarBodies);
+
+// Field label, wrapped so its popover has something to attach to
+function bodyLabel(field){
+    return `<span id="genelabBody-${field}">${loc(`genelab_${field}`)}</span>`;
+}
+
 // The genus whose names a genome falls back on. A hybrid has no naming set of its own, so it
 // borrows its first half's; anything the table does not cover lands on humanoid.
 function genomeNamer(genome){
@@ -7836,7 +7850,7 @@ export function setUniverse(){
 
         $('#evolution').append(parent);
 
-        let srDescButton = $(`<a class="is-sr-only" role="button">${universe_types[universe].name} description</a>`);
+        let srDescButton = $(`<a class="is-sr-only" role="button">${universe_types[universe].name()} description</a>`);
         $('#evolution').append(srDescButton);
 
         $('#'+id).on('click',function(){
@@ -7972,27 +7986,24 @@ export function ascendLab(hybrid,wiki){
         `);
     }
 
-    let name = $(`<div class="fields"><div class="name textInput">${loc('genelab_name')} <b-input v-model="g.name" maxlength="20"></b-input></div><div class="entity textInput">${loc('genelab_entity')} <b-input v-model="g.entity" maxlength="40"></b-input></div><div class="name textInput">${loc('genelab_home')} <b-input v-model="g.home" maxlength="20"></b-input></div> <div class="textInput">${loc('genelab_desc')} <b-input v-model="g.desc" maxlength="255"></b-input></div></div>`);
+    let name = $(`<div class="fields"><div class="name textInput">${loc('genelab_name')} <b-input v-model="g.name" maxlength="20"></b-input></div><div class="entity textInput">${loc('genelab_entity')} <b-input v-model="g.entity" maxlength="40"></b-input></div><div class="name textInput">${bodyLabel('home')} <b-input v-model="g.home" maxlength="20"></b-input></div> <div class="textInput">${loc('genelab_desc')} <b-input v-model="g.desc" maxlength="255"></b-input></div></div>`);
     lab.append(name);
 
     let planets = $(`<div class="fields">
-        <div class="name textInput">${loc('genelab_red')} <b-input v-model="g.red" maxlength="20"></b-input></div>
-        <div class="name textInput">${loc('genelab_hell')} <b-input v-model="g.hell" maxlength="20"></b-input></div>
-        <div class="name textInput">${loc('genelab_gas')} <b-input v-model="g.gas" maxlength="20"></b-input></div>
-        <div class="name textInput">${loc('genelab_gas_moon')} <b-input v-model="g.gas_moon" maxlength="20"></b-input></div>
-        <div class="name textInput">${loc('genelab_dwarf')} <b-input v-model="g.dwarf" maxlength="20"></b-input></div></div>`);
+        <div class="name textInput">${bodyLabel('red')} <b-input v-model="g.red" maxlength="20"></b-input></div>
+        <div class="name textInput">${bodyLabel('hell')} <b-input v-model="g.hell" maxlength="20"></b-input></div>
+        <div class="name textInput">${bodyLabel('gas')} <b-input v-model="g.gas" maxlength="20"></b-input></div>
+        <div class="name textInput">${bodyLabel('gas_moon')} <b-input v-model="g.gas_moon" maxlength="20"></b-input></div>
+        <div class="name textInput">${bodyLabel('dwarf')} <b-input v-model="g.dwarf" maxlength="20"></b-input></div></div>`);
     lab.append(planets);
 
     let tpHeader = $(`<div class="fields tpMode"><span class="has-text-caution">${loc('genelab_truepath')}</span> <button class="button tpmode" @click="advanced()">{{ advLabel() }}</button></div>`);
     lab.append(tpHeader);
 
-    // One block in solar order (see truepathBodies). The advanced entries hide themselves rather
-    // than living in a block of their own, so switching to Advanced opens them up in place among the
-    // four that are always shown instead of appending a second list underneath.
-    let tpPlanets = `<div class="fields">`;
+    let tpPlanets = `<div class="fields" :class="{ advFields: adv.on }">`;
     truepathBodies.forEach(function(body){
         let advOnly = body.adv ? ` v-show="adv.on"` : ``;
-        tpPlanets += `<div class="name textInput tp"${advOnly}>${loc(`genelab_${body.field}`)} <b-input v-model="g.${body.field}" maxlength="20"></b-input></div>`;
+        tpPlanets += `<div class="name textInput tp"${advOnly}>${bodyLabel(body.field)} <b-input v-model="g.${body.field}" maxlength="20"></b-input></div>`;
     });
     tpPlanets += `</div>`;
     lab.append($(tpPlanets));
@@ -8600,6 +8611,12 @@ export function ascendLab(hybrid,wiki){
             wide: true
         });
     }
+
+    // What each world you can rename actually is. Bound after the mount, since Vue builds the
+    // fields from the template and replaces whatever was there before it.
+    labSolarBodies.forEach(function(body){
+        popover(`genelabBody-${body}`, loc(`genelab_body_${body}`));
+    });
 
     Object.keys(unlockedTraits).sort().forEach(function (trait){
         if (traits.hasOwnProperty(trait) && traits[trait].type === 'major'){

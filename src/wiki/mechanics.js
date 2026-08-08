@@ -9,7 +9,7 @@ import { universe_types } from './../space.js';
 import { swissKnife } from './../tech.js';
 import { actions, structName } from './../actions.js';
 import { astroVal, astrologySign } from './../seasons.js';
-import { shipAttackPower, sensorRange, shipCrewSize, shipPower, zWarfareVars } from './../truepath.js';
+import { shipAttackPower, sensorRange, shipCrewSize, shipPower, zWarfareVars, fleetVars } from './../truepath.js';
 import { sideMenu, infoBoxBuilder, createRevealSection, createCalcSection, getSolarName } from './functions.js';
 
 export function mechanicsPage(content){
@@ -869,7 +869,27 @@ export function mechanicsPage(content){
         tpShipsScanCalc(scan_calc);
         let intel_calc = createCalcSection(tp_ships_sensors,'mechanics','tp_ships_intel',loc('space_scan_effectiveness'));
         tpShipsIntelCalc(intel_calc);
-        
+
+        { // Fleets
+            // Read from the live command table, so retuning the hulls retunes the documentation too.
+            let f = fleetVars();
+            let fpct = v => `${+(v * 100).toFixed(1)}%`;
+            let fleets = infoBoxBuilder(tp_ships,{ name: 'tp_ships_fleets', template: 'mechanics', label: loc('wiki_mechanics_tp_ships_fleets'), paragraphs: 5, break: [3], h_level: 2,
+                para_data: {
+                    1: [loc('tech_fleet_command')],
+                    2: [loc('outer_shipyard_fleet_flagship'),f.hulls.cruiser.cmd],
+                    3: [fpct(f.hulls.cruiser.buff),fpct(f.hulls.cruiser.soak),fpct(f.hulls.destroyer.buff),fpct(f.hulls.destroyer.soak)],
+                    4: [fpct(f.hulls.corvette.speed)],
+                    5: [loc('outer_shipyard_class_explorer')]
+                }
+            });
+
+            let fleet_reveal = createRevealSection(fleets,'mechanics','tp_ships_fleets_hulls',loc('wiki_mechanics_tp_ships_fleets_hulls'));
+            Object.keys(f.hulls).forEach(function(cls){
+                fleet_reveal.append(`<div><span class="has-text-caution">${loc('outer_shipyard_class_'+cls)}</span>: <span class="has-text-warning">${loc('wiki_mechanics_tp_ships_fleets_hull',[f.hulls[cls].cmd,f.hulls[cls].cost])}</span></div>`);
+            });
+        }
+
         sideMenu('add',`mechanics-gameplay`,`tp_ships`,loc('wiki_mechanics_tp_ships'));
     }
 
@@ -983,7 +1003,7 @@ export function mechanicsPage(content){
         { // Earth shooting back, and the standing orders
             infoBoxBuilder(zwar,{ name: 'zwar_orders', template: 'mechanics', label: loc('wiki_mechanics_zwar_orders'), paragraphs: 6, break: [3], h_level: 2,
                 para_data: {
-                    1: [z.groundFireDay,getSolarName('home')],
+                    1: [z.groundFireDay,getSolarName('home'),z.groundFireTargets],
                     2: [z.groundFireMin,z.groundFireMax,loc('outer_shipyard_armor')],
                     3: [loc('fleet_cmd'),loc('tab_military')],
                     4: [loc('fleet_cmd_flee_plain'),z.fleetCmd.flee.min,z.fleetCmd.flee.max],
@@ -2914,7 +2934,7 @@ function syndicatePenaltyCalc(info){
                     inputs.ship_security.val = 0;
                     inputs.intel.val = 0;
                     global.space.shipyard.ships.forEach(function(ship){
-                        if (ship.location === 'spc_'+inputs.region.val && ship.transit === 0 && ship.fueled){
+                        if (!ship.inTransit && ship.location.name === 'spc_'+inputs.region.val && ship.fueled){
                             let rating = shipAttackPower(ship);
                             inputs.ship_security.val += ship.damage > 0 ? Math.round(rating * (100 - ship.damage) / 100) : rating;
                             inputs.intel.val += sensorRange(ship);
@@ -3269,6 +3289,7 @@ function tpShipsCostsCalc(info){
                         <b-dropdown-item v-on:click="pickGeneric('weapon', 'plasma')">{{ genericLabel('weapon', 'plasma') }}</b-dropdown-item>
                         <b-dropdown-item v-on:click="pickGeneric('weapon', 'phaser')">{{ genericLabel('weapon', 'phaser') }}</b-dropdown-item>
                         <b-dropdown-item v-on:click="pickGeneric('weapon', 'disruptor')">{{ genericLabel('weapon', 'disruptor') }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('weapon', 'gauss')">{{ genericLabel('weapon', 'gauss') }}</b-dropdown-item>
                     </b-dropdown>
                 </div>
             </div>
@@ -3358,6 +3379,8 @@ function tpShipsCostsCalc(info){
                         return 1.15;
                     case 'disruptor':
                         return 1.2;
+                    case 'gauss':
+                        return 1.25;
                 }
 
         }
@@ -3576,6 +3599,9 @@ function tpShipsCostsCalc(info){
                                 break;
                             case 'disruptor':
                                 resVal = resource === 'Quantium' ? 35000 : 0;
+                                break;
+                            case 'gauss':
+                                resVal = resource === 'Quantium' ? 60000 : resource === 'Iron' ? 40000 : 0;
                                 break;
                         }
                         break;
@@ -3803,6 +3829,7 @@ function tpShipsPowerCalc(info){
                         <b-dropdown-item v-on:click="pickGeneric('weapon', 'plasma')">{{ genericLabel('weapon', 'plasma') }}</b-dropdown-item>
                         <b-dropdown-item v-on:click="pickGeneric('weapon', 'phaser')">{{ genericLabel('weapon', 'phaser') }}</b-dropdown-item>
                         <b-dropdown-item v-on:click="pickGeneric('weapon', 'disruptor')">{{ genericLabel('weapon', 'disruptor') }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('weapon', 'gauss')">{{ genericLabel('weapon', 'gauss') }}</b-dropdown-item>
                     </b-dropdown>
                 </div>
             </div>
@@ -4036,6 +4063,7 @@ function tpShipsFirepowerCalc(info){
                         <b-dropdown-item v-on:click="pickWeapon('plasma')">{{ weaponLabel('plasma') }}</b-dropdown-item>
                         <b-dropdown-item v-on:click="pickWeapon('phaser')">{{ weaponLabel('phaser') }}</b-dropdown-item>
                         <b-dropdown-item v-on:click="pickWeapon('disruptor')">{{ weaponLabel('disruptor') }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickWeapon('gauss')">{{ weaponLabel('gauss') }}</b-dropdown-item>
                     </b-dropdown>
                 </div>
             </div>
@@ -4098,6 +4126,8 @@ function tpShipsFirepowerCalc(info){
                         return 114;
                     case 'disruptor':
                         return 156;
+                    case 'gauss':
+                        return 210;
                     default:
                         return loc('wiki_calc_tp_ships_firepower_weapon');
                 }

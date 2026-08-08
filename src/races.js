@@ -2310,22 +2310,22 @@ export const traits = {
         taxonomy: 'combat',
         val: 6,
         vars(r){
-            // [Combat Rating Bonus, Ambush Avoid]
+            // [Combat Rating Bonus, Ambush Avoid, Zombie Avoid]
             switch (r || traitRank('chameleon') || 1){
                 case 0.1:
-                    return [3,5];
+                    return [3,5,2];
                 case 0.25:
-                    return [5,10];
+                    return [5,10,4];
                 case 0.5:
-                    return [10,15];
+                    return [10,15,6];
                 case 1:
-                    return [20,20];
+                    return [20,20,8];
                 case 2:
-                    return [25,25];
+                    return [25,25,10];
                 case 3:
-                    return [30,30];
+                    return [30,30,12];
                 case 4:
-                    return [35,35];
+                    return [35,35,14];
             }
         },
     },
@@ -4545,22 +4545,22 @@ export const traits = {
         taxonomy: 'combat',
         val: -8,
         vars(r){
-            // [Hell Worse, Piracy Worse, Events Worse]
+            // [Hell Worse, Piracy Worse, Zombies Worse, Events Worse]
             switch (r || traitRank('chicken') || 1){
                 case 0.1:
-                    return [110,20];
+                    return [110,20,20];
                 case 0.25:
-                    return [100,18];
+                    return [100,18,16];
                 case 0.5:
-                    return [75,15];
+                    return [75,15,13];
                 case 1:
-                    return [50,12];
+                    return [50,12,10];
                 case 2:
-                    return [40,9];
+                    return [40,9,8];
                 case 3:
-                    return [30,6];
+                    return [30,6,6];
                 case 4:
-                    return [20,3];
+                    return [20,3,4];
             }
         }
     },

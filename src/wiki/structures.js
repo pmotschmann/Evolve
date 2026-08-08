@@ -143,7 +143,9 @@ const calcInfo = {
             ringworld: 1000,
             alien_station: 100,
             matrioshka_brain: 1000,
-            ignition_device: 10
+            ignition_device: 10,
+            adv_shipyard: 1,
+            mass_relay: 1,
         },
         eden: {
             throne: 1,

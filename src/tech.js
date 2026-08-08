@@ -9,7 +9,7 @@ import { loadFoundry, jobScale, jobName, limitCraftsmen } from './jobs.js';
 import { buildGarrison, checkControlling, govTitle, defineFleetCommand } from './civics.js';
 import { renderSpace, planetName, int_fuel_adjust } from './space.js';
 import { drawHellObservations } from './portal.js';
-import { setOrbits, drawShipYard, jumpGateShutdown, jumpGateRestart, aerographeneSpeedBonus } from './truepath.js';
+import { setOrbits, drawShipYard, jumpGateShutdown, jumpGateRestart, aerographeneSpeedBonus, shipCapacitorSaving } from './truepath.js';
 import { arpa } from './arpa.js';
 import { setPowerGrid, defineIndustry, addSmelter, setupRituals, altReplicatorRes } from './industry.js';
 import { defineGovernor, removeTask } from './governor.js';
@@ -13446,6 +13446,49 @@ const techs = {
             return false;
         }
     },
+    ship_gauss: {
+        id: 'tech-ship_gauss',
+        title(){ return loc('tech_ship_gauss'); },
+        desc(){ return loc('tech_ship_gauss'); },
+        category: 'space_militarization',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { syard_weapon: 6, resettle: 13 },
+        grant: ['syard_weapon',7],
+        cost: {
+            Knowledge(){ return 26250000; },
+            Cipher(){ return 250000; }
+        },
+        effect: loc('tech_ship_gauss_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    ship_capacitor: {
+        id: 'tech-ship_capacitor',
+        title(){ return loc('tech_ship_capacitor'); },
+        desc(){ return loc('tech_ship_capacitor'); },
+        category: 'space_militarization',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { syard_weapon: 1, resettle: 13 },
+        grant: ['syard_capacitor',1],
+        cost: {
+            Knowledge(){ return 25000000; },
+            Positronium(){ return 22500; },
+            Cipher(){ return 175000; }
+        },
+        effect(){ return loc('tech_ship_capacitor_effect',[shipCapacitorSaving()]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     destroyer_ship: {
         id: 'tech-destroyer_ship',
         title(){ return loc('tech_destroyer_ship'); },
@@ -15210,6 +15253,27 @@ const techs = {
             return false;
         }
     },
+    expert_salvage: {
+        id: 'tech-expert_salvage',
+        title(){ return loc('tech_expert_salvage'); },
+        desc(){ return loc('tech_expert_salvage'); },
+        category: 'progress',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { resettle: 14 },
+        grant: ['salvage',1],
+        cost: {
+            Knowledge(){ return 26500000; },
+            Cipher(){ return 100000; }
+        },
+        effect(){ return loc('tech_expert_salvage_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     reconstruction: {
         id: 'tech-reconstruction',
         title(){ return loc('tech_reconstruction'); },
@@ -15218,8 +15282,7 @@ const techs = {
         era: 'matrioshka',
         path: ['truepath'],
         reqs: { resettle: 9, governor: 1 },
-        // Same gate as the governor tech itself — without a governor to hand it to, there is nothing
-        // for a reconstruction directive to direct.
+        // Same gate as the governor tech itself — without a governor to hand it to, there is nothing for a reconstruction directive to direct.
         condition(){
             return global.genes['governor'] && global.civic.govern.type !== 'anarchy' ? true : false;
         },

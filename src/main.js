@@ -5,13 +5,13 @@ import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaT
 import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, cleanRemoveTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobName, jobScale, workerScale, limitCraftsmen, loadServants} from './jobs.js';
-import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, replicatorLines, luxGoodPrice, smelterUnlocked, smelterFuelConfig, setupRituals, maxRitualNum, ritual_types, factoryLines } from './industry.js';
+import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, replicatorLines, luxGoodPrice, smelterUnlocked, smelterFuelConfig, setupRituals, maxRitualNum, ritual_types, factoryLines, factoryCapacity, trimFactoryLines } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
 import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, checkPowerRequirements, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, start_iceage, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct, casino_vault, casinoEarn, doCallbacks, cLabels } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types, spaceSectors } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
-import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, randomCoord, atShipyard, pinSalvage, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, moveShips } from './truepath.js';
+import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYZcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, randomCoord, atShipyard, pinSalvage, beaconsActive, finalBeacons, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, moveShips } from './truepath.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
 import { defineGovernor, govern, govActive, removeTask } from './governor.js';
@@ -3203,7 +3203,8 @@ function fastLoop(){
         if (global.civic.garrison.hasOwnProperty('crew')){
             if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
                 global.space.shipyard.ships.forEach(function(ship){
-                    if (ship.location !== 'spc_dwarf' && ship.location !== 'tau_gas2' || (ship.location === 'spc_dwarf' && ship.transit > 0) || (ship.location === 'tau_gas2' && ship.transit > 0)){
+                    // Anything not sitting in dry dock is crewed and counts against the military.
+                    if (!atShipyard(ship)){
                         crew_mil += shipCrewSize(ship);
                     }
                 });
@@ -4258,10 +4259,12 @@ function fastLoop(){
                 Oil: 0,
                 Helium_3: 0,
                 Uranium: 0,
-                Elerium: 0
+                Elerium: 0,
+                Positronium: 0
             };
             global.space.shipyard.ships.forEach(function(ship){
-                if ((ship.location !== 'spc_dwarf' && ship.location !== 'tau_gas2') || ship.transit !== 0){
+                // A ship in dry dock burns nothing; everything else is running its plant.
+                if (!atShipyard(ship)){
                     let fuel = shipFuelUse(ship);
                     if (fuel.res && fuel.burn > 0){
                         if (fuel.burn * time_multiplier < global.resource[fuel.res].amount + (global.resource[fuel.res].diff > 0 ? global.resource[fuel.res].diff * time_multiplier : 0)){
@@ -4283,6 +4286,7 @@ function fastLoop(){
             breakdown.p.consume.Helium_3[loc('outer_shipyard_fleet')] = -(fuels.Helium_3);
             breakdown.p.consume.Uranium[loc('outer_shipyard_fleet')] = -(fuels.Uranium);
             breakdown.p.consume.Elerium[loc('outer_shipyard_fleet')] = -(fuels.Elerium);
+            breakdown.p.consume.Positronium[loc('outer_shipyard_fleet')] = -(fuels.Positronium);
         }
 
         if (global.race['emfield']){
@@ -4679,23 +4683,11 @@ function fastLoop(){
                 + ((p_on['int_factory'] || 0) * 2)
                 + ((p_on['hell_factory'] || 0) * actions.portal.prtl_wasteland.hell_factory.lines())
                 + ((support_on['tau_factory'] || 0) * (global.tech['isolation'] ? 5 : 3));
-            let max_factories = global.city['factory'].on
-                + (global.space['red_factory'] ? global.space['red_factory'].on : 0)
-                + (global.interstellar['int_factory'] ? global.interstellar['int_factory'].on * 2 : 0)
-                + (global.portal['hell_factory'] ? global.portal['hell_factory'].on * actions.portal.prtl_wasteland.hell_factory.lines() : 0)
-                + (global.tauceti['tau_factory'] ? global.tauceti['tau_factory'].on * (global.tech['isolation'] ? 5 : 3) : 0);
+            let max_factories = factoryCapacity();
             let eff = max_factories > 0 ? on_factories / max_factories : 0;
-            let remaining = max_factories;
 
             let hold = global.city.factory['hold'];
-            factoryLines.forEach(function(res){
-                remaining -= global.city.factory[res];
-                if (remaining < 0) {
-                    if (hold){ hold[res] -= remaining; }   // remaining is negative: banks what was cut
-                    global.city.factory[res] += remaining;
-                    remaining = 0;
-                }
-            });
+            let remaining = trimFactoryLines(max_factories);
 
             if (hold && remaining > 0 && max_factories > global.city.factory.cap){
                 let room = Math.min(remaining, max_factories - global.city.factory.cap);
@@ -10747,7 +10739,7 @@ function midLoop(){
             global.tauceti.overseer.loyal = loyal;
             global.tauceti.overseer.morale = morale;
             global.tauceti.overseer.pop = pop;
-            global.tauceti.overseer.working = farmers + miners + scientist;
+            global.tauceti.overseer.working = farmers + miners + scientist + artisan;
             global.tauceti.overseer.injured = injured;
             global.tauceti.overseer.prod = prod;
         }
@@ -12750,25 +12742,33 @@ function longLoop(){
                 let eScan = 0;
                 let tScan = 0;
                 let tShip = false;
+
+                // Repair cadence. A yard has the ship in dry dock and works it every day; a crew out in
+                // the field can only get to it every other day, on even ones. Ths means dry docked ships
+                // are effectively repaired 6 times faster
+                const yardRepair = 3;
+                const fieldRepair = 1;
+                let dayStep = webWorker.offline ? webWorker.offlineScale : 1;
+                let fieldDays = Math.floor(global.stats.days / 2) - Math.floor((global.stats.days - dayStep) / 2);
+
                 // Hulls under way are advanced by moveShips (see truepath.js), which midLoop drives in
                 // fifth-of-a-day steps so they cross the map smoothly instead of a day at a time. By
                 // the time this runs, `transit` is the same whole number of days it always was.
                 global.space.shipyard.ships.forEach(function(ship){
-                    if (ship.transit === 0){
-                        ship.xy = genXYcoord(ship.location);
-                        ship.origin = deepClone(ship.xy);
-                        ship.dist = 0;
-                        if (ship.path){ ship.path = false; }
+                    if (!ship.inTransit){
+                        ship.location.position = genXYZcoord(ship.location.name);
                     }
                     if (ship.damage > 0 && (p_on['shipyard'] || p_on['adv_shipyard'])){
-                        // In dry dock the crews have the yard's facilities, so repairs go twice as fast.
-                        ship.damage -= atShipyard(ship) ? 2 : 1;
+                        // In dry dock the crews have the yard's facilities and work the hull daily;
+                        // anywhere else it is patched up every other day (see the cadence above).
+                        ship.damage -= atShipyard(ship) ? yardRepair * dayStep : fieldRepair * fieldDays;
                         if (ship.damage < 0){ ship.damage = 0; }
                     }
                     // Wear and tear finds ships everywhere except inside a yard; being under way counts
                     // as exposed even on the leg home.
                     if (!atShipyard(ship) && Math.rand(0, 10) === 0){
-                        let dm = ship.location === 'spc_triton' ? 2 : 1;
+                        // A ship under way wears by where it is bound; one parked, by where it sits.
+                        let dm = (ship.inTransit ? ship.destination.name : ship.location.name) === 'spc_triton' ? 2 : 1;
                         switch (ship.armor){
                             case 'steel':
                                 ship.damage += Math.rand(1, 8 * dm);
@@ -12782,10 +12782,10 @@ function longLoop(){
                         }
                         if (ship.damage > 90){ ship.damage = 90; }
                     }
-                    if (global.tech.hasOwnProperty('eris_scan') && ship.location === 'spc_eris' && ship.transit === 0){
+                    if (global.tech.hasOwnProperty('eris_scan') && !ship.inTransit && ship.location.name === 'spc_eris'){
                         eScan += sensorRange(ship);
                     }
-                    if (global.tech.hasOwnProperty('tauceti') && ship.location === 'tauceti' && ship.transit === 0){
+                    if (global.tech.hasOwnProperty('tauceti') && !ship.inTransit && ship.location.name === 'tauceti'){
                         tScan += sensorRange(ship);
                         tShip = ship.name;
                     }
@@ -13215,7 +13215,7 @@ function longLoop(){
             trackInfestation();
 
             // Scout Sun Gate
-            if (global.tech.resettle === 3 && global.space.shipyard.ships.some(s => s.location === 'spc_sun_gate' && s.transit === 0)){
+            if (global.tech.resettle === 3 && global.space.shipyard.ships.some(s => !s.inTransit && s.location.name === 'spc_sun_gate')){
                 global.tech.resettle = 4;
                 global.settings.showSpace = true;
                 global.settings.spaceTabs = 1;
@@ -13224,7 +13224,7 @@ function longLoop(){
             }
 
             // Scout Earth
-            if (global.tech.resettle === 7 && global.space.shipyard.ships.some(s => s.location === 'spc_home' && s.transit === 0)){
+            if (global.tech.resettle === 7 && global.space.shipyard.ships.some(s => !s.inTransit && s.location.name === 'spc_home')){
                 global.tech.resettle = 8;
                 global.settings.space.home = true;
                 renderSpace();
@@ -13232,7 +13232,7 @@ function longLoop(){
             }
 
             // Scout Moon
-            if (global.tech.resettle >= 7 && !global.race['orbit_decayed'] && global.tech.luna === 2 && global.space.shipyard.ships.some(s => s.location === 'spc_moon' && s.transit === 0)){
+            if (global.tech.resettle >= 7 && !global.race['orbit_decayed'] && global.tech.luna === 2 && global.space.shipyard.ships.some(s => !s.inTransit && s.location.name === 'spc_moon')){
                 global.tech.luna = 3;
                 global.settings.space.moon = true;
                 renderSpace();
@@ -13240,7 +13240,7 @@ function longLoop(){
             }
 
             // Scout Mars
-            if (global.tech.resettle >= 7 && global.tech['mars'] && global.tech.mars === 5 && global.space.shipyard.ships.some(s => s.location === 'spc_red' && s.transit === 0)){
+            if (global.tech.resettle >= 7 && global.tech['mars'] && global.tech.mars === 5 && global.space.shipyard.ships.some(s => !s.inTransit && s.location.name === 'spc_red')){
                 global.tech.mars = 6;
                 global.settings.space.red = true;
                 renderSpace();
@@ -13256,7 +13256,7 @@ function longLoop(){
             }
 
             // Scout Mercury
-            if (global.tech.resettle >= 9 && global.tech['hell'] && global.tech.hell === 1 && global.space.shipyard.ships.some(s => s.location === 'spc_hell' && s.transit === 0)){
+            if (global.tech.resettle >= 9 && global.tech['hell'] && global.tech.hell === 1 && global.space.shipyard.ships.some(s => !s.inTransit && s.location.name === 'spc_hell')){
                 global.tech.hell = 2;
                 global.settings.space.hell = true;
                 // Reserve the wreck the Mercury salvage will offer, the same way the sun gate one is
@@ -13268,7 +13268,7 @@ function longLoop(){
             }
 
             // Scout Ceres
-            if (global.tech.resettle >= 14 && global.tech['dwarf'] && global.tech.dwarf === 1 && global.space.shipyard.ships.some(s => s.location === 'spc_dwarf' && s.transit === 0)){
+            if (global.tech.resettle >= 14 && global.tech['dwarf'] && global.tech.dwarf === 1 && global.space.shipyard.ships.some(s => !s.inTransit && s.location.name === 'spc_dwarf')){
                 global.tech.dwarf = 2;
                 global.settings.space.dwarf = true;
                 // Reserve the wreck the Ceres salvage will offer, the same way the sun gate one is
@@ -13280,9 +13280,13 @@ function longLoop(){
             }
 
             // Investigate Activity
-            if (global.tech.dwarf >= 3 && global.tech.resettle === 14){
-                //global.tech.resettle = 15;
-                //messageQueue(loc('scout_activity'),'info',false,['progress']);
+            if (global.tech.dwarf >= 3 && global.tech.resettle === 14 && !beaconsActive() && Math.rand(0,100) <= 10){
+                global.tech.resettle = 15;
+                global.tech['venus'] = 1;
+                global.settings.space.venus = true;
+                finalBeacons();
+                messageQueue(loc('scout_activity',[planetName().venus]),'info',false,['progress']);
+                renderSpace();
             }
 
             // Detect Signals
@@ -13303,11 +13307,14 @@ function longLoop(){
                 messageQueue(loc('scout_signal_found'),'info',false,['progress']);
                 renderSpace();
             }
-            else if (global.tech.resettle >= 9 && global.space.shipyard.ships.some(s => s.location.startsWith('beacon') && s.transit === 0 && global.race.tempCoordinates.hasOwnProperty(s.location) && global.race.tempCoordinates[s.location].a)){
+            else if (global.tech.resettle >= 9){
                 global.space.shipyard.ships.forEach(s => {
-                    if (s.location.startsWith('beacon') && s.transit === 0 && global.race.tempCoordinates.hasOwnProperty(s.location) && global.race.tempCoordinates[s.location].a){
-                        global.race.tempCoordinates[s.location].a = false;
-                        salvageShip(1,global.race.tempCoordinates[s.location].n,'tau_gas2',true,global.race.tempCoordinates[s.location].d);
+                    if (!s.inTransit && s.location.name.startsWith('beacon') 
+                                     && global.race.tempCoordinates.hasOwnProperty(s.location.name) 
+                                     && global.race.tempCoordinates[s.location.name].a){
+                                        
+                        global.race.tempCoordinates[s.location.name].a = false;
+                        salvageShip(1,global.race.tempCoordinates[s.location.name].n,'tau_gas2',true,global.race.tempCoordinates[s.location.name].d);
                     }
                 });
             }

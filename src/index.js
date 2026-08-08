@@ -1368,7 +1368,7 @@ export function index(){
     tabs.append(settings);
 
     // (Hidden Last Tab) Hell Observation Tab
-    let observe = $(`<b-tab-item disabled>
+    let observe = $(`<b-tab-item disabled header-class="hiddenObserveTab">
         <template #header></template>
         <div id="mTabObserve"></div>
     </b-tab-item>`);
