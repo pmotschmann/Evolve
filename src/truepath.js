@@ -11871,9 +11871,16 @@ function shipDispatchModal(id, modal){
         dests = dests.filter(d => reachable.has(d.region));
     }
 
-    // A hull under the launch minimum holds the ship in dry dock 
+    // Crew check
+    let crewNeed = group.reduce((t,s) => t + (shipManned(s) ? 0 : shipCrewSize(s)), 0);
+    let crewFree = Math.max(0, global.civic.garrison.workers - global.civic.garrison.crew);
+
+    // A hull under the launch minimum holds the ship in dry dock
     if (group.some(s => !shipCanLaunch(s))){
         list.append(`<span class="has-text-danger">${loc('outer_shipyard_dispatch_damaged',[minHullToLaunch])}</span>`);
+    }
+    else if (crewNeed > crewFree){
+        list.append(`<span class="has-text-danger">${loc(group.length > 1 ? 'outer_shipyard_dispatch_crew_fleet' : 'outer_shipyard_dispatch_crew',[crewNeed,crewFree])}</span>`);
     }
     else if (dests.length === 0){
         list.append(`<span class="has-text-caution">${loc('outer_shipyard_dispatch_none')}</span>`);

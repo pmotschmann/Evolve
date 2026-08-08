@@ -8303,6 +8303,8 @@
   "outer_shipyard_fleet": "Fleet",
   "outer_shipyard_fleet_map": "Fleet (%0)",
   "outer_shipyard_dispatch_damaged": "Too damaged to leave dry dock. Repairs must bring the hull to %0% before it can be dispatched from a repair yard.",
+  "outer_shipyard_dispatch_crew": "Not enough soldiers available to crew this ship. It needs a crew of %0 and only %1 are free.",
+  "outer_shipyard_dispatch_crew_fleet": "Not enough soldiers available to crew this fleet. It needs a crew of %0 and only %1 are free.",
   "outer_shipyard_fleet_details": "Ship Details",
   "outer_shipyard_fleet_sort": "Auto Sort",
   "outer_shipyard_class_corvette": "Corvette",
