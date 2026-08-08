@@ -1549,7 +1549,7 @@ if (!global.hasOwnProperty('support')){
 
 [
     'moon','red','belt','alpha','nebula','gateway','alien2','lake','spire',
-    'titan','enceladus','eris','tau_home','tau_red','tau_roid','asphodel'
+    'titan','enceladus','eris','venus','tau_home','tau_red','tau_roid','asphodel'
 ].forEach(function(s){
     if (!global.support.hasOwnProperty(s)){
         global.support[s] = [];

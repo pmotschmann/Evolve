@@ -50,13 +50,12 @@ const achieve_list = {
     ],
 };
 
-// Zombie Genocider is a checklist rather than a ladder: each task can be finished in any order and the
-// rank is however many are done. Tasks 3 to 5 are not defined yet, so the ceiling is currently 2.
+// Zombie Genocider is a task list; rank is however many are done. 
+// Tasks 4 and 5 are not defined yet, so the ceiling is currently 3.
 const zombieGenociderKills = 53594;
 export const zombieGenociderTasks = ['z1','z2','z3','z4','z5'];
 
-// Mark one of the tasks complete. Called from wherever the objective actually happens; the rank is
-// recounted by checkAchievements. Mirrors how the Banana Smoothie tasks record themselves.
+// Mark one of the tasks complete. Called from wherever the objective actually happens; the rank is recounted by checkAchievements. 
 export function zombieGenociderTask(task){
     if (!global.stats.hasOwnProperty('zombie_genocider') || !global.stats.zombie_genocider.hasOwnProperty(task)){ return; }
     let affix = universeAffix();

@@ -14946,6 +14946,29 @@ const techs = {
             return false;
         }
     },
+    venus_foothold: {
+        id: 'tech-venus_foothold',
+        title(){ return loc('tech_venus_foothold',[planetName().venus]); },
+        desc(){ return loc('tech_venus_foothold',[planetName().venus]); },
+        category: 'progress',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { venus: 3 },
+        grant: ['venus',4],
+        cost: {
+            Knowledge(){ return 27000000; }
+        },
+        effect(){ return loc('tech_venus_foothold_effect',[planetName().venus]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.space.spc_venus.cloud_city);
+                messageQueue(loc('tech_venus_foothold_msg',[3]),'info',false,['progress']);
+                renderSpace();
+                return true;
+            }
+            return false;
+        }
+    },
     expert_salvage: {
         id: 'tech-expert_salvage',
         title(){ return loc('tech_expert_salvage'); },

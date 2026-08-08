@@ -2497,6 +2497,7 @@ function fastLoop(){
             { a: 'space', r: 'spc_titan', s: 'electrolysis', g: 'titan' },
             { a: 'space', r: 'spc_titan', r2: 'spc_enceladus', s: 'titan_spaceport', g: 'enceladus' },
             { a: 'space', r: 'spc_eris', s: 'drone_control', g: 'eris' },
+            { a: 'space', r: 'spc_venus', s: 'cloud_city', g: 'venus' },
             { a: 'tauceti', r: 'tau_home', s: 'orbital_station', g: 'tau_home' },
             { a: 'tauceti', r: 'tau_red', s: 'orbital_platform', g: 'tau_red' },
             { a: 'tauceti', r: 'tau_roid', s: 'patrol_ship', g: 'tau_roid', oc: true },
@@ -10798,11 +10799,11 @@ function midLoop(){
             global.race.servants.used = total_servants;
         }
 
-        // Womling artisans lend a skilled pair of hands each. They are temporary in the sense that the
-        // capacity follows the job — lose the craftworks or the population and it goes away — so the
-        // permanent allowance is kept in sbase and the total rebuilt from it every tick.
+        // Womling artisans
         {
             let artisans = womlingArtisans();
+            let hadSkilled = global.race['servants'] && global.race.servants.smax > 0 ? true : false;
+
             if (global.race['servants']){
                 if (!global.race.servants.hasOwnProperty('sbase')){
                     global.race.servants['sbase'] = global.race.servants.smax || 0;
@@ -10810,8 +10811,13 @@ function midLoop(){
                 global.race.servants.smax = global.race.servants.sbase + artisans;
             }
             else if (artisans > 0){
-                // No servants of your own yet — the artisans alone are enough to open the workshop.
+                // Womlings are first servants
                 global.race['servants'] = { max: 0, used: 0, sbase: 0, smax: artisans, sused: 0, jobs: {}, sjobs: {}, force_scavenger: false };
+            }
+
+            let hasSkilled = global.race['servants'] && global.race.servants.smax > 0 ? true : false;
+            if (hadSkilled !== hasSkilled){
+                loadFoundry();
             }
         }
 
@@ -12727,6 +12733,8 @@ function longLoop(){
                 };
             }
             messageQueue((womlings + skilled) === 1 ? loc('civics_servants_msg1') : loc('civics_servants_msg2',[womlings + skilled]),'caution',false,['events','major_events']);
+            loadServants();
+            loadFoundry();
         }
 
         if (global.race['truepath'] && global.tech['focus_cure'] && global.tech.focus_cure >= 2 && global.tauceti['infectious_disease_lab']){
@@ -13152,9 +13160,23 @@ function longLoop(){
                 global.tech.resettle = 15;
                 global.tech['venus'] = 1;
                 global.settings.space.venus = true;
+                initStruct(actions.space.spc_venus.cloud_city);
                 finalBeacons();
                 messageQueue(loc('scout_activity',[planetName().venus]),'info',false,['progress']);
                 renderSpace();
+            }
+
+            // Scout Venus
+            // A quantum scanner is required to pin point the location of the anomoly.
+            if (global.tech['venus'] && global.tech.venus < 3 && global.space.shipyard.ships.some(s => !s.inTransit && s.location.name === 'spc_venus')){
+                if (global.space.shipyard.ships.some(s => !s.inTransit && s.location.name === 'spc_venus' && s.sensor === 'quantum')){
+                    global.tech.venus = 3;
+                    messageQueue(loc('scout_venus_outpost',[planetName().venus,planetName().home,loc('tech_alien_outpost')]),'info',false,['progress']);
+                }
+                else if (global.tech.venus === 1){
+                    global.tech.venus = 2;
+                    messageQueue(loc('scout_venus_signal',[planetName().venus,loc('outer_shipyard_sensor_quantum')]),'info',false,['progress']);
+                }
             }
 
             // Detect Signals

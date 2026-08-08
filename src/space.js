@@ -7135,8 +7135,10 @@ function space(zone){
                 // The horde readout follows the support line when there is one.
                 let infest = infestationLabel(region);
 
-                if (spaceProjects[region].info['support']){
-                    let support = spaceProjects[region].info['support'];
+                let support = spaceProjects[region].info['support'];
+                if (support && !global.space[support]){ support = false; }
+
+                if (support){
                     if (!global.space[support].hasOwnProperty('support')){
                         global.space[support]['support'] = 0;
                         global.space[support]['s_max'] = 0;
