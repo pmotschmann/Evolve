@@ -4,7 +4,7 @@ import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, c
 import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, resetResBuffer, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone, exceededATimeThreshold, loopTimers, getWeaselTechLevelRequirement, calcQuantumLevel, drawPet } from './functions.js';
 import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, cleanRemoveTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
-import { defineJobs, job_desc, loadFoundry, farmerValue, jobName, jobScale, workerScale, limitCraftsmen, loadServants} from './jobs.js';
+import { defineJobs, job_desc, loadFoundry, farmerValue, jobName, jobScale, workerScale, limitCraftsmen, loadServants, craftsmanCap } from './jobs.js';
 import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, replicatorLines, luxGoodPrice, smelterUnlocked, smelterFuelConfig, setupRituals, maxRitualNum, ritual_types, factoryLines, factoryCapacity, trimFactoryLines } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
 import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, checkPowerRequirements, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct, casino_vault, casinoEarn, doCallbacks, cLabels } from './actions.js';
@@ -11239,20 +11239,57 @@ function midLoop(){
         }
 
         if (global.city['foundry']){
+            if (!global.city.foundry.hasOwnProperty('hold')){ global.city.foundry['hold'] = {}; }
+            if (!global.city.foundry.hasOwnProperty('cap')){ global.city.foundry['cap'] = global.civic.craftsman.max || 0; }
+            if (!global.city.foundry.hasOwnProperty('rcap')){ global.city.foundry['rcap'] = {}; }
+            let hold = global.city.foundry.hold;
+            let rcap = global.city.foundry.rcap;
+
             let fworkers = global.civic.craftsman.workers;
+            // Don't hold Plywood if player has no Plywood resource
             if ((global.race['kindling_kindred'] || global.race['smoldering']) && global.city.foundry['Plywood'] > 0){
                 global.civic.craftsman.workers -= global.city.foundry['Plywood'];
                 global.city.foundry.crafting -= global.city.foundry['Plywood'];
                 global.city.foundry['Plywood'] = 0;
+                hold['Plywood'] = 0;
             }
             let craft_costs = craftCost();
             Object.keys(craft_costs).forEach(function (craft){
+                // Crafters cut loose because the building employing them was razed or switched off.
                 while (global.city.foundry[craft] > fworkers && global.city.foundry[craft] > 0){
                     global.city.foundry[craft]--;
                     global.city.foundry.crafting--;
+                    hold[craft] = (hold[craft] || 0) + 1;
                 }
                 fworkers -= global.city.foundry[craft];
             });
+
+            // Capacity has gbeen restored
+            let roomier = global.civic.craftsman.max > global.city.foundry.cap;
+            let dJob = global.civic[global.civic.d_job];
+            let restored = false;
+            Object.keys(craft_costs).forEach(function (craft){
+                let capped = ['Scarletite','Quantium'].includes(craft);
+                let ceiling = capped ? craftsmanCap(craft) : -1;
+                let reopened = capped && ceiling > (rcap.hasOwnProperty(craft) ? rcap[craft] : ceiling);
+                if (roomier || reopened){
+                    while ((hold[craft] || 0) > 0
+                        && typeof global.city.foundry[craft] === 'number'
+                        && global.city.foundry.crafting < global.civic.craftsman.max
+                        && dJob && dJob.workers > 0
+                        && (ceiling === -1 || global.city.foundry[craft] < ceiling)){
+                        global.city.foundry[craft]++;
+                        global.city.foundry.crafting++;
+                        global.civic.craftsman.workers++;
+                        dJob.workers--;
+                        hold[craft]--;
+                        restored = true;
+                    }
+                }
+                if (capped){ rcap[craft] = ceiling; }
+            });
+            if (restored){ loadFoundry(); }
+            global.city.foundry.cap = global.civic.craftsman.max;
         }
 
         if (global.tech['foundry'] === 3 && (global.race['kindling_kindred'] || global.race['smoldering'])){

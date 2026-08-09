@@ -6919,6 +6919,10 @@ function releaseResource(res) {
         global.civic.craftsman.workers -= global.city.foundry[res];
         global.city.foundry.crafting -= global.city.foundry[res];
         global.city.foundry[res] = 0;
+        // This material is being taken away entirely, so anyone banked against it is not coming back.
+        if (global.city.foundry.hasOwnProperty('hold')){
+            delete global.city.foundry.hold[res];
+        }
         loadFoundry();
     }
     if (global.resource[res].hasOwnProperty('trade')) {

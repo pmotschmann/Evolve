@@ -781,6 +781,10 @@ export function limitCraftsmen(res, allow_redraw = true){
         global.civic.craftsman.workers -= diff;
         global.city.foundry.crafting -= diff;
         global.city.foundry[res] -= diff;
+        // The structures hosting this material were razed or switched off.
+        if (global.city.foundry.hasOwnProperty('hold')){
+            global.city.foundry.hold[res] = (global.city.foundry.hold[res] || 0) + diff;
+        }
         refresh = true;
     }
     else if (!tmp_vars['craftsman_cap'].hasOwnProperty(res)){

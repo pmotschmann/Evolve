@@ -2226,6 +2226,18 @@ if (!global['arpa']){
     global['arpa'] = {};
 }
 
+if (global.city['foundry']){
+    if (!global.city.foundry.hasOwnProperty('hold')){
+        global.city.foundry['hold'] = {};
+    }
+    if (!global.city.foundry.hasOwnProperty('cap')){
+        global.city.foundry['cap'] = 0;
+    }
+    if (!global.city.foundry.hasOwnProperty('rcap')){
+        global.city.foundry['rcap'] = {};
+    }
+}
+
 if (global.city['factory']){
     // Production lines shut down when factory capacity was lost,
     if (!global.city.factory.hasOwnProperty('hold')){

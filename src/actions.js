@@ -2808,6 +2808,9 @@ export const actions = {
                         Aerographene: 0,
                         Scarletite: 0,
                         Quantium: 0,
+                        hold: {},
+                        cap: 0,
+                        rcap: {},
                     },
                     p: ['foundry','city']
                 };

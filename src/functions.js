@@ -3252,6 +3252,9 @@ export function eventActive(event,val){
                     global.civic.craftsman.workers -= global.city.foundry['Thermite'];
                     global.civic[global.civic.d_job].workers += global.city.foundry['Thermite'];
                     delete global.city.foundry['Thermite'];
+                    if (global.city.foundry.hasOwnProperty('hold')){
+                        delete global.city.foundry.hold['Thermite'];
+                    }
                 }
                 return false;
             }

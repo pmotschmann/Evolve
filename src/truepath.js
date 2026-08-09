@@ -129,9 +129,7 @@ const outerTruth = {
                 return `${support}<div class="has-text-caution">${loc('space_electrolysis_use',[$(this)[0].support_fuel().a,global.resource.Water.name,$(this)[0].powered()])}</div>`;
             },
             support(wiki){
-                // Positronium electrolysis splits water harder than the AI core ever managed at it. Either
-                // upgrade takes the plant to three and they do not stack — which matters on the resettle
-                // path, where the AI cores are gone by the time this tech is reachable.
+                // Positronium electrolysis or AI core upgrade. These are mutually exclusive.
                 if (global.tech['titan'] && global.tech.titan >= 11){ return 3; }
                 return global.tech['titan_ai_core'] && global.tech.titan_ai_core >= 2 && (wiki ? global.space.ai_core2.on : p_on['ai_core2']) ? 3 : 2;
             },
