@@ -11,7 +11,7 @@ import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMul
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types, spaceSectors } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
-import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYZcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, randomCoord, atShipyard, pinSalvage, beaconsActive, finalBeacons, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, moveShips } from './truepath.js';
+import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYZcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, randomCoord, atShipyard, pinSalvage, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, moveShips } from './truepath.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
 import { defineGovernor, govern, govActive, removeTask } from './governor.js';
@@ -1408,7 +1408,7 @@ function fastLoop(){
     let resList = [
         'Money','Knowledge','Omniscience','Food','Lumber','Stone','Chrysotile','Crystal','Furs','Copper','Iron',
         'Cement','Coal','Oil','Uranium','Aluminium','Steel','Titanium','Alloy','Polymer','Iridium','Helium_3',
-        'Water','Deuterium','Neutronium','Adamantite','Infernite','Elerium','Nano_Tube','Graphene','Stanene',
+        'Water','Deuterium','Tungsten','Neutronium','Adamantite','Infernite','Elerium','Nano_Tube','Graphene','Stanene',
         'Bolognium','Vitreloy','Orichalcum','Asphodel_Powder','Elysanite','Unobtainium','Positronium','Quantium',
         'Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril','Aerogel','Nanoweave','Aerographene','Scarletite',
         'Cipher','Nanite','Mana','Authority'
@@ -8562,6 +8562,7 @@ function midLoop(){
             Helium_3: 0,
             Water: 0,
             Deuterium: 0,
+            Tungsten: 0,
             Neutronium: 0,
             Adamantite: 0,
             Infernite: 0,
@@ -13178,6 +13179,9 @@ function longLoop(){
                     messageQueue(loc('scout_venus_signal',[planetName().venus,loc('outer_shipyard_sensor_quantum')]),'info',false,['progress']);
                 }
             }
+
+            // Survey the rocky moons for tungsten.
+            checkTungstenSurvey();
 
             // Detect Signals
             if (global.tech.mars >= 6 && global.tech.resettle === 8 && Math.rand(0,5) === 0){

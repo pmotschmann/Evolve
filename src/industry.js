@@ -1879,7 +1879,8 @@ function loadReplicator(parent,bind){
 const replicator_complexity = {
     Infernite: 4,
     Elerium: 4,
-    Aerographene: 12
+    Aerographene: 12,
+    Tungsten: 8
 };
 
 export function replicator(res,pow){

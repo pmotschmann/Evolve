@@ -322,13 +322,17 @@ const outerTruth = {
             },
             wide: true,
             res(){
-                return [
+                let res = [
                     'Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal','Steel','Titanium',
                     'Alloy','Polymer','Iridium','Chrysotile','Nano_Tube','Neutronium','Adamantite'
                 ];
+                if (global.resource.Tungsten.display){
+                    res.push('Tungsten');
+                }
+                return res;
             },
             heavy(res){
-                return ['Copper','Iron','Steel','Titanium','Iridium','Neutronium','Adamantite'].includes(res) ? true : false;
+                return ['Copper','Iron','Steel','Titanium','Iridium','Neutronium','Adamantite','Tungsten'].includes(res) ? true : false;
             },
             val(res){
                 switch (res){
@@ -346,6 +350,8 @@ const outerTruth = {
                         return 1400;
                     case 'Aluminium':
                         return 1280;
+                    case 'Tungsten':
+                        return 480;
                     case 'Cement':
                         return 1120;
                     case 'Coal':
@@ -1677,7 +1683,11 @@ const outerTruth = {
             powered(){ return powerCostMod(10); },
             action(){
                 if (payCosts($(this)[0])){
-                    if (global.tech.venus === 4){ global.tech.venus = 5; drawTech(); }
+                    if (global.tech.venus === 4){
+                        global.tech.venus = 5;
+                        beginTungstenSurvey();
+                        drawTech();
+                    }
                     incrementStruct('cloud_city');
                     powerOnNewStruct($(this)[0]);
                     return true;
@@ -1692,7 +1702,169 @@ const outerTruth = {
             }
         }
     },
+    // The one moon that turned out to be worth landing on. Which body this actually is comes out of the
+    // survey roll, so everything about it — name, description, where it sits on the map — is read from
+    // that rather than written down here. Only ever visible once the deposit has been confirmed.
+    spc_survey: {
+        info: {
+            name(){
+                return surveyBody() ? planetName()[surveyBody()] : loc('survey_region_unknown');
+            },
+            desc(){
+                let moon = surveyBody();
+                if (!moon){ return loc('survey_region_unknown'); }
+                return `<div>${loc(`space_${moon}_info_desc`,[planetName()[moon]])}</div><div class="has-text-success">${loc('survey_info_desc_rich',[global.resource.Tungsten.name])}</div>`;
+            },
+            zone: 'outer',
+            showDest(){
+                let show = surveyFound();
+                return {r: show, l: show};
+            },
+            syndicate(){ return false; },
+            nav(){ return surveyFound(); }
+        }
+    },
 };
+
+// places to look for Tungsten
+const surveyMoons = ['titania','oberon','io','europa','callisto'];
+
+function surveyState(){
+    return global.space['survey'] || false;
+}
+
+// The bare moon name of the body that held the deposit ('io', 'europa', …), or false while the search
+// is still running. Everything spc_survey shows about itself comes from this.
+export function surveyBody(){
+    let s = surveyState();
+    return s && s.rich ? s.rich : false;
+}
+
+// Whether the deposit has actually been found, which is what makes spc_survey a real place.
+function surveyFound(){
+    return global.tech['survey'] && global.tech.survey >= 2 && surveyBody() ? true : false;
+}
+
+// spc_survey has no entry of its own in the position table — it stands in for a real moon, and which
+// one is not known until the roll. Anything resolving a position or a star system goes through here so
+// the region behaves as the body it actually is.
+export function resolveBody(locationName){
+    if (locationName === 'spc_survey'){
+        let moon = surveyBody();
+        return moon ? `spc_${moon}` : locationName;
+    }
+    return locationName;
+}
+
+// Moon survey canadidates
+function surveyPoint(moon){
+    return `survey_${moon}`;
+}
+
+// Opened by the first cloud city: the descent problem becomes concrete, and the search for the metal
+// that solves it begins. The roll is made once and kept, so reloading cannot reshuffle the answer.
+export function beginTungstenSurvey(){
+    if (global.tech['survey']){ return; }
+    global.tech['survey'] = 1;
+    global.space['survey'] = {
+        rich: surveyMoons[Math.floor(seededRandom(0,surveyMoons.length,true))],
+        done: {}
+    };
+
+    // Each candidate becomes a destination fixed at wherever that moon is standing today. They orbit
+    // and the point does not, but the survey is a trip you make once and cross off.
+    if (!global.race['tempCoordinates']){ global.race['tempCoordinates'] = {}; }
+    surveyMoons.forEach(function(moon){
+        let c = genXYZcoord(`spc_${moon}`);
+        global.race.tempCoordinates[surveyPoint(moon)] = {
+            n: planetName()[moon], a: true, s: 'spc_sun', x: c.x, y: c.y, z: c.z
+        };
+    });
+
+    messageQueue(loc('survey_begin',[global.resource.Tungsten.name,loc('outer_shipyard_sensor_quantum')]),'info',false,['progress']);
+    renderSpace();
+    drawShipYard();
+}
+
+// Strike a candidate off: the point stays in the table so a ship parked on it can still say where it
+// is, but it stops being somewhere you can be sent.
+function closeSurveyPoint(moon){
+    let point = global.race['tempCoordinates'] ? global.race.tempCoordinates[surveyPoint(moon)] : false;
+    if (point){ point.a = false; }
+}
+
+// Survey moon for Tungsten
+function repairSurveyPoints(){
+    let s = surveyState();
+    if (!s || !s.rich){ return; }
+
+    if (s.rich.startsWith('spc_')){
+        s.rich = s.rich.substring(4);
+        let done = {};
+        Object.keys(s.done).forEach(function(key){
+            done[key.startsWith('spc_') ? key.substring(4) : key] = s.done[key];
+        });
+        s.done = done;
+    }
+
+    if (!global.race['tempCoordinates']){ return; }
+    surveyMoons.forEach(function(moon){
+        let stale = `survey_spc_${moon}`;
+        if (!global.race.tempCoordinates.hasOwnProperty(stale)){ return; }
+        let old = global.race.tempCoordinates[stale];
+        let key = surveyPoint(moon);
+        if (!global.race.tempCoordinates.hasOwnProperty(key)){
+            let c = genXYZcoord(`spc_${moon}`);
+            global.race.tempCoordinates[key] = {
+                n: planetName()[moon], a: old.a && !s.done[moon], s: 'spc_sun', x: c.x, y: c.y, z: c.z
+            };
+        }
+        // A ship parked on the bad point keeps somewhere to be — named, so it does not read as
+        // undefined — but it is no longer offered as a destination. Otherwise the point simply goes.
+        if (allShips().some(ship => !ship.inTransit && ship.location.name === stale)){
+            old.n = planetName()[moon];
+            old.a = false;
+        }
+        else {
+            delete global.race.tempCoordinates[stale];
+        }
+    });
+}
+
+export function checkTungstenSurvey(){
+    if (!global.tech['survey']){ return; }
+    repairSurveyPoints();
+    if (global.tech.survey !== 1){ return; }
+    let s = surveyState();
+    if (!s){ return; }
+
+    for (let moon of surveyMoons){
+        if (s.done[moon]){ continue; }
+        let point = surveyPoint(moon);
+        if (!allShips().some(ship => !ship.inTransit && ship.location.name === point && ship.sensor === 'quantum')){ continue; }
+
+        s.done[moon] = true;
+        if (moon === s.rich){
+            // Found. Everything still on the list is struck off with it; there is no reason to go and
+            // look at the rest, and leaving them open would only invite wasted trips.
+            global.tech['survey'] = 2;
+            surveyMoons.forEach(function(m){
+                s.done[m] = true;
+                closeSurveyPoint(m);
+            });
+            global.settings.space['survey'] = true;
+            messageQueue(loc('survey_rich',[planetName()[moon],global.resource.Tungsten.name]),'success',false,['progress']);
+            renderSpace();
+            drawShipYard();
+            return;
+        }
+
+        closeSurveyPoint(moon);
+        messageQueue(loc('survey_poor',[planetName()[moon]]),'info',false,['progress']);
+        renderSpace();
+        drawShipYard();
+    }
+}
 
 const tauCetiModules = {
     tau_star: {
@@ -2604,6 +2776,9 @@ const tauCetiModules = {
                     res.push('Water');
                     //res.push('Elerium');
                 }
+                if (global.resource.Tungsten.display){
+                    res.push('Tungsten');
+                }
                 return res;
             },
             val(res){
@@ -2640,6 +2815,8 @@ const tauCetiModules = {
                         return 1750;
                     case 'Nano_Tube':
                         return 1200;
+                    case 'Tungsten':
+                        return 2000;
                     case 'Neutronium':
                         return 640;
                     case 'Adamantite':
@@ -7198,10 +7375,8 @@ function drawShips(){
     const spaceRegions = spaceTech();
     let regionNames = {};
     Object.keys(spaceRegions).forEach(function(region){
-        if (spaceRegions[region].info.nav()){
-            let name = typeof spaceRegions[region].info.name === 'string' ? spaceRegions[region].info.name : spaceRegions[region].info.name();
-            regionNames[region] = name;
-        }
+        let name = typeof spaceRegions[region].info.name === 'string' ? spaceRegions[region].info.name : spaceRegions[region].info.name();
+        regionNames[region] = name;
     });
     Object.keys(tauCetiModules).forEach(function(region){
         if (tauCetiModules[region].info.nav()){
@@ -7210,9 +7385,6 @@ function drawShips(){
         }
     });
     regionNames['tauceti'] = loc('tech_era_tauceti');
-    // Temporary coordinates are locations too, so a ship parked on one names it rather than showing
-    // a blank button. Included whether or not they are still active — a ship sitting on a signal
-    // that has gone quiet still has to say where it is.
     if (global.race['tempCoordinates']){
         Object.keys(global.race.tempCoordinates).forEach(function(key){
             if (global.race.tempCoordinates[key]){ regionNames[key] = global.race.tempCoordinates[key].n; }
@@ -8792,6 +8964,8 @@ export function genXYZcoord(planet){
     // Temporary coordinates are fixed points held outside the table.
     let temp = tempCoord(planet);
     if (temp){ return { x: temp.x, y: temp.y, z: temp.z }; }
+    // spc_survey is whichever moon the survey turned up, so it orbits as that body does.
+    planet = resolveBody(planet);
     // A location that is neither in the table nor a live temp point — a signal that expired while a
     // ship sat on it, say. Fall back to the origin rather than throwing, which would take the map
     // and the tick loop down with it.
@@ -8888,6 +9062,7 @@ function locSystem(locationName){
     let temp = tempCoord(locationName);
     if (temp){ return tempSystem(temp); }
     if (locationName === 'tauceti'){ return 'tauceti'; }
+    locationName = resolveBody(locationName);
     return spacePlanetStats[locationName] && spacePlanetStats[locationName].star ? spacePlanetStats[locationName].star : 'sun';
 }
 
