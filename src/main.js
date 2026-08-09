@@ -1061,6 +1061,7 @@ function runOfflineCatchup(totalSteps, daysPerStep, creditedMinutes){
     // Drop Vue reactivity for the whole simulation so the thousands of state mutations don't each
     // fire a reactivity trigger; restored in finalize() and the UI refreshes once afterward.
     suppressReactivity();
+    $('#msgQueue, #msgQueueLog').attr('aria-live', 'off'); // prevent overloading screen readers with message announcements
     let cancelled = false;
     let overlay = drawOfflineModal(function(){ cancelled = true; });
 
@@ -1079,6 +1080,7 @@ function runOfflineCatchup(totalSteps, daysPerStep, creditedMinutes){
         stopPump();
         clearPopper();      // remove the cancel-button tooltip before tearing down the modal
         restoreReactivity();  // re-wrap global before live play resumes; the UI refreshes next tick
+        $('#msgQueue, #msgQueueLog').attr('aria-live', 'polite');
         webWorker.offline = false;
         webWorker.offlineScale = 1;
         if (!global.race.hasOwnProperty('geck')){
