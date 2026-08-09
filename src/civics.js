@@ -10,7 +10,7 @@ import { jobScale } from './jobs.js';
 import { templeCount } from './actions.js';
 import { astrologySign, astroVal } from './seasons.js';
 import { warhead } from './resets.js';
-import { fleetCmd, fleetCmdUnlocked, fleetCmdRange } from './truepath.js';
+import { fleetCmd, fleetCmdUnlocked, fleetCmdRange, battleLogModal } from './truepath.js';
 
 // Sets up government in civics tab
 export function defineGovernment(define){
@@ -128,22 +128,34 @@ export function defineFleetCommand(){
         <b-checkbox class="patrol" v-model="zquiet">${loc('fleet_cmd_zquiet')}</b-checkbox>
     </div>`);
 
+    panel.append(`<div class="fleetCmdOpt battleLogOpen">
+        <button class="button" @click="battleLog">${loc('battle_log_button')}</button>
+    </div>`);
+
     panel.append(`<div class="fleetCmdSep"></div>`);
 
     vBind({
         el: '#fleetCmd',
         data: cfg,
         methods: {
-            // b-numberinput's min/max only bound its own +/- controls; a typed value goes straight
-            // through. Clamp on the model event and keep it a whole number — these drive an automatic
-            // order and a NaN would strand the fleet. It has to be @update:model-value, not :input:
-            // the latter binds a prop evaluated at render, so it only ever fires on a redraw, and this
-            // panel has no per-tick $forceUpdate to supply one.
             pct(key){
                 let range = fleetCmdRange[key];
                 let val = Math.round(Number(cfg[key]));
                 if (isNaN(val)){ val = range.min; }
                 cfg[key] = Math.max(range.min,Math.min(range.max,val));
+            },
+            battleLog(){
+                let modal = this.$buefy.modal.open({
+                    hasModalCard: false,
+                    content: '<div id="modalBox" class="modalBox"></div>'
+                });
+
+                let checkExist = setInterval(function(){
+                    if ($('#modalBox').length > 0) {
+                        clearInterval(checkExist);
+                        battleLogModal(modal);
+                    }
+                }, 50);
             }
         }
     });

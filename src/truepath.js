@@ -1664,11 +1664,11 @@ const outerTruth = {
             // Nothing goes up while the horde holds the orbit. Every Venus structure should carry this.
             condition(){ return venusBlockade() === 0; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('cloud_city', offset, 8000000, 1.28); },
-                Aluminium(offset){ return spaceCostMultiplier('cloud_city', offset, 1800000, 1.28); },
-                Nano_Tube(offset){ return spaceCostMultiplier('cloud_city', offset, 400000, 1.28); },
-                Stanene(offset){ return spaceCostMultiplier('cloud_city', offset, 350000, 1.28); },
-                Aerographene(offset){ return spaceCostMultiplier('cloud_city', offset, 125000, 1.28); }
+                Money(offset){ return spaceCostMultiplier('cloud_city', offset, 20000000, 1.28); },
+                Aluminium(offset){ return spaceCostMultiplier('cloud_city', offset, 5800000, 1.28); },
+                Nano_Tube(offset){ return spaceCostMultiplier('cloud_city', offset, 1200000, 1.28); },
+                Stanene(offset){ return spaceCostMultiplier('cloud_city', offset, 3500000, 1.28); },
+                Aerographene(offset){ return spaceCostMultiplier('cloud_city', offset, 500000, 1.28); }
             },
             effect(){
                 return `<div>+${loc(`galaxy_alien2_support`,[$(this)[0].support(),planetName().venus])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
@@ -5102,21 +5102,59 @@ function destroyPlayerShip(ship,locationName){
     messageQueue(loc('zcombat_ship_lost',[ship.name,regionName(locationName),crew]),'danger',false,['combat']);
 }
 
-// One exchange at a location. Your ships fire, then whatever is left of theirs fires back — one volley
-// each, then the raiders press on. Returns true if any of the raiders were stopped here.
+// --- Battle log ----------------------------------------------------------------------------------
+const zBattleLogMax = 60;   // engagements kept; the oldest falls off the end
+
+export function zBattleLog_read(){
+    return global.space['shipyard'] && Array.isArray(global.space.shipyard['battles']) ? global.space.shipyard.battles : [];
+}
+
+// Engagement information
+function zBattleRoster(ships){
+    let roster = {};
+    ships.forEach(function(s){
+        if (!s || !s.class){ return; }
+        roster[s.class] = (roster[s.class] || 0) + 1;
+    });
+    return roster;
+}
+
+// Written the moment the volleys are resolved, before the wrecks are cleared away.
+function zBattleLog(locationName,guards,foes,dealt,taken,lost,downed){
+    if (!global.space['shipyard']){ return; }
+    if (!Array.isArray(global.space.shipyard['battles'])){ global.space.shipyard['battles'] = []; }
+    global.space.shipyard.battles.unshift({
+        d: global.stats.days,       // game day
+        l: locationName,            // where it happened
+        p: zBattleRoster(guards),   // your hulls
+        e: zBattleRoster(foes),     // theirs
+        pd: dealt,                  // hull you landed
+        ed: taken,                  // hull they landed
+        pl: lost,                   // your ships destroyed
+        el: downed                  // theirs destroyed
+    });
+    if (global.space.shipyard.battles.length > zBattleLogMax){
+        global.space.shipyard.battles.length = zBattleLogMax;
+    }
+}
+
 function zEngage(locationName,foes){
     let guards = guardsAt(locationName);
     if (guards.length === 0 || foes.length === 0){ return false; }
 
     let scan = guards.reduce((t,s) => t + (sensorRange(s) || 0), 0);
     let downed = [];
+    let dealt = 0;
+    let taken = 0;
 
     guards.forEach(function(ship){
         let live = foes.filter(f => f.damage < 100);
         if (live.length === 0){ return; }
         let foe = live[Math.floor(seededRandom(0,live.length,true))];
         if (seededRandom(0,1,true) >= playerAccuracy(scan,foe)){ return; }
-        foe.damage += combatDamage(ship,foe);
+        let hit = combatDamage(ship,foe);
+        foe.damage += hit;
+        dealt += hit;
         if (foe.damage >= 100){
             foe.damage = 100;
             downed.push(foe);
@@ -5131,12 +5169,16 @@ function zEngage(locationName,foes){
         if (live.length === 0){ return; }
         let ship = live[Math.floor(seededRandom(0,live.length,true))];
         if (seededRandom(0,1,true) >= foeAccuracy(foe)){ return; }
-        ship.damage += combatDamage(foe,ship);
+        let hit = combatDamage(foe,ship);
+        ship.damage += hit;
+        taken += hit;
         if (ship.damage >= 100){
             ship.damage = 100;
             lost.push(ship);
         }
     });
+
+    zBattleLog(locationName,guards,foes,dealt,taken,lost.length,downed.length);
 
     zMessage(loc('zcombat_engage',[guards.length,foes.length,regionName(locationName)]),'warning');
     lost.forEach(function(ship){ destroyPlayerShip(ship,locationName); });
@@ -5145,8 +5187,7 @@ function zEngage(locationName,foes){
         zMessage(loc('zcombat_foe_destroyed',[foe.name,regionName(locationName)]),'success');
     });
 
-    // Anything shot down here is culled before it can deliver, so a single kill anywhere along the
-    // route — over Earth, at a wormhole gate, or on arrival — settles the interception task.
+    // Check for achievement unlock
     if (downed.length > 0){
         zombieGenociderTask('z2');
     }
@@ -5159,9 +5200,7 @@ function zCullDowned(list){
     return list.filter(f => f.damage < 100);
 }
 
-// Every tunable the Z-warfare systems run on, gathered in one place so the wiki can document the live
-// numbers rather than repeating them. Read-only by convention — callers should not mutate what comes
-// back, they should change the constants above.
+// zWarfare Variables
 export function zWarfareVars(){
     return {
         // Ground war against a horde already on a world
@@ -12056,6 +12095,40 @@ function shipDispatchModal(id, modal){
                 .appendTo(list);
         });
     }
+}
+
+// The battle log. Newest first, one row per engagement: when and where it happened, what each side
+// brought, and what each side landed. Read-only — it is a record, not a control.
+export function battleLogModal(){
+    $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${loc('battle_log_title')}</p>`));
+
+    let log = zBattleLog_read();
+    let list = $(`<div class="battleLog"></div>`);
+    $('#modalBox').append(list);
+
+    if (log.length === 0){
+        list.append(`<span class="has-text-caution">${loc('battle_log_empty')}</span>`);
+        return;
+    }
+
+    // A hull tally rendered as "2 Corvettes, 1 Destroyer", using the same class names the shipyard uses.
+    let roster = function(tally){
+        let parts = shipClassSizes.concat(['explorer']).filter(c => tally[c] > 0).map(function(c){
+            return `${tally[c]} ${loc(`outer_shipyard_class_${c}`)}`;
+        });
+        return parts.length ? parts.join(`, `) : loc('battle_log_unknown');
+    };
+
+    log.forEach(function(b){
+        let row = $(`<div class="battleRow"></div>`);
+        // A fight you walked away from unscathed reads differently from one that cost you a hull, so the
+        // outcome is colored rather than left for the player to work out from the numbers.
+        let tone = b.pl > 0 ? `has-text-danger` : (b.el > 0 ? `has-text-success` : `has-text-warning`);
+        row.append(`<div class="battleHead"><span class="${tone}">${loc('battle_log_where',[regionName(b.l)])}</span> <span class="has-text-caution">${loc('battle_log_day',[b.d])}</span></div>`);
+        row.append(`<div class="battleSide"><span class="has-text-success">${loc('battle_log_yours')}</span> <span>${roster(b.p)}</span> <span class="has-text-warning">${loc('battle_log_dealt',[b.pd])}</span>${b.pl > 0 ? ` <span class="has-text-danger">${loc('battle_log_lost',[b.pl])}</span>` : ``}</div>`);
+        row.append(`<div class="battleSide"><span class="has-text-danger">${loc('battle_log_theirs')}</span> <span>${roster(b.e)}</span> <span class="has-text-warning">${loc('battle_log_dealt',[b.ed])}</span>${b.el > 0 ? ` <span class="has-text-success">${loc('battle_log_destroyed',[b.el])}</span>` : ``}</div>`);
+        list.append(row);
+    });
 }
 
 // Who a ship could serve under: a fleet of its own, or any flagship parked alongside with the command
