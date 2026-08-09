@@ -1698,11 +1698,92 @@ const outerTruth = {
                     p: ['cloud_city','space']
                 };
             }
+        },
+        descender: {
+            id: 'space-descender',
+            title(){ return loc('space_descender_title'); },
+            desc(wiki){
+                if (!global.space.hasOwnProperty('descender') || global.space.descender.count < 100 || wiki){
+                    return `<div>${loc('space_descender_title')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
+                }
+                return `<div>${loc('space_descender_title')}</div><div class="has-text-special">${loc('space_support',[planetName().venus])}</div>`;
+            },
+            type: 'megaproject',
+            reqs: { venus: 6 },
+            path: ['truepath'],
+            condition(){ return venusBlockade() === 0; },
+            queue_size: 5,
+            queue_complete(){ return 100 - (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0); },
+            cost: {
+                Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0)) < 100 ? 50000000 : 0; },
+                Tungsten(offset){ return ((offset || 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0)) < 100 ? 12000000 : 0; },
+                Graphene(offset){ return ((offset || 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0)) < 100 ? 8500000 : 0; },
+                Nano_Tube(offset){ return ((offset || 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0)) < 100 ? 9000000 : 0; },
+                Unobtainium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0)) < 100 ? 100000 : 0; }
+            },
+            effect(wiki){
+                let count = (wiki?.count ?? 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0);
+                if (count < 100){
+                    return `<div>${loc('space_descender_effect',[loc('space_cloud_city_title')])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[100 - count])}</div>`;
+                }
+                return `<div>${loc('space_descender_effect',[loc('space_cloud_city_title')])}</div><div class="has-text-caution">${loc('space_used_support_more',[$(this)[0].support(),planetName().venus])}</div>`;
+            },
+            s_type: 'venus',
+            support(){ return -3; },
+            powered(){ return 0; },
+            // Half a tether is not a thing you can switch on, so there is nothing to offer until fully constructed
+            switchable(){ return global.space.hasOwnProperty('descender') && global.space.descender.count >= 100; },
+            on_cap(){ return global.space.hasOwnProperty('descender') && global.space.descender.count >= 100 ? 1 : 0; },
+            action(){
+                if (global.space.hasOwnProperty('descender') && global.space.descender.count >= 100){ return false; }
+                if (payCosts($(this)[0])){
+                    incrementStruct($(this)[0]);
+                    if (global.space.descender.count >= 100){
+                        global.tech['venus'] = 7;
+                        global.space.descender.on = 1;
+                        initStruct(actions.space.spc_venus.alien_facility);
+                        messageQueue(loc('space_descender_complete',[planetName().venus]),'success',false,['progress']);
+                        drawTech();
+                        renderSpace();
+                        clearPopper();
+                    }
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['descender','space']
+                };
+            }
+        },
+        alien_facility: {
+            id: 'space-alien_facility',
+            title(){ return loc('space_alien_facility_title'); },
+            desc(){ return `<div>${loc('space_alien_facility_title')}</div><div class="has-text-special">${loc('space_alien_facility_req',[loc('space_descender_title')])}</div>`; },
+            type: 'science',
+            reqs: { venus: 7 },
+            path: ['truepath'],
+            cost: {},
+            queue_complete(){ return 0; },
+            effect(){
+                let desc = `<div>${loc('space_alien_facility_effect',[facilityProgress()])}</div>`;
+                if (!facilityStudying()){
+                    desc += `<div class="has-text-warning">${loc('space_alien_facility_stalled',[loc('space_descender_title')])}</div>`;
+                }
+                return desc;
+            },
+            action(){ return false; },
+            struct(){
+                return {
+                    d: { count: 1, research: 0 },
+                    p: ['alien_facility','space']
+                };
+            }
         }
     },
-    // The one moon that turned out to be worth landing on. Which body this actually is comes out of the
-    // survey roll, so everything about it — name, description, where it sits on the map — is read from
-    // that rather than written down here. Only ever visible once the deposit has been confirmed.
+    // The moon that turns out to be worth landing on.
     spc_survey: {
         info: {
             name(){
@@ -1762,6 +1843,36 @@ const outerTruth = {
         }
     },
 };
+
+// The descender has to be finished and actually running on Venus support for anyone to be down there.
+export function facilityStudying(){
+    if (!global.space['alien_facility'] || !global.space['descender']){ return false; }
+    if (global.space.descender.count < 100){ return false; }
+    return support_on['descender'] > 0;
+}
+
+// Baseline for progress, not a required amount
+export const facilityCrew = 40;
+// Denominated in seconds of work at baseline staff level, so this is three hours for forty of them.
+export const facilityResearchTotal = 10800;
+
+export function facilityProgress(){
+    if (!global.space['alien_facility']){ return 0; }
+    let pct = global.space.alien_facility.research / facilityResearchTotal * 100;
+    if (pct > 100){ pct = 100; }
+    return +(pct).toFixed(2);
+}
+
+// What the survey turns up, and how far in. Checked in order, one rank per tick, so a long offline
+// catch-up still walks the player through the findings rather than skipping to the end.
+export const facilityFindings = [
+    { r: 1, p: 5,   m: 'space_alien_facility_data1', v(){ return [planetName().home]; } },
+    { r: 2, p: 15,  m: 'space_alien_facility_data2', v(){ return [races[global.race.species].name]; } },
+    { r: 3, p: 30,  m: 'space_alien_facility_data3' },
+    { r: 4, p: 50,  m: 'space_alien_facility_data4' },
+    { r: 5, p: 75,  m: 'space_alien_facility_data5', v(){ return [planetName().home]; } },
+    { r: 6, p: 100, m: 'space_alien_facility_data6' }
+];
 
 // places to look for Tungsten
 const surveyMoons = ['titania','oberon','io','europa','callisto'];

@@ -6442,16 +6442,22 @@ export function setAction(c_action,action,type,old,prediction){
                     }, 50);
                 }
             },
+            // How many units the on/off switch may address. Normally every one that has been built, but
+            // a structure assembled out of segments is a single machine and says so by capping this at 1.
+            on_cap(){
+                return c_action['on_cap'] ? c_action.on_cap() : global[action][type].count;
+            },
             on_label(){
                 return `on: ${global[action][type].on}`;
             },
             off_label(){
-                return `off: ${global[action][type].count - global[action][type].on}`;
+                return `off: ${this.on_cap() - global[action][type].on}`;
             },
             power_on(){
                 let keyMult = keyMultiplier();
+                let cap = this.on_cap();
                 for (let i=0; i<keyMult; i++){
-                    if (global[action][type].on < global[action][type].count){
+                    if (global[action][type].on < cap){
                         global[action][type].on++;
                     }
                     else {
@@ -6502,7 +6508,7 @@ export function setAction(c_action,action,type,old,prediction){
                 }
             },
             p_off(p,id){
-                let value = global[action][type].count - p;
+                let value = this.on_cap() - p;
                 if (
                     (id === 'city-casino' && !global.race['cataclysm'] && !global.race['orbit_decayed']) || 
                     (id === 'space-spc_casino' && (global.race['cataclysm'] || global.race['orbit_decayed'])) || 

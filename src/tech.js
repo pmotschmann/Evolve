@@ -14969,6 +14969,28 @@ const techs = {
             return false;
         }
     },
+    descent_module: {
+        id: 'tech-descent_module',
+        title(){ return loc('tech_descent_module'); },
+        desc(){ return loc('tech_descent_module'); },
+        category: 'progress',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { venus: 5 },
+        grant: ['venus',6],
+        cost: {
+            Knowledge(){ return 27250000; }
+        },
+        effect(){ return loc('tech_descent_module_effect',[planetName().venus,loc('space_cloud_city_title')]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.space.spc_venus.descender);
+                renderSpace();
+                return true;
+            }
+            return false;
+        }
+    },
     expert_salvage: {
         id: 'tech-expert_salvage',
         title(){ return loc('tech_expert_salvage'); },

@@ -11,7 +11,7 @@ import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMul
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types, spaceSectors } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
-import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYZcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, randomCoord, atShipyard, pinSalvage, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, moveShips } from './truepath.js';
+import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYZcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, randomCoord, atShipyard, pinSalvage, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, moveShips, facilityStudying, facilityProgress, facilityCrew, facilityResearchTotal, facilityFindings } from './truepath.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
 import { defineGovernor, govern, govActive, removeTask } from './governor.js';
@@ -2490,6 +2490,11 @@ function fastLoop(){
             global.civic.meditator.display = true;
         }
 
+        if (global.space['descender']){
+            let ready = global.space.descender.count >= 100 ? 1 : 0;
+            if (global.space.descender.on > ready){ global.space.descender.on = ready; }
+        }
+
         // Moon Bases, Spaceports, Etc
         [
             { a: 'space', r: 'spc_moon', s: 'moon_base', g: 'moon' },
@@ -4576,6 +4581,29 @@ function fastLoop(){
                         messageQueue(loc('tau_gas2_alien_station_data6'),'success',false,['progress']);
                     }
                     drawTech();
+                }
+            }
+        }
+
+        // Researching the Alien Facility, scaled by scientist count
+        if (facilityStudying() && (!global.tech['facility_data'] || global.tech.facility_data < 6)){
+            let crew = workerScale(global.civic.scientist.workers,'scientist');
+            if (crew > 0){
+                global.space.alien_facility.research += (crew / facilityCrew) * time_multiplier;
+                let pct = facilityProgress();
+                let rank = global.tech['facility_data'] || 0;
+                for (let step of facilityFindings){
+                    if (rank < step.r && pct >= step.p){
+                        global.tech['facility_data'] = step.r;
+                        rank = step.r;
+                        if (step.r === 6){
+                            global.space.alien_facility.research = facilityResearchTotal;
+                            global.tech['resettle'] = 16;
+                        }
+                        messageQueue(loc(step.m,step.v ? step.v() : []),'success',false,['progress']);
+                        drawTech();
+                        break;
+                    }
                 }
             }
         }
