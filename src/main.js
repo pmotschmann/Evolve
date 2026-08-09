@@ -3889,7 +3889,18 @@ function fastLoop(){
                 breakdown.p['Food'][`ᄂ${loc('sign_virgo')}+1`] = ((virgo - 1) * 100) + '%';
             }
 
-            let generated = food_base + (hunting * q_multiplier) + (biodome * red_synd * zigVal * virgo);
+            // Nitrogen pulled out of the Venusian atmosphere and fed into the cloud city growing decks.
+            let nitrogen_food = 0;
+            if (support_on['nitrogen_harvester']){
+                nitrogen_food = support_on['nitrogen_harvester'] * production('nitrogen_harvester','food') * production('psychic_boost','Food');
+                breakdown.p['Food'][actions.space.spc_venus.nitrogen_harvester.title()] = nitrogen_food + 'v';
+                if (nitrogen_food > 0){
+                    breakdown.p['Food'][`ᄂ${loc('space_red_ziggurat_title')}+1`] = ((zigVal - 1) * 100) + '%';
+                    breakdown.p['Food'][`ᄂ${loc('sign_virgo')}+2`] = ((virgo - 1) * 100) + '%';
+                }
+            }
+
+            let generated = food_base + (hunting * q_multiplier) + (biodome * red_synd * zigVal * virgo) + (nitrogen_food * zigVal * virgo);
             generated *= global_multiplier;
 
             let soldiers = global.civic.garrison.workers;
@@ -4598,7 +4609,7 @@ function fastLoop(){
                         rank = step.r;
                         if (step.r === 6){
                             global.space.alien_facility.research = facilityResearchTotal;
-                            global.tech['resettle'] = 16;
+                            global.tech.resettle = 17;
                         }
                         messageQueue(loc(step.m,step.v ? step.v() : []),'success',false,['progress']);
                         drawTech();
@@ -5782,6 +5793,15 @@ function fastLoop(){
 
         // Lumber
         { //block scope
+            if (support_on['nitrogen_harvester'] && !global.race['kindling_kindred'] && !global.race['smoldering']){
+                let lumber = support_on['nitrogen_harvester'] * production('nitrogen_harvester','lumber') * production('psychic_boost','Lumber');
+                breakdown.p['Lumber'][actions.space.spc_venus.nitrogen_harvester.title()] = lumber + 'v';
+                if (lumber > 0){
+                    breakdown.p['Lumber'][`ᄂ${loc('space_red_ziggurat_title')}+1`] = ((zigVal - 1) * 100) + '%';
+                }
+                modRes('Lumber', lumber * hunger * global_multiplier * time_multiplier * zigVal);
+            }
+
             if (global.race['cataclysm'] || global.race['orbit_decayed']){
                 if (global.tech['mars'] && support_on['biodome'] && !global.race['kindling_kindred'] && !global.race['smoldering']){
                     let lumber = support_on['biodome'] * workerScale(global.civic.colonist.workers,'colonist') * production('biodome','lumber') * production('psychic_boost','Lumber');

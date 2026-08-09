@@ -289,6 +289,16 @@ export function production(id,val,wiki){
             }
             return 0;
         }
+        case 'nitrogen_harvester':
+        {
+            switch (val){
+                case 'food':
+                    return 18;
+                case 'lumber':
+                    return 15;
+            }
+            return 0;
+        }
         case 'mineshaft':
         {
             return 9.8;

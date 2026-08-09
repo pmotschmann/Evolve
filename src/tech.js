@@ -14991,6 +14991,28 @@ const techs = {
             return false;
         }
     },
+    nitrogen_harvester: {
+        id: 'tech-nitrogen_harvester',
+        title(){ return loc('tech_nitrogen_harvester'); },
+        desc(){ return loc('tech_nitrogen_harvester'); },
+        category: 'progress',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { venus: 6 },
+        grant: ['venus',7],
+        cost: {
+            Knowledge(){ return 27500000; }
+        },
+        effect(){ return loc('tech_nitrogen_harvester_effect',[planetName().venus]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.space.spc_venus.nitrogen_harvester);
+                renderSpace();
+                return true;
+            }
+            return false;
+        }
+    },
     expert_salvage: {
         id: 'tech-expert_salvage',
         title(){ return loc('tech_expert_salvage'); },

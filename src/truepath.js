@@ -5,7 +5,7 @@ import { spatialReasoning, unlockContainers } from './resources.js';
 import { armyRating, garrisonSize, soldierDeath, buildGarrison, govEffect } from './civics.js';
 import { jobScale, job_desc, loadFoundry, limitCraftsmen } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
-import { actions, payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, buildTemplate, casinoEffect, housingLabel, structName, initStruct } from './actions.js';
+import { actions, payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, buildTemplate, casinoEffect, housingLabel, structName, initStruct, getStructNumActive } from './actions.js';
 import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, incrementStruct, planetName } from './space.js';
 import { defineGovernor, removeTask, govActive } from './governor.js';
 import { defineIndustry, nf_resources, addSmelter, addFactoryLines, factoryCapacity, trimFactoryLines, factoryStructs, setupRituals, cancelRituals } from './industry.js';
@@ -1709,7 +1709,7 @@ const outerTruth = {
                 return `<div>${loc('space_descender_title')}</div><div class="has-text-special">${loc('space_support',[planetName().venus])}</div>`;
             },
             type: 'megaproject',
-            reqs: { venus: 6 },
+            reqs: { venus: 6, resettle: 15 },
             path: ['truepath'],
             condition(){ return venusBlockade() === 0; },
             queue_size: 5,
@@ -1726,11 +1726,22 @@ const outerTruth = {
                 if (count < 100){
                     return `<div>${loc('space_descender_effect',[loc('space_cloud_city_title')])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[100 - count])}</div>`;
                 }
-                return `<div>${loc('space_descender_effect',[loc('space_cloud_city_title')])}</div><div class="has-text-caution">${loc('space_used_support_more',[$(this)[0].support(),planetName().venus])}</div>`;
+                else {
+                    let desc =  `<div>${loc('space_descender_effect',[loc('space_cloud_city_title')])}</div>`
+                    desc += `<div class="has-text-caution">${loc('space_used_support_more',[-$(this)[0].support(),planetName().venus])}</div>`;
+                    if ($(this)[0].powered() > 0){
+                        desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                    }
+                    return desc;
+                }                
             },
             s_type: 'venus',
             support(){ return -3; },
-            powered(){ return 0; },
+            powered(){
+                let cost = 500 - (support_on['nitrogen_harvester'] || 0) * actions.space.spc_venus.nitrogen_harvester.cooling();
+                if (cost < 0){ cost = 0; }
+                return powerCostMod(cost);
+            },
             // Half a tether is not a thing you can switch on, so there is nothing to offer until fully constructed
             switchable(){ return global.space.hasOwnProperty('descender') && global.space.descender.count >= 100; },
             on_cap(){ return global.space.hasOwnProperty('descender') && global.space.descender.count >= 100 ? 1 : 0; },
@@ -1739,7 +1750,7 @@ const outerTruth = {
                 if (payCosts($(this)[0])){
                     incrementStruct($(this)[0]);
                     if (global.space.descender.count >= 100){
-                        global.tech['venus'] = 7;
+                        global.tech.resettle = 16;
                         global.space.descender.on = 1;
                         initStruct(actions.space.spc_venus.alien_facility);
                         messageQueue(loc('space_descender_complete',[planetName().venus]),'success',false,['progress']);
@@ -1758,12 +1769,55 @@ const outerTruth = {
                 };
             }
         },
+        nitrogen_harvester: {
+            id: 'space-nitrogen_harvester',
+            title(){ return loc('space_nitrogen_harvester_title'); },
+            desc(){ return `<div>${loc('space_nitrogen_harvester_title')}</div><div class="has-text-special">${loc('space_support',[planetName().venus])}</div>`; },
+            type: 'mining',
+            reqs: { venus: 7 },
+            path: ['truepath'],
+            condition(){ return venusBlockade() === 0; },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('nitrogen_harvester', offset, 42000000, 1.24); },
+                Coal(offset){ return spaceCostMultiplier('nitrogen_harvester', offset, 5000000, 1.24); },
+                Polymer(offset){ return spaceCostMultiplier('nitrogen_harvester', offset, 9500000, 1.24); },
+                Sheet_Metal(offset){ return spaceCostMultiplier('nitrogen_harvester', offset, 1250000, 1.24); }
+            },
+            effect(){
+                let desc = `<div>${loc('produce',[+(production('nitrogen_harvester','food')).toFixed(2),global.resource.Food.name])}</div>`;
+                if (!global.race['kindling_kindred'] && !global.race['smoldering']){
+                    desc = desc + `<div>${loc('produce',[+(production('nitrogen_harvester','lumber')).toFixed(2),global.resource.Lumber.name])}</div>`;
+                }
+                desc += `<div>${loc('space_nitrogen_harvester_effect',[$(this)[0].cooling(),loc('space_descender_title')])}</div>`;
+                desc += `<div class="has-text-caution">${loc('space_used_support',[planetName().venus])}</div>`;
+                return desc;
+            },
+            s_type: 'venus',
+            support(){ return -1; },
+            powered(){ return 0; },
+            // What one running harvester takes off the descender's draw.
+            cooling(){ return 50; },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct($(this)[0]);
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['nitrogen_harvester','space']
+                };
+            }
+        },
         alien_facility: {
             id: 'space-alien_facility',
             title(){ return loc('space_alien_facility_title'); },
             desc(){ return `<div>${loc('space_alien_facility_title')}</div><div class="has-text-special">${loc('space_alien_facility_req',[loc('space_descender_title')])}</div>`; },
             type: 'science',
-            reqs: { venus: 7 },
+            reqs: { resettle: 16 },
             path: ['truepath'],
             cost: {},
             queue_complete(){ return 0; },
@@ -1848,7 +1902,7 @@ const outerTruth = {
 export function facilityStudying(){
     if (!global.space['alien_facility'] || !global.space['descender']){ return false; }
     if (global.space.descender.count < 100){ return false; }
-    return support_on['descender'] > 0;
+    return getStructNumActive(actions.space.spc_venus.descender) > 0;
 }
 
 // Baseline for progress, not a required amount
@@ -1863,7 +1917,7 @@ export function facilityProgress(){
     return +(pct).toFixed(2);
 }
 
-// What the survey turns up, and how far in. Checked in order, one rank per tick, so a long offline
+// What the investigation turns up, and how far in. Checked in order, one rank per tick, so a long offline
 // catch-up still walks the player through the findings rather than skipping to the end.
 export const facilityFindings = [
     { r: 1, p: 5,   m: 'space_alien_facility_data1', v(){ return [planetName().home]; } },
