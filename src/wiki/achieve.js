@@ -352,10 +352,10 @@ function achieveDesc(achievement,showFlair,universe){
         ['ashanddust','exodus','obsolete','bluepill','retired'].forEach(function (key){
             let label = loc(`achieve_${key}_name`);
             if (global.stats.achieve[key] && global.stats.achieve[key][uAffix] >= 5){
-                path = path + `<span class="wide iclr${global.stats.achieve[key][uAffix]}">${label}</span>`;
+                path = path + `<span class="wide iclr${global.stats.achieve[key][uAffix]}">${label}${srNoteCompleted(true)}</span>`;
             }
             else {
-                path = path + `<span class="wide has-text-danger">${label}</span>`;
+                path = path + `<span class="wide has-text-danger">${label}${srNoteCompleted(false)}</span>`;
             }
         });
         path = path + `</div>`;
@@ -373,10 +373,10 @@ function achieveDesc(achievement,showFlair,universe){
 
         Object.keys(womling).forEach(function (key){
             if (global.stats.womling[womling[key]] && global.stats.womling[womling[key]][uAffix] > 0){
-                wom_list = wom_list + `<span class="wide iclr5">${loc(`wiki_achieve_overlord_${key}`)}</span>`;
+                wom_list = wom_list + `<span class="wide iclr5">${loc(`wiki_achieve_overlord_${key}`)}${srNoteCompleted(true)}</span>`;
             }
             else {
-                wom_list = wom_list + `<span class="wide has-text-danger">${loc(`wiki_achieve_overlord_${key}`)}</span>`;
+                wom_list = wom_list + `<span class="wide has-text-danger">${loc(`wiki_achieve_overlord_${key}`)}${srNoteCompleted(false)}</span>`;
             }
         });
         wom_list = wom_list + `</div>`;
@@ -509,10 +509,10 @@ function featDesc(feat,showFlair){
 
             let label = loc(map[key]);
             if (reset >= 1){
-                path += `<span class="wide10 iclr${reset}">${label}</span>`;
+                path += `<span class="wide10 iclr${reset}">${label}${srNoteCompleted(reset)}</span>`;
             }
             else {
-                path += `<span class="wide10 has-text-danger">${label}</span>`;
+                path += `<span class="wide10 has-text-danger">${label}${srNoteCompleted(false)}</span>`;
             }
         });
         path += `</div>`;
