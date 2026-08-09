@@ -252,6 +252,9 @@ export const job_desc = {
             gain *= biomes.ashland.vars()[1];
         }
         gain = +(gain).toFixed(2);
+        if(global.race['iceage']){
+            return loc('job_cement_worker_iceage_desc',[gain,unit_price,unit_price*1.5]);
+        }
         return global.race['sappy'] ? loc('job_cement_worker_amber_desc',[gain]) : loc('job_cement_worker_desc',[gain,unit_price]);
     },
     banker: function(){
@@ -448,6 +451,9 @@ export function workerScale(num,job){
     let teacher = govActive('teacher',1);
     if(teacher && ['professor'].includes(job)){
         num *= 1 + (teacher / 100);
+    }
+    if(global.underground['mineshaft'] && ['miner'].includes(job)){
+        num *= 1 - (global.underground['mineshaft'].ratio / 100);
     }
     if (global.race['lone_survivor']){
         if (['hunter','forager','water_collector','farmer','lumberjack','quarry_worker','crystal_miner','scavenger'].includes(job)){
