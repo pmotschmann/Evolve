@@ -1674,9 +1674,10 @@ const outerTruth = {
                 return `<div>+${loc(`galaxy_alien2_support`,[$(this)[0].support(),planetName().venus])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             support(){ return 3; },
-            powered(){ return powerCostMod(8); },
+            powered(){ return powerCostMod(10); },
             action(){
                 if (payCosts($(this)[0])){
+                    if (global.tech.venus === 4){ global.tech.venus = 5; drawTech(); }
                     incrementStruct('cloud_city');
                     powerOnNewStruct($(this)[0]);
                     return true;
