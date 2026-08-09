@@ -422,7 +422,7 @@ function featDesc(feat,showFlair){
         let eggs = `<div class="has-text-warning">${loc('wiki_feat_egghunt_found')}</div><div class="flexed">`;
         for (let i=1; i<=18; i++){
             let egg = global.special.egg[year][`egg${i}`] ? 'has-text-success' : 'has-text-danger';
-            eggs = eggs + `<span class="${egg}">${loc('wiki_feat_egghunt_num',[i])}</span>`
+            eggs = eggs + `<span class="${egg}">${loc('wiki_feat_egghunt_num',[i])}${srNoteCompleted(global.special.egg[year][`egg${i}`] ? true : false)}</span>`
         }
         eggs = eggs + `</div>`;
         content = $(`<div class="has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${eggs}${flair}`);
@@ -433,11 +433,11 @@ function featDesc(feat,showFlair){
         let tricks = `<div class="has-text-warning">${loc('wiki_feat_trickortreat_found')}</div><div class="flexed">`;
         for (let i=1; i<=8; i++){
             let treat = global.special.trick[year][`treat${i}`] ? 'has-text-success' : 'has-text-danger';   
-            tricks = tricks + `<span class="wide ${treat}">${loc('wiki_feat_treat_num',[i])}</span>`
+            tricks = tricks + `<span class="wide ${treat}">${loc('wiki_feat_treat_num',[i])}${srNoteCompleted(global.special.trick[year][`treat${i}`] ? true : false)}</span>`
         }
         for (let i=1; i<=8; i++){
             let trick = global.special.trick[year][`trick${i}`] ? 'has-text-success' : 'has-text-danger';   
-            tricks = tricks + `<span class="wide ${trick}">${loc('wiki_feat_trick_num',[i])}</span>`
+            tricks = tricks + `<span class="wide ${trick}">${loc('wiki_feat_trick_num',[i])}${srNoteCompleted(global.special.trick[year][`trick${i}`] ? true : false)}</span>`
         }
         tricks = tricks + `</div>`;
         content = $(`<div class="has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${tricks}${flair}`);
