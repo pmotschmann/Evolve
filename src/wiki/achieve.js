@@ -163,6 +163,8 @@ export function featPage(){
 
 function achieveDesc(achievement,showFlair,universe){
     let uAffix = universeAffix(universe || 'standard');
+    let content = $();
+    let options = {};
     
     let flair = showFlair ? `<div class="has-text-flair">${achievements[achievement].flair}</div>` : ``;
     if (achievement === 'mass_extinction' || achievement === 'vigilante'){
@@ -194,9 +196,10 @@ function achieveDesc(achievement,showFlair,universe){
             }
         });
         killed = killed + `</div>`;
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${killed}${flair}`),{
+        content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${killed}${flair}`);
+        options = {
             wide: true
-        });
+        };
     }
     else if (achievement === 'explorer'){
         let biome_list = `<div class="flexed">`;
@@ -211,7 +214,7 @@ function achieveDesc(achievement,showFlair,universe){
             }
         });
         biome_list = biome_list + `</div>`;
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${biome_list}${flair}`));
+        content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${biome_list}${flair}`);
     }
     else if (achievement === 'creator' || achievement === 'heavyweight'){
         let genus = `<div class="flexed">`;
@@ -227,7 +230,7 @@ function achieveDesc(achievement,showFlair,universe){
             }
         });
         genus = genus + `</div>`;
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${genus}${flair}`));
+        content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${genus}${flair}`);
     }
     else if (achievement === 'enlightenment'){
         let genus = {};
@@ -253,7 +256,7 @@ function achieveDesc(achievement,showFlair,universe){
             }
         });
         checked = checked + `</div>`;
-        popover(`a-${achievement}`,$(`<div class="wide has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checked}${flair}`));
+        content = $(`<div class="wide has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checked}${flair}`);
     }
     else if (achievement === 'gladiator'){
         let defeated = `<div class="flexed wide">`;
@@ -280,9 +283,10 @@ function achieveDesc(achievement,showFlair,universe){
             }
         });
         defeated = defeated + `</div>`;
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`,[42])}</div>${defeated}${flair}`),{
+        content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`,[42])}</div>${defeated}${flair}`);
+        options = {
             wide: true
-        });
+        };
     }
     else if (achievement === 'banana'){
         let checklist = `<div class="list">`;
@@ -292,7 +296,7 @@ function achieveDesc(achievement,showFlair,universe){
         checklist = checklist + `<div class="has-text-${global.stats.banana.b4[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_banana4`,[500])}</div>`;
         checklist = checklist + `<div class="has-text-${global.stats.banana.b5[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_banana5`,[50])}</div>`;
         checklist = checklist + `</div>`;
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`));
+        content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`);
     }
     else if (achievement === 'endless_hunger'){
         let checklist = `<div class="list">`;
@@ -302,7 +306,7 @@ function achieveDesc(achievement,showFlair,universe){
         checklist = checklist + `<div class="has-text-${global.stats.endless_hunger.b4[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger4`,[1200])}</div>`;
         checklist = checklist + `<div class="has-text-${global.stats.endless_hunger.b5[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger5`)}</div>`;
         checklist = checklist + `</div>`;
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`));
+        content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`);
     }
     else if (achievement === 'zombie_genocider'){
         // Task 5 is not written yet, so only the ones that exist are listed.
@@ -312,7 +316,7 @@ function achieveDesc(achievement,showFlair,universe){
         checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z3[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider3`)}</div>`;
         checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z4[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider4`)}</div>`;
         checklist = checklist + `</div>`;
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`));
+        content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`);
     }
     else if (achievement === 'pathfinder'){
         let path = `<div class="flexed">`;
@@ -326,7 +330,7 @@ function achieveDesc(achievement,showFlair,universe){
             }
         });
         path = path + `</div>`;
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${path}${flair}`));
+        content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${path}${flair}`);
     }
     else if (achievement === 'overlord'){
         let wom_list = `<div class="flexed">`;
@@ -347,7 +351,7 @@ function achieveDesc(achievement,showFlair,universe){
             }
         });
         wom_list = wom_list + `</div>`;
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${wom_list}${flair}`));
+        content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${wom_list}${flair}`);
     }
     else if (achievement === 'what_is_best'){
         let checklist = `<div class="list">`;
@@ -357,27 +361,30 @@ function achieveDesc(achievement,showFlair,universe){
         checklist = checklist + `<div class="has-text-${global.stats.warlord.r ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_r`)}</div>`;
         checklist = checklist + `<div class="has-text-${global.stats.warlord.g ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_g`)}</div>`;
         checklist = checklist + `</div>`;
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`));
+        content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`);
     }
     else if (achievement.includes('extinct_') && achievement.substring(8) !== 'custom' && achievement.substring(8) !== 'hybrid'){
         let race = achievement.substring(8);
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc('wiki_achieve_extinct_race',[loc(`race_${race}`)])}</div>${flair}`));
+        content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc('wiki_achieve_extinct_race',[loc(`race_${race}`)])}</div>${flair}`);
     }
     else if (achievement.includes('genus_')){
         let genus = achievement.substring(6);
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc('wiki_achieve_genus_type',[loc(`genelab_genus_${genus}`)])}</div>${flair}`));
+        content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc('wiki_achieve_genus_type',[loc(`genelab_genus_${genus}`)])}</div>${flair}`);
     }
     else if (achievement.includes('biome_') || achievement.includes('atmo_')){
         let planet = achievement.substring(achievement.indexOf('_') + 1);
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc('wiki_achieve_planet_type',[achievement.substring(0,1) === 'b' ? loc(`biome_${planet}_name`) : loc(`planet_${planet}`)])}</div>${flair}`));
+        content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc('wiki_achieve_planet_type',[achievement.substring(0,1) === 'b' ? loc(`biome_${planet}_name`) : loc(`planet_${planet}`)])}</div>${flair}`);
     }
     else {
         let desc = achieveDescData[achievement] ? loc(`wiki_achieve_${achievement}`,achieveDescData[achievement]) : loc(`wiki_achieve_${achievement}`);
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${desc}</div>${flair}`));
+        content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${desc}</div>${flair}`);
     }
+    popover(`a-${achievement}`,content,options);
 }
 
 function featDesc(feat,showFlair){
+    let content = $();
+    let options = {};
     let flair = showFlair ? `<div class="has-text-flair">${feats[feat].flair}</div>` : ``;
     if (feat === 'egghunt'){
         const date = new Date();
@@ -388,7 +395,7 @@ function featDesc(feat,showFlair){
             eggs = eggs + `<span class="${egg}">${loc('wiki_feat_egghunt_num',[i])}</span>`
         }
         eggs = eggs + `</div>`;
-        popover(`f-${feat}`,$(`<div class="has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${eggs}${flair}`));
+        content = $(`<div class="has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${eggs}${flair}`);
     }
     else if (feat === 'trickortreat'){
         const date = new Date();
@@ -403,7 +410,7 @@ function featDesc(feat,showFlair){
             tricks = tricks + `<span class="wide ${trick}">${loc('wiki_feat_trick_num',[i])}</span>`
         }
         tricks = tricks + `</div>`;
-        popover(`f-${feat}`,$(`<div class="has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${tricks}${flair}`));
+        content = $(`<div class="has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${tricks}${flair}`);
     }
     else if (feat === 'equilibrium'){
         let species = {};
@@ -433,9 +440,10 @@ function featDesc(feat,showFlair){
             }
         });
         checked = checked + `</div>`;
-        popover(`f-${feat}`,$(`<div class="wide has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${checked}${flair}`),{
+        content = $(`<div class="wide has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${checked}${flair}`);
+        options = {
             wide: true
-        });
+        };
     }
     else if (feat === 'gene_splicer'){
         let checked = `<div class="flexed wide">`;
@@ -478,7 +486,8 @@ function featDesc(feat,showFlair){
             }
         });
         path += `</div>`;
-        popover(`f-${feat}`,$(`<div class="wide has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${path}${flair}`),{ wide: true, classes: 'w25' });
+        content = $(`<div class="wide has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${path}${flair}`);
+        options = { wide: true, classes: 'w25' };
     }
     else if (feat === 'planned_obsolescence') {
         let checked = `<div class="flexed wide">`;    
@@ -500,11 +509,13 @@ function featDesc(feat,showFlair){
             }
         });
         checked = checked + `</div>`;
-        popover(`f-${feat}`,$(`<div class="wide has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${checked}${flair}`),{
+        content = $(`<div class="wide has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${checked}${flair}`);
+        options = {
             wide: true
-        });
+        };
     }
     else {
-        popover(`f-${feat}`,$(`<div class="has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${flair}`));
+        content = $(`<div class="has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${flair}`);
     }
+    popover(`f-${feat}`,content,options);
 }
