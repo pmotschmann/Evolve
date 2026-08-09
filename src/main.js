@@ -7486,6 +7486,18 @@ function fastLoop(){
             modRes('Adamantite', adam_delta * time_multiplier);
         }
 
+        // Tungsten
+        if (global.resource.Tungsten.display && global.space['mineshaft'] && p_on['mineshaft']){
+            let mine_base = p_on['mineshaft'] * production('mineshaft') * production('psychic_boost','Tungsten');
+            let mine_delta = mine_base * global_multiplier * qs_multiplier * zigVal;
+            breakdown.p['Tungsten'][loc('space_mineshaft_title')] = mine_base + 'v';
+            if (mine_base > 0){
+                breakdown.p['Tungsten'][`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
+                breakdown.p['Tungsten'][`ᄂ${loc('quarantine')}`] = ((qs_multiplier - 1) * 100) + '%';
+            }
+            modRes('Tungsten', mine_delta * time_multiplier);
+        }
+
         // Stone from the Titan mines, once resettlement reopens regolith processing there.
         if (global.tech['resettle'] && global.resource.Stone.display && global.space['titan_mine']){
             let synd = syndicate('spc_titan');

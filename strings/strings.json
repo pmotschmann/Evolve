@@ -7041,6 +7041,8 @@
   "survey_rich": "%0 has been surveyed, and the readings are unambiguous: significant deposits of %1 lie beneath the surface. The remaining moons have been struck off the survey list; there is no reason to keep looking.",
   "survey_info_desc_rich": "Substantial %0 deposits have been confirmed beneath the surface.",
   "survey_region_unknown": "Unsurveyed Moon",
+  "space_mineshaft_title": "Mineshaft",
+  "space_mineshaft_desc": "%0 Mineshaft",
   "space_titania_info_desc": "%0 is the largest of Uranus's moons, a cratered ball of ice and rock scarred by an enormous canyon system.",
   "space_oberon_info_desc": "%0 is the outermost of Uranus's major moons, its ancient surface saturated with impact craters and streaked with dark deposits.",
   "space_io_info_desc": "%0 is the most volcanically violent body in the solar system, kneaded by Jupiter's tides until its surface runs with sulphur and molten rock.",

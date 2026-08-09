@@ -1720,6 +1720,45 @@ const outerTruth = {
             },
             syndicate(){ return false; },
             nav(){ return surveyFound(); }
+        },
+        mineshaft: {
+            id: 'space-mineshaft',
+            title(){ return loc('space_mineshaft_title'); },
+            desc(){
+                let moon = surveyBody();
+                return `<div>${loc('space_mineshaft_desc',[moon ? planetName()[moon] : loc('survey_region_unknown')])}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            type: 'mining',
+            reqs: { survey: 2 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('mineshaft', offset, 15000000, 1.26); },
+                Lumber(offset){ return spaceCostMultiplier('mineshaft', offset, 18000000, 1.26); },
+                Iron(offset){ return spaceCostMultiplier('mineshaft', offset, 21750000, 1.26); },
+            },
+            effect(){
+                let tungsten = +(production('mineshaft')).toFixed(3);
+                return `<div>${loc('gain',[tungsten,global.resource.Tungsten.name])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            powered(){ return powerCostMod(8); },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct($(this)[0]);
+                    powerOnNewStruct($(this)[0]);
+                    if (!global.resource.Tungsten.display){
+                        global.resource.Tungsten.display = true;
+                        defineIndustry();
+                    }
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['mineshaft','space']
+                };
+            }
         }
     },
 };

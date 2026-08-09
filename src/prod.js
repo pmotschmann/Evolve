@@ -289,6 +289,10 @@ export function production(id,val,wiki){
             }
             return 0;
         }
+        case 'mineshaft':
+        {
+            return 9.8;
+        }
         case 'orichalcum_mine':
         {
             return 0.08;
