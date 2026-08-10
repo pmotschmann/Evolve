@@ -308,7 +308,7 @@ function achieveDesc(achievement,showFlair,universe){
                 defeated = defeated + `<span class="swide iclr${list[boss]}">${loc(`portal_mech_boss_${boss}`)}</span>`;
             }
             else {
-                defeated = defeated + `<span class="swide has-text-danger">${loc(`portal_mech_boss_${boss}`)}</span>`;
+                defeated = defeated + `<span class="swide has-text-danger">${loc(`portal_mech_boss_${boss}`)}${srNoteCompleted(false)}</span>`;
             }
         });
         defeated = defeated + `</div>`;
@@ -319,31 +319,31 @@ function achieveDesc(achievement,showFlair,universe){
     }
     else if (achievement === 'banana'){
         let checklist = `<div class="list">`;
-        checklist = checklist + `<div class="has-text-${global.stats.banana.b1[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_banana1`)}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.banana.b2[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_banana2`)}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.banana.b3[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_banana3`)}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.banana.b4[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_banana4`,[500])}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.banana.b5[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_banana5`,[50])}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.banana.b1[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_banana1`)}${srNoteCompleted(global.stats.banana.b1[uAffix])}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.banana.b2[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_banana2`)}${srNoteCompleted(global.stats.banana.b2[uAffix])}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.banana.b3[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_banana3`)}${srNoteCompleted(global.stats.banana.b3[uAffix])}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.banana.b4[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_banana4`,[500])}${srNoteCompleted(global.stats.banana.b4[uAffix])}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.banana.b5[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_banana5`,[50])}${srNoteCompleted(global.stats.banana.b5[uAffix])}</div>`;
         checklist = checklist + `</div>`;
         content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`);
     }
     else if (achievement === 'endless_hunger'){
         let checklist = `<div class="list">`;
-        checklist = checklist + `<div class="has-text-${global.stats.endless_hunger.b1[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger1`)}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.endless_hunger.b2[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger2`)}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.endless_hunger.b3[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger3`,[80])}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.endless_hunger.b4[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger4`,[1200])}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.endless_hunger.b5[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger5`)}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.endless_hunger.b1[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger1`)}${srNoteCompleted(global.stats.endless_hunger.b1[uAffix])}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.endless_hunger.b2[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger2`)}${srNoteCompleted(global.stats.endless_hunger.b2[uAffix])}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.endless_hunger.b3[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger3`,[80])}${srNoteCompleted(global.stats.endless_hunger.b3[uAffix])}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.endless_hunger.b4[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger4`,[1200])}${srNoteCompleted(global.stats.endless_hunger.b4[uAffix])}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.endless_hunger.b5[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger5`)}${srNoteCompleted(global.stats.endless_hunger.b5[uAffix])}</div>`;
         checklist = checklist + `</div>`;
         content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`);
     }
     else if (achievement === 'zombie_genocider'){
         // Task 5 is not written yet, so only the ones that exist are listed.
         let checklist = `<div class="list">`;
-        checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z1[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider1`,[(53594).toLocaleString()])}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z2[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider2`)}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z3[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider3`)}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z4[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider4`)}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z1[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider1`,[(53594).toLocaleString()])}${srNoteCompleted(global.stats.zombie_genocider.z1[uAffix])}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z2[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider2`)}${srNoteCompleted(global.stats.zombie_genocider.z2[uAffix])}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z3[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider3`)}${srNoteCompleted(global.stats.zombie_genocider.z3[uAffix])}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z4[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider4`)}${srNoteCompleted(global.stats.zombie_genocider.z4[uAffix])}</div>`;
         checklist = checklist + `</div>`;
         content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`);
     }
@@ -384,11 +384,11 @@ function achieveDesc(achievement,showFlair,universe){
     }
     else if (achievement === 'what_is_best'){
         let checklist = `<div class="list">`;
-        checklist = checklist + `<div class="has-text-${global.stats.warlord.k ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_k`,[50])}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.warlord.p ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_p`)}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.warlord.a ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_a`,[250])}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.warlord.r ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_r`)}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.warlord.g ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_g`)}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.warlord.k ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_k`,[50])}${srNoteCompleted(global.stats.warlord.k)}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.warlord.p ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_p`)}${srNoteCompleted(global.stats.warlord.p)}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.warlord.a ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_a`,[250])}${srNoteCompleted(global.stats.warlord.a)}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.warlord.r ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_r`)}${srNoteCompleted(global.stats.warlord.r)}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.warlord.g ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_g`)}${srNoteCompleted(global.stats.warlord.g)}</div>`;
         checklist = checklist + `</div>`;
         content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`);
     }
