@@ -9,7 +9,7 @@ import { loadFoundry, jobScale, jobName, limitCraftsmen } from './jobs.js';
 import { buildGarrison, checkControlling, govTitle, defineFleetCommand } from './civics.js';
 import { renderSpace, planetName, int_fuel_adjust } from './space.js';
 import { drawHellObservations } from './portal.js';
-import { setOrbits, drawShipYard, jumpGateShutdown, jumpGateRestart, aerographeneSpeedBonus, shipCapacitorSaving } from './truepath.js';
+import { setOrbits, drawShipYard, jumpGateShutdown, jumpGateRestart, aerographeneSpeedBonus, shipCapacitorSaving, surveyTheme } from './truepath.js';
 import { arpa } from './arpa.js';
 import { setPowerGrid, defineIndustry, addSmelter, setupRituals, altReplicatorRes } from './industry.js';
 import { defineGovernor, removeTask } from './governor.js';
@@ -15007,6 +15007,29 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.space.spc_venus.nitrogen_harvester);
+                renderSpace();
+                return true;
+            }
+            return false;
+        }
+    },
+    moon_resort: {
+        id: 'tech-moon_resort',
+        // Theme changes depending on which moon was selected
+        title(){ return loc(`tech_moon_resort_${surveyTheme()}`); },
+        desc(){ return loc(`tech_moon_resort_${surveyTheme()}`); },
+        category: 'progress',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { survey: 2 },
+        grant: ['survey',3],
+        cost: {
+            Knowledge(){ return 26500000; }
+        },
+        effect(){ return loc(`tech_moon_resort_${surveyTheme()}_effect`,[planetName()[surveyTheme()]]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.space.spc_survey.survey_resort);
                 renderSpace();
                 return true;
             }

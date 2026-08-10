@@ -973,7 +973,9 @@ const outerTruth = {
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[planetName().enceladus])}</div>`;
-                desc += `<div>${loc('galaxy_defense_platform_effect',[50])}</div>`;
+                if (!global.tech['resettle']){
+                    desc += `<div>${loc('galaxy_defense_platform_effect',[50])}</div>`;
+                }
                 desc += loc('plus_max_resource',[$(this)[0].soldiers(),loc('civics_garrison_soldiers')]);
                 if (global.race['orbit_decayed']){
                     let healing = global.tech['medic'] * 5;
@@ -1738,7 +1740,7 @@ const outerTruth = {
             s_type: 'venus',
             support(){ return -3; },
             powered(){
-                let cost = 500 - (support_on['nitrogen_harvester'] || 0) * actions.space.spc_venus.nitrogen_harvester.cooling();
+                let cost = 5000 - (support_on['nitrogen_harvester'] || 0) * actions.space.spc_venus.nitrogen_harvester.cooling();
                 if (cost < 0){ cost = 0; }
                 return powerCostMod(cost);
             },
@@ -1796,7 +1798,7 @@ const outerTruth = {
             support(){ return -1; },
             powered(){ return 0; },
             // What one running harvester takes off the descender's draw.
-            cooling(){ return 50; },
+            cooling(){ return 500; },
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct($(this)[0]);
@@ -1894,9 +1896,50 @@ const outerTruth = {
                     p: ['mineshaft','space']
                 };
             }
+        },
+        // Resorts is themed dependign on location
+        survey_resort: {
+            id: 'space-survey_resort',
+            title(){ return loc(`space_resort_${surveyTheme()}_title`); },
+            desc(){ return `<div>${loc(`space_resort_${surveyTheme()}_title`)}</div><div class="has-text-special">${loc(`space_resort_${surveyTheme()}_desc`)}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            type: 'entertainment',
+            category: 'commercial',
+            reqs: { survey: 3 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('survey_resort', offset, 125000000, 1.28); },
+                Food(offset){ return spaceCostMultiplier('survey_resort', offset, 5500000, 1.28); },
+                Furs(offset){ return spaceCostMultiplier('survey_resort', offset, 180000000, 1.28); },
+                Water(offset){ return spaceCostMultiplier('survey_resort', offset, 125000, 1.28); },
+                Plywood(offset){ return spaceCostMultiplier('survey_resort', offset, 3500000, 1.28); }
+            },
+            morale(){ return 5; },
+            effect(){
+                return `<div>${loc('city_shrine_morale',[$(this)[0].morale()])}</div><div>${loc('plus_max_resource',[jobScale(1),loc('job_entertainer')])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            powered(){ return powerCostMod(5); },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct($(this)[0]);
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['survey_resort','space']
+                };
+            }
         }
     },
 };
+
+// Which of the five moons to use for theming
+export function surveyTheme(){
+    return surveyFound() ? surveyBody() : 'europa';
+}
 
 // The descender has to be finished and actually running on Venus support for anyone to be down there.
 export function facilityStudying(){

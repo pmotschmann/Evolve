@@ -8,7 +8,7 @@ import { races, traits } from './../races.js';
 import { getHalloween, svgIcons, svgViewBox } from './../functions.js';
 import { planetName } from './../space.js';
 import { actionDesc, sideMenu, getSolarName } from './functions.js';
-import { shipCapacitorSaving } from './../truepath.js';
+import { shipCapacitorSaving, surveyTheme } from './../truepath.js';
 
 const isHalloween = getHalloween();
 const standard_tech = techList('standard');
@@ -2191,6 +2191,10 @@ const extraInformation = {
     venus_foothold: [
         loc(`wiki_tech_building_unlock`,[loc('space_cloud_city_title')]),
         loc(`wiki_tech_venus_foothold`,[3,getSolarName('venus')])
+    ],
+    moon_resort: [
+        loc(`wiki_tech_building_unlock`,[loc(`space_resort_${surveyTheme()}_title`)]),
+        loc(`wiki_tech_moon_resort`,[5,1])
     ],
     nitrogen_harvester: [
         loc(`wiki_tech_building_unlock`,[loc('space_nitrogen_harvester_title')]),

@@ -3403,6 +3403,17 @@ function fastLoop(){
             morale += high_tax * 0.5;
         }
 
+        // Somewhere to go that is not a work rotation. Lifts current morale rather than the ceiling, so
+        // it is felt straight away instead of raising room the player then has to fill. Read after the
+        // power pass so an unpowered resort stops counting the same tick its lights go out.
+        if (global.space['survey_resort'] && p_on['survey_resort']){
+            global.city.morale.resort = p_on['survey_resort'] * actions.space.spc_survey.survey_resort.morale();
+            morale += global.city.morale.resort;
+        }
+        else {
+            global.city.morale.resort = 0;
+        }
+
         if (((global.civic.govern.type !== 'autocracy' && !global.race['blood_thirst']) || global.race['immoral']) && global.civic.garrison.protest + global.civic.garrison.fatigue > 2){
             let immoral = global.race['immoral'] ? 1 + (traits.immoral.vars()[0] / 100) : 1;
             let warmonger = Math.round(Math.log2(global.civic.garrison.protest + global.civic.garrison.fatigue) * immoral);
@@ -9119,6 +9130,9 @@ function midLoop(){
             if (global.tech['theatre'] && !global.race['joyless']){
                 lCaps['entertainer'] += jobScale(p_on['resort'] * 2);
             }
+        }
+        if (global.space['survey_resort']){
+            lCaps['entertainer'] += jobScale(p_on['survey_resort'] || 0);
         }
         if (global.city['cement_plant']){
             lCaps['cement_worker'] += jobScale(global.city.cement_plant.count * 2);
