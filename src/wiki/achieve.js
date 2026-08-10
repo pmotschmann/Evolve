@@ -217,10 +217,10 @@ function achieveDesc(achievement,showFlair,universe){
                         : global.stats.achieve[`extinct_${key}`].hasOwnProperty('e') && global.stats.achieve[`extinct_${key}`].e >= 0
                         )
                     ){
-                    killed = killed + `<span class="wide iclr${global.stats.achieve[`extinct_${key}`][achievement === 'mass_extinction' ? [uAffix] : 'e']}">${races[key].name}</span>`;
+                    killed = killed + `<span class="wide iclr${global.stats.achieve[`extinct_${key}`][achievement === 'mass_extinction' ? [uAffix] : 'e']}">${races[key].name}${srNoteCompleted(global.stats.achieve[`extinct_${key}`][achievement === 'mass_extinction' ? [uAffix] : 'e'])}</span>`;
                 }
                 else {
-                    killed = killed + `<span class="wide has-text-danger">${races[key].name}</span>`;
+                    killed = killed + `<span class="wide has-text-danger">${races[key].name}${srNoteCompleted(false)}</span>`;
                 }
             }
         });
@@ -235,10 +235,10 @@ function achieveDesc(achievement,showFlair,universe){
         Object.keys(biomes).sort((a,b) => biomes[a].label.localeCompare(biomes[b].label)).forEach(function (key){
             if (!universe || (key !== 'hellscape' && key !== 'eden') || (key === 'hellscape' && universe !== 'evil') || (key === 'eden' && universe === 'evil')){
                 if (global.stats.achieve[`biome_${key}`] && global.stats.achieve[`biome_${key}`][uAffix] >= 0){
-                    biome_list = biome_list + `<span class="wide iclr${global.stats.achieve[`biome_${key}`][uAffix]}">${biomes[key].label}</span>`;
+                    biome_list = biome_list + `<span class="wide iclr${global.stats.achieve[`biome_${key}`][uAffix]}">${biomes[key].label}${srNoteCompleted(global.stats.achieve[`biome_${key}`][uAffix])}</span>`;
                 }
                 else {
-                    biome_list = biome_list + `<span class="wide has-text-danger">${biomes[key].label}</span>`;
+                    biome_list = biome_list + `<span class="wide has-text-danger">${biomes[key].label}${srNoteCompleted(false)}</span>`;
                 }
             }
         });
@@ -251,10 +251,10 @@ function achieveDesc(achievement,showFlair,universe){
             if (key !== 'hybrid' && key !== 'omnivore'){
                 let label = ['carnivore','herbivore','omnivore'].includes(key) ? loc(`evo_${key}_title`) : loc(`genelab_genus_${key}`);
                 if (achievement === 'creator' ? global.stats.achieve[`genus_${key}`] && global.stats.achieve[`genus_${key}`][uAffix] >= 0 : global.stats.achieve[`genus_${key}`] && global.stats.achieve[`genus_${key}`].h >= 0){
-                    genus = genus + `<span class="wide iclr${achievement === 'creator' ? global.stats.achieve[`genus_${key}`][uAffix] : global.stats.achieve[`genus_${key}`].h}">${label}</span>`;
+                    genus = genus + `<span class="wide iclr${achievement === 'creator' ? global.stats.achieve[`genus_${key}`][uAffix] : global.stats.achieve[`genus_${key}`].h}">${label}${srNoteCompleted(achievement === 'creator' ? global.stats.achieve[`genus_${key}`][uAffix] : global.stats.achieve[`genus_${key}`].h)}</span>`;
                 }
                 else {
-                    genus = genus + `<span class="wide has-text-danger">${label}</span>`;
+                    genus = genus + `<span class="wide has-text-danger">${label}${srNoteCompleted(false)}</span>`;
                 }
             }
         });
@@ -277,10 +277,10 @@ function achieveDesc(achievement,showFlair,universe){
             if (key !== 'omnivore'){
                 let label = ['carnivore','herbivore','omnivore'].includes(key) ? loc(`evo_${key}_title`) : loc(`genelab_genus_${key}`);
                 if (genus[key] && genus[key] >= 1){
-                    checked = checked + `<span class="wide iclr${genus[key]}">${label}</span>`;
+                    checked = checked + `<span class="wide iclr${genus[key]}">${label}${srNoteCompleted(genus[key])}</span>`;
                 }
                 else if (key !== 'hybrid'){
-                    checked = checked + `<span class="wide has-text-danger">${label}</span>`;
+                    checked = checked + `<span class="wide has-text-danger">${label}${srNoteCompleted(false)}</span>`;
                 }
             }
         });
@@ -305,7 +305,7 @@ function achieveDesc(achievement,showFlair,universe){
         }
         Object.keys(monsters).forEach(function (boss){
             if (list[boss] && list[boss] > 0){
-                defeated = defeated + `<span class="swide iclr${list[boss]}">${loc(`portal_mech_boss_${boss}`)}</span>`;
+                defeated = defeated + `<span class="swide iclr${list[boss]}">${loc(`portal_mech_boss_${boss}`)}${srNoteCompleted(list[boss])}</span>`;
             }
             else {
                 defeated = defeated + `<span class="swide has-text-danger">${loc(`portal_mech_boss_${boss}`)}${srNoteCompleted(false)}</span>`;
@@ -462,10 +462,10 @@ function featDesc(feat,showFlair){
         }).forEach(function (key){
             if (key !== 'protoplasm' && (key !== 'custom' || (key === 'custom' && global.stats.achieve['ascended'])) && (key !== 'hybrid' || (key === 'hybrid' && global.stats.achieve['what_is_best'] && global.stats.achieve.what_is_best.e >= 5))){
                 if (species[key] && species[key] >= 1){
-                    checked = checked + `<span class="wide iclr${species[key]}">${races[key].name}</span>`;
+                    checked = checked + `<span class="wide iclr${species[key]}">${races[key].name}${srNoteCompleted(species[key])}</span>`;
                 }
                 else {
-                    checked = checked + `<span class="wide has-text-danger">${races[key].name}</span>`;
+                    checked = checked + `<span class="wide has-text-danger">${races[key].name}${srNoteCompleted(false)}</span>`;
                 }
             }
         });
@@ -531,10 +531,10 @@ function featDesc(feat,showFlair){
         }).forEach(function (key){
             if (key !== 'protoplasm' && (key !== 'custom' || (key === 'custom' && global.stats.achieve['ascended'])) && (key !== 'hybrid' || (key === 'hybrid' && global.stats.achieve['what_is_best']))){
                 if (global.stats['synth'] && global.stats.synth[key]){
-                    checked = checked + `<span class="wide iclr5">${races[key].name}</span>`;
+                    checked = checked + `<span class="wide iclr5">${races[key].name}${srNoteCompleted(true)}</span>`;
                 }
                 else {
-                    checked = checked + `<span class="wide has-text-danger">${races[key].name}</span>`;
+                    checked = checked + `<span class="wide has-text-danger">${races[key].name}${srNoteCompleted(false)}</span>`;
                 }
             }
         });
