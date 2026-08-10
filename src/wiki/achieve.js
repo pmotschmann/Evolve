@@ -168,7 +168,7 @@ export function featPage(){
 
         let color = global.stats.feat[feat] && global.stats.feat[feat] > 0 ? 'warning' : 'fade';
         let baseIcon = getBaseIcon(feat,'feat');
-        let star = global.stats.feat[feat] > 1 ? `<p class="flair" title="${sLevel(global.stats.feat[feat])} ${loc(baseIcon)}"><svg class="star${global.stats.feat[feat]}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(baseIcon)}" xml:space="preserve">${svgIcons(baseIcon)}</svg></p>` : '';
+        let star = global.stats.feat[feat] > 1 ? `<p class="flair" title="${sLevel(global.stats.feat[feat])} ${loc(baseIcon)}" role="presentation"><svg class="star${global.stats.feat[feat]}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(baseIcon)}" xml:space="preserve" aria-label="${sLevel(global.stats.feat[feat])} ${loc(baseIcon)}" role="img">${svgIcons(baseIcon)}</svg></p>` : '';
         achieve.append(`<span id="f-${feat}" class="achieve has-text-${color}" aria-hidden="true">${feats[feat].name}</span>`);
         achieve.append(`<button id="f-sr-expand-${feat}" aria-expanded="false" aria-controls="f-sr-desc-${feat}" class="is-sr-only">${feats[feat].name}</button><div id="f-sr-desc-${feat}" class="is-sr-only" aria-hidden="true"></div>`);
         achieve.append(`${star}`);

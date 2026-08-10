@@ -485,7 +485,7 @@ export function drawAchieve(args){
         Object.keys(feats).forEach(function (feat){
             let baseIcon = getBaseIcon(feat,'feat');
             if (global.stats.feat[feat]){
-                let star = global.stats.feat[feat] > 1 ? `<p class="flair" title="${sLevel(global.stats.feat[feat])} ${loc(baseIcon)}"><svg class="star${global.stats.feat[feat]}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(baseIcon)}" xml:space="preserve">${svgIcons(baseIcon)}</svg></p>` : '';
+                let star = global.stats.feat[feat] > 1 ? `<p class="flair" title="${sLevel(global.stats.feat[feat])} ${loc(baseIcon)}" role="presentation"><svg class="star${global.stats.feat[feat]}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(baseIcon)}" xml:space="preserve" aria-label="${sLevel(global.stats.feat[feat])} ${loc(baseIcon)}" role="img">${svgIcons(baseIcon)}</svg></p>` : '';
                 if (feat === 'easter'){
                     let egg = easterEgg(4,14);
                     if (egg.length > 0){
