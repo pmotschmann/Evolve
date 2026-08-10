@@ -109,6 +109,7 @@ export const atomic_mass = {
     Iridium: 192.217,
     Helium_3: 3.0026,
     Deuterium: 2.014,
+    Tungsten: 183.84,
     Neutronium: 248.74,
     Adamantite: 178.803,
     Infernite: 222.666,
@@ -732,6 +733,7 @@ export function defineResources(wiki){
     loadResource('Helium_3',wiki,0,1,true,false);
     loadResource('Water',wiki,0,1,false,false,'advanced');
     loadResource('Deuterium',wiki,0,1,false,false,'advanced');
+    loadResource('Tungsten',wiki,0,1,false,true,'advanced');
     loadResource('Neutronium',wiki,0,1,false,false,'advanced');
     loadResource('Adamantite',wiki,0,1,false,true,'advanced');
     loadResource('Infernite',wiki,0,1,false,false,'advanced');

@@ -15334,6 +15334,51 @@ const techs = {
             return false;
         }
     },
+    venus_foothold: {
+        id: 'tech-venus_foothold',
+        title(){ return loc('tech_venus_foothold',[planetName().venus]); },
+        desc(){ return loc('tech_venus_foothold',[planetName().venus]); },
+        category: 'progress',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { venus: 3 },
+        grant: ['venus',4],
+        cost: {
+            Knowledge(){ return 27000000; }
+        },
+        effect(){ return loc('tech_venus_foothold_effect',[planetName().venus]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.space.spc_venus.cloud_city);
+                messageQueue(loc('tech_venus_foothold_msg',[3]),'info',false,['progress']);
+                renderSpace();
+                return true;
+            }
+            return false;
+        }
+    },
+    descent_module: {
+        id: 'tech-descent_module',
+        title(){ return loc('tech_descent_module'); },
+        desc(){ return loc('tech_descent_module'); },
+        category: 'progress',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { venus: 5 },
+        grant: ['venus',6],
+        cost: {
+            Knowledge(){ return 27250000; }
+        },
+        effect(){ return loc('tech_descent_module_effect',[planetName().venus,loc('space_cloud_city_title')]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.space.spc_venus.descender);
+                renderSpace();
+                return true;
+            }
+            return false;
+        }
+    },
     expert_salvage: {
         id: 'tech-expert_salvage',
         title(){ return loc('tech_expert_salvage'); },

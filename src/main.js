@@ -4,14 +4,14 @@ import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, c
 import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, resetResBuffer, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone, exceededATimeThreshold, loopTimers, getWeaselTechLevelRequirement, calcQuantumLevel, drawPet } from './functions.js';
 import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, cleanRemoveTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
-import { defineJobs, job_desc, loadFoundry, farmerValue, jobName, jobScale, workerScale, limitCraftsmen, loadServants} from './jobs.js';
+import { defineJobs, job_desc, loadFoundry, farmerValue, jobName, jobScale, workerScale, limitCraftsmen, loadServants, craftsmanCap } from './jobs.js';
 import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, replicatorLines, luxGoodPrice, smelterUnlocked, smelterFuelConfig, setupRituals, maxRitualNum, ritual_types, factoryLines, factoryCapacity, trimFactoryLines } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
 import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, checkPowerRequirements, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, start_iceage, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct, casino_vault, casinoEarn, doCallbacks, cLabels } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types, spaceSectors } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
-import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYZcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, randomCoord, atShipyard, pinSalvage, beaconsActive, finalBeacons, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, moveShips } from './truepath.js';
+import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYZcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, randomCoord, atShipyard, pinSalvage, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, moveShips, facilityStudying, facilityProgress, facilityCrew, facilityResearchTotal, facilityFindings } from './truepath.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
 import { defineGovernor, govern, govActive, removeTask } from './governor.js';
@@ -1408,7 +1408,7 @@ function fastLoop(){
     let resList = [
         'Money','Knowledge','Omniscience','Food','Lumber','Stone','Chrysotile','Crystal','Furs','Copper','Iron',
         'Cement','Coal','Oil','Uranium','Aluminium','Steel','Titanium','Alloy','Polymer','Iridium','Helium_3',
-        'Water','Deuterium','Neutronium','Adamantite','Infernite','Elerium','Nano_Tube','Graphene','Stanene',
+        'Water','Deuterium','Tungsten','Neutronium','Adamantite','Infernite','Elerium','Nano_Tube','Graphene','Stanene',
         'Bolognium','Vitreloy','Orichalcum','Asphodel_Powder','Elysanite','Unobtainium','Positronium','Quantium',
         'Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril','Aerogel','Nanoweave','Aerographene','Scarletite',
         'Cipher','Nanite','Mana','Authority'
@@ -2490,6 +2490,11 @@ function fastLoop(){
             global.civic.meditator.display = true;
         }
 
+        if (global.space['descender']){
+            let ready = global.space.descender.count >= 100 ? 1 : 0;
+            if (global.space.descender.on > ready){ global.space.descender.on = ready; }
+        }
+
         // Moon Bases, Spaceports, Etc
         [
             { a: 'space', r: 'spc_moon', s: 'moon_base', g: 'moon' },
@@ -2497,6 +2502,7 @@ function fastLoop(){
             { a: 'space', r: 'spc_titan', s: 'electrolysis', g: 'titan' },
             { a: 'space', r: 'spc_titan', r2: 'spc_enceladus', s: 'titan_spaceport', g: 'enceladus' },
             { a: 'space', r: 'spc_eris', s: 'drone_control', g: 'eris' },
+            { a: 'space', r: 'spc_venus', s: 'cloud_city', g: 'venus' },
             { a: 'tauceti', r: 'tau_home', s: 'orbital_station', g: 'tau_home' },
             { a: 'tauceti', r: 'tau_red', s: 'orbital_platform', g: 'tau_red' },
             { a: 'tauceti', r: 'tau_roid', s: 'patrol_ship', g: 'tau_roid', oc: true },
@@ -4634,6 +4640,29 @@ function fastLoop(){
                         messageQueue(loc('tau_gas2_alien_station_data6'),'success',false,['progress']);
                     }
                     drawTech();
+                }
+            }
+        }
+
+        // Researching the Alien Facility, scaled by scientist count
+        if (facilityStudying() && (!global.tech['facility_data'] || global.tech.facility_data < 6)){
+            let crew = workerScale(global.civic.scientist.workers,'scientist');
+            if (crew > 0){
+                global.space.alien_facility.research += (crew / facilityCrew) * time_multiplier;
+                let pct = facilityProgress();
+                let rank = global.tech['facility_data'] || 0;
+                for (let step of facilityFindings){
+                    if (rank < step.r && pct >= step.p){
+                        global.tech['facility_data'] = step.r;
+                        rank = step.r;
+                        if (step.r === 6){
+                            global.space.alien_facility.research = facilityResearchTotal;
+                            global.tech['resettle'] = 16;
+                        }
+                        messageQueue(loc(step.m,step.v ? step.v() : []),'success',false,['progress']);
+                        drawTech();
+                        break;
+                    }
                 }
             }
         }
@@ -7571,6 +7600,18 @@ function fastLoop(){
             modRes('Adamantite', adam_delta * time_multiplier);
         }
 
+        // Tungsten
+        if (global.resource.Tungsten.display && global.space['mineshaft'] && p_on['mineshaft']){
+            let mine_base = p_on['mineshaft'] * production('mineshaft') * production('psychic_boost','Tungsten');
+            let mine_delta = mine_base * global_multiplier * qs_multiplier * zigVal;
+            breakdown.p['Tungsten'][loc('space_mineshaft_title')] = mine_base + 'v';
+            if (mine_base > 0){
+                breakdown.p['Tungsten'][`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
+                breakdown.p['Tungsten'][`ᄂ${loc('quarantine')}`] = ((qs_multiplier - 1) * 100) + '%';
+            }
+            modRes('Tungsten', mine_delta * time_multiplier);
+        }
+
         // Stone from the Titan mines, once resettlement reopens regolith processing there.
         if (global.tech['resettle'] && global.resource.Stone.display && global.space['titan_mine']){
             let synd = syndicate('spc_titan');
@@ -8650,6 +8691,7 @@ function midLoop(){
             Helium_3: 0,
             Water: 0,
             Deuterium: 0,
+            Tungsten: 0,
             Neutronium: 0,
             Adamantite: 0,
             Infernite: 0,
@@ -10955,11 +10997,11 @@ function midLoop(){
             global.race.servants.used = total_servants;
         }
 
-        // Womling artisans lend a skilled pair of hands each. They are temporary in the sense that the
-        // capacity follows the job — lose the craftworks or the population and it goes away — so the
-        // permanent allowance is kept in sbase and the total rebuilt from it every tick.
+        // Womling artisans
         {
             let artisans = womlingArtisans();
+            let hadSkilled = global.race['servants'] && global.race.servants.smax > 0 ? true : false;
+
             if (global.race['servants']){
                 if (!global.race.servants.hasOwnProperty('sbase')){
                     global.race.servants['sbase'] = global.race.servants.smax || 0;
@@ -10967,8 +11009,13 @@ function midLoop(){
                 global.race.servants.smax = global.race.servants.sbase + artisans;
             }
             else if (artisans > 0){
-                // No servants of your own yet — the artisans alone are enough to open the workshop.
+                // Womlings are first servants
                 global.race['servants'] = { max: 0, used: 0, sbase: 0, smax: artisans, sused: 0, jobs: {}, sjobs: {}, force_scavenger: false };
+            }
+
+            let hasSkilled = global.race['servants'] && global.race.servants.smax > 0 ? true : false;
+            if (hadSkilled !== hasSkilled){
+                loadFoundry();
             }
         }
 
@@ -11389,20 +11436,57 @@ function midLoop(){
         }
 
         if (global.city['foundry']){
+            if (!global.city.foundry.hasOwnProperty('hold')){ global.city.foundry['hold'] = {}; }
+            if (!global.city.foundry.hasOwnProperty('cap')){ global.city.foundry['cap'] = global.civic.craftsman.max || 0; }
+            if (!global.city.foundry.hasOwnProperty('rcap')){ global.city.foundry['rcap'] = {}; }
+            let hold = global.city.foundry.hold;
+            let rcap = global.city.foundry.rcap;
+
             let fworkers = global.civic.craftsman.workers;
+            // Don't hold Plywood if player has no Plywood resource
             if ((global.race['kindling_kindred'] || global.race['smoldering']) && global.city.foundry['Plywood'] > 0){
                 global.civic.craftsman.workers -= global.city.foundry['Plywood'];
                 global.city.foundry.crafting -= global.city.foundry['Plywood'];
                 global.city.foundry['Plywood'] = 0;
+                hold['Plywood'] = 0;
             }
             let craft_costs = craftCost();
             Object.keys(craft_costs).forEach(function (craft){
+                // Crafters cut loose because the building employing them was razed or switched off.
                 while (global.city.foundry[craft] > fworkers && global.city.foundry[craft] > 0){
                     global.city.foundry[craft]--;
                     global.city.foundry.crafting--;
+                    hold[craft] = (hold[craft] || 0) + 1;
                 }
                 fworkers -= global.city.foundry[craft];
             });
+
+            // Capacity has gbeen restored
+            let roomier = global.civic.craftsman.max > global.city.foundry.cap;
+            let dJob = global.civic[global.civic.d_job];
+            let restored = false;
+            Object.keys(craft_costs).forEach(function (craft){
+                let capped = ['Scarletite','Quantium'].includes(craft);
+                let ceiling = capped ? craftsmanCap(craft) : -1;
+                let reopened = capped && ceiling > (rcap.hasOwnProperty(craft) ? rcap[craft] : ceiling);
+                if (roomier || reopened){
+                    while ((hold[craft] || 0) > 0
+                        && typeof global.city.foundry[craft] === 'number'
+                        && global.city.foundry.crafting < global.civic.craftsman.max
+                        && dJob && dJob.workers > 0
+                        && (ceiling === -1 || global.city.foundry[craft] < ceiling)){
+                        global.city.foundry[craft]++;
+                        global.city.foundry.crafting++;
+                        global.civic.craftsman.workers++;
+                        dJob.workers--;
+                        hold[craft]--;
+                        restored = true;
+                    }
+                }
+                if (capped){ rcap[craft] = ceiling; }
+            });
+            if (restored){ loadFoundry(); }
+            global.city.foundry.cap = global.civic.craftsman.max;
         }
 
         if (global.tech['foundry'] === 3 && (global.race['kindling_kindred'] || global.race['smoldering'])){
@@ -12900,6 +12984,8 @@ function longLoop(){
                 };
             }
             messageQueue((womlings + skilled) === 1 ? loc('civics_servants_msg1') : loc('civics_servants_msg2',[womlings + skilled]),'caution',false,['events','major_events']);
+            loadServants();
+            loadFoundry();
         }
 
         if (global.race['truepath'] && global.tech['focus_cure'] && global.tech.focus_cure >= 2 && global.tauceti['infectious_disease_lab']){
@@ -13325,10 +13411,27 @@ function longLoop(){
                 global.tech.resettle = 15;
                 global.tech['venus'] = 1;
                 global.settings.space.venus = true;
+                initStruct(actions.space.spc_venus.cloud_city);
                 finalBeacons();
                 messageQueue(loc('scout_activity',[planetName().venus]),'info',false,['progress']);
                 renderSpace();
             }
+
+            // Scout Venus
+            // A quantum scanner is required to pin point the location of the anomoly.
+            if (global.tech['venus'] && global.tech.venus < 3 && global.space.shipyard.ships.some(s => !s.inTransit && s.location.name === 'spc_venus')){
+                if (global.space.shipyard.ships.some(s => !s.inTransit && s.location.name === 'spc_venus' && s.sensor === 'quantum')){
+                    global.tech.venus = 3;
+                    messageQueue(loc('scout_venus_outpost',[planetName().venus,planetName().home,loc('tech_alien_outpost')]),'info',false,['progress']);
+                }
+                else if (global.tech.venus === 1){
+                    global.tech.venus = 2;
+                    messageQueue(loc('scout_venus_signal',[planetName().venus,loc('outer_shipyard_sensor_quantum')]),'info',false,['progress']);
+                }
+            }
+
+            // Survey the rocky moons for tungsten.
+            checkTungstenSurvey();
 
             // Detect Signals
             if (global.tech.mars >= 6 && global.tech.resettle === 8 && Math.rand(0,5) === 0){

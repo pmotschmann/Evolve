@@ -1536,7 +1536,7 @@ if(convertVersion(global['version']) && true){
 
 global['version'] = '1.5.0';
 delete global['revision'];
-global['beta'] = 22;
+global['beta'] = 24;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
@@ -1557,7 +1557,7 @@ if (!global.hasOwnProperty('support')){
 
 [
     'moon','red','belt','alpha','nebula','gateway','alien2','lake','spire',
-    'titan','enceladus','eris','tau_home','tau_red','tau_roid','asphodel'
+    'titan','enceladus','eris','venus','tau_home','tau_red','tau_roid','asphodel'
 ].forEach(function(s){
     if (!global.support.hasOwnProperty(s)){
         global.support[s] = [];
@@ -2234,6 +2234,18 @@ if (!global['arpa']){
     global['arpa'] = {};
 }
 
+if (global.city['foundry']){
+    if (!global.city.foundry.hasOwnProperty('hold')){
+        global.city.foundry['hold'] = {};
+    }
+    if (!global.city.foundry.hasOwnProperty('cap')){
+        global.city.foundry['cap'] = 0;
+    }
+    if (!global.city.foundry.hasOwnProperty('rcap')){
+        global.city.foundry['rcap'] = {};
+    }
+}
+
 if (global.city['factory']){
     // Production lines shut down when factory capacity was lost,
     if (!global.city.factory.hasOwnProperty('hold')){
@@ -2612,7 +2624,7 @@ function setRegionStates(reset){
             'showWish','showUnderground','showSurface'
         ],
         space: [
-            'moon','red','hell','venus','sun','gas','gas_moon','belt','dwarf','alpha','proxima',
+            'moon','red','hell','venus','survey','sun','gas','gas_moon','belt','dwarf','alpha','proxima',
             'nebula','neutron','blackhole','sirius','stargate','gateway','gorddon',
             'alien1','alien2','chthonian','titan','enceladus','triton','eris','makemake'
         ],

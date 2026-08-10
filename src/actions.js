@@ -2697,6 +2697,9 @@ export const actions = {
                         Aerographene: 0,
                         Scarletite: 0,
                         Quantium: 0,
+                        hold: {},
+                        cap: 0,
+                        rcap: {},
                     },
                     p: ['foundry','city']
                 };
@@ -6570,16 +6573,22 @@ export function setAction(c_action,action,type,old,prediction){
                     }, 50);
                 }
             },
+            // How many units the on/off switch may address. Normally every one that has been built, but
+            // a structure assembled out of segments is a single machine and says so by capping this at 1.
+            on_cap(){
+                return c_action['on_cap'] ? c_action.on_cap() : global[action][type].count;
+            },
             on_label(){
                 return `on: ${global[action][type].on}`;
             },
             off_label(){
-                return `off: ${global[action][type].count - global[action][type].on}`;
+                return `off: ${this.on_cap() - global[action][type].on}`;
             },
             power_on(){
                 let keyMult = keyMultiplier();
+                let cap = this.on_cap();
                 for (let i=0; i<keyMult; i++){
-                    if (global[action][type].on < global[action][type].count){
+                    if (global[action][type].on < cap){
                         global[action][type].on++;
                     }
                     else {
@@ -6630,7 +6639,7 @@ export function setAction(c_action,action,type,old,prediction){
                 }
             },
             p_off(p,id){
-                let value = global[action][type].count - p;
+                let value = this.on_cap() - p;
                 if (
                     (id === 'city-casino' && !global.race['cataclysm'] && !global.race['orbit_decayed']) || 
                     (id === 'space-spc_casino' && (global.race['cataclysm'] || global.race['orbit_decayed'])) || 
@@ -7430,7 +7439,14 @@ export function planetGeology(geology){
 
 function srDesc(c_action,old){
     let desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc();
-    desc = desc + '. ';
+    if (desc.endsWith('</div>')){
+        desc = desc.slice(0, -6) + '. </div>'; // the period was sometimes spoken when outside the div
+    }
+    else {
+        desc = desc + '. ';
+    }
+    let preAffordableLen = desc.length;
+    let preResCostsLen = 0;
     if (c_action.cost && !old){
         if (checkAffordable(c_action)){
             desc = desc + loc('affordable') + '. ';
@@ -7439,6 +7455,7 @@ function srDesc(c_action,old){
             desc = desc + loc('not_affordable') + '. ';
         }
         desc = desc + 'Costs: ';
+        preResCostsLen = desc.length;
         let type = c_action.id.split('-')[0];
         var costs = type !== 'genes' && type !== 'blood' ? adjustCosts(c_action) : c_action.cost;
         Object.keys(costs).forEach(function (res){
@@ -7466,7 +7483,7 @@ function srDesc(c_action,old){
                                 num_on = getStructNumActive(actions[region][struct]);
                             }
                         }
-                        desc = desc + `${label}. `;
+                        desc = desc + `${label}: ${structs[region][struct].count}. `;
 
                         if (!global[region][struct]){
                             desc = desc + `${loc('insufficient')} ${label}. `;
@@ -7503,6 +7520,26 @@ function srDesc(c_action,old){
                     }
                 }
             }
+            else if (res === 'HellArmy'){
+                let res_cost = costs[res]();
+                if (res_cost > 0){
+                    let label = loc('fortress_troops');
+                    desc = desc + `${label}: ${res_cost}. `;
+                    if (global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size) < res_cost){
+                        desc = desc + `${loc('insufficient')} ${label}. `;
+                    }
+                }
+            }
+            else if (res === 'Troops'){
+                let res_cost = costs[res]();
+                if (res_cost > 0){
+                    let label = global.tech['world_control'] && !global.race['truepath'] ? loc('civics_garrison_peacekeepers') : loc('civics_garrison_soldiers');
+                    desc = desc + `${label}: ${res_cost}. `;
+                    if (garrisonSize() < res_cost){
+                        desc = desc + `${loc('insufficient')} ${label}. `;
+                    }
+                }
+            }
             else if (res !== 'Morale' && res !== 'Army' && res !== 'Bool'){
                 let res_cost = costs[res]();
                 let f_res = res === 'Species' ? global.race.species : res;
@@ -7520,10 +7557,21 @@ function srDesc(c_action,old){
         });
     }
 
+    // if no res costs were found remove the stray text "affordable Costs:" or the equivalent for the current language
+    if (desc.length === preResCostsLen){
+        desc = desc.slice(0, preAffordableLen);
+    }
+
     if (c_action.effect){
         let effect = typeof c_action.effect === 'string' ? c_action.effect : c_action.effect();
         if (effect){
-            desc = desc + effect + '. ';
+            desc = desc + effect;
+            if (desc.endsWith('</div>')){
+                desc = desc.slice(0, -6) + '. </div>';
+            }
+            else {
+                desc = desc + '. ';
+            }
         }
     }
     if (c_action.flair){

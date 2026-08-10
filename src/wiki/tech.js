@@ -2187,6 +2187,14 @@ const extraInformation = {
     ],
     expert_salvage: [
         loc(`wiki_tech_expert_salvage`,[35,50,15,25])
+    ],
+    venus_foothold: [
+        loc(`wiki_tech_building_unlock`,[loc('space_cloud_city_title')]),
+        loc(`wiki_tech_venus_foothold`,[3,getSolarName('venus')])
+    ],
+    descent_module: [
+        loc(`wiki_tech_building_unlock`,[loc('space_descender_title')]),
+        loc(`wiki_tech_descent_module`,[100,3,getSolarName('venus'),loc('space_alien_facility_title')])
     ]
 };
 

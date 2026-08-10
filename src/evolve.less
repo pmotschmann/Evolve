@@ -4766,6 +4766,45 @@ span.inline {
     font-size: .85rem;
 }
 
+// The battle log button
+.battleLogOpen {
+    margin-top: .25rem;
+}
+
+// One row per engagement
+.battleLog {
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: .5rem;
+    text-align: left;
+
+    .battleRow {
+        padding: .35rem 0;
+        border-top: .0625rem solid;
+
+        &:first-child {
+            border-top: none;
+        }
+    }
+
+    .battleHead {
+        font-weight: bold;
+
+        span + span {
+            margin-left: .5rem;
+        }
+    }
+
+    .battleSide {
+        font-size: .9rem;
+        margin-left: .75rem;
+
+        span + span {
+            margin-left: .35rem;
+        }
+    }
+}
+
 .industryTab,
 .psychicTab,
 .supernaturalTab  {

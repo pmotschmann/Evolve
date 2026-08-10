@@ -896,6 +896,9 @@ const spaceProjects = {
                     r_list.push('Stone');
                     r_list.push('Furs');
                 }
+                if (global.resource.Tungsten.display){
+                    r_list.push('Tungsten');
+                }
                 return r_list;
             },
             heavy(res){
@@ -917,6 +920,8 @@ const spaceProjects = {
                         return 2500;
                     case 'Nano_Tube':
                         return 25000;
+                    case 'Tungsten':
+                        return 2750;
                     case 'Neutronium':
                         return 125;
                     case 'Infernite':
@@ -2932,6 +2937,7 @@ const spaceProjects = {
     spc_makemake: outerTruthTech().spc_makemake,
     spc_eris: outerTruthTech().spc_eris,
     spc_venus: outerTruthTech().spc_venus,
+    spc_survey: outerTruthTech().spc_survey,
 };
 
 const interstellarProjects = {
@@ -7135,8 +7141,10 @@ function space(zone){
                 // The horde readout follows the support line when there is one.
                 let infest = infestationLabel(region);
 
-                if (spaceProjects[region].info['support']){
-                    let support = spaceProjects[region].info['support'];
+                let support = spaceProjects[region].info['support'];
+                if (support && !global.space[support]){ support = false; }
+
+                if (support){
                     if (!global.space[support].hasOwnProperty('support')){
                         global.space[support]['support'] = 0;
                         global.space[support]['s_max'] = 0;

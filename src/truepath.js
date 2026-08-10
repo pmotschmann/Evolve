@@ -129,9 +129,7 @@ const outerTruth = {
                 return `${support}<div class="has-text-caution">${loc('space_electrolysis_use',[$(this)[0].support_fuel().a,global.resource.Water.name,$(this)[0].powered()])}</div>`;
             },
             support(wiki){
-                // Positronium electrolysis splits water harder than the AI core ever managed at it. Either
-                // upgrade takes the plant to three and they do not stack — which matters on the resettle
-                // path, where the AI cores are gone by the time this tech is reachable.
+                // Positronium electrolysis or AI core upgrade. These are mutually exclusive.
                 if (global.tech['titan'] && global.tech.titan >= 11){ return 3; }
                 return global.tech['titan_ai_core'] && global.tech.titan_ai_core >= 2 && (wiki ? global.space.ai_core2.on : p_on['ai_core2']) ? 3 : 2;
             },
@@ -322,13 +320,17 @@ const outerTruth = {
             },
             wide: true,
             res(){
-                return [
+                let res = [
                     'Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal','Steel','Titanium',
                     'Alloy','Polymer','Iridium','Chrysotile','Nano_Tube','Neutronium','Adamantite'
                 ];
+                if (global.resource.Tungsten.display){
+                    res.push('Tungsten');
+                }
+                return res;
             },
             heavy(res){
-                return ['Copper','Iron','Steel','Titanium','Iridium','Neutronium','Adamantite'].includes(res) ? true : false;
+                return ['Copper','Iron','Steel','Titanium','Iridium','Neutronium','Adamantite','Tungsten'].includes(res) ? true : false;
             },
             val(res){
                 switch (res){
@@ -346,6 +348,8 @@ const outerTruth = {
                         return 1400;
                     case 'Aluminium':
                         return 1280;
+                    case 'Tungsten':
+                        return 480;
                     case 'Cement':
                         return 1120;
                     case 'Coal':
@@ -1634,22 +1638,381 @@ const outerTruth = {
                 return planetName().venus;
             },
             desc(){
-                if (global.tech['venus'] && global.tech.venus === 1){
+                // A blockade shuts down the planet
+                let blockade = venusBlockade();
+                if (blockade > 0){
+                    return `<div class="has-text-danger">${loc('space_venus_info_desc_blockade',[blockade,planetName().venus])}</div><div>${loc('space_venus_info_desc',[planetName().venus])}</div>`;
+                }
+                if (global.tech['venus'] && global.tech.venus <= 2){
                     return `<div class="has-text-warning">${loc('space_venus_info_desc_not_scouted',[planetName().venus])}</div><div>${loc('space_venus_info_desc',[planetName().venus])}</div>`;
                 }
                 else {
                     return loc('space_venus_info_desc',[planetName().venus]);
                 }
             },
+            support: 'cloud_city',
             zone: 'inner',
             showDest(){
                 return {r: true, l: global.tech['venus'] ? true : false};
             },
             syndicate(){ return false; },
             nav(){ return global.tech['venus'] ? true : false; }
+        },
+        cloud_city: {
+            id: 'space-cloud_city',
+            title(){ return loc('space_cloud_city_title'); },
+            desc(){ return `<div>${loc('space_cloud_city_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            type: 'outpost',
+            reqs: { venus: 4 },
+            path: ['truepath'],
+            // Nothing goes up while the horde holds the orbit. Every Venus structure should carry this.
+            condition(){ return venusBlockade() === 0; },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('cloud_city', offset, 20000000, 1.28); },
+                Aluminium(offset){ return spaceCostMultiplier('cloud_city', offset, 5800000, 1.28); },
+                Nano_Tube(offset){ return spaceCostMultiplier('cloud_city', offset, 1200000, 1.28); },
+                Stanene(offset){ return spaceCostMultiplier('cloud_city', offset, 3500000, 1.28); },
+                Aerographene(offset){ return spaceCostMultiplier('cloud_city', offset, 500000, 1.28); }
+            },
+            effect(){
+                return `<div>+${loc(`galaxy_alien2_support`,[$(this)[0].support(),planetName().venus])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            support(){ return 3; },
+            powered(){ return powerCostMod(10); },
+            action(){
+                if (payCosts($(this)[0])){
+                    if (global.tech.venus === 4){
+                        global.tech.venus = 5;
+                        beginTungstenSurvey();
+                        drawTech();
+                    }
+                    incrementStruct('cloud_city');
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, support: 0, s_max: 0 },
+                    p: ['cloud_city','space']
+                };
+            }
+        },
+        descender: {
+            id: 'space-descender',
+            title(){ return loc('space_descender_title'); },
+            desc(wiki){
+                if (!global.space.hasOwnProperty('descender') || global.space.descender.count < 100 || wiki){
+                    return `<div>${loc('space_descender_title')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
+                }
+                return `<div>${loc('space_descender_title')}</div><div class="has-text-special">${loc('space_support',[planetName().venus])}</div>`;
+            },
+            type: 'megaproject',
+            reqs: { venus: 6 },
+            path: ['truepath'],
+            condition(){ return venusBlockade() === 0; },
+            queue_size: 5,
+            queue_complete(){ return 100 - (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0); },
+            cost: {
+                Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0)) < 100 ? 50000000 : 0; },
+                Tungsten(offset){ return ((offset || 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0)) < 100 ? 12000000 : 0; },
+                Graphene(offset){ return ((offset || 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0)) < 100 ? 8500000 : 0; },
+                Nano_Tube(offset){ return ((offset || 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0)) < 100 ? 9000000 : 0; },
+                Unobtainium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0)) < 100 ? 100000 : 0; }
+            },
+            effect(wiki){
+                let count = (wiki?.count ?? 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0);
+                if (count < 100){
+                    return `<div>${loc('space_descender_effect',[loc('space_cloud_city_title')])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[100 - count])}</div>`;
+                }
+                return `<div>${loc('space_descender_effect',[loc('space_cloud_city_title')])}</div><div class="has-text-caution">${loc('space_used_support_more',[$(this)[0].support(),planetName().venus])}</div>`;
+            },
+            s_type: 'venus',
+            support(){ return -3; },
+            powered(){ return 0; },
+            // Half a tether is not a thing you can switch on, so there is nothing to offer until fully constructed
+            switchable(){ return global.space.hasOwnProperty('descender') && global.space.descender.count >= 100; },
+            on_cap(){ return global.space.hasOwnProperty('descender') && global.space.descender.count >= 100 ? 1 : 0; },
+            action(){
+                if (global.space.hasOwnProperty('descender') && global.space.descender.count >= 100){ return false; }
+                if (payCosts($(this)[0])){
+                    incrementStruct($(this)[0]);
+                    if (global.space.descender.count >= 100){
+                        global.tech['venus'] = 7;
+                        global.space.descender.on = 1;
+                        initStruct(actions.space.spc_venus.alien_facility);
+                        messageQueue(loc('space_descender_complete',[planetName().venus]),'success',false,['progress']);
+                        drawTech();
+                        renderSpace();
+                        clearPopper();
+                    }
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['descender','space']
+                };
+            }
+        },
+        alien_facility: {
+            id: 'space-alien_facility',
+            title(){ return loc('space_alien_facility_title'); },
+            desc(){ return `<div>${loc('space_alien_facility_title')}</div><div class="has-text-special">${loc('space_alien_facility_req',[loc('space_descender_title')])}</div>`; },
+            type: 'science',
+            reqs: { venus: 7 },
+            path: ['truepath'],
+            cost: {},
+            queue_complete(){ return 0; },
+            effect(){
+                let desc = `<div>${loc('space_alien_facility_effect',[facilityProgress()])}</div>`;
+                if (!facilityStudying()){
+                    desc += `<div class="has-text-warning">${loc('space_alien_facility_stalled',[loc('space_descender_title')])}</div>`;
+                }
+                return desc;
+            },
+            action(){ return false; },
+            struct(){
+                return {
+                    d: { count: 1, research: 0 },
+                    p: ['alien_facility','space']
+                };
+            }
+        }
+    },
+    // The moon that turns out to be worth landing on.
+    spc_survey: {
+        info: {
+            name(){
+                return surveyBody() ? planetName()[surveyBody()] : loc('survey_region_unknown');
+            },
+            desc(){
+                let moon = surveyBody();
+                if (!moon){ return loc('survey_region_unknown'); }
+                return `<div>${loc(`space_${moon}_info_desc`,[planetName()[moon]])}</div><div class="has-text-success">${loc('survey_info_desc_rich',[global.resource.Tungsten.name])}</div>`;
+            },
+            zone: 'outer',
+            showDest(){
+                let show = surveyFound();
+                return {r: show, l: show};
+            },
+            syndicate(){ return false; },
+            nav(){ return surveyFound(); }
+        },
+        mineshaft: {
+            id: 'space-mineshaft',
+            title(){ return loc('space_mineshaft_title'); },
+            desc(){
+                let moon = surveyBody();
+                return `<div>${loc('space_mineshaft_desc',[moon ? planetName()[moon] : loc('survey_region_unknown')])}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            type: 'mining',
+            reqs: { survey: 2 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('mineshaft', offset, 15000000, 1.26); },
+                Lumber(offset){ return spaceCostMultiplier('mineshaft', offset, 18000000, 1.26); },
+                Iron(offset){ return spaceCostMultiplier('mineshaft', offset, 21750000, 1.26); },
+            },
+            effect(){
+                let tungsten = +(production('mineshaft')).toFixed(3);
+                return `<div>${loc('gain',[tungsten,global.resource.Tungsten.name])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            powered(){ return powerCostMod(8); },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct($(this)[0]);
+                    powerOnNewStruct($(this)[0]);
+                    if (!global.resource.Tungsten.display){
+                        global.resource.Tungsten.display = true;
+                        defineIndustry();
+                    }
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['mineshaft','space']
+                };
+            }
         }
     },
 };
+
+// The descender has to be finished and actually running on Venus support for anyone to be down there.
+export function facilityStudying(){
+    if (!global.space['alien_facility'] || !global.space['descender']){ return false; }
+    if (global.space.descender.count < 100){ return false; }
+    return support_on['descender'] > 0;
+}
+
+// Baseline for progress, not a required amount
+export const facilityCrew = 40;
+// Denominated in seconds of work at baseline staff level, so this is three hours for forty of them.
+export const facilityResearchTotal = 10800;
+
+export function facilityProgress(){
+    if (!global.space['alien_facility']){ return 0; }
+    let pct = global.space.alien_facility.research / facilityResearchTotal * 100;
+    if (pct > 100){ pct = 100; }
+    return +(pct).toFixed(2);
+}
+
+// What the survey turns up, and how far in. Checked in order, one rank per tick, so a long offline
+// catch-up still walks the player through the findings rather than skipping to the end.
+export const facilityFindings = [
+    { r: 1, p: 5,   m: 'space_alien_facility_data1', v(){ return [planetName().home]; } },
+    { r: 2, p: 15,  m: 'space_alien_facility_data2', v(){ return [races[global.race.species].name]; } },
+    { r: 3, p: 30,  m: 'space_alien_facility_data3' },
+    { r: 4, p: 50,  m: 'space_alien_facility_data4' },
+    { r: 5, p: 75,  m: 'space_alien_facility_data5', v(){ return [planetName().home]; } },
+    { r: 6, p: 100, m: 'space_alien_facility_data6' }
+];
+
+// places to look for Tungsten
+const surveyMoons = ['titania','oberon','io','europa','callisto'];
+
+function surveyState(){
+    return global.space['survey'] || false;
+}
+
+// The bare moon name of the body that held the deposit ('io', 'europa', …), or false while the search
+// is still running. Everything spc_survey shows about itself comes from this.
+export function surveyBody(){
+    let s = surveyState();
+    return s && s.rich ? s.rich : false;
+}
+
+// Whether the deposit has actually been found, which is what makes spc_survey a real place.
+function surveyFound(){
+    return global.tech['survey'] && global.tech.survey >= 2 && surveyBody() ? true : false;
+}
+
+// spc_survey has no entry of its own in the position table — it stands in for a real moon, and which
+// one is not known until the roll. Anything resolving a position or a star system goes through here so
+// the region behaves as the body it actually is.
+export function resolveBody(locationName){
+    if (locationName === 'spc_survey'){
+        let moon = surveyBody();
+        return moon ? `spc_${moon}` : locationName;
+    }
+    return locationName;
+}
+
+// Moon survey canadidates
+function surveyPoint(moon){
+    return `survey_${moon}`;
+}
+
+// Opened by the first cloud city: the descent problem becomes concrete, and the search for the metal
+// that solves it begins. The roll is made once and kept, so reloading cannot reshuffle the answer.
+export function beginTungstenSurvey(){
+    if (global.tech['survey']){ return; }
+    global.tech['survey'] = 1;
+    global.space['survey'] = {
+        rich: surveyMoons[Math.floor(seededRandom(0,surveyMoons.length,true))],
+        done: {}
+    };
+
+    // Each candidate becomes a destination fixed at wherever that moon is standing today. They orbit
+    // and the point does not, but the survey is a trip you make once and cross off.
+    if (!global.race['tempCoordinates']){ global.race['tempCoordinates'] = {}; }
+    surveyMoons.forEach(function(moon){
+        let c = genXYZcoord(`spc_${moon}`);
+        global.race.tempCoordinates[surveyPoint(moon)] = {
+            n: planetName()[moon], a: true, s: 'spc_sun', x: c.x, y: c.y, z: c.z
+        };
+    });
+
+    messageQueue(loc('survey_begin',[global.resource.Tungsten.name,loc('outer_shipyard_sensor_quantum')]),'info',false,['progress']);
+    renderSpace();
+    drawShipYard();
+}
+
+// Strike a candidate off: the point stays in the table so a ship parked on it can still say where it
+// is, but it stops being somewhere you can be sent.
+function closeSurveyPoint(moon){
+    let point = global.race['tempCoordinates'] ? global.race.tempCoordinates[surveyPoint(moon)] : false;
+    if (point){ point.a = false; }
+}
+
+// Survey moon for Tungsten
+function repairSurveyPoints(){
+    let s = surveyState();
+    if (!s || !s.rich){ return; }
+
+    if (s.rich.startsWith('spc_')){
+        s.rich = s.rich.substring(4);
+        let done = {};
+        Object.keys(s.done).forEach(function(key){
+            done[key.startsWith('spc_') ? key.substring(4) : key] = s.done[key];
+        });
+        s.done = done;
+    }
+
+    if (!global.race['tempCoordinates']){ return; }
+    surveyMoons.forEach(function(moon){
+        let stale = `survey_spc_${moon}`;
+        if (!global.race.tempCoordinates.hasOwnProperty(stale)){ return; }
+        let old = global.race.tempCoordinates[stale];
+        let key = surveyPoint(moon);
+        if (!global.race.tempCoordinates.hasOwnProperty(key)){
+            let c = genXYZcoord(`spc_${moon}`);
+            global.race.tempCoordinates[key] = {
+                n: planetName()[moon], a: old.a && !s.done[moon], s: 'spc_sun', x: c.x, y: c.y, z: c.z
+            };
+        }
+        // A ship parked on the bad point keeps somewhere to be — named, so it does not read as
+        // undefined — but it is no longer offered as a destination. Otherwise the point simply goes.
+        if (allShips().some(ship => !ship.inTransit && ship.location.name === stale)){
+            old.n = planetName()[moon];
+            old.a = false;
+        }
+        else {
+            delete global.race.tempCoordinates[stale];
+        }
+    });
+}
+
+export function checkTungstenSurvey(){
+    if (!global.tech['survey']){ return; }
+    repairSurveyPoints();
+    if (global.tech.survey !== 1){ return; }
+    let s = surveyState();
+    if (!s){ return; }
+
+    for (let moon of surveyMoons){
+        if (s.done[moon]){ continue; }
+        let point = surveyPoint(moon);
+        if (!allShips().some(ship => !ship.inTransit && ship.location.name === point && ship.sensor === 'quantum')){ continue; }
+
+        s.done[moon] = true;
+        if (moon === s.rich){
+            // Found. Everything still on the list is struck off with it; there is no reason to go and
+            // look at the rest, and leaving them open would only invite wasted trips.
+            global.tech['survey'] = 2;
+            surveyMoons.forEach(function(m){
+                s.done[m] = true;
+                closeSurveyPoint(m);
+            });
+            global.settings.space['survey'] = true;
+            messageQueue(loc('survey_rich',[planetName()[moon],global.resource.Tungsten.name]),'success',false,['progress']);
+            renderSpace();
+            drawShipYard();
+            return;
+        }
+
+        closeSurveyPoint(moon);
+        messageQueue(loc('survey_poor',[planetName()[moon]]),'info',false,['progress']);
+        renderSpace();
+        drawShipYard();
+    }
+}
 
 const tauCetiModules = {
     tau_star: {
@@ -2561,6 +2924,9 @@ const tauCetiModules = {
                     res.push('Water');
                     //res.push('Elerium');
                 }
+                if (global.resource.Tungsten.display){
+                    res.push('Tungsten');
+                }
                 return res;
             },
             val(res){
@@ -2597,6 +2963,8 @@ const tauCetiModules = {
                         return 1750;
                     case 'Nano_Tube':
                         return 1200;
+                    case 'Tungsten':
+                        return 2000;
                     case 'Neutronium':
                         return 640;
                     case 'Adamantite':
@@ -4893,6 +5261,10 @@ function zFleetDay(){
 
     zFleetMove(fleet);
 
+    // The blockade runs on its own rules rather than act like a raid
+    zVenusBlockade(fleet);
+    zBlockadeDay(fleet);
+
     if (fleet.t > 0){
         fleet.t--;
         if (fleet.t === 0){
@@ -5056,21 +5428,59 @@ function destroyPlayerShip(ship,locationName){
     messageQueue(loc('zcombat_ship_lost',[ship.name,regionName(locationName),crew]),'danger',false,['combat']);
 }
 
-// One exchange at a location. Your ships fire, then whatever is left of theirs fires back — one volley
-// each, then the raiders press on. Returns true if any of the raiders were stopped here.
+// --- Battle log ----------------------------------------------------------------------------------
+const zBattleLogMax = 60;   // engagements kept; the oldest falls off the end
+
+export function zBattleLog_read(){
+    return global.space['shipyard'] && Array.isArray(global.space.shipyard['battles']) ? global.space.shipyard.battles : [];
+}
+
+// Engagement information
+function zBattleRoster(ships){
+    let roster = {};
+    ships.forEach(function(s){
+        if (!s || !s.class){ return; }
+        roster[s.class] = (roster[s.class] || 0) + 1;
+    });
+    return roster;
+}
+
+// Written the moment the volleys are resolved, before the wrecks are cleared away.
+function zBattleLog(locationName,guards,foes,dealt,taken,lost,downed){
+    if (!global.space['shipyard']){ return; }
+    if (!Array.isArray(global.space.shipyard['battles'])){ global.space.shipyard['battles'] = []; }
+    global.space.shipyard.battles.unshift({
+        d: global.stats.days,       // game day
+        l: locationName,            // where it happened
+        p: zBattleRoster(guards),   // your hulls
+        e: zBattleRoster(foes),     // theirs
+        pd: dealt,                  // hull you landed
+        ed: taken,                  // hull they landed
+        pl: lost,                   // your ships destroyed
+        el: downed                  // theirs destroyed
+    });
+    if (global.space.shipyard.battles.length > zBattleLogMax){
+        global.space.shipyard.battles.length = zBattleLogMax;
+    }
+}
+
 function zEngage(locationName,foes){
     let guards = guardsAt(locationName);
     if (guards.length === 0 || foes.length === 0){ return false; }
 
     let scan = guards.reduce((t,s) => t + (sensorRange(s) || 0), 0);
     let downed = [];
+    let dealt = 0;
+    let taken = 0;
 
     guards.forEach(function(ship){
         let live = foes.filter(f => f.damage < 100);
         if (live.length === 0){ return; }
         let foe = live[Math.floor(seededRandom(0,live.length,true))];
         if (seededRandom(0,1,true) >= playerAccuracy(scan,foe)){ return; }
-        foe.damage += combatDamage(ship,foe);
+        let hit = combatDamage(ship,foe);
+        foe.damage += hit;
+        dealt += hit;
         if (foe.damage >= 100){
             foe.damage = 100;
             downed.push(foe);
@@ -5085,21 +5495,25 @@ function zEngage(locationName,foes){
         if (live.length === 0){ return; }
         let ship = live[Math.floor(seededRandom(0,live.length,true))];
         if (seededRandom(0,1,true) >= foeAccuracy(foe)){ return; }
-        ship.damage += combatDamage(foe,ship);
+        let hit = combatDamage(foe,ship);
+        ship.damage += hit;
+        taken += hit;
         if (ship.damage >= 100){
             ship.damage = 100;
             lost.push(ship);
         }
     });
 
+    zBattleLog(locationName,guards,foes,dealt,taken,lost.length,downed.length);
+
     zMessage(loc('zcombat_engage',[guards.length,foes.length,regionName(locationName)]),'warning');
     lost.forEach(function(ship){ destroyPlayerShip(ship,locationName); });
+    if (lost.length > 0){ drawShips(); }
     downed.forEach(function(foe){
         zMessage(loc('zcombat_foe_destroyed',[foe.name,regionName(locationName)]),'success');
     });
 
-    // Anything shot down here is culled before it can deliver, so a single kill anywhere along the
-    // route — over Earth, at a wormhole gate, or on arrival — settles the interception task.
+    // Check for achievement unlock
     if (downed.length > 0){
         zombieGenociderTask('z2');
     }
@@ -5112,9 +5526,7 @@ function zCullDowned(list){
     return list.filter(f => f.damage < 100);
 }
 
-// Every tunable the Z-warfare systems run on, gathered in one place so the wiki can document the live
-// numbers rather than repeating them. Read-only by convention — callers should not mutate what comes
-// back, they should change the constants above.
+// zWarfare Variables
 export function zWarfareVars(){
     return {
         // Ground war against a horde already on a world
@@ -5240,6 +5652,9 @@ function zFleetMove(fleet){
             continue;
         }
         if (!ship.inTransit){
+            // The Venus blockade is not a delivery. It takes station in orbit and stays there, so it is
+            // left in the fleet rather than landed and turned into a horde on the ground.
+            if (ship.vb){ continue; }
             fleet.s.splice(i,1);
             if (!landings[ship.location.name]){ landings[ship.location.name] = []; }
             landings[ship.location.name].push(ship);
@@ -5379,7 +5794,11 @@ export function finalBeacons(){
 
 // One raider hull of a given class, fitted out and sitting over Earth. Not yet under way: a sortie
 // wants its whole group built before any of it is shot at.
-function zFleetHull(cls){
+//
+// An ordinary raid is thrown together from whatever the wrecks gave up, so each fitting is rolled. A
+// scripted force fitted `best` instead takes the top of every list — zFleetParts is ordered worst to
+// best, so this stays right if the lists are ever retuned or extended.
+function zFleetHull(cls,best){
     let ship = {
         class: cls,
         name: `${loc(`outer_shipyard_class_${cls}`)} ${Math.floor(seededRandom(100,10000,true))}`,
@@ -5387,7 +5806,8 @@ function zFleetHull(cls){
     };
     TPShipInitTransit(ship, 'spc_home');
     Object.keys(zFleetParts).forEach(function(part){
-        ship[part] = zFleetParts[part][Math.floor(seededRandom(0,zFleetParts[part].length,true))];
+        let list = zFleetParts[part];
+        ship[part] = best ? list[list.length - 1] : list[Math.floor(seededRandom(0,list.length,true))];
     });
     return ship;
 }
@@ -5396,8 +5816,15 @@ function zFleetHull(cls){
 // Lift a group of hulls together for one target. Whatever you have parked over Earth gets a single
 // shot at the sortie as it climbs out, however many hulls are in it, and only what survives that flies.
 // Returns the number that got away.
-function zFleetSortie(fleet,classes,target,ramp){
-    let ships = classes.map(cls => zFleetHull(cls));
+//
+// `opts.best` fits every hull with the top of each parts list; `opts.mark` sets a flag on each one
+// before it is engaged, so a scripted force is identifiable even if it is shot down on the way out.
+function zFleetSortie(fleet,classes,target,ramp,opts){
+    opts = opts || {};
+    let ships = classes.map(cls => zFleetHull(cls,opts.best));
+    if (opts.mark){
+        ships.forEach(function(ship){ ship[opts.mark] = true; });
+    }
     zEngage('spc_home',ships);
     let flying = zCullDowned(ships);
     if (flying.length === 0){ return 0; }
@@ -5483,6 +5910,84 @@ function zTauStrike(fleet){
     let sent = zFleetSortie(fleet,zTauStrikeHulls.slice(),zTauStrikeTarget,1);
     if (sent > 0){
         //messageQueue(loc('zfleet_tau_strike',[sent,regionName(zTauStrikeTarget)]),'danger',false,['combat','progress']);
+    }
+}
+
+// --- The blockade over Venus -------------------------------------------------------------------
+// The one infested force that is not a delivery. Every other sortie is a hull carrying infected to a
+// surface; this one is sent to keep you off one, and it holds station in orbit until it is destroyed.
+// Nothing can be built on Venus while it is up there.
+const zVenusBlockadeHulls = ['dreadnought','cruiser','cruiser','destroyer','destroyer','frigate','frigate'];
+const zVenusBlockadeTarget = 'spc_venus';
+// Hull a blockade ship recovers on a day nobody engages it. Leaving it alone lets it patch up, so a
+// half-finished attack is worse than none — the fight wants to be pressed until it is over.
+const zBlockadeRepair = 2;
+
+// Infested hulls actually holding station over Venus. Ships still crossing are not blockading anything
+// yet, which is what makes the arrival the moment the planet closes.
+export function venusBlockade(){
+    let fleet = global.race['zfleet'];
+    if (!fleet || !fleet.s){ return 0; }
+    return fleet.s.filter(s => s.vb && !s.inTransit).length;
+}
+
+// Sent once, the moment the outpost on the surface is identified. Whatever is down there does not want
+// it looked at, and it commits the best hulls the horde can field rather than the usual scavenged mix.
+function zVenusBlockade(fleet){
+    if (fleet.vb || !global.tech['venus'] || global.tech.venus < 3){ return; }
+
+    // Marked spent whether or not any of it survives the climb out, the same as the Tau Ceti strike:
+    // stopping it over Earth is a win, not an invitation to try again.
+    fleet.vb = true;
+    let sent = zFleetSortie(fleet,zVenusBlockadeHulls.slice(),zVenusBlockadeTarget,1,{ best: true, mark: 'vb' });
+    if (sent > 0){
+        messageQueue(loc('zfleet_blockade_launch',[sent,regionName('spc_home'),regionName(zVenusBlockadeTarget)]),'danger',false,['combat','progress']);
+    }
+    else {
+        // Broken up before it ever left orbit. It still counts as beaten.
+        fleet.vbd = true;
+        zombieGenociderTask('z3');
+        messageQueue(loc('zfleet_blockade_broken',[regionName(zVenusBlockadeTarget)]),'success',false,['combat','progress']);
+    }
+}
+
+// One day of the blockade. It never goes down to the surface, so the only way past it is to destroy it:
+// anything of yours in orbit trades a volley with it, and on a day nobody comes it patches itself up.
+function zBlockadeDay(fleet){
+    if (!fleet.vb || fleet.vbd){ return; }
+
+    let ships = fleet.s.filter(s => s.vb);
+    if (ships.length === 0){
+        fleet.vbd = true;
+        zombieGenociderTask('z3');
+        messageQueue(loc('zfleet_blockade_broken',[regionName(zVenusBlockadeTarget)]),'success',false,['combat','progress']);
+        renderSpace();
+        return;
+    }
+
+    let onStation = ships.filter(s => !s.inTransit);
+    if (onStation.length === 0){ return; }
+
+    // Taking station is what closes the planet, so it is announced the day it happens rather than the
+    // day the fleet left.
+    if (!fleet.vba){
+        fleet.vba = true;
+        messageQueue(loc('zfleet_blockade_arrive',[onStation.length,regionName(zVenusBlockadeTarget)]),'danger',false,['combat','progress']);
+        renderSpace();
+    }
+
+    if (guardsAt(zVenusBlockadeTarget).length > 0){
+        zEngage(zVenusBlockadeTarget,onStation);
+        // Culled here rather than left to the next day's move pass, so the blockade is known to be
+        // broken on the day the last hull goes down.
+        for (let i=fleet.s.length-1; i>=0; i--){
+            if (fleet.s[i].vb && fleet.s[i].damage >= 100){ fleet.s.splice(i,1); }
+        }
+    }
+    else {
+        onStation.forEach(function(ship){
+            if (ship.damage > 0){ ship.damage = Math.max(0, ship.damage - zBlockadeRepair); }
+        });
     }
 }
 
@@ -7018,10 +7523,8 @@ function drawShips(){
     const spaceRegions = spaceTech();
     let regionNames = {};
     Object.keys(spaceRegions).forEach(function(region){
-        if (spaceRegions[region].info.nav()){
-            let name = typeof spaceRegions[region].info.name === 'string' ? spaceRegions[region].info.name : spaceRegions[region].info.name();
-            regionNames[region] = name;
-        }
+        let name = typeof spaceRegions[region].info.name === 'string' ? spaceRegions[region].info.name : spaceRegions[region].info.name();
+        regionNames[region] = name;
     });
     Object.keys(tauCetiModules).forEach(function(region){
         if (tauCetiModules[region].info.nav()){
@@ -7030,9 +7533,6 @@ function drawShips(){
         }
     });
     regionNames['tauceti'] = loc('tech_era_tauceti');
-    // Temporary coordinates are locations too, so a ship parked on one names it rather than showing
-    // a blank button. Included whether or not they are still active — a ship sitting on a signal
-    // that has gone quiet still has to say where it is.
     if (global.race['tempCoordinates']){
         Object.keys(global.race.tempCoordinates).forEach(function(key){
             if (global.race.tempCoordinates[key]){ regionNames[key] = global.race.tempCoordinates[key].n; }
@@ -7332,11 +7832,16 @@ function drawShipRow(list,i,ship,regionNames){
                 },
                 // A fleet aims as one body, so what it is worth is the best dish it carries.
                 sensorText(id){
-                    return Math.max(...rowGroup(global.space.shipyard.ships[id]).map(s => sensorRange(s) || 0)) + 'km';
+                    let group = rowGroup(global.space.shipyard.ships[id]);
+                    // Math.max of nothing is -Infinity, and a row can outlive its ship by a frame.
+                    if (group.length === 0){ return `0km`; }
+                    return Math.max(...group.map(s => sensorRange(s) || 0)) + 'km';
                 },
                 // A fleet keeps pace with its slowest ship, which is what its trips are planned on.
                 speedText(id){
-                    let speed = (149597870.7/225/24/3600) * shipSpeed(fleetPace(rowGroup(global.space.shipyard.ships[id])));
+                    let pace = fleetPace(rowGroup(global.space.shipyard.ships[id]));
+                    if (!pace){ return `0km/s`; }
+                    let speed = (149597870.7/225/24/3600) * shipSpeed(pace);
                     return Math.round(speed) + 'km/s';
                 },
                 fuelText(id){
@@ -7345,7 +7850,9 @@ function drawShipRow(list,i,ship,regionNames){
                 // The worst hull in the group: a fleet leaves together or not at all, so that is the
                 // one that decides whether it can.
                 hullText(id){
-                    return `${100 - Math.max(...rowGroup(global.space.shipyard.ships[id]).map(s => s.damage))}%`;
+                    let group = rowGroup(global.space.shipyard.ships[id]);
+                    if (group.length === 0){ return `100%`; }
+                    return `${100 - Math.max(...group.map(s => s.damage))}%`;
                 },
                 // An undamaged hull is the norm and says nothing worth the space, so the readout only
                 // appears once a ship has taken damage.
@@ -7355,6 +7862,7 @@ function drawShipRow(list,i,ship,regionNames){
                 // Colorize hull damage at threshold
                 hullDamage(id){
                     let group = rowGroup(global.space.shipyard.ships[id]);
+                    if (group.length === 0){ return ``; }
                     let damage = Math.max(...group.map(s => s.damage));
                     if (damage <= 10){
                         return `has-text-success`;
@@ -8604,6 +9112,8 @@ export function genXYZcoord(planet){
     // Temporary coordinates are fixed points held outside the table.
     let temp = tempCoord(planet);
     if (temp){ return { x: temp.x, y: temp.y, z: temp.z }; }
+    // spc_survey is whichever moon the survey turned up, so it orbits as that body does.
+    planet = resolveBody(planet);
     // A location that is neither in the table nor a live temp point — a signal that expired while a
     // ship sat on it, say. Fall back to the origin rather than throwing, which would take the map
     // and the tick loop down with it.
@@ -8700,6 +9210,7 @@ function locSystem(locationName){
     let temp = tempCoord(locationName);
     if (temp){ return tempSystem(temp); }
     if (locationName === 'tauceti'){ return 'tauceti'; }
+    locationName = resolveBody(locationName);
     return spacePlanetStats[locationName] && spacePlanetStats[locationName].star ? spacePlanetStats[locationName].star : 'sun';
 }
 
@@ -11871,9 +12382,16 @@ function shipDispatchModal(id, modal){
         dests = dests.filter(d => reachable.has(d.region));
     }
 
-    // A hull under the launch minimum holds the ship in dry dock 
+    // Crew check
+    let crewNeed = group.reduce((t,s) => t + (shipManned(s) ? 0 : shipCrewSize(s)), 0);
+    let crewFree = Math.max(0, global.civic.garrison.workers - global.civic.garrison.crew);
+
+    // A hull under the launch minimum holds the ship in dry dock
     if (group.some(s => !shipCanLaunch(s))){
         list.append(`<span class="has-text-danger">${loc('outer_shipyard_dispatch_damaged',[minHullToLaunch])}</span>`);
+    }
+    else if (crewNeed > crewFree){
+        list.append(`<span class="has-text-danger">${loc(group.length > 1 ? 'outer_shipyard_dispatch_crew_fleet' : 'outer_shipyard_dispatch_crew',[crewNeed,crewFree])}</span>`);
     }
     else if (dests.length === 0){
         list.append(`<span class="has-text-caution">${loc('outer_shipyard_dispatch_none')}</span>`);
@@ -11901,6 +12419,40 @@ function shipDispatchModal(id, modal){
                 .appendTo(list);
         });
     }
+}
+
+// The battle log. Newest first, one row per engagement: when and where it happened, what each side
+// brought, and what each side landed. Read-only — it is a record, not a control.
+export function battleLogModal(){
+    $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${loc('battle_log_title')}</p>`));
+
+    let log = zBattleLog_read();
+    let list = $(`<div class="battleLog"></div>`);
+    $('#modalBox').append(list);
+
+    if (log.length === 0){
+        list.append(`<span class="has-text-caution">${loc('battle_log_empty')}</span>`);
+        return;
+    }
+
+    // A hull tally rendered as "2 Corvettes, 1 Destroyer", using the same class names the shipyard uses.
+    let roster = function(tally){
+        let parts = shipClassSizes.concat(['explorer']).filter(c => tally[c] > 0).map(function(c){
+            return `${tally[c]} ${loc(`outer_shipyard_class_${c}`)}`;
+        });
+        return parts.length ? parts.join(`, `) : loc('battle_log_unknown');
+    };
+
+    log.forEach(function(b){
+        let row = $(`<div class="battleRow"></div>`);
+        // A fight you walked away from unscathed reads differently from one that cost you a hull, so the
+        // outcome is colored rather than left for the player to work out from the numbers.
+        let tone = b.pl > 0 ? `has-text-danger` : (b.el > 0 ? `has-text-success` : `has-text-warning`);
+        row.append(`<div class="battleHead"><span class="${tone}">${loc('battle_log_where',[regionName(b.l)])}</span> <span class="has-text-caution">${loc('battle_log_day',[b.d])}</span></div>`);
+        row.append(`<div class="battleSide"><span class="has-text-success">${loc('battle_log_yours')}</span> <span>${roster(b.p)}</span> <span class="has-text-warning">${loc('battle_log_dealt',[b.pd])}</span>${b.pl > 0 ? ` <span class="has-text-danger">${loc('battle_log_lost',[b.pl])}</span>` : ``}</div>`);
+        row.append(`<div class="battleSide"><span class="has-text-danger">${loc('battle_log_theirs')}</span> <span>${roster(b.e)}</span> <span class="has-text-warning">${loc('battle_log_dealt',[b.ed])}</span>${b.el > 0 ? ` <span class="has-text-success">${loc('battle_log_destroyed',[b.el])}</span>` : ``}</div>`);
+        list.append(row);
+    });
 }
 
 // Who a ship could serve under: a fleet of its own, or any flagship parked alongside with the command
@@ -12046,9 +12598,10 @@ function fleetDamageBonus(ship){
     return fleetHulls.hasOwnProperty(flag.class) ? fleetHulls[flag.class].buff : 0;
 }
 
-// Share of an incoming hit a flagship shrugs off. Only the ship in command benefits.
+// Share of an incoming hit a flagship shrugs off. Only the ship in command benefits, and only while it
+// actually has an escort to screen it — a flagship leading nobody is just a ship, however it is flagged.
 function fleetDamageSoak(ship){
-    if (!ship || !ship.flag || !shipFlagship(ship)){ return 0; }
+    if (!ship || !ship.flag || !shipFlagship(ship) || fleetEscortCount(ship.fid) === 0){ return 0; }
     return fleetHulls.hasOwnProperty(ship.class) ? fleetHulls[ship.class].soak : 0;
 }
 
@@ -12056,7 +12609,8 @@ function fleetDamageSoak(ship){
 // travels as fast as the arrangement lets it.
 function fleetSpeedBonus(ship){
     let flag = shipFlagship(ship);
-    if (!flag){ return 0; }
+    // A group of one is not a group: a light hull flying alone has nobody to set the pace for.
+    if (!flag || fleetEscortCount(flag.fid) === 0){ return 0; }
     return fleetHulls.hasOwnProperty(flag.class) ? fleetHulls[flag.class].speed : 0;
 }
 
@@ -12110,15 +12664,14 @@ export function fleetsFor(ship){
     );
 }
 
-// Whether forming a fleet here would achieve anything: something else has to be sitting alongside that
-// could actually be told to join.
+// Fleet check
 function fleetWorthForming(ship){
-    if (!fleetEligible(ship) || ship.fid || fleetCommandRating(ship) <= 0){ return false; }
-    return allShips().some(o => o !== ship && !o.fid && sameStation(o,ship) && fleetCommandCost(o) > 0);
+    return fleetEligible(ship) && !ship.fid && fleetCommandRating(ship) > 0 ? true : false;
 }
 
 // A fleet keeps pace with its slowest ship, so that is the one every trip is planned on.
 function fleetPace(group){
+    if (!group || group.length === 0){ return false; }
     return group.reduce((a,b) => shipSpeed(a) <= shipSpeed(b) ? a : b);
 }
 

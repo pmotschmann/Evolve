@@ -715,7 +715,7 @@ function loadJob(job, define, impact, stress, color){
 
 export function loadServants(){
     clearElement($('#servants'));
-    if (global.race['servants'] && Object.keys(global.race.servants.jobs).length > 0){
+    if (global.race['servants'] && global.race.servants.max > 0 && Object.keys(global.race.servants.jobs).length > 0){
         var servants = $(`<div id="servantList" class="job"><div class="foundry job_label"><h3 class="serveHeader has-text-warning">${loc('civics_servants')}</h3><span :class="level()">{{ s.used }} / {{ s.max }}</span></div></div>`);
         $('#servants').append(servants);
 
@@ -823,6 +823,10 @@ export function limitCraftsmen(res, allow_redraw = true){
         global.civic.craftsman.workers -= diff;
         global.city.foundry.crafting -= diff;
         global.city.foundry[res] -= diff;
+        // The structures hosting this material were razed or switched off.
+        if (global.city.foundry.hasOwnProperty('hold')){
+            global.city.foundry.hold[res] = (global.city.foundry.hold[res] || 0) + diff;
+        }
         refresh = true;
     }
     else if (!tmp_vars['craftsman_cap'].hasOwnProperty(res)){
@@ -869,7 +873,10 @@ export function farmerValue(farm,servant){
 
 export function loadFoundry(servants){
     clearElement($(servants ? '#skilledServants' : '#foundry'));
-    if ((global.city['foundry'] && global.city['foundry'].count > 0) || global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation'] || global.race['warlord']){
+    let show = servants
+        ? (global.race['servants'] && global.race.servants.smax > 0 ? true : false)
+        : ((global.city['foundry'] && global.city['foundry'].count > 0) || global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation'] || global.race['warlord'] ? true : false);
+    if (show){
         let element = $(servants ? '#skilledServants' : '#foundry');
         let track = servants ? `{{ s.sused }} / {{ s.smax }}` : `{{ f.crafting }} / {{ c.max }}`;
         let foundry = $(`<div class="job"><div class="foundry job_label"><h3 class="has-text-warning">${loc(servants ? 'civics_skilled_servants' : 'craftsman_assigned')}</h3><span :class="level()">${track}</span></div></div>`);
@@ -1088,8 +1095,9 @@ export function loadFoundry(servants){
             );
         }
 
-        if (global.race['servants'] && !servants && global.race.servants.smax > 0){
-            loadFoundry(true);
-        }
+    }
+
+    if (!servants){
+        loadFoundry(true);
     }
 }
