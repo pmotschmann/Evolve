@@ -342,19 +342,29 @@ export function hellPage(content){
             2: 'wiki_hell_hazard_counter'
         };
 
-        infoBoxBuilder(hazard,{ name: 'h_freeze', template: 'hell', label: loc(`portal_spire_status_freeze`), paragraphs: 2, break: [2], h_level: 4, header: true,
-            text: counter_text,    
+        infoBoxBuilder(hazard,{ name: 'h_freeze', template: 'hell', label: loc(`portal_spire_status_freeze`), paragraphs: 3, break: [2,3], h_level: 4, header: true,
+            text: {
+                1: global.race['warlord'] ? 'wiki_hell_hazard_effect_w' : 'wiki_hell_hazard_effect',
+                2: 'wiki_hell_hazard_counter',
+                3: 'wiki_hell_hazard_partial'
+            },
             para_data: {
                 1: [`75%`],
-                2: [global.race['warlord'] ? `${loc(`portal_mech_equip_radiator`)}, ${loc(`portal_mech_equip_cold`)}` : loc(`portal_mech_equip_radiator`)]
+                2: global.race['warlord'] ? [`${loc(`portal_mech_equip_cold`)}`] : [`${loc(`portal_mech_equip_radiator`)}`],
+                3: global.race['warlord'] ? [`${loc(`portal_mech_equip_thermal`)}`] : [`${loc(`portal_mech_equip_ablative`)}`]
             }
         });
-        
-        infoBoxBuilder(hazard,{ name: 'h_hot', template: 'hell', label: loc(`portal_spire_status_hot`), paragraphs: 2, break: [2], h_level: 4, header: true,
-            text: counter_text,    
+
+        infoBoxBuilder(hazard,{ name: 'h_hot', template: 'hell', label: loc(`portal_spire_status_hot`), paragraphs: global.race['warlord'] ? 2 : 3, break: global.race['warlord'] ? [2] : [2,3], h_level: 4, header: true,
+            text: {
+                1: global.race['warlord'] ? 'wiki_hell_hazard_effect_w' : 'wiki_hell_hazard_effect',
+                2: 'wiki_hell_hazard_counter',
+                3: 'wiki_hell_hazard_partial'
+            },
             para_data: {
                 1: [`75%`],
-                2: [global.race['warlord'] ? `${loc(`portal_mech_equip_coolant`)}, ${loc(`portal_mech_equip_heat`)}` : loc(`portal_mech_equip_coolant`)]
+                2: global.race['warlord'] ? [`${loc(`portal_mech_equip_heat`)}`] : [`${loc(`portal_mech_equip_coolant`)}`],
+                3: [`${loc(`portal_mech_equip_shields`)}`]
             }
         });
 
@@ -363,162 +373,138 @@ export function hellPage(content){
                 1: global.race['warlord'] ? 'wiki_hell_hazard_effect_w' : 'wiki_hell_hazard_effect',
                 2: 'wiki_hell_hazard_counter',
                 3: 'wiki_hell_hazard_partial'
-            },    
+            },
             para_data: {
                 1: [`75%`],
-                2: [loc(`portal_mech_equip_ablative`)],
-                3: [global.race['warlord'] ? `${loc(`portal_mech_equip_stoneskin`)}, ${loc(`portal_mech_equip_shields`)}, ${loc(`portal_mech_equip_manashield`)}` : loc(`portal_mech_equip_shields`)]
+                2: global.race['warlord'] ? [`${loc(`portal_mech_equip_stoneskin`)}`] : [`${loc(`portal_mech_equip_ablative`)}`],
+                3: global.race['warlord'] ? [`${loc(`portal_mech_equip_manashield`)}`] : [`${loc(`portal_mech_equip_shields`)}, ${loc(`portal_mech_equip_seals`)}`]
             }
         });
 
-        infoBoxBuilder(hazard,{ name: 'h_humid', template: 'hell', label: loc(`portal_spire_status_humid`), paragraphs: global.race['warlord'] ? 3 : 2, break: global.race['warlord'] ? [2,3] : [2], h_level: 4, header: true,
+        infoBoxBuilder(hazard,{ name: 'h_hail', template: 'hell', label: loc(`portal_spire_status_hail`), paragraphs: 3, break: [2,3], h_level: 4, header: true,
             text: {
                 1: global.race['warlord'] ? 'wiki_hell_hazard_effect_w' : 'wiki_hell_hazard_effect',
                 2: 'wiki_hell_hazard_counter',
                 3: 'wiki_hell_hazard_partial'
-            },     
+            },
             para_data: {
                 1: [`25%`],
-                2: [loc(`portal_mech_equip_seals`)],
-                3: [loc(`portal_mech_equip_heat`)]
+                2: global.race['warlord'] ? [`${loc(`portal_mech_equip_stoneskin`)}`] : [`${loc(`portal_mech_equip_ablative`)}`],
+                3: global.race['warlord'] ? [`${loc(`portal_mech_equip_manashield`)}, ${loc(`portal_mech_equip_cold`)}`] : [`${loc(`portal_mech_equip_shields`)}`]
             }
         });
 
-        infoBoxBuilder(hazard,{ name: 'h_windy', template: 'hell', label: loc(`portal_spire_status_windy`), paragraphs: 1, h_level: 4, header: true,
-            text: {
-                1: global.race['warlord'] ? 'wiki_hell_hazard_chassis_w' : 'wiki_hell_hazard_chassis'
-            },    
-            para_data: {
-                1: global.race['warlord'] ? [`50%`,loc(`portal_mech_chassis_hover`),loc(`portal_mech_chassis_flying_imp`),loc(`portal_mech_chassis_harpy`),loc(`portal_mech_chassis_dragon`)] : [`50%`,loc(`portal_mech_chassis_hover`)]
-            }
-        });
-
-        infoBoxBuilder(hazard,{ name: 'h_hilly', template: 'hell', label: loc(`portal_spire_status_hilly`), paragraphs: 1, h_level: 4, header: true,
-            text: {
-                1: global.race['warlord'] ? 'wiki_hell_hazard_not_chassis_w' : 'wiki_hell_hazard_not_chassis'
-            },    
-            para_data: {
-                1: global.race['warlord'] ? [`50%`,loc(`portal_mech_chassis_spider`),loc(`portal_mech_chassis_flying_imp`),loc(`portal_mech_chassis_harpy`),loc(`portal_mech_chassis_dragon`)] : [`25%`,loc(`portal_mech_chassis_spider`)]
-            }
-        });
-
-        infoBoxBuilder(hazard,{ name: 'h_mountain', template: 'hell', label: loc(`portal_spire_status_mountain`), paragraphs: 2, break: [2], h_level: 4, header: true,
-            text: {
-                1: global.race['warlord'] ? 'wiki_hell_hazard_either_w' : 'wiki_hell_hazard_either',
-                2: 'wiki_hell_hazard_partial'
-            },    
-            para_data: {
-                1: [`50%`,loc(`portal_mech_chassis_spider`),loc(`portal_mech_equip_grapple`)],
-                2: [global.race['warlord'] ? `${loc(`portal_mech_equip_echo`)}, ${loc(`portal_mech_equip_flare`)}` : loc(`portal_mech_equip_flare`)]
-            }
-        });
-
-        infoBoxBuilder(hazard,{ name: 'h_radioactive', template: 'hell', label: loc(`portal_spire_status_radioactive`), paragraphs: 2, break: [2], h_level: 4, header: true,
-            text: counter_text,    
-            para_data: {
-                1: [`50%`],
-                2: [global.race['warlord'] ? `${loc(`portal_mech_equip_shields`)}, ${loc(`portal_mech_equip_manashield`)}` : loc(`portal_mech_equip_shields`)]
-            }
-        });
-
-        infoBoxBuilder(hazard,{ name: 'h_quake', template: 'hell', label: loc(`portal_spire_status_quake`), paragraphs: global.race['warlord'] ? 3 : 2, break: global.race['warlord'] ? [2,3] : [2], h_level: 4, header: true,
+        infoBoxBuilder(hazard,{ name: 'h_radioactive', template: 'hell', label: loc(`portal_spire_status_radioactive`), paragraphs: global.race['warlord'] ? 2 : 3, break: global.race['warlord'] ? [2] : [2,3], h_level: 4, header: true,
             text: {
                 1: global.race['warlord'] ? 'wiki_hell_hazard_effect_w' : 'wiki_hell_hazard_effect',
                 2: 'wiki_hell_hazard_counter',
                 3: 'wiki_hell_hazard_partial'
-            },      
-            para_data: {
-                1: [`75%`],
-                2: [loc(`portal_mech_equip_stabilizer`)],
-                3: [loc(`portal_mech_equip_athletic`)]
-            }
-        });
-
-        infoBoxBuilder(hazard,{ name: 'h_dust', template: 'hell', label: loc(`portal_spire_status_dust`), paragraphs: 2, break: [2], h_level: 4, header: true,
-            text: counter_text,    
+            },
             para_data: {
                 1: [`50%`],
-                2: [global.race['warlord'] ? `${loc(`portal_mech_equip_seals`)}, ${loc(`portal_mech_equip_thermal`)}` : loc(`portal_mech_equip_seals`)]
+                2: global.race['warlord'] ? [`${loc(`portal_mech_equip_manashield`)}`] : [`${loc(`portal_mech_equip_shields`)}`],
+                3: [`${loc(`portal_mech_equip_ablative`)}`]
             }
         });
 
-        infoBoxBuilder(hazard,{ name: 'h_river', template: 'hell', label: loc(`portal_spire_status_river`), paragraphs: 1, h_level: 4, header: true,
+        infoBoxBuilder(hazard,{ name: 'h_static', template: 'hell', label: loc(`portal_spire_status_static`), paragraphs: 3, break: [2,3], h_level: 4, header: true,
             text: {
-                1: global.race['warlord'] ? 'wiki_hell_hazard_not_chassis_w' : 'wiki_hell_hazard_not_chassis'
-            },    
+                1: global.race['warlord'] ? 'wiki_hell_hazard_effect_w' : 'wiki_hell_hazard_effect',
+                2: 'wiki_hell_hazard_counter',
+                3: 'wiki_hell_hazard_partial'
+            },
             para_data: {
-                1: global.race['warlord'] ? [`35%`,loc(`portal_mech_chassis_hover`),loc(`portal_mech_chassis_flying_imp`),loc(`portal_mech_chassis_harpy`),loc(`portal_mech_chassis_dragon`)] : [`50%`,loc(`portal_mech_chassis_hover`)]
+                1: [`60%`],
+                2: global.race['warlord'] ? [`${loc(`portal_mech_equip_manashield`)}`] : [`${loc(`portal_mech_equip_shields`)}`],
+                3: global.race['warlord'] ? [`${loc(`portal_mech_equip_stoneskin`)}`] : [`${loc(`portal_mech_equip_ablative`)}, ${loc(`portal_mech_equip_stabilizer`)}, ${loc(`portal_mech_equip_coolant`)}`]
             }
         });
 
-        infoBoxBuilder(hazard,{ name: 'h_tar', template: 'hell', label: loc(`portal_spire_status_tar`), paragraphs: 2, break: [2], h_level: 4, header: true,
+        infoBoxBuilder(hazard,{ name: 'h_humid', template: 'hell', label: loc(`portal_spire_status_humid`), paragraphs: global.race['warlord'] ? 2 : 3, break: global.race['warlord'] ? [2] : [2,3], h_level: 4, header: true,
             text: {
-                1: global.race['warlord'] ? 'wiki_hell_hazard_not_chassis_w2' : 'wiki_hell_hazard_not_chassis',
-                2: global.race['warlord'] ? 'wiki_hell_hazard_worse_w' : 'wiki_hell_hazard_worse'
-            },    
+                1: global.race['warlord'] ? 'wiki_hell_hazard_effect_w' : 'wiki_hell_hazard_effect',
+                // A demon has no full answer to humidity, so its second paragraph is the partial list.
+                2: global.race['warlord'] ? 'wiki_hell_hazard_partial' : 'wiki_hell_hazard_counter',
+                3: 'wiki_hell_hazard_partial'
+            },
             para_data: {
-                1: [`25%`,loc(`portal_mech_chassis_quad`)],
-                2: [`50%`,loc(`portal_mech_chassis_tread`),loc(`portal_mech_chassis_wheel`)]
+                1: [`25%`],
+                2: global.race['warlord'] ? [`${loc(`portal_mech_equip_cold`)}, ${loc(`portal_mech_equip_heat`)}`] : [`${loc(`portal_mech_equip_seals`)}`],
+                3: global.race['warlord'] ? [`${loc(`portal_mech_equip_cold`)}, ${loc(`portal_mech_equip_heat`)}`] : [`${loc(`portal_mech_equip_radiator`)}`]
+            }
+        });
+
+        infoBoxBuilder(hazard,{ name: 'h_dust', template: 'hell', label: loc(`portal_spire_status_dust`), paragraphs: 3, break: [2,3], h_level: 4, header: true,
+            text: {
+                1: global.race['warlord'] ? 'wiki_hell_hazard_effect_w' : 'wiki_hell_hazard_effect',
+                2: 'wiki_hell_hazard_counter',
+                3: 'wiki_hell_hazard_partial'
+            },
+            para_data: {
+                1: [`50%`],
+                2: global.race['warlord'] ? [`${loc(`portal_mech_equip_thermal`)}`] : [`${loc(`portal_mech_equip_seals`)}`],
+                3: global.race['warlord'] ? [`${loc(`portal_mech_equip_darkvision`)}, ${loc(`portal_mech_equip_echo`)}`] : [`${loc(`portal_mech_equip_infrared`)}, ${loc(`portal_mech_equip_sonar`)}`]
+            }
+        });
+
+        infoBoxBuilder(hazard,{ name: 'h_ashfall', template: 'hell', label: loc(`portal_spire_status_ashfall`), paragraphs: 3, break: [2,3], h_level: 4, header: true,
+            text: {
+                1: global.race['warlord'] ? 'wiki_hell_hazard_effect_w' : 'wiki_hell_hazard_effect',
+                2: 'wiki_hell_hazard_counter',
+                3: 'wiki_hell_hazard_partial'
+            },
+            para_data: {
+                1: [`60%`],
+                2: global.race['warlord'] ? [`${loc(`portal_mech_equip_heat`)}`] : [`${loc(`portal_mech_equip_coolant`)}`],
+                3: global.race['warlord'] ? [`${loc(`portal_mech_equip_thermal`)}, ${loc(`portal_mech_equip_darkvision`)}, ${loc(`portal_mech_equip_stoneskin`)}`] : [`${loc(`portal_mech_equip_seals`)}, ${loc(`portal_mech_equip_infrared`)}, ${loc(`portal_mech_equip_ablative`)}`]
             }
         });
 
         infoBoxBuilder(hazard,{ name: 'h_steam', template: 'hell', label: loc(`portal_spire_status_steam`), paragraphs: 2, break: [2], h_level: 4, header: true,
-            text: counter_text,    
+            text: {
+                1: global.race['warlord'] ? 'wiki_hell_hazard_effect_w' : 'wiki_hell_hazard_effect',
+                2: 'wiki_hell_hazard_partial'
+            },
             para_data: {
                 1: [`25%`],
-                2: [global.race['warlord'] ? `${loc(`portal_mech_equip_shields`)}, ${loc(`portal_mech_equip_heat`)}` : loc(`portal_mech_equip_shields`)]
+                2: global.race['warlord'] ? [`${loc(`portal_mech_equip_heat`)}, ${loc(`portal_mech_equip_manashield`)}, ${loc(`portal_mech_equip_thermal`)}`] : [`${loc(`portal_mech_equip_coolant`)}, ${loc(`portal_mech_equip_radiator`)}, ${loc(`portal_mech_equip_shields`)}`]
             }
         });
 
-        infoBoxBuilder(hazard,{ name: 'h_flooded', template: 'hell', label: loc(`portal_spire_status_flooded`), paragraphs: global.race['warlord'] ? 2 : 1, break: global.race['warlord'] ? [2] : [1],  h_level: 4, header: true,
+        infoBoxBuilder(hazard,{ name: 'h_rain', template: 'hell', label: loc(`portal_spire_status_rain`), paragraphs: 2, break: [2], h_level: 4, header: true,
             text: {
-                1: global.race['warlord'] ? 'wiki_hell_hazard_not_chassis_w2' : 'wiki_hell_hazard_not_chassis',
+                1: global.race['warlord'] ? 'wiki_hell_hazard_effect_w' : 'wiki_hell_hazard_effect',
                 2: 'wiki_hell_hazard_partial'
-            },    
+            },
             para_data: {
-                1: [`65%`,loc(`portal_mech_chassis_hover`)],
-                2: [loc(`portal_mech_chassis_snake`)]
+                1: [`25%`],
+                2: global.race['warlord'] ? [`${loc(`portal_mech_equip_cold`)}`] : [`${loc(`portal_mech_equip_seals`)}, ${loc(`portal_mech_equip_radiator`)}, ${loc(`portal_mech_equip_pontoon`)}`]
             }
         });
 
-        infoBoxBuilder(hazard,{ name: 'h_fog', template: 'hell', label: loc(`portal_spire_status_fog`), paragraphs: 2, break: [2], h_level: 4, header: true,
-            text: counter_text,    
-            para_data: {
-                1: [`80%`],
-                2: [global.race['warlord'] ? `${loc(`portal_mech_equip_sonar`)}, ${loc(`portal_mech_equip_echo`)}` : loc(`portal_mech_equip_sonar`)]
-            }
-        });
-
-        infoBoxBuilder(hazard,{ name: 'h_rain', template: 'hell', label: loc(`portal_spire_status_rain`), paragraphs: global.race['warlord'] ? 3 : 2, break: global.race['warlord'] ? [2,3] : [2], h_level: 4, header: true,
+        infoBoxBuilder(hazard,{ name: 'h_quake', template: 'hell', label: loc(`portal_spire_status_quake`), paragraphs: global.race['warlord'] ? 2 : 3, break: global.race['warlord'] ? [2] : [2,3], h_level: 4, header: true,
             text: {
                 1: global.race['warlord'] ? 'wiki_hell_hazard_effect_w' : 'wiki_hell_hazard_effect',
                 2: 'wiki_hell_hazard_counter',
                 3: 'wiki_hell_hazard_partial'
-            },    
+            },
             para_data: {
-                1: [`25%`],
-                2: [loc(`portal_mech_equip_seals`)],
-                3: [loc(`portal_mech_equip_cold`)]
+                1: [`75%`],
+                2: global.race['warlord'] ? [`${loc(`portal_mech_equip_athletic`)}`] : [`${loc(`portal_mech_equip_stabilizer`)}`],
+                3: [`${loc(`portal_mech_equip_grapple`)}`]
             }
         });
 
-        infoBoxBuilder(hazard,{ name: 'h_hail', template: 'hell', label: loc(`portal_spire_status_hail`), paragraphs: 1, h_level: 4, header: true,
-            text: {
-                1: global.race['warlord'] ? 'wiki_hell_hazard_either2_w' : 'wiki_hell_hazard_either2'
-            },    
-            para_data: {
-                1: global.race['warlord'] ? [`25%`,loc(`portal_mech_equip_ablative`),loc(`portal_mech_equip_shields`),loc(`portal_mech_equip_manashield`),loc(`portal_mech_equip_stoneskin`)] : [`25%`,loc(`portal_mech_equip_ablative`),loc(`portal_mech_equip_shields`)]
-            }
-        });
-
-        infoBoxBuilder(hazard,{ name: 'h_chasm', template: 'hell', label: loc(`portal_spire_status_chasm`), paragraphs: 2, break: [2], h_level: 4, header: true,
+        infoBoxBuilder(hazard,{ name: 'h_fog', template: 'hell', label: loc(`portal_spire_status_fog`), paragraphs: 3, break: [2,3], h_level: 4, header: true,
             text: {
                 1: global.race['warlord'] ? 'wiki_hell_hazard_effect_w' : 'wiki_hell_hazard_effect',
-                2: global.race['warlord'] ? 'wiki_hell_hazard_counter_w' : 'wiki_hell_hazard_counter'
-            },    
+                2: 'wiki_hell_hazard_counter',
+                3: 'wiki_hell_hazard_partial'
+            },
             para_data: {
-                1: [`90%`],
-                2: global.race['warlord'] ? [loc(`portal_mech_equip_grapple`),loc(`portal_mech_chassis_flying_imp`),loc(`portal_mech_chassis_harpy`),loc(`portal_mech_chassis_dragon`)] : [loc(`portal_mech_equip_grapple`)]
+                1: [`80%`],
+                2: global.race['warlord'] ? [`${loc(`portal_mech_equip_echo`)}`] : [`${loc(`portal_mech_equip_sonar`)}`],
+                3: global.race['warlord'] ? [`${loc(`portal_mech_equip_darkvision`)}, ${loc(`portal_mech_equip_thermal`)}`] : [`${loc(`portal_mech_equip_infrared`)}`]
             }
         });
 
@@ -527,11 +513,92 @@ export function hellPage(content){
                 1: global.race['warlord'] ? 'wiki_hell_hazard_effect_w' : 'wiki_hell_hazard_effect',
                 2: 'wiki_hell_hazard_counter',
                 3: 'wiki_hell_hazard_partial'
-            },    
+            },
             para_data: {
                 1: [`90%`],
-                2: global.race['warlord'] ? [`${loc(`portal_mech_equip_infrared`)}, ${loc(`portal_mech_equip_darkvision`)}`] : [loc(`portal_mech_equip_infrared`)],
-                3: [loc(`portal_mech_equip_flare`)]
+                2: global.race['warlord'] ? [`${loc(`portal_mech_equip_darkvision`)}`] : [`${loc(`portal_mech_equip_infrared`)}`],
+                3: global.race['warlord'] ? [`${loc(`portal_mech_equip_echo`)}`] : [`${loc(`portal_mech_equip_sonar`)}`]
+            }
+        });
+
+        infoBoxBuilder(hazard,{ name: 'h_mountain', template: 'hell', label: loc(`portal_spire_status_mountain`), paragraphs: 2, break: [2], h_level: 4, header: true,
+            text: {
+                1: global.race['warlord'] ? 'wiki_hell_hazard_effect_w' : 'wiki_hell_hazard_either',
+                2: 'wiki_hell_hazard_counter'
+            },
+            para_data: {
+                1: global.race['warlord'] ? [`50%`] : [`50%`,loc(`portal_mech_chassis_spider`),loc(`portal_mech_equip_grapple`)],
+                2: global.race['warlord'] ? [`${loc(`portal_mech_equip_echo`)}`] : [`${loc(`portal_mech_equip_sonar`)}`]
+            }
+        });
+
+        infoBoxBuilder(hazard,{ name: 'h_windy', template: 'hell', label: loc(`portal_spire_status_windy`), paragraphs: 2, break: [2], h_level: 4, header: true,
+            text: {
+                1: global.race['warlord'] ? 'wiki_hell_hazard_chassis_w' : 'wiki_hell_hazard_chassis',
+                2: 'wiki_hell_hazard_partial'
+            },
+            para_data: {
+                1: global.race['warlord'] ? [`50%`,loc(`portal_mech_chassis_flying_imp`),loc(`portal_mech_chassis_harpy`),loc(`portal_mech_chassis_dragon`),loc(`portal_mech_chassis_dragon`)] : [`50%`,loc(`portal_mech_chassis_hover`)],
+                2: global.race['warlord'] ? [`${loc(`portal_mech_equip_athletic`)}`] : [`${loc(`portal_mech_equip_stabilizer`)}`]
+            }
+        });
+
+        infoBoxBuilder(hazard,{ name: 'h_hilly', template: 'hell', label: loc(`portal_spire_status_hilly`), paragraphs: 2, break: [2], h_level: 4, header: true,
+            text: {
+                1: global.race['warlord'] ? 'wiki_hell_hazard_not_chassis_w' : 'wiki_hell_hazard_not_chassis',
+                2: 'wiki_hell_hazard_partial'
+            },
+            para_data: {
+                1: global.race['warlord'] ? [`25%`,loc(`portal_mech_chassis_flying_imp`),loc(`portal_mech_chassis_harpy`),loc(`portal_mech_chassis_dragon`),loc(`portal_mech_chassis_dragon`)] : [`25%`,loc(`portal_mech_chassis_spider`)],
+                2: global.race['warlord'] ? [`${loc(`portal_mech_equip_athletic`)}`] : [`${loc(`portal_mech_equip_grapple`)}, ${loc(`portal_mech_equip_stabilizer`)}`]
+            }
+        });
+
+        infoBoxBuilder(hazard,{ name: 'h_chasm', template: 'hell', label: loc(`portal_spire_status_chasm`), paragraphs: 3, break: [2,3], h_level: 4, header: true,
+            text: {
+                1: global.race['warlord'] ? 'wiki_hell_hazard_effect_w' : 'wiki_hell_hazard_effect',
+                2: global.race['warlord'] ? 'wiki_hell_hazard_counter_w' : 'wiki_hell_hazard_counter',
+                3: 'wiki_hell_hazard_partial'
+            },
+            para_data: {
+                1: [`90%`],
+                2: global.race['warlord'] ? [loc(`portal_mech_equip_athletic`),loc(`portal_mech_chassis_flying_imp`),loc(`portal_mech_chassis_harpy`),loc(`portal_mech_chassis_dragon`)] : [loc(`portal_mech_equip_grapple`)],
+                3: global.race['warlord'] ? [`${loc(`portal_mech_equip_echo`)}`] : [`${loc(`portal_mech_equip_sonar`)}`]
+            }
+        });
+
+        infoBoxBuilder(hazard,{ name: 'h_flooded', template: 'hell', label: loc(`portal_spire_status_flooded`), paragraphs: 3, break: [2,3],  h_level: 4, header: true,
+            text: {
+                1: global.race['warlord'] ? 'wiki_hell_hazard_not_chassis_w2' : 'wiki_hell_hazard_not_chassis',
+                2: global.race['warlord'] ? 'wiki_hell_hazard_partial' : 'wiki_hell_hazard_counter',
+                3: 'wiki_hell_hazard_partial'
+            },
+            para_data: {
+                1: global.race['warlord'] ? [`65%`,loc(`portal_mech_chassis_snake`)] : [`65%`,loc(`portal_mech_chassis_hover`)],
+                2: global.race['warlord'] ? [`${loc(`portal_mech_chassis_snake`)}`] : [loc(`portal_mech_equip_pontoon`)],
+                3: global.race['warlord'] ? [`${loc(`portal_mech_equip_cold`)}`] : [`${loc(`portal_mech_equip_seals`)}`]
+            }
+        });
+
+        infoBoxBuilder(hazard,{ name: 'h_river', template: 'hell', label: loc(`portal_spire_status_river`), paragraphs: global.race['warlord'] ? 1 : 2, break: global.race['warlord'] ? [] : [2], h_level: 4, header: true,
+            text: {
+                1: global.race['warlord'] ? 'wiki_hell_hazard_not_chassis_w' : 'wiki_hell_hazard_not_chassis',
+                2: 'wiki_hell_hazard_partial'
+            },
+            para_data: {
+                1: global.race['warlord'] ? [`35%`,loc(`portal_mech_chassis_flying_imp`),loc(`portal_mech_chassis_harpy`),loc(`portal_mech_chassis_dragon`),loc(`portal_mech_chassis_dragon`)] : [`35%`,loc(`portal_mech_chassis_hover`)],
+                2: [`${loc(`portal_mech_equip_pontoon`)}`]
+            }
+        });
+
+        infoBoxBuilder(hazard,{ name: 'h_tar', template: 'hell', label: loc(`portal_spire_status_tar`), paragraphs: 2, break: [2], h_level: 4, header: true,
+            text: {
+                1: global.race['warlord'] ? 'wiki_hell_hazard_effect_w' : 'wiki_hell_hazard_not_chassis',
+                2: 'wiki_hell_hazard_partial'
+            },
+            para_data: {
+                1: global.race['warlord'] ? [`25%`] : [`25%`,loc(`portal_mech_chassis_quad`)],
+                2: global.race['warlord'] ? [`${loc(`portal_mech_equip_stoneskin`)}`] : [`${loc(`portal_mech_equip_pontoon`)}, ${loc(`portal_mech_equip_stabilizer`)}`]
             }
         });
 
@@ -540,7 +607,7 @@ export function hellPage(content){
                 1: global.race['warlord'] ? 'wiki_hell_hazard_gravity_w' : 'wiki_hell_hazard_gravity',
                 2: global.race['warlord'] ? 'wiki_hell_hazard_gravity_w' : 'wiki_hell_hazard_gravity',
                 3: global.race['warlord'] ? 'wiki_hell_hazard_gravity_w' : 'wiki_hell_hazard_gravity'
-            },    
+            },
             para_data: {
                 1: global.race['warlord'] ? [loc(`portal_mech_size_fiend`),`20%`] : [loc(`portal_mech_size_medium`),`20%`],
                 2: global.race['warlord'] ? [loc(`portal_mech_size_cyberdemon`),`50%`] : [loc(`portal_mech_size_large`),`55%`],
@@ -554,7 +621,7 @@ export function hellPage(content){
     { // Special Equipment
         let special = infoBoxBuilder(mainContent,{ name: 'equipment', template: 'hell', paragraphs: 1, h_level: 2,
             para_data: {
-                1: [loc(`portal_mech_equip_jumpjet`),loc(`portal_mech_equip_battery`),loc(`portal_mech_equip_target`)]
+                1: [loc(`portal_mech_equip_jumpjet`),loc(`portal_mech_equip_damper`),loc(`portal_mech_equip_battery`),loc(`portal_mech_equip_target`)]
             }
         });
         sideMenu('add',`hell-gameplay`,'equipment',loc('wiki_hell_equipment'));
@@ -578,9 +645,17 @@ export function hellPage(content){
         if (!global.race['warlord']){
             infoBoxBuilder(special,{ name: `eq_jump`, template: 'hell', label: loc(`portal_mech_equip_jumpjet`), paragraphs: 4, break: [4], h_level: 3, header: true,
                 para_data: {
-                    1: [loc(`portal_mech_equip_jumpjet`),loc(`wiki_hell_scout`),loc(`wiki_hell_standard`),loc(`wiki_hell_collector`)],
-                    2: [`20%`],
-                    3: [`10%`,loc(`portal_spire_status_gravity`)]
+                    1: [loc(`portal_mech_equip_jumpjet`),loc(`wiki_hell_scout`),loc(`wiki_hell_collector`)],
+                    2: [`65%`],
+                    3: [`32.5%`,loc(`portal_spire_status_gravity`)]
+                }
+            });
+
+            infoBoxBuilder(special,{ name: `eq_damper`, template: 'hell', label: loc(`portal_mech_equip_damper`), paragraphs: 3, h_level: 3, header: true,
+                para_data: {
+                    1: [loc(`portal_mech_equip_damper`),loc(`wiki_hell_standard`)],
+                    2: [`75%`],
+                    3: [loc(`portal_spire_status_gravity`)]
                 }
             });
         }
@@ -588,7 +663,7 @@ export function hellPage(content){
         infoBoxBuilder(special,{ name: `eq_battery`, template: 'hell', label: loc(`portal_mech_equip_battery`), paragraphs: 2, h_level: 3, header: true,
             para_data: {
                 1: [loc(`portal_mech_equip_battery`),global.race['warlord'] ? loc(`wiki_hell_cyberdemon`) : loc(`wiki_hell_heavy`)],
-                2: [`2%`]
+                2: [`10%`]
             }
         });
 
@@ -596,7 +671,7 @@ export function hellPage(content){
             infoBoxBuilder(special,{ name: `eq_target`, template: 'hell', label: loc(`portal_mech_equip_target`), paragraphs: 3, h_level: 3, header: true,
                 para_data: {
                     1: [loc(`portal_mech_equip_target`),loc(`wiki_hell_titan`)],
-                    2: [`25%`]
+                    2: [`10%`]
                 }
             });
         }

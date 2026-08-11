@@ -15,8 +15,13 @@ export function crisprPage(content){
         let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
         crisprContent.append(info);
         geneDesc(info,gene);
-        sideMenu('add',`crispr-prestige`,id[1],genePool[gene].title);
+        sideMenu('add',`crispr-prestige`,id[1],geneText(gene,'title'));
     });
+}
+
+function geneText(gene,field){
+    let val = genePool[gene][field];
+    return typeof val === 'function' ? val() : val;
 }
 
 const specialRequirements = {
@@ -63,7 +68,6 @@ Object.keys(genePool).forEach(function (gene){
     if (!crisprTrees[crispr.grant[0]]){
         crisprTrees[crispr.grant[0]] = {};
     }
-    let text = typeof genePool[gene].title === 'string' ? genePool[gene].title : genePool[gene].title();
     crisprTrees[crispr.grant[0]][crispr.grant[1]] = {
         name: gene
     };
@@ -72,12 +76,12 @@ Object.keys(genePool).forEach(function (gene){
 function geneDesc(info,gene){
     let owned = global.genes[genePool[gene].grant[0]] && global.genes[genePool[gene].grant[0]] >= genePool[gene].grant[1] ? true : false;
 
-    info.append(`<div class="type"><h2 class="has-text-warning">${genePool[gene].title}</h2>${owned ? `<span class="is-sr-only">${loc('wiki_arpa_purchased')}</span>` : ``}<span class="has-text-${owned ? `success` : `caution`}">${loc(`wiki_arpa_crispr_${genePool[gene].grant[0]}`)}: ${genePool[gene].grant[1]}</span></div>`);
+    info.append(`<div class="type"><h2 class="has-text-warning">${geneText(gene,'title')}</h2>${owned ? `<span class="is-sr-only">${loc('wiki_arpa_purchased')}</span>` : ``}<span class="has-text-${owned ? `success` : `caution`}">${loc(`wiki_arpa_crispr_${genePool[gene].grant[0]}`)}: ${genePool[gene].grant[1]}</span></div>`);
 
     let stats = $(`<div class="stats"></div>`);
     info.append(stats);
 
-    stats.append(`<div class="effect">${genePool[gene].desc}</div>`);
+    stats.append(`<div class="effect">${geneText(gene,'desc')}</div>`);
 
     let costs = $(`<div class="cost right"></div>`);
     stats.append(costs);

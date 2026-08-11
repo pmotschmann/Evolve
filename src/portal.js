@@ -5195,25 +5195,25 @@ export const monsters = {
         weapon: {
             laser: 1.05,
             flame: 0,
-            plasma: 0.25,
-            kinetic: 0.5,
+            plasma: 0.1,
+            kinetic: 0.55,
             missile: 0.5,
             sonic: 1,
             shotgun: 0.75,
-            tesla: 0.65,
-            claws: 0.5,
-            venom: 0.62,
-            cold: 1.25,
-            shock: 0.68,
+            tesla: 0.7,
+            claws: 0.55,
+            venom: 0.85,
+            cold: 1.2,
+            shock: 0.65,
             fire: 0,
-            acid: 0.25,
+            acid: 0.1,
             stone: 0.5,
-            iron: 0.5,
-            flesh: 0.3,
-            ice: 1.12,
+            iron: 0.45,
+            flesh: 0.4,
+            ice: 1.1,
             magma: 0,
-            axe: 0.5,
-            hammer: 0.5
+            axe: 0.55,
+            hammer: 0.45
         },
         nozone: {
             freeze: true,
@@ -5227,27 +5227,27 @@ export const monsters = {
     },
     water_elm: {
         weapon: {
-            laser: 0.65,
-            flame: 0.5,
+            laser: 0.6,
+            flame: 0.6,
             plasma: 1,
-            kinetic: 0.2,
+            kinetic: 0.25,
             missile: 0.5,
             sonic: 0.5,
             shotgun: 0.25,
-            tesla: 0.75,
-            claws: 0.4,
-            venom: 0.8,
-            cold: 1.1,
-            shock: 0.68,
-            fire: 0.8,
-            acid: 0.25,
+            tesla: 0.8,
+            claws: 0.45,
+            venom: 0.95,
+            cold: 1.05,
+            shock: 0.65,
+            fire: 0.85,
+            acid: 0.1,
             stone: 0.4,
-            iron: 0.3,
-            flesh: 0.5,
+            iron: 0.25,
+            flesh: 0.55,
             ice: 1.1,
             magma: 0.75,
-            axe: 0.45,
-            hammer: 0.45
+            axe: 0.5,
+            hammer: 0.4
         },
         nozone: {
             hot: true,
@@ -5264,25 +5264,25 @@ export const monsters = {
     rock_golem: {
         weapon: {
             laser: 1,
-            flame: 0.5,
+            flame: 0.6,
             plasma: 1,
             kinetic: 0.65,
             missile: 0.95,
-            sonic: 0.75,
+            sonic: 0.8,
             shotgun: 0.35,
             tesla: 0,
             claws: 0.7,
-            venom: 0.25,
-            cold: 0.35,
+            venom: 0.55,
+            cold: 0.3,
             shock: 0,
-            fire: 0.9,
+            fire: 0.95,
             acid: 1,
             stone: 0.5,
-            iron: 0.65,
-            flesh: 0.3,
+            iron: 0.55,
+            flesh: 0.4,
             ice: 0.3,
             magma: 0.9,
-            axe: 0.2,
+            axe: 0.25,
             hammer: 1
         },
         nozone: {},
@@ -5290,26 +5290,26 @@ export const monsters = {
     },
     bone_golem: {
         weapon: {
-            laser: 0.45,
-            flame: 0.35,
-            plasma: 0.55,
+            laser: 0.4,
+            flame: 0.45,
+            plasma: 0.35,
             kinetic: 1,
             missile: 1,
-            sonic: 0.75,
+            sonic: 0.8,
             shotgun: 0.75,
-            tesla: 0.15,
+            tesla: 0.2,
             claws: 0.75,
             venom: 0,
-            cold: 0.2,
+            cold: 0.15,
             shock: 0.15,
-            fire: 0.4,
-            acid: 0.85,
+            fire: 0.45,
+            acid: 0.75,
             stone: 0.9,
             iron: 1,
-            flesh: 0.15,
+            flesh: 0.2,
             ice: 0.3,
             magma: 0.9,
-            axe: 0.65,
+            axe: 0.7,
             hammer: 1.2
         },
         nozone: {},
@@ -5317,53 +5317,53 @@ export const monsters = {
     },
     mech_dino: {
         weapon: {
-            laser: 0.85,
-            flame: 0.05,
-            plasma: 0.55,
-            kinetic: 0.45,
+            laser: 0.8,
+            flame: 0.1,
+            plasma: 0.35,
+            kinetic: 0.5,
             missile: 0.5,
-            sonic: 0.35,
-            shotgun: 0.5,
+            sonic: 0.4,
+            shotgun: 0.35,
             tesla: 1,
-            claws: 0.38,
-            venom: 0.1,
-            cold: 0.5,
+            claws: 0.4,
+            venom: 0.35,
+            cold: 0.45,
             shock: 1.1,
-            fire: 0.5,
-            acid: 0.75,
+            fire: 0.55,
+            acid: 0.6,
             stone: 0.5,
-            iron: 0.5,
-            flesh: 0.15,
+            iron: 0.45,
+            flesh: 0.2,
             ice: 0.3,
             magma: 0.9,
-            axe: 0.6,
-            hammer: 0.4
+            axe: 0.65,
+            hammer: 0.35
         },
         nozone: {},
         amp: {}
     },
     plant: {
         weapon: {
-            laser: 0.42,
+            laser: 0.35,
             flame: 1,
-            plasma: 0.65,
-            kinetic: 0.2,
+            plasma: 0.45,
+            kinetic: 0.25,
             missile: 0.25,
-            sonic: 0.75,
-            shotgun: 0.35,
-            tesla: 0.38,
-            claws: 0.25,
-            venom: 0.25,
-            cold: 0.65,
-            shock: 0.28,
+            sonic: 0.8,
+            shotgun: 0.25,
+            tesla: 0.45,
+            claws: 0.3,
+            venom: 0.55,
+            cold: 0.6,
+            shock: 0.25,
             fire: 1,
-            acid: 0.45,
+            acid: 0.25,
             stone: 0.6,
-            iron: 0.5,
-            flesh: 0.5,
+            iron: 0.45,
+            flesh: 0.55,
             ice: 0.55,
             magma: 1,
-            axe: 0.25,
+            axe: 0.3,
             hammer: 0.15
         },
         nozone: {},
@@ -5371,26 +5371,26 @@ export const monsters = {
     },
     crazed: {
         weapon: {
-            laser: 0.5,
-            flame: 0.85,
-            plasma: 0.65,
+            laser: 0.45,
+            flame: 0.9,
+            plasma: 0.45,
             kinetic: 1,
             missile: 0.35,
-            sonic: 0.15,
+            sonic: 0.2,
             shotgun: 0.95,
-            tesla: 0.6,
+            tesla: 0.65,
             claws: 1,
-            venom: 0.5,
-            cold: 0.5,
+            venom: 0.75,
+            cold: 0.45,
             shock: 0.75,
-            fire: 0.5,
-            acid: 0.5,
+            fire: 0.55,
+            acid: 0.3,
             stone: 0.7,
             iron: 0.8,
             flesh: 0.9,
             ice: 0.4,
-            magma: 0.5,
-            axe: 1,
+            magma: 0.55,
+            axe: 1.1,
             hammer: 0.75
         },
         nozone: {},
@@ -5398,52 +5398,52 @@ export const monsters = {
     },
     minotaur: {
         weapon: {
-            laser: 0.32,
-            flame: 0.5,
-            plasma: 0.82,
-            kinetic: 0.44,
+            laser: 0.25,
+            flame: 0.6,
+            plasma: 0.7,
+            kinetic: 0.45,
             missile: 1,
-            sonic: 0.15,
+            sonic: 0.2,
             shotgun: 0.2,
-            tesla: 0.35,
-            claws: 0.6,
+            tesla: 0.45,
+            claws: 0.65,
             venom: 1.1,
-            cold: 0.5,
+            cold: 0.45,
             shock: 0.3,
-            fire: 0.5,
+            fire: 0.55,
             acid: 1,
             stone: 0.6,
             iron: 0.9,
-            flesh: 0.3,
+            flesh: 0.4,
             ice: 0.4,
-            magma: 0.55,
+            magma: 0.6,
             axe: 0.75,
-            hammer: 0.6
+            hammer: 0.55
         },
         nozone: {},
         amp: {}
     },
     ooze: {
         weapon: {
-            laser: 0.2,
-            flame: 0.65,
+            laser: 0.15,
+            flame: 0.7,
             plasma: 1,
             kinetic: 0,
             missile: 0,
-            sonic: 0.85,
+            sonic: 0.9,
             shotgun: 0,
-            tesla: 0.15,
+            tesla: 0.2,
             claws: 0,
-            venom: 0.15,
+            venom: 0.4,
             cold: 1.5,
             shock: 0.2,
-            fire: 0.6,
-            acid: 0.5,
+            fire: 0.65,
+            acid: 0,
             stone: 0,
             iron: 0,
             flesh: 0,
             ice: 1.25,
-            magma: 0.7,
+            magma: 0.75,
             axe: 0,
             hammer: 0
         },
@@ -5452,54 +5452,54 @@ export const monsters = {
     },
     zombie: {
         weapon: {
-            laser: 0.35,
+            laser: 0.3,
             flame: 1,
-            plasma: 0.45,
-            kinetic: 0.08,
+            plasma: 0.25,
+            kinetic: 0.1,
             missile: 0.8,
-            sonic: 0.18,
+            sonic: 0.25,
             shotgun: 0.95,
-            tesla: 0.05,
+            tesla: 0.1,
             claws: 0.85,
-            venom: 0,
-            cold: 0.2,
+            venom: 0.1,
+            cold: 0.15,
             shock: 0.35,
-            fire: 0.95,
-            acid: 0.5,
+            fire: 1,
+            acid: 0.3,
             stone: 0.5,
-            iron: 0.5,
-            flesh: 0.35,
+            iron: 0.45,
+            flesh: 0.45,
             ice: 0.25,
             magma: 0.9,
             axe: 1,
-            hammer: 0.5
+            hammer: 0.45
         },
         nozone: {},
         amp: {}
     },
     raptor: {
         weapon: {
-            laser: 0.68,
-            flame: 0.55,
-            plasma: 0.85,
+            laser: 0.65,
+            flame: 0.6,
+            plasma: 0.75,
             kinetic: 1,
-            missile: 0.44,
-            sonic: 0.22,
-            shotgun: 0.33,
-            tesla: 0.66,
+            missile: 0.4,
+            sonic: 0.3,
+            shotgun: 0.3,
+            tesla: 0.7,
             claws: 0.85,
-            venom: 0.5,
-            cold: 0.5,
-            shock: 0.88,
-            fire: 0.6,
-            acid: 0.6,
+            venom: 0.75,
+            cold: 0.45,
+            shock: 0.85,
+            fire: 0.65,
+            acid: 0.5,
             stone: 1,
             iron: 0.85,
-            flesh: 0.45,
+            flesh: 0.5,
             ice: 0.5,
-            magma: 0.65,
+            magma: 0.7,
             axe: 0.9,
-            hammer: 0.6
+            hammer: 0.55
         },
         nozone: {},
         amp: {}
@@ -5507,25 +5507,25 @@ export const monsters = {
     frost_giant: {
         weapon: {
             laser: 0.9,
-            flame: 0.82,
+            flame: 0.85,
             plasma: 1,
-            kinetic: 0.25,
-            missile: 0.08,
-            sonic: 0.45,
-            shotgun: 0.28,
-            tesla: 0.5,
-            claws: 0.35,
-            venom: 0.15,
+            kinetic: 0.3,
+            missile: 0.05,
+            sonic: 0.35,
+            shotgun: 0.25,
+            tesla: 0.55,
+            claws: 0.4,
+            venom: 0.4,
             cold: 0,
             shock: 0.6,
             fire: 1.2,
-            acid: 0.5,
-            stone: 0.35,
+            acid: 0.3,
+            stone: 0.4,
             iron: 1,
-            flesh: 0.3,
+            flesh: 0.4,
             ice: 0,
             magma: 1.1,
-            axe: 0.5,
+            axe: 0.55,
             hammer: 1
         },
         nozone: {
@@ -5540,24 +5540,24 @@ export const monsters = {
         weapon: {
             laser: 0.02,
             flame: 1,
-            plasma: 0.04,
-            kinetic: 0.01,
-            missile: 0.08,
-            sonic: 0.66,
-            shotgun: 0.38,
-            tesla: 0.45,
+            plasma: 0,
+            kinetic: 0.02,
+            missile: 0.05,
+            sonic: 0.65,
+            shotgun: 1,
+            tesla: 0.55,
             claws: 0.05,
-            venom: 0.01,
-            cold: 0.8,
+            venom: 0.1,
+            cold: 0.75,
             shock: 0.75,
-            fire: 0.8,
-            acid: 0.75,
-            stone: 0.03,
-            iron: 0.03,
-            flesh: 0.03,
+            fire: 0.85,
+            acid: 0.6,
+            stone: 0.05,
+            iron: 0.02,
+            flesh: 0.05,
             ice: 0.3,
-            magma: 0.5,
-            axe: 0.01,
+            magma: 0.55,
+            axe: 0.02,
             hammer: 0.05
         },
         nozone: {},
@@ -5565,53 +5565,53 @@ export const monsters = {
     },
     dragon: {
         weapon: {
-            laser: 0.18,
+            laser: 0.15,
             flame: 0,
-            plasma: 0.12,
-            kinetic: 0.35,
+            plasma: 0.02,
+            kinetic: 0.4,
             missile: 1,
-            sonic: 0.22,
+            sonic: 0.3,
             shotgun: 0.65,
-            tesla: 0.15,
-            claws: 0.38,
-            venom: 0.88,
-            cold: 0.8,
+            tesla: 0.2,
+            claws: 0.4,
+            venom: 1,
+            cold: 0.75,
             shock: 0.35,
             fire: 0,
-            acid: 0.85,
-            stone: 0.03,
-            iron: 0.03,
-            flesh: 0.03,
+            acid: 0.75,
+            stone: 0.05,
+            iron: 0.02,
+            flesh: 0.05,
             ice: 0.3,
             magma: 0,
-            axe: 0.4,
-            hammer: 0.55
+            axe: 0.45,
+            hammer: 0.5
         },
         nozone: {},
         amp: {}
     },
     mech_dragon: {
         weapon: {
-            laser: 0.84,
-            flame: 0.1,
-            plasma: 0.68,
-            kinetic: 0.18,
+            laser: 0.8,
+            flame: 0.15,
+            plasma: 0.5,
+            kinetic: 0.2,
             missile: 0.75,
-            sonic: 0.22,
-            shotgun: 0.28,
+            sonic: 0.3,
+            shotgun: 0.25,
             tesla: 1,
-            claws: 0.28,
+            claws: 0.3,
             venom: 0,
-            cold: 0.35,
+            cold: 0.3,
             shock: 1,
-            fire: 0.15,
-            acid: 0.72,
+            fire: 0.2,
+            acid: 0.6,
             stone: 0.5,
-            iron: 0.5,
-            flesh: 0.5,
+            iron: 0.4,
+            flesh: 0.55,
             ice: 0.2,
-            magma: 0.15,
-            axe: 0.25,
+            magma: 0.2,
+            axe: 0.3,
             hammer: 0.8
         },
         nozone: {},
@@ -5619,26 +5619,26 @@ export const monsters = {
     },
     construct: {
         weapon: {
-            laser: 0.5,
-            flame: 0.2,
-            plasma: 0.6,
-            kinetic: 0.34,
+            laser: 0.45,
+            flame: 0.3,
+            plasma: 0.4,
+            kinetic: 0.35,
             missile: 0.9,
-            sonic: 0.08,
-            shotgun: 0.28,
-            tesla: 1,
-            claws: 0.28,
+            sonic: 0.15,
+            shotgun: 0.25,
+            tesla: 1.15,
+            claws: 0.3,
             venom: 0,
-            cold: 0.45,
+            cold: 0.4,
             shock: 1.1,
-            fire: 0.22,
-            acid: 0.68,
+            fire: 0.25,
+            acid: 0.55,
             stone: 0.55,
-            iron: 0.55,
-            flesh: 0.4,
+            iron: 0.45,
+            flesh: 0.45,
             ice: 0.4,
-            magma: 0.18,
-            axe: 0.42,
+            magma: 0.2,
+            axe: 0.45,
             hammer: 0.95
         },
         nozone: {},
@@ -5646,53 +5646,53 @@ export const monsters = {
     },
     beholder: {
         weapon: {
-            laser: 0.75,
-            flame: 0.15,
+            laser: 0.7,
+            flame: 0.25,
             plasma: 1,
-            kinetic: 0.45,
+            kinetic: 0.5,
             missile: 0.05,
-            sonic: 0.01,
-            shotgun: 0.12,
-            tesla: 0.3,
-            claws: 0.48,
-            venom: 0.9,
-            cold: 0.88,
-            shock: 0.24,
-            fire: 0.18,
-            acid: 0.9,
-            stone: 0.72,
-            iron: 0.45,
-            flesh: 0.85,
-            ice: 0.92,
-            magma: 0.16,
-            axe: 0.44,
-            hammer: 0.08
+            sonic: 0.02,
+            shotgun: 0.1,
+            tesla: 0.4,
+            claws: 0.5,
+            venom: 1,
+            cold: 0.8,
+            shock: 0.2,
+            fire: 0.2,
+            acid: 0.85,
+            stone: 0.75,
+            iron: 0.35,
+            flesh: 0.9,
+            ice: 0.9,
+            magma: 0.2,
+            axe: 0.45,
+            hammer: 0.05
         },
         nozone: {},
         amp: {}
     },
     worm: {
         weapon: {
-            laser: 0.55,
-            flame: 0.38,
-            plasma: 0.45,
-            kinetic: 0.2,
+            laser: 0.5,
+            flame: 0.45,
+            plasma: 0.25,
+            kinetic: 0.25,
             missile: 0.05,
-            sonic: 1,
+            sonic: 1.15,
             shotgun: 0.02,
-            tesla: 0.01,
-            claws: 0.18,
-            venom: 0.65,
-            cold: 1,
+            tesla: 0.02,
+            claws: 0.2,
+            venom: 0.85,
+            cold: 0.95,
             shock: 0.02,
-            fire: 0.38,
-            acid: 0.48,
-            stone: 0.22,
-            iron: 0.24,
-            flesh: 0.35,
+            fire: 0.45,
+            acid: 0.3,
+            stone: 0.25,
+            iron: 0.2,
+            flesh: 0.45,
             ice: 1,
-            magma: 0.4,
-            axe: 0.15,
+            magma: 0.45,
+            axe: 0.2,
             hammer: 0.05
         },
         nozone: {},
@@ -5700,27 +5700,27 @@ export const monsters = {
     },
     hydra: {
         weapon: {
-            laser: 0.85,
-            flame: 0.75,
-            plasma: 0.85,
-            kinetic: 0.25,
-            missile: 0.45,
+            laser: 0.8,
+            flame: 0.8,
+            plasma: 0.75,
+            kinetic: 0.3,
+            missile: 0.4,
             sonic: 0.5,
-            shotgun: 0.6,
-            tesla: 0.65,
-            claws: 0.3,
-            venom: 0.65,
-            cold: 0.55,
+            shotgun: 0.55,
+            tesla: 0.7,
+            claws: 0.35,
+            venom: 0.85,
+            cold: 0.5,
             shock: 0.65,
-            fire: 0.75,
-            acid: 0.85,
+            fire: 0.8,
+            acid: 0.75,
             stone: 0.25,
-            iron: 0.15,
-            flesh: 0.2,
+            iron: 0.1,
+            flesh: 0.25,
             ice: 0.55,
             magma: 0.75,
             axe: 0.45,
-            hammer: 0.65
+            hammer: 0.6
         },
         nozone: {},
         amp: {}
@@ -5728,52 +5728,52 @@ export const monsters = {
     colossus: {
         weapon: {
             laser: 1,
-            flame: 0.05,
-            plasma: 0.75,
-            kinetic: 0.45,
+            flame: 0.1,
+            plasma: 0.6,
+            kinetic: 0.5,
             missile: 1,
-            sonic: 0.35,
-            shotgun: 0.35,
-            tesla: 0.5,
-            claws: 0.48,
-            venom: 0.22,
-            cold: 0.25,
+            sonic: 0.45,
+            shotgun: 0.25,
+            tesla: 0.55,
+            claws: 0.5,
+            venom: 0.5,
+            cold: 0.2,
             shock: 0.65,
-            fire: 0.15,
-            acid: 0.95,
+            fire: 0.2,
+            acid: 0.9,
             stone: 0.55,
             iron: 0.95,
-            flesh: 0.25,
+            flesh: 0.35,
             ice: 0.35,
-            magma: 0.2,
-            axe: 0.55,
-            hammer: 0.35
+            magma: 0.25,
+            axe: 0.6,
+            hammer: 0.3
         },
         nozone: {},
         amp: {}
     },
     lich: {
         weapon: {
-            laser: 0.1,
-            flame: 0.1,
-            plasma: 0.1,
-            kinetic: 0.45,
+            laser: 0.05,
+            flame: 0.15,
+            plasma: 0.02,
+            kinetic: 0.5,
             missile: 0.75,
-            sonic: 0.35,
+            sonic: 0.45,
             shotgun: 0.75,
-            tesla: 0.5,
-            claws: 0.4,
-            venom: 0.01,
-            cold: 0.1,
+            tesla: 0.55,
+            claws: 0.45,
+            venom: 0.1,
+            cold: 0.05,
             shock: 0.5,
-            fire: 0.1,
-            acid: 0.1,
-            stone: 0.35,
-            iron: 0.25,
+            fire: 0.15,
+            acid: 0.02,
+            stone: 0.4,
+            iron: 1,
             flesh: 0.95,
             ice: 0.1,
             magma: 0.1,
-            axe: 0.4,
+            axe: 0.45,
             hammer: 1
         },
         nozone: {},
@@ -5783,79 +5783,79 @@ export const monsters = {
         weapon: {
             laser: 1,
             flame: 0.95,
-            plasma: 0.85,
-            kinetic: 0.5,
-            missile: 0.5,
-            sonic: 0.05,
+            plasma: 0.75,
+            kinetic: 0.55,
+            missile: 0.45,
+            sonic: 0.1,
             shotgun: 0.35,
-            tesla: 0.68,
+            tesla: 0.75,
             claws: 0.65,
-            venom: 0.95,
-            cold: 0.5,
+            venom: 1,
+            cold: 0.45,
             shock: 0.5,
-            fire: 0.75,
-            acid: 0.65,
+            fire: 0.8,
+            acid: 0.6,
             stone: 0.5,
-            iron: 0.5,
-            flesh: 0.5,
+            iron: 0.45,
+            flesh: 0.55,
             ice: 0.5,
             magma: 0.75,
-            axe: 0.65,
-            hammer: 0.5
+            axe: 0.7,
+            hammer: 0.45
         },
         nozone: {},
         amp: {}
     },
     bandit: {
         weapon: {
-            laser: 0.65,
-            flame: 0.5,
-            plasma: 0.85,
+            laser: 0.6,
+            flame: 0.6,
+            plasma: 0.75,
             kinetic: 1,
             missile: 0.5,
             sonic: 0.25,
-            shotgun: 0.75,
-            tesla: 0.25,
+            shotgun: 0.7,
+            tesla: 0.35,
             claws: 1,
-            venom: 0.15,
-            cold: 0.5,
+            venom: 0.4,
+            cold: 0.45,
             shock: 0.25,
-            fire: 0.5,
-            acid: 0.5,
+            fire: 0.55,
+            acid: 0.3,
             stone: 0.5,
             iron: 0.8,
-            flesh: 0.5,
+            flesh: 0.55,
             ice: 0.5,
-            magma: 0.5,
+            magma: 0.55,
             axe: 1,
-            hammer: 0.5
+            hammer: 0.45
         },
         nozone: {},
         amp: {}
     },
     croc: {
         weapon: {
-            laser: 0.65,
-            flame: 0.05,
-            plasma: 0.6,
-            kinetic: 0.5,
-            missile: 0.5,
+            laser: 0.6,
+            flame: 0.1,
+            plasma: 0.4,
+            kinetic: 0.55,
+            missile: 0.45,
             sonic: 1,
             shotgun: 0.2,
-            tesla: 0.75,
+            tesla: 0.8,
             claws: 1,
-            venom: 0.5,
-            cold: 1,
+            venom: 0.75,
+            cold: 0.95,
             shock: 0.75,
             fire: 0.05,
-            acid: 0.08,
+            acid: 0.02,
             stone: 0.6,
-            iron: 0.5,
-            flesh: 0.25,
+            iron: 0.4,
+            flesh: 0.35,
             ice: 0.95,
             magma: 0.05,
             axe: 0.75,
-            hammer: 0.5
+            hammer: 0.45
         },
         nozone: {},
         amp: {}
@@ -5863,25 +5863,25 @@ export const monsters = {
     djinni: {
         weapon: {
             laser: 0,
-            flame: 0.35,
+            flame: 0.45,
             plasma: 1,
-            kinetic: 0.15,
+            kinetic: 0.2,
             missile: 0,
             sonic: 0.65,
-            shotgun: 0.22,
-            tesla: 0.4,
-            claws: 0.18,
-            venom: 0.12,
-            cold: 0.9,
+            shotgun: 0.2,
+            tesla: 0.5,
+            claws: 0.2,
+            venom: 0.4,
+            cold: 0.85,
             shock: 0.45,
-            fire: 0.3,
-            acid: 0.1,
+            fire: 0.35,
+            acid: 0.02,
             stone: 0.2,
-            iron: 0.95,
-            flesh: 0.2,
+            iron: 1.1,
+            flesh: 0.25,
             ice: 0.9,
-            magma: 0.3,
-            axe: 0.12,
+            magma: 0.35,
+            axe: 0.15,
             hammer: 0
         },
         nozone: {},
@@ -5916,53 +5916,53 @@ export const monsters = {
     },
     centipede: {
         weapon: {
-            laser: 0.5,
-            flame: 0.85,
-            plasma: 0.95,
+            laser: 0.45,
+            flame: 0.9,
+            plasma: 0.9,
             kinetic: 0.65,
             missile: 0.6,
             sonic: 0,
-            shotgun: 0.5,
-            tesla: 0.01,
+            shotgun: 0.45,
+            tesla: 0.02,
             claws: 0.65,
-            venom: 0.01,
+            venom: 0.1,
             cold: 0,
-            shock: 0.01,
-            fire: 0.88,
-            acid: 0.95,
+            shock: 0.02,
+            fire: 0.9,
+            acid: 0.9,
             stone: 0.6,
-            iron: 0.45,
-            flesh: 0.55,
+            iron: 0.4,
+            flesh: 0.6,
             ice: 0,
-            magma: 0.88,
+            magma: 0.9,
             axe: 0.7,
-            hammer: 0.4
+            hammer: 0.35
         },
         nozone: {},
         amp: {}
     },
     spider: {
         weapon: {
-            laser: 0.65,
+            laser: 0.6,
             flame: 1,
-            plasma: 0.22,
+            plasma: 0.05,
             kinetic: 0.75,
             missile: 0.15,
-            sonic: 0.38,
+            sonic: 0.45,
             shotgun: 0.9,
-            tesla: 0.18,
-            claws: 0.12,
-            venom: 0.05,
-            cold: 0.5,
-            shock: 0.32,
+            tesla: 0.25,
+            claws: 0.15,
+            venom: 0.25,
+            cold: 0.45,
+            shock: 0.3,
             fire: 1,
-            acid: 0.65,
+            acid: 0.5,
             stone: 0.8,
-            iron: 0.5,
-            flesh: 0.5,
+            iron: 0.35,
+            flesh: 0.55,
             ice: 0.5,
             magma: 1,
-            axe: 0.18,
+            axe: 0.2,
             hammer: 0.75
         },
         nozone: {},
@@ -5970,26 +5970,26 @@ export const monsters = {
     },
     manticore: {
         weapon: {
-            laser: 0.05,
-            flame: 0.25,
-            plasma: 0.95,
-            kinetic: 0.5,
+            laser: 0.02,
+            flame: 0.35,
+            plasma: 0.9,
+            kinetic: 0.55,
             missile: 0.15,
-            sonic: 0.48,
-            shotgun: 0.4,
-            tesla: 0.6,
-            claws: 0.5,
-            venom: 0.5,
-            cold: 0.8,
+            sonic: 0.5,
+            shotgun: 0.3,
+            tesla: 0.65,
+            claws: 0.55,
+            venom: 0.75,
+            cold: 0.75,
             shock: 0.75,
-            fire: 0.15,
-            acid: 0.95,
+            fire: 0.2,
+            acid: 0.9,
             stone: 0.25,
-            iron: 0.5,
-            flesh: 0.8,
+            iron: 0.3,
+            flesh: 0.85,
             ice: 0.8,
-            magma: 0.15,
-            axe: 0.5,
+            magma: 0.2,
+            axe: 0.55,
             hammer: 0.25
         },
         nozone: {},
@@ -5997,25 +5997,25 @@ export const monsters = {
     },
     fiend: {
         weapon: {
-            laser: 0.75,
-            flame: 0.25,
-            plasma: 0.5,
-            kinetic: 0.25,
+            laser: 0.7,
+            flame: 0.35,
+            plasma: 0.3,
+            kinetic: 0.3,
             missile: 0.75,
-            sonic: 0.25,
+            sonic: 0.3,
             shotgun: 0.5,
-            tesla: 0.5,
+            tesla: 0.55,
             claws: 0.65,
-            venom: 0.1,
-            cold: 0.65,
+            venom: 0.35,
+            cold: 0.6,
             shock: 0.5,
-            fire: 0.2,
-            acid: 0.5,
+            fire: 0.25,
+            acid: 0.3,
             stone: 0.25,
-            iron: 0.75,
-            flesh: 1,
+            iron: 0.65,
+            flesh: 1.1,
             ice: 0.65,
-            magma: 0.2,
+            magma: 0.25,
             axe: 0.75,
             hammer: 0.25
         },
@@ -6024,25 +6024,25 @@ export const monsters = {
     },
     bat: {
         weapon: {
-            laser: 0.16,
-            flame: 0.18,
-            plasma: 0.12,
-            kinetic: 0.25,
+            laser: 0.1,
+            flame: 0.25,
+            plasma: 0.02,
+            kinetic: 0.3,
             missile: 0.02,
             sonic: 1,
             shotgun: 0.9,
-            tesla: 0.58,
+            tesla: 0.65,
             claws: 0.1,
-            venom: 0.1,
-            cold: 0.8,
+            venom: 0.35,
+            cold: 0.75,
             shock: 0.65,
-            fire: 0.15,
-            acid: 0.5,
+            fire: 0.2,
+            acid: 0.3,
             stone: 0.1,
             iron: 0.1,
-            flesh: 0.5,
+            flesh: 0.55,
             ice: 0.8,
-            magma: 0.2,
+            magma: 0.25,
             axe: 0.1,
             hammer: 0.1
         },
@@ -6051,26 +6051,26 @@ export const monsters = {
     },
     medusa: {
         weapon: {
-            laser: 0.35,
-            flame: 0.1,
-            plasma: 0.3,
+            laser: 0.3,
+            flame: 0.15,
+            plasma: 0.1,
             kinetic: 0.95,
             missile: 1,
-            sonic: 0.15,
-            shotgun: 0.88,
-            tesla: 0.26,
-            claws: 0.42,
-            venom: 0.3,
-            cold: 0.48,
-            shock: 0.28,
-            fire: 0.1,
-            acid: 0.85,
+            sonic: 0.2,
+            shotgun: 0.85,
+            tesla: 0.35,
+            claws: 0.45,
+            venom: 0.6,
+            cold: 0.4,
+            shock: 0.25,
+            fire: 0.15,
+            acid: 0.75,
             stone: 1,
-            iron: 0.25,
-            flesh: 0.75,
-            ice: 0.52,
-            magma: 0.12,
-            axe: 0.34,
+            iron: 0.2,
+            flesh: 0.8,
+            ice: 0.55,
+            magma: 0.15,
+            axe: 0.4,
             hammer: 1
         },
         nozone: {},
@@ -6078,26 +6078,26 @@ export const monsters = {
     },
     ettin: {
         weapon: {
-            laser: 0.5,
-            flame: 0.35,
-            plasma: 0.8,
-            kinetic: 0.5,
+            laser: 0.45,
+            flame: 0.45,
+            plasma: 0.7,
+            kinetic: 0.55,
             missile: 0.25,
-            sonic: 0.3,
+            sonic: 0.25,
             shotgun: 0.6,
-            tesla: 0.09,
-            claws: 0.5,
-            venom: 0.95,
-            cold: 0.3,
+            tesla: 0.15,
+            claws: 0.55,
+            venom: 1,
+            cold: 0.25,
             shock: 0.8,
-            fire: 0.38,
-            acid: 0.9,
+            fire: 0.45,
+            acid: 0.85,
             stone: 0.6,
-            iron: 0.75,
-            flesh: 0.4,
-            ice: 0.28,
-            magma: 0.32,
-            axe: 0.45,
+            iron: 0.65,
+            flesh: 0.5,
+            ice: 0.3,
+            magma: 0.35,
+            axe: 0.5,
             hammer: 0.25
         },
         nozone: {},
@@ -6105,26 +6105,26 @@ export const monsters = {
     },
     faceless: {
         weapon: {
-            laser: 0.6,
-            flame: 0.28,
-            plasma: 0.6,
+            laser: 0.55,
+            flame: 0.35,
+            plasma: 0.4,
             kinetic: 0,
             missile: 0.05,
-            sonic: 0.8,
+            sonic: 0.85,
             shotgun: 0.15,
             tesla: 1,
             claws: 0.02,
-            venom: 0.01,
+            venom: 0.1,
             cold: 0,
             shock: 1,
-            fire: 0.25,
-            acid: 0.55,
+            fire: 0.3,
+            acid: 0.35,
             stone: 0.15,
-            iron: 0.15,
-            flesh: 0.95,
+            iron: 0.1,
+            flesh: 1,
             ice: 0,
-            magma: 0.25,
-            axe: 0.01,
+            magma: 0.3,
+            axe: 0.02,
             hammer: 0.05
         },
         nozone: {},
@@ -6133,52 +6133,52 @@ export const monsters = {
     enchanted: {
         weapon: {
             laser: 1,
-            flame: 0.02,
-            plasma: 0.95,
-            kinetic: 0.2,
+            flame: 0.05,
+            plasma: 0.9,
+            kinetic: 0.25,
             missile: 0.7,
-            sonic: 0.05,
-            shotgun: 0.65,
-            tesla: 0.01,
+            sonic: 0.1,
+            shotgun: 0.6,
+            tesla: 0.02,
             claws: 0.1,
             venom: 0,
-            cold: 0.5,
-            shock: 0.01,
+            cold: 0.45,
+            shock: 0.02,
             fire: 0.02,
             acid: 1,
             stone: 0.25,
-            iron: 0.75,
-            flesh: 0.1,
+            iron: 0.65,
+            flesh: 0.15,
             ice: 0.5,
-            magma: 0.03,
+            magma: 0.05,
             axe: 0.1,
-            hammer: 0.5
+            hammer: 0.45
         },
         nozone: {},
         amp: {}
     },
     gargoyle: {
         weapon: {
-            laser: 0.15,
-            flame: 0.4,
-            plasma: 0.3,
-            kinetic: 0.5,
-            missile: 0.5,
-            sonic: 0.85,
+            laser: 0.1,
+            flame: 0.5,
+            plasma: 0.1,
+            kinetic: 0.55,
+            missile: 0.45,
+            sonic: 0.9,
             shotgun: 1,
-            tesla: 0.2,
-            claws: 0.45,
-            venom: 0.05,
-            cold: 0.15,
-            shock: 0.08,
-            fire: 0.38,
-            acid: 0.85,
+            tesla: 0.25,
+            claws: 0.5,
+            venom: 0.25,
+            cold: 0.1,
+            shock: 0.05,
+            fire: 0.45,
+            acid: 0.75,
             stone: 1,
             iron: 0.85,
-            flesh: 0.25,
+            flesh: 0.35,
             ice: 0.15,
-            magma: 0.35,
-            axe: 0.42,
+            magma: 0.4,
+            axe: 0.45,
             hammer: 1
         },
         nozone: {},
@@ -6186,27 +6186,27 @@ export const monsters = {
     },
     chimera: {
         weapon: {
-            laser: 0.38,
-            flame: 0.6,
-            plasma: 0.42,
+            laser: 0.3,
+            flame: 0.65,
+            plasma: 0.2,
             kinetic: 0.85,
             missile: 0.35,
             sonic: 0.5,
-            shotgun: 0.65,
-            tesla: 0.8,
-            claws: 0.92,
-            venom: 0.5,
-            cold: 0.45,
+            shotgun: 0.6,
+            tesla: 0.85,
+            claws: 0.95,
+            venom: 0.75,
+            cold: 0.4,
             shock: 0.8,
-            fire: 0.56,
-            acid: 0.4,
+            fire: 0.6,
+            acid: 0.2,
             stone: 0.5,
-            iron: 0.5,
-            flesh: 0.5,
-            ice: 0.48,
-            magma: 0.54,
-            axe: 0.88,
-            hammer: 0.42
+            iron: 0.3,
+            flesh: 0.55,
+            ice: 0.5,
+            magma: 0.55,
+            axe: 1,
+            hammer: 0.4
         },
         nozone: {},
         amp: {}
@@ -6240,54 +6240,54 @@ export const monsters = {
     },
     kraken: {
         weapon: {
-            laser: 0.75,
-            flame: 0.35,
-            plasma: 0.75,
-            kinetic: 0.35,
+            laser: 0.7,
+            flame: 0.45,
+            plasma: 0.6,
+            kinetic: 0.4,
             missile: 0.5,
-            sonic: 0.18,
+            sonic: 0.95,
             shotgun: 0.05,
-            tesla: 0.85,
-            claws: 0.32,
-            venom: 0.8,
-            cold: 0.66,
-            shock: 0.82,
-            fire: 0.33,
-            acid: 0.75,
+            tesla: 0.9,
+            claws: 0.35,
+            venom: 0.95,
+            cold: 0.6,
+            shock: 0.8,
+            fire: 0.4,
+            acid: 0.6,
             stone: 0.45,
-            iron: 0.35,
-            flesh: 0.4,
-            ice: 0.66,
-            magma: 0.33,
-            axe: 0.36,
-            hammer: 0.5
+            iron: 0.3,
+            flesh: 0.5,
+            ice: 0.65,
+            magma: 0.35,
+            axe: 0.4,
+            hammer: 0.45
         },
         nozone: {},
         amp: {}
     },
     homunculus: {
         weapon: {
-            laser: 0.05,
+            laser: 0.02,
             flame: 1,
-            plasma: 0.1,
+            plasma: 0.02,
             kinetic: 0.85,
             missile: 0.65,
             sonic: 0.5,
             shotgun: 0.75,
-            tesla: 0.2,
+            tesla: 0.25,
             claws: 0.85,
-            venom: 0.4,
-            cold: 0.12,
-            shock: 0.22,
+            venom: 0.7,
+            cold: 0.1,
+            shock: 0.2,
             fire: 1,
-            acid: 0.13,
+            acid: 0.02,
             stone: 0.65,
-            iron: 0.68,
+            iron: 0.65,
             flesh: 0.95,
-            ice: 0.18,
+            ice: 0.2,
             magma: 0.9,
             axe: 0.85,
-            hammer: 0.65
+            hammer: 0.6
         },
         nozone: {},
         amp: {}
@@ -6321,27 +6321,27 @@ export const monsters = {
     },
     skeleton_pack: {
         weapon: {
-            laser: 0.5,
-            flame: 0.1,
-            plasma: 0.5,
+            laser: 0.45,
+            flame: 0.15,
+            plasma: 0.3,
             kinetic: 1,
             missile: 1.2,
             sonic: 0.5,
-            shotgun: 1.05,
-            tesla: 0.2,
+            shotgun: 1.2,
+            tesla: 0.25,
             claws: 0.65,
             venom: 0,
-            cold: 0.11,
-            shock: 0.22,
-            fire: 0.1,
-            acid: 0.5,
+            cold: 0.1,
+            shock: 0.2,
+            fire: 0.15,
+            acid: 0.3,
             stone: 1,
-            iron: 0.65,
-            flesh: 0.25,
+            iron: 0.55,
+            flesh: 0.35,
             ice: 0.1,
-            magma: 0.12,
-            axe: 0.15,
-            hammer: 1.08
+            magma: 0.15,
+            axe: 0.2,
+            hammer: 1.05
         },
         nozone: {},
         amp: {}
@@ -6356,25 +6356,25 @@ export function mechCost(size,infernal,standardize){
             {
                 let baseCost = global.blood['prepared'] && global.blood.prepared >= 2 ? 50000 : 75000;
                 cost = infernal ? baseCost * 2.5 : baseCost;
-                soul = infernal ? 20 : 1;
+                soul = infernal ? 10 : 1;
             }
             break;
         case 'medium':
             {
                 cost = infernal ? 450000 : 180000;
-                soul = infernal ? 100 : 4;
+                soul = infernal ? 50 : 4;
             }
             break;
         case 'large':
             {
                 cost = infernal ? 925000 : 375000;
-                soul = infernal ? 500 : 20;
+                soul = infernal ? 250 : 20;
             }
             break;
         case 'titan':
             {
                 cost = infernal ? 1500000 : 750000;
-                soul = infernal ? 1500 : 75;
+                soul = infernal ? 750 : 75;
             }
             break;
         case 'collector':
@@ -6388,25 +6388,25 @@ export function mechCost(size,infernal,standardize){
             {
                 let baseCost = global.blood['prepared'] && global.blood.prepared >= 2 ? 30000 : 50000;
                 cost = infernal ? baseCost * 2.5 : baseCost;
-                soul = infernal ? 10 : 1;
+                soul = infernal ? 5 : 1;
             }
             break;
         case 'fiend':
             {
                 cost = infernal ? 300000 : 125000;
-                soul = infernal ? 40 : 4;
+                soul = infernal ? 20 : 4;
             }
             break;
         case 'cyberdemon':
             {
                 cost = infernal ? 625000 : 250000;
-                soul = infernal ? 120 : 12;
+                soul = infernal ? 60 : 12;
             }
             break;
         case 'archfiend':
             {
                 cost = infernal ? 1200000 : 600000;
-                soul = infernal ? 250 : 25;
+                soul = infernal ? 125 : 25;
             }
             break;
     }
@@ -6484,6 +6484,9 @@ export function drawMechLab(){
                 infernal: false
             };
         }
+
+        // Reshape a blueprint saved under the old layout, where special competed for a general slot.
+        normalizeBlueprint();
 
         let assemble = $(`<div id="mechAssembly" class="mechAssembly"></div>`);
         lab.append(assemble);
@@ -6563,8 +6566,10 @@ export function drawMechLab(){
             </b-dropdown>`);
         }
 
-        let e_cap = global.blood['prepared'] ? 5 : 4;
+        // One more slot than before: the special mount sits at index zero and the general slots follow it.
+        let e_cap = global.race['warlord'] ? (global.blood['prepared'] ? 5 : 4) : (global.blood['prepared'] ? 6 : 5);
         for (let i=0; i<e_cap; i++){
+            // Slot zero renders like any other, but validEquipment only offers it the special mount
             let equip = ``;
             let equipTypes = validEquipment(global.portal.mechbay.blueprint.size,global.portal.mechbay.blueprint.chassis,i);
             equipTypes.forEach(function(val,idx){
@@ -6634,7 +6639,7 @@ export function drawMechLab(){
                     if (s === 'collector'){
                         global.portal.mechbay.blueprint.hardpoint.length = 0;
                     }
-                    else if (s === 'small' || s === 'medium' || s === 'minion' || s === 'fiend'){
+                    else if (s === 'small' || s === 'minion' || s === 'fiend'){
                         if (global.portal.mechbay.blueprint.hardpoint.length === 0){
                             global.portal.mechbay.blueprint.hardpoint.push('laser');
                         }
@@ -6657,62 +6662,11 @@ export function drawMechLab(){
                             global.portal.mechbay.blueprint.hardpoint.length = 2;
                         }
                     }
-                    if (global.race['warlord']){ 
-                        global.portal.mechbay.blueprint.equip[0] = validEquipment(s,global.portal.mechbay.blueprint.chassis)[0]; 
-                        global.portal.mechbay.blueprint.equip.length = 1;
+                    if (!global.race['warlord']){
+                        normalizeBlueprint();
+                        return;
                     }
-                    switch (s){
-                        case 'small':
-                        case 'minion':
-                            if (global.blood['prepared']){
-                                global.portal.mechbay.blueprint.equip.push(validEquipment(s,global.portal.mechbay.blueprint.chassis)[0]);
-                            }
-                            global.portal.mechbay.blueprint.equip.length = global.blood['prepared'] ? 1 : 0;
-                            break;
-                        case 'medium':
-                        case 'fiend':
-                            if (global.portal.mechbay.blueprint.equip.length < 1){
-                                global.portal.mechbay.blueprint.equip.push(validEquipment(s,global.portal.mechbay.blueprint.chassis)[0]);
-                            }
-                            if (global.blood['prepared']){
-                                global.portal.mechbay.blueprint.equip.push(validEquipment(s,global.portal.mechbay.blueprint.chassis)[1]);
-                            }
-                            global.portal.mechbay.blueprint.equip.length = global.blood['prepared'] ? 2 : 1;
-                            break;
-                        case 'collector':
-                        case 'large':
-                        case 'cyberdemon':
-                            if (global.portal.mechbay.blueprint.equip.length < 1){
-                                global.portal.mechbay.blueprint.equip.push('special');
-                            }
-                            if (global.portal.mechbay.blueprint.equip.length < 2){
-                                global.portal.mechbay.blueprint.equip.push('shields');
-                            }
-                            if (global.blood['prepared']){
-                                global.portal.mechbay.blueprint.equip.push('grapple');
-                            }
-                            global.portal.mechbay.blueprint.equip.length = global.blood['prepared'] ? 3 : 2;
-                            break;
-                        case 'titan':
-                        case 'archfiend':
-                            if (global.portal.mechbay.blueprint.equip.length < 1){
-                                global.portal.mechbay.blueprint.equip.push(validEquipment(s,global.portal.mechbay.blueprint.chassis)[0]);
-                            }
-                            if (global.portal.mechbay.blueprint.equip.length < 2){
-                                global.portal.mechbay.blueprint.equip.push(validEquipment(s,global.portal.mechbay.blueprint.chassis)[1]);
-                            }
-                            if (global.portal.mechbay.blueprint.equip.length < 3){
-                                global.portal.mechbay.blueprint.equip.push(validEquipment(s,global.portal.mechbay.blueprint.chassis)[2]);
-                            }
-                            if (global.portal.mechbay.blueprint.equip.length < 4){
-                                global.portal.mechbay.blueprint.equip.push(validEquipment(s,global.portal.mechbay.blueprint.chassis)[3]);
-                            }
-                            if (global.blood['prepared']){
-                                global.portal.mechbay.blueprint.equip.push(validEquipment(s,global.portal.mechbay.blueprint.chassis)[4]);
-                            }
-                            global.portal.mechbay.blueprint.equip.length = global.blood['prepared'] ? 5 : 4;
-                            break;
-                    }
+                    normalizeWarlordBlueprint();
                     if (global.race['warlord']){
                         switch (s){
                             case 'minion':
@@ -6757,6 +6711,10 @@ export function drawMechLab(){
                     global.portal.mechbay.blueprint.hardpoint = [...global.portal.mechbay.blueprint.hardpoint];
                 },
                 setEquip(e, i) {
+                    // The special mount stays in slot zero and the general slots will not take it.
+                    if (!global.race['warlord'] && ((i === 0) !== (e === 'special'))){
+                        return;
+                    }
                     global.portal.mechbay.blueprint.equip[i] = e;
                     // same as above
                     global.portal.mechbay.blueprint.equip = [...global.portal.mechbay.blueprint.equip];
@@ -6765,7 +6723,7 @@ export function drawMechLab(){
                     if (global.portal.mechbay.blueprint.size === 'collector'){
                         return false;
                     }
-                    if (hp === 0 || (['large','cyberdemon'].includes(global.portal.mechbay.blueprint.size) && hp < 2) || global.portal.mechbay.blueprint.size === 'titan'){
+                    if (hp === 0 || (['medium','large','cyberdemon'].includes(global.portal.mechbay.blueprint.size) && hp < 2) || global.portal.mechbay.blueprint.size === 'titan'){
                         return true;
                     }
                     else if (global.portal.mechbay.blueprint.size === 'archfiend'){
@@ -6782,17 +6740,21 @@ export function drawMechLab(){
                 },
                 eVis(es){
                     let prep = global.blood['prepared'] ? 1 : 0;
+                    if (!global.race['warlord']){
+                        // Slot zero is the special mount, which every frame carries; the rest are general.
+                        return es <= mechGeneralSlots(global.portal.mechbay.blueprint.size);
+                    }
                     switch (global.portal.mechbay.blueprint.size){
                         case 'small':
                         case 'minion':
-                            return prep === 1 && es === 0 ? true : false;
+                            return es <= (0 + prep) ? true : false;
                         case 'medium':
                         case 'fiend':
-                            return es <= (0 + prep) ? true : false;
+                            return es <= (1 + prep) ? true : false;
                         case 'collector':
                         case 'large':
                         case 'cyberdemon':
-                            return es <= (1 + prep) ? true : false;
+                            return es <= (2 + prep) ? true : false;
                         case 'titan':
                         case 'archfiend':
                             return true;
@@ -6828,17 +6790,7 @@ export function drawMechLab(){
                     if (e !== 'special'){
                         return loc(`portal_mech_equip_${e}`);
                     }
-                    let type = 'jumpjet';
-                    switch (global.portal.mechbay.blueprint.size){
-                        case 'large':
-                        case 'cyberdemon':
-                            type = 'battery';
-                            break;
-                        case 'titan':
-                            type = 'target';
-                            break;
-                    }
-                    return loc(`portal_mech_equip_${type}`);
+                    return loc(`portal_mech_equip_${mechSpecial(global.portal.mechbay.blueprint.size)}`);
                 }
             }
         });
@@ -6857,18 +6809,7 @@ export function drawMechLab(){
                     popover(`mechAssembly${type}${idx}${i}`, function(obj){
                         let val = $(obj.this).attr(`data-val`);
                         if (val === 'special'){
-                            switch (global.portal.mechbay.blueprint.size){
-                                case 'large':
-                                case 'cyberdemon':
-                                    val = 'battery';
-                                    break;
-                                case 'titan':
-                                    val = 'target';
-                                    break;
-                                default:
-                                    val = 'jumpjet';
-                                    break;
-                            }
+                            val = mechSpecial(global.portal.mechbay.blueprint.size);
                         }
                         return loc(`portal_mech_${type}_${val}_desc`);
                     },
@@ -6923,21 +6864,7 @@ export function mechDesc(parent,obj){
 
     let equip = [];
     mech.equip.forEach(function(eq){
-        let type = eq;
-        if (type === 'special'){
-            switch (mech.size){
-                case 'large':
-                case 'cyberdemon':
-                    type = 'battery';
-                    break;
-                case 'titan':
-                    type = 'target';
-                    break;
-                default:
-                    type = 'jumpjet';
-                    break;
-            }
-        }
+        let type = eq === 'special' ? mechSpecial(mech.size) : eq;
         equip.push(`<span class="has-text-warning">${loc(`portal_mech_equip_${type}`)}</span>`);
     });
     desc.append(`<div>${equip.join(', ')}</div>`);
@@ -7040,15 +6967,116 @@ export function validEquipment(size,type,point){
     if (global.race['warlord']){
         switch (size){
             case 'minion':
-                equipList = ['scavenger','scouter','darkvision','echo','thermal','manashield','cold','heat','athletic','lucky','stoneskin'];
-                break;
+                // A minion's first slot is its job
+                if (point === 0){
+                    return ['scavenger','scouter'];
+                }
+                return ['darkvision','echo','thermal','manashield','cold','heat','athletic','lucky','stoneskin'];
             case 'fiend':
             case 'archfiend':
                 equipList = ['darkvision','echo','thermal','manashield','cold','heat','athletic','lucky','stoneskin'];
                 break;
+            case 'cyberdemon':
+                if (point === 0){
+                    return ['special'];
+                }
+                return ['shields','sonar','grapple','infrared','flare','radiator','coolant','ablative','stabilizer','seals'];
+        }
+        return equipList;
+    }
+    // Slot zero is the frame's built-in special mount
+    if (point === 0){
+        return ['special'];
+    }
+    return ['shields','sonar','grapple','infrared','pontoon','radiator','coolant','ablative','stabilizer','seals'];
+}
+
+// Which special mount a frame carries in slot zero. 
+export function mechSpecial(size){
+    switch (size){
+        case 'large':
+        case 'cyberdemon':
+            return 'battery';
+        case 'titan':
+            return 'target';
+        case 'medium':
+            return 'damper';
+        default:
+            return 'jumpjet';
+    }
+}
+
+// General equipment slots, the ones the player actually chooses. They sit after the special mount at
+// slot zero, so a frame's full loadout is one more than this.
+export function mechGeneralSlots(size){
+    let prep = global.blood['prepared'] ? 1 : 0;
+    switch (size){
+        case 'small':
+            return 1 + prep;
+        case 'medium':
+            return 2 + prep;
+        case 'collector':
+        case 'large':
+            return 3 + prep;
+        case 'titan':
+            return 4 + prep;
+    }
+    return 0;
+}
+
+// Equipment slots on a demon. Unlike a mech there is no separate special mount to sit outside this
+// count — a cyberdemon's battery and a minion's job both occupy slot zero of this total.
+export function wlEquipSlots(size){
+    let prep = global.blood['prepared'] ? 1 : 0;
+    switch (size){
+        case 'minion':
+            return 1 + prep;
+        case 'fiend':
+            return 2 + prep;
+        case 'cyberdemon':
+            return 3 + prep;
+        case 'archfiend':
+            return 4 + prep;
+    }
+    return 0;
+}
+
+// Reshape a demon blueprint to its frame: keep whatever the player already chose where it is still
+// legal for that slot, and fill the rest with something valid. A minion's slot zero only ever offers
+// its job and the later slots refuse it, so this keeps the two from colliding.
+export function normalizeWarlordBlueprint(){
+    let bp = global.portal.mechbay.blueprint;
+    let slots = wlEquipSlots(bp.size);
+    let equip = [];
+    for (let i=0; i<slots; i++){
+        let valid = validEquipment(bp.size,bp.chassis,i);
+        let cur = bp.equip[i];
+        if (valid.includes(cur) && !equip.includes(cur)){
+            equip.push(cur);
+        }
+        else {
+            equip.push(valid.find(e => !equip.includes(e)) || valid[0]);
         }
     }
-    return equipList;
+    // Fresh reference so the lab redraws the row rather than showing the old length.
+    bp.equip = equip;
+}
+
+// Reshape the blueprint to the current frame: special pinned at slot zero, general slots filled with
+// something valid. Only ever touches the blueprint — mechs already in the bay keep the loadout they
+// were built with and do not get handed the extra mount for free.
+export function normalizeBlueprint(){
+    if (global.race['warlord']){ normalizeWarlordBlueprint(); return; }
+    let bp = global.portal.mechbay.blueprint;
+    let slots = mechGeneralSlots(bp.size);
+    let general = validEquipment(bp.size,bp.chassis,1);
+    let kept = bp.equip.filter(e => e !== 'special' && general.includes(e));
+    let equip = ['special'];
+    for (let i=0; i<slots; i++){
+        equip.push(kept[i] || general[i % general.length]);
+    }
+    // Fresh reference so the lab redraws the row rather than showing the old length.
+    bp.equip = equip;
 }
 
 function drawMechs(){
@@ -7102,17 +7130,7 @@ function drawMechs(){
                 if (e !== 'special'){
                     return loc(`portal_mech_equip_${e}`);
                 }
-                let type = 'jumpjet';
-                switch (size){
-                    case 'large':
-                    case 'cyberdemon':
-                        type = 'battery';
-                        break;
-                    case 'titan':
-                        type = 'target';
-                        break;
-                }
-                return loc(`portal_mech_equip_${type}`);
+                return loc(`portal_mech_equip_${mechSpecial(size)}`);
             },
             weapon(hp) {
                 return loc(`portal_mech_weapon_${hp}`);
@@ -7218,7 +7236,7 @@ export function genSpireFloor(){
     global.portal.spire.type = types[Math.floor(seededRandom(0,types.length))];
     if (global.portal.spire.count >= 10){
         global.portal.spire.status = {};
-        let effects = ['freeze','hot','corrosive','humid','windy','hilly','mountain','radioactive','quake','dust','river','tar','steam','flooded','fog','rain','hail','chasm','dark','gravity'];
+        let effects = ['freeze','hot','corrosive','humid','windy','hilly','mountain','radioactive','quake','dust','river','tar','steam','flooded','fog','rain','hail','chasm','dark','gravity','ashfall','static'];
         assignValidStatus(effects[Math.floor(seededRandom(0,effects.length))]);
         
         if (global.portal.spire.count >= 25 && global.portal.spire.count <= 100){
@@ -7276,11 +7294,20 @@ function assignValidStatus(effect){
 }
 
 function terrainRating(mech,rating,effects){
-    if (mech.equip.includes('special') && (mech.size === 'small' || mech.size === 'medium' || mech.size === 'collector')){
+    // Jump jets are the small frame's answer to bad ground.
+    if (mech.equip.includes('special') && (mech.size === 'small' || mech.size === 'collector')){
         if (rating < 1){
-            rating += (1 - rating) * (effects.includes('gravity') ? 0.1 : 0.2);
+            rating += (1 - rating) * (effects.includes('gravity') ? 0.325 : 0.65);
         }
     }
+    // A medium's inertial damper crosses bad ground a little better than a jump jet does, 
+    // but doesn't help under heavy gravity.
+    if (mech.equip.includes('special') && mech.size === 'medium'){
+        if (rating < 1 && !effects.includes('gravity')){
+            rating += (1 - rating) * 0.75;
+        }
+    }
+    // Scout effect, negate some of the penalty for bad terrain.
     if (mech.size !== 'small' && rating < 1){
         rating += (effects.includes('fog') || effects.includes('dark') ? 0.005 : 0.01) * global.portal.mechbay.scouts;
         if (rating > 1){
@@ -7293,156 +7320,180 @@ function terrainRating(mech,rating,effects){
 function weaponPower(mech,power){
     if (power < 1 && power !== 0){
         if (mech.equip.includes('special') && mech.size === 'titan'){
-            power += (1 - power) * 0.25;
+            power += (1 - power) * 0.1;
         }
     }
     if (mech.equip.includes('special') && (mech.size === 'large' || mech.size === 'cyberdemon')){
-        power *= 1.02;
+        power *= 1.1;
     }
     return power;
 }
 
 function statusEffect(mech,effect){
     let rating = 1;
+    let has = function(e){ return mech.equip.includes(e); };
+    let fly = ['flying_imp','harpy','dragon'].includes(mech.chassis);
     switch (effect){
         case 'freeze':
             {
-                if (!mech.equip.includes('radiator') && !mech.equip.includes('cold')){
-                    rating = 0.25;
-                }
+                if (has('radiator') || has('cold')){ rating = 1; }
+                else if (has('ablative')){ rating = 0.45; }
+                else if (has('thermal')){ rating = 0.4; }
+                else { rating = 0.25; }
             }
             break;
         case 'hot':
             {
-                if (!mech.equip.includes('coolant') && !mech.equip.includes('heat')){
-                    rating = 0.25;
-                }
+                if (has('coolant') || has('heat')){ rating = 1; }
+                else if (has('shields')){ rating = 0.45; }
+                else { rating = 0.25; }
             }
             break;
         case 'corrosive':
             {
-                if (!mech.equip.includes('ablative')){
-                    if (mech.equip.includes('stoneskin')){
-                        rating = 0.9;
-                    }
-                    else if (mech.equip.includes('shields')){
-                        rating = 0.75;
-                    }
-                    else {
-                        rating = mech.equip.includes('manashield') ? 0.5 : 0.25;
-                    }
-                }
-            }
-            break;
-        case 'humid':
-            {
-                if (!mech.equip.includes('seals')){
-                    rating = mech.equip.includes('heat') ? 0.85 : 0.75;
-                }
-            }
-            break;
-        case 'windy':
-            {
-                if (['hover','flying_imp','harpy','dragon'].includes(mech.chassis)){
-                    rating = 0.5;
-                }
-            }
-            break;
-        case 'hilly':
-            {
-                if (!['spider','flying_imp','harpy','dragon'].includes(mech.chassis)){
-                    rating = 0.75;
-                }
-            }
-            break;
-        case 'mountain':
-            {
-                if (mech.chassis !== 'spider' && !mech.equip.includes('grapple')){
-                    rating = mech.equip.includes('flare') || mech.equip.includes('echo') ? 0.75 : 0.5;
-                }
-            }
-            break;
-        case 'radioactive':
-            {
-                if (!mech.equip.includes('shields') && !mech.equip.includes('manashield')){
-                    rating = 0.5;
-                }
-            }
-            break;
-        case 'quake':
-            {
-                if (!mech.equip.includes('stabilizer')){
-                    rating = mech.equip.includes('athletic') ? 0.75 : 0.25;
-                }
-            }
-            break;
-        case 'dust':
-            {
-                if (!mech.equip.includes('seals') && !mech.equip.includes('thermal')){
-                    rating = 0.5;
-                }
-            }
-            break;
-        case 'river':
-            {
-                if (!['hover','flying_imp','harpy','dragon'].includes(mech.chassis)){
-                    rating = 0.65;
-                }
-            }
-            break;
-        case 'tar':
-            {
-                if (mech.chassis !== 'quad'){
-                    rating = mech.chassis === 'tread' || mech.chassis === 'wheel' ? 0.5 : 0.75;
-                }
-            }
-            break;
-        case 'steam':
-            {
-                if (!mech.equip.includes('shields') && !mech.equip.includes('heat')){
-                    rating = 0.75;
-                }
-            }
-            break;
-        case 'flooded':
-            {
-                if (mech.chassis !== 'hover'){
-                    rating = ['snake'].includes(mech.chassis) ? 0.85 : 0.35;
-                }
-            }
-            break;
-        case 'fog':
-            {
-                if (!mech.equip.includes('sonar') && !mech.equip.includes('echo')){
-                    rating = 0.2;
-                }
-            }
-            break;
-        case 'rain':
-            {
-                if (!mech.equip.includes('seals')){
-                    rating = mech.equip.includes('cold') ? 0.9 : 0.75;
-                }
+                if (has('ablative') || has('stoneskin')){ rating = 1; }
+                else if (has('shields') || has('manashield')){ rating = 0.6; }
+                else if (has('seals')){ rating = 0.45; }
+                else { rating = 0.25; }
             }
             break;
         case 'hail':
             {
-                if (!mech.equip.includes('ablative') && !mech.equip.includes('shields') && !mech.equip.includes('manashield') && !mech.equip.includes('stoneskin')){
-                    rating = 0.75;
-                }
+                if (has('ablative') || has('stoneskin')){ rating = 1; }
+                else if (has('shields') || has('manashield')){ rating = 0.9; }
+                else if (has('cold')){ rating = 0.85; }
+                else { rating = 0.75; }
             }
             break;
-        case 'chasm':
+        case 'radioactive':
             {
-                if (!mech.equip.includes('grapple') && !['flying_imp','harpy','dragon'].includes(mech.chassis)){
-                    rating = mech.equip.includes('athletic') ? 0.35 : 0.1;
-                }
+                if (has('shields') || has('manashield')){ rating = 1; }
+                else if (has('ablative')){ rating = 0.75; }
+                else { rating = 0.5; }
+            }
+            break;
+        case 'static':
+            {
+                if (has('shields') || has('manashield')){ rating = 1; }
+                else if (has('ablative') || has('stoneskin')){ rating = 0.7; }
+                else if (has('stabilizer')){ rating = 0.65; }
+                else if (has('coolant')){ rating = 0.6; }
+                else { rating = 0.4; }
+            }
+            break;
+        case 'humid':
+            {
+                if (has('seals')){ rating = 1; }
+                else if (has('radiator') || has('cold')){ rating = 0.9; }
+                else if (has('heat')){ rating = 0.85; }
+                else { rating = 0.75; }
+            }
+            break;
+        case 'dust':
+            {
+                if (has('seals') || has('thermal')){ rating = 1; }
+                else if (has('infrared') || has('darkvision')){ rating = 0.75; }
+                else if (has('sonar') || has('echo')){ rating = 0.7; }
+                else { rating = 0.5; }
+            }
+            break;
+        case 'ashfall':
+            {
+                if (has('coolant') || has('heat')){ rating = 1; }
+                else if (has('seals') || has('thermal') || has('infrared') || has('darkvision')){ rating = 0.7; }
+                else if (has('ablative') || has('stoneskin')){ rating = 0.6; }
+                else { rating = 0.4; }
+            }
+            break;
+        case 'steam':
+            {
+                if (has('coolant') || has('radiator') || has('shields') || has('heat')){ rating = 0.9; }
+                else if (has('manashield')){ rating = 0.85; }
+                else if (has('thermal')){ rating = 0.8; }
+                else { rating = 0.75; }
+            }
+            break;
+        case 'rain':
+            {
+                if (has('seals')){ rating = 0.95; }
+                else if (has('radiator') || has('cold')){ rating = 0.9; }
+                else if (has('pontoon')){ rating = 0.85; }
+                else { rating = 0.75; }
+            }
+            break;
+        case 'quake':
+            {
+                if (has('stabilizer') || has('athletic')){ rating = 1; }
+                else if (has('grapple')){ rating = 0.45; }
+                else { rating = 0.25; }
+            }
+            break;
+        case 'fog':
+            {
+                if (has('sonar') || has('echo')){ rating = 1; }
+                else if (has('infrared') || has('darkvision')){ rating = 0.5; }
+                else if (has('thermal')){ rating = 0.45; }
+                else { rating = 0.2; }
             }
             break;
         case 'dark':
             {
-                if (!mech.equip.includes('infrared') && !mech.equip.includes('darkvision')){
-                    rating = mech.equip.includes('flare') ? 0.25 : 0.1;
+                if (has('infrared') || has('darkvision')){ rating = 1; }
+                else if (has('sonar') || has('echo')){ rating = 0.35; }
+                else { rating = 0.1; }
+            }
+            break;
+        case 'chasm':
+            {
+                if (has('grapple') || has('athletic') || fly){ rating = 1; }
+                else if (has('sonar') || has('echo')){ rating = 0.3; }
+                else { rating = 0.1; }
+            }
+            break;
+        case 'mountain':
+            {
+                if (mech.chassis === 'spider' || has('grapple') || has('echo')){ rating = 1; }
+                else if (has('sonar')){ rating = 0.7; }
+                else { rating = 0.5; }
+            }
+            break;
+        case 'hilly':
+            {
+                if (['spider','flying_imp','harpy','dragon'].includes(mech.chassis)){ rating = 1; }
+                else if (has('grapple') || has('stabilizer') || has('athletic')){ rating = 0.9; }
+                else { rating = 0.75; }
+            }
+            break;
+        case 'flooded':
+            {
+                if (mech.chassis === 'hover' || has('pontoon')){ rating = 1; }
+                else if (mech.chassis === 'snake'){ rating = 0.85; }
+                else if (has('seals') || has('cold')){ rating = 0.55; }
+                else { rating = 0.35; }
+            }
+            break;
+        case 'river':
+            {
+                if (mech.chassis === 'hover' || fly){ rating = 1; }
+                else if (has('pontoon')){ rating = 0.9; }
+                else { rating = 0.65; }
+            }
+            break;
+        case 'tar':
+            {
+                if (mech.chassis === 'quad'){ rating = 1; }
+                else if (mech.chassis === 'tread' || mech.chassis === 'wheel'){
+                    rating = (has('pontoon') || has('stabilizer')) ? 0.75 : 0.5;
+                }
+                else if (has('pontoon')){ rating = 0.9; }
+                else if (has('stabilizer') || has('stoneskin')){ rating = 0.85; }
+                else { rating = 0.75; }
+            }
+            break;
+        case 'windy':
+            {
+                if (mech.chassis === 'hover' || fly){
+                    rating = (has('stabilizer') || has('athletic')) ? 0.75 : 0.5;
                 }
             }
             break;
@@ -7466,16 +7517,12 @@ function statusEffect(mech,effect){
                         rating = 0.25;
                         break;
                 }
-                if (['flying_imp','harpy','dragon'].includes(mech.chassis)){
-                    rating -= 0.15;
-                }
-                if (mech.equip.includes('athletic') && rating < 1){
-                    rating += 0.1;
-                }
+                if (fly){ rating -= 0.15; }
+                if (has('athletic') && rating < 1){ rating += 0.1; }
             }
             break;
     }
-    if (mech.equip.includes('lucky')){
+    if (has('lucky')){
         rating += 0.01 * Math.floor(seededRandom(1,10,false, global.stats.reset + (global.portal?.spire?.count || 1) * 42 ));
         if (rating > 1){ rating = 1; }
     }
@@ -7702,7 +7749,9 @@ export function mechWeaponPower(size){
         case 'fiend':
             return 0.006;
         case 'medium':
-            return 0.0075;
+            // Two weapon bays at half the damage each. Total output is unchanged, but a medium can no
+            // longer be shut out entirely by a boss that resists its one weapon.
+            return 0.00375;
         case 'cyberdemon':
             return 0.009;
         case 'large':

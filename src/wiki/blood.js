@@ -16,8 +16,13 @@ export function bloodPage(content){
         let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
         crisprContent.append(info);
         bloodDesc(info,trait);
-        sideMenu('add',`blood-prestige`,id[1],bloodPool[trait].title);
+        sideMenu('add',`blood-prestige`,id[1],bloodText(trait,'title'));
     });
+}
+
+function bloodText(trait,field){
+    let val = bloodPool[trait][field];
+    return typeof val === 'function' ? val() : val;
 }
 
 var bloodTrees = {};
@@ -26,7 +31,6 @@ Object.keys(bloodPool).forEach(function (blood){
     if (!bloodTrees[infusion.grant[0]]){
         bloodTrees[infusion.grant[0]] = {};
     }
-    let text = typeof bloodPool[blood].title === 'string' ? bloodPool[blood].title : bloodPool[blood].title();
     bloodTrees[infusion.grant[0]][infusion.grant[1]] = {
         name: blood
     };
@@ -35,12 +39,12 @@ Object.keys(bloodPool).forEach(function (blood){
 function bloodDesc(info,trait){
     let owned = global.blood[bloodPool[trait].grant[0]] && global.blood[bloodPool[trait].grant[0]] >= bloodPool[trait].grant[1] ? true : false;
 
-    info.append(`<div class="type"><h2 class="has-text-warning">${bloodPool[trait].title}</h2>${owned ? `<span class="is-sr-only">${loc('wiki_arpa_purchased')}</span>` : ``}<span class="has-text-${owned ? `success` : `caution`}">${loc(`wiki_arpa_blood_${bloodPool[trait].grant[0]}`)}: ${bloodPool[trait].grant[1]}</span></div>`);
+    info.append(`<div class="type"><h2 class="has-text-warning">${bloodText(trait,'title')}</h2>${owned ? `<span class="is-sr-only">${loc('wiki_arpa_purchased')}</span>` : ``}<span class="has-text-${owned ? `success` : `caution`}">${loc(`wiki_arpa_blood_${bloodPool[trait].grant[0]}`)}: ${bloodPool[trait].grant[1]}</span></div>`);
 
     let stats = $(`<div class="stats"></div>`);
     info.append(stats);
 
-    stats.append(`<div class="effect">${bloodPool[trait].desc}</div>`);
+    stats.append(`<div class="effect">${bloodText(trait,'desc')}</div>`);
 
     let costs = $(`<div class="cost right"></div>`);
     stats.append(costs);

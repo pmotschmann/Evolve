@@ -1526,9 +1526,26 @@ if (convertVersion(global['version']) <= 105000){
     }
 }
 
+// Medium frames went from one weapon bay to two at half the damage per shot. Existing mediums only
+// have one weapon saved, so without this they would keep firing once at the new halved power and
+// quietly lose half their output. Give them a second bay carrying a different weapon than the first,
+// which is the whole point of the change. Flagged rather than version-gated so it runs exactly once.
+if (global.hasOwnProperty('portal') && global.portal.hasOwnProperty('mechbay')
+    && Array.isArray(global.portal.mechbay.mechs) && !global.portal.mechbay['dualbay']){
+    global.portal.mechbay['dualbay'] = true;
+    let mechWeapons = ['laser','kinetic','shotgun','missile','flame','plasma','sonic','tesla'];
+    global.portal.mechbay.mechs.forEach(function(mech){
+        if (mech.size === 'medium' && Array.isArray(mech.hardpoint) && mech.hardpoint.length < 2){
+            let first = mech.hardpoint[0];
+            let alt = mechWeapons.filter(function(w){ return w !== first; });
+            mech.hardpoint.push(alt[Math.floor(Math.random() * alt.length)]);
+        }
+    });
+}
+
 global['version'] = '1.5.0';
 delete global['revision'];
-global['beta'] = 24;
+global['beta'] = 25;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
