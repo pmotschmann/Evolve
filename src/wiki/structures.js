@@ -107,7 +107,8 @@ const calcInfo = {
             mass_relay: 100,
             fob: 1,
             ai_core: 100,
-            jump_gate: 100
+            jump_gate: 100,
+            descender: 100
         },
         starDock: {
             seeder: 100

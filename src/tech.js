@@ -14995,7 +14995,7 @@ const techs = {
         id: 'tech-nitrogen_harvester',
         title(){ return loc('tech_nitrogen_harvester'); },
         desc(){ return loc('tech_nitrogen_harvester'); },
-        category: 'progress',
+        category: 'agriculture',
         era: 'matrioshka',
         path: ['truepath'],
         reqs: { venus: 6 },
@@ -15018,7 +15018,7 @@ const techs = {
         // Theme changes depending on which moon was selected
         title(){ return loc(`tech_moon_resort_${surveyTheme()}`); },
         desc(){ return loc(`tech_moon_resort_${surveyTheme()}`); },
-        category: 'progress',
+        category: 'entertainment',
         era: 'matrioshka',
         path: ['truepath'],
         reqs: { survey: 2 },
@@ -15030,6 +15030,28 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.space.spc_survey.survey_resort);
+                renderSpace();
+                return true;
+            }
+            return false;
+        }
+    },
+    moon_storage: {
+        id: 'tech-moon_storage',
+        title(){ return loc('tech_moon_storage',[planetName()[surveyTheme()]]); },
+        desc(){ return loc('tech_moon_storage',[planetName()[surveyTheme()]]); },
+        category: 'storage',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { survey: 3 },
+        grant: ['survey',4],
+        cost: {
+            Knowledge(){ return 26750000; }
+        },
+        effect(){ return loc('tech_moon_storage_effect',[planetName()[surveyTheme()]]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.space.spc_survey.survey_warehouse);
                 renderSpace();
                 return true;
             }

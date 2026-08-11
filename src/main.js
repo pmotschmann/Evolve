@@ -11,7 +11,7 @@ import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMul
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types, spaceSectors } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
-import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYZcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, randomCoord, atShipyard, pinSalvage, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, moveShips, facilityStudying, facilityProgress, facilityCrew, facilityResearchTotal, facilityFindings } from './truepath.js';
+import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYZcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, randomCoord, atShipyard, pinSalvage, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, moveShips, facilityFindings } from './truepath.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
 import { defineGovernor, govern, govActive, removeTask } from './governor.js';
@@ -4608,18 +4608,21 @@ function fastLoop(){
         }
 
         // Researching the Alien Facility, scaled by scientist count
-        if (facilityStudying() && (!global.tech['facility_data'] || global.tech.facility_data < 6)){
+        if (actions.space.spc_venus.alien_facility.studying() && (!global.tech['facility_data'] || global.tech.facility_data < 6)){
             let crew = workerScale(global.civic.scientist.workers,'scientist');
             if (crew > 0){
-                global.space.alien_facility.research += (crew / facilityCrew) * time_multiplier;
-                let pct = facilityProgress();
+                if (global.race['high_pop']){
+                    crew = highPopAdjust(crew);
+                }
+                global.space.alien_facility.research += (crew / actions.space.spc_venus.alien_facility.researchDivisor()) * time_multiplier;
+                let pct = actions.space.spc_venus.alien_facility.progress();
                 let rank = global.tech['facility_data'] || 0;
                 for (let step of facilityFindings){
                     if (rank < step.r && pct >= step.p){
                         global.tech['facility_data'] = step.r;
                         rank = step.r;
                         if (step.r === 6){
-                            global.space.alien_facility.research = facilityResearchTotal;
+                            global.space.alien_facility.research = actions.space.spc_venus.alien_facility.researchTotal();
                             global.tech.resettle = 17;
                         }
                         messageQueue(loc(step.m,step.v ? step.v() : []),'success',false,['progress']);
@@ -9438,6 +9441,18 @@ function midLoop(){
                 if (global.resource[res].display){
                     let heavy = actions.space.spc_titan.storehouse.heavy(res);
                     let gain = global.space.storehouse.count * spatialReasoning(actions.space.spc_titan.storehouse.val(res) * (heavy ? h_multiplier : multiplier));
+                    caps[res] += gain;
+                    breakdown.c[res][label] = gain+'v';
+                }
+            };
+        }
+
+        if (global.space['survey_warehouse']){
+            var multiplier = tpStorageMultiplier('warehouse',false);
+            let label = loc('city_shed_title3');
+            for (const res of actions.space.spc_survey.survey_warehouse.res()){
+                if (global.resource[res].display){
+                    let gain = global.space.survey_warehouse.count * spatialReasoning(actions.space.spc_survey.survey_warehouse.val(res) * multiplier);
                     caps[res] += gain;
                     breakdown.c[res][label] = gain+'v';
                 }

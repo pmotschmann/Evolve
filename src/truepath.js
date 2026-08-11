@@ -1823,9 +1823,23 @@ const outerTruth = {
             path: ['truepath'],
             cost: {},
             queue_complete(){ return 0; },
+            researchDivisor(){ return 40; },
+            researchTotal(){ return 10800; },
+            // The descender has to be finished and running on Venus support for anyone to be down there.
+            studying(){
+                if (!global.space['alien_facility'] || !global.space['descender']){ return false; }
+                if (global.space.descender.count < 100){ return false; }
+                return getStructNumActive(actions.space.spc_venus.descender) > 0;
+            },
+            progress(){
+                if (!global.space['alien_facility']){ return 0; }
+                let pct = global.space.alien_facility.research / $(this)[0].researchTotal() * 100;
+                if (pct > 100){ pct = 100; }
+                return +(pct).toFixed(2);
+            },
             effect(){
-                let desc = `<div>${loc('space_alien_facility_effect',[facilityProgress()])}</div>`;
-                if (!facilityStudying()){
+                let desc = `<div>${loc('space_alien_facility_effect',[$(this)[0].progress()])}</div>`;
+                if (!$(this)[0].studying()){
                     desc += `<div class="has-text-warning">${loc('space_alien_facility_stalled',[loc('space_descender_title')])}</div>`;
                 }
                 return desc;
@@ -1932,6 +1946,114 @@ const outerTruth = {
                     p: ['survey_resort','space']
                 };
             }
+        },
+        survey_warehouse: {
+            id: 'space-survey_warehouse',
+            title(){ return loc('city_shed_title3'); },
+            desc(){
+                let moon = surveyBody();
+                return `<div>${loc('space_survey_warehouse_desc',[moon ? planetName()[moon] : loc('survey_region_unknown')])}</div>`;
+            },
+            type: 'storage',
+            reqs: { survey: 4 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('survey_warehouse', offset, 141000000, 1.28); },
+                Cement(offset){ return spaceCostMultiplier('survey_warehouse', offset, 3300000, 1.28); },
+                Adamantite(offset){ return spaceCostMultiplier('survey_warehouse', offset, 2250000, 1.28); }
+            },
+            wide: true,
+            res(){
+                let res = [
+                    'Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal','Steel','Titanium',
+                    'Alloy','Polymer','Iridium','Chrysotile','Nano_Tube','Neutronium','Adamantite','Tungsten',
+                    'Graphene','Stanene','Bolognium','Unobtainium','Uranium'
+                ];
+                return res;
+            },
+            val(res){
+                switch (res){
+                    case 'Lumber':
+                        return 680000;
+                    case 'Stone':
+                        return 680000;
+                    case 'Chrysotile':
+                        return 680000;
+                    case 'Furs':
+                        return 552000;
+                    case 'Copper':
+                        return 551200;
+                    case 'Iron':
+                        return 564000;
+                    case 'Aluminium':
+                        return 546800;
+                    case 'Tungsten':
+                        return 527600;
+                    case 'Cement':
+                        return 507200;
+                    case 'Coal':
+                        return 258800;
+                    case 'Steel':
+                        return 254400;
+                    case 'Titanium':
+                        return 249600;
+                    case 'Alloy':
+                        return 130800;
+                    case 'Polymer':
+                        return 129000;
+                    case 'Iridium':
+                        return 160500;
+                    case 'Nano_Tube':
+                        return 137200;
+                    case 'Neutronium':
+                        return 123840;
+                    case 'Adamantite':
+                        return 134320;
+                    case 'Graphene':
+                        return 135000;
+                    case 'Stanene':
+                        return 136000;
+                    case 'Bolognium':
+                        return 58000;
+                    case 'Unobtainium':
+                        return 10000;
+                    case 'Uranium':
+                        return 2700;
+                    default:
+                        return 0;
+                }
+            },
+            effect(wiki){
+                let storage = '<div class="aTable">';
+                let multiplier = tpStorageMultiplier('warehouse',false,wiki);
+                for (const res of $(this)[0].res()){
+                    if (global.resource[res].display){
+                        let val = sizeApproximation(+(spatialReasoning($(this)[0].val(res)) * multiplier).toFixed(0),1);
+                        storage += `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
+                    }
+                };
+                storage += '</div>';
+                return storage;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct($(this)[0]);
+                    let multiplier = tpStorageMultiplier('warehouse',false);
+                    for (const res of $(this)[0].res()){
+                        if (global.resource[res].display){
+                            global.resource[res].max += (spatialReasoning($(this)[0].val(res)) * multiplier);
+                        }
+                    };
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['survey_warehouse','space']
+                };
+            }
         }
     },
 };
@@ -1939,25 +2061,6 @@ const outerTruth = {
 // Which of the five moons to use for theming
 export function surveyTheme(){
     return surveyFound() ? surveyBody() : 'europa';
-}
-
-// The descender has to be finished and actually running on Venus support for anyone to be down there.
-export function facilityStudying(){
-    if (!global.space['alien_facility'] || !global.space['descender']){ return false; }
-    if (global.space.descender.count < 100){ return false; }
-    return getStructNumActive(actions.space.spc_venus.descender) > 0;
-}
-
-// Baseline for progress, not a required amount
-export const facilityCrew = 40;
-// Denominated in seconds of work at baseline staff level, so this is three hours for forty of them.
-export const facilityResearchTotal = 10800;
-
-export function facilityProgress(){
-    if (!global.space['alien_facility']){ return 0; }
-    let pct = global.space.alien_facility.research / facilityResearchTotal * 100;
-    if (pct > 100){ pct = 100; }
-    return +(pct).toFixed(2);
 }
 
 // What the investigation turns up, and how far in. Checked in order, one rank per tick, so a long offline
@@ -9551,6 +9654,10 @@ export function tpStorageMultiplier(type,heavy,wiki){
             }
         }
         break;
+        case 'warehouse':
+        {
+            // Do Nothing so far
+        }
     }
     return multiplier;
 }
