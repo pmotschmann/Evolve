@@ -9467,7 +9467,7 @@
   "wiki_trait_effect_elemental_acid": "You have an elemental affinity for %0. Each citizen improves industrial processes by %1% and your soldiers are %2% stronger.",
   "wiki_trait_effect_elemental_fire": "You have an elemental affinity for %0. Each citizen improves smelting processes by %1% and your soldiers are %2% stronger.",
   "wiki_trait_effect_elemental_frost": "You have an elemental affinity for %0. Each citizen improves your %3 by %1% and your soldiers are %2% stronger.",
-  "wiki_trait_effect_chicken": "You taste great, things want to eat you. Hell is %0% more brutal, and piracy effects are %1% worse. Unpleasant random events also occur.",
+  "wiki_trait_effect_chicken": "You taste great, things want to eat you. Hell is %0% more brutal, piracy effects are %1% worse, and infestation hordes raze %2% more structures. Unpleasant random events also occur.",
   "wiki_trait_effect_tusk": "%0% of combat rating applied as mining bonus instead of using pickaxes. Gain %1% attack power depending on moisture level of environment. Combat bonus reduced in hell.",
   "wiki_trait_effect_blubber": "Convert your own dead into Oil, %0 body per day per refinery.",
   "wiki_trait_effect_ocular_power": "You can use up to %0 powers at a time. Ocular powers scaled to %1% power.",

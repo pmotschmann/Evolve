@@ -5810,10 +5810,14 @@ function advanceShip(ship, step){
                     zEngage(ship.path[0].destination.name, [ship]);
                 }
 
+                // Move origin to current gate location, and start interpolating new position from there
                 ship.origin = {
                     name:  ship.path[0].destination.name,
                     position: ship.path[0].destination.position
                 }
+
+                // Adjust totalTime removing the already-traversed step
+                ship.totalTime -= ship.path[0].totalTime;
 
                 ship.path.shift();
                 step -= ship.timeToNextStep;
@@ -6435,7 +6439,6 @@ export function salvageShip(qty, locationName, sLocation, eventStyle, maxClass, 
             // whether a frigate is out there, so a miss skips rather than abandoning the whole haul.
             let ship = pickDerelict(wants[i], i === 0 ? pin : false);
             if (!ship){ continue; }
-            ship.location = sLocation;
             TPShipInitTransit(ship, sLocation);
             ship.damage = Math.floor(seededRandom(75,90));
             ship.fueled = false;
@@ -9304,7 +9307,7 @@ export function randomCoord(target, minAU, maxAU, spreadAU){
     return {
         x: origin.x + Math.cos(bearing) * dist,
         y: origin.y + Math.sin(bearing) * dist,
-        z: (origin.z) + (Math.random() * 2 - 1) * spread
+        z: origin.z + (Math.random() * 2 - 1) * spread
     };
 }
 
@@ -9345,6 +9348,9 @@ function nearestStar(pt){
 // reaches the point equidistant from the two — the halfway point between them — then swaps to the
 // destination star.
 function shipRefStar(ship){
+    if (!ship.inTransit)
+        return locSystem(ship.location.name);
+
     let originStar = nearestStar(ship.origin.position || ship.location.position);
     let destStar = nearestStar(ship.destination.position || ship.location.position);
     if (originStar === destStar){ return genXYZcoord(originStar); }
@@ -9521,6 +9527,9 @@ function findWormholeRoute(fromLoc, toLoc, interstellar){
                 }
             });
 
+            if (bestVal === Infinity)
+                return null;
+
             let curSys = bestPos;
             while (curSys !== fromSys){
                 total_path.unshift(curSys); 
@@ -9586,7 +9595,12 @@ function planShipTrip(ship, locationName){
 
         route = findWormholeRoute(ship.path[0].destination.name, locationName, interstellar);
     }
-    else {
+    else if (ship.inTransit){
+        // Find path wrt current star. findWormholeRoute only cares about the system the location is in.
+        let currentLocation = nearestStar(ship.location.position);
+        route = findWormholeRoute(currentLocation, locationName, interstellar);
+    }
+    else{
         route = findWormholeRoute(ship.location.name, locationName, interstellar);
     }
 

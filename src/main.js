@@ -4272,6 +4272,9 @@ function fastLoop(){
                         ship.fueled = true;
                     }
                 }
+                else {
+                    ship.fueled = false;
+                }
             });
 
             breakdown.p.consume.Oil[loc('outer_shipyard_fleet')] = -(fuels.Oil);
