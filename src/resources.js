@@ -330,6 +330,18 @@ export const craftingRatio = (function(){
                     });
                 }
             }
+            // The workshop only multiplies what the complexes on the same surface are turning out, so
+            // it is worth nothing on its own — and nothing at all while the descender is stopped.
+            if (global.space['workshop'] && support_on['workshop'] && support_on['industrial_complex']
+                && actions.space.spc_venus.descender.operating()){
+                let rate = support_on['workshop'] * support_on['industrial_complex']
+                    * (actions.space.spc_venus.workshop.crafting() / 100);
+                crafting.general.add.push({
+                    name: loc(`space_workshop_title`),
+                    manual: rate,
+                    auto: rate
+                });
+            }
             if (global.portal['demon_forge'] && p_on['demon_forge']){
                 crafting.general.add.push({
                     name: loc(`portal_demon_forge_title`),

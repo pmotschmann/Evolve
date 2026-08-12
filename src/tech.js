@@ -13724,7 +13724,7 @@ const techs = {
         category: 'special',
         era: 'matrioshka',
         path: ['truepath'],
-        reqs: { tau_home: 9, replicator: 1 },
+        reqs: { replicator: 1, resettle: 17 },
         grant: ['replicator',2],
         cost: {
             Knowledge(){ return 30000000; },
@@ -15007,6 +15007,72 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.space.spc_venus.nitrogen_harvester);
+                renderSpace();
+                return true;
+            }
+            return false;
+        }
+    },
+    cloud_housing: {
+        id: 'tech-cloud_housing',
+        title(){ return loc('tech_cloud_housing'); },
+        desc(){ return loc('tech_cloud_housing'); },
+        category: 'housing',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { venus: 7 },
+        grant: ['venus',8],
+        cost: {
+            Knowledge(){ return 27750000; }
+        },
+        effect(){ return loc('tech_cloud_housing_effect',[planetName().venus]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.space.spc_venus.cloud_quarters);
+                renderSpace();
+                return true;
+            }
+            return false;
+        }
+    },
+    cloud_manufacturing: {
+        id: 'tech-cloud_manufacturing',
+        title(){ return loc('tech_cloud_manufacturing'); },
+        desc(){ return loc('tech_cloud_manufacturing'); },
+        category: 'crafting',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { venus: 8 },
+        grant: ['venus',9],
+        cost: {
+            Knowledge(){ return 28000000; }
+        },
+        effect(){ return loc('tech_cloud_manufacturing_effect',[planetName().venus]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.space.spc_venus.industrial_complex);
+                renderSpace();
+                return true;
+            }
+            return false;
+        }
+    },
+    cloud_crafting: {
+        id: 'tech-cloud_crafting',
+        title(){ return loc('tech_cloud_crafting'); },
+        desc(){ return loc('tech_cloud_crafting'); },
+        category: 'crafting',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { venus: 9 },
+        grant: ['venus',10],
+        cost: {
+            Knowledge(){ return 28250000; }
+        },
+        effect(){ return loc('tech_cloud_crafting_effect',[planetName().venus]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.space.spc_venus.workshop);
                 renderSpace();
                 return true;
             }

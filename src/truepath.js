@@ -8,7 +8,7 @@ import { production, highPopAdjust } from './prod.js';
 import { actions, payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, buildTemplate, casinoEffect, housingLabel, structName, initStruct, getStructNumActive } from './actions.js';
 import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, incrementStruct, planetName } from './space.js';
 import { defineGovernor, removeTask, govActive } from './governor.js';
-import { defineIndustry, nf_resources, addSmelter, addFactoryLines, factoryCapacity, trimFactoryLines, factoryStructs, setupRituals, cancelRituals } from './industry.js';
+import { defineIndustry, nf_resources, addSmelter, factoryData, setupRituals, cancelRituals } from './industry.js';
 import { arpa } from './arpa.js';
 import { matrix, retirement, gardenOfEden } from './resets.js';
 import { traitCostMod } from './races.js';
@@ -1746,6 +1746,10 @@ const outerTruth = {
             },
             // Half a tether is not a thing you can switch on, so there is nothing to offer until fully constructed
             switchable(){ return global.space.hasOwnProperty('descender') && global.space.descender.count >= 100; },
+            operating(){
+                if (!global.space.hasOwnProperty('descender') || global.space.descender.count < 100){ return false; }
+                return getStructNumActive($(this)[0]) > 0;
+            },
             on_cap(){ return global.space.hasOwnProperty('descender') && global.space.descender.count >= 100 ? 1 : 0; },
             action(){
                 if (global.space.hasOwnProperty('descender') && global.space.descender.count >= 100){ return false; }
@@ -1825,11 +1829,9 @@ const outerTruth = {
             queue_complete(){ return 0; },
             researchDivisor(){ return 40; },
             researchTotal(){ return 10800; },
-            // The descender has to be finished and running on Venus support for anyone to be down there.
             studying(){
-                if (!global.space['alien_facility'] || !global.space['descender']){ return false; }
-                if (global.space.descender.count < 100){ return false; }
-                return getStructNumActive(actions.space.spc_venus.descender) > 0;
+                if (!global.space['alien_facility']){ return false; }
+                return actions.space.spc_venus.descender.operating();
             },
             progress(){
                 if (!global.space['alien_facility']){ return 0; }
@@ -1849,6 +1851,140 @@ const outerTruth = {
                 return {
                     d: { count: 1, research: 0 },
                     p: ['alien_facility','space']
+                };
+            }
+        },
+        cloud_quarters: {
+            id: 'space-cloud_quarters',
+            title(){ return loc('space_cloud_quarters_title'); },
+            desc(){ return `<div>${loc('space_cloud_quarters_title')}</div><div class="has-text-special">${loc('space_support',[planetName().venus])}</div>`; },
+            type: 'housing',
+            reqs: { venus: 8 },
+            path: ['truepath'],
+            condition(){ return venusBlockade() === 0; },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('cloud_quarters', offset, 222000000, 1.24); },
+                Furs(offset){ return spaceCostMultiplier('cloud_quarters', offset, 12800000, 1.24); },
+                Copper(offset){ return spaceCostMultiplier('cloud_quarters', offset, 30000000, 1.24); },
+                Alloy(offset){ return spaceCostMultiplier('cloud_quarters', offset, 22000000, 1.24); },
+                Horseshoe(){ return global.race['hooved'] ? 2 : 0; }
+            },
+            effect(){
+                let desc = `<div>${loc('plus_max_resource',[$(this)[0].citizens(),loc('citizen')])}</div>`;
+                desc += `<div class="has-text-caution">${loc('space_used_support',[planetName().venus])}</div>`;
+                return desc;
+            },
+            s_type: 'venus',
+            support(){ return -1; },
+            powered(){ return 0; },
+            citizens(){
+                let gain = 4;
+                if (global.race['high_pop']){
+                    gain *= traits.high_pop.vars()[0];
+                }
+                return global.race['lone_survivor'] ? 0 : gain;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct($(this)[0]);
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['cloud_quarters','space']
+                };
+            }
+        },
+        industrial_complex: {
+            id: 'space-industrial_complex',
+            title(){ return loc('space_industrial_complex_title'); },
+            desc(){ return `<div>${loc('space_industrial_complex_title')}</div><div class="has-text-special">${loc('space_industrial_complex_req',[loc('space_descender_title'),planetName().venus])}</div>`; },
+            type: 'industry',
+            reqs: { venus: 9 },
+            path: ['truepath'],
+            condition(){ return venusBlockade() === 0; },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('industrial_complex', offset, 268000000, 1.26); },
+                Titanium(offset){ return spaceCostMultiplier('industrial_complex', offset, 24500000, 1.26); },
+                Tungsten(offset){ return spaceCostMultiplier('industrial_complex', offset, 39000000, 1.26); },
+                Bolognium(offset){ return spaceCostMultiplier('industrial_complex', offset, 8800000, 1.26); },
+                Elerium(offset){ return spaceCostMultiplier('industrial_complex', offset, 25000, 1.26); }
+            },
+            effect(){
+                let desc = `<div>${loc('space_industrial_complex_effect',[$(this)[0].lines()])}</div>`;
+                desc += `<div>${loc('plus_max_resource',[jobScale($(this)[0].cement()),loc('job_cement_worker')])}</div>`;
+                desc += `<div class="has-text-caution">${loc('space_used_support',[planetName().venus])}</div>`;
+                if (!actions.space.spc_venus.descender.operating()){
+                    desc += `<div class="has-text-warning">${loc('space_industrial_complex_stalled',[loc('space_descender_title')])}</div>`;
+                }
+                return desc;
+            },
+            s_type: 'venus',
+            support(){ return -1; },
+            powered(){ return 0; },
+            special: true,
+            lines(){ return 2; },
+            cement(){ return 2; },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct($(this)[0]);
+                    powerOnNewStruct($(this)[0]);
+                    defineIndustry();
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['industrial_complex','space']
+                };
+            }
+        },
+        workshop: {
+            id: 'space-workshop',
+            title(){ return loc('space_workshop_title'); },
+            desc(){ return `<div>${loc('space_workshop_title')}</div><div class="has-text-special">${loc('space_industrial_complex_req',[loc('space_descender_title'),planetName().venus])}</div>`; },
+            type: 'industry',
+            reqs: { venus: 10 },
+            path: ['truepath'],
+            condition(){ return venusBlockade() === 0; },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('workshop', offset, 82000000, 1.26); },
+                Lumber(offset){ return spaceCostMultiplier('workshop', offset, 54000000, 1.26); },
+                Aerographene(offset){ return spaceCostMultiplier('workshop', offset, 2800000, 1.26); },
+                Orichalcum(offset){ return spaceCostMultiplier('workshop', offset, 9200000, 1.26); }
+            },
+            effect(){
+                let desc = `<div>${loc('plus_max_resource',[jobScale($(this)[0].crafters()),loc('job_craftsman')])}</div>`;
+                desc += `<div>${loc('space_workshop_effect',[$(this)[0].crafting(),loc('space_industrial_complex_title')])}</div>`;
+                desc += `<div class="has-text-caution">${loc('space_used_support',[planetName().venus])}</div>`;
+                if (!actions.space.spc_venus.descender.operating()){
+                    desc += `<div class="has-text-warning">${loc('space_industrial_complex_stalled',[loc('space_descender_title')])}</div>`;
+                }
+                return desc;
+            },
+            s_type: 'venus',
+            support(){ return -1; },
+            powered(){ return 0; },
+            crafters(){ return 3; },
+            crafting(){ return 25; },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct($(this)[0]);
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['workshop','space']
                 };
             }
         }
@@ -3268,7 +3404,7 @@ const tauCetiModules = {
                     global.civic.craftsman.display = true; // Needed in Lone Survivor
                     incrementStruct('tau_factory','tauceti');
                     if (powerOnNewStruct($(this)[0])){
-                        addFactoryLines($(this)[0].manufacturing());
+                        factoryData.addFactoryLines($(this)[0].manufacturing());
                     }
                     return true;
                 }
@@ -6280,8 +6416,8 @@ function razeStructures(region,razings){
     // A razed factory takes lines out of the shared pool, so bank what it was making here rather than
     // leaving it to the next production tick. A factory rebuilt before that tick runs would find
     // nothing held and start its line over on alloy, quietly losing the job it had been doing.
-    if (Object.keys(losses).some(s => factoryStructs.includes(s))){
-        trimFactoryLines(factoryCapacity());
+    if (Object.keys(losses).some(s => factoryData.factoryStructs.includes(s))){
+        factoryData.trimFactoryLines(factoryData.factoryCapacity());
     }
 
     // A hidden horde that just leveled something has announced itself: report the ambush once, then

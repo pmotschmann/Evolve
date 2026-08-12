@@ -5,7 +5,7 @@ import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaT
 import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, cleanRemoveTrait } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobName, jobScale, workerScale, limitCraftsmen, loadServants, craftsmanCap } from './jobs.js';
-import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, replicatorLines, luxGoodPrice, smelterUnlocked, smelterFuelConfig, setupRituals, maxRitualNum, ritual_types, factoryLines, factoryCapacity, trimFactoryLines } from './industry.js';
+import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, replicatorLines, luxGoodPrice, smelterUnlocked, smelterFuelConfig, setupRituals, maxRitualNum, ritual_types, factoryData } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
 import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, checkPowerRequirements, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct, casino_vault, casinoEarn, doCallbacks, cLabels } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types, spaceSectors } from './space.js';
@@ -4677,20 +4677,16 @@ function fastLoop(){
         // Factory
         let FactoryMoney = 0;
         if (global.city['factory']){
-            let on_factories = (p_on['factory'] || 0)
-                + (p_on['red_factory'] || 0)
-                + ((p_on['int_factory'] || 0) * 2)
-                + ((p_on['hell_factory'] || 0) * actions.portal.prtl_wasteland.hell_factory.lines())
-                + ((support_on['tau_factory'] || 0) * (global.tech['isolation'] ? 5 : 3));
-            let max_factories = factoryCapacity();
+            let on_factories = factoryData.actualCapacity();
+            let max_factories = factoryData.factoryCapacity();
             let eff = max_factories > 0 ? on_factories / max_factories : 0;
 
             let hold = global.city.factory['hold'];
-            let remaining = trimFactoryLines(max_factories);
+            let remaining = factoryData.trimFactoryLines(max_factories);
 
             if (hold && remaining > 0 && max_factories > global.city.factory.cap){
                 let room = Math.min(remaining, max_factories - global.city.factory.cap);
-                factoryLines.forEach(function(res){
+                factoryData.factoryLines().forEach(function(res){
                     if (room <= 0 || !hold[res]){ return; }
                     let back = Math.min(hold[res], room);
                     global.city.factory[res] += back;
@@ -9343,6 +9339,11 @@ function midLoop(){
             lCaps['titan_colonist'] += jobScale(support_on['titan_quarters']);
             breakdown.c[global.race.species][`${planetName().titan}`] = gain + 'v';
         }
+        if (global.space['cloud_quarters']){
+            let gain = Math.round((support_on['cloud_quarters'] || 0) * actions.space.spc_venus.cloud_quarters.citizens());
+            caps[global.race.species] += gain;
+            breakdown.c[global.race.species][`${planetName().venus}`] = gain + 'v';
+        }
 
         if (global.interstellar['habitat'] && p_on['habitat']){
             let pop = p_on['habitat'] * actions.interstellar.int_alpha.habitat.citizens();
@@ -10222,6 +10223,16 @@ function midLoop(){
         if (global.tech['isolation'] && support_on['tau_factory']){
             lCaps['craftsman'] += jobScale(support_on['tau_factory'] * 5);
             lCaps['cement_worker'] += jobScale(support_on['tau_factory'] * 2);
+        }
+        // Both of these are surface works reached by the descender, so nobody is staffing them while
+        // the tether is stopped.
+        if (actions.space.spc_venus.descender.operating()){
+            if (support_on['industrial_complex']){
+                lCaps['cement_worker'] += jobScale(support_on['industrial_complex'] * actions.space.spc_venus.industrial_complex.cement());
+            }
+            if (support_on['workshop']){
+                lCaps['craftsman'] += jobScale(support_on['workshop'] * actions.space.spc_venus.workshop.crafters());
+            }
         }
         if (global.race['warlord'] && p_on['hell_factory']){
             lCaps['cement_worker'] += jobScale(p_on['hell_factory'] * 5);

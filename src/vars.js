@@ -1545,7 +1545,7 @@ if (global.hasOwnProperty('portal') && global.portal.hasOwnProperty('mechbay')
 
 global['version'] = '1.5.0';
 delete global['revision'];
-global['beta'] = 25;
+global['beta'] = 26;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};

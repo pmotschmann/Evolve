@@ -69,7 +69,7 @@ export function defineIndustry(){
         $(`#industry`).append(smelter);
         loadIndustry('smelter',smelter,'#iSmelter');
     }
-    if ((global.city['factory'] && global.city.factory.count > 0) || (global.space['red_factory'] && global.space.red_factory.count > 0) || (global.tauceti['tau_factory'] && global.tauceti.tau_factory.count > 0) || (global.portal['hell_factory'] && global.portal.hell_factory.count > 0)){
+    if ((global.city['factory'] && global.city.factory.count > 0) || (global.space['red_factory'] && global.space.red_factory.count > 0) || (global.tauceti['tau_factory'] && global.tauceti.tau_factory.count > 0) || (global.portal['hell_factory'] && global.portal.hell_factory.count > 0) || (global.space['industrial_complex'] && global.space.industrial_complex.count > 0)){
         var factory = $(`<div id="iFactory" class="industry"><h2 class="header has-text-advanced">${loc('city_factory')}</h2></div>`);
         $(`#industry`).append(factory);
         loadIndustry('factory',factory,'#iFactory');
@@ -587,72 +587,70 @@ export function addSmelter(num=1, product="Iron", fuel="Oil"){
     }
 }
 
-// The factory's products, in the order its lines are handed out and taken away. Every factory
-// anywhere — city, Red Planet, interstellar, Tau Ceti, hell — feeds the one pool of lines in
-// global.city.factory, so this is the single order the whole game trims and restores by.
-export const factoryLines = ['Lux','Furs','Alloy','Polymer','Nano','Stanene'];
-
-// Put `num` factory lines to work.
-//
-// Lines that were shut down when factory capacity was lost are remembered in factory.hold (see the
-// factory block in main.js), and they are put back on the job they were doing before anything else:
-// a factory that is switched back on, or rebuilt after being razed, resumes what it was making
-// rather than starting over. Only once nothing is left to remember do new lines fall back to alloy,
-// which is what a genuinely new factory has always defaulted to.
-export function addFactoryLines(num){
-    if (!(num > 0) || !global.city['factory']){ return; }
-    let hold = global.city.factory['hold'];
-    if (hold){
-        for (let res of factoryLines){
-            if (num <= 0){ break; }
-            let back = Math.min(hold[res] || 0, num);
-            if (back > 0){
-                global.city.factory[res] += back;
-                hold[res] -= back;
-                num -= back;
+export const factoryData = {
+    // The factory's products, in the order its lines are handed out and taken away.
+    factoryLines: ['Lux','Furs','Alloy','Polymer','Nano','Stanene'],
+    // Structures that put production lines into the shared factory pool.
+    factoryStructs: ['factory','red_factory','int_factory','hell_factory','tau_factory','industrial_complex'],
+    // Lines that were shut down when factory capacity was lost are remembered in factory.
+    // When restored they are returned to the previously shut down lines first, then to Alloy if nothing is left to remember.
+    addFactoryLines(num){
+        if (!(num > 0) || !global.city['factory']){ return; }
+        let hold = global.city.factory['hold'];
+        if (hold){
+            for (let res of factoryData.factoryLines){
+                if (num <= 0){ break; }
+                let back = Math.min(hold[res] || 0, num);
+                if (back > 0){
+                    global.city.factory[res] += back;
+                    hold[res] -= back;
+                    num -= back;
+                }
             }
         }
-    }
-    if (num > 0){
-        global.city.factory.Alloy += num;
-    }
-}
-
-// Every factory line the empire can staff right now. Measured on `on` rather than p_on/support_on on
-// purpose: this is the size of the pool lines are assigned out of, and a factory that is switched on
-// but starved of power still holds its lines — the production tick scales output by how many are
-// actually running. The hold/cap accounting and the raze path both have to measure the pool the same
-// way, so they share this one definition.
-export function factoryCapacity(){
-    return (global.city['factory'] ? global.city.factory.on : 0)
-        + (global.space['red_factory'] ? global.space.red_factory.on : 0)
-        + (global.interstellar['int_factory'] ? global.interstellar.int_factory.on * 2 : 0)
-        + (global.portal['hell_factory'] ? global.portal.hell_factory.on * actions.portal.prtl_wasteland.hell_factory.lines() : 0)
-        + (global.tauceti['tau_factory'] ? global.tauceti.tau_factory.on * (global.tech['isolation'] ? 5 : 3) : 0);
-}
-
-// Bring the assigned lines back inside `max` capacity, banking everything taken out of service in
-// factory.hold so addFactoryLines can later put each one back on the job it was doing. Lines are
-// handed out from the front of factoryLines, so the overflow always comes off the back. Returns the
-// capacity left unassigned.
-export function trimFactoryLines(max){
-    if (!global.city['factory']){ return 0; }
-    let hold = global.city.factory['hold'];
-    let remaining = max;
-    factoryLines.forEach(function(res){
-        remaining -= global.city.factory[res];
-        if (remaining < 0){
-            if (hold){ hold[res] -= remaining; }   // remaining is negative: banks what was cut
-            global.city.factory[res] += remaining;
-            remaining = 0;
+        if (num > 0){
+            global.city.factory.Alloy += num;
         }
-    });
-    return remaining;
-}
-
-// Structures that put lines into the shared factory pool, whichever world they stand on. Razing one
-// has to bank its lines then and there, the same as switching it off would.
-export const factoryStructs = ['factory','red_factory','int_factory','hell_factory','tau_factory'];
+    },
+    // Every factory line that can be staffed right now. Measured on `on` rather than p_on/support_on on
+    // purpose: this is the size of the pool lines are assigned out of, and a factory that is switched on
+    // but starved of power still holds its lines — the production tick scales output by how many are
+    // actually running.
+    factoryCapacity(){
+        return (global.city['factory'] ? global.city.factory.on : 0)
+            + (global.space['red_factory'] ? global.space.red_factory.on : 0)
+            + (global.interstellar['int_factory'] ? global.interstellar.int_factory.on * 2 : 0)
+            + (global.portal['hell_factory'] ? global.portal.hell_factory.on * actions.portal.prtl_wasteland.hell_factory.lines() : 0)
+            + (global.space['industrial_complex'] ? global.space.industrial_complex.on * actions.space.spc_venus.industrial_complex.lines() : 0)
+            + (global.tauceti['tau_factory'] ? global.tauceti.tau_factory.on * (global.tech['isolation'] ? 5 : 3) : 0);
+    },
+    // Bring the assigned lines back inside `max` capacity, banking everything taken out of service in factory.hold
+    trimFactoryLines(max){
+        if (!global.city['factory']){ return 0; }
+        let hold = global.city.factory['hold'];
+        let remaining = max;
+        factoryData.factoryLines.forEach(function(res){
+            remaining -= global.city.factory[res];
+            if (remaining < 0){
+                if (hold){ hold[res] -= remaining; }   // remaining is negative: banks what was cut
+                global.city.factory[res] += remaining;
+                remaining = 0;
+            }
+        });
+        return remaining;
+    },
+    // The actual operating capacity of factories, which may be less than the total capacity if some are switched on but not powered.
+    // This could be due to lack power, support, or other special factors.
+    actualCapacity(){
+        let on_factories = (p_on['factory'] || 0)
+                    + (p_on['red_factory'] || 0)
+                    + ((p_on['int_factory'] || 0) * 2)
+                    + ((p_on['hell_factory'] || 0) * actions.portal.prtl_wasteland.hell_factory.lines())
+                    + ((actions.space.spc_venus.descender.operating() ? (support_on['industrial_complex'] || 0) : 0) * actions.space.spc_venus.industrial_complex.lines())
+                    + ((support_on['tau_factory'] || 0) * (global.tech['isolation'] ? 5 : 3));
+        return on_factories;
+    }
+};
 
 function loadFactory(parent,bind){
     let fuel = $(`<div><span class="has-text-warning">${loc('modal_factory_operate')}:</span> <span :class="level()">{{ on_f(count) }}/{{ max_f(on) }}</span></div>`);
@@ -752,6 +750,9 @@ function loadFactory(parent,bind){
                 if (global.portal['hell_factory'] && p_on['hell_factory']){
                     max += p_on['hell_factory'] * actions.portal.prtl_wasteland.hell_factory.lines();
                 }
+                if (global.space['industrial_complex'] && support_on['industrial_complex']){
+                    max += support_on['industrial_complex'] * actions.space.spc_venus.industrial_complex.lines();
+                }
                 let keyMult = keyMultiplier();
                 for (var i=0; i<keyMult; i++){
                     let used = global.city.factory.Lux + global.city.factory.Furs + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano + global.city.factory.Stanene;
@@ -775,33 +776,14 @@ function loadFactory(parent,bind){
             },
             level(){
                 let on = global.city.factory.Lux + global.city.factory.Furs + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano + global.city.factory.Stanene;
-                let max = global.space['red_factory'] ? global.space.red_factory.on + global.city.factory.on : global.city.factory.on;
-                if (global.interstellar['int_factory'] && p_on['int_factory']){
-                    max += p_on['int_factory'] * 2;
-                }
-                if (global.tauceti['tau_factory'] && support_on['tau_factory']){
-                    max += support_on['tau_factory'] * (global.tech['isolation'] ? 5 : 3);
-                }
-                if (global.portal['hell_factory'] && p_on['hell_factory']){
-                    max += p_on['hell_factory'] * actions.portal.prtl_wasteland.hell_factory.lines();
-                }
+                let max = factoryData.actualCapacity();
                 return colorRange(on,max);
             },
             on_f(){
                 return global.city.factory.Lux + global.city.factory.Furs + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano + global.city.factory.Stanene;
             },
             max_f(){
-                let max = global.space['red_factory'] ? global.space.red_factory.on + global.city.factory.on : global.city.factory.on;
-                if (global.interstellar['int_factory'] && p_on['int_factory']){
-                    max += p_on['int_factory'] * 2;
-                }
-                if (global.tauceti['tau_factory'] && support_on['tau_factory']){
-                    max += support_on['tau_factory'] * (global.tech['isolation'] ? 5 : 3);
-                }
-                if (global.portal['hell_factory'] && p_on['hell_factory']){
-                    max += p_on['hell_factory'] * actions.portal.prtl_wasteland.hell_factory.lines();
-                }
-                return max;
+                return factoryData.actualCapacity();
             },
             spook(v){
                 if (global.city.factory.Lux === 3 && bind){

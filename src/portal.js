@@ -14,7 +14,7 @@ import { descension } from './resets.js';
 import { renderEdenic } from './edenic.js';
 import { loadTab } from './index.js';
 import { loc } from './locale.js';
-import { defineIndustry, addSmelter, addFactoryLines } from './industry.js';
+import { defineIndustry, addSmelter, factoryData } from './industry.js';
 import { arpa } from './arpa.js';
 import { jobName } from './jobs.js';
 
@@ -1201,7 +1201,7 @@ const fortressModules = {
                 else if (payCosts($(this)[0])){
                     incrementStruct('hell_factory','portal');
                     if (powerOnNewStruct($(this)[0])){
-                        addFactoryLines($(this)[0].lines());
+                        factoryData.addFactoryLines($(this)[0].lines());
                         defineIndustry();
                     }
                     return true;
