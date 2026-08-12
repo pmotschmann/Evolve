@@ -2,7 +2,7 @@ import { global } from './../vars.js';
 import { universeAffix } from './../achieve.js';
 import { loc } from './../locale.js';
 import { timeFormat, vBind, svgIcons, svgViewBox, calcGenomeScore, powerModifier } from './../functions.js';
-import { job_desc } from './../jobs.js';
+import { job_data } from './../jobs.js';
 import { races, traits, planetTraits } from './../races.js';
 import { atomic_mass } from './../resources.js';
 import { universe_types } from './../space.js';
@@ -1394,7 +1394,7 @@ function jobStressCalc(info){
     })
     
     let jobs = ['soldier'];
-    Object.keys(job_desc).forEach(function (job){
+    Object.keys(job_data).forEach(function (job){
         if (job !== 'unemployed' && job !== 'forager'){
             jobs.push(job);
         }
@@ -1633,7 +1633,7 @@ function jobStressCalc(info){
                     case 'soldier':
                         return 2;
                     default:
-                        return global.civic[job].stress;
+                        return job_data[job].stress();
                 }
             },
             contentVal(job){
@@ -1690,7 +1690,7 @@ function jobStressCalc(info){
                 show.result.vis = vis;
                 
                 if (show.result.vis){
-                    let div = inputs.job.val === 'hunter' ? 5 : inputs.job.val === 'soldier' ? 2 : global.civic[inputs.job.val].stress;
+                    let div = inputs.job.val === 'hunter' ? 5 : inputs.job.val === 'soldier' ? 2 : job_data[inputs.job.val].stress();
                     if (inputs.job.val === 'hunter' || inputs.job.val === 'soldier'){
                         if (inputs.mellow.val){
                             div *= planetTraits.mellow.vars()[0];

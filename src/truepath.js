@@ -3,7 +3,7 @@ import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, 
 import { races, traits, orbitLength } from './races.js';
 import { spatialReasoning, unlockContainers } from './resources.js';
 import { armyRating, garrisonSize, soldierDeath, buildGarrison, govEffect } from './civics.js';
-import { jobScale, job_desc, loadFoundry, limitCraftsmen } from './jobs.js';
+import { jobScale, job_data, loadFoundry, limitCraftsmen } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
 import { actions, payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, buildTemplate, casinoEffect, housingLabel, structName, initStruct, getStructNumActive } from './actions.js';
 import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, incrementStruct, planetName } from './space.js';
@@ -1916,7 +1916,7 @@ const outerTruth = {
             },
             effect(){
                 let desc = `<div>${loc('space_industrial_complex_effect',[$(this)[0].lines()])}</div>`;
-                desc += `<div>${loc('plus_max_resource',[jobScale($(this)[0].cement()),loc('job_cement_worker')])}</div>`;
+                desc += `<div>${loc('plus_max_resource',[jobScale($(this)[0].technicians()),loc('job_technician')])}</div>`;
                 desc += `<div class="has-text-caution">${loc('space_used_support',[planetName().venus])}</div>`;
                 if (!actions.space.spc_venus.descender.operating()){
                     desc += `<div class="has-text-warning">${loc('space_industrial_complex_stalled',[loc('space_descender_title')])}</div>`;
@@ -1928,9 +1928,10 @@ const outerTruth = {
             powered(){ return 0; },
             special: true,
             lines(){ return 2; },
-            cement(){ return 2; },
+            technicians(){ return 2; },
             action(){
                 if (payCosts($(this)[0])){
+                    global.civic.technician.display = true
                     incrementStruct($(this)[0]);
                     powerOnNewStruct($(this)[0]);
                     defineIndustry();
@@ -3084,7 +3085,7 @@ const tauCetiModules = {
                     desc = desc + `<div>${loc('tech_alien_outpost_effect2')}</div>`;
                 }
                 if (global.race['lone_survivor']){
-                    desc = desc + `<div>${loc('city_wardenclyffe_effect1',[jobScale(1), global.civic.professor.name])}</div>`;
+                    desc = desc + `<div>${loc('city_wardenclyffe_effect1',[jobScale(1), job_data.professor.name()])}</div>`;
                 }
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
@@ -3449,8 +3450,8 @@ const tauCetiModules = {
                 if (global.tech['isolation']){
                     let elerium = spatialReasoning(375);
                     desc = desc + `<div>${loc('plus_max_resource',[elerium,global.resource.Elerium.name])}</div>`;
-                    desc = desc + `<div>${loc('city_wardenclyffe_effect1',[jobScale(2), global.civic.professor.name])}</div>`;
-                    desc = desc + `<div>${loc('city_wardenclyffe_effect1',[jobScale(1), global.civic.scientist.name])}</div>`;
+                    desc = desc + `<div>${loc('city_wardenclyffe_effect1',[jobScale(2), job_data.professor.name()])}</div>`;
+                    desc = desc + `<div>${loc('city_wardenclyffe_effect1',[jobScale(1), job_data.scientist.name()])}</div>`;
                     desc = desc + `<div>${loc('space_zero_g_lab_effect',[jobScale(1)])}</div>`;
                     desc = desc + `<div>${loc('city_library_effect',[75])}</div>`;
                 }
@@ -9888,7 +9889,7 @@ export function jumpGateShutdown(){
         }
     });
 
-    Object.keys(job_desc).forEach(function (job){
+    Object.keys(job_data).forEach(function (job){
         if (!['professor','scientist','pit_miner','cement_worker','craftsman'].includes(job)){
             global.civic[job].workers = 0;
             global.civic[job].assigned = 0;

@@ -1,7 +1,7 @@
 import { global, seededRandom, save, webWorker, power_generated, keyMultiplier, sizeApproximation, active_rituals } from './vars.js';
 import { loc } from './locale.js';
 import { defineIndustry } from './industry.js';
-import { setJobName, jobScale, loadFoundry } from './jobs.js';
+import { jobScale, loadFoundry } from './jobs.js';
 import { vBind, clearElement, popover, removeFromQueue, removeFromRQueue, calc_mastery, gameLoop, getEaster, getHalloween, randomKey, modRes, messageQueue } from './functions.js';
 import { setResourceName, drawResourceTab, atomic_mass } from './resources.js';
 import { buildGarrison, govEffect, govTitle, armyRating, govCivics } from './civics.js';
@@ -7148,7 +7148,6 @@ export function cleanAddTrait(trait){
             defineIndustry();
             break;
         case 'soul_eater':
-            setJobName('lumberjack');
         case 'detritivore':
         case 'carnivore':
         case 'herbivore':
@@ -7442,7 +7441,6 @@ export function cleanRemoveTrait(trait,rank){
             defineIndustry();
             break;
         case 'soul_eater':
-            setJobName('lumberjack');
         case 'detritivore':
         case 'carnivore':
         case 'herbivore':

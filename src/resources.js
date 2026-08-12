@@ -2,12 +2,12 @@ import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, su
 import { vBind, clearElement, modRes, flib, calc_mastery, calcPillar, eventActive, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect, hoovedRename, messageQueue } from './functions.js';
 import { traits, fathomCheck } from './races.js';
 import { templeCount, actions } from './actions.js';
-import { workerScale } from './jobs.js';
+import { workerScale, job_data } from './jobs.js';
 import { hellSupression } from './portal.js';
 import { syndicate, womlingArtisans } from './truepath.js';
 import { govActive, defineGovernor } from './governor.js';
 import { govEffect } from './civics.js';
-import { highPopAdjust, production, teamster } from './prod.js';
+import { highPopAdjust, production, teamster, technicianCount } from './prod.js';
 import { loc } from './locale.js';
 
 export const resource_values = {
@@ -327,6 +327,19 @@ export const craftingRatio = (function(){
                         name: loc(`interstellar_int_factory_title`),
                         manual: p_on['int_factory'] * 0.1,
                         auto: p_on['int_factory'] * 0.1
+                    });
+                }
+            }
+            // Technicians add to crafting wherever it happens, not just on the complex they staff. This
+            // sits outside the foundry >= 7 gate above because it is the job doing the work, not a
+            // factory automating it.
+            {
+                let rate = technicianCount() * (job_data.technician.craftRate() / 100);
+                if (rate > 0){
+                    crafting.general.add.push({
+                        name: job_data.technician.name(),
+                        manual: rate,
+                        auto: rate
                     });
                 }
             }

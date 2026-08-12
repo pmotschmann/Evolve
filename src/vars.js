@@ -1524,21 +1524,27 @@ if (convertVersion(global['version']) <= 105000){
                 delete ship.tf;
         })
     }
-}
 
-// Medium frames went from one weapon bay to two at half the damage per shot. Existing mediums only
-// have one weapon saved, so without this they would keep firing once at the new halved power and
-// quietly lose half their output. Give them a second bay carrying a different weapon than the first,
-// which is the whole point of the change. Flagged rather than version-gated so it runs exactly once.
-if (global.hasOwnProperty('portal') && global.portal.hasOwnProperty('mechbay')
-    && Array.isArray(global.portal.mechbay.mechs) && !global.portal.mechbay['dualbay']){
-    global.portal.mechbay['dualbay'] = true;
-    let mechWeapons = ['laser','kinetic','shotgun','missile','flame','plasma','sonic','tesla'];
-    global.portal.mechbay.mechs.forEach(function(mech){
-        if (mech.size === 'medium' && Array.isArray(mech.hardpoint) && mech.hardpoint.length < 2){
-            let first = mech.hardpoint[0];
-            let alt = mechWeapons.filter(function(w){ return w !== first; });
-            mech.hardpoint.push(alt[Math.floor(Math.random() * alt.length)]);
+    // Medium frames went from one weapon bay to two at half the damage per shot.
+    if (global.hasOwnProperty('portal') && global.portal.hasOwnProperty('mechbay')
+        && Array.isArray(global.portal.mechbay.mechs) && !global.portal.mechbay['dualbay']){
+        global.portal.mechbay['dualbay'] = true;
+        let mechWeapons = ['laser','kinetic','shotgun','missile','flame','plasma','sonic','tesla'];
+        global.portal.mechbay.mechs.forEach(function(mech){
+            if (mech.size === 'medium' && Array.isArray(mech.hardpoint) && mech.hardpoint.length < 2){
+                let first = mech.hardpoint[0];
+                let alt = mechWeapons.filter(function(w){ return w !== first; });
+                mech.hardpoint.push(alt[Math.floor(Math.random() * alt.length)]);
+            }
+        });
+    }
+
+    // Impact, stress and name used to be copied into each job record on load, which is why legacy saves carry them.
+    Object.keys(global.civic).forEach(function(job){
+        if (global.civic[job] && typeof global.civic[job] === 'object' && global.civic[job].hasOwnProperty('job')){
+            delete global.civic[job].impact;
+            delete global.civic[job].stress;
+            delete global.civic[job].name;
         }
     });
 }
@@ -1572,10 +1578,6 @@ if (!global.hasOwnProperty('support')){
         global.support[s] = [];
     }
 });
-
-if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
-    global.civic.cement_worker.impact = 0.4;
-}
 
 if (!global['settings']){
     global['settings'] = {

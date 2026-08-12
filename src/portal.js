@@ -3,7 +3,7 @@ import { vBind, clearElement, clearTabPanels, popover, clearPopper, timeFormat, 
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { traits, races, fathomCheck, traitCostMod, orbitLength } from './races.js';
 import { spatialReasoning, unlockContainers, drawResourceTab } from './resources.js';
-import { loadFoundry, jobScale, limitCraftsmen } from './jobs.js';
+import { loadFoundry, jobScale, limitCraftsmen, job_data } from './jobs.js';
 import { armyRating, govCivics, garrisonSize, mercCost, soldierDeath } from './civics.js';
 import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc, actions, initStruct, storageMultipler, casinoEffect, structName, absorbRace, buildTemplate } from './actions.js';
 import { checkRequirements, incrementStruct, astrialProjection, ascendLab, planetName } from './space.js';
@@ -16,7 +16,6 @@ import { loadTab } from './index.js';
 import { loc } from './locale.js';
 import { defineIndustry, addSmelter, factoryData } from './industry.js';
 import { arpa } from './arpa.js';
-import { jobName } from './jobs.js';
 
 // Real-time throttle for the hell observation pie charts. bloodwar() drives these once per
 // in-game day, but many game days can elapse per real second (fast mode, time acceleration,
@@ -1062,7 +1061,7 @@ const fortressModules = {
                 }
                 let desc = `<div>${loc('plus_max_resource',[(+know.toFixed(0)).toLocaleString(),global.resource.Knowledge.name])}</div>`;
                 desc += `<div>${loc('city_university_effect',[jobScale(3)])}</div>`;
-                desc += `<div>${loc('plus_max_resource',[jobScale(2),jobName('scientist')])}</div>`;
+                desc += `<div>${loc('plus_max_resource',[jobScale(2),job_data.scientist.name()])}</div>`;
                 desc += `<div>${loc('interstellar_g_factory_effect')}</div>`;
                 desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
@@ -1182,7 +1181,7 @@ const fortressModules = {
             },
             effect(){
                 let desc = `<div>${loc('portal_factory_effect',[$(this)[0].lines()])}</div><div>${loc('city_crafted_mats',[25])}</div>`;
-                desc += `<div>${loc('plus_max_resource',[jobScale(5),jobName('cement_worker')])}</div>`;
+                desc += `<div>${loc('plus_max_resource',[jobScale(5),job_data.cement_worker.name()])}</div>`;
                 if ((global.portal?.hell_factory?.rank || 1) > 1){
                     desc += `<div>${loc('production',[(global.portal?.hell_factory?.rank || 1) * 8 - 8,global.resource.Cement.name])}</div>`;
                 }
@@ -1299,7 +1298,7 @@ const fortressModules = {
             powered(){ return true; },
             effect(wiki){
                 let pop = $(this)[0].citizens();
-                return loc('plus_resource',[pop,jobName('miner')]);
+                return loc('plus_resource',[pop,job_data.miner.name()]);
             },
             action(args){
                 if (!args.isQueue && global.portal['throne'] && global.portal.throne.skill && global.portal.throne.points > 0 && global.portal.dig_demon.rank < 5){
@@ -8541,7 +8540,7 @@ function drawHellReports(){
         if (curr_report.surveyor_finds){
             Object.keys(curr_report.surveyor_finds).forEach(function(num){
                 let surveyor = curr_report.surveyor_finds[num];
-                let name = loc('hell_report_log_obj_counter',[jobName('hell_surveyor'),num]);
+                let name = loc('hell_report_log_obj_counter',[job_data.hell_surveyor.name(),num]);
 
                 let displayText = $(`<p></p>`);
                 displayText.append(`<span>${loc('hell_report_log_search',[name,surveyor.bodies])}</span>`);

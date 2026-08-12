@@ -3,7 +3,7 @@ import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerMod
 import { unlockAchieve, unlockFeat, universeAffix } from './achieve.js';
 import { races, traits, genus_def, genusVars, planetTraits, biomes, traitCostMod } from './races.js';
 import { spatialReasoning, unlockContainers, drawResourceTab, atomic_mass } from './resources.js';
-import { loadFoundry, jobScale } from './jobs.js';
+import { loadFoundry, jobScale, job_data } from './jobs.js';
 import { defineIndustry, addSmelter, factoryData } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
 import { actions, payCosts, powerOnNewStruct, initStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, templeCount, casinoEffect, wardenLabel, buildTemplate, structName } from './actions.js';
@@ -83,7 +83,7 @@ const spaceProjects = {
                 let label = global.race['cataclysm'] ? loc('space_moon_observatory_title') : (global.race['orbit_decayed'] ? loc('city_university') : wardenLabel());
                 let amount = global.race['cataclysm'] ? 25 : (global.race['orbit_decayed'] ? 12 : 4);
                 let synergy = `<div>${loc('space_home_satellite_effect2',[label, amount])}</div>`;
-                return `<div>${loc('plus_max_resource',[knowledge,global.resource.Knowledge.name])}</div>${synergy}<div>${loc('space_home_satellite_effect3',[global.civic.scientist ? global.civic.scientist.name : loc('job_scientist')])}</div>`
+                return `<div>${loc('plus_max_resource',[knowledge,global.resource.Knowledge.name])}</div>${synergy}<div>${loc('space_home_satellite_effect3',[job_data.scientist.name()])}</div>`
             },
             action(args){
                 if (payCosts($(this)[0])){
@@ -1311,7 +1311,7 @@ const spaceProjects = {
                 let scientist = '';
                 let lab = '';
                 if (global.race['cataclysm'] || global.tech['resettle'] || global.race['orbit_decayed']){
-                    scientist = `<div>${loc('city_wardenclyffe_effect1',[jobScale(1), global.civic.scientist.name])}</div>`;
+                    scientist = `<div>${loc('city_wardenclyffe_effect1',[jobScale(1), job_data.scientist.name()])}</div>`;
                     sci *= 1 + (wiki ? global.space.observatory.on : support_on['observatory']) * (global.tech['resettle'] ? 0.02 : 0.25);
                     if (global.tech.science >= 15){
                         lab = `<div>${loc('city_wardenclyffe_effect4',[2])}</div>`;
@@ -3214,7 +3214,7 @@ const interstellarProjects = {
                 know = Math.round(know);
                 let sci = '';
                 if (global.tech.science >= 16){
-                    sci = `<div>${loc('city_wardenclyffe_effect1',[jobScale(1), global.civic.scientist.name])}</div>`;
+                    sci = `<div>${loc('city_wardenclyffe_effect1',[jobScale(1), job_data.scientist.name()])}</div>`;
                 }
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[loc('interstellar_alpha_name')])}</div>${sci}<div>${loc('city_max_knowledge',[know])}</div>`;
                 if (global.tech['science'] >= 13){
