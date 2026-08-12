@@ -3290,6 +3290,39 @@ function fastLoop(){
         global.city.morale.entertain = entertainment;
         morale += entertainment;
 
+        if(global.underground['color_garden']){
+            let workers = workerScale(global.civic.gardener.workers,'entertainer') * global.tech.theatre;
+            if (global.race['musical']){
+                workers += workerScale(global.civic.gardener.workers,'entertainer') * traits.musical.vars()[0];
+            }
+            if (astroSign === 'sagittarius'){
+                workers *= 1 + (astroVal('sagittarius')[0] / 100);
+            }
+            if (global.race['emotionless']){
+                workers *= 1 - (traits.emotionless.vars()[0] / 100);
+            }
+            if (global.race['high_pop']){
+                workers *= traits.high_pop.vars()[1] / 100;
+            }
+            if (global.civic.govern.type === 'democracy'){
+                workers *= 1 + (govEffect.democracy()[0] / 100);
+            }
+            
+            let water_consumption = 2 * workers;
+            if(water_consumption * time_multiplier > global.resource.Water.amount){
+                workers = global.resource.Water.amount / 2;
+            }
+
+            breakdown.p.consume.Water[jobName('gardener')] = -(water_consumption);
+            modRes('Water', -(water_consumption * time_multiplier));
+            global.underground['color_garden'].mushrooms += workers * time_multiplier / 100;
+            global.underground['color_garden'].mushrooms *= 0.9902 + (0.01 * (1 - time_multiplier));
+            
+            global.city.morale.gardener = Math.floor(global.underground['color_garden'].mushrooms);
+            morale += Math.floor(global.underground['color_garden'].mushrooms);
+        }
+
+
         if (global.tech['broadcast'] && !global.race['joyless']){
             let gasVal = govActive('gaslighter',0) || 0;
             let signalVal;
@@ -3564,7 +3597,7 @@ function fastLoop(){
         }
         
         if(global.race['iceage']){
-            breakdown.p['Global'][loc('underground_challenge')] = `-${(global_multiplier-global_multiplier**0.5)/global_multiplier * 100}%`;
+            breakdown.p['Global'][loc('underground_challenge_nerf')] = `-${(global_multiplier-global_multiplier**0.5)/global_multiplier * 100}%`;
             global_multiplier = global_multiplier ** 0.5;
         }
 
@@ -3872,7 +3905,6 @@ function fastLoop(){
                     farmers = jobScale(farm_count);
                 }
                 let food = (farmers * farmerValue(true)) + (farmhands * farmerValue(false));
-                let water_consumption = 0;
                 let water_mult = 1;
                 if(food * water_mult * time_multiplier > global.resource.Water.amount){
                     food = global.resource.Water.amount / water_mult;
@@ -6366,7 +6398,7 @@ function fastLoop(){
                 collectors *= 1 + ((global.underground['ice_collector']?.count || 0) * 0.04);
                 collectors /= 2;
                 if(global.tech['water'] >= 2){
-                    collectors *= 1.3;
+                    collectors *= 1 + (global.tech['water'] - 1) * 0.3;
                 }
                 let delta = collectors * global_multiplier; //important for food, not affected by hunger
                 breakdown.p['Water'][loc('job_water_collector')] = collectors + 'v';
@@ -6893,7 +6925,7 @@ function fastLoop(){
             }
 
             if (refinery > 0){
-                breakdown.p['Aluminium'][loc('city_metal_refinery')] = refinery + '%';
+                breakdown.p['Aluminium'][global.race['iceage'] ? loc('city_smelter') : loc('city_metal_refinery')] = refinery + '%';
                 breakdown.p['Aluminium'][`ᄂ${loc('quarantine')}+3`] = ((q_multiplier - 1) * 100) + '%';
             }
         }
@@ -8730,6 +8762,7 @@ function midLoop(){
             cement_worker: 0,
             banker: 0,
             entertainer: 0,
+            gardener: 0,
             priest: 0,
             professor: 0,
             scientist: 0,
@@ -9172,16 +9205,21 @@ function midLoop(){
         if (global.city['coal_mine']){
             lCaps['coal_miner'] += jobScale(global.city.coal_mine.count);
         }
+        if(global.underground['coal_mine']){
+            lCaps['coal_miner'] += jobScale(global.underground.coal_mine.count);
+        }
         if (global.city['bank']){
             lCaps['banker'] += jobScale(global.city.bank.count);
+        }
+        if(global.underground['vault']){
+            lCaps['banker'] += jobScale(global.underground.vault.count);
         }
         if (global.city['amphitheatre']){
             let athVal = govActive('athleticism',1);
             lCaps['entertainer'] += jobScale(athVal ? (global.city.amphitheatre.count * athVal) : global.city.amphitheatre.count);
         }
-        if (global.underground['amphitheatre']){
-            let athVal = govActive('athleticism',1);
-            lCaps['entertainer'] += jobScale(athVal ? (global.underground.amphitheatre.count * athVal) : global.underground.amphitheatre.count);
+        if(global.underground['color_garden']){
+            lCaps['gardener'] += jobScale(global.underground.color_garden.count);
         }
         if (global.city['casino']){
             if (global.tech['theatre'] && !global.race['joyless']){
@@ -9222,8 +9260,8 @@ function midLoop(){
         if (global.city['cement_plant']){
             lCaps['cement_worker'] += jobScale(global.city.cement_plant.count * 2);
         }
-        if (global.underground['cement_plant']){
-            lCaps['cement_worker'] += jobScale(global.underground.cement_plant.count * 2);
+        if (global.underground['foundry']){
+            lCaps['cement_worker'] += jobScale(global.underground.foundry.count * 2);
         }
         if (global.eden['eden_cement']){
             let ec = p_on['eden_cement'] || 0;
@@ -9326,6 +9364,16 @@ function midLoop(){
         }
         if (global.city['cottage']){
             let pop = global.city.cottage.count * actions.city.cottage.citizens();
+            caps[global.race.species] += pop;
+            breakdown.c[global.race.species][housingLabel('medium')] = pop + 'v';
+            if (global.tech['home_safe']){
+                let gain = (global.city['cottage'].count * spatialReasoning(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? 5000 : 2000) : 1000));
+                caps['Money'] += gain;
+                breakdown.c.Money[housingLabel('medium')] = gain+'v';
+            }
+        }
+        if (global.underground['cottage']){
+            let pop = global.underground['cottage'].count * actions.underground.depths.cottage.citizens();
             caps[global.race.species] += pop;
             breakdown.c[global.race.species][housingLabel('medium')] = pop + 'v';
             if (global.tech['home_safe']){
@@ -11695,15 +11743,24 @@ function midLoop(){
             let mineshaft = actions.underground.cave['mineshaft'];
             let dig_rate = mineshaft.dig_rate();
             let ice_break = Math.min(dig_rate, global.underground['mineshaft'].ice / 2);
-            dig_rate -= ice_break;
+            if(global.tech['mineshaft'] >= 2){
+                dig_rate -= ice_break / 2;
+            }
+            else{
+                dig_rate -= ice_break;
+            }
             global.underground['mineshaft'].ice -= ice_break;
 
             global.underground['mineshaft'].depth += dig_rate;
             global.underground['mineshaft'].ice += mineshaft.ice_rate(); //ice regrowth
             let depth = mineshaft.full_depth();
-            if(depth >= 100 && global.tech['mineshaft'] === 1){
-                global.tech['mineshaft'] = 2;
+            if(depth >= 1000 && !global.tech['mineshaft_depth']){
+                global.tech['mineshaft_depth'] = 1;
                 messageQueue(loc('tech_mineshaft_depth1'),'info',false,['progress']);
+            }
+            if(depth >= 20000 && global.tech['mineshaft_depth'] === 1 && global.tech['mineshaft'] >= 2){
+                global.tech['mineshaft_depth'] = 2;
+                messageQueue(loc('tech_mineshaft_depth2'),'info',false,['progress']);
             }
         }
 
@@ -12561,6 +12618,58 @@ function longLoop(){
                 global.city.calendar.wind = 0;
                 global.city.calendar.temp = 1;
                 global.city.calendar.weather = -1;
+            }
+            else if(global.race['iceage']){
+                if(Math.rand(0,10) === 0){
+                    if(global.tech['mineshaft_depth'] < 2){
+                        //90% for cold, 9% for neutral, 1% for hot
+                        if(Math.rand(0, 10) > 0){
+                            global.city.calendar.temp = 0;
+                        }
+                        else if(Math.rand(0, 10) > 0){
+                            global.city.calendar.temp = 1;
+                        }
+                        else{
+                            global.city.calendar.temp = 2;
+                        }
+                    }
+                    else if(global.tech['mineshaft_depth'] < 3){
+                        //75% for cold, 20% for neutral, 5% for hot
+                        if(Math.rand(0, 4) > 0){
+                            global.city.calendar.temp = 0;
+                        }
+                        else if(Math.rand(0, 5) > 0){
+                            global.city.calendar.temp = 1;
+                        }
+                        else{
+                            global.city.calendar.temp = 2;
+                        }
+                    }
+                    else{
+                        //55% for cold, 30% for neutral, 15% for hot
+                        if(Math.rand(0, 20) > 8){
+                            global.city.calendar.temp = 0;
+                        }
+                        else if(Math.rand(0, 3) > 1){
+                            global.city.calendar.temp = 1;
+                        }
+                        else{
+                            global.city.calendar.temp = 2;
+                        }
+                    }
+                    if(false){
+                        if(Math.rand(0, 3) === 0){
+                            global.city.calendar.weather = Math.rand(0, 3);
+                        }
+                        if(Math.rand(0, 3) === 0){
+                            global.city.calendar.wind = Math.rand(0, 2);
+                        }
+                    }
+                    else{
+                        global.city.calendar.weather = 0;
+                        global.city.calendar.wind = 0;
+                    }
+                }
             }
             else if (Math.rand(0,5) === 0){
                 let temp = Math.rand(0,3);

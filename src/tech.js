@@ -381,7 +381,12 @@ const techs = {
         effect: loc('tech_cottage_effect'),
         action(){
             if (payCosts($(this)[0])){
-                initStruct(actions.city.cottage);
+                if(!global.race['iceage']){
+                    initStruct(actions.city.cottage);
+                }
+                else{
+                    initStruct(actions.underground.depths.cottage);
+                }
                 return true;
             }
             return false;
@@ -439,7 +444,7 @@ const techs = {
         category: 'housing',
         era: 'discovery',
         reqs: { housing: 2, smelting: 2 },
-        not_trait: ['cataclysm','lone_survivor'],
+        not_trait: ['cataclysm','lone_survivor','iceage'],
         grant: ['housing_reduction',1],
         cost: {
             Knowledge(){ return 11250; },
@@ -1250,6 +1255,26 @@ const techs = {
             return false;
         }
     },
+    steel_casks: {
+        id: 'tech-iron_casks',
+        title(){ return loc('tech_steel_casks'); },
+        desc(){ return loc('tech_steel_casks'); },
+        category: 'agriculture',
+        era: 'civilized',
+        reqs: { water: 2 },
+        grant: ['water',3],
+        cost: {
+            Knowledge(){ return 8800; },
+            Steel(){ return 4400; }
+        },
+        effect: loc('tech_steel_casks_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     mushroom_farm: {
         id: 'tech-mushroom_farm',
         title(){ return loc('tech_mushroom_farm', [actions.underground.cave.mushroom_farm.mushroom_type()]); },
@@ -1465,18 +1490,19 @@ const techs = {
         era: 'civilized',
         reqs: { mining: 2 },
         grant: ['foundry',1],
-        condition(){ return !global.race['iceage'] || global.tech['mineshaft'] >= 2},
+        condition(){ return !global.race['iceage'] || global.tech['mineshaft_depth'] >= 1;},
         cost: {
             Knowledge(){ return global.race['iceage'] ? 3900 : 650; }
         },
         effect: loc('tech_foundry_effect'),
         action(){
             if (payCosts($(this)[0])){
-                if(!global.race['iceage']){
-                    initStruct(actions.city.foundry);
-                }
-                else{
+                initStruct(actions.city.foundry);
+                if(global.race['iceage']){
                     initStruct(actions.underground.depths.foundry);
+                    if(!global.race['flier']){
+                        global.tech['cement'] = 1;
+                    }
                 }
                 return true;
             }
@@ -1815,19 +1841,38 @@ const techs = {
         era: 'civilized',
         reqs: { housing: 1, currency: 1, cement: 1 },
         grant: ['theatre',1],
-        not_trait: ['joyless'],
+        not_trait: ['joyless', 'iceage'],
         cost: {
             Knowledge(){ return 750; }
         },
         effect(){ return global.race.universe === 'evil' ? loc('tech_theatre_evil_effect') : loc('tech_theatre_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                if(!global.race['iceage']){
-                    initStruct(actions.city.amphitheatre);
-                }
-                else{
-                    initStruct(actions.underground.depths.amphitheatre);
-                }
+                initStruct(actions.city.amphitheatre);
+                return true;
+            }
+            return false;
+        }
+    },
+    color_garden: {
+        id: 'tech-color_garden',
+        title(){ return loc('tech_color_garden'); },
+        desc(){ return loc('tech_color_garden'); },
+        category: 'entertainment',
+        era: 'civilized',
+        reqs: { cement: 1, mineshaft_depth: 1 },
+        grant: ['theatre',1],
+        not_trait: ['joyless'],
+        trait: ['iceage'],
+        cost: {
+            Knowledge(){ return 3400; },
+            Water(){ return 6500; },
+            Food(){ return global.race['artifical'] || global.race['ravenous'] ? 0 : 4500;}
+        },
+        effect(){ return loc('tech_color_garden_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.underground.depths.color_garden);
                 return true;
             }
             return false;
@@ -1835,16 +1880,17 @@ const techs = {
     },
     playwright: {
         id: 'tech-playwright',
-        title(){ return global.race.universe === 'evil' ? loc('tech_gladiators') : loc('tech_playwright'); },
-        desc(){ return loc('tech_playwright'); },
+        title(){ return global.race['iceage'] ? loc('tech_watering_can') : global.race.universe === 'evil' ? loc('tech_gladiators') : loc('tech_playwright'); },
+        desc(){ return $(this)[0].title(); },
         category: 'entertainment',
         era: 'civilized',
         reqs: { theatre: 1, science: 2 },
         grant: ['theatre',2],
         cost: {
-            Knowledge(){ return 1080; }
+            Knowledge(){ return global.race['iceage'] ? 6500 : 1080; },
+            Iron(){ return global.race['iceage'] ? 5800 : 0}
         },
-        effect(){ return global.race.universe === 'evil' ? loc('tech_gladiators_effect',[loc('city_colosseum')]) : loc('tech_playwright_effect'); },
+        effect(){ return global.race['iceage'] ? loc('tech_watering_can_effect') : global.race.universe === 'evil' ? loc('tech_gladiators_effect',[loc('city_colosseum')]) : loc('tech_playwright_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -1854,7 +1900,10 @@ const techs = {
     },
     magic: {
         id: 'tech-magic',
-        title(){ 
+        title(){
+            if(global.race['iceage']){
+                return loc('tech_color_variety');
+            }
             switch(global.race.universe){
                 case 'magic':
                     return loc('tech_illusionist');
@@ -1870,9 +1919,13 @@ const techs = {
         reqs: { theatre: 2, high_tech: 1 },
         grant: ['theatre',3],
         cost: {
-            Knowledge(){ return 7920; }
+            Knowledge(){ return 7920; },
+            Water(){ return global.race['iceage'] ? 26000 : 0; },
         },
         effect(){ 
+            if(global.race['iceage']){
+                return loc('tech_color_variety_effect');
+            }
             switch(global.race.universe){
                 case 'magic':
                     return loc('tech_illusionist_effect');
@@ -2122,8 +2175,8 @@ const techs = {
         },
         action(){
             if (payCosts($(this)[0])){
+                initStruct(actions.city.rock_quarry);
                 if(!global.race['iceage']){
-                    initStruct(actions.city.rock_quarry);
                     if (global.race['cannibalize']){
                         initStruct(actions.city.s_alter);
                     }
@@ -2149,6 +2202,7 @@ const techs = {
         era: 'civilized',
         reqs: { smelting: 2 },
         grant: ['alumina',1],
+        not_trait: ['iceage'],
         cost: {
             Knowledge(){ return 4500; }
         },
@@ -2200,6 +2254,9 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.city.smelter);
+                if(global.race['iceage']){
+                    initStruct(actions.underground.depths.smelter);
+                }
                 return true;
             }
             return false;
@@ -2230,6 +2287,10 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.resource.Steel.display = true;
+                if(global.race['iceage']){
+                    global.tech['alumina'] = 1;
+                    initStruct(actions.city.metal_refinery);
+                }
                 return true;
             }
             return false;
@@ -2501,7 +2562,7 @@ const techs = {
         era: 'civilized',
         reqs: { mining: 3 },
         grant: ['mining',4],
-        condition(){ return !global.race['iceage'] || global.tech['mineshaft'] >= 2},
+        condition(){ return !global.race['iceage'] || global.tech['mineshaft_depth'] >= 1;},
         cost: {
             Knowledge(){ return 4320; }
         },
@@ -2509,6 +2570,9 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.city.coal_mine);
+                if(global.race['iceage']){
+                    initStruct(actions.underground.depths.coal_mine);
+                }
                 global.resource.Coal.display = true;
                 return true;
             }
@@ -3546,7 +3610,7 @@ const techs = {
         reqs: { banking: 1, govern: 1 },
         not_trait: ['terrifying'],
         grant: ['currency',2],
-        condition(){ return !global.race['iceage'] || global.tech['mineshaft'] >= 2;},
+        condition(){ return !global.race['iceage'] || global.tech['mineshaft_depth'] >= 1;},
         cost: {
             Knowledge(){ return global.race['banana'] ? 300 : 1800; }
         },
@@ -4316,7 +4380,7 @@ const techs = {
         trait: ['iceage'],
         cost: {
             Knowledge(){ return traitCostMod('stubborn',720); },
-            Stone(){ return traitCostMod('stubborn', 450); }
+            Stone(){ return 450; }
         },
         effect: loc('tech_carving_tools_effect'),
         action(){
@@ -4947,7 +5011,7 @@ const techs = {
         id: 'tech-mineshaft',
         title(){ return loc('tech_mineshaft'); },
         desc(){ return loc('tech_mineshaft'); },
-        category: 'science',
+        category: 'mining',
         era: 'civilized',
         reqs: { support_beams: 1 },
         grant: ['mineshaft',1],
@@ -4959,6 +5023,30 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.underground.cave.mineshaft);
+                return true;
+            }
+            return false;
+        },
+        flair(){
+            return loc('tech_mineshaft_flair');
+        }
+    },
+    coal_lanterns: {
+        id: 'tech-coal_lanterns',
+        title(){ return loc('tech_coal_lanterns'); },
+        desc(){ return loc('tech_coal_lanterns'); },
+        category: 'mining',
+        era: 'civilized',
+        reqs: { mining: 4, mineshaft: 1 },
+        grant: ['mineshaft',2],
+        cost: {
+            Knowledge(){ return 7800; },
+            Wrought_Iron(){ return 2600; },
+            Coal(){ return 6000; }
+        },
+        effect(){return loc('tech_coal_lanterns_effect');},
+        action(){
+            if (payCosts($(this)[0])){
                 return true;
             }
             return false;
@@ -7449,8 +7537,24 @@ const techs = {
     },
     copper_hoe: {
         id: 'tech-copper_hoe',
-        title(){ return loc('tech_copper_hoe'); },
-        desc(){ return loc('tech_copper_hoe_desc'); },
+        title(){
+            if(global.race['iceage']){
+                if(global.race['synth']){
+                    return loc('tech_underground_copper_spade_synth');
+                }
+                return loc('tech_underground_copper_spade');
+            }
+            return loc('tech_copper_hoe');
+        },
+        desc(){
+            if(global.race['iceage']){
+                if(global.race['synth']){
+                    return loc('tech_underground_copper_spade_synth_desc');
+                }
+                return loc('tech_underground_copper_spade_desc');
+            }
+            return loc('tech_copper_hoe_desc');
+        },
         category: 'agriculture',
         era: 'civilized',
         reqs: { mining: 2, agriculture: 1 },
@@ -7460,7 +7564,15 @@ const techs = {
             Knowledge(){ return 720; },
             Copper(){ return 50; }
         },
-        effect: loc('tech_copper_hoe_effect'),
+        effect() {
+            if(global.race['iceage']){
+                if(global.race['synth']){
+                    return loc('tech_underground_copper_spade_synth_effect');
+                }
+                return loc('tech_underground_copper_spade_effect');
+            }
+            return loc('tech_copper_hoe_effect')
+        },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -7470,8 +7582,24 @@ const techs = {
     },
     iron_hoe: {
         id: 'tech-iron_hoe',
-        title(){ return loc('tech_iron_hoe'); },
-        desc(){ return loc('tech_iron_hoe_desc'); },
+        title(){
+            if(global.race['iceage']){
+                if(global.race['synth']){
+                    return loc('tech_underground_iron_spade_synth');
+                }
+                return loc('tech_underground_iron_spade');
+            }
+            return loc('tech_iron_hoe');
+        },
+        desc(){
+            if(global.race['iceage']){
+                if(global.race['synth']){
+                    return loc('tech_underground_iron_spade_synth_desc');
+                }
+                return loc('tech_underground_iron_spade_desc');
+            }
+            return loc('tech_iron_hoe_desc');
+        },
         category: 'agriculture',
         era: 'civilized',
         reqs: { hoe: 1, mining: 3, agriculture: 1 },
@@ -7481,7 +7609,15 @@ const techs = {
             Knowledge(){ return global.city.ptrait.includes('unstable') ? 1800 : 3600; },
             Iron(){ return 500; }
         },
-        effect: loc('tech_iron_hoe_effect'),
+        effect() {
+            if(global.race['iceage']){
+                if(global.race['synth']){
+                    return loc('tech_underground_iron_spade_synth_effect');
+                }
+                return loc('tech_underground_iron_spade_effect');
+            }
+            return loc('tech_iron_hoe_effect')
+        },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -7491,8 +7627,24 @@ const techs = {
     },
     steel_hoe: {
         id: 'tech-steel_hoe',
-        title(){ return loc('tech_steel_hoe'); },
-        desc(){ return loc('tech_steel_hoe_desc'); },
+        title(){
+            if(global.race['iceage']){
+                if(global.race['synth']){
+                    return loc('tech_underground_steel_spade_synth');
+                }
+                return loc('tech_underground_steel_spade');
+            }
+            return loc('tech_steel_hoe');
+        },
+        desc(){
+            if(global.race['iceage']){
+                if(global.race['synth']){
+                    return loc('tech_underground_steel_spade_synth_desc');
+                }
+                return loc('tech_underground_steel_spade_desc');
+            }
+            return loc('tech_steel_hoe_desc');
+        },
         category: 'agriculture',
         era: 'discovery',
         reqs: { hoe: 2, smelting: 2, agriculture: 1 },
@@ -7502,7 +7654,15 @@ const techs = {
             Knowledge(){ return 12600; },
             Steel(){ return 500; }
         },
-        effect: loc('tech_steel_hoe_effect'),
+        effect() {
+            if(global.race['iceage']){
+                if(global.race['synth']){
+                    return loc('tech_underground_steel_spade_synth_effect');
+                }
+                return loc('tech_underground_steel_spade_effect');
+            }
+            return loc('tech_steel_hoe_effect')
+        },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -7512,7 +7672,24 @@ const techs = {
     },
     titanium_hoe: {
         id: 'tech-titanium_hoe',
-        title(){ return loc('tech_titanium_hoe'); },
+        title(){
+            if(global.race['iceage']){
+                if(global.race['synth']){
+                    return loc('tech_underground_titanium_spade_synth');
+                }
+                return loc('tech_underground_titanium_spade');
+            }
+            return loc('tech_titanium_hoe');
+        },
+        desc(){
+            if(global.race['iceage']){
+                if(global.race['synth']){
+                    return loc('tech_underground_titanium_spade_synth_desc');
+                }
+                return loc('tech_underground_titanium_spade_desc');
+            }
+            return loc('tech_titanium_hoe_desc');
+        },
         desc(){ return loc('tech_titanium_hoe_desc'); },
         category: 'agriculture',
         era: 'industrialized',
@@ -7523,7 +7700,15 @@ const techs = {
             Knowledge(){ return 44000; },
             Titanium(){ return 500; }
         },
-        effect: loc('tech_titanium_hoe_effect'),
+        effect() {
+            if(global.race['iceage']){
+                if(global.race['synth']){
+                    return loc('tech_underground_titanium_spade_synth_effect');
+                }
+                return loc('tech_underground_titanium_spade_effect');
+            }
+            return loc('tech_titanium_hoe_effect')
+        },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -7702,6 +7887,10 @@ const techs = {
                 }
                 else{
                     initStruct(actions.underground.depths.hunting_lodge);
+                    if(global.race['calm']){
+                        initStruct(actions.city.meditation);
+                        initStruct(actions.underground.cave.meditation);
+                    }
                 }
                 return true;
             }
@@ -8488,28 +8677,6 @@ const techs = {
             return false;
         }
     },
-    cement_alt: {
-        id: 'tech-cement_alt',
-        title(){ return loc('tech_cement'); },
-        desc(){ return loc('tech_cement_desc'); },
-        category: 'cement',
-        era: 'civilized',
-        reqs: { mining: 1, mineshaft: 2 },
-        trait: ['iceage'],
-        not_trait: ['flier'],
-        grant: ['cement',1],
-        cost: {
-            Knowledge(){ return 3400; }
-        },
-        effect: loc('tech_cement_effect'),
-        action(){
-            if (payCosts($(this)[0])){
-                initStruct(actions.underground.depths.cement_plant);
-                return true;
-            }
-            return false;
-        }
-    },
     rebar: {
         id: 'tech-rebar',
         title(){ return loc('tech_rebar'); },
@@ -8814,6 +8981,12 @@ const techs = {
                 initStruct(actions.city.temple);
                 if (global.race['magnificent']){
                     initStruct(actions.city.shrine);
+                }
+                if(global.race['iceage']){
+                    initStruct(actions.underground.depths.statue);
+                    if (global.race['magnificent']){
+                        initStruct(actions.underground.cave.shrine);
+                    }
                 }
                 if (global.genes['ancients'] && global.genes['ancients'] >= 2){
                     global.civic.priest.display = true;

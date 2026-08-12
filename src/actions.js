@@ -8502,6 +8502,9 @@ function basicHousingLabel(){
 }
 
 function mediumHousingLabel(){
+    if(global.race['iceage']){
+        return loc('underground_cottage_title');
+    }
     let halloween = eventActive('halloween');
     if (halloween.active){
         return loc(`events_halloween_medium_house`);

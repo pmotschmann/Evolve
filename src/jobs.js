@@ -293,6 +293,22 @@ export const job_desc = {
         mcap = +workerScale(mcap,'entertainer').toFixed(2);
         return global.tech['superstar'] ? loc('job_entertainer_desc2',[morale,mcap]) : loc('job_entertainer_desc',[+(morale).toFixed(2)]);
     },
+    gardener: function(){
+        let morale = global.tech['theatre'];
+        if (global.race['musical']){
+            morale += traits.musical.vars()[0];
+        }
+        if (global.race['emotionless']){
+            morale *= 1 - (traits.emotionless.vars()[0] / 100);
+        }
+        if (global.race['high_pop']){
+            morale *= traits.high_pop.vars()[1] / 100;
+        }
+        morale = +workerScale(morale,'entertainer').toFixed(2);
+        //"job_gardener_desc": "Gardeners help brighten up the caverns by planting bioluminescent mushrooms of various colors. Each Gardener consumes %0 Water/s and produces up to %1 Mushrooms over time. Each mushroom raises morale by 1%",
+        let water = morale * 2;
+        return loc('job_gardener_desc',[water, +(morale).toFixed(2)]);
+    },
     priest: function(){
         let desc = ``;
         if (global.civic.govern.type === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
@@ -417,6 +433,7 @@ export function defineJobs(define){
     loadJob('craftsman',define,1,5,'advanced');
     loadJob('cement_worker',define,0.4,5,'advanced');
     loadJob('entertainer',define,1,10,'advanced');
+    loadJob('gardener',define,1,10,'advanced');
     loadJob('priest',define,1,3,'advanced');
     loadJob('professor',define,0.5,6,'advanced');
     loadJob('scientist',define,1,5,'advanced');

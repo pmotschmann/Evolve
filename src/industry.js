@@ -190,7 +190,7 @@ export function smelterFuelConfig(){
         }
     }
     // Set default fuel to coal if it's not possible to burn lumber, souls, or flesh
-    else if (global.race['kindling_kindred'] || global.race['smoldering']){
+    else if (global.race['kindling_kindred'] || global.race['smoldering'] || global.race['iceage']){
         fuel.d_fuel = 'Coal';
     }
 
@@ -226,7 +226,7 @@ function loadSmelter(parent,bind){
     parent.append(fuelTypes);
 
     if (!global.race['forge']){
-        if ((!global.race['kindling_kindred'] && !global.race['smoldering']) || global.race['evil']){
+        if (!global.race['iceage'] && ((!global.race['kindling_kindred'] && !global.race['smoldering']) || global.race['evil'])){
             let f_label = global.resource[fuel_config.l_type].name;
             let wood = $(`<span :aria-label="buildLabel('wood') + ariaCount('Wood', '${f_label}')" class="current wood">${f_label} {{ s.Wood }}</span>`);
             let subWood = $(`<span role="button" class="sub" @click="subFuel('Wood')" aria-label="Remove ${f_label} fuel"><span>&laquo;</span></span>`);
