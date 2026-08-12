@@ -4686,7 +4686,7 @@ function fastLoop(){
 
             if (hold && remaining > 0 && max_factories > global.city.factory.cap){
                 let room = Math.min(remaining, max_factories - global.city.factory.cap);
-                factoryData.factoryLines().forEach(function(res){
+                factoryData.factoryLines.forEach(function(res){
                     if (room <= 0 || !hold[res]){ return; }
                     let back = Math.min(hold[res], room);
                     global.city.factory[res] += back;
