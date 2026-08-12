@@ -1,7 +1,8 @@
 import { global, p_on, support_on } from './vars.js';
 import { biomes, traits, fathomCheck } from './races.js';
 import { govRelationFactor, govEffect } from './civics.js';
-import { jobScale, teamsterCap } from './jobs.js';
+import { jobScale, teamsterCap, workerScale } from './jobs.js';
+import { actions } from './actions.js';
 import { hellSupression } from './portal.js';
 import { flib } from './functions.js';
 import { govActive } from './governor.js';
@@ -286,6 +287,16 @@ export function production(id,val,wiki){
         {
             if (global.space.crashed_ship.count === 100){
                 return 0.005;
+            }
+            return 0;
+        }
+        case 'nitrogen_harvester':
+        {
+            switch (val){
+                case 'food':
+                    return 18;
+                case 'lumber':
+                    return 15;
             }
             return 0;
         }
@@ -591,6 +602,20 @@ export function production(id,val,wiki){
             return 0;
         }
     }
+}
+
+export function technicianCount(){
+    if (!global.civic['technician'] || global.civic.technician.workers <= 0){ return 0; }
+    let techs = workerScale(global.civic.technician.workers,'technician');
+    if (global.race['high_pop']){
+        techs = highPopAdjust(techs);
+    }
+    return techs;
+}
+
+// Multiplier one of the technician rates is worth right now. `rate` is a percent per technician.
+export function technicianBonus(rate){
+    return 1 + (technicianCount() * rate / 100);
 }
 
 export function factoryBonus(factory){

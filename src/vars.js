@@ -1526,6 +1526,29 @@ if (convertVersion(global['version']) <= 105000){
                 delete ship.tf;
         })
     }
+
+    // Medium frames went from one weapon bay to two at half the damage per shot.
+    if (global.hasOwnProperty('portal') && global.portal.hasOwnProperty('mechbay')
+        && Array.isArray(global.portal.mechbay.mechs) && !global.portal.mechbay['dualbay']){
+        global.portal.mechbay['dualbay'] = true;
+        let mechWeapons = ['laser','kinetic','shotgun','missile','flame','plasma','sonic','tesla'];
+        global.portal.mechbay.mechs.forEach(function(mech){
+            if (mech.size === 'medium' && Array.isArray(mech.hardpoint) && mech.hardpoint.length < 2){
+                let first = mech.hardpoint[0];
+                let alt = mechWeapons.filter(function(w){ return w !== first; });
+                mech.hardpoint.push(alt[Math.floor(Math.random() * alt.length)]);
+            }
+        });
+    }
+
+    // Impact, stress and name used to be copied into each job record on load, which is why legacy saves carry them.
+    Object.keys(global.civic).forEach(function(job){
+        if (global.civic[job] && typeof global.civic[job] === 'object' && global.civic[job].hasOwnProperty('job')){
+            delete global.civic[job].impact;
+            delete global.civic[job].stress;
+            delete global.civic[job].name;
+        }
+    });
 }
 
 if(convertVersion(global['version']) && true){
@@ -1536,7 +1559,7 @@ if(convertVersion(global['version']) && true){
 
 global['version'] = '1.5.0';
 delete global['revision'];
-global['beta'] = 24;
+global['beta'] = 26;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
@@ -1563,10 +1586,6 @@ if (!global.hasOwnProperty('support')){
         global.support[s] = [];
     }
 });
-
-if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
-    global.civic.cement_worker.impact = 0.4;
-}
 
 if (!global['settings']){
     global['settings'] = {

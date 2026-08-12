@@ -4,8 +4,8 @@ import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, cle
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
 import { races, traits, genus_def, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill, traitRank } from './races.js';
 import { defineResources, unlockCrates, unlockContainers, crateValue, containerValue, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus, faithTempleCount } from './resources.js';
-import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
-import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter, addFactoryLines, cancelRituals } from './industry.js';
+import { loadFoundry, defineJobs, jobScale, workerScale, job_data } from './jobs.js';
+import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter, factoryData, cancelRituals } from './industry.js';
 import { defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating, garrisonSize, govEffect } from './civics.js';
 import { spaceTech, interstellarTech, galaxyTech, incrementStruct, universe_affixes, renderSpace, piracy, fuel_adjust, isStargateOn, spaceSectors, checkRequirements } from './space.js';
 import { renderFortress, fortressTech, warlordSetup } from './portal.js';
@@ -2740,7 +2740,7 @@ export const actions = {
                         defineIndustry();
                     }
                     if (powerOnNewStruct($(this)[0])){
-                        addFactoryLines(1);
+                        factoryData.addFactoryLines(1);
                     }
                     return true;
                 }
@@ -3786,9 +3786,6 @@ export const actions = {
                     gain = +(gain).toFixed(1);
                     global['resource']['Knowledge'].max += gain;
                     incrementStruct('library','city');
-                    if (global.tech['science'] && global.tech.science >= 3){
-                        global.civic.professor.impact = 0.5 + (global.city.library.count * 0.01)
-                    }
                     return true;
                 }
                 return false;
@@ -3837,7 +3834,7 @@ export const actions = {
                 }
                 gain = +(gain).toFixed(0);
 
-                let desc = `<div>${loc('city_wardenclyffe_effect1',[jobScale(1),global.civic.scientist ? global.civic.scientist.name : loc('job_scientist')])}</div><div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div>`;
+                let desc = `<div>${loc('city_wardenclyffe_effect1',[jobScale(1),job_data.scientist.name()])}</div><div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div>`;
                 if (global.city.powered){
                     let pgain = global.tech['science'] >= 7 ? 2500 : 2000;
                     if (global.city.ptrait.includes('magnetic')){
@@ -4131,7 +4128,7 @@ export const actions = {
                 Iridium(offset){ return costMultiplier('mass_driver', offset, 2200, 1.32); }
             },
             effect(){
-                let exo = global.tech.mass >= 2 ? `<div>${loc('city_mass_driver_effect2',[1,global.civic.scientist.name])}</div>` : '';
+                let exo = global.tech.mass >= 2 ? `<div>${loc('city_mass_driver_effect2',[1,job_data.scientist.name()])}</div>` : '';
                 return `${exo}<span>${loc('city_mass_driver_effect',[global.race['truepath'] ? 6 : 5,flib('name')])}</span> <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span>`;
             },
             powered(){
@@ -8229,6 +8226,7 @@ function drawModal(c_action,type){
         case 'int_factory':
         case 'tau_factory':
         case 'hell_factory':
+        case 'industrial_complex':
             loadIndustry('factory',body);
             break;
         case 'star_dock':
@@ -8382,7 +8380,7 @@ export function orbitDecayed(){
             }
         });
 
-        Object.keys(job_desc).forEach(function (job){
+        Object.keys(job_data).forEach(function (job){
             if (job !== 'colonist'){
                 global.civic[job].workers = 0;
                 global.civic[job].assigned = 0;

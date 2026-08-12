@@ -5,11 +5,11 @@ import { unlockAchieve, alevel, universeAffix, unlockFeat } from './achieve.js';
 import { payCosts, housingLabel, wardenLabel, structName, updateQueueNames, drawTech, fanaticism, checkAffordable, actions, initStruct } from './actions.js';
 import { races, checkAltPurgatory, renderPsychicPowers, renderSupernatural, traitCostMod } from './races.js';
 import { drawResourceTab, resource_values, atomic_mass } from './resources.js';
-import { loadFoundry, jobScale, jobName, limitCraftsmen } from './jobs.js';
+import { loadFoundry, jobScale, limitCraftsmen, job_data } from './jobs.js';
 import { buildGarrison, checkControlling, govTitle, defineFleetCommand } from './civics.js';
 import { renderSpace, planetName, int_fuel_adjust } from './space.js';
 import { drawHellObservations } from './portal.js';
-import { setOrbits, drawShipYard, jumpGateShutdown, jumpGateRestart, aerographeneSpeedBonus, shipCapacitorSaving } from './truepath.js';
+import { setOrbits, drawShipYard, jumpGateShutdown, jumpGateRestart, aerographeneSpeedBonus, shipCapacitorSaving, surveyTheme } from './truepath.js';
 import { arpa } from './arpa.js';
 import { setPowerGrid, defineIndustry, addSmelter, setupRituals, altReplicatorRes } from './industry.js';
 import { defineGovernor, removeTask } from './governor.js';
@@ -299,7 +299,7 @@ const techs = {
         effect(){ return loc('tech_osha_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.civic.teamster.stress = 6;
+                // Teamster stress reads the tech level off job_data, so granting the tech is enough.
                 return true;
             }
             return false;
@@ -4520,7 +4520,7 @@ const techs = {
         cost: {
             Knowledge(){ return traitCostMod('stubborn',36000); }
         },
-        effect(){ return loc('tech_adjunct_professor_effect',[wardenLabel(),global.civic.scientist ? global.civic.scientist.name : jobName('scientist')]); },
+        effect(){ return loc('tech_adjunct_professor_effect',[wardenLabel(),job_data.scientist.name()]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -4843,7 +4843,7 @@ const techs = {
             Knowledge(){ return 80000000; },
             Omniscience(){ return 12500; },
         },
-        effect(){ return loc('tech_spirit_researcher_effect',[global.civic.scientist ? global.civic.scientist.name : jobName('scientist')]); },
+        effect(){ return loc('tech_spirit_researcher_effect',[job_data.scientist.name()]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -6943,7 +6943,6 @@ const techs = {
         effect: loc('tech_reclaimer_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.civic.lumberjack.name = loc('job_reclaimer');
                 global.civic.lumberjack.display = true;
                 initStruct(actions.city.graveyard);
                 return true;
@@ -14285,7 +14284,7 @@ const techs = {
         category: 'special',
         era: 'matrioshka',
         path: ['truepath'],
-        reqs: { tau_home: 9, replicator: 1 },
+        reqs: { replicator: 1, resettle: 17 },
         grant: ['replicator',2],
         cost: {
             Knowledge(){ return 30000000; },
@@ -15552,6 +15551,139 @@ const techs = {
             return false;
         }
     },
+    nitrogen_harvester: {
+        id: 'tech-nitrogen_harvester',
+        title(){ return loc('tech_nitrogen_harvester'); },
+        desc(){ return loc('tech_nitrogen_harvester'); },
+        category: 'agriculture',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { venus: 6 },
+        grant: ['venus',7],
+        cost: {
+            Knowledge(){ return 27500000; }
+        },
+        effect(){ return loc('tech_nitrogen_harvester_effect',[planetName().venus]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.space.spc_venus.nitrogen_harvester);
+                renderSpace();
+                return true;
+            }
+            return false;
+        }
+    },
+    cloud_housing: {
+        id: 'tech-cloud_housing',
+        title(){ return loc('tech_cloud_housing'); },
+        desc(){ return loc('tech_cloud_housing'); },
+        category: 'housing',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { venus: 7 },
+        grant: ['venus',8],
+        cost: {
+            Knowledge(){ return 27750000; }
+        },
+        effect(){ return loc('tech_cloud_housing_effect',[planetName().venus]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.space.spc_venus.cloud_quarters);
+                renderSpace();
+                return true;
+            }
+            return false;
+        }
+    },
+    cloud_manufacturing: {
+        id: 'tech-cloud_manufacturing',
+        title(){ return loc('tech_cloud_manufacturing'); },
+        desc(){ return loc('tech_cloud_manufacturing'); },
+        category: 'crafting',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { venus: 8 },
+        grant: ['venus',9],
+        cost: {
+            Knowledge(){ return 28000000; }
+        },
+        effect(){ return loc('tech_cloud_manufacturing_effect',[planetName().venus]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.space.spc_venus.industrial_complex);
+                renderSpace();
+                return true;
+            }
+            return false;
+        }
+    },
+    cloud_crafting: {
+        id: 'tech-cloud_crafting',
+        title(){ return loc('tech_cloud_crafting'); },
+        desc(){ return loc('tech_cloud_crafting'); },
+        category: 'crafting',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { venus: 9 },
+        grant: ['venus',10],
+        cost: {
+            Knowledge(){ return 28250000; }
+        },
+        effect(){ return loc('tech_cloud_crafting_effect',[planetName().venus]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.space.spc_venus.workshop);
+                renderSpace();
+                return true;
+            }
+            return false;
+        }
+    },
+    moon_resort: {
+        id: 'tech-moon_resort',
+        // Theme changes depending on which moon was selected
+        title(){ return loc(`tech_moon_resort_${surveyTheme()}`); },
+        desc(){ return loc(`tech_moon_resort_${surveyTheme()}`); },
+        category: 'entertainment',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { survey: 2 },
+        grant: ['survey',3],
+        cost: {
+            Knowledge(){ return 26500000; }
+        },
+        effect(){ return loc(`tech_moon_resort_${surveyTheme()}_effect`,[planetName()[surveyTheme()]]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.space.spc_survey.survey_resort);
+                renderSpace();
+                return true;
+            }
+            return false;
+        }
+    },
+    moon_storage: {
+        id: 'tech-moon_storage',
+        title(){ return loc('tech_moon_storage',[planetName()[surveyTheme()]]); },
+        desc(){ return loc('tech_moon_storage',[planetName()[surveyTheme()]]); },
+        category: 'storage',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { survey: 3 },
+        grant: ['survey',4],
+        cost: {
+            Knowledge(){ return 26750000; }
+        },
+        effect(){ return loc('tech_moon_storage_effect',[planetName()[surveyTheme()]]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.space.spc_survey.survey_warehouse);
+                renderSpace();
+                return true;
+            }
+            return false;
+        }
+    },
     expert_salvage: {
         id: 'tech-expert_salvage',
         title(){ return loc('tech_expert_salvage'); },
@@ -15960,7 +16092,7 @@ const techs = {
             Knowledge(){ return 95000000; },
             Omniscience(){ return 19500; },
         },
-        effect(){ return loc('tech_hallowed_housing_effect',[jobName('priest'),loc('eden_asphodel_name')]); },
+        effect(){ return loc('tech_hallowed_housing_effect',[job_data.priest.name(),loc('eden_asphodel_name')]); },
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.eden.eden_asphodel.rectory);
