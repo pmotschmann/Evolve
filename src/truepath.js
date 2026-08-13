@@ -3,7 +3,7 @@ import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, 
 import { races, traits, orbitLength } from './races.js';
 import { spatialReasoning, unlockContainers } from './resources.js';
 import { armyRating, garrisonSize, soldierDeath, buildGarrison, govEffect } from './civics.js';
-import { jobScale, job_data, loadFoundry, limitCraftsmen } from './jobs.js';
+import { jobScale, job_data, loadFoundry, limitCraftsmen, workerScale } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
 import { actions, payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, buildTemplate, casinoEffect, housingLabel, structName, initStruct, getStructNumActive } from './actions.js';
 import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, incrementStruct, planetName } from './space.js';
@@ -1931,10 +1931,12 @@ const outerTruth = {
             technicians(){ return 2; },
             action(){
                 if (payCosts($(this)[0])){
-                    global.civic.technician.display = true
                     incrementStruct($(this)[0]);
                     powerOnNewStruct($(this)[0]);
-                    defineIndustry();
+                    if (!global.civic.technician.display){
+                        global.civic.technician.display = true;
+                        defineIndustry();
+                    }
                     return true;
                 }
                 return false;
@@ -1955,9 +1957,9 @@ const outerTruth = {
             path: ['truepath'],
             condition(){ return venusBlockade() === 0; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('workshop', offset, 82000000, 1.26); },
-                Lumber(offset){ return spaceCostMultiplier('workshop', offset, 54000000, 1.26); },
-                Aerographene(offset){ return spaceCostMultiplier('workshop', offset, 2800000, 1.26); },
+                Money(offset){ return spaceCostMultiplier('workshop', offset, 99000000, 1.26); },
+                Lumber(offset){ return spaceCostMultiplier('workshop', offset, 63000000, 1.26); },
+                Aerographene(offset){ return spaceCostMultiplier('workshop', offset, 3400000, 1.26); },
                 Orichalcum(offset){ return spaceCostMultiplier('workshop', offset, 9200000, 1.26); }
             },
             effect(){
@@ -1973,7 +1975,7 @@ const outerTruth = {
             support(){ return -1; },
             powered(){ return 0; },
             crafters(){ return 3; },
-            crafting(){ return 25; },
+            crafting(){ return 20; },
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct($(this)[0]);
@@ -1986,6 +1988,53 @@ const outerTruth = {
                 return {
                     d: { count: 0, on: 0 },
                     p: ['workshop','space']
+                };
+            }
+        },
+        university: {
+            id: 'space-university',
+            title(){ return loc('space_university_title'); },
+            desc(){ return `<div>${loc('space_university_title')}</div><div class="has-text-special">${loc('space_support',[planetName().venus])}</div>`; },
+            type: 'science',
+            reqs: { venus: 11 },
+            path: ['truepath'],
+            condition(){ return venusBlockade() === 0; },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('university', offset, 118000000, 1.26); },
+                Knowledge(offset){ return spaceCostMultiplier('university', offset, 2500000, 1.26); },
+                Iron(offset){ return spaceCostMultiplier('university', offset, 60000000, 1.26); },
+                Plywood(offset){ return spaceCostMultiplier('university', offset, 42000000, 1.26); }
+            },
+            effect(){
+                let desc = `<div>${loc('space_university_effect',[$(this)[0].knowVal().toLocaleString(),global.resource.Knowledge.name,job_data.professor.name()])}</div>`;
+                desc += `<div>${loc('plus_max_resource',[jobScale($(this)[0].professors()),job_data.professor.name()])}</div>`;
+                desc += `<div class="has-text-caution">${loc('space_used_support',[planetName().venus])}</div>`;
+                return desc;
+            },
+            s_type: 'venus',
+            support(){ return -1; },
+            powered(){ return 0; },
+            knowVal(){ return 3333; },
+            professors(){ return 2; },
+            knowledge(){
+                let profs = workerScale(global.civic.professor.workers,'professor');
+                if (global.race['high_pop']){
+                    profs = highPopAdjust(profs);
+                }
+                return $(this)[0].knowVal() * profs;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct($(this)[0]);
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['university','space']
                 };
             }
         }
@@ -2048,7 +2097,7 @@ const outerTruth = {
                 };
             }
         },
-        // Resorts is themed dependign on location
+        // Resorts is themed depending on location
         survey_resort: {
             id: 'space-survey_resort',
             title(){ return loc(`space_resort_${surveyTheme()}_title`); },

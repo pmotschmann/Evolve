@@ -280,7 +280,7 @@ export function powerGrid(type,reset){
             power_structs = ['spc_eris:shock_trooper','spc_eris:tank'];
             break;
         case 'venus':
-            power_structs = ['spc_venus:descender','spc_venus:nitrogen_harvester','spc_venus:cloud_quarters','spc_venus:industrial_complex','spc_venus:workshop'];
+            power_structs = ['spc_venus:descender','spc_venus:nitrogen_harvester','spc_venus:cloud_quarters','spc_venus:industrial_complex','spc_venus:workshop','spc_venus:university'];
             break;
         case 'tau_home':
             power_structs = ['tau_home:colony','tau_home:tau_factory','tau_home:mining_pit','tau_home:infectious_disease_lab','tau_home:marine_barracks','tau_home:data_decoder'];

@@ -9778,6 +9778,13 @@ function midLoop(){
             caps['Knowledge'] += gain;
             breakdown.c.Knowledge[loc('city_university')] = gain+'v';
         }
+        if (global.space['university'] && support_on['university']){
+            let uni = actions.space.spc_venus.university;
+            let gain = uni.knowledge() * support_on['university'];
+            lCaps['professor'] += jobScale(support_on['university'] * uni.professors());
+            caps['Knowledge'] += gain;
+            breakdown.c.Knowledge[loc('space_university_title')] = gain+'v';
+        }
         if (global.race['lone_survivor'] && global.tauceti['alien_outpost']){
             lCaps['professor'] += jobScale(global.tauceti.alien_outpost.count);
         }

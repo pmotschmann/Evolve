@@ -1238,14 +1238,21 @@ export function setResourceName(name){
         }
     }
 
-    /* Too many hard coded string references to cement, maybe some other day
     if (global.city.biome === 'ashland'){
         switch(name){
             case 'Cement':
                 global['resource'][name].name = loc('resource_Ashcrete_name');
                 break;
         }
-    }*/
+    }
+
+    if (global.city.universe === 'antimatter'){
+        switch(name){
+            case 'Positronium':
+                global['resource'][name].name = loc('resource_Electronium_name');
+                break;
+        }
+    }
 
     let hallowed = eventActive('halloween');
     if (hallowed.active){

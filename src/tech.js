@@ -14945,6 +14945,27 @@ const techs = {
             return false;
         }
     },
+    sever_uplink: {
+        id: 'tech-sever_uplink',
+        title(){ return loc('tech_sever_uplink'); },
+        desc(){ return loc('tech_sever_uplink'); },
+        category: 'progress',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { resettle: 17 },
+        grant: ['resettle',18],
+        cost: {
+            Knowledge(){ return 30000000; }
+        },
+        effect(){ return loc('tech_sever_uplink_effect',[actions.space.spc_venus.alien_facility.title(),planetName().venus]); },
+        action(){
+            if (payCosts($(this)[0])){
+                messageQueue(loc('tech_sever_uplink_msg',[planetName().home]),'info',false,['progress']);
+                return true;
+            }
+            return false;
+        }
+    },
     venus_foothold: {
         id: 'tech-venus_foothold',
         title(){ return loc('tech_venus_foothold',[planetName().venus]); },
@@ -15072,6 +15093,28 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.space.spc_venus.workshop);
+                renderSpace();
+                return true;
+            }
+            return false;
+        }
+    },
+    cloud_university: {
+        id: 'tech-cloud_university',
+        title(){ return loc('tech_cloud_university'); },
+        desc(){ return loc('tech_cloud_university'); },
+        category: 'science',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { venus: 10 },
+        grant: ['venus',11],
+        cost: {
+            Knowledge(){ return 28500000; }
+        },
+        effect(){ return loc('tech_cloud_university_effect',[planetName().venus]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.space.spc_venus.university);
                 renderSpace();
                 return true;
             }
