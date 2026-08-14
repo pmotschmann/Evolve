@@ -4860,7 +4860,7 @@ export function buildTemplate(key, region){
                 reqs: {},
                 trait: ['artifical'],
                 condition(){
-                    return !global.race['iceage'] || global.underground['basic_housing']?.count >= 1;
+                    return !global.race['iceage'] || global.underground['hollow']?.count >= 1;
                 },
                 queue_complete(){ return global.resource[global.race.species].max - global.resource[global.race.species].amount; },
                 cost: {
@@ -8500,9 +8500,6 @@ function basicHousingLabel(){
 }
 
 function mediumHousingLabel(){
-    if(global.race['iceage']){
-        return loc('underground_cottage_title');
-    }
     let halloween = eventActive('halloween');
     if (halloween.active){
         return loc(`events_halloween_medium_house`);

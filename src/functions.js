@@ -240,7 +240,9 @@ export function powerGrid(type,reset){
                 'prtl_gate:infernite_mine','int_sirius:ascension_trigger','spc_makemake:orichalcum_mine','spc_makemake:elerium_mine','spc_makemake:uranium_mine','spc_makemake:neutronium_mine','spc_survey:mineshaft','spc_dwarf:m_relay','tau_gas2:tcm_relay',
                 'tau_home:tau_factory','tau_home:infectious_disease_lab','tau_home:alien_outpost','tau_home:data_decoder','tau_gas:womling_station','tau_roid:synthesizer','spc_red:atmo_terraformer','tau_star:matrix','tau_home:tau_cultural_center',
                 'eden_elysium:sacred_smelter','prtl_pit:soul_capacitor','prtl_lake:oven_complete','eden_elysium:elysanite_mine','eden_elysium:elerium_containment','eden_elysium:pillbox','eden_elysium:archive',
-                'eden_elysium:restaurant','eden_elysium:eden_cement','eden_isle:spirit_battery','eden_isle:spirit_vacuum','city:replicator'
+                'eden_elysium:restaurant','eden_elysium:eden_cement','eden_isle:spirit_battery','eden_isle:spirit_vacuum','industrial_zone:archaeological_dig','cave:hollow','cave:under_transmitter','cave:storage_space','cave:under_mine','depths:stone_house','depths:under_coal_mine',
+
+                'city:replicator'
             ];
             break;
         case 'moon':
@@ -293,6 +295,9 @@ export function powerGrid(type,reset){
             break;
         case 'asphodel':
             power_structs = ['eden_asphodel:soul_engine','eden_asphodel:bunker','eden_asphodel:asphodel_harvester','eden_asphodel:ectoplasm_processor','eden_asphodel:research_station','eden_asphodel:bliss_den'];
+            break;
+        case 'underground':
+            power_structs = ['industrial_zone:archaeological_dig']
             break;
     }
 
@@ -2093,6 +2098,7 @@ export function adjustCosts(c_action, offset, wiki){
     costs = dictatorAdjust(costs, offset, wiki);
     costs = lMatAdjust(costs, c_action, offset, wiki);
     costs = nexusAdjust(costs, c_action, offset, wiki);
+    costs = undergroundTradeAdjust(costs, offset, wiki)
     costs = razedAdjust(costs, c_action, offset, wiki);
     return craftAdjust(costs, offset, wiki);
 }
@@ -2420,6 +2426,23 @@ function nexusAdjust(costs, c_action, offset, wiki){
         let adjustRate = 0.96 ** global.tech['nexus'];
         Object.keys(costs).forEach(function (res){
             if (['Mana'].includes(res)){
+                newCosts[res] = function(){ return costs[res](offset, wiki) * adjustRate; }
+            }
+            else {
+                newCosts[res] = function(){ return costs[res](offset, wiki); }
+            }
+        });
+        return newCosts;
+    }
+    return costs;
+}
+
+export function undergroundTradeAdjust(costs, offset, wiki){
+    if(global.underground['trade']){
+        let newCosts = {};
+        Object.keys(costs).forEach(function (res){
+            let adjustRate = (1 - actions.underground.depths.trade.price_reduction() / 100) ** global.underground['trade'].count; //0.95x
+            if (['Money'].includes(res)){
                 newCosts[res] = function(){ return costs[res](offset, wiki) * adjustRate; }
             }
             else {

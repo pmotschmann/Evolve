@@ -8997,7 +8997,7 @@ function majorWish(parent){
                         {
                             let wonders = [];
                             if (!global.race['lone_survivor']){
-                                let hasCity = global.race['cataclysm'] || global.race['orbit_decay'] || global.race['warlord'] || global.tech['isolation'] ? false : true;
+                                let hasCity = global.race['cataclysm'] || global.race['orbit_decay'] || global.race['warlord'] || global.tech['isolation'] || global.race['iceage'] ? false : true;
                                 let hasMars = global.tech['mars'] && !global.race['warlord'] ? true : false;
                                 if (!global.city.hasOwnProperty('wonder_lighthouse') && hasCity){
                                     wonders.push('lighthouse');
@@ -9007,6 +9007,9 @@ function majorWish(parent){
                                 }
                                 if (!global.space.hasOwnProperty('wonder_statue') && hasMars){
                                     wonders.push('statue');
+                                }
+                                if(!global.underground.hasOwnProperty('wonder_fountain') && global.race['iceage']){
+                                    wonders.push('fountain');
                                 }
                                 if (global.race['warlord']){
                                     if (!global.portal.hasOwnProperty('wonder_gardens')){
@@ -9039,6 +9042,9 @@ function majorWish(parent){
                                         break;
                                     case 'gardens':
                                         global[global.race['warlord'] ? 'portal' : (global.race['truepath'] ? 'space' : 'interstellar')]['wonder_gardens'] = { count: 1 };
+                                        break;
+                                    case 'fountain':
+                                        global.underground['wonder_fountain'] = { count: 1 };
                                         break;
                                 }
                                 messageQueue(loc('wish_wonder'),'warning',false,['events']);

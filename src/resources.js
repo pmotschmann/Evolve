@@ -2458,9 +2458,9 @@ function tradeRouteColor(res){
 }
 
 function buildCrateLabel(){
-    let material = global.race['kindling_kindred'] || global.race['smoldering'] ? (global.race['smoldering'] ? global.resource.Chrysotile.name : global.resource.Stone.name) : (global.resource['Plywood'] ? global.resource.Plywood.name : global.resource.Plywood.name);
+    let material = global.race['kindling_kindred'] || global.race['smoldering'] || global.race['iceage'] ? (global.race['smoldering'] ? global.resource.Chrysotile.name : global.resource.Stone.name) : (global.resource['Plywood'] ? global.resource.Plywood.name : global.resource.Plywood.name);
     if (global.race['iron_wood']){ material = global.resource.Lumber.name; }
-    let cost = global.race['kindling_kindred'] || global.race['smoldering'] || global.race['iron_wood'] ? 200 : 10
+    let cost = global.race['kindling_kindred'] || global.race['smoldering'] || global.race['iceage'] || global.race['iron_wood'] ? 200 : 10
     return loc('resource_modal_crate_construct_desc',[cost,material,crateValue()]);
 }
 
@@ -2481,9 +2481,9 @@ export function crateGovHook(type,num){
 
 function buildCrate(num){
     let keyMutipler = num || keyMultiplier();
-    let material = global.race['kindling_kindred'] || global.race['smoldering'] ? (global.race['smoldering'] ? 'Chrysotile' : 'Stone') : 'Plywood';
+    let material = global.race['kindling_kindred'] || global.race['smoldering'] || global.race['iceage'] ? (global.race['smoldering'] ? 'Chrysotile' : 'Stone') : 'Plywood';
     if (global.race['iron_wood']){ material = 'Lumber'; }
-    let cost = global.race['kindling_kindred'] || global.race['smoldering'] || global.race['iron_wood'] ? 200 : 10;
+    let cost = global.race['kindling_kindred'] || global.race['smoldering'] || global.race['iceage'] || global.race['iron_wood'] ? 200 : 10;
     if (keyMutipler + global.resource.Crates.amount > global.resource.Crates.max){
         keyMutipler = global.resource.Crates.max - global.resource.Crates.amount;
     }

@@ -4,7 +4,7 @@ import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, message
 import { unlockAchieve, alevel, universeAffix, unlockFeat } from './achieve.js';
 import { payCosts, housingLabel, wardenLabel, structName, updateQueueNames, drawTech, fanaticism, checkAffordable, actions, initStruct } from './actions.js';
 import { races, checkAltPurgatory, renderPsychicPowers, renderSupernatural, traitCostMod } from './races.js';
-import { drawResourceTab, resource_values, atomic_mass } from './resources.js';
+import { drawResourceTab, resource_values, atomic_mass, unlockCrates, unlockContainers } from './resources.js';
 import { loadFoundry, jobScale, limitCraftsmen, job_data } from './jobs.js';
 import { buildGarrison, checkControlling, govTitle, defineFleetCommand } from './civics.js';
 import { renderSpace, planetName, int_fuel_adjust } from './space.js';
@@ -173,7 +173,7 @@ const techs = {
             if (payCosts($(this)[0])){
                 global.resource.Knowledge.display = true;
                 global.city.calendar.day++;
-                initStruct(actions.underground.cave.basic_housing);
+                initStruct(actions.underground.cave.hollowunderground_stone_house_title);
                 return true;
             }
             return false;
@@ -385,7 +385,7 @@ const techs = {
                     initStruct(actions.city.cottage);
                 }
                 else{
-                    initStruct(actions.underground.depths.cottage);
+                    initStruct(actions.underground.depths.stone_house);
                 }
                 return true;
             }
@@ -395,22 +395,25 @@ const techs = {
     apartment: {
         id: 'tech-apartment',
         title(){
-            return housingLabel('large');
+            return global.race['iceage'] ? loc('tech_space_heaters') : housingLabel('large');
         },
         desc(){
-            return housingLabel('large');
+            return global.race['iceage'] ? loc('tech_space_heaters') : housingLabel('large');
         },
         category: 'housing',
         era: 'discovery',
         reqs: { housing: 2, high_tech: 2 },
         grant: ['housing',3],
         cost: {
-            Knowledge(){ return 15750; }
+            Knowledge(){ return 15750; },
+            Copper() {return global.race['iceage'] ? 32000 : 0 }
         },
-        effect: loc('tech_apartment_effect'),
+        effect: global.race['iceage'] ? loc('tech_space_heaters_effect') : loc('tech_apartment_effect'),
         action(){
             if (payCosts($(this)[0])){
-                initStruct(actions.city.apartment);
+                if(!global.race['iceage']){
+                    initStruct(actions.city.apartment);
+                }
                 return true;
             }
             return false;
@@ -1969,6 +1972,7 @@ const techs = {
         era: 'discovery',
         reqs: { theatre: 3, high_tech: 2 },
         grant: ['broadcast',1],
+        not_trait: ['iceage'],
         cost: {
             Knowledge(){ return 16200; }
         },
@@ -2183,7 +2187,7 @@ const techs = {
                 }
                 else{
                     global.tech['mining'] = 2;
-                    initStruct(actions.underground.cave['mine']);
+                    initStruct(actions.underground.cave['cave_mine']);
                     initStruct(actions.city['mine']); //just for error mitigation
                     if(global.race['cannibalize']){
                         initStruct(actions.underground.cave['s_alter']);
@@ -2571,7 +2575,7 @@ const techs = {
             if (payCosts($(this)[0])){
                 initStruct(actions.city.coal_mine);
                 if(global.race['iceage']){
-                    initStruct(actions.underground.depths.coal_mine);
+                    initStruct(actions.underground.depths.under_coal_mine);
                 }
                 global.resource.Coal.display = true;
                 return true;
@@ -2609,8 +2613,8 @@ const techs = {
     },
     reinforced_shed: {
         id: 'tech-reinforced_shed',
-        title(){ return loc('tech_reinforced_shed'); },
-        desc(){ return loc('tech_reinforced_shed_desc'); },
+        title(){ return global.race['iceage'] ? loc('tech_reinforced_storage_space') : loc('tech_reinforced_shed'); },
+        desc(){ return global.race['iceage'] ? loc('tech_reinforced_storage_space') : loc('tech_reinforced_shed_desc'); },
         category: 'storage',
         era: 'civilized',
         reqs: { storage: 1, cement: 1, mining: 3 },
@@ -2621,7 +2625,7 @@ const techs = {
             Iron(){ return 750; },
             Cement(){ return 500; }
         },
-        effect: loc('tech_reinforced_shed_effect'),
+        effect: global.race['iceage'] ? loc('tech_reinforced_storage_space_effect') :  loc('tech_reinforced_shed_effect'),
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -2637,6 +2641,7 @@ const techs = {
         era: 'discovery',
         reqs: { storage: 2, smelting: 2, alumina: 1 },
         grant: ['storage',3],
+        not_trait: ['iceage'],
         cost: {
             Knowledge(){ return 15750; },
             Aluminium(){ return 3000; },
@@ -2674,6 +2679,29 @@ const techs = {
         },
         post(){
             updateQueueNames(false, ['city-shed']);
+        }
+    },
+    mechanical_storage: {
+        id: 'tech-mechanical_storage',
+        title(){ return loc('tech_mechanical_storage'); },
+        desc(){ return loc('tech_mechanical_storage'); },
+        category: 'storage',
+        era: 'discovery',
+        reqs: { storage: 2, smelting: 2, alumina: 1, high_tech: 2 },
+        trait: ['iceage'],
+        grant: ['storage',4],
+        cost: {
+            Knowledge(){ return 21000; },
+            Aluminium(){ return 52000; },
+            Steel(){ return 45000; },
+            Copper(){ return 66000; },
+        },
+        effect: loc('tech_mechanical_storage_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
         }
     },
     cameras: {
@@ -2749,7 +2777,12 @@ const techs = {
         effect: loc('tech_containerization_effect'),
         action(){
             if (payCosts($(this)[0])){
-                initStruct(actions.city.storage_yard);
+                if(!global.race['iceage']){
+                    initStruct(actions.city.storage_yard);
+                }
+                else{
+                    unlockCrates();
+                }
                 return true;
             }
             return false;
@@ -2961,7 +2994,12 @@ const techs = {
         },
         action(){
             if (payCosts($(this)[0])){
-                initStruct(actions.city.warehouse);
+                if(!global.race['iceage']){
+                    initStruct(actions.city.warehouse);
+                }
+                else{
+                    unlockContainers();
+                }
                 return true;
             }
             return false;
@@ -3479,7 +3517,6 @@ const techs = {
         era: 'civilized',
         reqs: { govern: 1 },
         grant: ['spy',1],
-        condition(){ return !global.race['iceage'] || global.tech['placeholder'] >= 1},
         cost: {
             Knowledge(){ return 1250; }
         },
@@ -3732,10 +3769,8 @@ const techs = {
         effect: loc('tech_trade_effect'),
         action(){
             if (payCosts($(this)[0])){
-                if(!global.race['iceage']){
-                    initStruct(actions.city.trade);
-                }
-                if(!global.race['iceage']){
+                initStruct(actions.city.trade);
+                if(global.race['iceage']){
                     initStruct(actions.underground.depths.trade);
                 }
                 global.city.market.active = true;
@@ -4208,7 +4243,7 @@ const techs = {
             Knowledge(){ return 8000; },
             Steel(){ return 4500; }
         },
-        effect: loc('tech_home_safe_effect'),
+        effect: global.race['iceage'] ? loc('tech_home_safe_effect_alt') : loc('tech_home_safe_effect'),
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -5007,6 +5042,50 @@ const techs = {
             return false;
         }
     },
+    steel_support_beams: {
+        id: 'tech-steel_support_beams',
+        title(){ return loc('tech_steel_support_beams'); },
+        desc(){ return loc('tech_steel_support_beams'); },
+        category: 'science',
+        era: 'civilized',
+        reqs: { support_beams: 1, smelting: 2 },
+        grant: ['support_beams',2],
+        cost: {
+            Knowledge(){ return 8400; },
+            Steel(){ return 6500; }
+        },
+        effect(){return loc('tech_steel_support_beams_effect');},
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.underground.depths.depth_support_beams);
+                if(global.tech['mineshaft_depth'] >= 2){
+                    initStruct(actions.underground.industrial_zone.industrial_support_beams);
+                }
+                return true;
+            }
+            return false;
+        }
+    },
+    titanium_support_beams: {
+        id: 'tech-titanium_support_beams',
+        title(){ return loc('tech_titanium_support_beams'); },
+        desc(){ return loc('tech_titanium_support_beams'); },
+        category: 'science',
+        era: 'civilized',
+        reqs: { support_beams: 2, titanium: 1 },
+        grant: ['support_beams',3],
+        cost: {
+            Knowledge(){ return 26000; },
+            Titanium(){ return 12000; }
+        },
+        effect(){return loc('tech_titanium_support_beams_effect');},
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     mineshaft: {
         id: 'tech-mineshaft',
         title(){ return loc('tech_mineshaft'); },
@@ -5273,7 +5352,15 @@ const techs = {
                 messageQueue(loc('tech_electricity_msg'),'info',false,['progress']);
                 global.city['power'] = 0;
                 global.city['powered'] = true;
-                initStruct(actions.city.coal_power);
+                if(!global.race['iceage']){
+                    initStruct(actions.city.coal_power);
+                }
+                else{
+                    initStruct(actions.underground.industrial_zone.coal_power);
+                    if(global.race['artifical']){
+
+                    }
+                }
                 global.settings.showPowerGrid = true;
                 setPowerGrid();
                 return true;
@@ -6428,6 +6515,7 @@ const techs = {
         era: 'globalized',
         reqs: { high_tech: 4 },
         grant: ['uranium',1],
+        not_trait: ['iceage'],
         cost: {
             Knowledge(){ return 72000; }
         },
@@ -6519,6 +6607,26 @@ const techs = {
         effect: loc('tech_mine_conveyor_effect'),
         action(){
             if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    fossil_survey: {
+        id: 'tech-fossil_survey',
+        title(){ return loc('tech_fossil_survey'); },
+        desc(){ return loc('tech_fossil_survey'); },
+        category: 'science',
+        era: 'industrialized',
+        reqs: { mineshaft_depth: 3 },
+        grant: ['archaeology',1],
+        cost: {
+            Knowledge(){ return 27000; }
+        },
+        effect(){ return loc('tech_fossil_survey_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.underground.industrial_zone.archaeological_dig);
                 return true;
             }
             return false;
@@ -7943,8 +8051,8 @@ const techs = {
     },
     hospital: {
         id: 'tech-hospital',
-        title(){ return loc('tech_hospital'); },
-        desc(){ return loc('tech_hospital'); },
+        title(){ return global.race['iceage'] ? loc('tech_medicinal_mushrooms') : loc('tech_hospital'); },
+        desc(){ return global.race['iceage'] ? loc('tech_medicinal_mushrooms') : loc('tech_hospital'); },
         category: 'military',
         era: 'civilized',
         reqs: { military: 1, alumina: 1 },
@@ -7953,10 +8061,12 @@ const techs = {
         cost: {
             Knowledge(){ return 5000; }
         },
-        effect: loc('tech_hospital_effect'),
+        effect: global.race['iceage'] ? loc('tech_medicinal_mushrooms_effect') : loc('tech_hospital_effect'),
         action(){
             if (payCosts($(this)[0])){
-                initStruct(actions.city.hospital);
+                if(!global.race['iceage']){
+                    initStruct(actions.city.hospital);
+                }
                 return true;
             }
             return false;
@@ -7997,6 +8107,9 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.city.boot_camp);
+                if(global.race['iceage']){
+                    initStruct(actions.underground.depths.boot_camp);
+                }
                 return true;
             }
             return false;
@@ -9370,7 +9483,7 @@ const techs = {
         cost: {
             Knowledge(){ return 10000; }
         },
-        effect: loc('tech_archaeology_effect'),
+        effect: global.race['iceage'] ? loc('tech_archaeology_effect_alt') : loc('tech_archaeology_effect'),
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -13477,7 +13590,7 @@ const techs = {
             Adamantite(){ return 350000; },
             Graphene(){ return 250000; }
         },
-        effect: loc('tech_reinforced_shelving_effect'),
+        effect: global.race['iceage'] ? loc('tech_reinforced_shelving_effect_alt') : loc('tech_reinforced_shelving_effect'),
         action(){
             if (payCosts($(this)[0])){
                 return true;

@@ -1,12 +1,12 @@
-import { global, seededRandom, sizeApproximation } from './vars.js';
+import { global, seededRandom, sizeApproximation, p_on } from './vars.js';
 import { loc } from './locale.js';
-import { buildTemplate, actions, setAction, removeAction, payCosts, BHStorageMulti, storageMultipler, bank_vault, templeEffect } from './actions.js';
-import { clearElement, popover, darkEffect, getShrineBonus, powerCostMod, vBind, modRes, messageQueue } from './functions.js';
+import { buildTemplate, actions, setAction, removeAction, payCosts, BHStorageMulti, bank_vault, templeEffect, wardenLabel, powerOnNewStruct, storageMultipler } from './actions.js';
+import { clearElement, popover, darkEffect, getShrineBonus, powerCostMod, vBind, modRes, messageQueue, powerModifier } from './functions.js';
 import { addSmelter, defineIndustry } from './industry.js';
 import { govActive } from './governor.js';
 import { production } from './prod.js';
 import { spatialReasoning, } from './resources.js';
-import { jobScale, workerScale, loadFoundry } from './jobs.js';
+import { jobScale, workerScale, loadFoundry, job_data } from './jobs.js';
 import { garrisonSize, armorCalc, armyRating, soldierDeath } from './civics.js';
 import { races, traits, fathomCheck, traitCostMod, planetTraits, racialTrait } from './races.js';
 import { checkRequirements, incrementStruct } from './space.js';
@@ -66,7 +66,8 @@ const iceAgeModules = {
                 cost: {},
                 effect(wiki){
                     if(global['resource'][global.race.species].amount >= 1){
-                        return `<div>${loc('gain',[1, global.resource.Food.name])}</div>`;
+                        let power = global.city['powered'] ? `<div>${loc('space_dwarf_reactor_effect1', [25])}</div>` : '';
+                        return `<div>${loc('gain',[1, global.resource.Food.name])}</div>${power}`;
                     }
                     return '';
                 },
@@ -77,17 +78,17 @@ const iceAgeModules = {
             assembly: buildTemplate(`assembly`, 'underground')
         },
         cave: {
-            basic_housing: {
-                id: 'underground-basic_housing',
-                title(){ return loc('underground_basic_housing'); },
-                desc(){ return loc('underground_basic_housing_desc'); },
+            hollow: {
+                id: 'underground-hollow',
+                title(){ return loc('underground_hollow'); },
+                desc(){ return loc('underground_hollow_desc'); },
                 type: 'housing',
                 reqs: { housing: 1 },
                 cost: {
                     Money(offset){
                         offset = offset || 0;
-                        if ((global.underground['basic_housing']?.count || 0) + offset >= 2){
-                            return undergroundCostMultiplier('basic_housing', offset, 60, 1.55, 'cave');
+                        if ((global.underground['hollow']?.count || 0) + offset >= 2){
+                            return undergroundCostMultiplier('hollow', offset, 60, 1.55, 'cave');
                         }
                         else {
                             return 0;
@@ -95,20 +96,25 @@ const iceAgeModules = {
                     },
                     Stone(offset){ 
                         offset = offset || 0;
-                        if ((global.underground['basic_housing']?.count || 0) + offset >= 2){
-                            return undergroundCostMultiplier('basic_housing', offset, 120, 1.45, 'cave');
+                        if ((global.underground['hollow']?.count || 0) + offset >= 2){
+                            return undergroundCostMultiplier('hollow', offset, 120, 1.45, 'cave');
                         }
                         else {
-                            return undergroundCostMultiplier('basic_housing', offset, 20, 1.45, 'cave');
+                            return undergroundCostMultiplier('hollow', offset, 20, 1.45, 'cave');
                         }
                     },
-                    Chrysotile(offset){ return global.race['smoldering'] ? undergroundCostMultiplier('basic_housing', offset, 10, 1.45, 'cave') : 0; },
+                    Chrysotile(offset){ return global.race['smoldering'] ? undergroundCostMultiplier('hollow', offset, 10, 1.45, 'cave') : 0; },
                     Horseshoe(){ return global.race['hooved'] ? 2 : 0; }
                 },
                 effect(){
-                    let pop = $(this)[0].citizens();
-                    return loc('plus_max_citizens',[pop]);
+                    let desc = `<div>${loc('plus_max_citizens',[$(this)[0].citizens()])}</div>`;
+                    if(global.tech['housing'] >= 3){
+                        desc += `<div class="has-text-caution">${loc('underground_housing_powered', [$(this)[0].powered(), 1])}</div>`;
+                    }
+                    return desc;
                 },
+                powered(){ return powerCostMod(3); },
+                power_reqs: { housing: 3 },
                 action(args){
                     if (payCosts($(this)[0])){
                         incrementStruct($(this)[0]);
@@ -124,7 +130,7 @@ const iceAgeModules = {
                 struct(){
                     return {
                         d: { count: 0 },
-                        p: ['basic_housing','underground']
+                        p: ['hollow','underground']
                     };
                 },
                 citizens(){
@@ -176,7 +182,7 @@ const iceAgeModules = {
                 },
                 action(args){
                     if (payCosts($(this)[0])){
-                        incrementStruct('ice_collector','underground');
+                        incrementStruct($(this)[0]);
                         global.civic.water_collector.display = true;
                         return true;
                     }
@@ -236,7 +242,7 @@ const iceAgeModules = {
                 },
                 action(args){
                     if (payCosts($(this)[0])){
-                        incrementStruct('mushroom_farm','underground');
+                        incrementStruct($(this)[0]);
                         global.civic.farmer.display = true;
                         global.civic.farmer.assigned = 0;
                         return true;
@@ -250,7 +256,7 @@ const iceAgeModules = {
                     };
                 }
             },
-            transmitter: {
+            under_transmitter: {
                 id: 'underground-transmitter',
                 title(){ return loc('underground_transmitter'); },
                 desc(){ return `<div>${loc('underground_transmitter_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
@@ -258,18 +264,18 @@ const iceAgeModules = {
                 reqs: { agriculture: 1 },
                 trait: ['artifical'],
                 cost: {
-                    Money(offset){ return undergroundCostMultiplier('transmitter', offset, 120, 1.40, 'cave')},
+                    Money(offset){ return undergroundCostMultiplier('under_transmitter', offset, 120, 1.40, 'cave')},
                     Stone(offset){
                         if (false){
                             return 0;
                         }
                         else {
-                            return undergroundCostMultiplier('transmitter', offset, 120, 1.45, 'cave');
+                            return undergroundCostMultiplier('under_transmitter', offset, 120, 1.45, 'cave');
                         }
                     },
                     Copper(offset){
                         if (false){
-                            return undergroundCostMultiplier('transmitter', offset, 120, 1.45, 'cave');
+                            return undergroundCostMultiplier('under_transmitter', offset, 120, 1.45, 'cave');
                         }
                         else {
                             return 0;
@@ -277,7 +283,7 @@ const iceAgeModules = {
                     },
                     Steel(offset){
                         if (false){
-                            return undergroundCostMultiplier('transmitter', offset, 80, 1.45, 'cave');
+                            return undergroundCostMultiplier('under_transmitter', offset, 80, 1.45, 'cave');
                         }
                         else {
                             return 0;
@@ -285,18 +291,22 @@ const iceAgeModules = {
                     }
                 },
                 effect(){
-                    let sig_cap = $(this)[0].res_cap('food');
-                    return `<div>${loc('underground_transmitter_effect')}</div><div>${loc('city_transmitter_effect',[sig_cap])}</div>`;
+                    let desc = `<div>${loc('underground_transmitter_effect1')}</div><div>${loc('city_transmitter_effect',[$(this)[0].res_cap('food')])}</div>`;
+                    if(global.tech['high_tech'] >= 2){
+                        desc += `<div class="has-text-caution">${loc('underground_transmitter_effect2', [$(this)[0].powered()])}`;
+                    }
+                    return desc;
                 },
                 action(args){
                     if (payCosts($(this)[0])){
-                        incrementStruct('transmitter','underground');
+                        incrementStruct($(this)[0]);
                         global.civic.farmer.display = true; //don't worry, the synth farmers are unrecognizably retextured
                         global.civic.farmer.assigned = 0;
                         return true;
                     }
                     return false;
                 },
+                powered(){ return powerCostMod(1.5); },
                 res_cap(res){
                     switch (res){
                         case 'food':
@@ -307,7 +317,7 @@ const iceAgeModules = {
                 struct(){
                     return {
                         d: { count: 0 },
-                        p: ['transmitter','underground']
+                        p: ['under_transmitter','underground']
                     };
                 }
             },
@@ -322,44 +332,59 @@ const iceAgeModules = {
                     Stone(offset){ return undergroundCostMultiplier('storage_space', offset, 250, 1.55, 'cave'); }
                 },
                 res_list(){
-                    return ['Stone', 'Chrysotile', 'Crystal', 'Water', 'Furs', 'Copper', 'Iron', 'Aluminium', 'Cement', 'Coal', 'Steel', 'Titanium'];
+                    return ['Stone', 'Chrysotile', 'Crystal', 'Water', 'Furs', 'Copper', 'Iron', 'Aluminium', 'Cement', 'Coal', 'Steel', 'Titanium', 'Crates', 'Containers'];
                 },
-                res_cap(res){
-                    switch (res){
-                        case 'Stone':
-                            return 300;
-                        case 'Chrysotile':
-                            return 300;
-                        case 'Crystal':
-                            return 8;
-                        case 'Water':
-                            return 80;
-                        case 'Furs':
-                            return 125;
-                        case 'Copper':
-                            return 90;
-                        case 'Iron':
-                            return 125;
-                        case 'Aluminium':
-                            return 90;
-                        case 'Cement':
-                            return 100;
-                        case 'Coal':
-                            return 75;
-                        case 'Steel':
-                            return 40;
-                        case 'Titanium':
-                            return 20;
-                        default:
-                            return 0;
+                res_cap(res, wiki){
+                    let storage = {
+                        Stone: 300,
+                        Chrysotile: 300,
+                        Crystal: 8,
+                        Water: 80,
+                        Furs: 125,
+                        Copper: 90,
+                        Iron: 125,
+                        Aluminium: 90,
+                        Cement: 100,
+                        Coal: 75,
+                        Steel: 40,
+                        Titanium: 20,
+                        Crates: $(this)[0].containers('crates'),
+                        Containers: $(this)[0].containers('containers')
                     }
+                    let val = storage[res];
+                    if(p_on['storage_space']){
+                        val *= 1 + 0.02 * p_on['storage_space'];
+                    }
+                    if(!['Crates', 'Containers'].includes(res)){
+                        return storageMultipler(iceAgeStorage(val || 0), wiki);
+                    }
+                    return val || 0;
+                },
+                containers(which){
+                    if(global.tech.container >= 1){
+                        let cap = global.tech.container >= 3 ? 20 : 10;
+                        if (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 1){
+                            cap += 10;
+                        }
+                        if (global.tech['world_control']){
+                            cap += 10;
+                        }
+                        if (global.tech['particles'] && global.tech['particles'] >= 2){
+                            cap *= 2;
+                        }
+                        return cap;
+                    }
+                    return 0;
                 },
                 effect(wiki){
-                    let storage = '<div class="aTable">';
-                    let multiplier = storageMultipler(1, wiki);
+                    let storage = '';
+                    if(global.tech['storage'] >= 4){
+                        storage += `<div class="has-text-caution">${loc('underground_storage_space_effect1', [$(this)[0].powered()])}</div><div class="has-text-caution">${loc('underground_storage_space_effect2', [ $(this)[0].title()])}</div>`;
+                    }
+                    storage += '<div class="aTable">';
                     for (const res of $(this)[0].res_list()){
                         if (global.resource[res].display){
-                            let val = sizeApproximation(+(spatialReasoning($(this)[0].res_cap(res)) * multiplier).toFixed(0),1);
+                            let val = sizeApproximation(+$(this)[0].res_cap(res, wiki).toFixed(0),1);
                             storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                         }
                     };
@@ -367,16 +392,18 @@ const iceAgeModules = {
                     return storage;
                 },
                 wide: true,
+                powered(){ return powerCostMod(3); },
+                power_reqs: { storage: 4 },
                 action(args){
                     if (payCosts($(this)[0])){
-                        incrementStruct('storage_space','underground');
+                        incrementStruct($(this)[0]);
                         return true;
                     }
                     return false;
                 },
                 struct(){
                     return {
-                        d: { count: 0 },
+                        d: { count: 0, on: 0 },
                         p: ['storage_space','underground']
                     };
                 },
@@ -398,7 +425,7 @@ const iceAgeModules = {
                 },
                 action(args){
                     if (payCosts($(this)[0])){
-                        incrementStruct('vault','underground');
+                        incrementStruct($(this)[0]);
                         return true;
                     }
                     return false;
@@ -432,8 +459,7 @@ const iceAgeModules = {
                     let gain = +($(this)[0].knowVal(wiki)).toFixed(0);
                     return `<div>${loc('city_university_effect',[jobScale(1)])}</div>
                         <div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div>
-                        ${global.tech['science'] >= 4 ? `<div>${loc('underground_stone_slab_effect2',[global.tech['stone_carving'] || 0])}</div>` : ''}
-                        ${global.tech['science'] >= 3 ? `<div>${loc('underground_stone_slab_effect1',[4])}</div>` : ''}`;
+                        ${global.tech['science'] >= 5 ? `<div>${loc('underground_stone_slab_effect',[global.underground['stone_slab'].breakthrough, 1])}</div>` : ''}`;
                 },
                 knowVal(wiki){
                     let multiplier = 1;
@@ -468,7 +494,7 @@ const iceAgeModules = {
                 },
                 action(args){
                     if (payCosts($(this)[0])){
-                        incrementStruct('stone_slab','underground');
+                        incrementStruct($(this)[0]);
                         global.civic.professor.display = true;
                         return true;
                     }
@@ -476,13 +502,13 @@ const iceAgeModules = {
                 },
                 struct(){
                     return {
-                        d: { count: 0 },
+                        d: { count: 0, breakthrough: 0 },
                         p: ['stone_slab','underground']
                     };
                 }
             },
-            mine: {
-                id: 'underground-mine',
+            under_mine: {
+                id: 'underground-under_mine',
                 title(){ return loc('underground_mine'); },
                 desc(){ return loc('underground_mine_desc'); },
                 type: 'mining',
@@ -490,8 +516,8 @@ const iceAgeModules = {
                 cost: {
                     Money(offset){
                         offset = offset || 0;
-                        if (global.underground['mine']?.count || 0 + offset >= 2){
-                            return undergroundCostMultiplier('mine', offset, 220, 1.50, 'cave');
+                        if (global.underground['under_mine']?.count || 0 + offset >= 2){
+                            return undergroundCostMultiplier('under_mine', offset, 220, 1.50, 'cave');
                         }
                         else {
                             return 0;
@@ -499,21 +525,30 @@ const iceAgeModules = {
                     },
                     Stone(offset){
                         offset = offset || 0;
-                        if (global.underground['mine']?.count || 0 + offset >= 2){
-                            return undergroundCostMultiplier('mine', offset, 340, 1.55, 'cave');
+                        if (global.underground['under_mine']?.count || 0 + offset >= 2){
+                            return undergroundCostMultiplier('under_mine', offset, 340, 1.55, 'cave');
                         }
                         else {
-                            return undergroundCostMultiplier('mine', offset, 20, 1.55, 'cave');
+                            return undergroundCostMultiplier('under_mine', offset, 20, 1.55, 'cave');
                         }
                     }
                 },
                 effect(){
-                    let stone = $(this)[0].res_cap('stone');
-                    let asbestos = global.race['smoldering'] ? `<div>${loc('plus_max_resource',[stone,global.resource.Chrysotile.name])}</div>` : '';
-                    let mineshaft = global.underground['mineshaft']?.ratio ? `<div class="has-text-warning">${loc(`underground_mine_mineshaft_workers`, [global.underground['mineshaft'].ratio])}</div>` : '';
-                    return `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_miner`)])}</div><div>${loc('city_rock_quarry_effect1',[2])}</div><div>${loc('plus_max_resource',[stone,global.resource.Stone.name])}</div>${asbestos}${mineshaft}`;
+                    let desc = `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_miner`)])}</div><div>${loc('city_rock_quarry_effect1',[2])}</div><div>${loc('plus_max_resource',[$(this)[0].res_cap('stone'),global.resource.Stone.name])}</div>`;
+                    if(global.race['smoldering']){
+                        desc += `<div>${loc('plus_max_resource',[$(this)[0].res_cap('stone'),global.resource.Chrysotile.name])}</div>`;
+                    }
+                    if(global.underground['mineshaft']?.ratio){
+                        desc += `<div class="has-text-warning">${loc(`underground_mine_mineshaft_workers`, [global.underground['mineshaft'].ratio])}</div>`;
+                    }
+                    if (global.tech['mine_conveyor']){
+                        desc += `<div class="has-text-caution">${loc('city_mine_effect2',[$(this)[0].powered(),5])}</div>`;
+                    }
+                    return desc;
                 },
                 special(){ return global.race['smoldering'] ? true : false; },
+                powered(){ return powerCostMod(2); },
+                power_reqs: { mine_conveyor: 1 },
                 res_cap(res){
                     switch (res){
                         case 'stone':
@@ -523,12 +558,12 @@ const iceAgeModules = {
                 },
                 action(args){
                     if (payCosts($(this)[0])){
-                        incrementStruct('mine','underground');
+                        incrementStruct($(this)[0]);
                         global.civic.quarry_worker.display = true;
                         global.resource.Copper.display = true;
                         global.civic.miner.display = true;
                         if (global.race['smoldering'] && global.resource.Chrysotile.display){
-                            if (global.underground.mine.count === 1){
+                            if (global.underground.under_mine.count === 1){
                                 global.settings.showCivic = true;
                                 global.settings.showIndustry = true;
                                 defineIndustry();
@@ -544,7 +579,7 @@ const iceAgeModules = {
                             count: 0,
                             asbestos: 50
                         },
-                        p: ['mine','underground']
+                        p: ['under_mine','underground']
                     };
                 },
             },
@@ -648,6 +683,22 @@ const iceAgeModules = {
                     };
                 }
             },
+            wonder_fountain: {
+                id: 'underground-wonder_fountain',
+                title(){ return loc('underground_wonder_fountain'); },
+                desc(){ return loc('underground_wonder_fountain'); },
+                reqs: {},
+                condition(){
+                    return global.race['wish'] && global.race['wishStats'] && global.underground['wonder_fountain'];
+                },
+                trait: ['wish'],
+                wiki: false,
+                queue_complete(){ return false; },
+                effect(){ return loc(`city_wonder_effect`,[5]); },
+                action(args){
+                    return false;
+                }
+            },
             support_beams: {
                 id: 'underground-support_beams',
                 title(){ return loc('underground_support_beams'); },
@@ -655,14 +706,13 @@ const iceAgeModules = {
                 type: 'utility',
                 reqs: { support_beams: 1 },
                 cost: {
-                    Money(offset){ return undergroundCostMultiplier('support_beams', offset, 700, 2.1); },
-                    Iron(offset){ return undergroundCostMultiplier('support_beams', offset, 350, 2); }
+                    Money(offset){ return undergroundCostMultiplier('support_beams', offset, 700, (global.tech['support_beams'] < 2 ? 1.9 : 1.75)); },
+                    Iron(offset){ return global.tech['support_beams'] < 2 ? undergroundCostMultiplier('support_beams', offset, 350, 2) : 0; },
+                    Steel(offset){ return global.tech['support_beams'] === 2 ? undergroundCostMultiplier('support_beams', offset, 350, 1.8) : 0; },
+                    Titanium(offset){ return global.tech['support_beams'] >= 3 ? undergroundCostMultiplier('depths_support_beams', offset, 350, 1.75) : 0; }
                 },
                 effect(){
-                    let effect = `<div>${loc('underground_support_beams_effect', [0.005])}</div>`
-                    if(global.tech['support_beams'] >= 2){
-                        let effect = `<div>${loc('underground_support_beams_effect2', [10])}</div>`
-                    }
+                    let effect = `<div>${loc('underground_support_beams_effect1', [0.005])}</div><div>${loc('underground_support_beams_effect2', [10])}</div>`;
                     return effect;
                 },
                 action(args){
@@ -692,7 +742,7 @@ const iceAgeModules = {
                     Water(offset){ return !global.underground.mineshaft.count ? 2400 : 0; }
                 },
                 effect(){
-                    let effect = `<div>${loc("underground_mineshaft_effect1", [global.underground['mineshaft'].depth.toFixed(2)])}</div>`;
+                    let effect = `<div>${loc("underground_mineshaft_effect1", [$(this)[0].full_depth().toFixed(2)])}</div>`;
                     effect += `<div>${loc("underground_mineshaft_effect2", [($(this)[0].dig_rate()).toFixed(3)])}</div><div>${loc("underground_mineshaft_effect3", [($(this)[0].ice_rate()).toFixed(3)])}</div>`;
                     effect += `<div class="has-text-caution">${loc("underground_mineshaft_effect_warn")}</div>`;
                     return effect;
@@ -753,41 +803,50 @@ const iceAgeModules = {
             }
         },
         depths: {
-            cottage: {
-                id: 'underground-cottage',
-                title(){ return loc('underground_cottage_title'); },
-                desc(){ return loc('underground_cottage_desc'); },
+            stone_house: {
+                id: 'underground-stone_house',
+                title(){ return loc('underground_stone_house_title'); },
+                desc(){ return loc('underground_stone_house_desc'); },
                 type: 'housing',
                 reqs: { housing: 2 },
                 cost: {
-                    Money(offset){ return undergroundCostMultiplier('cottage', offset, 6800, 1.65); },
-                    Stone(offset){ return undergroundCostMultiplier('cottage', offset, 8800, 1.75); },
-                    Brick(offset){ return undergroundCostMultiplier('cottage', offset, 1600, 1.75); },
-                    Wrought_Iron(offset){ return undergroundCostMultiplier('cottage', offset, 1800, 1.75); },
+                    Money(offset){ return undergroundCostMultiplier('stone_house', offset, 6800, 1.65, 'depths'); },
+                    Stone(offset){ return undergroundCostMultiplier('stone_house', offset, 8800, 1.75, 'depths'); },
+                    Brick(offset){ return undergroundCostMultiplier('stone_house', offset, 1600, 1.75, 'depths'); },
+                    Wrought_Iron(offset){ return undergroundCostMultiplier('stone_house', offset, 1800, 1.75, 'depths'); },
                     Horseshoe(){ return global.race['hooved'] ? 2 : 0; }
                 },
                 effect(){
-                    let pop = $(this)[0].citizens();
+                    let desc = `<div>${loc('plus_max_citizens',[$(this)[0].citizens()])}</div>`;
                     if (global.tech['home_safe']){
-                        let safe = spatialReasoning(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? 5000 : 2000) : 1000);
-                        return `<div>${loc('plus_max_citizens',[pop])}</div><div>${loc('plus_max_resource',[`\$${safe.toLocaleString()}`,loc('resource_Money_name')])}</div>`;
+                        desc += `<div>${loc('plus_max_resource',[`\$${$(this)[0].res_cap('money').toLocaleString()}`,loc('resource_Money_name')])}</div>`;
                     }
-                    else {
-                        return loc('plus_max_citizens',[pop]);
+                    if(global.tech['housing'] >= 3){
+                        desc += `<div class="has-text-caution">${loc('underground_housing_powered', [$(this)[0].powered(), 2])}</div>`;
                     }
+                    return desc;
                 },
                 action(args){
                     if (payCosts($(this)[0])){
-                        incrementStruct('cottage','underground');
+                        incrementStruct($(this)[0]);
                         return true;
                     }
                     return false;
                 },
+                powered(){ return powerCostMod(5); },
+                power_reqs: { housing: 3 },
                 struct(){
                     return {
                         d: { count: 0 },
-                        p: ['cottage','underground']
+                        p: ['stone_house','underground']
                     };
+                },
+                res_cap(res){
+                    switch (res){
+                        case 'money':
+                            return iceAgeStorage(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? 5000 : 2000) : 1000);
+                    }
+                    return 0
                 },
                 citizens(){
                     let pop = 3;
@@ -835,7 +894,7 @@ const iceAgeModules = {
                             vBind({el: `#c_garrison`},'update');
                         }
                         global.civic['garrison'].max += $(this)[0].soldiers();
-                        incrementStruct('hunting_lodge','underground');
+                        incrementStruct($(this)[0]);
                         global.underground['hunting_lodge'].on++;
                         global.resource.Furs.display = true;
                         return true;
@@ -849,7 +908,7 @@ const iceAgeModules = {
                     };
                 },
                 soldiers(){
-                    let soldiers = 2;
+                    let soldiers = 3;
                     if (global.race['chameleon']){
                         soldiers--;
                     }
@@ -858,6 +917,52 @@ const iceAgeModules = {
                     }
                     if (soldiers <= 0){ return 1; }
                     return jobScale(soldiers);
+                }
+            },
+            boot_camp: {
+                id: 'underground-boot_camp',
+                title(){ return global.race['artifical'] ? loc('city_boot_camp_art') : loc('city_boot_camp'); },
+                desc(){ return global.race['artifical'] ? loc('city_boot_camp_art_desc',[races[global.race.species].name]) : loc('city_boot_camp_desc'); },
+                type: 'military',
+                reqs: { boot_camp: 1 },
+                cost: {
+                    Money(offset){ return undergroundCostMultiplier('boot_camp', offset, 160000, 1.55, 'depths'); },
+                    Aluminium(offset){ return undergroundCostMultiplier('boot_camp', offset, 120000, 1.65, 'depths'); },
+                    Brick(offset){ return undergroundCostMultiplier('boot_camp', offset, 6000, 1.65, 'depths'); },
+                },
+                effect(){
+                    let rate = global.tech['boot_camp'] >= 2 ? 8 : 5;
+                    if (global.blood['lust']){
+                        rate += global.blood.lust * 0.2;
+                    }
+                    let milVal = govActive('militant',0);
+                    if (milVal){
+                        rate *= 1 + (milVal / 100);
+                    }
+                    rate = +rate.toFixed(2);
+                    let effect = global.tech['spy'] && global.tech['spy'] >= 3 ? `<div>${loc('city_boot_camp_effect',[rate])}</div><div>${loc('city_boot_camp_effect2',[10])}</div>` : `<div>${loc('city_boot_camp_effect',[rate])}</div>`;
+                    if (global.race['artifical'] && !global.race['orbit_decayed']){
+                        let repair = global.tech['medic'] || 1;
+                        effect += `<div>${loc('city_boot_camp_art_effect',[repair * 5])}</div>`;
+                    }
+                    if (global.race['artifical'] && global.race.hasOwnProperty('vax')){
+                        effect += `<div>${loc('tau_home_disease_lab_vax',[+global.race.vax.toFixed(2)])}</div>`;
+                    }
+                    return effect;
+                },
+                action(args){
+                    if (payCosts($(this)[0])){
+                        incrementStruct('boot_camp','city');
+                        global.underground.boot_camp.count = global.city.boot_camp.count;
+                        return true;
+                    }
+                    return false;
+                },
+                struct(){
+                    return {
+                        d: { count: 0 },
+                        p: ['boot_camp','underground']
+                    };
                 }
             },
             color_garden: {
@@ -873,20 +978,68 @@ const iceAgeModules = {
                     Iron(offset){ return undergroundCostMultiplier('color_garden', offset, 1600, 1.65, 'depths'); },
                 },
                 effect(){
-                    return`<div>${loc('plus_max_resource',[jobScale(1),loc(`job_gardener`)])}</div><div>${loc('city_max_morale',[2])}</div><div>${loc('underground_color_garden_effect',[Math.floor(global.underground['color_garden'].mushrooms)])}</div>`;
+                    let medic = global.tech['medic'] >= 1 ? `<div>${loc('underground_color_garden_effect2', $(this)[0].mushroom_effect())}`: '';
+                    return`<div>${loc('plus_max_resource',[jobScale(1),loc(`job_gardener`)])}</div><div>${loc('city_max_morale',[2])}</div>
+                        <div>${loc('underground_color_garden_effect1',[Math.floor(global.underground['color_garden'].mushrooms), $(this)[0].mushroom_effect()])}</div>${medic}`;
                 },
                 action(args){
                     if (payCosts($(this)[0])){
-                        incrementStruct('color_garden','underground');
+                        incrementStruct($(this)[0]);
                         global.civic.gardener.display = true;
+                        return true;
+                    }
+                    return false;
+                },
+                mushroom_effect(){
+                    return 1;
+                },
+                struct(){
+                    return {
+                        d: { count: 0, mushrooms: 0 },
+                        p: ['color_garden','underground']
+                    };
+                }
+            },
+            trade: {
+                id: 'underground-trade',
+                title(){ return loc('underground_trade'); },
+                desc(){ return loc('underground_trade_desc'); },
+                type: 'finance',
+                reqs: { trade: 1 },
+                cost: {
+                    Money(offset){ return undergroundCostMultiplier('trade', offset, 4500, 1.50, 'depths'); },
+                    Brick(offset){ return undergroundCostMultiplier('trade', offset, 750, 1.45, 'depths'); },
+                    Steel(offset){ return undergroundCostMultiplier('trade', offset, 1300, 1.55, 'depths'); },
+                    Furs(offset){ return undergroundCostMultiplier('trade', offset, 1900, 1.55, 'depths'); }
+                },
+                effect(){
+                    return `<div>${loc('underground_trade_effect1',[$(this)[0].routes()])}</div><div>${loc('underground_trade_effect2',[$(this)[0].price_reduction()])}</div>`;
+                },
+                routes(){
+                    let routes = (global.tech['trade'] >= 2) ? 5 : 4;
+                    if (global.race['xenophobic'] || global.race['nomadic']){
+                        routes--;
+                    }
+                    if (global.race['flier']){
+                        routes += traits.flier.vars()[1];
+                    }
+                    return routes;
+                },
+                price_reduction(){
+                    return 5;
+                },
+                action(args){
+                    if (payCosts($(this)[0])){
+                        incrementStruct($(this)[0]);
+                        global.city.market.mtrade += $(this)[0].routes();
                         return true;
                     }
                     return false;
                 },
                 struct(){
                     return {
-                        d: { count: 0, mushrooms: 0 },
-                        p: ['color_garden','underground']
+                        d: { count: 0 },
+                        p: ['trade','underground']
                     };
                 }
             },
@@ -989,18 +1142,24 @@ const iceAgeModules = {
                     };
                 }
             },
-            coal_mine: {
-                id: 'city-coal_mine',
+            under_coal_mine: {
+                id: 'underground-under_coal_mine',
                 title(){ return loc('city_coal_mine'); },
                 desc(){ return loc('city_coal_mine_desc'); },
                 type: 'mining',
                 reqs: { mining: 4 },
                 cost: {
-                    Money(offset){ return undergroundCostMultiplier('coal_mine', offset, 3200, 1.50); },
-                    Iron(offset){ return undergroundCostMultiplier('coal_mine', offset, 1600, 1.55); },
-                    Wrought_Iron(offset){ return undergroundCostMultiplier('coal_mine', offset, 320, 1.45); }
+                    Money(offset){ return undergroundCostMultiplier('under_coal_mine', offset, 3200, 1.50); },
+                    Iron(offset){ return undergroundCostMultiplier('under_coal_mine', offset, 1600, 1.55); },
+                    Wrought_Iron(offset){ return undergroundCostMultiplier('under_coal_mine', offset, 320, 1.45); }
                 },
-                effect(){ return loc('plus_max_resource',[jobScale(1),loc(`job_coal_miner`)]); },
+                effect(){
+                    let desc = `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_coal_miner`)])}</div>`;
+                    if (global.tech['mine_conveyor']){
+                        desc += `<div class="has-text-caution">${loc('city_coal_mine_effect2',[$(this)[0].powered(),5])}</div>`;
+                    }
+                    return desc;
+                },
                 action(args){
                     if (payCosts($(this)[0])){
                         incrementStruct($(this)[0]);
@@ -1010,10 +1169,12 @@ const iceAgeModules = {
                     }
                     return false;
                 },
+                powered(){ return powerCostMod(5); },
+                power_reqs: { mine_conveyor: 1 },
                 struct(){
                     return {
                         d: { count: 0 },
-                        p: ['coal_mine','underground']
+                        p: ['under_coal_mine','underground']
                     };
                 }
             },
@@ -1068,7 +1229,7 @@ const iceAgeModules = {
                         p: ['smelter','underground']
                     };
                 },
-                flair: `<div>${loc('underground_smelter_flair1')}<div>`
+                flair: `<div>${loc('city_smelter_flair1')}<div></div>${loc('city_smelter_flair2')}</div>`
             },
             cave_creatures: {
                 id: 'underground-cave_creatures',
@@ -1079,7 +1240,16 @@ const iceAgeModules = {
                 cost: {},
                 queue_complete(){ return 0; },
                 effect(){
-                    return `<div>${loc('underground_cave_creatures_effect', [0.005])}</div><div>${loc('underground_cave_creatures_effect2', [$(this)[0].group_size()])}</div>`;
+                    let wins = 0;
+                    for (let i=0;i<18;i++){
+                        if(cave_fight(false, global['warseed'] + (i * 1000)).success){
+                            wins++;
+                        }
+                    }
+                    wins += seededRandom(-2,2,false, global['warseed']);
+                    let calc_odds = (wins * 10 - 100).toFixed(0);
+                    return `<div>${loc('underground_cave_creatures_effect', [3])}</div><div>${loc('underground_cave_creatures_effect2', [$(this)[0].group_size()])}</div>
+                        <div>${loc(calc_odds >= 0 ? 'civics_garrison_advantage' : 'civics_garrison_disadvantage', [Math.abs(calc_odds)])}</div>`;
                 },
                 action(args){
                     if(garrisonSize() > 0){
@@ -1104,7 +1274,7 @@ const iceAgeModules = {
                     return false;
                 },
                 group_size(){
-                    return 20 + (global.underground['cave_creatures'].count ** 2) * 5; //20, 25, 40, 65, 100, 145, etc
+                    return 20 + (5 * global.underground['cave_creatures'].count ) + (global.underground['cave_creatures'].count ** 2) * 4; //20, 27, 38, 43, 72, 95, etc
                 },
                 struct(){
                     return {
@@ -1112,7 +1282,186 @@ const iceAgeModules = {
                         p: ['cave_creatures','underground']
                     };
                 }
-            }
+            },
+            depths_support_beams: {
+                id: 'underground-depths_support_beams',
+                title(){ return loc('underground_support_beams'); },
+                desc(){ return loc('underground_support_beams_desc'); },
+                type: 'utility',
+                reqs: { support_beams: 2 },
+                cost: {
+                    Money(offset){ return undergroundCostMultiplier('depths_support_beams', offset, 700, 1.75); },
+                    Steel(offset){ return global.tech['support_beams'] === 2 ? undergroundCostMultiplier('depths_support_beams', offset, 350, 1.8) : 0; },
+                    Titanium(offset){ return global.tech['support_beams'] === 3 ? undergroundCostMultiplier('depths_support_beams', offset, 350, 1.75) : 0; },
+                },
+                effect(){
+                    let effect = `<div>${loc('underground_depths_support_beams_effect1', [0.005])}</div><div>${loc('underground_depths_support_beams_effect2', [10])}</div>`;
+                    return effect;
+                },
+                action(args){
+                    if (payCosts($(this)[0])){
+                        incrementStruct($(this)[0]);
+                        return true;
+                    }
+                    return false;
+                },
+                struct(){
+                    return {
+                        d: { count: 0 },
+                        p: ['depths_support_beams','underground']
+                    };
+                }
+            },
+        },
+        industrial_zone:{
+            archaeological_dig:{
+                id: 'underground-archaeological_dig',
+                title(){ return loc('portal_archaeology_title'); },
+                desc(){ return loc('underground_archaeological_dig_desc'); },
+                type: 'science',
+                reqs: { science: 1 },
+                cost: {
+                    Money(offset){ return undergroundCostMultiplier('archaeological_dig', offset, 32000, 1.55, 'industrial'); },
+                    Steel(offset){ return undergroundCostMultiplier('archaeological_dig', offset, 12000, 1.65, 'industrial'); },
+                    Sheet_Metal(offset){ return undergroundCostMultiplier('archaeological_dig', offset, 2500, 1.55, 'industrial'); },
+                    Water(offset){ return undergroundCostMultiplier('archaeological_dig', offset, 25000, 1.65, 'industrial'); },
+                    Crystal(offset){ return global.race.universe === 'magic' ? undergroundCostMultiplier('archaeological_dig', offset, 3600, 1.65, 'industrial') : 0; }
+                },
+                /*effect(wiki){
+                    let gain = +($(this)[0].knowVal(wiki)).toFixed(0);
+                    return `<div>${loc('portal_archaeology_effect',[jobScale(1)])}</div>
+                        <div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div>`;
+                },*/
+                effect(wiki){
+                    let desc = `<div>${loc('portal_archaeology_effect',[jobScale(1)])}</div>${ false ? `<div>${loc('underground_archaeological_dig_effect1',[(100 / $(this)[0].fossil_chance()).toFixed(2)])}</div>` : ''}
+                        <div>${loc('underground_archaeological_dig_effect2',[global.underground['archaeological_dig'].fossils, $(this)[0].knowVal()])}</div>`;
+                    if(global.tech['high_tech'] >= 2){
+                        desc += `<div class="has-text-caution">${loc('underground_archaeological_dig_effect3',[$(this)[0].powered(), 20])}</div>`;
+                    }
+                    return desc;
+                    
+                },
+                knowVal(){
+                    return 300 + (20 * p_on['archaeological_dig']);
+                },
+                fossil_chance(){ //1 = 1 in 1 (100%), 2 = 1 in 2 (50%), etc
+                    let base = 10;
+                    base += 20 * global.underground['archaeological_dig'].fossils;
+                    base /= 1 + workerScale(global.civic.archaeologist.workers);
+                    if(p_on['archaeological_dig']){
+                        base -= 20 * p_on['archaeological_dig'];
+                        base *= 0.99 ** p_on['archaeological_dig'];
+                        base = base < 0 ? 0 : base;
+                    }
+                    //console.log(base, p_on['archaeological_dig']);
+                    return base;
+                },
+                powered(){ return powerCostMod(2); },
+                action(args){
+                    if (payCosts($(this)[0])){
+                        incrementStruct($(this)[0]);
+                        global.civic.archaeologist.display = true;
+                        powerOnNewStruct($(this)[0])
+                        return true;
+                    }
+                    return false;
+                },
+                struct(){
+                    return {
+                        d: { count: 0, on: 0, fossils: 0 },
+                        p: ['archaeological_dig','underground']
+                    };
+                }
+            },
+            coal_power:{
+                id: 'underground-coal_power',
+                title(){
+                    return global.race['environmentalist'] ? loc('city_hydro_power') : loc(global.race.universe === 'magic' ? 'city_mana_engine' : 'city_coal_power');
+                },
+                desc(){
+                    return global.race['environmentalist']
+                        ? `<div>${loc('city_hydro_power_desc')}</div>`
+                        : `<div>${loc(global.race.universe === 'magic' ? 'city_mana_engine_desc' : 'city_coal_power_desc')}</div><div class="has-text-special">${loc('requires_res',[loc(global.race.universe === 'magic' ? 'resource_Mana_name' : 'resource_Coal_name')])}</div>`;
+                },
+                type: 'power',
+                reqs: { high_tech: 2 },
+                cost: {
+                    Money(offset){ return undergroundCostMultiplier('coal_power', offset, 10000, 1.55, 'industrial'); },
+                    Crystal(offset){ return global.race.universe === 'magic' ? undergroundCostMultiplier('coal_power', offset, 125, 1.65, 'industrial') : 0; },
+                    Copper(offset){ return undergroundCostMultiplier('coal_power', offset, 1800, 1.65, 'industrial'); },
+                    Cement(offset){ return undergroundCostMultiplier('coal_power', offset, 600, 1.65, 'industrial'); },
+                    Steel(offset){ return undergroundCostMultiplier('coal_power', offset, 2000, 1.65, 'industrial'); }
+                },
+                effect(){
+                    let consume = $(this)[0].p_fuel().a;
+                    let power = -($(this)[0].powered());
+                    return global.race['environmentalist'] ? `+${power}MW` : `<span>+${power}MW.</span> <span class="has-text-caution">${loc(global.race.universe === 'magic' ? 'city_mana_engine_effect' : 'city_coal_power_effect',[consume])}</span>`;
+                },
+                powered(wiki){
+                    let power = global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 1 ? -6 : -5;
+                    if (!wiki && global.race['environmentalist']){
+                        power -= traits.environmentalist.vars()[0];
+                    }
+                    let dirt = govActive('dirty_jobs',1);
+                    if (dirt){ power -= dirt; }
+                    return powerModifier(power);
+                },
+                p_fuel(){
+                    if(global.race['environmentalist']){
+                        return { r: 'Water', a: 3 };
+                    }
+                    else if (global.race.universe === 'magic'){
+                        return { r: 'Mana', a: 0.25 };
+                    }
+                    else {
+                        return { r: 'Coal', a: 2 };
+                    }
+                },
+                action(args){
+                    if (payCosts($(this)[0])){
+                        incrementStruct($(this)[0]);
+                        global.underground['coal_power'].on++;
+                        return true;
+                    }
+                    return false;
+                },
+                struct(){
+                    return {
+                        d: { count: 0, on: 0 },
+                        p: ['coal_power','underground']
+                    };
+                }
+            },
+            industrial_support_beams: {
+                id: 'underground-industrial_support_beams',
+                title(){ return loc('underground_support_beams'); },
+                desc(){ return loc('underground_support_beams_desc'); },
+                type: 'utility',
+                reqs: { support_beams: 2 },
+                cost: {
+                    Money(offset){ return undergroundCostMultiplier('industrial_support_beams', offset, 700, 1.75); },
+                    Steel(offset){ return global.tech['support_beams'] === 2 ? undergroundCostMultiplier('industrial_support_beams', offset, 350, 1.8) : 0; },
+                    Titanium(offset){ return global.tech['support_beams'] === 3 ? undergroundCostMultiplier('industrial_support_beams', offset, 350, 1.75) : 0; },
+                },
+                effect(){
+                    
+                    let effect = `<div>${loc('underground_industrial_support_beams_effect1', [0.005])}</div><div>${loc('underground_industrial_support_beams_effect2', [10])}</div>`;
+                    return effect;
+                },
+                action(args){
+                    if (payCosts($(this)[0])){
+                        incrementStruct($(this)[0]);
+                        return true;
+                    }
+                    return false;
+                },
+                struct(){
+                    return {
+                        d: { count: 0 },
+                        p: ['industrial_support_beams','underground']
+                    };
+                }
+            },
         }
     },
     surface: {
@@ -1120,10 +1469,12 @@ const iceAgeModules = {
     }
 }
 
-function cave_fight(real=false){
+function cave_fight(real=false, seed=global['warseed']){
     let creatures = actions.underground.depths.cave_creatures.group_size();
     let army = garrisonSize();
-    let seed = global['warseed'];
+    let injuries = global.civic.garrison.wounded;
+    let stored_seed = global['warseed'];
+    global['warseed'] = seed;
     let ambushing_max = 70 - Math.max(global.race['chameleon'] ? traits.chameleon.vars()[1] : 0,
                                     global.race['elusive'] ? traits.elusive.vars()[0] : 0);
     if (global.race['chicken']){
@@ -1136,19 +1487,16 @@ function cave_fight(real=false){
 
     let deaths = Math.floor(ambushing / 3); //1 soldier dies per 3 ambushing creatures
     let armor = armorCalc(deaths); //can be more than deaths
-    let injuries = Math.min(deaths, armor);
-    deaths -= injuries;
+    injuries += Math.min(deaths, armor);
+    deaths -= Math.min(deaths, armor);
     if (global.race['instinct']){
         let reduction = Math.floor(deaths * (traits.instinct.vars()[1] / 100));
         deaths -= reduction;
         injuries += reduction;
     }
     army -= deaths;
-    if(army < 0){
-        army = 0;
-        injuries = 0;
-    }
-    armor = armorCalc();
+    army = Math.max(0, army);
+    injuries = Math.min(injuries, army);
     let further_deaths = 0;
     while(creatures > 0 && army > 0){
         let rating = armyRating(army, Math.min(army, injuries));
@@ -1189,7 +1537,7 @@ function cave_fight(real=false){
         }
     }
     else{
-        global['warseed'] = seed; //do not update seed in a preview attempt.
+        global['warseed'] = stored_seed; //do not update seed in a preview attempt.
     }
     return {
         success: creatures <= 0,
@@ -1255,13 +1603,13 @@ function undergroundCostMultiplier(structure,offset,base,multiplier,subSector,se
     if (global.race['large']){ multiplier += traits.large.vars()[0]; }
     if (global.race['compact']){ multiplier -= traits.compact.vars()[0]; }
     if (global.race['tunneler'] && (structure === 'mine' || structure === 'coal_mine')){ multiplier -= traits.tunneler.vars()[0]; }
-    if (global.tech['housing_reduction'] && (structure === 'basic_housing' || structure === 'cottage')){
+    if (global.tech['housing_reduction'] && (structure === 'hollow' || structure === 'stone_house')){
         multiplier -= global.tech['housing_reduction'] * 0.02;
     }
     if (global.tech['housing_reduction'] && structure === 'captive_housing'){
         multiplier -= global.tech['housing_reduction'] * 0.01;
     }
-    if (structure === 'basic_housing'){
+    if (structure === 'hollow'){
         if (global.race['solitary']){
             multiplier -= traits.solitary.vars()[0];
         }
@@ -1269,7 +1617,7 @@ function undergroundCostMultiplier(structure,offset,base,multiplier,subSector,se
             multiplier += traits.pack_mentality.vars()[0];
         }
     }
-    if (structure === 'cottage'){
+    if (structure === 'stone_house'){
         if (global.race['solitary']){
             multiplier += traits.solitary.vars()[1];
         }
@@ -1282,17 +1630,20 @@ function undergroundCostMultiplier(structure,offset,base,multiplier,subSector,se
             multiplier -= traits.pack_mentality.vars()[1];
         }
     }
-    if(['mine', 'coal_mine', 'smelter'].includes(structure)){
+    if(['mine', 'coal_mine', 'smelter', 'coal_power'].includes(structure)){
         multiplier -= govActive('dirty_jobs',0);
     }
     if(subSector === 'cave' && global.underground['support_beams']){
         multiplier -= global.underground['support_beams'].count * 0.005;
-        if(global.tech['support_beams'] >= 2){
-            base *= 0.9 ** global.underground['support_beams'].count;
-        }
+        base *= 0.9 ** global.underground['support_beams'].count;
     }
-    if(subSector === 'depths' && global.underground['cave_creatures']){
-        multiplier -= global.underground['cave_creatures'].count * 0.005;
+    if(subSector === 'depths' && global.underground['depths_support_beams']){
+        multiplier -= global.underground['depths_support_beams'].count * 0.005;
+        base *= 0.9 ** global.underground['depths_support_beams'].count;
+    }
+    if(subSector === 'industrial' && global.underground['industrial_support_beams']){
+        multiplier -= global.underground['industrial_support_beams'].count * 0.005;
+        base *= 0.9 ** global.underground['industrial_support_beams'].count;
     }
     if (global.genes['creep'] && !global.race['no_crispr']){
         multiplier -= global.genes['creep'] * 0.01;

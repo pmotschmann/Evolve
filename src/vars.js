@@ -1552,7 +1552,6 @@ if (convertVersion(global['version']) <= 105000){
 }
 
 if(convertVersion(global['version']) && true){
-    //potentially unnecessary as these are only relevant for those that are already playing ice age or have completed it.
     global.underground = global.underground || {};
     global.surface = global.surface || {};
 }

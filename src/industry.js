@@ -10,6 +10,7 @@ import { edenicTech } from './edenic.js';
 import { checkPathRequirements } from './truepath.js';
 import { highPopAdjust, production } from './prod.js';
 import { govEffect } from './civics.js';
+import { undergroundTech, surfaceTech } from './iceage.js';
 
 export function loadIndustry(industry,parent,bind){
     switch (industry){
@@ -1956,11 +1957,11 @@ export function gridEnabled(c_action,region,p0,p1){
                 isOk = true;
             }
             else {
-                isOk = global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation'] || global.race['warlord'] ? false : checkCityRequirements(p1);
+                isOk = global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation'] || global.race['warlord'] || global.race['iceage'] ? false : checkCityRequirements(p1);
             }
             break;
         case 'space':
-            isOk = global.tech['isolation'] || global.race['warlord'] ? false : checkSpaceRequirements(region,p0,p1);
+            isOk = global.tech['isolation'] || global.race['warlord'] || global.race['iceage'] ? false : checkSpaceRequirements(region,p0,p1);
             break;
         case 'portal':
             isOk = checkRequirements(fortressTech(),p0,p1);
@@ -1970,6 +1971,12 @@ export function gridEnabled(c_action,region,p0,p1){
             break;
         case 'eden':
             isOk = checkRequirements(edenicTech(),p0,p1);
+            break;
+        case 'underground':
+            isOk = checkRequirements(undergroundTech(),p0,p1);
+            break;
+        case 'surface':
+            isOk = checkRequirements(surfaceTech(),p0,p1);
             break;
         default:
             isOk = p0 === 'spc_moon' && global.race['orbit_decayed'] ? false : checkSpaceRequirements(region,p0,p1);
@@ -1991,7 +1998,6 @@ export function setPowerGrid(){
         el: `#powerModeSwitch`,
         data: global.settings
     });
-
     Object.keys(grids).forEach(function(grid_type){
         if (!grids[grid_type].s){
             return;
