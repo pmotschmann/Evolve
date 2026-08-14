@@ -5475,6 +5475,31 @@ div.bigbang {
     animation: 3.8s shake infinite alternate;
 }
 
+// The assault warning under Earth. Deliberately slow — it should read as something looming rather than
+// as an alert demanding a click.
+.zassault {
+    margin-left: 1rem;
+    font-weight: bold;
+}
+
+.zpulse {
+    animation: 2.4s zpulse infinite ease-in-out;
+}
+
+@keyframes zpulse {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.25;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
 @keyframes shake {
     0% {
         transform: skewX(-1deg);

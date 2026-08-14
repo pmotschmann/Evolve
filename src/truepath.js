@@ -1839,8 +1839,13 @@ const outerTruth = {
                 if (pct > 100){ pct = 100; }
                 return +(pct).toFixed(2);
             },
+            uplinkKnowledge(){ return 50; },
+            uplinked(){ return global.tech['resettle'] && global.tech.resettle >= 18 ? true : false; },
             effect(){
                 let desc = `<div>${loc('space_alien_facility_effect',[$(this)[0].progress()])}</div>`;
+                if ($(this)[0].uplinked()){
+                    desc += `<div>${loc('space_alien_facility_university',[$(this)[0].uplinkKnowledge(),loc('space_university_title')])}</div>`;
+                }
                 if (!$(this)[0].studying()){
                     desc += `<div class="has-text-warning">${loc('space_alien_facility_stalled',[loc('space_descender_title')])}</div>`;
                 }
@@ -2014,7 +2019,14 @@ const outerTruth = {
             s_type: 'venus',
             support(){ return -1; },
             powered(){ return 0; },
-            knowVal(){ return 3333; },
+            knowVal(){
+                let facility = actions.space.spc_venus.alien_facility;
+                let val = 2222;
+                if (facility.uplinked()){
+                    val *= 1 + (facility.uplinkKnowledge() / 100);
+                }
+                return val;
+            },
             professors(){ return 2; },
             knowledge(){
                 let profs = workerScale(global.civic.professor.workers,'professor');
@@ -2240,7 +2252,74 @@ const outerTruth = {
                     p: ['survey_warehouse','space']
                 };
             }
-        }
+        },
+        fort_knox: {
+            id: 'space-fort_knox',
+            title(){ return loc('space_fort_knox_title'); },
+            desc(wiki){
+                let moon = surveyBody();
+                if (!global.space.hasOwnProperty('fort_knox') || global.space.fort_knox.count < 100 || wiki){
+                    return `<div>${loc('space_fort_knox_title')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
+                }
+                return `<div>${loc('space_fort_knox_title')}</div>`;
+            },
+            type: 'megaproject',
+            reqs: { survey: 5 },
+            path: ['truepath'],
+            queue_size: 5,
+            queue_complete(){ return 100 - (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0); },
+            cost: {
+                Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0)) < 100 ? 42000000 : 0; },
+                Brick(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0)) < 100 ? 7500000 : 0; },
+                Orichalcum(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0)) < 100 ? 2500000 : 0; },
+                Cement(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0)) < 100 ? 12500000 : 0; },
+                Neutronium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0)) < 100 ? 2600000 : 0; }
+            },
+            effect(wiki){
+                let count = (wiki?.count ?? 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0);
+                if (count < 100){
+                    return `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[100 - count])}</div>`;
+                }
+                return `<div>${loc('plus_max_resource',[`\$${$(this)[0].vault().toLocaleString()}`,loc('resource_Money_name')])}</div><div>${loc('plus_max_resource',[$(this)[0].soldiers(),loc('civics_garrison_soldiers')])}</div>`;
+            },
+            vault(){
+                let vault = 1000000000;
+                if (global.tech['extra_vault']){
+                    vault *= 1 + (global.tech.extra_vault * 0.1);
+                }
+                return vault;
+            },
+            soldiers(){
+                let troops = 20;
+                if (global.tech['guard_station']){
+                    troops += global.tech.guard_station;
+                }
+                return jobScale(troops);
+            },
+            action(){
+                if (global.space.hasOwnProperty('fort_knox') && global.space.fort_knox.count >= 100){ return false; }
+                if (payCosts($(this)[0])){
+                    incrementStruct($(this)[0]);
+                    if (global.space.fort_knox.count >= 100){
+                        if (global.tech['survey'] && global.tech.survey < 6){
+                            global.tech.survey = 6;
+                        }
+                        let moon = surveyBody();
+                        drawTech();
+                        renderSpace();
+                        clearPopper();
+                    }
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['fort_knox','space']
+                };
+            }
+        },
     },
 };
 
@@ -5423,7 +5502,10 @@ export function checkPathRequirements(era,region,action){
 const razeTargets = {
     spc_moon: { c: 'space', s: ['moon_base','iridium_mine','helium_mine','observatory'] },
     spc_red: { c: 'space', s: ['spaceport','red_tower','living_quarters','pylon','vr_center','garage','red_mine','fabrication','red_factory','biodome','exotic_lab','ziggurat','space_barracks'] },
-    spc_venus: { c: 'space', s: [] },
+    // Venus only comes under threat during the final assault, and even then the tether and what it
+    // reaches are off the list: the descender is a finished megaproject like every other one excluded
+    // here, and the alien facility is a fixed find rather than something you built.
+    spc_venus: { c: 'space', s: ['cloud_city','nitrogen_harvester','cloud_quarters','industrial_complex','workshop','university'] },
     spc_hell: { c: 'space', s: ['geothermal','hell_smelter','spc_casino','swarm_plant'] },
     spc_titan: { c: 'space', s: ['titan_spaceport','electrolysis','hydrogen_plant','titan_quarters','titan_mine','storehouse','titan_bank','g_factory','sam','decoder','ai_colonist','metalworks'] },
     spc_enceladus: { c: 'space', s: ['water_freighter','zero_g_lab','operating_base','munitions_depot'] },
@@ -5473,6 +5555,26 @@ export function infestationCount(region){
 export function infestationLabel(region){
     if (infestationCount(region) <= 0){ return ``; }
     return ` <span class="infestation has-text-caution" v-show="zombies()">${loc('space_infestation')} <span class="has-text-danger">{{ zombieCount() }}</span></span>`;
+}
+
+// The assault warning that hangs under Earth. Bound to global.race.zfleet rather than written once, so
+// the countdown follows the day clock without anything having to redraw the region.
+export function zAssaultBanner(region){
+    if (region !== 'spc_home'){ return ``; }
+    return `<div class="zassault has-text-danger" v-show="warn()"><span :class="pulse()">{{ warnText() }}</span></div>`;
+}
+
+export function zAssaultMethods(){
+    return {
+        warn(){ return zUplinkWarning() || zAssault() ? true : false; },
+        // Only the signature warning pulses; once it becomes a countdown it holds still so the number stays readable.
+        pulse(){ return zUplinkWarning() ? 'zpulse' : ''; },
+        warnText(){
+            return zUplinkWarning()
+                ? loc('zfleet_uplink_banner_signatures')
+                : loc('zfleet_uplink_banner_survive',[zAssaultLeft()]);
+        }
+    };
 }
 
 export function infestationMethods(region){
@@ -5555,19 +5657,29 @@ function zFleetTargets(){
     // Titan only becomes worth raiding once you are established enough there to have found what was
     // already on it (see zTitanWatch).
     if (global.tech['resettle'] && global.tech.resettle >= 13){ targets.push('spc_titan'); }
+    // The assault stops respecting the boundaries the raids kept to: the cloud city is suddenly worth
+    // hitting, and it reaches all the way to Tau Ceti rather than the one scripted strike it managed
+    // before. Everything opened here stays open afterwards.
+    if (global.tech['resettle'] && global.tech.resettle >= 19){
+        targets.push('spc_venus');
+        targets.push('tau_home');
+        targets.push('tau_red');
+    }
     return targets;
 }
 
 // Hulls the horde flies, smallest first. `weight` is how often a class comes up relative to the others
 // once it is cleared to fly; the two heavy hulls turn up half as often as the four it builds routinely.
 // Called at every roll like avail and horde, so a rate can be moved on tech or horde size later.
+// Once the assault opens the horde stops bothering with its lightest hull and starts flying its heaviest
+// as readily as anything else, so the corvette drops out and the battlecruiser stops being a rarity.
 const zFleetHulls = {
-    corvette:      { weight(){ return 1; },   avail(){ return true; },  horde(){ return 350; } },
+    corvette:      { weight(){ return global.tech['resettle'] && global.tech.resettle >= 19 ? 0 : 1; }, avail(){ return true; },  horde(){ return 350; } },
     frigate:       { weight(){ return 1; },   avail(){ return true; },  horde(){ return 825; } },
     destroyer:     { weight(){ return 1; },   avail(){ return global.tech['resettle'] && global.tech.resettle >= 11 ? true : false; }, horde(){ return 1700; } },
     cruiser:       { weight(){ return 1; },   avail(){ return global.tech['resettle'] && global.tech.resettle >= 14 ? true : false; }, horde(){ return 4100; } },
-    battlecruiser: { weight(){ return 0.5; }, avail(){ return global.tech['resettle'] && global.tech.resettle >= 15 ? true : false; }, horde(){ return 10300; } },
-    dreadnought:   { weight(){ return 0.5; }, avail(){ return false; }, horde(){ return 24750; } }
+    battlecruiser: { weight(){ return global.tech['resettle'] && global.tech.resettle >= 19 ? 1 : 0.5; }, avail(){ return global.tech['resettle'] && global.tech.resettle >= 15 ? true : false; }, horde(){ return 10300; } },
+    dreadnought:   { weight(){ return 0.5; }, avail(){ return global.tech['resettle'] && global.tech.resettle >= 19 ? true : false; }, horde(){ return 24750; } }
 };
 
 // The classes cleared to fly right now.
@@ -5613,7 +5725,103 @@ const zFleetDelayMax = 25;
 const zFleetRampDays = 150;     // days of raiding before launches and cargoes reach full strength
 const zFleetOddsStart = 0.08;   // chance of a launch on the first day
 const zFleetOddsEnd = 0.40;     // ...and once the ramp is complete.
+const zAssaultOdds = 0.40;       // stands in for the above during the assault: a launch every day.
 const zFleetLoadStart = 0.25;   // share of a hull's cargo that lands on the first day
+
+// --- The final assault ---------------------------------------------------------------------------
+// Severing the uplink is what provokes it. Everything the horde has been doing stops dead — no raid
+// lifts at all while it masses — and then it comes at everything at once for a hundred days.
+const zUplinkSilent = 25;     // game days of nothing whatsoever after the uplink is cut
+const zUplinkWarn = 5;        // days the warning hangs over Earth before the assault proper
+const zUplinkSurvive = 100;   // days the assault runs
+
+// Days since the uplink was severed, or false on a run that never cut it.
+export function zUplinkDays(){
+    let fleet = global.race['zfleet'];
+    return fleet && typeof fleet.uz === 'number' ? fleet.uz : false;
+}
+
+// The horde is massing and sending nothing: from the moment the uplink is cut until the assault opens.
+function zUplinkSilence(){
+    let d = zUplinkDays();
+    return d !== false && d < zUplinkSilent + zUplinkWarn;
+}
+
+// The warning is up but the assault has not started. resettle stays at 18 through this.
+export function zUplinkWarning(){
+    let d = zUplinkDays();
+    return d !== false && d >= zUplinkSilent && d < zUplinkSilent + zUplinkWarn;
+}
+
+// The hundred days themselves. resettle 19 is the marker, so anything can ask without a day count.
+export function zAssault(){
+    return global.tech['resettle'] && global.tech.resettle === 19 ? true : false;
+}
+
+// Days still to survive, for the banner's countdown.
+export function zAssaultLeft(){
+    let d = zUplinkDays();
+    if (d === false){ return 0; }
+    let left = zUplinkSurvive - (d - zUplinkSilent - zUplinkWarn);
+    return left > 0 ? left : 0;
+}
+
+// Advance the uplink clock and move the arc on when it reaches each mark. Runs before the launch
+// gates below so the clock keeps ticking on the days nothing is allowed to fly.
+function zUplinkWatch(fleet){
+    if (!global.tech['resettle'] || global.tech.resettle < 18){ return; }
+    if (typeof fleet.uz !== 'number'){ fleet.uz = 0; }
+    fleet.uz++;
+
+    if (fleet.uz === zUplinkSilent){
+        global.settings.civTabs = 1;
+        renderSpace();
+        messageQueue(loc('zfleet_uplink_signatures',[regionName('spc_home')]),'danger',false,['combat','progress']);
+    }
+    else if (fleet.uz === zUplinkSilent + zUplinkWarn){
+        global.tech.resettle = 19;
+        drawTech();
+        renderSpace();
+        messageQueue(loc('zfleet_uplink_assault',[zUplinkSurvive]),'danger',false,['combat','progress']);
+    }
+    else if (fleet.uz === zUplinkSilent + zUplinkWarn + zUplinkSurvive){
+        global.tech.resettle = 20;
+        drawTech();
+        renderSpace();
+        messageQueue(loc('zfleet_uplink_survived'),'success',false,['combat','progress']);
+    }
+}
+
+// Hulls in one sortie. Ordinarily a lone raider, or a pair once the horde has managed a strike on
+// another star. The assault never sends fewer than two, and what it leaves behind afterwards still
+// flies in company more often than it used to.
+const zAssaultSizes = [[0.50,3],[0.35,4],[0.15,5]];
+const zAftermathSizes = [[0.50,1],[0.40,2],[0.10,3]];
+function zFleetSize(fleet){
+    let table = zAssault() ? zAssaultSizes : (global.tech['resettle'] && global.tech.resettle >= 20 ? zAftermathSizes : false);
+    if (table){
+        let roll = seededRandom(0,1,true);
+        for (let i=0; i<table.length; i++){
+            roll -= table[i][0];
+            if (roll < 0){ return table[i][1]; }
+        }
+        return table[table.length - 1][1];
+    }
+    return fleet.tw && seededRandom(0,1,true) < zPairOdds ? zPairSize : 1;
+}
+
+// What the horde can fit. An ordinary raid is scavenged from wrecks and rolls the whole of each list;
+// the assault is built rather than salvaged, so it takes only from the good end.
+function zFleetPartRange(part){
+    if (!zAssault()){ return zFleetParts[part]; }
+    switch (part){
+        case 'power':  return zFleetParts.power.slice(4);    // elerium, nothing else
+        case 'weapon': return zFleetParts.weapon.slice(3);   // plasma, phaser or disruptor
+        case 'sensor': return zFleetParts.sensor.slice(1);   // anything better than visual
+        case 'engine': return zFleetParts.engine.slice(1);   // never ion
+    }
+    return zFleetParts[part];
+}
 
 // The one scripted sortie: days after Titan comes under threat, then where it goes and what flies it.
 const zTauStrikeDay = 100;
@@ -5645,6 +5853,7 @@ function zFleetDay(){
     let fleet = global.race.zfleet;
     if (!fleet.s){ fleet.s = []; }
 
+    zUplinkWatch(fleet);
     zFleetMove(fleet);
 
     // The blockade runs on its own rules rather than act like a raid
@@ -5662,8 +5871,14 @@ function zFleetDay(){
     fleet.d++;
     zTauStrike(fleet);
     let ramp = Math.min(fleet.d / zFleetRampDays, 1);
-    if (seededRandom(0,1,true) < zFleetOddsStart + (zFleetOddsEnd - zFleetOddsStart) * ramp){
-        zFleetLaunch(fleet,ramp);
+    // Nothing lifts at all while the horde is massing for the assault. Anything already under way
+    // still flies its leg — zFleetMove above runs regardless — this only stops new launches.
+    if (!zUplinkSilence()){
+        // Through the assault enemy fleets take off more frequently.
+        let oddsEnd = zAssault() ? zAssaultOdds : zFleetOddsEnd;
+        if (seededRandom(0,1,true) < zFleetOddsStart + (oddsEnd - zFleetOddsStart) * ramp){
+            zFleetLaunch(fleet,ramp);
+        }
     }
 
     zGroundFire(fleet);
@@ -6196,7 +6411,7 @@ function zFleetHull(cls,best){
     };
     TPShipInitTransit(ship, 'spc_home');
     Object.keys(zFleetParts).forEach(function(part){
-        let list = zFleetParts[part];
+        let list = zFleetPartRange(part);
         ship[part] = best ? list[list.length - 1] : list[Math.floor(seededRandom(0,list.length,true))];
     });
     return ship;
@@ -6266,7 +6481,7 @@ function zFleetLaunch(fleet,ramp){
     let avail = zFleetClasses();
     if (avail.length === 0){ return; }
 
-    let count = fleet.tw && seededRandom(0,1,true) < zPairOdds ? zPairSize : 1;
+    let count = zFleetSize(fleet);
     let classes = [];
     for (let i=0; i<count; i++){
         let cls = zFleetClass(avail);

@@ -183,6 +183,39 @@ export const arpaProjects = {
             Crystal(offset,wiki){ return monument_costs('Crystal', offset, wiki) }
         }
     },
+    extra_vault: {
+        title(){ return loc('arpa_projects_extra_vault_title'); },
+        desc(){ return loc('arpa_projects_extra_vault_desc',[actions.space.spc_survey.fort_knox.title()]); },
+        reqs: { survey: 7 },
+        grant: 'extra_vault',
+        path: ['truepath'],
+        effect(){
+            return loc('arpa_projects_extra_vault_effect',[10,actions.space.spc_survey.fort_knox.title()]);
+        },
+        cost: {
+            Money(offset,wiki){ return costMultiplier('extra_vault', offset, 55000000, 1.08, wiki); },
+            Iron(offset,wiki){ return costMultiplier('extra_vault', offset, 12750000, 1.08, wiki); },
+            Tungsten(offset,wiki){ return costMultiplier('extra_vault', offset, 7800000, 1.08, wiki); },
+            Graphene(offset,wiki){ return costMultiplier('extra_vault', offset, 3330000, 1.08, wiki); }
+        }
+    },
+    guard_station: {
+        title(){ return loc('arpa_projects_guard_station_title'); },
+        desc(){ return loc('arpa_projects_guard_station_desc',[actions.space.spc_survey.fort_knox.title()]); },
+        reqs: { survey: 8 },
+        grant: 'guard_station',
+        path: ['truepath'],
+        effect(){
+            return loc('arpa_projects_guard_station_effect',[1,actions.space.spc_survey.fort_knox.title()]);
+        },
+        cost: {
+            Money(offset,wiki){ return costMultiplier('guard_station', offset, 48000000, 1.08, wiki); },
+            Food(offset,wiki){ return costMultiplier('guard_station', offset, 10000000, 1.08, wiki); },
+            Stone(offset,wiki){ return costMultiplier('guard_station', offset, 100000000, 1.08, wiki); },
+            Furs(offset,wiki){ return costMultiplier('guard_station', offset, 75000000, 1.08, wiki); },
+            Water(offset,wiki){ return costMultiplier('guard_station', offset, 250000, 1.08, wiki); }
+        }
+    },
     railway: {
         title(){ return eventActive('fool',2022) ? loc('arpa_projects_lhc_title') : loc('arpa_projects_railway_title'); },
         desc(){ return eventActive('fool',2022) ? loc('arpa_projects_lhc_desc') : loc('arpa_projects_railway_desc'); },

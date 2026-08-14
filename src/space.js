@@ -7,7 +7,7 @@ import { loadFoundry, jobScale, job_data } from './jobs.js';
 import { defineIndustry, addSmelter, factoryData } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
 import { actions, payCosts, powerOnNewStruct, initStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, templeCount, casinoEffect, wardenLabel, buildTemplate, structName } from './actions.js';
-import { outerTruthTech, syndicate, drawShipYard, infestationLabel, infestationMethods, salvageShip, salvagePin } from './truepath.js';
+import { outerTruthTech, syndicate, drawShipYard, infestationLabel, infestationMethods, salvageShip, salvagePin, zAssaultBanner, zAssaultMethods } from './truepath.js';
 import { production, highPopAdjust } from './prod.js';
 import { defineGovernor, govActive } from './governor.js';
 import { ascend, terraform, apotheosis } from './resets.js';
@@ -7165,6 +7165,17 @@ function space(zone){
                             methods: infestationMethods(region)
                         });
                     }
+                }
+
+                // The assault warning sits directly under Earth's heading, above anything built there.
+                let assault = zAssaultBanner(region);
+                if (assault && global.race['zfleet']){
+                    $(`#${region}`).append(`<div id="${region}warn">${assault}</div>`);
+                    vBind({
+                        el: `#${region}warn`,
+                        data: global.race,
+                        methods: zAssaultMethods()
+                    });
                 }
 
                 if (global.race['truepath'] && spaceProjects[region].info.hasOwnProperty('syndicate') && spaceProjects[region].info.syndicate() && global.tech['syndicate']){

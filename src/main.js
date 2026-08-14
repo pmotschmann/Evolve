@@ -9216,6 +9216,10 @@ function midLoop(){
         if (global.city['garrison']){
             lCaps['garrison'] += global.city.garrison.on * actions.city.garrison.soldiers();
         }
+        // Only once the last segment is in; a part-built vault garrisons nobody.
+        if (global.space['fort_knox'] && global.space.fort_knox.count >= 100){
+            lCaps['garrison'] += actions.space.spc_survey.fort_knox.soldiers();
+        }
         if (global.space['space_barracks'] && !global.race['fasting']){
             let soldiers = actions.space.spc_red.space_barracks.soldiers();
             lCaps['garrison'] += Math.round(global.space.space_barracks.on * soldiers);
@@ -9318,6 +9322,12 @@ function midLoop(){
             let pop = p_on['rectory'] * actions.eden.eden_asphodel.rectory.citizens();
             caps[global.race.species] += pop;
             breakdown.c[global.race.species][loc(`eden_rectory_title`)] = pop + 'v';
+        }
+        // Only once the last segment is in; a part-built vault holds nothing.
+        if (global.space['fort_knox'] && global.space.fort_knox.count >= 100){
+            let gain = actions.space.spc_survey.fort_knox.vault();
+            caps['Money'] += gain;
+            breakdown.c.Money[loc('space_fort_knox_title')] = gain+'v';
         }
         if (p_on['s_gate'] && global.galaxy['consulate'] && global.galaxy.consulate.count >= 1){
             let pop = actions.galaxy.gxy_alien1.consulate.citizens();

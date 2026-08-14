@@ -14960,6 +14960,9 @@ const techs = {
         effect(){ return loc('tech_sever_uplink_effect',[actions.space.spc_venus.alien_facility.title(),planetName().venus]); },
         action(){
             if (payCosts($(this)[0])){
+                if (!global['sim']){
+                    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+                }
                 messageQueue(loc('tech_sever_uplink_msg',[planetName().home]),'info',false,['progress']);
                 return true;
             }
@@ -15164,6 +15167,75 @@ const techs = {
                 return true;
             }
             return false;
+        }
+    },
+    moon_treasury: {
+        id: 'tech-moon_treasury',
+        title(){ return loc('tech_moon_treasury',[planetName()[surveyTheme()]]); },
+        desc(){ return loc('tech_moon_treasury',[planetName()[surveyTheme()]]); },
+        category: 'banking',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { survey: 4 },
+        grant: ['survey',5],
+        cost: {
+            Knowledge(){ return 27500000; }
+        },
+        effect(){ return loc('tech_moon_treasury_effect',[planetName()[surveyTheme()]]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.space.spc_survey.fort_knox);
+                renderSpace();
+                return true;
+            }
+            return false;
+        }
+    },
+    moon_vault: {
+        id: 'tech-moon_vault',
+        title(){ return loc('tech_moon_vault',[actions.space.spc_survey.fort_knox.title()]); },
+        desc(){ return loc('tech_moon_vault',[actions.space.spc_survey.fort_knox.title()]); },
+        category: 'banking',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { survey: 6 },
+        grant: ['survey',7],
+        cost: {
+            Knowledge(){ return 28000000; }
+        },
+        effect(){ return loc('tech_moon_vault_effect',[actions.space.spc_survey.fort_knox.title()]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        },
+        flair(){ return loc('tech_moon_vault_flair'); },
+        post(){
+            arpa('Physics');
+        }
+    },
+    moon_security: {
+        id: 'tech-moon_security',
+        title(){ return loc('tech_moon_security',[actions.space.spc_survey.fort_knox.title()]); },
+        desc(){ return loc('tech_moon_security',[actions.space.spc_survey.fort_knox.title()]); },
+        category: 'military',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { survey: 7 },
+        grant: ['survey',8],
+        cost: {
+            Knowledge(){ return 28500000; }
+        },
+        effect(){ return loc('tech_moon_security_effect',[actions.space.spc_survey.fort_knox.title()]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        },
+        post(){
+            arpa('Physics');
         }
     },
     expert_salvage: {
