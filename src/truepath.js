@@ -8659,7 +8659,7 @@ function calcLandingPoint(startingPosition, planet, speed, elapsed) {
     }
     else {
         let ecc = orbitEcc(planet);
-        semiMajor = spacePlanetStats[planet].dist;
+        semiMajor = orbitDist(planet);
         semiMinor = semiMajor * Math.sqrt(1 - ecc * ecc);
         // The Sun sits at a focus, so the ellipse's centre is one focal distance off it, toward
         // apoapsis (the -x side, since periapsis is drawn at +x).
@@ -9594,6 +9594,7 @@ export function dist3(a,b){
 // is turned. Nothing in the 0-6 degree range is a ship destination, so this can't move a target.
 function orbitIncline(id){
     let body = spacePlanetStats[id];
+    if (id === 'spc_home' && kamikazeRun()){ return KAMIKAZE_INCLINE; }
     return body.hasOwnProperty('inc') ? body.inc : (texSeed(id) % 600) / 100;
 }
 
@@ -9631,7 +9632,7 @@ function moonSpread(parent){
 // The radius a body's orbit is drawn at, moon exaggeration included.
 function orbitRadius(id){
     let body = spacePlanetStats[id];
-    return body.parent ? body.dist * moonSpread(body.parent) : body.dist;
+    return body.parent ? body.dist * moonSpread(body.parent) : orbitDist(id);
 }
 
 // Where a body sits at a given angle along its orbit, in AU from the Sun. Split out of genXYZcoord so
@@ -9669,8 +9670,9 @@ export function orbitPoint(planet, deg){
         origin = { x: 0, y: 0, z: 0 };
         let ecc = orbitEcc(planet);
         let E = eccentricAnomaly(rad, ecc);
-        u = body.dist * (Math.cos(E) - ecc);
-        v = body.dist * Math.sqrt(1 - ecc * ecc) * Math.sin(E);
+        let semi = orbitDist(planet);
+        u = semi * (Math.cos(E) - ecc);
+        v = semi * Math.sqrt(1 - ecc * ecc) * Math.sin(E);
     }
     // Tilt about the line of nodes (the x axis). The orbit keeps its size and every point on it
     // keeps its distance from the primary; only its height above the reference plane changes.
@@ -10779,6 +10781,39 @@ export function orbitPeriod(id){
     let orbit = body.orbit === -1 ? orbitLength() : body.orbit;
     if (id === 'spc_moon' && homeTrait('dense')){ orbit /= 2; }
     return orbit;
+}
+
+// --- The kamikaze home world -------------------------------------------------------------------
+//
+// The kamikaze planet trait takes a day off the year every year
+const KAMIKAZE_FLOOR_ORBIT = 100;
+const KAMIKAZE_MIN_PERIHELION = 0.25;
+// Reduces chance of visual collision with Venus and Mercury, doesn't eliminate it but without doing something whacky this is as good as it gets.
+const KAMIKAZE_INCLINE = -12;
+
+function kamikazeRun(){
+    return global.race['truepath'] && homeTrait('kamikaze') ? true : false;
+}
+
+// Set Kamakaze data
+export function kamikazeOrbit(){
+    if (!kamikazeRun()){ return 0; }
+    if (!global.city.calendar['kamikaze']){
+        global.city.calendar['kamikaze'] = orbitLength();
+    }
+    return global.city.calendar.kamikaze;
+}
+
+// The radius a body's orbit is drawn at, in AU. Only a falling home world is ever anything other than its table distance.
+export function orbitDist(id){
+    let body = spacePlanetStats[id];
+    if (!body){ return 0; }
+    if (id !== 'spc_home' || !kamikazeRun()){ return body.dist; }
+    let start = kamikazeOrbit();
+    if (!(start > 0)){ return body.dist; }
+    let now = Math.min(Math.max(orbitLength(), KAMIKAZE_FLOOR_ORBIT), start);
+    let floor = KAMIKAZE_MIN_PERIHELION / Math.max(1 - orbitEcc(id), 0.01);
+    return Math.max(body.dist * (now / start), floor);
 }
 
 // Solve Kepler's equation, M = E - e·sin(E), for the eccentric anomaly.

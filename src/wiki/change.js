@@ -18,6 +18,7 @@ export const changeList = [
             `Solar System orbits changed to be more realistic.`,
             `The planet trait "Elliptical" will now change the actual orbit path of your homeworld on Truepath.`,
             `The planet trait "Retrograde" will now cause the moon to actually orbit backwards on Truepath.`,
+            `The planet trait "Kamikaze" will now move the home world closer to the sun over time on Truepath.`,
             `The planet trait "Dense" now makes the moon orbit faster.`,
             `Rebalanced Spire Mech mechanics, equipment, and weapons.`,
             `Special Spire Mech equipment now has a unique slot.`,
