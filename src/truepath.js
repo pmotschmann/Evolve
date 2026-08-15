@@ -12671,8 +12671,31 @@ function buildSolarMap(parentNode, keep) {
         }
     }
 
+    // --- Touch input -------------------------------------------------------------------------
+    // Gated on the player's own touch-device setting rather than sniffed, the same as everywhere else
+    // in the game. The four things the mouse can do are mapped onto the gestures a phone already
+    // uses: one finger drags the map as the left button does and a tap selects what is under it, two
+    // fingers pinch to zoom and slide to orbit the camera — the two-finger pair standing in for the
+    // wheel and the right-drag.
+    function touchMap(){ return global.settings['touch'] ? true : false; }
+    // Below this a pinch is finger jitter rather than an attempt to zoom; without it a two-finger
+    // slide zooms slightly the whole way.
+    const PINCH_SLOP_PX = 4;
+    let touching = false;       // false | 'pan' | 'camera'
+    let tap = false;            // the opening finger, for telling a tap from a drag
+    let gesture = {};
+    function touchMid(t){ return { x: (t[0].clientX + t[1].clientX) / 2, y: (t[0].clientY + t[1].clientY) / 2 }; }
+    function touchGap(t){ return Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY); }
+    // Zoom about the middle of the viewport, which is where the camera's focus already sits — the
+    // same arithmetic the wheel uses when locked onto a star.
+    function zoomCentre(factor){
+        mapScale *= factor;
+        mapShift.x = canvasOffset.x + (mapShift.x - canvasOffset.x) * factor;
+        mapShift.y = canvasOffset.y + (mapShift.y - canvasOffset.y) * factor;
+    }
+
     currentNode.append(
-      $(`<canvas id="mapCanvas" style="width: 100%; height: 75vh"></canvas>`)
+      $(`<canvas id="mapCanvas" style="width: 100%; height: 75vh;${global.settings['touch'] ? ' touch-action: none;' : ''}"></canvas>`)
         // A left press that ends without the pointer really moving is a click, not a pan: if it
         // landed on a body, centre the view on it. The slop allows for the shake of an ordinary
         // click, which would otherwise pan a pixel and count as a drag.
@@ -12792,6 +12815,85 @@ function buildSolarMap(parentNode, keep) {
                     refocus();
                 }
                 drawMap();
+            }
+            return false;
+        })
+        .on("touchstart", (e) => {
+            if (!touchMap()){ return; }
+            let t = e.originalEvent.touches;
+            if (t.length === 1){
+                touching = 'pan';
+                tap = { x: t[0].clientX, y: t[0].clientY, moved: false };
+                dragOffset.x = t[0].clientX - mapShift.x;
+                dragOffset.y = t[0].clientY - mapShift.y;
+            }
+            else if (t.length === 2){
+                // A second finger down ends any tap in progress: this is a camera gesture now.
+                touching = 'camera';
+                tap = false;
+                let mid = touchMid(t);
+                gesture = { gap: touchGap(t), x: mid.x, y: mid.y, yaw: mapYaw, pitch: mapPitch };
+            }
+            return false;
+        })
+        .on("touchmove", (e) => {
+            if (!touchMap()){ return; }
+            let t = e.originalEvent.touches;
+            if (touching === 'pan' && t.length === 1){
+                if (tap && (Math.abs(t[0].clientX - tap.x) > CLICK_SLOP_PX || Math.abs(t[0].clientY - tap.y) > CLICK_SLOP_PX)){
+                    tap.moved = true;
+                    starLockOn = false;
+                }
+                mapShift.x = t[0].clientX - dragOffset.x;
+                mapShift.y = t[0].clientY - dragOffset.y;
+                refocus();
+                drawMap();
+            }
+            else if (touching === 'camera' && t.length === 2){
+                // The two are independent components of the same two-finger move, so both are read
+                // every frame: the gap between the fingers zooms, and where the pair as a whole has
+                // travelled orbits, exactly as dragging with the right button does.
+                let gap = touchGap(t);
+                let mid = touchMid(t);
+                if (gesture.gap > 0 && Math.abs(gap - gesture.gap) > PINCH_SLOP_PX){
+                    zoomCentre(gap / gesture.gap);
+                    gesture.gap = gap;
+                }
+                mapYaw = wrapAngle(gesture.yaw + (mid.x - gesture.x) * ROTATE_RATE);
+                mapPitch = wrapAngle(gesture.pitch + (mid.y - gesture.y) * ROTATE_RATE);
+                camUpdate();
+                recenterOn(mapFocus);
+                drawMap();
+            }
+            return false;
+        })
+        // A finger that lifts without having really moved is a tap, and does what a click does.
+        .on("touchend touchcancel", (e) => {
+            if (!touchMap()){ return; }
+            let lifted = e.originalEvent.changedTouches;
+            if (touching === 'pan' && tap && !tap.moved && lifted && lifted.length){
+                let hit = starAt(lifted[0]) || bodyAt(lifted[0]);
+                if (hit){
+                    recenterOn(genXYZcoord(hit));
+                    drawMap();
+                    starLockOn = hit;
+                    if (cowGlyph(hit)){
+                        unlockFeat('secret_cow', global.race.universe === 'micro' ? true : false);
+                    }
+                }
+            }
+            // Lifting one of two fingers leaves the other one panning rather than stranding the map
+            // mid-gesture, so the pan is re-seated from where that finger actually is.
+            let left = e.originalEvent.touches;
+            if (left && left.length === 1){
+                touching = 'pan';
+                tap = false;
+                dragOffset.x = left[0].clientX - mapShift.x;
+                dragOffset.y = left[0].clientY - mapShift.y;
+            }
+            else if (!left || left.length === 0){
+                touching = false;
+                tap = false;
             }
             return false;
         }),
