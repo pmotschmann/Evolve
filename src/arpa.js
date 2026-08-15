@@ -213,7 +213,7 @@ export const arpaProjects = {
             Food(offset,wiki){ return costMultiplier('guard_station', offset, 5000000, 1.08, wiki); },
             Stone(offset,wiki){ return costMultiplier('guard_station', offset, 60000000, 1.08, wiki); },
             Furs(offset,wiki){ return costMultiplier('guard_station', offset, 44000000, 1.08, wiki); },
-            Water(offset,wiki){ return costMultiplier('guard_station', offset, 250000, 1.08, wiki); }
+            Water(offset,wiki){ return costMultiplier('guard_station', offset, 120000, 1.08, wiki); }
         }
     },
     railway: {

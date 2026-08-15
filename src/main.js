@@ -1,4 +1,4 @@
-import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level, callback_queue, active_rituals, suppressReactivity, restoreReactivity } from './vars.js';
+import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level, callback_queue, active_rituals, suppressReactivity, restoreReactivity, decayPerks} from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat, checkAdept } from './achieve.js';
 import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, resetResBuffer, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone, exceededATimeThreshold, loopTimers, getWeaselTechLevelRequirement, calcQuantumLevel, drawPet } from './functions.js';
@@ -3295,13 +3295,13 @@ function fastLoop(){
             let gasVal = govActive('gaslighter',0) || 0;
             let signalVal;
             let mVal = gasVal + global.tech.broadcast;
-            if (global.race['orbit_decayed']) {
-                signalVal = p_on['nav_beacon'] || 0;
-                mVal /= 2; // 50% effectiveness also applies to Media governor
-            }
-            else if (global.tech['isolation'] && global.race['truepath']){
+            if (global.tech['isolation'] && global.race['truepath']){
                 signalVal = support_on['colony'];
                 mVal *= 2;
+            }
+            else if (global.race['orbit_decayed']) {
+                signalVal = p_on['nav_beacon'] || 0;
+                mVal /= 2;
             }
             else {
                 signalVal = p_on['wardenclyffe'];
@@ -3315,7 +3315,7 @@ function fastLoop(){
         if (support_on['vr_center'] && !global.race['joyless']){
             let gasVal = govActive('gaslighter',1) || 0;
             let vr_morale = gasVal + 1;
-            if (global.race['orbit_decayed']){
+            if (decayPerks()){
                 vr_morale += 2;
             }
             global.city.morale.vr = support_on['vr_center'] * vr_morale;
@@ -3889,7 +3889,7 @@ function fastLoop(){
             let red_synd = syndicate('spc_red');
             if (global.tech['mars']){
                 biodome = support_on['biodome'] * workerScale(global.civic.colonist.workers,'colonist') * production('biodome','food') * production('psychic_boost','Food');
-                if (global.race['cataclysm'] || global.race['orbit_decayed']){
+                if (global.race['cataclysm'] || decayPerks()){
                     biodome += support_on['biodome'] * production('biodome','cat_food') * production('psychic_boost','Food');
                 }
             }
@@ -4010,7 +4010,7 @@ function fastLoop(){
                 }
 
                 if (global.space['spaceport']){
-                    spaceport = p_on['spaceport'] * (global.race['cataclysm'] || global.race['orbit_decayed'] ? 2 : 25);
+                    spaceport = p_on['spaceport'] * (global.race['cataclysm'] || decayPerks() ? 2 : 25);
                     breakdown.p.consume.Food[loc('space_red_spaceport_title')] = -(spaceport);
                 }
 
@@ -6445,13 +6445,13 @@ function fastLoop(){
             if (global.city['pylon'] || global.space['pylon'] || global.tauceti['pylon']){
                 let mana_base = 0;
                 let name = 'city_pylon';
-                if ((global.race['cataclysm'] || global.race['orbit_decayed']) && global.space['pylon']){
-                    mana_base = global.space.pylon.count * 0.005;
-                    name = 'space_red_pylon';
-                }
-                else if (global.tech['isolation'] && global.tauceti['pylon']){
+                if (global.tech['isolation'] && global.tauceti['pylon']){
                     mana_base = global.tauceti.pylon.count * 0.0125;
                     name = 'tau_home_pylon';
+                }
+                else if ((global.race['cataclysm'] || global.race['orbit_decayed']) && global.space['pylon']){
+                    mana_base = global.space.pylon.count * 0.005;
+                    name = 'space_red_pylon';
                 }
                 else if (global.city['pylon']){
                     mana_base = global.city.pylon.count * 0.01;
@@ -8505,7 +8505,7 @@ function fastLoop(){
             if (milVal){
                 train *= 1 + (milVal / 100);
             }
-            rate *= 1 + ((global.race['orbit_decayed'] && global.space['space_barracks'] ? global.space.space_barracks.on : global.city.boot_camp.count) * train);
+            rate *= 1 + ((decayPerks() && global.space['space_barracks'] ? global.space.space_barracks.on : global.city.boot_camp.count) * train);
         }
         if (global.tech['celestial_warfare'] && global.tech.celestial_warfare >= 5 && global.eden['bunker']){
             let train = 0.1;
@@ -8687,7 +8687,7 @@ function midLoop(){
         var caps = {
             Money: 1000,
             Slave: 0,
-            Authority: global.race['cataclysm'] || global.race['orbit_decayed'] ? 90 : (global.race['lone_survivor'] ? 100 : 80),
+            Authority: (global.race['cataclysm'] || global.race['orbit_decayed']) && !global.tech['isolation'] ? 90 : (global.race['lone_survivor'] ? 100 : 80),
             Mana: 0,
             Energy: 100,
             Sus: 100,
@@ -8905,7 +8905,7 @@ function midLoop(){
                 breakdown.c.Authority[loc(`event_pet_${global.race.pet.type}_owner`)] = pet+'v';
             }
 
-            global.resource.Authority.amount = global.race['cataclysm'] || global.race['orbit_decayed'] ? 90 : (global.race['lone_survivor'] ? 100 : 80);
+            global.resource.Authority.amount = (global.race['cataclysm'] || global.race['orbit_decayed']) && !global.tech['isolation'] ? 90 : (global.race['lone_survivor'] ? 100 : 80);
             if (global.city.morale.current > 100){
                 let excess = global.city.morale.current - 100;
                 if (global.civic.govern.type === 'democracy'){
@@ -9026,13 +9026,13 @@ function midLoop(){
         if (global.city['pylon'] || global.space['pylon'] || global.tauceti['pylon']){
             let gain = 0;
             let name = 'city_pylon';
-            if ((global.race['cataclysm'] || global.race['orbit_decayed']) && global.space['pylon']){
-                gain = spatialReasoning(2) * global.space.pylon.count;
-                name = 'space_red_pylon';
-            }
-            else if (global.tech['isolation'] && global.tauceti['pylon']){
+            if (global.tech['isolation'] && global.tauceti['pylon']){
                 gain = spatialReasoning(2) * global.tauceti.pylon.count;;
                 name = 'tau_home_pylon';
+            }
+            else if ((global.race['cataclysm'] || global.race['orbit_decayed']) && global.space['pylon']){
+                gain = spatialReasoning(2) * global.space.pylon.count;
+                name = 'space_red_pylon';
             }
             else if (global.city['pylon']){
                 gain = spatialReasoning(5) * global.city.pylon.count;;
@@ -9189,7 +9189,7 @@ function midLoop(){
             if (global.tech['theatre'] && !global.race['joyless']){
                 lCaps['entertainer'] += jobScale(global.space.spc_casino.count);
             }
-            if (global.race['orbit_decayed']){
+            if (decayPerks()){
                 lCaps['banker'] += jobScale(global.space.spc_casino.count);
             }
         }
@@ -9415,13 +9415,13 @@ function midLoop(){
             lCaps['colonist'] += jobScale(support_on['living_quarters']);
             breakdown.c[global.race.species][`${planetName().red}`] = gain + 'v';
 
-            if ((global.race['cataclysm'] || global.race['orbit_decayed']) && global.tech['home_safe']){
+            if ((global.race['cataclysm'] || decayPerks()) && global.tech['home_safe']){
                 let gain = (support_on['living_quarters'] * spatialReasoning(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? 100000 : 50000) : 25000));
                 caps['Money'] += gain;
                 breakdown.c.Money[loc('space_red_living_quarters_title')] = gain+'v';
             }
         }
-        if (support_on['biodome'] && (global.race['artifical'] || global.race['orbit_decayed'])){
+        if (support_on['biodome'] && (global.race['artifical'] || decayPerks())){
             let gain = support_on['biodome'] * spatialReasoning(global.race['artifical'] ? 500 : 100);
             caps['Food'] += gain;
             breakdown.c.Food[loc('space_red_signal_tower_title')] = gain+'v';
@@ -9906,8 +9906,8 @@ function midLoop(){
             breakdown.c.Knowledge[loc('portal_sensor_drone_title')] = gain+'v';
         }
         if (global.space['satellite']){
-            let gain = (global.space.satellite.count * (global.race['cataclysm'] || global.race['orbit_decayed'] ? 2000 : 750));
-            if ((global.race['cataclysm'] || global.race['orbit_decayed']) && global.tech['supercollider']){
+            let gain = (global.space.satellite.count * (global.race['cataclysm'] || decayPerks() ? 2000 : 750));
+            if ((global.race['cataclysm'] || decayPerks()) && global.tech['supercollider']){
                 let ratio = global.tech['tp_particles'] || (global.tech['particles'] && global.tech['particles'] >= 3) ? 5: 10;
                 gain *= (global.tech['supercollider'] / ratio) + 1;
             }
@@ -10098,7 +10098,7 @@ function midLoop(){
         }
 
         if (global.city['bank'] || (global.race['cataclysm'] && p_on['spaceport'])){
-            let vault = global.race['cataclysm'] || global.race['orbit_decayed'] ? bank_vault() * 4 : bank_vault();
+            let vault = global.race['cataclysm'] || decayPerks() ? bank_vault() * 4 : bank_vault();
             let banks = global.race['cataclysm'] || global.race['orbit_decayed'] ? p_on['spaceport'] : global.city['bank'].count;
 
             let gain = (banks * spatialReasoning(vault));
@@ -10233,7 +10233,7 @@ function midLoop(){
             if ((global.race['cataclysm'] || global.tech['resettle']) && support_on['observatory']){
                 sci *= 1 + (support_on['observatory'] * (global.tech['resettle'] ? 0.02 : 0.25));
             }
-            if ((global.race['cataclysm'] || global.race['orbit_decayed']) && global.portal['sensor_drone'] && global.tech['science'] >= 14){
+            if ((global.race['cataclysm'] || decayPerks()) && global.portal['sensor_drone'] && global.tech['science'] >= 14){
                 sci *= 1 + (p_on['sensor_drone'] * 0.02);
             }
             if (global.tech['science'] >= 21){
@@ -10522,13 +10522,13 @@ function midLoop(){
             if (global.city['pylon'] || global.space['pylon'] || global.tauceti['pylon']){
                 let p_count = 0;
                 let name = 'city_pylon';
-                if ((global.race['cataclysm'] || global.race['orbit_decayed']) && global.space['pylon']){
-                    p_count = global.space.pylon.count;
-                    name = 'space_red_pylon';
-                }
-                else if (global.tech['isolation'] && global.tauceti['pylon']){
+                if (global.tech['isolation'] && global.tauceti['pylon']){
                     p_count = global.tauceti.pylon.count;
                     name = 'tau_home_pylon';
+                }
+                else if ((global.race['cataclysm'] || global.race['orbit_decayed']) && global.space['pylon']){
+                    p_count = global.space.pylon.count;
+                    name = 'space_red_pylon';
                 }
                 else if (global.city['pylon']){
                     p_count = global.city.pylon.count;

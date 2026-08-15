@@ -11,7 +11,7 @@ import { defineGovernor, removeTask, govActive } from './governor.js';
 import { defineIndustry, nf_resources, addSmelter, factoryData, setupRituals, cancelRituals } from './industry.js';
 import { arpa } from './arpa.js';
 import { matrix, retirement, gardenOfEden } from './resets.js';
-import { traitCostMod } from './races.js';
+import { traitCostMod, fathomCheck } from './races.js';
 import { loadTab } from './index.js';
 import { zombieGenociderTask, unlockFeat } from './achieve.js';
 import { createGLContext, webglSupported } from './glmap.js';
@@ -2287,9 +2287,22 @@ const outerTruth = {
                 return `<div>${loc('plus_max_resource',[`\$${$(this)[0].vault().toLocaleString()}`,loc('resource_Money_name')])}</div><div>${loc('plus_max_resource',[$(this)[0].soldiers(),loc('civics_garrison_soldiers')])}</div>`;
             },
             vault(){
-                let vault = 1000000000;
+                let vault = spatialReasoning(65000000);
                 if (global.tech['extra_vault']){
                     vault *= 1 + (global.tech.extra_vault * 0.1);
+                }
+                if (global.race['paranoid']){
+                    vault *= 1 - (traits.paranoid.vars()[0] / 100);
+                }
+                if (global.race['hoarder']){
+                    vault *= 1 + (traits.hoarder.vars()[0] / 100);
+                }
+                let fathom = fathomCheck('dracnid');
+                if (fathom > 0){
+                    vault *= 1 + (traits.hoarder.vars(1)[0] / 100 * fathom);
+                }
+                if (global.race['inflation']){
+                    vault *= 1 + (global.race.inflation / 125);
                 }
                 return vault;
             },

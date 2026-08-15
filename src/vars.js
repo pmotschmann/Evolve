@@ -1630,6 +1630,11 @@ if (!global.settings['showStorage']){
     }
 }
 
+// Whether the orbit-decay compensation is in effect.
+export function decayPerks(){
+    return global.race['orbit_decayed'] && !global.tech['isolation'] ? true : false;
+}
+
 // Detect if player device is a touch screen device
 export function touchDevice(){
     if (typeof navigator !== 'undefined' && typeof navigator.maxTouchPoints === 'number'){

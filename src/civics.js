@@ -1,4 +1,4 @@
-import { global, seededRandom, keyMultiplier, sizeApproximation, p_on } from './vars.js';
+import { global, seededRandom, keyMultiplier, sizeApproximation, p_on, decayPerks} from './vars.js';
 import { loc } from './locale.js';
 import { calcPrestige, clearElement, popover, clearPopper, vBind, timeFormat, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat } from './functions.js';
 import { universeAffix } from './achieve.js';
@@ -852,7 +852,7 @@ function trainSpy(i){
             global.resource.Money.amount -= cost;
             let time = 300;
             if (global.tech['spy'] >= 3 && global.city['boot_camp']){
-                time -= (global.race['orbit_decayed'] && global.space['space_barracks'] ? global.space.space_barracks.on : global.city['boot_camp'].count) * 10;
+                time -= (decayPerks() && global.space['space_barracks'] ? global.space.space_barracks.on : global.city['boot_camp'].count) * 10;
                 if (time < 10){
                     time = 10;
                 }

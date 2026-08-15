@@ -403,7 +403,7 @@ export function messageQueue(msg,color,dnr,tags,reload){
     updateMobileMsg();
 }
 
-// Max ,obile message log size
+// Max mobile message log size
 export const MOBILE_MSG_MAX = 3;
 
 export function mobileMsgLines(){
