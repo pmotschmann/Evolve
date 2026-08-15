@@ -11,7 +11,7 @@ import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMul
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types, spaceSectors } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
-import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYZcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, randomCoord, atShipyard, pinSalvage, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, moveShips, facilityFindings } from './truepath.js';
+import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYZcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, randomCoord, atShipyard, pinSalvage, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, moveShips, facilityFindings, orbitPeriod } from './truepath.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
 import { defineGovernor, govern, govActive, removeTask } from './governor.js';
@@ -19,7 +19,7 @@ import { production, highPopAdjust, teamster, factoryBonus, technicianBonus } fr
 import { swissKnife } from './tech.js';
 import { vacuumCollapse } from './resets.js';
 import { index, mainVue, initTabs, loadTab, registerOfflineHandler } from './index.js';
-import { setWeather, seasonDesc, astrologySign, astroVal } from './seasons.js';
+import { setMoonPhase, setWeather, seasonDesc, astrologySign, astroVal } from './seasons.js';
 import { getTopChange } from './wiki/change.js';
 import { enableDebug, updateDebugData } from './debug.js';
 
@@ -873,6 +873,7 @@ else {
     if (global.portal.hasOwnProperty('soul_forge') && global.portal.soul_forge.on){
         p_on['soul_forge'] = 1;
     }
+    setMoonPhase();
     setWeather();
 }
 
@@ -8664,6 +8665,24 @@ function midLoop(){
         });
     }
     else {
+        // Moon Phase
+        if (!global.race['orbit_decayed']){
+            if (global.city.ptrait.includes('retrograde')){
+                global.city.calendar.moon_angle -= global.city.ptrait.includes('dense') ? 5.4 : 2.7;
+                if (global.city.calendar.moon_angle < 0){
+                    global.city.calendar.moon_angle += 360;
+                }
+            }
+            else {
+                global.city.calendar.moon_angle += global.city.ptrait.includes('dense') ? 5.4 : 2.7;
+                if (global.city.calendar.moon_angle > 360){
+                    global.city.calendar.moon_angle -= 360;
+                }
+            }
+            global.city.calendar.moon = Math.floor(global.city.calendar.moon_angle / 13.2);
+        }
+        setMoonPhase();
+
         // Resource caps
         var caps = {
             Money: 1000,
@@ -12046,7 +12065,7 @@ function midLoop(){
             Object.keys(spacePlanetStats).forEach(function(planet){
                 if (spacePlanetStats[planet].startype){ return; }   // stars use fixed coordinates
                 if (global.space.position.hasOwnProperty(planet)){
-                    let orbit = spacePlanetStats[planet].orbit === -1 ? orbitLength() : spacePlanetStats[planet].orbit;
+                    let orbit = orbitPeriod(planet);
                     if (orbit === 0){
                         global.space.position[planet] = 0;
                     }
@@ -12680,25 +12699,8 @@ function longLoop(){
             else {
                 global.city.hot = 0;
             }
-
-            // Moon Phase
-            if (!global.race['orbit_decayed']){
-                if (global.city.ptrait.includes('retrograde')){
-                    global.city.calendar.moon--;
-                    if (global.city.calendar.moon < 0){
-                        global.city.calendar.moon = 27;
-                    }
-                }
-                else {
-                    global.city.calendar.moon++;
-                    if (global.city.calendar.moon > 27){
-                        global.city.calendar.moon = 0;
-                    }
-                }
-            }
-
-            setWeather();
         }
+        setWeather();
 
         if (!global.race['cataclysm'] && !global.race['orbit_decayed'] && !global.race['lone_survivor'] && !global.race['vax']){
             let deterioration = Math.floor(50000000 / (1 + global.race.mutation)) - global.stats.days;

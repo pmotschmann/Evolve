@@ -2165,7 +2165,7 @@ const outerTruth = {
                 let res = [
                     'Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal','Steel','Titanium',
                     'Alloy','Polymer','Iridium','Chrysotile','Nano_Tube','Neutronium','Adamantite','Tungsten',
-                    'Graphene','Stanene','Bolognium','Unobtainium','Uranium'
+                    'Graphene','Stanene','Bolognium','Unobtainium','Uranium','Water','Orichalcum'
                 ];
                 return res;
             },
@@ -2217,6 +2217,10 @@ const outerTruth = {
                         return 10000;
                     case 'Uranium':
                         return 2700;
+                    case 'Orichalcum':
+                        return 25000;
+                    case 'Water':
+                        return 150;
                     default:
                         return 0;
                 }
@@ -2292,7 +2296,7 @@ const outerTruth = {
             soldiers(){
                 let troops = 20;
                 if (global.tech['guard_station']){
-                    troops += global.tech.guard_station;
+                    troops += global.tech.guard_station * 2;
                 }
                 return jobScale(troops);
             },
@@ -5502,9 +5506,6 @@ export function checkPathRequirements(era,region,action){
 const razeTargets = {
     spc_moon: { c: 'space', s: ['moon_base','iridium_mine','helium_mine','observatory'] },
     spc_red: { c: 'space', s: ['spaceport','red_tower','living_quarters','pylon','vr_center','garage','red_mine','fabrication','red_factory','biodome','exotic_lab','ziggurat','space_barracks'] },
-    // Venus only comes under threat during the final assault, and even then the tether and what it
-    // reaches are off the list: the descender is a finished megaproject like every other one excluded
-    // here, and the alien facility is a fixed find rather than something you built.
     spc_venus: { c: 'space', s: ['cloud_city','nitrogen_harvester','cloud_quarters','industrial_complex','workshop','university'] },
     spc_hell: { c: 'space', s: ['geothermal','hell_smelter','spc_casino','swarm_plant'] },
     spc_titan: { c: 'space', s: ['titan_spaceport','electrolysis','hydrogen_plant','titan_quarters','titan_mine','storehouse','titan_bank','g_factory','sam','decoder','ai_colonist','metalworks'] },
@@ -5654,12 +5655,7 @@ function zTitanWatch(){
 function zFleetTargets(){
     let targets = ['spc_red','spc_hell'];
     if (global.tech['luna'] && global.tech.luna >= 3){ targets.push('spc_moon'); }
-    // Titan only becomes worth raiding once you are established enough there to have found what was
-    // already on it (see zTitanWatch).
     if (global.tech['resettle'] && global.tech.resettle >= 13){ targets.push('spc_titan'); }
-    // The assault stops respecting the boundaries the raids kept to: the cloud city is suddenly worth
-    // hitting, and it reaches all the way to Tau Ceti rather than the one scripted strike it managed
-    // before. Everything opened here stays open afterwards.
     if (global.tech['resettle'] && global.tech.resettle >= 19){
         targets.push('spc_venus');
         targets.push('tau_home');
@@ -5668,11 +5664,7 @@ function zFleetTargets(){
     return targets;
 }
 
-// Hulls the horde flies, smallest first. `weight` is how often a class comes up relative to the others
-// once it is cleared to fly; the two heavy hulls turn up half as often as the four it builds routinely.
-// Called at every roll like avail and horde, so a rate can be moved on tech or horde size later.
-// Once the assault opens the horde stops bothering with its lightest hull and starts flying its heaviest
-// as readily as anything else, so the corvette drops out and the battlecruiser stops being a rarity.
+// Hulls the zombie horde flies, smallest first. `weight` is how often a class comes up relative to the others
 const zFleetHulls = {
     corvette:      { weight(){ return global.tech['resettle'] && global.tech.resettle >= 19 ? 0 : 1; }, avail(){ return true; },  horde(){ return 350; } },
     frigate:       { weight(){ return 1; },   avail(){ return true; },  horde(){ return 825; } },
@@ -5725,7 +5717,7 @@ const zFleetDelayMax = 25;
 const zFleetRampDays = 150;     // days of raiding before launches and cargoes reach full strength
 const zFleetOddsStart = 0.08;   // chance of a launch on the first day
 const zFleetOddsEnd = 0.40;     // ...and once the ramp is complete.
-const zAssaultOdds = 0.40;       // stands in for the above during the assault: a launch every day.
+const zAssaultOdds = 0.60;       // stands in for the above during the assault.
 const zFleetLoadStart = 0.25;   // share of a hull's cargo that lands on the first day
 
 // --- The final assault ---------------------------------------------------------------------------
@@ -7036,11 +7028,10 @@ export function drawShipYard(){
         assemble.append(`<span><b-checkbox class="patrol" v-model="s.expand" @change="redraw()">${loc('outer_shipyard_fleet_details')}</b-checkbox></span>`);
         assemble.append(`<span><b-checkbox class="patrol" v-model="s.sort" @change="redraw()">${loc('outer_shipyard_fleet_sort')}</b-checkbox></span>`);
 
-        // Two star systems and dozens of locations make the flat list hard to read, so it can be
-        // narrowed to one system and folded up by location. Built from shipyardSystems(), which is
-        // stable, so these items do not need rebuilding as the campaign runs.
+        // Filter by system or shipyard locations
         if (shipyardViewUnlocked()){
             let systems = `<b-dropdown-item aria-role="listitem" class="sysAll" @click="setSys('all')">${systemLabel('all')}</b-dropdown-item>`;
+            systems += `<b-dropdown-item aria-role="listitem" class="sysYards" @click="setSys('yards')">${systemLabel('yards')}</b-dropdown-item>`;
             shipyardSystems().forEach(function(sys){
                 systems += `<b-dropdown-item aria-role="listitem" class="sys_${sys}" @click="setSys('${sys}')">${systemLabel(sys)}</b-dropdown-item>`;
             });
@@ -7997,6 +7988,7 @@ function shipyardSystems(){
 // Display name of a system key, the same label locSystemName puts on a location.
 function systemLabel(sys){
     if (sys === 'all'){ return loc('outer_shipyard_system_all'); }
+    if (sys === 'yards'){ return loc('outer_shipyard_system_yards'); }
     let star = sys === 'sun' ? spacePlanetStats.spc_sun : spacePlanetStats[sys];
     return star && star.label ? star.label : sys;
 }
@@ -8164,9 +8156,12 @@ function drawShips(){
         // Which tab should the ship be drawn in
         let shipDisplayLocation = (ship.inTransit ? ship.destination.name : ship.location.name);
 
-        if (view.sys !== 'all' && locSystem(shipDisplayLocation) !== view.sys){ return; }
-        // A folded fleet shows its flagship and nothing else, the same way a folded location shows only
-        // its header. The flagship keeps its row, so there is always something left to unfold from.
+        // 'yards' filters for locations with shipyards rather then star systems
+        if (view.sys === 'yards'){
+            if (!repairYards.includes(shipDisplayLocation)){ return; }
+        }
+        else if (view.sys !== 'all' && locSystem(shipDisplayLocation) !== view.sys){ return; }
+        // A folded fleet shows its flagship and nothing else
         if (ship.fid && !ship.flag && view.ffold[ship.fid]){
             collapsed = true;
             return;
@@ -8592,7 +8587,7 @@ function initializeShipTrip(ship, locationName, trip){
 // update in main.js advances at: it runs on the mid loop, five of which make a game day, so its
 // 72/orbit per tick is 360/orbit per day — one full circuit in exactly `orbit` days.
 function orbitDegrees(id, days){
-    let orbit = spacePlanetStats[id].orbit === -1 ? orbitLength() : spacePlanetStats[id].orbit;
+    let orbit = orbitPeriod(id);
     let now = global.space.position[id] || 0;
     if (!(orbit > 0)){ return now; }
     return (now + days * (360 / orbit)) % 360;
@@ -8688,9 +8683,7 @@ function calcLandingPoint(startingPosition, planet, speed, elapsed) {
     if (ship_dist >= semiMinor && ship_dist <= semiMajor) {
         cross1_days = 0;
     }
-    let planet_orbit = spacePlanetStats[planet].orbit === -1
-      ? orbitLength()
-      : spacePlanetStats[planet].orbit;
+    let planet_orbit = orbitPeriod(planet);
     let planet_speed = 360 / planet_orbit;
     // `i` counts flight days from where the ship is now, but the planet has also been moving through
     // whatever the ship spent getting here, so the angle is wound by elapsed as well.
@@ -10782,6 +10775,15 @@ function orbitEcc(id){
 // Which way round a body travels: 1 the usual way, -1 backwards.
 function orbitDirection(id){
     return id === 'spc_moon' && homeTrait('retrograde') ? -1 : 1;
+}
+
+// How long a body takes to come round, in days.
+export function orbitPeriod(id){
+    let body = spacePlanetStats[id];
+    if (!body){ return 0; }
+    let orbit = body.orbit === -1 ? orbitLength() : body.orbit;
+    if (id === 'spc_moon' && homeTrait('dense')){ orbit /= 2; }
+    return orbit;
 }
 
 // Solve Kepler's equation, M = E - e·sin(E), for the eccentric anomaly.

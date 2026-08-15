@@ -206,13 +206,13 @@ export const arpaProjects = {
         grant: 'guard_station',
         path: ['truepath'],
         effect(){
-            return loc('arpa_projects_guard_station_effect',[1,actions.space.spc_survey.fort_knox.title()]);
+            return loc('arpa_projects_guard_station_effect',[2,actions.space.spc_survey.fort_knox.title()]);
         },
         cost: {
             Money(offset,wiki){ return costMultiplier('guard_station', offset, 48000000, 1.08, wiki); },
-            Food(offset,wiki){ return costMultiplier('guard_station', offset, 10000000, 1.08, wiki); },
-            Stone(offset,wiki){ return costMultiplier('guard_station', offset, 100000000, 1.08, wiki); },
-            Furs(offset,wiki){ return costMultiplier('guard_station', offset, 75000000, 1.08, wiki); },
+            Food(offset,wiki){ return costMultiplier('guard_station', offset, 5000000, 1.08, wiki); },
+            Stone(offset,wiki){ return costMultiplier('guard_station', offset, 60000000, 1.08, wiki); },
+            Furs(offset,wiki){ return costMultiplier('guard_station', offset, 44000000, 1.08, wiki); },
             Water(offset,wiki){ return costMultiplier('guard_station', offset, 250000, 1.08, wiki); }
         }
     },

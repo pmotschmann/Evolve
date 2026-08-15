@@ -2169,6 +2169,7 @@ if (!global.city['calendar']){
         weather: 2,
         temp: 1,
         moon: 0,
+        moon_angle: 0,
         wind: 0,
         orbit: 365
     };
@@ -2180,6 +2181,10 @@ if (!global.city.calendar['season']){
 
 if (!global.city.calendar['moon']){
     global.city.calendar['moon'] = 0;
+}
+
+if (!global.city.calendar['moon_angle']){
+    global.city.calendar['moon_angle'] = Math.floor(global.city.calendar['moon'] * 360 / 28);
 }
 
 if (!global.city.calendar['wind']){
