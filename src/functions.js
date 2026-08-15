@@ -399,6 +399,35 @@ export function messageQueue(msg,color,dnr,tags,reload){
             }
         });
     }
+
+    updateMobileMsg();
+}
+
+// Max ,obile message log size
+export const MOBILE_MSG_MAX = 3;
+
+export function mobileMsgLines(){
+    let show = global.settings['mMsg'];
+    if (typeof show !== 'number' || !(show >= 0)){ return 1; }
+    return Math.min(Math.floor(show), MOBILE_MSG_MAX);
+}
+
+// Redraw the mobile message bar
+export function updateMobileMsg(){
+    let bar = document.getElementById('mobileMsg');
+    if (!bar){ return; }
+    let show = mobileMsgLines();
+    // The height the rest of the mobile layout has to make room for is driven off this attribute in
+    // CSS, so the bar and the space reserved for it can never disagree.
+    document.documentElement.setAttribute('data-mmsg', show);
+    let body = bar.querySelector('.mMsgBody');
+    if (!body){ return; }
+    clearElement($(body));
+    if (show === 0){ return; }
+    let log = message_logs[message_logs.view] || [];
+    for (let i = 0; i < show && i < log.length; i++){
+        $(body).append($(`<p class="has-text-${log[i].color}"></p>`).text(log[i].msg));
+    }
 }
 
 export function removeFromQueue(build_ids){

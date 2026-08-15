@@ -1643,6 +1643,11 @@ if (!global.settings.hasOwnProperty('touch')){
     global.settings['touch'] = touchDevice();
 }
 
+// How many recent messages the mobile message bar shows.
+if (!global.settings.hasOwnProperty('mMsg')){
+    global.settings['mMsg'] = 1;
+}
+
 if (!global.settings.hasOwnProperty('lowPowerBalance')){
     global.settings['lowPowerBalance'] = false;
 }

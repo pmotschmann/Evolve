@@ -1297,7 +1297,8 @@ Misc ---------> Main template
         // UI Bars
         .topBar,
         .promoBar,
-        #mobileNav {
+        #mobileNav,
+        #mobileMsg {
             background-color: @bars-background;
         }
 
@@ -5987,6 +5988,17 @@ div.bigbang {
     display: none; // Hidden on desktop
 }
 
+#mobileMsg {
+    display: none; // Hidden on desktop
+}
+
+// How much room the mobile message bar takes out of the bottom of the screen. Zero everywhere but
+// the mobile layout, where the sizes below take over; the panels above it all subtract this, so the
+// bar and the space reserved for it are driven by the one value and cannot drift apart.
+:root {
+    --mMsg: 0rem;
+}
+
 @media only screen and (max-width: 48rem) {
 
     html {
@@ -6087,6 +6099,69 @@ div.bigbang {
     }
 
     // Bottom navigation bar for switching between active panels on mobile
+    // --- Message bar ---
+    @mMsgLine: 1.3rem;
+    @mMsgGrip: 1.2rem;   // collapsed: the handle alone, still a tap target
+
+    // Wrapped in calc() because LESS passes a custom property's value through verbatim rather than evaluating it
+    :root[data-mmsg="0"] { --mMsg: @mMsgGrip; }
+    :root[data-mmsg="1"] { --mMsg: @mMsgLine; }
+    :root[data-mmsg="2"] { --mMsg: ~"calc(@{mMsgLine} * 2)"; }
+    :root[data-mmsg="3"] { --mMsg: ~"calc(@{mMsgLine} * 3)"; }
+
+    #mobileMsg {
+        display: block;
+        position: fixed;
+        bottom: 4.8rem;  // promoBar (2.4) + mobileNav (2.4) — sit directly above the buttons
+        left: 0;
+        right: 0;
+        z-index: 30;
+        height: var(--mMsg);
+        overflow: hidden;
+        cursor: pointer;
+        border-top: 1px solid;
+        // Background comes from the active theme, alongside the other fixed bars.
+        // The grip is parked in the top-right corner, so the text is inset far enough to clear it.
+        padding: 0 1.4rem 0 0.5rem;
+
+        .mMsgBody p {
+            // One message per line, clipped rather than wrapped: a long message would otherwise
+            // reflow the bar to a different height than the layout above has reserved for it.
+            line-height: @mMsgLine;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 0.85rem;
+        }
+
+        // A chevron pointing up while there is more to open, and down once it is fully open.
+        .mMsgGrip {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 1.4rem;
+            height: @mMsgGrip;
+            opacity: 0.75;
+
+            &::before {
+                content: '';
+                position: absolute;
+                top: 0.4rem;
+                left: 0.4rem;
+                width: 0.4rem;
+                height: 0.4rem;
+                border-left: 2px solid currentColor;
+                border-top: 2px solid currentColor;
+                transform: rotate(45deg);
+            }
+        }
+    }
+
+    :root[data-mmsg="3"] #mobileMsg .mMsgGrip::before {
+        top: 0.2rem;
+        transform: rotate(-135deg);
+    }
+
     #mobileNav {
         display: flex;
         position: fixed;
@@ -6143,7 +6218,8 @@ div.bigbang {
             // svh (not vh) so the bottom clears the fixed footer + mobileNav even while the mobile
             // browser URL bar is showing; the deduction is generous enough that the last rows stay
             // reachable even when the race-info header (morale + power) is at its tallest.
-            height: ~"calc(100svh - 7.5rem)";
+            // --mMsg is the message bar above the nav buttons, which the player can resize.
+            height: ~"calc(100svh - 7.5rem - var(--mMsg))";
             padding-top:0.75rem;
             padding-bottom: 0.5rem;
 
@@ -6509,7 +6585,7 @@ div.bigbang {
     .leftColumn {
         display: block;
         height: auto;
-        padding-bottom: 4.9rem; // promoBar (2.4) + mobileNav (2.4) + 0.1 gap
+        padding-bottom: ~"calc(4.9rem + var(--mMsg))"; // promoBar (2.4) + mobileNav (2.4) + 0.1 gap, plus the message bar
 
         #sideQueue {
             display: none;
@@ -6529,7 +6605,7 @@ div.bigbang {
 
         #mainColumn {
             display: block;
-            padding-bottom: 4.9rem;
+            padding-bottom: ~"calc(4.9rem + var(--mMsg))";
         }
     }
 
@@ -6539,7 +6615,7 @@ div.bigbang {
             display: block;
             height: auto;
             padding-top: 0.75rem;
-            padding-bottom: 4.9rem;
+            padding-bottom: ~"calc(4.9rem + var(--mMsg))";
 
             #race,
             #resources {
@@ -6566,7 +6642,7 @@ div.bigbang {
 
         #mainColumn {
             display: block;
-            padding-bottom: 4.9rem;
+            padding-bottom: ~"calc(4.9rem + var(--mMsg))";
         }
 
         #mainTabs > nav.tabs {
@@ -6581,20 +6657,10 @@ div.bigbang {
 
     // Resource list height
     .resources {
-        height: ~"calc(100svh - 9.2rem)";
+        height: ~"calc(100svh - 9.2rem - var(--mMsg))";
     }
 
     // --- Action-button grid ---
-    // Desktop lays the building/tech/etc. action buttons out as fixed-width (12.625rem) inline
-    // blocks that wrap. On a narrow screen that wraps too, but the leftover width all collects into
-    // one dead strip on the right. Instead, lay the buttons of each tab panel out as a grid that
-    // fills the width: as many columns as fit at the current button width (~3 on a small tablet /
-    // phone in landscape), stretching (1fr) to consume the row so there's no right-side gap. As the
-    // screen narrows the column count drops to 2. It is floored at 2 — the min() second arm caps a
-    // column at half the row so two always fit and a button is never stranded alone across the row.
-    // auto-fill (not auto-fit) keeps a lone trailing button at column width rather than ballooning it.
-    // Buttons only ever grow past their desktop width here, never shrink below it (until the 2-column
-    // floor forces it on the very narrowest phones).
     #mainColumn {
         #evolution, #city, #space, #outerSol, #interstellar, #galaxy,
         #tauceti, #eden, #portal, #tech, #oldTech,

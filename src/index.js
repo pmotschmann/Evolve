@@ -1,7 +1,7 @@
 import { global, tmp_vars, save, message_logs, message_filters, webWorker } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats, alevel } from './achieve.js';
-import { vBind, initMessageQueue, clearElement, clearTabPanels, flushTabPanelClears, flib, tagEvent, gameLoop, popover, clearPopper, powerGrid, easterEgg, trickOrTreat, drawIcon } from './functions.js';
+import { vBind, initMessageQueue, clearElement, clearTabPanels, flushTabPanelClears, flib, tagEvent, gameLoop, popover, clearPopper, powerGrid, easterEgg, trickOrTreat, drawIcon, updateMobileMsg, mobileMsgLines, MOBILE_MSG_MAX } from './functions.js';
 import { tradeRatio, atomic_mass, supplyValue, marketItem, containerItem, loadEjector, loadSupply, loadAlchemy, initResourceTabs, drawResourceTab, tradeSummery } from './resources.js';
 import { defineJobs, } from './jobs.js';
 import { clearSpyopDrag } from './governor.js';
@@ -897,12 +897,14 @@ export function index(){
                     message_logs[filter].forEach(function (msg){
                         queue.append($('<p class="has-text-'+msg.color+'"></p>').text(msg.msg));
                     });
+                    updateMobileMsg();
                 }
             },
             clearLog(filter){
                 filter = filter ? [filter] : filter;
                 initMessageQueue(filter);
                 clearElement($(`#msgQueueLog`));
+                updateMobileMsg();
                 if (filter){
                     global.lastMsg[filter] = [];
                 }
@@ -1368,6 +1370,20 @@ export function index(){
 
     let egg15 = easterEgg(15,8);
     
+    // Mobile message bar
+    $('body').append(`
+        <div id="mobileMsg" role="button" tabindex="0" aria-label="${loc('mobile_msg_toggle')}">
+            <div class="mMsgBody"></div>
+            <span class="mMsgGrip" aria-hidden="true"></span>
+        </div>
+    `);
+
+    $('#mobileMsg').on('click', function(){
+        global.settings['mMsg'] = (mobileMsgLines() + 1) % (MOBILE_MSG_MAX + 1);
+        updateMobileMsg();
+        sizeScrollPanels();
+    });
+
     // Bottom Mobile navigation bar
     $('body').append(`
         <div id="mobileNav">
@@ -1455,7 +1471,10 @@ export function index(){
             return;
         }
         const remPx = parseFloat(getComputedStyle(document.documentElement).fontSize);
-        const barsPx = 3.7 * remPx;
+        // The message bar is part of the bottom chrome and changes height as the player resizes it,
+        // so it is measured rather than baked into the constant alongside the two fixed bars.
+        const msgBar = document.getElementById('mobileMsg');
+        const barsPx = 3.7 * remPx + (msgBar && msgBar.offsetParent ? msgBar.offsetHeight : 0);
         document.querySelectorAll('#settings, #evolution, .resTabs > section, .govTabs2 > section').forEach((el) => {
             if (!el.offsetParent) {
                 return;
@@ -1464,6 +1483,9 @@ export function index(){
             el.style.height = `${Math.max(0, window.innerHeight - top - barsPx)}px`;
         });
     };
+
+    // Messages restored from the save were queued before this bar existed, so draw it once here.
+    updateMobileMsg();
 
     sizeScrollPanels();
     window.addEventListener('resize', sizeScrollPanels);
