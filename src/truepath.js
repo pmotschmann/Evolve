@@ -8548,12 +8548,16 @@ function tauEnableSoldiers(){
 
 // Take a `ship` and send it on its merry way to `locationName`
 function initializeShipTrip(ship, locationName, trip){
+    // Whether this ship is presently inside a wormhole, and which gate it is bound for.
+    let inGate = ship.inTransit && ship.path && ship.path[0] && ship.path[0].inGate ? true : false;
+    let gateExit = inGate ? ship.path[0].destination.name : false;
+
     // If a trip is already calculated then use that trip (for example when sending 
     // a fleet to account for its slower speed). Otherwise calculate steps for new path.
     let plannedTrip;
-    if (trip)
+    if (trip && !inGate)
         plannedTrip = trip;
-    else 
+    else
         plannedTrip = planShipTrip(ship, locationName);
 
     // We're already at the target location, or the location is unavailable (for any possible reason)
@@ -8585,8 +8589,10 @@ function initializeShipTrip(ship, locationName, trip){
     ship.destination.name = locationName;
     ship.destination.position = ship.path[ship.path.length - 1].destination.position;
 
-    // First step
-    ship.timeToNextStep = ship.path[0].totalTime;
+    // First step. A carried-over gate leg keeps the time it had left on it
+    if (!(inGate && ship.path[0].inGate && ship.path[0].destination.name === gateExit)){
+        ship.timeToNextStep = ship.path[0].totalTime;
+    }
 
     // Liftoff
     ship.inTransit = true;
@@ -10030,7 +10036,8 @@ function planShipTrip(ship, locationName){
                 name: step.location,
                 position: nextPosition
             },
-            totalTime: time
+            totalTime: time,
+            inGate: step.inGate ? true : false
         });
         
         currentPosition = nextPosition;
