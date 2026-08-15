@@ -5771,6 +5771,7 @@ export function zAssaultLeft(){
 function zUplinkWatch(fleet){
     if (!global.tech['resettle'] || global.tech.resettle < 18){ return; }
     if (typeof fleet.uz !== 'number'){ fleet.uz = 0; }
+    if (fleet.uz >= zUplinkSilent + zUplinkWarn + zUplinkSurvive){ return; }
     fleet.uz++;
 
     if (fleet.uz === zUplinkSilent){
@@ -6178,7 +6179,11 @@ function placeShip(ship){
         return;
     }
 
-    let dist = ship.timeToNextStep / ship.path[0].totalTime; //Distance from destination  
+    // Fraction of the current leg still to run. any value outside of 0 to 1 is invalid and can cause
+    // weird behavior such as moving ships millions of AU outside the star cluster.
+    let dist = ship.path[0].totalTime > 0 ? ship.timeToNextStep / ship.path[0].totalTime : 0;
+    if (!(dist >= 0)){ dist = 0; }
+    else if (dist > 1){ dist = 1; }
     let origin = ship.origin.position;
     let destination = ship.path[0].destination.position;
 
@@ -8552,7 +8557,8 @@ function initializeShipTrip(ship, locationName, trip){
     if (!plannedTrip)
         return;
 
-    ship.path = plannedTrip.path;
+    // Ensure every ship in a fleet has the same travel plan
+    ship.path = deepClone(plannedTrip.path);
     ship.totalTime = plannedTrip.totalTime;
 
     // Origin
@@ -10964,6 +10970,8 @@ const ORBIT_STEPS = 96;
 // than its projected extent, so tilting the camera edge-on — which squashes a ring to a line but
 // leaves it perfectly visible — doesn't make orbits disappear.
 const ORBIT_MIN_PX = 3;
+// Had to limit ship trails or trips between stars would crash the browser, also in general they caused lag
+const TRAIL_MAX_DASHES = 400;
 // Ship markers are drawn at a constant size on screen, in pixels.
 const SHIP_DOT_PX = 3;
 const SHIP_LABEL_PX = 5;
@@ -12037,10 +12045,19 @@ export function drawMap() {
         ctx.save();
         ctx.translate(pX(ref), pY(ref));
         ctx.beginPath();
-        ctx.setLineDash([0.1, 0.4]);
         let here = rel(ship.location.position, ref);
+
+        let span = 0;
+        let prev = here;
+        for (let i=0; i<ship.path.length; i++){
+            let q = rel(ship.path[i].destination.position, ref);
+            span += Math.sqrt((q.x-prev.x)**2 + (q.y-prev.y)**2 + (q.z-prev.z)**2);
+            prev = q;
+        }
+        let cycle = Math.max(0.5, span / TRAIL_MAX_DASHES);
+        ctx.setLineDash([cycle * 0.2, cycle * 0.8]);
+
         ctx.moveTo(pX(here), pY(here));
-        
         // Draw the full remaining flight path through each waypoint still ahead of the ship.
         for (let i=0; i<ship.path.length; i++){
             let q = rel(ship.path[i].destination.position, ref);
