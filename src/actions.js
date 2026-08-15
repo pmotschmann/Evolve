@@ -1,6 +1,6 @@
 import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, int_on, gal_on, spire_on, tmp_vars, setupStats, callback_queue } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel } from './functions.js';
+import { timeCheck, timeFormat, vBind, popover, clearPopper, togglePopover, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
 import { races, traits, genus_def, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill, traitRank } from './races.js';
 import { defineResources, unlockCrates, unlockContainers, crateValue, containerValue, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus, faithTempleCount } from './resources.js';
@@ -6410,13 +6410,10 @@ export function setAction(c_action,action,type,old,prediction){
         },
         methods: {
             action(args){
-                const isMobile = 'ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/);
-                if (isMobile && global.settings.touch) {
+                if (global.settings['touch'] && togglePopover(id)){
                     return;
                 }
-                else {
-                    runAction(c_action,action,type);
-                }
+                runAction(c_action,action,type);
             },
             describe(){
                 srSpeak(srDesc(c_action,old));
@@ -6485,9 +6482,7 @@ export function setAction(c_action,action,type,old,prediction){
             repairMax(){
                 return c_action.repair();
             },
-            // Structures razed on return to Sol accrue a 'razed' count (e.g. global.space[x].razed);
-            // the action button shows a cracked overlay. 'severe' (more cracks, full red) when more
-            // units are razed than built; 'mild' (fewer cracks, muted red) while razed stays within count.
+            // Damaged structures
             damaged(){
                 if (global[action] && global[action][type] && typeof global[action][type]['razed'] !== 'undefined'){
                     let d = global[action][type].razed;
@@ -6570,6 +6565,7 @@ export function setAction(c_action,action,type,old,prediction){
         attach: action === 'starDock' ? 'body .modal' : '#main',
         wide: c_action['wide'],
         classes: c_action.hasOwnProperty('class') ? c_action.class : false,
+        touchToggle: true,
     });
 }
 
@@ -7452,15 +7448,34 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
     clearElement(parent);
     var desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc();
     bres = bres || false;
-    
-    let touch = false;
-    if (action && a_type && 'ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/) && global.settings.touch ? true : false){
-        touch = $(`<a id="touchButton" class="button is-dark touchButton">${c_action.hasOwnProperty('touchlabel') ? c_action.touchlabel : loc('construct')}</a>`);
-        parent.append(touch);
 
-        $('#touchButton').on('touchstart', function(){
+    let buildable = true;
+    if (c_action['queue_complete']){
+        let left = c_action.queue_complete();
+        if (left === false || (c_action.hasOwnProperty('struct') && left < 1)){
+            buildable = false;
+        }
+    }
+
+    if (action && a_type && buildable && global.settings['touch']){
+        let bulk = c_action.hasOwnProperty('struct');
+        let label = c_action.hasOwnProperty('touchlabel') ? c_action.touchlabel : loc('construct');
+        let row = $(`<div class="touchBuild"></div>`);
+        let one = $(`<a id="touchButton" class="button is-dark touchButton">${label}</a>`);
+        row.append(one);
+        one.on('click', function(){
             runAction(c_action,action,a_type);
         });
+        if (bulk){
+            let five = $(`<a id="touchButton5" class="button is-dark touchButton touchButton5">${loc('touch_build_5x')}</a>`);
+            row.append(five);
+            five.on('click', function(){
+                for (let i=0; i<5; i++){
+                    runAction(c_action,action,a_type);
+                }
+            });
+        }
+        parent.append(row);
     }
 
     parent.append($(`<div>${desc}</div>`));

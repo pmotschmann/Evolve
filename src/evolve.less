@@ -5770,10 +5770,27 @@ div.bigbang {
 
 .popper {
     pointer-events: none;
+
+    .touchBuild {
+        pointer-events: all;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: .5rem;
+        margin-bottom: .25rem;
+    }
+
     .touchButton {
         pointer-events: all;
-        height: 1.25rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
         margin-bottom: .25rem;
+    }
+
+    .touchButton5 {
+        margin-left: auto;
     }
 
     .soldierEvaluation {
@@ -6671,16 +6688,23 @@ div.bigbang {
         padding-bottom: 0.55rem;
     }
 
-    // The "construct" button injected into action popovers when touch mode is on:
-    // make it a full-width, easy-to-hit target instead of a small inline link.
+    // The "construct" button injected into action popovers when touch mode is on
     .touchButton {
-        display: block;
-        width: 100%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 1 1 auto;
         min-height: 2.4rem;
-        line-height: 2.4rem;
+        line-height: 1;
+        padding: 0 0.75rem;
         margin-bottom: 0.4rem;
         text-align: center;
         font-weight: 700;
+    }
+
+    // 5x is sized to its own label so construct keeps the bulk of the row.
+    .touchButton5 {
+        flex: 0 0 auto;
     }
 
     // Per-building on/off toggles and settings switches — a bit more vertical room to tap.

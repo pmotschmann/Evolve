@@ -1551,7 +1551,7 @@ if (convertVersion(global['version']) <= 105000){
 
 global['version'] = '1.5.0';
 delete global['revision'];
-global['beta'] = 27;
+global['beta'] = 28;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
@@ -1630,8 +1630,17 @@ if (!global.settings['showStorage']){
     }
 }
 
+// Detect if player device is a touch screen device
+export function touchDevice(){
+    if (typeof navigator !== 'undefined' && typeof navigator.maxTouchPoints === 'number'){
+        return navigator.maxTouchPoints > 0;
+    }
+    return typeof window !== 'undefined' && 'ontouchstart' in window;
+}
+
+// Auto detect on first load
 if (!global.settings.hasOwnProperty('touch')){
-    global.settings['touch'] = false;
+    global.settings['touch'] = touchDevice();
 }
 
 if (!global.settings.hasOwnProperty('lowPowerBalance')){

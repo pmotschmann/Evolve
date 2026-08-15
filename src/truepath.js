@@ -5645,11 +5645,6 @@ function zTitanWatch(){
 }
 
 // --- Infested fleet -----------------------------------------------------------------------------
-// Once Mars is cleared the horde on Earth stops waiting to be visited and starts sending hulls of its
-// own. Ships lift from spc_home, cross to a colony and are gone on arrival, leaving their cargo of
-// infected behind as a new horde. Launches are rare and small at first and grow on both counts the
-// longer the campaign runs.
-
 // Where the infested can reach. spc_red and spc_hell are open from the start; the rest unlock as the
 // player pushes outward and the horde follows.
 function zFleetTargets(){

@@ -1,4 +1,4 @@
-import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame, atrack, p_on, quantum_level, tmp_vars } from './vars.js';
+import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame, atrack, p_on, quantum_level, tmp_vars, touchDevice } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits, genus_def, traitSkin, fathomCheck } from './races.js';
 import { actions, actionDesc } from './actions.js';
@@ -22,8 +22,9 @@ export function popover(id,content,opts){
     if (!opts.hasOwnProperty('bind')){ opts['bind'] = true; }
     if (!opts.hasOwnProperty('unbind')){ opts['unbind'] = true; }
     if (!opts.hasOwnProperty('placement')){ opts['placement'] = 'bottom'; }
-    if (opts['bind']){
-        $(opts.elm).on(opts['bind_mouse_enter'] ? 'mouseenter' : 'mouseover',function(){
+
+    let showPop = function(self){
+        {
             if (popperRef || $(`#popper`).length > 0){
                 clearPopper();
             }
@@ -37,10 +38,10 @@ export function popover(id,content,opts){
                 $(`#main`).append(popper);
             }
             if (content){
-                popper.append(typeof content === 'function' ? content({ this: this, popper: popper }) : content);
+                popper.append(typeof content === 'function' ? content({ this: self, popper: popper }) : content);
             }
 
-            popperRef = window.Popper.createPopper(opts['self'] ? this : $(opts.elm)[0],
+            popperRef = window.Popper.createPopper(opts['self'] ? self : $(opts.elm)[0],
                 document.querySelector(`#popper`),
                 {
                     placement: opts['placement'],
@@ -61,42 +62,75 @@ export function popover(id,content,opts){
 
             popper.show();
             if (opts.hasOwnProperty('in') && typeof opts['in'] === 'function'){
-                opts['in']({ this: this, popper: popper, id: `popper` });
+                opts['in']({ this: self, popper: popper, id: `popper` });
             }
 
             if (eventActive('firework') && global[global.race['cataclysm'] || global.race['orbit_decayed'] ? 'space' : 'city'].firework.on > 0){
                 $(popper).append(`<span class="pyro"><span class="before"></span><span class="after"></span></span>`);
             }
+        }
+    };
+    let hidePop = function(self){
+        clearPopper();
+        if (opts.hasOwnProperty('out') && typeof opts['out'] === 'function'){
+            opts['out']({ this: self, popper: $(`#popper`), id: `popper`});
+        }
+    };
+
+    let toggleMode = opts['touchToggle'] && global.settings['touch'] ? true : false;
+    if (toggleMode){
+        popToggles[id] = { show: showPop, hide: hidePop, elm: opts.elm };
+    }
+
+    if (opts['bind'] && !toggleMode){
+        $(opts.elm).on(opts['bind_mouse_enter'] ? 'mouseenter' : 'mouseover',function(){
+            showPop(this);
         });
     }
-    if (opts['unbind']){
-        if ('ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/) && global.settings.touch) {
+    if (opts['unbind'] && !toggleMode){
+        if (global.settings['touch']) {
             $(opts.elm).on('touchend',function(e){
-                clearPopper();
-                if (opts.hasOwnProperty('out') && typeof opts['out'] === 'function'){
-                    opts['out']({ this: this, popper: $(`#popper`), id: `popper`});
-                }
+                hidePop(this);
             });
         }
         else {
             $(opts.elm).on(opts['bind_mouse_enter'] ? 'mouseleave' : 'mouseout',function(){
-                clearPopper();
-                if (opts.hasOwnProperty('out') && typeof opts['out'] === 'function'){
-                    opts['out']({ this: this, popper: $(`#popper`), id: `popper`});
-                }
+                hidePop(this);
             });
         }
     }
 }
 
-if ('ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/) && global.settings.touch) {
-    $(document).on('touchend',function(e){
-        if ($(`.popper`).length === 1){
-            clearPopper();
-            return;
-        }
-    });
+// Controls that open and close their own popover on tap, by element id.
+const popToggles = {};
+
+// Open a popover if it is shut, shut it if it is open.
+export function togglePopover(id){
+    let t = popToggles[id];
+    if (!t){ return false; }
+    let open = $(`#popper`).length > 0 && $(`#popper`).data('id') === id;
+    if (open){ t.hide($(t.elm)[0]); }
+    else { t.show($(t.elm)[0]); }
+    return true;
 }
+
+// True while a tapped-open popover is showing, so the tap-away handler can tell one apart from the
+// hover popovers that close themselves.
+function stickyPopper(){
+    let id = $(`#popper`).length > 0 ? $(`#popper`).data('id') : false;
+    return id && popToggles[id] ? popToggles[id] : false;
+}
+
+$(document).on('touchend',function(e){
+    if (!global.settings['touch']){ return; }
+    if ($(`.popper`).length !== 1){ return; }
+    let sticky = stickyPopper();
+    if (sticky){
+        if ($(e.target).closest(`#popper`).length > 0){ return; }
+        if ($(e.target).closest(sticky.elm).length > 0){ return; }
+    }
+    clearPopper();
+});
 
 export function clearPopper(id){
     if (id && $(`#popper`).data('id') !== id){
@@ -214,6 +248,8 @@ window.importGame = function importGame(data,utf16){
                 }
             }
         }
+        // Smart detection of touch device
+        saveState.settings['touch'] = touchDevice();
         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(saveState)));
         window.location.reload();
     }
