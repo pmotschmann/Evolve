@@ -323,6 +323,5 @@ export function resetsPage(content){
     section = createCalcSection(section,'za','gain');
     prestigeCalc(section,'plasmid',false,'za');
     prestigeCalc(section,'phage',false,'za');
-    prestigeCalc(section,'cores',false,'za');
     sideMenu('add',`resets-prestige`,'za',loc('wiki_resets_zombie_apocalypse'));
 }
