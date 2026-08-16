@@ -1493,6 +1493,7 @@ export function zApocalypse(){
 
     global.stats.zappoc++;
     updateResetStats();
+    logPrestigeGains('zombie_apocalypse', gains);
     global.prestige.Phage.count += gains.phage;
     global.stats.phage += gains.phage;
     if (global.race.universe === 'antimatter'){
