@@ -5769,11 +5769,43 @@ export function zAssaultLeft(){
     return left > 0 ? left : 0;
 }
 
-// --- The end of it ------------------------------------------------------------------------------
-// Bleeding the Overmind is a commitment, not a victory: what it opens is the run's own ending. The
-// horde no longer stops, and the only place it goes is through everything the player built. Once the
-// last of that is gone there is nothing left to hold, and the run ends in extinction -- which is the
-// point, since that reset is what the player came for.
+// Zombies still holding ground anywhere. Deliberately not infestationCount: that reports 0 for a horde
+// nobody has found yet, and one lying low on Mars or Titan has not been dealt with.
+export function zInfestationLeft(){
+    if (!global.race['zhorde']){ return 0; }
+    let left = 0;
+    Object.keys(global.race.zhorde).forEach(function(region){
+        // Earth's billions are a fact of the setting, not something a fleet can work on.
+        if (inertInfestation.includes(region)){ return; }
+        if (global.race.zhorde[region] > 0){ left += global.race.zhorde[region]; }
+    });
+    return left;
+}
+
+// Structures the horde pulled down that have not been put back up.
+export function zRazedLeft(){
+    let razed = 0;
+    Object.keys(razeTargets).forEach(function(region){
+        let cat = razeTargets[region].c;
+        if (!global[cat]){ return; }
+        razeTargets[region].s.forEach(function(s){
+            if (global[cat][s] && global[cat][s].razed > 0){ razed += global[cat][s].razed; }
+        });
+    });
+    return razed;
+}
+
+// The system swept clean: nothing left alive out there and nothing left in ruins. Only ever looked at
+// while the arc is sitting at 20, so it cannot fire before the assault or a second time after it.
+function zRecoveryWatch(){
+    if (!global.tech['resettle'] || global.tech.resettle !== 20){ return; }
+    if (zInfestationLeft() > 0 || zRazedLeft() > 0){ return; }
+    global.tech.resettle = 21;
+    drawTech();
+    renderSpace();
+    messageQueue(loc('zfleet_recovered'),'success',false,['combat','progress']);
+    zombieGenociderTask('z4');
+}
 
 // Everything still standing that the horde is able to take, across every region it can reach. Read
 // off razeTargets so it can never disagree with what razing actually removes.
@@ -5854,11 +5886,10 @@ function zUplinkWatch(fleet){
         drawTech();
         renderSpace();
         messageQueue(loc('zfleet_uplink_survived'),'success',false,['combat','progress']);
-        zombieGenociderTask('z4');
     }
 }
 
-// Hulls in one sortie. Ordinarily a lone raider, or a pair once the horde has managed a strike on
+// Ships in one sortie. Ordinarily a lone raider, or a pair once the horde has managed a strike on
 // another star. The assault never sends fewer than two, and what it leaves behind afterwards still
 // flies in company more often than it used to.
 const zAssaultSizes = [[0.50,3],[0.35,4],[0.15,5]];
@@ -5929,6 +5960,7 @@ function zFleetDay(){
     if (!fleet.s){ fleet.s = []; }
 
     zUplinkWatch(fleet);
+    zRecoveryWatch();
     zFleetMove(fleet);
 
     // The blockade runs on its own rules rather than act like a raid
@@ -6097,7 +6129,7 @@ function guardsAt(locationName){
     return global.space.shipyard.ships.filter(s => !s.inTransit && s.location.name === locationName);
 }
 
-// A ship shot out from under its crew. The hull is gone from the roster and the crew with it.
+// A ship shot out from under its crew. The ship is gone from the roster and the crew with it.
 function destroyPlayerShip(ship,locationName){
     let crew = shipCrewSize(ship);
     // Losing the flagship scatters the fleet it was holding together, so stand it down before the hull

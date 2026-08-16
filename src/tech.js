@@ -14997,8 +14997,8 @@ const techs = {
         category: 'progress',
         era: 'matrioshka',
         path: ['truepath'],
-        reqs: { resettle: 20 },
-        grant: ['resettle',21],
+        reqs: { resettle: 21 },
+        grant: ['resettle',22],
         cost: {
             Money(){ return 25000000000; },
             Knowledge(){ return 32000000; },
@@ -15024,8 +15024,8 @@ const techs = {
         category: 'progress',
         era: 'matrioshka',
         path: ['truepath'],
-        reqs: { resettle: 20 },
-        grant: ['resettle',21],
+        reqs: { resettle: 21 },
+        grant: ['resettle',22],
         cost: {
             Knowledge(){ return 31255000; }
         },
