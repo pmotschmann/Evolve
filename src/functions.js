@@ -2149,6 +2149,9 @@ export function logPrestigeGains(reset, gains) {
             case 'skilledServants':
                 resourceName = loc(resCount === 1 ? 'prestige_report_singular_skilled_servant' : 'civics_skilled_servants');
                 break;
+            case 'talens':
+                resourceName = loc(resCount === 1 ? 'prestige_report_singular_TALEN' : 'resource_TALENs_name');
+                break;
             default:
                 resourceName = res; // fallback if an unhandled resource is added
                 break;
