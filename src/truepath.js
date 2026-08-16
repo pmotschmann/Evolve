@@ -5515,8 +5515,8 @@ const razeTargets = {
     spc_venus: { c: 'space', s: ['cloud_city','nitrogen_harvester','cloud_quarters','industrial_complex','workshop','university'] },
     spc_hell: { c: 'space', s: ['geothermal','hell_smelter','spc_casino','swarm_plant'] },
     spc_titan: { c: 'space', s: ['titan_spaceport','electrolysis','hydrogen_plant','titan_quarters','titan_mine','storehouse','titan_bank','g_factory','sam','decoder','ai_colonist','metalworks'] },
-    spc_enceladus: { c: 'space', s: ['water_freighter','zero_g_lab','operating_base','munitions_depot'] },
-    spc_dwarf: { c: 'space', s: ['elerium_contain','e_reactor'] },
+    //spc_enceladus: { c: 'space', s: ['water_freighter','zero_g_lab','operating_base','munitions_depot'] },
+    //spc_dwarf: { c: 'space', s: ['elerium_contain','e_reactor'] },
     tau_home: { c: 'tauceti', s: ['colony','tau_housing','pylon','tau_farm','mining_pit','fusion_generator','repository','tau_factory','infectious_disease_lab','tauceti_casino','tau_cultural_center','marine_barracks','data_decoder'] },
     tau_red: { c: 'tauceti', s: ['overseer','womling_village','womling_farm','womling_mine','womling_fun','womling_lab','womling_craftworks','antimatter_reactor','womling_rangers'] }
 };
@@ -5661,7 +5661,7 @@ function zFleetTargets(){
 // Hulls the zombie horde flies, smallest first. `weight` is how often a class comes up relative to the others
 const zFleetHulls = {
     corvette:      { weight(){ return global.tech['resettle'] && global.tech.resettle >= 19 ? 0 : 1; }, avail(){ return true; },  horde(){ return 350; } },
-    frigate:       { weight(){ return 1; },   avail(){ return true; },  horde(){ return 825; } },
+    frigate:       { weight(){ return 1; },   avail(){ return global.tech['overmind'] ? false : true; },  horde(){ return 825; } },
     destroyer:     { weight(){ return 1; },   avail(){ return global.tech['resettle'] && global.tech.resettle >= 11 ? true : false; }, horde(){ return 1700; } },
     cruiser:       { weight(){ return 1; },   avail(){ return global.tech['resettle'] && global.tech.resettle >= 14 ? true : false; }, horde(){ return 4100; } },
     battlecruiser: { weight(){ return global.tech['resettle'] && global.tech.resettle >= 19 ? 1 : 0.5; }, avail(){ return global.tech['resettle'] && global.tech.resettle >= 15 ? true : false; }, horde(){ return 10300; } },
@@ -6100,7 +6100,7 @@ function foeAccuracy(foe){
 }
 
 // How much harder the horde hits once the Overmind final assault is launched.
-const zOvermindDamage = 4;
+const zOvermindDamage = 10;
 
 // Firepower turned into hull damage.
 function combatDamage(attacker,defender){
@@ -6746,8 +6746,12 @@ function infestationCombat(region){
         zombiesPerRazingFinal *= 1 + (traits.chameleon.vars()[2] / 100);
         zombiesPerRazingFinal = Math.round(zombiesPerRazingFinal);
     }
-    let razings = Math.min(Math.floor(survivors / zombiesPerRazingFinal),razeCap);
-    if (razings < razeCap && seededRandom(0,1,true) < (survivors % zombiesPerRazingFinal) / zombiesPerRazingFinal){
+    if (global.tech['overmind']){
+        zombiesPerRazingFinal *= 0.25;
+    }
+    let maxRaze = global.tech['overmind'] ? razeCap * 4 : razeCap;
+    let razings = Math.min(Math.floor(survivors / zombiesPerRazingFinal),maxRaze);
+    if (razings < maxRaze && seededRandom(0,1,true) < (survivors % zombiesPerRazingFinal) / zombiesPerRazingFinal){
         razings++;
     }
     if (razings > 0){
