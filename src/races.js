@@ -4911,7 +4911,7 @@ export const traits = {
         name: loc('trait_tactical_name'),
         desc: loc('trait_tactical'),
         type: 'minor',
-        vars(r){ return [5]; },
+        vars(r){ return [4]; },
     },
     analytical: { // Science output
         name: loc('trait_analytical_name'),
@@ -4935,7 +4935,7 @@ export const traits = {
         name: loc('trait_cunning_name'),
         desc: loc('trait_cunning'),
         type: 'minor',
-        vars(r){ return [6]; },
+        vars(r){ return [8]; },
     },
     hardy: { // Factory output
         name: loc('trait_hardy_name'),
@@ -4959,8 +4959,6 @@ export const traits = {
         name: loc('trait_content_name'),
         desc: loc('trait_content'),
         type: 'minor',
-        // Display only. The hook in main.js adds this per rank to the stress divisor itself,
-        // reading the rank rather than this value, so it exists to keep the description honest.
         vars(r){ return [0.4]; },
     },
     fibroblast: { // Soldier healing
@@ -4973,7 +4971,7 @@ export const traits = {
         name: loc('trait_metallurgist_name'),
         desc: loc('trait_metallurgist'),
         type: 'minor',
-        vars(r){ return [8]; },
+        vars(r){ return [6]; },
     },
     gambler: { // Casino income
         name: loc('trait_gambler_name'),
@@ -4991,7 +4989,7 @@ export const traits = {
         name: loc('trait_refiner_name'),
         desc: loc('trait_refiner'),
         type: 'minor',
-        vars(r){ return [5]; },
+        vars(r){ return [3]; },
     },
     conductive: { // Power generation
         name: loc('trait_conductive_name'),
@@ -5003,7 +5001,7 @@ export const traits = {
         name: loc('trait_stockpiler_name'),
         desc: loc('trait_stockpiler'),
         type: 'minor',
-        vars(r){ return [5]; },
+        vars(r){ return [4]; },
     },
     assayer: { // Iridium and Titanium production
         name: loc('trait_assayer_name'),
@@ -5027,13 +5025,13 @@ export const traits = {
         name: loc('trait_arborist_name'),
         desc: loc('trait_arborist'),
         type: 'minor',
-        vars(r){ return [5]; },
+        vars(r){ return [6]; },
     },
     stonecutter: { // Stone production; unsuited to sappy
         name: loc('trait_stonecutter_name'),
         desc: loc('trait_stonecutter'),
         type: 'minor',
-        vars(r){ return [5]; },
+        vars(r){ return [6]; },
     },
     archivist: { // Maximum Knowledge
         name: loc('trait_archivist_name'),
@@ -5051,7 +5049,7 @@ export const traits = {
         name: loc('trait_zealot_name'),
         desc: loc('trait_zealot'),
         type: 'minor',
-        vars(r){ return [2]; },
+        vars(r){ return [1]; },
     },
     stargazer: { // Observatory knowledge
         name: loc('trait_stargazer_name'),
@@ -5087,7 +5085,7 @@ export const traits = {
         name: loc('trait_taskmaster_name'),
         desc: loc('trait_taskmaster'),
         type: 'minor',
-        vars(r){ return [2]; },
+        vars(r){ return [1]; },
     },
     queuemaster: { // Building queue size, flat
         name: loc('trait_queuemaster_name'),
@@ -5107,28 +5105,28 @@ export const traits = {
         desc: loc('trait_ambusher'),
         type: 'minor',
         genus: 'carnivore',
-        vars(r){ return [8]; },
+        vars(r){ return [5]; },
     },
     ruminant: { // Maximum population
         name: loc('trait_ruminant_name'),
         desc: loc('trait_ruminant'),
         type: 'minor',
         genus: 'herbivore',
-        vars(r){ return [6]; },
+        vars(r){ return [5]; },
     },
     opportunist: { // Mining output and crafting speed
         name: loc('trait_opportunist_name'),
         desc: loc('trait_opportunist'),
         type: 'minor',
         genus: 'omnivore',
-        vars(r){ return [4]; },
+        vars(r){ return [3]; },
     },
     frugal: { // Housing cost discount
         name: loc('trait_frugal_name'),
         desc: loc('trait_frugal'),
         type: 'minor',
         genus: 'small',
-        vars(r){ return [3]; },
+        vars(r){ return [2]; },
     },
     titanic: { // Manual labour output
         name: loc('trait_titanic_name'),
@@ -5137,19 +5135,19 @@ export const traits = {
         genus: 'giant',
         vars(r){ return [8]; },
     },
-    ironscale: { // Soldier death reduction
-        name: loc('trait_ironscale_name'),
-        desc: loc('trait_ironscale'),
+    moltskin: { // Passive Furs from population
+        name: loc('trait_moltskin_name'),
+        desc: loc('trait_moltskin'),
         type: 'minor',
         genus: 'reptilian',
-        vars(r){ return [8]; },
+        vars(r){ return [1]; },
     },
     featherlight: { // Ship speed; requires True Path
         name: loc('trait_featherlight_name'),
         desc: loc('trait_featherlight'),
         type: 'minor',
         genus: 'avian',
-        vars(r){ return [8]; },
+        vars(r){ return [5]; },
     },
     swarm: { // Population growth
         name: loc('trait_swarm_name'),
@@ -5163,7 +5161,7 @@ export const traits = {
         desc: loc('trait_chlorophyll'),
         type: 'minor',
         genus: 'plant',
-        vars(r){ return [8]; },
+        vars(r){ return [6]; },
     },
     mycelial: { // Soldier healing
         name: loc('trait_mycelial_name'),
@@ -5186,9 +5184,9 @@ export const traits = {
         genus: 'fey',
         vars(r){ return [5]; },
     },
-    magmatic: { // Smelter output
-        name: loc('trait_magmatic_name'),
-        desc: loc('trait_magmatic'),
+    fireweave: { // Chrysotile production; requires smoldering
+        name: loc('trait_fireweave_name'),
+        desc: loc('trait_fireweave'),
         type: 'minor',
         genus: 'heat',
         vars(r){ return [8]; },
@@ -5212,14 +5210,14 @@ export const traits = {
         desc: loc('trait_infernal'),
         type: 'minor',
         genus: 'demonic',
-        vars(r){ return [8]; },
+        vars(r){ return [6]; },
     },
     radiant: { // Temple output
         name: loc('trait_radiant_name'),
         desc: loc('trait_radiant'),
         type: 'minor',
         genus: 'angelic',
-        vars(r){ return [8]; },
+        vars(r){ return [3]; },
     },
     overclocked: { // Factory output
         name: loc('trait_overclocked_name'),
@@ -7081,8 +7079,18 @@ export function geneSpecialUnlocked(gene){
     return false;
 }
 
+// The genus a gene is matched against. A hybrid carries two on its species record and is neither
+// of them by default; the one it counts as is whichever was specialised during evolution, which
+// race.maintype records -- the same lookup resets.js and the gene lab use.
+export function geneGenus(){
+    if (!global.race.species || !races[global.race.species]){ return false; }
+    return races[global.race.species].type === 'hybrid'
+        ? (global.race['maintype'] || false)
+        : races[global.race.species].type;
+}
+
 export function geneRoster(){
-    let genus = global.race.species && races[global.race.species] ? races[global.race.species].type : false;
+    let genus = geneGenus();
     return Object.keys(traits).filter(function(t){
         if (genes.gene_specials.includes(t)){ return geneSpecialUnlocked(t); }
         if (traits[t].type !== 'minor'){ return false; }
@@ -7119,6 +7127,7 @@ export function geneUnlocked(gene){
 const geneUnsuited = {
     arborist(){ return global.race['kindling_kindred'] || global.race['smoldering'] ? true : false; },
     chlorophyll(){ return global.race['sappy'] ? false : true; },
+    fireweave(){ return global.race['smoldering'] ? false : true; },
     stonecutter(){ return global.race['sappy'] ? true : false; },
     sapper(){ return global.race['flier'] ? true : false; },
     duneborn(){ return global.race['flier'] ? true : false; },

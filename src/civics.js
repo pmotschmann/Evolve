@@ -2188,8 +2188,7 @@ export function weaponTechModifer(){
 }
 
 export function soldierDeath(v){
-    // Ironscale: the reptilian genus takes the same hit and loses fewer to it.
-    let killed = Math.round(v / geneBonus('ironscale'));
+    let killed = v;
     if (killed > global.civic.garrison.workers){
         killed = global.civic.garrison.workers;
     }

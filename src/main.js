@@ -4454,6 +4454,15 @@ function fastLoop(){
             modRes('Furs', delta);
         }
 
+        // Moltskin: a reptile sheds continuously, so the population is itself a supply of hides.
+        // Scaled through highPopAdjust so a high_pop race is not paid twice for the same citizens.
+        if (global.resource.Furs.display && geneRank('moltskin') > 0){
+            let shed = highPopAdjust(global.resource[global.race.species].amount * geneFlat('moltskin') / 100);
+            shed *= production('psychic_boost','Furs');
+            breakdown.p['Furs'][traitSkin('name','moltskin')] = shed + 'v';
+            modRes('Furs', shed * hunger * global_multiplier * time_multiplier);
+        }
+
         if (global.race['unfathomable'] && global.civic.hunter.display){
             let weapons = weaponTechModifer();
             let hunters = workerScale(global.civic.hunter.workers,'hunter');
@@ -5433,7 +5442,7 @@ function fastLoop(){
             }
 
             // Refiner for everyone, Magmatic for the heat genus.
-            iron_smelter *= geneBonus('refiner') * geneBonus('magmatic');
+            iron_smelter *= geneBonus('refiner');
             iron_smelter *= global.tech['smelting'] >= 3 ? 1.2 : 1;
             iridium_smelter *= 0.05;
 
@@ -5544,7 +5553,7 @@ function fastLoop(){
                     steel_smelter *= 1 + (0.2 * salFathom);
                 }
 
-                let smelter_output = steel_smelter * steel_base * production('psychic_boost','Steel') * geneBonus('refiner') * geneBonus('magmatic');
+                let smelter_output = steel_smelter * steel_base * production('psychic_boost','Steel') * geneBonus('refiner');
                 if (global.race['pyrophobia']){
                     smelter_output *= 1 - (traits.pyrophobia.vars()[0] / 100);
                 }
@@ -6327,7 +6336,7 @@ function fastLoop(){
                 a_delta *=  power_mult * hunger * q_multiplier * global_multiplier;
 
                 breakdown.p['Chrysotile'][loc('hunger')] = ((hunger - 1) * 100) + '%';
-                modRes('Chrysotile', a_delta * time_multiplier);
+                modRes('Chrysotile', (a_delta * time_multiplier) * geneBonus('fireweave'));
             }
 
             // Aluminium
@@ -6925,7 +6934,7 @@ function fastLoop(){
                     delta *= hunger * global_multiplier;
 
                     breakdown.p['Chrysotile'][loc('hunger')] = ((hunger - 1) * 100) + '%';
-                    modRes('Chrysotile', delta * time_multiplier);
+                    modRes('Chrysotile', (delta * time_multiplier) * geneBonus('fireweave'));
                 }
             }
         }
@@ -7722,7 +7731,7 @@ function fastLoop(){
                 breakdown.p['Chrysotile'][`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
                 breakdown.p['Chrysotile'][`ᄂ${loc('quarantine')}`] = ((qs_multiplier - 1) * 100) + '%';
             }
-            modRes('Chrysotile', cry_delta * time_multiplier);
+            modRes('Chrysotile', (cry_delta * time_multiplier) * geneBonus('fireweave'));
         }
 
         // Infernite
@@ -7884,7 +7893,7 @@ function fastLoop(){
                         breakdown.p['Chrysotile'][`ᄂ${loc('tau_home_colony')}`] = ((colony_val - 1) * 100) + '%';
                         breakdown.p['Chrysotile'][loc('hunger')] = ((hunger - 1) * 100) + '%';
                     }
-                    modRes('Chrysotile', delta * time_multiplier);
+                    modRes('Chrysotile', (delta * time_multiplier) * geneBonus('fireweave'));
                 }
 
                 { // Adamantite
@@ -10981,7 +10990,10 @@ function midLoop(){
         // Archivist stacks on top for Knowledge, which is its own gene and its own ceiling.
         // Run before crates and containers are subtracted, so what they consume is measured against
         // the raised cap.
-        const stewardExempt = ['Money','Knowledge','Crates','Containers','Slave','Authority','Zen','Mana','Energy','Sus'];
+        // Every special meter that shares the caps table with the real resources. Anything not
+        // listed here is something a warehouse could actually hold.
+        const stewardExempt = ['Money','Knowledge','Omniscience','Crates','Containers','Slave','Authority',
+                               'Zen','Mana','Energy','Sus','Cipher'];
         Object.keys(caps).forEach(function (res){
             if (res === global.race.species || stewardExempt.includes(res)){ return; }
             if (caps[res] > 0){ caps[res] = Math.round(caps[res] * geneBonus('steward')); }
