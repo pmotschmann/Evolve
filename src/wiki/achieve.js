@@ -304,11 +304,12 @@ function achieveDesc(achievement,showFlair,universe){
         popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`));
     }
     else if (achievement === 'zombie_genocider'){
-        // Tasks 4 and 5 are not written yet, so only the ones that exist are listed.
+        // Task 5 is not written yet, so only the ones that exist are listed.
         let checklist = `<div class="list">`;
         checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z1[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider1`,[(53594).toLocaleString()])}</div>`;
         checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z2[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider2`)}</div>`;
         checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z3[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider3`)}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z4[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider4`)}</div>`;
         checklist = checklist + `</div>`;
         popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`));
     }
@@ -443,9 +444,10 @@ function featDesc(feat,showFlair){
             di: 'wiki_resets_infusion', 
             ai: 'wiki_resets_ai', 
             vc: 'wiki_resets_vacuum',
-            md: 'wiki_resets_mad_wish'
+            md: 'wiki_resets_mad_wish',
+            za: 'wiki_resets_zombie_apocalypse'
         };
-        ['ct','bh','di','ai','vc','md'].forEach(function (key){
+        ['ct','bh','di','ai','vc','md','za'].forEach(function (key){
             let reset = 0;
             Object.keys(global.stats.death_tour[key]).forEach(function(k){
                 if (global.stats.death_tour[key][k] > reset){

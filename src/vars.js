@@ -1551,7 +1551,7 @@ if (convertVersion(global['version']) <= 105000){
 
 global['version'] = '1.5.0';
 delete global['revision'];
-global['beta'] = 28;
+global['beta'] = 29;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
@@ -1868,7 +1868,7 @@ export function setupStats(){
         'reset','plasmid','antiplasmid','universes','phage','starved','tstarved','died','tdied',
         'sac','tsac','know','tknow','portals','dkills','attacks','cfood','tfood','cstone','tstone',
         'clumber','tlumber','mad','bioseed','cataclysm','blackhole','ascend','descend','apotheosis',
-        'terraform','aiappoc','matrix','retire','eden','geck','dark','harmony','blood','cores','artifact',
+        'terraform','aiappoc','matrix','retire','eden','zappoc','geck','dark','harmony','blood','cores','artifact',
         'supercoiled','cattle','tcattle','murders','tmurders','psykill','tpsykill','pdebt','uDead','zkills'
     ].forEach(function(k){
         if (!global.stats.hasOwnProperty(k)){
@@ -1936,16 +1936,20 @@ export function setupStats(){
     }
     if (!global.stats.hasOwnProperty('death_tour')){
         global.stats['death_tour'] = {
-            ct: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 }, 
-            bh: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 }, 
-            di: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 }, 
-            ai: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 }, 
-            vc: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 },
-            md: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 }
+            ct: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 }, // Cataclysm
+            bh: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 }, // Black Hole
+            di: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 }, // Demonic Infusion
+            ai: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 }, // AI Appocalypse
+            vc: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 }, // Vacuum Collapse
+            md: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 }, // Mutual Destruction
+            za: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 }, // Zombie Apocalypse
         };
     }
     if (global.stats['death_tour'] && !global.stats.death_tour.hasOwnProperty('md')){
         global.stats.death_tour['md'] = { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 };
+    }
+    if (global.stats['death_tour'] && !global.stats.death_tour.hasOwnProperty('za')){
+        global.stats.death_tour['za'] = { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 };
     }
     if (!global.stats['warlord']){
         global.stats['warlord'] = { k: false, p: false, a: false, r: false, g: false };

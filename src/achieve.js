@@ -46,12 +46,12 @@ const achieve_list = {
     challenge: [
         'joyless','steelen','dissipated','technophobe','wheelbarrow','iron_will','failed_history','banana','pathfinder',
         'ashanddust','exodus','obsolete','bluepill','retired','gross','lamentis','overlord',`adam_eve`,'endless_hunger',
-        'zombie_genocider'
+        'zombie_genocider','brainless'
     ],
 };
 
-// Zombie Genocider is a task list; rank is however many are done. 
-// Tasks 4 and 5 are not defined yet, so the ceiling is currently 3.
+// Zombie Genocider is a task list; rank is however many are done.
+// Task 5 is not defined yet, so the ceiling is currently 4.
 const zombieGenociderKills = 53594;
 export const zombieGenociderTasks = ['z1','z2','z3','z4','z5'];
 

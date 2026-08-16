@@ -13181,6 +13181,27 @@ const techs = {
             return false;
         }
     },
+    ship_massdriver: {
+        id: 'tech-ship_massdriver',
+        title(){ return loc('tech_ship_massdriver'); },
+        desc(){ return loc('tech_ship_massdriver'); },
+        category: 'space_militarization',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { resettle: 21, bombard: 1 },
+        grant: ['syard_special',1],
+        cost: {
+            Knowledge(){ return 32000000; },
+            Cipher(){ return 500000; }
+        },
+        effect: loc('tech_ship_massdriver_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     destroyer_ship: {
         id: 'tech-destroyer_ship',
         title(){ return loc('tech_destroyer_ship'); },
@@ -14968,6 +14989,55 @@ const techs = {
             }
             return false;
         }
+    },
+    bleed_overmind: {
+        id: 'tech-bleed_overmind',
+        title(){ return loc('tech_bleed_overmind'); },
+        desc(){ return `<div>${loc('tech_bleed_overmind')}</div><div class="has-text-danger">${loc('tech_bleed_overmind_warn')}</div><div class="has-text-warning">${loc('tech_exclusive_warn',[loc('tech_bombard_homeworld')])}</div>`; },
+        category: 'progress',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { resettle: 20 },
+        grant: ['resettle',21],
+        cost: {
+            Money(){ return 25000000000; },
+            Knowledge(){ return 32000000; },
+            Cipher(){ return 500000; }
+        },
+        effect(){ return loc('tech_bleed_overmind_effect',[actions.space.spc_venus.alien_facility.title()]); },
+        action(){
+            if (payCosts($(this)[0])){
+                if (!global['sim']){
+                    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+                }
+                global.tech['overmind'] = 1;
+                return true;
+            }
+            return false;
+        },
+        flair(){ return loc('tech_bleed_overmind_flair'); }
+    },
+    bombard_homeworld: {
+        id: 'tech-bombard_homeworld',
+        title(){ return loc('tech_bombard_homeworld'); },
+        desc(){ return `<div>${loc('tech_bombard_homeworld')}</div><div class="has-text-warning">${loc('tech_exclusive_warn',[loc('tech_bleed_overmind')])}</div>`; },
+        category: 'progress',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { resettle: 20 },
+        grant: ['resettle',21],
+        cost: {
+            Knowledge(){ return 31255000; }
+        },
+        effect(){ return loc('tech_bombard_homeworld_effect',[planetName().home]); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.tech['bombard'] = 1;
+                return true;
+            }
+            return false;
+        },
+        flair(){ return loc('tech_bombard_homeworld_flair'); }
     },
     venus_foothold: {
         id: 'tech-venus_foothold',

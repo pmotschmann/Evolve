@@ -5964,6 +5964,38 @@ div.bigbang {
     z-index: 100;
 }
 
+// --- The screen bleeding out ---------------------------------------------------------------------
+.bleed-wrapper {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 100;
+}
+
+// The sheet closing over the screen from the top edge. jQuery animates the height from 0.
+.bleed-sheet {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 0;
+    background: linear-gradient(to bottom, rgba(72,0,0,0.97) 0%, rgba(126,2,2,0.94) 55%, rgba(178,12,12,0.86) 100%);
+    box-shadow: 0 0 4rem 1.5rem rgba(110,0,0,0.75);
+}
+
+// Individual runs of blood
+.bleed-drip {
+    position: absolute;
+    top: 0;
+    height: 0;
+    background: linear-gradient(to bottom, rgba(96,0,0,0.97), rgba(186,14,14,0.8));
+    border-radius: 0 0 45% 45% / 0 0 1.5rem 1.5rem;
+}
+
 .refresh {
     position: relative;
     display: inline-block;
