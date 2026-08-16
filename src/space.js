@@ -1,7 +1,7 @@
 import { save, global, seededRandom, webWorker, keyMultiplier, sizeApproximation, p_on, support_on, int_on, gal_on, srSpeak, decayPerks} from './vars.js';
 import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, calcGenomeScore, randomKey, getTraitDesc, deepClone, get_qlevel, timeFormat } from './functions.js';
 import { unlockAchieve, unlockFeat, universeAffix } from './achieve.js';
-import { races, traits, genus_def, genusVars, planetTraits, biomes, traitCostMod } from './races.js';
+import { races, traits, genus_def, genusVars, planetTraits, biomes, traitCostMod, geneBonus} from './races.js';
 import { spatialReasoning, unlockContainers, drawResourceTab, atomic_mass } from './resources.js';
 import { loadFoundry, jobScale, job_data } from './jobs.js';
 import { defineIndustry, addSmelter, factoryData } from './industry.js';
@@ -1459,6 +1459,9 @@ const spaceProjects = {
                 if (global.race['grenadier']){
                     soldiers /= 2;
                 }
+                // Quartermaster, same as it applies to a city barracks: many runs house their whole
+                // garrison out here rather than on the home world.
+                soldiers *= geneBonus('quartermaster');
                 return +(jobScale(soldiers)).toFixed(3);
             },
             struct(){

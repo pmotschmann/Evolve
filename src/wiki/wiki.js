@@ -40,6 +40,7 @@ function initPage(){
             submenu: [
                 { key: 'basics' },
                 { key: 'mechanics' },
+                { key: 'genetics' },
                 { key: 'government' },
                 { key: 'governor' },
                 { key: 'combat' },

@@ -2,7 +2,7 @@ import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resiz
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat, checkAdept } from './achieve.js';
 import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, resetResBuffer, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone, exceededATimeThreshold, loopTimers, getWeaselTechLevelRequirement, calcQuantumLevel, drawPet } from './functions.js';
-import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, cleanRemoveTrait } from './races.js';
+import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, cleanRemoveTrait, syncGenes, geneBonus, geneFlat, geneRank, traitSkin, grantRandomMinorTrait} from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_data, loadFoundry, farmerValue, jobScale, workerScale, limitCraftsmen, loadServants, craftsmanCap } from './jobs.js';
 import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, replicatorLines, luxGoodPrice, smelterUnlocked, smelterFuelConfig, setupRituals, maxRitualNum, ritual_types, factoryData } from './industry.js';
@@ -178,6 +178,55 @@ else {
 }
 
 initMessageQueue();
+
+// Push the slotted gene ranks onto global.race before anything reads them. The slots live on
+// global.race and are rebuilt each run, so this is what makes them live at the start of one.
+syncGenes();
+
+// Finish the changeover for a save that predates the gene slots. vars.js has already refunded the
+// phage and genes the old system consumed; what is left is the discoveries. Under the new rules a
+// mutation turns up a gene, so a run that has already mutated is owed one gene per mutation --
+// otherwise an established save would open the lab to an empty library and no way to fill it short
+// of mutating all over again. They arrive as this run's temporary unlocks, exactly as they would
+// have if the mutations had happened under the new rules.
+//
+// Carried on its own flag rather than the refund's, so a save that has already taken the refund
+// still gets its discoveries the next time it loads.
+if (global.genes['geneReset'] && !global.genes.geneReset['found']){
+    // The Mutation genes hand over slotted genes at the start of a run. A save part way through one
+    // already had that happen under the old rules and had it refunded away, so replay it here on the
+    // same terms a fresh run would get.
+    let granted = 0;
+    if (global.genes['evolve'] && global.genes['evolve'] >= 2){
+        for (let i=1; i<8; i++){
+            if (global.genes['evolve'] >= i+1 && grantRandomMinorTrait(i) !== false){ granted++; }
+        }
+    }
+
+    // Then the discoveries the run's own mutations would have turned up.
+    let owed = global.race['mutation'] || 0;
+    let found = 0;
+    for (let i=0; i<owed; i++){
+        if (randomMinorTrait() === false){ break; }   // nothing left to find
+        found++;
+    }
+    if (found > 0){
+        messageQueue(loc('arpa_gene_rediscover',[found]),'success',false,['progress']);
+    }
+    if (granted > 0){
+        messageQueue(loc('arpa_gene_regrant',[granted]),'success',false,['progress']);
+    }
+    global.genes.geneReset['found'] = true;
+}
+
+// The refund itself is announced once, on its own flag.
+if (global.genes['geneReset'] && !global.genes.geneReset['told']){
+    let r = global.genes.geneReset;
+    if (r.p > 0 || r.g > 0){
+        messageQueue(loc('arpa_gene_refund',[r.p,loc('resource_Phage_name'),r.g,loc('resource_Genes_name')]),'success',false,['progress']);
+    }
+    global.genes.geneReset['told'] = true;
+}
 
 if (global.lastMsg){
     Object.keys(global.lastMsg).forEach(function (tag){
@@ -1905,7 +1954,7 @@ function fastLoop(){
                 let imp_total = 0;
 
                 if (global.race['persuasive']){
-                    imprt_vol *= 1 + (global.race['persuasive'] / 100);
+                    imprt_vol *= 1 + (traits.persuasive.vars()[0] * global.race['persuasive'] / 100);
                 }
                 if (global.race['merchant']){
                     imprt_vol *= 1 + (traits.merchant.vars()[1] / 100);
@@ -2145,7 +2194,7 @@ function fastLoop(){
                     ash *= global.city.geology['Uranium'] + 1;
                 }
                 ash *= production('psychic_boost','Uranium');
-                modRes('Uranium', ash * time_multiplier);
+                modRes('Uranium', (ash * time_multiplier) * geneBonus('abyssal'));
                 // Display on the right side of the breakdown to demonstrate that there is no global production scaling
                 breakdown.p.consume['Uranium'][loc('city_coal_ash')] = ash;
             }
@@ -3530,6 +3579,8 @@ function fastLoop(){
             let gasVal = govActive('gaslighter',3) || 0;
             morale = moraleCap + (morale - moraleCap) * gasVal / 100;
         }
+        // Glamour: the fey are simply pleasanter to live among.
+        morale *= geneBonus('glamour');
         global.city.morale.cap = moraleCap;
         global.city.morale.current = morale;
 
@@ -4193,6 +4244,8 @@ function fastLoop(){
                 if (global.tech['reproduction'] && date.getMonth() === 1 && date.getDate() === 14){
                     lowerBound += 5;
                 }
+                // Swarm: a higher bound is a likelier birth, which is how fast_growth reads too.
+                lowerBound *= geneBonus('swarm');
                 if (global.race['fast_growth']){
                     lowerBound *= traits.fast_growth.vars()[0];
                     lowerBound += traits.fast_growth.vars()[1];
@@ -5020,7 +5073,7 @@ function fastLoop(){
                     breakdown.p['Nano_Tube'][`ᄂ${loc('evo_challenge_gravity_well')}+0`] = -((1 - teamster(1)) * 100) + '%';
                 }
 
-                modRes('Nano_Tube', delta * time_multiplier);
+                modRes('Nano_Tube', (delta * time_multiplier) * geneBonus('nanoweaver'));
             }
             else {
                 breakdown.p['Nano_Tube'] = 0;
@@ -5122,6 +5175,10 @@ function fastLoop(){
             let cement_base = global.tech['cement'] >= 4 ? (global.tech.cement >= (global.tech['isolation'] ? 6 : 7) ? 1.45 : 1.2) : 1;
             cement_base *= job_data.cement_worker.impact();
             cement_base *= racialTrait(workerScale(global.civic.cement_worker.workers,'cement_worker'),'factory');
+            // Nothing for these to raise on a flier, which builds in stone instead of cement.
+            if (!global.race['flier']){
+                cement_base *= geneBonus('sapper') * geneBonus('duneborn');
+            }
             if (global.city.biome === 'ashland'){
                 cement_base *= biomes.ashland.vars()[1];
             }
@@ -5375,6 +5432,8 @@ function fastLoop(){
                 disable_smelters -= disable_iridium;
             }
 
+            // Refiner for everyone, Magmatic for the heat genus.
+            iron_smelter *= geneBonus('refiner') * geneBonus('magmatic');
             iron_smelter *= global.tech['smelting'] >= 3 ? 1.2 : 1;
             iridium_smelter *= 0.05;
 
@@ -5429,7 +5488,7 @@ function fastLoop(){
                     ash *= global.city.geology['Uranium'] + 1;
                 }
                 ash *= production('psychic_boost','Uranium');
-                modRes('Uranium', ash * time_multiplier);
+                modRes('Uranium', (ash * time_multiplier) * geneBonus('abyssal'));
                 // Display on the right side of the breakdown to demonstrate that there is no global production scaling
                 breakdown.p.consume['Uranium'][loc('city_coal_ash')] = (breakdown.p.consume['Uranium'][loc('city_coal_ash')] ?? 0) + ash;
             }
@@ -5485,7 +5544,7 @@ function fastLoop(){
                     steel_smelter *= 1 + (0.2 * salFathom);
                 }
 
-                let smelter_output = steel_smelter * steel_base * production('psychic_boost','Steel');
+                let smelter_output = steel_smelter * steel_base * production('psychic_boost','Steel') * geneBonus('refiner') * geneBonus('magmatic');
                 if (global.race['pyrophobia']){
                     smelter_output *= 1 - (traits.pyrophobia.vars()[0] / 100);
                 }
@@ -5514,7 +5573,7 @@ function fastLoop(){
                     }
                     delta *= shrineMetal.mult * mworks.Titanium;
                     let divisor = global.tech['titanium'] >= 3 ? 10 : 25;
-                    modRes('Titanium', (delta * time_multiplier) / divisor);
+                    modRes('Titanium', ((delta * time_multiplier) / divisor) * geneBonus('assayer'));
                     breakdown.p['Titanium'][loc('resource_Steel_name')] = (titanium / divisor) + 'v';
                 }
             }
@@ -6095,6 +6154,16 @@ function fastLoop(){
             let stone_prod_name = global.race['warlord'] ? job_data.miner.name() : loc('workers');
             quarriers = workerScale(quarriers,'quarry_worker');
             let stone_base = quarriers * racialTrait(quarriers,'miner');
+            // This quarry yields Amber for a sappy race and Stone for everyone else, so the two
+            // genes that raise it are mutually exclusive: Chlorophyll is the Amber one, Stonecutter
+            // the Stone one. Gated here as well as kept out of the random pools, so neither does
+            // anything on the wrong race even if slotted by hand.
+            if (global.race['sappy']){
+                stone_base *= geneBonus('chlorophyll');
+            }
+            else {
+                stone_base *= geneBonus('stonecutter');
+            }
             let cactiFathom = fathomCheck('cacti');
             if (cactiFathom > 0){
                 stone_base *= 1 + (0.32 * cactiFathom);
@@ -6798,7 +6867,7 @@ function fastLoop(){
                     }
                     delta *= shrineMetal.mult * mworks.Titanium * production('psychic_boost','Titanium');
                     let divisor = global.tech['titanium'] >= 3 ? 10 : 25;
-                    modRes('Titanium', (delta * time_multiplier) / divisor);
+                    modRes('Titanium', ((delta * time_multiplier) / divisor) * geneBonus('assayer'));
                     breakdown.p['Titanium'][loc('resource_Iron_name')] = (iron / divisor) + 'v';
                 }
             }
@@ -6931,7 +7000,7 @@ function fastLoop(){
                 breakdown.p['Titanium'][`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
                 breakdown.p['Titanium'][`ᄂ${loc('quarantine')}+0`] = ((qs_multiplier - 1) * 100) + '%';
             }
-            modRes('Titanium', titanium_base * shrineMetal.mult * mworks.Titanium * time_multiplier * global_multiplier * qs_multiplier * synd * zigVal);
+            modRes('Titanium', (titanium_base * shrineMetal.mult * mworks.Titanium * time_multiplier * global_multiplier * qs_multiplier * synd * zigVal) * geneBonus('assayer'));
         }
         if (shrineBonusActive()){
             breakdown.p['Copper'][loc('city_shrine')] = ((shrineMetal.mult - 1) * 100).toFixed(1) + '%';
@@ -7038,7 +7107,7 @@ function fastLoop(){
                     breakdown.p['Uranium'][`ᄂ${loc('portal_tunneler_bd')}`] = ((tunneler - 1) * 100) + '%';
                 }
 
-                modRes('Uranium', u_delta * time_multiplier);
+                modRes('Uranium', (u_delta * time_multiplier) * geneBonus('abyssal'));
             }
         }
 
@@ -7108,7 +7177,7 @@ function fastLoop(){
             if (droid_base > 0){
                 breakdown.p['Uranium'][`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
             }
-            modRes('Uranium', droid_delta * time_multiplier);
+            modRes('Uranium', (droid_delta * time_multiplier) * geneBonus('abyssal'));
         }
 
         // Makemake Uranium
@@ -7123,7 +7192,7 @@ function fastLoop(){
                 breakdown.p['Uranium'][`ᄂ${loc('space_red_ziggurat_title')}+1`] = ((zigVal - 1) * 100) + '%';
                 breakdown.p['Uranium'][`ᄂ${loc('quarantine')}+0`] = ((qs_multiplier - 1) * 100) + '%';
             }
-            modRes('Uranium', mine_delta * time_multiplier);
+            modRes('Uranium', (mine_delta * time_multiplier) * geneBonus('abyssal'));
         }
 
         // Oil
@@ -7213,7 +7282,8 @@ function fastLoop(){
             }
 
             breakdown.p['Oil'][loc('hunger')] = ((hunger - 1) * 100) + '%';
-            modRes('Oil', delta * time_multiplier);
+            // Applied to the total, so every source counts -- wells, extractors and whaling alike.
+            modRes('Oil', (delta * time_multiplier) * geneBonus('resilient') * geneBonus('abyssal'));
         }
 
         // Iridium
@@ -7251,7 +7321,7 @@ function fastLoop(){
                     breakdown.p['Iridium'][`ᄂ${loc('evo_challenge_gravity_well')}+0`] = -((1 - teamster(1)) * 100) + '%';
                 }
             }
-            modRes('Iridium', delta * time_multiplier);
+            modRes('Iridium', (delta * time_multiplier) * geneBonus('assayer'));
         }
 
         if (support_on['iridium_ship']){
@@ -7271,7 +7341,7 @@ function fastLoop(){
                     breakdown.p['Iridium'][`ᄂ${loc('evo_challenge_gravity_well')}+1`] = -((1 - teamster(1)) * 100) + '%';
                 }
             }
-            modRes('Iridium', delta * time_multiplier);
+            modRes('Iridium', (delta * time_multiplier) * geneBonus('assayer'));
         }
 
         if (p_on['s_gate'] && global.resource.Adamantite.display && global.galaxy['armed_miner'] && gal_on['armed_miner'] > 0){
@@ -7291,7 +7361,7 @@ function fastLoop(){
                     breakdown.p['Iridium'][`ᄂ${loc('evo_challenge_gravity_well')}+2`] = -((1 - teamster(1)) * 100) + '%';
                 }
             }
-            modRes('Iridium', delta * time_multiplier);
+            modRes('Iridium', (delta * time_multiplier) * geneBonus('assayer'));
         }
 
         // Iridium Extractor Ship
@@ -7308,7 +7378,7 @@ function fastLoop(){
             if (global.race['gravity_well']){
                 breakdown.p['Iridium'][`ᄂ${loc('evo_challenge_gravity_well')}+3`] = -((1 - teamster(1)) * 100) + '%';
             }
-            modRes('Iridium', iridium_delta * time_multiplier);
+            modRes('Iridium', (iridium_delta * time_multiplier) * geneBonus('assayer'));
         }
 
         // Helium 3
@@ -7328,7 +7398,8 @@ function fastLoop(){
                     breakdown.p['Helium_3'][`ᄂ${loc('evo_challenge_gravity_well')}+0`] = -((1 - teamster(1)) * 100) + '%';
                 }
             }
-            modRes('Helium_3', delta * time_multiplier);
+            // Every Helium-3 source gets the fuel genes, the same way each Uranium source does.
+            modRes('Helium_3', (delta * time_multiplier) * geneBonus('resilient') * geneBonus('abyssal'));
         }
 
         if (global.space['gas_mining'] && p_on['gas_mining']){
@@ -7347,7 +7418,7 @@ function fastLoop(){
                     breakdown.p['Helium_3'][`ᄂ${loc('evo_challenge_gravity_well')}+1`] = -((1 - teamster(1)) * 100) + '%';
                 }
             }
-            modRes('Helium_3', delta * time_multiplier);
+            modRes('Helium_3', (delta * time_multiplier) * geneBonus('resilient') * geneBonus('abyssal'));
         }
 
         if (p_on['refueling_station']){
@@ -7359,7 +7430,7 @@ function fastLoop(){
             if (womling_technician > 1){
                 breakdown.p['Helium_3'][`ᄂ${loc('tau_red_womlings')}+0`] = ((womling_technician - 1) * 100) + '%';
             }
-            modRes('Helium_3', delta * time_multiplier);
+            modRes('Helium_3', (delta * time_multiplier) * geneBonus('resilient') * geneBonus('abyssal'));
         }
 
         if (global.interstellar['harvester'] && int_on['harvester']){
@@ -7376,7 +7447,7 @@ function fastLoop(){
                 }
             }
 
-            modRes('Helium_3', delta * time_multiplier);
+            modRes('Helium_3', (delta * time_multiplier) * geneBonus('resilient') * geneBonus('abyssal'));
 
             if (global.tech['ram_scoop']){
                 let deut_mining = int_on['harvester'] * production('harvester','deuterium');
@@ -7996,7 +8067,7 @@ function fastLoop(){
                     if (uranium_base > 0){
                         breakdown.p['Uranium'][`ᄂ${loc('tau_red_womling_prod_label')}`] = -((1 - prod) * 100) + '%';
                     }
-                    modRes('Uranium', uranium_delta * time_multiplier);
+                    modRes('Uranium', (uranium_delta * time_multiplier) * geneBonus('abyssal'));
 
                     let titanium_base = global.tauceti.womling_mine.miners * production('womling_mine','titanium') * production('psychic_boost','Titanium');
                     breakdown.p['Titanium'][loc('tau_red_womlings')] = titanium_base + 'v';
@@ -8005,7 +8076,7 @@ function fastLoop(){
                     if (titanium_base > 0){
                         breakdown.p['Titanium'][`ᄂ${loc('tau_red_womling_prod_label')}`] = -((1 - prod) * 100) + '%';
                     }
-                    modRes('Titanium', titanium_delta * time_multiplier);
+                    modRes('Titanium', (titanium_delta * time_multiplier) * geneBonus('assayer'));
 
                     if (global.race['lone_survivor']){
                         let copper_base = global.tauceti.womling_mine.miners * production('womling_mine','copper') * production('psychic_boost','Copper');
@@ -8033,7 +8104,7 @@ function fastLoop(){
                         if (iridium_base > 0){
                             breakdown.p['Iridium'][`ᄂ${loc('tau_red_womling_prod_label')}`] = -((1 - prod) * 100) + '%';
                         }
-                        modRes('Iridium', iridium_delta * time_multiplier);
+                        modRes('Iridium', (iridium_delta * time_multiplier) * geneBonus('assayer'));
 
                         let neutronium_base = global.tauceti.womling_mine.miners * production('womling_mine','neutronium') * production('psychic_boost','Neutronium');
                         breakdown.p['Neutronium'][loc('tau_red_womlings')] = neutronium_base + 'v';
@@ -8073,6 +8144,7 @@ function fastLoop(){
                 income_base = highPopAdjust(income_base);
             }
             income_base *= global.race['truepath'] ? 0.2 : 0.4;
+            income_base *= geneBonus('bureaucrat');
             if (global.race['greedy']){
                 income_base *= 1 - (traits.greedy.vars()[0] / 100);
             }
@@ -8498,6 +8570,7 @@ function fastLoop(){
         }
         if (global.city['boot_camp']){
             let train = global.tech['boot_camp'] >= 2 ? 0.08 : 0.05;
+            train *= geneBonus('ambusher');
             if (global.blood['lust']){
                 train += global.blood.lust * 0.002;
             }
@@ -8509,6 +8582,7 @@ function fastLoop(){
         }
         if (global.tech['celestial_warfare'] && global.tech.celestial_warfare >= 5 && global.eden['bunker']){
             let train = 0.1;
+            train *= geneBonus('ambusher');
             if (global.blood['lust']){
                 train += global.blood.lust * 0.002;
             }
@@ -9915,7 +9989,7 @@ function midLoop(){
             breakdown.c.Knowledge[loc('space_home_satellite_title')] = gain+'v';
         }
         if (global.space['observatory'] && global.space.observatory.count > 0){
-            let gain = (support_on['observatory'] * 5000);
+            let gain = (support_on['observatory'] * 5000 * geneBonus('stargazer'));
             if (global.race['cataclysm'] && global.space['satellite'] && global.space.satellite.count > 0){
                 gain *= 1 + (global.space.satellite.count * 0.25);
             }
@@ -10410,6 +10484,7 @@ function midLoop(){
         }
 
         breakdown['t_route'] = {};
+        // Logistician is applied to the finished total further down.
         global.city.market.mtrade = 0;
         if (global.race['banana']){
             global.city.market.mtrade++;
@@ -10467,6 +10542,12 @@ function midLoop(){
             }
             global.city.market.mtrade += global.tech['railway'] * routes;
             breakdown.t_route[loc('arpa_projects_railway_title')] = global.tech['railway'] * routes;
+        }
+        // Logistician, on the finished total rather than any one source of routes.
+        if (global.city.market.mtrade > 0 && geneRank('logistician') > 0){
+            let base = global.city.market.mtrade;
+            global.city.market.mtrade = Math.round(base * geneBonus('logistician'));
+            breakdown.t_route[traitSkin('name','logistician')] = global.city.market.mtrade - base;
         }
         if (p_on['titan_spaceport']){
             let water = p_on['titan_spaceport'] * spatialReasoning(250);
@@ -10822,6 +10903,15 @@ function midLoop(){
             }
         });
 
+        // Ruminant raises the population ceiling, and it has to do so before anything is evicted
+        // against it. Applied after, the check below compares a population that has already grown
+        // into the raised cap against the unraised one and turns the difference out of doors --
+        // every tick, forever, which is a stream of abandonment messages and a homeless count that
+        // never stops climbing. Steward does not touch this cap at all: it is warehouse space.
+        if (caps[global.race.species] > 0){
+            caps[global.race.species] = Math.round(caps[global.race.species] * geneBonus('ruminant'));
+        }
+
         let pop_loss = global.resource[global.race.species].amount - caps[global.race.species];
         if (pop_loss > 0){
             if (global.race['orbit_decayed'] && global.stats.days === global.race['orbit_decay']){
@@ -10883,6 +10973,23 @@ function midLoop(){
         }
 
         let tempCrates = caps['Crates'], tempContainers = caps['Containers'];
+        // Steward is warehouse space, so it applies to resources that are actually stored and to
+        // nothing else. The exempt list is every cap whose number means something other than "how
+        // much can be kept": money, the population itself, knowledge, the crate and container pools,
+        // and the special meters, which are all defined non-stackable for the same reason.
+        //
+        // Archivist stacks on top for Knowledge, which is its own gene and its own ceiling.
+        // Run before crates and containers are subtracted, so what they consume is measured against
+        // the raised cap.
+        const stewardExempt = ['Money','Knowledge','Crates','Containers','Slave','Authority','Zen','Mana','Energy','Sus'];
+        Object.keys(caps).forEach(function (res){
+            if (res === global.race.species || stewardExempt.includes(res)){ return; }
+            if (caps[res] > 0){ caps[res] = Math.round(caps[res] * geneBonus('steward')); }
+        });
+        if (caps['Knowledge'] > 0){
+            caps['Knowledge'] = Math.round(caps['Knowledge'] * geneBonus('archivist'));
+        }
+
         Object.keys(caps).forEach(function (res){
             caps['Crates'] -= global.resource[res].crates;
         });
@@ -12437,6 +12544,7 @@ function longLoop(){
             if (global.race['fibroblast']){
                 hc += traits.fibroblast.vars()[0] * global.race['fibroblast'];
             }
+            hc *= geneBonus('mycelial');
             if (global.race['cannibalize'] && global.city['s_alter'] && global.city.s_alter.regen > 0){
                 hc >= 20 ? hc *= (1 + traits.cannibalize.vars()[0] / 100) : hc += Math.floor(traits.cannibalize.vars()[0] / 5);
             }
@@ -12734,13 +12842,9 @@ function longLoop(){
         }
 
         if (global.tech['decay'] && global.tech['decay'] >= 2){
-            let fortify = 0;
-            if (global.genes.minor['fortify']){
-                fortify += global.genes.minor['fortify'];
-            }
-            if (global.race.minor['fortify']){
-                fortify += global.race.minor['fortify'];
-            }
+            // Read from the slot the gene sits in. The old global.race.minor / global.genes.minor
+            // ranks this used to add up are emptied by the refund migration and never written again.
+            let fortify = geneRank('fortify');
             if (global.tech['decay'] >= 3){
                 fortify *= 100;
             }

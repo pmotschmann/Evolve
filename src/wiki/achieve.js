@@ -2,7 +2,7 @@ import { global } from './../vars.js';
 import { loc } from './../locale.js';
 import { clearElement, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel } from './../functions.js';
 import { achievements, feats, universeAffix } from './../achieve.js';
-import { races, biomes, genus_def } from './../races.js';
+import { races, biomes, genus_def, traits, traitSkin, geneCatalog, genePermanent } from './../races.js';
 import { monsters } from './../portal.js';
 import { vBind, popover } from './../functions.js';
 
@@ -430,6 +430,19 @@ function featDesc(feat,showFlair){
                     checked = checked + `<span class="wide has-text-danger">${races[key].name}</span>`;
                 }
             }
+        });
+        checked = checked + `</div>`;
+        popover(`f-${feat}`,$(`<div class="wide has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${checked}${flair}`),{
+            wide: true
+        });
+    }
+    else if (feat === 'gene_splicer'){
+        let checked = `<div class="flexed wide">`;
+        geneCatalog().sort(function(a,b){
+            return traitSkin('name',a).localeCompare(traitSkin('name',b));
+        }).forEach(function (gene){
+            let owned = genePermanent(gene) ? `has-text-success` : `has-text-danger`;
+            checked = checked + `<span class="wide ${owned}">${traitSkin('name',gene)}</span>`;
         });
         checked = checked + `</div>`;
         popover(`f-${feat}`,$(`<div class="wide has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${checked}${flair}`),{

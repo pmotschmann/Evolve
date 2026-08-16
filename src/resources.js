@@ -1,6 +1,6 @@
 import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, support_on, active_rituals } from './vars.js';
 import { vBind, clearElement, modRes, flib, calc_mastery, calcPillar, eventActive, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect, hoovedRename, messageQueue } from './functions.js';
-import { traits, fathomCheck } from './races.js';
+import { traits, fathomCheck, geneBonus, geneFlat, geneRank} from './races.js';
 import { templeCount, actions } from './actions.js';
 import { workerScale, job_data } from './jobs.js';
 import { hellSupression } from './portal.js';
@@ -516,6 +516,14 @@ export const craftingRatio = (function(){
                     name: loc(`trait_ambidextrous_name`),
                     manual: 1,
                     auto: 1 + (traits.ambidextrous.vars()[1] * global.race['ambidextrous'] / 100)
+                });
+            }
+            // Versatile: the humanoid genus turns out more of whatever it is making.
+            if (geneRank('versatile') > 0){
+                crafting.general.multi.push({
+                    name: loc(`trait_versatile_name`),
+                    manual: geneBonus('versatile'),
+                    auto: geneBonus('versatile')
                 });
             }
             if (global.blood['artisan']){
@@ -1495,7 +1503,7 @@ export function marketItem(mount,market_item,name,color,full){
                     rate *= 1 + (dealVal / 100);
                 }
                 if (global.race['persuasive']){
-                    rate *= 1 + (global.race['persuasive'] / 100);
+                    rate *= 1 + (traits.persuasive.vars()[0] * global.race['persuasive'] / 100);
                 }
                 if (astroSign === 'capricorn'){
                     rate *= 1 + (astroVal('capricorn')[0] / 100);
@@ -1831,7 +1839,7 @@ export function galacticTrade(modal){
                 let offers = galaxyOffers();
                 let buy_vol = offers[idx].buy.vol;
                 if (global.race['persuasive']){
-                    buy_vol *= 1 + (global.race['persuasive'] / 100);
+                    buy_vol *= 1 + (traits.persuasive.vars()[0] * global.race['persuasive'] / 100);
                 }
                 if (global.race['devious']){
                     buy_vol *= 1 - (traits.devious.vars()[0] / 100);
@@ -2050,6 +2058,8 @@ export function tradeSellPrice(res){
 
 export function tradeBuyPrice(res){
     let rate = global.resource[res].value;
+    // Cunning drives the buying price down. The selling price is untouched by it.
+    rate *= 2 - geneBonus('cunning');
     if (global.race['arrogant']){
         rate *= 1 + (traits.arrogant.vars()[0] / 100);
     }
@@ -2707,6 +2717,7 @@ export function crateValue(){
     if (global.tech['container'] && global.tech['container'] >= 8){
         create_value += global.tech['container'] >= 9 ? 7800 : 4000;
     }
+    create_value *= geneBonus('stockpiler');
     if (global.race['pack_rat']){
         create_value *= 1 + (traits.pack_rat.vars()[0] / 100);
     }
@@ -3165,6 +3176,7 @@ export function faithTempleCount(){
 }
 
 export function faithBonus(num_temples = -1){
+    // Zealot for everyone, Radiant for the angelic. Applied to the returned figure at the end.
     if (global.race['no_plasmid'] || global.race.universe === 'antimatter'){
         if (num_temples == -1){
             num_temples = faithTempleCount();
@@ -3203,7 +3215,7 @@ export function faithBonus(num_temples = -1){
                 temple_bonus *= 1 - (traits.ooze.vars()[1] / 100);
             }
 
-            return num_temples * temple_bonus;
+            return num_temples * temple_bonus * geneBonus('zealot') * geneBonus('radiant');
         }
     }
     return 0;

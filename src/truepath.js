@@ -1,6 +1,6 @@
 import { global, p_on, support_on, sizeApproximation, keyMap, seededRandom, webWorker } from './vars.js';
 import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect, adjustCosts, get_qlevel, timeCheck, timeFormat, buildQueue, getWeaselTechLevelRequirement } from './functions.js';
-import { races, traits, orbitLength } from './races.js';
+import { races, traits, orbitLength, geneBonus } from './races.js';
 import { spatialReasoning, unlockContainers } from './resources.js';
 import { armyRating, garrisonSize, soldierDeath, buildGarrison, govEffect } from './civics.js';
 import { jobScale, job_data, loadFoundry, limitCraftsmen, workerScale } from './jobs.js';
@@ -5508,14 +5508,7 @@ export function checkPathRequirements(era,region,action){
     }
 }
 
-// Structures the horde can raze, per infested region. A candidate MUST have a struct() definition on its
-// action — that is what creates the global[category][key] record holding the count/razed pair razing
-// works on — so anything without one is never a target. The remainder of the list is curated: orbital
-// structures (satellites, GPS, nav beacons, orbital stations/platforms) are out of reach of a ground
-// horde, and multi-segment megaprojects plus the powered "completed" forms they unlock (world_collider /
-// world_controller, mass_relay / m_relay, ai_core / ai_core2, jump_gate) are excluded so razing can never
-// unwind a finished project. `c` is the global category the structs live under.
-// spc_home is deliberately absent: Earth is a special location that never fights (see trackInfestation).
+// Structures the horde can raze, per infested region.
 const razeTargets = {
     spc_moon: { c: 'space', s: ['moon_base','iridium_mine','helium_mine','observatory'] },
     spc_red: { c: 'space', s: ['spaceport','red_tower','living_quarters','pylon','vr_center','garage','red_mine','fabrication','red_factory','biodome','exotic_lab','ziggurat','space_barracks'] },
@@ -5535,17 +5528,12 @@ const orbitalStrikeRate = 0.05;
 // remainder rolled as a fractional chance, and never more than razeCap in a single day.
 const zombiesPerRazing = 100000;
 const razeCap = 5;
-// Hordes that lie low: absent from the UI and unengaged until something gives them away. On spc_red
-// that is the first structure it razes; on spc_titan it is putting support back into orbit there and
-// getting a proper look at the surface (see zTitanWatch).
+// Starting infected Planets
 const hiddenInfestation = ['spc_red','spc_titan'];
-// Special cases that sit outside the system entirely: never fought, never counted on screen. Earth's
-// billions are a fact of the setting rather than something a fleet can work on.
+// Don't advertise
 const inertInfestation = ['spc_home'];
 
-// The war's day-to-day traffic — hulls engaging, raiders going down, landings, buildings lost. It runs
-// every game day on every front at once, so it is the one thing worth being able to turn off. Anything
-// that moves the arc forward calls messageQueue directly instead and is announced either way.
+// Daily war messages
 function zMessage(msg,type){
     if (fleetCmd()['zquiet']){ return; }
     messageQueue(msg,type,false,['combat']);
@@ -5640,9 +5628,7 @@ function titanSupportMax(){
     return global.space['electrolysis'] && global.space.electrolysis['s_max'] > 0 ? global.space.electrolysis.s_max : 0;
 }
 
-// Titan's horde keeps its head down until you put more support back over it than the wreck you
-// inherited. Whatever plants came through the razing do not count — it takes a fresh one running
-// before you get a proper look at the surface, and before Titan joins the horde's own target list.
+// Titan's horde 
 function zTitanWatch(){
     if (titanReclaimed()){ return; }
     // Ordered behind the outer distress signals, so the stages cannot be leapfrogged.
@@ -7763,7 +7749,8 @@ export function shipAttackPower(ship){
 }
 
 export function shipSpeed(ship){
-    let mass = 1;
+    // Featherlight: avian hulls are built lighter than anyone else's.
+    let mass = 1 / geneBonus('featherlight');
     switch (ship.class){
         case 'corvette':
             mass = global.tech['syard_mass'] ? (ship.armor === 'neutronium' ? 1 : 0.95) : ship.armor === 'neutronium' ? 1.1 : 1;

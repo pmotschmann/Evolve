@@ -1,6 +1,6 @@
 import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame, atrack, p_on, quantum_level, tmp_vars, touchDevice } from './vars.js';
 import { loc } from './locale.js';
-import { races, traits, genus_def, traitSkin, fathomCheck } from './races.js';
+import { races, traits, genus_def, traitSkin, fathomCheck, geneBonus, geneFlat} from './races.js';
 import { actions, actionDesc } from './actions.js';
 import { jobScale } from './jobs.js';
 import { universe_affixes } from './space.js';
@@ -459,6 +459,8 @@ export function calcQueueMax(){
     if (pragVal){
         max_queue = Math.round(max_queue * (1 + (pragVal / 100)));
     }
+    // Queuemaster is added after the doubling above so a rank is always worth exactly one slot.
+    max_queue += geneFlat('queuemaster');
 
     global.queue.max = max_queue;
 }
@@ -809,6 +811,10 @@ export function genCivName(alt){
 }
 
 export function costMultiplier(structure,offset,base,multiplier,cat){
+    // Frugal: the small genus needs less of everything to put a roof up.
+    if (['basic_housing','cottage','apartment'].includes(structure)){
+        base = base * (2 - geneBonus('frugal'));
+    }
     if (!cat){
         cat = 'city';
     }
@@ -1574,14 +1580,18 @@ export function powerModifier(energy){
         energy *= 1 + (astroVal('leo')[0] / 100);
         energy = +energy.toFixed(2);
     }
+    // Conductive: more out of the same plant.
+    energy = +(energy * geneBonus('conductive')).toFixed(2);
     return energy;
 }
 
 export function powerCostMod(energy){
     if (global.race['emfield']){
-        return +(energy * 1.5).toFixed(2);
+        energy *= 1.5;
     }
-    return energy;
+    // Frostbound: the polar genus runs its buildings colder.
+    energy *= 2 - geneBonus('frostbound');
+    return +(energy).toFixed(2);
 }
 
 export function calcQuantumLevel(load){

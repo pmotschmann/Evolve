@@ -1,7 +1,7 @@
 import { global, seededRandom, keyMultiplier, p_on, support_on, gal_on, spire_on, hell_reports, hell_graphs, sizeApproximation, keyMap } from './vars.js';
 import { vBind, clearElement, clearTabPanels, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost, calcPrestige, get_qlevel, shrineBonusActive, getShrineBonus, buildQueue, timeCheck } from './functions.js';
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
-import { traits, races, fathomCheck, traitCostMod, orbitLength } from './races.js';
+import { traits, races, fathomCheck, traitCostMod, orbitLength, geneBonus } from './races.js';
 import { spatialReasoning, unlockContainers, drawResourceTab } from './resources.js';
 import { loadFoundry, jobScale, limitCraftsmen, job_data } from './jobs.js';
 import { armyRating, govCivics, garrisonSize, mercCost, soldierDeath } from './civics.js';
@@ -7769,6 +7769,11 @@ export function mechRating(mech,boss){
     if (rating === 0){
         return 0;
     }
+
+    // The Infernal minor trait. Applied here so it reaches both the boss and the floor branches
+    // below. Not to be confused with mech.infernal on the next line, which is the mech's own
+    // infernal chassis flag.
+    rating *= geneBonus('infernal');
 
     if (mech.hasOwnProperty('infernal') && mech.infernal && global.blood['prepared'] && global.blood.prepared >= 3){
         rating *= 1.25;

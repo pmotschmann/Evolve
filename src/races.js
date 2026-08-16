@@ -4905,82 +4905,335 @@ export const traits = {
         type: 'special',
         val: -20,
     },
-    tactical: { // War Bonus
+    // --- Minor traits -----
+    // Genus restricts trait to that genus only.
+    tactical: { // Army rating
         name: loc('trait_tactical_name'),
         desc: loc('trait_tactical'),
         type: 'minor',
         vars(r){ return [5]; },
     },
-    analytical: { // Science Bonus
+    analytical: { // Science output
         name: loc('trait_analytical_name'),
         desc: loc('trait_analytical'),
         type: 'minor',
-        vars(r){ return [1]; },
+        vars(r){ return [2]; },
     },
-    promiscuous: { // Organics Growth Bonus, Synths Population Discount
+    promiscuous: { // Population growth; synths get cheaper citizens instead
         name: loc('trait_promiscuous_name'),
         desc: loc('trait_promiscuous'),
         type: 'minor',
-        vars(r){ return [1,0.02]; },
+        vars(r){ return [2,0.04]; },
     },
-    resilient: { // Coal Mining Bonus
+    resilient: { // Coal, Oil and Helium-3 production
         name: loc('trait_resilient_name'),
         desc: loc('trait_resilient'),
         type: 'minor',
-        vars(r){ return [2]; },
+        vars(r){ return [6]; },
     },
-    cunning: { // Hunting Bonus
+    cunning: { // Market buy price
         name: loc('trait_cunning_name'),
         desc: loc('trait_cunning'),
         type: 'minor',
-        vars(r){ return [5]; },
+        vars(r){ return [6]; },
     },
-    hardy: { // Factory Woker Bonus
+    hardy: { // Factory output
         name: loc('trait_hardy_name'),
         desc: loc('trait_hardy'),
         type: 'minor',
-        vars(r){ return [1]; },
+        vars(r){ return [2]; },
     },
-    ambidextrous: { // Crafting Bonus
+    ambidextrous: { // Crafting speed, and automated crafting
         name: loc('trait_ambidextrous_name'),
         desc: loc('trait_ambidextrous'),
         type: 'minor',
-        vars(r){ return [3,2]; },
+        vars(r){ return [6,4]; },
     },
-    industrious: { // Miner Bonus
+    industrious: { // Mining output
         name: loc('trait_industrious_name'),
         desc: loc('trait_industrious'),
         type: 'minor',
-        vars(r){ return [2]; },
+        vars(r){ return [4]; },
     },
-    content: { // Morale Bonus
+    content: { // Job stress: workers a job carries per stress point
         name: loc('trait_content_name'),
         desc: loc('trait_content'),
         type: 'minor',
+        // Display only. The hook in main.js adds this per rank to the stress divisor itself,
+        // reading the rank rather than this value, so it exists to keep the description honest.
+        vars(r){ return [0.4]; },
     },
-    fibroblast: { // Healing Bonus
+    fibroblast: { // Soldier healing
         name: loc('trait_fibroblast_name'),
         desc: loc('trait_fibroblast'),
         type: 'minor',
-        vars(r){ return [2]; },
+        vars(r){ return [4]; },
     },
-    metallurgist: { // Alloy bonus
+    metallurgist: { // Alloy production
         name: loc('trait_metallurgist_name'),
         desc: loc('trait_metallurgist'),
         type: 'minor',
-        vars(r){ return [4]; },
+        vars(r){ return [8]; },
     },
-    gambler: { // Casino bonus
+    gambler: { // Casino income
         name: loc('trait_gambler_name'),
         desc: loc('trait_gambler'),
         type: 'minor',
-        vars(r){ return [4]; },
+        vars(r){ return [8]; },
     },
-    persuasive: { // Trade bonus
+    persuasive: { // Trade route value
         name: loc('trait_persuasive_name'),
         desc: loc('trait_persuasive'),
         type: 'minor',
+        vars(r){ return [2]; },
+    },
+    refiner: { // Smelter output
+        name: loc('trait_refiner_name'),
+        desc: loc('trait_refiner'),
+        type: 'minor',
+        vars(r){ return [5]; },
+    },
+    conductive: { // Power generation
+        name: loc('trait_conductive_name'),
+        desc: loc('trait_conductive'),
+        type: 'minor',
         vars(r){ return [1]; },
+    },
+    stockpiler: { // Crate and Container capacity
+        name: loc('trait_stockpiler_name'),
+        desc: loc('trait_stockpiler'),
+        type: 'minor',
+        vars(r){ return [5]; },
+    },
+    assayer: { // Iridium and Titanium production
+        name: loc('trait_assayer_name'),
+        desc: loc('trait_assayer'),
+        type: 'minor',
+        vars(r){ return [5]; },
+    },
+    nanoweaver: { // Nano Tube and composite production
+        name: loc('trait_nanoweaver_name'),
+        desc: loc('trait_nanoweaver'),
+        type: 'minor',
+        vars(r){ return [5]; },
+    },
+    sapper: { // Cement production; unsuited to fliers
+        name: loc('trait_sapper_name'),
+        desc: loc('trait_sapper'),
+        type: 'minor',
+        vars(r){ return [5]; },
+    },
+    arborist: { // Lumber production; unsuited to kindling and smoldering
+        name: loc('trait_arborist_name'),
+        desc: loc('trait_arborist'),
+        type: 'minor',
+        vars(r){ return [5]; },
+    },
+    stonecutter: { // Stone production; unsuited to sappy
+        name: loc('trait_stonecutter_name'),
+        desc: loc('trait_stonecutter'),
+        type: 'minor',
+        vars(r){ return [5]; },
+    },
+    archivist: { // Maximum Knowledge
+        name: loc('trait_archivist_name'),
+        desc: loc('trait_archivist'),
+        type: 'minor',
+        vars(r){ return [1]; },
+    },
+    bureaucrat: { // Tax revenue
+        name: loc('trait_bureaucrat_name'),
+        desc: loc('trait_bureaucrat'),
+        type: 'minor',
+        vars(r){ return [4]; },
+    },
+    zealot: { // Temple output
+        name: loc('trait_zealot_name'),
+        desc: loc('trait_zealot'),
+        type: 'minor',
+        vars(r){ return [2]; },
+    },
+    stargazer: { // Observatory knowledge
+        name: loc('trait_stargazer_name'),
+        desc: loc('trait_stargazer'),
+        type: 'minor',
+        vars(r){ return [5]; },
+    },
+    engineer: { // A.R.P.A. project progress
+        name: loc('trait_engineer_name'),
+        desc: loc('trait_engineer'),
+        type: 'minor',
+        vars(r){ return [3]; },
+    },
+    logistician: { // Trade route capacity
+        name: loc('trait_logistician_name'),
+        desc: loc('trait_logistician'),
+        type: 'minor',
+        vars(r){ return [10]; },
+    },
+    quartermaster: { // Soldier capacity
+        name: loc('trait_quartermaster_name'),
+        desc: loc('trait_quartermaster'),
+        type: 'minor',
+        vars(r){ return [4]; },
+    },
+    steward: { // Maximum storage, regular resources only
+        name: loc('trait_steward_name'),
+        desc: loc('trait_steward'),
+        type: 'minor',
+        vars(r){ return [2]; },
+    },
+    taskmaster: { // Output of every job
+        name: loc('trait_taskmaster_name'),
+        desc: loc('trait_taskmaster'),
+        type: 'minor',
+        vars(r){ return [2]; },
+    },
+    queuemaster: { // Building queue size, flat
+        name: loc('trait_queuemaster_name'),
+        desc: loc('trait_queuemaster'),
+        type: 'minor',
+        vars(r){ return [1]; },
+    },
+    versatile: { // Crafted goods output
+        name: loc('trait_versatile_name'),
+        desc: loc('trait_versatile'),
+        type: 'minor',
+        genus: 'humanoid',
+        vars(r){ return [5]; },
+    },
+    ambusher: { // Soldier training speed
+        name: loc('trait_ambusher_name'),
+        desc: loc('trait_ambusher'),
+        type: 'minor',
+        genus: 'carnivore',
+        vars(r){ return [8]; },
+    },
+    ruminant: { // Maximum population
+        name: loc('trait_ruminant_name'),
+        desc: loc('trait_ruminant'),
+        type: 'minor',
+        genus: 'herbivore',
+        vars(r){ return [6]; },
+    },
+    opportunist: { // Mining output and crafting speed
+        name: loc('trait_opportunist_name'),
+        desc: loc('trait_opportunist'),
+        type: 'minor',
+        genus: 'omnivore',
+        vars(r){ return [4]; },
+    },
+    frugal: { // Housing cost discount
+        name: loc('trait_frugal_name'),
+        desc: loc('trait_frugal'),
+        type: 'minor',
+        genus: 'small',
+        vars(r){ return [3]; },
+    },
+    titanic: { // Manual labour output
+        name: loc('trait_titanic_name'),
+        desc: loc('trait_titanic'),
+        type: 'minor',
+        genus: 'giant',
+        vars(r){ return [8]; },
+    },
+    ironscale: { // Soldier death reduction
+        name: loc('trait_ironscale_name'),
+        desc: loc('trait_ironscale'),
+        type: 'minor',
+        genus: 'reptilian',
+        vars(r){ return [8]; },
+    },
+    featherlight: { // Ship speed; requires True Path
+        name: loc('trait_featherlight_name'),
+        desc: loc('trait_featherlight'),
+        type: 'minor',
+        genus: 'avian',
+        vars(r){ return [8]; },
+    },
+    swarm: { // Population growth
+        name: loc('trait_swarm_name'),
+        desc: loc('trait_swarm'),
+        type: 'minor',
+        genus: 'insectoid',
+        vars(r){ return [6]; },
+    },
+    chlorophyll: { // Amber production; requires sappy
+        name: loc('trait_chlorophyll_name'),
+        desc: loc('trait_chlorophyll'),
+        type: 'minor',
+        genus: 'plant',
+        vars(r){ return [8]; },
+    },
+    mycelial: { // Soldier healing
+        name: loc('trait_mycelial_name'),
+        desc: loc('trait_mycelial'),
+        type: 'minor',
+        genus: 'fungi',
+        vars(r){ return [6]; },
+    },
+    abyssal: { // Uranium, Oil and Helium-3 production
+        name: loc('trait_abyssal_name'),
+        desc: loc('trait_abyssal'),
+        type: 'minor',
+        genus: 'aquatic',
+        vars(r){ return [8]; },
+    },
+    glamour: { // Morale
+        name: loc('trait_glamour_name'),
+        desc: loc('trait_glamour'),
+        type: 'minor',
+        genus: 'fey',
+        vars(r){ return [5]; },
+    },
+    magmatic: { // Smelter output
+        name: loc('trait_magmatic_name'),
+        desc: loc('trait_magmatic'),
+        type: 'minor',
+        genus: 'heat',
+        vars(r){ return [8]; },
+    },
+    frostbound: { // Building power discount
+        name: loc('trait_frostbound_name'),
+        desc: loc('trait_frostbound'),
+        type: 'minor',
+        genus: 'polar',
+        vars(r){ return [1]; },
+    },
+    duneborn: { // Cement production
+        name: loc('trait_duneborn_name'),
+        desc: loc('trait_duneborn'),
+        type: 'minor',
+        genus: 'sand',
+        vars(r){ return [8]; },
+    },
+    infernal: { // Combat effectiveness in Hell and mech damage; unsuited to True Path
+        name: loc('trait_infernal_name'),
+        desc: loc('trait_infernal'),
+        type: 'minor',
+        genus: 'demonic',
+        vars(r){ return [8]; },
+    },
+    radiant: { // Temple output
+        name: loc('trait_radiant_name'),
+        desc: loc('trait_radiant'),
+        type: 'minor',
+        genus: 'angelic',
+        vars(r){ return [8]; },
+    },
+    overclocked: { // Factory output
+        name: loc('trait_overclocked_name'),
+        desc: loc('trait_overclocked'),
+        type: 'minor',
+        genus: 'synthetic',
+        vars(r){ return [5]; },
+    },
+    cerebral: { // Knowledge gain
+        name: loc('trait_cerebral_name'),
+        desc: loc('trait_cerebral'),
+        type: 'minor',
+        genus: 'eldritch',
+        vars(r){ return [8]; },
     },
     fortify: { // gene fortification
         name: loc('trait_fortify_name'),
@@ -6643,11 +6896,22 @@ export function racialTrait(workers,type){
     if (shroomiFathom > 0 && type === 'factory'){
         modifier *= 1 + (traits.toxic.vars(1)[2] / 100 * shroomiFathom);
     }
-    if (global.race['hardy'] && type === 'factory'){
-        modifier *= 1 + (traits.hardy.vars()[0] * global.race['hardy'] / 100);
-    }
+    // Note: racialTrait only ever receives factory, farmer, forager, hunting, lumberjack, miner and
+    // science -- and its 'factory' is cement, not the city factory (see the two call sites). Hardy
+    // and Overclocked therefore live in factoryBonus, and the cement and stone genes are hooked at
+    // their own production sites; a gene keyed here on any other string would silently do nothing.
+    if (type === 'science'){ modifier *= geneBonus('cerebral'); }
+    if (type === 'lumberjack'){ modifier *= geneBonus('arborist'); }
     if (global.race['analytical'] && type === 'science'){
         modifier *= 1 + (traits.analytical.vars()[0] * global.race['analytical'] / 100);
+    }
+    // Taskmaster lifts every job; Titanic only the ones done by hand.
+    modifier *= geneBonus('taskmaster');
+    if (['lumberjack','miner','forager','hunting'].includes(type)){
+        modifier *= geneBonus('titanic');
+    }
+    if (type === 'miner'){
+        modifier *= geneBonus('opportunist');
     }
     if (global.race['ooze']){
         modifier *= 1 - (traits.ooze.vars()[0] / 100);
@@ -6771,28 +7035,284 @@ export function servantTrait(workers,type){
     return modifier;
 }
 
-export function randomMinorTrait(ranks){
-    let trait_list = [];
-    Object.keys(traits).forEach(function (t){
-        if (traits[t].type === 'minor' && !global.race[t]){
-            trait_list.push(t);
-        }
-    });
-    if (trait_list.length === 0){
-        Object.keys(traits).forEach(function (t){
-            if (traits[t].type === 'minor'){
-                trait_list.push(t);
-            }
-        });
+// --- Minor genes ----------------------------------------------------------------------------
+// Ten slots, each holding one gene at one rank. A gene must be unlocked with phage before it can
+// be slotted, except the two specials, which carry their own unlock conditions instead.
+
+// Every tunable of the gene economy in one place, so a retune is a single edit here rather than a
+// hunt through the module.
+export const genes = {
+    gene_slot_count: 10,
+    gene_unlock_phage: 25,
+    gene_slot_cost: 25,         // genes, to fill an empty slot
+    gene_first_cost: 10,        // ...discounted, while nothing at all is slotted
+    gene_rank_base: 5,          // ranks per slot before any limit break
+    gene_break_ranks: 5,        // ranks each limit break adds
+    // Genes to take a slot from rank 1 to 2, 3, 4, 5, and onward past a limit break.
+    gene_rank_cost: [40,75,140,260,480,890,1650,3050,5650],
+    // Plasmids per limit break.
+    gene_break_cost: [5,10,25,50],
+    // Past the table the price climbs by a flat step rather than a multiplier.
+    gene_break_step: 25,
+    // Genes priced above the standard rate.
+    gene_cost_mult: { mastery: 2 },
+    // The specials sit outside the unlock economy: they are earned, not bought.
+    gene_specials: ['fortify','mastery']
+};
+
+// Every minor gene in the game, genus-locked ones included and regardless of what this run can
+// use. geneRoster() is the per-run view; this is the whole library a player can come to own.
+export function geneCatalog(){
+    return Object.keys(traits).filter(function(t){ return traits[t].type === 'minor'; });
+}
+
+// Every gene this run could ever slot: the standard list, plus the genes of the current genus,
+// plus whichever specials have been earned.
+// The two specials are earned rather than bought, each on its own condition. Whenever that condition
+// holds they count as permanently unlocked, and nothing is written to geneUnlock -- the condition is
+// the record, so it re-evaluates itself every run without any bookkeeping to keep in step.
+export function geneSpecialUnlocked(gene){
+    switch (gene){
+        case 'mastery':
+            return global.genes['challenge'] && global.genes.challenge >= 5 ? true : false;
+        case 'fortify':
+            return global.tech['decay'] && global.tech.decay >= 2 ? true : false;
     }
-    let trait = trait_list[Math.floor(seededRandom(0,trait_list.length))];
-    if (global.race[trait]){
-        global.race[trait] += ranks;
+    return false;
+}
+
+export function geneRoster(){
+    let genus = global.race.species && races[global.race.species] ? races[global.race.species].type : false;
+    return Object.keys(traits).filter(function(t){
+        if (genes.gene_specials.includes(t)){ return geneSpecialUnlocked(t); }
+        if (traits[t].type !== 'minor'){ return false; }
+        return traits[t].genus ? traits[t].genus === genus : true;
+    });
+}
+
+// Unlocks come in two tiers.
+// global.genes.geneUnlock  bought with phage, permanent, survives every reset
+// global.race.geneUnlock   found by mutating, lasts this run only
+export function geneTempUnlocks(){
+    if (!global.race['geneUnlock'] || typeof global.race['geneUnlock'] !== 'object'){
+        global.race['geneUnlock'] = {};
+    }
+    return global.race.geneUnlock;
+}
+
+export function genePermanent(gene){
+    // A special that has met its condition reads as permanent without ever being recorded.
+    if (geneSpecialUnlocked(gene)){ return true; }
+    return global.genes['geneUnlock'] && global.genes.geneUnlock[gene] ? true : false;
+}
+
+export function geneTemp(gene){
+    return geneTempUnlocks()[gene] ? true : false;
+}
+
+export function geneUnlocked(gene){
+    return genePermanent(gene) || geneTemp(gene) ? true : false;
+}
+
+// Some minor traits should not be mutated by some species
+// Negative logic, don't hurt your brain
+const geneUnsuited = {
+    arborist(){ return global.race['kindling_kindred'] || global.race['smoldering'] ? true : false; },
+    chlorophyll(){ return global.race['sappy'] ? false : true; },
+    stonecutter(){ return global.race['sappy'] ? true : false; },
+    sapper(){ return global.race['flier'] ? true : false; },
+    duneborn(){ return global.race['flier'] ? true : false; },
+    featherlight(){ return global.race['truepath'] ? false : true; },
+    infernal(){ return global.race['truepath'] ? true : false; }
+};
+
+export function geneSuited(gene){
+    return geneUnsuited[gene] ? !geneUnsuited[gene]() : true;
+}
+
+// A gene that reaches further in some runs than others needs a description that follows. Returns
+// an alternate locale key, or false to use the plain one.
+const geneDescAlt = {
+    // Warlord has no coal miner; mining runs through the Tunneler, and Resilient lifts the rare
+    // metals it brings up alongside the coal.
+    resilient(){ return global.race['warlord'] ? `trait_resilient_warlord` : false; }
+};
+
+export function geneDescKey(gene){
+    let alt = geneDescAlt[gene] ? geneDescAlt[gene]() : false;
+    return alt ? alt : `trait_${gene}`;
+}
+
+// Gene slots
+export function geneSlotCount(){
+    let extra = global.race['geneSlotBonus'] || 0;
+    return genes.gene_slot_count + extra;
+}
+
+export function geneSlots(){
+    if (!global.race['geneSlots'] || !Array.isArray(global.race['geneSlots'])){
+        global.race['geneSlots'] = [];
+    }
+    // Enough general slots for the current allowance, counting only the ones that are general.
+    let general = global.race.geneSlots.filter(function(s){ return !(s && s.x); }).length;
+    while (general < geneSlotCount()){
+        global.race.geneSlots.push(false);
+        general++;
+    }
+    return global.race.geneSlots;
+}
+
+export function geneSlotExtra(slot){
+    let s = geneSlots()[slot];
+    return s && s.x ? true : false;
+}
+
+export function geneSlotLabel(slot){
+    let slots = geneSlots();
+    let n = 0;
+    for (let i=0; i<=slot && i<slots.length; i++){
+        if (geneSlotExtra(slot) === (slots[i] && slots[i].x ? true : false)){ n++; }
+    }
+    return geneSlotExtra(slot) ? `S${n}` : `${n}`;
+}
+
+// Which slot a gene sits in, or false. A gene may only be slotted once.
+export function geneSlotOf(gene){
+    let slots = geneSlots();
+    for (let i=0; i<slots.length; i++){
+        if (slots[i] && slots[i].g === gene){ return i; }
+    }
+    return false;
+}
+
+// Limit breaks bought per slot this run.
+export function geneBreaks(){
+    if (!global.race['geneBreak'] || typeof global.race['geneBreak'] !== 'object'){
+        global.race['geneBreak'] = {};
+    }
+    return global.race.geneBreak;
+}
+
+// Rank cap for a slot: the base, plus five for every limit break paid for this run.
+export function geneRankCap(slot){
+    let breaks = geneBreaks()[slot] || 0;
+    return genes.gene_rank_base + (breaks * genes.gene_break_ranks);
+}
+
+// How many limit breaks a slot needs before it could hold this rank at all.
+function geneBreaksFor(rank){
+    return rank > genes.gene_rank_base ? Math.ceil((rank - genes.gene_rank_base) / genes.gene_break_ranks) : 0;
+}
+
+// Self explanatory: the cost to slot or upgrade a gene
+export function geneSlotCost(slot,gene){
+    let anySlotted = geneSlots().some(function(s){ return s && s.g; });
+    let cost = anySlotted ? genes.gene_slot_cost : genes.gene_first_cost;
+    return cost * geneCostMod(gene !== undefined ? gene : geneInSlot(slot));
+}
+
+function geneCostMod(gene){
+    return gene && genes.gene_cost_mult[gene] ? genes.gene_cost_mult[gene] : 1;
+}
+
+// The gene sitting in a slot, or false.
+function geneInSlot(slot){
+    let s = geneSlots()[slot];
+    return s && s.g ? s.g : false;
+}
+
+export function geneRankCost(rank,gene){
+    let idx = rank - 2;
+    if (idx < 0){ return genes.gene_slot_cost * geneCostMod(gene); }
+    if (idx < genes.gene_rank_cost.length){ return genes.gene_rank_cost[idx] * geneCostMod(gene); }
+    let cost = genes.gene_rank_cost[genes.gene_rank_cost.length - 1];
+    for (let i=genes.gene_rank_cost.length; i<=idx; i++){ cost = Math.round(cost * 1.85); }
+    return cost * geneCostMod(gene);
+}
+
+export function geneBreakCost(slot){
+    let breaks = geneBreaks()[slot] || 0;
+    if (breaks < genes.gene_break_cost.length){
+        return genes.gene_break_cost[breaks];
+    }
+    return genes.gene_break_cost[genes.gene_break_cost.length - 1]
+         + ((breaks - genes.gene_break_cost.length + 1) * genes.gene_break_step);
+}
+
+// The live rank of a gene, which is what every effect reads. Zero unless it is sitting in a slot.
+export function geneRank(gene){
+    let slot = geneSlotOf(gene);
+    return slot === false ? 0 : geneSlots()[slot].r;
+}
+
+// The multiplier a gene contributes, as 1 + vars[idx] * rank / 100. The one call every hook makes.
+export function geneBonus(gene,idx){
+    let rank = geneRank(gene);
+    if (rank <= 0 || !traits[gene]){ return 1; }
+    let vars = traits[gene].vars ? traits[gene].vars() : [0];
+    return 1 + (vars[idx || 0] * rank / 100);
+}
+
+// The same figure as a plain total rather than a multiplier, for the handful of effects that add
+// a flat amount instead of scaling something.
+export function geneFlat(gene,idx){
+    let rank = geneRank(gene);
+    if (rank <= 0 || !traits[gene]){ return 0; }
+    let vars = traits[gene].vars ? traits[gene].vars() : [0];
+    return vars[idx || 0] * rank;
+}
+
+// Push the slotted ranks onto global.race, which is where the older traits are already read from
+// and what the trait breakdown in the genetics tab displays.
+export function syncGenes(){
+    geneRoster().forEach(function(t){
+        if (!genes.gene_specials.includes(t)){ delete global.race[t]; }
+    });
+    geneSlots().forEach(function(slot){
+        if (slot && slot.g){ global.race[slot.g] = slot.r; }
+    });
+}
+
+export function grantRandomMinorTrait(rank,extra){
+    let slots = geneSlots();
+    let pool = geneRoster().filter(function(t){
+        return !genes.gene_specials.includes(t) && geneSlotOf(t) === false && geneSuited(t);
+    });
+    if (pool.length === 0){ return false; }
+
+    let free = -1;
+    if (extra){
+        // Appended, so it never competes with the general slots for space and never shifts one.
+        slots.push(false);
+        free = slots.length - 1;
     }
     else {
-        global.race[trait] = ranks;
+        // The first empty general slot. An extra is never empty, so this skips them naturally.
+        for (let i=0; i<slots.length; i++){
+            if (!slots[i]){ free = i; break; }
+        }
     }
-    return trait;
+    if (free < 0){ return false; }
+    let gene = pool[Math.floor(seededRandom(0,pool.length))];
+    let at = Math.max(1,rank || 1);
+    geneTempUnlocks()[gene] = 1;
+    slots[free] = extra ? { g: gene, r: at, x: true } : { g: gene, r: at };
+    let owed = geneBreaksFor(at);
+    if (owed > 0){
+        geneBreaks()[free] = Math.max(geneBreaks()[free] || 0, owed);
+    }
+    syncGenes();
+    return gene;
+}
+
+export function randomMinorTrait(){
+    let pool = geneRoster().filter(function(t){
+        return !genes.gene_specials.includes(t) && !geneUnlocked(t) && geneSuited(t);
+    });
+    if (pool.length === 0){ return false; }
+    let gene = pool[Math.floor(seededRandom(0,pool.length))];
+    geneTempUnlocks()[gene] = 1;
+    return gene;
 }
 
 function checkPurgatory(s,t,dv){

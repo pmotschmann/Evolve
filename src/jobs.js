@@ -2,7 +2,7 @@ import { global, keyMultiplier, p_on, support_on, tmp_vars } from './vars.js';
 import { vBind, clearElement, popover, darkEffect, eventActive, easterEgg, getHalloween } from './functions.js';
 import { loc } from './locale.js';
 import { highPopAdjust } from './prod.js';
-import { racialTrait, servantTrait, races, traits, biomes, planetTraits, fathomCheck } from './races.js';
+import { racialTrait, servantTrait, races, traits, biomes, planetTraits, fathomCheck, geneBonus} from './races.js';
 import { armyRating, govEffect } from './civics.js';
 import { govActive } from './governor.js';
 import { craftingRatio, craftCost, craftingPopover } from './resources.js';
@@ -298,6 +298,9 @@ export const job_data = {
             let worker_impact = +workerScale(job_data.cement_worker.impact(),'cement_worker').toFixed(2);
             let impact = global.tech['cement'] >= 4 ? (global.tech.cement >= 7 ? 1.45 : 1.2) : 1;
             let cement_multiplier = racialTrait(global.civic.cement_worker.workers,'factory');
+            if (!global.race['flier']){
+                cement_multiplier *= geneBonus('sapper') * geneBonus('duneborn');
+            }
             let gain = worker_impact * impact * cement_multiplier;
             if (global.city.biome === 'ashland'){
                 gain *= biomes.ashland.vars()[1];

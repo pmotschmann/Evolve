@@ -1,6 +1,6 @@
 import { global, set_alevel, set_ulevel } from './vars.js';
 import { clearElement, popover, flib, calc_mastery, masteryType, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, calcQueueMax, calcRQueueMax, messageQueue, eventActive, easterEgg, getHalloween, trickOrTreat, harmonyEffect } from './functions.js';
-import { races, genus_def } from './races.js';
+import { races, genus_def, geneSlots, geneCatalog, genePermanent } from './races.js';
 import { actions } from './actions.js';
 import { universe_affixes, universe_types, piracy } from './space.js';
 import { monsters, towerSize } from './portal.js';
@@ -13,7 +13,7 @@ const achieve_list = {
         'laser_shark','infested','mass_starvation','colonist','world_domination','illuminati',
         'syndicate','cult_of_personality','doomed','pandemonium','blood_war','landfill','seeder',
         'miners_dream','shaken','blacken_the_sun','trade','resonance','enlightenment','gladiator',
-        'corrupted','red_dead','godslayer','traitor','doppelganger'
+        'corrupted','red_dead','godslayer','traitor','doppelganger','geneticist'
     ],
     species: [
         'mass_extinction','extinct_human','extinct_elven','extinct_orc','extinct_cath','extinct_wolven','extinct_vulpine','extinct_centaur',
@@ -69,8 +69,12 @@ const flairData = {
     colonist: [flib('name')]
 };
 
+// Filled gene slots needed for Geneticist. One per general slot, so a full set of them does it.
+const geneticistGenes = 10;
+
 const descData = {
-    trade: [750,50]
+    trade: [750,50],
+    geneticist: [geneticistGenes]
 };
 
 export const achievements = {};
@@ -158,6 +162,11 @@ export const feats = {
         name: loc("feat_equilibrium_name"),
         desc: loc("feat_equilibrium_desc"),
         flair: loc("feat_equilibrium_flair")
+    },
+    gene_splicer: {
+        name: loc("feat_gene_splicer_name"),
+        desc: loc("feat_gene_splicer_desc"),
+        flair: loc("feat_gene_splicer_flair")
     },
     planned_obsolescence: {
         name: loc("feat_planned_obsolescence_name"),
@@ -642,6 +651,18 @@ export function checkAchievements(){
         if (global.city.morale.current >= 500){
             unlockFeat('utopia');
         }
+    }
+
+    // Any filled slot counts, specials included.
+    let slotted = geneSlots().filter(function(s){ return s && s.g ? true : false; }).length;
+    if (slotted >= geneticistGenes){
+        unlockAchieve('geneticist');
+    }
+
+    // Permanent unlocks only. A gene turned up by mutating is gone at the next reset, so it does
+    // not count toward owning the library.
+    if (geneCatalog().every(function(g){ return genePermanent(g); })){
+        unlockFeat('gene_splicer');
     }
 
     if (global.resource.hasOwnProperty('Money') && global.resource.Money.amount >= 1000000000){

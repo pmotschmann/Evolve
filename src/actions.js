@@ -2,7 +2,7 @@ import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, 
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, togglePopover, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
-import { races, traits, genus_def, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill, traitRank } from './races.js';
+import { races, traits, genus_def, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill, traitRank, syncGenes, geneBonus, grantRandomMinorTrait} from './races.js';
 import { defineResources, unlockCrates, unlockContainers, crateValue, containerValue, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus, faithTempleCount } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_data } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter, factoryData, cancelRituals } from './industry.js';
@@ -2006,7 +2006,7 @@ export const actions = {
                         vBind({el: `#garrison`},'update');
                         vBind({el: `#c_garrison`},'update');
                     }
-                    global.civic['garrison'].max += $(this)[0].soldiers();
+                    global.civic['garrison'].max += Math.round($(this)[0].soldiers() * geneBonus('quartermaster'));
                     incrementStruct('garrison','city');
                     global.city['garrison'].on++;
                     global.resource.Furs.display = true;
@@ -8886,22 +8886,16 @@ function sentience(){
         }
     }
 
-    Object.keys(global.genes.minor).forEach(function (trait){
-        global.race[trait] = trait === 'mastery' ? global.genes.minor[trait] : global.genes.minor[trait] * 2;
-    });
-    
-    let tempMTOrder = [];
-    global.settings.mtorder.forEach(function(trait){
-       if (global.genes.minor[trait] || trait === 'mastery'){
-           tempMTOrder.push(trait);
-       }
-    });
-    global.settings.mtorder = tempMTOrder;
+    // Slotted genes carry across a reset intact -- the slots and their ranks live on global.genes,
+    // which survives -- so the ranks are simply pushed back onto the fresh global.race.
+    syncGenes();
 
+    // The Mutation genes hand over slotted genes at a rank rather than merely revealing them; each
+    // rank of the gene grants one more, at one rank higher.
     if (global.genes['evolve'] && global.genes['evolve'] >= 2){
         for (let i=1; i<8; i++){
             if (global.genes['evolve'] >= i+1){
-                randomMinorTrait(i);
+                grantRandomMinorTrait(i);
             }
         }
     }
@@ -9697,14 +9691,14 @@ function cataclysm(){
 
 export function fanaticism(god){
     if (['custom','hybrid','nano'].includes(god) && global.race['warlord']){
-        randomMinorTrait(5);
+        grantRandomMinorTrait(5,true);
         arpa('Genetics');
     }
     else {
         switch (races[god].fanaticism){
             case 'smart':
                 if (global.race['dumb']){
-                    randomMinorTrait(5);
+                    grantRandomMinorTrait(5,true);
                     arpa('Genetics');
                 }
                 else {
@@ -9724,7 +9718,7 @@ export function fanaticism(god){
                 }
                 break;
             case 'none':
-                randomMinorTrait(5);
+                grantRandomMinorTrait(5,true);
                 arpa('Genetics');
                 break;
             case 'kindling_kindred':
@@ -9755,7 +9749,7 @@ function fanaticTrait(trait,rank){
     else if (global.race['warlord'] && trait === 'blood_thirst'){ trait = 'apex_predator'; }
     if (global.race[trait]){
         if (!setTraitRank(trait)){
-            randomMinorTrait(5);
+            grantRandomMinorTrait(5,true);
         }
         else if (trait === 'imitation'){
             setImitation(true);

@@ -2,7 +2,7 @@ import { global, seededRandom, keyMultiplier, sizeApproximation, p_on, decayPerk
 import { loc } from './locale.js';
 import { calcPrestige, clearElement, popover, clearPopper, vBind, timeFormat, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat } from './functions.js';
 import { universeAffix } from './achieve.js';
-import { races, racialTrait, traits, planetTraits, biomes, fathomCheck, blubberFill } from './races.js';
+import { races, racialTrait, traits, planetTraits, biomes, fathomCheck, blubberFill, geneBonus} from './races.js';
 import { defineGovernor, govActive } from './governor.js';
 import { drawTech } from  './actions.js';
 import { soulForgeSoldiers } from './portal.js';
@@ -2188,7 +2188,8 @@ export function weaponTechModifer(){
 }
 
 export function soldierDeath(v){
-    let killed = v;
+    // Ironscale: the reptilian genus takes the same hit and loses fewer to it.
+    let killed = Math.round(v / geneBonus('ironscale'));
     if (killed > global.civic.garrison.workers){
         killed = global.civic.garrison.workers;
     }
@@ -2317,6 +2318,9 @@ export function armyRating(val,type,wound,analysis){
             let pathetic = (traits.pathetic.vars()[0] / 100);
             army *= 1 - pathetic;
             data.push({ k: 'trait_pathetic_name', v: -(pathetic) });
+        }
+        if (type === 'hellArmy'){
+            rating *= geneBonus('infernal');
         }
         if (global.race['holy'] && type === 'hellArmy'){
             let holy = (traits.holy.vars()[0] / 100);

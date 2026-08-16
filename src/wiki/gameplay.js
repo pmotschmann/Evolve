@@ -1,6 +1,7 @@
 import { clearElement } from './../functions.js';
 import { basicsPage } from './basics.js';
 import { mechanicsPage } from './mechanics.js';
+import { geneticsPage } from './genetics.js';
 import { govPage } from './government.js';
 import { governPage } from './governor.js';
 import { combatPage } from './combat.js';
@@ -20,6 +21,9 @@ export function gamePlayPage(zone){
             break;
         case 'mechanics':
             mechanicsPage(content);
+            break;
+        case 'genetics':
+            geneticsPage(content);
             break;
         case 'government':
             govPage(content);

@@ -1853,9 +1853,7 @@ if (!global.settings.hasOwnProperty('mapView')){
     global.settings['mapView'] = {};
 }
 // `webgl` picks the backend that paints it: on by default, since both renderers draw the same scene
-// from the same code and the hardware-accelerated one is the better default wherever it is
-// available. It is ignored on a browser without WebGL, which falls back to the 2D canvas without
-// disturbing the setting — so a save that moves to a machine that can manage it gets it back.
+// from the same code and the hardware-accelerated one is the better default wherever it is available.
 ['planetOrbits','moonOrbits','ships','planetNames','webgl'].forEach(function(k){
     if (!global.settings.mapView.hasOwnProperty(k)){
         global.settings.mapView[k] = true;
@@ -1980,6 +1978,72 @@ if (!global.genes['minor']){
 }
 if (!global.race['minor']){
     global.race['minor'] = {};
+}
+
+// Minor genes
+if (!global.genes['geneUnlock']){
+    global.genes['geneUnlock'] = {};
+}
+// The per-run tier. Created on demand by geneTempUnlocks() in races.js as well, so a reset that
+// replaces global.race cannot leave it missing.
+if (!global.race['geneUnlock']){
+    global.race['geneUnlock'] = {};
+}
+// Carry over an arrangement saved while the slots still lived on global.genes.
+if (Array.isArray(global.genes['geneSlots'])){
+    if (!Array.isArray(global.race['geneSlots'])){
+        global.race['geneSlots'] = global.genes['geneSlots'];
+    }
+    delete global.genes['geneSlots'];
+}
+if (!Array.isArray(global.race['geneSlots'])){
+    global.race['geneSlots'] = [];
+}
+if (!global.race['geneBreak']){
+    global.race['geneBreak'] = {};
+}
+
+// One-time refund of the old system.
+if (!global.genes['geneReset']){
+    let fib = function(n){
+        let a = 1, b = 1;
+        for (let i=2; i<=n; i++){ let c = a + b; a = b; b = c; }
+        return b;
+    };
+    let spent = function(ranks,mult){
+        let total = 0;
+        for (let i=1; i<=ranks; i++){ total += fib(i + 3) * mult; }
+        return total;
+    };
+
+    let phage = 0;
+    Object.keys(global.genes.minor).forEach(function(t){
+        phage += spent(global.genes.minor[t], t === 'mastery' ? 2 : 1);
+    });
+    let genes = 0;
+    Object.keys(global.race.minor).forEach(function(t){
+        genes += spent(global.race.minor[t], t === 'mastery' ? 5 : 1);
+    });
+
+    // Guarded individually: this runs while the save is still being assembled, and a throw here
+    // would take the game down before it ever drew a frame.
+    if (phage > 0 && global.prestige && global.prestige['Phage']){
+        global.prestige.Phage.count += phage;
+        if (global.stats && typeof global.stats.phage === 'number'){
+            global.stats.phage += phage;
+        }
+    }
+    if (genes > 0 && global.resource && global.resource['Genes']){
+        global.resource.Genes.amount += genes;
+    }
+
+    // Zero the ranks themselves, and the live trait values they were feeding.
+    Object.keys(global.genes.minor).forEach(function(t){ delete global.race[t]; });
+    Object.keys(global.race.minor).forEach(function(t){ delete global.race[t]; });
+    global.genes.minor = {};
+    global.race.minor = {};
+
+    global.genes['geneReset'] = { p: phage, g: genes };
 }
 
 if (!global.hasOwnProperty('govern')){
