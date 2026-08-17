@@ -481,12 +481,11 @@ function featDesc(feat,showFlair){
             return traitSkin('name',a).localeCompare(traitSkin('name',b));
         }).forEach(function (gene){
             let owned = genePermanent(gene) ? `has-text-success` : `has-text-danger`;
-            checked = checked + `<span class="wide ${owned}">${traitSkin('name',gene)}</span>`;
+            checked = checked + `<span class="wide ${owned}">${traitSkin('name',gene)}${srNoteCompleted(genePermanent(gene))}</span>`;
         });
         checked = checked + `</div>`;
-        popover(`f-${feat}`,$(`<div class="wide has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${checked}${flair}`),{
-            wide: true
-        });
+        content = $(`<div class="wide has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${checked}${flair}`);
+        options = { wide: true };
     }
     else if (feat === 'grand_death_tour'){
         let path = `<div class="flexed">`;
