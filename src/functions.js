@@ -31,6 +31,7 @@ export function popover(id,content,opts){
             let wide = opts['wide'] ? ' wide' : '';
             let classes = opts['classes'] ? opts['classes'] : `has-background-light has-text-dark pop-desc`;
             var popper = $(`<div id="popper" class="popper${wide} ${classes}" data-id="${id}"></div>`);
+
             if (opts['attach']){
                 $(opts['attach']).append(popper);
             }
@@ -1249,11 +1250,7 @@ export function flushTabPanelClears(){
 }
 
 export function clearElement(elm,remove){
-    // Unmount nested Vue apps deepest-first. Document order (`.find` default) unmounts a parent
-    // app before its nested child app; the parent's unmount detaches the child's DOM, so the
-    // child's later unmount() throws ("nextSibling of null") and its reactive effect is orphaned
-    // (still subscribed to the global proxy → a per-rebuild heap/CPU leak). Reversing to
-    // deepest-first keeps each element's DOM attached when its own app is unmounted.
+    // Unmount nested Vue apps deepest-first.
     let vbs = elm.find('.vb').get();
     for (let i = vbs.length - 1; i >= 0; i--){
         unmountApp(vbs[i]);
@@ -1272,30 +1269,12 @@ export function clearElement(elm,remove){
 
 export function vBind(bind,action){
     action = action || 'create';
-    if (action === 'native'){
-        return vBindNative(bind,'create');
-    }
     if (action === 'update'){
-        // During offline catch-up the whole UI sits behind the progress modal and reactivity is
-        // suppressed; skip the ~70 forced re-renders per simulated tick and refresh once at the end.
+        // During offline catch-up the whole UI sits behind the progress modal and reactivity is suppressed;
         if (webWorker.offline){ return; }
-        // An 'update' call carries only { el } — no data/methods/template — so it can
-        // only refresh a binding that already exists. Refresh a live one; otherwise
-        // rebuild it from the config stashed at create time (see __vue_bind__ below).
         if ($(bind.el).length === 0){ return; }
         let el = $(bind.el)[0];
         let app = el.__vue_app__;
-        // A live app: force a re-render. $forceUpdate bypasses reactivity and re-runs
-        // the render function, so method-based interpolations (e.g. the fortress
-        // {{ filter(on,'army') }} panels, which read non-reactive values like p_on)
-        // are re-evaluated even when the bound data object itself didn't change.
-        //
-        // The component proxy is preferred from app._instance, but Vue 3.5 does NOT populate
-        // app._instance for a multi-root (fragment) root component — app.mount() still returns a
-        // valid proxy though, which we stash as __vue_proxy__ at create time. Without this
-        // fallback, a fragment-root panel (e.g. #fort, updated every game tick) fails the
-        // liveness test every tick and gets needlessly re-created, orphaning the live app each
-        // time — a fast heap leak that froze the Hell Dimension tab.
         let proxy = (app && app._instance && app._instance.proxy) ? app._instance.proxy : (app ? el.__vue_proxy__ : null);
         if (proxy){
             try {
@@ -1312,18 +1291,9 @@ export function vBind(bind,action){
         if (app && app._container){
             return;
         }
-        // No live app. It was torn down (unmounted -> _instance null / detached) but the
-        // element still stands, so the update would otherwise silently no-op and the panel
-        // would go stale forever. If the original create config was stashed on the element,
-        // re-mount from it so it starts rendering again; otherwise there's nothing to do.
         if (typeof app !== "undefined"){ delete el.__vue_app__; delete el.__vue_proxy__; }
         $(el).removeClass('vb');
         if (el.__vue_bind__){
-            // Unmount clears the element's innerHTML (its template); restore it so create
-            // has the markup to compile again, then re-mount from the stashed config. Guard
-            // the remount so a mount failure can never take down the game loop; drop the stash
-            // on failure so we don't retry (and re-throw) every tick — the next full re-render
-            // re-creates it. (create clears the stale _vnode that would otherwise crash mount.)
             if (typeof el.__vue_template__ === 'string'){ el.innerHTML = el.__vue_template__; }
             try {
                 return vBind(el.__vue_bind__, 'create');
@@ -1345,18 +1315,9 @@ export function vBind(bind,action){
         if ($(bind.el).length > 0) {
             const el = $(bind.el)[0];
             const vueOptions = { ...bind };
-
-            // The panel's template is the element's innerHTML, which Vue consumes on mount
-            // and clears on unmount. Capture it (read-only — normal create still lets Vue read
-            // innerHTML as before) so a later self-heal rebuild can restore it before
-            // re-mounting, instead of mounting a now-blank element. See the 'update' branch.
             const template = el.innerHTML;
 
-            // Vue 3 removed the `filters` option. A lot of (mostly wiki) templates still declare
-            // helper functions in a `filters` block and call them as ordinary methods in
-            // interpolations, e.g. {{ generic(x) }} / {{ stressDiv(job) }}. Merge any filters into
-            // methods (methods win on name clashes) so those calls resolve instead of throwing
-            // "X is not a function".
+            // Vue 3 removed the `filters` option.
             if (vueOptions.filters && typeof vueOptions.filters === 'object') {
                 vueOptions.methods = Object.assign({}, vueOptions.filters, vueOptions.methods || {});
                 delete vueOptions.filters;
@@ -1378,34 +1339,18 @@ export function vBind(bind,action){
                 app.use(Buefy.default);
             }
 
-            // Every create mounts a brand-new app, so mount must always do a clean
-            // patch(null, ...). If a prior app was torn down but its unmount threw (the
-            // documented "nextSibling of null" on detached DOM), Vue's internal _vnode
-            // pointer can be left on the element; the fresh mount would then diff against
-            // that stale, detached tree and crash. Clear it to enforce the clean-mount path.
             el._vnode = null;
-            // Stash the proxy app.mount() returns — it exposes $forceUpdate and is valid even when
-            // Vue 3.5 leaves app._instance unset (fragment-root components). vBind('update') uses it.
             el.__vue_proxy__ = app.mount(bind.el);
             el.__vue_app__ = app;
 
             // Vue 3 ignores directives written on the element you mount onto: it treats that element as
-            // an inert container and compiles only its innerHTML as the template. So a `v-show` left on
-            // the mount element never takes effect and the panel renders unconditionally (the bug behind
-            // #mad, #govType, #foreign, the syndicate/ground overlays, per-resource eject rows, etc.).
-            // Vue leaves the unprocessed directive behind as a literal DOM attribute, so honor it here:
-            // drive the element's own `display` from a reactive effect that evaluates the same expression
-            // against the component proxy, reproducing what a compiled v-show would do. Only v-show is
-            // handled — the one mount-element directive the codebase actually relies on.
+            // an inert container and compiles only its innerHTML as the template.
             if (typeof Vue.watchEffect === 'function' && el.getAttribute && el.getAttribute('v-show') !== null){
                 const vShowExpr = el.getAttribute('v-show');
                 el.removeAttribute('v-show');
                 const proxy = el.__vue_proxy__;
                 let evalVShow = null;
                 try {
-                    // A Function-constructor body runs in sloppy mode even though this module is strict,
-                    // so `with` is legal here — it resolves the raw template expression's bare identifiers
-                    // and method calls against the proxy exactly as Vue's compiled render function would.
                     evalVShow = new Function('$ctx', `with($ctx){ return (${vShowExpr}); }`);
                 }
                 catch(e){ evalVShow = null; }
@@ -1418,9 +1363,6 @@ export function vBind(bind,action){
                 }
             }
 
-            // Stash the original (unmutated) bind config and template so a later
-            // vBind('update') can self-heal — re-mounting the panel from these if its
-            // app has since been torn down.
             el.__vue_bind__ = bind;
             if (typeof template === 'string' && template.length > 0){ el.__vue_template__ = template; }
             $(el).addClass('vb');
@@ -1471,56 +1413,6 @@ export function clearVueProxies(element) {
             
         } catch(e) {
             console.warn('Error clearing Vue proxies:', e);
-        }
-    }
-}
-
-// Alternative vBind implementation using Vue 3 native reactive system
-function vBindNative(bind, action) {
-    action = action || 'create';
-    if (action === 'create') {
-        if ($(bind.el).length > 0) {
-            const vueOptions = { ...bind };
-
-            // Vue 3 removed `filters`; merge them into methods so templates that call them as
-            // functions (e.g. {{ generic(x) }}) keep working. See vBind for details.
-            if (vueOptions.filters && typeof vueOptions.filters === 'object') {
-                vueOptions.methods = Object.assign({}, vueOptions.filters, vueOptions.methods || {});
-                delete vueOptions.filters;
-            }
-
-            // Use Vue 3 native reactive system
-            if (vueOptions.data && typeof vueOptions.data === 'object') {
-                const originalData = vueOptions.data;
-                
-                // Convert to Vue 3 reactive data
-                vueOptions.data = function() {
-                    return Vue.reactive(originalData);
-                };
-                
-                // No custom sync logic needed - Vue 3 reactive handles this natively
-                // The reactive object will automatically sync with the original data
-                const originalMounted = vueOptions.mounted;
-                vueOptions.mounted = function() {
-                    // Vue 3 reactive objects automatically maintain reactivity
-                    // No manual watchers or intervals needed
-                    
-                    if (originalMounted) {
-                        originalMounted.call(this);
-                    }
-                };
-            }
-
-            const app = Vue.createApp(vueOptions);
-            if (!bind.hasOwnProperty('buefy') || bind.buefy) {
-                app.use(Buefy.default);
-            }
-            
-            $(bind.el)[0].__vue_proxy__ = app.mount(bind.el);
-            $(bind.el)[0].__vue_app__ = app;
-            $(bind.el).addClass('vb');
-
-            return app;
         }
     }
 }

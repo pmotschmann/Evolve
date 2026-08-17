@@ -6081,19 +6081,14 @@ function zGroundFire(fleet){
 const zCombatSpeedWeight = 2;      // how hard a target's speed works against a firing solution
 const zCombatDamageDivisor = 50;  // firepower per point of hull damage
 
-// A defending fleet aims as one body: every dish at the location feeds the same firing solution, so
-// what matters is the scan total rather than which hull carries which sensor. The chance closes on a
-// certainty as that total climbs and falls away as the target gets faster — at the reference point of
-// 100 scan against a middling hull it is a coin toss, a slow target is comfortably hit at the same
-// scan, a fast one mostly is not, and enough scan overcomes even that.
+// A player fleet uses combined scan value
 function playerAccuracy(scan,foe){
     if (scan <= 0){ return 0; }
     let evade = Math.max(1,shipSpeed(foe)) * zCombatSpeedWeight;
     return scan / (scan + evade);
 }
 
-// The horde aims with whatever dish each hull was built with, one ship at a time. No shared solution —
-// these are scavenged ships flown by the dead, not a coordinated fleet.
+// The horde aims with whatever each hull was built with, one ship at a time.
 const zSensorAccuracy = { visual: 0.15, radar: 0.3, lidar: 0.45, quantum: 0.6 };
 function foeAccuracy(foe){
     return zSensorAccuracy.hasOwnProperty(foe.sensor) ? zSensorAccuracy[foe.sensor] : 0.25;
@@ -6264,10 +6259,6 @@ export function zWarfareVars(){
         minHull: minHullToLaunch
     };
 }
-
-// Advance every hull under way. One that arrives has to get past whatever is guarding the place first;
-// survive that and the ship is gone, because it was only ever a delivery, and what it delivers is a
-// horde on the ground.
 
 // --- Ship motion ---------------------------------------------------------------------------------
 

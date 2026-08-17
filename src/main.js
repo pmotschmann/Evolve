@@ -24,7 +24,7 @@ import { getTopChange } from './wiki/change.js';
 import { enableDebug, updateDebugData } from './debug.js';
 
 {
-    $(document).ready(function() {
+    document.addEventListener('DOMContentLoaded',function() {
         if (!window.matchMedia)
             return;
 
@@ -65,7 +65,7 @@ var quickMap = {
     settings: 7
 };
 
-$(document).keydown(function(e){
+document.addEventListener('keydown', (e) => {
     e = e || window.event;
     let key = e.key || e.keyCode;
     Object.keys(keyMap).forEach(function(k){
@@ -134,7 +134,7 @@ $(document).keydown(function(e){
         });
     }
 });
-$(document).keyup(function(e){
+document.addEventListener('keyup', (e) => {
     e = e || window.event;
     let key = e.key || e.keyCode;
     Object.keys(keyMap).forEach(function(k){
@@ -143,7 +143,7 @@ $(document).keyup(function(e){
         }
     });
 });
-$(document).mousemove(function(e){
+document.addEventListener('mousemove', (e) => {
     e = e || window.event;
     Object.keys(global.settings.keyMap).forEach(function(k){
         switch(global.settings.keyMap[k]){
@@ -179,23 +179,11 @@ else {
 
 initMessageQueue();
 
-// Push the slotted gene ranks onto global.race before anything reads them. The slots live on
-// global.race and are rebuilt each run, so this is what makes them live at the start of one.
+// Push the slotted gene ranks onto global.race before anything reads them..
 syncGenes();
 
-// Finish the changeover for a save that predates the gene slots. vars.js has already refunded the
-// phage and genes the old system consumed; what is left is the discoveries. Under the new rules a
-// mutation turns up a gene, so a run that has already mutated is owed one gene per mutation --
-// otherwise an established save would open the lab to an empty library and no way to fill it short
-// of mutating all over again. They arrive as this run's temporary unlocks, exactly as they would
-// have if the mutations had happened under the new rules.
-//
-// Carried on its own flag rather than the refund's, so a save that has already taken the refund
-// still gets its discoveries the next time it loads.
+// Gene phage refund
 if (global.genes['geneReset'] && !global.genes.geneReset['found']){
-    // The Mutation genes hand over slotted genes at the start of a run. A save part way through one
-    // already had that happen under the old rules and had it refunded away, so replay it here on the
-    // same terms a fresh run would get.
     let granted = 0;
     if (global.genes['evolve'] && global.genes['evolve'] >= 2){
         for (let i=1; i<8; i++){
