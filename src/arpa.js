@@ -2730,6 +2730,7 @@ function afterGeneChange(gene){
     syncGenes();
     if (gene === 'mastery'){ calc_mastery(true); }
     if (gene === 'persuasive' || gene === 'logistician'){ updateTrades(); }
+    if (gene === 'queuemaster'){ calcQueueMax(); buildQueue(); }
     genetics();
 }
 

@@ -12271,6 +12271,14 @@ export function drawMap() {
     // frame's batch set up explicitly. No-op on the 2D path.
     if (ctx.beginFrame){ ctx.beginFrame(); }
 
+    if (starLockOn) {
+        // Move camera onto locked on body, keeping its position in the center
+        const pos = genXYZcoord(starLockOn);
+        const bounds = document.getElementById("mapCanvas").getBoundingClientRect();
+        mapShift.x = bounds.width / 2 - pX(pos) * mapScale;
+        mapShift.y = bounds.height / 2 - pY(pos) * mapScale;
+    }
+
     ctx.save();
     ctx.fillStyle = "#000000";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -13040,10 +13048,10 @@ function buildSolarMap(parentNode, keep) {
             if (drag === 'pan' && press && !press.moved){
                 let hit = starAt(e) || bodyAt(e);
                 if (hit){
-                    recenterOn(genXYZcoord(hit));
-                    drawMap();
                     // Lock on so zooming pulls in on it rather than following the cursor away.
+                    // Draw after to immediately recenter on clicked body
                     starLockOn = hit;
+                    drawMap();
                     // Finding the cow is the whole of it — there is nothing else to do out there.
                     if (cowGlyph(hit)){
                         unlockFeat('secret_cow', global.race.universe === 'micro' ? true : false);
@@ -13249,6 +13257,7 @@ function buildSolarMap(parentNode, keep) {
             // This is the "back to the default view of Sol" control — it already restores the
             // opening zoom, so it restores the opening bearing with it.
             mapYaw = mapDefaultYaw('spc_sun');
+            starLockOn = 'spc_sun';
             camUpdate();
             recenterOn(genXYZcoord('spc_sun'));
             drawMap();
@@ -13261,6 +13270,7 @@ function buildSolarMap(parentNode, keep) {
             .on("click", () => {
                 mapScale = 20.0;
                 mapYaw = mapDefaultYaw('tauceti');
+                starLockOn = 'tauceti';
                 camUpdate();
                 recenterOn(genXYZcoord('tauceti'));
                 drawMap();

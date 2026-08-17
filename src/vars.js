@@ -1449,7 +1449,7 @@ if (convertVersion(global['version']) <= 105000){
     // Truepath ships got their navigation reworked, notably changing 2D space to 3D. 
     // Reconstruct what we can with the info we have, keep rest blank to refill itself over time
     if (global.space && global.space.shipyard && global.space.shipyard.ships && Array.isArray(global.space.shipyard.ships)){
-        global.space.shipyard.ships.forEach(ship => {
+        let fn = (ship) => {
             if (ship.transit > 0) {
                 ship.inTransit = true;
 
@@ -1491,7 +1491,7 @@ if (convertVersion(global['version']) <= 105000){
                     ship.timeToNextStep = 200;
                 }
             }
-            else if (ship.transit === 0){
+            else if (ship.transit <= 0){
                 ship.inTransit = false;
                 ship.location = {
                     name: ship.location,
@@ -1514,7 +1514,9 @@ if (convertVersion(global['version']) <= 105000){
             delete ship.xy;
             if (ship.tf)
                 delete ship.tf;
-        })
+        };
+        global.space.shipyard.ships.forEach(fn);
+        (global?.race?.inactive?.ships ?? []).forEach(fn);
     }
 
     // Medium frames went from one weapon bay to two at half the damage per shot.
