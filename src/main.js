@@ -2083,7 +2083,7 @@ function fastLoop(){
         [
             {r:'city',s:'coal_power'},{r:'city',s:'oil_power'},{r:'city',s:'fission_power'},{r:'spc_hell',s:'geothermal'},{r:'spc_dwarf',s:'e_reactor'},
             {r:'int_alpha',s:'fusion'},{r:'tau_home',s:'fusion_generator'},{r:'tau_gas2',s:'alien_space_station'},{r:'tau_red',s:'antimatter_reactor'},
-            {r:'industrial_zone', s:'coal_power'}
+            {r:'industry', s:'coal_power'},{r:'industry', s:'under_oil_power'}
         ].forEach(function(generator){
             let space = convertSpaceSector(generator.r);
             let region = generator.r === 'city' ? generator.r : space;
@@ -3621,8 +3621,8 @@ function fastLoop(){
         }
         
         if(global.race['iceage']){
-            global_multiplier = global_multiplier ** 0.5;
             breakdown.p['Global'][loc('underground_challenge_nerf')] = `-${(global_multiplier-global_multiplier**0.5)/global_multiplier * 100}%`;
+            global_multiplier = global_multiplier ** 0.5;
         }
         if(global.underground['cave_creatures']){
             global_multiplier *= 1 + (0.03 * global.underground['cave_creatures'].count);
@@ -3936,7 +3936,12 @@ function fastLoop(){
                 let food = (farmers * farmerValue(true)) + (farmhands * farmerValue(false));
                 let water_use = highPopAdjust(farmers + farmhands - workerScale(powered, 'farmer'));
                 if(water_use * time_multiplier > global.resource.Water.amount){
-                    food /= (global.resource.Water.amount / (water_use * time_multiplier));
+                    if(global.resource.Water.amount === 0){
+                        food = 0;
+                    }
+                    else{
+                        food /= (global.resource.Water.amount / (water_use * time_multiplier));
+                    }
                 }
 
                 breakdown.p['Food'][job_data.farmer.name()] = (food) + 'v';
@@ -4549,6 +4554,9 @@ function fastLoop(){
                         global.underground['stone_slab'].breakthrough = carving_level + 1;
                     }
                     sundial_base += carving_level;
+                    if(global.tech['science'] >= 7){
+                        sundial_base *= 2;
+                    }
                 }
             }
 
@@ -5257,6 +5265,12 @@ function fastLoop(){
             if (global.city.powered && p_on['cement_plant']){
                 let rate = global.tech['cement'] >= 6 ? 0.08 : 0.05;
                 powered_mult += (p_on['cement_plant'] * rate);
+                power_single += rate;
+            }
+
+            if (global.city.powered && p_on['under_foundry']){
+                let rate = global.tech['cement'] >= 6 ? 0.08 : 0.05;
+                powered_mult += (p_on['under_foundry'] * rate);
                 power_single += rate;
             }
 
@@ -6519,6 +6533,12 @@ function fastLoop(){
                 breakdown.p['Water'][loc('job_water_collector')] = collectors + 'v';
                 modRes('Water', delta * time_multiplier);
             }
+
+            if(p_on['water_pump']){
+                let prod = production('water_pump') * p_on['water_pump'];
+                breakdown.p['Water'][loc('underground_water_pump')] = prod + 'v';
+                modRes('Water', prod * time_multiplier * global_multiplier);
+            }
         }
 
         if (global.eden['palace'] && p_on['spirit_vacuum'] && global.tech['isle']){
@@ -7298,10 +7318,13 @@ function fastLoop(){
             let synd = syndicate('spc_gas_moon');
             let fueled_oil_wells = global.race['warlord'] ? global.portal.pumpjack.count : global.city.oil_well.count;
             let fueled_oil_extractor = p_on['oil_extractor'];
+            let fueled_oil_pump = p_on['oil_pump'];
             let oil_prod = global.city['oil_well'] ? production('oil_well') : 0;
             let oil_prod_mod = q_multiplier;
             let extract_prod = global.space['oil_extractor'] ? production('oil_extractor') : 0;
             let extract_prod_mod = qs_multiplier * synd * zigVal;
+            let pump_prod = global.underground['oil_pump'] ? actions.underground.industry.oil_pump.production() : 0;
+            let pump_prod_mod = 1;
             if (global.race['blubber']){
                 let tick = traits.blubber.vars()[0] * time_multiplier / 5;
                 let check_dead = function(amount){
@@ -7316,21 +7339,45 @@ function fastLoop(){
                     }
                     return amount;
                 }
-                if(oil_prod * oil_prod_mod >= extract_prod * extract_prod_mod){ /* swap order of extractors and wells based on which produces more */
+                [['oil_well', oil_prod * oil_prod_mod], ['oil_extractor', extract_prod * extract_prod_mod], ['oil_pump', pump_prod * pump_prod_mod]].sort((a, b) => {
+                    if(a[1] > b[1]) return -1; //sort from high to low
+                    else if (a[1] < b[1]) return 1;
+                    return 0;
+                }).forEach((item) => {
+                    switch (item[0]){ /* swap order of extractors and wells based on which produces more */
+                        case 'oil_well':
+                            fueled_oil_wells = check_dead(fueled_oil_wells);
+                            break;
+                        case 'oil_extractor':
+                            fueled_oil_extractor = check_dead(fueled_oil_extractor);
+                            break;
+                        case 'oil_pump':
+                            fueled_oil_pump = check_dead(fueled_oil_pump);
+                            break;
+
+                    }
+                })
+                /* swap order of extractors and wells based on which produces more */
+                /*if(global.underground['oil_pump']){
+                    fueled_oil_pump = check_dead(fueled_oil_pump);
+                }
+                else if(oil_prod * oil_prod_mod >= extract_prod * extract_prod_mod){
                     fueled_oil_wells = check_dead(fueled_oil_wells);
                     fueled_oil_extractor = check_dead(fueled_oil_extractor);
                 }
                 else{
                     fueled_oil_extractor = check_dead(fueled_oil_extractor);
                     fueled_oil_wells = check_dead(fueled_oil_wells);
-                }
+                }*/
             }
             let oil_well = oil_prod * fueled_oil_wells;
             let oil_extractor = extract_prod * fueled_oil_extractor;
+            let oil_pump = pump_prod * fueled_oil_pump;
             oil_extractor *= production('psychic_boost','Oil');
             oil_well *= production('psychic_boost','Oil');
+            oil_pump *= production('psychic_boost', 'Oil');
 
-            let delta = (oil_well * oil_prod_mod) + (oil_extractor * extract_prod_mod) + (whale_oil * womling_technician);
+            let delta = (oil_well * oil_prod_mod) + (oil_extractor * extract_prod_mod) + (oil_pump * fueled_oil_pump) + (whale_oil * womling_technician);
             delta *= hunger * global_multiplier;
             if (global.race['gravity_well']){ delta = teamster(delta); }
 
@@ -9388,8 +9435,8 @@ function midLoop(){
         if (global.city['cement_plant']){
             lCaps['cement_worker'] += jobScale(global.city.cement_plant.count * 2);
         }
-        if (global.underground['foundry']){
-            lCaps['cement_worker'] += jobScale(global.underground.foundry.count * 2);
+        if (global.underground['under_foundry']){
+            lCaps['cement_worker'] += jobScale(global.underground.under_foundry.count * 2);
         }
         if (global.eden['eden_cement']){
             let ec = p_on['eden_cement'] || 0;
@@ -9874,6 +9921,11 @@ function midLoop(){
             caps['Oil'] += gain;
             breakdown.c.Oil[loc('city_oil_well')] = gain+'v';
         }
+        if (global.underground['oil_pump']){
+            let gain = (global.underground['oil_pump'].count * actions.underground.industry.oil_pump.res_cap('oil'));
+            caps['Oil'] += gain;
+            breakdown.c.Oil[loc('underground_oil_pump')] = gain+'v';
+        }
         if (global.city['oil_depot']){
             let gain = (global.city['oil_depot'].count * spatialReasoning(1000));
             gain *= global.tech['world_control'] ? 1.5 : 1;
@@ -10252,7 +10304,7 @@ function midLoop(){
         }
         
         if(global.underground['archaeological_dig']){
-            let know = global.underground['archaeological_dig'].fossils * actions.underground.industrial_zone.archaeological_dig.knowVal();
+            let know = global.underground['archaeological_dig'].fossils * actions.underground.industry.archaeological_dig.knowVal();
             caps['Knowledge'] += know;
             breakdown.c.Knowledge[loc('portal_archaeology_bd')] = (know)+'v';
         }
@@ -10513,6 +10565,9 @@ function midLoop(){
         }
         if (global.city['foundry']){
             lCaps['craftsman'] += jobScale(global.city['foundry'].count);
+        }
+        if (global.underground['under_foundry']){
+            lCaps['craftsman'] += jobScale(global.underground['under_foundry'].count);
         }
         if (support_on['fabrication']){
             lCaps['craftsman'] += jobScale(support_on['fabrication']);
@@ -11918,7 +11973,7 @@ function midLoop(){
             if(depth >= 20000 && global.tech['mineshaft_depth'] === 1 && global.tech['mineshaft'] >= 2){
                 global.tech['mineshaft_depth'] = 2;
                 if(global.tech['support_beams'] >= 2){
-                    initStruct(actions.underground.industrial_zone.industrial_support_beams);
+                    initStruct(actions.underground.industry.industrial_support_beams);
                 }
                 messageQueue(loc('tech_mineshaft_depth2'),'info',false,['progress']);
             }
@@ -13125,7 +13180,7 @@ function longLoop(){
             }
         }
         if(global.underground['archaeological_dig'] && global.civic.archaeologist.workers >= 1){
-            if(Math.rand(0, actions.underground.industrial_zone.archaeological_dig.fossil_chance()) === 0){
+            if(Math.rand(0, actions.underground.industry.archaeological_dig.fossil_chance()) === 0){
                 global.underground['archaeological_dig'].fossils++;
             }
         }

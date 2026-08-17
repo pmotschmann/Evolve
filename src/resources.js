@@ -278,10 +278,11 @@ export const craftingRatio = (function(){
             }
             if (global.tech['foundry'] >= 2){
                 let skill = global.tech['foundry'] >= 5 ? (global.tech['foundry'] >= 8 ? 0.08 : 0.05) : 0.03;
+                let foundries = global.city.foundry.count + (global.underground.under_foundry?.count || 0);
                 crafting.general.add.push({
                     name: loc(`city_foundry`),
-                    manual: global.city.foundry.count * skill,
-                    auto: global.city.foundry.count * skill
+                    manual: foundries * skill,
+                    auto: foundries * skill
                 });
             }
             if (global.tech['foundry'] >= 3){
@@ -303,10 +304,11 @@ export const craftingRatio = (function(){
                 });
             }
             if (global.tech['foundry'] >= 6){
+                let foundries = global.city.foundry.count + (global.underground.under_foundry?.count || 0);
                 crafting.Brick.add.push({
                     name: loc(`city_foundry`),
-                    manual: global.city['foundry'].count * 0.02,
-                    auto: global.city['foundry'].count * 0.02
+                    manual: foundries * 0.02,
+                    auto: foundries * 0.02
                 });
             }
             if (global.tech['foundry'] >= 7){

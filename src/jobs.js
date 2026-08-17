@@ -549,7 +549,8 @@ export const job_data = {
         name(){ return loc('job_archaeologist'); },
         desc(){
             if(global.race['iceage']){
-                return loc('job_archaeologist_underground_desc');
+                let chance = (100 / actions.underground.industry.archaeological_dig.fossil_chance()).toFixed(2);
+                return loc('job_archaeologist_underground_desc', [chance]);
             }
             else{
                 let value = highPopAdjust(250000);
@@ -691,7 +692,7 @@ export function workerScale(num,job){
         else if (['miner','coal_miner','cement_worker','banker','entertainer','priest','pit_miner'].includes(job)){
             num *= 45;
         }
-        else if (['professor','scientist'].includes(job)){
+        else if (['professor','scientist','archaeologist'].includes(job)){
             num *= 125;
         }
     }
@@ -1061,7 +1062,7 @@ export function loadFoundry(servants){
     clearElement($(servants ? '#skilledServants' : '#foundry'));
     let show = servants
         ? (global.race['servants'] && global.race.servants.smax > 0 ? true : false)
-        : ((global.city['foundry'] && global.city['foundry'].count > 0) || global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation'] || global.race['warlord'] ? true : false);
+        : ((global.city['foundry'] && global.city['foundry'].count > 0) || global.underground['under_foundry']?.count || global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation'] || global.race['warlord'] ? true : false);
     if (show){
         let element = $(servants ? '#skilledServants' : '#foundry');
         let track = servants ? `{{ s.sused }} / {{ s.smax }}` : `{{ f.crafting }} / {{ c.max }}`;

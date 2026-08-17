@@ -595,7 +595,7 @@ export const factoryData = {
     // The factory's products, in the order its lines are handed out and taken away.
     factoryLines: ['Lux','Furs','Alloy','Polymer','Nano','Stanene'],
     // Structures that put production lines into the shared factory pool.
-    factoryStructs: ['factory','red_factory','int_factory','hell_factory','tau_factory','industrial_complex'],
+    factoryStructs: ['factory','red_factory','int_factory','hell_factory','tau_factory','under_factory','industrial_complex'],
     // Lines that were shut down when factory capacity was lost are remembered in factory.
     // When restored they are returned to the previously shut down lines first, then to Alloy if nothing is left to remember.
     addFactoryLines(num){
@@ -625,6 +625,7 @@ export const factoryData = {
             + (global.space['red_factory'] ? global.space.red_factory.on : 0)
             + (global.interstellar['int_factory'] ? global.interstellar.int_factory.on * 2 : 0)
             + (global.portal['hell_factory'] ? global.portal.hell_factory.on * actions.portal.prtl_wasteland.hell_factory.lines() : 0)
+            + (global.underground['under_factory'] ? global.underground.under_factory.on * actions.underground.industry.under_factory.lines() : 0)
             + (global.space['industrial_complex'] ? global.space.industrial_complex.on * actions.space.spc_venus.industrial_complex.lines() : 0)
             + (global.tauceti['tau_factory'] ? global.tauceti.tau_factory.on * (global.tech['isolation'] ? 5 : 3) : 0);
     },
@@ -650,6 +651,7 @@ export const factoryData = {
                     + (p_on['red_factory'] || 0)
                     + ((p_on['int_factory'] || 0) * 2)
                     + ((p_on['hell_factory'] || 0) * actions.portal.prtl_wasteland.hell_factory.lines())
+                    + ((p_on['under_factory'] || 0) * actions.underground.industry.under_factory.lines())
                     + ((actions.space.spc_venus.descender.operating() ? (support_on['industrial_complex'] || 0) : 0) * actions.space.spc_venus.industrial_complex.lines())
                     + ((support_on['tau_factory'] || 0) * (global.tech['isolation'] ? 5 : 3));
         return on_factories;
@@ -744,7 +746,8 @@ function loadFactory(parent,bind){
                 }
             },
             addItem: function(item){
-                let max = global.space['red_factory'] ? global.space.red_factory.on + global.city.factory.on : global.city.factory.on;
+                let max = factoryData.actualCapacity();
+                /*let max = global.space['red_factory'] ? global.space.red_factory.on + global.city.factory.on : global.city.factory.on;
                 if (global.interstellar['int_factory'] && p_on['int_factory']){
                     max += p_on['int_factory'] * 2;
                 }
@@ -756,7 +759,7 @@ function loadFactory(parent,bind){
                 }
                 if (global.space['industrial_complex'] && support_on['industrial_complex']){
                     max += support_on['industrial_complex'] * actions.space.spc_venus.industrial_complex.lines();
-                }
+                }*/
                 let keyMult = keyMultiplier();
                 for (var i=0; i<keyMult; i++){
                     let used = global.city.factory.Lux + global.city.factory.Furs + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano + global.city.factory.Stanene;
@@ -2030,7 +2033,6 @@ export function setPowerGrid(){
             let space = convertSpaceSector(parts[0]);
             let region = parts[0] === 'city' ? parts[0] : space;
             let c_action = parts[0] === 'city' ? actions.city[parts[1]] : actions[space][parts[0]][parts[1]];
-
             let title = typeof c_action.title === 'function' ? c_action.title() : c_action.title;
             let extra = ``;
             switch (parts[1]){

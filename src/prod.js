@@ -260,6 +260,10 @@ export function production(id,val,wiki){
         {
             return 1.25;
         }
+        case 'water_pump':
+        {
+            return 4;
+        }
         case 'titan_mine':
         {
             switch (val){
