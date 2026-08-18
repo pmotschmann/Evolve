@@ -15011,6 +15011,7 @@ const techs = {
                     save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
                 }
                 global.tech['overmind'] = 1;
+                global.race['r_data'] = { c: global.resource[global.race.species].amount || 0, s: global.civic.garrison.workers || 0 };
                 return true;
             }
             return false;

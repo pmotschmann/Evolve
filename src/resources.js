@@ -1,6 +1,6 @@
 import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, support_on, active_rituals } from './vars.js';
 import { vBind, clearElement, modRes, flib, calc_mastery, calcPillar, eventActive, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect, hoovedRename, messageQueue } from './functions.js';
-import { traits, fathomCheck, geneBonus, geneFlat, geneRank} from './races.js';
+import { races, traits, fathomCheck, geneBonus, geneFlat, geneRank, geneVars} from './races.js';
 import { templeCount, actions } from './actions.js';
 import { workerScale, job_data } from './jobs.js';
 import { hellSupression } from './portal.js';
@@ -448,8 +448,8 @@ export const craftingRatio = (function(){
             if (global.race['ambidextrous']){
                 crafting.general.add.push({
                     name: loc(`trait_ambidextrous_name`),
-                    manual: traits.ambidextrous.vars()[0] * global.race['ambidextrous'] / 100,
-                    auto: traits.ambidextrous.vars()[0] * global.race['ambidextrous'] / 100
+                    manual: geneVars('ambidextrous')[0] * global.race['ambidextrous'] / 100,
+                    auto: geneVars('ambidextrous')[0] * global.race['ambidextrous'] / 100
                 });
             }
             if (global.race['rigid']){
@@ -515,7 +515,7 @@ export const craftingRatio = (function(){
                 crafting.general.multi.push({
                     name: loc(`trait_ambidextrous_name`),
                     manual: 1,
-                    auto: 1 + (traits.ambidextrous.vars()[1] * global.race['ambidextrous'] / 100)
+                    auto: 1 + (geneVars('ambidextrous')[1] * global.race['ambidextrous'] / 100)
                 });
             }
             // Versatile: the humanoid genus turns out more of whatever it is making.
@@ -1246,6 +1246,15 @@ export function setResourceName(name){
         }
     }
 
+    let genusType = races[global.race.species].type === 'hybrid' ? global.race.maintype : races[global.race.species].type;
+    if (genusType === 'reptilian'){
+        switch(name){
+            case 'Furs':
+                global['resource'][name].name = loc('resource_Scales_name');
+                break;
+        }
+    }
+
     if (global.city.biome === 'ashland'){
         switch(name){
             case 'Cement':
@@ -1503,7 +1512,7 @@ export function marketItem(mount,market_item,name,color,full){
                     rate *= 1 + (dealVal / 100);
                 }
                 if (global.race['persuasive']){
-                    rate *= 1 + (traits.persuasive.vars()[0] * global.race['persuasive'] / 100);
+                    rate *= 1 + (geneVars('persuasive')[0] * global.race['persuasive'] / 100);
                 }
                 if (astroSign === 'capricorn'){
                     rate *= 1 + (astroVal('capricorn')[0] / 100);
@@ -1839,7 +1848,7 @@ export function galacticTrade(modal){
                 let offers = galaxyOffers();
                 let buy_vol = offers[idx].buy.vol;
                 if (global.race['persuasive']){
-                    buy_vol *= 1 + (traits.persuasive.vars()[0] * global.race['persuasive'] / 100);
+                    buy_vol *= 1 + (geneVars('persuasive')[0] * global.race['persuasive'] / 100);
                 }
                 if (global.race['devious']){
                     buy_vol *= 1 - (traits.devious.vars()[0] / 100);

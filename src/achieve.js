@@ -69,8 +69,7 @@ const flairData = {
     colonist: [flib('name')]
 };
 
-// Filled gene slots needed for Geneticist. One per general slot, so a full set of them does it.
-const geneticistGenes = 10;
+export const geneticistGenes = 8;
 
 const descData = {
     trade: [750,50],

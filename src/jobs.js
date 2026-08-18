@@ -2,7 +2,7 @@ import { global, keyMultiplier, p_on, support_on, tmp_vars } from './vars.js';
 import { vBind, clearElement, popover, darkEffect, eventActive, easterEgg, getHalloween } from './functions.js';
 import { loc } from './locale.js';
 import { highPopAdjust } from './prod.js';
-import { racialTrait, servantTrait, races, traits, biomes, planetTraits, fathomCheck, geneBonus} from './races.js';
+import { racialTrait, servantTrait, races, traits, biomes, planetTraits, fathomCheck, geneBonus, geneFlat} from './races.js';
 import { armyRating, govEffect } from './civics.js';
 import { govActive } from './governor.js';
 import { craftingRatio, craftCost, craftingPopover } from './resources.js';
@@ -882,6 +882,13 @@ export function teamsterCap(){
     return transport;
 }
 
+// Craftsman slots in force: what the buildings have granted, plus whatever the gene adds. Scaled
+// the same way the buildings scale theirs, so a high_pop race gets the matching number of bodies.
+export function craftsmanMax(){
+    let bonus = geneFlat('guildmaster');
+    return global.civic.craftsman.max + (bonus > 0 ? jobScale(bonus) : 0);
+}
+
 export function craftsmanCap(res){
     switch (res){
         case 'Scarletite':
@@ -1074,7 +1081,7 @@ export function loadFoundry(servants){
                             }
                         }
                         else {
-                            if (global.city.foundry.crafting < global.civic.craftsman.max
+                            if (global.city.foundry.crafting < craftsmanMax()
                                 && (global.civic[global.civic.d_job] && global.civic[global.civic.d_job].workers > 0)
                                 && (tMax === -1 || tMax > global.city.foundry[res])
                             ){
@@ -1116,7 +1123,7 @@ export function loadFoundry(servants){
                 },
                 level(){
                     let workers = servants ? global.race.servants.sused : global.civic.craftsman.workers;
-                    let max = servants ? global.race.servants.smax : global.civic.craftsman.max;
+                    let max = servants ? global.race.servants.smax : craftsmanMax();
                     if (workers === 0){
                         return 'count has-text-danger';
                     }

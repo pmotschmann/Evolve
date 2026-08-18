@@ -1,6 +1,6 @@
 import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame, atrack, p_on, quantum_level, tmp_vars, touchDevice } from './vars.js';
 import { loc } from './locale.js';
-import { races, traits, genus_def, traitSkin, fathomCheck, geneBonus, geneFlat} from './races.js';
+import { races, traits, genus_def, traitSkin, fathomCheck, geneBonus, geneFlat, geneVars} from './races.js';
 import { actions, actionDesc } from './actions.js';
 import { jobScale } from './jobs.js';
 import { universe_affixes } from './space.js';
@@ -463,7 +463,7 @@ export function calcQueueMax(){
     // Queuemaster is added after the doubling above so a rank is always worth exactly one slot.
     max_queue += geneFlat('queuemaster');
 
-    global.queue.max = max_queue;
+    global.queue.max = Math.floor(max_queue);
 }
 
 export function calcRQueueMax(){
@@ -1677,8 +1677,8 @@ export function masteryType(universe,detailed,unmodified){
                 u_rate *= 1 - (traits.ooze.vars()[2] / 100);
             }
             if (global.genes.challenge >= 5 && global.race.hasOwnProperty('mastery')){
-                m_rate *= 1 + (traits.mastery.vars()[0] * global.race.mastery / 100);
-                u_rate *= 1 + (traits.mastery.vars()[0] * global.race.mastery / 100);
+                m_rate *= 1 + (geneVars('mastery')[0] * global.race.mastery / 100);
+                u_rate *= 1 + (geneVars('mastery')[0] * global.race.mastery / 100);
             }
         }
 
@@ -1866,17 +1866,18 @@ export function calcPrestige(type,inputs){
 
     let pop = 0;
     if (inputs.cit === undefined){
-        let garrisoned = global.civic.hasOwnProperty('garrison') ? global.civic.garrison.workers : 0;
+        let garrisoned = global.race['r_data'] ? global.race.r_data.s : (global.civic.hasOwnProperty('garrison') ? global.civic.garrison.workers : 0);
         for (let i=0; i<3; i++){
             if (global.civic.foreign[`gov${i}`].occ){
                 garrisoned += jobScale(global.civic.govern.type === 'federation' ? 15 : 20);
             }
         }
+        let citizens = global.race['r_data'] ? global.race.r_data.c : global.resource[global.race.species].amount;
         if (global.race['high_pop']){
-            pop = Math.round(global.resource[global.race.species].amount / traits.high_pop.vars()[0]) + Math.round(garrisoned / traits.high_pop.vars()[0]);
+            pop = Math.round(citizens / traits.high_pop.vars()[0]) + Math.round(garrisoned / traits.high_pop.vars()[0]);
         }
         else {
-            pop = global.resource[global.race.species].amount + garrisoned;
+            pop = citizens + garrisoned;
         }
     }
     else {
@@ -3617,6 +3618,14 @@ export function hoovedRename(style, species=global.race.species){
 }
 
 const traitExtra = {
+    // Neither of these is slotted or found: they are grown by the strand. Said on the trait itself,
+    // since the page otherwise reads exactly like a gene you could go and get.
+    content: [
+        loc(`wiki_trait_effect_content_ex1`)
+    ],
+    promiscuous: [
+        loc(`wiki_trait_effect_promiscuous_ex1`)
+    ],
     infiltrator: [
         loc(`wiki_trait_effect_infiltrator_ex1`),
         loc(`wiki_trait_effect_infiltrator_ex2`,[
@@ -3696,6 +3705,10 @@ export function getTraitDesc(info, trait, opts){
 
     let traitName = traitSkin('name', trait, species);
     let traitDesc = traitSkin('desc', trait, species);
+
+    if (['minor','special'].includes(traits[trait].type) && traits[trait].vars){
+        traitDesc = loc(`trait_${trait}`, getTraitVals(trait, trank, species));
+    }
 
     if (tpage && ['genus','major'].includes(traits[trait].type)){
         rank = `<span><span role="button" @click="down()">&laquo;</span><span class="has-text-warning">${loc(`wiki_trait_rank`)} {{ rank }}</span><span role="button" @click="up()">&raquo;</span></span>`;

@@ -1352,14 +1352,6 @@ if (convertVersion(global['version']) <= 105000){
             if (item['type'] === 'kuiper_mission'){ item['type'] = 'makemake_mission'; }
         });
     }
-
-    // Fleets are now led. They used to be a flat `fleet` flag — everything carrying it at one location
-    // flew as a single group — and are now a flagship with a command rating plus escorts that spend
-    // points from it. Each old group is rebuilt around the largest hull it contained, taking on as much
-    // of the rest as the new rating allows and releasing whatever no longer fits. The ratings below are
-    // a snapshot of how they stood at conversion: what an old save becomes should not shift later just
-    // because the live tables in truepath.js were retuned. Idempotent — a converted save has no `fleet`
-    // property left to find.
     if (global['space'] && global.space['shipyard'] && Array.isArray(global.space.shipyard['ships'])){
         let lead = { corvette: 1, frigate: 2, destroyer: 5, cruiser: 10, battlecruiser: 15, dreadnought: 20 };
         let berth = { corvette: 1, frigate: 2, destroyer: 3, cruiser: 5, battlecruiser: 8, dreadnought: 12 };
@@ -1495,7 +1487,6 @@ if (convertVersion(global['version']) <= 105000){
                 ship.timeToNextStep = ship.transit;
                 if (ship.timeToNextStep > 2000){
                     // Ship was likely within a gate during update, push it a bit so it's not stuck for several years 
-                    // (only applies to beta players so w/e)
                     ship.timeToNextStep = 200;
                 }
             }
@@ -1547,11 +1538,80 @@ if (convertVersion(global['version']) <= 105000){
             delete global.civic[job].name;
         }
     });
+
+    // One-time refund of the old system.
+    if (!global.genes['geneReset']){
+        let fib = function(n){
+            let a = 1, b = 1;
+            for (let i=2; i<=n; i++){ let c = a + b; a = b; b = c; }
+            return b;
+        };
+        let spent = function(ranks,mult){
+            let total = 0;
+            for (let i=1; i<=ranks; i++){ total += fib(i + 3) * mult; }
+            return total;
+        };
+
+        let phage = 0;
+        Object.keys(global.genes.minor).forEach(function(t){
+            phage += spent(global.genes.minor[t], t === 'mastery' ? 2 : 1);
+        });
+        let genes = 0;
+        Object.keys(global.race.minor).forEach(function(t){
+            genes += spent(global.race.minor[t], t === 'mastery' ? 5 : 1);
+        });
+
+        // Guarded individually: this runs while the save is still being assembled, and a throw here
+        // would take the game down before it ever drew a frame.
+        if (phage > 0 && global.prestige && global.prestige['Phage']){
+            global.prestige.Phage.count += phage;
+            if (global.stats && typeof global.stats.phage === 'number'){
+                global.stats.phage += phage;
+            }
+        }
+        if (genes > 0 && global.resource && global.resource['Genes']){
+            global.resource.Genes.amount += genes;
+        }
+
+        // Zero the ranks themselves, and the live trait values they were feeding.
+        Object.keys(global.genes.minor).forEach(function(t){ delete global.race[t]; });
+        Object.keys(global.race.minor).forEach(function(t){ delete global.race[t]; });
+        global.genes.minor = {};
+        global.race.minor = {};
+
+        global.genes['geneReset'] = { p: phage, g: genes };
+    }
+
+    // The Mutation line was repriced. Anyone who bought a rank at the old price is handed the difference
+    // back, once. Ranks are counted rather than a total stored, so a save part-way up the line refunds
+    // only what it actually paid for.
+    if (!global.genes['evolveReprice']){
+        // Ranks 1 to 8 only. Rank 9 is new with this change, so nobody ever paid an old price for it.
+        let wasCost = [10,35,70,175,440,1100,2750,6875];
+        let nowCost = [10,25,60,145,325,750,1600,3200];
+        let back = 0;
+        let have = global.genes['evolve'] || 0;
+        for (let r=1; r<=have && r<=wasCost.length; r++){
+            let diff = wasCost[r - 1] - nowCost[r - 1];
+            if (diff > 0){ back += diff; }
+        }
+        if (back > 0 && global.prestige){
+            // Into whichever bank this universe actually pays CRISPR out of.
+            let bank = global.race && global.race.universe === 'antimatter' ? 'AntiPlasmid' : 'Plasmid';
+            if (global.prestige[bank]){
+                global.prestige[bank].count += back;
+            }
+            else {
+                back = 0;
+            }
+        }
+        global.genes['evolveReprice'] = { p: back };
+    }
 }
 
 global['version'] = '1.5.0';
 delete global['revision'];
-global['beta'] = 29;
+global['beta'] = 30;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
@@ -2001,49 +2061,6 @@ if (!Array.isArray(global.race['geneSlots'])){
 }
 if (!global.race['geneBreak']){
     global.race['geneBreak'] = {};
-}
-
-// One-time refund of the old system.
-if (!global.genes['geneReset']){
-    let fib = function(n){
-        let a = 1, b = 1;
-        for (let i=2; i<=n; i++){ let c = a + b; a = b; b = c; }
-        return b;
-    };
-    let spent = function(ranks,mult){
-        let total = 0;
-        for (let i=1; i<=ranks; i++){ total += fib(i + 3) * mult; }
-        return total;
-    };
-
-    let phage = 0;
-    Object.keys(global.genes.minor).forEach(function(t){
-        phage += spent(global.genes.minor[t], t === 'mastery' ? 2 : 1);
-    });
-    let genes = 0;
-    Object.keys(global.race.minor).forEach(function(t){
-        genes += spent(global.race.minor[t], t === 'mastery' ? 5 : 1);
-    });
-
-    // Guarded individually: this runs while the save is still being assembled, and a throw here
-    // would take the game down before it ever drew a frame.
-    if (phage > 0 && global.prestige && global.prestige['Phage']){
-        global.prestige.Phage.count += phage;
-        if (global.stats && typeof global.stats.phage === 'number'){
-            global.stats.phage += phage;
-        }
-    }
-    if (genes > 0 && global.resource && global.resource['Genes']){
-        global.resource.Genes.amount += genes;
-    }
-
-    // Zero the ranks themselves, and the live trait values they were feeding.
-    Object.keys(global.genes.minor).forEach(function(t){ delete global.race[t]; });
-    Object.keys(global.race.minor).forEach(function(t){ delete global.race[t]; });
-    global.genes.minor = {};
-    global.race.minor = {};
-
-    global.genes['geneReset'] = { p: phage, g: genes };
 }
 
 if (!global.hasOwnProperty('govern')){

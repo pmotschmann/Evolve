@@ -4911,327 +4911,453 @@ export const traits = {
         name: loc('trait_tactical_name'),
         desc: loc('trait_tactical'),
         type: 'minor',
+        base: 'A',
         vars(r){ return [4]; },
+        weak(r){ return [2]; },
     },
     analytical: { // Science output
         name: loc('trait_analytical_name'),
         desc: loc('trait_analytical'),
         type: 'minor',
+        base: 'T',
         vars(r){ return [2]; },
+        weak(r){ return [1]; },
     },
     promiscuous: { // Population growth; synths get cheaper citizens instead
         name: loc('trait_promiscuous_name'),
         desc: loc('trait_promiscuous'),
-        type: 'minor',
-        vars(r){ return [2,0.04]; },
+        type: 'special',
+        base: 'C',
+        vars(r){ return [2,4]; },
+        weak(r){ return [1,2]; },
     },
     resilient: { // Coal, Oil and Helium-3 production
         name: loc('trait_resilient_name'),
         desc: loc('trait_resilient'),
         type: 'minor',
+        base: 'G',
         vars(r){ return [6]; },
+        weak(r){ return [3]; },
     },
     cunning: { // Market buy price
         name: loc('trait_cunning_name'),
         desc: loc('trait_cunning'),
         type: 'minor',
+        base: 'A',
         vars(r){ return [8]; },
+        weak(r){ return [4]; },
     },
     hardy: { // Factory output
         name: loc('trait_hardy_name'),
         desc: loc('trait_hardy'),
         type: 'minor',
+        base: 'A',
         vars(r){ return [2]; },
+        weak(r){ return [1]; },
     },
     ambidextrous: { // Crafting speed, and automated crafting
         name: loc('trait_ambidextrous_name'),
         desc: loc('trait_ambidextrous'),
         type: 'minor',
+        base: 'C',
         vars(r){ return [6,4]; },
+        weak(r){ return [3,2]; },
     },
     industrious: { // Mining output
         name: loc('trait_industrious_name'),
         desc: loc('trait_industrious'),
         type: 'minor',
+        base: 'G',
         vars(r){ return [4]; },
+        weak(r){ return [2]; },
     },
     content: { // Job stress: workers a job carries per stress point
         name: loc('trait_content_name'),
         desc: loc('trait_content'),
-        type: 'minor',
+        type: 'special',
+        base: 'A',
         vars(r){ return [0.4]; },
+        weak(r){ return [0.2]; },
     },
     fibroblast: { // Soldier healing
         name: loc('trait_fibroblast_name'),
         desc: loc('trait_fibroblast'),
         type: 'minor',
+        base: 'T',
         vars(r){ return [4]; },
+        weak(r){ return [2]; },
     },
     metallurgist: { // Alloy production
         name: loc('trait_metallurgist_name'),
         desc: loc('trait_metallurgist'),
         type: 'minor',
+        base: 'C',
         vars(r){ return [6]; },
+        weak(r){ return [3]; },
     },
     gambler: { // Casino income
         name: loc('trait_gambler_name'),
         desc: loc('trait_gambler'),
         type: 'minor',
+        base: 'G',
         vars(r){ return [8]; },
+        weak(r){ return [4]; },
     },
     persuasive: { // Trade route value
         name: loc('trait_persuasive_name'),
         desc: loc('trait_persuasive'),
         type: 'minor',
+        base: 'A',
         vars(r){ return [2]; },
+        weak(r){ return [1]; },
     },
     refiner: { // Smelter output
         name: loc('trait_refiner_name'),
         desc: loc('trait_refiner'),
         type: 'minor',
+        base: 'T',
         vars(r){ return [3]; },
+        weak(r){ return [1.5]; },
     },
     conductive: { // Power generation
         name: loc('trait_conductive_name'),
         desc: loc('trait_conductive'),
         type: 'minor',
+        base: 'C',
         vars(r){ return [1]; },
+        weak(r){ return [0.5]; },
     },
     stockpiler: { // Crate and Container capacity
         name: loc('trait_stockpiler_name'),
         desc: loc('trait_stockpiler'),
         type: 'minor',
+        base: 'G',
         vars(r){ return [4]; },
+        weak(r){ return [2]; },
     },
     assayer: { // Iridium and Titanium production
         name: loc('trait_assayer_name'),
         desc: loc('trait_assayer'),
         type: 'minor',
+        base: 'A',
         vars(r){ return [5]; },
+        weak(r){ return [2.5]; },
     },
     nanoweaver: { // Nano Tube and composite production
         name: loc('trait_nanoweaver_name'),
         desc: loc('trait_nanoweaver'),
         type: 'minor',
+        base: 'T',
         vars(r){ return [5]; },
+        weak(r){ return [2.5]; },
     },
     sapper: { // Cement production; unsuited to fliers
         name: loc('trait_sapper_name'),
         desc: loc('trait_sapper'),
         type: 'minor',
+        base: 'C',
         vars(r){ return [5]; },
+        weak(r){ return [2.5]; },
     },
     arborist: { // Lumber production; unsuited to kindling and smoldering
         name: loc('trait_arborist_name'),
         desc: loc('trait_arborist'),
         type: 'minor',
+        base: 'G',
         vars(r){ return [6]; },
+        weak(r){ return [3]; },
     },
     stonecutter: { // Stone production; unsuited to sappy
         name: loc('trait_stonecutter_name'),
         desc: loc('trait_stonecutter'),
         type: 'minor',
+        base: 'T',
         vars(r){ return [6]; },
+        weak(r){ return [3]; },
     },
     archivist: { // Maximum Knowledge
         name: loc('trait_archivist_name'),
         desc: loc('trait_archivist'),
         type: 'minor',
+        base: 'T',
         vars(r){ return [1]; },
+        weak(r){ return [0.5]; },
     },
     bureaucrat: { // Tax revenue
         name: loc('trait_bureaucrat_name'),
         desc: loc('trait_bureaucrat'),
         type: 'minor',
+        base: 'C',
         vars(r){ return [4]; },
+        weak(r){ return [2]; },
     },
     zealot: { // Temple output
         name: loc('trait_zealot_name'),
         desc: loc('trait_zealot'),
         type: 'minor',
+        base: 'G',
         vars(r){ return [1]; },
+        weak(r){ return [0.5]; },
     },
     stargazer: { // Observatory knowledge
         name: loc('trait_stargazer_name'),
         desc: loc('trait_stargazer'),
         type: 'minor',
+        base: 'A',
         vars(r){ return [5]; },
+        weak(r){ return [2.5]; },
     },
     engineer: { // A.R.P.A. project progress
         name: loc('trait_engineer_name'),
         desc: loc('trait_engineer'),
         type: 'minor',
-        vars(r){ return [3]; },
+        base: 'T',
+        vars(r){ return [2]; },
+        weak(r){ return [1]; },
     },
     logistician: { // Trade route capacity
         name: loc('trait_logistician_name'),
         desc: loc('trait_logistician'),
         type: 'minor',
+        base: 'C',
         vars(r){ return [10]; },
+        weak(r){ return [5]; },
     },
     quartermaster: { // Soldier capacity
         name: loc('trait_quartermaster_name'),
         desc: loc('trait_quartermaster'),
         type: 'minor',
+        base: 'G',
         vars(r){ return [4]; },
+        weak(r){ return [2]; },
     },
     steward: { // Maximum storage, regular resources only
         name: loc('trait_steward_name'),
         desc: loc('trait_steward'),
         type: 'minor',
+        base: 'A',
         vars(r){ return [2]; },
+        weak(r){ return [1]; },
     },
     taskmaster: { // Output of every job
         name: loc('trait_taskmaster_name'),
         desc: loc('trait_taskmaster'),
         type: 'minor',
+        base: 'T',
         vars(r){ return [1]; },
+        weak(r){ return [0.5]; },
     },
     queuemaster: { // Building queue size, flat
         name: loc('trait_queuemaster_name'),
         desc: loc('trait_queuemaster'),
         type: 'minor',
+        base: 'C',
         vars(r){ return [1]; },
+        weak(r){ return [0.5]; },
+    },
+    guildmaster: { // Extra craftsman slots, flat
+        name: loc('trait_guildmaster_name'),
+        desc: loc('trait_guildmaster'),
+        type: 'minor',
+        base: 'G',
+        vars(r){ return [2]; },
+        weak(r){ return [1]; },
+    },
+    thaumaturge: { // Mana production; magic universe only
+        name: loc('trait_thaumaturge_name'),
+        desc: loc('trait_thaumaturge'),
+        type: 'minor',
+        base: 'C',
+        vars(r){ return [4]; },
+        weak(r){ return [2]; },
+    },
+    despot: { // Authority standing; evil universe only
+        name: loc('trait_despot_name'),
+        desc: loc('trait_despot'),
+        type: 'minor',
+        base: 'A',
+        vars(r){ return [2]; },
+        weak(r){ return [1]; },
     },
     versatile: { // Crafted goods output
         name: loc('trait_versatile_name'),
         desc: loc('trait_versatile'),
         type: 'minor',
+        base: 'A',
         genus: 'humanoid',
         vars(r){ return [5]; },
+        weak(r){ return [2.5]; },
     },
     ambusher: { // Soldier training speed
         name: loc('trait_ambusher_name'),
         desc: loc('trait_ambusher'),
         type: 'minor',
+        base: 'T',
         genus: 'carnivore',
         vars(r){ return [5]; },
+        weak(r){ return [2.5]; },
     },
     ruminant: { // Maximum population
         name: loc('trait_ruminant_name'),
         desc: loc('trait_ruminant'),
         type: 'minor',
+        base: 'C',
         genus: 'herbivore',
         vars(r){ return [5]; },
+        weak(r){ return [2.5]; },
     },
     opportunist: { // Mining output and crafting speed
         name: loc('trait_opportunist_name'),
         desc: loc('trait_opportunist'),
         type: 'minor',
+        base: 'G',
         genus: 'omnivore',
         vars(r){ return [3]; },
+        weak(r){ return [1.5]; },
     },
     frugal: { // Housing cost discount
         name: loc('trait_frugal_name'),
         desc: loc('trait_frugal'),
         type: 'minor',
+        base: 'A',
         genus: 'small',
-        vars(r){ return [2]; },
+        vars(r){ return [1]; },
+        weak(r){ return [0.5]; },
     },
     titanic: { // Manual labour output
         name: loc('trait_titanic_name'),
         desc: loc('trait_titanic'),
         type: 'minor',
+        base: 'T',
         genus: 'giant',
         vars(r){ return [8]; },
+        weak(r){ return [4]; },
     },
     moltskin: { // Passive Furs from population
         name: loc('trait_moltskin_name'),
         desc: loc('trait_moltskin'),
         type: 'minor',
+        base: 'C',
         genus: 'reptilian',
         vars(r){ return [1]; },
+        weak(r){ return [0.5]; },
     },
     featherlight: { // Ship speed; requires True Path
         name: loc('trait_featherlight_name'),
         desc: loc('trait_featherlight'),
         type: 'minor',
+        base: 'G',
         genus: 'avian',
         vars(r){ return [5]; },
+        weak(r){ return [2.5]; },
     },
     swarm: { // Population growth
         name: loc('trait_swarm_name'),
         desc: loc('trait_swarm'),
         type: 'minor',
+        base: 'A',
         genus: 'insectoid',
         vars(r){ return [6]; },
+        weak(r){ return [3]; },
     },
     chlorophyll: { // Amber production; requires sappy
         name: loc('trait_chlorophyll_name'),
         desc: loc('trait_chlorophyll'),
         type: 'minor',
+        base: 'T',
         genus: 'plant',
         vars(r){ return [6]; },
+        weak(r){ return [3]; },
     },
     mycelial: { // Soldier healing
         name: loc('trait_mycelial_name'),
         desc: loc('trait_mycelial'),
         type: 'minor',
+        base: 'C',
         genus: 'fungi',
         vars(r){ return [6]; },
+        weak(r){ return [3]; },
     },
     abyssal: { // Uranium, Oil and Helium-3 production
         name: loc('trait_abyssal_name'),
         desc: loc('trait_abyssal'),
         type: 'minor',
+        base: 'G',
         genus: 'aquatic',
         vars(r){ return [8]; },
+        weak(r){ return [4]; },
     },
     glamour: { // Morale
         name: loc('trait_glamour_name'),
         desc: loc('trait_glamour'),
         type: 'minor',
+        base: 'A',
         genus: 'fey',
         vars(r){ return [5]; },
+        weak(r){ return [2.5]; },
     },
     fireweave: { // Chrysotile production; requires smoldering
         name: loc('trait_fireweave_name'),
         desc: loc('trait_fireweave'),
         type: 'minor',
+        base: 'T',
         genus: 'heat',
         vars(r){ return [8]; },
+        weak(r){ return [4]; },
     },
     frostbound: { // Building power discount
         name: loc('trait_frostbound_name'),
         desc: loc('trait_frostbound'),
         type: 'minor',
+        base: 'C',
         genus: 'polar',
         vars(r){ return [1]; },
+        weak(r){ return [0.5]; },
     },
     duneborn: { // Cement production
         name: loc('trait_duneborn_name'),
         desc: loc('trait_duneborn'),
         type: 'minor',
+        base: 'G',
         genus: 'sand',
         vars(r){ return [8]; },
+        weak(r){ return [4]; },
     },
     infernal: { // Combat effectiveness in Hell and mech damage; unsuited to True Path
         name: loc('trait_infernal_name'),
         desc: loc('trait_infernal'),
         type: 'minor',
+        base: 'A',
         genus: 'demonic',
         vars(r){ return [6]; },
+        weak(r){ return [3]; },
     },
     radiant: { // Temple output
         name: loc('trait_radiant_name'),
         desc: loc('trait_radiant'),
         type: 'minor',
+        base: 'T',
         genus: 'angelic',
         vars(r){ return [3]; },
+        weak(r){ return [1.5]; },
     },
     overclocked: { // Factory output
         name: loc('trait_overclocked_name'),
         desc: loc('trait_overclocked'),
         type: 'minor',
+        base: 'C',
         genus: 'synthetic',
         vars(r){ return [5]; },
+        weak(r){ return [2.5]; },
     },
     cerebral: { // Knowledge gain
         name: loc('trait_cerebral_name'),
         desc: loc('trait_cerebral'),
         type: 'minor',
+        base: 'G',
         genus: 'eldritch',
         vars(r){ return [8]; },
+        weak(r){ return [4]; },
     },
     fortify: { // gene fortification
         name: loc('trait_fortify_name'),
@@ -5243,6 +5369,7 @@ export const traits = {
         desc: loc('trait_mastery'),
         type: 'special',
         vars(r){ return [1]; },
+        weak(r){ return [0.5]; },
     }
 };
 
@@ -6894,16 +7021,11 @@ export function racialTrait(workers,type){
     if (shroomiFathom > 0 && type === 'factory'){
         modifier *= 1 + (traits.toxic.vars(1)[2] / 100 * shroomiFathom);
     }
-    // Note: racialTrait only ever receives factory, farmer, forager, hunting, lumberjack, miner and
-    // science -- and its 'factory' is cement, not the city factory (see the two call sites). Hardy
-    // and Overclocked therefore live in factoryBonus, and the cement and stone genes are hooked at
-    // their own production sites; a gene keyed here on any other string would silently do nothing.
     if (type === 'science'){ modifier *= geneBonus('cerebral'); }
     if (type === 'lumberjack'){ modifier *= geneBonus('arborist'); }
     if (global.race['analytical'] && type === 'science'){
-        modifier *= 1 + (traits.analytical.vars()[0] * global.race['analytical'] / 100);
+        modifier *= 1 + (geneVars('analytical')[0] * global.race['analytical'] / 100);
     }
-    // Taskmaster lifts every job; Titanic only the ones done by hand.
     modifier *= geneBonus('taskmaster');
     if (['lumberjack','miner','forager','hunting'].includes(type)){
         modifier *= geneBonus('titanic');
@@ -6958,7 +7080,7 @@ export function racialTrait(workers,type){
             modifier *= planetTraits.rage.vars()[1];
         }
         if (global.race['cunning']){
-            modifier *= 1 + (traits.cunning.vars()[0] * global.race['cunning'] / 100);
+            modifier *= 1 + (geneVars('cunning')[0] * global.race['cunning'] / 100);
         }
         if (global.city.biome === 'savanna'){
             modifier *= biomes.savanna.vars()[1];
@@ -7040,20 +7162,31 @@ export function servantTrait(workers,type){
 // Every tunable of the gene economy in one place, so a retune is a single edit here rather than a
 // hunt through the module.
 export const genes = {
-    gene_slot_count: 10,
+    gene_slot_count: 8,
     gene_unlock_phage: 25,
-    gene_slot_cost: 25,         // genes, to fill an empty slot
-    gene_first_cost: 10,        // ...discounted, while nothing at all is slotted
-    gene_rank_base: 5,          // ranks per slot before any limit break
+    gene_slot_cost: 10,         // genes, to fill any empty slot
+    gene_rank_base: 5,          // ranks a mispaired slot holds before any limit break
+    gene_rank_paired: 10,       // ...and what a correctly paired one holds instead
     gene_break_ranks: 5,        // ranks each limit break adds
-    // Genes to take a slot from rank 1 to 2, 3, 4, 5, and onward past a limit break.
-    gene_rank_cost: [40,75,140,260,480,890,1650,3050,5650],
+    // The strand, read left to right and repeating for any slots a later upgrade adds. Taken two at
+    // a time it gives the rungs: A-T, C-G, A-T, C-G.
+    gene_strand: ['A','T','C','G'],
+    // Which base answers which. A gene pairs with the slot bearing its own base; the rung it sits on
+    // is what makes that slot's partner the complement.
+    gene_pairs: { A: 'T', T: 'A', C: 'G', G: 'C' },
+    // Every rank costs this much more than the one before it, all the way up. The ladder is grown
+    // from gene_slot_cost rather than written out, so the two can never drift apart.
+    gene_rank_growth: 1.85,
     // Plasmids per limit break.
     gene_break_cost: [5,10,25,50],
     // Past the table the price climbs by a flat step rather than a multiplier.
     gene_break_step: 25,
     // Genes priced above the standard rate.
     gene_cost_mult: { mastery: 2 },
+    // Genes a mutation pays, as gene_mutation_scale x mutation cubed. Cubic rather than doubling:
+    // it keeps climbing so a late mutation is still worth having, but it cannot outrun every sink
+    // in the game the way 2^n did -- that reached a trillion genes a mutation by the fortieth.
+    gene_mutation_scale: 4,
     // The specials sit outside the unlock economy: they are earned, not bought.
     gene_specials: ['fortify','mastery']
 };
@@ -7132,6 +7265,8 @@ const geneUnsuited = {
     sapper(){ return global.race['flier'] ? true : false; },
     duneborn(){ return global.race['flier'] ? true : false; },
     featherlight(){ return global.race['truepath'] ? false : true; },
+    despot(){ return global.race.universe === 'evil' ? false : true; },
+    thaumaturge(){ return global.race.universe === 'magic' ? false : true; },
     infernal(){ return global.race['truepath'] ? true : false; }
 };
 
@@ -7185,6 +7320,119 @@ export function geneSlotLabel(slot){
     return geneSlotExtra(slot) ? `S${n}` : `${n}`;
 }
 
+// The base a slot calls for. General slots run the strand in order and repeat, so an upgrade that
+// adds slots extends the same alternating pattern rather than needing a longer table.
+export function geneSlotBase(slot){
+    // A granted pair carries its bases on the slots themselves: they sit outside the strand, so
+    // there is no position to read one from.
+    let s = geneSlots()[slot];
+    if (s && s.x){ return s.b || false; }
+    if (geneSlotExtra(slot)){ return false; }
+    let general = -1;
+    let slots = geneSlots();
+    for (let i=0; i<=slot && i<slots.length; i++){
+        if (!(slots[i] && slots[i].x)){ general++; }
+    }
+    if (general < 0){ return false; }
+    return genes.gene_strand[general % genes.gene_strand.length];
+}
+
+// The slot across the rung from this one, or false when it is on no rung at all. General slots pair
+// by position down the strand; granted extras pair with each other in the order they arrived, two by
+// two, so a granted pair reads as its own rung hanging off the end.
+export function genePairSlot(slot){
+    let slots = geneSlots();
+    let extra = geneSlotExtra(slot);
+    let group = [];
+    for (let i=0; i<slots.length; i++){
+        if ((slots[i] && slots[i].x ? true : false) === extra){ group.push(i); }
+    }
+    let at = group.indexOf(slot);
+    if (at < 0){ return false; }
+    let partner = at % 2 === 0 ? at + 1 : at - 1;
+    return partner >= 0 && partner < group.length ? group[partner] : false;
+}
+
+// Whether the gene sitting in a slot answers that slot's own base. The two specials carry no base
+// of their own and read as an answer wherever they are put -- they are earned rather than found,
+// and pinning them to one rung would make them dead weight on most strands.
+export function geneSlotAnswers(slot){
+    let s = geneSlots()[slot];
+    if (!s || !s.g || !traits[s.g]){ return false; }
+    if (genes.gene_specials.includes(s.g)){ return true; }
+    let base = geneSlotBase(slot);
+    return base && traits[s.g].base === base ? true : false;
+}
+
+// Traits nobody slots. They emerge from the strand itself: every rung that is correctly paired AND
+// correctly placed contributes to the one tied to its base pair, at the lower of its two ranks.
+// Keyed by either half of the pair so a rung can be looked up from whichever side.
+export const geneEmergent = { A: 'content', T: 'content', C: 'promiscuous', G: 'promiscuous' };
+
+export function geneEmergentList(){
+    let seen = [];
+    Object.keys(geneEmergent).forEach(function(b){
+        if (!seen.includes(geneEmergent[b])){ seen.push(geneEmergent[b]); }
+    });
+    return seen;
+}
+
+// Rank of an emergent trait: the sum over every qualifying rung of the lower of its two genes. A rung
+// only counts when both halves answer their own slot and bond with each other, so it is the reward
+// for getting a pair completely right.
+export function geneEmergentRank(gene){
+    let slots = geneSlots();
+    let done = {};
+    let total = 0;
+    for (let i=0; i<slots.length; i++){
+        if (done[i]){ continue; }
+        let partner = genePairSlot(i);
+        if (partner === false){ continue; }
+        done[i] = true;
+        done[partner] = true;
+        if (!slots[i] || !slots[i].g || !slots[partner] || !slots[partner].g){ continue; }
+        if (!geneSlotAnswers(i) || !geneSlotAnswers(partner)){ continue; }
+        if (!geneSlotMatched(i)){ continue; }
+        if (geneEmergent[geneSlotBase(i)] !== gene){ continue; }
+        total += Math.min(slots[i].r,slots[partner].r);
+    }
+    return total;
+}
+
+// The base a slotted gene reads as. The two specials have none of their own and take on whatever
+// the slot calls for, so they bond with a correct partner and fail with a wrong one like any gene.
+export function geneEffectiveBase(slot){
+    let s = geneSlots()[slot];
+    if (!s || !s.g || !traits[s.g]){ return false; }
+    if (genes.gene_specials.includes(s.g)){ return geneSlotBase(slot); }
+    return traits[s.g].base || false;
+}
+
+// The two genes on a rung bond with each other: A to T, C to G. This is about the pair alone -- a
+// rung can bond while sitting in the wrong slots, and two correctly slotted genes that do not answer
+// each other do not bond. An empty partner is no bond.
+export function geneSlotMatched(slot){
+    let partner = genePairSlot(slot);
+    if (partner === false){ return false; }
+    let a = geneEffectiveBase(slot), b = geneEffectiveBase(partner);
+    return a && b && genes.gene_pairs[a] === b ? true : false;
+}
+
+// A gene runs at full strength only while its rung is bonded; on its own, or beside the wrong
+// partner, it runs at the weaker figures instead.
+export function geneWeak(gene){
+    let slot = geneSlotOf(gene);
+    return slot === false || !geneSlotMatched(slot);
+}
+
+// The numbers a gene is actually working at right now. Every hook reads through this rather than
+// traits[gene].vars() directly, which is what makes the weak variant apply everywhere at once.
+export function geneVars(gene){
+    if (!traits[gene]){ return [0]; }
+    if (geneWeak(gene) && traits[gene].weak){ return traits[gene].weak(); }
+    return traits[gene].vars ? traits[gene].vars() : [0];
+}
+
 // Which slot a gene sits in, or false. A gene may only be slotted once.
 export function geneSlotOf(gene){
     let slots = geneSlots();
@@ -7202,22 +7450,28 @@ export function geneBreaks(){
     return global.race.geneBreak;
 }
 
-// Rank cap for a slot: the base, plus five for every limit break paid for this run.
+// Where a slot's ceiling starts, before any limit break: twice as far when the gene answers the
+// slot's own base as when it does not. Independent of what sits across the rung -- that decides
+// strength, not the ceiling.
+export function geneRankStart(slot){
+    return geneSlotAnswers(slot) ? genes.gene_rank_paired : genes.gene_rank_base;
+}
+
+// Rank cap for a slot: where it starts, plus five for every limit break paid for this run.
 export function geneRankCap(slot){
     let breaks = geneBreaks()[slot] || 0;
-    return genes.gene_rank_base + (breaks * genes.gene_break_ranks);
+    return geneRankStart(slot) + (breaks * genes.gene_break_ranks);
 }
 
 // How many limit breaks a slot needs before it could hold this rank at all.
-function geneBreaksFor(rank){
-    return rank > genes.gene_rank_base ? Math.ceil((rank - genes.gene_rank_base) / genes.gene_break_ranks) : 0;
+function geneBreaksFor(rank,slot){
+    let start = slot === undefined ? genes.gene_rank_base : geneRankStart(slot);
+    return rank > start ? Math.ceil((rank - start) / genes.gene_break_ranks) : 0;
 }
 
 // Self explanatory: the cost to slot or upgrade a gene
 export function geneSlotCost(slot,gene){
-    let anySlotted = geneSlots().some(function(s){ return s && s.g; });
-    let cost = anySlotted ? genes.gene_slot_cost : genes.gene_first_cost;
-    return cost * geneCostMod(gene !== undefined ? gene : geneInSlot(slot));
+    return genes.gene_slot_cost * geneCostMod(gene !== undefined ? gene : geneInSlot(slot));
 }
 
 function geneCostMod(gene){
@@ -7230,12 +7484,11 @@ function geneInSlot(slot){
     return s && s.g ? s.g : false;
 }
 
-export function geneRankCost(rank,gene){
-    let idx = rank - 2;
-    if (idx < 0){ return genes.gene_slot_cost * geneCostMod(gene); }
-    if (idx < genes.gene_rank_cost.length){ return genes.gene_rank_cost[idx] * geneCostMod(gene); }
-    let cost = genes.gene_rank_cost[genes.gene_rank_cost.length - 1];
-    for (let i=genes.gene_rank_cost.length; i<=idx; i++){ cost = Math.round(cost * 1.85); }
+// Rank 1 is the slot price; each rank after it is the previous one grown by gene_rank_growth and
+// rounded, so the whole ladder follows from what a slot costs.
+export function geneRankCost(rank,gene,slot){
+    let cost = genes.gene_slot_cost;
+    for (let r=2; r<=rank; r++){ cost = Math.round(cost * genes.gene_rank_growth); }
     return cost * geneCostMod(gene);
 }
 
@@ -7250,16 +7503,19 @@ export function geneBreakCost(slot){
 
 // The live rank of a gene, which is what every effect reads. Zero unless it is sitting in a slot.
 export function geneRank(gene){
+    // An emergent trait sits in no slot; its rank is read off the pairs instead.
+    if (geneEmergentList().includes(gene)){ return geneEmergentRank(gene); }
     let slot = geneSlotOf(gene);
     return slot === false ? 0 : geneSlots()[slot].r;
 }
 
 // The multiplier a gene contributes, as 1 + vars[idx] * rank / 100. The one call every hook makes.
-export function geneBonus(gene,idx){
+export function geneBonus(gene,idx,reduce){
+    reduce = reduce || false;
     let rank = geneRank(gene);
     if (rank <= 0 || !traits[gene]){ return 1; }
-    let vars = traits[gene].vars ? traits[gene].vars() : [0];
-    return 1 + (vars[idx || 0] * rank / 100);
+    let vars = geneVars(gene);
+    return reduce ? 1 - (vars[idx || 0] * rank / 100) : 1 + (vars[idx || 0] * rank / 100);
 }
 
 // The same figure as a plain total rather than a multiplier, for the handful of effects that add
@@ -7267,7 +7523,7 @@ export function geneBonus(gene,idx){
 export function geneFlat(gene,idx){
     let rank = geneRank(gene);
     if (rank <= 0 || !traits[gene]){ return 0; }
-    let vars = traits[gene].vars ? traits[gene].vars() : [0];
+    let vars = geneVars(gene);
     return vars[idx || 0] * rank;
 }
 
@@ -7280,22 +7536,72 @@ export function syncGenes(){
     geneSlots().forEach(function(slot){
         if (slot && slot.g){ global.race[slot.g] = slot.r; }
     });
+    // The emergent traits are never slotted, so their rank has to be pushed on here as well or the
+    // hooks that read global.race[trait] would never see them.
+    geneEmergentList().forEach(function(t){
+        let rank = geneEmergentRank(t);
+        if (rank > 0){ global.race[t] = rank; }
+        else { delete global.race[t]; }
+    });
+}
+
+// The genes this run could still be handed: not a special, not already slotted, and of use here.
+function grantPool(){
+    return geneRoster().filter(function(t){
+        return !genes.gene_specials.includes(t) && geneSlotOf(t) === false && geneSuited(t);
+    });
+}
+
+// A granted pair: two extra slots forming a rung of their own, bases complementary and both genes
+// at the same rank. Returns the two genes, or false when the roster cannot fill both sides.
+export function grantMinorTraitPair(rank){
+    let pool = grantPool();
+    let byBase = {};
+    pool.forEach(function(t){
+        let b = traits[t].base;
+        if (!b){ return; }
+        if (!byBase[b]){ byBase[b] = []; }
+        byBase[b].push(t);
+    });
+
+    // Each rung is one base and its complement, counted once. Only those with something to put on
+    // both sides are worth drawing from.
+    let rungs = Object.keys(genes.gene_pairs).filter(function(b){
+        let c = genes.gene_pairs[b];
+        return b < c && byBase[b] && byBase[b].length > 0 && byBase[c] && byBase[c].length > 0;
+    });
+    if (rungs.length === 0){ return false; }
+
+    let left = rungs[Math.floor(seededRandom(0,rungs.length))];
+    let right = genes.gene_pairs[left];
+    let pick = function(base){ return byBase[base][Math.floor(seededRandom(0,byBase[base].length))]; };
+    let pair = [{ b: left, g: pick(left) },{ b: right, g: pick(right) }];
+
+    let slots = geneSlots();
+    let at = Math.max(1,rank || 1);
+    pair.forEach(function(half){
+        geneTempUnlocks()[half.g] = 1;
+        slots.push({ g: half.g, r: at, x: true, b: half.b });
+        let free = slots.length - 1;
+        let owed = geneBreaksFor(at,free);
+        if (owed > 0){
+            geneBreaks()[free] = Math.max(geneBreaks()[free] || 0, owed);
+        }
+    });
+    syncGenes();
+    return pair.map(function(half){ return half.g; });
 }
 
 export function grantRandomMinorTrait(rank,extra){
+    // A granted slot arrives as a matched pair rather than a lone gene.
+    if (extra){ return grantMinorTraitPair(rank); }
+
     let slots = geneSlots();
-    let pool = geneRoster().filter(function(t){
-        return !genes.gene_specials.includes(t) && geneSlotOf(t) === false && geneSuited(t);
-    });
+    let pool = grantPool();
     if (pool.length === 0){ return false; }
 
     let free = -1;
-    if (extra){
-        // Appended, so it never competes with the general slots for space and never shifts one.
-        slots.push(false);
-        free = slots.length - 1;
-    }
-    else {
+    {
         // The first empty general slot. An extra is never empty, so this skips them naturally.
         for (let i=0; i<slots.length; i++){
             if (!slots[i]){ free = i; break; }
@@ -7305,13 +7611,59 @@ export function grantRandomMinorTrait(rank,extra){
     let gene = pool[Math.floor(seededRandom(0,pool.length))];
     let at = Math.max(1,rank || 1);
     geneTempUnlocks()[gene] = 1;
-    slots[free] = extra ? { g: gene, r: at, x: true } : { g: gene, r: at };
-    let owed = geneBreaksFor(at);
+    slots[free] = { g: gene, r: at };
+    // Measured against the slot it actually landed in: a granted gene that happens to answer its
+    // base already reaches ten, and should not be handed breaks it does not need.
+    let owed = geneBreaksFor(at,free);
     if (owed > 0){
         geneBreaks()[free] = Math.max(geneBreaks()[free] || 0, owed);
     }
     syncGenes();
     return gene;
+}
+
+// One rank of the Mutation line
+function grantEvolveGene(slot,rank){
+    let slots = geneSlots();
+    if (slot >= slots.length){ return false; }
+    if (slots[slot] && slots[slot].g){
+        // Already occupied -- bring it up to the rank this upgrade is worth and leave it there.
+        if (slots[slot].r < rank){ slots[slot].r = rank; }
+        return false;
+    }
+    let want = geneSlotBase(slot);
+    let pool = geneRoster().filter(function(t){
+        return !genes.gene_specials.includes(t) && geneSlotOf(t) === false && geneSuited(t)
+            && traits[t].base === want;
+    });
+    if (pool.length === 0){ return false; }
+    let gene = pool[Math.floor(seededRandom(0,pool.length))];
+    geneTempUnlocks()[gene] = 1;
+    slots[slot] = { g: gene, r: rank };
+    return true;
+}
+
+// The Mutation line hands over a strand rather than a random none matching gene.
+export function grantEvolveGenes(){
+    let have = global.genes['evolve'] || 0;
+    let granted = 0;
+    for (let r=2; r<=have; r++){
+        let slot = r - 2;
+        let rank = r - 1;
+        if (grantEvolveGene(slot,rank)){ granted++; }
+        if (slot % 2 === 1){
+            let mate = geneSlots()[slot - 1];
+            if (mate && mate.g && mate.r < rank){ mate.r = rank; }
+        }
+    }
+    if (granted > 0 || have >= 2){ syncGenes(); }
+    return granted;
+}
+
+// What one mutation is worth, before the Synthesis and Creator multipliers are applied on top.
+export function mutationGenes(mutation){
+    let m = mutation > 0 ? mutation : 1;
+    return Math.round(genes.gene_mutation_scale * (m ** 3));
 }
 
 export function randomMinorTrait(){

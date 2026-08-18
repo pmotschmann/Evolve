@@ -1332,9 +1332,8 @@ function trackWomling(){
 
 // Zombie Appocalypse
 export function zApocalypse(){
-    if (!global['sim']){
-        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
-    }
+    // Don't create an automatic backup on purpose or it restore the game to a state where the player can't really do anything
+    // Backup is instead made when the player does the bleed overmind research
     clearSavedMessages();
 
     tagEvent('reset',{

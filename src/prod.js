@@ -1,5 +1,5 @@
 import { global, p_on, support_on } from './vars.js';
-import { biomes, traits, fathomCheck, geneBonus} from './races.js';
+import { biomes, traits, fathomCheck, geneBonus, geneVars} from './races.js';
 import { govRelationFactor, govEffect } from './civics.js';
 import { jobScale, teamsterCap, workerScale } from './jobs.js';
 import { actions } from './actions.js';
@@ -622,7 +622,7 @@ export function factoryBonus(factory){
     // Hardy and Overclocked belong here rather than in racialTrait, whose 'factory' type is only
     // ever passed for cement production.
     if (global.race['hardy']){
-        factory *= 1 + (traits.hardy.vars()[0] * global.race['hardy'] / 100);
+        factory *= 1 + (geneVars('hardy')[0] * global.race['hardy'] / 100);
     }
     factory *= geneBonus('overclocked');
     if (global.race['toxic']){

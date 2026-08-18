@@ -1,7 +1,7 @@
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
 import { clearElement, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel } from './../functions.js';
-import { achievements, feats, universeAffix } from './../achieve.js';
+import { achievements, feats, universeAffix, geneticistGenes } from './../achieve.js';
 import { races, biomes, genus_def, traits, traitSkin, geneCatalog, genePermanent } from './../races.js';
 import { monsters } from './../portal.js';
 import { vBind, popover } from './../functions.js';
@@ -43,7 +43,8 @@ const universeExclusives = {
 };
 
 const achieveDescData = {
-    trade: [750,50]
+    trade: [750,50],
+    geneticist: [geneticistGenes]
 };
 
 export function achievePage(universe, filter){

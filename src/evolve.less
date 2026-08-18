@@ -5965,9 +5965,26 @@ div.bigbang {
 }
 
 // --- Gene slots ----------------------------------------------------------------------------------
-// The genetics tab's minor-gene panel: ten slots above a library of everything slottable.
-// The gene picker modal: every gene available to slot, laid out as a wrapping grid of buttons so a
-// long list stays readable. Each carries its own popover with the description and the price.
+.baseA { color: var(--tc-danger,  #e57373); }
+.baseT { color: var(--tc-caution, #ffb74d); }
+.baseC { color: var(--tc-info,    #64b5f6); }
+.baseG { color: var(--tc-success, #81c784); }
+.baseX { color: var(--tc-fade,    #9e9e9e); }
+
+.pickBase {
+    display: inline-block;
+    flex: 0 0 auto;
+    width: 1.2rem;
+    height: 1.2rem;
+    line-height: 1.1rem;
+    text-align: center;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 0.7rem;
+    vertical-align: middle;
+}
+
 .genePick {
     display: flex;
     flex-wrap: wrap;
@@ -5981,12 +5998,22 @@ div.bigbang {
         min-width: 9rem;
         height: 1.9rem;
         font-size: 0.85rem;
+        // Base badge first, name after, both aligned left so the two read as separate things.
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 0.4rem;
+        text-align: left;
+    }
+
+    // A gene that matches the slot being filled. Worth spotting at a glance in a grid this size.
+    .genePickFits {
+        border-color: var(--tc-success, #81c784);
+        box-shadow: 0 0 0.3rem var(--tc-success, #81c784);
     }
 }
 
 .geneSlots {
-    // The tab strip and its content pane both size to what is in them. Bulma gives .tabs a bottom
-    // margin meant for a full-page tab bar, which is far more than this panel wants.
     .geneTabs {
         > nav.tabs {
             margin-bottom: 0.4rem;
@@ -5996,6 +6023,117 @@ div.bigbang {
             padding: 0;
             overflow: visible;
         }
+    }
+
+    .geneStrand {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+    }
+
+    .geneRung {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+        flex-wrap: nowrap;
+
+        > .geneSlot {
+            flex: 1 1 0;
+            min-width: 0;
+        }
+
+        .rungBond {
+            flex: 0 0 auto;
+            width: 1.6rem;
+            text-align: center;
+            opacity: 0.25;
+            letter-spacing: -0.15rem;
+
+            &.bonded {
+                opacity: 1;
+                color: var(--tc-success, #4caf50);
+            }
+        }
+    }
+
+    // The left half mirrors the right so both read inward toward the bond.
+    .slotLeft {
+        flex-direction: row-reverse;
+        text-align: right;
+    }
+
+    .geneSlotVoid {
+        visibility: hidden;
+    }
+
+    // The base a slot calls for. Lit when the gene sitting there answers it.
+    .slotBase {
+        flex: 0 0 auto;
+        width: 1.35rem;
+        height: 1.35rem;
+        line-height: 1.35rem;
+        text-align: center;
+        border-radius: 50%;
+        font-weight: 700;
+        font-size: 0.8rem;
+        opacity: 0.45;
+        border: 1px solid currentColor;
+
+        &.paired {
+            opacity: 1;
+        }
+
+        &.bonded {
+            opacity: 1;
+            box-shadow: 0 0 0.35rem currentColor;
+        }
+    }
+
+    .slotBaseExtra {
+        border: none;
+        opacity: 0.5;
+    }
+
+    // What the strand produces by itself, listed under it.
+    .geneEmergence {
+        margin-top: 0.6rem;
+        padding-top: 0.4rem;
+        border-top: 1px solid rgba(128,128,128,0.35);
+
+        .emergeHead {
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .emergeRow {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            padding: 0.1rem 0;
+        }
+
+        .emergeName {
+            flex: 0 0 auto;
+            min-width: 7rem;
+        }
+
+        .emergeRank {
+            flex: 0 0 auto;
+            min-width: 5rem;
+        }
+
+        .emergeText {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+    }
+
+    // Granted slots sit below the strand rather than on a rung of their own.
+    .geneExtras {
+        margin-top: 0.5rem;
+        padding-top: 0.35rem;
+        border-top: 1px solid rgba(128,128,128,0.35);
     }
 
     .geneSlot {
@@ -6010,26 +6148,42 @@ div.bigbang {
             opacity: 0.6;
         }
 
-        // A granted extra slot: its gene is fixed there, so it reads as a fixture rather than
-        // something the player arranges.
+        &.slotRight .slotNum {
+            text-align: left;
+        }
+
         &.geneSlotExtra .slotNum {
             opacity: 1;
             font-weight: 700;
         }
 
         .slotGene {
-            min-width: 14rem;
+            flex: 1 1 auto;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .slotActions {
             display: flex;
             align-items: center;
             gap: 0.35rem;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
+            flex: 0 0 auto;
 
             .button {
                 height: 1.6rem;
                 font-size: 0.8rem;
+                white-space: nowrap;
+            }
+
+            .geneClear {
+                width: 1.6rem;
+                min-width: 1.6rem;
+                padding: 0;
+                font-size: 1rem;
+                line-height: 1;
             }
         }
     }
@@ -6045,8 +6199,6 @@ div.bigbang {
                 min-width: 10rem;
             }
 
-            // Marks a gene that is only unlocked for this run, so the phage offer beside it reads
-            // as keeping the gene rather than buying it again.
             .geneNote {
                 font-size: 0.75rem;
                 white-space: nowrap;
@@ -6126,9 +6278,7 @@ div.bigbang {
     display: none; // Hidden on desktop
 }
 
-// How much room the mobile message bar takes out of the bottom of the screen. Zero everywhere but
-// the mobile layout, where the sizes below take over; the panels above it all subtract this, so the
-// bar and the space reserved for it are driven by the one value and cannot drift apart.
+// How much room the mobile message bar takes out of the bottom of the screen.
 :root {
     --mMsg: 0rem;
 }
@@ -6138,31 +6288,18 @@ div.bigbang {
     html {
         // Mobile browsers by default will scale up the font size based on screen width, and font size translates to layout dimensions in most places
         // this ends up causing nearly the entire UI to become massively overscaled and entirely unusable on narrow screens, unless the user manually adjusts their browser's font size settings
-        // So, we'll just override whatever the browser's auto font scaling chose
-        // vw units are purely viewport-width-relative and immune to font scaling
-        // clamp makes sure we don't go below 12px or above 16px
         font-size: ~"clamp(12px, 4.2vw, 16px)" !important;
         -moz-text-size-adjust: none;
         -webkit-text-size-adjust: none;
         text-size-adjust: none;
-        // Ideally, this would be user configurable, perhaps with a mobile-specific settings menu you can access from it's own little settings cog somewhere
-        // but for now, this will at least make the UI usable on mobile by default
     }
 
-    // Header bar: the version tag makes the single-line bar overflow and wrap on a narrow screen, so
-    // drop it here (it moves to the footer, below) and let the calendar slide over into its place on
-    // the right instead of sitting centered.
+
     .topBar {
         .version {
             display: none;
         }
 
-        // Keep the planet info and the calendar each on a single line. Their trailing inline bits —
-        // the optional player-pet icon and the pause control — otherwise wrap to a second row once the
-        // content reaches the screen edge, which is the "pushed onto the next line" look being fixed.
-        // Trimming the calendar's inner spacing buys a little width so the one-line fit holds at more
-        // phone widths; on a genuinely tiny screen the calendar's rightmost icons clip at the edge
-        // (the fixed bar doesn't scroll the page) rather than wrapping, which reads far better.
         .planetWrap {
             white-space: nowrap;
         }
@@ -6177,9 +6314,6 @@ div.bigbang {
         }
     }
 
-    // Footer: on desktop the author (left) and links (right, absolutely positioned) share one line;
-    // on a narrow screen they overlap. Give the bar two rows instead — external links across the top,
-    // then author on the left and the version (relocated from the header) on the right.
     .promoBar {
         bottom: 0; // stays at bottom
         height: 2.4rem; // two 1.2rem rows
@@ -6188,7 +6322,7 @@ div.bigbang {
 
         .right {
             order: 1; // links first → top row
-            position: static; // was absolute; participate in the flow so it takes a full row
+            position: static;
             width: 100%;
             margin: 0;
             text-align: center;
@@ -6214,7 +6348,7 @@ div.bigbang {
         }
 
         // The pause button is relocated here, centered in the space between the author/pet group on
-        // the left and the version on the right (its two auto margins split the free space evenly).
+        // the left and the version on the right.
         .footPause {
             order: 3;
             margin: 0 auto;
@@ -6254,13 +6388,9 @@ div.bigbang {
         overflow: hidden;
         cursor: pointer;
         border-top: 1px solid;
-        // Background comes from the active theme, alongside the other fixed bars.
-        // The grip is parked in the top-right corner, so the text is inset far enough to clear it.
         padding: 0 1.4rem 0 0.5rem;
 
         .mMsgBody p {
-            // One message per line, clipped rather than wrapped: a long message would otherwise
-            // reflow the bar to a different height than the layout above has reserved for it.
             line-height: @mMsgLine;
             white-space: nowrap;
             overflow: hidden;
@@ -6349,10 +6479,6 @@ div.bigbang {
         
         .resources {
             margin-top:-0.75rem;
-            // svh (not vh) so the bottom clears the fixed footer + mobileNav even while the mobile
-            // browser URL bar is showing; the deduction is generous enough that the last rows stay
-            // reachable even when the race-info header (morale + power) is at its tallest.
-            // --mMsg is the message bar above the nav buttons, which the player can resize.
             height: ~"calc(100svh - 7.5rem - var(--mMsg))";
             padding-top:0.75rem;
             padding-bottom: 0.5rem;
@@ -6367,10 +6493,6 @@ div.bigbang {
                 position: static !important;
                 overflow-y: auto !important;
                 overflow-x: hidden !important;
-                // Desktop sizes this scroller as `100vh - 10rem`, which only reserves room for the
-                // top chrome. On mobile the fixed footer + mobileNav (~4.8rem) also sit over the
-                // bottom, so the scroller must stop above them or its last rows hide underneath.
-                // svh keeps the fit correct while the browser URL bar is showing.
                 height: ~"calc(100svh - 13rem)" !important;
             }
 
@@ -6415,17 +6537,10 @@ div.bigbang {
                     overflow-x: hidden !important;
                 }
 
-                // Settings opens as a full-screen panel (top tab bar hidden), so its scroller only has
-                // to clear the fixed footer + mobileNav at the bottom. The desktop height is 100vh-based
-                // and leaves the last rows hidden under the footer; svh reserves the right space and
-                // keeps the bottom reachable while the browser URL bar is showing.
                 #settings {
                     height: ~"calc(100svh - 6.5rem)" !important;
                 }
 
-                // Evolution keeps the (single) icon tab bar above it, so it deducts more than settings.
-                // Same fix: svh-based height so the bottom clears the fixed footer + mobileNav instead
-                // of the desktop 100vh height that runs the last rows under the footer.
                 #evolution {
                     height: ~"calc(100svh - 10rem)" !important;
                 }
@@ -6468,10 +6583,6 @@ div.bigbang {
         margin-top: -0.25rem;
     }
 
-    // Allow the tab bar to scroll horizontally so all tabs stay reachable on one line. The nested
-    // sub-tab bars (.resTabs .tabs) already scroll, but the main tab bar sits outside .resTabs and
-    // defaults to overflow:hidden, which clips the tabs past the screen edge (e.g. Stats) with no way
-    // to reach them — so enable horizontal scrolling here too.
     .b-tabs .tabs {
         overflow-x: auto;
         overflow-y: hidden;
@@ -6550,12 +6661,6 @@ div.bigbang {
     #mainTabs .micon-stats     > a::before { content: "📊"; }
 
     // --- Sub-tab bars ---
-    // The per-panel sub-navigation (Hala System / Tau Ceti, Government / Industry / …, Projects /
-    // Genetics / …) all live inside .resTabs. Give them the same fill-the-width, touch-friendly feel
-    // as the main tab bar: each tab flexes to an equal share so a short group (New / Completed)
-    // spreads across the screen and a longer one (Government … Supernatural) still fits, only falling
-    // back to horizontal scrolling when the labels genuinely can't fit at a readable size. The
-    // selected sub-tab gets the same subtle highlight as the active main tab.
     .resTabs > nav.tabs {
         > ul {
             width: 100%;
@@ -6580,22 +6685,16 @@ div.bigbang {
     .ShipYardTab {
         margin-left: 0; // reclaim the desktop left margin on the narrow mobile panel
 
-        // The ship list is a sticky, 100vh, self-scrolling sidebar on desktop; on mobile that makes
-        // it float over the construct-ship options above it. Make it a normal in-flow block that
-        // scrolls with the rest of the panel.
         #shipList {
             position: static;
             height: auto;
             overflow: visible;
         }
 
-        // Let the designer's stat readouts wrap onto multiple lines instead of one overflowing row.
         .stats {
             flex-wrap: wrap;
         }
 
-        // Give the ship stats the width and keep the destination button compact against the right
-        // edge (was a fixed 10rem column with the button left-aligned inside it, wasting space).
         #shipList .shipRow {
             grid-template-columns: 1fr auto;
             margin-left: 0;
@@ -6610,10 +6709,6 @@ div.bigbang {
 
     // --- Storage tab ---
     #resStorage {
-        // The two Construct buttons use big left margins on desktop to line up over the crate /
-        // container columns of the rows below; those columns don't line up on mobile, so drop the
-        // margins and center the pair. (One tooltip wrapper is flex:1 and would otherwise stretch, so
-        // center via text-align on inline-flex wrappers rather than justify-content.)
         .storage-header {
             text-align: center;
 
@@ -6629,9 +6724,6 @@ div.bigbang {
             }
         }
 
-        // Each row is: resource name | Crate « n » | Container « n ». The desktop min-widths make the
-        // crate/container groups too wide for the phone, so the « n » wraps (the » drops to a second
-        // line). Trim the widths and keep each group on one line.
         .market-item {
             margin-left: 0;
 
@@ -6654,8 +6746,6 @@ div.bigbang {
             }
         }
 
-        // The unused-crate/container totals row: its desktop left margins (11.5rem / 2rem) push it off
-        // and force it to wrap on mobile. Center it and keep both counts on one line.
         #crateTotal {
             justify-content: center;
             flex-wrap: nowrap;
@@ -6679,10 +6769,6 @@ div.bigbang {
     }
 
     // --- Hell observations ---
-    // The Reports / Analysis tabs fill the width on mobile, so a right-floated Close button covers the
-    // second tab. Give the tabs the left two-thirds and pin the Close button in the right third. Bulma
-    // makes the tab <ul> flex-shrink:0, so it keeps its full width and overflows the 66% nav — override
-    // it (and the tab items) so the tabs actually fit within the left two-thirds.
     #hellObservations {
         position: relative;
 
@@ -6766,9 +6852,7 @@ div.bigbang {
         }
     }
 
-    // Settings panel — reached from the footer nav (the Settings tab is removed from the top tab bar
-    // on mobile, see .mobileSettingsTab). Shows the main column with the settings tab active and the
-    // top tab bar hidden, so settings reads as its own full-screen page.
+    // Settings panel
     #main.mobile-panel-settings {
         .leftColumn {
             display: none;
@@ -6805,22 +6889,11 @@ div.bigbang {
             align-content: start;
             align-items: start;
 
-            // Section/era/region headers, support & syndicate readouts, sr-only labels, etc. are not
-            // buttons — give each its own full-width row so it heads the buttons that follow it.
-            // The value is escaped because LESS otherwise evaluates `1 / -1` as arithmetic (= -1),
-            // which mis-places the item and spawns a phantom column that overflows the panel.
             > *:not(.action) {
                 grid-column: ~"1 / -1";
             }
 
-            // The button fills its column (which is >= its old fixed width); grid `gap` replaces the
-            // per-button margin so the spacing stays even in both axes.
             > .action {
-                // Grid items default to min-width:auto (their min-content). On the narrowest phones a
-                // column can be a touch narrower than a button's widest title word, and that automatic
-                // minimum would make the item refuse to shrink — overflowing its cell and, in the last
-                // column, spilling past the panel's clipped right edge. min-width:0 lets the item track
-                // its column so the title wraps instead.
                 width: auto;
                 min-width: 0;
 
@@ -6831,14 +6904,11 @@ div.bigbang {
                     margin: 0;
                 }
 
-                // The title is a flex child of the button; it needs min-width:0 to actually shrink and
-                // let overflow-wrap break a long word rather than force the button wider than its cell.
                 .aTitle {
                     min-width: 0;
                     overflow-wrap: anywhere;
                 }
 
-                // span.on's .375rem inset compensated for the button's now-removed right margin.
                 span.on {
                     right: 0;
                 }
@@ -6846,17 +6916,11 @@ div.bigbang {
         }
     }
 
-    // On the evolution grid the challenge section headers should run the full width of the window,
-    // not be capped to the action-button width (.actionWidth caps them at 12–38rem). Drop the cap so
-    // their divider lines reach both edges across the whole row.
     #mainColumn #evolution > .challenge {
         max-width: none;
     }
 
     // --- Touch-target sizing ---
-    // The desktop UI is tuned for a mouse cursor; fingers need larger, well-spaced hit
-    // areas. Enlarge the controls that get tapped most, without altering the calc() heights
-    // the layout above depends on.
 
     // Kill the 300ms tap delay / double-tap-zoom on the interactive controls
     .button,
@@ -6913,9 +6977,7 @@ div.bigbang {
         min-height: 1.6rem;
     }
 
-    // --- Responsive modals (market buy/sell, mech lab, spy ops, etc.) ---
-    // Desktop modals assume a wide viewport; clamp them to the screen and let their body
-    // scroll rather than overflowing off-screen.
+    // --- Responsive modals (market buy/sell, mech lab, spy ops, etc.)
     .modal .animation-content {
         width: 96vw !important;
         max-width: 96vw !important;
@@ -6933,8 +6995,7 @@ div.bigbang {
         -webkit-overflow-scrolling: touch;
     }
 
-    // Wide modal content (trade rows, mech loadouts) may still exceed the viewport width;
-    // let it scroll sideways within the modal instead of forcing the page to scroll.
+    // Wide modal content (trade rows, mech loadouts, etc)
     .modalBox {
         max-width: 96vw;
         overflow-x: auto;

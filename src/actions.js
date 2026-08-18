@@ -2,7 +2,7 @@ import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, 
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, togglePopover, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
-import { races, traits, genus_def, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill, traitRank, syncGenes, geneBonus, grantRandomMinorTrait} from './races.js';
+import { races, traits, genus_def, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill, traitRank, syncGenes, geneBonus, grantRandomMinorTrait, geneVars, grantEvolveGenes} from './races.js';
 import { defineResources, unlockCrates, unlockContainers, crateValue, containerValue, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus, faithTempleCount } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_data } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter, factoryData, cancelRituals } from './industry.js';
@@ -4723,7 +4723,7 @@ export function buildTemplate(key, region){
             let assemblyCostAdjust = function(v){
                 let cost = highPopAdjust(v);
                 if (global.race['promiscuous']){
-                    cost /= 1 + traits.promiscuous.vars()[1] * global.race['promiscuous'];
+                    cost /= 1 + (geneVars('promiscuous')[1] / 100 * global.race['promiscuous']);
                 }
                 return Math.round(cost);
             }
@@ -5657,7 +5657,7 @@ export function casino_vault(){
     }
     vault = spatialReasoning(vault);
     if (global.race['gambler']){
-        vault *= 1 + (traits.gambler.vars()[0] * global.race['gambler'] / 100);
+        vault *= 1 + (geneVars('gambler')[0] * global.race['gambler'] / 100);
     }
     if (global.tech['world_control']){
         vault *= 1.25;
@@ -5688,7 +5688,7 @@ export function casino_vault(){
 export function casinoEarn(){
     let cash = Math.log2(1 + global.resource[global.race.species].amount) * 2.5;
     if (global.race['gambler']){
-        cash *= 1 + (traits.gambler.vars()[0] * global.race['gambler'] / 100);
+        cash *= 1 + (geneVars('gambler')[0] * global.race['gambler'] / 100);
     }
     if (global.tech['gambling'] && global.tech['gambling'] >= 2){
         cash *= global.tech.gambling >= 5 ? 2 : 1.5;
@@ -8890,15 +8890,9 @@ function sentience(){
     // which survives -- so the ranks are simply pushed back onto the fresh global.race.
     syncGenes();
 
-    // The Mutation genes hand over slotted genes at a rank rather than merely revealing them; each
-    // rank of the gene grants one more, at one rank higher.
-    if (global.genes['evolve'] && global.genes['evolve'] >= 2){
-        for (let i=1; i<8; i++){
-            if (global.genes['evolve'] >= i+1){
-                grantRandomMinorTrait(i);
-            }
-        }
-    }
+    // The Mutation genes hand over a strand: one slot per rank, each answering its own base, in
+    // pairs that finish level with each other.
+    grantEvolveGenes();
 
     let civ0name = genCivName();
     global.civic.foreign.gov0['name'] = {
@@ -9691,14 +9685,14 @@ function cataclysm(){
 
 export function fanaticism(god){
     if (['custom','hybrid','nano'].includes(god) && global.race['warlord']){
-        grantRandomMinorTrait(5,true);
+        grantRandomMinorTrait(3,true);
         arpa('Genetics');
     }
     else {
         switch (races[god].fanaticism){
             case 'smart':
                 if (global.race['dumb']){
-                    grantRandomMinorTrait(5,true);
+                    grantRandomMinorTrait(3,true);
                     arpa('Genetics');
                 }
                 else {
@@ -9718,7 +9712,7 @@ export function fanaticism(god){
                 }
                 break;
             case 'none':
-                grantRandomMinorTrait(5,true);
+                grantRandomMinorTrait(3,true);
                 arpa('Genetics');
                 break;
             case 'kindling_kindred':
@@ -9749,7 +9743,7 @@ function fanaticTrait(trait,rank){
     else if (global.race['warlord'] && trait === 'blood_thirst'){ trait = 'apex_predator'; }
     if (global.race[trait]){
         if (!setTraitRank(trait)){
-            grantRandomMinorTrait(5,true);
+            grantRandomMinorTrait(3,true);
         }
         else if (trait === 'imitation'){
             setImitation(true);

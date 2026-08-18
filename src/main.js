@@ -2,9 +2,9 @@ import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resiz
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat, checkAdept } from './achieve.js';
 import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, resetResBuffer, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone, exceededATimeThreshold, loopTimers, getWeaselTechLevelRequirement, calcQuantumLevel, drawPet } from './functions.js';
-import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, cleanRemoveTrait, syncGenes, geneBonus, geneFlat, geneRank, traitSkin, grantRandomMinorTrait} from './races.js';
+import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, cleanRemoveTrait, syncGenes, geneBonus, geneFlat, geneRank, traitSkin, grantRandomMinorTrait, geneVars, grantEvolveGenes, mutationGenes} from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
-import { defineJobs, job_data, loadFoundry, farmerValue, jobScale, workerScale, limitCraftsmen, loadServants, craftsmanCap } from './jobs.js';
+import { defineJobs, job_data, loadFoundry, farmerValue, jobScale, workerScale, limitCraftsmen, loadServants, craftsmanCap , craftsmanMax} from './jobs.js';
 import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, replicatorLines, luxGoodPrice, smelterUnlocked, smelterFuelConfig, setupRituals, maxRitualNum, ritual_types, factoryData } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
 import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, checkPowerRequirements, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct, casino_vault, casinoEarn, doCallbacks, cLabels } from './actions.js';
@@ -185,11 +185,7 @@ syncGenes();
 // Gene phage refund
 if (global.genes['geneReset'] && !global.genes.geneReset['found']){
     let granted = 0;
-    if (global.genes['evolve'] && global.genes['evolve'] >= 2){
-        for (let i=1; i<8; i++){
-            if (global.genes['evolve'] >= i+1 && grantRandomMinorTrait(i) !== false){ granted++; }
-        }
-    }
+    granted = grantEvolveGenes();
 
     // Then the discoveries the run's own mutations would have turned up.
     let owed = global.race['mutation'] || 0;
@@ -205,6 +201,17 @@ if (global.genes['geneReset'] && !global.genes.geneReset['found']){
         messageQueue(loc('arpa_gene_regrant',[granted]),'success',false,['progress']);
     }
     global.genes.geneReset['found'] = true;
+}
+
+// The Mutation line reprice, announced once.
+if (global.genes['evolveReprice'] && !global.genes.evolveReprice['told']){
+    let back = global.genes.evolveReprice.p || 0;
+    if (back > 0){
+        let bank = global.race.universe === 'antimatter'
+            ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
+        messageQueue(loc('arpa_evolve_reprice',[back,bank]),'success',false,['progress']);
+    }
+    global.genes.evolveReprice['told'] = true;
 }
 
 // The refund itself is announced once, on its own flag.
@@ -1812,7 +1819,7 @@ function fastLoop(){
                             rate *= 1 + (dealVal / 100);
                         }
                         if (global.race['persuasive']){
-                            rate *= 1 + (traits.persuasive.vars()[0] * global.race['persuasive'] / 100);
+                            rate *= 1 + (geneVars('persuasive')[0] * global.race['persuasive'] / 100);
                         }
                         if (global.race['merchant']){
                             rate *= 1 + (traits.merchant.vars()[1] / 100);
@@ -1942,7 +1949,7 @@ function fastLoop(){
                 let imp_total = 0;
 
                 if (global.race['persuasive']){
-                    imprt_vol *= 1 + (traits.persuasive.vars()[0] * global.race['persuasive'] / 100);
+                    imprt_vol *= 1 + (geneVars('persuasive')[0] * global.race['persuasive'] / 100);
                 }
                 if (global.race['merchant']){
                     imprt_vol *= 1 + (traits.merchant.vars()[1] / 100);
@@ -3270,8 +3277,10 @@ function fastLoop(){
                         stress_level += planetTraits.mellow.vars()[1];
                     }
                     if (global.race['content']){
-                        let effectiveness = job === 'hell_surveyor' ? 0.2 : 0.4;
-                        stress_level += global.race['content'] * effectiveness;
+                        // Read from the trait rather than hardcoded, so the weak variant applies
+                        // here like it does everywhere else. Surveyors get half, as before.
+                        let per = geneVars('content')[0] * (job === 'hell_surveyor' ? 0.5 : 1);
+                        stress_level += global.race['content'] * per;
                     }
                     if (global.city.ptrait.includes('dense') && job === 'miner'){
                         stress_level -= planetTraits.dense.vars()[1];
@@ -4254,7 +4263,7 @@ function fastLoop(){
                     lowerBound += global.genes['birth'];
                 }
                 if (global.race['promiscuous']){
-                    lowerBound += traits.promiscuous.vars()[0] * global.race['promiscuous'];
+                    lowerBound += geneVars('promiscuous')[0] * global.race['promiscuous'];
                 }
                 if(global.race['fasting']){
                     lowerBound += highPopAdjust(global.civic.meditator.workers) * 0.15;
@@ -4872,7 +4881,7 @@ function fastLoop(){
                     factory_output *= 1.37;
                 }
                 if (global.race['metallurgist']){
-                    factory_output *= 1 + (traits.metallurgist.vars()[0] * global.race['metallurgist'] / 100);
+                    factory_output *= 1 + (geneVars('metallurgist')[0] * global.race['metallurgist'] / 100);
                 }
 
                 let delta = factory_output * tauBonus;
@@ -5429,7 +5438,6 @@ function fastLoop(){
                 disable_smelters -= disable_iridium;
             }
 
-            // Refiner for everyone, Magmatic for the heat genus.
             iron_smelter *= geneBonus('refiner');
             iron_smelter *= global.tech['smelting'] >= 3 ? 1.2 : 1;
             iridium_smelter *= 0.05;
@@ -6534,7 +6542,7 @@ function fastLoop(){
                     breakdown.p['Mana'][`ᄂ${loc('arpa_projects_nexus_title')}`] = nexus+'%';
                 }
 
-                modRes('Mana', delta * time_multiplier);
+                modRes('Mana', (delta * time_multiplier) * geneBonus('thaumaturge'));
             }
 
             if (global.tech['cleric'] && global.civic.priest.display){
@@ -6546,7 +6554,7 @@ function fastLoop(){
                 let delta = mana_base * hunger * global_multiplier;
 
                 breakdown.p['Mana'][job_data.priest.name()] = mana_base+'v';
-                modRes('Mana', delta * time_multiplier);
+                modRes('Mana', (delta * time_multiplier) * geneBonus('thaumaturge'));
             }
 
             if (global.race.universe === 'magic' && global.civic.scientist.display){
@@ -6564,7 +6572,7 @@ function fastLoop(){
                     breakdown.p['Mana'][`ᄂ${loc('govern_magocracy')}`] = govEffect.magocracy()[0] + '%';
                 }
 
-                modRes('Mana', delta * time_multiplier);
+                modRes('Mana', (delta * time_multiplier) * geneBonus('thaumaturge'));
             }
 
             if (global.race.universe === 'magic' && global.tech['syphon']){
@@ -6574,7 +6582,7 @@ function fastLoop(){
                 let delta = mana_base * hunger * global_multiplier;
                 breakdown.p['Mana'][loc('arpa_syphon_title')] = mana_base+'v';
 
-                modRes('Mana', delta * time_multiplier);
+                modRes('Mana', (delta * time_multiplier) * geneBonus('thaumaturge'));
             }
 
             breakdown.p['Mana'][loc('hunger')] = ((hunger - 1) * 100) + '%';
@@ -6620,7 +6628,7 @@ function fastLoop(){
                 miner_base *= 1 + (traits.tough.vars(1)[0] / 100 * ogreFathom);
             }
             if (global.race['industrious']){
-                let bonus = 1 + (traits.industrious.vars()[0] * global.race['industrious'] / 100);
+                let bonus = 1 + (geneVars('industrious')[0] * global.race['industrious'] / 100);
                 miner_base *= bonus;
             }
             if (global.city.ptrait.includes('dense')){
@@ -7021,7 +7029,7 @@ function fastLoop(){
                 coal_base *= 1 + (traits.tough.vars(1)[0] / 100 * ogreFathom);
             }
             if (global.race['resilient']){
-                let bonus = 1 + (traits.resilient.vars()[0] * global.race['resilient'] / 100);
+                let bonus = 1 + (geneVars('resilient')[0] * global.race['resilient'] / 100);
                 coal_base *= bonus;
             }
             if (!global.race['living_tool'] && !global.race['tusk']){
@@ -7120,7 +7128,7 @@ function fastLoop(){
                 res_base *= 1 + (traits.tough.vars(1)[0] / 100 * ogreFathom);
             }
             if (global.race['resilient']){
-                let bonus = 1 + (traits.resilient.vars()[0] * global.race['resilient'] / 100);
+                let bonus = 1 + (geneVars('resilient')[0] * global.race['resilient'] / 100);
                 res_base *= bonus;
             }
             if (!global.race['living_tool'] && !global.race['tusk']){
@@ -9011,6 +9019,10 @@ function midLoop(){
             if ((global.race['lone_survivor'] || global.tech['isolation']) && global.tauceti['colony'] && support_on['colony']){
                 global.resource.Authority.amount += support_on['colony'] * 5;
             }
+
+            // Applied to the whole standing rather than one of its sources, so it both digs a low
+            // Authority out of the penalty band and pushes a high one further past 100.
+            global.resource.Authority.amount *= geneBonus('despot');
 
             global.resource.Authority.amount = Math.floor(global.resource.Authority.amount);
             if (global.resource.Authority.amount < 0){ global.resource.Authority.amount = 0; }
@@ -11509,7 +11521,7 @@ function midLoop(){
                     global.race.mutation++;
                     let trait = randomMinorTrait(1);
                     let gene_multi = 1 + (global.genes['synthesis'] ? global.genes['synthesis'] : 0);
-                    let gene = (2 ** (global.race.mutation - 1)) * gene_multi;
+                    let gene = mutationGenes(global.race.mutation) * gene_multi;
                     if (global.stats.achieve['creator']){
                         gene = Math.round(gene * (1 + (global.stats.achieve['creator'].l * 0.5)));
                     }
@@ -11546,7 +11558,7 @@ function midLoop(){
 
         if (global.city['foundry']){
             if (!global.city.foundry.hasOwnProperty('hold')){ global.city.foundry['hold'] = {}; }
-            if (!global.city.foundry.hasOwnProperty('cap')){ global.city.foundry['cap'] = global.civic.craftsman.max || 0; }
+            if (!global.city.foundry.hasOwnProperty('cap')){ global.city.foundry['cap'] = craftsmanMax() || 0; }
             if (!global.city.foundry.hasOwnProperty('rcap')){ global.city.foundry['rcap'] = {}; }
             let hold = global.city.foundry.hold;
             let rcap = global.city.foundry.rcap;
@@ -11571,7 +11583,7 @@ function midLoop(){
             });
 
             // Capacity has gbeen restored
-            let roomier = global.civic.craftsman.max > global.city.foundry.cap;
+            let roomier = craftsmanMax() > global.city.foundry.cap;
             let dJob = global.civic[global.civic.d_job];
             let restored = false;
             Object.keys(craft_costs).forEach(function (craft){
@@ -11581,7 +11593,7 @@ function midLoop(){
                 if (roomier || reopened){
                     while ((hold[craft] || 0) > 0
                         && typeof global.city.foundry[craft] === 'number'
-                        && global.city.foundry.crafting < global.civic.craftsman.max
+                        && global.city.foundry.crafting < craftsmanMax()
                         && dJob && dJob.workers > 0
                         && (ceiling === -1 || global.city.foundry[craft] < ceiling)){
                         global.city.foundry[craft]++;
@@ -11595,7 +11607,7 @@ function midLoop(){
                 if (capped){ rcap[craft] = ceiling; }
             });
             if (restored){ loadFoundry(); }
-            global.city.foundry.cap = global.civic.craftsman.max;
+            global.city.foundry.cap = craftsmanMax();
         }
 
         if (global.tech['foundry'] === 3 && (global.race['kindling_kindred'] || global.race['smoldering'])){
@@ -12542,7 +12554,7 @@ function longLoop(){
                 hc *= global.tech['medic'];
             }
             if (global.race['fibroblast']){
-                hc += traits.fibroblast.vars()[0] * global.race['fibroblast'];
+                hc += geneVars('fibroblast')[0] * global.race['fibroblast'];
             }
             hc *= geneBonus('mycelial');
             if (global.race['cannibalize'] && global.city['s_alter'] && global.city.s_alter.regen > 0){

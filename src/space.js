@@ -439,7 +439,7 @@ const spaceProjects = {
                 if (global.race['cataclysm']){
                     prof = `<div>${loc('city_university_effect',[jobScale(1)])}</div>`;
                 }
-                let gain = 5000;
+                let gain = 5000 * geneBonus('stargazer');
                 if (global.race['cataclysm'] && global.space['satellite'] && global.space.satellite.count > 0){
                     gain *= 1 + (global.space.satellite.count * 0.25);
                 }
@@ -1459,8 +1459,6 @@ const spaceProjects = {
                 if (global.race['grenadier']){
                     soldiers /= 2;
                 }
-                // Quartermaster, same as it applies to a city barracks: many runs house their whole
-                // garrison out here rather than on the home world.
                 soldiers *= geneBonus('quartermaster');
                 return +(jobScale(soldiers)).toFixed(3);
             },
