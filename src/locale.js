@@ -3,6 +3,15 @@ import { global, save } from './vars.js';
 let strings;
 getString(global.settings.locale);
 
+const lastLoc = { key: null, vars: null, out: null };
+export function lastLocalization(text){
+    if (lastLoc.out === null || lastLoc.out !== text){ return null; }
+    return {
+        key: lastLoc.key,
+        vars: (lastLoc.vars instanceof Array && lastLoc.vars.length > 0) ? lastLoc.vars.slice() : null
+    };
+}
+
 export function loc(key, variables) {
     let string = strings[key];
     if (!string) {
@@ -10,6 +19,7 @@ export function loc(key, variables) {
             console.error(`string ${key} not found`);
             console.log(strings);
         }
+        lastLoc.key = key; lastLoc.vars = null; lastLoc.out = key;
         return key;
     }
     if (variables) {
@@ -36,6 +46,7 @@ export function loc(key, variables) {
             }
         }
     }
+    lastLoc.key = key; lastLoc.vars = variables; lastLoc.out = string;
     return string;
 }
 

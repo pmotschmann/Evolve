@@ -11,6 +11,7 @@ export const changeList = [
             `New Mobile UI`,
             `Added new "Offline Time" feature, replaces "Accelerated Time"`,
             `Added option to Save or Load game from Google Drive.`,
+            `Shrunk save file sizes`,
             `Upgraded game from Vue 2 to Vue 3.`,
             `Truepath Star Map now supports WebGL rendering (default when supported).`,
             `Truepath Star Map now has a Z axis making it more realistic and rotatable.`,

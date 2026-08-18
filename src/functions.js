@@ -1,5 +1,6 @@
-import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame, atrack, p_on, quantum_level, tmp_vars, touchDevice } from './vars.js';
-import { loc } from './locale.js';
+import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame, atrack, p_on, quantum_level, tmp_vars, touchDevice, writeSave } from './vars.js';
+import { encodeExportString, decodeExportString, decodeSaveString } from './save.js';
+import { loc, lastLocalization } from './locale.js';
 import { races, traits, genus_def, traitSkin, fathomCheck, geneBonus, geneFlat, geneVars} from './races.js';
 import { actions, actionDesc } from './actions.js';
 import { jobScale } from './jobs.js';
@@ -207,16 +208,24 @@ window.exportGame = function exportGame(){
     if (global.race['noexport']){
         return `Export is not available during ${global.race['noexport']} Creation`;
     }
-    return LZString.compressToBase64(JSON.stringify(global));
+    return encodeExportString(global);
 }
 
-window.importGame = function importGame(data,utf16){
-    let saveState = JSON.parse(utf16 ? LZString.decompressFromUTF16(data) : LZString.decompressFromBase64(data));
+// fromStorage marks data that came out of localStorage 
+window.importGame = function importGame(data,fromStorage){
+    let saveState;
+    try {
+        saveState = fromStorage ? decodeSaveString(data) : decodeExportString(data);
+    }
+    catch (e){
+        console.error('Save import failed:', e);
+        return;
+    }
     if (saveState && 'evolution' in saveState && 'settings' in saveState && 'stats' in saveState && 'plasmid' in saveState.stats){
         if (webWorker.w){
             webWorker.w.terminate();
         }
-        if (saveState.hasOwnProperty('tech') && utf16){
+        if (saveState.hasOwnProperty('tech') && fromStorage){
             if (saveState.tech.hasOwnProperty('whitehole') && saveState.tech.whitehole >= 4){
                 saveState.tech.whitehole = 3;
                 saveState.resource.Soul_Gem.amount += 10;
@@ -251,7 +260,7 @@ window.importGame = function importGame(data,utf16){
         }
         // Smart detection of touch device
         saveState.settings['touch'] = touchDevice();
-        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(saveState)));
+        writeSave(saveState);
         window.location.reload();
     }
 }
@@ -369,6 +378,9 @@ export function messageQueue(msg,color,dnr,tags,reload){
     // log, but intentional random-event notifications (tagged 'events') are allowed through so the
     // player can see the major/minor events that fired while they were away.
     if (webWorker.offline && !(Array.isArray(tags) && tags.includes('events'))){ return; }
+
+    const origin = dnr ? null : lastLocalization(msg);
+
     tags = tags || [];
     if (!reload && !tags.includes('all')){
         tags.push('all');
@@ -393,7 +405,15 @@ export function messageQueue(msg,color,dnr,tags,reload){
     if (!dnr){
         tags.forEach(function (tag){
             if (global.lastMsg[tag]){
-                global.lastMsg[tag].unshift({ m: msg, c: color });
+                let entry;
+                if (origin){
+                    entry = { k: origin.key, c: color };
+                    if (origin.vars){ entry.v = origin.vars.slice(); }
+                }
+                else {
+                    entry = { m: msg, c: color };
+                }
+                global.lastMsg[tag].unshift(entry);
                 if (global.lastMsg[tag].length > global.settings.msgFilters[tag].save){
                     global.lastMsg[tag].splice(global.settings.msgFilters[tag].save);
                 }

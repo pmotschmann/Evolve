@@ -1,4 +1,4 @@
-import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level, callback_queue, active_rituals, suppressReactivity, restoreReactivity, decayPerks} from './vars.js';
+import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level, callback_queue, active_rituals, suppressReactivity, restoreReactivity, decayPerks, writeSave } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat, checkAdept } from './achieve.js';
 import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, resetResBuffer, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone, exceededATimeThreshold, loopTimers, getWeaselTechLevelRequirement, calcQuantumLevel, drawPet } from './functions.js';
@@ -226,7 +226,9 @@ if (global.genes['geneReset'] && !global.genes.geneReset['told']){
 if (global.lastMsg){
     Object.keys(global.lastMsg).forEach(function (tag){
         global.lastMsg[tag].reverse().forEach(function(msg){
-            messageQueue(msg.m, msg.c, true, [tag], true);
+            // {k,v} entries re-render in the player's *current* locale; {m} entries are older
+            // saves (or messages that were not a bare loc() call) and replay as stored text.
+            messageQueue(msg.hasOwnProperty('k') ? loc(msg.k, msg.v) : msg.m, msg.c, true, [tag], true);
         });
         global.lastMsg[tag].reverse();
     });
@@ -1020,7 +1022,7 @@ function runOfflineCatchup(totalSteps, daysPerStep, creditedMinutes){
         webWorker.offline = false;
         webWorker.offlineScale = 1;
         if (!global.race.hasOwnProperty('geck')){
-            save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+            writeSave();
         }
         if (cancelledEarly){
             // global.stats.current was already advanced to now, so uncalculated time is forfeit.
@@ -13735,7 +13737,7 @@ function longLoop(){
     // performance; runOfflineCatchup() performs a single save once the catch-up finishes.
     global.stats['current'] = currentTimestamp;
     if (!webWorker.offline && !global.race.hasOwnProperty('geck')){
-        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+        writeSave();
     }
 
     if (global.race.species !== 'protoplasm' && (global.stats.days + global.stats.tdays) % 100000 === 99999){

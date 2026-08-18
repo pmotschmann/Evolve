@@ -1,4 +1,4 @@
-import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, int_on, gal_on, spire_on, tmp_vars, setupStats, callback_queue, decayPerks} from './vars.js';
+import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, int_on, gal_on, spire_on, tmp_vars, setupStats, callback_queue, decayPerks, writeSave } from './vars.js';
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, togglePopover, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
@@ -9170,7 +9170,7 @@ function sentience(){
     }
 
     if (global.race['slow'] || global.race['hyper'] || global.race.species === 'junker'){
-        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+        writeSave();
         if (webWorker.w){
             webWorker.w.terminate();
         }
@@ -9228,7 +9228,7 @@ function exitSim(){
         global.race.species = 'protoplasm';
         delete global.race['simulation'];
 
-        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+        writeSave();
         if (webWorker.w){
             webWorker.w.terminate();
         }

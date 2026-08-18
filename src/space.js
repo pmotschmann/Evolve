@@ -1,4 +1,4 @@
-import { save, global, seededRandom, webWorker, keyMultiplier, sizeApproximation, p_on, support_on, int_on, gal_on, srSpeak, decayPerks} from './vars.js';
+import { save, global, seededRandom, webWorker, keyMultiplier, sizeApproximation, p_on, support_on, int_on, gal_on, srSpeak, decayPerks, writeBackup } from './vars.js';
 import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, calcGenomeScore, randomKey, getTraitDesc, deepClone, get_qlevel, timeFormat } from './functions.js';
 import { unlockAchieve, unlockFeat, universeAffix } from './achieve.js';
 import { races, traits, genus_def, genusVars, planetTraits, biomes, traitCostMod, geneBonus} from './races.js';
@@ -7906,7 +7906,7 @@ export function ascendLab(hybrid,wiki){
             webWorker.w.terminate();
         }
         if (!global['sim']){
-            save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+            writeBackup();
         }
 
         let genusType = races[global.race.species].type === 'hybrid' ? global.race.maintype : races[global.race.species].type;
@@ -8924,7 +8924,7 @@ export function terraformLab(wiki){
             webWorker.w.terminate();
         }
         if (!global['sim']){
-            save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+            writeBackup();
         }
 
         let genusType = races[global.race.species].type === 'hybrid' ? global.race.maintype : races[global.race.species].type;

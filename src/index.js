@@ -1,4 +1,4 @@
-import { global, tmp_vars, save, message_logs, message_filters, webWorker } from './vars.js';
+import { global, tmp_vars, save, message_logs, message_filters, webWorker, writeSave } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats, alevel } from './achieve.js';
 import { vBind, initMessageQueue, clearElement, clearTabPanels, flushTabPanelClears, flib, tagEvent, gameLoop, popover, clearPopper, powerGrid, easterEgg, trickOrTreat, drawIcon, updateMobileMsg, mobileMsgLines, MOBILE_MSG_MAX } from './functions.js';
@@ -80,7 +80,7 @@ export function mainVue(){
                         save.setItem('string_pack_name',fileName); save.setItem('string_pack',LZString.compressToUTF16(evt.target.result));
                         if (global.settings.sPackOn){
                             global.queue.rename = true;
-                            save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+                            writeSave();
                             if (webWorker.w){
                                 webWorker.w.terminate();
                             }
@@ -100,7 +100,7 @@ export function mainVue(){
                     save.removeItem('string_pack');
                     if (global.settings.sPackOn){
                         global.queue.rename = true;
-                        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+                        writeSave();
                         if (webWorker.w){
                             webWorker.w.terminate();
                         }
@@ -111,7 +111,7 @@ export function mainVue(){
             stringPackOn(){
                 if (save.getItem('string_pack')){
                     global.queue.rename = true;
-                    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+                    writeSave();
                     if (webWorker.w){
                         webWorker.w.terminate();
                     }
@@ -152,7 +152,7 @@ export function mainVue(){
             lChange(locale){
                 global.settings.locale = locale;
                 global.queue.rename = true;
-                save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+                writeSave();
                 if (webWorker.w){
                     webWorker.w.terminate();
                 }
@@ -176,7 +176,7 @@ export function mainVue(){
             },
             icon(icon){
                 global.settings.icon = icon;
-                save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+                writeSave();
                 if (webWorker.w){
                     webWorker.w.terminate();
                 }

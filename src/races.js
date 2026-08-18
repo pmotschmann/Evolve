@@ -1,4 +1,4 @@
-import { global, seededRandom, save, webWorker, power_generated, keyMultiplier, sizeApproximation, active_rituals } from './vars.js';
+import { global, seededRandom, save, webWorker, power_generated, keyMultiplier, sizeApproximation, active_rituals, writeSave } from './vars.js';
 import { loc } from './locale.js';
 import { defineIndustry } from './industry.js';
 import { jobScale, loadFoundry } from './jobs.js';
@@ -8172,7 +8172,7 @@ export function cleanAddTrait(trait){
             defineGovernor();
             break;
         case 'slow':
-            save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+            writeSave();
             if (webWorker.w){
                 gameLoop('stop');
                 gameLoop('start');
@@ -8182,7 +8182,7 @@ export function cleanAddTrait(trait){
             }
             break;
         case 'hyper':
-            save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+            writeSave();
             if (webWorker.w){
                 gameLoop('stop');
                 gameLoop('start');
@@ -8405,7 +8405,7 @@ export function cleanRemoveTrait(trait,rank){
             defineGovernor();
             break;
         case 'slow':
-            save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+            writeSave();
             if (webWorker.w){
                 gameLoop('stop');
                 gameLoop('start');
@@ -8415,7 +8415,7 @@ export function cleanRemoveTrait(trait,rank){
             }
             break;
         case 'hyper':
-            save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+            writeSave();
             if (webWorker.w){
                 gameLoop('stop');
                 gameLoop('start');

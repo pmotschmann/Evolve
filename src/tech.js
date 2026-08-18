@@ -1,4 +1,4 @@
-import { global, save, webWorker, p_on } from './vars.js';
+import { global, save, webWorker, p_on, writeSave, writeBackup } from './vars.js';
 import { loc } from './locale.js';
 import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper, popCost } from './functions.js';
 import { unlockAchieve, alevel, universeAffix, unlockFeat } from './achieve.js';
@@ -4879,7 +4879,7 @@ const techs = {
             if (payCosts($(this)[0])){
                 if (global.race.universe === 'antimatter' && global.race['amexplode']){
                     unlockFeat('annihilation');
-                    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+                    writeSave();
                     $('body').addClass('nuke');
                     let nuke = $('<div class="nuke"></div>');
                     $('body').append(nuke);
@@ -9652,7 +9652,7 @@ const techs = {
             if (payCosts($(this)[0])){
                 if (global.race['banana']){
                     if (!global['sim']){
-                        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+                        writeBackup();
                     }
                     delete global.race['banana'];
                 }
@@ -9699,7 +9699,7 @@ const techs = {
             if (payCosts($(this)[0])){
                 if (global.race['banana']){
                     if (!global['sim']){
-                        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+                        writeBackup();
                     }
                     delete global.race['banana'];
                 }
@@ -14247,7 +14247,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 if (!global['sim']){
-                    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+                    writeBackup();
                 }
                 global.tech['isolation'] = 1;
                 jumpGateShutdown();
@@ -14982,7 +14982,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 if (!global['sim']){
-                    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+                    writeBackup();
                 }
                 messageQueue(loc('tech_sever_uplink_msg',[planetName().home]),'info',false,['progress']);
                 return true;
@@ -15008,7 +15008,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 if (!global['sim']){
-                    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+                    writeBackup();
                 }
                 global.tech['overmind'] = 1;
                 global.race['r_data'] = { c: global.resource[global.race.species].amount || 0, s: global.civic.garrison.workers || 0 };

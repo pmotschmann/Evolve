@@ -1,3 +1,5 @@
+import { encodeSaveString, decodeSaveString } from './save.js';
+
 export var save = window.localStorage;
 export var global = {
     seed: 1,
@@ -84,11 +86,7 @@ export function seededRandom(min, max, alt, useSeed) {
 }
 
 // Wrap game state in a Vue 3 reactive proxy so that the game's direct mutations
-// to `global` (the loops mutate it in place) are tracked and the UI updates.
-// Vue 3's reactive() returns a proxy and does NOT instrument the original object
-// in place the way Vue 2 did, so every consumer must share this same proxy --
-// achieved here by making `global` itself reactive at its single source. Guarded
-// so non-Vue contexts (e.g. debug-console) still work with a plain object.
+// to `global` are tracked and the UI updates.
 function makeReactive(state){
     return (typeof Vue !== 'undefined' && Vue && typeof Vue.reactive === 'function') ? Vue.reactive(state) : state;
 }
@@ -96,8 +94,8 @@ function makeReactive(state){
 {
     let global_data = save.getItem('evolved') || false;
     if (global_data) {
-        // Load pre-existing game data
-        let saveState = JSON.parse(LZString.decompressFromUTF16(global_data));
+        // Decode both old and new save formats.
+        let saveState = decodeSaveString(global_data);
 
         if (saveState){
             global = saveState;
@@ -116,10 +114,17 @@ export function setGlobal(gameState) {
     global = makeReactive(gameState);
 }
 
+// Common accessor for save operations
+export function writeSave(state){
+    save.setItem('evolved', encodeSaveString(state || global));
+}
+
+export function writeBackup(state){
+    save.setItem('evolveBak', encodeSaveString(state || global));
+}
+
 // Temporarily drop the Vue reactive wrapper so a bulk operation (offline catch-up) can mutate
 // game state thousands of times without firing a reactivity trigger on every change.
-// restoreReactivity() re-wraps the same underlying object; Vue returns the cached proxy for that
-// target, so every already-mounted component keeps its binding and simply needs one refresh.
 export function suppressReactivity(){
     if (typeof Vue !== 'undefined' && Vue && typeof Vue.toRaw === 'function'){
         global = Vue.toRaw(global);
@@ -133,10 +138,6 @@ if (!global['version']){
     global['version'] = '0.2.0';
 }
 
-// Offline hell RNG stream. hellseed was added after the versioned migrations below, so an existing
-// save can be past that gate and never receive one; without a valid numeric seed every
-// seededRandom(...,'hell') call returns NaN and all hell combat (kills, soul gems) silently stops.
-// Runs ungated on every load, and self-heals a null/NaN seed left by an earlier build.
 if (!global.hasOwnProperty('hellseed') || typeof global['hellseed'] !== 'number' || isNaN(global['hellseed'])){
     global['hellseed'] = (global.hasOwnProperty('warseed') ? global['warseed'] : global['seed']) + 2;
 }
@@ -1611,7 +1612,7 @@ if (convertVersion(global['version']) <= 105000){
 
 global['version'] = '1.5.0';
 delete global['revision'];
-global['beta'] = 30;
+global['beta'] = 31;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
@@ -2717,7 +2718,7 @@ window.soft_reset = function reset(source){
     global.hellseed = Math.rand(0,10000);
 
     global.stats['current'] = Date.now();
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    writeSave();
     window.location.reload();
 }
 

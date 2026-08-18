@@ -1,4 +1,4 @@
-import { global, save, seededRandom, webWorker, clearSavedMessages, clearStates } from './vars.js';
+import { global, save, seededRandom, webWorker, clearSavedMessages, clearStates, writeSave, writeBackup } from './vars.js';
 import { tagEvent, calcPrestige, updateResetStats } from './functions.js';
 import { races, planetTraits } from './races.js';
 import { unlockAchieve, unlockFeat, checkAchievements, universeAffix, alevel } from './achieve.js';
@@ -7,7 +7,7 @@ import { unlockAchieve, unlockFeat, checkAchievements, universeAffix, alevel } f
 export function warhead(){
     if (!global.civic.mad.armed && !global.race['cataclysm']){
         if (!global['sim']){
-            save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+            writeBackup();
         }
         clearSavedMessages();
 
@@ -78,7 +78,7 @@ export function warhead(){
             geology: geo
         });
         
-        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+        writeSave();
         window.location.reload();
     }
 }
@@ -86,7 +86,7 @@ export function warhead(){
 //Bioseed
 export function bioseed(){
     if (!global['sim']){
-        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+        writeBackup();
     }
     clearSavedMessages();
 
@@ -219,7 +219,7 @@ export function bioseed(){
         geology: false
     });
 
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    writeSave();
     window.location.reload();
 }
 
@@ -230,7 +230,7 @@ export function cataclysm_end(){
             webWorker.w.terminate();
         }
         if (!global['sim']){
-            save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+            writeBackup();
         }
 
         tagEvent('reset',{
@@ -311,7 +311,7 @@ export function cataclysm_end(){
 
         global.race['start_cataclysm'] = 1;
         global.race['cataclysm'] = 1;
-        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+        writeSave();
         window.location.reload();
     }
 }
@@ -319,7 +319,7 @@ export function cataclysm_end(){
 // Blackhole
 export function big_bang(){
     if (!global['sim']){
-        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+        writeBackup();
     }
     clearSavedMessages();
 
@@ -424,7 +424,7 @@ export function big_bang(){
         geology: false
     });
 
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    writeSave();
     window.location.reload();
 }
 
@@ -437,7 +437,7 @@ export function vacuumCollapse(){
 
         global.stats['current'] = Date.now();
         if (!global['sim']){
-            save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+            writeBackup();
         }
         clearSavedMessages();
 
@@ -523,7 +523,7 @@ export function vacuumCollapse(){
             geology: false
         });
 
-        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+        writeSave();
         window.location.reload();
     }
 }
@@ -625,7 +625,7 @@ export function ascend(){
         geology: geo
     });
 
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    writeSave();
     window.location.reload();
 }
 
@@ -635,7 +635,7 @@ export function descension(){
         webWorker.w.terminate();
     }
     if (!global['sim']){
-        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+        writeBackup();
     }
     clearSavedMessages();
 
@@ -740,7 +740,7 @@ export function descension(){
         geology: geo
     });
 
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    writeSave();
     window.location.reload();
 }
 
@@ -836,7 +836,7 @@ export function apotheosis(){
         geology: geo
     });
 
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    writeSave();
     window.location.reload();
 }
 
@@ -926,14 +926,14 @@ export function terraform(planet){
         geology: geo
     });
 
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    writeSave();
     window.location.reload();
 }
 
 // AI Appocalypse
 export function aiApocalypse(){
     if (!global['sim']){
-        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+        writeBackup();
     }
     clearSavedMessages();
 
@@ -1002,7 +1002,7 @@ export function aiApocalypse(){
         geology: geo
     });
 
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    writeSave();
     window.location.reload();
 }
 
@@ -1012,7 +1012,7 @@ export function matrix(){
         webWorker.w.terminate();
     }
     if (!global['sim']){
-        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+        writeBackup();
     }
     clearSavedMessages();
 
@@ -1087,7 +1087,7 @@ export function matrix(){
         geology: geo
     });
 
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    writeSave();
     window.location.reload();
 }
 
@@ -1097,7 +1097,7 @@ export function retirement(){
         webWorker.w.terminate();
     }
     if (!global['sim']){
-        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+        writeBackup();
     }
     clearSavedMessages();
 
@@ -1172,7 +1172,7 @@ export function retirement(){
         geology: geo
     });
 
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    writeSave();
     window.location.reload();
 }
 
@@ -1182,7 +1182,7 @@ export function gardenOfEden(){
         webWorker.w.terminate();
     }
     if (!global['sim']){
-        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+        writeBackup();
     }
     clearSavedMessages();
 
@@ -1257,7 +1257,7 @@ export function gardenOfEden(){
         geology: geo
     });
 
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    writeSave();
     window.location.reload();
 }
 
@@ -1399,7 +1399,7 @@ export function zApocalypse(){
         geology: geo
     });
 
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    writeSave();
     window.location.reload();
 }
 

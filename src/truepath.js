@@ -6141,19 +6141,23 @@ function zBattleRoster(ships){
     return roster;
 }
 
+function zBattleHull(damage){
+    return Math.round(damage * 10) / 10;
+}
+
 // Written the moment the volleys are resolved, before the wrecks are cleared away.
 function zBattleLog(locationName,guards,foes,dealt,taken,lost,downed){
     if (!global.space['shipyard']){ return; }
     if (!Array.isArray(global.space.shipyard['battles'])){ global.space.shipyard['battles'] = []; }
     global.space.shipyard.battles.unshift({
-        d: global.stats.days,       // game day
-        l: locationName,            // where it happened
-        p: zBattleRoster(guards),   // your hulls
-        e: zBattleRoster(foes),     // theirs
-        pd: dealt,                  // hull you landed
-        ed: taken,                  // hull they landed
-        pl: lost,                   // your ships destroyed
-        el: downed                  // theirs destroyed
+        d: global.stats.days,           // game day
+        l: locationName,                // where it happened
+        p: zBattleRoster(guards),       // your hulls
+        e: zBattleRoster(foes),         // theirs
+        pd: zBattleHull(dealt),         // hull you landed
+        ed: zBattleHull(taken),         // hull they landed
+        pl: lost,                       // your ships destroyed
+        el: downed                      // theirs destroyed
     });
     if (global.space.shipyard.battles.length > zBattleLogMax){
         global.space.shipyard.battles.length = zBattleLogMax;
@@ -13405,8 +13409,10 @@ export function battleLogModal(){
         // outcome is colored rather than left for the player to work out from the numbers.
         let tone = b.pl > 0 ? `has-text-danger` : (b.el > 0 ? `has-text-success` : `has-text-warning`);
         row.append(`<div class="battleHead"><span class="${tone}">${loc('battle_log_where',[regionName(b.l)])}</span> <span class="has-text-caution">${loc('battle_log_day',[b.d])}</span></div>`);
-        row.append(`<div class="battleSide"><span class="has-text-success">${loc('battle_log_yours')}</span> <span>${roster(b.p)}</span> <span class="has-text-warning">${loc('battle_log_dealt',[b.pd])}</span>${b.pl > 0 ? ` <span class="has-text-danger">${loc('battle_log_lost',[b.pl])}</span>` : ``}</div>`);
-        row.append(`<div class="battleSide"><span class="has-text-danger">${loc('battle_log_theirs')}</span> <span>${roster(b.e)}</span> <span class="has-text-warning">${loc('battle_log_dealt',[b.ed])}</span>${b.el > 0 ? ` <span class="has-text-success">${loc('battle_log_destroyed',[b.el])}</span>` : ``}</div>`);
+        // Rounded here as well as at write time: engagements recorded before damage was rounded
+        // still hold full-precision doubles, and "dealt 154.9204903865691 hull" is unreadable.
+        row.append(`<div class="battleSide"><span class="has-text-success">${loc('battle_log_yours')}</span> <span>${roster(b.p)}</span> <span class="has-text-warning">${loc('battle_log_dealt',[zBattleHull(b.pd)])}</span>${b.pl > 0 ? ` <span class="has-text-danger">${loc('battle_log_lost',[b.pl])}</span>` : ``}</div>`);
+        row.append(`<div class="battleSide"><span class="has-text-danger">${loc('battle_log_theirs')}</span> <span>${roster(b.e)}</span> <span class="has-text-warning">${loc('battle_log_dealt',[zBattleHull(b.ed)])}</span>${b.el > 0 ? ` <span class="has-text-success">${loc('battle_log_destroyed',[b.el])}</span>` : ``}</div>`);
         list.append(row);
     });
 }
