@@ -5096,8 +5096,8 @@ export const traits = {
         desc: loc('trait_zealot'),
         type: 'minor',
         base: 'G',
-        vars(r){ return [1]; },
-        weak(r){ return [0.5]; },
+        vars(r){ return [0.5]; },
+        weak(r){ return [0.25]; },
     },
     stargazer: { // Observatory knowledge
         name: loc('trait_stargazer_name'),
@@ -7440,6 +7440,18 @@ export function geneSlotOf(gene){
         if (slots[i] && slots[i].g === gene){ return i; }
     }
     return false;
+}
+
+// Whether the player may BUY limit breaks, which is what the Unlocked DNA CRISPR upgrade (evolve
+// rank 10) has always claimed to grant -- "unlock the ability to break the rank limits on minor
+// gene traits" -- without anything having enforced it.
+//
+// This gates the purchase only, deliberately not geneRankCap(). The game hands out breaks of its
+// own accord alongside granted genes (see grantRandomMinorTrait / grantMinorTraitPair, which call
+// geneBreaksFor to pay for the ranks they award); capping those would silently demote awarded
+// genes for anyone below rank 10.
+export function geneBreakUnlocked(){
+    return global.genes['evolve'] && global.genes.evolve >= 10 ? true : false;
 }
 
 // Limit breaks bought per slot this run.

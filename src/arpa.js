@@ -3,7 +3,7 @@ import { clearElement, popover, clearPopper, flib, fibonacci, eventActive, timeF
 import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts, structName } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait, combineTraits, traitSkin, fathomCheck, planetTraits, setTraitRank, traitRank,
          geneRoster, geneUnlocked, geneSlotOf, geneRankCap, geneRankCost, geneBreakCost, geneRank, syncGenes, genes,
-         geneBonus, geneSlots, genePermanent, geneTemp, geneSlotCost, geneBreaks, geneSlotCount, geneSlotExtra, geneSlotLabel, geneSuited, geneDescKey,
+         geneBonus, geneSlots, genePermanent, geneTemp, geneSlotCost, geneBreaks, geneBreakUnlocked, geneSlotCount, geneSlotExtra, geneSlotLabel, geneSuited, geneDescKey,
          geneSlotBase, geneSlotMatched, geneSlotAnswers, genePairSlot, geneRankStart,
          geneEffectiveBase, geneWeak, geneVars, geneEmergentList, geneEmergentRank} from './races.js';
 import { renderSpace } from './space.js';
@@ -529,7 +529,7 @@ export const genePool = {
         desc(){ return loc('arpa_genepool_homologous_recombination_desc'); },
         reqs: { evolve: 2 },
         grant: ['evolve',3],
-        cost: { Plasmid(){ return 60; } },
+        cost: { Plasmid(){ return 50; } },
         action(){
             if (payCrispr('homologous_recombination')){
                 return true;
@@ -543,7 +543,7 @@ export const genePool = {
         desc(){ return loc('arpa_genepool_genetic_reshuffling_desc'); },
         reqs: { evolve: 3 },
         grant: ['evolve',4],
-        cost: { Plasmid(){ return 145; } },
+        cost: { Plasmid(){ return 120; } },
         action(){
             if (payCrispr('genetic_reshuffling')){
                 return true;
@@ -557,7 +557,7 @@ export const genePool = {
         desc(){ return loc('arpa_genepool_recombinant_dna_desc'); },
         reqs: { evolve: 4 },
         grant: ['evolve',5],
-        cost: { Plasmid(){ return 325; } },
+        cost: { Plasmid(){ return 200; } },
         action(){
             if (payCrispr('recombinant_dna')){
                 return true;
@@ -571,7 +571,7 @@ export const genePool = {
         desc(){ return loc('arpa_genepool_chimeric_dna_desc'); },
         reqs: { evolve: 5 },
         grant: ['evolve',6],
-        cost: { Plasmid(){ return 750; } },
+        cost: { Plasmid(){ return 450; } },
         action(){
             if (payCrispr('chimeric_dna')){
                 return true;
@@ -585,7 +585,7 @@ export const genePool = {
         desc(){ return loc('arpa_genepool_molecular_cloning_desc'); },
         reqs: { evolve: 6 },
         grant: ['evolve',7],
-        cost: { Plasmid(){ return 1600; } },
+        cost: { Plasmid(){ return 800; } },
         action(){
             if (payCrispr('molecular_cloning')){
                 return true;
@@ -599,7 +599,7 @@ export const genePool = {
         desc(){ return loc('arpa_genepool_transgenes_desc'); },
         reqs: { evolve: 7 },
         grant: ['evolve',8],
-        cost: { Plasmid(){ return 3200; } },
+        cost: { Plasmid(){ return 1600; } },
         action(){
             if (payCrispr('transgenes')){
                 return true;
@@ -613,9 +613,23 @@ export const genePool = {
         desc(){ return loc('arpa_genepool_synthetic_genome_desc'); },
         reqs: { evolve: 8 },
         grant: ['evolve',9],
-        cost: { Plasmid(){ return 5340; } },
+        cost: { Plasmid(){ return 3200; } },
         action(){
             if (payCrispr('synthetic_genome')){
+                return true;
+            }
+            return false;
+        }
+    },
+    unlocked_dna: {
+        id: 'genes-unlocked_dna',
+        title(){ return loc('arpa_genepool_unlocked_dna_title'); },
+        desc(){ return loc('arpa_genepool_unlocked_dna_desc'); },
+        reqs: { evolve: 9 },
+        grant: ['evolve',10],
+        cost: { Plasmid(){ return 5000; } },
+        action(){
+            if (payCrispr('unlocked_dna')){
                 return true;
             }
             return false;
@@ -2452,6 +2466,7 @@ function geneSlotPanel(parent,primary,primaryMethods){
                 return s && s.g && s.r < geneRankCap(i) ? true : false;
             },
             canBreak(i){
+                if (!geneBreakUnlocked()){ return false; }
                 let s = geneSlots()[i];
                 return s && s.g && s.r >= geneRankCap(i) ? true : false;
             },
@@ -2501,6 +2516,7 @@ function geneSlotPanel(parent,primary,primaryMethods){
                 afterGeneChange(s.g);
             },
             breakCap(i){
+                if (!geneBreakUnlocked()){ return; }
                 let s = geneSlots()[i];
                 if (!s || !s.g || s.r < geneRankCap(i)){ return; }
                 let cost = geneBreakCost(i);
@@ -2595,14 +2611,21 @@ function geneSlotPanel(parent,primary,primaryMethods){
             let rate = each && each !== total
                 ? `<div class="has-text-caution">${loc('arpa_gene_per_rank',[each])}</div>`
                 : ``;
-            // Two separate things now: the slot's base sets the ceiling, the partner sets strength.
             let want = geneSlotBase(i);
             let fits = geneSlotAnswers(i);
+            let breakable = geneBreakUnlocked();
+            let pairKey = fits
+                ? (breakable ? 'arpa_gene_pair_match' : 'arpa_gene_pair_match_locked')
+                : (breakable ? 'arpa_gene_pair_miss' : 'arpa_gene_pair_miss_locked');
             let pairing = want
                 ? `<div class="${fits ? `has-text-success` : `has-text-caution`}">`
-                    + loc(fits ? 'arpa_gene_pair_match' : 'arpa_gene_pair_miss',
-                          [geneEffectiveBase(i) || loc('arpa_gene_base_any'),want,geneRankStart(i)])
+                    + loc(pairKey,[geneEffectiveBase(i) || loc('arpa_gene_base_any'),want,geneRankStart(i)])
                     + `</div>`
+                : ``;
+            // Named only once the slot is actually up against its ceiling, so it reads as the answer
+            // to "why is there no button" rather than noise on every gene.
+            let locked = !breakable && s.r >= geneRankCap(i)
+                ? `<div class="has-text-caution">${loc('arpa_gene_break_locked',[loc('arpa_genepool_unlocked_dna_title')])}</div>`
                 : ``;
             let strength = `<div class="${geneSlotMatched(i) ? `has-text-success` : `has-text-caution`}">`
                 + loc(geneSlotMatched(i) ? 'arpa_gene_bonded' : 'arpa_gene_unbonded')
@@ -2611,6 +2634,7 @@ function geneSlotPanel(parent,primary,primaryMethods){
                  + `<div>${total}</div>`
                  + `<div class="has-text-caution">${loc('arpa_gene_at_rank',[s.r,geneRankCap(i)])}</div>`
                  + pairing
+                 + locked
                  + strength
                  + rate;
         },
