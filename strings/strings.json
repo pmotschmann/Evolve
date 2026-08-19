@@ -416,6 +416,7 @@
   "powerplant": "Powerplant",
   "reactor": "Reactor",
   "build_success": "%0 has been constructed.",
+  "build_success_many": "%1x %0 have been constructed.",
   "research_success": "%0 has been researched.",
   "action_options": "%0 options",
   "action_ready": "Affordable in [%0]",

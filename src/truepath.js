@@ -6775,8 +6775,13 @@ function razeStructures(region,razings){
         let lost = losses[s];
         global[cat][s].count -= lost;
         global[cat][s]['razed'] = (global[cat][s]['razed'] || 0) + lost;
-        if (global[cat][s].hasOwnProperty('on') && global[cat][s].on > global[cat][s].count){
-            global[cat][s].on = global[cat][s].count;
+
+        if (global[cat][s].hasOwnProperty('on')){
+            let turned_off = lost;
+            if (global[cat][s].on < turned_off){
+                turned_off = global[cat][s].on;
+            }
+            global[cat][s].on -= turned_off;
         }
         zMessage(loc('infestation_razed',[lost,structTitle(cat,region,s),regionName(region)]),'danger');
     });

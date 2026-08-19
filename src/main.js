@@ -12100,11 +12100,13 @@ function midLoop(){
                 let attempts = global.queue.queue[idx].q;
                 let struct = global.queue.queue[idx];
                 let report_in = c_action['queue_complete'] ? c_action.queue_complete() : 1;
+                let built = 0;
+                let label = global.queue.queue[idx].label;
                 for (let i=0; i<attempts; i++){
                     if (c_action.action({isQueue: true}) !== false){
                         triggerd = true;
                         if (report_in - i <= 1){
-                            messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success',false,['queue','building_queue']);
+                            built++;
                         }
                         if (global.queue.queue[idx].q > 1){
                             global.queue.queue[idx].q--;
@@ -12124,6 +12126,13 @@ function midLoop(){
                         break;
                     }
                 }
+                if (built === 1){
+                    messageQueue(loc('build_success',[label]),'success',false,['queue','building_queue']);
+                }
+                else if (built > 1){
+                    messageQueue(loc('build_success_many',[label, built]),'success',false,['queue','building_queue']);
+                }
+
                 if (triggerd){
                     postBuild(c_action,struct.action,struct.type);
                 }
