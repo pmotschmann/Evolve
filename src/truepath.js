@@ -7741,8 +7741,7 @@ export function shipAttackPower(ship){
 }
 
 export function shipSpeed(ship){
-    // Featherlight: avian hulls are built lighter than anyone else's.
-    let mass = 1 / geneBonus('featherlight');
+    let mass = 1;
     switch (ship.class){
         case 'corvette':
             mass = global.tech['syard_mass'] ? (ship.armor === 'neutronium' ? 1 : 0.95) : ship.armor === 'neutronium' ? 1.1 : 1;
@@ -7767,6 +7766,9 @@ export function shipSpeed(ship){
             break;
     }
     if (ship.armor === 'aerographene'){ mass /= AEROGRAPHENE_SPEED; }
+
+    // Featherlight: avian hulls are built lighter than anyone else's.
+    mass /= geneBonus('featherlight');
 
     let boost = 1;
     switch (ship.location?.name ?? ""){
