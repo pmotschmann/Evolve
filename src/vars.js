@@ -1608,7 +1608,26 @@ if (convertVersion(global['version']) <= 105000){
         }
         global.genes['evolveReprice'] = { p: back };
     }
+
+    // Conductive was removed.
+    if (global['race'] && Array.isArray(global.race['geneSlots'])){
+        let breaks = (global.race['geneBreak'] && typeof global.race['geneBreak'] === 'object') ? global.race.geneBreak : {};
+        let slots = [];
+        let rebuilt = {};
+        global.race.geneSlots.forEach(function(slot,i){
+            if (slot && slot.g === 'conductive'){
+                if (!slot.x){ slots.push(false); }
+                return;
+            }
+            if (breaks[i] !== undefined){ rebuilt[slots.length] = breaks[i]; }
+            slots.push(slot);
+        });
+        global.race.geneSlots = slots;
+        global.race.geneBreak = rebuilt;
+    }
 }
+
+
 
 global['version'] = '1.5.0';
 delete global['revision'];

@@ -7258,7 +7258,7 @@ export function drawShipYard(){
                     return shipBombardPower(global.space.shipyard.blueprint);
                 },
                 sensorText(){
-                    return sensorRange(global.space.shipyard.blueprint) + 'km';
+                    return loc('outer_shipyard_sensor_range',[sensorRange(global.space.shipyard.blueprint)]);
                 },
                 speedText(){
                     let speed = (149597870.7/225/24/3600) * shipSpeed(global.space.shipyard.blueprint);
@@ -8698,8 +8698,8 @@ function drawShipRow(list,i,ship,regionNames){
                 sensorText(id){
                     let group = rowGroup(global.space.shipyard.ships[id]);
                     // Math.max of nothing is -Infinity, and a row can outlive its ship by a frame.
-                    if (group.length === 0){ return `0km`; }
-                    return Math.max(...group.map(s => sensorRange(s) || 0)) + 'km';
+                    if (group.length === 0){ return loc('outer_shipyard_sensor_range',[0]); }
+                    return loc('outer_shipyard_sensor_range',[Math.max(...group.map(s => sensorRange(s) || 0))]);
                 },
                 // A fleet keeps pace with its slowest ship, which is what its trips are planned on.
                 speedText(id){
@@ -9090,6 +9090,30 @@ export function sensorRange(s){
         case 'quantum':
             return 32 * hf;
     }
+}
+
+// Sensor ratings are gigameters; the map works in AU. A quantum set on a frigate reads 64 Gm, which is a shade over 0.42 AU
+export const GM_PER_AU = 149.5978707;
+
+// A hull's sensor reach in map units.
+export function sensorRangeAU(ship){
+    return (sensorRange(ship) || 0) / GM_PER_AU;
+}
+
+// Whether an enemy hull is currently detected.
+export function foeDetected(foe){
+    if (!foe || !foe.location || !foe.location.position){ return false; }
+    return sensorContact(foe);
+}
+
+// Anything of yours with the point inside its sensor bubble.
+function sensorContact(foe){
+    if (!global.space['shipyard'] || !Array.isArray(global.space.shipyard['ships'])){ return false; }
+    for (let ship of global.space.shipyard.ships){
+        if (!ship.location || !ship.location.position){ continue; }
+        if (dist3(ship.location.position, foe.location.position) <= sensorRangeAU(ship)){ return true; }
+    }
+    return false;
 }
 
 export function tritonWar(){
@@ -12321,6 +12345,10 @@ export function drawMap() {
             let raids = {};
             for (let ship of global.race.zfleet.s){
                 if (!ship.inTransit){ continue; }
+                // Nothing of yours can see it, so nothing of yours plots it. Tested per hull rather
+                // than per sortie, so a raid crossing the edge of a sensor bubble shows the part
+                // that is actually in contact instead of all of it or none of it.
+                if (!foeDetected(ship)){ continue; }
                 if (!ship.zf){
                     shipMarks.push({ ship, count: 1, foe: true });
                     continue;
@@ -13407,7 +13435,7 @@ function shipDispatchModal(id, modal){
     let stats = $(`<div class="shipDispatchStats"></div>`);
     stats.append(`<span><span class="has-text-warning">${loc('crew')}</span> <span class="pad">${sum(shipCrewSize)}</span></span>`);
     stats.append(`<span><span class="has-text-warning">${loc('firepower')}</span> <span class="pad">${sum(shipAttackPower)}</span></span>`);
-    stats.append(`<span><span class="has-text-warning">${loc('outer_shipyard_sensors')}</span> <span class="pad">${Math.max(...group.map(sensorRange))}km</span></span>`);
+    stats.append(`<span><span class="has-text-warning">${loc('outer_shipyard_sensors')}</span> <span class="pad">${loc('outer_shipyard_sensor_range',[Math.max(...group.map(sensorRange))])}</span></span>`);
     stats.append(`<span><span class="has-text-warning">${loc('speed')}</span> <span class="pad">${speed}km/s</span></span>`);
     stats.append(`<span><span class="has-text-warning">${loc('outer_shipyard_fuel')}</span> <span class="pad">${fuelText}</span></span>`);
     stats.append(`<span><span class="has-text-warning">${loc('outer_shipyard_hull')}</span> <span class="pad ${hullClass}">${100 - damage}%</span></span>`);

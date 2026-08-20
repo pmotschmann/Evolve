@@ -8543,6 +8543,7 @@
   "outer_shipyard_class": "Ship Class",
   "outer_shipyard_registry": "Ship Name",
   "outer_shipyard_sensors": "Scan",
+  "outer_shipyard_sensor_range": "%0 Gm",
   "outer_shipyard_build": "Construct Ship",
   "outer_shipyard_park": "Ships parked at %0 are out of service and require no crew or fuel.",
   "outer_shipyard_map": "Star Map",
