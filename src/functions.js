@@ -1171,6 +1171,18 @@ export function arpaTimeCheck(project, remain, track, detailed){
     return detailed ? { t: allRemainingSegmentsTime, r: bottleneck, s: shorted } : allRemainingSegmentsTime;
 }
 
+// Resolve whatever a caller put in `bind.el` down to a single element, or null.
+function bindEl(el){
+    if (!el){ return null; }
+    if (typeof el === 'string'){
+        try { return document.querySelector(el); }
+        catch(e){ return null; }
+    }
+    if (el.nodeType === 1){ return el; }
+    if (el[0] && el[0].nodeType === 1){ return el[0]; }
+    return null;
+}
+
 function unmountApp(el){
     if (el && el.__vue_app__){
         // Stop the mount-element v-show effect (see vBind create) before unmounting so it doesn't keep
@@ -1187,7 +1199,7 @@ function unmountApp(el){
         delete el.__vue_app__;
         delete el.__vue_bind__;
         delete el.__vue_proxy__;
-        $(el).removeClass('vb');
+        el.classList.remove('vb');
     }
 }
 
@@ -1292,8 +1304,8 @@ export function vBind(bind,action){
     if (action === 'update'){
         // During offline catch-up the whole UI sits behind the progress modal and reactivity is suppressed;
         if (webWorker.offline){ return; }
-        if ($(bind.el).length === 0){ return; }
-        let el = $(bind.el)[0];
+        let el = bindEl(bind.el);
+        if (!el){ return; }
         let app = el.__vue_app__;
         let proxy = (app && app._instance && app._instance.proxy) ? app._instance.proxy : (app ? el.__vue_proxy__ : null);
         if (proxy){
@@ -1312,7 +1324,7 @@ export function vBind(bind,action){
             return;
         }
         if (typeof app !== "undefined"){ delete el.__vue_app__; delete el.__vue_proxy__; }
-        $(el).removeClass('vb');
+        el.classList.remove('vb');
         if (el.__vue_bind__){
             if (typeof el.__vue_template__ === 'string'){ el.innerHTML = el.__vue_template__; }
             try {
@@ -1322,18 +1334,19 @@ export function vBind(bind,action){
                 console.warn('Error during vBind rebuild:', e);
                 delete el.__vue_app__;
                 delete el.__vue_bind__;
-                $(el).removeClass('vb');
+                el.classList.remove('vb');
             }
         }
         return;
     }
     // create / destroy: tear down any existing app on the element first.
-    if ($(bind.el).length > 0 && typeof $(bind.el)[0].__vue_app__ !== "undefined"){
-        unmountApp($(bind.el)[0]);
+    const target = bindEl(bind.el);
+    if (target && typeof target.__vue_app__ !== "undefined"){
+        unmountApp(target);
     }
     if (action === 'create'){
-        if ($(bind.el).length > 0) {
-            const el = $(bind.el)[0];
+        if (target) {
+            const el = target;
             const vueOptions = { ...bind };
             const template = el.innerHTML;
 
@@ -1360,7 +1373,7 @@ export function vBind(bind,action){
             }
 
             el._vnode = null;
-            el.__vue_proxy__ = app.mount(bind.el);
+            el.__vue_proxy__ = app.mount(el);
             el.__vue_app__ = app;
 
             // Vue 3 ignores directives written on the element you mount onto: it treats that element as
@@ -1385,7 +1398,7 @@ export function vBind(bind,action){
 
             el.__vue_bind__ = bind;
             if (typeof template === 'string' && template.length > 0){ el.__vue_template__ = template; }
-            $(el).addClass('vb');
+            el.classList.add('vb');
 
             return app;
         }
@@ -1394,9 +1407,7 @@ export function vBind(bind,action){
 
 // Helper function to forcefully clean up Vue proxy references
 export function clearVueProxies(element) {
-    if (typeof element === 'string') {
-        element = $(element)[0];
-    }
+    element = bindEl(element);
     
     if (element && element.__vue_app__) {
         try {
