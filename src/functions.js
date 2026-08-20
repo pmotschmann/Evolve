@@ -3737,7 +3737,13 @@ export function getTraitDesc(info, trait, opts){
             info.append(`<div class="type has-text-caution">${loc(`wiki_trait_${traits[trait].type}`)}<span>${loc(`wiki_trait_value`,[traits[trait].val])}</span></div>`);
         }
         else {
-            info.append(`<div class="type has-text-caution">${loc(`wiki_trait_${traits[trait].type}`)}</div>`);
+            if (traits[trait].type === 'minor'){
+                let base = traits[trait].base;
+                info.append(`<div class="type"><span class="has-text-caution">${loc(`wiki_trait_minor`)} <span class="pickBase base${base}">${base}</span></span></div>`);
+            }
+            else{
+                info.append(`<div class="type has-text-caution">${loc(`wiki_trait_${traits[trait].type}`)}</div>`);
+            }
         }
         if (fanatic){
             info.append(`<div class="has-text-danger">${loc(`wiki_trait_fanaticism`,[fanatic])}</div>`);
