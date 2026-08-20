@@ -1492,8 +1492,6 @@ export function powerModifier(energy){
         energy *= 1 + (astroVal('leo')[0] / 100);
         energy = +energy.toFixed(2);
     }
-    // Conductive: more out of the same plant.
-    energy = +(energy * geneBonus('conductive')).toFixed(2);
     return energy;
 }
 

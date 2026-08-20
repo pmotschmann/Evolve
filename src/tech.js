@@ -4544,6 +4544,26 @@ const techs = {
         },
         flair(){ return loc(`tech_dimensional_tap_flair`); }
     },
+    lab_assistants: {
+        id: 'tech-lab_assistants',
+        title(){ return loc('tech_lab_assistants'); },
+        desc(){ return loc('tech_lab_assistants'); },
+        category: 'science',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { science: 9, womling_tech: 10, tau_gas2: 8, m_ignite: 2 },
+        grant: ['science',10],
+        cost: {
+            Knowledge(){ return 17500000; }
+        },
+        effect(){ return loc('tech_lab_assistants_effect',[5]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     devilish_dish: {
         id: 'tech-devilish_dish',
         title(){ return loc('tech_devilish_dish'); },

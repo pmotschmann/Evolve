@@ -7063,6 +7063,10 @@ export function drawShipYard(){
     if (global.space.hasOwnProperty('shipyard') && global.settings.showShipYard){
         let yard = $(`#dwarfShipYard`);
 
+        if (!global.space.shipyard.hasOwnProperty('copy')){
+            global.space.shipyard['copy'] = false;
+        }
+
         if (!global.space.shipyard.hasOwnProperty('blueprint')){
             global.space.shipyard['blueprint'] = {
                 class: 'corvette',
@@ -7145,6 +7149,7 @@ export function drawShipYard(){
         assemble.append(`<button class="button is-info" v-on:click="build()"><span>${loc('outer_shipyard_build')}</span></button>`);
         assemble.append(`<span><b-checkbox class="patrol" v-model="s.expand" @change="redraw()">${loc('outer_shipyard_fleet_details')}</b-checkbox></span>`);
         assemble.append(`<span><b-checkbox class="patrol" v-model="s.sort" @change="redraw()">${loc('outer_shipyard_fleet_sort')}</b-checkbox></span>`);
+        assemble.append(`<span><b-checkbox class="patrol" v-model="s.copy" @change="redraw()">${loc('outer_shipyard_copy_mode')}</b-checkbox></span>`);
 
         // Filter by system or shipyard locations
         if (shipyardViewUnlocked()){
@@ -7279,28 +7284,11 @@ export function drawShipYard(){
                             let ship = deepClone(global.space.shipyard.blueprint);
                             buildTPShip(ship,false);
                         }
-                        else {
-                            let used = 0;
-                            for (let j=0; j<global.queue.queue.length; j++){
-                                used += Math.ceil(global.queue.queue[j].q / global.queue.queue[j].qs);
-                            }
-                            if (used < global.queue.max){
-                                let blueprint = deepClone(global.space.shipyard.blueprint);
-                                global.queue.queue.push({ 
-                                    id: `tp-ship-${Math.rand(0,100000)}`, 
-                                    action: 'tp-ship', 
-                                    type: blueprint,
-                                    label: blueprint.name, 
-                                    cna: false, 
-                                    time: 0, 
-                                    q: 1, 
-                                    qs: 1, 
-                                    t_max: 0, 
-                                    bres: false 
-                                });
-                                global.space.shipyard.blueprint.name = getRandomShipName();
-                                buildQueue();
-                            }
+                        else if (queueTPShip(global.space.shipyard.blueprint)){
+                            // The hull on the slipway has been spoken for, so the yard rolls a
+                            // registry name for the next one.
+                            global.space.shipyard.blueprint.name = getRandomShipName();
+                            buildQueue();
                         }
                     }
                 },
@@ -8279,6 +8267,47 @@ function clusterFleets(ships){
     return ordered;
 }
 
+// Room left in the build queue, counted the way the queue itself counts it.
+function queueSpace(){
+    let used = 0;
+    for (let j=0; j<global.queue.queue.length; j++){
+        used += Math.ceil(global.queue.queue[j].q / global.queue.queue[j].qs);
+    }
+    return global.queue.max - used;
+}
+
+// Put one ship design on the build queue. Returns false when there is no room left, so a caller
+// queueing a whole fleet can stop rather than silently dropping hulls. Does not call buildQueue():
+// the caller does that once, after the last hull goes on.
+function queueTPShip(design){
+    if (queueSpace() <= 0){ return false; }
+    let blueprint = deepClone(design);
+    global.queue.queue.push({
+        id: `tp-ship-${Math.rand(0,100000)}`,
+        action: 'tp-ship',
+        type: blueprint,
+        label: blueprint.name,
+        cna: false,
+        time: 0,
+        q: 1,
+        qs: 1,
+        t_max: 0,
+        bres: false
+    });
+    return true;
+}
+
+// A copy of an existing hull is a new ship, not the same one, so it gets its own registry name.
+function copyShipDesign(ship){
+    let design = deepClone(ship);
+    ['location','destination','origin','transit','inTransit','timeToNextStep','path','damage','fid','flag','ret','crew'].forEach(function(runtime){
+        delete design[runtime];
+    });
+    if (!shipSpecialAllowed(design.special,design.class)){ design.special = 'none'; }
+    design.name = getRandomShipName();
+    return design;
+}
+
 function drawShips(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 5)){
         return;
@@ -8450,7 +8479,7 @@ function drawShipRow(list,i,ship,regionNames){
         if (global.space.shipyard.expand){
             let ship_class = `${loc(`outer_shipyard_engine_${ship.engine}`)} ${loc(`outer_shipyard_class_${ship.class}`)}`;
             let desc = $(`<div id="shipReg${i}" class="shipRow ship${i}${escort}"></div>`);
-            let row1 = $(`<div class="row1"><span class="name has-text-caution">${ship.name}</span> <span v-show="scrapAllowed(${i})">| </span><a class="scrap${i}" v-show="scrapAllowed(${i})" @click="scrap(${i})" role="button">${loc(`outer_shipyard_scrap`)}</a><a class="fleetFold" v-show="fleetFoldShow(${i})" @click="fleetFold(${i})" role="button" :aria-expanded="fleetFolded(${i}) ? 'false' : 'true'" :aria-label="fleetFoldLabel(${i})"><span class="groupArrow" v-html="fleetArrow(${i})"></span></a><span v-show="fleetTag(${i})" class="flagship" v-html="fleetTag(${i})"></span><span v-show="fleetShow(${i})"> | <a class="fleetToggle" @click="fleetAction(${i})" role="button" v-html="fleetText(${i})"></a></span> | <span class="has-text-warning">${ship_class}</span> | <span class="has-text-danger">${loc(`outer_shipyard_weapon_${ship.weapon}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_power_${ship.power}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_armor_${ship.armor}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_sensor_${ship.sensor}`)}</span></div>`);
+            let row1 = $(`<div class="row1"><span class="name has-text-caution">${ship.name}</span> <span v-show="scrapAllowed(${i})">| </span><a class="scrap${i}" v-show="scrapAllowed(${i})" @click="scrap(${i})" role="button">${loc(`outer_shipyard_scrap`)}</a><span v-show="copyMode()"> | <a class="loadDesign" @click="loadDesign(${i})" role="button">${loc(`outer_shipyard_copy_design`)}</a> | <a class="copyBuild" @click="copyBuild(${i})" role="button">${loc(`outer_shipyard_copy_build`)}</a></span><span v-show="copyFleetShow(${i})"> | <a class="copyFleet" @click="copyFleet(${i})" role="button">${loc(`outer_shipyard_copy_fleet`)}</a></span><a class="fleetFold" v-show="fleetFoldShow(${i})" @click="fleetFold(${i})" role="button" :aria-expanded="fleetFolded(${i}) ? 'false' : 'true'" :aria-label="fleetFoldLabel(${i})"><span class="groupArrow" v-html="fleetArrow(${i})"></span></a><span v-show="fleetTag(${i})" class="flagship" v-html="fleetTag(${i})"></span><span v-show="fleetShow(${i})"> | <a class="fleetToggle" @click="fleetAction(${i})" role="button" v-html="fleetText(${i})"></a></span> | <span class="has-text-warning">${ship_class}</span> | <span class="has-text-danger">${loc(`outer_shipyard_weapon_${ship.weapon}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_power_${ship.power}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_armor_${ship.armor}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_sensor_${ship.sensor}`)}</span></div>`);
             let row2 = $(`<div class="row2"></div>`);
             let row3 = $(`<div class="row3"></div>`);
             let row4 = $(`<div class="location">${dispatch}</div>`);
@@ -8477,7 +8506,7 @@ function drawShipRow(list,i,ship,regionNames){
             let row3 = $(`<div class="row3"></div>`);
             let row4 = $(`<div class="location">${dispatch}</div>`);
 
-            row1.append(`<span class="name has-text-caution">${ship.name}</span><a class="fleetFold" v-show="fleetFoldShow(${i})" @click="fleetFold(${i})" role="button" :aria-expanded="fleetFolded(${i}) ? 'false' : 'true'" :aria-label="fleetFoldLabel(${i})"><span class="groupArrow" v-html="fleetArrow(${i})"></span></a><span v-show="fleetTag(${i})" class="flagship" v-html="fleetTag(${i})"></span><span v-show="fleetShow(${i})"> | <a class="fleetToggle" @click="fleetAction(${i})" role="button" v-html="fleetText(${i})"></a></span> | `);
+            row1.append(`<span class="name has-text-caution">${ship.name}</span><span v-show="copyMode()"> | <a class="loadDesign" @click="loadDesign(${i})" role="button">${loc(`outer_shipyard_copy_design`)}</a> | <a class="copyBuild" @click="copyBuild(${i})" role="button">${loc(`outer_shipyard_copy_build`)}</a></span><span v-show="copyFleetShow(${i})"> | <a class="copyFleet" @click="copyFleet(${i})" role="button">${loc(`outer_shipyard_copy_fleet`)}</a></span><a class="fleetFold" v-show="fleetFoldShow(${i})" @click="fleetFold(${i})" role="button" :aria-expanded="fleetFolded(${i}) ? 'false' : 'true'" :aria-label="fleetFoldLabel(${i})"><span class="groupArrow" v-html="fleetArrow(${i})"></span></a><span v-show="fleetTag(${i})" class="flagship" v-html="fleetTag(${i})"></span><span v-show="fleetShow(${i})"> | <a class="fleetToggle" @click="fleetAction(${i})" role="button" v-html="fleetText(${i})"></a></span> | `);
             row1.append(`<span class="shipStat"><span class="has-text-warning">${loc(`firepower`)}</span> <span class="pad" v-html="fireText(${i})"></span></span><wbr>`);
             row1.append(`<span class="shipStat"><span class="has-text-warning">${loc(`outer_shipyard_sensors`)}</span> <span class="pad" v-html="sensorText(${i})"></span></span><wbr>`);
             row1.append(`<span class="shipStat"><span class="has-text-warning">${loc(`speed`)}</span> <span class="pad" v-html="speedText(${i})"></span></span><wbr>`);
@@ -8505,6 +8534,59 @@ function drawShipRow(list,i,ship,regionNames){
                         global.space.shipyard.ships.splice(id,1);
                         drawShips();
                         updateCosts();
+                    }
+                },
+                // Whether the yard's copy controls are switched on, which is what puts the copy
+                // links on every row rather than leaving them there permanently.
+                copyMode(){
+                    return global.space.shipyard['copy'] ? true : false;
+                },
+                // Copy a built ship's design back into the yard so a sister ship can be ordered
+                // without setting every dropdown again. The name is deliberately left alone: it
+                // identifies the ship, and the yard rolls a fresh one for each hull it lays down.
+                loadDesign(id){
+                    let s = global.space.shipyard.ships[id];
+                    if (!s){ return; }
+                    let bp = global.space.shipyard.blueprint;
+                    ['class','engine','weapon','armor','sensor','power'].forEach(function(part){
+                        if (s[part] !== undefined){ bp[part] = s[part]; }
+                    });
+                    // A special the copied class cannot carry falls back exactly the way the class
+                    // dropdown makes it fall back.
+                    bp.special = s['special'] !== undefined ? s.special : 'none';
+                    if (!shipSpecialAllowed(bp.special,bp.class)){ bp.special = 'none'; }
+                },
+                // The same copy, plus a hull on the queue for it. The yard is loaded as well so the
+                // design is sitting there to adjust if the next one wants to differ.
+                copyBuild(id){
+                    let s = global.space.shipyard.ships[id];
+                    if (!s){ return; }
+                    this.loadDesign(id);
+                    if (queueTPShip(copyShipDesign(s))){
+                        buildQueue();
+                    }
+                },
+                // Offered on a flagship only, and only with the copy controls on: a fleet is named
+                // by the ship leading it, so that row is where "another one of these" belongs.
+                copyFleetShow(id){
+                    let s = global.space.shipyard.ships[id];
+                    return global.space.shipyard['copy'] && global.tech['syard_fleet'] && s && s.flag && s.fid ? true : false;
+                },
+                // Queue a sister ship for every hull in the fleet, flagship included. Stops at the
+                // end of the queue rather than dropping the rest on the floor, and the copies are
+                // ordinary unattached ships -- they are not enrolled in the fleet for you.
+                copyFleet(id){
+                    let s = global.space.shipyard.ships[id];
+                    if (!s || !s.fid){ return; }
+                    let queued = 0;
+                    let members = fleetMembers(s.fid);
+                    for (let m=0; m<members.length; m++){
+                        if (!queueTPShip(copyShipDesign(members[m]))){ break; }
+                        queued++;
+                    }
+                    if (queued > 0){
+                        buildQueue();
+                        messageQueue(loc('outer_shipyard_copy_fleet_msg',[queued,members.length]),'info',false,['progress']);
                     }
                 },
                 // Only at a yard, and only while actually docked there rather than crossing to it.

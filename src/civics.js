@@ -2168,6 +2168,8 @@ function lootModify(val,gov){
         loot *= biomes.swamp.vars()[1];
     }
 
+    loot *= geneBonus('plunderer');
+
     return Math.floor(loot * global.civic.foreign[`gov${gov}`].eco / 100);
 }
 

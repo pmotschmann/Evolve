@@ -4524,6 +4524,8 @@ function fastLoop(){
                 professors_base *= 1 - (govEffect.theocracy()[1] / 100);
             }
 
+            let womling_sci = global.tauceti.hasOwnProperty('womling_lab') ? global.tauceti.womling_lab.scientist : 0;
+
             let scientist_base = workerScale(global.civic.scientist.workers,'scientist');
             scientist_base *= job_data.scientist.impact();
             scientist_base *= racialTrait(workerScale(global.civic.scientist.workers,'scientist'),'science');
@@ -4536,6 +4538,9 @@ function fastLoop(){
             }
             if (global.space['satellite']){
                 scientist_base *= 1 + (global.space.satellite.count * 0.01);
+            }
+            if (global.tech['science'] >= 10){
+                scientist_base *= 1 + (womling_sci * 0.05);
             }
             if (global.civic.govern.type === 'theocracy'){
                 scientist_base *= 1 - (govEffect.theocracy()[2] / 100);
@@ -4562,7 +4567,7 @@ function fastLoop(){
                 gene_sequence = false;
             }
 
-            let womling = global.tauceti.hasOwnProperty('womling_lab') ? global.tauceti.womling_lab.scientist * (global.tech['womling_gene'] ? 10 : 8) : 0;
+            let womling = womling_sci * (global.tech['womling_gene'] ? 10 : 8);
 
             let delta = professors_base + scientist_base + womling;
             delta *= hunger * global_multiplier;

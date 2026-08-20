@@ -4032,7 +4032,7 @@ export const traits = {
         type: 'major',
         origin: 'synth',
         taxonomy: 'utility',
-        val: 6,
+        val: 9,
         vars(r){
             // [Postitive Trait Rank, Negative Trait Rank]
             switch (r || traitRank('imitation') || 1){
@@ -4086,7 +4086,7 @@ export const traits = {
         type: 'major',
         origin: 'synth',
         taxonomy: 'utility',
-        val: 6,
+        val: 8,
         vars(r){
             // [Reduce Wardenclyffe Knowledge Cost, Knowledge per Citizen]
             switch (r || traitRank('logical') || 1){
@@ -5019,13 +5019,13 @@ export const traits = {
         vars(r){ return [3]; },
         weak(r){ return [1.5]; },
     },
-    conductive: { // Power generation
-        name: loc('trait_conductive_name'),
-        desc: loc('trait_conductive'),
+    plunderer: { // Loot taken from campaigns against rival governments
+        name: loc('trait_plunderer_name'),
+        desc: loc('trait_plunderer'),
         type: 'minor',
         base: 'C',
-        vars(r){ return [1]; },
-        weak(r){ return [0.5]; },
+        vars(r){ return [6]; },
+        weak(r){ return [3]; },
     },
     stockpiler: { // Crate and Container capacity
         name: loc('trait_stockpiler_name'),
