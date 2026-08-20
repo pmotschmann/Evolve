@@ -1556,13 +1556,17 @@ if (convertVersion(global['version']) <= 105000){
         };
 
         let phage = 0;
-        Object.keys(global.genes.minor).forEach(function(t){
-            phage += spent(global.genes.minor[t], t === 'mastery' ? 2 : 1);
-        });
+        if (Array.isArray(global.genes.minor)){
+            Object.keys(global.genes.minor).forEach(function(t){
+                phage += spent(global.genes.minor[t], t === 'mastery' ? 2 : 1);
+            });
+        }
         let genes = 0;
-        Object.keys(global.race.minor).forEach(function(t){
-            genes += spent(global.race.minor[t], t === 'mastery' ? 5 : 1);
-        });
+        if (Array.isArray(global.race.minor)){
+            Object.keys(global.race.minor).forEach(function(t){
+                genes += spent(global.race.minor[t], t === 'mastery' ? 5 : 1);
+            });
+        }
 
         // Guarded individually: this runs while the save is still being assembled, and a throw here
         // would take the game down before it ever drew a frame.
@@ -1577,8 +1581,12 @@ if (convertVersion(global['version']) <= 105000){
         }
 
         // Zero the ranks themselves, and the live trait values they were feeding.
-        Object.keys(global.genes.minor).forEach(function(t){ delete global.race[t]; });
-        Object.keys(global.race.minor).forEach(function(t){ delete global.race[t]; });
+        if (Array.isArray(global.genes.minor)){
+            Object.keys(global.genes.minor).forEach(function(t){ delete global.race[t]; });
+        }
+        if (Array.isArray(global.race.minor)){
+            Object.keys(global.race.minor).forEach(function(t){ delete global.race[t]; });
+        }
         global.genes.minor = {};
         global.race.minor = {};
 
