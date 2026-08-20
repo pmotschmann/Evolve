@@ -1132,18 +1132,65 @@ resourceAlt();
 
 var firstRun = true;
 var gene_sequence = global.arpa['sequence'] && global.arpa['sequence']['on'] ? global.arpa.sequence.on : 0;
+
+function powerBadge(sel,warn,title){
+    const nodes = document.querySelectorAll(sel);
+    for (let i=0; i<nodes.length; i++){
+        if (warn){ nodes[i].classList.add('warn'); }
+        else { nodes[i].classList.remove('warn'); }
+        if (title !== undefined){ nodes[i].title = title; }
+    }
+}
+
+function dataNum(raw){
+    return raw === String(+raw) ? +raw : raw;
+}
+
+function affordTint(c_action){
+    const el = document.getElementById(c_action.id);
+    if (!el){ return; }
+    const maxOk = checkAffordable(c_action,true);
+    el.classList.toggle('cnam', !maxOk);
+    el.classList.toggle('cna', !(maxOk && checkAffordable(c_action)));
+}
+
+function elHeight(el){
+    if (!el){ return 0; }
+    const cs = window.getComputedStyle(el);
+    const trim = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom)
+               + parseFloat(cs.borderTopWidth) + parseFloat(cs.borderBottomWidth);
+    const h = parseFloat(cs.height);
+    if (!isNaN(h)){
+        return cs.boxSizing === 'border-box' ? h - trim : h;
+    }
+    // A computed height of `auto`: offsetHeight is always the border box.
+    return el.offsetHeight ? el.offsetHeight - trim : 0;
+}
+
+function setElHeight(el,value){
+    if (!el){ return; }
+    if (typeof value !== 'number'){ el.style.height = value; return; }
+    const cs = window.getComputedStyle(el);
+    let px = value;
+    if (cs.boxSizing === 'border-box'){
+        px += parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom)
+            + parseFloat(cs.borderTopWidth) + parseFloat(cs.borderBottomWidth);
+    }
+    el.style.height = px + 'px';
+}
+
 function fastLoop(){
     if (!global.race['no_craft']){
         // keyMultiplier() is the same for every button this tick, so compute it once instead
-        // of per element, and wrap each element in a single jQuery object rather than three.
+        // of per element.
         const km = keyMultiplier();
-        $('.craft').each(function(){
-            const el = $(this);
-            const val = el.data('val');
+        const crafts = document.querySelectorAll('.craft');
+        for (let i=0; i<crafts.length; i++){
+            const val = dataNum(crafts[i].dataset.val);
             if (typeof val === 'number'){
-                el.html(sizeApproximation(val * km, 1));
+                crafts[i].innerHTML = sizeApproximation(val * km, 1);
             }
-        });
+        }
     }
 
     const date = new Date();
@@ -2162,22 +2209,19 @@ function fastLoop(){
                 power_grid -= power;
                 power_generated[title] = -(power);
 
-                let genOnEl = $(`#${region}-${generator.s} .on`);
+                let genOnSel = `#${region}-${generator.s} .on`;
                 if (p_on[generator.s] !== global[region][generator.s].on){
-                    genOnEl.addClass('warn');
-                    genOnEl.prop('title',`ON ${p_on[generator.s]}/${global[region][generator.s].on}`);
+                    powerBadge(genOnSel,true,`ON ${p_on[generator.s]}/${global[region][generator.s].on}`);
                 }
                 else {
-                    genOnEl.removeClass('warn');
-                    genOnEl.prop('title',`ON`);
+                    powerBadge(genOnSel,false,`ON`);
                 }
             }
             else {
                 power_generated[title] = 0;
                 p_on[generator.s] = 0;
-                let genOnEl = $(`#${region}-${generator.s} .on`);
-                genOnEl.removeClass('warn');
-                genOnEl.prop('title',`ON`);
+                let genOnSel = `#${region}-${generator.s} .on`;
+                powerBadge(genOnSel,false,`ON`);
             }
         });
 
@@ -2411,25 +2455,22 @@ function fastLoop(){
                 }
                 power_grid_temp -= power;
 
-                let structOnEl = $(`#${region}-${struct} .on`);
+                let structOnSel = `#${region}-${struct} .on`;
                 if (p_on[struct] !== global[region][struct].on){
-                    structOnEl.addClass('warn');
-                    structOnEl.prop('title',`ON ${p_on[struct]}/${global[region][struct].on}`);
+                    powerBadge(structOnSel,true,`ON ${p_on[struct]}/${global[region][struct].on}`);
                     // Remove the reset actions for reset structures that lose power
                     if (['matrix', 'atmo_terraformer', 'ascension_trigger'].includes(struct)){
                         callback_queue.set([c_action, 'postPower'], [true]);
                     }
                 }
                 else {
-                    structOnEl.removeClass('warn');
-                    structOnEl.prop('title',`ON`);
+                    powerBadge(structOnSel,false,`ON`);
                 }
             }
             else {
                 p_on[struct] = 0;
-                let structOnEl = $(`#${region}-${struct} .on`);
-                structOnEl.removeClass('warn');
-                structOnEl.prop('title',`ON`);
+                let structOnSel = `#${region}-${struct} .on`;
+                powerBadge(structOnSel,false,`ON`);
             }
         }
         power_grid -= totalPowerDemand;
@@ -2484,21 +2525,18 @@ function fastLoop(){
                     }
                 }
 
-                let landerOnEl = $(`#space-lander .on`);
+                let landerOnSel = `#space-lander .on`;
                 if (support_on['lander'] !== global.space.lander.on){
-                    landerOnEl.addClass('warn');
-                    landerOnEl.prop('title',`ON ${support_on['lander']}/${global.space.lander.on}`);
+                    powerBadge(landerOnSel,true,`ON ${support_on['lander']}/${global.space.lander.on}`);
                 }
                 else {
-                    landerOnEl.removeClass('warn');
-                    landerOnEl.prop('title',`ON`);
+                    powerBadge(landerOnSel,false,`ON`);
                 }
             }
             else {
                 global.space.fob.troops = 0;
-                let landerOnEl = $(`#space-lander .on`);
-                landerOnEl.addClass('warn');
-                landerOnEl.prop('title',`ON 0/${global.space.lander.on}`);
+                let landerOnSel = `#space-lander .on`;
+                powerBadge(landerOnSel,true,`ON 0/${global.space.lander.on}`);
             }
         }
 
@@ -2522,16 +2560,14 @@ function fastLoop(){
                 let parts = foodBuildings[i].split(":");
                 let space = convertSpaceSector(parts[0]);
                 let region = parts[0] === 'city' ? parts[0] : space;
-                let mediOnEl = $(`#${region}-${parts[1]} .on`);
+                let mediOnSel = `#${region}-${parts[1]} .on`;
                 if (global[region][parts[1]] && global[region][parts[1]]['on']){
                     if(p_on[parts[1]]){
                         p_on[parts[1]] = 0;
                     }
-                    mediOnEl.addClass('warn');
-                    mediOnEl.prop('title',`ON 0`);
+                    powerBadge(mediOnSel,true,`ON 0`);
                 }else {
-                    mediOnEl.removeClass('warn');
-                    mediOnEl.prop('title',`ON`);
+                    powerBadge(mediOnSel,false,`ON`);
                 }
             }
             global.civic.meditator.display = true;
@@ -2578,14 +2614,12 @@ function fastLoop(){
                                 break;
                             }
                         }
-                        let supOnEl = $(`#space-${sup.s} .on`);
+                        let supOnSel = `#space-${sup.s} .on`;
                         if (p_on[sup.s] < global[sup.a][sup.s].on){
-                            supOnEl.addClass('warn');
-                            supOnEl.prop('title',`ON ${p_on[sup.s]}/${global[sup.a][sup.s].on}`);
+                            powerBadge(supOnSel,true,`ON ${p_on[sup.s]}/${global[sup.a][sup.s].on}`);
                         }
                         else {
-                            supOnEl.removeClass('warn');
-                            supOnEl.prop('title',`ON`);
+                            powerBadge(supOnSel,false,`ON`);
                         }
                     }
                 }
@@ -2631,15 +2665,13 @@ function fastLoop(){
                         let operating = global[sup.a][area_structs[i]].on;
                         let remaining_support = global[sup.a][sup.s].s_max - used_support;
 
-                        let areaOnEl = $(`#${id} .on`);
+                        let areaOnSel = `#${id} .on`;
                         if ((operating * supportSize > remaining_support) && !sup.oc){
                             operating = Math.floor(remaining_support / supportSize);
-                            areaOnEl.addClass('warn');
-                            areaOnEl.prop('title',`ON ${operating}/${global[sup.a][area_structs[i]].on}`);
+                            powerBadge(areaOnSel,true,`ON ${operating}/${global[sup.a][area_structs[i]].on}`);
                         }
                         else {
-                            areaOnEl.removeClass('warn');
-                            areaOnEl.prop('title',`ON`);
+                            powerBadge(areaOnSel,false,`ON`);
                         }
 
                         if (actions[sup.a][sup.r2][area_structs[i]].hasOwnProperty('support_fuel')){
@@ -2752,15 +2784,13 @@ function fastLoop(){
                 if (global.interstellar[structs[i]]){
                     let operating = global.interstellar[structs[i]].on;
                     let id = actions.interstellar.int_alpha[structs[i]].id;
-                    let alphaOnEl = $(`#${id} .on`);
+                    let alphaOnSel = `#${id} .on`;
                     if (used_support + operating > global.interstellar.starport.s_max){
                         operating -=  (used_support + operating) - global.interstellar.starport.s_max;
-                        alphaOnEl.addClass('warn');
-                        alphaOnEl.prop('title',`ON ${operating}/${global.interstellar[structs[i]].on}`);
+                        powerBadge(alphaOnSel,true,`ON ${operating}/${global.interstellar[structs[i]].on}`);
                     }
                     else {
-                        alphaOnEl.removeClass('warn');
-                        alphaOnEl.prop('title',`ON`);
+                        powerBadge(alphaOnSel,false,`ON`);
                     }
                     used_support += operating;
                     int_on[structs[i]] = operating;
@@ -2826,15 +2856,13 @@ function fastLoop(){
                     let id = actions.galaxy.gxy_gateway[gateway_structs[i]].id;
                     let operating_cost = -(actions.galaxy.gxy_gateway[gateway_structs[i]].support());
                     let max_operating = Math.floor((global.galaxy.starbase.s_max - used_support) / operating_cost);
-                    let gxyOnEl = $(`#${id} .on`);
+                    let gxyOnSel = `#${id} .on`;
                     if (operating > max_operating){
                         operating = max_operating;
-                        gxyOnEl.addClass('warn');
-                        gxyOnEl.prop('title',`ON ${operating}/${global.galaxy[gateway_structs[i]].on}`);
+                        powerBadge(gxyOnSel,true,`ON ${operating}/${global.galaxy[gateway_structs[i]].on}`);
                     }
                     else {
-                        gxyOnEl.removeClass('warn');
-                        gxyOnEl.prop('title',`ON`);
+                        powerBadge(gxyOnSel,false,`ON`);
                     }
                     used_support += operating * operating_cost;
                     gal_on[gateway_structs[i]] = operating;
@@ -2887,15 +2915,13 @@ function fastLoop(){
                 if (global.portal[purifier_structs[i]]){
                     let operating = global.portal[purifier_structs[i]].on;
                     let id = actions.portal.prtl_spire[purifier_structs[i]].id;
-                    let prtlOnEl = $(`#${id} .on`);
+                    let prtlOnSel = `#${id} .on`;
                     if (used_support + operating > global.portal.purifier.s_max){
                         operating -= (used_support + operating) - global.portal.purifier.s_max;
-                        prtlOnEl.addClass('warn');
-                        prtlOnEl.prop('title',`ON ${operating}/${global.portal[purifier_structs[i]].on}`);
+                        powerBadge(prtlOnSel,true,`ON ${operating}/${global.portal[purifier_structs[i]].on}`);
                     }
                     else {
-                        prtlOnEl.removeClass('warn');
-                        prtlOnEl.prop('title',`ON`);
+                        powerBadge(prtlOnSel,false,`ON`);
                     }
                     used_support += operating * -(actions.portal.prtl_spire[purifier_structs[i]].support());
                     spire_on[purifier_structs[i]] = operating;
@@ -2928,16 +2954,14 @@ function fastLoop(){
                 if (global.space[belt_structs[i]]){
                     let operating = global.space[belt_structs[i]].on;
                     let id = actions.space.spc_belt[belt_structs[i]].id;
-                    let beltOnEl = $(`#${id} .on`);
+                    let beltOnSel = `#${id} .on`;
                     if (used_support + (operating * -(actions.space.spc_belt[belt_structs[i]].support())) > global.space.space_station.s_max){
                         let excess = used_support + (operating * -(actions.space.spc_belt[belt_structs[i]].support())) - global.space.space_station.s_max;
                         operating -= Math.ceil(excess / -(actions.space.spc_belt[belt_structs[i]].support()));
-                        beltOnEl.addClass('warn');
-                        beltOnEl.prop('title',`ON ${operating}/${global.space[belt_structs[i]].on}`);
+                        powerBadge(beltOnSel,true,`ON ${operating}/${global.space[belt_structs[i]].on}`);
                     }
                     else {
-                        beltOnEl.removeClass('warn');
-                        beltOnEl.prop('title',`ON`);
+                        powerBadge(beltOnSel,false,`ON`);
                     }
                     used_support += (operating * -(actions.space.spc_belt[belt_structs[i]].support()));
                     support_on[belt_structs[i]] = operating;
@@ -2970,15 +2994,13 @@ function fastLoop(){
                 if (global.interstellar[structs[i]]){
                     let operating = global.interstellar[structs[i]].on;
                     let id = actions.interstellar.int_nebula[structs[i]].id;
-                    let nebOnEl = $(`#${id} .on`);
+                    let nebOnSel = `#${id} .on`;
                     if (used_support + operating > global.interstellar.nexus.s_max){
                         operating -=  (used_support + operating) - global.interstellar.nexus.s_max;
-                        nebOnEl.addClass('warn');
-                        nebOnEl.prop('title',`ON ${operating}/${global.interstellar[structs[i]].on}`);
+                        powerBadge(nebOnSel,true,`ON ${operating}/${global.interstellar[structs[i]].on}`);
                     }
                     else {
-                        nebOnEl.removeClass('warn');
-                        nebOnEl.prop('title',`ON`);
+                        powerBadge(nebOnSel,false,`ON`);
                     }
                     used_support += operating;
                     int_on[structs[i]] = operating;
@@ -3077,12 +3099,12 @@ function fastLoop(){
                 global.eden.pillbox.staffed = 0;
             }
 
-            let pillOnEl = $(`#eden-pillbox .on`);
+            let pillOnSel = `#eden-pillbox .on`;
             if (global.eden.pillbox.staffed < p_on['pillbox'] * pillsize){
-                pillOnEl.addClass('warn');
+                powerBadge(pillOnSel,true);
             }
             else {
-                pillOnEl.removeClass('warn')
+                powerBadge(pillOnSel,false)
             }
         }
 
@@ -3225,14 +3247,12 @@ function fastLoop(){
                             }
                         }
 
-                        let andrOnEl = $(`#${id} .on`);
+                        let andrOnSel = `#${id} .on`;
                         if (operating < num_on){
-                            andrOnEl.addClass('warn');
-                            andrOnEl.prop('title',`ON ${operating}/${num_on}`);
+                            powerBadge(andrOnSel,true,`ON ${operating}/${num_on}`);
                         }
                         else {
-                            andrOnEl.removeClass('warn');
-                            andrOnEl.prop('title',`ON`);
+                            powerBadge(andrOnSel,false,`ON`);
                         }
 
                         used_support += operating * operating_cost;
@@ -8480,20 +8500,20 @@ function fastLoop(){
         // Power grid state
         global.city.power_total = -max_power;
         global.city.power = power_grid;
-        if (global.city.power < 0){
-            $('#powerMeter').addClass('low');
-            $('#powerMeter').removeClass('neutral');
-            $('#powerMeter').removeClass('high');
-        }
-        else if (global.city.power > 0){
-            $('#powerMeter').removeClass('low');
-            $('#powerMeter').removeClass('neutral');
-            $('#powerMeter').addClass('high');
-        }
-        else {
-            $('#powerMeter').removeClass('low');
-            $('#powerMeter').addClass('neutral');
-            $('#powerMeter').removeClass('high');
+        const meter = document.getElementById('powerMeter');
+        if (meter){
+            if (global.city.power < 0){
+                meter.classList.add('low');
+                meter.classList.remove('neutral','high');
+            }
+            else if (global.city.power > 0){
+                meter.classList.add('high');
+                meter.classList.remove('low','neutral');
+            }
+            else {
+                meter.classList.add('neutral');
+                meter.classList.remove('low','high');
+            }
         }
 
         if (p_on['world_controller'] && p_on['world_controller'] > 0){
@@ -8628,10 +8648,9 @@ function fastLoop(){
 
     // carport repair
     if (global.portal['carport']){
+        const carportCount = document.querySelector('#portal-carport .count');
         if (global.portal.carport.damaged > 0){
-            if (!$('#portal-carport .count').hasClass('has-text-alert')){
-                $('#portal-carport .count').addClass('has-text-alert');
-            }
+            if (carportCount){ carportCount.classList.add('has-text-alert'); }
             global.portal.carport.repair++;
             if (global.portal.carport.repair >= actions.portal.prtl_fortress.carport.repair()){
                 global.portal.carport.repair = 0;
@@ -8641,9 +8660,7 @@ function fastLoop(){
             global.portal.carport.damaged = Math.min(global.portal.carport.damaged, jobScale(global.portal.carport.count));
         }
         else {
-            if ($('#portal-carport .count').hasClass('has-text-alert')){
-                $('#portal-carport .count').removeClass('has-text-alert');
-            }
+            if (carportCount){ carportCount.classList.remove('has-text-alert'); }
         }
     }
 
@@ -8670,9 +8687,10 @@ function fastLoop(){
     let easter = eventActive('easter');
     if (easter.active){
         for (i=1; i<=18; i++){
-            if ($(`#egg${i}`).length > 0 && !$(`#egg${i}`).hasClass('binded')){
+            const egg = document.getElementById(`egg${i}`);
+            if (egg && !egg.classList.contains('binded')){
                 easterEggBind(i);
-                $(`#egg${i}`).addClass('binded');
+                egg.classList.add('binded');
             }
         }
     }
@@ -8680,15 +8698,17 @@ function fastLoop(){
     let halloween = eventActive('halloween');
     if (halloween.active){
         for (i=1; i<=8; i++){
-            if ($(`#treat${i}`).length > 0 && !$(`#treat${i}`).hasClass('binded')){
+            const treat = document.getElementById(`treat${i}`);
+            if (treat && !treat.classList.contains('binded')){
                 trickOrTreatBind(i,false);
-                $(`#treat${i}`).addClass('binded');
+                treat.classList.add('binded');
             }
         }
         for (i=1; i<=8; i++){
-            if ($(`#trick${i}`).length > 0 && !$(`#trick${i}`).hasClass('binded')){
+            const trick = document.getElementById(`trick${i}`);
+            if (trick && !trick.classList.contains('binded')){
                 trickOrTreatBind(i,true);
-                $(`#trick${i}`).addClass('binded');
+                trick.classList.add('binded');
             }
         }
     }
@@ -8723,30 +8743,7 @@ function midLoop(){
         Object.keys(actions.evolution).forEach(function (action){
             if (actions.evolution[action] && actions.evolution[action].cost){
                 let c_action = actions.evolution[action];
-                let element = $('#'+c_action.id);
-                if (element.length > 0){
-                    if (checkAffordable(c_action,true)){
-                        if (element.hasClass('cnam')){
-                            element.removeClass('cnam');
-                        }
-                        if (checkAffordable(c_action)){
-                            if (element.hasClass('cna')){
-                                element.removeClass('cna');
-                            }
-                        }
-                        else if (!element.hasClass('cna')){
-                            element.addClass('cna');
-                        }
-                    }
-                    else {
-                        if (!element.hasClass('cnam')){
-                            element.addClass('cnam');
-                        }
-                        if (!element.hasClass('cna')){
-                            element.addClass('cna');
-                        }
-                    }
-                }
+                affordTint(c_action);
             }
         });
     }
@@ -11065,13 +11062,9 @@ function midLoop(){
             else if (global.resource[res].amount < 0){
                 //global.resource[res].amount = 0;
             }
-            if (global.resource[res].amount >= global.resource[res].max * 0.99){
-                if (!$(`#res${res} .count`).hasClass('has-text-warning')){
-                    $(`#res${res} .count`).addClass('has-text-warning');
-                }
-            }
-            else if ($(`#res${res} .count`).hasClass('has-text-warning')){
-                $(`#res${res} .count`).removeClass('has-text-warning');
+            const resCount = document.querySelector(`#res${res} .count`);
+            if (resCount){
+                resCount.classList.toggle('has-text-warning', global.resource[res].amount >= global.resource[res].max * 0.99);
             }
         });
 
@@ -11402,30 +11395,7 @@ function midLoop(){
         cityList.forEach(function (action){
             if (actions.city[action] && actions.city[action].cost){
                 let c_action = actions.city[action];
-                let element = $('#'+c_action.id);
-                if (element.length > 0){
-                    if (checkAffordable(c_action,true)){
-                        if (element.hasClass('cnam')){
-                            element.removeClass('cnam');
-                        }
-                        if (checkAffordable(c_action)){
-                            if (element.hasClass('cna')){
-                                element.removeClass('cna');
-                            }
-                        }
-                        else if (!element.hasClass('cna')){
-                            element.addClass('cna');
-                        }
-                    }
-                    else {
-                        if (!element.hasClass('cnam')){
-                            element.addClass('cnam');
-                        }
-                        if (!element.hasClass('cna')){
-                            element.addClass('cna');
-                        }
-                    }
-                }
+                affordTint(c_action);
                 if (global.city[action]){
                     let tc = timeCheck(c_action,false,true);
                     global.city[action]['time'] = timeFormat(tc.t);
@@ -11437,30 +11407,7 @@ function midLoop(){
         Object.keys(actions.tech).forEach(function (action){
             if (actions.tech[action] && actions.tech[action].cost){
                 let c_action = actions.tech[action];
-                let element = $('#'+c_action.id);
-                if (element.length > 0){
-                    if (checkAffordable(c_action,true)){
-                        if (element.hasClass('cnam')){
-                            element.removeClass('cnam');
-                        }
-                        if (checkAffordable(c_action)){
-                            if (element.hasClass('cna')){
-                                element.removeClass('cna');
-                            }
-                        }
-                        else if (!element.hasClass('cna')){
-                            element.addClass('cna');
-                        }
-                    }
-                    else {
-                        if (!element.hasClass('cnam')){
-                            element.addClass('cnam');
-                        }
-                        if (!element.hasClass('cna')){
-                            element.addClass('cna');
-                        }
-                    }
-                }
+                affordTint(c_action);
             }
         });
 
@@ -11471,30 +11418,7 @@ function midLoop(){
                     let s_region = actions[location][region][action] && actions[location][region][action].hasOwnProperty('region') ? actions[location][region][action].region : location;
                     if ((global[s_region][action] || actions[location][region][action].grant) && actions[location][region][action] && actions[location][region][action].cost){
                         let c_action = actions[location][region][action];
-                        let element = $('#'+c_action.id);
-                        if (element.length > 0){
-                            if (checkAffordable(c_action,true)){
-                                if (element.hasClass('cnam')){
-                                    element.removeClass('cnam');
-                                }
-                                if (checkAffordable(c_action)){
-                                    if (element.hasClass('cna')){
-                                        element.removeClass('cna');
-                                    }
-                                }
-                                else if (!element.hasClass('cna')){
-                                    element.addClass('cna');
-                                }
-                            }
-                            else {
-                                if (!element.hasClass('cnam')){
-                                    element.addClass('cnam');
-                                }
-                                if (!element.hasClass('cna')){
-                                    element.addClass('cna');
-                                }
-                            }
-                        }
+                        affordTint(c_action);
                         if (global[s_region][action]){
                             global[s_region][action]['time'] = timeFormat(timeCheck(c_action));
                         }
@@ -11814,7 +11738,7 @@ function midLoop(){
                 global.city.s_alter.harvest--;
             }
 
-            if ($(`#popper[data-id="city-s_alter"]`).length > 0){
+            if (document.querySelector(`#popper[data-id="city-s_alter"]`)){
                 updateDesc(actions.city.s_alter,'city','s_alter');
             }
         }
@@ -12215,57 +12139,62 @@ function midLoop(){
         }
         moveShips(webWorker.midRatio / webWorker.longRatio);
 
-        if ($('#mapCanvas').length > 0) {
+        if (document.getElementById('mapCanvas')) {
             drawMap();
         }
     }
     
     resourceAlt();
 
-    $(`.costList`).each(function (){
-        $(this).children().each(function (){
-            let elm = $(this);
-            this.className.split(/\s+/).forEach(function(cls){
-                if (cls.startsWith(`res-`)){
-                    let res = cls.split(`-`)[1];
-                    if (global.resource.hasOwnProperty(res)){
-                        let res_val = elm.attr(`data-${res}`);
-                        let fail_max = global.resource[res].max >= 0 && res_val > global.resource[res].max ? true : false;
-                        let avail = elm.attr(`data-ok`) ? elm.attr(`data-ok`) : 'has-text-dark';
-                        if (global.resource[res].amount + global.resource[res].diff < res_val || fail_max){
-                            if (elm.hasClass(avail)){
-                                elm.removeClass(avail);
-                                elm.addClass('has-text-danger');
-                            }
-                        }
-                        else if (elm.hasClass('has-text-danger') || elm.hasClass('has-text-alert')){
-                            elm.removeClass('has-text-danger');
-                            elm.addClass(avail);
-                        }
+    const costLists = document.querySelectorAll(`.costList`);
+    for (let c=0; c<costLists.length; c++){
+        const kids = costLists[c].children;
+        for (let k=0; k<kids.length; k++){
+            const elm = kids[k];
+            const classes = elm.className.split(/\s+/);
+            for (let n=0; n<classes.length; n++){
+                if (!classes[n].startsWith(`res-`)){ continue; }
+                let res = classes[n].split(`-`)[1];
+                if (!global.resource.hasOwnProperty(res)){ continue; }
+                let res_val = elm.getAttribute(`data-${res}`);
+                let fail_max = global.resource[res].max >= 0 && res_val > global.resource[res].max ? true : false;
+                let avail = elm.getAttribute(`data-ok`) ? elm.getAttribute(`data-ok`) : 'has-text-dark';
+                if (global.resource[res].amount + global.resource[res].diff < res_val || fail_max){
+                    if (elm.classList.contains(avail)){
+                        elm.classList.remove(avail);
+                        elm.classList.add('has-text-danger');
                     }
                 }
-            });
-        });
-    });
+                else if (elm.classList.contains('has-text-danger') || elm.classList.contains('has-text-alert')){
+                    elm.classList.remove('has-text-danger');
+                    elm.classList.add(avail);
+                }
+            }
+        }
+    }
 
     const isMobileLayout = window.innerWidth <= 768;
+
+    const resourcesEl = document.getElementById('resources');
+    const msgQueueEl = document.getElementById('msgQueue');
+    const buildQueueEl = document.getElementById('buildQueue');
 
     if (isMobileLayout) {
         // On mobile the CSS controls heights; clear any previously-set inline heights
         // so they don't fight the responsive stylesheet.
-        $(`#resources`).css('height', '');
-        $(`#msgQueue`).css('height', '');
-        $(`#buildQueue`).css('height', '');
+        if (resourcesEl){ resourcesEl.style.height = ''; }
+        if (msgQueueEl){ msgQueueEl.style.height = ''; }
+        if (buildQueueEl){ buildQueueEl.style.height = ''; }
     } else {
-        let msgHeight = $(`#msgQueue`).height();
-        let buildHeight = $(`#buildQueue`).height();
-        let totHeight = $(`.leftColumn`).height();
-        let rem = $(`#topBar`).height();
+        let msgHeight = elHeight(msgQueueEl);
+        let buildHeight = elHeight(buildQueueEl);
+        let totHeight = elHeight(document.querySelector(`.leftColumn`));
+        let rem = elHeight(document.getElementById('topBar'));
         let min = rem * 5;
         let max = totHeight - (5 * rem);
 
         if (global.settings.q_resize !== 'manual') {
-            const buildQueueElement = $(`#buildQueue`).get(0);
+            const buildQueueElement = buildQueueEl;
             if (['auto', 'grow'].includes(global.settings.q_resize) &&
                 buildQueueElement.scrollHeight > buildQueueElement.clientHeight
             ) {
@@ -12306,34 +12235,36 @@ function midLoop(){
             }
         }
 
-        if ($(`#msgQueue`).hasClass('right')){
-            $(`#resources`).height(`calc(100vh - 5rem)`);
-            if ($(`#msgQueue`).hasClass('vscroll')){
-                $(`#msgQueue`).removeClass('vscroll');
-                $(`#msgQueue`).addClass('sticky');
+        if (msgQueueEl && msgQueueEl.classList.contains('right')){
+            setElHeight(resourcesEl,`calc(100vh - 5rem)`);
+            if (msgQueueEl.classList.contains('vscroll')){
+                msgQueueEl.classList.remove('vscroll');
+                msgQueueEl.classList.add('sticky');
             }
             msgHeight = `calc(100vh - ${buildHeight}px - 6rem)`;
         }
         else {
-            $(`#resources`).height(`calc(100vh - 5rem - ${buildHeight}px - ${msgHeight}px)`);
-            if ($(`#msgQueue`).hasClass('sticky')){
-                $(`#msgQueue`).removeClass('sticky');
-                $(`#msgQueue`).addClass('vscroll');
+            setElHeight(resourcesEl,`calc(100vh - 5rem - ${buildHeight}px - ${msgHeight}px)`);
+            if (msgQueueEl && msgQueueEl.classList.contains('sticky')){
+                msgQueueEl.classList.remove('sticky');
+                msgQueueEl.classList.add('vscroll');
                 msgHeight = 100;
             }
         }
 
-        $(`#msgQueue`).height(msgHeight);
-        $(`#buildQueue`).height(buildHeight);
+        setElHeight(msgQueueEl,msgHeight);
+        setElHeight(buildQueueEl,buildHeight);
         global.settings.msgQueueHeight = msgHeight;
         global.settings.buildQueueHeight = buildHeight;
     }
 
-    if ($(`#mechList`).length > 0){
-        $(`#mechList`).css('height',`calc(100vh - 11.5rem - ${$(`#mechAssembly`).height()}px)`);
+    const mechList = document.getElementById('mechList');
+    if (mechList){
+        mechList.style.height = `calc(100vh - 11.5rem - ${elHeight(document.getElementById('mechAssembly'))}px)`;
     }
-    if ($(`#shipList`).length > 0){
-        $(`#shipList`).css('height',`calc(100vh - 11.5rem - ${$(`#shipPlans`).height()}px)`);
+    const shipList = document.getElementById('shipList');
+    if (shipList){
+        shipList.style.height = `calc(100vh - 11.5rem - ${elHeight(document.getElementById('shipPlans'))}px)`;
     }
 }
 
@@ -12402,9 +12333,13 @@ function longLoop(){
                     let space = convertSpaceSector(parts[0]);
                     let region = parts[0] === 'city' ? parts[0] : space;
                     let c_action = parts[0] === 'city' ? actions.city[parts[1]] : actions[space][parts[0]][parts[1]];
-                    let breaker = $(`#pg${c_action.id}${grid}`);
+                    // getElementById rather than a selector: these ids concatenate an action id
+                    // with a grid name and never need parsing as CSS. The || short-circuits before
+                    // the classList read when the breaker is absent, exactly as the empty jQuery
+                    // set did.
+                    let breaker = document.getElementById(`pg${c_action.id}${grid}`);
 
-                    if (grids[grid].s && (breaker.length === 0 || (gridEnabled(c_action,region,parts[0],parts[1]) && breaker.hasClass('inactive')))){
+                    if (grids[grid].s && (!breaker || (gridEnabled(c_action,region,parts[0],parts[1]) && breaker.classList.contains('inactive')))){
                         updatePowerGrid = true;
                     }
                 });
@@ -12418,16 +12353,17 @@ function longLoop(){
             if (webWorker.w){
                 webWorker.w.terminate();
             }
-            let bang = $('<div class="bigbang"></div>');
-            $('body').append(bang);
+            let bang = document.createElement('div');
+            bang.className = 'bigbang';
+            document.body.appendChild(bang);
             setTimeout(function(){
-                bang.addClass('burn');
+                bang.classList.add('burn');
             }, 125);
             setTimeout(function(){
-                bang.addClass('b');
+                bang.classList.add('b');
             }, 150);
             setTimeout(function(){
-                bang.addClass('c');
+                bang.classList.add('c');
             }, 2000);
             setTimeout(function(){
                 vacuumCollapse();
@@ -13663,7 +13599,11 @@ function longLoop(){
 
         if (global.race['orbit_decay']){
             if (!global.race['orbit_decayed']){
-                $(`#infoTimer`).html(`T-${global.race['orbit_decay'] - global.stats.days}`);
+                // The timer is only on screen on some tabs; a miss stays a no-op, as .html() was.
+                const infoTimer = document.getElementById('infoTimer');
+                if (infoTimer){
+                    infoTimer.innerHTML = `T-${global.race['orbit_decay'] - global.stats.days}`;
+                }
             }
             orbitDecayed();
         }
@@ -13735,13 +13675,13 @@ function longLoop(){
     }
 
     if (eventActive('fool')){
-        if (!$(`body`).hasClass('fool')){
-            $(`body`).addClass('fool');
+        if (!document.body.classList.contains('fool')){
+            document.body.classList.add('fool');
             drawAchieve({fool: true});
         }
     }
-    else if ($(`body`).hasClass('fool')){
-        $(`body`).removeClass('fool');
+    else if (document.body.classList.contains('fool')){
+        document.body.classList.remove('fool');
         drawAchieve();
     }
 
