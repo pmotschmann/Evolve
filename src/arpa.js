@@ -2508,11 +2508,21 @@ function geneSlotPanel(parent,primary,primaryMethods){
             },
             rankUp(i){
                 let s = geneSlots()[i];
-                if (!s || !s.g || s.r >= geneRankCap(i)){ return; }
-                let cost = geneRankCost(s.r + 1,s.g,i);
-                if (global.resource.Genes.amount < cost){ return; }
-                global.resource.Genes.amount -= cost;
-                s.r++;
+                if (!s || !s.g){ return; }
+
+                let rankCap = geneRankCap(i);
+                if (s.r >= rankCap){ return; }
+
+                let keyMult = keyMultiplier();
+                if (keyMult > rankCap - s.r)
+                    keyMult = rankCap - s.r;
+
+                for (let n = 0; n < keyMult; n++){
+                    let cost = geneRankCost(s.r + 1,s.g,i);
+                    if (global.resource.Genes.amount < cost){ return; }
+                    global.resource.Genes.amount -= cost;
+                    s.r++;
+                }
                 afterGeneChange(s.g);
             },
             breakCap(i){
@@ -2730,6 +2740,7 @@ function afterGeneChange(gene){
     syncGenes();
     if (gene === 'mastery'){ calc_mastery(true); }
     if (gene === 'persuasive' || gene === 'logistician'){ updateTrades(); }
+    if (gene === 'queuemaster'){ calcQueueMax(); buildQueue(); }
     genetics();
 }
 

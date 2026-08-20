@@ -2321,7 +2321,11 @@ export function armyRating(val,type,wound,analysis){
             data.push({ k: 'trait_pathetic_name', v: -(pathetic) });
         }
         if (type === 'hellArmy'){
-            rating *= geneBonus('infernal');
+            let infernal = geneBonus('infernal');
+            if (infernal > 1){
+                army *= infernal;
+                data.push({ k: 'trait_pathetic_name', v: (pathetic - 1) });
+            }
         }
         if (global.race['holy'] && type === 'hellArmy'){
             let holy = (traits.holy.vars()[0] / 100);
