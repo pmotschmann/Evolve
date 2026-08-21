@@ -127,12 +127,26 @@ export function achievePage(universe, filter){
             list.append(achieve);
 
             let color = global.stats.achieve[achievement] && global.stats.achieve[achievement][uAffix] && global.stats.achieve[achievement][uAffix] > 0 ? 'warning' : 'fade';
-            achieve.append(`<span id="a-${achievement}" class="achieve has-text-${color}">${achievements[achievement].name}</span>`);
+            achieve.append(`<span id="a-${achievement}" class="achieve has-text-${color}" aria-hidden="true">${achievements[achievement].name}</span>`);
+            achieve.append(`<button id="a-sr-expand-${achievement}" aria-expanded="false" aria-controls="a-sr-desc-${achievement}" class="is-sr-only">${achievements[achievement].name}</button><div id="a-sr-desc-${achievement}" class="is-sr-only" aria-hidden="true"></div>`);
 
             let emblems = format_emblem(achievement,16,false,false,universe);
             achieve.append(`<span class="icons">${emblems}</span>`);
             
             achieveDesc(achievement, color === 'warning' ? true : false, universe);
+
+            $(`#a-sr-expand-${achievement}`).on('click',function(){
+                let expander = $(`#a-sr-expand-${achievement}`);
+                let descDiv = $(`#a-sr-desc-${achievement}`);
+                if (expander.attr('aria-expanded') === 'false'){
+                    expander.attr('aria-expanded', 'true');
+                    descDiv.removeAttr('aria-hidden');
+                }
+                else {
+                    expander.attr('aria-expanded', 'false');
+                    descDiv.attr('aria-hidden', true);
+                }
+            });
         });
     });
 }
@@ -155,9 +169,24 @@ export function featPage(){
         let color = global.stats.feat[feat] && global.stats.feat[feat] > 0 ? 'warning' : 'fade';
         let baseIcon = getBaseIcon(feat,'feat');
         let star = global.stats.feat[feat] > 1 ? `<p class="flair" title="${sLevel(global.stats.feat[feat])} ${loc(baseIcon)}"><svg class="star${global.stats.feat[feat]}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(baseIcon)}" xml:space="preserve">${svgIcons(baseIcon)}</svg></p>` : '';
-        achieve.append(`<span id="f-${feat}" class="achieve has-text-${color}">${feats[feat].name}</span>${star}`);
+        achieve.append(`<span id="f-${feat}" class="achieve has-text-${color}" aria-hidden="true">${feats[feat].name}</span>`);
+        achieve.append(`<button id="f-sr-expand-${feat}" aria-expanded="false" aria-controls="f-sr-desc-${feat}" class="is-sr-only">${feats[feat].name}</button><div id="f-sr-desc-${feat}" class="is-sr-only" aria-hidden="true"></div>`);
+        achieve.append(`${star}`);
 
         featDesc(feat, color === 'warning' ? true : false);
+
+        $(`#f-sr-expand-${feat}`).on('click',function(){
+            let expander = $(`#f-sr-expand-${feat}`);
+            let descDiv = $(`#f-sr-desc-${feat}`);
+            if (expander.attr('aria-expanded') === 'false'){
+                expander.attr('aria-expanded', 'true');
+                descDiv.removeAttr('aria-hidden');
+            }
+            else {
+                expander.attr('aria-expanded', 'false');
+                descDiv.attr('aria-hidden', true);
+            }
+        });
     });
 }
 
@@ -380,6 +409,7 @@ function achieveDesc(achievement,showFlair,universe){
         content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${desc}</div>${flair}`);
     }
     popover(`a-${achievement}`,content,options);
+    $(`#a-sr-desc-${achievement}`).append(content.clone());
 }
 
 function featDesc(feat,showFlair){
@@ -518,4 +548,5 @@ function featDesc(feat,showFlair){
         content = $(`<div class="has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${flair}`);
     }
     popover(`f-${feat}`,content,options);
+    $(`#f-sr-desc-${feat}`).append(content.clone());
 }
