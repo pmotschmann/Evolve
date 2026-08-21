@@ -253,7 +253,7 @@ const outerTruth = {
         },
         titan_mine: {
             id: 'space-titan_mine',
-            title(){ return structName('mine'); },
+            title(){ return structName('titan_mine'); },
             desc(){
                 return `<div>${loc('space_red_mine_desc')}</div><div class="has-text-special">${loc('space_support',[planetName().titan])}</div>`;
             },

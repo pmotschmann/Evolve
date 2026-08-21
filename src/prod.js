@@ -115,9 +115,9 @@ export function production(id,val,wiki){
                     };
                 }
                 case 'stone':
-                    return highPopAdjust(0.75);
+                    return highPopAdjust(global.tech['resettle'] ? 0.025 : 0.75);
                 case 'asbestos':
-                    return highPopAdjust(1.25);
+                    return highPopAdjust(global.tech['resettle'] ? 0.03 : 1.25);
                 case 'aluminium':
                     return highPopAdjust(0.066);
             }

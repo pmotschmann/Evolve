@@ -7,7 +7,7 @@ import { defineResources, unlockCrates, unlockContainers, crateValue, containerV
 import { loadFoundry, defineJobs, jobScale, workerScale, job_data } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter, factoryData, cancelRituals } from './industry.js';
 import { defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating, garrisonSize, govEffect } from './civics.js';
-import { spaceTech, interstellarTech, galaxyTech, incrementStruct, universe_affixes, renderSpace, piracy, fuel_adjust, isStargateOn, spaceSectors, checkRequirements } from './space.js';
+import { spaceTech, interstellarTech, galaxyTech, incrementStruct, universe_affixes, renderSpace, piracy, fuel_adjust, isStargateOn, spaceSectors, checkRequirements, planetName } from './space.js';
 import { renderFortress, fortressTech, warlordSetup } from './portal.js';
 import { edenicTech, renderEdenic } from './edenic.js';
 import { tauCetiTech, renderTauCeti, loneSurvivor } from './truepath.js';
@@ -8472,6 +8472,14 @@ export function structName(type){
         case 'mine':
         {
             return halloween.active ? loc(`events_halloween_mine`) : loc('city_mine');
+        }
+        case 'red_mine':
+        {
+            return global.tech['resettle'] ? loc('space_mine',[planetName().red]) : (halloween.active ? loc(`events_halloween_mine`) : loc('city_mine'));
+        }
+        case 'titan_mine':
+        {
+            return global.tech['resettle'] ? loc('space_mine',[planetName().titan]) : (halloween.active ? loc(`events_halloween_mine`) : loc('city_mine'));
         }
         case 'coal_mine':
         {

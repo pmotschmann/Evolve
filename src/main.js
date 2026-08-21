@@ -6186,10 +6186,7 @@ function fastLoop(){
             let stone_prod_name = global.race['warlord'] ? job_data.miner.name() : loc('workers');
             quarriers = workerScale(quarriers,'quarry_worker');
             let stone_base = quarriers * racialTrait(quarriers,'miner');
-            // This quarry yields Amber for a sappy race and Stone for everyone else, so the two
-            // genes that raise it are mutually exclusive: Chlorophyll is the Amber one, Stonecutter
-            // the Stone one. Gated here as well as kept out of the random pools, so neither does
-            // anything on the wrong race even if slotted by hand.
+            // This quarry yields Amber for a sappy race and Stone for everyone else.
             if (global.race['sappy']){
                 stone_base *= geneBonus('chlorophyll');
             }
@@ -6259,8 +6256,8 @@ function fastLoop(){
             let power_mult = 1;
             let quarry_discharge = false;
             let zigValStone = 1;
-            if (global.race['cataclysm'] || global.race['orbit_decayed']){
-                stone_prod_name = structName('mine');
+            if (global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['resettle']){
+                stone_prod_name = structName('red_mine');
 
                 if (global.tech['mars'] && support_on['red_mine']){
                     let mine_base = support_on['red_mine'] * workerScale(global.civic.colonist.workers,'colonist');
@@ -6299,7 +6296,7 @@ function fastLoop(){
             breakdown.p['Stone'][stone_prod_name] = stone_base + 'v';
             if (stone_base > 0){
                 if (zigValStone > 1){
-                    breakdown.p['Stone'][`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
+                    breakdown.p['Stone'][`ᄂ${loc('space_red_ziggurat_title')}+0`] = ((zigVal - 1) * 100) + '%';
                 }
                 breakdown.p['Stone'][`ᄂ${loc('city_rock_quarry')}`] = ((rock_quarry - 1) * 100) + '%';
                 breakdown.p['Stone'][`ᄂ${loc('power')}`] = ((power_mult - 1) * 100) + '%';
@@ -6314,7 +6311,7 @@ function fastLoop(){
                 breakdown.p['Chrysotile'][stone_prod_name] = asbestos_base + 'v';
                 if (asbestos_base > 0){
                     if (zigValStone > 1){
-                        breakdown.p['Chrysotile'][`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
+                        breakdown.p['Chrysotile'][`ᄂ${loc('space_red_ziggurat_title')}+0`] = ((zigVal - 1) * 100) + '%';
                     }
                     breakdown.p['Chrysotile'][`ᄂ${loc('city_rock_quarry')}`] = ((rock_quarry - 1) * 100) + '%';
                     breakdown.p['Chrysotile'][`ᄂ${loc('power')}`] = ((power_mult - 1) * 100) + '%';
@@ -6984,7 +6981,7 @@ function fastLoop(){
                 let alum_base = production('titan_mine','aluminium') * support_on['titan_mine'] * titan_colonists * production('psychic_boost','Aluminium');
                 let alum_delta = alum_base * shrineMetal.mult * mworks.Aluminium * global_multiplier * qs_multiplier * synd * zigVal;
                 alum_delta *= 1 + (refinery / 100);
-                breakdown.p['Aluminium'][`${loc('city_mine')}+0`] = +(alum_base).toFixed(3) + 'v';
+                breakdown.p['Aluminium'][`${structName('titan_mine')}+0`] = +(alum_base).toFixed(3) + 'v';
                 if (alum_base > 0){
                     breakdown.p['Aluminium'][`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
                     breakdown.p['Aluminium'][`ᄂ${loc('space_red_ziggurat_title')}+2`] = ((zigVal - 1) * 100) + '%';
@@ -7705,7 +7702,7 @@ function fastLoop(){
             let titan_colonists = p_on['ai_colonist'] ? workerScale(global.civic.titan_colonist.workers,'titan_colonist') + jobScale(p_on['ai_colonist']) : workerScale(global.civic.titan_colonist.workers,'titan_colonist');
             let adam_base = production('titan_mine','adamantite') * support_on['titan_mine'] * titan_colonists * production('psychic_boost','Adamantite');
             let adam_delta = adam_base * shrineMetal.mult * global_multiplier * qs_multiplier * synd * zigVal;
-            breakdown.p['Adamantite'][loc('city_mine')] = adam_base + 'v';
+            breakdown.p['Adamantite'][structName('titan_mine')] = adam_base + 'v';
             if (adam_base > 0){
                 breakdown.p['Adamantite'][`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
                 breakdown.p['Adamantite'][`ᄂ${loc('space_red_ziggurat_title')}+2`] = ((zigVal - 1) * 100) + '%';
@@ -7732,7 +7729,7 @@ function fastLoop(){
             let titan_colonists = p_on['ai_colonist'] ? workerScale(global.civic.titan_colonist.workers,'titan_colonist') + jobScale(p_on['ai_colonist']) : workerScale(global.civic.titan_colonist.workers,'titan_colonist');
             let stone_base = production('titan_mine','stone') * support_on['titan_mine'] * titan_colonists * production('psychic_boost','Stone');
             let stone_delta = stone_base * global_multiplier * qs_multiplier * synd * zigVal;
-            breakdown.p['Stone'][loc('city_mine')] = +(stone_base).toFixed(4) + 'v';
+            breakdown.p['Stone'][structName('titan_mine')] = +(stone_base).toFixed(4) + 'v';
             if (stone_base > 0){
                 breakdown.p['Stone'][`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
                 breakdown.p['Stone'][`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
@@ -7741,17 +7738,16 @@ function fastLoop(){
             modRes('Stone', stone_delta * time_multiplier);
         }
 
-        // Chrysotile from the Titan mines, once resettlement reopens them and for the races that can
-        // work it at all.
+        // Chrysotile from the Titan mines, once resettlement reopens them
         if (global.tech['resettle'] && global.resource.Chrysotile.display && global.space['titan_mine']){
             let synd = syndicate('spc_titan');
             let titan_colonists = p_on['ai_colonist'] ? workerScale(global.civic.titan_colonist.workers,'titan_colonist') + jobScale(p_on['ai_colonist']) : workerScale(global.civic.titan_colonist.workers,'titan_colonist');
             let cry_base = production('titan_mine','chrysotile') * support_on['titan_mine'] * titan_colonists * production('psychic_boost','Chrysotile');
             let cry_delta = cry_base * global_multiplier * qs_multiplier * synd * zigVal;
-            breakdown.p['Chrysotile'][loc('city_mine')] = +(cry_base).toFixed(4) + 'v';
+            breakdown.p['Chrysotile'][structName('titan_mine')] = +(cry_base).toFixed(4) + 'v';
             if (cry_base > 0){
                 breakdown.p['Chrysotile'][`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
-                breakdown.p['Chrysotile'][`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
+                breakdown.p['Chrysotile'][`ᄂ${loc('space_red_ziggurat_title')}+1`] = ((zigVal - 1) * 100) + '%';
                 breakdown.p['Chrysotile'][`ᄂ${loc('quarantine')}`] = ((qs_multiplier - 1) * 100) + '%';
             }
             modRes('Chrysotile', (cry_delta * time_multiplier) * geneBonus('fireweave'));
