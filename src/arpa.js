@@ -2319,9 +2319,9 @@ function geneSlotPanel(parent,primary,primaryMethods){
         let marker = extra
             ? `<span class="slotBase slotBaseExtra">&bull;</span>`
             : `<span class="slotBase base${base}" v-bind:class="{ paired: answers(${i}), bonded: lit(${i}) }">${base}</span>`;
-        // An extra slot's gene is fixed there: nothing to fill, nothing to empty.
+        // An extra slot's gene is fixed there: nothing to fill, nothing to swap out.
         let clear = extra ? `` :
-            `<button id="geneClear${i}" class="button geneClear" v-show="filled(${i})" @click="clearSlot(${i})" :aria-label="clearLabel(${i})">&times;</button>`;
+            `<button id="geneClear${i}" class="button geneClear" v-show="filled(${i})" @click="replaceGene(${i})" :aria-label="replaceLabel(${i})">&times;</button>`;
         let act = `<button id="geneRank${i}" class="button" v-show="canRank(${i})" @click="rankUp(${i})" :aria-label="rankLabel(${i})">${loc('arpa_gene_rank_btn')}</button>
                 <button id="geneBreak${i}" class="button" v-show="canBreak(${i})" @click="breakCap(${i})" :aria-label="breakLabel(${i})">${loc('arpa_gene_break_btn')}</button>`
             + (extra ? `` : `
@@ -2441,9 +2441,9 @@ function geneSlotPanel(parent,primary,primaryMethods){
             answers(i){ return geneSlotAnswers(i); },
             // Fully lit: right slot and bonded with its partner.
             lit(i){ return geneSlotAnswers(i) && geneSlotMatched(i); },
-            clearLabel(i){
+            replaceLabel(i){
                 let s = geneSlots()[i];
-                return s && s.g ? loc('arpa_gene_clear_pop',[traitSkin('name',s.g)]) : loc('arpa_gene_clear');
+                return s && s.g ? loc('arpa_gene_replace_pop',[traitSkin('name',s.g)]) : loc('arpa_gene_replace');
             },
             geneName(g){ return traitSkin('name',g); },
             geneDesc(g){
@@ -2485,26 +2485,23 @@ function geneSlotPanel(parent,primary,primaryMethods){
             },
             pickGene(i){
                 if (this.filled(i) || geneSlotExtra(i)){ return; }
+                this.openGenePicker(i);
+            },
+            replaceGene(i){
+                if (!this.filled(i) || geneSlotExtra(i)){ return; }
+                this.openGenePicker(i);
+            },
+            openGenePicker(i){
                 let modal = this.$buefy.modal.open({
                     hasModalCard: false,
                     content: '<div id="modalBox" class="modalBox"></div>'
                 });
                 let checkExist = setInterval(function(){
-                    if ($('#modalBox').length > 0){
+                    if (document.getElementById('modalBox')){
                         clearInterval(checkExist);
                         genePickModal(i,modal);
                     }
                 }, 50);
-            },
-            clearSlot(i){
-                let s = geneSlots()[i];
-                if (!s || !s.g){ return; }
-                // A granted extra slot keeps its gene for good.
-                if (geneSlotExtra(i)){ return; }
-                let gene = s.g;
-                geneSlots()[i] = false;
-                delete geneBreaks()[i];
-                afterGeneChange(gene);
             },
             rankUp(i){
                 let s = geneSlots()[i];
@@ -2553,7 +2550,10 @@ function geneSlotPanel(parent,primary,primaryMethods){
         popover(`geneClearPop${i}`, function(){
             let s = geneSlots()[i];
             if (!s || !s.g){ return ``; }
-            return loc('arpa_gene_clear_pop',[traitSkin('name',s.g)]);
+            let cost = geneSlotCost(i);
+            let afford = global.resource.Genes.amount >= cost ? 'has-text-success' : 'has-text-danger';
+            return `<div class="has-text-warning">${loc('arpa_gene_replace_pop',[traitSkin('name',s.g)])}</div>`
+                 + `<div class="${afford}">${loc('arpa_gene_replace_cost',[cost,global.resource.Genes.name])}</div>`;
         },
         {
             elm: `#geneClear${i}`,
@@ -2662,7 +2662,12 @@ function genePickModal(slot,modal){
     // read the grid rather than something to remember from the strand behind the modal.
     let want = geneSlotBase(slot);
     let badge = want ? ` <span class="pickBase base${want}">${want}</span>` : ``;
-    $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${loc('arpa_gene_pick',[geneSlotLabel(slot)])}${badge}</p>`));
+    // The same grid serves an empty slot and a swap; only the heading tells them apart.
+    let held = geneSlots()[slot];
+    let title = held && held.g
+        ? loc('arpa_gene_replace_title',[geneSlotLabel(slot),traitSkin('name',held.g)])
+        : loc('arpa_gene_pick',[geneSlotLabel(slot)]);
+    $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${title}${badge}</p>`));
 
     let body = $(`<div id="genePick" class="modalBody genePick"></div>`);
     $('#modalBox').append(body);
@@ -2699,12 +2704,14 @@ function genePickModal(slot,modal){
             let cost = geneSlotCost(slot,gene);
             if (global.resource.Genes.amount < cost){ return; }
             if (geneSlotOf(gene) !== false){ return; }
+            let prev = geneSlots()[slot];
+            let displaced = prev && prev.g && prev.g !== gene ? prev.g : false;
             global.resource.Genes.amount -= cost;
             geneSlots()[slot] = { g: gene, r: 1 };
             delete geneBreaks()[slot];
             clearPopper();
             if (modal){ modal.close(); }
-            afterGeneChange(gene);
+            afterGeneChange(gene,displaced);
         });
 
         popover(`genePickPop_${gene}`,function(){
@@ -2736,11 +2743,14 @@ function genePickModal(slot,modal){
 }
 
 // Anything that has to happen once a gene's live rank changes.
-function afterGeneChange(gene){
+function afterGeneChange(gene,also){
     syncGenes();
-    if (gene === 'mastery'){ calc_mastery(true); }
-    if (gene === 'persuasive' || gene === 'logistician'){ updateTrades(); }
-    if (gene === 'queuemaster'){ calcQueueMax(); buildQueue(); }
+    [gene,also].forEach(function(g){
+        if (!g){ return; }
+        if (g === 'mastery'){ calc_mastery(true); }
+        if (g === 'persuasive' || g === 'logistician'){ updateTrades(); }
+        if (g === 'queuemaster'){ calcQueueMax(); buildQueue(); }
+    });
     genetics();
 }
 

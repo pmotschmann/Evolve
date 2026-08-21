@@ -992,7 +992,8 @@ export function loadFoundry(servants){
         : ((global.city['foundry'] && global.city['foundry'].count > 0) || global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation'] || global.race['warlord'] ? true : false);
     if (show){
         let element = $(servants ? '#skilledServants' : '#foundry');
-        let track = servants ? `{{ s.sused }} / {{ s.smax }}` : `{{ f.crafting }} / {{ c.max }}`;
+        // cmax() rather than c.max: the latter is only what the buildings grant, so the slots guildmaster adds never showed up here
+        let track = servants ? `{{ s.sused }} / {{ s.smax }}` : `{{ f.crafting }} / {{ cmax() }}`;
         let foundry = $(`<div class="job"><div class="foundry job_label"><h3 class="has-text-warning">${loc(servants ? 'civics_skilled_servants' : 'craftsman_assigned')}</h3><span :class="level()">${track}</span></div></div>`);
         element.append(foundry);
 
@@ -1064,6 +1065,8 @@ export function loadFoundry(servants){
             el: servants ? '#skilledServants' : '#foundry',
             data: bindData,
             methods: {
+                // Craftsman slots actually available: the buildings' allowance plus guildmaster.
+                cmax(){ return craftsmanMax(); },
                 add(res){
                     let keyMult = keyMultiplier();
                     let tMax = -1;

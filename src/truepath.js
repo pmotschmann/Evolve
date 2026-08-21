@@ -6090,8 +6090,12 @@ function playerAccuracy(scan,foe){
 
 // The horde aims with whatever each hull was built with, one ship at a time.
 const zSensorAccuracy = { visual: 0.15, radar: 0.3, lidar: 0.45, quantum: 0.6 };
-function foeAccuracy(foe){
-    return zSensorAccuracy.hasOwnProperty(foe.sensor) ? zSensorAccuracy[foe.sensor] : 0.25;
+const zHomeAccuracy = 2;    // accuracy multiplier for the horde while the fight is over Earth
+function foeAccuracy(foe,locationName){
+    let acc = zSensorAccuracy.hasOwnProperty(foe.sensor) ? zSensorAccuracy[foe.sensor] : 0.25;
+    if (locationName === 'spc_home'){ acc *= zHomeAccuracy; }
+    // Accuracy over 100% is reduced to 100%
+    return Math.min(1,acc);
 }
 
 // How much harder the horde hits once the Overmind final assault is launched.
@@ -6194,7 +6198,7 @@ function zEngage(locationName,foes){
         let live = guards.filter(s => s.damage < 100);
         if (live.length === 0){ return; }
         let ship = live[Math.floor(seededRandom(0,live.length,true))];
-        if (seededRandom(0,1,true) >= foeAccuracy(foe)){ return; }
+        if (seededRandom(0,1,true) >= foeAccuracy(foe,locationName)){ return; }
         let hit = combatDamage(foe,ship);
         ship.damage += hit;
         taken += hit;

@@ -11084,8 +11084,9 @@ function midLoop(){
 
         Object.keys(lCaps).forEach(function (job){
             global.civic[job].max = lCaps[job];
-            if (global.civic[job].workers > global.civic[job].max && global.civic[job].max !== -1){
-                global.civic[job].workers = global.civic[job].max;
+            let cap = (job === 'craftsman' && global.civic[job].max !== -1) ? craftsmanMax() : global.civic[job].max;
+            if (global.civic[job].workers > cap && cap !== -1){
+                global.civic[job].workers = cap;
             }
             else if (!global.civic[job].display || global.civic[job].workers < 0){
                 global.civic[job].workers = 0;

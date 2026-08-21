@@ -5080,8 +5080,8 @@ export const traits = {
         desc: loc('trait_archivist'),
         type: 'minor',
         base: 'T',
-        vars(r){ return [1]; },
-        weak(r){ return [0.5]; },
+        vars(r){ return [0.5]; },
+        weak(r){ return [0.25]; },
     },
     bureaucrat: { // Tax revenue
         name: loc('trait_bureaucrat_name'),
