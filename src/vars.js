@@ -1646,7 +1646,7 @@ global['beta'] = 33;
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
 }
-['Plasmid','AntiPlasmid','Phage','Dark','Harmony','AICore','Artifact','Blood_Stone','Supercoiled','TALENs'].forEach(function (res){
+['Plasmid','AntiPlasmid','Phage','Dark','Harmony','AICore','Artifact','Blood_Stone','Supercoiled','TALENs','Exons'].forEach(function (res){
     if (!global.prestige.hasOwnProperty(res)){
         global.prestige[res] = { count: 0 };
     }
@@ -1957,7 +1957,7 @@ export function setupStats(){
         'sac','tsac','know','tknow','portals','dkills','attacks','cfood','tfood','cstone','tstone',
         'clumber','tlumber','mad','bioseed','cataclysm','blackhole','ascend','descend','apotheosis',
         'terraform','aiappoc','matrix','retire','eden','zappoc','geck','dark','harmony','blood','cores','artifact',
-        'supercoiled','talens','cattle','tcattle','murders','tmurders','psykill','tpsykill','pdebt','uDead','zkills'
+        'supercoiled','talens','exons','cattle','tcattle','murders','tmurders','psykill','tpsykill','pdebt','uDead','zkills'
     ].forEach(function(k){
         if (!global.stats.hasOwnProperty(k)){
             global.stats[k] = 0;

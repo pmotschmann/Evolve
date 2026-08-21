@@ -7057,6 +7057,8 @@
   "resource_Supercoiled_trade_desc": "Additionally they increase trade volume gains by %0%.",
   "resource_TALENs_name": "TALENs",
   "resource_TALENs_desc": "Transcription Activator-Like Effector Nucleases (TALENs) are used to modify DNA. They can edit minor gene sequences accurately.",
+  "resource_Exons_name": "Exons",
+  "resource_Exons_desc": "Exons provide instructions needed to build proteins. They are used to create new genes and modify existing ones.",
   "resource_market_buy": "BUY",
   "resource_market_sell": "SELL",
   "resource_market_routes": "Routes",

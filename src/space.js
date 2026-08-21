@@ -2876,7 +2876,7 @@ const spaceProjects = {
             reqs: { outer: 6 },
             path: ['truepath'],
             condition(){
-                return global.space.mass_relay.count && !global.tech['resettle'] >= 100 ? true : false;
+                return global.space.mass_relay.count >= 100 && !global.tech['resettle'] ? true : false;
             },
             wiki: false,
             queue_complete(){ return 0; },

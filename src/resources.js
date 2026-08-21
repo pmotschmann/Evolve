@@ -1430,6 +1430,13 @@ function loadSpecialResource(name,color) {
                     desc.append($(`<span>${loc(`resource_${name}_desc`)}</span>`));
                 }
                 break;
+
+            case 'Exons':
+                {
+                    let exons = global.prestige.Exons.count;
+                    desc.append($(`<span>${loc(`resource_${name}_desc`)}</span>`));
+                }
+                break;
         }
         return desc;
     });

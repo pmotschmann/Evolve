@@ -15052,7 +15052,7 @@ const techs = {
         category: 'progress',
         era: 'matrioshka',
         path: ['truepath'],
-        reqs: { resettle: 21 },
+        reqs: { resettle: 21, locked: 1 },
         grant: ['resettle',22],
         cost: {
             Knowledge(){ return 31255000; }

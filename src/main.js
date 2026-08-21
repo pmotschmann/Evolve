@@ -11,7 +11,7 @@ import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMul
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types, spaceSectors } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
-import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYZcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, randomCoord, atShipyard, pinSalvage, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, moveShips, facilityFindings, orbitPeriod } from './truepath.js';
+import { renderTauCeti, syndicate, syndicateActive, shipFuelUse, spacePlanetStats, genXYZcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, randomCoord, atShipyard, pinSalvage, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, moveShips, facilityFindings, orbitPeriod } from './truepath.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
 import { defineGovernor, govern, govActive, removeTask } from './governor.js';
@@ -12910,9 +12910,7 @@ function longLoop(){
                 let dayStep = webWorker.offline ? webWorker.offlineScale : 1;
                 let fieldDays = Math.floor(global.stats.days / 2) - Math.floor((global.stats.days - dayStep) / 2);
 
-                // Hulls under way are advanced by moveShips (see truepath.js), which midLoop drives in
-                // fifth-of-a-day steps so they cross the map smoothly instead of a day at a time. By
-                // the time this runs, `transit` is the same whole number of days it always was.
+                // Ships under way are advanced by moveShips (see truepath.js)
                 global.space.shipyard.ships.forEach(function(ship){
                     if (!ship.inTransit){
                         ship.location.position = genXYZcoord(ship.location.name);
@@ -12923,9 +12921,8 @@ function longLoop(){
                         ship.damage -= atShipyard(ship) ? yardRepair * dayStep : fieldRepair * fieldDays;
                         if (ship.damage < 0){ ship.damage = 0; }
                     }
-                    // Wear and tear finds ships everywhere except inside a yard; being under way counts
-                    // as exposed even on the leg home.
-                    if (!atShipyard(ship) && Math.rand(0, 10) === 0){
+                    // Wear and tear from fighting syndicate.
+                    if (syndicateActive() && !atShipyard(ship) && Math.rand(0, 10) === 0){
                         // A ship under way wears by where it is bound; one parked, by where it sits.
                         let dm = (ship.inTransit ? ship.destination.name : ship.location.name) === 'spc_triton' ? 2 : 1;
                         switch (ship.armor){

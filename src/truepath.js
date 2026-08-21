@@ -7783,7 +7783,7 @@ export function shipSpeed(ship){
     let boost = 1;
     switch (ship.location?.name ?? ""){
         case 'spc_dwarf':
-            boost = p_on['m_relay'] && !ship.inTransit && global.space['m_relay'] && global.space.m_relay.charged >= 10000 ? 3 : 1;
+            boost = p_on['m_relay'] && !ship.inTransit && global.space['m_relay'] && !global.tech['resettle'] && global.space.m_relay.charged >= 10000 ? 3 : 1;
             break;
         case 'tau_gas2':
             boost = p_on['tcm_relay'] && !ship.inTransit && global.tauceti['tcm_relay'] && global.tauceti.tcm_relay.charged >= 10000 ? 3 : 1;
@@ -8983,8 +8983,13 @@ function calcLandingPoint(startingPosition, planet, speed, elapsed) {
     return genXYZcoord(planet);
 }
 
+// Whether the syndicate is operating at all
+export function syndicateActive(){
+    return !global.tech['isolation'] && global.tech['syndicate'] && global.race['truepath'] && global.space['syndicate'] ? true : false;
+}
+
 export function syndicate(region,extra){
-    if (!global.tech['isolation'] && global.tech['syndicate'] && global.race['truepath'] && global.space['syndicate'] && global.space.syndicate.hasOwnProperty(region)){
+    if (syndicateActive() && global.space.syndicate.hasOwnProperty(region)){
         let divisor = 1000;
 
         let rival = 0;
@@ -10145,7 +10150,7 @@ function locSystemName(locationName){
 // fromLoc's system to toLoc's system, or null when cannot find a path.
 // Uses A* to find optimal route when more gates are involved.
 // Does not account for travel within a system, so solution might not be optimal in extreme edge cases
-function findWormholeRoute(fromLoc, toLoc, interstellar){
+function findWormholeRoute(fromLoc, toLoc){
     let fromSys = locSystem(fromLoc);
     let toSys = locSystem(toLoc);
     if (fromSys === toSys){ 
@@ -10223,31 +10228,24 @@ function findWormholeRoute(fromLoc, toLoc, interstellar){
     }
 
     if (total_path.length === 0){
-        // Gate path not found, maybe interstellar?
-        if (interstellar){
-            // Go to best location to start journey, then launch from there
-            let bestVal = Infinity;
-            let bestSys = null;
+        // No gate route to that system, which is not the same as no way there
+        let bestVal = Infinity;
+        let bestSys = null;
 
-            Object.entries(f_score).forEach(([sys, val]) => {
-                if (val < bestVal){
-                    bestVal = val;
-                    bestSys = sys;
-                }
-            });
-
-            if (bestVal === Infinity)
-                return null;
-
-            let curSys = bestPos;
-            while (curSys !== fromSys){
-                total_path.unshift(curSys); 
-                curSys = came_from[curSys];
+        Object.entries(f_score).forEach(([sys, val]) => {
+            if (val < bestVal){
+                bestVal = val;
+                bestSys = sys;
             }
-        }
-        else {
-            // Can't go interstellar
+        });
+
+        if (bestVal === Infinity)
             return null;
+
+        let curSys = bestSys;
+        while (curSys !== fromSys){
+            total_path.unshift(curSys);
+            curSys = came_from[curSys];
         }
     }
      
@@ -10290,9 +10288,6 @@ function planShipTrip(ship, locationName){
     // before being able to change course
     let inGate = (ship.inTransit && ship.path[0].inGate);
 
-    // Onpy allow starworthy ships to cross interstellar space, other ships must use jump gates to travel
-    let interstellar = (ship.class === 'explorer');
-
     let path = [];
     let currentPosition = ship.location.position;
     let currentTime = 0;
@@ -10302,15 +10297,15 @@ function planShipTrip(ship, locationName){
         currentPosition = ship.path[0].destination.position;
         currentTime = ship.timeToNextStep;
 
-        route = findWormholeRoute(ship.path[0].destination.name, locationName, interstellar);
+        route = findWormholeRoute(ship.path[0].destination.name, locationName);
     }
     else if (ship.inTransit){
         // Find path wrt current star. findWormholeRoute only cares about the system the location is in.
         let currentLocation = nearestStar(ship.location.position);
-        route = findWormholeRoute(currentLocation, locationName, interstellar);
+        route = findWormholeRoute(currentLocation, locationName);
     }
     else{
-        route = findWormholeRoute(ship.location.name, locationName, interstellar);
+        route = findWormholeRoute(ship.location.name, locationName);
     }
 
     if (!route)
@@ -13068,8 +13063,8 @@ function buildSolarMap(parentNode, keep) {
                     // Lock on so zooming pulls in on it rather than following the cursor away.
                     // Draw after to immediately recenter on clicked body
                     starLockOn = hit;
+                    recenterOn(genXYZcoord(hit));
                     drawMap();
-                    // Finding the cow is the whole of it — there is nothing else to do out there.
                     if (cowGlyph(hit)){
                         unlockFeat('secret_cow', global.race.universe === 'micro' ? true : false);
                     }
