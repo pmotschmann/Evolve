@@ -12764,6 +12764,7 @@
   "wiki_achievements_obtained": "Obtained",
   "wiki_achievements_incomplete": "Incomplete",
   "wiki_achievements_completed": "Completed",
+  "wiki_achievements_completed_at": "Completed at challenge level %0",
   "wiki_search_placeholder": "No results found.",
   "wiki_search_regex_support": "RegEx Supported"
 }

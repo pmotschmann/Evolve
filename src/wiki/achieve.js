@@ -550,3 +550,15 @@ function featDesc(feat,showFlair){
     popover(`f-${feat}`,content,options);
     $(`#f-sr-desc-${feat}`).append(content.clone());
 }
+
+function srNoteCompleted(condVal){
+    if ((typeof condVal === 'number') && (condVal >= 1) && (condVal <= 5)){ // assume condVal is challenge level
+        return `<span class="is-sr-only">&nbsp;(${loc('wiki_achievements_completed_at',[condVal-1])})</span>`;
+    }
+    if (condVal){ // if condVal is a truthy value not 1-5, return basic completed note
+        return `<span class="is-sr-only">&nbsp;(${loc('wiki_achievements_completed')})</span>`;
+    }
+    else { // if no condVal was passed or the value is falsy, return incompleted note
+        return `<span class="is-sr-only">&nbsp;(${loc('wiki_achievements_incomplete')})</span>`;
+    }
+}
