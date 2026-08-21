@@ -1299,6 +1299,26 @@ const techs = {
             return false;
         }
     },
+    mythril_valves: {
+        id: 'tech-mythril_valves',
+        title(){ return loc('tech_mythril_valves'); },
+        desc(){ return loc('tech_mythril_valves'); },
+        category: 'agriculture',
+        era: 'globalized',
+        reqs: { water: 4, core: 2 },
+        grant: ['water',5],
+        cost: {
+            Knowledge(){ return 135000; },
+            Mythril(){ return 25000; }
+        },
+        effect: loc('tech_mythril_valves_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     mushroom_farm: {
         id: 'tech-mushroom_farm',
         title(){ return loc('tech_mushroom_farm', [actions.underground.cave.mushroom_farm.mushroom_type()]); },
@@ -1393,6 +1413,7 @@ const techs = {
         era: 'civilized',
         reqs: { agriculture: 2, storage: 1 },
         grant: ['agriculture',3],
+        not_trait: ['iceage'],
         cost: {
             Knowledge(){ return 80; }
         },
@@ -5812,6 +5833,66 @@ const techs = {
             return false;
         }
     },
+    carnivore_introduction: {
+        id: 'tech-carnivore_introduction',
+        title(){ return loc('tech_carnivore_introduction'); },
+        desc(){ return loc('tech_carnivore_introduction'); },
+        category: 'progress',
+        era: 'globalized',
+        reqs: { surface: 6 },
+        grant: ['surface',7],
+        cost: {
+            Knowledge(){ return 150000; },
+            Lumber() { return 3000; }
+        },
+        effect: loc('tech_carnivore_introduction_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        },
+        flair(){ return loc('tech_carnivore_introduction_flair') }
+    },
+    scavenger_introduction: {
+        id: 'tech-scavenger_introduction',
+        title(){ return loc('tech_scavenger_introduction'); },
+        desc(){ return loc('tech_scavenger_introduction'); },
+        category: 'progress',
+        era: 'globalized',
+        reqs: { surface: 7 },
+        grant: ['surface',8],
+        cost: {
+            Knowledge(){ return 155000; },
+            Lumber() { return 10000; }
+        },
+        effect: loc('tech_scavenger_introduction_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    sequence_ecosystem: {
+        id: 'tech-sequence_ecosystem',
+        title(){ return loc('tech_sequence_ecosystem'); },
+        desc(){ return loc('tech_sequence_ecosystem'); },
+        category: 'genes',
+        era: 'globalized',
+        reqs: { surface: 9, genetics: 4 },
+        grant: ['ecosystem_genetics',1],
+        cost: {
+            Knowledge(){ return 180000; }
+        },
+        effect: loc('tech_sequence_ecosystem_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     watch_tower: {
         id: 'tech-watch_tower',
         title(){ return loc('tech_watch_tower'); },
@@ -5870,6 +5951,70 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.surface.wastes.surface_apartment);
+                return true;
+            }
+            return false;
+        }
+    },
+    surface_farm: {
+        id: 'tech-surface_farm',
+        title(){ return global.race['artifical'] ? loc('tech_server_farm') : loc('tech_surface_farm'); },
+        desc(){ return global.race['artifical'] ? loc('tech_server_farm') : loc('tech_surface_farm'); },
+        category: 'progress',
+        era: 'globalized',
+        reqs: { surface: 9 },
+        grant: ['agriculture',2],
+        cost: {
+            Knowledge(){ return 158000; }
+        },
+        effect: global.race['artifical'] ? loc('tech_server_farm_effect') : loc('tech_surface_farm_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.surface.wastes.surface_farm);
+                return true;
+            }
+            return false;
+        }
+    },
+    surface_zoo: {
+        id: 'tech-surface_zoo',
+        title(){ return loc('tech_surface_zoo'); },
+        desc(){ return loc('tech_surface_zoo'); },
+        category: 'progress',
+        era: 'globalized',
+        reqs: { surface: 9 },
+        grant: ['zoo',1],
+        cost: {
+            Knowledge(){ return 160000; },
+            Lumber(){ return 32000; }
+        },
+        effect: loc('tech_surface_zoo_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.surface.wastes.surface_zoo);
+                return true;
+            }
+            return false;
+        }
+    },
+    surface_expedition: {
+        id: 'tech-surface_expedition',
+        title(){ return loc('tech_surface_expedition'); },
+        desc(){ return loc('tech_surface_expedition'); },
+        category: 'progress',
+        era: 'globalized',
+        reqs: { surface: 9, wastes: 1 },
+        grant: ['surface', 10],
+        cost: {
+            Knowledge(){ return 175000; },
+            Lumber(){ return 32000; },
+            Water(){ return 15000; },
+            Furs(){ return 75000; }
+        },
+        effect: loc('tech_surface_expedition_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                //initStruct(actions.surface.wastes.surface_zoo);
                 return true;
             }
             return false;
@@ -8593,6 +8738,33 @@ const techs = {
         category: 'military',
         era: 'early_space',
         reqs: { military: 5, mass: 1 },
+        grant: ['military',6],
+        condition(){ return global.tech['mass'] >= 1 || (global.race['iceage'] && p_on['core_blacksmith'])},
+        cost: {
+            Mana(){ return global.race.universe === 'magic' ? 450 : 0; },
+            Knowledge(){ return 200000; },
+            Iridium(){ return 2500; }
+        },
+        effect(){ return global.race.universe === 'magic' ? loc('tech_lightning_caster_effect') : loc('tech_rail_guns_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        },
+        post(){
+            vBind({el: `#garrison`},'update');
+            vBind({el: `#c_garrison`},'update');
+        }
+    },
+    rail_guns_iceage: {
+        id: 'tech-rail_guns_iceage',
+        title(){ return global.race.universe === 'magic' ? loc('tech_lightning_caster') : loc('tech_rail_guns'); },
+        desc(){ return global.race.universe === 'magic' ? loc('tech_lightning_caster') : loc('tech_rail_guns'); },
+        category: 'military',
+        era: 'globalized',
+        reqs: { military: 5, high_tech: 7 },
+        trait: ['iceage'],
         grant: ['military',6],
         cost: {
             Mana(){ return global.race.universe === 'magic' ? 450 : 0; },

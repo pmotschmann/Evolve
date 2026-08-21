@@ -7814,6 +7814,8 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
     }
     if (c_action.id === 'portal-spire' || (c_action.id === 'portal-waygate' && global.tech.waygate >= 2)){
         if (obj && obj['time']){
+            console.log(obj['time']);
+            debugger;
             parent.append($(`<div id="popTimer" class="flair has-text-advanced">{{ timer(time) }}</div>`));
             vBind({
                 el: '#popTimer',
@@ -8636,7 +8638,12 @@ export function structName(type){
         {
             return halloween.active ? loc(`events_halloween_temple`) : (global.race.universe === 'evil' && global.civic.govern.type != 'theocracy' ? loc('city_propaganda') : loc('city_temple'));
         }
+        case 'surface_farm':
+        {
+            return global.race['artifical'] ? loc('server_farm') : loc('surface_farm');
+        }
     }
+    return loc(type);
 }
 
 export function updateQueueNames(both, items){

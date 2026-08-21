@@ -262,7 +262,11 @@ export function production(id,val,wiki){
         }
         case 'water_pump':
         {
-            return 4;
+            let water = 4;
+            if(global.tech['water'] >= 5){
+                water *= 1.5;
+            }
+            return water;
         }
         case 'titan_mine':
         {

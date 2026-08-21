@@ -22,7 +22,7 @@ import { index, mainVue, initTabs, loadTab, registerOfflineHandler } from './ind
 import { setWeather, seasonDesc, astrologySign, astroVal } from './seasons.js';
 import { getTopChange } from './wiki/change.js';
 import { enableDebug, updateDebugData } from './debug.js';
-import { surfaceEcosystem, surfaceEcosystemVisual, ecosystemInfo } from './iceage.js';
+import { surfaceEcosystem, surfaceEcosystemVisual, ecosystemInfo, drawEcology } from './iceage.js';
 
 {
     $(document).ready(function() {
@@ -2576,6 +2576,10 @@ function fastLoop(){
                             global[sup.a][sup.s].s_max += (p_on['corruptor'] ? p_on['corruptor'] : 0) * actions.eden.eden_asphodel.corruptor.support();
                         }
                         break;
+                    case 'wastes':
+                        {
+                            global[sup.a][sup.s].s_max += (p_on['surface_farm'] ? p_on['surface_farm'] : 0) * actions.surface.wastes.surface_farm.support();
+                        }
                 }
             }
 
@@ -3331,6 +3335,10 @@ function fastLoop(){
             morale += Math.floor(global.underground['color_garden'].mushrooms);
         }
 
+        if(p_on['bonfire']){
+            global.city.morale.under_bonfire = p_on['bonfire'] * 2;
+            morale += p_on['bonfire'] * 2;
+        }
 
         if (global.tech['broadcast'] && !global.race['joyless']){
             let gasVal = govActive('gaslighter',0) || 0;
@@ -3369,7 +3377,14 @@ function fastLoop(){
             global.city.morale.zoo = int_on['zoo'] * 5;
             morale += int_on['zoo'] * 5;
         }
-        else {
+        else if(p_on['surface_zoo']){
+            let info = global.surface.overview;
+            if(info && Math.min(info.herbivores, info.carnivores, info.scavengers) >= 10){
+                morale += p_on['surface_zoo'] * 4;
+                global.city.morale.zoo = p_on['surface_zoo'] * 4;
+            }
+        }
+        else{
             global.city.morale.zoo = 0;
         }
         if (p_on['tavern'] && !global.race['joyless']){
@@ -3511,6 +3526,16 @@ function fastLoop(){
                 if (global.interstellar['wonder_gardens'] || global.space['wonder_gardens'] || global.portal['wonder_gardens']){ monuments += 5; }
             }
             moraleCap += monuments * mcap;
+        }
+
+        if(p_on['bonfire']){
+            moraleCap += p_on['bonfire'];
+        }
+        if(p_on['surface_zoo']){
+            let info = global.surface.overview;
+            if(info && Math.min(info.herbivores, info.carnivores, info.scavengers) >= 10){
+                moraleCap += p_on['surface_zoo'] * 3;
+            }
         }
 
         if (global.civic.taxes.tax_rate < 20 && !global.race['banana']){
@@ -3951,6 +3976,18 @@ function fastLoop(){
                 if (food > 0){
                     breakdown.p['Food'][`ᄂ${loc('sign_virgo')}+0`] = ((virgo - 1) * 100) + '%';
                 }
+            }
+            
+            if(p_on['surface_farm']){
+                let produce = 0;
+                if(global.race['artifical']){
+                    produce = p_on['surface_farm'] * 50;
+                }
+                else{
+                    produce = p_on['surface_farm'] * 0.03 * global.surface.overview.trees;
+                }
+                breakdown.p['Food'][structName('surface_farm')] = (produce) + 'v';
+                food_base += produce * production('psychic_boost', 'food');
             }
 
             if (global.tauceti['tau_farm'] && p_on['tau_farm']){
@@ -6150,11 +6187,16 @@ function fastLoop(){
                 if(support_on['woodcutter']){
                     woodcutter += support_on['woodcutter'] * 0.04;
                 }
+                let ecosystem = 1;
+                if(global.surface.overview?.scavengers){
+                    ecosystem = actions.surface.ecosystem.scavengers.tree_effect();
+                }
 
                 breakdown.p['Lumber'][job_data.lumberjack.name()] = lumber_base + 'v';
                 if (lumber_base > 0){
                     breakdown.p['Lumber'][`ᄂ${loc('city_lumber_yard')}`] = ((lumber_yard - 1) * 100) + '%';
                     breakdown.p['Lumber'][`ᄂ${loc('surface_woodcutter')}`] = ((woodcutter - 1) * 100) + '%';
+                    breakdown.p['Lumber'][`ᄂ${loc('surface_ecosystem')}`] = ((ecosystem - 1) * 100) + '%';
                     breakdown.p['Lumber'][`ᄂ${loc('city_sawmill')}`] = ((sawmills - 1) * 100) + '%';
                     breakdown.p['Lumber'][`ᄂ${loc('power')}`] = ((power_mult - 1) * 100) + '%';
                     breakdown.p['Lumber'][`ᄂ${loc('quarantine')}+0`] = ((q_multiplier - 1) * 100) + '%';
@@ -6173,13 +6215,14 @@ function fastLoop(){
                         let reserved_trees = info.area * (info.tree_ratio / 100) / tree_info.size;
                         let avail_trees = Math.max(0, info.trees - reserved_trees);
                         let tree_hardiness = actions.surface.ecosystem.trees.hardiness();
-                        lack_of_trees = Math.min(1, avail_trees / workers / time_multiplier * tree_hardiness);
+                        lack_of_trees = Math.min(1, avail_trees / workers / time_multiplier / 2 * tree_hardiness);
                         global.surface.overview.trees -= workers * time_multiplier * lack_of_trees / tree_hardiness;
+                        drawEcology('trees');
                         breakdown.p['Lumber'][`ᄂ${loc('surface_tree_shortage')}`] = ((lack_of_trees - 1) * 100) + '%';
                     }
                 }
 
-                let delta = lumber_base * sawmills * lumber_yard * lack_of_trees;
+                let delta = lumber_base * sawmills * lumber_yard * lack_of_trees * ecosystem;
                 if (global.city['sawmill']){
                     global.city.sawmill['psaw'] = +(delta * hunger * q_multiplier * global_multiplier * (power_single - 1)).toFixed(5);
                 }
@@ -6575,6 +6618,78 @@ function fastLoop(){
         }
 
         //ice age buildings
+        [
+            {b:'bonfire', r:'underground', r2:'cave', c:['lumber']},{b:'mineshaft_vator', r:'underground', r2:'cave', c:['oil']},{b:'core_forge', r:'underground', r2:'core', c:['water', 'coal']},{b:'core_blacksmith', r:'underground', r2:'core', c:['water', 'titanium']},
+            {b:'watch_tower', r:'surface', r2:'wastes', c:['food']},{b:'water_pipe', r:'surface', r2:'ecosystem', c:['water']},{b:'surface_farm', r:'surface', r2:'wastes', c:['water']},{b:'surface_zoo', r:'surface', r2:'wastes', c:['food']}
+        ].forEach(function(building){
+            if(global[building.r][building.b]){
+                let c_action = actions[building.r][building.r2][building.b];
+                let max_active = 0;
+                let type = false;
+                if(p_on[building.b]){
+                    max_active = p_on[building.b];
+                    type = 'p_on';
+                }
+                else{
+                    max_active = support_on[building.b] || 0;
+                    type = 'support_on';
+                }
+                let active = max_active;
+                building.c.forEach(function(consume){
+                    let cost = c_action.consume(consume);
+                    let uppercase = consume.charAt(0).toUpperCase() + consume.slice(1);
+                    if (building.b.substring(0, 8) === 'surface_'){
+                        breakdown.p.consume[uppercase][loc(building.b)] = -(cost * max_active);
+                    }
+                    else if(building.b === 'mineshaft_vator'){
+                        breakdown.p.consume[uppercase][loc('underground_mineshaft_elevator')] = -(cost * max_active);
+                    }
+                    else{
+                        breakdown.p.consume[uppercase][structName(`${building.r}_${building.b}`)] = -(cost * max_active);
+                    }
+                    active = Math.floor(Math.min(
+                        global.resource[uppercase].amount / (cost * time_multiplier),
+                        max_active,
+                        active));
+                    if(type === 'p_on'){
+                        modRes(uppercase, -(p_on[building.b] * cost * time_multiplier));
+                        p_on[building.c] = active;
+                    }
+                    else{
+                        modRes(uppercase, -(support_on[building.b] * cost * time_multiplier));
+                        support_on[building.c] = active;
+                    }
+                });
+                let struct = $(`#${c_action.id} .on`);
+                if(global[building.r][building.b].on > active){
+                    struct.addClass('warn');
+                    struct.prop('title',`ON ${active}/${global[building.r][building.b].on}`);
+                }
+                else {
+                    struct.removeClass('warn');
+                    struct.prop('title',`ON`);
+                }
+            }
+        });
+        /*if(p_on['bonfire']){
+            let c_action = actions.underground.cave.bonfire;
+            let lumber_cost = c_action.consume('lumber');
+            breakdown.p.consume.Lumber[loc('underground_bonfire')] = -(lumber_cost * p_on['bonfire']);
+            let active = Math.floor(Math.min(
+                global.resource.Lumber.amount / (lumber_cost * time_multiplier),
+                p_on['bonfire']));
+            modRes('Lumber', -(p_on['bonfire'] * lumber_cost * time_multiplier));
+            p_on['bonfire'] = active;
+            let struct = $(`#${c_action.id} .on`);
+            if(global.underground.bonfire.on > p_on['bonfire']){
+                struct.addClass('warn');
+                struct.prop('title',`ON ${p_on['bonfire']}/${global.underground.bonfire.on}`);
+            }
+            else {
+                struct.removeClass('warn');
+                struct.prop('title',`ON`);
+            }
+        }
         if(p_on['core_forge']){ //issue: buildings further below shut off first when running out of resource regardless of power grid settings
             let c_action = actions.underground.core.core_forge;
             let water_cost = c_action.consume('water');
@@ -6582,13 +6697,13 @@ function fastLoop(){
             breakdown.p.consume.Water[loc('underground_core_forge')] = -(water_cost * p_on['core_forge']);
             breakdown.p.consume.Coal[loc('underground_core_forge')] = -(coal_cost * p_on['core_forge']);
             let active = Math.floor(Math.min(
-                global.resource.Water.amount / (water_cost * time_multiplier * p_on['core_forge']),
-                global.resource.Coal.amount / (coal_cost * time_multiplier * p_on['core_forge']),
+                global.resource.Water.amount / (water_cost * time_multiplier),
+                global.resource.Coal.amount / (coal_cost * time_multiplier),
                 p_on['underground_core_forge']));
             modRes('Water', -(p_on['core_forge'] * water_cost * time_multiplier));
             modRes('Coal', -(p_on['core_forge'] * coal_cost * time_multiplier));
             p_on['underground_core_forge'] = active;
-            let struct = $(`#${actions.underground.core.core_forge.id} .on`);
+            let struct = $(`#${c_action.id} .on`);
             if(global.underground.core_forge.on > p_on['core_forge']){
                 struct.addClass('warn');
                 struct.prop('title',`ON ${p_on['core_forge']}/${global.underground.core_forge.on}`);
@@ -6605,13 +6720,13 @@ function fastLoop(){
             breakdown.p.consume.Water[loc('underground_core_blacksmith')] = -(water_cost * p_on['core_blacksmith']);
             breakdown.p.consume.Titanium[loc('underground_core_blacksmith')] = -(titanium_cost * p_on['core_blacksmith']);
             let active = Math.floor(Math.min(
-                global.resource.Water.amount / (water_cost * time_multiplier * p_on['core_blacksmith']),
-                global.resource.Titanium.amount / (titanium_cost * time_multiplier * p_on['core_blacksmith']),
+                global.resource.Water.amount / (water_cost * time_multiplier),
+                global.resource.Titanium.amount / (titanium_cost * time_multiplier),
                 p_on['core_blacksmith']));
             modRes('Water', -(p_on['core_blacksmith'] * water_cost * time_multiplier));
             modRes('Titanium', -(p_on['core_blacksmith'] * titanium_cost * time_multiplier));
             p_on['core_blacksmith'] = active;
-            let struct = $(`#${actions.underground.core.core_forge.id} .on`);
+            let struct = $(`#${c_action.id} .on`);
             if(global.underground.core_blacksmith.on > p_on['core_blacksmith']){
                 struct.addClass('warn');
                 struct.prop('title',`ON ${p_on['core_blacksmith']}/${global.underground.core_blacksmith.on}`);
@@ -6626,11 +6741,11 @@ function fastLoop(){
             let food_cost = c_action.consume('food');
             breakdown.p.consume.Food[loc('surface_watch_tower')] = -(food_cost * support_on['watch_tower']);
             let active = Math.floor(Math.min(
-                global.resource.Food.amount / (food_cost * time_multiplier * support_on['watch_tower']),
+                global.resource.Food.amount / (food_cost * time_multiplier),
                 support_on['watch_tower']));
             modRes('Food', -(support_on['watch_tower'] * food_cost * time_multiplier));
             support_on['watch_tower'] = active;
-            let struct = $(`#${actions.surface.wastes.watch_tower.id} .on`);
+            let struct = $(`#${c_action.id} .on`);
             if(global.surface.watch_tower.on > support_on['watch_tower']){
                 struct.addClass('warn');
                 struct.prop('title',`ON ${support_on['watch_tower']}/${global.surface.watch_tower.on}`);
@@ -6640,7 +6755,63 @@ function fastLoop(){
                 struct.prop('title',`ON`);
             }
         }
-
+        if(p_on['water_pipe']){
+            let c_action = actions.surface.ecosystem.water_pipe;
+            let water_cost = c_action.consume('water');
+            breakdown.p.consume.Water[loc('surface_water_pipe')] = -(water_cost * p_on['water_pipe']);
+            let active = Math.floor(Math.min(
+                global.resource.Water.amount / (water_cost * time_multiplier),
+                p_on['water_pipe']));
+            modRes('Water', -(p_on['water_pipe'] * water_cost * time_multiplier));
+            p_on['water_pipe'] = active;
+            let struct = $(`#${c_action.id} .on`);
+            if(global.surface.water_pipe.on > p_on['water_pipe']){
+                struct.addClass('warn');
+                struct.prop('title',`ON ${p_on['water_pipe']}/${global.surface.water_pipe.on}`);
+            }
+            else {
+                struct.removeClass('warn');
+                struct.prop('title',`ON`);
+            }
+        }
+        if(p_on['surface_farm']){
+            let c_action = actions.surface.ecosystem.surface_farm;
+            let water_cost = c_action.consume('water');
+            breakdown.p.consume.Water[loc('surface_surface_farm')] = -(water_cost * p_on['surface_farm']);
+            let active = Math.floor(Math.min(
+                global.resource.Water.amount / (water_cost * time_multiplier),
+                p_on['surface_farm']));
+            modRes('Water', -(p_on['surface_farm'] * water_cost * time_multiplier));
+            p_on['surface_farm'] = active;
+            let struct = $(`#${c_action.id} .on`);
+            if(global.surface.surface_farm.on > p_on['surface_farm']){
+                struct.addClass('warn');
+                struct.prop('title',`ON ${p_on['surface_farm']}/${global.surface.surface_farm.on}`);
+            }
+            else {
+                struct.removeClass('warn');
+                struct.prop('title',`ON`);
+            }
+        }
+        if(p_on['surface_zoo']){
+            let c_action = actions.surface.wastes.surface_zoo;
+            let food_cost = c_action.consume('food');
+            breakdown.p.consume.Food[loc('surface_zoo')] = -(food_cost * p_on['surface_zoo']);
+            let active = Math.floor(Math.min(
+                global.resource.Food.amount / (food_cost * time_multiplier),
+                p_on['surface_zoo']));
+            modRes('Food', -(p_on['surface_zoo'] * food_cost * time_multiplier));
+            p_on['surface_zoo'] = active;
+            let struct = $(`#${c_action.id} .on`);
+            if(global.surface.surface_zoo.on > p_on['surface_zoo']){
+                struct.addClass('warn');
+                struct.prop('title',`ON ${p_on['surface_zoo']}/${global.surface.surface_zoo.on}`);
+            }
+            else {
+                struct.removeClass('warn');
+                struct.prop('title',`ON`);
+            }
+        }*/
         
         if(global.surface['overview']){
             surfaceEcosystemVisual();
@@ -7309,15 +7480,6 @@ function fastLoop(){
 
                 modRes('Uranium', u_delta * time_multiplier);
             }
-        }
-
-        //iceage mineshaft elevator
-        if(p_on['mineshaft_vator']){
-            let oil_cost = actions.underground.cave.mineshaft_vator.consume('oil');
-            if(!modRes('Oil', -(time_multiplier * oil_cost))){
-                p_on['mineshaft_vator'] = 0;
-            }
-            breakdown.p.consume.Oil[loc('underground_mineshaft_elevator')] = -(oil_cost);
         }
 
         // Warlord Supplimental Resources
@@ -8580,6 +8742,21 @@ function fastLoop(){
             }
             modRes('Money', +(tourism * time_multiplier * global_multiplier * hunger).toFixed(2));
             rawCash += tourism * global_multiplier * hunger;
+        }
+
+        if(p_on['surface_zoo']){
+            let income = 0;
+            let info = global.surface.overview;
+            if(info){
+                income += 0.03 * info.trees;
+                income += 0.08 * info.herbivores;
+                income += 0.25 * info.carnivores;
+                income += 0.1 * info.scavengers;
+            }
+            income *= p_on['surface_zoo'];
+            breakdown.p['Money'][loc('surface_zoo')] = Math.round(income) + 'v';
+            modRes('Money', +(income * time_multiplier * global_multiplier * hunger).toFixed(2));
+            rawCash += income * global_multiplier * hunger;
         }
 
         if (global.portal['bazaar'] && global.portal['spire'] && global.tech['monuments']){
@@ -12142,6 +12319,15 @@ function midLoop(){
                 }
             }
             global.portal['devilish_dish'].time = progress === 0 ? timeFormat(-1) : timeFormat((100 - global.portal['devilish_dish'].done) / progress);
+        }
+
+        if(global.tech['surface'] >= 10 && (global.tech['crater'] || 0) < 1){
+            let progress = 0.0075 + (0.002 * support_on['watch_tower']);
+            global.surface['watch_tower'].explore += progress;
+            if(global.surface['watch_tower'].explore >= 100){
+                global.tech['crater'] = 1;
+                global.surface['watch_tower'].explore = 100;
+            }
         }
 
         if (global.tech['asphodel'] && global.tech.asphodel === 4 && Math.rand(0,25) === 0){
