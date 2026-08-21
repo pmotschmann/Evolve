@@ -1,3 +1,5 @@
+import { encodeSaveString, decodeSaveString } from './save.js';
+
 export var save = window.localStorage;
 export var global = {
     seed: 1,
@@ -86,11 +88,7 @@ export function seededRandom(min, max, alt, useSeed) {
 }
 
 // Wrap game state in a Vue 3 reactive proxy so that the game's direct mutations
-// to `global` (the loops mutate it in place) are tracked and the UI updates.
-// Vue 3's reactive() returns a proxy and does NOT instrument the original object
-// in place the way Vue 2 did, so every consumer must share this same proxy --
-// achieved here by making `global` itself reactive at its single source. Guarded
-// so non-Vue contexts (e.g. debug-console) still work with a plain object.
+// to `global` are tracked and the UI updates.
 function makeReactive(state){
     return (typeof Vue !== 'undefined' && Vue && typeof Vue.reactive === 'function') ? Vue.reactive(state) : state;
 }
@@ -98,8 +96,8 @@ function makeReactive(state){
 {
     let global_data = save.getItem('evolved') || false;
     if (global_data) {
-        // Load pre-existing game data
-        let saveState = JSON.parse(LZString.decompressFromUTF16(global_data));
+        // Decode both old and new save formats.
+        let saveState = decodeSaveString(global_data);
 
         if (saveState){
             global = saveState;
@@ -118,10 +116,17 @@ export function setGlobal(gameState) {
     global = makeReactive(gameState);
 }
 
+// Common accessor for save operations
+export function writeSave(state){
+    save.setItem('evolved', encodeSaveString(state || global));
+}
+
+export function writeBackup(state){
+    save.setItem('evolveBak', encodeSaveString(state || global));
+}
+
 // Temporarily drop the Vue reactive wrapper so a bulk operation (offline catch-up) can mutate
 // game state thousands of times without firing a reactivity trigger on every change.
-// restoreReactivity() re-wraps the same underlying object; Vue returns the cached proxy for that
-// target, so every already-mounted component keeps its binding and simply needs one refresh.
 export function suppressReactivity(){
     if (typeof Vue !== 'undefined' && Vue && typeof Vue.toRaw === 'function'){
         global = Vue.toRaw(global);
@@ -135,10 +140,6 @@ if (!global['version']){
     global['version'] = '0.2.0';
 }
 
-// Offline hell RNG stream. hellseed was added after the versioned migrations below, so an existing
-// save can be past that gate and never receive one; without a valid numeric seed every
-// seededRandom(...,'hell') call returns NaN and all hell combat (kills, soul gems) silently stops.
-// Runs ungated on every load, and self-heals a null/NaN seed left by an earlier build.
 if (!global.hasOwnProperty('hellseed') || typeof global['hellseed'] !== 'number' || isNaN(global['hellseed'])){
     global['hellseed'] = (global.hasOwnProperty('warseed') ? global['warseed'] : global['seed']) + 2;
 }
@@ -1354,14 +1355,6 @@ if (convertVersion(global['version']) <= 105000){
             if (item['type'] === 'kuiper_mission'){ item['type'] = 'makemake_mission'; }
         });
     }
-
-    // Fleets are now led. They used to be a flat `fleet` flag — everything carrying it at one location
-    // flew as a single group — and are now a flagship with a command rating plus escorts that spend
-    // points from it. Each old group is rebuilt around the largest hull it contained, taking on as much
-    // of the rest as the new rating allows and releasing whatever no longer fits. The ratings below are
-    // a snapshot of how they stood at conversion: what an old save becomes should not shift later just
-    // because the live tables in truepath.js were retuned. Idempotent — a converted save has no `fleet`
-    // property left to find.
     if (global['space'] && global.space['shipyard'] && Array.isArray(global.space.shipyard['ships'])){
         let lead = { corvette: 1, frigate: 2, destroyer: 5, cruiser: 10, battlecruiser: 15, dreadnought: 20 };
         let berth = { corvette: 1, frigate: 2, destroyer: 3, cruiser: 5, battlecruiser: 8, dreadnought: 12 };
@@ -1458,7 +1451,7 @@ if (convertVersion(global['version']) <= 105000){
     // Truepath ships got their navigation reworked, notably changing 2D space to 3D. 
     // Reconstruct what we can with the info we have, keep rest blank to refill itself over time
     if (global.space && global.space.shipyard && global.space.shipyard.ships && Array.isArray(global.space.shipyard.ships)){
-        global.space.shipyard.ships.forEach(ship => {
+        let fn = (ship) => {
             if (ship.transit > 0) {
                 ship.inTransit = true;
 
@@ -1497,11 +1490,10 @@ if (convertVersion(global['version']) <= 105000){
                 ship.timeToNextStep = ship.transit;
                 if (ship.timeToNextStep > 2000){
                     // Ship was likely within a gate during update, push it a bit so it's not stuck for several years 
-                    // (only applies to beta players so w/e)
                     ship.timeToNextStep = 200;
                 }
             }
-            else if (ship.transit === 0){
+            else if (ship.transit <= 0){
                 ship.inTransit = false;
                 ship.location = {
                     name: ship.location,
@@ -1524,7 +1516,9 @@ if (convertVersion(global['version']) <= 105000){
             delete ship.xy;
             if (ship.tf)
                 delete ship.tf;
-        })
+        };
+        global.space.shipyard.ships.forEach(fn);
+        (global?.race?.inactive?.ships ?? []).forEach(fn);
     }
 
     // Medium frames went from one weapon bay to two at half the damage per shot.
@@ -1549,6 +1543,100 @@ if (convertVersion(global['version']) <= 105000){
             delete global.civic[job].name;
         }
     });
+
+    // One-time refund of the old system.
+    if (!global.genes['geneReset']){
+        let fib = function(n){
+            let a = 1, b = 1;
+            for (let i=2; i<=n; i++){ let c = a + b; a = b; b = c; }
+            return b;
+        };
+        let spent = function(ranks,mult){
+            let total = 0;
+            for (let i=1; i<=ranks; i++){ total += fib(i + 3) * mult; }
+            return total;
+        };
+
+        let phage = 0;
+        if (Array.isArray(global.genes.minor)){
+            Object.keys(global.genes.minor).forEach(function(t){
+                phage += spent(global.genes.minor[t], t === 'mastery' ? 2 : 1);
+            });
+        }
+        let genes = 0;
+        if (Array.isArray(global.race.minor)){
+            Object.keys(global.race.minor).forEach(function(t){
+                genes += spent(global.race.minor[t], t === 'mastery' ? 5 : 1);
+            });
+        }
+
+        // Guarded individually: this runs while the save is still being assembled, and a throw here
+        // would take the game down before it ever drew a frame.
+        if (phage > 0 && global.prestige && global.prestige['Phage']){
+            global.prestige.Phage.count += phage;
+            if (global.stats && typeof global.stats.phage === 'number'){
+                global.stats.phage += phage;
+            }
+        }
+        if (genes > 0 && global.resource && global.resource['Genes']){
+            global.resource.Genes.amount += genes;
+        }
+
+        // Zero the ranks themselves, and the live trait values they were feeding.
+        if (Array.isArray(global.genes.minor)){
+            Object.keys(global.genes.minor).forEach(function(t){ delete global.race[t]; });
+        }
+        if (Array.isArray(global.race.minor)){
+            Object.keys(global.race.minor).forEach(function(t){ delete global.race[t]; });
+        }
+        global.genes.minor = {};
+        global.race.minor = {};
+
+        global.genes['geneReset'] = { p: phage, g: genes };
+    }
+
+    // The Mutation line was repriced. Anyone who bought a rank at the old price is handed the difference
+    // back, once. Ranks are counted rather than a total stored, so a save part-way up the line refunds
+    // only what it actually paid for.
+    if (!global.genes['evolveReprice']){
+        // Ranks 1 to 8 only. Rank 9 is new with this change, so nobody ever paid an old price for it.
+        let wasCost = [10,35,70,175,440,1100,2750,6875];
+        let nowCost = [10,25,60,145,325,750,1600,3200];
+        let back = 0;
+        let have = global.genes['evolve'] || 0;
+        for (let r=1; r<=have && r<=wasCost.length; r++){
+            let diff = wasCost[r - 1] - nowCost[r - 1];
+            if (diff > 0){ back += diff; }
+        }
+        if (back > 0 && global.prestige){
+            // Into whichever bank this universe actually pays CRISPR out of.
+            let bank = global.race && global.race.universe === 'antimatter' ? 'AntiPlasmid' : 'Plasmid';
+            if (global.prestige[bank]){
+                global.prestige[bank].count += back;
+            }
+            else {
+                back = 0;
+            }
+        }
+        global.genes['evolveReprice'] = { p: back };
+    }
+
+    // Conductive was removed.
+    if (global['race'] && Array.isArray(global.race['geneSlots'])){
+        let breaks = (global.race['geneBreak'] && typeof global.race['geneBreak'] === 'object') ? global.race.geneBreak : {};
+        let slots = [];
+        let rebuilt = {};
+        global.race.geneSlots.forEach(function(slot,i){
+            if (slot && slot.g === 'conductive'){
+                if (!slot.x){ slots.push(false); }
+                return;
+            }
+            if (breaks[i] !== undefined){ rebuilt[slots.length] = breaks[i]; }
+            slots.push(slot);
+        });
+        global.race.geneSlots = slots;
+        global.race.geneBreak = rebuilt;
+    }
 }
 
 if(convertVersion(global['version']) && true){
@@ -1558,12 +1646,12 @@ if(convertVersion(global['version']) && true){
 
 global['version'] = '1.5.0';
 delete global['revision'];
-global['beta'] = 26;
+global['beta'] = 33;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
 }
-['Plasmid','AntiPlasmid','Phage','Dark','Harmony','AICore','Artifact','Blood_Stone','Supercoiled'].forEach(function (res){
+['Plasmid','AntiPlasmid','Phage','Dark','Harmony','AICore','Artifact','Blood_Stone','Supercoiled','TALENs'].forEach(function (res){
     if (!global.prestige.hasOwnProperty(res)){
         global.prestige[res] = { count: 0 };
     }
@@ -1638,8 +1726,27 @@ if (!global.settings['showStorage']){
     }
 }
 
+// Whether the orbit-decay compensation is in effect.
+export function decayPerks(){
+    return global.race['orbit_decayed'] && !global.tech['isolation'] ? true : false;
+}
+
+// Detect if player device is a touch screen device
+export function touchDevice(){
+    if (typeof navigator !== 'undefined' && typeof navigator.maxTouchPoints === 'number'){
+        return navigator.maxTouchPoints > 0;
+    }
+    return typeof window !== 'undefined' && 'ontouchstart' in window;
+}
+
+// Auto detect on first load
 if (!global.settings.hasOwnProperty('touch')){
-    global.settings['touch'] = false;
+    global.settings['touch'] = touchDevice();
+}
+
+// How many recent messages the mobile message bar shows.
+if (!global.settings.hasOwnProperty('mMsg')){
+    global.settings['mMsg'] = 1;
 }
 
 if (!global.settings.hasOwnProperty('lowPowerBalance')){
@@ -1842,9 +1949,7 @@ if (!global.settings.hasOwnProperty('mapView')){
     global.settings['mapView'] = {};
 }
 // `webgl` picks the backend that paints it: on by default, since both renderers draw the same scene
-// from the same code and the hardware-accelerated one is the better default wherever it is
-// available. It is ignored on a browser without WebGL, which falls back to the 2D canvas without
-// disturbing the setting — so a save that moves to a machine that can manage it gets it back.
+// from the same code and the hardware-accelerated one is the better default wherever it is available.
 ['planetOrbits','moonOrbits','ships','planetNames','webgl'].forEach(function(k){
     if (!global.settings.mapView.hasOwnProperty(k)){
         global.settings.mapView[k] = true;
@@ -1857,8 +1962,8 @@ export function setupStats(){
         'reset','plasmid','antiplasmid','universes','phage','starved','tstarved','died','tdied',
         'sac','tsac','know','tknow','portals','dkills','attacks','cfood','tfood','cstone','tstone',
         'clumber','tlumber','mad','bioseed','cataclysm','blackhole','ascend','descend','apotheosis',
-        'terraform','aiappoc','matrix','retire','eden','iceAge','geck','dark','harmony','blood','cores','artifact',
-        'supercoiled','cattle','tcattle','murders','tmurders','psykill','tpsykill','pdebt','uDead','zkills'
+        'terraform','aiappoc','matrix','retire','eden','zappoc','iceAge','geck','dark','harmony','blood','cores','artifact',
+        'supercoiled','talens','cattle','tcattle','murders','tmurders','psykill','tpsykill','pdebt','uDead','zkills'
     ].forEach(function(k){
         if (!global.stats.hasOwnProperty(k)){
             global.stats[k] = 0;
@@ -1925,16 +2030,20 @@ export function setupStats(){
     }
     if (!global.stats.hasOwnProperty('death_tour')){
         global.stats['death_tour'] = {
-            ct: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 }, 
-            bh: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 }, 
-            di: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 }, 
-            ai: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 }, 
-            vc: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 },
-            md: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 }
+            ct: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 }, // Cataclysm
+            bh: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 }, // Black Hole
+            di: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 }, // Demonic Infusion
+            ai: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 }, // AI Appocalypse
+            vc: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 }, // Vacuum Collapse
+            md: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 }, // Mutual Destruction
+            za: { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 }, // Zombie Apocalypse
         };
     }
     if (global.stats['death_tour'] && !global.stats.death_tour.hasOwnProperty('md')){
         global.stats.death_tour['md'] = { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 };
+    }
+    if (global.stats['death_tour'] && !global.stats.death_tour.hasOwnProperty('za')){
+        global.stats.death_tour['za'] = { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 };
     }
     if (!global.stats['warlord']){
         global.stats['warlord'] = { k: false, p: false, a: false, r: false, g: false };
@@ -1965,6 +2074,29 @@ if (!global.genes['minor']){
 }
 if (!global.race['minor']){
     global.race['minor'] = {};
+}
+
+// Minor genes
+if (!global.genes['geneUnlock']){
+    global.genes['geneUnlock'] = {};
+}
+// The per-run tier. Created on demand by geneTempUnlocks() in races.js as well, so a reset that
+// replaces global.race cannot leave it missing.
+if (!global.race['geneUnlock']){
+    global.race['geneUnlock'] = {};
+}
+// Carry over an arrangement saved while the slots still lived on global.genes.
+if (Array.isArray(global.genes['geneSlots'])){
+    if (!Array.isArray(global.race['geneSlots'])){
+        global.race['geneSlots'] = global.genes['geneSlots'];
+    }
+    delete global.genes['geneSlots'];
+}
+if (!Array.isArray(global.race['geneSlots'])){
+    global.race['geneSlots'] = [];
+}
+if (!global.race['geneBreak']){
+    global.race['geneBreak'] = {};
 }
 
 if (!global.hasOwnProperty('govern')){
@@ -2177,6 +2309,7 @@ if (!global.city['calendar']){
         weather: 2,
         temp: 1,
         moon: 0,
+        moon_angle: 0,
         wind: 0,
         orbit: 365
     };
@@ -2188,6 +2321,10 @@ if (!global.city.calendar['season']){
 
 if (!global.city.calendar['moon']){
     global.city.calendar['moon'] = 0;
+}
+
+if (!global.city.calendar['moon_angle']){
+    global.city.calendar['moon_angle'] = Math.floor(global.city.calendar['moon'] * 360 / 28);
 }
 
 if (!global.city.calendar['wind']){
@@ -2616,7 +2753,7 @@ window.soft_reset = function reset(source){
     global.hellseed = Math.rand(0,10000);
 
     global.stats['current'] = Date.now();
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    writeSave();
     window.location.reload();
 }
 

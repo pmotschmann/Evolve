@@ -305,4 +305,23 @@ export function resetsPage(content){
     prestigeCalc(section,'plasmid',false,'eden');
     prestigeCalc(section,'phage',false,'eden');
     sideMenu('add',`resets-prestige`,'eden',loc('wiki_resets_eden'));
+
+    // Zombie Appoc
+    section = infoBoxBuilder(mainContent,{ name: 'zombie_apocalypse', template: 'resets', paragraphs: 5, break: [2,4,5], h_level: 2,
+        para_data: {
+            2: [loc('evo_challenge_truepath'),loc('wiki_path_isolation')],
+            4: [loc('wiki_resets_zombie_apocalypse'),loc('wiki_p_res_plasmids'),loc('wiki_p_res_phage'),loc('wiki_p_res_talens')],
+            5: [loc('wiki_resets_zombie_apocalypse')],
+        },
+        data_color: {
+            4: ['warning','danger','danger','danger'],
+        },
+        data_link: {
+            2: ['wiki.html#challenges-gameplay-scenarios_truepath',false],
+        }
+    });
+    section = createCalcSection(section,'za','gain');
+    prestigeCalc(section,'plasmid',false,'za');
+    prestigeCalc(section,'phage',false,'za');
+    sideMenu('add',`resets-prestige`,'za',loc('wiki_resets_zombie_apocalypse'));
 }

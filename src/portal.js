@@ -1,7 +1,7 @@
 import { global, seededRandom, keyMultiplier, p_on, support_on, gal_on, spire_on, hell_reports, hell_graphs, sizeApproximation, keyMap } from './vars.js';
 import { vBind, clearElement, clearTabPanels, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost, calcPrestige, get_qlevel, shrineBonusActive, getShrineBonus, buildQueue, timeCheck } from './functions.js';
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
-import { traits, races, fathomCheck, traitCostMod, orbitLength } from './races.js';
+import { traits, races, fathomCheck, traitCostMod, orbitLength, geneBonus } from './races.js';
 import { spatialReasoning, unlockContainers, drawResourceTab } from './resources.js';
 import { loadFoundry, jobScale, limitCraftsmen, job_data } from './jobs.js';
 import { armyRating, govCivics, garrisonSize, mercCost, soldierDeath } from './civics.js';
@@ -6474,6 +6474,11 @@ export function drawMechLab(){
     if (global.portal.hasOwnProperty('mechbay') && global.settings.showMechLab){
         let lab = $(`#mechLab`);
 
+        // Bays from before the copy controls existed have no setting for them.
+        if (!global.portal.mechbay.hasOwnProperty('copy')){
+            global.portal.mechbay['copy'] = false;
+        }
+
         if (!global.portal.mechbay.hasOwnProperty('blueprint')){
             global.portal.mechbay['blueprint'] = {
                 size: 'small',
@@ -6587,7 +6592,8 @@ export function drawMechLab(){
 
         assemble.append(options);
 
-        assemble.append(`<div class="mechAssemble"><button class="button is-info" v-on:click="build()"><span>${global.race['warlord'] ? loc('portal_mech_summon') : loc('portal_mech_construct')}</span></button></div>`);
+        // Duplcation controls, off by default
+        assemble.append(`<div class="mechAssemble"><button class="button is-info" v-on:click="build()"><span>${global.race['warlord'] ? loc('portal_mech_summon') : loc('portal_mech_construct')}</span></button><span><b-checkbox class="patrol" v-model="m.copy" @change="redrawList()">${loc('portal_mech_copy_mode')}</b-checkbox></span></div>`);
 
         vBind({
             el: '#mechAssembly',
@@ -6597,6 +6603,10 @@ export function drawMechLab(){
                 b: global.portal.mechbay.blueprint
             },
             methods: {
+                // The copy links live on the mech rows, which are a separate binding.
+                redrawList(){
+                    drawMechs();
+                },
                 build(){
                     let costs = mechCost(global.portal.mechbay.blueprint.size,global.portal.mechbay.blueprint.infernal);
 
@@ -7086,6 +7096,7 @@ function drawMechs(){
     list.append(`
       <div v-for="(mech, index) of mechs" :key="index" class="mechRow" :class="index < active ? '' : 'inactive-row' ">
         <a class="scrap" @click="scrap(index)" role="button">${loc(global.race['warlord'] ? 'portal_mech_unsummon' : 'portal_mech_scrap')}</a>
+        <span v-show="copyMode()"> | <a class="loadDesign" @click="loadDesign(index)" role="button">${loc('portal_mech_copy_design')}</a> | <a class="copyBuild" @click="copyBuild(index)" role="button">${loc('portal_mech_copy_build')}</a></span>
         <span> | </span><span>${loc(global.race['warlord'] ? 'portal_demon' : 'portal_mech')} #{{index + 1}}: </span>
         <span class="has-text-caution">{{ mech.infernal ? "${loc('portal_mech_infernal')} " : "" }}{{ size(mech) }} {{ chassis(mech) }}</span>
         <div :class="'gearList '+mech.size">
@@ -7124,6 +7135,60 @@ function drawMechs(){
                     global.portal.mechbay.bay -= size;
                     global.portal.mechbay.active--;
                 }
+            },
+            // Whether the lab's copy controls are switched on.
+            copyMode(){
+                return global.portal.mechbay['copy'] ? true : false;
+            },
+            // The same copy, plus one on the build queue for it. The lab is loaded as well so the
+            // design is there to adjust if the next one wants to differ.
+            copyBuild(id){
+                let mech = global.portal.mechbay.mechs[id];
+                if (!mech){ return; }
+                let used = 0;
+                for (let j=0; j<global.queue.queue.length; j++){
+                    used += Math.ceil(global.queue.queue[j].q / global.queue.queue[j].qs);
+                }
+                if (used < global.queue.max){
+                    let blueprint = deepClone(mech);
+                    global.queue.queue.push({
+                        id: `hell-mech-${Math.rand(0,100000)}`,
+                        action: 'hell-mech',
+                        type: blueprint,
+                        label: `${loc(`portal_mech_size_${blueprint.size}`)} ${loc(`portal_mech_chassis_${blueprint.chassis}`)}`,
+                        cna: false,
+                        time: 0,
+                        q: 1,
+                        qs: 1,
+                        t_max: 0,
+                        bres: false
+                    });
+                    buildQueue();
+                }
+                // Loaded last: it redraws the lab, which tears this row down.
+                this.loadDesign(id);
+            },
+            // Copy a built mech's loadout back into the lab so another like it can be ordered
+            // without setting every dropdown again. Nothing in the bay is touched; this only
+            // fills in the blueprint.
+            loadDesign(id){
+                let mech = global.portal.mechbay.mechs[id];
+                if (!mech){ return; }
+                let bp = global.portal.mechbay.blueprint;
+                bp.size = mech.size;
+                bp.chassis = mech.chassis;
+                // Copies, not references. Sharing the arrays would mean editing the design
+                // afterwards silently rebuilt the mech already sitting in the bay.
+                bp.hardpoint = Array.isArray(mech.hardpoint) ? [...mech.hardpoint] : [];
+                bp.equip = Array.isArray(mech.equip) ? [...mech.equip] : [];
+                bp.infernal = mech.infernal ? true : false;
+                // Reshape to the current frame: a mech built before the special mount existed
+                // has no entry for it, and warlord demons use a different slot layout entirely.
+                normalizeBlueprint();
+                // The weapon and equipment dropdowns are built per size/chassis at draw time, so
+                // the lab has to be rebuilt rather than left to reactivity.
+                drawMechLab();
+                clearPopper();
             },
             equipment(e,size){
                 if (e !== 'special'){
@@ -7769,6 +7834,11 @@ export function mechRating(mech,boss){
     if (rating === 0){
         return 0;
     }
+
+    // The Infernal minor trait. Applied here so it reaches both the boss and the floor branches
+    // below. Not to be confused with mech.infernal on the next line, which is the mech's own
+    // infernal chassis flag.
+    rating *= geneBonus('infernal');
 
     if (mech.hasOwnProperty('infernal') && mech.infernal && global.blood['prepared'] && global.blood.prepared >= 3){
         rating *= 1.25;

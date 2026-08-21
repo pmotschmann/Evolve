@@ -1,6 +1,7 @@
-import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame, atrack, p_on, quantum_level, tmp_vars } from './vars.js';
-import { loc } from './locale.js';
-import { races, traits, genus_def, traitSkin, fathomCheck } from './races.js';
+import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame, atrack, p_on, quantum_level, tmp_vars, touchDevice, writeSave } from './vars.js';
+import { encodeExportString, decodeExportString, decodeSaveString } from './save.js';
+import { loc, lastLocalization } from './locale.js';
+import { races, traits, genus_def, traitSkin, fathomCheck, geneBonus, geneFlat, geneVars} from './races.js';
 import { actions, actionDesc } from './actions.js';
 import { jobScale } from './jobs.js';
 import { universe_affixes } from './space.js';
@@ -22,14 +23,16 @@ export function popover(id,content,opts){
     if (!opts.hasOwnProperty('bind')){ opts['bind'] = true; }
     if (!opts.hasOwnProperty('unbind')){ opts['unbind'] = true; }
     if (!opts.hasOwnProperty('placement')){ opts['placement'] = 'bottom'; }
-    if (opts['bind']){
-        $(opts.elm).on(opts['bind_mouse_enter'] ? 'mouseenter' : 'mouseover',function(){
+
+    let showPop = function(self){
+        {
             if (popperRef || $(`#popper`).length > 0){
                 clearPopper();
             }
             let wide = opts['wide'] ? ' wide' : '';
             let classes = opts['classes'] ? opts['classes'] : `has-background-light has-text-dark pop-desc`;
             var popper = $(`<div id="popper" class="popper${wide} ${classes}" data-id="${id}"></div>`);
+
             if (opts['attach']){
                 $(opts['attach']).append(popper);
             }
@@ -37,10 +40,10 @@ export function popover(id,content,opts){
                 $(`#main`).append(popper);
             }
             if (content){
-                popper.append(typeof content === 'function' ? content({ this: this, popper: popper }) : content);
+                popper.append(typeof content === 'function' ? content({ this: self, popper: popper }) : content);
             }
 
-            popperRef = window.Popper.createPopper(opts['self'] ? this : $(opts.elm)[0],
+            popperRef = window.Popper.createPopper(opts['self'] ? self : $(opts.elm)[0],
                 document.querySelector(`#popper`),
                 {
                     placement: opts['placement'],
@@ -61,42 +64,75 @@ export function popover(id,content,opts){
 
             popper.show();
             if (opts.hasOwnProperty('in') && typeof opts['in'] === 'function'){
-                opts['in']({ this: this, popper: popper, id: `popper` });
+                opts['in']({ this: self, popper: popper, id: `popper` });
             }
 
             if (eventActive('firework') && global[global.race['cataclysm'] || global.race['orbit_decayed'] ? 'space' : 'city'].firework.on > 0){
                 $(popper).append(`<span class="pyro"><span class="before"></span><span class="after"></span></span>`);
             }
+        }
+    };
+    let hidePop = function(self){
+        clearPopper();
+        if (opts.hasOwnProperty('out') && typeof opts['out'] === 'function'){
+            opts['out']({ this: self, popper: $(`#popper`), id: `popper`});
+        }
+    };
+
+    let toggleMode = opts['touchToggle'] && global.settings['touch'] ? true : false;
+    if (toggleMode){
+        popToggles[id] = { show: showPop, hide: hidePop, elm: opts.elm };
+    }
+
+    if (opts['bind'] && !toggleMode){
+        $(opts.elm).on(opts['bind_mouse_enter'] ? 'mouseenter' : 'mouseover',function(){
+            showPop(this);
         });
     }
-    if (opts['unbind']){
-        if ('ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/) && global.settings.touch) {
+    if (opts['unbind'] && !toggleMode){
+        if (global.settings['touch']) {
             $(opts.elm).on('touchend',function(e){
-                clearPopper();
-                if (opts.hasOwnProperty('out') && typeof opts['out'] === 'function'){
-                    opts['out']({ this: this, popper: $(`#popper`), id: `popper`});
-                }
+                hidePop(this);
             });
         }
         else {
             $(opts.elm).on(opts['bind_mouse_enter'] ? 'mouseleave' : 'mouseout',function(){
-                clearPopper();
-                if (opts.hasOwnProperty('out') && typeof opts['out'] === 'function'){
-                    opts['out']({ this: this, popper: $(`#popper`), id: `popper`});
-                }
+                hidePop(this);
             });
         }
     }
 }
 
-if ('ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/) && global.settings.touch) {
-    $(document).on('touchend',function(e){
-        if ($(`.popper`).length === 1){
-            clearPopper();
-            return;
-        }
-    });
+// Controls that open and close their own popover on tap, by element id.
+const popToggles = {};
+
+// Open a popover if it is shut, shut it if it is open.
+export function togglePopover(id){
+    let t = popToggles[id];
+    if (!t){ return false; }
+    let open = $(`#popper`).length > 0 && $(`#popper`).data('id') === id;
+    if (open){ t.hide($(t.elm)[0]); }
+    else { t.show($(t.elm)[0]); }
+    return true;
 }
+
+// True while a tapped-open popover is showing, so the tap-away handler can tell one apart from the
+// hover popovers that close themselves.
+function stickyPopper(){
+    let id = $(`#popper`).length > 0 ? $(`#popper`).data('id') : false;
+    return id && popToggles[id] ? popToggles[id] : false;
+}
+
+$(document).on('touchend',function(e){
+    if (!global.settings['touch']){ return; }
+    if ($(`.popper`).length !== 1){ return; }
+    let sticky = stickyPopper();
+    if (sticky){
+        if ($(e.target).closest(`#popper`).length > 0){ return; }
+        if ($(e.target).closest(sticky.elm).length > 0){ return; }
+    }
+    clearPopper();
+});
 
 export function clearPopper(id){
     if (id && $(`#popper`).data('id') !== id){
@@ -172,16 +208,24 @@ window.exportGame = function exportGame(){
     if (global.race['noexport']){
         return `Export is not available during ${global.race['noexport']} Creation`;
     }
-    return LZString.compressToBase64(JSON.stringify(global));
+    return encodeExportString(global);
 }
 
-window.importGame = function importGame(data,utf16){
-    let saveState = JSON.parse(utf16 ? LZString.decompressFromUTF16(data) : LZString.decompressFromBase64(data));
+// fromStorage marks data that came out of localStorage 
+window.importGame = function importGame(data,fromStorage){
+    let saveState;
+    try {
+        saveState = fromStorage ? decodeSaveString(data) : decodeExportString(data);
+    }
+    catch (e){
+        console.error('Save import failed:', e);
+        return;
+    }
     if (saveState && 'evolution' in saveState && 'settings' in saveState && 'stats' in saveState && 'plasmid' in saveState.stats){
         if (webWorker.w){
             webWorker.w.terminate();
         }
-        if (saveState.hasOwnProperty('tech') && utf16){
+        if (saveState.hasOwnProperty('tech') && fromStorage){
             if (saveState.tech.hasOwnProperty('whitehole') && saveState.tech.whitehole >= 4){
                 saveState.tech.whitehole = 3;
                 saveState.resource.Soul_Gem.amount += 10;
@@ -214,7 +258,9 @@ window.importGame = function importGame(data,utf16){
                 }
             }
         }
-        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(saveState)));
+        // Smart detection of touch device
+        saveState.settings['touch'] = touchDevice();
+        writeSave(saveState);
         window.location.reload();
     }
 }
@@ -283,7 +329,7 @@ export function powerGrid(type,reset){
             power_structs = ['spc_eris:shock_trooper','spc_eris:tank'];
             break;
         case 'venus':
-            power_structs = ['spc_venus:descender','spc_venus:nitrogen_harvester','spc_venus:cloud_quarters','spc_venus:industrial_complex','spc_venus:workshop'];
+            power_structs = ['spc_venus:descender','spc_venus:nitrogen_harvester','spc_venus:cloud_quarters','spc_venus:industrial_complex','spc_venus:workshop','spc_venus:university'];
             break;
         case 'tau_home':
             power_structs = ['tau_home:colony','tau_home:tau_factory','tau_home:mining_pit','tau_home:infectious_disease_lab','tau_home:marine_barracks','tau_home:data_decoder'];
@@ -338,6 +384,9 @@ export function messageQueue(msg,color,dnr,tags,reload){
     // log, but intentional random-event notifications (tagged 'events') are allowed through so the
     // player can see the major/minor events that fired while they were away.
     if (webWorker.offline && !(Array.isArray(tags) && tags.includes('events'))){ return; }
+
+    const origin = dnr ? null : lastLocalization(msg);
+
     tags = tags || [];
     if (!reload && !tags.includes('all')){
         tags.push('all');
@@ -362,12 +411,49 @@ export function messageQueue(msg,color,dnr,tags,reload){
     if (!dnr){
         tags.forEach(function (tag){
             if (global.lastMsg[tag]){
-                global.lastMsg[tag].unshift({ m: msg, c: color });
+                let entry;
+                if (origin){
+                    entry = { k: origin.key, c: color };
+                    if (origin.vars){ entry.v = origin.vars.slice(); }
+                }
+                else {
+                    entry = { m: msg, c: color };
+                }
+                global.lastMsg[tag].unshift(entry);
                 if (global.lastMsg[tag].length > global.settings.msgFilters[tag].save){
                     global.lastMsg[tag].splice(global.settings.msgFilters[tag].save);
                 }
             }
         });
+    }
+
+    updateMobileMsg();
+}
+
+// Max mobile message log size
+export const MOBILE_MSG_MAX = 3;
+
+export function mobileMsgLines(){
+    let show = global.settings['mMsg'];
+    if (typeof show !== 'number' || !(show >= 0)){ return 1; }
+    return Math.min(Math.floor(show), MOBILE_MSG_MAX);
+}
+
+// Redraw the mobile message bar
+export function updateMobileMsg(){
+    let bar = document.getElementById('mobileMsg');
+    if (!bar){ return; }
+    let show = mobileMsgLines();
+    // The height the rest of the mobile layout has to make room for is driven off this attribute in
+    // CSS, so the bar and the space reserved for it can never disagree.
+    document.documentElement.setAttribute('data-mmsg', show);
+    let body = bar.querySelector('.mMsgBody');
+    if (!body){ return; }
+    clearElement($(body));
+    if (show === 0){ return; }
+    let log = message_logs[message_logs.view] || [];
+    for (let i = 0; i < show && i < log.length; i++){
+        $(body).append($(`<p class="has-text-${log[i].color}"></p>`).text(log[i].msg));
     }
 }
 
@@ -400,8 +486,10 @@ export function calcQueueMax(){
     if (pragVal){
         max_queue = Math.round(max_queue * (1 + (pragVal / 100)));
     }
+    // Queuemaster is added after the doubling above so a rank is always worth exactly one slot.
+    max_queue += geneFlat('queuemaster');
 
-    global.queue.max = max_queue;
+    global.queue.max = Math.floor(max_queue);
 }
 
 export function calcRQueueMax(){
@@ -750,6 +838,10 @@ export function genCivName(alt){
 }
 
 export function costMultiplier(structure,offset,base,multiplier,cat){
+    // Frugal: the small genus needs less of everything to put a roof up.
+    if (['basic_housing','cottage','apartment'].includes(structure)){
+        base = base * (2 - geneBonus('frugal'));
+    }
     if (!cat){
         cat = 'city';
     }
@@ -1085,6 +1177,18 @@ export function arpaTimeCheck(project, remain, track, detailed){
     return detailed ? { t: allRemainingSegmentsTime, r: bottleneck, s: shorted } : allRemainingSegmentsTime;
 }
 
+// Resolve whatever a caller put in `bind.el` down to a single element, or null.
+function bindEl(el){
+    if (!el){ return null; }
+    if (typeof el === 'string'){
+        try { return document.querySelector(el); }
+        catch(e){ return null; }
+    }
+    if (el.nodeType === 1){ return el; }
+    if (el[0] && el[0].nodeType === 1){ return el[0]; }
+    return null;
+}
+
 function unmountApp(el){
     if (el && el.__vue_app__){
         // Stop the mount-element v-show effect (see vBind create) before unmounting so it doesn't keep
@@ -1101,7 +1205,7 @@ function unmountApp(el){
         delete el.__vue_app__;
         delete el.__vue_bind__;
         delete el.__vue_proxy__;
-        $(el).removeClass('vb');
+        el.classList.remove('vb');
     }
 }
 
@@ -1184,11 +1288,7 @@ export function flushTabPanelClears(){
 }
 
 export function clearElement(elm,remove){
-    // Unmount nested Vue apps deepest-first. Document order (`.find` default) unmounts a parent
-    // app before its nested child app; the parent's unmount detaches the child's DOM, so the
-    // child's later unmount() throws ("nextSibling of null") and its reactive effect is orphaned
-    // (still subscribed to the global proxy → a per-rebuild heap/CPU leak). Reversing to
-    // deepest-first keeps each element's DOM attached when its own app is unmounted.
+    // Unmount nested Vue apps deepest-first.
     let vbs = elm.find('.vb').get();
     for (let i = vbs.length - 1; i >= 0; i--){
         unmountApp(vbs[i]);
@@ -1207,30 +1307,12 @@ export function clearElement(elm,remove){
 
 export function vBind(bind,action){
     action = action || 'create';
-    if (action === 'native'){
-        return vBindNative(bind,'create');
-    }
     if (action === 'update'){
-        // During offline catch-up the whole UI sits behind the progress modal and reactivity is
-        // suppressed; skip the ~70 forced re-renders per simulated tick and refresh once at the end.
+        // During offline catch-up the whole UI sits behind the progress modal and reactivity is suppressed;
         if (webWorker.offline){ return; }
-        // An 'update' call carries only { el } — no data/methods/template — so it can
-        // only refresh a binding that already exists. Refresh a live one; otherwise
-        // rebuild it from the config stashed at create time (see __vue_bind__ below).
-        if ($(bind.el).length === 0){ return; }
-        let el = $(bind.el)[0];
+        let el = bindEl(bind.el);
+        if (!el){ return; }
         let app = el.__vue_app__;
-        // A live app: force a re-render. $forceUpdate bypasses reactivity and re-runs
-        // the render function, so method-based interpolations (e.g. the fortress
-        // {{ filter(on,'army') }} panels, which read non-reactive values like p_on)
-        // are re-evaluated even when the bound data object itself didn't change.
-        //
-        // The component proxy is preferred from app._instance, but Vue 3.5 does NOT populate
-        // app._instance for a multi-root (fragment) root component — app.mount() still returns a
-        // valid proxy though, which we stash as __vue_proxy__ at create time. Without this
-        // fallback, a fragment-root panel (e.g. #fort, updated every game tick) fails the
-        // liveness test every tick and gets needlessly re-created, orphaning the live app each
-        // time — a fast heap leak that froze the Hell Dimension tab.
         let proxy = (app && app._instance && app._instance.proxy) ? app._instance.proxy : (app ? el.__vue_proxy__ : null);
         if (proxy){
             try {
@@ -1247,18 +1329,9 @@ export function vBind(bind,action){
         if (app && app._container){
             return;
         }
-        // No live app. It was torn down (unmounted -> _instance null / detached) but the
-        // element still stands, so the update would otherwise silently no-op and the panel
-        // would go stale forever. If the original create config was stashed on the element,
-        // re-mount from it so it starts rendering again; otherwise there's nothing to do.
         if (typeof app !== "undefined"){ delete el.__vue_app__; delete el.__vue_proxy__; }
-        $(el).removeClass('vb');
+        el.classList.remove('vb');
         if (el.__vue_bind__){
-            // Unmount clears the element's innerHTML (its template); restore it so create
-            // has the markup to compile again, then re-mount from the stashed config. Guard
-            // the remount so a mount failure can never take down the game loop; drop the stash
-            // on failure so we don't retry (and re-throw) every tick — the next full re-render
-            // re-creates it. (create clears the stale _vnode that would otherwise crash mount.)
             if (typeof el.__vue_template__ === 'string'){ el.innerHTML = el.__vue_template__; }
             try {
                 return vBind(el.__vue_bind__, 'create');
@@ -1267,31 +1340,23 @@ export function vBind(bind,action){
                 console.warn('Error during vBind rebuild:', e);
                 delete el.__vue_app__;
                 delete el.__vue_bind__;
-                $(el).removeClass('vb');
+                el.classList.remove('vb');
             }
         }
         return;
     }
     // create / destroy: tear down any existing app on the element first.
-    if ($(bind.el).length > 0 && typeof $(bind.el)[0].__vue_app__ !== "undefined"){
-        unmountApp($(bind.el)[0]);
+    const target = bindEl(bind.el);
+    if (target && typeof target.__vue_app__ !== "undefined"){
+        unmountApp(target);
     }
     if (action === 'create'){
-        if ($(bind.el).length > 0) {
-            const el = $(bind.el)[0];
+        if (target) {
+            const el = target;
             const vueOptions = { ...bind };
-
-            // The panel's template is the element's innerHTML, which Vue consumes on mount
-            // and clears on unmount. Capture it (read-only — normal create still lets Vue read
-            // innerHTML as before) so a later self-heal rebuild can restore it before
-            // re-mounting, instead of mounting a now-blank element. See the 'update' branch.
             const template = el.innerHTML;
 
-            // Vue 3 removed the `filters` option. A lot of (mostly wiki) templates still declare
-            // helper functions in a `filters` block and call them as ordinary methods in
-            // interpolations, e.g. {{ generic(x) }} / {{ stressDiv(job) }}. Merge any filters into
-            // methods (methods win on name clashes) so those calls resolve instead of throwing
-            // "X is not a function".
+            // Vue 3 removed the `filters` option.
             if (vueOptions.filters && typeof vueOptions.filters === 'object') {
                 vueOptions.methods = Object.assign({}, vueOptions.filters, vueOptions.methods || {});
                 delete vueOptions.filters;
@@ -1313,34 +1378,18 @@ export function vBind(bind,action){
                 app.use(Buefy.default);
             }
 
-            // Every create mounts a brand-new app, so mount must always do a clean
-            // patch(null, ...). If a prior app was torn down but its unmount threw (the
-            // documented "nextSibling of null" on detached DOM), Vue's internal _vnode
-            // pointer can be left on the element; the fresh mount would then diff against
-            // that stale, detached tree and crash. Clear it to enforce the clean-mount path.
             el._vnode = null;
-            // Stash the proxy app.mount() returns — it exposes $forceUpdate and is valid even when
-            // Vue 3.5 leaves app._instance unset (fragment-root components). vBind('update') uses it.
-            el.__vue_proxy__ = app.mount(bind.el);
+            el.__vue_proxy__ = app.mount(el);
             el.__vue_app__ = app;
 
             // Vue 3 ignores directives written on the element you mount onto: it treats that element as
-            // an inert container and compiles only its innerHTML as the template. So a `v-show` left on
-            // the mount element never takes effect and the panel renders unconditionally (the bug behind
-            // #mad, #govType, #foreign, the syndicate/ground overlays, per-resource eject rows, etc.).
-            // Vue leaves the unprocessed directive behind as a literal DOM attribute, so honor it here:
-            // drive the element's own `display` from a reactive effect that evaluates the same expression
-            // against the component proxy, reproducing what a compiled v-show would do. Only v-show is
-            // handled — the one mount-element directive the codebase actually relies on.
+            // an inert container and compiles only its innerHTML as the template.
             if (typeof Vue.watchEffect === 'function' && el.getAttribute && el.getAttribute('v-show') !== null){
                 const vShowExpr = el.getAttribute('v-show');
                 el.removeAttribute('v-show');
                 const proxy = el.__vue_proxy__;
                 let evalVShow = null;
                 try {
-                    // A Function-constructor body runs in sloppy mode even though this module is strict,
-                    // so `with` is legal here — it resolves the raw template expression's bare identifiers
-                    // and method calls against the proxy exactly as Vue's compiled render function would.
                     evalVShow = new Function('$ctx', `with($ctx){ return (${vShowExpr}); }`);
                 }
                 catch(e){ evalVShow = null; }
@@ -1353,12 +1402,9 @@ export function vBind(bind,action){
                 }
             }
 
-            // Stash the original (unmutated) bind config and template so a later
-            // vBind('update') can self-heal — re-mounting the panel from these if its
-            // app has since been torn down.
             el.__vue_bind__ = bind;
             if (typeof template === 'string' && template.length > 0){ el.__vue_template__ = template; }
-            $(el).addClass('vb');
+            el.classList.add('vb');
 
             return app;
         }
@@ -1367,9 +1413,7 @@ export function vBind(bind,action){
 
 // Helper function to forcefully clean up Vue proxy references
 export function clearVueProxies(element) {
-    if (typeof element === 'string') {
-        element = $(element)[0];
-    }
+    element = bindEl(element);
     
     if (element && element.__vue_app__) {
         try {
@@ -1406,56 +1450,6 @@ export function clearVueProxies(element) {
             
         } catch(e) {
             console.warn('Error clearing Vue proxies:', e);
-        }
-    }
-}
-
-// Alternative vBind implementation using Vue 3 native reactive system
-function vBindNative(bind, action) {
-    action = action || 'create';
-    if (action === 'create') {
-        if ($(bind.el).length > 0) {
-            const vueOptions = { ...bind };
-
-            // Vue 3 removed `filters`; merge them into methods so templates that call them as
-            // functions (e.g. {{ generic(x) }}) keep working. See vBind for details.
-            if (vueOptions.filters && typeof vueOptions.filters === 'object') {
-                vueOptions.methods = Object.assign({}, vueOptions.filters, vueOptions.methods || {});
-                delete vueOptions.filters;
-            }
-
-            // Use Vue 3 native reactive system
-            if (vueOptions.data && typeof vueOptions.data === 'object') {
-                const originalData = vueOptions.data;
-                
-                // Convert to Vue 3 reactive data
-                vueOptions.data = function() {
-                    return Vue.reactive(originalData);
-                };
-                
-                // No custom sync logic needed - Vue 3 reactive handles this natively
-                // The reactive object will automatically sync with the original data
-                const originalMounted = vueOptions.mounted;
-                vueOptions.mounted = function() {
-                    // Vue 3 reactive objects automatically maintain reactivity
-                    // No manual watchers or intervals needed
-                    
-                    if (originalMounted) {
-                        originalMounted.call(this);
-                    }
-                };
-            }
-
-            const app = Vue.createApp(vueOptions);
-            if (!bind.hasOwnProperty('buefy') || bind.buefy) {
-                app.use(Buefy.default);
-            }
-            
-            $(bind.el)[0].__vue_proxy__ = app.mount(bind.el);
-            $(bind.el)[0].__vue_app__ = app;
-            $(bind.el).addClass('vb');
-
-            return app;
         }
     }
 }
@@ -1520,9 +1514,11 @@ export function powerModifier(energy){
 
 export function powerCostMod(energy){
     if (global.race['emfield']){
-        return +(energy * 1.5).toFixed(2);
+        energy *= 1.5;
     }
-    return energy;
+    // Frostbound: the polar genus runs its buildings colder.
+    energy *= 2 - geneBonus('frostbound');
+    return +(energy).toFixed(2);
 }
 
 export function calcQuantumLevel(load){
@@ -1716,8 +1712,8 @@ export function masteryType(universe,detailed,unmodified){
                 u_rate *= 1 - (traits.ooze.vars()[2] / 100);
             }
             if (global.genes.challenge >= 5 && global.race.hasOwnProperty('mastery')){
-                m_rate *= 1 + (traits.mastery.vars()[0] * global.race.mastery / 100);
-                u_rate *= 1 + (traits.mastery.vars()[0] * global.race.mastery / 100);
+                m_rate *= 1 + (geneVars('mastery')[0] * global.race.mastery / 100);
+                u_rate *= 1 + (geneVars('mastery')[0] * global.race.mastery / 100);
             }
         }
 
@@ -1879,6 +1875,13 @@ export function getResetConstants(type, inputs){
             rc.phage_mult = 2.5;
             rc.plasmid_cap = 1800;
             break;
+        case 'za':
+            rc.pop_divisor = 1.5;
+            rc.k_inc = 10000;
+            rc.k_mult = 1.006;
+            rc.phage_mult = 3.5;
+            rc.plasmid_cap = 2000;
+            break;
         default:
             rc.unknown = true;
             break;
@@ -1895,6 +1898,7 @@ export function calcPrestige(type,inputs){
         artifact: 0,
         cores: 0,
         supercoiled: 0,
+        talens: 0,
         pdebt: 0
     };
 
@@ -1906,17 +1910,18 @@ export function calcPrestige(type,inputs){
 
     let pop = 0;
     if (inputs.cit === undefined){
-        let garrisoned = global.civic.hasOwnProperty('garrison') ? global.civic.garrison.workers : 0;
+        let garrisoned = global.race['r_data'] ? global.race.r_data.s : (global.civic.hasOwnProperty('garrison') ? global.civic.garrison.workers : 0);
         for (let i=0; i<3; i++){
             if (global.civic.foreign[`gov${i}`].occ){
                 garrisoned += jobScale(global.civic.govern.type === 'federation' ? 15 : 20);
             }
         }
+        let citizens = global.race['r_data'] ? global.race.r_data.c : global.resource[global.race.species].amount;
         if (global.race['high_pop']){
-            pop = Math.round(global.resource[global.race.species].amount / traits.high_pop.vars()[0]) + Math.round(garrisoned / traits.high_pop.vars()[0]);
+            pop = Math.round(citizens / traits.high_pop.vars()[0]) + Math.round(garrisoned / traits.high_pop.vars()[0]);
         }
         else {
-            pop = global.resource[global.race.species].amount + garrisoned;
+            pop = citizens + garrisoned;
         }
     }
     else {
@@ -2057,6 +2062,10 @@ export function calcPrestige(type,inputs){
 
     if (type === 'ai'){
         gains.cores = universe === 'micro' ? 2 : 5;
+    }
+
+    if (type === 'za'){
+        gains.talens = 1;
     }
     
     if (global.stats.pdebt > 0){
@@ -3678,6 +3687,14 @@ export function hoovedRename(style, species=global.race.species){
 }
 
 const traitExtra = {
+    // Neither of these is slotted or found: they are grown by the strand. Said on the trait itself,
+    // since the page otherwise reads exactly like a gene you could go and get.
+    content: [
+        loc(`wiki_trait_effect_content_ex1`)
+    ],
+    promiscuous: [
+        loc(`wiki_trait_effect_promiscuous_ex1`)
+    ],
     infiltrator: [
         loc(`wiki_trait_effect_infiltrator_ex1`),
         loc(`wiki_trait_effect_infiltrator_ex2`,[
@@ -3758,6 +3775,10 @@ export function getTraitDesc(info, trait, opts){
     let traitName = traitSkin('name', trait, species);
     let traitDesc = traitSkin('desc', trait, species);
 
+    if (['minor','special'].includes(traits[trait].type) && traits[trait].vars){
+        traitDesc = loc(`trait_${trait}`, getTraitVals(trait, trank, species));
+    }
+
     if (tpage && ['genus','major'].includes(traits[trait].type)){
         rank = `<span><span role="button" @click="down()">&laquo;</span><span class="has-text-warning">${loc(`wiki_trait_rank`)} {{ rank }}</span><span role="button" @click="up()">&raquo;</span></span>`;
     }
@@ -3767,7 +3788,13 @@ export function getTraitDesc(info, trait, opts){
             info.append(`<div class="type has-text-caution">${loc(`wiki_trait_${traits[trait].type}`)}<span>${loc(`wiki_trait_value`,[traits[trait].val])}</span></div>`);
         }
         else {
-            info.append(`<div class="type has-text-caution">${loc(`wiki_trait_${traits[trait].type}`)}</div>`);
+            if (traits[trait].type === 'minor'){
+                let base = traits[trait].base;
+                info.append(`<div class="type"><span class="has-text-caution">${loc(`wiki_trait_minor`)} <span class="pickBase base${base}">${base}</span></span></div>`);
+            }
+            else{
+                info.append(`<div class="type has-text-caution">${loc(`wiki_trait_${traits[trait].type}`)}</div>`);
+            }
         }
         if (fanatic){
             info.append(`<div class="has-text-danger">${loc(`wiki_trait_fanaticism`,[fanatic])}</div>`);

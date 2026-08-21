@@ -1,8 +1,8 @@
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
 import { clearElement, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel } from './../functions.js';
-import { achievements, feats, universeAffix } from './../achieve.js';
-import { races, biomes, genus_def } from './../races.js';
+import { achievements, feats, universeAffix, geneticistGenes } from './../achieve.js';
+import { races, biomes, genus_def, traits, traitSkin, geneCatalog, genePermanent } from './../races.js';
 import { monsters } from './../portal.js';
 import { vBind, popover } from './../functions.js';
 
@@ -43,7 +43,8 @@ const universeExclusives = {
 };
 
 const achieveDescData = {
-    trade: [750,50]
+    trade: [750,50],
+    geneticist: [geneticistGenes]
 };
 
 export function achievePage(universe, filter){
@@ -304,11 +305,12 @@ function achieveDesc(achievement,showFlair,universe){
         popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`));
     }
     else if (achievement === 'zombie_genocider'){
-        // Tasks 4 and 5 are not written yet, so only the ones that exist are listed.
+        // Task 5 is not written yet, so only the ones that exist are listed.
         let checklist = `<div class="list">`;
         checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z1[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider1`,[(53594).toLocaleString()])}</div>`;
         checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z2[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider2`)}</div>`;
         checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z3[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider3`)}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z4[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider4`)}</div>`;
         checklist = checklist + `</div>`;
         popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`));
     }
@@ -435,6 +437,19 @@ function featDesc(feat,showFlair){
             wide: true
         });
     }
+    else if (feat === 'gene_splicer'){
+        let checked = `<div class="flexed wide">`;
+        geneCatalog().sort(function(a,b){
+            return traitSkin('name',a).localeCompare(traitSkin('name',b));
+        }).forEach(function (gene){
+            let owned = genePermanent(gene) ? `has-text-success` : `has-text-danger`;
+            checked = checked + `<span class="wide ${owned}">${traitSkin('name',gene)}</span>`;
+        });
+        checked = checked + `</div>`;
+        popover(`f-${feat}`,$(`<div class="wide has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${checked}${flair}`),{
+            wide: true
+        });
+    }
     else if (feat === 'grand_death_tour'){
         let path = `<div class="flexed">`;
         let map = {
@@ -443,9 +458,10 @@ function featDesc(feat,showFlair){
             di: 'wiki_resets_infusion', 
             ai: 'wiki_resets_ai', 
             vc: 'wiki_resets_vacuum',
-            md: 'wiki_resets_mad_wish'
+            md: 'wiki_resets_mad_wish',
+            za: 'wiki_resets_zombie_apocalypse'
         };
-        ['ct','bh','di','ai','vc','md'].forEach(function (key){
+        ['ct','bh','di','ai','vc','md','za'].forEach(function (key){
             let reset = 0;
             Object.keys(global.stats.death_tour[key]).forEach(function(k){
                 if (global.stats.death_tour[key][k] > reset){

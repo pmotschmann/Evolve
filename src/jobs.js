@@ -2,7 +2,7 @@ import { global, keyMultiplier, p_on, support_on, tmp_vars } from './vars.js';
 import { vBind, clearElement, popover, darkEffect, eventActive, easterEgg, getHalloween } from './functions.js';
 import { loc } from './locale.js';
 import { highPopAdjust } from './prod.js';
-import { racialTrait, servantTrait, races, traits, biomes, planetTraits, fathomCheck } from './races.js';
+import { racialTrait, servantTrait, races, traits, biomes, planetTraits, fathomCheck, geneBonus, geneFlat} from './races.js';
 import { armyRating, govEffect } from './civics.js';
 import { govActive } from './governor.js';
 import { craftingRatio, craftCost, craftingPopover } from './resources.js';
@@ -378,6 +378,9 @@ export const job_data = {
             let worker_impact = +workerScale(job_data.cement_worker.impact(),'cement_worker').toFixed(2);
             let impact = global.tech['cement'] >= 4 ? (global.tech.cement >= 7 ? 1.45 : 1.2) : 1;
             let cement_multiplier = racialTrait(global.civic.cement_worker.workers,'factory');
+            if (!global.race['flier']){
+                cement_multiplier *= geneBonus('sapper') * geneBonus('duneborn');
+            }
             let gain = worker_impact * impact * cement_multiplier;
             if (global.city.biome === 'ashland'){
                 gain *= biomes.ashland.vars()[1];
@@ -991,6 +994,13 @@ export function teamsterCap(){
     return transport;
 }
 
+// Craftsman slots in force: what the buildings have granted, plus whatever the gene adds. Scaled
+// the same way the buildings scale theirs, so a high_pop race gets the matching number of bodies.
+export function craftsmanMax(){
+    let bonus = geneFlat('guildmaster');
+    return global.civic.craftsman.max + (bonus > 0 ? jobScale(bonus) : 0);
+}
+
 export function craftsmanCap(res){
     switch (res){
         case 'Scarletite':
@@ -1094,7 +1104,8 @@ export function loadFoundry(servants){
         : ((global.city['foundry'] && global.city['foundry'].count > 0) || global.underground['under_foundry']?.count || global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation'] || global.race['warlord'] ? true : false);
     if (show){
         let element = $(servants ? '#skilledServants' : '#foundry');
-        let track = servants ? `{{ s.sused }} / {{ s.smax }}` : `{{ f.crafting }} / {{ c.max }}`;
+        // cmax() rather than c.max: the latter is only what the buildings grant, so the slots guildmaster adds never showed up here
+        let track = servants ? `{{ s.sused }} / {{ s.smax }}` : `{{ f.crafting }} / {{ cmax() }}`;
         let foundry = $(`<div class="job"><div class="foundry job_label"><h3 class="has-text-warning">${loc(servants ? 'civics_skilled_servants' : 'craftsman_assigned')}</h3><span :class="level()">${track}</span></div></div>`);
         element.append(foundry);
 
@@ -1166,6 +1177,8 @@ export function loadFoundry(servants){
             el: servants ? '#skilledServants' : '#foundry',
             data: bindData,
             methods: {
+                // Craftsman slots actually available: the buildings' allowance plus guildmaster.
+                cmax(){ return craftsmanMax(); },
                 add(res){
                     let keyMult = keyMultiplier();
                     let tMax = -1;
@@ -1183,7 +1196,7 @@ export function loadFoundry(servants){
                             }
                         }
                         else {
-                            if (global.city.foundry.crafting < global.civic.craftsman.max
+                            if (global.city.foundry.crafting < craftsmanMax()
                                 && (global.civic[global.civic.d_job] && global.civic[global.civic.d_job].workers > 0)
                                 && (tMax === -1 || tMax > global.city.foundry[res])
                             ){
@@ -1225,7 +1238,7 @@ export function loadFoundry(servants){
                 },
                 level(){
                     let workers = servants ? global.race.servants.sused : global.civic.craftsman.workers;
-                    let max = servants ? global.race.servants.smax : global.civic.craftsman.max;
+                    let max = servants ? global.race.servants.smax : craftsmanMax();
                     if (workers === 0){
                         return 'count has-text-danger';
                     }

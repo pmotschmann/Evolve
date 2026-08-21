@@ -1,5 +1,5 @@
 import { global, p_on, support_on } from './vars.js';
-import { biomes, traits, fathomCheck } from './races.js';
+import { biomes, traits, fathomCheck, geneBonus, geneVars} from './races.js';
 import { govRelationFactor, govEffect } from './civics.js';
 import { jobScale, teamsterCap, workerScale } from './jobs.js';
 import { actions } from './actions.js';
@@ -115,9 +115,9 @@ export function production(id,val,wiki){
                     };
                 }
                 case 'stone':
-                    return highPopAdjust(0.75);
+                    return highPopAdjust(global.tech['resettle'] ? 0.025 : 0.75);
                 case 'asbestos':
-                    return highPopAdjust(1.25);
+                    return highPopAdjust(global.tech['resettle'] ? 0.03 : 1.25);
                 case 'aluminium':
                     return highPopAdjust(0.066);
             }
@@ -627,6 +627,12 @@ export function technicianBonus(rate){
 }
 
 export function factoryBonus(factory){
+    // Hardy and Overclocked belong here rather than in racialTrait, whose 'factory' type is only
+    // ever passed for cement production.
+    if (global.race['hardy']){
+        factory *= 1 + (geneVars('hardy')[0] * global.race['hardy'] / 100);
+    }
+    factory *= geneBonus('overclocked');
     if (global.race['toxic']){
         factory *= 1 + (traits.toxic.vars()[0] / 100);
     }

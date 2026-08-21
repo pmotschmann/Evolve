@@ -1,4 +1,4 @@
-import { global, save, webWorker, p_on } from './vars.js';
+import { global, save, webWorker, p_on, writeSave, writeBackup } from './vars.js';
 import { loc } from './locale.js';
 import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper, popCost } from './functions.js';
 import { unlockAchieve, alevel, universeAffix, unlockFeat } from './achieve.js';
@@ -5020,6 +5020,26 @@ const techs = {
         },
         flair(){ return loc(`tech_dimensional_tap_flair`); }
     },
+    lab_assistants: {
+        id: 'tech-lab_assistants',
+        title(){ return loc('tech_lab_assistants'); },
+        desc(){ return loc('tech_lab_assistants'); },
+        category: 'science',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { science: 9, womling_tech: 10, tau_gas2: 8, m_ignite: 2 },
+        grant: ['science',10],
+        cost: {
+            Knowledge(){ return 17500000; }
+        },
+        effect(){ return loc('tech_lab_assistants_effect',[5]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     devilish_dish: {
         id: 'tech-devilish_dish',
         title(){ return loc('tech_devilish_dish'); },
@@ -5579,7 +5599,7 @@ const techs = {
             if (payCosts($(this)[0])){
                 if (global.race.universe === 'antimatter' && global.race['amexplode']){
                     unlockFeat('annihilation');
-                    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+                    writeSave();
                     $('body').addClass('nuke');
                     let nuke = $('<div class="nuke"></div>');
                     $('body').append(nuke);
@@ -10846,7 +10866,7 @@ const techs = {
             if (payCosts($(this)[0])){
                 if (global.race['banana']){
                     if (!global['sim']){
-                        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+                        writeBackup();
                     }
                     delete global.race['banana'];
                 }
@@ -10893,7 +10913,7 @@ const techs = {
             if (payCosts($(this)[0])){
                 if (global.race['banana']){
                     if (!global['sim']){
-                        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+                        writeBackup();
                     }
                     delete global.race['banana'];
                 }
@@ -14375,6 +14395,27 @@ const techs = {
             return false;
         }
     },
+    ship_massdriver: {
+        id: 'tech-ship_massdriver',
+        title(){ return loc('tech_ship_massdriver'); },
+        desc(){ return loc('tech_ship_massdriver'); },
+        category: 'space_militarization',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { resettle: 21, bombard: 1 },
+        grant: ['syard_special',1],
+        cost: {
+            Knowledge(){ return 32000000; },
+            Cipher(){ return 500000; }
+        },
+        effect: loc('tech_ship_massdriver_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     destroyer_ship: {
         id: 'tech-destroyer_ship',
         title(){ return loc('tech_destroyer_ship'); },
@@ -15420,7 +15461,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 if (!global['sim']){
-                    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+                    writeBackup();
                 }
                 global.tech['isolation'] = 1;
                 jumpGateShutdown();
@@ -16139,6 +16180,87 @@ const techs = {
             return false;
         }
     },
+    sever_uplink: {
+        id: 'tech-sever_uplink',
+        title(){ return loc('tech_sever_uplink'); },
+        desc(){ return loc('tech_sever_uplink'); },
+        category: 'progress',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { resettle: 17 },
+        grant: ['resettle',18],
+        cost: {
+            Knowledge(){ return 30000000; }
+        },
+        effect(){ return loc('tech_sever_uplink_effect',[actions.space.spc_venus.alien_facility.title(),planetName().venus]); },
+        action(){
+            if (payCosts($(this)[0])){
+                if (!global['sim']){
+                    writeBackup();
+                }
+                messageQueue(loc('tech_sever_uplink_msg',[planetName().home]),'info',false,['progress']);
+                return true;
+            }
+            return false;
+        }
+    },
+    bleed_overmind: {
+        id: 'tech-bleed_overmind',
+        title(){ return loc('tech_bleed_overmind'); },
+        desc(){ return `<div>${loc('tech_bleed_overmind')}</div><div class="has-text-danger">${loc('tech_bleed_overmind_warn')}</div><div class="has-text-warning">${loc('tech_exclusive_warn',[loc('tech_bombard_homeworld')])}</div>`; },
+        category: 'progress',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { resettle: 21 },
+        grant: ['resettle',22],
+        cost: {
+            Money(){ return 25000000000; },
+            Knowledge(){ return 32000000; },
+            Cipher(){ return 500000; }
+        },
+        wide: true,
+        effect(){
+            let desc = `<div>${loc('tech_bleed_overmind_effect',[actions.space.spc_venus.alien_facility.title()])}</div>`;
+            let gains = calcPrestige('za');
+            let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
+            let prestige = `<div class="has-text-caution">${loc('tech_bleed_overmind_effect_gains',[gains.plasmid, plasmidType, gains.phage, loc('resource_Phage_name'), gains.talens, loc('resource_TALENs_name')])}</div>`;
+            return desc + prestige;
+        },
+        action(){
+            if (payCosts($(this)[0])){
+                if (!global['sim']){
+                    writeBackup();
+                }
+                global.tech['overmind'] = 1;
+                global.race['r_data'] = { c: global.resource[global.race.species].amount || 0, s: global.civic.garrison.workers || 0 };
+                return true;
+            }
+            return false;
+        },
+        flair(){ return loc('tech_bleed_overmind_flair'); }
+    },
+    bombard_homeworld: {
+        id: 'tech-bombard_homeworld',
+        title(){ return loc('tech_bombard_homeworld'); },
+        desc(){ return `<div>${loc('tech_bombard_homeworld')}</div><div class="has-text-warning">${loc('tech_exclusive_warn',[loc('tech_bleed_overmind')])}</div>`; },
+        category: 'progress',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { resettle: 21 },
+        grant: ['resettle',22],
+        cost: {
+            Knowledge(){ return 31255000; }
+        },
+        effect(){ return loc('tech_bombard_homeworld_effect',[planetName().home]); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.tech['bombard'] = 1;
+                return true;
+            }
+            return false;
+        },
+        flair(){ return loc('tech_bombard_homeworld_flair'); }
+    },
     venus_foothold: {
         id: 'tech-venus_foothold',
         title(){ return loc('tech_venus_foothold',[planetName().venus]); },
@@ -16272,6 +16394,28 @@ const techs = {
             return false;
         }
     },
+    cloud_university: {
+        id: 'tech-cloud_university',
+        title(){ return loc('tech_cloud_university'); },
+        desc(){ return loc('tech_cloud_university'); },
+        category: 'science',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { venus: 10 },
+        grant: ['venus',11],
+        cost: {
+            Knowledge(){ return 28500000; }
+        },
+        effect(){ return loc('tech_cloud_university_effect',[planetName().venus]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.space.spc_venus.university);
+                renderSpace();
+                return true;
+            }
+            return false;
+        }
+    },
     moon_resort: {
         id: 'tech-moon_resort',
         // Theme changes depending on which moon was selected
@@ -16315,6 +16459,75 @@ const techs = {
                 return true;
             }
             return false;
+        }
+    },
+    moon_treasury: {
+        id: 'tech-moon_treasury',
+        title(){ return loc('tech_moon_treasury',[planetName()[surveyTheme()]]); },
+        desc(){ return loc('tech_moon_treasury',[planetName()[surveyTheme()]]); },
+        category: 'banking',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { survey: 4 },
+        grant: ['survey',5],
+        cost: {
+            Knowledge(){ return 27500000; }
+        },
+        effect(){ return loc('tech_moon_treasury_effect',[planetName()[surveyTheme()]]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.space.spc_survey.fort_knox);
+                renderSpace();
+                return true;
+            }
+            return false;
+        }
+    },
+    moon_vault: {
+        id: 'tech-moon_vault',
+        title(){ return loc('tech_moon_vault',[actions.space.spc_survey.fort_knox.title()]); },
+        desc(){ return loc('tech_moon_vault',[actions.space.spc_survey.fort_knox.title()]); },
+        category: 'banking',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { survey: 6 },
+        grant: ['survey',7],
+        cost: {
+            Knowledge(){ return 28000000; }
+        },
+        effect(){ return loc('tech_moon_vault_effect',[actions.space.spc_survey.fort_knox.title()]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        },
+        flair(){ return loc('tech_moon_vault_flair'); },
+        post(){
+            arpa('Physics');
+        }
+    },
+    moon_security: {
+        id: 'tech-moon_security',
+        title(){ return loc('tech_moon_security',[actions.space.spc_survey.fort_knox.title()]); },
+        desc(){ return loc('tech_moon_security',[actions.space.spc_survey.fort_knox.title()]); },
+        category: 'military',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { survey: 7 },
+        grant: ['survey',8],
+        cost: {
+            Knowledge(){ return 28500000; }
+        },
+        effect(){ return loc('tech_moon_security_effect',[actions.space.spc_survey.fort_knox.title()]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        },
+        post(){
+            arpa('Physics');
         }
     },
     expert_salvage: {

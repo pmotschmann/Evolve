@@ -3,8 +3,8 @@ import { loc } from './locale.js';
 import { clearElement, easterEgg } from './functions.js';
 import { traits } from './races.js';
 
-export function setWeather(){
-    // Moon Phase
+export function setMoonPhase(){
+// Moon Phase
     switch(global.city.calendar.moon){
         case 0:
             global.city.ptrait.includes('retrograde')
@@ -183,7 +183,9 @@ export function setWeather(){
             $('#moon').addClass('wi-moon-waning-crescent-6');
             break;
     }
+}
 
+export function setWeather(){
     // Temp
     $('#temp').removeClass('wi-thermometer');
     $('#temp').removeClass('wi-thermometer-exterior');

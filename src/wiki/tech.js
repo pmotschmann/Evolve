@@ -1711,6 +1711,10 @@ const extraInformation = {
     ship_gauss: [
         loc(`wiki_tech_ship_weapon_unlock`,[loc('outer_shipyard_weapon_gauss')])
     ],
+    ship_massdriver: [
+        loc(`wiki_tech_ship_special_unlock`,[loc('outer_shipyard_special_massdriver')]),
+        loc(`outer_shipyard_special_massdriver_desc`)
+    ],
     ship_capacitor: [
         loc(`wiki_tech_ship_capacitor`,[shipCapacitorSaving()])
     ],

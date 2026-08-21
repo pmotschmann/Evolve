@@ -722,7 +722,7 @@ class GLContext {
         // snapped to the pixel grid — with the usual net scale of 1 the texture then maps one to one
         // and the glyphs land on exactly the pixels the 2D renderer would have used. A rotated
         // transform (the gate's engraved glyphs) has no grid to snap to and goes through as normal.
-        if (Math.abs(this.m[1]) < 1e-9 && Math.abs(this.m[2]) < 1e-9){
+        if (Math.abs(this.m[1]) < 1e-9 && Math.abs(this.m[2]) < 1e-9 && this.m[0] > 0 && this.m[3] > 0){
             let k = s / q;
             this._quadDev(entry.tex, Math.round(this._tx(ux, uy)), Math.round(this._ty(ux, uy)),
                 entry.w * k, entry.h * k);

@@ -5,6 +5,8 @@
     <meta http-equiv="Content-type" content="text/html;charset=utf-8">
     <link rel="icon" href="evolved.ico" type="images/x-icon">
     <script src="lib/lz-string.min.js"></script>
+    <script src="lib/fflate.min.js"></script>
+    <script src="evolve/save-codec.js"></script>
     <style>
         #save {
             width: 90%;
@@ -17,12 +19,14 @@
     <script>
         let global_data = window.localStorage.getItem('evolved') || false;
         if (global_data) {
-            let saveState = JSON.parse(LZString.decompressFromUTF16(global_data));
-            if (saveState){
-                document.getElementById('save').innerHTML = LZString.compressToBase64(JSON.stringify(saveState));
+            try {
+                let saveState = EvolveSave.decodeSaveString(global_data);
+                document.getElementById('save').innerHTML = saveState
+                    ? EvolveSave.encodeExportString(saveState)
+                    : 'Corrupted save data detected';
             }
-            else {
-                document.getElementById('save').innerHTML = 'Corrupted save data detected';
+            catch (e){
+                document.getElementById('save').innerHTML = 'Could not read save data: ' + e.message;
             }
         }
         else {

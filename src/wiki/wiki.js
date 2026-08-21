@@ -1,4 +1,5 @@
 import { global, setGlobal, save } from './../vars.js';
+import { decodeSaveString } from './../save.js';
 import { loc } from './../locale.js';
 import {} from './init.js';
 import {} from './../achieve.js';
@@ -40,6 +41,7 @@ function initPage(){
             submenu: [
                 { key: 'basics' },
                 { key: 'mechanics' },
+                { key: 'genetics' },
                 { key: 'government' },
                 { key: 'governor' },
                 { key: 'combat' },
@@ -200,7 +202,15 @@ async function menuDispatch(main,sub,frag){
 
     var global_data = save.getItem('evolved') || false;
     if (global_data){
-        setGlobal(JSON.parse(LZString.decompressFromUTF16(global_data)));
+        // The wiki only reads the save (to tailor pages to the player's progress), so an
+        // undecodable one degrades to the generic wiki rather than taking the page down.
+        try {
+            let saveState = decodeSaveString(global_data);
+            if (saveState){ setGlobal(saveState); }
+        }
+        catch (e){
+            console.error('Wiki could not read the save:', e);
+        }
     }
 
     tagEvent('page_view',{ page_title: `Evolve Wiki - ${main}` });

@@ -1,8 +1,8 @@
-import { global, seededRandom, keyMultiplier, sizeApproximation, p_on } from './vars.js';
+import { global, seededRandom, keyMultiplier, sizeApproximation, p_on, decayPerks} from './vars.js';
 import { loc } from './locale.js';
 import { calcPrestige, clearElement, popover, clearPopper, vBind, timeFormat, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat } from './functions.js';
 import { universeAffix } from './achieve.js';
-import { races, racialTrait, traits, planetTraits, biomes, fathomCheck, blubberFill } from './races.js';
+import { races, racialTrait, traits, planetTraits, biomes, fathomCheck, blubberFill, geneBonus, geneVars} from './races.js';
 import { defineGovernor, govActive } from './governor.js';
 import { drawTech } from  './actions.js';
 import { soulForgeSoldiers } from './portal.js';
@@ -852,7 +852,7 @@ function trainSpy(i){
             global.resource.Money.amount -= cost;
             let time = 300;
             if (global.tech['spy'] >= 3 && global.city['boot_camp']){
-                time -= (global.race['orbit_decayed'] && global.space['space_barracks'] ? global.space.space_barracks.on : global.city['boot_camp'].count) * 10;
+                time -= (decayPerks() && global.space['space_barracks'] ? global.space.space_barracks.on : global.city['boot_camp'].count) * 10;
                 if (time < 10){
                     time = 10;
                 }
@@ -2168,6 +2168,8 @@ function lootModify(val,gov){
         loot *= biomes.swamp.vars()[1];
     }
 
+    loot *= geneBonus('plunderer');
+
     return Math.floor(loot * global.civic.foreign[`gov${gov}`].eco / 100);
 }
 
@@ -2225,7 +2227,7 @@ export function armyRating(val,type,wound,analysis){
     let army = global.tech['military'] ? adjusted_val * weapon_tech : adjusted_val;
     if (type === 'army' || type === 'hellArmy' || type === 'Troops'){
         if (global.race['tactical']){
-            let tactical = (traits.tactical.vars()[0] * global.race['tactical'] / 100);
+            let tactical = (geneVars('tactical')[0] * global.race['tactical'] / 100);
             army *= 1 + tactical;
             data.push({ k: 'trait_tactical_name', v: tactical });
         }
@@ -2317,6 +2319,13 @@ export function armyRating(val,type,wound,analysis){
             let pathetic = (traits.pathetic.vars()[0] / 100);
             army *= 1 - pathetic;
             data.push({ k: 'trait_pathetic_name', v: -(pathetic) });
+        }
+        if (type === 'hellArmy'){
+            let infernal = geneBonus('infernal');
+            if (infernal > 1){
+                army *= infernal;
+                data.push({ k: 'trait_pathetic_name', v: (pathetic - 1) });
+            }
         }
         if (global.race['holy'] && type === 'hellArmy'){
             let holy = (traits.holy.vars()[0] / 100);

@@ -1,17 +1,17 @@
-import { global, p_on, support_on, sizeApproximation, keyMap, seededRandom } from './vars.js';
+import { global, p_on, support_on, sizeApproximation, keyMap, seededRandom, webWorker } from './vars.js';
 import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect, adjustCosts, get_qlevel, timeCheck, timeFormat, buildQueue, getWeaselTechLevelRequirement } from './functions.js';
-import { races, traits, orbitLength } from './races.js';
+import { races, traits, orbitLength, geneBonus } from './races.js';
 import { spatialReasoning, unlockContainers } from './resources.js';
 import { armyRating, garrisonSize, soldierDeath, buildGarrison, govEffect } from './civics.js';
-import { jobScale, job_data, loadFoundry, limitCraftsmen } from './jobs.js';
+import { jobScale, job_data, loadFoundry, limitCraftsmen, workerScale } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
 import { actions, payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, buildTemplate, casinoEffect, housingLabel, structName, initStruct, getStructNumActive } from './actions.js';
 import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, incrementStruct, planetName } from './space.js';
 import { defineGovernor, removeTask, govActive } from './governor.js';
 import { defineIndustry, nf_resources, addSmelter, factoryData, setupRituals, cancelRituals } from './industry.js';
 import { arpa } from './arpa.js';
-import { matrix, retirement, gardenOfEden } from './resets.js';
-import { traitCostMod } from './races.js';
+import { matrix, retirement, gardenOfEden, zApocalypse } from './resets.js';
+import { traitCostMod, fathomCheck } from './races.js';
 import { loadTab } from './index.js';
 import { zombieGenociderTask, unlockFeat } from './achieve.js';
 import { createGLContext, webglSupported } from './glmap.js';
@@ -253,7 +253,7 @@ const outerTruth = {
         },
         titan_mine: {
             id: 'space-titan_mine',
-            title(){ return structName('mine'); },
+            title(){ return structName('titan_mine'); },
             desc(){
                 return `<div>${loc('space_red_mine_desc')}</div><div class="has-text-special">${loc('space_support',[planetName().titan])}</div>`;
             },
@@ -518,6 +518,7 @@ const outerTruth = {
                 desc += split + '</div>';
                 return desc;
             },
+            wide: true,
             // Metals the works divides its pool between, in the order the UI lists them. The effect text,
             // the industry panel and the production loop all read this one list.
             res(){
@@ -1839,8 +1840,13 @@ const outerTruth = {
                 if (pct > 100){ pct = 100; }
                 return +(pct).toFixed(2);
             },
+            uplinkKnowledge(){ return 50; },
+            uplinked(){ return global.tech['resettle'] && global.tech.resettle >= 18 ? true : false; },
             effect(){
                 let desc = `<div>${loc('space_alien_facility_effect',[$(this)[0].progress()])}</div>`;
+                if ($(this)[0].uplinked()){
+                    desc += `<div>${loc('space_alien_facility_university',[$(this)[0].uplinkKnowledge(),loc('space_university_title')])}</div>`;
+                }
                 if (!$(this)[0].studying()){
                     desc += `<div class="has-text-warning">${loc('space_alien_facility_stalled',[loc('space_descender_title')])}</div>`;
                 }
@@ -1931,10 +1937,12 @@ const outerTruth = {
             technicians(){ return 2; },
             action(){
                 if (payCosts($(this)[0])){
-                    global.civic.technician.display = true
                     incrementStruct($(this)[0]);
                     powerOnNewStruct($(this)[0]);
-                    defineIndustry();
+                    if (!global.civic.technician.display){
+                        global.civic.technician.display = true;
+                        defineIndustry();
+                    }
                     return true;
                 }
                 return false;
@@ -1955,9 +1963,9 @@ const outerTruth = {
             path: ['truepath'],
             condition(){ return venusBlockade() === 0; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('workshop', offset, 82000000, 1.26); },
-                Lumber(offset){ return spaceCostMultiplier('workshop', offset, 54000000, 1.26); },
-                Aerographene(offset){ return spaceCostMultiplier('workshop', offset, 2800000, 1.26); },
+                Money(offset){ return spaceCostMultiplier('workshop', offset, 99000000, 1.26); },
+                Lumber(offset){ return spaceCostMultiplier('workshop', offset, 63000000, 1.26); },
+                Aerographene(offset){ return spaceCostMultiplier('workshop', offset, 3400000, 1.26); },
                 Orichalcum(offset){ return spaceCostMultiplier('workshop', offset, 9200000, 1.26); }
             },
             effect(){
@@ -1973,7 +1981,7 @@ const outerTruth = {
             support(){ return -1; },
             powered(){ return 0; },
             crafters(){ return 3; },
-            crafting(){ return 25; },
+            crafting(){ return 20; },
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct($(this)[0]);
@@ -1986,6 +1994,60 @@ const outerTruth = {
                 return {
                     d: { count: 0, on: 0 },
                     p: ['workshop','space']
+                };
+            }
+        },
+        university: {
+            id: 'space-university',
+            title(){ return loc('space_university_title'); },
+            desc(){ return `<div>${loc('space_university_title')}</div><div class="has-text-special">${loc('space_support',[planetName().venus])}</div>`; },
+            type: 'science',
+            reqs: { venus: 11 },
+            path: ['truepath'],
+            condition(){ return venusBlockade() === 0; },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('university', offset, 118000000, 1.26); },
+                Knowledge(offset){ return spaceCostMultiplier('university', offset, 2500000, 1.26); },
+                Iron(offset){ return spaceCostMultiplier('university', offset, 60000000, 1.26); },
+                Plywood(offset){ return spaceCostMultiplier('university', offset, 42000000, 1.26); }
+            },
+            effect(){
+                let desc = `<div>${loc('space_university_effect',[$(this)[0].knowVal().toLocaleString(),global.resource.Knowledge.name,job_data.professor.name()])}</div>`;
+                desc += `<div>${loc('plus_max_resource',[jobScale($(this)[0].professors()),job_data.professor.name()])}</div>`;
+                desc += `<div class="has-text-caution">${loc('space_used_support',[planetName().venus])}</div>`;
+                return desc;
+            },
+            s_type: 'venus',
+            support(){ return -1; },
+            powered(){ return 0; },
+            knowVal(){
+                let facility = actions.space.spc_venus.alien_facility;
+                let val = 2222;
+                if (facility.uplinked()){
+                    val *= 1 + (facility.uplinkKnowledge() / 100);
+                }
+                return val;
+            },
+            professors(){ return 2; },
+            knowledge(){
+                let profs = workerScale(global.civic.professor.workers,'professor');
+                if (global.race['high_pop']){
+                    profs = highPopAdjust(profs);
+                }
+                return $(this)[0].knowVal() * profs;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct($(this)[0]);
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['university','space']
                 };
             }
         }
@@ -2048,7 +2110,7 @@ const outerTruth = {
                 };
             }
         },
-        // Resorts is themed dependign on location
+        // Resorts is themed depending on location
         survey_resort: {
             id: 'space-survey_resort',
             title(){ return loc(`space_resort_${surveyTheme()}_title`); },
@@ -2104,7 +2166,7 @@ const outerTruth = {
                 let res = [
                     'Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal','Steel','Titanium',
                     'Alloy','Polymer','Iridium','Chrysotile','Nano_Tube','Neutronium','Adamantite','Tungsten',
-                    'Graphene','Stanene','Bolognium','Unobtainium','Uranium'
+                    'Graphene','Stanene','Bolognium','Unobtainium','Uranium','Water','Orichalcum'
                 ];
                 return res;
             },
@@ -2156,6 +2218,10 @@ const outerTruth = {
                         return 10000;
                     case 'Uranium':
                         return 2700;
+                    case 'Orichalcum':
+                        return 25000;
+                    case 'Water':
+                        return 150;
                     default:
                         return 0;
                 }
@@ -2191,7 +2257,87 @@ const outerTruth = {
                     p: ['survey_warehouse','space']
                 };
             }
-        }
+        },
+        fort_knox: {
+            id: 'space-fort_knox',
+            title(){ return loc('space_fort_knox_title'); },
+            desc(wiki){
+                let moon = surveyBody();
+                if (!global.space.hasOwnProperty('fort_knox') || global.space.fort_knox.count < 100 || wiki){
+                    return `<div>${loc('space_fort_knox_title')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
+                }
+                return `<div>${loc('space_fort_knox_title')}</div>`;
+            },
+            type: 'megaproject',
+            reqs: { survey: 5 },
+            path: ['truepath'],
+            queue_size: 5,
+            queue_complete(){ return 100 - (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0); },
+            cost: {
+                Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0)) < 100 ? 42000000 : 0; },
+                Brick(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0)) < 100 ? 7500000 : 0; },
+                Orichalcum(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0)) < 100 ? 2500000 : 0; },
+                Cement(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0)) < 100 ? 12500000 : 0; },
+                Neutronium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0)) < 100 ? 2600000 : 0; }
+            },
+            effect(wiki){
+                let count = (wiki?.count ?? 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0);
+                if (count < 100){
+                    return `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[100 - count])}</div>`;
+                }
+                return `<div>${loc('plus_max_resource',[`\$${$(this)[0].vault().toLocaleString()}`,loc('resource_Money_name')])}</div><div>${loc('plus_max_resource',[$(this)[0].soldiers(),loc('civics_garrison_soldiers')])}</div>`;
+            },
+            vault(){
+                let vault = spatialReasoning(65000000);
+                if (global.tech['extra_vault']){
+                    vault *= 1 + (global.tech.extra_vault * 0.1);
+                }
+                if (global.race['paranoid']){
+                    vault *= 1 - (traits.paranoid.vars()[0] / 100);
+                }
+                if (global.race['hoarder']){
+                    vault *= 1 + (traits.hoarder.vars()[0] / 100);
+                }
+                let fathom = fathomCheck('dracnid');
+                if (fathom > 0){
+                    vault *= 1 + (traits.hoarder.vars(1)[0] / 100 * fathom);
+                }
+                if (global.race['inflation']){
+                    vault *= 1 + (global.race.inflation / 125);
+                }
+                return vault;
+            },
+            soldiers(){
+                let troops = 20;
+                if (global.tech['guard_station']){
+                    troops += global.tech.guard_station * 2;
+                }
+                return jobScale(troops);
+            },
+            action(){
+                if (global.space.hasOwnProperty('fort_knox') && global.space.fort_knox.count >= 100){ return false; }
+                if (payCosts($(this)[0])){
+                    incrementStruct($(this)[0]);
+                    if (global.space.fort_knox.count >= 100){
+                        if (global.tech['survey'] && global.tech.survey < 6){
+                            global.tech.survey = 6;
+                        }
+                        let moon = surveyBody();
+                        drawTech();
+                        renderSpace();
+                        clearPopper();
+                    }
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['fort_knox','space']
+                };
+            }
+        },
     },
 };
 
@@ -5363,22 +5509,15 @@ export function checkPathRequirements(era,region,action){
     }
 }
 
-// Structures the horde can raze, per infested region. A candidate MUST have a struct() definition on its
-// action — that is what creates the global[category][key] record holding the count/razed pair razing
-// works on — so anything without one is never a target. The remainder of the list is curated: orbital
-// structures (satellites, GPS, nav beacons, orbital stations/platforms) are out of reach of a ground
-// horde, and multi-segment megaprojects plus the powered "completed" forms they unlock (world_collider /
-// world_controller, mass_relay / m_relay, ai_core / ai_core2, jump_gate) are excluded so razing can never
-// unwind a finished project. `c` is the global category the structs live under.
-// spc_home is deliberately absent: Earth is a special location that never fights (see trackInfestation).
+// Structures the horde can raze, per infested region.
 const razeTargets = {
     spc_moon: { c: 'space', s: ['moon_base','iridium_mine','helium_mine','observatory'] },
     spc_red: { c: 'space', s: ['spaceport','red_tower','living_quarters','pylon','vr_center','garage','red_mine','fabrication','red_factory','biodome','exotic_lab','ziggurat','space_barracks'] },
-    spc_venus: { c: 'space', s: [] },
+    spc_venus: { c: 'space', s: ['cloud_city','nitrogen_harvester','cloud_quarters','industrial_complex','workshop','university'] },
     spc_hell: { c: 'space', s: ['geothermal','hell_smelter','spc_casino','swarm_plant'] },
     spc_titan: { c: 'space', s: ['titan_spaceport','electrolysis','hydrogen_plant','titan_quarters','titan_mine','storehouse','titan_bank','g_factory','sam','decoder','ai_colonist','metalworks'] },
-    spc_enceladus: { c: 'space', s: ['water_freighter','zero_g_lab','operating_base','munitions_depot'] },
-    spc_dwarf: { c: 'space', s: ['elerium_contain','e_reactor'] },
+    //spc_enceladus: { c: 'space', s: ['water_freighter','zero_g_lab','operating_base','munitions_depot'] },
+    //spc_dwarf: { c: 'space', s: ['elerium_contain','e_reactor'] },
     tau_home: { c: 'tauceti', s: ['colony','tau_housing','pylon','tau_farm','mining_pit','fusion_generator','repository','tau_factory','infectious_disease_lab','tauceti_casino','tau_cultural_center','marine_barracks','data_decoder'] },
     tau_red: { c: 'tauceti', s: ['overseer','womling_village','womling_farm','womling_mine','womling_fun','womling_lab','womling_craftworks','antimatter_reactor','womling_rangers'] }
 };
@@ -5390,17 +5529,12 @@ const orbitalStrikeRate = 0.05;
 // remainder rolled as a fractional chance, and never more than razeCap in a single day.
 const zombiesPerRazing = 100000;
 const razeCap = 5;
-// Hordes that lie low: absent from the UI and unengaged until something gives them away. On spc_red
-// that is the first structure it razes; on spc_titan it is putting support back into orbit there and
-// getting a proper look at the surface (see zTitanWatch).
+// Starting infected Planets
 const hiddenInfestation = ['spc_red','spc_titan'];
-// Special cases that sit outside the system entirely: never fought, never counted on screen. Earth's
-// billions are a fact of the setting rather than something a fleet can work on.
+// Don't advertise
 const inertInfestation = ['spc_home'];
 
-// The war's day-to-day traffic — hulls engaging, raiders going down, landings, buildings lost. It runs
-// every game day on every front at once, so it is the one thing worth being able to turn off. Anything
-// that moves the arc forward calls messageQueue directly instead and is announced either way.
+// Daily war messages
 function zMessage(msg,type){
     if (fleetCmd()['zquiet']){ return; }
     messageQueue(msg,type,false,['combat']);
@@ -5424,6 +5558,26 @@ export function infestationCount(region){
 export function infestationLabel(region){
     if (infestationCount(region) <= 0){ return ``; }
     return ` <span class="infestation has-text-caution" v-show="zombies()">${loc('space_infestation')} <span class="has-text-danger">{{ zombieCount() }}</span></span>`;
+}
+
+// The assault warning that hangs under Earth. Bound to global.race.zfleet rather than written once, so
+// the countdown follows the day clock without anything having to redraw the region.
+export function zAssaultBanner(region){
+    if (region !== 'spc_home'){ return ``; }
+    return `<div class="zassault has-text-danger" v-show="warn()"><span :class="pulse()">{{ warnText() }}</span></div>`;
+}
+
+export function zAssaultMethods(){
+    return {
+        warn(){ return zUplinkWarning() || (zAssault() && !zEndless()) ? true : false; },
+        // Only the signature warning pulses; once it becomes a countdown it holds still so the number stays readable.
+        pulse(){ return zUplinkWarning() ? 'zpulse' : ''; },
+        warnText(){
+            return zUplinkWarning()
+                ? loc('zfleet_uplink_banner_signatures')
+                : loc('zfleet_uplink_banner_survive',[zAssaultLeft()]);
+        }
+    };
 }
 
 export function infestationMethods(region){
@@ -5475,9 +5629,7 @@ function titanSupportMax(){
     return global.space['electrolysis'] && global.space.electrolysis['s_max'] > 0 ? global.space.electrolysis.s_max : 0;
 }
 
-// Titan's horde keeps its head down until you put more support back over it than the wreck you
-// inherited. Whatever plants came through the razing do not count — it takes a fresh one running
-// before you get a proper look at the surface, and before Titan joins the horde's own target list.
+// Titan's horde 
 function zTitanWatch(){
     if (titanReclaimed()){ return; }
     // Ordered behind the outer distress signals, so the stages cannot be leapfrogged.
@@ -5493,32 +5645,28 @@ function zTitanWatch(){
 }
 
 // --- Infested fleet -----------------------------------------------------------------------------
-// Once Mars is cleared the horde on Earth stops waiting to be visited and starts sending hulls of its
-// own. Ships lift from spc_home, cross to a colony and are gone on arrival, leaving their cargo of
-// infected behind as a new horde. Launches are rare and small at first and grow on both counts the
-// longer the campaign runs.
-
 // Where the infested can reach. spc_red and spc_hell are open from the start; the rest unlock as the
 // player pushes outward and the horde follows.
 function zFleetTargets(){
     let targets = ['spc_red','spc_hell'];
     if (global.tech['luna'] && global.tech.luna >= 3){ targets.push('spc_moon'); }
-    // Titan only becomes worth raiding once you are established enough there to have found what was
-    // already on it (see zTitanWatch).
     if (global.tech['resettle'] && global.tech.resettle >= 13){ targets.push('spc_titan'); }
+    if (global.tech['resettle'] && global.tech.resettle >= 19){
+        targets.push('spc_venus');
+        targets.push('tau_home');
+        targets.push('tau_red');
+    }
     return targets;
 }
 
-// Hulls the horde flies, smallest first. `weight` is how often a class comes up relative to the others
-// once it is cleared to fly; the two heavy hulls turn up half as often as the four it builds routinely.
-// Called at every roll like avail and horde, so a rate can be moved on tech or horde size later.
+// Hulls the zombie horde flies, smallest first. `weight` is how often a class comes up relative to the others
 const zFleetHulls = {
-    corvette:      { weight(){ return 1; },   avail(){ return true; },  horde(){ return 350; } },
-    frigate:       { weight(){ return 1; },   avail(){ return true; },  horde(){ return 825; } },
+    corvette:      { weight(){ return global.tech['resettle'] && global.tech.resettle >= 19 ? 0 : 1; }, avail(){ return true; },  horde(){ return 350; } },
+    frigate:       { weight(){ return 1; },   avail(){ return global.tech['overmind'] ? false : true; },  horde(){ return 825; } },
     destroyer:     { weight(){ return 1; },   avail(){ return global.tech['resettle'] && global.tech.resettle >= 11 ? true : false; }, horde(){ return 1700; } },
     cruiser:       { weight(){ return 1; },   avail(){ return global.tech['resettle'] && global.tech.resettle >= 14 ? true : false; }, horde(){ return 4100; } },
-    battlecruiser: { weight(){ return 0.5; }, avail(){ return global.tech['resettle'] && global.tech.resettle >= 15 ? true : false; }, horde(){ return 10300; } },
-    dreadnought:   { weight(){ return 0.5; }, avail(){ return false; }, horde(){ return 24750; } }
+    battlecruiser: { weight(){ return global.tech['resettle'] && global.tech.resettle >= 19 ? 1 : 0.5; }, avail(){ return global.tech['resettle'] && global.tech.resettle >= 15 ? true : false; }, horde(){ return 10300; } },
+    dreadnought:   { weight(){ return global.tech['overmind'] ? 1 : 0.5; }, avail(){ return global.tech['resettle'] && global.tech.resettle >= 19 && global.tech.resettle < 20 || global.tech['overmind'] ? true : false; }, horde(){ return 24750; } }
 };
 
 // The classes cleared to fly right now.
@@ -5564,7 +5712,208 @@ const zFleetDelayMax = 25;
 const zFleetRampDays = 150;     // days of raiding before launches and cargoes reach full strength
 const zFleetOddsStart = 0.08;   // chance of a launch on the first day
 const zFleetOddsEnd = 0.40;     // ...and once the ramp is complete.
+const zAssaultOdds = 0.60;       // stands in for the above during the assault.
 const zFleetLoadStart = 0.25;   // share of a hull's cargo that lands on the first day
+
+// --- The zombie assault ---------------------------------------------------------------------------
+const zUplinkSilent = 25;     // game days of nothing whatsoever after the uplink is cut
+const zUplinkWarn = 5;        // days the warning hangs over Earth before the assault proper
+const zUplinkSurvive = 100;   // days the assault runs
+
+// Days since the uplink was severed, or false on a run that never cut it.
+export function zUplinkDays(){
+    let fleet = global.race['zfleet'];
+    return fleet && typeof fleet.uz === 'number' ? fleet.uz : false;
+}
+
+// The horde is massing and sending nothing: from the moment the uplink is cut until the assault opens.
+function zUplinkSilence(){
+    let d = zUplinkDays();
+    return d !== false && d < zUplinkSilent + zUplinkWarn;
+}
+
+// The warning is up but the assault has not started. resettle stays at 18 through this.
+export function zUplinkWarning(){
+    let d = zUplinkDays();
+    return d !== false && d >= zUplinkSilent && d < zUplinkSilent + zUplinkWarn;
+}
+
+// Brainless route activated
+export function zEndless(){
+    return global.tech['overmind'] ? true : false;
+}
+
+// zAssault active
+export function zAssault(){
+    return (global.tech['resettle'] && global.tech.resettle === 19) || zEndless() ? true : false;
+}
+
+// Days still to survive, for the banner's countdown.
+export function zAssaultLeft(){
+    let d = zUplinkDays();
+    if (d === false){ return 0; }
+    let left = zUplinkSurvive - (d - zUplinkSilent - zUplinkWarn);
+    return left > 0 ? left : 0;
+}
+
+// Zombies still holding ground anywhere. Deliberately not infestationCount: that reports 0 for a horde
+// nobody has found yet, and one lying low on Mars or Titan has not been dealt with.
+export function zInfestationLeft(){
+    if (!global.race['zhorde']){ return 0; }
+    let left = 0;
+    Object.keys(global.race.zhorde).forEach(function(region){
+        // Earth's billions are a fact of the setting, not something a fleet can work on.
+        if (inertInfestation.includes(region)){ return; }
+        if (global.race.zhorde[region] > 0){ left += global.race.zhorde[region]; }
+    });
+    return left;
+}
+
+// Structures the horde pulled down that have not been put back up.
+export function zRazedLeft(){
+    let razed = 0;
+    Object.keys(razeTargets).forEach(function(region){
+        let cat = razeTargets[region].c;
+        if (!global[cat]){ return; }
+        razeTargets[region].s.forEach(function(s){
+            if (global[cat][s] && global[cat][s].razed > 0){ razed += global[cat][s].razed; }
+        });
+    });
+    return razed;
+}
+
+// The system swept clean: nothing left alive out there and nothing left in ruins. Only ever looked at
+// while the arc is sitting at 20, so it cannot fire before the assault or a second time after it.
+function zRecoveryWatch(){
+    if (!global.tech['resettle'] || global.tech.resettle !== 20){ return; }
+    if (zInfestationLeft() > 0 || zRazedLeft() > 0){ return; }
+    global.tech.resettle = 21;
+    drawTech();
+    renderSpace();
+    messageQueue(loc('zfleet_recovered'),'success',false,['combat','progress']);
+    zombieGenociderTask('z4');
+}
+
+// Everything still standing that the horde is able to take, across every region it can reach. Read
+// off razeTargets so it can never disagree with what razing actually removes.
+export function zRazeStanding(){
+    let standing = 0;
+    Object.keys(razeTargets).forEach(function(region){
+        let cat = razeTargets[region].c;
+        if (!global[cat]){ return; }
+        razeTargets[region].s.forEach(function(s){
+            if (global[cat][s] && global[cat][s].count > 0){ standing += global[cat][s].count; }
+        });
+    });
+    return standing;
+}
+
+// How long the screen bleeds before the reset actually runs.
+const zBleedTime = 4000;
+const zBleedDrips = 26;
+
+// The screen bleeding out. A sheet of red runs down from the top edge with a scatter of drips leading
+// ahead of it, and the run ends underneath it.
+function zBleedOut(){
+    if (webWorker.w){
+        webWorker.w.terminate();
+    }
+    clearPopper();
+
+    let drips = ``;
+    for (let i=0; i<zBleedDrips; i++){
+        // Scattered rather than evenly spaced, so it reads as something running rather than a bar chart.
+        let left = +(seededRandom(0,100,true)).toFixed(2);
+        let width = +(seededRandom(0.4,2.6,true)).toFixed(2);
+        drips += `<div class="bleed-drip" style="left:${left}%;width:${width}rem"></div>`;
+    }
+    $(`body`).append(`<div id="zBleed" class="bleed-wrapper"><div class="bleed-sheet"></div>${drips}</div>`);
+
+    // The drips run ahead of the sheet and each at its own pace; the sheet then closes over the lot.
+    $(`#zBleed .bleed-drip`).each(function(){
+        $(this).animate({ height: `${Math.round(seededRandom(25,105,true))}%` },
+            Math.round(seededRandom(zBleedTime * 0.35,zBleedTime * 0.85,true)));
+    });
+    $(`#zBleed .bleed-sheet`).animate({ height: '100%' }, Math.round(zBleedTime * 0.9));
+
+    setTimeout(function(){
+        zApocalypse();
+    }, zBleedTime);
+}
+
+// Watch for the end. Only armed once the Overmind begins its endless assault.
+function zApocalypseWatch(){
+    if (!zEndless() || global.race['zapoc']){ return; }
+    if (zRazeStanding() > 0){ return; }
+    global.race['zapoc'] = true;
+    zBleedOut();
+}
+
+// Advance the uplink clock and move the arc on when it reaches each mark.
+function zUplinkWatch(fleet){
+    if (!global.tech['resettle'] || global.tech.resettle < 18){ return; }
+    if (typeof fleet.uz !== 'number'){ fleet.uz = 0; }
+    if (fleet.uz >= zUplinkSilent + zUplinkWarn + zUplinkSurvive){ return; }
+    fleet.uz++;
+
+    if (fleet.uz === zUplinkSilent){
+        global.settings.civTabs = 1;
+        renderSpace();
+        messageQueue(loc('zfleet_uplink_signatures',[regionName('spc_home')]),'danger',false,['combat','progress']);
+    }
+    else if (fleet.uz === zUplinkSilent + zUplinkWarn){
+        global.tech.resettle = 19;
+        drawTech();
+        renderSpace();
+        messageQueue(loc('zfleet_uplink_assault',[zUplinkSurvive]),'danger',false,['combat','progress']);
+    }
+    else if (fleet.uz === zUplinkSilent + zUplinkWarn + zUplinkSurvive){
+        global.tech.resettle = 20;
+        drawTech();
+        renderSpace();
+        messageQueue(loc('zfleet_uplink_survived'),'success',false,['combat','progress']);
+    }
+}
+
+// Ships in one sortie. Ordinarily a lone raider, or a pair once the horde has managed a strike on
+// another star. The assault never sends fewer than two, and what it leaves behind afterwards still
+// flies in company more often than it used to.
+const zAssaultSizes = [[0.50,3],[0.35,4],[0.15,5]];
+const zAftermathSizes = [[0.50,1],[0.40,2],[0.10,3]];
+function zFleetSize(fleet){
+    let table = zAssault() ? zAssaultSizes : (global.tech['resettle'] && global.tech.resettle >= 20 ? zAftermathSizes : false);
+    if (table){
+        let roll = seededRandom(0,1,true);
+        for (let i=0; i<table.length; i++){
+            roll -= table[i][0];
+            if (roll < 0){ return table[i][1]; }
+        }
+        return table[table.length - 1][1];
+    }
+    return fleet.tw && seededRandom(0,1,true) < zPairOdds ? zPairSize : 1;
+}
+
+// The final tech list for zombie fleets, only the best.
+const zOvermindParts = {
+    power: 'elerium',
+    weapon: 'disruptor',
+    armor: 'neutronium',
+    engine: 'vacuum',
+    sensor: 'quantum'
+};
+
+// What the horde fleet ships can equip.
+function zFleetPartRange(part){
+    if (zEndless() && zOvermindParts.hasOwnProperty(part)){ return [zOvermindParts[part]]; }
+    if (!zAssault()){ return zFleetParts[part]; }
+    switch (part){
+        case 'power':  return zFleetParts.power.slice(4);    // elerium, nothing else
+        case 'weapon': return zFleetParts.weapon.slice(3);   // plasma, phaser or disruptor
+        case 'sensor': return zFleetParts.sensor.slice(1);   // anything better than visual
+        case 'engine': return zFleetParts.engine.slice(1);   // never ion
+    }
+    return zFleetParts[part];
+}
 
 // The one scripted sortie: days after Titan comes under threat, then where it goes and what flies it.
 const zTauStrikeDay = 100;
@@ -5596,6 +5945,8 @@ function zFleetDay(){
     let fleet = global.race.zfleet;
     if (!fleet.s){ fleet.s = []; }
 
+    zUplinkWatch(fleet);
+    zRecoveryWatch();
     zFleetMove(fleet);
 
     // The blockade runs on its own rules rather than act like a raid
@@ -5613,17 +5964,35 @@ function zFleetDay(){
     fleet.d++;
     zTauStrike(fleet);
     let ramp = Math.min(fleet.d / zFleetRampDays, 1);
-    if (seededRandom(0,1,true) < zFleetOddsStart + (zFleetOddsEnd - zFleetOddsStart) * ramp){
-        zFleetLaunch(fleet,ramp);
+    // Nothing lifts at all while the horde is massing for the assault. Anything already under way
+    // still flies its leg — zFleetMove above runs regardless — this only stops new launches.
+    if (!zUplinkSilence()){
+        // Through the assault enemy fleets take off more frequently.
+        let oddsEnd = zAssault() ? zAssaultOdds : zFleetOddsEnd;
+        if (seededRandom(0,1,true) < zFleetOddsStart + (oddsEnd - zFleetOddsStart) * ramp){
+            zFleetLaunch(fleet,ramp);
+        }
     }
 
     zGroundFire(fleet);
+
+    // Last thing in the day, so a razing that finishes the job this morning ends the run this evening
+    // rather than a day later.
+    zApocalypseWatch();
 }
 
 const zGroundFireDay = 50;      // days after the first hull lifts before the surface starts shooting back
 const zGroundFireMin = 2;       // hull points an unarmoured ship in orbit loses per day once it does
 const zGroundFireMax = 9;
-const zGroundFireTargets = 2;   // ships the batteries can track and engage in one day
+const zGroundFireTargets = 2;         // ships the batteries can track and engage in one day
+const zAssaultGroundFireTargets = 5;  // ...and during the assault, with the whole surface firing at once
+
+// How many ships the surface can hold a firing solution on.
+function zGroundFireCount(){
+    let targets = zAssault() ? zAssaultGroundFireTargets : zGroundFireTargets;
+    if (global.race.universe === 'micro'){ targets *= 2; } // Not everything in life is fair.
+    return targets;
+}
 
 // Share of a hit each armour lets through. The ratio matches the 8 / 6 / 4 the wear-and-tear roll in
 // the main loop already uses, so neutronium plating turns aside half of what steel does wherever the
@@ -5642,11 +6011,7 @@ export function aerographeneSpeedBonus(){
     return Math.round((AEROGRAPHENE_SPEED - 1) * 100);
 }
 
-// Plating is described against steel, which is the zero point for both figures: it soaks a full hit
-// and carries no weight penalty. Both numbers are derived rather than written down — the soak from
-// the table combat reads, the speed by running shipSpeed twice on the design currently on the
-// drawing board. That last part matters: neutronium's weight costs a corvette about 5% and a
-// dreadnought about 17%, so any single fixed number would be wrong for most of the fleet.
+// Plating is described against steel, which is the zero point for both figures: it soaks a full hit.
 function armorDesc(armor){
     let desc = loc(`outer_shipyard_armor_${armor}_desc`);
     if (armor === 'steel'){ return `${desc} ${loc(`outer_shipyard_armor_baseline`)}`; }
@@ -5669,9 +6034,7 @@ function armorDesc(armor){
     return notes.length ? `${desc} ${notes.join(' ')}` : desc;
 }
 
-// Share of a hit each hull size takes, smallest to largest. A bigger ship spreads the same round over
-// more structure, so a round that guts a corvette barely marks a dreadnought. Explorers are not a size
-// tier and fall through to taking it in full.
+// Share of a hit each hull size takes, smallest to largest.
 const shipClassSoak = {
     corvette: 1,
     frigate: 0.85,
@@ -5696,7 +6059,8 @@ function zGroundFire(fleet){
 
     let hit = 0;
     // Drawn without replacement, so the same hull is never worked over twice in one day.
-    for (let i=0; i<zGroundFireTargets && overhead.length > 0; i++){
+    let targets = zGroundFireCount();
+    for (let i=0; i<targets && overhead.length > 0; i++){
         let ship = overhead.splice(Math.floor(seededRandom(0,overhead.length,true)),1)[0];
         // Armour soaks part of every hit, but never all of it — a barrage that lands still scores. A
         // flagship's escort screens it here the same as it does under fire in orbit.
@@ -5719,29 +6083,30 @@ function zGroundFire(fleet){
 const zCombatSpeedWeight = 2;      // how hard a target's speed works against a firing solution
 const zCombatDamageDivisor = 50;  // firepower per point of hull damage
 
-// A defending fleet aims as one body: every dish at the location feeds the same firing solution, so
-// what matters is the scan total rather than which hull carries which sensor. The chance closes on a
-// certainty as that total climbs and falls away as the target gets faster — at the reference point of
-// 100 scan against a middling hull it is a coin toss, a slow target is comfortably hit at the same
-// scan, a fast one mostly is not, and enough scan overcomes even that.
+// A player fleet uses combined scan value
 function playerAccuracy(scan,foe){
     if (scan <= 0){ return 0; }
     let evade = Math.max(1,shipSpeed(foe)) * zCombatSpeedWeight;
     return scan / (scan + evade);
 }
 
-// The horde aims with whatever dish each hull was built with, one ship at a time. No shared solution —
-// these are scavenged ships flown by the dead, not a coordinated fleet.
+// The horde aims with whatever each hull was built with, one ship at a time.
 const zSensorAccuracy = { visual: 0.15, radar: 0.3, lidar: 0.45, quantum: 0.6 };
-function foeAccuracy(foe){
-    return zSensorAccuracy.hasOwnProperty(foe.sensor) ? zSensorAccuracy[foe.sensor] : 0.25;
+const zHomeAccuracy = 2;    // accuracy multiplier for the horde while the fight is over Earth
+function foeAccuracy(foe,locationName){
+    let acc = zSensorAccuracy.hasOwnProperty(foe.sensor) ? zSensorAccuracy[foe.sensor] : 0.25;
+    if (locationName === 'spc_home'){ acc *= zHomeAccuracy; }
+    // Accuracy over 100% is reduced to 100%
+    return Math.min(1,acc);
 }
 
-// Firepower turned into hull damage. The target's plating soaks part of it, its size soaks the rest,
-// and a flagship's escort screens what is left: the same round means far less to a dreadnought than to
-// a corvette. A hit still always scores.
+// How much harder the horde hits once the Overmind final assault is launched.
+const zOvermindDamage = 10;
+
+// Firepower turned into hull damage.
 function combatDamage(attacker,defender){
     let raw = shipAttackPower(attacker) / zCombatDamageDivisor;
+    if (attacker.enemy && zEndless()){ raw *= zOvermindDamage; }
     return Math.max(1,Math.round(raw * shipArmorFactor(defender) * shipClassFactor(defender) * (1 - fleetDamageSoak(defender))));
 }
 
@@ -5751,7 +6116,7 @@ function guardsAt(locationName){
     return global.space.shipyard.ships.filter(s => !s.inTransit && s.location.name === locationName);
 }
 
-// A ship shot out from under its crew. The hull is gone from the roster and the crew with it.
+// A ship shot out from under its crew. The ship is gone from the roster and the crew with it.
 function destroyPlayerShip(ship,locationName){
     let crew = shipCrewSize(ship);
     // Losing the flagship scatters the fleet it was holding together, so stand it down before the hull
@@ -5782,19 +6147,23 @@ function zBattleRoster(ships){
     return roster;
 }
 
+function zBattleHull(damage){
+    return Math.round(damage * 10) / 10;
+}
+
 // Written the moment the volleys are resolved, before the wrecks are cleared away.
 function zBattleLog(locationName,guards,foes,dealt,taken,lost,downed){
     if (!global.space['shipyard']){ return; }
     if (!Array.isArray(global.space.shipyard['battles'])){ global.space.shipyard['battles'] = []; }
     global.space.shipyard.battles.unshift({
-        d: global.stats.days,       // game day
-        l: locationName,            // where it happened
-        p: zBattleRoster(guards),   // your hulls
-        e: zBattleRoster(foes),     // theirs
-        pd: dealt,                  // hull you landed
-        ed: taken,                  // hull they landed
-        pl: lost,                   // your ships destroyed
-        el: downed                  // theirs destroyed
+        d: global.stats.days,           // game day
+        l: locationName,                // where it happened
+        p: zBattleRoster(guards),       // your hulls
+        e: zBattleRoster(foes),         // theirs
+        pd: zBattleHull(dealt),         // hull you landed
+        ed: zBattleHull(taken),         // hull they landed
+        pl: lost,                       // your ships destroyed
+        el: downed                      // theirs destroyed
     });
     if (global.space.shipyard.battles.length > zBattleLogMax){
         global.space.shipyard.battles.length = zBattleLogMax;
@@ -5831,7 +6200,7 @@ function zEngage(locationName,foes){
         let live = guards.filter(s => s.damage < 100);
         if (live.length === 0){ return; }
         let ship = live[Math.floor(seededRandom(0,live.length,true))];
-        if (seededRandom(0,1,true) >= foeAccuracy(foe)){ return; }
+        if (seededRandom(0,1,true) >= foeAccuracy(foe,locationName)){ return; }
         let hit = combatDamage(foe,ship);
         ship.damage += hit;
         taken += hit;
@@ -5895,15 +6264,11 @@ export function zWarfareVars(){
         groundFireDay: zGroundFireDay,
         groundFireMin: zGroundFireMin,
         groundFireMax: zGroundFireMax,
-        groundFireTargets: zGroundFireTargets,
+        groundFireTargets: zGroundFireCount(),
         fleetCmd: fleetCmdRange,
         minHull: minHullToLaunch
     };
 }
-
-// Advance every hull under way. One that arrives has to get past whatever is guarding the place first;
-// survive that and the ship is gone, because it was only ever a delivery, and what it delivers is a
-// horde on the ground.
 
 // --- Ship motion ---------------------------------------------------------------------------------
 
@@ -5914,7 +6279,11 @@ function placeShip(ship){
         return;
     }
 
-    let dist = ship.timeToNextStep / ship.path[0].totalTime; //Distance from destination  
+    // Fraction of the current leg still to run. any value outside of 0 to 1 is invalid and can cause
+    // weird behavior such as moving ships millions of AU outside the star cluster.
+    let dist = ship.path[0].totalTime > 0 ? ship.timeToNextStep / ship.path[0].totalTime : 0;
+    if (!(dist >= 0)){ dist = 0; }
+    else if (dist > 1){ dist = 1; }
     let origin = ship.origin.position;
     let destination = ship.path[0].destination.position;
 
@@ -6147,7 +6516,7 @@ function zFleetHull(cls,best){
     };
     TPShipInitTransit(ship, 'spc_home');
     Object.keys(zFleetParts).forEach(function(part){
-        let list = zFleetParts[part];
+        let list = zFleetPartRange(part);
         ship[part] = best ? list[list.length - 1] : list[Math.floor(seededRandom(0,list.length,true))];
     });
     return ship;
@@ -6217,7 +6586,7 @@ function zFleetLaunch(fleet,ramp){
     let avail = zFleetClasses();
     if (avail.length === 0){ return; }
 
-    let count = fleet.tw && seededRandom(0,1,true) < zPairOdds ? zPairSize : 1;
+    let count = zFleetSize(fleet);
     let classes = [];
     for (let i=0; i<count; i++){
         let cls = zFleetClass(avail);
@@ -6378,8 +6747,16 @@ function infestationCombat(region){
         zombiesPerRazingFinal *= 1 + (traits.chameleon.vars()[2] / 100);
         zombiesPerRazingFinal = Math.round(zombiesPerRazingFinal);
     }
-    let razings = Math.min(Math.floor(survivors / zombiesPerRazingFinal),razeCap);
-    if (razings < razeCap && seededRandom(0,1,true) < (survivors % zombiesPerRazingFinal) / zombiesPerRazingFinal){
+    if (global.race.universe === 'micro'){
+        // Looking for easy prestige farming? Nope. Lets make it interesting.
+        zombiesPerRazingFinal *= 0.5;
+    }
+    if (global.tech['overmind']){
+        zombiesPerRazingFinal *= 0.25;
+    }
+    let maxRaze = global.tech['overmind'] ? razeCap * 4 : razeCap;
+    let razings = Math.min(Math.floor(survivors / zombiesPerRazingFinal),maxRaze);
+    if (razings < maxRaze && seededRandom(0,1,true) < (survivors % zombiesPerRazingFinal) / zombiesPerRazingFinal){
         razings++;
     }
     if (razings > 0){
@@ -6408,8 +6785,13 @@ function razeStructures(region,razings){
         let lost = losses[s];
         global[cat][s].count -= lost;
         global[cat][s]['razed'] = (global[cat][s]['razed'] || 0) + lost;
-        if (global[cat][s].hasOwnProperty('on') && global[cat][s].on > global[cat][s].count){
-            global[cat][s].on = global[cat][s].count;
+
+        if (global[cat][s].hasOwnProperty('on')){
+            let turned_off = lost;
+            if (global[cat][s].on < turned_off){
+                turned_off = global[cat][s].on;
+            }
+            global[cat][s].on -= turned_off;
         }
         zMessage(loc('infestation_razed',[lost,structTitle(cat,region,s),regionName(region)]),'danger');
     });
@@ -6696,6 +7078,10 @@ export function drawShipYard(){
     if (global.space.hasOwnProperty('shipyard') && global.settings.showShipYard){
         let yard = $(`#dwarfShipYard`);
 
+        if (!global.space.shipyard.hasOwnProperty('copy')){
+            global.space.shipyard['copy'] = false;
+        }
+
         if (!global.space.shipyard.hasOwnProperty('blueprint')){
             global.space.shipyard['blueprint'] = {
                 class: 'corvette',
@@ -6704,8 +7090,15 @@ export function drawShipYard(){
                 engine: 'ion',
                 power: 'diesel',
                 sensor: 'radar',
+                special: 'none',
                 name: getRandomShipName()
             };
+        }
+
+        // A blueprint saved before the special slot existed has no entry for it.
+        global.space.shipyard.blueprint.special = shipSpecial(global.space.shipyard.blueprint);
+        if (!shipSpecialAllowed(global.space.shipyard.blueprint.special,global.space.shipyard.blueprint.class)){
+            global.space.shipyard.blueprint.special = 'none';
         }
 
         // Disable Explorer hull and emdrive engine when restarting ship yard
@@ -6729,6 +7122,7 @@ export function drawShipYard(){
         shipStats.append(`<div><span class="has-text-caution">${loc(`crew`)}</span> <span v-html="crewText()"></span></div>`);
         shipStats.append(`<div><span class="has-text-caution">${loc(`power`)}</span> <span v-html="powerText()"></span></div>`);
         shipStats.append(`<div><span class="has-text-caution">${loc(`firepower`)}</span> <span v-html="fireText()"></span></div>`);
+        shipStats.append(`<div v-show="bombardVis()"><span class="has-text-caution">${loc(`outer_shipyard_bombard`)}</span> <span v-html="bombardText()"></span></div>`);
         shipStats.append(`<div><span class="has-text-caution">${loc(`outer_shipyard_sensors`)}</span> <span v-html="sensorText()"></span></div>`);
         shipStats.append(`<div><span class="has-text-caution">${loc(`speed`)}</span> <span v-html="speedText()"></span></div>`);
         shipStats.append(`<div><span class="has-text-caution">${loc(`outer_shipyard_fuel`)}</span> <span v-html="fuelText()"></span></div>`);
@@ -6741,10 +7135,11 @@ export function drawShipYard(){
         let shipConfig = {
             class: ['corvette','frigate','destroyer','cruiser','battlecruiser','dreadnought','explorer'],
             power: ['solar','diesel','fission','fusion','elerium','antimatter'],
-            weapon: ['railgun','laser','p_laser','plasma','phaser','disruptor','gauss'],
+            weapon: shipWeapons,
             armor : ['steel','alloy','neutronium','aerographene'],
             engine: ['ion','tie','pulse','photon','vacuum','emdrive','electrokinetic'],
             sensor: ['visual','radar','lidar','quantum'],
+            special: shipSpecials,
         };
 
         Object.keys(shipConfig).forEach(function(k){
@@ -6753,7 +7148,10 @@ export function drawShipYard(){
                 values += `<b-dropdown-item aria-role="listitem" @click="setVal('${k}','${v}')" class="${k} a${idx}" data-val="${v}" v-show="avail('${k}','${idx}','${v}')">${loc(`outer_shipyard_${k}_${v}`)}</b-dropdown-item>`;
             });
 
-            options.append(`<b-dropdown :triggers="['hover', 'click']" aria-role="list">
+            // The special mount is not part of a hull until it has been researched, so the whole
+            // control stays out of the yard rather than sitting there reading "None".
+            let slot = k === 'special' ? ` v-show="slotOpen('${k}')"` : ``;
+            options.append(`<b-dropdown :triggers="['hover', 'click']" aria-role="list"${slot}>
                 <template #trigger>
                     <button class="button is-info">
                         <span>${loc(`outer_shipyard_${k}`)}: {{ lbl(b.${k}, '${k}') }}</span>
@@ -6766,12 +7164,12 @@ export function drawShipYard(){
         assemble.append(`<button class="button is-info" v-on:click="build()"><span>${loc('outer_shipyard_build')}</span></button>`);
         assemble.append(`<span><b-checkbox class="patrol" v-model="s.expand" @change="redraw()">${loc('outer_shipyard_fleet_details')}</b-checkbox></span>`);
         assemble.append(`<span><b-checkbox class="patrol" v-model="s.sort" @change="redraw()">${loc('outer_shipyard_fleet_sort')}</b-checkbox></span>`);
+        assemble.append(`<span><b-checkbox class="patrol" v-model="s.copy" @change="redraw()">${loc('outer_shipyard_copy_mode')}</b-checkbox></span>`);
 
-        // Two star systems and dozens of locations make the flat list hard to read, so it can be
-        // narrowed to one system and folded up by location. Built from shipyardSystems(), which is
-        // stable, so these items do not need rebuilding as the campaign runs.
+        // Filter by system or shipyard locations
         if (shipyardViewUnlocked()){
             let systems = `<b-dropdown-item aria-role="listitem" class="sysAll" @click="setSys('all')">${systemLabel('all')}</b-dropdown-item>`;
+            systems += `<b-dropdown-item aria-role="listitem" class="sysYards" @click="setSys('yards')">${systemLabel('yards')}</b-dropdown-item>`;
             shipyardSystems().forEach(function(sys){
                 systems += `<b-dropdown-item aria-role="listitem" class="sys_${sys}" @click="setSys('${sys}')">${systemLabel(sys)}</b-dropdown-item>`;
             });
@@ -6817,14 +7215,26 @@ export function drawShipYard(){
                     else if (b === 'class' && v !== 'explorer' && global.space.shipyard.blueprint.class === 'explorer'){
                         global.space.shipyard.blueprint.engine = 'ion';
                     }
+                    // Remove special if not allowed on ship class
+                    if (b === 'class' && !shipSpecialAllowed(global.space.shipyard.blueprint.special,v)){
+                        global.space.shipyard.blueprint.special = 'none';
+                    }
                     global.space.shipyard.blueprint[b] = v;
                     updateCosts();
                     vBind({el: `#shipPlans`},'update');
+                },
+                slotOpen(k){
+                    return k === 'special' ? (global.tech['syard_special'] ? true : false) : true;
                 },
                 avail(k,i,v){
                     // Disable the Explorer hull and emdrive engine after new shipyard is unlocked
                     if (global.tech['resettle'] && (v === 'emdrive' || v === 'explorer')){
                         return false;
+                    }
+                    if (k === 'special'){
+                        // A mount the current hull has no room for is not offered at all.
+                        if (!shipSpecialAllowed(v,global.space.shipyard.blueprint.class)){ return false; }
+                        return global.tech['syard_special'] ? true : false;
                     }
                     if ((k === 'class' || k === 'engine') && global.tech['tauceti'] && (v === 'emdrive' || v === 'explorer')){
                         return true;
@@ -6855,8 +7265,15 @@ export function drawShipYard(){
                 fireText(){
                     return shipAttackPower(global.space.shipyard.blueprint);
                 },
+                // Only worth a line on the design once there is a mount fitted to rate.
+                bombardVis(){
+                    return shipBombardPower(global.space.shipyard.blueprint) > 0;
+                },
+                bombardText(){
+                    return shipBombardPower(global.space.shipyard.blueprint);
+                },
                 sensorText(){
-                    return sensorRange(global.space.shipyard.blueprint) + 'km';
+                    return loc('outer_shipyard_sensor_range',[sensorRange(global.space.shipyard.blueprint)]);
                 },
                 speedText(){
                     let speed = (149597870.7/225/24/3600) * shipSpeed(global.space.shipyard.blueprint);
@@ -6882,28 +7299,11 @@ export function drawShipYard(){
                             let ship = deepClone(global.space.shipyard.blueprint);
                             buildTPShip(ship,false);
                         }
-                        else {
-                            let used = 0;
-                            for (let j=0; j<global.queue.queue.length; j++){
-                                used += Math.ceil(global.queue.queue[j].q / global.queue.queue[j].qs);
-                            }
-                            if (used < global.queue.max){
-                                let blueprint = deepClone(global.space.shipyard.blueprint);
-                                global.queue.queue.push({ 
-                                    id: `tp-ship-${Math.rand(0,100000)}`, 
-                                    action: 'tp-ship', 
-                                    type: blueprint,
-                                    label: blueprint.name, 
-                                    cna: false, 
-                                    time: 0, 
-                                    q: 1, 
-                                    qs: 1, 
-                                    t_max: 0, 
-                                    bres: false 
-                                });
-                                global.space.shipyard.blueprint.name = getRandomShipName();
-                                buildQueue();
-                            }
+                        else if (queueTPShip(global.space.shipyard.blueprint)){
+                            // The hull on the slipway has been spoken for, so the yard rolls a
+                            // registry name for the next one.
+                            global.space.shipyard.blueprint.name = getRandomShipName();
+                            buildQueue();
                         }
                     }
                 },
@@ -7224,6 +7624,8 @@ export function shipPower(ship, wiki){
             break;
     }
 
+    watts -= Math.round(shipSpecialPower[shipSpecial(ship)] * use_inflate);
+
     switch (ship.engine){
         case 'ion':
             watts -= Math.round((global.tech.syard_engine >= 6 ? 18 : 25) * use_inflate);
@@ -7261,6 +7663,37 @@ export function shipPower(ship, wiki){
     }
 
     return watts;
+}
+
+// --- Ship weapons -------------------------------------------------------------------------------
+// In unlock order: the index is what syard_weapon is measured against, so this order is load bearing.
+const shipWeapons = ['railgun','laser','p_laser','plasma','phaser','disruptor','gauss'];
+
+// --- The special slot ---------------------------------------------------------------------------
+const shipSpecials = ['none','massdriver'];
+
+// Ships allowed to carry mass drivers
+const massDriverHulls = ['cruiser','battlecruiser','dreadnought'];
+export function shipSpecialAllowed(special,shipClass){
+    return special === 'massdriver' ? massDriverHulls.includes(shipClass) : true;
+}
+
+// What special a ship has equiped.
+export function shipSpecial(ship){
+    return ship && ship.special && shipSpecials.includes(ship.special) ? ship.special : 'none';
+}
+
+// Power a special mount draws
+const shipSpecialPower = { none: 0, massdriver: 325 };
+
+// --- Orbital bombardment ------------------------------------------------------------------------
+const shipBombardRating = { cruiser: 500, battlecruiser: 900, dreadnought: 2000 };
+
+// The bombardment rating of a single hull, or 0 for anything not carrying a mass driver.
+export function shipBombardPower(ship){
+    if (!ship || shipSpecial(ship) !== 'massdriver'){ return 0; }
+    if (!shipSpecialAllowed('massdriver',ship.class)){ return 0; }
+    return shipBombardRating.hasOwnProperty(ship.class) ? shipBombardRating[ship.class] : 0;
 }
 
 export function shipAttackPower(ship){
@@ -7343,6 +7776,9 @@ export function shipSpeed(ship){
             break;
     }
     if (ship.armor === 'aerographene'){ mass /= AEROGRAPHENE_SPEED; }
+
+    // Featherlight: avian hulls are built lighter than anyone else's.
+    mass /= geneBonus('featherlight');
 
     let boost = 1;
     switch (ship.location?.name ?? ""){
@@ -7599,6 +8035,13 @@ export function shipCosts(bp){
             break;
     }
 
+    // The special mount
+    if (shipSpecial(bp) === 'massdriver'){
+        costs['Iridium'] = Math.round(costs['Iridium'] ** 1.2);
+        costs['Tungsten'] = Math.round(750000 ** h_inflate);
+        costs['Quantium'] = Math.round(40000 ** h_inflate);
+    }
+
     if (bp.class === 'explorer'){
         costs['Iron'] *= 10;
         costs['Titanium'] *= 5;
@@ -7728,6 +8171,7 @@ function shipyardSystems(){
 // Display name of a system key, the same label locSystemName puts on a location.
 function systemLabel(sys){
     if (sys === 'all'){ return loc('outer_shipyard_system_all'); }
+    if (sys === 'yards'){ return loc('outer_shipyard_system_yards'); }
     let star = sys === 'sun' ? spacePlanetStats.spc_sun : spacePlanetStats[sys];
     return star && star.label ? star.label : sys;
 }
@@ -7840,6 +8284,47 @@ function clusterFleets(ships){
     return ordered;
 }
 
+// Room left in the build queue, counted the way the queue itself counts it.
+function queueSpace(){
+    let used = 0;
+    for (let j=0; j<global.queue.queue.length; j++){
+        used += Math.ceil(global.queue.queue[j].q / global.queue.queue[j].qs);
+    }
+    return global.queue.max - used;
+}
+
+// Put one ship design on the build queue. Returns false when there is no room left, so a caller
+// queueing a whole fleet can stop rather than silently dropping hulls. Does not call buildQueue():
+// the caller does that once, after the last hull goes on.
+function queueTPShip(design){
+    if (queueSpace() <= 0){ return false; }
+    let blueprint = deepClone(design);
+    global.queue.queue.push({
+        id: `tp-ship-${Math.rand(0,100000)}`,
+        action: 'tp-ship',
+        type: blueprint,
+        label: blueprint.name,
+        cna: false,
+        time: 0,
+        q: 1,
+        qs: 1,
+        t_max: 0,
+        bres: false
+    });
+    return true;
+}
+
+// A copy of an existing hull is a new ship, not the same one, so it gets its own registry name.
+function copyShipDesign(ship){
+    let design = deepClone(ship);
+    ['location','destination','origin','transit','inTransit','timeToNextStep','path','damage','fid','flag','ret','crew'].forEach(function(runtime){
+        delete design[runtime];
+    });
+    if (!shipSpecialAllowed(design.special,design.class)){ design.special = 'none'; }
+    design.name = getRandomShipName();
+    return design;
+}
+
 function drawShips(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 5)){
         return;
@@ -7895,9 +8380,12 @@ function drawShips(){
         // Which tab should the ship be drawn in
         let shipDisplayLocation = (ship.inTransit ? ship.destination.name : ship.location.name);
 
-        if (view.sys !== 'all' && locSystem(shipDisplayLocation) !== view.sys){ return; }
-        // A folded fleet shows its flagship and nothing else, the same way a folded location shows only
-        // its header. The flagship keeps its row, so there is always something left to unfold from.
+        // 'yards' filters for locations with shipyards rather then star systems
+        if (view.sys === 'yards'){
+            if (!repairYards.includes(shipDisplayLocation)){ return; }
+        }
+        else if (view.sys !== 'all' && locSystem(shipDisplayLocation) !== view.sys){ return; }
+        // A folded fleet shows its flagship and nothing else
         if (ship.fid && !ship.flag && view.ffold[ship.fid]){
             collapsed = true;
             return;
@@ -8008,7 +8496,7 @@ function drawShipRow(list,i,ship,regionNames){
         if (global.space.shipyard.expand){
             let ship_class = `${loc(`outer_shipyard_engine_${ship.engine}`)} ${loc(`outer_shipyard_class_${ship.class}`)}`;
             let desc = $(`<div id="shipReg${i}" class="shipRow ship${i}${escort}"></div>`);
-            let row1 = $(`<div class="row1"><span class="name has-text-caution">${ship.name}</span> <span v-show="scrapAllowed(${i})">| </span><a class="scrap${i}" v-show="scrapAllowed(${i})" @click="scrap(${i})" role="button">${loc(`outer_shipyard_scrap`)}</a><a class="fleetFold" v-show="fleetFoldShow(${i})" @click="fleetFold(${i})" role="button" :aria-expanded="fleetFolded(${i}) ? 'false' : 'true'" :aria-label="fleetFoldLabel(${i})"><span class="groupArrow" v-html="fleetArrow(${i})"></span></a><span v-show="fleetTag(${i})" class="flagship" v-html="fleetTag(${i})"></span><span v-show="fleetShow(${i})"> | <a class="fleetToggle" @click="fleetAction(${i})" role="button" v-html="fleetText(${i})"></a></span> | <span class="has-text-warning">${ship_class}</span> | <span class="has-text-danger">${loc(`outer_shipyard_weapon_${ship.weapon}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_power_${ship.power}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_armor_${ship.armor}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_sensor_${ship.sensor}`)}</span></div>`);
+            let row1 = $(`<div class="row1"><span class="name has-text-caution">${ship.name}</span> <span v-show="scrapAllowed(${i})">| </span><a class="scrap${i}" v-show="scrapAllowed(${i})" @click="scrap(${i})" role="button">${loc(`outer_shipyard_scrap`)}</a><span v-show="copyMode()"> | <a class="loadDesign" @click="loadDesign(${i})" role="button">${loc(`outer_shipyard_copy_design`)}</a> | <a class="copyBuild" @click="copyBuild(${i})" role="button">${loc(`outer_shipyard_copy_build`)}</a></span><span v-show="copyFleetShow(${i})"> | <a class="copyFleet" @click="copyFleet(${i})" role="button">${loc(`outer_shipyard_copy_fleet`)}</a></span><a class="fleetFold" v-show="fleetFoldShow(${i})" @click="fleetFold(${i})" role="button" :aria-expanded="fleetFolded(${i}) ? 'false' : 'true'" :aria-label="fleetFoldLabel(${i})"><span class="groupArrow" v-html="fleetArrow(${i})"></span></a><span v-show="fleetTag(${i})" class="flagship" v-html="fleetTag(${i})"></span><span v-show="fleetShow(${i})"> | <a class="fleetToggle" @click="fleetAction(${i})" role="button" v-html="fleetText(${i})"></a></span> | <span class="has-text-warning">${ship_class}</span> | <span class="has-text-danger">${loc(`outer_shipyard_weapon_${ship.weapon}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_power_${ship.power}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_armor_${ship.armor}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_sensor_${ship.sensor}`)}</span></div>`);
             let row2 = $(`<div class="row2"></div>`);
             let row3 = $(`<div class="row3"></div>`);
             let row4 = $(`<div class="location">${dispatch}</div>`);
@@ -8035,7 +8523,7 @@ function drawShipRow(list,i,ship,regionNames){
             let row3 = $(`<div class="row3"></div>`);
             let row4 = $(`<div class="location">${dispatch}</div>`);
 
-            row1.append(`<span class="name has-text-caution">${ship.name}</span><a class="fleetFold" v-show="fleetFoldShow(${i})" @click="fleetFold(${i})" role="button" :aria-expanded="fleetFolded(${i}) ? 'false' : 'true'" :aria-label="fleetFoldLabel(${i})"><span class="groupArrow" v-html="fleetArrow(${i})"></span></a><span v-show="fleetTag(${i})" class="flagship" v-html="fleetTag(${i})"></span><span v-show="fleetShow(${i})"> | <a class="fleetToggle" @click="fleetAction(${i})" role="button" v-html="fleetText(${i})"></a></span> | `);
+            row1.append(`<span class="name has-text-caution">${ship.name}</span><span v-show="copyMode()"> | <a class="loadDesign" @click="loadDesign(${i})" role="button">${loc(`outer_shipyard_copy_design`)}</a> | <a class="copyBuild" @click="copyBuild(${i})" role="button">${loc(`outer_shipyard_copy_build`)}</a></span><span v-show="copyFleetShow(${i})"> | <a class="copyFleet" @click="copyFleet(${i})" role="button">${loc(`outer_shipyard_copy_fleet`)}</a></span><a class="fleetFold" v-show="fleetFoldShow(${i})" @click="fleetFold(${i})" role="button" :aria-expanded="fleetFolded(${i}) ? 'false' : 'true'" :aria-label="fleetFoldLabel(${i})"><span class="groupArrow" v-html="fleetArrow(${i})"></span></a><span v-show="fleetTag(${i})" class="flagship" v-html="fleetTag(${i})"></span><span v-show="fleetShow(${i})"> | <a class="fleetToggle" @click="fleetAction(${i})" role="button" v-html="fleetText(${i})"></a></span> | `);
             row1.append(`<span class="shipStat"><span class="has-text-warning">${loc(`firepower`)}</span> <span class="pad" v-html="fireText(${i})"></span></span><wbr>`);
             row1.append(`<span class="shipStat"><span class="has-text-warning">${loc(`outer_shipyard_sensors`)}</span> <span class="pad" v-html="sensorText(${i})"></span></span><wbr>`);
             row1.append(`<span class="shipStat"><span class="has-text-warning">${loc(`speed`)}</span> <span class="pad" v-html="speedText(${i})"></span></span><wbr>`);
@@ -8063,6 +8551,59 @@ function drawShipRow(list,i,ship,regionNames){
                         global.space.shipyard.ships.splice(id,1);
                         drawShips();
                         updateCosts();
+                    }
+                },
+                // Whether the yard's copy controls are switched on, which is what puts the copy
+                // links on every row rather than leaving them there permanently.
+                copyMode(){
+                    return global.space.shipyard['copy'] ? true : false;
+                },
+                // Copy a built ship's design back into the yard so a sister ship can be ordered
+                // without setting every dropdown again. The name is deliberately left alone: it
+                // identifies the ship, and the yard rolls a fresh one for each hull it lays down.
+                loadDesign(id){
+                    let s = global.space.shipyard.ships[id];
+                    if (!s){ return; }
+                    let bp = global.space.shipyard.blueprint;
+                    ['class','engine','weapon','armor','sensor','power'].forEach(function(part){
+                        if (s[part] !== undefined){ bp[part] = s[part]; }
+                    });
+                    // A special the copied class cannot carry falls back exactly the way the class
+                    // dropdown makes it fall back.
+                    bp.special = s['special'] !== undefined ? s.special : 'none';
+                    if (!shipSpecialAllowed(bp.special,bp.class)){ bp.special = 'none'; }
+                },
+                // The same copy, plus a hull on the queue for it. The yard is loaded as well so the
+                // design is sitting there to adjust if the next one wants to differ.
+                copyBuild(id){
+                    let s = global.space.shipyard.ships[id];
+                    if (!s){ return; }
+                    this.loadDesign(id);
+                    if (queueTPShip(copyShipDesign(s))){
+                        buildQueue();
+                    }
+                },
+                // Offered on a flagship only, and only with the copy controls on: a fleet is named
+                // by the ship leading it, so that row is where "another one of these" belongs.
+                copyFleetShow(id){
+                    let s = global.space.shipyard.ships[id];
+                    return global.space.shipyard['copy'] && global.tech['syard_fleet'] && s && s.flag && s.fid ? true : false;
+                },
+                // Queue a sister ship for every hull in the fleet, flagship included. Stops at the
+                // end of the queue rather than dropping the rest on the floor, and the copies are
+                // ordinary unattached ships -- they are not enrolled in the fleet for you.
+                copyFleet(id){
+                    let s = global.space.shipyard.ships[id];
+                    if (!s || !s.fid){ return; }
+                    let queued = 0;
+                    let members = fleetMembers(s.fid);
+                    for (let m=0; m<members.length; m++){
+                        if (!queueTPShip(copyShipDesign(members[m]))){ break; }
+                        queued++;
+                    }
+                    if (queued > 0){
+                        buildQueue();
+                        messageQueue(loc('outer_shipyard_copy_fleet_msg',[queued,members.length]),'info',false,['progress']);
                     }
                 },
                 // Only at a yard, and only while actually docked there rather than crossing to it.
@@ -8174,8 +8715,8 @@ function drawShipRow(list,i,ship,regionNames){
                 sensorText(id){
                     let group = rowGroup(global.space.shipyard.ships[id]);
                     // Math.max of nothing is -Infinity, and a row can outlive its ship by a frame.
-                    if (group.length === 0){ return `0km`; }
-                    return Math.max(...group.map(s => sensorRange(s) || 0)) + 'km';
+                    if (group.length === 0){ return loc('outer_shipyard_sensor_range',[0]); }
+                    return loc('outer_shipyard_sensor_range',[Math.max(...group.map(s => sensorRange(s) || 0))]);
                 },
                 // A fleet keeps pace with its slowest ship, which is what its trips are planned on.
                 speedText(id){
@@ -8276,19 +8817,24 @@ function tauEnableSoldiers(){
 
 // Take a `ship` and send it on its merry way to `locationName`
 function initializeShipTrip(ship, locationName, trip){
+    // Whether this ship is presently inside a wormhole, and which gate it is bound for.
+    let inGate = ship.inTransit && ship.path && ship.path[0] && ship.path[0].inGate ? true : false;
+    let gateExit = inGate ? ship.path[0].destination.name : false;
+
     // If a trip is already calculated then use that trip (for example when sending 
     // a fleet to account for its slower speed). Otherwise calculate steps for new path.
     let plannedTrip;
-    if (trip)
+    if (trip && !inGate)
         plannedTrip = trip;
-    else 
+    else
         plannedTrip = planShipTrip(ship, locationName);
 
     // We're already at the target location, or the location is unavailable (for any possible reason)
     if (!plannedTrip)
         return;
 
-    ship.path = plannedTrip.path;
+    // Ensure every ship in a fleet has the same travel plan
+    ship.path = deepClone(plannedTrip.path);
     ship.totalTime = plannedTrip.totalTime;
 
     // Origin
@@ -8312,8 +8858,10 @@ function initializeShipTrip(ship, locationName, trip){
     ship.destination.name = locationName;
     ship.destination.position = ship.path[ship.path.length - 1].destination.position;
 
-    // First step
-    ship.timeToNextStep = ship.path[0].totalTime;
+    // First step. A carried-over gate leg keeps the time it had left on it
+    if (!(inGate && ship.path[0].inGate && ship.path[0].destination.name === gateExit)){
+        ship.timeToNextStep = ship.path[0].totalTime;
+    }
 
     // Liftoff
     ship.inTransit = true;
@@ -8322,7 +8870,7 @@ function initializeShipTrip(ship, locationName, trip){
 // update in main.js advances at: it runs on the mid loop, five of which make a game day, so its
 // 72/orbit per tick is 360/orbit per day — one full circuit in exactly `orbit` days.
 function orbitDegrees(id, days){
-    let orbit = spacePlanetStats[id].orbit === -1 ? orbitLength() : spacePlanetStats[id].orbit;
+    let orbit = orbitPeriod(id);
     let now = global.space.position[id] || 0;
     if (!(orbit > 0)){ return now; }
     return (now + days * (360 / orbit)) % 360;
@@ -8399,7 +8947,7 @@ function calcLandingPoint(startingPosition, planet, speed, elapsed) {
     }
     else {
         let ecc = orbitEcc(planet);
-        semiMajor = spacePlanetStats[planet].dist;
+        semiMajor = orbitDist(planet);
         semiMinor = semiMajor * Math.sqrt(1 - ecc * ecc);
         // The Sun sits at a focus, so the ellipse's centre is one focal distance off it, toward
         // apoapsis (the -x side, since periapsis is drawn at +x).
@@ -8418,9 +8966,7 @@ function calcLandingPoint(startingPosition, planet, speed, elapsed) {
     if (ship_dist >= semiMinor && ship_dist <= semiMajor) {
         cross1_days = 0;
     }
-    let planet_orbit = spacePlanetStats[planet].orbit === -1
-      ? orbitLength()
-      : spacePlanetStats[planet].orbit;
+    let planet_orbit = orbitPeriod(planet);
     let planet_speed = 360 / planet_orbit;
     // `i` counts flight days from where the ship is now, but the planet has also been moving through
     // whatever the ship spent getting here, so the angle is wound by elapsed as well.
@@ -8561,6 +9107,30 @@ export function sensorRange(s){
         case 'quantum':
             return 32 * hf;
     }
+}
+
+// Sensor ratings are gigameters; the map works in AU. A quantum set on a frigate reads 64 Gm, which is a shade over 0.42 AU
+export const GM_PER_AU = 149.5978707;
+
+// A hull's sensor reach in map units.
+export function sensorRangeAU(ship){
+    return (sensorRange(ship) || 0) / GM_PER_AU;
+}
+
+// Whether an enemy hull is currently detected.
+export function foeDetected(foe){
+    if (!foe || !foe.location || !foe.location.position){ return false; }
+    return sensorContact(foe);
+}
+
+// Anything of yours with the point inside its sensor bubble.
+function sensorContact(foe){
+    if (!global.space['shipyard'] || !Array.isArray(global.space.shipyard['ships'])){ return false; }
+    for (let ship of global.space.shipyard.ships){
+        if (!ship.location || !ship.location.position){ continue; }
+        if (dist3(ship.location.position, foe.location.position) <= sensorRangeAU(ship)){ return true; }
+    }
+    return false;
 }
 
 export function tritonWar(){
@@ -9336,6 +9906,7 @@ export function dist3(a,b){
 // is turned. Nothing in the 0-6 degree range is a ship destination, so this can't move a target.
 function orbitIncline(id){
     let body = spacePlanetStats[id];
+    if (id === 'spc_home' && kamikazeRun()){ return KAMIKAZE_INCLINE; }
     return body.hasOwnProperty('inc') ? body.inc : (texSeed(id) % 600) / 100;
 }
 
@@ -9373,7 +9944,7 @@ function moonSpread(parent){
 // The radius a body's orbit is drawn at, moon exaggeration included.
 function orbitRadius(id){
     let body = spacePlanetStats[id];
-    return body.parent ? body.dist * moonSpread(body.parent) : body.dist;
+    return body.parent ? body.dist * moonSpread(body.parent) : orbitDist(id);
 }
 
 // Where a body sits at a given angle along its orbit, in AU from the Sun. Split out of genXYZcoord so
@@ -9411,8 +9982,9 @@ export function orbitPoint(planet, deg){
         origin = { x: 0, y: 0, z: 0 };
         let ecc = orbitEcc(planet);
         let E = eccentricAnomaly(rad, ecc);
-        u = body.dist * (Math.cos(E) - ecc);
-        v = body.dist * Math.sqrt(1 - ecc * ecc) * Math.sin(E);
+        let semi = orbitDist(planet);
+        u = semi * (Math.cos(E) - ecc);
+        v = semi * Math.sqrt(1 - ecc * ecc) * Math.sin(E);
     }
     // Tilt about the line of nodes (the x axis). The orbit keeps its size and every point on it
     // keeps its distance from the primary; only its height above the reference plane changes.
@@ -9757,7 +10329,8 @@ function planShipTrip(ship, locationName){
                 name: step.location,
                 position: nextPosition
             },
-            totalTime: time
+            totalTime: time,
+            inGate: step.inGate ? true : false
         });
         
         currentPosition = nextPosition;
@@ -10514,6 +11087,48 @@ function orbitDirection(id){
     return id === 'spc_moon' && homeTrait('retrograde') ? -1 : 1;
 }
 
+// How long a body takes to come round, in days.
+export function orbitPeriod(id){
+    let body = spacePlanetStats[id];
+    if (!body){ return 0; }
+    let orbit = body.orbit === -1 ? orbitLength() : body.orbit;
+    if (id === 'spc_moon' && homeTrait('dense')){ orbit /= 2; }
+    return orbit;
+}
+
+// --- The kamikaze home world -------------------------------------------------------------------
+//
+// The kamikaze planet trait takes a day off the year every year
+const KAMIKAZE_FLOOR_ORBIT = 100;
+const KAMIKAZE_MIN_PERIHELION = 0.25;
+// Reduces chance of visual collision with Venus and Mercury, doesn't eliminate it but without doing something whacky this is as good as it gets.
+const KAMIKAZE_INCLINE = -12;
+
+function kamikazeRun(){
+    return global.race['truepath'] && homeTrait('kamikaze') ? true : false;
+}
+
+// Set Kamakaze data
+export function kamikazeOrbit(){
+    if (!kamikazeRun()){ return 0; }
+    if (!global.city.calendar['kamikaze']){
+        global.city.calendar['kamikaze'] = orbitLength();
+    }
+    return global.city.calendar.kamikaze;
+}
+
+// The radius a body's orbit is drawn at, in AU. Only a falling home world is ever anything other than its table distance.
+export function orbitDist(id){
+    let body = spacePlanetStats[id];
+    if (!body){ return 0; }
+    if (id !== 'spc_home' || !kamikazeRun()){ return body.dist; }
+    let start = kamikazeOrbit();
+    if (!(start > 0)){ return body.dist; }
+    let now = Math.min(Math.max(orbitLength(), KAMIKAZE_FLOOR_ORBIT), start);
+    let floor = KAMIKAZE_MIN_PERIHELION / Math.max(1 - orbitEcc(id), 0.01);
+    return Math.max(body.dist * (now / start), floor);
+}
+
 // Solve Kepler's equation, M = E - e·sin(E), for the eccentric anomaly.
 //
 // The angle the game stores and advances at a constant rate (see the position update in main.js) is
@@ -10700,6 +11315,8 @@ const ORBIT_STEPS = 96;
 // than its projected extent, so tilting the camera edge-on — which squashes a ring to a line but
 // leaves it perfectly visible — doesn't make orbits disappear.
 const ORBIT_MIN_PX = 3;
+// Had to limit ship trails or trips between stars would crash the browser, also in general they caused lag
+const TRAIL_MAX_DASHES = 400;
 // Ship markers are drawn at a constant size on screen, in pixels.
 const SHIP_DOT_PX = 3;
 const SHIP_LABEL_PX = 5;
@@ -11671,6 +12288,14 @@ export function drawMap() {
     // frame's batch set up explicitly. No-op on the 2D path.
     if (ctx.beginFrame){ ctx.beginFrame(); }
 
+    if (starLockOn) {
+        // Move camera onto locked on body, keeping its position in the center
+        const pos = genXYZcoord(starLockOn);
+        const bounds = document.getElementById("mapCanvas").getBoundingClientRect();
+        mapShift.x = bounds.width / 2 - pX(pos) * mapScale;
+        mapShift.y = bounds.height / 2 - pY(pos) * mapScale;
+    }
+
     ctx.save();
     ctx.fillStyle = "#000000";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -11745,6 +12370,10 @@ export function drawMap() {
             let raids = {};
             for (let ship of global.race.zfleet.s){
                 if (!ship.inTransit){ continue; }
+                // Nothing of yours can see it, so nothing of yours plots it. Tested per hull rather
+                // than per sortie, so a raid crossing the edge of a sensor bubble shows the part
+                // that is actually in contact instead of all of it or none of it.
+                if (!foeDetected(ship)){ continue; }
                 if (!ship.zf){
                     shipMarks.push({ ship, count: 1, foe: true });
                     continue;
@@ -11773,10 +12402,19 @@ export function drawMap() {
         ctx.save();
         ctx.translate(pX(ref), pY(ref));
         ctx.beginPath();
-        ctx.setLineDash([0.1, 0.4]);
         let here = rel(ship.location.position, ref);
+
+        let span = 0;
+        let prev = here;
+        for (let i=0; i<ship.path.length; i++){
+            let q = rel(ship.path[i].destination.position, ref);
+            span += Math.sqrt((q.x-prev.x)**2 + (q.y-prev.y)**2 + (q.z-prev.z)**2);
+            prev = q;
+        }
+        let cycle = Math.max(0.5, span / TRAIL_MAX_DASHES);
+        ctx.setLineDash([cycle * 0.2, cycle * 0.8]);
+
         ctx.moveTo(pX(here), pY(here));
-        
         // Draw the full remaining flight path through each waypoint still ahead of the ship.
         for (let i=0; i<ship.path.length; i++){
             let q = rel(ship.path[i].destination.position, ref);
@@ -12390,8 +13028,31 @@ function buildSolarMap(parentNode, keep) {
         }
     }
 
+    // --- Touch input -------------------------------------------------------------------------
+    // Gated on the player's own touch-device setting rather than sniffed, the same as everywhere else
+    // in the game. The four things the mouse can do are mapped onto the gestures a phone already
+    // uses: one finger drags the map as the left button does and a tap selects what is under it, two
+    // fingers pinch to zoom and slide to orbit the camera — the two-finger pair standing in for the
+    // wheel and the right-drag.
+    function touchMap(){ return global.settings['touch'] ? true : false; }
+    // Below this a pinch is finger jitter rather than an attempt to zoom; without it a two-finger
+    // slide zooms slightly the whole way.
+    const PINCH_SLOP_PX = 4;
+    let touching = false;       // false | 'pan' | 'camera'
+    let tap = false;            // the opening finger, for telling a tap from a drag
+    let gesture = {};
+    function touchMid(t){ return { x: (t[0].clientX + t[1].clientX) / 2, y: (t[0].clientY + t[1].clientY) / 2 }; }
+    function touchGap(t){ return Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY); }
+    // Zoom about the middle of the viewport, which is where the camera's focus already sits — the
+    // same arithmetic the wheel uses when locked onto a star.
+    function zoomCentre(factor){
+        mapScale *= factor;
+        mapShift.x = canvasOffset.x + (mapShift.x - canvasOffset.x) * factor;
+        mapShift.y = canvasOffset.y + (mapShift.y - canvasOffset.y) * factor;
+    }
+
     currentNode.append(
-      $(`<canvas id="mapCanvas" style="width: 100%; height: 75vh"></canvas>`)
+      $(`<canvas id="mapCanvas" style="width: 100%; height: 75vh;${global.settings['touch'] ? ' touch-action: none;' : ''}"></canvas>`)
         // A left press that ends without the pointer really moving is a click, not a pan: if it
         // landed on a body, centre the view on it. The slop allows for the shake of an ordinary
         // click, which would otherwise pan a pixel and count as a drag.
@@ -12404,10 +13065,10 @@ function buildSolarMap(parentNode, keep) {
             if (drag === 'pan' && press && !press.moved){
                 let hit = starAt(e) || bodyAt(e);
                 if (hit){
-                    recenterOn(genXYZcoord(hit));
-                    drawMap();
                     // Lock on so zooming pulls in on it rather than following the cursor away.
+                    // Draw after to immediately recenter on clicked body
                     starLockOn = hit;
+                    drawMap();
                     // Finding the cow is the whole of it — there is nothing else to do out there.
                     if (cowGlyph(hit)){
                         unlockFeat('secret_cow', global.race.universe === 'micro' ? true : false);
@@ -12513,6 +13174,85 @@ function buildSolarMap(parentNode, keep) {
                 drawMap();
             }
             return false;
+        })
+        .on("touchstart", (e) => {
+            if (!touchMap()){ return; }
+            let t = e.originalEvent.touches;
+            if (t.length === 1){
+                touching = 'pan';
+                tap = { x: t[0].clientX, y: t[0].clientY, moved: false };
+                dragOffset.x = t[0].clientX - mapShift.x;
+                dragOffset.y = t[0].clientY - mapShift.y;
+            }
+            else if (t.length === 2){
+                // A second finger down ends any tap in progress: this is a camera gesture now.
+                touching = 'camera';
+                tap = false;
+                let mid = touchMid(t);
+                gesture = { gap: touchGap(t), x: mid.x, y: mid.y, yaw: mapYaw, pitch: mapPitch };
+            }
+            return false;
+        })
+        .on("touchmove", (e) => {
+            if (!touchMap()){ return; }
+            let t = e.originalEvent.touches;
+            if (touching === 'pan' && t.length === 1){
+                if (tap && (Math.abs(t[0].clientX - tap.x) > CLICK_SLOP_PX || Math.abs(t[0].clientY - tap.y) > CLICK_SLOP_PX)){
+                    tap.moved = true;
+                    starLockOn = false;
+                }
+                mapShift.x = t[0].clientX - dragOffset.x;
+                mapShift.y = t[0].clientY - dragOffset.y;
+                refocus();
+                drawMap();
+            }
+            else if (touching === 'camera' && t.length === 2){
+                // The two are independent components of the same two-finger move, so both are read
+                // every frame: the gap between the fingers zooms, and where the pair as a whole has
+                // travelled orbits, exactly as dragging with the right button does.
+                let gap = touchGap(t);
+                let mid = touchMid(t);
+                if (gesture.gap > 0 && Math.abs(gap - gesture.gap) > PINCH_SLOP_PX){
+                    zoomCentre(gap / gesture.gap);
+                    gesture.gap = gap;
+                }
+                mapYaw = wrapAngle(gesture.yaw + (mid.x - gesture.x) * ROTATE_RATE);
+                mapPitch = wrapAngle(gesture.pitch + (mid.y - gesture.y) * ROTATE_RATE);
+                camUpdate();
+                recenterOn(mapFocus);
+                drawMap();
+            }
+            return false;
+        })
+        // A finger that lifts without having really moved is a tap, and does what a click does.
+        .on("touchend touchcancel", (e) => {
+            if (!touchMap()){ return; }
+            let lifted = e.originalEvent.changedTouches;
+            if (touching === 'pan' && tap && !tap.moved && lifted && lifted.length){
+                let hit = starAt(lifted[0]) || bodyAt(lifted[0]);
+                if (hit){
+                    recenterOn(genXYZcoord(hit));
+                    drawMap();
+                    starLockOn = hit;
+                    if (cowGlyph(hit)){
+                        unlockFeat('secret_cow', global.race.universe === 'micro' ? true : false);
+                    }
+                }
+            }
+            // Lifting one of two fingers leaves the other one panning rather than stranding the map
+            // mid-gesture, so the pan is re-seated from where that finger actually is.
+            let left = e.originalEvent.touches;
+            if (left && left.length === 1){
+                touching = 'pan';
+                tap = false;
+                dragOffset.x = left[0].clientX - mapShift.x;
+                dragOffset.y = left[0].clientY - mapShift.y;
+            }
+            else if (!left || left.length === 0){
+                touching = false;
+                tap = false;
+            }
+            return false;
         }),
       $(`<input type="button" value="+" style="position: absolute; width: 30px; height: 30px; top: 32px; right: 2px;">`)
         .on("click", () => {
@@ -12534,6 +13274,7 @@ function buildSolarMap(parentNode, keep) {
             // This is the "back to the default view of Sol" control — it already restores the
             // opening zoom, so it restores the opening bearing with it.
             mapYaw = mapDefaultYaw('spc_sun');
+            starLockOn = 'spc_sun';
             camUpdate();
             recenterOn(genXYZcoord('spc_sun'));
             drawMap();
@@ -12546,6 +13287,7 @@ function buildSolarMap(parentNode, keep) {
             .on("click", () => {
                 mapScale = 20.0;
                 mapYaw = mapDefaultYaw('tauceti');
+                starLockOn = 'tauceti';
                 camUpdate();
                 recenterOn(genXYZcoord('tauceti'));
                 drawMap();
@@ -12720,7 +13462,7 @@ function shipDispatchModal(id, modal){
     let stats = $(`<div class="shipDispatchStats"></div>`);
     stats.append(`<span><span class="has-text-warning">${loc('crew')}</span> <span class="pad">${sum(shipCrewSize)}</span></span>`);
     stats.append(`<span><span class="has-text-warning">${loc('firepower')}</span> <span class="pad">${sum(shipAttackPower)}</span></span>`);
-    stats.append(`<span><span class="has-text-warning">${loc('outer_shipyard_sensors')}</span> <span class="pad">${Math.max(...group.map(sensorRange))}km</span></span>`);
+    stats.append(`<span><span class="has-text-warning">${loc('outer_shipyard_sensors')}</span> <span class="pad">${loc('outer_shipyard_sensor_range',[Math.max(...group.map(sensorRange))])}</span></span>`);
     stats.append(`<span><span class="has-text-warning">${loc('speed')}</span> <span class="pad">${speed}km/s</span></span>`);
     stats.append(`<span><span class="has-text-warning">${loc('outer_shipyard_fuel')}</span> <span class="pad">${fuelText}</span></span>`);
     stats.append(`<span><span class="has-text-warning">${loc('outer_shipyard_hull')}</span> <span class="pad ${hullClass}">${100 - damage}%</span></span>`);
@@ -12804,8 +13546,10 @@ export function battleLogModal(){
         // outcome is colored rather than left for the player to work out from the numbers.
         let tone = b.pl > 0 ? `has-text-danger` : (b.el > 0 ? `has-text-success` : `has-text-warning`);
         row.append(`<div class="battleHead"><span class="${tone}">${loc('battle_log_where',[regionName(b.l)])}</span> <span class="has-text-caution">${loc('battle_log_day',[b.d])}</span></div>`);
-        row.append(`<div class="battleSide"><span class="has-text-success">${loc('battle_log_yours')}</span> <span>${roster(b.p)}</span> <span class="has-text-warning">${loc('battle_log_dealt',[b.pd])}</span>${b.pl > 0 ? ` <span class="has-text-danger">${loc('battle_log_lost',[b.pl])}</span>` : ``}</div>`);
-        row.append(`<div class="battleSide"><span class="has-text-danger">${loc('battle_log_theirs')}</span> <span>${roster(b.e)}</span> <span class="has-text-warning">${loc('battle_log_dealt',[b.ed])}</span>${b.el > 0 ? ` <span class="has-text-success">${loc('battle_log_destroyed',[b.el])}</span>` : ``}</div>`);
+        // Rounded here as well as at write time: engagements recorded before damage was rounded
+        // still hold full-precision doubles, and "dealt 154.9204903865691 hull" is unreadable.
+        row.append(`<div class="battleSide"><span class="has-text-success">${loc('battle_log_yours')}</span> <span>${roster(b.p)}</span> <span class="has-text-warning">${loc('battle_log_dealt',[zBattleHull(b.pd)])}</span>${b.pl > 0 ? ` <span class="has-text-danger">${loc('battle_log_lost',[b.pl])}</span>` : ``}</div>`);
+        row.append(`<div class="battleSide"><span class="has-text-danger">${loc('battle_log_theirs')}</span> <span>${roster(b.e)}</span> <span class="has-text-warning">${loc('battle_log_dealt',[zBattleHull(b.ed)])}</span>${b.el > 0 ? ` <span class="has-text-success">${loc('battle_log_destroyed',[b.el])}</span>` : ``}</div>`);
         list.append(row);
     });
 }

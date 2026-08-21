@@ -3,6 +3,7 @@ import { clearElement } from './../functions.js';
 import { faqPage } from './faq.js';
 import { basicsPage } from './basics.js';
 import { mechanicsPage } from './mechanics.js';
+import { geneticsPage } from './genetics.js';
 import { govPage } from './government.js';
 import { governPage } from './governor.js';
 import { combatPage } from './combat.js';
@@ -30,6 +31,7 @@ const pages = [
     [faqPage, false, "faq", undefined],
     [basicsPage, false, "gameplay", "basics"],
     [mechanicsPage, true, "gameplay", "mechanics"],
+    [geneticsPage, true, "gameplay", "genetics"],
     [govPage, true, "gameplay", "government"],
     [governPage, true, "gameplay", "governor"],
     [combatPage, true, "gameplay", "combat"],

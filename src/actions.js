@@ -1,13 +1,13 @@
-import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, int_on, gal_on, spire_on, tmp_vars, setupStats, callback_queue } from './vars.js';
+import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, int_on, gal_on, spire_on, tmp_vars, setupStats, callback_queue, decayPerks, writeSave } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel } from './functions.js';
+import { timeCheck, timeFormat, vBind, popover, clearPopper, togglePopover, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
-import { races, traits, genus_def, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill, traitRank } from './races.js';
+import { races, traits, genus_def, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill, traitRank, syncGenes, geneBonus, grantRandomMinorTrait, geneVars, grantEvolveGenes} from './races.js';
 import { defineResources, unlockCrates, unlockContainers, crateValue, containerValue, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus, faithTempleCount } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_data } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter, factoryData, cancelRituals } from './industry.js';
 import { defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating, garrisonSize, govEffect } from './civics.js';
-import { spaceTech, interstellarTech, galaxyTech, incrementStruct, universe_affixes, renderSpace, piracy, fuel_adjust, isStargateOn, spaceSectors, checkRequirements } from './space.js';
+import { spaceTech, interstellarTech, galaxyTech, incrementStruct, universe_affixes, renderSpace, piracy, fuel_adjust, isStargateOn, spaceSectors, checkRequirements, planetName } from './space.js';
 import { renderFortress, fortressTech, warlordSetup } from './portal.js';
 import { edenicTech, renderEdenic } from './edenic.js';
 import { tauCetiTech, renderTauCeti, loneSurvivor } from './truepath.js';
@@ -1895,7 +1895,7 @@ export const actions = {
                         vBind({el: `#garrison`},'update');
                         vBind({el: `#c_garrison`},'update');
                     }
-                    global.civic['garrison'].max += $(this)[0].soldiers();
+                    global.civic['garrison'].max += Math.round($(this)[0].soldiers() * geneBonus('quartermaster'));
                     incrementStruct('garrison','city');
                     global.city['garrison'].on++;
                     global.resource.Furs.display = true;
@@ -3495,7 +3495,7 @@ export const actions = {
                     let ratio = global.tech['tp_particles'] || (global.tech['particles'] && global.tech.particles >= 3) ? 12.5: 25;
                     gain *= (global.tech['supercollider'] / ratio) + 1;
                 }
-                if (global.race['orbit_decayed']){
+                if (decayPerks()){
                     if (global.space['satellite']){
                         gain *= 1 + (global.space.satellite.count * 0.12);
                     }
@@ -4677,7 +4677,7 @@ export function buildTemplate(key, region){
             let assemblyCostAdjust = function(v){
                 let cost = highPopAdjust(v);
                 if (global.race['promiscuous']){
-                    cost /= 1 + traits.promiscuous.vars()[1] * global.race['promiscuous'];
+                    cost /= 1 + (geneVars('promiscuous')[1] / 100 * global.race['promiscuous']);
                 }
                 return Math.round(cost);
             }
@@ -5792,7 +5792,7 @@ export function casino_vault(){
     }
     vault = spatialReasoning(vault);
     if (global.race['gambler']){
-        vault *= 1 + (traits.gambler.vars()[0] * global.race['gambler'] / 100);
+        vault *= 1 + (geneVars('gambler')[0] * global.race['gambler'] / 100);
     }
     if (global.tech['world_control']){
         vault *= 1.25;
@@ -5823,7 +5823,7 @@ export function casino_vault(){
 export function casinoEarn(){
     let cash = Math.log2(1 + global.resource[global.race.species].amount) * 2.5;
     if (global.race['gambler']){
-        cash *= 1 + (traits.gambler.vars()[0] * global.race['gambler'] / 100);
+        cash *= 1 + (geneVars('gambler')[0] * global.race['gambler'] / 100);
     }
     if (global.tech['gambling'] && global.tech['gambling'] >= 2){
         cash *= global.tech.gambling >= 5 ? 2 : 1.5;
@@ -6547,13 +6547,10 @@ export function setAction(c_action,action,type,old,prediction){
         },
         methods: {
             action(args){
-                const isMobile = 'ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/);
-                if (isMobile && global.settings.touch) {
+                if (global.settings['touch'] && togglePopover(id)){
                     return;
                 }
-                else {
-                    runAction(c_action,action,type);
-                }
+                runAction(c_action,action,type);
             },
             describe(){
                 srSpeak(srDesc(c_action,old));
@@ -6622,9 +6619,7 @@ export function setAction(c_action,action,type,old,prediction){
             repairMax(){
                 return c_action.repair();
             },
-            // Structures razed on return to Sol accrue a 'razed' count (e.g. global.space[x].razed);
-            // the action button shows a cracked overlay. 'severe' (more cracks, full red) when more
-            // units are razed than built; 'mild' (fewer cracks, muted red) while razed stays within count.
+            // Damaged structures
             damaged(){
                 if (global[action] && global[action][type] && typeof global[action][type]['razed'] !== 'undefined'){
                     let d = global[action][type].razed;
@@ -6697,6 +6692,11 @@ export function setAction(c_action,action,type,old,prediction){
         }
     });
 
+    let popClasses = c_action.hasOwnProperty('class') ? c_action.class : false;
+    if (action === 'tech' && c_action['wide'] && !popClasses){
+        popClasses = 'has-background-light has-text-dark pop-desc w30';
+    }
+
     popover(id,function(){ return undefined; },{
         in: function(obj){
             actionDesc(obj.popper,c_action,global[action][type],old,action,type);
@@ -6706,7 +6706,8 @@ export function setAction(c_action,action,type,old,prediction){
         },
         attach: action === 'starDock' ? 'body .modal' : '#main',
         wide: c_action['wide'],
-        classes: c_action.hasOwnProperty('class') ? c_action.class : false,
+        classes: popClasses,
+        touchToggle: true,
     });
 }
 
@@ -7591,15 +7592,34 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
     clearElement(parent);
     var desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc();
     bres = bres || false;
-    
-    let touch = false;
-    if (action && a_type && 'ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/) && global.settings.touch ? true : false){
-        touch = $(`<a id="touchButton" class="button is-dark touchButton">${c_action.hasOwnProperty('touchlabel') ? c_action.touchlabel : loc('construct')}</a>`);
-        parent.append(touch);
 
-        $('#touchButton').on('touchstart', function(){
+    let buildable = true;
+    if (c_action['queue_complete']){
+        let left = c_action.queue_complete();
+        if (left === false || (c_action.hasOwnProperty('struct') && left < 1)){
+            buildable = false;
+        }
+    }
+
+    if (action && a_type && buildable && global.settings['touch']){
+        let bulk = c_action.hasOwnProperty('struct');
+        let label = c_action.hasOwnProperty('touchlabel') ? c_action.touchlabel : loc('construct');
+        let row = $(`<div class="touchBuild"></div>`);
+        let one = $(`<a id="touchButton" class="button is-dark touchButton">${label}</a>`);
+        row.append(one);
+        one.on('click', function(){
             runAction(c_action,action,a_type);
         });
+        if (bulk){
+            let five = $(`<a id="touchButton5" class="button is-dark touchButton touchButton5">${loc('touch_build_5x')}</a>`);
+            row.append(five);
+            five.on('click', function(){
+                for (let i=0; i<5; i++){
+                    runAction(c_action,action,a_type);
+                }
+            });
+        }
+        parent.append(row);
     }
 
     parent.append($(`<div>${desc}</div>`));
@@ -8606,6 +8626,14 @@ export function structName(type){
         {
             return halloween.active ? loc(`events_halloween_mine`) : loc('city_mine');
         }
+        case 'red_mine':
+        {
+            return global.tech['resettle'] ? loc('space_mine',[planetName().red]) : (halloween.active ? loc(`events_halloween_mine`) : loc('city_mine'));
+        }
+        case 'titan_mine':
+        {
+            return global.tech['resettle'] ? loc('space_mine',[planetName().titan]) : (halloween.active ? loc(`events_halloween_mine`) : loc('city_mine'));
+        }
         case 'coal_mine':
         {
             return halloween.active ? loc(`events_halloween_coal_mine`) : loc('city_coal_mine');
@@ -9024,25 +9052,13 @@ function sentience(){
         }
     }
 
-    Object.keys(global.genes.minor).forEach(function (trait){
-        global.race[trait] = trait === 'mastery' ? global.genes.minor[trait] : global.genes.minor[trait] * 2;
-    });
-    
-    let tempMTOrder = [];
-    global.settings.mtorder.forEach(function(trait){
-       if (global.genes.minor[trait] || trait === 'mastery'){
-           tempMTOrder.push(trait);
-       }
-    });
-    global.settings.mtorder = tempMTOrder;
+    // Slotted genes carry across a reset intact -- the slots and their ranks live on global.genes,
+    // which survives -- so the ranks are simply pushed back onto the fresh global.race.
+    syncGenes();
 
-    if (global.genes['evolve'] && global.genes['evolve'] >= 2){
-        for (let i=1; i<8; i++){
-            if (global.genes['evolve'] >= i+1){
-                randomMinorTrait(i);
-            }
-        }
-    }
+    // The Mutation genes hand over a strand: one slot per rank, each answering its own base, in
+    // pairs that finish level with each other.
+    grantEvolveGenes();
 
     let civ0name = genCivName();
     global.civic.foreign.gov0['name'] = {
@@ -9326,7 +9342,7 @@ function sentience(){
     }
 
     if (global.race['slow'] || global.race['hyper'] || global.race.species === 'junker'){
-        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+        writeSave();
         if (webWorker.w){
             webWorker.w.terminate();
         }
@@ -9384,7 +9400,7 @@ function exitSim(){
         global.race.species = 'protoplasm';
         delete global.race['simulation'];
 
-        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+        writeSave();
         if (webWorker.w){
             webWorker.w.terminate();
         }
@@ -9862,14 +9878,14 @@ function iceAgeStart(){
 
 export function fanaticism(god){
     if (['custom','hybrid','nano'].includes(god) && global.race['warlord']){
-        randomMinorTrait(5);
+        grantRandomMinorTrait(3,true);
         arpa('Genetics');
     }
     else {
         switch (races[god].fanaticism){
             case 'smart':
                 if (global.race['dumb']){
-                    randomMinorTrait(5);
+                    grantRandomMinorTrait(3,true);
                     arpa('Genetics');
                 }
                 else {
@@ -9889,7 +9905,7 @@ export function fanaticism(god){
                 }
                 break;
             case 'none':
-                randomMinorTrait(5);
+                grantRandomMinorTrait(3,true);
                 arpa('Genetics');
                 break;
             case 'kindling_kindred':
@@ -9920,7 +9936,7 @@ function fanaticTrait(trait,rank){
     else if (global.race['warlord'] && trait === 'blood_thirst'){ trait = 'apex_predator'; }
     if (global.race[trait]){
         if (!setTraitRank(trait)){
-            randomMinorTrait(5);
+            grantRandomMinorTrait(3,true);
         }
         else if (trait === 'imitation'){
             setImitation(true);
@@ -10032,6 +10048,11 @@ function attachQueuePopovers(){
         let segments = global.r_queue.queue[i].id.split("-");
         c_action = actions[segments[0]][segments[1]];
 
+        let qClasses = c_action.hasOwnProperty('class') ? c_action.class : false;
+        if (segments[0] === 'tech' && c_action['wide'] && !qClasses){
+            qClasses = 'has-background-light has-text-dark pop-desc w30';
+        }
+
         popover(id,function(){ return undefined; },{
             in: function(obj){
                 actionDesc(obj.popper,c_action,global[segments[0]][segments[1]],false);
@@ -10039,7 +10060,8 @@ function attachQueuePopovers(){
             out: function(){
                 clearPopper(id);
             },
-            wide: c_action['wide']
+            wide: c_action['wide'],
+            classes: qClasses
         });
     }
 }
