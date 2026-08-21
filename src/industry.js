@@ -38,6 +38,9 @@ export function loadIndustry(industry,parent,bind){
         case 'mineshaft':
             loadMineshaft(parent,bind);
             break;
+        case 'woodcutter':
+            loadTreeRatio(parent,bind);
+            break;
         case 'titan_mine':
             loadTMine(parent,bind);
             break;
@@ -824,7 +827,7 @@ function loadFactory(parent,bind){
                 return loc('modal_factory_alloy_label',[copper,global.resource.Copper.name,aluminium,global.resource.Aluminium.name,global.resource.Alloy.name]);
             }
             case 'Polymer':{
-                if (global.race['kindling_kindred'] || global.race['smoldering']){
+                if (global.race['kindling_kindred'] || global.race['smoldering'] || global.race['iceage']){
                     let oil = assembly ? f_rate.Polymer.oil_kk[global.tech['factory']] : f_rate.Polymer.oil_kk[0];
                     return loc('modal_factory_polymer_label2',[oil,global.resource.Oil.name,global.resource.Polymer.name]);
                 }
@@ -1471,6 +1474,38 @@ function loadMineshaft(parent,bind){
                     global.underground.mineshaft.ratio += keyMult;
                     if (global.underground.mineshaft.ratio > 100){
                         global.underground.mineshaft.ratio = 100;
+                    }
+                }
+            }
+        }
+    });
+}
+
+function loadTreeRatio(parent,bind){
+    parent.append($(`<div>${loc('modal_treecutter_ratio')}</div>`));
+
+    let slider = $(`<div class="sliderbar"><span class="sub" role="button" @click="sub" aria-label="Save the trees">&laquo;</span><b-slider v-model="tree_ratio" format="percent"></b-slider><span class="add" role="button" @click="add" aria-label="Break the trees">&raquo;</span></div>`);
+    parent.append(slider);
+
+    vBind({
+        el: bind ? bind : '#specialModal',
+        data: global.surface.overview,
+        methods: {
+            sub(){
+                let keyMult = keyMultiplier();
+                if (global.surface.overview.tree_ratio > 0){
+                    global.surface.overview.tree_ratio -= keyMult;
+                    if (global.surface.overview.tree_ratio < 0){
+                        global.surface.overview.tree_ratio = 0;
+                    }
+                }
+            },
+            add(){
+                let keyMult = keyMultiplier();
+                if (global.surface.overview.tree_ratio < 100){
+                    global.surface.overview.tree_ratio += keyMult;
+                    if (global.surface.overview.tree_ratio > 100){
+                        global.surface.overview.tree_ratio = 100;
                     }
                 }
             }
@@ -2168,6 +2203,7 @@ export function gridDefs(){
         tau_red: { l: global.support.tau_red, n: loc(`tau_planet`,[planetName().red]), s: global.settings.tau.red, r: 'tauceti', rs: 'orbital_platform'  },
         tau_roid: { l: global.support.tau_roid, n: loc(`tau_roid_title`), s: global.settings.tau.roid, r: 'tauceti', rs: 'patrol_ship'  },
         asphodel: { l: global.support.asphodel, n: loc(`eden_asphodel_name`), s: global.settings.eden.asphodel, r: 'eden', rs: 'encampment' },
+        wastes: { l: global.support.wastes, n: loc(`surface_wastes`), s: global.settings.surface.wastes, r: 'surface', rs: 'great_heater'},
     };
 }
 

@@ -5867,7 +5867,7 @@ export function casinoEarn(){
 export function casinoEffect(){
     let money = Math.round(casino_vault());
 
-    let joy = (global.tech['theatre'] && !global.race['joyless']) ? `<div>${loc('plus_max_resource',[jobScale(global.race['warlord'] ? 3 : 1),loc(`job_entertainer`)])}</div>` : '';
+    let joy = (global.tech['theatre'] && !global.race['joyless'] && !global.race['iceage']) ? `<div>${loc('plus_max_resource',[jobScale(global.race['warlord'] ? 3 : 1),loc(`job_entertainer`)])}</div>` : '';
     let banker = global.race['orbit_decayed'] || global.tech['isolation'] || global.race['warlord'] ? `<div>${loc('plus_max_resource',[jobScale(1),loc('banker_name')])}</div>` : '';
     let desc = `<div>${loc('plus_max_resource',[`\$${money.toLocaleString()}`,loc('resource_Money_name')])}</div>${joy}${banker}<div>${loc('city_max_morale',[1])}</div>`;
     let cash = +(casinoEarn()).toFixed(2);
@@ -6508,11 +6508,11 @@ export function setAction(c_action,action,type,old,prediction){
     }
     if (c_action['count']){
         let count = c_action.count();
-        if (count > 0 && (id !== 'city-gift' || count > 1)){
+        if (count > 0 && (id !== 'city-gift' || count > 1) || c_action.show_count){
             element.append($(`<span class="count">${count}</span>`));
         }
     }
-    else if (action !== 'tech' && global[action] && global[action][type] && global[action][type].count >= 0){
+    else if (action !== 'tech' && global[action] && global[action][type] && (global[action][type].count >= 0 || global[action][type].show_count)){
         element.append($(`<span class="count" v-html="count(act.count,'${type}')"></span>`));
     }
     else if (action === 'blood' && global[action] && global[action][c_action.grant[0]] && global[action][c_action.grant[0]] > 0 && c_action.grant[1] === '*'){
@@ -8262,6 +8262,9 @@ function drawModal(c_action,type){
         case 'mineshaft':
             loadIndustry('mineshaft', body);
             break
+        case 'woodcutter':
+            loadIndustry('woodcutter', body);
+            break;
         case 'titan_mine':
             loadIndustry('titan_mine',body);
             break;

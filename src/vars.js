@@ -1579,7 +1579,8 @@ if (!global.hasOwnProperty('support')){
 
 [
     'moon','red','belt','alpha','nebula','gateway','alien2','lake','spire',
-    'titan','enceladus','eris','venus','tau_home','tau_red','tau_roid','asphodel'
+    'titan','enceladus','eris','venus','tau_home','tau_red','tau_roid','asphodel',
+    'wastes'
 ].forEach(function(s){
     if (!global.support.hasOwnProperty(s)){
         global.support[s] = [];
@@ -2649,7 +2650,7 @@ function setRegionStates(reset){
         portal: ['fortress','badlands','pit','ruins','gate','lake','spire','wasteland'],
         eden: ['asphodel','elysium','isle','palace'],
         tau: ['home','red','roid','gas','gas2','star'],
-        iceAge:['underground','surface']
+        surface:['wastes', 'ecosystem', 'crater']
     };
     
     Object.keys(regions).forEach(function(r){

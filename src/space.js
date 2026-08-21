@@ -6772,8 +6772,11 @@ export function convertSpaceSector(part){
     else if (part.substr(0,5) === 'eden_'){
         space = 'eden';
     }
-    else if (part.substr(0,4) === 'cave' || part.substr(0,6) === 'depths' || part.substr(0,8) === 'industry'){
+    else if (part.substr(0,4) === 'cave' || part.substr(0,6) === 'depths' || part.substr(0,8) === 'industry' || part.substr(0, 4) === 'core'){
         space = 'underground';
+    }
+    else if(part.substr(0,6) === 'wastes' || part.substr(0,9) === 'ecosystem' || part.substr(0,6) === 'crater'){
+        space = 'surface';
     }
     return space;
 }

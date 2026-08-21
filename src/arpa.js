@@ -8,7 +8,7 @@ import { govActive, defineGovernor } from './governor.js';
 import { highPopAdjust } from './prod.js';
 import { unlockFeat } from './achieve.js';
 import { loc } from './locale.js';
-
+import { renderSurface } from './iceage.js';
 export function arpa(type) {
     switch(type){
         case 'Physics':
@@ -102,7 +102,7 @@ export const arpaProjects = {
         },
         cost: {
             Money(offset,wiki){ return costMultiplier('stock_exchange', offset, 3000000, 1.06, wiki); },
-            Plywood(offset,wiki){ return costMultiplier('stock_exchange', offset, 25000, 1.06, wiki); },
+            Plywood(offset,wiki){ return !global.race['iceage'] ? costMultiplier('stock_exchange', offset, 25000, 1.06, wiki) : 0; },
             Brick(offset,wiki){ return costMultiplier('stock_exchange', offset, 20000, 1.06, wiki); },
             Wrought_Iron(offset,wiki){ return costMultiplier('stock_exchange', offset, 10000, 1.06, wiki); }
         }
@@ -129,7 +129,7 @@ export const arpaProjects = {
         desc(){ return loc('arpa_projects_launch_facility_desc'); },
         reqs: { high_tech: 7 },
         condition(){
-            return global.race['cataclysm'] || global.race['lone_survivor'] || global.race['warlord'] ? false : true;
+            return global.race['cataclysm'] || global.race['lone_survivor'] || global.race['warlord'] || global.race['iceage'] ? false : true;
         },
         grant: 'launch_facility',
         rank: 1,
@@ -144,6 +144,29 @@ export const arpaProjects = {
             Oil(offset){ return costMultiplier('launch_facility', offset, 20000, 1.1); },
             Sheet_Metal(offset){ return costMultiplier('launch_facility', offset, 15000, 1.1); },
             Alloy(offset){ return costMultiplier('launch_facility', offset, 25000, 1.1); }
+        }
+    },
+    surface_elevator: {
+        id: 'arpasurface_elevator',
+        title(){ return loc('arpa_projects_surface_elevator_title'); },
+        desc(){ return loc('arpa_projects_surface_elevator_desc'); },
+        reqs: { high_tech: 7 },
+        condition(){
+            return global.race['iceage'];
+        },
+        grant: 'surface_elevator',
+        rank: 1,
+        queue_complete(){ return global.tech.surface >= 1 ? 0 : 1; },
+        effect(){
+            return loc('arpa_projects_surface_elevator_effect1');
+        },
+        cost: {
+            Money(offset){ return costMultiplier('surface_elevator', offset, 4000000, 1.1); },
+            Knowledge(offset){ return costMultiplier('surface_elevator', offset, 1000000, 1.1); },
+            Iridium(offset){ return costMultiplier('surface_elevator', offset, 50000, 1.1); },
+            Sheet_Metal(offset){ return costMultiplier('surface_elevator', offset, 80000, 1.1); },
+            Polymer(offset){ return costMultiplier('surface_elevator', offset, 150000, 1.1); },
+            Oil(offset){ return costMultiplier('surface_elevator', offset, 500000, 1.1); }
         }
     },
     monument: {
@@ -2379,6 +2402,7 @@ export function sequenceLabs(){
     let labs = global.race['cataclysm'] || global.race['orbit_decayed'] ? support_on['exotic_lab'] : (global.race['warlord'] ? p_on['twisted_lab'] : p_on['biolab']);
     if (global.tech['isolation']){ labs = support_on['infectious_disease_lab'] * 5; }
     if (global.race['lone_survivor']){ labs += 2; }
+    if (p_on['under_biolab']){ labs += p_on['under_biolab']; }
     if (labs > 0 && global.city.ptrait.includes('toxic')){
         labs += planetTraits.toxic.vars()[0];
     }
@@ -2587,6 +2611,20 @@ export function buildArpa(pro,num,update,queue){
                     physics();
                     renderSpace();
                     messageQueue(loc('arpa_projects_launch_facility_msg'),'info',false,['progress']);
+                }
+                if (pro === 'surface_elevator'){
+                    global.settings.showSurface = true;
+                    global.tech['surface'] = 1;
+                    clearPopper('popArpasurface_elevator');
+                    [1,10,25,100].forEach(function(amount){
+                        clearPopper(`popArpasurface_elevator${amount}`);
+                    });
+                    if (!queue){
+                        removeFromQueue(['arpasurface_elevator']);
+                    }
+                    physics();
+                    renderSurface();
+                    messageQueue(loc('arpa_projects_surface_elevator_msg'),'info',false,['progress']);
                 }
                 if (global.race['inflation']){
                     global.race.inflation += 10;

@@ -1443,6 +1443,9 @@ export function marketItem(mount,market_item,name,color,full){
     if ((global.race['artifical'] || global.race['fasting']) && name === 'Food'){
         return;
     }
+    if(global.race['iceage'] && name === 'Lumber'){
+        return;
+    }
 
     if (full){
         market_item.append($(`<h3 class="res has-text-${color}">{{ namespace(r.name) }}</h3>`));
@@ -2080,6 +2083,9 @@ export function tradeBuyPrice(res){
     if (global.race['witch_hunter'] && global.resource.Sus.amount > 50){
         let wariness = (global.resource.Sus.amount - 50) / 8;
         price *= 1 + wariness;
+    }
+    if(global.underground['trade']){
+        price *= (1 - actions.underground.depths.trade.price_reduction() / 100) ** global.underground['trade'].count; //0.99x
     }
     price = +(price).toFixed(1);
     return price;

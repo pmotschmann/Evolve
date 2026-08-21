@@ -116,7 +116,7 @@ export const job_data = {
                 workers = +workerScale(workers,'lumberjack').toFixed(2);
                 impact = +workerScale(impact,'lumberjack').toFixed(2);
             }
-            if (global.race['evil'] && (!global.race['soul_eater'] || global.race.species === 'wendigo')){
+            if (global.race['evil'] && !global.race['iceage'] && (!global.race['soul_eater'] || global.race.species === 'wendigo')){
                 let multiplier = 1;
                 if (!servant){
                     multiplier *= racialTrait(workers,'lumberjack');
@@ -151,6 +151,15 @@ export const job_data = {
                 }
                 let gain = +(impact * multiplier).toFixed(2);
                 let desc = loc('job_lumberjack_desc',[gain,global.resource.Lumber.name]);
+                if(global.race['iceage']){
+                    let hardiness = actions.surface.ecosystem.trees.hardiness();
+                    if(hardiness === 1){
+                        desc = loc('job_lumberjack_desc_iceage',[gain,global.resource.Lumber.name, (1 / hardiness).toFixed(2)]);
+                    }
+                    else{
+                        desc = loc('job_lumberjack_desc_iceage_plural',[gain,global.resource.Lumber.name, (1 / hardiness).toFixed(2)]);
+                    }
+                }
                 if (global.civic.d_job === 'lumberjack' && !servant){
                     desc = desc + ' ' + loc('job_default',[job_data.lumberjack.name()]);
                 }
@@ -329,6 +338,25 @@ export const job_data = {
         },
         impact(){ return 0.2; },
         stress(){ return 4; },
+        color(){ return 'advanced'; }
+    },
+    core_miner: {
+        name(){ return loc('job_core_miner'); },
+        desc(){
+            return `<div>${loc('job_core_miner_desc1')}</div><div class="has-text-caution">${loc('job_core_miner_desc2')}</div>`;
+        },
+        impact(){ return 0.1; },
+        mine_effect(){
+            let effect = 1;
+            if(global.tech['mineshaft'] >= 5 && global.underground['mineshaft']){
+                let mineshaft_effect = 1 + (actions.underground.cave.mineshaft.full_depth() - 100000) * 0.00003;
+                if(mineshaft_effect >= 1){
+                    effect *= mineshaft_effect;
+                }
+            }
+            return effect;
+        },
+        stress(){ return 1; },
         color(){ return 'advanced'; }
     },
     craftsman: {
@@ -639,6 +667,7 @@ export function defineJobs(define){
     loadJob('water_collector',define);
     loadJob('miner',define);
     loadJob('coal_miner',define);
+    loadJob('core_miner',define);
     loadJob('craftsman',define);
     loadJob('cement_worker',define);
     loadJob('technician',define);

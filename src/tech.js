@@ -2080,8 +2080,13 @@ const techs = {
         effect: loc('tech_casino_effect'),
         action(){
             if (payCosts($(this)[0])){
-                initStruct(actions.city.casino);
-                initStruct(actions.space.spc_hell.spc_casino);
+                if(!global.race['iceage']){
+                    initStruct(actions.city.casino);
+                    initStruct(actions.space.spc_hell.spc_casino);
+                }
+                else{
+                    initStruct(actions.underground.industry.under_casino);
+                }
                 return true;
             }
             return false;
@@ -2497,6 +2502,30 @@ const techs = {
             Mythril(){ return 2500; }
         },
         effect: loc('tech_iridium_smelting_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        },
+        post(){
+            defineIndustry();
+        }
+    },
+    iridium_smelting_iceage: {
+        id: 'tech-iridium_smelting_perk',
+        title(){ return loc('tech_iridium_smelting'); },
+        desc(){ return loc('tech_iridium_smelting'); },
+        category: 'mining',
+        era: 'globalized',
+        reqs: { core: 1 },
+        condition(){ return global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 3 ? true : false; },
+        grant: ['irid_smelting',1],
+        cost: {
+            Knowledge(){ return 160000; },
+            Iridium(){ return 3500; }
+        },
+        effect: loc('tech_iridium_smelting_effect_alt'),
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -4655,7 +4684,7 @@ const techs = {
         cost: {
             Knowledge(){ return traitCostMod('stubborn',61200); }
         },
-        effect: loc('tech_internet_effect'),
+        effect: global.race['iceage'] ? loc('tech_internet_effect_alt') : loc('tech_internet_effect'),
         action(){
             if (payCosts($(this)[0])){
                 if (global.race['toxic'] && global.race.species === 'troll'){
@@ -5143,6 +5172,9 @@ const techs = {
         effect(){return loc('tech_titanium_support_beams_effect');},
         action(){
             if (payCosts($(this)[0])){
+                if(global.tech['mineshaft_depth'] >= 3){
+                    initStruct(actions.underground.core.core_support_beams);
+                }
                 return true;
             }
             return false;
@@ -5188,26 +5220,107 @@ const techs = {
                 return true;
             }
             return false;
-        },
-        flair(){
-            return loc('tech_mineshaft_flair');
         }
     },
-    bioscience: {
-        id: 'tech-bioscience',
-        title(){ return loc('tech_bioscience'); },
-        desc(){ return loc('tech_bioscience_desc'); },
-        category: 'science',
+    mineshaft_elevator:{
+        id: 'tech-mineshaft_elevator',
+        title(){ return loc('tech_mineshaft_elevator'); },
+        desc(){ return loc('tech_mineshaft_elevator'); },
+        category: 'mining',
         era: 'globalized',
-        reqs: { science: 8 },
-        grant: ['genetics',1],
+        reqs: { alloy: 1, mineshaft: 2 },
+        grant: ['mineshaft',3],
         cost: {
-            Knowledge(){ return 67500; }
+            Knowledge(){ return 75000; },
+            Steel(){ return 55000; },
+            Alloy(){ return 12000; }
         },
-        effect: loc('tech_bioscience_effect'),
+        effect(){return loc('tech_mineshaft_elevator_effect');},
         action(){
             if (payCosts($(this)[0])){
-                initStruct(actions.city.biolab);
+                initStruct(actions.underground.cave.mineshaft_elevator);
+                return true;
+            }
+            return false;
+        }
+    },
+    core_mine: {
+        id: 'tech-core_mine',
+        title(){ return loc('tech_core_mine'); },
+        desc(){ return loc('tech_core_mine'); },
+        category: 'mining',
+        era: 'globalized',
+        reqs: { mineshaft_depth: 3, mineshaft: 4 },
+        grant: ['core',1],
+        cost: {
+            Knowledge(){ return 98000; }
+        },
+        effect(){return loc('tech_core_mine_effect');},
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.underground.core.core_mine);
+                return true;
+            }
+            return false;
+        }
+    },
+    core_digging: {
+        id: 'tech-core_digging',
+        title(){ return loc('tech_core_digging'); },
+        desc(){ return loc('tech_core_digging'); },
+        category: 'mining',
+        era: 'globalized',
+        reqs: { core: 1, mineshaft: 4 },
+        grant: ['mineshaft',5],
+        cost: {
+            Knowledge(){ return 130000; }
+        },
+        effect(){return loc('tech_core_digging_effect');},
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    core_tap: {
+        id: 'tech-core_tap',
+        title(){ return loc('tech_core_tap'); },
+        desc(){ return loc('tech_core_tap'); },
+        category: 'power_generation',
+        era: 'globalized',
+        reqs: { core: 1 },
+        grant: ['core',2],
+        cost: {
+            Knowledge(){ return 105000; },
+            Iridium(){ return 1000; }
+        },
+        effect(){return loc('tech_core_tap_effect');},
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.underground.core.core_tap);
+                return true;
+            }
+            return false;
+        }
+    },
+    core_forging: {
+        id: 'tech-core_forging',
+        title(){ return loc('tech_core_forging'); },
+        desc(){ return loc('tech_core_forging'); },
+        category: 'crafting',
+        era: 'globalized',
+        reqs: { core: 2 },
+        grant: ['core',3],
+        cost: {
+            Knowledge(){ return 125000; },
+            Iridium(){ return 4000; }
+        },
+        effect(){return loc('tech_core_forging_effect');},
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.underground.core.core_blacksmith);
+                initStruct(actions.underground.core.core_forge);
                 return true;
             }
             return false;
@@ -5520,6 +5633,12 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            if(global.race['iceage']){
+                global.tech['high_tech'] = 5;
+                drawTech();
+            }
         }
     },
     fission: {
@@ -5579,6 +5698,7 @@ const techs = {
         era: 'globalized',
         reqs: { high_tech: 6 },
         grant: ['high_tech',7],
+        not_trait: ['iceage'],
         cost: {
             Knowledge(){ return traitCostMod('stubborn',112500); },
             Oil(){ return global.city.ptrait.includes('dense') ? 8000 : 6800; }
@@ -5598,11 +5718,168 @@ const techs = {
             arpa('Physics');
         }
     },
+    surface_breach: {
+        id: 'tech-surface_breach',
+        title(){ return loc('tech_surface_breach'); },
+        desc(){ return loc('tech_surface_breach'); },
+        category: 'progress',
+        era: 'globalized',
+        reqs: { high_tech: 6, core: 1 },
+        trait: ['iceage'],
+        grant: ['high_tech',7],
+        cost: {
+            Knowledge(){ return traitCostMod('stubborn',112500); },
+            Iridium(){ return 1000; }
+        },
+        effect: loc('tech_surface_breach_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                if (global.race['truepath'] && !global.tech['rival']){
+                    global.tech['rival'] = 1;
+                    messageQueue(loc(`civics_rival_unlocked`,[govTitle(3)]),'info',false,['progress','combat']);
+                }
+                return true;
+            }
+            return false;
+        },
+        post(){
+            arpa('Physics');
+        }
+    },
+    surface_establishment: {
+        id: 'tech-surface_establishment',
+        title(){ return loc('tech_surface_establishment'); },
+        desc(){ return loc('tech_surface_establishment'); },
+        category: 'progress',
+        era: 'globalized',
+        reqs: { surface: 1 },
+        grant: ['surface',2],
+        cost: {
+            Knowledge(){ return 130000; }
+        },
+        effect: loc('tech_surface_establishment_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.surface.wastes.great_heater);
+                return true;
+            }
+            return false;
+        }
+    },
+    lumber_cultivation: {
+        id: 'tech-lumber_cultivation',
+        title(){ return loc('tech_lumber_cultivation'); },
+        desc(){ return loc('tech_lumber_cultivation'); },
+        category: 'progress',
+        era: 'globalized',
+        reqs: { surface: 3 },
+        grant: ['surface',4],
+        cost: {
+            Knowledge(){ return 135000; }
+        },
+        effect: loc('tech_lumber_cultivation_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.surface.wastes.woodcutter);
+                initStruct(actions.surface.ecosystem.overview);
+                initStruct(actions.surface.ecosystem.area_heater);
+                initStruct(actions.surface.ecosystem.water_pipe);
+                global.tech['axe'] = 5;
+                return true;
+            }
+            return false;
+        }
+    },
+    growth_study: {
+        id: 'tech-growth_study',
+        title(){ return loc('tech_growth_study'); },
+        desc(){ return loc('tech_growth_study'); },
+        category: 'progress',
+        era: 'globalized',
+        reqs: { surface: 4 },
+        grant: ['surface',5],
+        cost: {
+            Knowledge(){ return 140000; },
+            Lumber() { return 1000; }
+        },
+        effect: loc('tech_growth_study_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                messageQueue(loc('tech_growth_study_result'),'info',false,['progress']);
+                initStruct(actions.surface.wastes.genetics_lab);
+                return true;
+            }
+            return false;
+        }
+    },
+    watch_tower: {
+        id: 'tech-watch_tower',
+        title(){ return loc('tech_watch_tower'); },
+        desc(){ return loc('tech_watch_tower'); },
+        category: 'military',
+        era: 'globalized',
+        reqs: { surface: 4 },
+        grant: ['wastes',1],
+        cost: {
+            Knowledge(){ return 145000; },
+            Plywood() { return 1000; }
+        },
+        effect: loc('tech_watch_tower_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.surface.wastes.watch_tower);
+                return true;
+            }
+            return false;
+        }
+    },
+    bonfires: {
+        id: 'tech-bonfires',
+        title(){ return loc('tech_bonfires'); },
+        desc(){ return loc('tech_bonfires'); },
+        category: 'military',
+        era: 'globalized',
+        reqs: { surface: 4 },
+        grant: ['bonfires',1],
+        cost: {
+            Knowledge(){ return 3500; },
+            Lumber() { return 1000; }
+        },
+        effect: loc('tech_bonfires_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.underground.cave.bonfire);
+                return true;
+            }
+            return false;
+        }
+    },
+    surface_housing: {
+        id: 'tech-surface_housing',
+        title(){ return loc('tech_surface_housing'); },
+        desc(){ return loc('tech_surface_housing'); },
+        category: 'military',
+        era: 'globalized',
+        reqs: { surface: 4, housing: 3 },
+        grant: ['housing',4],
+        cost: {
+            Knowledge(){ return 145000; },
+            Lumber() { return 1000; }
+        },
+        effect: loc('tech_surface_housing_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.surface.wastes.surface_apartment);
+                return true;
+            }
+            return false;
+        }
+    },
     robotics: {
         id: 'tech-robotics',
         title(){ return loc('tech_robotics'); },
         desc(){ return loc('tech_robotics'); },
-        category: 'progress',
+        category: 'lumber_gathering',
         era: 'globalized',
         reqs: { high_tech: 7 },
         grant: ['high_tech',8],
@@ -6674,13 +6951,13 @@ const techs = {
             return false;
         }
     },
-    fossil_survey: {
+    /*fossil_survey: {
         id: 'tech-fossil_survey',
         title(){ return loc('tech_fossil_survey'); },
         desc(){ return loc('tech_fossil_survey'); },
         category: 'science',
         era: 'industrialized',
-        reqs: { mineshaft_depth: 3 },
+        reqs: { mineshaft_depth: 2 },
         grant: ['archaeology',1],
         cost: {
             Knowledge(){ return 27000; }
@@ -6693,7 +6970,7 @@ const techs = {
             }
             return false;
         }
-    },
+    },*/
     oil_well: {
         id: 'tech-oil_well',
         title(){ return global.race['blubber'] ? loc('tech_oil_refinery') : loc('tech_oil_well'); },
