@@ -15024,7 +15024,14 @@ const techs = {
             Knowledge(){ return 32000000; },
             Cipher(){ return 500000; }
         },
-        effect(){ return loc('tech_bleed_overmind_effect',[actions.space.spc_venus.alien_facility.title()]); },
+        wide: true,
+        effect(){
+            let desc = `<div>${loc('tech_bleed_overmind_effect',[actions.space.spc_venus.alien_facility.title()])}</div>`;
+            let gains = calcPrestige('za');
+            let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
+            let prestige = `<div class="has-text-caution">${loc('tech_bleed_overmind_effect_gains',[gains.plasmid, plasmidType, gains.phage, loc('resource_Phage_name'), gains.talens, loc('resource_TALENs_name')])}</div>`;
+            return desc + prestige;
+        },
         action(){
             if (payCosts($(this)[0])){
                 if (!global['sim']){

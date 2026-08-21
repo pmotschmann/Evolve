@@ -6555,6 +6555,11 @@ export function setAction(c_action,action,type,old,prediction){
         }
     });
 
+    let popClasses = c_action.hasOwnProperty('class') ? c_action.class : false;
+    if (action === 'tech' && c_action['wide'] && !popClasses){
+        popClasses = 'has-background-light has-text-dark pop-desc w30';
+    }
+
     popover(id,function(){ return undefined; },{
         in: function(obj){
             actionDesc(obj.popper,c_action,global[action][type],old,action,type);
@@ -6564,7 +6569,7 @@ export function setAction(c_action,action,type,old,prediction){
         },
         attach: action === 'starDock' ? 'body .modal' : '#main',
         wide: c_action['wide'],
-        classes: c_action.hasOwnProperty('class') ? c_action.class : false,
+        classes: popClasses,
         touchToggle: true,
     });
 }
@@ -9863,6 +9868,11 @@ function attachQueuePopovers(){
         let segments = global.r_queue.queue[i].id.split("-");
         c_action = actions[segments[0]][segments[1]];
 
+        let qClasses = c_action.hasOwnProperty('class') ? c_action.class : false;
+        if (segments[0] === 'tech' && c_action['wide'] && !qClasses){
+            qClasses = 'has-background-light has-text-dark pop-desc w30';
+        }
+
         popover(id,function(){ return undefined; },{
             in: function(obj){
                 actionDesc(obj.popper,c_action,global[segments[0]][segments[1]],false);
@@ -9870,7 +9880,8 @@ function attachQueuePopovers(){
             out: function(){
                 clearPopper(id);
             },
-            wide: c_action['wide']
+            wide: c_action['wide'],
+            classes: qClasses
         });
     }
 }

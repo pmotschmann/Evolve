@@ -518,6 +518,7 @@ const outerTruth = {
                 desc += split + '</div>';
                 return desc;
             },
+            wide: true,
             // Metals the works divides its pool between, in the order the UI lists them. The effect text,
             // the industry panel and the production loop all read this one list.
             res(){
@@ -5807,8 +5808,7 @@ export function zRazeStanding(){
     return standing;
 }
 
-// How long the screen bleeds before the reset actually runs, matching the pacing of the corrupted
-// AI's static, and how many runs of blood lead it down.
+// How long the screen bleeds before the reset actually runs.
 const zBleedTime = 4000;
 const zBleedDrips = 26;
 
@@ -5989,7 +5989,9 @@ const zAssaultGroundFireTargets = 5;  // ...and during the assault, with the who
 
 // How many ships the surface can hold a firing solution on.
 function zGroundFireCount(){
-    return zAssault() ? zAssaultGroundFireTargets : zGroundFireTargets;
+    let targets = zAssault() ? zAssaultGroundFireTargets : zGroundFireTargets;
+    if (global.race.universe === 'micro'){ targets *= 2; } // Not everything in life is fair.
+    return targets;
 }
 
 // Share of a hit each armour lets through. The ratio matches the 8 / 6 / 4 the wear-and-tear roll in
@@ -6744,6 +6746,10 @@ function infestationCombat(region){
     if (global.race['chameleon']){ // Good at hiding from zombies
         zombiesPerRazingFinal *= 1 + (traits.chameleon.vars()[2] / 100);
         zombiesPerRazingFinal = Math.round(zombiesPerRazingFinal);
+    }
+    if (global.race.universe === 'micro'){
+        // Looking for easy prestige farming? Nope. Lets make it interesting.
+        zombiesPerRazingFinal *= 0.5;
     }
     if (global.tech['overmind']){
         zombiesPerRazingFinal *= 0.25;

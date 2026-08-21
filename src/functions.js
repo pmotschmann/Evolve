@@ -1868,6 +1868,13 @@ export function getResetConstants(type, inputs){
             rc.phage_mult = 2.5;
             rc.plasmid_cap = 1800;
             break;
+        case 'za':
+            rc.pop_divisor = 1.5;
+            rc.k_inc = 10000;
+            rc.k_mult = 1.006;
+            rc.phage_mult = 3.5;
+            rc.plasmid_cap = 2000;
+            break;
         default:
             rc.unknown = true;
             break;
@@ -1884,6 +1891,7 @@ export function calcPrestige(type,inputs){
         artifact: 0,
         cores: 0,
         supercoiled: 0,
+        talens: 0,
         pdebt: 0
     };
 
@@ -2044,6 +2052,10 @@ export function calcPrestige(type,inputs){
 
     if (type === 'ai'){
         gains.cores = universe === 'micro' ? 2 : 5;
+    }
+
+    if (type === 'za'){
+        gains.talens = 1;
     }
     
     if (global.stats.pdebt > 0){

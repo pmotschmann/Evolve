@@ -310,7 +310,7 @@ export function resetsPage(content){
     section = infoBoxBuilder(mainContent,{ name: 'zombie_apocalypse', template: 'resets', paragraphs: 5, break: [2,4,5], h_level: 2,
         para_data: {
             2: [loc('evo_challenge_truepath'),loc('wiki_path_isolation')],
-            4: [loc('wiki_resets_zombie_apocalypse'),loc('wiki_p_res_plasmids'),loc('wiki_p_res_phage'),'???'],
+            4: [loc('wiki_resets_zombie_apocalypse'),loc('wiki_p_res_plasmids'),loc('wiki_p_res_phage'),loc('wiki_p_res_talens')],
             5: [loc('wiki_resets_zombie_apocalypse')],
         },
         data_color: {

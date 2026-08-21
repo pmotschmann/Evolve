@@ -813,6 +813,7 @@ export function defineResources(wiki){
     loadSpecialResource('Dark');
     loadSpecialResource('Harmony');
     loadSpecialResource('AICore');
+    loadSpecialResource('TALENs');
 }
 
 export function tradeSummery(){
@@ -1420,6 +1421,13 @@ function loadSpecialResource(name,color) {
                         let trade = (coiled / (coiled + 500)) * 100;
                         desc.append($(`<span> ${loc(`resource_${name}_trade_desc`,[+trade.toFixed(2)])}</span>`));
                     }
+                }
+                break;
+
+            case 'TALENs':
+                {
+                    let talens = global.prestige.TALENs.count;
+                    desc.append($(`<span>${loc(`resource_${name}_desc`)}</span>`));
                 }
                 break;
         }

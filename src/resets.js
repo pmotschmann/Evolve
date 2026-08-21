@@ -1059,9 +1059,6 @@ export function matrix(){
     global.prestige.Phage.count += gains.phage;
     global.stats.phage += gains.phage;
 
-    global.prestige.AICore.count += gains.cores;
-    global.stats.cores += gains.cores;
-
     let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
     let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
     global['race'] = {
@@ -1143,9 +1140,6 @@ export function retirement(){
     global.stats.pdebt = gains.pdebt;
     global.prestige.Phage.count += gains.phage;
     global.stats.phage += gains.phage;
-
-    global.prestige.AICore.count += gains.cores;
-    global.stats.cores += gains.cores;
 
     let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
     let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
@@ -1229,9 +1223,6 @@ export function gardenOfEden(){
     global.prestige.Phage.count += gains.phage;
     global.stats.phage += gains.phage;
 
-    global.prestige.AICore.count += gains.cores;
-    global.stats.cores += gains.cores;
-
     let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
     let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
     global['race'] = {
@@ -1248,6 +1239,82 @@ export function gardenOfEden(){
     }
     if (srace){
         global.race['srace'] = srace;
+    }
+
+    resetCommon({
+        orbit: orbit, 
+        biome: biome, 
+        ptrait: atmo, 
+        geology: geo
+    });
+
+    writeSave();
+    window.location.reload();
+}
+
+// Zombie Appocalypse
+export function zApocalypse(){
+    // Don't create an automatic backup on purpose or it restore the game to a state where the player can't really do anything
+    // Backup is instead made when the player does the bleed overmind research
+    clearSavedMessages();
+
+    tagEvent('reset',{
+        'end': 'zombie apocalypse'
+    });
+
+    unlockAchieve(`extinct_${global.race.species}`);
+    unlockAchieve(`brainless`);
+
+    unlockAchieve(`squished`,true);
+    if (global.race['junker'] && global.race.species === 'junker'){
+        unlockFeat('the_misery');
+    }
+
+    grandDeathTour('za');
+
+    let god = global.race.species;
+    let old_god = global.race.gods;
+    let orbit = global.city.calendar.orbit;
+    let biome = global.city.biome;
+    let atmo = global.city.ptrait;
+    let geo = global.city.geology;
+
+    let gains = calcPrestige('za');
+    checkAchievements();
+
+    global.stats.zappoc++;
+    updateResetStats();
+    global.prestige.Phage.count += gains.phage;
+    global.stats.phage += gains.phage;
+    if (global.race.universe === 'antimatter'){
+        global.prestige.AntiPlasmid.count += gains.plasmid;
+        global.stats.antiplasmid += gains.plasmid;
+    }
+    else {
+        global.prestige.Plasmid.count += gains.plasmid;
+        global.stats.plasmid += gains.plasmid;
+    }
+    global.stats.pdebt = gains.pdebt;
+
+    global.prestige.TALENs.count += gains.talens;
+    global.stats.TALENs += gains.talens;
+
+    let srace = races[god].type !== 'synthetic' && !['junker','sludge','ultra_sludge'].includes(god) ? god : (global.race.hasOwnProperty('srace') ? global.race.srace : god);
+    global.stats.synth[god] = true;
+
+    let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
+    global['race'] = {
+        species : 'protoplasm',
+        gods: god,
+        old_gods: old_god,
+        srace: srace,
+        universe: global.race.universe,
+        seeded: false,
+        seed: Math.floor(seededRandom(10000)),
+        ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
+    };
+    if (corruption > 0){
+        global.race['corruption'] = corruption;
     }
 
     resetCommon({
@@ -1328,79 +1395,6 @@ function trackWomling(){
     if (global.stats.womling.friend[uni] > 0 && global.stats.womling.lord[uni] > 0 && global.stats.womling.god[uni] > 0){
         unlockAchieve('overlord',uni === 'm' ? true : false,alevel(),uni);
     }
-}
-
-// Zombie Appocalypse
-export function zApocalypse(){
-    // Don't create an automatic backup on purpose or it restore the game to a state where the player can't really do anything
-    // Backup is instead made when the player does the bleed overmind research
-    clearSavedMessages();
-
-    tagEvent('reset',{
-        'end': 'zombie apocalypse'
-    });
-
-    unlockAchieve(`extinct_${global.race.species}`);
-    unlockAchieve(`brainless`);
-
-    unlockAchieve(`squished`,true);
-    if (global.race['junker'] && global.race.species === 'junker'){
-        unlockFeat('the_misery');
-    }
-
-    grandDeathTour('za');
-
-    let god = global.race.species;
-    let old_god = global.race.gods;
-    let orbit = global.city.calendar.orbit;
-    let biome = global.city.biome;
-    let atmo = global.city.ptrait;
-    let geo = global.city.geology;
-
-    let gains = calcPrestige('za');
-    checkAchievements();
-
-    global.stats.zappoc++;
-    updateResetStats();
-    global.prestige.Phage.count += gains.phage;
-    global.stats.phage += gains.phage;
-    if (global.race.universe === 'antimatter'){
-        global.prestige.AntiPlasmid.count += gains.plasmid;
-        global.stats.antiplasmid += gains.plasmid;
-    }
-    else {
-        global.prestige.Plasmid.count += gains.plasmid;
-        global.stats.plasmid += gains.plasmid;
-    }
-    global.stats.pdebt = gains.pdebt;
-
-    let srace = races[god].type !== 'synthetic' && !['junker','sludge','ultra_sludge'].includes(god) ? god : (global.race.hasOwnProperty('srace') ? global.race.srace : god);
-    global.stats.synth[god] = true;
-
-    let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
-    global['race'] = {
-        species : 'protoplasm',
-        gods: god,
-        old_gods: old_god,
-        srace: srace,
-        universe: global.race.universe,
-        seeded: false,
-        seed: Math.floor(seededRandom(10000)),
-        ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
-    };
-    if (corruption > 0){
-        global.race['corruption'] = corruption;
-    }
-
-    resetCommon({
-        orbit: orbit, 
-        biome: biome, 
-        ptrait: atmo, 
-        geology: geo
-    });
-
-    writeSave();
-    window.location.reload();
 }
 
 function grandDeathTour(type){
