@@ -3519,7 +3519,8 @@ const valAdjust = {
 };
 
 function getTraitVals(trait, rank, species){
-    let vals = traits[trait].hasOwnProperty('vars') ? traits[trait].vars(rank) : [];
+    // `rank` arrives as false when the caller has no rank in mind
+    let vals = traits[trait].hasOwnProperty('vars') ? traits[trait].vars(rank || undefined) : [];
     if (valAdjust.hasOwnProperty(trait)){
         if (trait === 'fibroblast'){
             vals = [vals[0] * 5];

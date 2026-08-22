@@ -668,6 +668,22 @@ export function drawnGovernOffice(){
         res_bal.append($(`<div class="chk"><b-checkbox v-model="c.replicate.res.cap">${loc(`gov_task_replicate_cap`)}</b-checkbox></div>`));
     }
 
+    { // Rebuild Ruins
+        if (!global.race.governor.config.hasOwnProperty('repair')){
+            global.race.governor.config['repair'] = {};
+        }
+        if (!global.race.governor.config.repair.hasOwnProperty('threat')){
+            global.race.governor.config.repair['threat'] = repairThreatDefault;
+        }
+
+        let contain = $(`<div class="tConfig" v-show="showTask('repair')"><div class="has-text-warning" role="heading" aria-level="3">${loc(`gov_task_repair`)}</div></div>`);
+        options.append(contain);
+        let repair = $(`<div class="storage"></div>`);
+        contain.append(repair);
+
+        repair.append($(`<b-field>${loc(`gov_task_repair_threat`)}<b-numberinput min="0" :max="Number.MAX_SAFE_INTEGER" v-model="c.repair.threat" :controls="false"></b-numberinput></b-field>`));
+    }
+
     vBind({
         el: '#govOffice',
         data: { 
@@ -981,10 +997,11 @@ function starvedGrids(targets,room){
 // moon nobody has set foot on yet.
 const repairHeldRegions = ['spc_titan','spc_enceladus'];
 
-// Standing ruins the governor could act on: razed structures whose region is discovered and whose
-// requirements are still met.
+// Standing ruins the governor could act on: razed structures whose region is discovered, whose
+// requirements are still met, and whose world is quiet enough to be worth rebuilding on.
 function repairQueueTargets(){
     let index = repairTargets();
+    let cap = repairThreatCap();
     let list = [];
     Object.keys(repairRegions).forEach(function(cat){
         if (!global[cat]){ return; }
@@ -994,6 +1011,7 @@ function repairQueueTargets(){
             let target = index[`${cat}:${key}`];
             if (!target){ return; }
             if (repairHeldRegions.includes(target.region) && !titanReclaimed()){ return; }
+            if (repairThreat(target) > cap){ return; }
             try {
                 if (!repairRegions[cat].show(target.region) || !repairRegions[cat].req(target.region,target.qtype)){ return; }
             }
@@ -1055,6 +1073,17 @@ function chargeCopy(c_action,offset,budget,force){
 // patience for the kinds of building they actually care about.
 export const repairWaitCap = 900;           // 15 minutes
 export const repairWaitCapFavoured = 3600;  // 60 minutes for a type the governor is biased toward
+export const repairThreatDefault = 50000; // Default setting for rebuilding structures in danger
+
+function repairThreat(target){
+    return global.race['zhorde'] && global.race.zhorde[target.region] ? global.race.zhorde[target.region] : 0;
+}
+
+function repairThreatCap(){
+    let cfg = global.race.governor['config'] && global.race.governor.config['repair']
+        ? global.race.governor.config.repair : false;
+    return cfg && typeof cfg.threat === 'number' && !isNaN(cfg.threat) ? cfg.threat : repairThreatDefault;
+}
 
 // Is this the sort of building the sitting governor goes out of their way for?
 function govFavours(target){

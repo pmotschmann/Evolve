@@ -7736,14 +7736,18 @@ function genomeNamer(genome){
 }
 
 export function planetName(){
-    let type = races[global.race.species].type === 'hybrid' ? global.race.maintype : races[global.race.species].type;
+    // "Use real solar names" reads every world off the human race and its genus
+    let real = global.settings['solarNames'] ? true : false;
+    let species = real ? 'human' : global.race.species;
+    let type = real ? 'humanoid'
+        : (races[global.race.species].type === 'hybrid' ? global.race.maintype : races[global.race.species].type);
     let names = {
-        home: races[global.race.species].home,
-        red: races[global.race.species].solar.red,
-        hell: races[global.race.species].solar.hell,
-        gas: races[global.race.species].solar.gas,
-        gas_moon: races[global.race.species].solar.gas_moon,
-        dwarf: races[global.race.species].solar.dwarf,
+        home: races[species].home,
+        red: races[species].solar.red,
+        hell: races[species].solar.hell,
+        gas: races[species].solar.gas,
+        gas_moon: races[species].solar.gas_moon,
+        dwarf: races[species].solar.dwarf,
         titan: genusVars[type].solar.titan,
         enceladus: genusVars[type].solar.enceladus,
         triton: genusVars[type].solar.triton,
@@ -7761,17 +7765,15 @@ export function planetName(){
         haumea: genusVars[type].solar.haumea,
         makemake: genusVars[type].solar.makemake,
     };
-    // Anything the custom race named for itself wins over its genus's default — the advanced bodies
-    // included, since the gene lab can now name those too.
     let renameable = truepathSolarBodies;
-    if (global.race.species === 'custom'){
+    if (!real && global.race.species === 'custom'){
         for (let p of renameable){
             if (global.custom.race0.hasOwnProperty(p)){
                 names[p] = global.custom.race0[p];
             }
         }
     }
-    if (global.race.species === 'hybrid'){
+    if (!real && global.race.species === 'hybrid'){
         for (let p of renameable){
             if (global.custom.race1.hasOwnProperty(p)){
                 names[p] = global.custom.race1[p];

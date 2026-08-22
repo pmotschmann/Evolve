@@ -3299,7 +3299,7 @@ function fastLoop(){
                         stress_level += planetTraits.mellow.vars()[1];
                     }
                     if (global.race['content']){
-                        // Read from the trait rather than hardcoded, so the weak variant applies
+                        // Read from the trait rather than hardcoded, so the unbonded halving applies
                         // here like it does everywhere else. Surveyors get half, as before.
                         let per = geneVars('content')[0] * (job === 'hell_surveyor' ? 0.5 : 1);
                         stress_level += global.race['content'] * per;

@@ -2619,7 +2619,7 @@ function geneSlotPanel(parent,primary,primaryMethods){
         popover(`geneSlotPop${i}`, function(){
             let s = geneSlots()[i];
             if (!s || !s.g || !traits[s.g]){ return ``; }
-            // The figures in force right now, which are the weak ones on an unbonded rung.
+            // The figures in force right now, which are halved on an unbonded rung.
             let vars = traits[s.g].vars ? geneVars(s.g) : [];
             let total = vars.length
                 ? traits[s.g].desc(vars.map(function(v){ return +(v * s.r).toFixed(2); }))

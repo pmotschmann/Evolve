@@ -1931,6 +1931,10 @@ if (typeof global.settings.boring === 'undefined'){
 if (typeof global.settings.pauseOnLoad === 'undefined'){
     global.settings['pauseOnLoad'] = false;
 }
+// Show every world under the name a human would see it by, whatever species is being played.
+if (typeof global.settings.solarNames === 'undefined'){
+    global.settings['solarNames'] = false;
+}
 if (!global.settings.hasOwnProperty('mtorder')){
     global.settings['mtorder'] = [];
 }
