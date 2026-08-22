@@ -4099,7 +4099,7 @@ const tauCetiModules = {
                 if (global.tech['isolation']){
                     desc = desc + `<div>${loc('tau_red_womling_generate',[global.resource.Furs.name])}</div>`;
                 }
-                desc = desc + `<div>${loc('tau_red_womling_farm_effect2',[food / 2 * farmers,global.resource.Food.name])}</div>`;
+                desc = desc + `<div>${loc('tau_red_womling_farm_effect2',[food / 2 * farmers,loc('resource_Food_name')])}</div>`;
                 return desc;
             },
             s_type: 'tau_red',
@@ -4331,7 +4331,7 @@ const tauCetiModules = {
             path: ['truepath'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('womling_rangers', offset, 38000000, 1.28, 'tauceti'); },
-                Food(offset){ return spaceCostMultiplier('womling_rangers', offset, 2000000, 1.28, 'tauceti'); },
+                Food(offset){ return spaceCostMultiplier('womling_rangers', offset, global.race['artifical'] ? 20000 : 2000000, 1.28, 'tauceti'); },
                 Cement(offset){ return spaceCostMultiplier('womling_rangers', offset, 1800000, 1.28, 'tauceti'); },
                 Unobtainium(offset){ return spaceCostMultiplier('womling_rangers', offset, 675000, 1.28, 'tauceti'); },
             },

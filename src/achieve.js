@@ -2907,6 +2907,12 @@ export function drawStats(){
     if (global.stats.eden > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_eden_resets")}</span> {{ format(s.eden) }}</div>`);
     }
+    if (global.stats.zappoc > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_zappoc_resets")}</span> {{ format(s.zappoc) }}</div>`);
+    }
+    if (global.stats.enslaved > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_enslaved_resets")}</span> {{ format(s.enslaved) }}</div>`);
+    }
     if (global.stats.terraform > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_terraform_resets")}</span> {{ format(s.terraform) }}</div>`);
     }

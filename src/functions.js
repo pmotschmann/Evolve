@@ -3748,7 +3748,7 @@ export function getTraitDesc(info, trait, opts){
     let traitDesc = traitSkin('desc', trait, species);
 
     if (['minor','special'].includes(traits[trait].type) && traits[trait].vars){
-        traitDesc = loc(`trait_${trait}`, getTraitVals(trait, trank, species));
+        traitDesc = traits[trait].desc(getTraitVals(trait, trank, species));
     }
 
     if (tpage && ['genus','major'].includes(traits[trait].type)){

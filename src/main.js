@@ -5106,7 +5106,13 @@ function fastLoop(){
                     breakdown.p['Nano_Tube'][`ᄂ${loc('evo_challenge_gravity_well')}+0`] = -((1 - teamster(1)) * 100) + '%';
                 }
 
-                modRes('Nano_Tube', (delta * time_multiplier) * geneBonus('nanoweaver'));
+                let nanoweaver = geneBonus('nanoweaver');
+                if (nanoweaver > 1){
+                    breakdown.p['Nano_Tube'][`ᄂ${loc('trait_nanoweaver_name')}+0`] = ((nanoweaver - 1) * 100) + '%';
+                    delta *= nanoweaver;
+                }
+
+                modRes('Nano_Tube', (delta * time_multiplier));
             }
             else {
                 breakdown.p['Nano_Tube'] = 0;
@@ -5160,16 +5166,19 @@ function fastLoop(){
                         breakdown.p['Stanene'][`ᄂ${loc('quantum')}`] = ((q_bonus - 1) * 100) + '%';
                     }
 
-
                     let techBonus = technicianBonus(job_data.technician.factoryRate());
 
                     if (techBonus > 1){
-
                         delta *= techBonus;
-
                         breakdown.p['Stanene'][`ᄂ${job_data.technician.name()}`] = ((techBonus - 1) * 100) + '%';
-
                     }
+
+                    let nanoweaver = geneBonus('nanoweaver');
+                    if (nanoweaver > 1){
+                        breakdown.p['Stanene'][`ᄂ${loc('trait_nanoweaver_name')}+0`] = ((nanoweaver - 1) * 100) + '%';
+                        delta *= nanoweaver;
+                    }
+
                     breakdown.p['Stanene'][loc('hunger')] = ((hunger - 1) * 100) + '%';
                 }
 
@@ -5611,10 +5620,7 @@ function fastLoop(){
             }
         }
 
-        // Graphene. Every plant keeps its own fuel allocation, production rate and bonuses, and they all
-        // run at once — once the jump gate reopens, Titan's factory and the Tau Ceti refueling station
-        // both produce. Ziggurats are a Sol bonus and do not reach Tau Ceti; womling technicians are a
-        // Tau Ceti bonus and do not reach Titan.
+        // Graphene. Every plant keeps its own fuel allocation, production rate and bonuses, and they all run at once
         let graph_plants = [];
         if (global.race['warlord']){
             graph_plants.push({ s: 'portal', k: 'twisted_lab', active: p_on['twisted_lab'], rate: 'g_factory', bd: loc('portal_twisted_lab_title'), zig: true, incin: true });
@@ -5741,6 +5747,13 @@ function fastLoop(){
             if (p_on['citadel'] > 0){
                 breakdown.p['Graphene'][loc('interstellar_citadel_effect_bd')] = ((ai - 1) * 100) + '%';
             }
+
+            let nanoweaver = geneBonus('nanoweaver');
+            if (nanoweaver > 1){
+                breakdown.p['Graphene'][`${loc('trait_nanoweaver_name')}+0`] = ((nanoweaver - 1) * 100) + '%';
+                delta *= nanoweaver;
+            }
+
             breakdown.p['Graphene'][loc('hunger')] = ((hunger - 1) * 100) + '%';
             modRes('Graphene', delta * time_multiplier);
         });
