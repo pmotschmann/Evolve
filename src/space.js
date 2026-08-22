@@ -1472,6 +1472,48 @@ const spaceProjects = {
                 return loc('space_red_space_barracks_flair');
             }
         },
+        botanical: {
+            id: 'space-botanical',
+            title(){ return loc('space_red_botanical_title'); },
+            desc(){
+                return `<div>${loc('space_red_botanical_desc',[planetName().red])}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`;
+            },
+            type: 'entertainment',
+            reqs: { mars: 7 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('botanical', offset, 85000000, 1.32); },
+                Alloy(offset){ return spaceCostMultiplier('botanical', offset, 550000, 1.32); },
+                Nano_Tube(offset){ return spaceCostMultiplier('botanical', offset, 400000, 1.32); },
+                Water(offset){ return spaceCostMultiplier('botanical', offset, 110000, 1.32); }
+            },
+            calm: 0.3,
+            effect(){
+                return `<div class="has-text-caution">${loc('space_used_support',[planetName().red])}</div>`
+                     + `<div>${loc('space_red_botanical_effect')}</div>`;
+            },
+            s_type: 'red',
+            support(){ return -1; },
+            powered(){ return 0; },
+            action(args){
+                if (payCosts($(this)[0])){
+                    incrementStruct($(this)[0]);
+                    global.civic.gardener.display = true;
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['botanical','space']
+                };
+            },
+            flair(){
+                return loc('space_red_botanical_flair');
+            }
+        },
         wonder_statue: {
             id: 'space-wonder_statue',
             title(){
@@ -6929,6 +6971,7 @@ const structDefinitions = {
     exotic_lab: { count: 0, on: 0 },
     ziggurat: { count: 0 },
     space_barracks: { count: 0, on: 0 },
+    botanical: { count: 0, on: 0 },
     biodome: { count: 0, on: 0 },
     laboratory: { count: 0, on: 0 },
     geothermal: { count: 0, on: 0 },

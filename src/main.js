@@ -3281,6 +3281,12 @@ function fastLoop(){
             global.civic.garrison.crew = crew_mil;
         }
 
+        // A garden standing anywhere means the job is available, which also picks it up on a save
+        // that built one before the job existed.
+        if (global.space['botanical'] && global.space.botanical.count > 0 && global.civic['gardener'] && !global.civic.gardener.display){
+            global.civic.gardener.display = true;
+        }
+
         // Detect labor anomalies
         Object.keys(job_data).forEach(function (job) {
             if (global.civic[job]){
@@ -3299,10 +3305,16 @@ function fastLoop(){
                         stress_level += planetTraits.mellow.vars()[1];
                     }
                     if (global.race['content']){
-                        // Read from the trait rather than hardcoded, so the unbonded halving applies
-                        // here like it does everywhere else. Surveyors get half, as before.
                         let per = geneVars('content')[0] * (job === 'hell_surveyor' ? 0.5 : 1);
                         stress_level += global.race['content'] * per;
+                    }
+                    if (support_on['botanical']){
+                        let tenders = global.civic['gardener'] ? global.civic.gardener.workers : 0;
+                        if (global.race['high_pop']){
+                            tenders /= traits.high_pop.vars()[0];
+                        }
+                        let tended = 1 + (tenders * job_data.gardener.boost() / 100);
+                        stress_level += support_on['botanical'] * actions.space.spc_red.botanical.calm * tended;
                     }
                     if (global.city.ptrait.includes('dense') && job === 'miner'){
                         stress_level -= planetTraits.dense.vars()[1];
@@ -8838,6 +8850,7 @@ function midLoop(){
             quarry_worker: -1,
             crystal_miner: -1,
             scavenger: -1,
+            gardener: -1,
             teamster: -1,
             meditator: -1,
             torturer: 0,
@@ -11080,8 +11093,9 @@ function midLoop(){
         let unlock_servants = false;
         let total_servants = 0;
         let not_scavanger_jobs_avail = 0;
+        // Only jobs a servant could actually be put on count here
         Object.keys(lCaps).forEach(function (job){
-            if (global.civic[job].max === -1 && global.civic[job].display && job !== 'unemployed' && job !== 'scavenger'){
+            if (global.civic[job].max === -1 && global.civic[job].display && job !== 'unemployed' && job !== 'scavenger' && job !== 'gardener'){
                 not_scavanger_jobs_avail++;
             }
         });

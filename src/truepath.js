@@ -327,6 +327,9 @@ const outerTruth = {
                 if (global.resource.Tungsten.display){
                     res.push('Tungsten');
                 }
+                if (global.resource.Water.display && global.tech['resettle']){
+                    res.push('Water');
+                }
                 return res;
             },
             heavy(res){
@@ -370,6 +373,8 @@ const outerTruth = {
                         return 64;
                     case 'Adamantite':
                         return 72;
+                    case 'Water':
+                        return 2;
                     default:
                         return 0;
                 }
@@ -5512,7 +5517,7 @@ export function checkPathRequirements(era,region,action){
 // Structures the horde can raze, per infested region.
 const razeTargets = {
     spc_moon: { c: 'space', s: ['moon_base','iridium_mine','helium_mine','observatory'] },
-    spc_red: { c: 'space', s: ['spaceport','red_tower','living_quarters','pylon','vr_center','garage','red_mine','fabrication','red_factory','biodome','exotic_lab','ziggurat','space_barracks'] },
+    spc_red: { c: 'space', s: ['spaceport','red_tower','living_quarters','pylon','vr_center','garage','red_mine','fabrication','red_factory','biodome','exotic_lab','ziggurat','space_barracks','botanical'] },
     spc_venus: { c: 'space', s: ['cloud_city','nitrogen_harvester','cloud_quarters','industrial_complex','workshop','university'] },
     spc_hell: { c: 'space', s: ['geothermal','hell_smelter','spc_casino','swarm_plant'] },
     spc_titan: { c: 'space', s: ['titan_spaceport','electrolysis','hydrogen_plant','titan_quarters','titan_mine','storehouse','titan_bank','g_factory','sam','decoder','ai_colonist','metalworks'] },

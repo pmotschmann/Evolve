@@ -57,6 +57,30 @@ export const job_data = {
         stress(){ return 0; },
         color(){ return false; }
     },
+    gardener: {
+        name(){ return loc('job_gardener'); },
+        desc(servant){
+            let tenders = servant && global.race['servants']
+                ? (global.race.servants.jobs.gardener || 0)
+                : (global.civic['gardener'] ? global.civic.gardener.workers : 0);
+            if (global.race['high_pop']){
+                tenders /= traits.high_pop.vars()[0];
+            }
+            let desc = loc('job_gardener_desc',[
+                job_data.gardener.boost(),
+                actions.space.spc_red.botanical.title(),
+                +(tenders * job_data.gardener.boost()).toFixed(1)
+            ]);
+            if (global.civic.d_job === 'gardener' && !servant){
+                desc = desc + ' ' + loc('job_default',[job_data.gardener.name()]);
+            }
+            return desc;
+        },
+        // Percent added to the Botanical Garden's effect per gardener.
+        boost(){ return 2; },
+        stress(){ return 0; },
+        color(){ return false; }
+    },
     farmer: {
         name(){ return loc('job_farmer'); },
         desc(servant){
@@ -558,6 +582,7 @@ export function defineJobs(define){
     loadJob('quarry_worker',define);
     loadJob('crystal_miner',define);
     loadJob('scavenger',define);
+    loadJob('gardener',define);
     loadJob('teamster',define);
     loadJob('meditator',define);
     loadJob('torturer',define);

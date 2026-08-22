@@ -293,7 +293,7 @@ export function powerGrid(type,reset){
             power_structs = ['spc_moon:helium_mine','spc_moon:iridium_mine','spc_moon:observatory'];
             break;
         case 'red':
-            power_structs = ['spc_red:living_quarters','spc_red:exotic_lab','spc_red:red_mine','spc_red:fabrication','spc_red:biodome','spc_red:vr_center'];
+            power_structs = ['spc_red:living_quarters','spc_red:exotic_lab','spc_red:red_mine','spc_red:fabrication','spc_red:biodome','spc_red:vr_center','spc_red:botanical'];
             break;
         case 'belt':
             power_structs = ['spc_belt:elerium_ship','spc_belt:iridium_ship','spc_belt:iron_ship'];
