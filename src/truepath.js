@@ -2624,6 +2624,64 @@ const tauCetiModules = {
                 };
             }
         },
+        server_farm: {
+            id: 'tauceti-server_farm',
+            title(){ return loc('tau_star_server_farm'); },
+            desc(wiki){
+                if (!global.tauceti.hasOwnProperty('server_farm') || global.tauceti.server_farm.count < 100 || wiki){
+                    return `<div>${loc('tau_star_server_farm')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
+                }
+                return `<div>${loc('tau_star_server_farm')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            type: 'megaproject',
+            reqs: { shadow: 1 },
+            path: ['truepath'],
+            queue_size: 5,
+            queue_complete(){ return 100 - (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0); },
+            cost: {
+                Money(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? 150000000 : 0; },
+                Copper(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? 80000000 : 0; },
+                Polymer(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? 6000000 : 0; },
+                Graphene(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? 1250000 : 0; },
+                Orichalcum(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? 750000 : 0; },
+                Quantium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? wom_recycle(750000) : 0; }
+            },
+            effect(wiki){
+                let count = (wiki?.count ?? 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0);
+                if (count < 100){
+                    return `<div>${loc('tau_star_server_farm_effect',[75])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[100 - count])}</div>`;
+                }
+                return `<div>${loc('tau_star_server_farm_effect',[75])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            powered(){ return powerCostMod(7500); },
+            switchable(){ return global.tauceti.hasOwnProperty('server_farm') && global.tauceti.server_farm.count >= 100; },
+            operating(){
+                if (!global.tauceti.hasOwnProperty('server_farm') || global.tauceti.server_farm.count < 100){ return false; }
+                return getStructNumActive($(this)[0]) > 0;
+            },
+            on_cap(){ return global.tauceti.hasOwnProperty('server_farm') && global.tauceti.server_farm.count >= 100 ? 1 : 0; },
+            action(){
+                if (global.tauceti.hasOwnProperty('server_farm') && global.tauceti.server_farm.count >= 100){ return false; }
+                if (payCosts($(this)[0])){
+                    incrementStruct($(this)[0]);
+                    if (global.tauceti.server_farm.count >= 100){
+                        global.tauceti.server_farm.on = 1;
+                        messageQueue(loc('tau_star_server_farm_complete'),'success',false,['progress']);
+                        drawTech();
+                        renderTauCeti();
+                        clearPopper();
+                    }
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['server_farm','tauceti']
+                };
+            }
+        },
         matrix: {
             id: 'tauceti-matrix',
             title(){ return loc('tau_star_matrix'); },

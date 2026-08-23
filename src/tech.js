@@ -16794,6 +16794,30 @@ const techs = {
             return false;
         }
     },
+    server_farm: {
+        id: 'tech-server_farm',
+        title(){ return loc('tech_server_farm'); },
+        desc(){ return loc('tech_server_farm'); },
+        category: 'progress',
+        era: 'shadow_war',
+        path: ['truepath'],
+        reqs: { matrix: 3 },
+        grant: ['shadow',1],
+        cost: {
+            Money(){ return 3200000000; },
+            Knowledge(){ return 12000000; }
+        },
+        effect(){
+            return `<div>${loc('tech_server_farm_effect')}</div>`;
+        },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.tauceti.tau_star.server_farm);
+                return true;
+            }
+            return false;
+        }
+    },
 }
 
 function uniteEffect(){

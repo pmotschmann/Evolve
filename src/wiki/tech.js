@@ -2266,6 +2266,9 @@ const extraInformationTP = {
     bleed_overmind: [
         loc(`wiki_tech_overmind_effect`,[4]),
         loc(`tech_exclusive_warn`,[loc(`tech_bombard_homeworld`)])
+    ],
+    server_farm: [
+        loc(`wiki_tech_building_unlock`,[loc(`tau_star_server_farm`)])
     ]
 };
 

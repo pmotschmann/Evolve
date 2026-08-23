@@ -10979,11 +10979,22 @@ function midLoop(){
             breakdown.c.Knowledge[loc('space_dwarf_collider_title')] = gain+'v';
         }
 
-        // Ignited Matrioshka Brain (True Path) boosts the Knowledge cap by 50%, like the World Collider.
+        // Ignited Matrioshka Brain (True Path).
         if (global.tech['m_ignite'] && global.tech.m_ignite >= 2){
             let gain = Math.round(caps['Knowledge'] * 0.5);
             caps['Knowledge'] += gain;
             breakdown.c.Knowledge[loc('tech_matrioshka_brain')] = gain+'v';
+        }
+
+        // The Server Farm (True Path) on the ringworld.
+        if (p_on['server_farm']){
+            let gain = Math.round(caps['Knowledge'] * 0.75);
+            caps['Knowledge'] += gain;
+            breakdown.c.Knowledge[loc('tau_star_server_farm')] = gain+'v';
+            if (global.tech['shadow'] && global.tech.shadow === 1){
+                global.tech.shadow = 2;
+                drawTech();
+            }
         }
 
         // Once Positronium is unlocked (element_zero), the Matrioshka Brain provides 1 Positronium of
@@ -11461,7 +11472,7 @@ function midLoop(){
                 }
                 else {
                     global.race.mutation++;
-                    let trait = randomMinorTrait(1);
+                    randomMinorTrait();
                     let gene_multi = 1 + (global.genes['synthesis'] ? global.genes['synthesis'] : 0);
                     let gene = mutationGenes(global.race.mutation) * gene_multi;
                     if (global.stats.achieve['creator']){
@@ -11491,7 +11502,7 @@ function midLoop(){
                         global.prestige.Plasmid.count += plasma;
                     }
                     arpa('Crispr');
-                    messageQueue(loc('gene_therapy',[loc('trait_' + trait + '_name'),gene,plasma,plasmid_type,global.resource.Genes.name]),'success',false,['progress']);
+                    messageQueue(loc('gene_therapy_reward',[gene,global.resource.Genes.name,plasma,plasmid_type]),'success',false,['progress']);
                 }
                 arpa('Genetics');
                 drawTech();

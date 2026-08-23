@@ -286,7 +286,7 @@ export function powerGrid(type,reset){
                 'prtl_gate:infernite_mine','int_sirius:ascension_trigger','spc_makemake:orichalcum_mine','spc_makemake:elerium_mine','spc_makemake:uranium_mine','spc_makemake:neutronium_mine','spc_survey:mineshaft','spc_dwarf:m_relay','tau_gas2:tcm_relay',
                 'tau_home:tau_factory','tau_home:infectious_disease_lab','tau_home:alien_outpost','tau_home:data_decoder','tau_gas:womling_station','tau_roid:synthesizer','spc_red:atmo_terraformer','tau_star:matrix','tau_home:tau_cultural_center',
                 'eden_elysium:sacred_smelter','prtl_pit:soul_capacitor','prtl_lake:oven_complete','eden_elysium:elysanite_mine','eden_elysium:elerium_containment','eden_elysium:pillbox','eden_elysium:archive',
-                'eden_elysium:restaurant','eden_elysium:eden_cement','eden_isle:spirit_battery','eden_isle:spirit_vacuum','city:replicator'
+                'eden_elysium:restaurant','eden_elysium:eden_cement','eden_isle:spirit_battery','eden_isle:spirit_vacuum','city:replicator','tau_star:server_farm'
             ];
             break;
         case 'moon':
