@@ -57,6 +57,7 @@ export function set_ulevel(u_level){
 }
 export var hell_reports = {};
 export var hell_graphs = {};
+export var battle_log = [];
 export var message_logs = {
     view: 'all'
 };
@@ -1637,7 +1638,9 @@ if (convertVersion(global['version']) <= 105000){
     }
 }
 
-
+if (global['space'] && global.space['shipyard'] && global.space.shipyard.hasOwnProperty('battles')){
+    delete global.space.shipyard.battles;
+}
 
 global['version'] = '1.5.0';
 delete global['revision'];

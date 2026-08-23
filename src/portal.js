@@ -8466,15 +8466,23 @@ function drawHellReports(){
         recentDay.day = Object.keys(hell_reports[`year-${recentDay.year}`])[0].split('-')[1];
     }
 
+    // The table built at runtime, not stored in save data.
+    let reportFor = function(year,day){
+        let entries = hell_reports[`year-${year}`];
+        return entries && entries[`day-${day}`] ? entries[`day-${day}`] : false;
+    };
+
     let updateList = function(startYear,startDay){
         if (purgeReports(true)){
             list = ``;
             startYear = Object.keys(hell_reports)[0].split('-')[1];
-            startDay = Object.keys(hell_reports[`year-${recentDay.year}`])[0].split('-')[1];
+            startDay = Object.keys(hell_reports[`year-${startYear}`])[0].split('-')[1];
         }
         for (startYear; startYear<global.city.calendar.year; startYear++){
             for (startDay; startDay<=orbitLength(); startDay++){
-                let gemString = ""; let gemCount = hell_reports[`year-${startYear}`][`day-${startDay}`].foundGems;
+                let report = reportFor(startYear,startDay);
+                if (!report){ continue; }
+                let gemString = ""; let gemCount = report.foundGems;
                 if (gemCount) {
                     gemString = `<span class="has-text-advanced" aria-label="${loc(`hell_report_log_soul_gem_aria`)}">${gemCount >= 5 ? `&#9830x${gemCount}` : "&#9830".repeat(gemCount)}</span>`;
                 }
@@ -8486,7 +8494,9 @@ function drawHellReports(){
         }
         //Remaining days in current year.
         for (startDay; startDay<global.city.calendar.day; startDay++){
-            let gemString = ""; let gemCount = hell_reports[`year-${startYear}`][`day-${startDay}`].foundGems;
+            let report = reportFor(startYear,startDay);
+            if (!report){ continue; }
+            let gemString = ""; let gemCount = report.foundGems;
             if (gemCount) {
                 gemString = `<span class="has-text-advanced" aria-label="${loc(`hell_report_log_soul_gem_aria`)}">${gemCount >= 5 ? `&#9830x${gemCount}` : "&#9830".repeat(gemCount)}</span>`;
             }
@@ -8516,7 +8526,9 @@ function drawHellReports(){
         }
         let info = $(`#hellReportDisplay`);
         clearElement(info);
-        let curr_report = hell_reports[`year-${year}`][`day-${day}`];
+        // A purge can drop the year out from under a link that is still on screen.
+        let curr_report = reportFor(year,day);
+        if (!curr_report){ return; }
 
         let statsBar = $(`<div id="hellReportStats" class="reportStats"></div>`);
         info.append(statsBar);

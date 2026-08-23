@@ -1,4 +1,4 @@
-import { global, p_on, support_on, sizeApproximation, keyMap, seededRandom, webWorker } from './vars.js';
+import { global, p_on, support_on, sizeApproximation, keyMap, seededRandom, webWorker, battle_log } from './vars.js';
 import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect, adjustCosts, get_qlevel, timeCheck, timeFormat, buildQueue, getWeaselTechLevelRequirement } from './functions.js';
 import { races, traits, orbitLength, geneBonus } from './races.js';
 import { spatialReasoning, unlockContainers } from './resources.js';
@@ -6195,10 +6195,15 @@ function destroyPlayerShip(ship,locationName){
 }
 
 // --- Battle log ----------------------------------------------------------------------------------
-const zBattleLogMax = 60;   // engagements kept; the oldest falls off the end
+const zBattleLogMax = 100;   // engagements kept; the oldest falls off the end
+
+function zBattleDate(days){
+    let orbit = orbitLength();
+    return loc('battle_log_date',[Math.floor(days / orbit),(days % orbit) + 1]);
+}
 
 export function zBattleLog_read(){
-    return global.space['shipyard'] && Array.isArray(global.space.shipyard['battles']) ? global.space.shipyard.battles : [];
+    return battle_log;
 }
 
 // Engagement information
@@ -6218,8 +6223,7 @@ function zBattleHull(damage){
 // Written the moment the volleys are resolved, before the wrecks are cleared away.
 function zBattleLog(locationName,guards,foes,dealt,taken,lost,downed){
     if (!global.space['shipyard']){ return; }
-    if (!Array.isArray(global.space.shipyard['battles'])){ global.space.shipyard['battles'] = []; }
-    global.space.shipyard.battles.unshift({
+    battle_log.unshift({
         d: global.stats.days,           // game day
         l: locationName,                // where it happened
         p: zBattleRoster(guards),       // your hulls
@@ -6229,8 +6233,8 @@ function zBattleLog(locationName,guards,foes,dealt,taken,lost,downed){
         pl: lost,                       // your ships destroyed
         el: downed                      // theirs destroyed
     });
-    if (global.space.shipyard.battles.length > zBattleLogMax){
-        global.space.shipyard.battles.length = zBattleLogMax;
+    if (battle_log.length > zBattleLogMax){
+        battle_log.length = zBattleLogMax;
     }
 }
 
@@ -13714,7 +13718,7 @@ export function battleLogModal(){
         // A fight you walked away from unscathed reads differently from one that cost you a hull, so the
         // outcome is colored rather than left for the player to work out from the numbers.
         let tone = b.pl > 0 ? `has-text-danger` : (b.el > 0 ? `has-text-success` : `has-text-warning`);
-        row.append(`<div class="battleHead"><span class="${tone}">${loc('battle_log_where',[regionName(b.l)])}</span> <span class="has-text-caution">${loc('battle_log_day',[b.d])}</span></div>`);
+        row.append(`<div class="battleHead"><span class="${tone}">${loc('battle_log_where',[regionName(b.l)])}</span> <span class="has-text-caution">${zBattleDate(b.d)}</span></div>`);
         // Rounded here as well as at write time: engagements recorded before damage was rounded
         // still hold full-precision doubles, and "dealt 154.9204903865691 hull" is unreadable.
         row.append(`<div class="battleSide"><span class="has-text-success">${loc('battle_log_yours')}</span> <span>${roster(b.p)}</span> <span class="has-text-warning">${loc('battle_log_dealt',[zBattleHull(b.pd)])}</span>${b.pl > 0 ? ` <span class="has-text-danger">${loc('battle_log_lost',[b.pl])}</span>` : ``}</div>`);

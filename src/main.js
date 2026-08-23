@@ -1181,8 +1181,7 @@ function setElHeight(el,value){
 
 function fastLoop(){
     if (!global.race['no_craft']){
-        // keyMultiplier() is the same for every button this tick, so compute it once instead
-        // of per element.
+        // keyMultiplier() is the same for every button this tick, so compute it once instead of per element.
         const km = keyMultiplier();
         const crafts = document.querySelectorAll('.craft');
         for (let i=0; i<crafts.length; i++){
@@ -10941,11 +10940,6 @@ function midLoop(){
             }
         });
 
-        // Ruminant raises the population ceiling, and it has to do so before anything is evicted
-        // against it. Applied after, the check below compares a population that has already grown
-        // into the raised cap against the unraised one and turns the difference out of doors --
-        // every tick, forever, which is a stream of abandonment messages and a homeless count that
-        // never stops climbing. Steward does not touch this cap at all: it is warehouse space.
         if (caps[global.race.species] > 0){
             caps[global.race.species] = Math.round(caps[global.race.species] * geneBonus('ruminant'));
         }
@@ -11011,16 +11005,6 @@ function midLoop(){
         }
 
         let tempCrates = caps['Crates'], tempContainers = caps['Containers'];
-        // Steward is warehouse space, so it applies to resources that are actually stored and to
-        // nothing else. The exempt list is every cap whose number means something other than "how
-        // much can be kept": money, the population itself, knowledge, the crate and container pools,
-        // and the special meters, which are all defined non-stackable for the same reason.
-        //
-        // Archivist stacks on top for Knowledge, which is its own gene and its own ceiling.
-        // Run before crates and containers are subtracted, so what they consume is measured against
-        // the raised cap.
-        // Every special meter that shares the caps table with the real resources. Anything not
-        // listed here is something a warehouse could actually hold.
         const stewardExempt = ['Money','Knowledge','Omniscience','Crates','Containers','Slave','Authority',
                                'Zen','Mana','Energy','Sus','Cipher'];
         Object.keys(caps).forEach(function (res){
@@ -12953,8 +12937,7 @@ function longLoop(){
                         if (ship.damage < 0){ ship.damage = 0; }
                     }
                     // Wear and tear from fighting syndicate.
-                    if (syndicateActive() && !atShipyard(ship) && Math.rand(0, 10) === 0){
-                        // A ship under way wears by where it is bound; one parked, by where it sits.
+                    if (syndicateActive() && !atShipyard(ship) && !ship.inTransit && Math.rand(0, 10) === 0){
                         let dm = (ship.inTransit ? ship.destination.name : ship.location.name) === 'spc_triton' ? 2 : 1;
                         switch (ship.armor){
                             case 'steel':
