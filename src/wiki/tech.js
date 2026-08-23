@@ -2222,6 +2222,50 @@ const extraInformationTP = {
         loc(`wiki_tech_destination_unlock`,[loc(`space_mission_title`,[loc(`space_sun_info_name`)]),loc(`space_sun_info_name`)]),
         loc(`wiki_tech_destination_unlock`,[loc(`space_mission_title`,[getSolarName('gas')]),getSolarName('gas')]),
         loc(`wiki_tech_subtab_unlock`,[loc(`outer_sol_system`,[getSolarName('home')]),loc(`tab_civil`)]),
+    ],
+    lab_assistants: [
+        loc(`tech_lab_assistants_effect`,[5])
+    ],
+    aerographene_crates: [
+        loc(`wiki_tech_containerized_upgrade`,[loc(`resource_Crates_name`),10000,6200])
+    ],
+    botanical: [
+        loc(`wiki_tech_building_unlock`,[loc(`space_red_botanical_title`)])
+    ],
+    laugh_center: [
+        loc(`wiki_tech_building_unlock`,[loc(`space_comedy_club_title`)])
+    ],
+    moon_storage: [
+        loc(`wiki_tech_building_unlock`,[loc(`city_shed_title3`)])
+    ],
+    moon_treasury: [
+        loc(`wiki_tech_building_unlock`,[loc(`space_fort_knox_title`)])
+    ],
+    moon_vault: [
+        loc(`wiki_tech_project_unlock`,[loc(`arpa_projects_extra_vault_title`)])
+    ],
+    moon_security: [
+        loc(`wiki_tech_project_unlock`,[loc(`arpa_projects_guard_station_title`)])
+    ],
+    cloud_housing: [
+        loc(`wiki_tech_building_unlock`,[loc(`space_cloud_quarters_title`)])
+    ],
+    cloud_manufacturing: [
+        loc(`wiki_tech_building_unlock`,[loc(`space_industrial_complex_title`)])
+    ],
+    cloud_crafting: [
+        loc(`wiki_tech_building_unlock`,[loc(`space_workshop_title`)])
+    ],
+    cloud_university: [
+        loc(`wiki_tech_building_unlock`,[loc(`space_university_title`)])
+    ],
+    bombard_homeworld: [
+        loc(`wiki_tech_bombard_unlock`,[getSolarName('home')]),
+        loc(`tech_exclusive_warn`,[loc(`tech_bleed_overmind`)])
+    ],
+    bleed_overmind: [
+        loc(`wiki_tech_overmind_effect`,[4]),
+        loc(`tech_exclusive_warn`,[loc(`tech_bombard_homeworld`)])
     ]
 };
 

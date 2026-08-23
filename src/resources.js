@@ -599,7 +599,7 @@ export const craftingRatio = (function(){
             });
 
             let craft_total = {
-                multiplier: multiplier * 1000,
+                multiplier: multiplier,
                 add_bd: add_bd,
                 multi_bd: multi_bd
                 
