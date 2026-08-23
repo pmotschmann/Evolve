@@ -12161,6 +12161,28 @@ const techs = {
             return false;
         }
     },
+    laugh_center: {
+        id: 'tech-laugh_center',
+        title(){ return loc('tech_laugh_center'); },
+        desc(){ return loc('tech_laugh_center'); },
+        category: 'power_generation',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { titan: 11 },
+        grant: ['titan',12],
+        cost: {
+            Knowledge(){ return 26250000; }
+        },
+        effect(){ return loc('tech_laugh_center_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.space.spc_titan.comedy_club);
+                return true;
+            }
+            return false;
+        },
+        flair(){ return loc('tech_laugh_center_flair'); }
+    },
     ai_optimizations: {
         id: 'tech-ai_optimizations',
         title(){ return loc('tech_ai_optimizations'); },

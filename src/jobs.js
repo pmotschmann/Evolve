@@ -312,7 +312,7 @@ export const job_data = {
         color(){ return 'advanced'; }
     },
     cement_worker: {
-        name(){ return loc('job_cement_worker'); },
+        name(){ return loc('job_resource_worker',[global.resource.Cement.name]); },
         desc(){
             let unit_price = global.race['high_pop'] ? 3 / traits.high_pop.vars()[0] : 3;
             if (global.city.biome === 'ashland'){
@@ -330,7 +330,8 @@ export const job_data = {
                 gain *= biomes.ashland.vars()[1];
             }
             gain = +(gain).toFixed(2);
-            return global.race['sappy'] ? loc('job_cement_worker_amber_desc',[gain]) : loc('job_cement_worker_desc',[gain,unit_price]);
+            let vars = [gain,unit_price,global.resource.Cement.name,global.resource.Stone.name];
+            return global.race['sappy'] ? loc('job_cement_worker_amber_desc',vars) : loc('job_cement_worker_desc',vars);
         },
         impact(){ return 0.4; },
         stress(){ return 5; },

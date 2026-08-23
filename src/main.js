@@ -11,7 +11,7 @@ import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMul
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types, spaceSectors } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
-import { renderTauCeti, syndicate, syndicateActive, shipFuelUse, spacePlanetStats, genXYZcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, randomCoord, atShipyard, pinSalvage, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, moveShips, facilityFindings, orbitPeriod } from './truepath.js';
+import { renderTauCeti, syndicate, syndicateActive, shipFuelUse, spacePlanetStats, genXYZcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, randomCoord, atShipyard, pinSalvage, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, moveShips, moveTempCoordinates, driftingPoint, facilityFindings, orbitPeriod } from './truepath.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
 import { defineGovernor, govern, govActive, removeTask } from './governor.js';
@@ -1196,7 +1196,7 @@ function fastLoop(){
     const date = new Date();
     const astroSign = astrologySign();
     breakdown.p['Global'] = {};
-    var global_multiplier = 1;
+    var global_multiplier = 1000;
     let applyPlasmid = false;
     let pBonus = plasmidBonus('raw');
     if (global.prestige.Plasmid.count > 0 && ((global.race.universe !== 'antimatter') || (global.genes['bleed'] && global.race.universe === 'antimatter'))){
@@ -5223,7 +5223,7 @@ function fastLoop(){
             }
 
             let tauBonus = global.tech['isolation'] ? 1 + ((support_on['colony'] || 0) * 0.5) : 1;
-            breakdown.p.consume.Stone[loc(global.tech['isolation'] ? 'job_cement_worker_bd' : 'city_cement_plant_bd')] = -(stone_cost);
+            breakdown.p.consume.Stone[global.tech['isolation'] ? loc('job_resource_worker',[global.resource.Cement.name]) : loc('city_cement_plant_bd')] = -(stone_cost);
             modRes('Stone', -(stone_cost * time_multiplier));
 
             let cement_base = global.tech['cement'] >= 4 ? (global.tech.cement >= (global.tech['isolation'] ? 6 : 7) ? 1.45 : 1.2) : 1;
@@ -5274,7 +5274,7 @@ function fastLoop(){
             let techBonus = technicianBonus(job_data.technician.cementRate());
 
             let cq_multiplier = global.tech['isolation'] ? 1 : q_multiplier;
-            breakdown.p['Cement'][loc(global.tech['isolation'] ? 'job_cement_worker_bd' : 'city_cement_plant_bd')] = factory_output + 'v';
+            breakdown.p['Cement'][global.tech['isolation'] ? loc('job_resource_worker',[global.resource.Cement.name]) : loc('city_cement_plant_bd')] = factory_output + 'v';
             if (factory_output > 0){
                 if (global.tech['isolation']){
                     breakdown.p['Cement'][`ᄂ${loc('tau_home_colony')}+0`] = ((tauBonus - 1) * 100) + '%';
@@ -9328,6 +9328,9 @@ function midLoop(){
         if (global.space['survey_resort']){
             lCaps['entertainer'] += jobScale(p_on['survey_resort'] || 0);
         }
+        if (global.space['comedy_club']){
+            lCaps['entertainer'] += jobScale(support_on['comedy_club'] || 0);
+        }
         if (global.city['cement_plant']){
             lCaps['cement_worker'] += jobScale(global.city.cement_plant.count * 2);
         }
@@ -12161,6 +12164,7 @@ function midLoop(){
                 }
             });
         }
+        moveTempCoordinates();
         moveShips(webWorker.midRatio / webWorker.longRatio);
 
         if (document.getElementById('mapCanvas')) {
@@ -13504,7 +13508,7 @@ function longLoop(){
                 }
                 for (let i=1; i<=5; i++){
                     let c = randomCoord('spc_sun',0.4,5);
-                    global.race.tempCoordinates[`beacon${i}`] = {n: loc(`scout_beacon`,[i]), a: true, s: 'spc_sun', x: c.x, y: c.y, z: c.z, d: hulls[i-1]};
+                    global.race.tempCoordinates[`beacon${i}`] = driftingPoint({ n: loc(`scout_beacon`,[i]), d: hulls[i-1] }, 'spc_sun', c);
                 }
                 messageQueue(loc('scout_signal_found'),'info',false,['progress']);
                 renderSpace();

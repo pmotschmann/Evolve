@@ -7,7 +7,7 @@ import { loadFoundry, jobScale, job_data } from './jobs.js';
 import { defineIndustry, addSmelter, factoryData } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
 import { actions, payCosts, powerOnNewStruct, initStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, templeCount, casinoEffect, wardenLabel, buildTemplate, structName } from './actions.js';
-import { outerTruthTech, syndicate, drawShipYard, infestationLabel, infestationMethods, salvageShip, salvagePin, zAssaultBanner, zAssaultMethods } from './truepath.js';
+import { outerTruthTech, syndicate, drawShipYard, infestationLabel, infestationMethods, salvageShip, salvagePin, zAssaultBanner, zAssaultMethods, blockadeBanner, blockadeMethods } from './truepath.js';
 import { production, highPopAdjust } from './prod.js';
 import { defineGovernor, govActive } from './governor.js';
 import { ascend, terraform, apotheosis } from './resets.js';
@@ -1076,7 +1076,7 @@ const spaceProjects = {
                 Wrought_Iron(offset){ return spaceCostMultiplier('fabrication', offset, 1200, 1.32); }
             },
             effect(){
-                let c_worker = global.race['cataclysm'] && !global.race['flier'] ? `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_cement_worker`)])}</div>` : ``;
+                let c_worker = global.race['cataclysm'] && !global.race['flier'] ? `<div>${loc('plus_max_resource',[jobScale(1),loc('job_resource_worker',[global.resource.Cement.name])])}</div>` : ``;
                 let fab = global.race['cataclysm'] || decayPerks() ? 5 : 2;
                 if (global.race['high_pop']){
                     fab = highPopAdjust(fab);
@@ -1122,7 +1122,7 @@ const spaceProjects = {
                     desc = desc + `<div>${loc('space_red_factory_effect2')}</div>`;
                 }
                 if (decayPerks() && !global.race['flier']){
-                    desc = desc + `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_cement_worker`)])}</div>`;
+                    desc = desc + `<div>${loc('plus_max_resource',[jobScale(1),loc('job_resource_worker',[global.resource.Cement.name])])}</div>`;
                 }
                 let helium = +(fuel_adjust(1,true,wiki)).toFixed(2);
                 desc = desc + `<div class="has-text-caution">${loc('space_red_factory_effect3',[helium,$(this)[0].powered()])}</div>`;
@@ -1483,8 +1483,8 @@ const spaceProjects = {
             path: ['truepath'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('botanical', offset, 85000000, 1.32); },
-                Alloy(offset){ return spaceCostMultiplier('botanical', offset, 550000, 1.32); },
-                Nano_Tube(offset){ return spaceCostMultiplier('botanical', offset, 400000, 1.32); },
+                Lumber(offset){ return spaceCostMultiplier('botanical', offset, 12500000, 1.32); },
+                Nano_Tube(offset){ return spaceCostMultiplier('botanical', offset, 1640000, 1.32); },
                 Water(offset){ return spaceCostMultiplier('botanical', offset, 110000, 1.32); }
             },
             calm: 0.3,
@@ -6972,6 +6972,7 @@ const structDefinitions = {
     ziggurat: { count: 0 },
     space_barracks: { count: 0, on: 0 },
     botanical: { count: 0, on: 0 },
+    comedy_club: { count: 0, on: 0 },
     biodome: { count: 0, on: 0 },
     laboratory: { count: 0, on: 0 },
     geothermal: { count: 0, on: 0 },
@@ -7219,6 +7220,17 @@ function space(zone){
                         el: `#${region}warn`,
                         data: global.race,
                         methods: zAssaultMethods()
+                    });
+                }
+
+                // Same treatment for a blockaded world, which has nothing else to show while it is shut.
+                let blockade = blockadeBanner(region);
+                if (blockade && global.race['zfleet']){
+                    $(`#${region}`).append(`<div id="${region}block">${blockade}</div>`);
+                    vBind({
+                        el: `#${region}block`,
+                        data: global.race,
+                        methods: blockadeMethods()
                     });
                 }
 

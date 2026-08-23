@@ -214,7 +214,7 @@ export const arpaProjects = {
         },
         cost: {
             Money(offset,wiki){ return costMultiplier('guard_station', offset, 48000000, 1.08, wiki); },
-            Food(offset,wiki){ return costMultiplier('guard_station', offset, 5000000, 1.08, wiki); },
+            Food(offset,wiki){ return costMultiplier('guard_station', offset, global.race['artifical'] ? 125000 : 5000000, 1.08, wiki); },
             Stone(offset,wiki){ return costMultiplier('guard_station', offset, 60000000, 1.08, wiki); },
             Furs(offset,wiki){ return costMultiplier('guard_station', offset, 44000000, 1.08, wiki); },
             Water(offset,wiki){ return costMultiplier('guard_station', offset, 120000, 1.08, wiki); }
