@@ -281,6 +281,14 @@ export function techInEra(c_action,era){
     return Array.isArray(c_action.era) ? c_action.era.includes(era) : c_action.era === era;
 }
 
+// if `reqs` is a function then it gets passed in the era of the tech.
+export function actionReqs(c_action,era){
+    if (c_action && typeof c_action.reqs === 'function'){
+        return c_action.reqs(era !== undefined ? era : techEra(c_action)) || {};
+    }
+    return c_action && c_action.reqs ? c_action.reqs : {};
+}
+
 export function powerGrid(type,reset){
     let grids = gridDefs();
 

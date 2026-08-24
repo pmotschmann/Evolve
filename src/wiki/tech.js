@@ -5,7 +5,7 @@ import { actions, housingLabel } from './../actions.js';
 import { techList } from './../tech.js';
 import { checkControlling } from './../civics.js';
 import { races, traits } from './../races.js';
-import { getHalloween, svgIcons, svgViewBox, techInEra } from './../functions.js';
+import { getHalloween, svgIcons, svgViewBox, techInEra, actionReqs } from './../functions.js';
 import { planetName } from './../space.js';
 import { actionDesc, sideMenu, getSolarName } from './functions.js';
 import { shipCapacitorSaving, surveyTheme } from './../truepath.js';
@@ -4576,16 +4576,18 @@ function pickTechReqs(candidates,pageEra){
 
 function addRequirements(parent,key,keyName,path,pageEra){
     let techTrees = getTechTrees(path);
-    if (Object.keys(key.reqs).length > 0){
+    // A tech spanning several eras can vary its requirements per era, so ask for the page's version.
+    let keyReqs = actionReqs(key,pageEra);
+    if (Object.keys(keyReqs).length > 0){
         let techReqs = {};
         let otherReqs = {};
-        Object.keys(key.reqs).forEach(function (req){
-            let color = global.tech[req] && global.tech[req] >= key.reqs[req] ? 'success' : 'danger';
-            let reqID = req + key.reqs[req];
+        Object.keys(keyReqs).forEach(function (req){
+            let color = global.tech[req] && global.tech[req] >= keyReqs[req] ? 'success' : 'danger';
+            let reqID = req + keyReqs[req];
             //Determine Tech Requirements and Non-Tech Requirements
-            if (techTrees[req] && techTrees[req][key.reqs[req]]) {
+            if (techTrees[req] && techTrees[req][keyReqs[req]]) {
                 techReqs[reqID] = [];
-                let currTechReq = techTrees[req][key.reqs[req]];
+                let currTechReq = techTrees[req][keyReqs[req]];
                 //For anomalies where multiple techs can fill one pre-req.
                 pickTechReqs(currTechReq,pageEra).forEach(function (subReq){
                     techReqs[reqID].push({
