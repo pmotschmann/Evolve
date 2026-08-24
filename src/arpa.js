@@ -12,7 +12,7 @@ import { govActive, defineGovernor } from './governor.js';
 import { highPopAdjust } from './prod.js';
 import { unlockFeat } from './achieve.js';
 import { loc } from './locale.js';
-import { renderSurface } from './iceage.js';
+import { renderSurface, ecosystemInfo, ecoMinorTraitEffect } from './iceage.js';
 export function arpa(type) {
     switch(type){
         case 'Physics':
@@ -34,6 +34,9 @@ export function arpa(type) {
             break;
         case 'Blood':
             blood();
+            break;
+        case 'Ecosystem':
+            ecosystem();
             break;
     }
 }
@@ -2794,6 +2797,103 @@ function blood(){
         $('#arpaBlood').append('<div id="blood"></div>');
         drawBlood();
     }
+}
+
+function ecosystem(){
+    clearElement($('#arpaEcosystem'));
+    drawEcosystem();
+}
+
+function drawEcosystem(){
+    let types = ['trees', 'herbivores', 'carnivores', 'scavengers'];
+    
+    ['trees', 'herbivores', 'carnivores', 'scavengers'].forEach(function(type){
+        if(global.surface[type]){
+            let breakdown = $(`<div id="geneticBreakdown_${type}" class="ecoTraits"></div>`);
+            $('#arpaEcosystem').append(breakdown);
+
+
+            let minorElem = $(`<div id="geneticMinor_${type}" class="traitListing"></div>`);
+            breakdown.append(minorElem);
+            minorElem.append(`<div class="traitHeading has-text-success" role="heading" aria-level="3">${loc('arpa_race_genetic_minor_traits',[loc(`surface_${type}`)])}</div>`);
+
+            let trait_box = $(`<div class="traitBox"></div>`);
+            minorElem.append(trait_box);
+            let minorList = ecosystemInfo.minorTraits;
+            for(let [index, entry] of Object.entries(minorList)){
+                let name_type = `${type === 'trees' ? `${index}_trees` : index}`;
+                let m_trait = $(`<div class="trait t-${index} traitRow"></div>`);
+                let gene = $(`<h4 class="is-sr-only">${index}</h4><span v-bind:class="['basic-button', 'gene', 'gbuy', genePurchasable('${type}', '${index}') ? '' : 'has-text-fade']" role="button" :aria-label="geneCost('${type}', '${index}')" @click="gene('${type}', '${index}')">${loc('genelab_eco_rank')}</span>`);
+                m_trait.append(gene);
+
+                m_trait.append(`<span class="has-text-warning name">(${global.surface[type].minorTraits[index]}) ${loc(`ecotrait_${name_type}_name`)}</span>`);
+
+                trait_box.append(m_trait);
+            };
+            let mGeneCost = ecosystemInfo.minorTraitCost;
+            vBind({
+                el: `#geneticBreakdown_${type}`,
+                data: {
+                    genes: global.genes,
+                    race: global.race
+                },
+                methods: {
+                    gene(eco, type){
+                        let curr_iteration = 0;
+                        let iterations = keyMultiplier();
+                        let can_purchase = true;
+                        let redraw = false;
+                        while (curr_iteration < iterations && can_purchase){
+                            let cost = mGeneCost(global.surface[eco].minorTraits[type]);
+                            if (global.resource.Genes.amount >= cost){
+                                global.resource.Genes.amount -= cost;
+                                global.surface[eco].minorTraits[type]++;
+                                redraw = true;
+                            }
+                            else {
+                                can_purchase = false;
+                            }
+                            curr_iteration++;
+                        }
+                        if (redraw){
+                            ecosystem();
+                        }
+                    },
+                    geneCost(eco, type){
+                        return mGeneCost(global.surface[eco].minorTraits[type]);
+                    },
+                    traitEffect(t){
+                        return 'description';
+                    },
+                    genePurchasable(eco, type){
+                        if(global.resource.Genes.amount >= mGeneCost(global.surface[eco].minorTraits[type])){
+                            return true;
+                        }
+                        return false;
+                    }
+                }
+            });
+            for(let [index, entry] of Object.entries(minorList)){
+                let name_type = `${type === 'trees' ? `${index}_trees` : index}`;
+
+                popover(`ecoGenetrait${index}`, function(){
+                    return `${loc('arpa_eco_gene_buy',[loc(`ecotrait_${name_type}_name`),sizeApproximation(mGeneCost(global.surface[type].minorTraits[index])),global.resource.Genes.name])}`;
+                },
+                {
+                    elm: `#geneticMinor_${type} .t-${index} .gbuy`,
+                    classes: `has-background-light has-text-dark`
+                });
+                popover(`ecoGenetrait${index}`, function(){
+                    let effect = (ecoMinorTraitEffect(type, index) - 1) * 100;
+                    return `<div>${loc(`ecotrait_${name_type}_desc`)}</div><div>${loc(`ecotrait_${name_type}_effect`, [+effect.toFixed(1)])}</div>`;
+                },
+                {
+                    elm: `#geneticMinor_${type} .t-${index} .name`,
+                    classes: `has-background-light has-text-dark`
+                });
+            }
+        }
+    })
 }
 
 function addProject(parent,project){

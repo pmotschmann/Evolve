@@ -260,14 +260,6 @@ export function production(id,val,wiki){
         {
             return 1.25;
         }
-        case 'water_pump':
-        {
-            let water = 4;
-            if(global.tech['water'] >= 5){
-                water *= 1.5;
-            }
-            return water;
-        }
         case 'titan_mine':
         {
             switch (val){
@@ -608,6 +600,35 @@ export function production(id,val,wiki){
                 return patrol * 0.01;
             }
             return 0;
+        }
+        case 'water_pump':
+        {
+            let water = 4;
+            if(global.tech['water'] >= 5){
+                water *= 1.5;
+            }
+            return water;
+        }
+        case 'crater_drill':
+        {
+            switch (val){
+                case 'iron':
+                {
+                    return highPopAdjust(0.4);
+                }
+                case 'copper':
+                {
+                    return highPopAdjust(0.3);
+                }
+                case 'coal':
+                {
+                    return highPopAdjust(0.3);
+                }
+                case 'uranium':
+                {
+                    return highPopAdjust(0.002);
+                }
+            }
         }
     }
 }

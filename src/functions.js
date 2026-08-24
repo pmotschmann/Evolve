@@ -288,7 +288,7 @@ export function powerGrid(type,reset){
                 'eden_elysium:sacred_smelter','prtl_pit:soul_capacitor','prtl_lake:oven_complete','eden_elysium:elysanite_mine','eden_elysium:elerium_containment','eden_elysium:pillbox','eden_elysium:archive',
                 'eden_elysium:restaurant','eden_elysium:eden_cement','eden_isle:spirit_battery','eden_isle:spirit_vacuum','cave:hollow','cave:under_transmitter','cave:storage_space','cave:under_mine','cave:mineshaft_vator','cave:bonfire',
                 'depths:stone_house','depths:under_coal_mine','depths:under_foundry','depths:under_casino','industry:archaeological_dig','industry:under_biolab','industry:water_pump','industry:under_factory','industry:oil_pump',
-                'core:core_mine','core:core_blacksmith','core:core_forge','wastes:great_heater','wastes:surface_farm','wastes:surface_zoo','ecosystem:area_heater','ecosystem:water_pipe',
+                'core:core_mine','core:core_blacksmith','core:core_forge','core:core_refinery','wastes:great_heater','wastes:surface_farm','wastes:surface_zoo','ecosystem:area_heater','ecosystem:water_pipe','crater:crater_station',
                 'city:replicator'
             ];
             break;
@@ -345,6 +345,9 @@ export function powerGrid(type,reset){
             break;
         case 'wastes':
             power_structs = ['wastes:watch_tower', 'wastes:woodcutter', 'wastes:surface_apartment', 'wastes:genetics_lab'];
+            break;
+        case 'crater':
+            power_structs = ['crater:work_quarters', 'crater:crater_drill', 'crater:crater_fabrication', 'crater:crater_factory'];
             break;
     }
 

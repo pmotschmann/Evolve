@@ -8255,6 +8255,7 @@ function drawModal(c_action,type){
         case 'tau_factory':
         case 'hell_factory':
         case 'under_factory':
+        case 'crater_factory':
         case 'industrial_complex':
             loadIndustry('factory',body);
             break;

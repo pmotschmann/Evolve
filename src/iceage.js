@@ -1,16 +1,15 @@
 import { global, seededRandom, sizeApproximation, p_on, support_on } from './vars.js';
 import { loc } from './locale.js';
-import { buildTemplate, actions, setAction, drawTech, payCosts, BHStorageMulti, bank_vault, templeEffect, wardenLabel, powerOnNewStruct, storageMultipler, structName, casinoEffect, initStruct, housingLabel } from './actions.js';
-import { clearElement, popover, darkEffect, getShrineBonus, powerCostMod, vBind, modRes, messageQueue, powerModifier, timeFormat } from './functions.js';
+import { buildTemplate, actions, setAction, drawTech, payCosts, BHStorageMulti, bank_vault, templeEffect, powerOnNewStruct, storageMultipler, structName, casinoEffect, initStruct, housingLabel } from './actions.js';
+import { clearElement, popover, darkEffect, getShrineBonus, powerCostMod, vBind, modRes, messageQueue, powerModifier, timeFormat, fibonacci } from './functions.js';
 import { addSmelter, defineIndustry, factoryData } from './industry.js';
 import { govActive } from './governor.js';
 import { production, highPopAdjust } from './prod.js';
 import { spatialReasoning, } from './resources.js';
 import { jobScale, workerScale, loadFoundry, job_data } from './jobs.js';
 import { garrisonSize, armorCalc, armyRating, soldierDeath } from './civics.js';
-import { races, traits, fathomCheck, traitCostMod, planetTraits, racialTrait, servantTrait } from './races.js';
+import { races, traits, fathomCheck, traitCostMod, planetTraits, racialTrait, servantTrait, geneVars } from './races.js';
 import { checkRequirements, incrementStruct } from './space.js';
-
 
 const iceAgeModules = {
     underground:{
@@ -828,7 +827,7 @@ const iceAgeModules = {
                     }
                     miner_base *= 1 + (trait_mods ** 0.5) - 1; //trait effects are severely reduced
                     if (global.race['industrious']){
-                        let bonus = 1 + (traits.industrious.vars()[0] * global.race['industrious'] / 100);
+                        let bonus = 1 + (geneVars('industrious')[0] * global.race['industrious'] / 100);
                         miner_base *= bonus;
                     }
                     if (global.city.ptrait.includes('dense')){
@@ -1189,7 +1188,8 @@ const iceAgeModules = {
                 },
                 effect(){
                     let desc = casinoEffect();
-                    desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                    desc += `<div>${loc('space_red_vr_center_effect1', [2])}</div>`;
+                    desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                     return desc;
                 },
                 powered(){ return powerCostMod(global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 2 ? 2 : 3); },
@@ -1460,6 +1460,9 @@ const iceAgeModules = {
                         }
                     }
                     wins += seededRandom(-2,2,false, global['warseed']);
+                    if(wins < 0){
+                        wins = 0;
+                    }
                     let calc_odds = (wins * 10 - 100).toFixed(0);
                     return `<div>${loc('underground_cave_creatures_effect', [3])}</div><div>${loc('underground_cave_creatures_effect2', [$(this)[0].group_size()])}</div>
                         <div>${loc(calc_odds >= 0 ? 'civics_garrison_advantage' : 'civics_garrison_disadvantage', [Math.abs(calc_odds)])}</div>`;
@@ -1468,7 +1471,7 @@ const iceAgeModules = {
                     if(garrisonSize() > 0){
                         let result = cave_fight(true);
                         if (result.success){
-                            messageQueue(loc('underground_cave_creatures_combat_success', [result.kills, result.deaths, result.injuries]));
+                            messageQueue(loc('underground_cave_creatures_combat_success', [result.kills, result.deaths, result.injuries]), 'success');
                             incrementStruct($(this)[0]);
                             return true;
                         }
@@ -1809,7 +1812,7 @@ const iceAgeModules = {
                     return desc;
                 },
                 production(){
-                    return production('oil_well') * 2;
+                    return production('oil_well') * 2.5;
                 },
                 powered(){ return powerCostMod(2); },
                 res_cap(res){
@@ -1986,8 +1989,7 @@ const iceAgeModules = {
                 },
                 effect(){
                     let desc = `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_core_miner`)])}</div>`;
-                    desc += `<div class="has-text-caution">${loc('minus_power', [$(this)[0].powered()])}, 
-                    ${loc('spend', [$(this)[0].consume('water'), global.resource.Water.name])}, 
+                    desc += `<div class="has-text-caution">${loc('spend', [$(this)[0].consume('water'), global.resource.Water.name])}, 
                     ${loc('spend', [$(this)[0].consume('steel'), global.resource.Steel.name])}, 
                     ${loc('spend', [$(this)[0].consume('alloy'), global.resource.Alloy.name])}</div>`;
                     desc += `<div class="has-text-special">${loc('underground_core_mine_effect1', [global.resource.Steel.name, global.resource.Alloy.name])}</div>`;
@@ -2014,7 +2016,7 @@ const iceAgeModules = {
                     }
                     return false;
                 },
-                powered(){ return powerCostMod(5); },
+                powered(){ return 0; },
                 struct(){
                     return {
                         d: { count: 0 },
@@ -2080,7 +2082,7 @@ const iceAgeModules = {
                 cost: {
                     Money(offset){ return undergroundCostMultiplier('core_forge', offset, 250000, 1.55, 'core'); },
                     Coal(offset){ return undergroundCostMultiplier('core_forge', offset, 220000, 1.65, 'core'); },
-                    Wrought_Iron(offset){ return undergroundCostMultiplier('core_forge', offset, 5000, 1.55, 'core'); },
+                    Wrought_Iron(offset){ return undergroundCostMultiplier('core_forge', offset, 15000, 1.55, 'core'); },
                     Iridium(offset){ return undergroundCostMultiplier('core_forge', offset, 4000, 1.65, 'core'); },
                 },
                 effect(){
@@ -2110,6 +2112,52 @@ const iceAgeModules = {
                     return {
                         d: { count: 0 },
                         p: ['core_forge','underground']
+                    };
+                }
+            },
+            core_refinery: {
+                id: 'underground-core_refinery',
+                title(){
+                    return loc('underground_core_refinery');
+                },
+                desc(){
+                    return loc('underground_core_refinery_desc');
+                },
+                type: 'industry',
+                reqs: { core: 3 },
+                cost: {
+                    Money(offset){ return undergroundCostMultiplier('core_refinery', offset, 310000, 1.55, 'core'); },
+                    Stone(offset){ return undergroundCostMultiplier('core_refinery', offset, 230000, 1.65, 'core'); },
+                    Alloy(offset){ return undergroundCostMultiplier('core_refinery', offset, 55000, 1.65, 'core'); },
+                    Brick(offset){ return undergroundCostMultiplier('core_refinery', offset, 15000, 1.55, 'core'); },
+                },
+                effect(){
+                    return `<div>${loc('underground_core_refinery_effect', [5])}</div>
+                        <span class="has-text-caution">${loc('spend',[$(this)[0].consume('water'), global.resource.Water.name])}</span>
+                        <span class="has-text-caution">${loc('spend',[$(this)[0].consume('oil'), global.resource.Oil.name])}</span>`;
+                },
+                consume(res){
+                    switch (res){
+                        case 'water':
+                            return 40;
+                        case 'oil':
+                            return 10;
+                    }
+                    return 0
+                },
+                action(args){
+                    if (payCosts($(this)[0])){
+                        incrementStruct($(this)[0]);
+                        powerOnNewStruct($(this)[0]);
+                        return true;
+                    }
+                    return false;
+                },
+                powered(){ return 0; },
+                struct(){
+                    return {
+                        d: { count: 0 },
+                        p: ['core_refinery','underground']
                     };
                 }
             },
@@ -2207,17 +2255,17 @@ const iceAgeModules = {
                 type: 'outpost',
                 reqs: { surface: 2 },
                 cost: {
-                    Money(offset){ return undergroundCostMultiplier('great_heater', offset, 22000, 1.45, 'wastes', 'surface'); },
-                    Cement(offset){ return undergroundCostMultiplier('great_heater', offset, 18000, 1.55, 'wastes', 'surface'); },
-                    Copper(offset){ return undergroundCostMultiplier('great_heater', offset, 7800, 1.55, 'wastes', 'surface'); },
-                    Polymer(offset){ return undergroundCostMultiplier('great_heater', offset, 12500, 1.55, 'wastes', 'surface'); }
+                    Money(offset){ return undergroundCostMultiplier('great_heater', offset, 22000, 1.4, 'wastes', 'surface'); },
+                    Cement(offset){ return undergroundCostMultiplier('great_heater', offset, 18000, 1.45, 'wastes', 'surface'); },
+                    Copper(offset){ return undergroundCostMultiplier('great_heater', offset, 7800, 1.45, 'wastes', 'surface'); },
+                    Polymer(offset){ return undergroundCostMultiplier('great_heater', offset, 12500, 1.45, 'wastes', 'surface'); }
                 },
                 effect(wiki){
                     let desc = `<div>${loc('galaxy_foothold_effect', [$(this)[0].support(), loc('surface_wastes')])}</div>`;
                     desc += `<div class="has-text-caution">${loc('minus_power', [$(this)[0].powered()])}</div>`;
                     return desc;
                 },
-                support(){ return 2; },
+                support(){ return global.tech['surface_uranium'] >= 3 ? 3 : 2; },
                 /*support_fuel(){ return { r: 'Oil', a: 2 }; },*/
                 powered(){ return powerCostMod(35); },
                 powerBalancer(){
@@ -2315,7 +2363,7 @@ const iceAgeModules = {
                 },
                 effect(){
                     let desc = `<div class="has-text-caution">${loc('space_used_support', [loc('surface_wastes')])}</div>`;
-                    desc += `<div>${loc('production',[4,global.resource.Lumber.name])}</div>`;
+                    desc += `<div>${loc('production',[8,global.resource.Lumber.name])}</div>`;
                     return desc;
                 },
                 special: true,
@@ -2338,7 +2386,8 @@ const iceAgeModules = {
                         d: { count: 0, on: 0 },
                         p: ['woodcutter','surface']
                     };
-                }
+                },
+                flair(){ return loc('surface_woodcutter_flair'); }
             },
             surface_apartment: {
                 id: 'surface-surface_apartment',
@@ -2421,10 +2470,28 @@ const iceAgeModules = {
                 },
                 effect(wiki){
                     let desc = `<span class="has-text-caution">${loc('space_used_support', [loc('surface_wastes')])}</span>`;
-                    desc += `<div>${loc('surface_genetics_lab_effect1', [75])}</div>`;
-                    desc += `<div>${loc('surface_genetics_lab_effect2')}</div>`;
+                    if(global.surface.trees){
+                        desc += `<div>${loc('surface_genetics_lab_effect1', [(35 * ecoMinorTraitEffect('trees', 'curious')).toFixed(0)])}</div>`;
+                    }
+                    if(global.surface.herbivores){
+                        desc += `<div>${loc('surface_genetics_lab_effect2', [(80 * ecoMinorTraitEffect('trees', 'curious')).toFixed(0)])}</div>`;
+                    }
+                    if(global.surface.carnivores){
+                        desc += `<div>${loc('surface_genetics_lab_effect3', [(200 * ecoMinorTraitEffect('trees', 'curious')).toFixed(0)])}</div>`;
+                    }
+                    if(global.surface.scavengers){
+                        desc += `<div>${loc('surface_genetics_lab_effect4', [(60 * ecoMinorTraitEffect('trees', 'curious')).toFixed(0)])}</div>`;
+                    }
+                    desc += `<div>${loc('surface_genetics_lab_effect5')}</div>`;
                     //desc += `<div>${loc('surface_genetics_lab_effect3', [(100 / $(this)[0].creation_cooldown_mult() - 100).toFixed(0)])}</div>`;
                     return desc;
+                },
+                knowVal(){
+                    let result = 35 * (global.surface.trees?.count || 0) * ecoMinorTraitEffect('trees', 'curious');
+                    result += 80 * (global.surface.herbivores?.count || 0) * ecoMinorTraitEffect('herbivores', 'curious');
+                    result += 200 * (global.surface.carnivores?.count || 0) * ecoMinorTraitEffect('carnivores', 'curious');
+                    result += 60 * (global.surface.scavengers?.count || 0) * ecoMinorTraitEffect('scavengers', 'curious');
+                    return result;
                 },
                 creation_cooldown_mult(){
                     return 1 / (support_on['genetics_lab'] || 1);
@@ -2525,10 +2592,10 @@ const iceAgeModules = {
                 },
                 effect(wiki){
                     let desc = `<div class="has-text-caution">${loc('requires_power_combo_effect', [$(this)[0].powered(), $(this)[0].consume('food'), global.resource.Food.name])}</div>`;
-                    desc += `<div>${loc('surface_zoo_effect1', [0.03])}</div>`;
-                    desc += `<div>${loc('surface_zoo_effect2', [0.08])}</div>`;
-                    desc += `<div>${loc('surface_zoo_effect3', [0.25])}</div>`;
-                    desc += `<div>${loc('surface_zoo_effect4', [0.1])}</div>`;
+                    desc += `<div>${loc('surface_zoo_effect1', [+(0.04 * ecoMinorTraitEffect('trees', 'playful')).toFixed(2)])}</div>`;
+                    desc += `<div>${loc('surface_zoo_effect2', [+(0.1 * ecoMinorTraitEffect('herbivores', 'playful')).toFixed(2)])}</div>`;
+                    desc += `<div>${loc('surface_zoo_effect3', [+(0.25 * ecoMinorTraitEffect('carnivores', 'playful')).toFixed(2)])}</div>`;
+                    desc += `<div>${loc('surface_zoo_effect4', [+(0.075 * ecoMinorTraitEffect('scavengers', 'playful')).toFixed(2)])}</div>`;
                     desc += `<div>${loc('surface_zoo_effect5', [4, 3])}</div>`;
                     return desc;
                 },
@@ -2555,6 +2622,66 @@ const iceAgeModules = {
                     };
                 },
                 flair(){ return loc('surface_zoo_flair'); }
+            },
+            grand_dome: {
+                id: 'surface-grand_dome',
+                title(){ return loc('surface_grand_dome'); },
+                desc(wiki){
+                    return `<div>${loc('surface_grand_dome')}</div>${global.surface.grand_dome.count < 100 || wiki ? `<div class="has-text-special">${loc('requires_segments',[100])}</div>` : ``}`;
+                },
+                type: 'megaproject',
+                reqs: { crater: 4 },
+                queue_size: 10,
+                queue_complete(){ return 100 - global.surface.grand_dome.count; },
+                cost: {
+                    Money(offset){ return ((offset || 0) + (global.surface.grand_dome?.count || 0)) < 100 ? 750000 : 0; },
+                    Uranium(offset){ return ((offset || 0) + (global.surface.grand_dome?.count || 0)) < 100 ? 20 : 0; },
+                    Polymer(offset){ return ((offset || 0) + (global.surface.grand_dome?.count || 0)) < 100 ? 80000 : 0; },
+                    Titanium(offset){ return ((offset || 0) + (global.surface.grand_dome?.count || 0)) < 100 ? 95000 : 0; },
+                    Mythril(offset){ return ((offset || 0) + (global.surface.grand_dome?.count || 0)) < 100 ? 35000 : 0; }
+                },
+                effect(wiki){
+                    let count = (wiki?.count ?? 0) + (global.surface.grand_dome?.count || 0);
+                    let desc = `<div>${loc('galaxy_foothold_effect', [$(this)[0].support(count), loc('surface_wastes')])}</div>
+                        <div>${loc('surface_grand_dome_effect', [$(this)[0].eco_area(count)])}`;
+                    if(count < 100){
+                        desc += `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[100 - count])}</div>`;
+                    }
+                    return desc;
+                },
+                support(wiki){
+                    let count = (wiki?.count ?? 0) + (global.surface.grand_dome?.count || 0);
+                    if(count < 100){
+                        return (2 * count) / 10; //anti floating point imprecision
+                    }
+                    return 30;
+                },
+                eco_area(wiki){
+                    let count = (wiki?.count ?? 0) + (global.surface.grand_dome?.count || 0);
+                    if(count < 100){
+                        return 1 * count;
+                    }
+                    return 200;
+                },
+                action(args){
+                    if (payCosts($(this)[0])){
+                        if (global.surface.grand_dome.count < 100){
+                            incrementStruct($(this)[0]);
+                            if (global.surface.grand_dome.count >= 100){
+                                global.tech['crater'] = 5;
+                                drawTech();
+                            }
+                            return true;
+                        }
+                    }
+                    return false;
+                },
+                struct(){
+                    return {
+                        d: { count: 0 },
+                        p: ['grand_dome','surface']
+                    };
+                }
             }
         },
         ecosystem: {
@@ -2570,54 +2697,44 @@ const iceAgeModules = {
                     let desc = `<div>${loc('surface_overview_area', [info.area])}</div>`;
                     let water_use = $(this)[0].total_water_use();
                     desc += `<div class="${water_use > info.water ? 'has-text-danger' : ''}">${loc('surface_overview_water', [(info.water - water_use).toFixed(0), info.water, water_use.toFixed(0)])}</div>`;
-                    
-                    let tree_cycle = actions.surface.ecosystem.trees.growth_cycle();
-                    if(tree_cycle.total_change >= 0){
-                        desc += `<div>${loc('surface_overview_trees', [Math.floor(info.trees), `+${tree_cycle.total_change.toFixed(2)}`])}</div>`;
+                    let corpses = 0;
+                    let flood = 0;
+                    let drought = 0;
+                    if(global.surface.trees?.count){
+                        let tree_cycle = growth_cycle('trees');
+                        desc += `<div>${loc('surface_overview_trees', [Math.floor(global.surface.trees.count), `${tree_cycle.total_change.toFixed(2) >= 0 ? '+' : ''}${+tree_cycle.total_change.toFixed(2)}`])}</div>`;
+                        flood += tree_cycle.flood_loss;
+                        drought += tree_cycle.drought_loss;
                     }
-                    else{
-                        desc += `<div>${loc('surface_overview_trees', [Math.floor(info.trees), tree_cycle.total_change.toFixed(2)])}</div>`;
+                    if(global.surface.herbivores?.count){
+                        let herbivore_cycle = growth_cycle('herbivores');
+                        desc += `<div>${loc('surface_overview_herbivores', [Math.floor(global.surface.herbivores.count), `${herbivore_cycle.total_change.toFixed(2) >= 0 ? '+' : ''}${+herbivore_cycle.total_change.toFixed(2)}`])}</div>`;
+                        flood += herbivore_cycle.flood_loss;
+                        drought += herbivore_cycle.drought_loss;
                     }
-                    if(info.herbivores){
-                        let herbivore_cycle = actions.surface.ecosystem.herbivores.growth_cycle();
-                        if(herbivore_cycle.total_change >= 0){
-                            desc += `<div>${loc('surface_overview_herbivores', [Math.floor(info.herbivores), `+${herbivore_cycle.total_change.toFixed(2)}`])}</div>`;
-                        }
-                        else{
-                            desc += `<div>${loc('surface_overview_herbivores', [Math.floor(info.herbivores), herbivore_cycle.total_change.toFixed(2)])}</div>`;
-                        }
+                    if(global.surface.carnivores?.count){
+                        let carnivore_cycle = growth_cycle('carnivores');
+                        desc += `<div>${loc('surface_overview_carnivores', [Math.floor(global.surface.carnivores.count), `${carnivore_cycle.total_change.toFixed(2) >= 0 ? '+' : ''}${+carnivore_cycle.total_change.toFixed(2)}`])}</div>`;
+                        flood += carnivore_cycle.flood_loss;
+                        drought += carnivore_cycle.drought_loss;
+                        corpses += carnivore_cycle.corpse_create;
                     }
-                    if(info.carnivores){
-                        let carnivore_cycle = actions.surface.ecosystem.carnivores.growth_cycle();
-                        if(carnivore_cycle.total_change >= 0){
-                            desc += `<div>${loc('surface_overview_carnivores', [Math.floor(info.carnivores), `+${carnivore_cycle.total_change.toFixed(2)}`])}</div>`;
-                        }
-                        else{
-                            desc += `<div>${loc('surface_overview_carnivores', [Math.floor(info.carnivores), carnivore_cycle.total_change.toFixed(2)])}</div>`;
-                        }
-                        let corpse_cycle = $(this)[0].corpse_cycle();
-                        if(corpse_cycle >= 0){
-                            desc += `<div>${loc('surface_overview_corpses', [Math.floor(info.corpses), `+${corpse_cycle.toFixed(2)}`])}</div>`;
-                        }
-                        else{
-                            desc += `<div>${loc('surface_overview_corpses', [Math.floor(info.corpses), corpse_cycle.toFixed(2)])}</div>`;
-                        }
-                    }
-                    if(info.scavengers){
-                        let scavenger_cycle = actions.surface.ecosystem.scavengers.growth_cycle();
-                        if(scavenger_cycle.total_change >= 0){
-                            desc += `<div>${loc('surface_overview_scavengers', [Math.floor(info.scavengers), `+${scavenger_cycle.total_change.toFixed(2)}`])}</div>`;
-                        }
-                        else{
-                            desc += `<div>${loc('surface_overview_scavengers', [Math.floor(info.scavengers), scavenger_cycle.total_change.toFixed(2)])}</div>`;
-                        }
+                    if(global.surface.scavengers?.count){
+                        let scavenger_cycle = growth_cycle('scavengers');
+                        desc += `<div>${loc('surface_overview_scavengers', [Math.floor(global.surface.scavengers.count), `${scavenger_cycle.total_change.toFixed(2) >= 0 ? '+' : ''}${+scavenger_cycle.total_change.toFixed(2)}`])}</div>`;
+                        flood += scavenger_cycle.flood_loss;
+                        drought += scavenger_cycle.drought_loss;
+                        corpses -= scavenger_cycle.corpse_consume;
                     }
                     
+                    let corpse_change = corpse_cycle(corpses);
+                    desc += `<div>${loc('surface_overview_corpses', [Math.floor(info.corpses), `${corpse_change >= 0 ? '+' : ''}${+corpse_change.toFixed(2)}`])}</div>`;
+
                     let water_ratio = (info.water - $(this)[0].total_water_use()) / info.area;
-                    if(water_ratio < 0.1){
+                    if(water_ratio < 0.1 || drought > 0){
                         desc += `<div class="has-text-danger">${loc('surface_overview_warn_drought')}</div>`;
                     }
-                    else if(water_ratio > 0.5){
+                    else if(water_ratio > 0.5 || flood > 0){
                         desc += `<div class="has-text-danger">${loc('surface_overview_warn_flood')}</div>`;
                     }
                     return desc;
@@ -2629,25 +2746,10 @@ const iceAgeModules = {
                     return false;
                 },
                 total_water_use(){
-                    let total = global.surface.overview.trees * ecosystemInfo.trees.water_use;
-                    total += global.surface.overview.herbivores * ecosystemInfo.herbivores.water_use;
-                    return total;
-                },
-                corpse_cycle(){
-                    let total = 0;
-                    let info = evolve.global.surface?.overview;
-                    if(info){
-                        let avail = info.herbivores / 100 + info.scavengers / 250 + info.carnivores / 50; //amount of available creatures that can become corpses
-                        let create = ecosystemInfo.carnivores.herbivores_use * info.carnivores;
-                        let consume = ecosystemInfo.scavengers.corpse_use * info.scavengers;
-                        
-                        total += Math.min(avail, create);
-                        let ratio = ((info.corpses + total) * 20) / info.area;
-                        if(ratio > 1){ //diminishing returns if there are more than 5% as much corpses as area, linear reduction until 0% at 10% coverage
-                            total *= (Math.min(0, (2 - ratio)));
-                        }
-                        total -= consume;
-                    }
+                    let total = (global.surface.trees?.count || 0) * ecosystemInfo.trees.water_use;
+                    total += (global.surface.herbivores?.count || 0) * ecosystemInfo.herbivores.water_use;
+                    total += (global.surface.carnivores?.count || 0) * ecosystemInfo.carnivores.water_use;
+                    total += (global.surface.scavengers?.count || 0) * ecosystemInfo.scavengers.water_use;
                     return total;
                 },
                 set_cooldown(time){
@@ -2658,7 +2760,7 @@ const iceAgeModules = {
                 },
                 struct(){
                     return {
-                        d: { area: 0, water: 0, trees:0, herbivores: 0, carnivores: 0, corpses:0, scavengers: 0, cooldown: 0, tree_ratio:0 },
+                        d: { area: 0, water: 0, corpses:0, cooldown: 0, trees_reserved: 0 },
                         p: ['overview','surface']
                     };
                 }
@@ -2670,18 +2772,18 @@ const iceAgeModules = {
                 type: 'ecosystem',
                 reqs: { surface: 4 },
                 cost: {
-                    Money(offset){ return undergroundCostMultiplier('area_heater', offset, 22000, 1.45, 'ecosystem', 'surface'); },
-                    Cement(offset){ return undergroundCostMultiplier('area_heater', offset, 18000, 1.55, 'ecosystem', 'surface'); },
-                    Copper(offset){ return undergroundCostMultiplier('area_heater', offset, 7800, 1.55, 'ecosystem', 'surface'); },
-                    Polymer(offset){ return undergroundCostMultiplier('area_heater', offset, 12500, 1.55, 'ecosystem', 'surface'); }
+                    Money(offset){ return undergroundCostMultiplier('area_heater', offset, 22000, 1.4, 'ecosystem', 'surface'); },
+                    Cement(offset){ return undergroundCostMultiplier('area_heater', offset, 18000, 1.45, 'ecosystem', 'surface'); },
+                    Copper(offset){ return undergroundCostMultiplier('area_heater', offset, 7800, 1.45, 'ecosystem', 'surface'); },
+                    Polymer(offset){ return undergroundCostMultiplier('area_heater', offset, 12500, 1.45, 'ecosystem', 'surface'); }
                 },
                 effect(wiki){
                     let desc = `<div class="has-text-caution">${loc('minus_power', [$(this)[0].powered()])}</div>`;
                     desc += `<div>${loc('surface_area_heater_effect', [$(this)[0].support()])}</div>`;
                     return desc;
                 },
-                powered(){ return powerCostMod(25); },
-                support(){ return 30; },
+                powered(){ return powerCostMod(18); },
+                support(){ return global.tech['surface_uranium'] >= 3 ? 40 : 30; },
                 action(args){
                     if (payCosts($(this)[0])){
                         incrementStruct($(this)[0]);
@@ -2709,10 +2811,10 @@ const iceAgeModules = {
                 type: 'ecosystem',
                 reqs: { surface: 4 },
                 cost: {
-                    Money(offset){ return undergroundCostMultiplier('water_pipe', offset, 46000, 1.55, 'ecosystem', 'surface'); },
-                    Titanium(offset){ return undergroundCostMultiplier('water_pipe', offset, 1200, 1.65, 'ecosystem', 'surface'); },
-                    Copper(offset){ return undergroundCostMultiplier('water_pipe', offset, 32000, 1.65, 'ecosystem', 'surface'); },
-                    Sheet_Metal(offset){ return undergroundCostMultiplier('water_pipe', offset, 4000, 1.55, 'ecosystem', 'surface'); }
+                    Money(offset){ return undergroundCostMultiplier('water_pipe', offset, 46000, 1.4, 'ecosystem', 'surface'); },
+                    Titanium(offset){ return undergroundCostMultiplier('water_pipe', offset, 1200, 1.45, 'ecosystem', 'surface'); },
+                    Copper(offset){ return undergroundCostMultiplier('water_pipe', offset, 32000, 1.45, 'ecosystem', 'surface'); },
+                    Sheet_Metal(offset){ return undergroundCostMultiplier('water_pipe', offset, 4000, 1.4, 'ecosystem', 'surface'); }
                 },
                 effect(wiki){
                     let desc = `<span class="has-text-caution">${loc('spend',[$(this)[0].consume('water'), global.resource.Water.name])}, ${loc('minus_power',[$(this)[0].powered()])}</span>`;
@@ -2720,7 +2822,16 @@ const iceAgeModules = {
                     return desc;
                 },
                 powered(){ return powerCostMod(10); },
-                support(){ return 10; },
+                support(){
+                    let total = 10;
+                    if(global.tech['water'] >= 5){
+                        total *= 1.5;
+                    }
+                    if(global.tech['water'] >= 6){
+                        total *= 2;
+                    }
+                    return total;
+                },
                 consume(res){
                     switch (res){
                         case 'water':
@@ -2747,96 +2858,33 @@ const iceAgeModules = {
                 id: 'surface-trees',
                 title(){ return loc('surface_trees'); },
                 desc(){ return loc('surface_trees_desc'); },
+                count(){ return Math.floor(global.surface.trees?.count || 0); },
                 reqs: { surface: 4 },
                 wiki: false,
                 queue_complete(){ return false; },
-                count(){ return Math.floor(global.surface.overview.trees); },
                 show_count: true,
                 effect(){
                     let desc = ``;
-                    let growth_cycle = $(this)[0].growth_cycle();
-                    if(growth_cycle.lumberjack_loss > 0){
-                        desc += `<div>${loc('surface_ecosystem_lumberjack_loss', [growth_cycle.lumberjack_loss.toFixed(2)])}</div>`;
-                    }
-                    if(growth_cycle.drought_loss > 0){
-                        desc += `<div>${loc('surface_ecosystem_drought_loss', [growth_cycle.drought_loss.toFixed(2)])}</div>`;
-                    }
-                    if(growth_cycle.flood_loss > 0){
-                        desc += `<div>${loc('surface_ecosystem_flood_loss', [growth_cycle.flood_loss.toFixed(2)])}</div>`;
-                    }
-                    if(growth_cycle.size_loss > 0){
-                        desc += `<div>${loc('surface_ecosystem_size_loss', [growth_cycle.size_loss.toFixed(2)])}</div>`;
-                    }
-                    if(growth_cycle.herbivore_loss > 0){
-                        desc += `<div>${loc('surface_ecosystem_herbivore_loss', [growth_cycle.herbivore_loss.toFixed(2)])}</div>`;
-                    }
-                    if(growth_cycle.grow_gain > 0){
-                        desc += `<div>${loc('surface_ecosystem_grow_gain', [growth_cycle.grow_gain.toFixed(2)])}</div>`;
-                    }
-                    desc += `<div>${loc('surface_trees_effect1')}</div>`;
-                    desc += `<div>${loc('surface_overview_cooldown', [$(this)[0].cooldown()])}</div>`;
-                    desc += `<div class="has-text-caution">${loc('surface_overview_cooldown_left', [Math.ceil(global.surface.overview.cooldown * actions.surface.wastes.genetics_lab.creation_cooldown_mult())])}</div>`;
-                    return desc;
-                },
-                growth_cycle(){
-                    let info = global.surface.overview;
-                    let water = info.water - actions.surface.ecosystem.overview.total_water_use();
-                    let water_ratio = water / info.area;
                     let lumberjacks = workerScale(global.civic.lumberjack.workers,'lumberjack');
                     if (global.race['servants']){
                         let serve = global.race.servants.jobs.lumberjack;
                         serve *= servantTrait(global.race.servants.jobs.lumberjack,'lumberjack');
                         lumberjacks += serve;
                     }
-                    if(water_ratio < 0){
-                        water_ratio = 0;
-                    }
-                    let size_ratio = info.trees * ecosystemInfo.trees.size / info.area; //1 = 100% coverage, 0 = 0% coverage
-                    let results = {
-                        drought_loss: 0,
-                        flood_loss: 0,
-                        size_loss: 0,
-                        herbivore_loss: 0,
-                        lumberjack_loss: 0,
-                        total_loss: 0,
-                        grow_gain: 0,
-                        total_gain: 0,
-                        total_change: 0
-                    };
-                    if(water_ratio <= ecosystemInfo.trees.water_min){ //0% loss at 0.1 water -> 5% loss at 0 water
-                        results.drought_loss = global.surface.overview.trees * (0.05 * (Math.abs(water_ratio - 0.1) / ecosystemInfo.trees.water_min));
-                    }
-                    if(water_ratio > ecosystemInfo.trees.water_max){ //2% loss per 0.1 above 0.5 up to 10% loss at 1 water
-                        results.flood_loss = global.surface.overview.trees * (0.02 * ((water_ratio-ecosystemInfo.trees.water_max) * 10));
-                    }
-                    if(size_ratio > 1){ //5% loss per ratio over 1 (compounding). ex: 100 size worth of trees with 50 area = 2 ratio = 5% loss
-                        results.size_loss = global.surface.overview.trees * 1 - (0.95 ** (size_ratio - 1));
-                    }
                     if(lumberjacks){
-                        results.lumberjack_loss = lumberjacks * 5 / $(this)[0].hardiness();
+                        desc += `<div>${loc('surface_ecosystem_lumberjack_loss', [+(lumberjacks * 5 / $(this)[0].hardiness()).toFixed(2)])}</div>`;
                     }
-                    results.herbivore_loss = ecosystemInfo.herbivores.trees_use * info.herbivores;
-                    if(water_ratio > 0){ //requires at least some water to grow. Having life consume water to 0 in a cycle counts as no water.
-                        let rate = 1;
-                        if (size_ratio >= 0.5){
-                            rate = ((ecosystemInfo.trees.growth_rate - 1) * (2 - size_ratio * 2))
-                            //results.grow_gain = global.surface.overview.trees * ((ecosystemInfo.trees.growth_rate - 1) * (2 - size_ratio * 2)); //linear reduction from 0.5 to 1 from 100% growth to 0%
-                        }
-                        else{
-                            rate = (ecosystemInfo.trees.growth_rate - 1);
-                        }
-                        rate *= actions.surface.ecosystem.carnivores.tree_effect();
-                        results.grow_gain = global.surface.overview.trees * rate;
-                    }
-                    results.total_loss = results.flood_loss + results.drought_loss + results.herbivore_loss;
-                    results.total_gain = results.grow_gain;
-                    results.total_change = results.total_gain - results.total_loss;
-                    return results;
+                    desc += cycle_breakdown('trees');
+                    desc += `<div class="has-text-special">${loc('surface_trees_effect1')}</div>`;
+                    desc += `<div class="has-text-special">${loc('surface_overview_cooldown', [$(this)[0].cooldown()])}</div>`;
+                    desc += `<div class="has-text-caution">${loc('surface_overview_cooldown_left', [Math.ceil(global.surface.overview.cooldown * actions.surface.wastes.genetics_lab.creation_cooldown_mult())])}</div>`;
+                    return desc;
                 },
                 hardiness(){
                     //how long it takes a lumberjack to cut a tree down in seconds. Higher value is better
                     let hardiness = 2;
                     hardiness *= actions.surface.ecosystem.herbivores.tree_effect();
+                    hardiness *= ecoMinorTraitEffect('trees', 'slow_digestion');
                     return hardiness;
                 },
                 cooldown(){
@@ -2844,44 +2892,37 @@ const iceAgeModules = {
                 },
                 action(args){
                     if(global.surface.overview.cooldown === 0){
-                        global.surface.overview.trees++;
+                        incrementStruct($(this)[0]);
                         actions.surface.ecosystem.overview.set_cooldown($(this)[0].cooldown());
                         drawEcology('trees');
+                        return true;
                     }
                     return false;
+                },
+                struct(){
+                    return {
+                        d: {
+                            count: 0,
+                            traits: ecosystemInfo.minorTraits,
+                            mayorTraits: {}
+                        },
+                        p: ['trees','surface']
+                    };
                 }
             },
             herbivores: {
                 id: 'surface-herbivores',
                 title(){ return loc('surface_herbivores'); },
                 desc(){ return loc('surface_herbivores_desc'); },
-                count(){ return Math.floor(global.surface.overview.herbivores); },
+                count(){ return Math.floor(global.surface.herbivores?.count || 0); },
                 show_count: true,
                 effect(){
                     let desc = `<div>${loc('surface_herbivores_effect1', [(($(this)[0].tree_effect() - 1) * 100).toFixed(0)])}</div>`;
-                    let growth_cycle = $(this)[0].growth_cycle();
-                    if(growth_cycle.drought_loss > 0){
-                        desc += `<div>${loc('surface_ecosystem_drought_loss', [growth_cycle.drought_loss.toFixed(2)])}</div>`;
-                    }
-                    if(growth_cycle.flood_loss > 0){
-                        desc += `<div>${loc('surface_ecosystem_flood_loss', [growth_cycle.flood_loss.toFixed(2)])}</div>`;
-                    }
-                    if(growth_cycle.size_loss > 0){
-                        desc += `<div>${loc('surface_ecosystem_size_loss', [growth_cycle.size_loss.toFixed(2)])}</div>`;
-                    }
-                    if(growth_cycle.starve_loss > 0){
-                        desc += `<div>${loc('surface_ecosystem_starve_loss', [growth_cycle.starve_loss.toFixed(2)])}</div>`;
-                    }
-                    if(growth_cycle.carnivore_loss > 0){
-                        desc += `<div>${loc('surface_ecosystem_carnivore_loss', [growth_cycle.carnivore_loss.toFixed(2)])}</div>`;
-                    }
-                    if(growth_cycle.grow_gain > 0){
-                        desc += `<div>${loc('surface_ecosystem_grow_gain', [growth_cycle.grow_gain.toFixed(2)])}</div>`;
-                    }
+                    desc += cycle_breakdown('herbivores');
                     if(support_on['genetics_lab'] > 0){
                         let cooldown = Math.floor($(this)[0].cooldown() * actions.surface.wastes.genetics_lab.creation_cooldown_mult());
-                        desc += `<div>${loc('surface_herbivores_effect2')}</div>`;
-                        desc += `<div>${loc('surface_overview_cooldown', [cooldown])}</div>`;
+                        desc += `<div class="has-text-special">${loc('surface_herbivores_effect2')}</div>`;
+                        desc += `<div class="has-text-special">${loc('surface_overview_cooldown', [cooldown])}</div>`;
                         desc += `<div class="has-text-caution">${loc('surface_overview_cooldown_left', [Math.ceil(global.surface.overview.cooldown * actions.surface.wastes.genetics_lab.creation_cooldown_mult())])}</div>`;
                     }
                     else{
@@ -2889,54 +2930,8 @@ const iceAgeModules = {
                     }
                     return desc;
                 },
-                growth_cycle(){
-                    let info = global.surface.overview;
-                    let water = info.water - actions.surface.ecosystem.overview.total_water_use();
-                    let water_ratio = water / info.area;
-                    if(water_ratio < 0){
-                        water_ratio = 0;
-                    }
-                    let size_ratio = info.herbivores * ecosystemInfo.herbivores.size / info.area;
-                    let eat = ecosystemInfo.herbivores.trees_use * info.herbivores;
-                    let results = {
-                        drought_loss: 0,
-                        flood_loss: 0,
-                        starve_loss: 0,
-                        carnivore_loss: 0,
-                        size_loss: 0,
-                        total_loss: 0,
-                        grow_gain: 0,
-                        total_gain: 0,
-                        total_change: 0
-                    };
-                    if(water_ratio <= ecosystemInfo.herbivores.water_min){ //0% loss at 0.1 water -> 5% loss at 0 water
-                        results.drought_loss = global.surface.overview.herbivores * (0.05 * (Math.abs(water_ratio - 0.1) / ecosystemInfo.herbivores.water_min));
-                    }
-                    if(water_ratio > ecosystemInfo.herbivores.water_max){ //2% loss per 0.1 above 0.5 up to 10% loss at 1 water
-                        results.flood_loss = global.surface.overview.herbivores * (0.02 * ((water_ratio-ecosystemInfo.herbivores.water_max) * 10));
-                    }
-                    if(eat > info.trees){ // up to 5% loss depending on lack of trees
-                        results.starve_loss = global.surface.overview.herbivores * 0.05 * (1 - (info.trees / eat));
-                    }
-                    results.carnivore_loss = Math.min(ecosystemInfo.carnivores.herbivores_use * info.carnivores, info.herbivores / 100);
-                    if(size_ratio > 1){ //5% loss per ratio over 1 (compounding). ex: 100 size worth of trees with 50 area = 2 ratio = 5% loss
-                        results.size_loss = global.surface.overview.herbivores * 1 - (0.95 ** (size_ratio - 1));
-                    }
-                    if(water_ratio > 0 && info.herbivores >= 2 && info.trees >= eat){ //grows if there's water, enough food and there are at least 2 already
-                        if (size_ratio >= 0.5){
-                            results.grow_gain = global.surface.overview.herbivores * ((ecosystemInfo.herbivores.growth_rate - 1) * (2 - size_ratio * 2)); //linear reduction from 0.5 to 1 from 100% growth to 0%
-                        }
-                        else{
-                            results.grow_gain = global.surface.overview.herbivores * (ecosystemInfo.herbivores.growth_rate - 1);
-                        }
-                    }
-                    results.total_loss = results.flood_loss + results.drought_loss + results.size_loss + results.starve_loss + results.carnivore_loss;
-                    results.total_gain = results.grow_gain;
-                    results.total_change = results.total_gain - results.total_loss;
-                    return results;
-                },
                 tree_effect(){
-                    return 1 + (0.01 * (global.surface.overview.herbivores ** 1.05));
+                    return 1 + (0.01 * ((global.surface.herbivores?.count || 0) ** 1.05));
                 },
                 cooldown(){
                     return 100;
@@ -2946,47 +2941,37 @@ const iceAgeModules = {
                 queue_complete(){ return false; },
                 action(args){
                     if(global.surface.overview.cooldown === 0){
-                        global.surface.overview.herbivores++;
+                        incrementStruct($(this)[0]);
                         actions.surface.ecosystem.overview.set_cooldown($(this)[0].cooldown());
                         drawEcology('herbivores');
+                        return true;
                     }
                     return false;
+                },
+                struct(){
+                    return {
+                        d: {
+                            count: 0,
+                            minorTraits: ecosystemInfo.minorTraits,
+                            mayorTraits: {}
+                        },
+                        p: ['herbivores','surface']
+                    };
                 }
             },
             carnivores: {
                 id: 'surface-carnivores',
                 title(){ return loc('surface_carnivores'); },
                 desc(){ return loc('surface_carnivores_desc'); },
-                count(){ return Math.floor(global.surface.overview.carnivores); },
+                count(){ return Math.floor(global.surface.carnivores?.count || 0); },
                 show_count: true,
                 effect(){
                     let desc = `<div>${loc('surface_carnivores_effect1', [(($(this)[0].tree_effect() - 1) * 100).toFixed(0)])}</div>`;
-                    let growth_cycle = $(this)[0].growth_cycle();
-                    if(growth_cycle.corpse_create > 0){
-                        desc += `<div>${loc('surface_ecosystem_corpse_create', [growth_cycle.corpse_create.toFixed(2)])}</div>`;
-                    }
-                    if(growth_cycle.drought_loss > 0){
-                        desc += `<div>${loc('surface_ecosystem_drought_loss', [growth_cycle.drought_loss.toFixed(2)])}</div>`;
-                    }
-                    if(growth_cycle.flood_loss > 0){
-                        desc += `<div>${loc('surface_ecosystem_flood_loss', [growth_cycle.flood_loss.toFixed(2)])}</div>`;
-                    }
-                    if(growth_cycle.size_loss > 0){
-                        desc += `<div>${loc('surface_ecosystem_size_loss', [growth_cycle.size_loss.toFixed(2)])}</div>`;
-                    }
-                    if(growth_cycle.starve_loss > 0){
-                        desc += `<div>${loc('surface_ecosystem_starve_loss', [growth_cycle.starve_loss.toFixed(2)])}</div>`;
-                    }
-                    if(growth_cycle.carnivore_loss > 0){
-                        desc += `<div>${loc('surface_ecosystem_cannibal_loss', [growth_cycle.carnivore_loss.toFixed(2)])}</div>`;
-                    }
-                    if(growth_cycle.grow_gain > 0){
-                        desc += `<div>${loc('surface_ecosystem_grow_gain', [growth_cycle.grow_gain.toFixed(2)])}</div>`;
-                    }
+                    desc += cycle_breakdown('carnivores');
                     if(support_on['genetics_lab'] > 0){
                         let cooldown = Math.floor($(this)[0].cooldown() * actions.surface.wastes.genetics_lab.creation_cooldown_mult());
-                        desc += `<div>${loc('surface_carnivores_effect2')}</div>`;
-                        desc += `<div>${loc('surface_overview_cooldown', [cooldown])}</div>`;
+                        desc += `<div class="has-text-special">${loc('surface_carnivores_effect2')}</div>`;
+                        desc += `<div class="has-text-special">${loc('surface_overview_cooldown', [cooldown])}</div>`;
                         desc += `<div class="has-text-caution">${loc('surface_overview_cooldown_left', [Math.ceil(global.surface.overview.cooldown * actions.surface.wastes.genetics_lab.creation_cooldown_mult())])}</div>`;
                     }
                     else{
@@ -2994,71 +2979,8 @@ const iceAgeModules = {
                     }
                     return desc;
                 },
-                growth_cycle(){
-                    let info = global.surface.overview;
-                    let water = info.water - actions.surface.ecosystem.overview.total_water_use();
-                    let water_ratio = water / info.area;
-                    if(water_ratio < 0){
-                        water_ratio = 0;
-                    }
-                    let size_ratio = info.carnivores * ecosystemInfo.carnivores.size / info.area;
-                    let eat = ecosystemInfo.carnivores.herbivores_use * info.carnivores;
-                    let fed = false;
-                    let results = {
-                        drought_loss: 0,
-                        flood_loss: 0,
-                        starve_loss: 0,
-                        carnivore_loss: 0,
-                        size_loss: 0,
-                        corpse_create: 0,
-                        total_loss: 0,
-                        grow_gain: 0,
-                        total_gain: 0,
-                        total_change: 0
-                    };
-                    if(water_ratio <= ecosystemInfo.carnivores.water_min){ //0% loss at 0.1 water -> 5% loss at 0 water
-                        results.drought_loss = global.surface.overview.carnivores * (0.05 * (Math.abs(water_ratio - 0.1) / ecosystemInfo.carnivores.water_min));
-                    }
-                    if(water_ratio > ecosystemInfo.carnivores.water_max){ //2% loss per 0.1 above 0.5 up to 10% loss at 1 water
-                        results.flood_loss = global.surface.overview.carnivores * (0.02 * ((water_ratio-ecosystemInfo.carnivores.water_max) * 10));
-                    }
-                    let avail = info.herbivores / 100; //only 1% of herbivores are exposed to predators
-                    if(eat > avail){
-                        avail += info.scavengers / 250; //if not enough herbivores, carnivores will eat scavengers of which 0.4% are exposed
-                        if(eat > avail){
-                            avail += info.carnivores / 50; //if still not enough, carnivores will cannibalize. 2% of carnivores are exposed
-                            if(eat > avail){ //between 0-5% loss depending on lack of food
-                                results.starve_loss = global.surface.overview.carnivores * 0.05 * (1 - (avail / eat));
-                            }
-                            results.carnivore_loss = Math.min(eat, info.carnivores / 2);
-                        }
-                    }
-                    results.corpse_create += Math.min(avail, eat);
-                    let corpse_ratio = (info.corpses + results.corpse_create * 20) / info.area;
-                    if(corpse_ratio > 1){
-                        results.corpse_create *= (Math.min(0, (2 - corpse_ratio)));
-                    }
-                    if(!results.starve_loss){
-                        fed = true;
-                    }
-                    if(size_ratio > 1){ //5% loss per ratio over 1 (compounding). ex: 100 size worth of trees with 50 area = 2 ratio = 5% loss
-                        results.size_loss = global.surface.overview.carnivores * 1 - (0.95 ** (size_ratio - 1));
-                    }
-                    if(water_ratio > 0 && info.carnivores >= 2 && fed){ //grows if there's water, enough food and there are at least 2 already
-                        if (size_ratio >= 0.5){
-                            results.grow_gain = global.surface.overview.carnivores * ((ecosystemInfo.carnivores.growth_rate - 1) * (2 - size_ratio * 2)); //linear reduction from 0.5 to 1 from 100% growth to 0%
-                        }
-                        else{
-                            results.grow_gain = global.surface.overview.carnivores * (ecosystemInfo.carnivores.growth_rate - 1);
-                        }
-                    }
-                    results.total_loss = results.flood_loss + results.drought_loss + results.size_loss + results.starve_loss + results.carnivore_loss;
-                    results.total_gain = results.grow_gain;
-                    results.total_change = results.total_gain - results.total_loss;
-                    return results;
-                },
                 tree_effect(){
-                    return 1 + (0.01 * (global.surface.overview.carnivores ** 0.95));
+                    return 1 + (0.01 * ((global.surface.carnivores?.count || 0) ** 0.95));
                 },
                 cooldown(){
                     return 300;
@@ -3068,47 +2990,37 @@ const iceAgeModules = {
                 queue_complete(){ return false; },
                 action(args){
                     if(global.surface.overview.cooldown === 0){
-                        global.surface.overview.carnivores++;
+                        incrementStruct($(this)[0]);
                         actions.surface.ecosystem.overview.set_cooldown($(this)[0].cooldown());
                         drawEcology('carnivores');
+                        return true;
                     }
                     return false;
+                },
+                struct(){
+                    return {
+                        d: {
+                            count: 0,
+                            minorTraits: ecosystemInfo.minorTraits,
+                            mayorTraits: {}
+                        },
+                        p: ['carnivores','surface']
+                    };
                 }
             },
             scavengers: {
                 id: 'surface-scavengers',
                 title(){ return loc('surface_scavengers'); },
                 desc(){ return loc('surface_scavengers_desc'); },
-                count(){ return Math.floor(global.surface.overview.scavengers); },
+                count(){ return Math.floor(global.surface.scavengers?.count || 0); },
                 show_count: true,
                 effect(){
                     let desc = `<div>${loc('surface_scavengers_effect1', [(($(this)[0].tree_effect() - 1) * 100).toFixed(0)])}</div>`;
-                    let growth_cycle = $(this)[0].growth_cycle();
-                    if(growth_cycle.corpse_eat > 0){
-                        desc += `<div>${loc('surface_ecosystem_corpse_eat', [growth_cycle.corpse_eat.toFixed(2)])}</div>`;
-                    }
-                    if(growth_cycle.drought_loss > 0){
-                        desc += `<div>${loc('surface_ecosystem_drought_loss', [growth_cycle.drought_loss.toFixed(2)])}</div>`;
-                    }
-                    if(growth_cycle.flood_loss > 0){
-                        desc += `<div>${loc('surface_ecosystem_flood_loss', [growth_cycle.flood_loss.toFixed(2)])}</div>`;
-                    }
-                    if(growth_cycle.size_loss > 0){
-                        desc += `<div>${loc('surface_ecosystem_size_loss', [growth_cycle.size_loss.toFixed(2)])}</div>`;
-                    }
-                    if(growth_cycle.starve_loss > 0){
-                        desc += `<div>${loc('surface_ecosystem_starve_loss', [growth_cycle.starve_loss.toFixed(2)])}</div>`;
-                    }
-                    if(growth_cycle.carnivore_loss > 0){
-                        desc += `<div>${loc('surface_ecosystem_carnivore_loss', [growth_cycle.carnivore_loss.toFixed(2)])}</div>`;
-                    }
-                    if(growth_cycle.grow_gain > 0){
-                        desc += `<div>${loc('surface_ecosystem_grow_gain', [growth_cycle.grow_gain.toFixed(2)])}</div>`;
-                    }
+                    desc += cycle_breakdown('scavengers');
                     if(support_on['genetics_lab'] > 0){
                         let cooldown = Math.floor($(this)[0].cooldown() * actions.surface.wastes.genetics_lab.creation_cooldown_mult());
-                        desc += `<div>${loc('surface_scavengers_effect2')}</div>`;
-                        desc += `<div>${loc('surface_overview_cooldown', [cooldown])}</div>`;
+                        desc += `<div class="has-text-special">${loc('surface_scavengers_effect2')}</div>`;
+                        desc += `<div class="has-text-special">${loc('surface_overview_cooldown', [cooldown])}</div>`;
                         desc += `<div class="has-text-caution">${loc('surface_overview_cooldown_left', [Math.ceil(global.surface.overview.cooldown * actions.surface.wastes.genetics_lab.creation_cooldown_mult())])}</div>`;
                     }
                     else{
@@ -3116,62 +3028,8 @@ const iceAgeModules = {
                     }
                     return desc;
                 },
-                growth_cycle(){
-                    let info = global.surface.overview;
-                    let water = info.water - actions.surface.ecosystem.overview.total_water_use();
-                    let water_ratio = water / info.area;
-                    if(water_ratio < 0){
-                        water_ratio = 0;
-                    }
-                    let size_ratio = info.scavengers * ecosystemInfo.scavengers.size / info.area;
-                    let eat = ecosystemInfo.scavengers.corpse_use * info.scavengers;
-                    let fed = false;
-                    let results = {
-                        drought_loss: 0,
-                        flood_loss: 0,
-                        starve_loss: 0,
-                        carnivore_loss: 0,
-                        size_loss: 0,
-                        total_loss: 0,
-                        corpse_eat: 0,
-                        grow_gain: 0,
-                        total_gain: 0,
-                        total_change: 0
-                    };
-                    if(water_ratio <= ecosystemInfo.scavengers.water_min){ //0% loss at 0.1 water -> 5% loss at 0 water
-                        results.drought_loss = global.surface.overview.scavengers * (0.05 * (Math.abs(water_ratio - 0.1) / ecosystemInfo.scavengers.water_min));
-                    }
-                    if(water_ratio > ecosystemInfo.scavengers.water_max){ //2% loss per 0.1 above 0.5 up to 10% loss at 1 water
-                        results.flood_loss = global.surface.overview.scavengers * (0.02 * ((water_ratio-ecosystemInfo.scavengers.water_max) * 10));
-                    }
-                    let carnivore_eat = (ecosystemInfo.carnivores.herbivores_use * info.carnivores) - (info.herbivores / 100);
-                    if(carnivore_eat > 0){ //carnivores can not find enough herbivores and eat scavengers
-                        let scavenger_eat = carnivore_eat * info.scavengers;
-                        results.carnivore_loss = Math.min(scavenger_eat, info.scavengers / 250); //99.6% of scavengers are hidden from predators
-                    }
-                    if(eat > info.corpses){
-                        results.starve_loss = global.surface.overview.scavengers * 0.05 * (1 - (info.corpses / eat));
-                        //todo: decide whether scavengers will try their hand at hunting when starving
-                    }
-                    if(size_ratio > 1){ //5% loss per ratio over 1 (compounding). ex: 100 size worth of trees with 50 area = 2 ratio = 5% loss
-                        results.size_loss = global.surface.overview.scavengers * 1 - (0.95 ** (size_ratio - 1));
-                    }
-                    if(water_ratio > 0 && info.scavengers >= 2 /*&& eat >= info.corpses */){ //grows if there's water, enough food and there are at least 2 already
-                        if (size_ratio >= 0.5){
-                            results.grow_gain = global.surface.overview.scavengers * ((ecosystemInfo.scavengers.growth_rate - 1) * (2 - size_ratio * 2)); //linear reduction from 0.5 to 1 from 100% growth to 0%
-                        }
-                        else{
-                            results.grow_gain = global.surface.overview.scavengers * (ecosystemInfo.scavengers.growth_rate - 1);
-                        }
-                    }
-                    results.corpse_eat = Math.min(eat, info.corpses); 
-                    results.total_loss = results.flood_loss + results.drought_loss + results.size_loss + results.starve_loss + results.carnivore_loss;
-                    results.total_gain = results.grow_gain;
-                    results.total_change = results.total_gain - results.total_loss;
-                    return results;
-                },
                 tree_effect(){
-                    return 1 + (0.01 * (global.surface.overview.scavengers ** 1.05));
+                    return 1 + (0.01 * ((global.surface.scavengers?.count || 0) ** 1.05));
                 },
                 cooldown(){
                     return 750;
@@ -3181,11 +3039,22 @@ const iceAgeModules = {
                 queue_complete(){ return false; },
                 action(args){
                     if(global.surface.overview.cooldown === 0){
-                        global.surface.overview.scavengers++;
+                        incrementStruct($(this)[0]);
                         actions.surface.ecosystem.overview.set_cooldown($(this)[0].cooldown());
                         drawEcology('scavengers');
+                        return true;
                     }
                     return false;
+                },
+                struct(){
+                    return {
+                        d: {
+                            count: 0,
+                            minorTraits: ecosystemInfo.minorTraits,
+                            mayorTraits: {}
+                        },
+                        p: ['scavengers','surface']
+                    };
                 }
             }
         },
@@ -3202,7 +3071,7 @@ const iceAgeModules = {
                             data: global.surface.watch_tower,
                         });
                         popover(`explore_progress`, function(){
-                            let desc = `<div>${loc('surface_exploration_time', [timeFormat((100 - global.surface.watch_tower.progress) / (0.0075 + (0.002 * support_on['watch_tower'])))])}</div>`;
+                            let desc = `<div>${loc('surface_exploration_time', [timeFormat((100 - global.surface.watch_tower.explore) / (0.0075 + (0.002 * support_on['watch_tower'])))])}</div>`;
                             desc += `<div>${loc('surface_exploration_hint')}</div>`;
                             return desc;
                         });
@@ -3218,29 +3087,19 @@ const iceAgeModules = {
                 cost: {
                     Money(offset){ return undergroundCostMultiplier('crater_station', offset, 450000, 1.45, 'crater', 'surface'); },
                     Steel(offset){ return undergroundCostMultiplier('crater_station', offset, 220000, 1.55, 'crater', 'surface'); },
-                    Iridium(offset){ return undergroundCostMultiplier('crater_station', offset, 125000, 1.55, 'crater', 'surface'); },
+                    Iridium(offset){ return undergroundCostMultiplier('crater_station', offset, 8000, 1.55, 'crater', 'surface'); },
                     Wrought_Iron(offset){ return undergroundCostMultiplier('crater_station', offset, 45000, 1.55, 'crater', 'surface'); }
                 },
                 effect(wiki){
                     let desc = `<div>${loc('galaxy_foothold_effect', [$(this)[0].support(), loc('surface_crater')])}</div>`;
-                    desc += `<div class="has-text-caution">${loc('requires_power_combo_effect', [$(this)[0].powered(), $(this)[0].consume('coal'), global.resource.Coal.name])}
-                    ${loc('spend', [$(this)[0].consume('oil'), global.resource.Oil.name])}</div>`;
+                    desc += `<div class="has-text-caution">${loc('requires_power_combo_effect', [$(this)[0].powered(), $(this)[0].support_fuel().a, global.resource.Coal.name])}`;
                     return desc;
                 },
                 support(){ return 2; },
-                /*support_fuel(){ return { r: 'Oil', a: 2 }; },*/
+                support_fuel(){ return { r: 'Coal', a: 50 }; },
                 powered(){ return powerCostMod(15); },
                 powerBalancer(){
                     return [{ s: global.surface.crater_station.s_max - global.surface.crater_station.support }];
-                },
-                consume(res){
-                    switch (res){
-                        case 'coal':
-                            return 80;
-                        case 'oil':
-                            return 50;
-                    }
-                    return 0
                 },
                 refresh: true,
                 action(args){
@@ -3263,6 +3122,212 @@ const iceAgeModules = {
                     };
                 }
             },
+            crater_fission: {
+                id: 'surface-crater_fission',
+                title(){ return loc('city_fission_power'); },
+                desc(){ return `<div>${loc('city_fission_power_desc')}</div><div class="has-text-special">${loc('requires_res',[global.resource.Uranium.name])}</div>`; },
+                type: 'power',
+                reqs: { surface_uranium: 2 },
+                cost: {
+                    Money(offset){ return undergroundCostMultiplier('crater_fission', offset, 550000, 1.45, 'crater', 'surface'); },
+                    Copper(offset){ return undergroundCostMultiplier('crater_fission', offset, 245000, 1.55, 'crater', 'surface'); },
+                    Cement(offset){ return undergroundCostMultiplier('crater_fission', offset, 290000, 1.55, 'crater', 'surface'); },
+                    Uranium(offset){ return undergroundCostMultiplier('crater_fission', offset, 60, 1.55, 'crater', 'surface'); }
+                },
+                effect(){
+                    return `<div>${loc('galaxy_foothold_effect', [$(this)[0].support(), loc('surface_crater')])}</div>
+                        <span>+${-($(this)[0].powered())}MW.</span> <span class="has-text-caution">${loc('city_fission_power_effect',[$(this)[0].p_fuel().a])}</span>`;
+                },
+                support(){ return 0.5; },
+                powered(){ return powerModifier(-35); },
+                p_fuel(){ return { r: 'Uranium', a: 0.1 }; },
+                action(args){
+                    if (payCosts($(this)[0])){
+                        incrementStruct($(this)[0]);
+                        powerOnNewStruct($(this)[0]);
+                        return true;
+                    }
+                    return false;
+                },
+                struct(){
+                    return {
+                        d: { count: 0, on: 0 },
+                        p: ['crater_fission','surface']
+                    };
+                },
+            },
+            work_quarters: {
+                id: 'surface-work_quarters',
+                title(){
+                    return loc('surface_work_quarters');
+                },
+                desc(){
+                    return `<div>${loc('surface_work_quarters_desc')}</div><div class="has-text-special">${loc('space_support',[loc('surface_crater')])}</div>`;
+                },
+                type: 'housing',
+                reqs: { crater: 2 },
+                cost: {
+                    Money(offset){ return undergroundCostMultiplier('work_quarters', offset, 350000, 1.45, 'crater', 'surface'); },
+                    Plywood(offset){ return undergroundCostMultiplier('work_quarters', offset, 21000, 1.45, 'crater', 'surface'); },
+                    Alloy(offset){ return undergroundCostMultiplier('work_quarters', offset, 125000, 1.55, 'crater', 'surface'); },
+                    Horseshoe(){ return global.race['hooved'] ? 1 : 0; }
+                },
+                effect(wiki){
+                    let gain = $(this)[0].citizens(wiki);
+                    let uranium = $(this)[0].res_cap('uranium');
+                    return `<div class="has-text-caution">${loc('space_used_support',[loc('surface_crater')])}</div><div>${loc('plus_max_resource',[uranium,global.resource.Uranium.name])}</div>
+                        <div>${loc('plus_max_resource',[gain,loc('citizen')])}</div><div>${loc('plus_max_resource',[jobScale(1),loc('job_crater_worker')])}</div>`;
+                },
+                s_type: 'crater',
+                support(){ return -1; },
+                powered(){ return 0; },
+                res_cap(res){
+                    switch (res){
+                        case 'uranium':
+                            return iceAgeStorage(10);
+                    }
+                    return 0
+                },
+                action(args){
+                    if (payCosts($(this)[0])){
+                        incrementStruct($(this)[0]);
+                        powerOnNewStruct($(this)[0]);
+                        global.civic.crater_worker.display = true;
+                        return true;
+                    }
+                    return false;
+                },
+                struct(){
+                    return {
+                        d: { count: 0, on: 0 },
+                        p: ['work_quarters','surface']
+                    };
+                },
+                citizens(wiki){
+                    return jobScale(3);
+                }
+            },
+            crater_drill: {
+                id: 'surface-crater_drill',
+                title(){ return loc('surface_crater_drill'); },
+                desc(){
+                    return `<div>${loc('surface_crater_drill_desc')}</div><div class="has-text-special">${loc('space_support',[loc('surface_crater')])}</div>`;
+                },
+                type: 'mining',
+                reqs: { crater: 2 },
+                cost: {
+                    Money(offset){ return undergroundCostMultiplier('crater_drill', offset, 325000, 1.45, 'crater', 'surface'); },
+                    Mythril(offset){ return undergroundCostMultiplier('crater_drill', offset, 75000, 1.45, 'crater', 'surface'); },
+                    Titanium(offset){ return undergroundCostMultiplier('crater_drill', offset, 125000, 1.55, 'crater', 'surface'); },
+                    Steel(offset){ return undergroundCostMultiplier('crater_drill', offset, 225000, 1.55, 'crater', 'surface'); },
+                },
+                effect(){
+                    let iron_val = +(production('crater_drill','iron')).toFixed(2);
+                    let cop_val = +(production('crater_drill','copper')).toFixed(2);
+                    let coal_val = +(production('crater_drill','coal')).toFixed(2);
+                    let uranium_val = +(production('crater_drill','uranium')).toFixed(4);
+                    let desc = `<div class="has-text-caution">${loc('space_used_support',[loc('surface_crater')])}</div><div>${loc('surface_crater_drill_effect',[iron_val,global.resource.Iron.name])}</div>`;
+                    desc += `<div>${loc('surface_crater_drill_effect',[cop_val,global.resource.Copper.name])}</div><div>${loc('surface_crater_drill_effect',[coal_val,global.resource.Coal.name])}</div>`
+                    desc += `<div>${loc('surface_crater_drill_effect',[uranium_val,global.resource.Uranium.name])}</div>`;
+                    return desc;
+                },
+                s_type: 'crater',
+                support(){ return -1; },
+                powered(){ return 0; },
+                action(args){
+                    if (payCosts($(this)[0])){
+                        incrementStruct($(this)[0]);
+                        powerOnNewStruct($(this)[0]);
+                        if(!global.tech['surface_uranium']){
+                            global.tech['surface_uranium'] = 1;
+                        }
+                        global.resource.Uranium.display = true;
+                        return true;
+                    }
+                    return false;
+                },
+                struct(){
+                    return {
+                        d: { count: 0, on: 0 },
+                        p: ['crater_drill','surface']
+                    };
+                }
+            },
+            crater_fabrication: {
+                id: 'surface-crater_fabrication',
+                title(){ return loc('surface_crater_fabrication'); },
+                desc(){
+                    return `<div>${loc('surface_crater_fabrication_desc')}</div><div class="has-text-special">${loc('space_support',[loc('surface_crater')])}</div>`;
+                },
+                type: 'industry',
+                reqs: { crater: 3 },
+                cost: {
+                    Money(offset){ return undergroundCostMultiplier('crater_fabrication', offset, 540000, 1.45, 'crater', 'surface'); },
+                    Iridium(offset){ return undergroundCostMultiplier('crater_fabrication', offset, 10000, 1.55, 'crater', 'surface'); },
+                    Stone(offset){ return undergroundCostMultiplier('crater_fabrication', offset, 650000, 1.55, 'crater', 'surface'); },
+                    Wrought_Iron(offset){ return undergroundCostMultiplier('crater_fabrication', offset, 90000, 1.45, 'crater', 'surface'); }
+                },
+                effect(){
+                    let prod = +highPopAdjust(5).toFixed(2);
+                    let cement_1 = !global.race['flier'] ? `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_cement_worker`)])}</div>` : ``;
+                    let cement_2 = !global.race['flier'] ? `<div>${loc('surface_crater_fabrication_effect2',[prod, global.resource.Cement.name])}</div>` : ``;
+                    return `<div class="has-text-caution">${loc('space_used_support',[loc('surface_crater')])}</div>${cement_1}<div>${loc('plus_max_resource',[jobScale(1),loc('job_craftsman')])}</div>
+                        <div>${loc('surface_crater_fabrication_effect1',[prod])}</div>${cement_2}`;
+                },
+                s_type: 'crater',
+                support(){ return -1; },
+                powered(){ return 0; },
+                action(args){
+                    if (payCosts($(this)[0])){
+                        incrementStruct($(this)[0]);
+                        powerOnNewStruct($(this)[0]);
+                        return true;
+                    }
+                    return false;
+                },
+                struct(){
+                    return {
+                        d: { count: 0, on: 0 },
+                        p: ['crater_fabrication','surface']
+                    };
+                }
+            },
+            crater_factory: {
+                id: 'surface-crater_factory',
+                title(){ return loc('surface_crater_factory'); },
+                desc(){
+                    return `<div>${loc('surface_crater_factory')}</div><div class="has-text-special">${loc('space_support',[loc('surface_crater')])}</div>`;
+                },
+                type: 'industry',
+                reqs: { crater: 3 },
+                cost: {
+                    Money(offset){ return undergroundCostMultiplier('crater_factory', offset, 540000, 1.45, 'crater', 'surface'); },
+                    Brick(offset){ return undergroundCostMultiplier('crater_factory', offset, 65000, 1.45, 'crater', 'surface'); },
+                    Iron(offset){ return undergroundCostMultiplier('crater_factory', offset, 660000, 1.55, 'crater', 'surface'); },
+                    Aluminium(offset){ return undergroundCostMultiplier('crater_factory', offset, 350000, 1.55, 'crater', 'surface'); }
+                },
+                effect(){
+                    return `<div class="has-text-caution">${loc('space_used_support',[loc('surface_crater')])}</div><div>${loc('surface_crater_factory_effect', [1, jobScale(3)])}</div>`;
+                },
+                s_type: 'crater',
+                special: true,
+                support(){ return -1; },
+                powered(){ return 0; },
+                action(args){
+                    if (payCosts($(this)[0])){
+                        incrementStruct($(this)[0]);
+                        powerOnNewStruct($(this)[0]);
+                        return true;
+                    }
+                    return false;
+                },
+                struct(){
+                    return {
+                        d: { count: 0, on: 0 },
+                        p: ['crater_factory','surface']
+                    };
+                }
+            }
         }
     }
 }
@@ -3363,6 +3428,7 @@ function cave_fight(real=false, seed=global['warseed']){
 
 export const ecosystemInfo = {
     trees: {
+        plant: true,
         water_min: 0.1, //minimum tolerate water ratio. Ratio is water / area
         water_max: 0.5, //maximum tolerable water ratio
         water_use: 0.2, //amount of flat water used per tree per in-game day. Consumption of all lifeforms as accounted for first before determining tolerable water ratios
@@ -3371,19 +3437,20 @@ export const ecosystemInfo = {
         size: 2 //growth rate slows down once size reaches past 50% of total area, stops completely once it hits 100% and decays once it hits >100%
     },
     herbivores: {
+        prey: true,
         water_min: 0.08,
         water_max: 0.4,
         water_use: 0.08,
         trees_use: 0.01,
         decay_rate: 0.98,
         growth_rate: 1.008,
-        size: 5
+        size: 5,
     },
     carnivores: {
         water_min: 0.08,
         water_max: 0.4,
         water_use: 0.1,
-        herbivores_use: 0.004,
+        meat_use: 0.004,
         decay_rate: 0.96,
         growth_rate: 1.004,
         size: 10
@@ -3392,46 +3459,241 @@ export const ecosystemInfo = {
         water_min: 0.1,
         water_max: 0.6,
         water_use: 0.05,
-        corpse_use: 0.005,
+        corpse_use: 0.0015,
         decay_rate: 0.99,
         growth_rate: 1.008,
         size: 3
+    },
+    minorTraits: {
+        promiscuous: 0,
+        hardy: 0,
+        compact: 0,
+        slow_digestion: 0,
+        playful: 0,
+        curious: 0
+    },
+    minorTraitEffects: {
+        promiscuous: 3,
+        hardy: 3,
+        compact: 2,
+        slow_digestion: 1,
+        playful: 3,
+        curious: 3
+    },
+    plantMinorTraitEffects: {
+        promiscuous: 3,
+        hardy: 3,
+        compact: 2,
+        slow_digestion: 3,
+        playful: 3,
+        curious: 3
+    },
+    minorTraitCost(level){
+        return fibonacci(level + 4);
     }
 }
 
+export function ecoMinorTraitEffect(creature, trait){
+    if(ecosystemInfo[creature].plant){
+        return 1 + (ecosystemInfo.plantMinorTraitEffects[trait] * global.surface[creature].minorTraits[trait] / 100);
+    }
+    return 1 + (ecosystemInfo.minorTraitEffects[trait] * global.surface[creature].minorTraits[trait] / 100);
+}
+
 export function surfaceEcosystemVisual(){ //run every fastLoop (0.25 seconds)
-    global.surface.overview.area = (p_on['area_heater'] || 0) * actions.surface.ecosystem.area_heater.support();
+    global.surface.overview.area = (p_on['area_heater'] || 0) * actions.surface.ecosystem.area_heater.support() * (1 + actions.surface.wastes.grand_dome.eco_area() / 100);
     global.surface.overview.water = (p_on['water_pipe'] || 0) * actions.surface.ecosystem.water_pipe.support();
 }
 
 export function surfaceEcosystem(){ //run every longLoop (5 seconds)
     //{ area: 0, water: 0, trees:0, hebivores: 0, carnivores: 0, scavengers: 0, cooldown: 0 },
-    let info = global.surface.overview;
-    let tree_cycle = actions.surface.ecosystem.trees.growth_cycle();
-    let herbivore_cycle = actions.surface.ecosystem.herbivores.growth_cycle();
-    let carnivore_cycle = actions.surface.ecosystem.carnivores.growth_cycle();
-    let scavenger_cycle = actions.surface.ecosystem.scavengers.growth_cycle();
-    let corpse_cycle = actions.surface.ecosystem.overview.corpse_cycle();
-    let post_info = global.surface.overview;
-    
-    global.surface.overview.trees = Math.max(0, global.surface.overview.trees + tree_cycle.total_change);
-    global.surface.overview.herbivores = Math.max(0, global.surface.overview.herbivores + herbivore_cycle.total_change);
-    global.surface.overview.carnivores = Math.max(0, global.surface.overview.carnivores + carnivore_cycle.total_change);
-    global.surface.overview.scavengers = Math.max(0, global.surface.overview.scavengers + scavenger_cycle.total_change);
-    global.surface.overview.corpses = Math.max(0, global.surface.overview.corpses + corpse_cycle);
+    let corpses = 0;
+    if(global.surface.trees){
+        let tree_cycle = growth_cycle('trees');
+        global.surface.trees.count = Math.max(0, global.surface.trees.count + tree_cycle.total_change);
+    }
+    if(global.surface.herbivores){
+        let herbivore_cycle = growth_cycle('herbivores');
+        global.surface.herbivores.count = Math.max(0, global.surface.herbivores.count + herbivore_cycle.total_change);
+    }
+    if(global.surface.carnivores){
+        let carnivore_cycle = growth_cycle('carnivores');
+        global.surface.carnivores.count = Math.max(0, global.surface.carnivores.count + carnivore_cycle.total_change);
+        corpses += carnivore_cycle.corpse_create;
+    }
+    if(global.surface.scavengers){
+        let scavenger_cycle = growth_cycle('scavengers');
+        global.surface.scavengers.count = Math.max(0, global.surface.scavengers.count + scavenger_cycle.total_change);
+        corpses -= scavenger_cycle.corpse_consume;
+    }
+    let corpse_change = corpse_cycle(corpses);
+    global.surface.overview.corpses = Math.max(0, global.surface.overview.corpses + corpse_change);
     global.surface.overview.cooldown = Math.max(0, global.surface.overview.cooldown - 1);
 
-    if(post_info.herbivores >= 10 && global.tech['surface'] === 5){
+    if(global.surface.herbivores?.count >= 10 && global.tech['surface'] === 5){
         global.tech['surface'] = 6;
         messageQueue(loc('tech_ecosystem_progression'),'info',false,['progress']);
         drawTech();
     }
-    if(post_info.herbivores >= 10 && post_info.carnivores >= 10 && post_info.scavengers >= 10 && global.tech['surface'] === 8){
+    if(Math.min(global.surface.herbivores?.count, global.surface.carnivores?.count, global.surface.scavengers?.count) >= 10 && global.tech['surface'] === 8){
         global.tech['surface'] = 9;
         messageQueue(loc('tech_ecosystem_progression2'),'info',false,['progress']);
         drawTech();
     }
     drawEcology();
+}
+
+function growth_cycle(lifeform){
+    let results = {
+        drought_loss: 0,
+        flood_loss: 0,
+        starve_loss: 0,
+        herbivore_loss: 0,
+        carnivore_loss: 0,
+        size_loss: 0,
+        total_loss: 0,
+        corpse_create: 0,
+        corpse_consume: 0,
+        grow_gain: 0,
+        overcrowd_gain_reduce: 1,
+        total_gain: 0,
+        total_change: 0
+    };
+    let info = global.surface.overview;
+    let self = global.surface[lifeform];
+    let eco_info = ecosystemInfo[lifeform];
+    if(info && self){
+        let water = info.water - actions.surface.ecosystem.overview.total_water_use();
+        let water_ratio = water / info.area;
+        if(water_ratio < 0){
+            water_ratio = 0;
+        }
+        let max_allowed = info.area / eco_info.size * ecoMinorTraitEffect(lifeform, 'compact');
+        let size_ratio = self.count / max_allowed;
+        let fed = true;
+        let slow_digestion = !eco_info.plant ? ecoMinorTraitEffect(lifeform, 'slow_digestion') : 1;
+        let decay = ecoMinorTraitEffect(lifeform, 'hardy');
+        if(eco_info.trees_use){
+            let eat = eco_info.trees_use * self.count / slow_digestion;
+            if(eat > (global.surface.trees?.count || 0)){ // up to 5% loss depending on lack of trees
+                results.starve_loss = self.count * 0.05 * (1 - ((global.surface.trees?.count || 0) / eat)) / decay;
+                fed = false;
+            }
+        }
+        if(eco_info.meat_use){
+            let eat = eco_info.meat_use * self.count / slow_digestion;
+            let avail = (global.surface.herbivores?.count || 0) / 100; //only 1% of herbivores are exposed to predators
+            if(eat > avail){ //up to 5% loss depending on lack of food
+                results.starve_loss += self.count * 0.05 * (1 - (avail / eat)) / decay;
+                fed = false;
+                /*avail += (global.surface.scavengers?.count || 0) / 250; //if not enough herbivores, carnivores will eat scavengers of which 0.4% are exposed
+                if(eat > avail){
+                    avail += self.count / 50; //if still not enough, carnivores will cannibalize. 2% of carnivores are exposed
+                    if(eat > avail){ //between 0-5% loss depending on lack of food
+                        results.starve_loss = self.count * 0.05 * (1 - (avail / eat));
+                    }
+                    results.carnivore_loss = Math.min(eat, self.count / 2);
+                }*/
+            }
+            results.corpse_create = Math.min(eat, avail);
+        }
+        if(eco_info.corpse_use){
+            let eat = eco_info.corpse_use * self.count / slow_digestion;
+            if(eat > info.corpses){ //up to 5% loss depending on lack of food
+                results.starve_loss += self.count * 0.05 * (1 - (info.corpses / eat)) / decay;
+                //todo: decide whether scavengers will try their hand at hunting when starving
+                fed = false;
+            }
+            results.corpse_consume += Math.min(eat, info.corpses); 
+        }
+        if(water_ratio <= eco_info.water_min){ //0% loss at 0.1 water -> 5% loss at 0 water
+            results.drought_loss += self.count * (0.05 * (Math.abs(water_ratio - 0.1) / eco_info.water_min)) / decay;
+        }
+        if(water_ratio > eco_info.water_max){ //2% loss per 0.1 above 0.5 up to 10% loss at 1 water
+            results.flood_loss += self.count * (0.02 * ((water_ratio-eco_info.water_max) * 10)) / decay;
+        }
+        if(eco_info.prey){
+            results.carnivore_loss += Math.min(ecosystemInfo.carnivores.meat_use * (global.surface.carnivores?.count || 0), self.count / 100) / ecoMinorTraitEffect('carnivores', 'slow_digestion');
+        }
+        if(eco_info.plant){
+            results.herbivore_loss += ecosystemInfo.herbivores.trees_use * (global.surface.herbivores?.count || 0) / ecoMinorTraitEffect('herbivores', 'slow_digestion');
+        }
+        /*let carnivore_eat = (ecosystemInfo.carnivores.meat_use * (global.surface.carnivores?.count || 0)) - ((global.surface.herbivores?.count || 0) / 100);
+        if(carnivore_eat > 0){ //carnivores can not find enough herbivores and eat scavengers
+            let scavenger_eat = carnivore_eat * self.count;
+            results.carnivore_loss = Math.min(scavenger_eat, self.count / 250); //99.6% of scavengers are hidden from predators
+        }*/
+        if(size_ratio > 1){ //0-20% loss between 100% to 200% coverage
+            results.size_loss = (self.count * (0.2 * Math.min(1, size_ratio - 1))) / decay;
+        }
+        if(water_ratio > 0 && (self.count >= 2 || eco_info.plant) && fed ){ //grows if there's water, enough food and there are at least 2 already
+            //growth is reduced at >50% size coverage. Linear reduction to 0 at 100% coverage
+            if(lifeform === 'herbivores'){
+                //debugger;
+            }
+            results.grow_gain = self.count * ((eco_info.growth_rate - 1) * (2 - Math.max(1, size_ratio * 2))) * ecoMinorTraitEffect(lifeform, 'promiscuous');
+            if(results.grow_gain < 0){
+                results.grow_gain = 0;
+            }
+            results.overcrowd_gain_reduce = (2 - Math.max(1, size_ratio * 2));
+            //results.grow_gain = Math.max(0, max_allowed - self.count - results.grow_gain);
+        }
+        results.total_loss = results.flood_loss + results.drought_loss + results.size_loss + results.starve_loss + results.carnivore_loss + results.herbivore_loss;
+        results.total_gain = results.grow_gain;
+        results.total_change = results.total_gain - results.total_loss;
+    }
+    if(results.total_change < -10 || results.total_change === NaN){
+        debugger;
+    }
+    return results;
+}
+
+function corpse_cycle(extra){
+    let total = 0;
+    let info = evolve.global.surface?.overview;
+    if(info){
+        total += extra;
+        let ratio = ((info.corpses + total) * 20) / info.area;
+        if(ratio > 1){ //diminishing returns if there are more than 5% as much corpses as area, linear reduction until 0% at 10% coverage
+            total *= (Math.min(0, (2 - ratio)));
+        }
+    }
+    return total;
+}
+
+function cycle_breakdown(lifeform){
+    let cycle = growth_cycle(lifeform);
+    let desc = ``;
+    if(cycle.corpse_create.toFixed(2) > 0){
+        desc += `<div>${loc('surface_ecosystem_corpse_create', [+cycle.corpse_create.toFixed(2)])}</div>`;
+    }
+    if(cycle.corpse_consume.toFixed(2) > 0){
+        desc += `<div>${loc('surface_ecosystem_corpse_consume', [+cycle.corpse_consume.toFixed(2)])}</div>`;
+    }
+    if(cycle.drought_loss.toFixed(2) > 0){
+        desc += `<div>${loc('surface_ecosystem_drought_loss', [+cycle.drought_loss.toFixed(2)])}</div>`;
+    }
+    if(cycle.flood_loss.toFixed(2) > 0){
+        desc += `<div>${loc('surface_ecosystem_flood_loss', [+cycle.flood_loss.toFixed(2)])}</div>`;
+    }
+    if(cycle.size_loss.toFixed(2) > 0){
+        desc += `<div>${loc('surface_ecosystem_size_loss', [+cycle.size_loss.toFixed(2)])}</div>`;
+    }
+    if(cycle.starve_loss.toFixed(2) > 0){
+        desc += `<div>${loc('surface_ecosystem_starve_loss', [+cycle.starve_loss.toFixed(2)])}</div>`;
+    }
+    if(cycle.carnivore_loss.toFixed(2) > 0){
+        desc += `<div>${loc('surface_ecosystem_carnivore_loss', [+cycle.carnivore_loss.toFixed(2)])}</div>`;
+    }
+    if(cycle.grow_gain.toFixed(2) > 0){
+        if(cycle.overcrowd_gain_reduce < 1){
+            desc += `<div>${loc('surface_ecosystem_grow_gain_reduced', [+cycle.grow_gain.toFixed(2), +cycle.overcrowd_gain_reduce.toFixed(2)])}</div>`;
+        }
+        else{
+            desc += `<div>${loc('surface_ecosystem_grow_gain', [+cycle.grow_gain.toFixed(2)])}</div>`;
+        }
+    }
+    return desc;
 }
 
 export function undergroundTech(){

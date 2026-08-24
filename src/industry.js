@@ -598,7 +598,7 @@ export const factoryData = {
     // The factory's products, in the order its lines are handed out and taken away.
     factoryLines: ['Lux','Furs','Alloy','Polymer','Nano','Stanene'],
     // Structures that put production lines into the shared factory pool.
-    factoryStructs: ['factory','red_factory','int_factory','hell_factory','tau_factory','under_factory','industrial_complex'],
+    factoryStructs: ['factory','red_factory','int_factory','hell_factory','tau_factory','under_factory','crater_factory','industrial_complex'],
     // Lines that were shut down when factory capacity was lost are remembered in factory.
     // When restored they are returned to the previously shut down lines first, then to Alloy if nothing is left to remember.
     addFactoryLines(num){
@@ -629,6 +629,7 @@ export const factoryData = {
             + (global.interstellar['int_factory'] ? global.interstellar.int_factory.on * 2 : 0)
             + (global.portal['hell_factory'] ? global.portal.hell_factory.on * actions.portal.prtl_wasteland.hell_factory.lines() : 0)
             + (global.underground['under_factory'] ? global.underground.under_factory.on * actions.underground.industry.under_factory.lines() : 0)
+            + Math.floor(global.surface['crater_factory'] ? global.surface.crater_factory.on / 3 * global.civic.crater_worker.workers / (global.race['high_pop'] ? traits.high_pop.vars()[0] : 1) : 0)
             + (global.space['industrial_complex'] ? global.space.industrial_complex.on * actions.space.spc_venus.industrial_complex.lines() : 0)
             + (global.tauceti['tau_factory'] ? global.tauceti.tau_factory.on * (global.tech['isolation'] ? 5 : 3) : 0);
     },
@@ -655,6 +656,7 @@ export const factoryData = {
                     + ((p_on['int_factory'] || 0) * 2)
                     + ((p_on['hell_factory'] || 0) * actions.portal.prtl_wasteland.hell_factory.lines())
                     + ((p_on['under_factory'] || 0) * actions.underground.industry.under_factory.lines())
+                    + Math.floor((support_on['crater_factory'] || 0) / 3 * global.civic.crater_worker.workers / (global.race['high_pop'] ? traits.high_pop.vars()[0] : 1))
                     + ((actions.space.spc_venus.descender.operating() ? (support_on['industrial_complex'] || 0) : 0) * actions.space.spc_venus.industrial_complex.lines())
                     + ((support_on['tau_factory'] || 0) * (global.tech['isolation'] ? 5 : 3));
         return on_factories;
@@ -1484,7 +1486,7 @@ function loadMineshaft(parent,bind){
 function loadTreeRatio(parent,bind){
     parent.append($(`<div>${loc('modal_treecutter_ratio')}</div>`));
 
-    let slider = $(`<div class="sliderbar"><span class="sub" role="button" @click="sub" aria-label="Save the trees">&laquo;</span><b-slider v-model="tree_ratio" format="percent"></b-slider><span class="add" role="button" @click="add" aria-label="Break the trees">&raquo;</span></div>`);
+    let slider = $(`<div class="sliderbar"><span class="sub" role="button" @click="sub" aria-label="Save the trees">&laquo;</span><b-slider v-model="trees_reserved" format="percent"></b-slider><span class="add" role="button" @click="add" aria-label="Break the trees">&raquo;</span></div>`);
     parent.append(slider);
 
     vBind({
@@ -1493,19 +1495,19 @@ function loadTreeRatio(parent,bind){
         methods: {
             sub(){
                 let keyMult = keyMultiplier();
-                if (global.surface.overview.tree_ratio > 0){
-                    global.surface.overview.tree_ratio -= keyMult;
-                    if (global.surface.overview.tree_ratio < 0){
-                        global.surface.overview.tree_ratio = 0;
+                if (global.surface.overview.trees_reserved > 0){
+                    global.surface.overview.trees_reserved -= keyMult;
+                    if (global.surface.overview.trees_reserved < 0){
+                        global.surface.overview.trees_reserved = 0;
                     }
                 }
             },
             add(){
                 let keyMult = keyMultiplier();
-                if (global.surface.overview.tree_ratio < 100){
-                    global.surface.overview.tree_ratio += keyMult;
-                    if (global.surface.overview.tree_ratio > 100){
-                        global.surface.overview.tree_ratio = 100;
+                if (global.surface.overview.trees_reserved < 100){
+                    global.surface.overview.trees_reserved += keyMult;
+                    if (global.surface.overview.trees_reserved > 100){
+                        global.surface.overview.trees_reserved = 100;
                     }
                 }
             }
@@ -1752,6 +1754,7 @@ export function altReplicatorRes(res){
 export function replicatorRes(){
     let blacklist = ['Asphodel_Powder','Elysanite','Quantium'];
     if (global.race['fasting']){ blacklist.push('Food'); }
+    if (global.race['iceage']){ blacklist.push('Lumber'); }
     return Object.keys(atomic_mass).filter(res => global.resource[res].display && !blacklist.includes(res));
 }
 
@@ -1868,7 +1871,7 @@ function loadReplicator(parent,bind){
                     }
                 },
                 avail(r){
-                    return global.resource[r].display && !(global.race['fasting'] && r === 'Food');
+                    return global.resource[r].display && !(global.race['fasting'] && r === 'Food') && !(global.race['iceage'] && r === 'Lumber');
                 },
                 taken(r,field){
                     let other = field === 'res' ? 'res2' : 'res';
@@ -1941,6 +1944,9 @@ const replicator_complexity = {
 
 export function replicator(res,pow){
     let mass = replicator_complexity[res] ? atomic_mass[res] * replicator_complexity[res] : atomic_mass[res];
+    if (global.race['iceage'] && res === 'Uranium'){
+        mass *= 10;
+    }
     if (global.race['lone_survivor']){
         return 17.5 * quantum_level / mass * pow;
     }
@@ -2204,6 +2210,7 @@ export function gridDefs(){
         tau_roid: { l: global.support.tau_roid, n: loc(`tau_roid_title`), s: global.settings.tau.roid, r: 'tauceti', rs: 'patrol_ship'  },
         asphodel: { l: global.support.asphodel, n: loc(`eden_asphodel_name`), s: global.settings.eden.asphodel, r: 'eden', rs: 'encampment' },
         wastes: { l: global.support.wastes, n: loc(`surface_wastes`), s: global.settings.surface.wastes, r: 'surface', rs: 'great_heater'},
+        crater: { l: global.support.crater, n: loc(`surface_crater`), s: global.settings.surface.crater, r: 'surface', rs: 'crater_station'}
     };
 }
 

@@ -1668,7 +1668,7 @@ if (!global.hasOwnProperty('support')){
 [
     'moon','red','belt','alpha','nebula','gateway','alien2','lake','spire',
     'titan','enceladus','eris','venus','tau_home','tau_red','tau_roid','asphodel',
-    'wastes'
+    'wastes','crater'
 ].forEach(function(s){
     if (!global.support.hasOwnProperty(s)){
         global.support[s] = [];
@@ -2384,6 +2384,9 @@ if (!global.settings.arpa['crispr']){
 }
 if (!global.settings.arpa['blood']){
     global.settings.arpa['blood'] = false;
+}
+if(!global.settings.arpa['ecosystem']){
+    global.settings.arpa['ecosystem'] = false;
 }
 
 if (!global['arpa']){

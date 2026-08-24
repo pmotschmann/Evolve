@@ -154,10 +154,11 @@ export const job_data = {
                 if(global.race['iceage']){
                     let hardiness = actions.surface.ecosystem.trees.hardiness();
                     if(hardiness === 1){
-                        desc = loc('job_lumberjack_desc_iceage',[gain,global.resource.Lumber.name, (1 / hardiness).toFixed(2)]);
+                        //global.surface.overview.trees -= workers * time_multiplier * lack_of_trees / tree_hardiness;
+                        desc = loc('job_lumberjack_desc_iceage',[gain,global.resource.Lumber.name, (workerScale(1,'lumberjack') / hardiness).toFixed(2)]);
                     }
                     else{
-                        desc = loc('job_lumberjack_desc_iceage_plural',[gain,global.resource.Lumber.name, (1 / hardiness).toFixed(2)]);
+                        desc = loc('job_lumberjack_desc_iceage_plural',[gain,global.resource.Lumber.name, (workerScale(1,'lumberjack') / hardiness).toFixed(2)]);
                     }
                 }
                 if (global.civic.d_job === 'lumberjack' && !servant){
@@ -544,6 +545,14 @@ export const job_data = {
         stress(){ return 5; },
         color(){ return 'advanced'; }
     },
+    crater_worker: {
+        name(){ return loc('job_crater_worker'); },
+        desc(){
+            return loc('job_crater_worker_desc');
+        },
+        stress(){ return 3; },
+        color(){ return 'advanced'; }
+    },
     technician: {
         name(){ return loc('job_technician'); },
         desc(){
@@ -682,6 +691,7 @@ export function defineJobs(define){
     loadJob('banker',define);
     loadJob('colonist',define);
     loadJob('titan_colonist',define);
+    loadJob('crater_worker',define);
     loadJob('space_miner',define);
     loadJob('hell_surveyor',define);
     loadJob('archaeologist',define);

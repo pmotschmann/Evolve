@@ -747,6 +747,7 @@ export function loadTab(tab){
                         <b-tab-item id="arpaGenetics" :visible="s.arpa.genetics" label="${loc(global.race['artifical'] ? 'tab_arpa_machine' : 'tab_arpa_genetics')}"></b-tab-item>
                         <b-tab-item id="arpaCrispr" :visible="s.arpa.crispr" label="${loc('tab_arpa_crispr')}"></b-tab-item>
                         <b-tab-item id="arpaBlood" :visible="s.arpa.blood" label="${loc('tab_arpa_blood')}"></b-tab-item>
+                        <b-tab-item id="arpaEcosystem" :visible="s.arpa.ecosystem" label="${loc('tab_arpa_ecosystem')}"></b-tab-item>
                     </b-tabs>
                 </div>`);
                 vBind({
@@ -764,6 +765,7 @@ export function loadTab(tab){
                 arpa('Genetics');
                 arpa('Crispr');
                 arpa('Blood');
+                arpa('Ecosystem');
             }
             break;
         case 6:

@@ -440,6 +440,20 @@ export const craftingRatio = (function(){
                     auto: qCraft
                 });
             }
+            if (global.tech['core'] >= 3 && p_on['core_blacksmith']){
+                crafting.general.add.push({
+                    name: loc(`underground_core_blacksmith`),
+                    manual: p_on['core_blacksmith'] * 0.2,
+                    auto: p_on['core_blacksmith'] * 0.2
+                });
+            }
+            if (global.tech['crater'] >= 3 && support_on['crater_fabrication']){
+                crafting.general.add.push({
+                    name: loc(`surface_crater_fabrication`),
+                    manual: support_on['crater_fabrication'] * highPopAdjust(global.civic.crater_worker.workers) * 0.05,
+                    auto: support_on['crater_fabrication'] * highPopAdjust(global.civic.crater_worker.workers) * 0.05
+                });
+            }
             if (global.race['crafty']){
                 crafting.general.add.push({
                     name: loc(`wiki_arpa_crispr_crafty`),

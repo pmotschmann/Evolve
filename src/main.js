@@ -22,7 +22,7 @@ import { index, mainVue, initTabs, loadTab, registerOfflineHandler } from './ind
 import { setMoonPhase, setWeather, seasonDesc, astrologySign, astroVal } from './seasons.js';
 import { getTopChange } from './wiki/change.js';
 import { enableDebug, updateDebugData } from './debug.js';
-import { surfaceEcosystem, surfaceEcosystemVisual, ecosystemInfo, drawEcology } from './iceage.js';
+import { surfaceEcosystem, surfaceEcosystemVisual, ecosystemInfo, drawEcology, renderSurface, ecoMinorTraitEffect } from './iceage.js';
 
 {
     document.addEventListener('DOMContentLoaded',function() {
@@ -2178,7 +2178,7 @@ function fastLoop(){
         [
             {r:'city',s:'coal_power'},{r:'city',s:'oil_power'},{r:'city',s:'fission_power'},{r:'spc_hell',s:'geothermal'},{r:'spc_dwarf',s:'e_reactor'},
             {r:'int_alpha',s:'fusion'},{r:'tau_home',s:'fusion_generator'},{r:'tau_gas2',s:'alien_space_station'},{r:'tau_red',s:'antimatter_reactor'},
-            {r:'industry', s:'coal_power'},{r:'industry', s:'under_oil_power'},{r:'core', s:'core_tap'}
+            {r:'industry', s:'coal_power'},{r:'industry', s:'under_oil_power'},{r:'core', s:'core_tap'},{r:'crater', s:'crater_fission'}
         ].forEach(function(generator){
             let space = convertSpaceSector(generator.r);
             let region = generator.r === 'city' ? generator.r : space;
@@ -2598,7 +2598,8 @@ function fastLoop(){
             { a: 'tauceti', r: 'tau_red', s: 'orbital_platform', g: 'tau_red' },
             { a: 'tauceti', r: 'tau_roid', s: 'patrol_ship', g: 'tau_roid', oc: true },
             { a: 'eden', r: 'eden_asphodel', s: 'encampment', g: 'asphodel' },
-            { a: 'surface', r: 'wastes', s: 'great_heater', g: 'wastes'}
+            { a: 'surface', r: 'wastes', s: 'great_heater', g: 'wastes'},
+            { a: 'surface', r: 'crater', s: 'crater_station', g: 'crater'}
         ].forEach(function(sup){
             sup['r2'] = sup['r2'] || sup.r;
             if (global[sup.a][sup.s] && global[sup.a][sup.s].count > 0){
@@ -2660,7 +2661,15 @@ function fastLoop(){
                     case 'wastes':
                         {
                             global[sup.a][sup.s].s_max += (p_on['surface_farm'] ? p_on['surface_farm'] : 0) * actions.surface.wastes.surface_farm.support();
+                            global[sup.a][sup.s].s_max += actions.surface.wastes.grand_dome.support();
+                            global[sup.a][sup.s].s_max = +global[sup.a][sup.s].s_max.toFixed(1);
                         }
+                        break;
+                    case 'crater':
+                        {
+                            global[sup.a][sup.s].s_max += (p_on['crater_fission'] ? p_on['crater_fission'] : 0) * actions.surface.crater.crater_fission.support();
+                        }
+                        break;
                 }
             }
 
@@ -3408,6 +3417,15 @@ function fastLoop(){
             global.city.morale.under_bonfire = p_on['bonfire'] * 2;
             morale += p_on['bonfire'] * 2;
         }
+        else{
+            global.city.morale.under_bonfire = 0;
+        }
+        if(p_on['under_casino']){
+            global.city.morale.casino = p_on['under_casino'] * 2;
+        }
+        else{
+            global.city.morale.casino = 0;
+        }
 
         if (global.tech['broadcast'] && !global.race['joyless']){
             let gasVal = govActive('gaslighter',0) || 0;
@@ -3448,7 +3466,7 @@ function fastLoop(){
         }
         else if(p_on['surface_zoo']){
             let info = global.surface.overview;
-            if(info && Math.min(info.herbivores, info.carnivores, info.scavengers) >= 10){
+            if(info && Math.min(global.surface.herbivores?.count, global.surface.carnivores?.count, global.surface.scavengers?.count) >= 10){
                 morale += p_on['surface_zoo'] * 4;
                 global.city.morale.zoo = p_on['surface_zoo'] * 4;
             }
@@ -4031,12 +4049,7 @@ function fastLoop(){
                 let food = (farmers * farmerValue(true)) + (farmhands * farmerValue(false));
                 let water_use = highPopAdjust(farmers + farmhands - workerScale(powered, 'farmer'));
                 if(water_use * time_multiplier > global.resource.Water.amount){
-                    if(global.resource.Water.amount === 0){
-                        food = 0;
-                    }
-                    else{
-                        food /= (global.resource.Water.amount / (water_use * time_multiplier));
-                    }
+                    food *= (global.resource.Water.amount / (water_use * time_multiplier));
                 }
 
                 breakdown.p['Food'][job_data.farmer.name()] = (food) + 'v';
@@ -4057,8 +4070,13 @@ function fastLoop(){
                 else{
                     produce = p_on['surface_farm'] * 0.03 * global.surface.overview.trees;
                 }
+                let virgo = astroSign === 'virgo' ? 1 + (astroVal('virgo')[0] / 100) : 1;
                 breakdown.p['Food'][structName('surface_farm')] = (produce) + 'v';
-                food_base += produce * production('psychic_boost', 'food');
+                food_base += produce * virgo * production('psychic_boost', 'food');
+
+                if(produce > 0){
+                    breakdown.p['Food'][`ᄂ${loc('sign_virgo')}+1`] = ((virgo - 1) * 100) + '%';
+                }
             }
 
             if (global.tauceti['tau_farm'] && p_on['tau_farm']){
@@ -4513,7 +4531,7 @@ function fastLoop(){
 
         // Furs
         if (global.resource.Furs.display){
-            let watch_tower = 1 * (0.04 * support_on['watch_tower'] || 0);
+            let watch_tower = 1 + (0.04 * support_on['watch_tower'] || 0);
             if (global.race['evil'] || global.race['artifical'] || global.race['unfathomable']){
                 let weapons = weaponTechModifer();
                 let hunters = workerScale(global.civic.hunter.workers,'hunter');
@@ -4579,7 +4597,7 @@ function fastLoop(){
             breakdown.p['Furs'][loc('soldiers')] = hunting  + 'v';
             if (hunting > 0){
                 breakdown.p['Furs'][`ᄂ${loc('quarantine')}+2`] = ((q_multiplier - 1) * 100) + '%';
-                breakdown.p['Furs'][`ᄂ${loc('surface_watch_tower')}+2`] = (watch_tower * 100) + '%';
+                breakdown.p['Furs'][`ᄂ${loc('surface_watch_tower')}+2`] = ((watch_tower - 1) * 100) + '%';
             }
             modRes('Furs', hunting * hunger * watch_tower * global_multiplier * q_multiplier * time_multiplier);
 
@@ -6277,10 +6295,10 @@ function fastLoop(){
                 }
                 let woodcutter = 1;
                 if(support_on['woodcutter']){
-                    woodcutter += support_on['woodcutter'] * 0.04;
+                    woodcutter += support_on['woodcutter'] * 0.08;
                 }
                 let ecosystem = 1;
-                if(global.surface.overview?.scavengers){
+                if(global.surface.scavengers?.count){
                     ecosystem = actions.surface.ecosystem.scavengers.tree_effect();
                 }
 
@@ -6301,14 +6319,14 @@ function fastLoop(){
                 let lack_of_trees = 1;
                 if(global.race['iceage']){
                     lack_of_trees = 0;
-                    if(global.surface.overview){
+                    if(global.surface.trees){
                         let tree_info = ecosystemInfo.trees;
                         let info = global.surface.overview;
-                        let reserved_trees = info.area * (info.tree_ratio / 100) / tree_info.size;
-                        let avail_trees = Math.max(0, info.trees - reserved_trees);
+                        let reserved_trees = info.area * (info.trees_reserved / 100) / tree_info.size * ecoMinorTraitEffect('trees', 'compact');
+                        let avail_trees = Math.max(0, global.surface.trees.count - reserved_trees);
                         let tree_hardiness = actions.surface.ecosystem.trees.hardiness();
-                        lack_of_trees = Math.min(1, avail_trees / workers / time_multiplier / 2 * tree_hardiness);
-                        global.surface.overview.trees -= workers * time_multiplier * lack_of_trees / tree_hardiness;
+                        lack_of_trees = Math.min(1, avail_trees / workers / time_multiplier * tree_hardiness / 2);
+                        global.surface.trees.count -= workers * time_multiplier * lack_of_trees / tree_hardiness;
                         drawEcology('trees');
                         breakdown.p['Lumber'][`ᄂ${loc('surface_tree_shortage')}`] = ((lack_of_trees - 1) * 100) + '%';
                     }
@@ -6719,7 +6737,8 @@ function fastLoop(){
         //ice age buildings
         [
             {b:'bonfire', r:'underground', r2:'cave', c:['lumber']},{b:'mineshaft_vator', r:'underground', r2:'cave', c:['oil']},{b:'core_forge', r:'underground', r2:'core', c:['water', 'coal']},{b:'core_blacksmith', r:'underground', r2:'core', c:['water', 'titanium']},
-            {b:'watch_tower', r:'surface', r2:'wastes', c:['food']},{b:'water_pipe', r:'surface', r2:'ecosystem', c:['water']},{b:'surface_farm', r:'surface', r2:'wastes', c:['water']},{b:'surface_zoo', r:'surface', r2:'wastes', c:['food']}
+            {b:'core_refinery', r:'underground', r2:'core', c:['water', 'oil']},{b:'watch_tower', r:'surface', r2:'wastes', c:['food']},{b:'water_pipe', r:'surface', r2:'ecosystem', c:['water']},{b:'surface_farm', r:'surface', r2:'wastes', c:['water']},
+            {b:'surface_zoo', r:'surface', r2:'wastes', c:['food']}
         ].forEach(function(building){
             if(global[building.r][building.b]){
                 let c_action = actions[building.r][building.r2][building.b];
@@ -6770,6 +6789,43 @@ function fastLoop(){
                 }
             }
         });
+
+        
+        // Surface Crater Mining
+        if(support_on['crater_drill']){
+            let iron_base = production('crater_drill','iron') * production('psychic_boost', 'Iron');
+            iron_base *= workerScale(global.civic.crater_worker.workers,'crater_worker') * support_on['crater_drill'];
+            let copper_base = production('crater_drill','copper') * production('psychic_boost', 'Copper');
+            copper_base *= workerScale(global.civic.crater_worker.workers,'crater_worker') * support_on['crater_drill'];
+            let coal_base = production('crater_drill','coal') * production('psychic_boost', 'Coal');
+            coal_base *= workerScale(global.civic.crater_worker.workers,'crater_worker') * support_on['crater_drill'];
+            let uranium_base = production('crater_drill','uranium') * production('psychic_boost', 'Uranium');
+            uranium_base *= workerScale(global.civic.crater_worker.workers,'crater_worker') * support_on['crater_drill'];
+            let smelter_mult = 1 + (iron_smelter * 0.1);
+            let refinery = 1;
+            if(p_on['core_refinery']){
+                refinery += p_on['core_refinery'] * 0.05;
+            }
+            breakdown.p['Iron'][loc('surface_crater_drill')] = (iron_base) + 'v';
+            if (iron_base > 0){
+                breakdown.p['Iron'][`ᄂ${loc('underground_core_refinery')}`] = ((refinery - 1) * 100) + '%';
+            }
+            breakdown.p['Copper'][loc('surface_crater_drill')] = (copper_base) + 'v';
+            if (copper_base > 0){
+                breakdown.p['Copper'][`ᄂ${loc('underground_core_refinery')}`] = ((refinery - 1) * 100) + '%';
+            }
+            breakdown.p['Coal'][loc('surface_crater_drill')] = (coal_base) + 'v';
+            if (coal_base > 0){
+                breakdown.p['Coal'][`ᄂ${loc('underground_core_refinery')}`] = ((refinery - 1) * 100) + '%';
+            }
+            breakdown.p['Uranium'][loc('surface_crater_drill')] = (uranium_base) + 'v';
+            
+            modRes('Iron', iron_base * shrineMetal.mult * smelter_mult * refinery * global_multiplier * time_multiplier * hunger);
+            modRes('Copper', copper_base * shrineMetal.mult * refinery * global_multiplier * time_multiplier * hunger);
+            modRes('Coal', coal_base * refinery * global_multiplier * time_multiplier * hunger);
+            modRes('Uranium', uranium_base * refinery * global_multiplier * time_multiplier * hunger);
+        }
+
         /*if(p_on['bonfire']){
             let c_action = actions.underground.cave.bonfire;
             let lumber_cost = c_action.consume('lumber');
@@ -7136,12 +7192,18 @@ function fastLoop(){
                     copper_base *= biomes.ashland.vars()[2];
                 }
 
+                let refinery = 1;
+                if(p_on['core_refinery']){
+                    refinery += p_on['core_refinery'] * 0.05;
+                }
+
                 let copper_power = power_mult;
                 let cop_single = pow_single;
                 breakdown.p['Copper'][job_data.miner.name()] = (copper_base) + 'v';
                 if (copper_base > 0){
                     breakdown.p['Copper'][`ᄂ${loc('power')}`] = ((copper_power - 1) * 100) + '%';
                     breakdown.p['Copper'][`ᄂ${loc('portal_tunneler_bd')}`] = ((tunneler - 1) * 100) + '%';
+                    breakdown.p['Copper'][`ᄂ${loc('underground_core_refinery')}`] = ((refinery - 1) * 100) + '%';
                     breakdown.p['Copper'][`ᄂ${loc('quarantine')}+0`] = ((q_multiplier - 1) * 100) + '%';
                     if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['mine'] > 0){
                         copper_power = (copper_power - 1) * 0.5 + 1;
@@ -7149,7 +7211,7 @@ function fastLoop(){
                         breakdown.p['Copper'][`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
                     }
                 }
-                let delta = copper_base * shrineMetal.mult * mworks.Copper * tunneler * hunger * q_multiplier * global_multiplier;
+                let delta = copper_base * shrineMetal.mult * mworks.Copper * tunneler * refinery * hunger * q_multiplier * global_multiplier;
                 global.city.mine['cpow'] = +(delta * (cop_single - 1)).toFixed(5);
                 delta *= copper_power;
 
@@ -7204,6 +7266,11 @@ function fastLoop(){
                     iron_base *= biomes.ashland.vars()[2];
                 }
 
+                let refinery = 1;
+                if(p_on['core_refinery']){
+                    refinery += p_on['core_refinery'] * 0.05;
+                }
+
                 let space_iron = 0;
 
                 let synd = syndicate('spc_belt');
@@ -7223,6 +7290,7 @@ function fastLoop(){
                         iron_single = (iron_single - 1) * 0.5 + 1;
                         breakdown.p['Iron'][`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
                     }
+                    breakdown.p['Iron'][`ᄂ${loc('underground_core_refinery')}`] = ((refinery - 1) * 100) + '%';
                     breakdown.p['Iron'][`ᄂ${loc('quarantine')}+0`] = ((q_multiplier - 1) * 100) + '%';
                 }
 
@@ -7267,8 +7335,8 @@ function fastLoop(){
                 }
 
                 let eship_iron = e_ship['iron'] ? e_ship.iron * womling_technician : 0;
-                let delta = ((iron_base * tunneler * iron_power * q_multiplier) + (space_iron * qs_multiplier * zigVal) + (eship_iron) + (pit_miner) + (womling)) * smelter_mult * shrineMetal.mult * mworks.Iron;
-                global.city.mine['ipow'] = +(iron_base * q_multiplier * hunger * global_multiplier * (iron_single - 1)).toFixed(5);
+                let delta = ((iron_base * tunneler * iron_power * refinery * q_multiplier) + (space_iron * qs_multiplier * zigVal) + (eship_iron) + (pit_miner) + (womling)) * smelter_mult * shrineMetal.mult * mworks.Iron;
+                global.city.mine['ipow'] = +(iron_base * q_multiplier * hunger * global_multiplier * refinery * (iron_single - 1)).toFixed(5);
                 delta *= hunger * global_multiplier;
 
                 if (e_ship['iron'] && e_ship.iron > 0){
@@ -7503,6 +7571,11 @@ function fastLoop(){
                 coal_base *= global.city.geology['Coal'] + 1;
             }
 
+            let refinery = 1;
+            if(p_on['core_refinery']){
+                refinery += p_on['core_refinery'] * 0.05;
+            }
+
             let power_mult = 1;
             let coal_single = 1;
             if (global.city['coal_mine']['on']){
@@ -7524,6 +7597,7 @@ function fastLoop(){
             if (coal_base > 0){
                 breakdown.p['Coal'][`ᄂ${loc('power')}`] = ((power_mult - 1) * 100) + '%';
                 breakdown.p['Coal'][`ᄂ${loc('portal_tunneler_bd')}`] = ((tunneler - 1) * 100) + '%';
+                breakdown.p['Coal'][`ᄂ${loc('underground_core_refinery')}`] = ((refinery - 1) * 100) + '%';
                 breakdown.p['Coal'][`ᄂ${loc('quarantine')}+0`] = ((q_multiplier - 1) * 100) + '%';
             }
 
@@ -7544,7 +7618,7 @@ function fastLoop(){
                 power_mult = 1 * zigVal;
             }
 
-            let delta = coal_base * tunneler * hunger * q_multiplier * global_multiplier;
+            let delta = coal_base * tunneler * refinery * hunger * q_multiplier * global_multiplier;
             global.city.coal_mine['cpow'] = +(delta * (coal_single - 1)).toFixed(5);
             delta *= power_mult;
 
@@ -7563,7 +7637,7 @@ function fastLoop(){
             modRes('Coal', delta * time_multiplier);
 
             // Uranium (from coal miners)
-            if (global.resource.Uranium.display){
+            if (global.resource.Uranium.display && !global.race['iceage']){
                 let uranium = delta / (global.race['cataclysm'] ? 48 : 115) * production('psychic_boost','Uranium');
                 global.city.coal_mine['upow'] = +(global.city.coal_mine['cpow'] / (global.race['cataclysm'] ? 48 : 115)).toFixed(5);
                 if (global.city.geology['Uranium']){
@@ -8846,14 +8920,10 @@ function fastLoop(){
         }
 
         if(p_on['surface_zoo']){
-            let income = 0;
-            let info = global.surface.overview;
-            if(info){
-                income += 0.03 * info.trees;
-                income += 0.08 * info.herbivores;
-                income += 0.25 * info.carnivores;
-                income += 0.1 * info.scavengers;
-            }
+            let income = 0.04 * (global.surface.trees?.count || 0) * ecoMinorTraitEffect('trees', 'playful');
+            income += 0.1 * (global.surface.herbivores?.count || 0) * ecoMinorTraitEffect('herbivores', 'playful');
+            income += 0.25 * (global.surface.carnivores?.count || 0) * ecoMinorTraitEffect('carnivores', 'playful');
+            income += 0.075 * (global.surface.scavengers?.count || 0) * ecoMinorTraitEffect('scavengers', 'playful');
             income *= p_on['surface_zoo'];
             breakdown.p['Money'][loc('surface_zoo')] = Math.round(income) + 'v';
             modRes('Money', +(income * time_multiplier * global_multiplier * hunger).toFixed(2));
@@ -9391,6 +9461,7 @@ function midLoop(){
             garrison: 0,
             colonist: 0,
             titan_colonist: 0,
+            crater_worker: 0,
             space_miner: 0,
             hell_surveyor: 0,
             archaeologist: 0,
@@ -9924,7 +9995,7 @@ function midLoop(){
         if (support_on['watch_tower']){
             lCaps['garrison'] += support_on['watch_tower'] * actions.surface.wastes.watch_tower.soldiers();
         }
-        
+
         // Only once the last segment is in; a part-built vault garrisons nobody.
         if (global.space['fort_knox'] && global.space.fort_knox.count >= 100){
             lCaps['garrison'] += actions.space.spc_survey.fort_knox.soldiers();
@@ -10171,6 +10242,12 @@ function midLoop(){
             let gain = (p_on['luxury_condo']  * spatialReasoning(750000));
             caps['Money'] += gain;
             breakdown.c.Money[loc('tech_luxury_condo')] = gain+'v';
+        }
+        if (support_on['work_quarters']){
+            let gain = Math.round(support_on['work_quarters'] * actions.surface.crater.work_quarters.citizens());
+            caps[global.race.species] += gain;
+            lCaps['crater_worker'] += jobScale(support_on['work_quarters']);
+            breakdown.c[global.race.species][`${loc('surface_work_quarters')}`] = gain + 'v';
         }
         if (global.city['lodge']){
             let cit = global.city.lodge.count * actions.city.lodge.citizens();
@@ -10435,7 +10512,7 @@ function midLoop(){
                 breakdown.c.Helium_3[loc('city_oil_depot')] = gain+'v';
             }
         }
-        if(global.underground['fluid_depot']){
+        if (global.underground['fluid_depot']){
             for (const res of actions.underground.industry['fluid_depot'].res_list()){
                 if (global.resource[res].display){
                     let gain = global.underground['fluid_depot'].count * actions.underground.industry['fluid_depot'].res_cap(res);
@@ -10443,6 +10520,11 @@ function midLoop(){
                     breakdown.c[res][loc('underground_fluid_depot')] = gain+'v';
                 }
             }
+        }
+        if (global.surface['work_quarters']){
+            let gain = actions.surface.crater.work_quarters.res_cap('uranium') * global.surface['work_quarters'].count;
+            caps['Uranium'] += gain;
+            breakdown.c['Uranium'][loc('surface_work_quarters')] = gain+'v';
         }
         if (global.space['propellant_depot']){
             let gain = (global.space['propellant_depot'].count * spatialReasoning(1250));
@@ -10816,6 +10898,12 @@ function midLoop(){
             breakdown.c.Knowledge[loc('portal_archaeology_bd')] = (know)+'v';
         }
 
+        if(support_on['genetics_lab']){
+            let know = actions.surface.wastes.genetics_lab.knowVal() * support_on['genetics_lab'];
+            caps['Knowledge'] += know;
+            breakdown.c.Knowledge[loc('surface_genetics_lab')] = (know)+'v';
+        }
+
         if (p_on['embassy'] && global.galaxy['symposium']){
             let dorm = 1750 * p_on['dormitory'];
             let gtrade = 650 * global.galaxy.trade.cur;
@@ -11087,6 +11175,10 @@ function midLoop(){
             if (global.race['cataclysm']){
                 lCaps['cement_worker'] += jobScale(support_on['fabrication']);
             }
+        }
+        if (support_on['crater_fabrication']){
+            lCaps['craftsman'] += jobScale(support_on['crater_fabrication']);
+            lCaps['cement_worker'] += jobScale(support_on['crater_fabrication']);
         }
         if (global.tech['isolation'] && support_on['tau_factory']){
             lCaps['craftsman'] += jobScale(support_on['tau_factory'] * 5);
@@ -12411,6 +12503,9 @@ function midLoop(){
             if(global.surface['watch_tower'].explore >= 100){
                 global.tech['crater'] = 1;
                 global.surface['watch_tower'].explore = 100;
+                messageQueue(loc('tech_surface_expedition_result'),'info',false,['progress']);
+                renderSurface();
+                drawTech();
             }
         }
 
