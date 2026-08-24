@@ -8698,7 +8698,6 @@
   "tau_star": "The star %0. It is a G Type star with about 78% of the total mass of the %1.",
   "tau_star_ringworld": "Ringworld",
   "tau_star_server_farm": "Server Farm",
-  "tau_star_server_farm_effect": "Increases maximum Knowledge by %0%.",
   "tau_star_server_farm_complete": "The last rack comes online and the farm draws its full load. Across the ringworld the lights dim for a moment, and then something very large finishes thinking.",
   "tau_star_ringworld_effect": "Construct part of the Ringworld.",
   "tau_star_matrix": "Matrix",

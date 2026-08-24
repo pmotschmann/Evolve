@@ -265,6 +265,22 @@ window.importGame = function importGame(data,fromStorage){
     }
 }
 
+// A tech's `era` is normally one, but it may be a list when the same tech belongs to more than
+// one because of different game paths/forks.
+export function techEra(c_action){
+    if (c_action && Array.isArray(c_action.era)){
+        return typeof c_action.era_a === 'function' ? c_action.era_a() : c_action.era[0];
+    }
+    return c_action ? c_action.era : undefined;
+}
+
+// The wiki wants membership instead — a listed tech is documented on every era page it belongs to,
+// not just whichever one happens to be active in the loaded save.
+export function techInEra(c_action,era){
+    if (!c_action || era === undefined){ return false; }
+    return Array.isArray(c_action.era) ? c_action.era.includes(era) : c_action.era === era;
+}
+
 export function powerGrid(type,reset){
     let grids = gridDefs();
 

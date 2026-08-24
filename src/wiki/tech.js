@@ -5,7 +5,7 @@ import { actions, housingLabel } from './../actions.js';
 import { techList } from './../tech.js';
 import { checkControlling } from './../civics.js';
 import { races, traits } from './../races.js';
-import { getHalloween, svgIcons, svgViewBox } from './../functions.js';
+import { getHalloween, svgIcons, svgViewBox, techInEra } from './../functions.js';
 import { planetName } from './../space.js';
 import { actionDesc, sideMenu, getSolarName } from './functions.js';
 import { shipCapacitorSaving, surveyTheme } from './../truepath.js';
@@ -2150,6 +2150,10 @@ const extraInformation = {
     ],
     element_zero: [
         loc(`wiki_tech_building_unlock`,[loc('space_dwarf_mass_relay_title')]),
+        loc(`wiki_tech_building_unlock`,[loc('tau_roid_synthesizer_title')]),
+        loc(`wiki_tech_resource_unlock`,[loc(`resource_Positronium_name`)])
+    ],
+    element_zero_b: [
         loc(`wiki_tech_building_unlock`,[loc('tau_roid_synthesizer_title')]),
         loc(`wiki_tech_resource_unlock`,[loc(`resource_Positronium_name`)])
     ],
@@ -4435,13 +4439,15 @@ function getTechTrees(path){
             techTrees[action.grant[0]] = {};
         }
         let text = typeof actions.tech[actionName].title === 'string' ? actions.tech[actionName].title : actions.tech[actionName].title();
-        techTrees[action.grant[0]][action.grant[1]] = [
-            {
-                name: actionName,
-                title: text,
-                era: actions.tech[actionName].era
-            }
-        ];
+        // Possible for multiple matching techs to exist because of game route forking.
+        if (!techTrees[action.grant[0]][action.grant[1]]){
+            techTrees[action.grant[0]][action.grant[1]] = [];
+        }
+        techTrees[action.grant[0]][action.grant[1]].push({
+            name: actionName,
+            title: text,
+            era: actions.tech[actionName].era
+        });
     });
     //Anomalies
     techTrees['primitive'][2] = [
@@ -4540,7 +4546,35 @@ function addInformation(parent,key,path){
     }
 }
 
-function addRequirements(parent,key,keyName,path){
+// Check if era matches current page
+function eraCovers(era,pageEra){
+    if (era === undefined || pageEra === undefined){ return false; }
+    let wanted = [pageEra];
+    if (alt_era[pageEra]){ wanted.push(alt_era[pageEra]); }
+    return Array.isArray(era) ? era.some(e => wanted.includes(e)) : wanted.includes(era);
+}
+
+// Match era for a requirement.
+function reqEra(era,pageEra){
+    if (Array.isArray(era)){
+        return eraCovers(era,pageEra) ? (era.includes(pageEra) ? pageEra : era.find(e => eraCovers(e,pageEra))) : era[0];
+    }
+    return era;
+}
+
+// Match best fit era for tech requirements.
+function pickTechReqs(candidates,pageEra){
+    let matched = candidates.filter(c => eraCovers(c.era,pageEra));
+    let list = matched.length > 0 ? matched : candidates;
+    let seen = {};
+    return list.filter(function(c){
+        if (seen[c.title]){ return false; }
+        seen[c.title] = true;
+        return true;
+    });
+}
+
+function addRequirements(parent,key,keyName,path,pageEra){
     let techTrees = getTechTrees(path);
     if (Object.keys(key.reqs).length > 0){
         let techReqs = {};
@@ -4553,7 +4587,7 @@ function addRequirements(parent,key,keyName,path){
                 techReqs[reqID] = [];
                 let currTechReq = techTrees[req][key.reqs[req]];
                 //For anomalies where multiple techs can fill one pre-req.
-                currTechReq.forEach(function (subReq){
+                pickTechReqs(currTechReq,pageEra).forEach(function (subReq){
                     techReqs[reqID].push({
                         name: subReq.name,
                         title: subReq.title,
@@ -4580,7 +4614,7 @@ function addRequirements(parent,key,keyName,path){
                 let isOr = false;
                 let color = false;
                 techReqs[req].forEach(function (subReq){
-                    let subText = `<a href="wiki.html#${subReq.era}-${path === 'truepath' ? 'tp_tech' : 'tech'}-${subReq.name}" class="has-text-${subReq.color}" target="_blank">${subReq.title}</a>`;
+                    let subText = `<a href="wiki.html#${reqEra(subReq.era,pageEra)}-${path === 'truepath' ? 'tp_tech' : 'tech'}-${subReq.name}" class="has-text-${subReq.color}" target="_blank">${subReq.title}</a>`;
                     color = subReq.color;
                     if (isOr){
                         reqText = loc('wiki_tech_req_or',[reqText,subText]);
@@ -4645,7 +4679,7 @@ function addRequirements(parent,key,keyName,path){
                         break;
                     case 'tech':
                         subText = typeof actions.tech[subreq.name].title === 'string' ? actions.tech[subreq.name].title : actions.tech[subreq.name].title();
-                        link = `wiki.html#${actions.tech[subreq.name].era}-tech-${subreq.name}`;
+                        link = `wiki.html#${reqEra(actions.tech[subreq.name].era,pageEra)}-tech-${subreq.name}`;
                         color = global.tech[subreq.tree] && global.genes[subreq.tree] >= subreq.val;
                         break;
                     case 'universe':
@@ -4738,12 +4772,12 @@ export function renderTechPage(era,path){
 
     Object.keys(techs).forEach(function (actionName){
         let action = techs[actionName];
-        if (action.hasOwnProperty('era') && (action.era === era || action.era === alt_era[era]) && (!action.hasOwnProperty('wiki') || action.wiki)){
+        if (action.hasOwnProperty('era') && (techInEra(action,era) || techInEra(action,alt_era[era])) && (!action.hasOwnProperty('wiki') || action.wiki)){
             let id = techs[actionName].id.split('-');
             let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
             actionDesc(info, action);
             addInformation(info, actionName, path);
-            addRequirements(info, action, actionName, path);
+            addRequirements(info, action, actionName, path, era);
             if (action.cost['Knowledge']){
                 if (techListing.length === 0){
                     techListing[0] = [action, info];
@@ -4788,9 +4822,12 @@ export function renderTechPage(era,path){
         }
     }
     for (let i=0; i<techListing.length; i++) {
-        let era = path === 'truepath' && alt_era_r[techListing[i][0].era] ? alt_era_r[techListing[i][0].era] : techListing[i][0].era;
+        // alt_era_r maps a tech's own era to the page it is documented on.
+        let menuEra = Array.isArray(techListing[i][0].era)
+            ? era
+            : (path === 'truepath' && alt_era_r[techListing[i][0].era] ? alt_era_r[techListing[i][0].era] : techListing[i][0].era);
         content.append(techListing[i][1]);
         let id = techListing[i][0].id.split('-');
-        sideMenu('add',`${era}-${prefix}`,id[1],typeof techListing[i][0].title === 'function' ? techListing[i][0].title() : techListing[i][0].title);
+        sideMenu('add',`${menuEra}-${prefix}`,id[1],typeof techListing[i][0].title === 'function' ? techListing[i][0].title() : techListing[i][0].title);
     }
 }

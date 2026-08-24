@@ -10988,7 +10988,7 @@ function midLoop(){
 
         // The Server Farm (True Path) on the ringworld.
         if (p_on['server_farm']){
-            let gain = Math.round(caps['Knowledge'] * 0.75);
+            let gain = Math.round(caps['Knowledge'] * 0.5);
             caps['Knowledge'] += gain;
             breakdown.c.Knowledge[loc('tau_star_server_farm')] = gain+'v';
             if (global.tech['shadow'] && global.tech.shadow === 1){
@@ -10997,12 +10997,14 @@ function midLoop(){
             }
         }
 
-        // Once Positronium is unlocked (element_zero), the Matrioshka Brain provides 1 Positronium of
+        // Once Positronium is unlocked (element_zero), the Matrioshka Brain or Server Farm provides 1 Positronium of
         // storage per 1000 maximum Knowledge (rounded down). The Knowledge cap is finalized just above.
-        if (global.resource.Positronium.display){
-            let store = Math.floor(caps['Knowledge'] / 1000);
-            caps['Positronium'] += store;
-            breakdown.c.Positronium[loc('tech_matrioshka_brain')] = store+'v';
+        if (global.resource.Positronium.display && (global.tech['tau_roid'] && global.tech.tau_roid >= 6)){
+            if ((global.tech['shadow'] && p_on['server_farm']) || (global.tech['m_ignite'] && global.tech.m_ignite >= 2)){
+                let store = Math.floor(caps['Knowledge'] / 1000);
+                caps['Positronium'] += store;
+                breakdown.c.Positronium[global.tech['shadow'] ? loc('tau_star_server_farm') : loc('tech_matrioshka_brain')] = store+'v';
+            }
         }
 
         if (global.eden['fortress'] && global.tech.hasOwnProperty('celestial_warfare')){

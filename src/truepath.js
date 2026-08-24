@@ -2649,9 +2649,14 @@ const tauCetiModules = {
             effect(wiki){
                 let count = (wiki?.count ?? 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0);
                 if (count < 100){
-                    return `<div>${loc('tau_star_server_farm_effect',[75])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[100 - count])}</div>`;
+                    return `<div>${loc('tau_star_server_farm_effect',[50])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[100 - count])}</div>`;
                 }
-                return `<div>${loc('tau_star_server_farm_effect',[75])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                let effectText = `<div>${loc('plus_max_resource',['50%',global.resource.Knowledge.name])}</div>`;
+                if (global.resource.Positronium.display){
+                    let store = Math.floor(global.resource.Knowledge.max / 1000);
+                    effectText += `<div>${loc('plus_max_resource',[store.toLocaleString(),global.resource.Positronium.name])}</div>`;
+                }
+                return effectText + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             powered(){ return powerCostMod(7500); },
             switchable(){ return global.tauceti.hasOwnProperty('server_farm') && global.tauceti.server_farm.count >= 100; },
@@ -4897,7 +4902,7 @@ const tauCetiModules = {
                 return desc;
             },
             support_fuel(){ return { r: 'Helium_3', a: global.tech['isolation'] ? 15 : 250 }; },
-            support(){ return global.tech['m_ignite'] && global.tech.m_ignite >= 4 ? 2 : 1; },
+            support(){ return global.tech['tau_roid'] && global.tech.tau_roid >= 7 ? 2 : 1; },
             powered(){ return 0; },
             refresh: true,
             action(){
@@ -5004,7 +5009,7 @@ const tauCetiModules = {
                 return `<div>${loc('tau_roid_synthesizer_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             type: 'industry',
-            reqs: { tau_roid: 4, m_ignite: 3 },
+            reqs: { tau_roid: 6 },
             path: ['truepath'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('synthesizer', offset, 90000000, 1.26, 'tauceti'); },
