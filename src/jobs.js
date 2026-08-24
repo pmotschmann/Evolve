@@ -465,7 +465,7 @@ export const job_data = {
         stress(){ return 10; },
         color(){ return 'advanced'; }
     },
-    gardener: {
+    iceage_gardener: {
         name(){ return loc('job_gardener'); },
         desc(){
             let morale = global.tech['theatre'];
@@ -480,7 +480,7 @@ export const job_data = {
             }
             morale = +workerScale(morale,'entertainer').toFixed(2);
             let water = morale * 2;
-            return loc('job_gardener_desc',[water, +(morale).toFixed(2)]);
+            return loc('job_gardener_desc_iceage',[water, +(morale).toFixed(2)]);
         },
         stress(){ return 10; },
         color(){ return 'advanced'; }
@@ -698,7 +698,7 @@ export function defineJobs(define){
     loadJob('quarry_worker',define);
     loadJob('crystal_miner',define);
     loadJob('scavenger',define);
-    loadJob('gardener',define);
+    loadJob('iceage_gardener',define);
     loadJob('teamster',define);
     loadJob('meditator',define);
     loadJob('torturer',define);

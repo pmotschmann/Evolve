@@ -5996,7 +5996,7 @@ const techs = {
         cost: {
             Knowledge(){ return 158000; }
         },
-        effect: global.race['artifical'] ? loc('tech_server_farm_effect') : loc('tech_surface_farm_effect'),
+        effect: global.race['artifical'] ? loc('tech_server_farm_effect_iceage') : loc('tech_surface_farm_effect'),
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.surface.wastes.surface_farm);
