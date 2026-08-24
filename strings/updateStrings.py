@@ -5,10 +5,14 @@ import os.path as path
 
 print()
 
-if len(sys.argv) < 2:
-    print("inform locale key (python updateString.py <locale>)")
+args = [arg for arg in sys.argv[1:] if not arg.startswith('-')]
+flags = [arg for arg in sys.argv[1:] if arg.startswith('-')]
+delete_only = '--delete-only' in flags or '-d' in flags
+
+if len(args) < 1:
+    print("inform locale key (python updateString.py <locale> [--delete-only])")
 else:
-    locale = sys.argv[1]
+    locale = args[0]
 
     if not path.isfile('strings.{}.json'.format(locale)):
         print("'strings.{}.json' not found.\nCreate that file with a line write '{{ }}' if need.".format(locale))
@@ -47,7 +51,9 @@ else:
 
         for key in default_strings:
             if key in locale_strings:
-                if locale_strings[key][0:6] == "TRANS:":
+                if delete_only:
+                    writing[key] = locale_strings[key]
+                elif locale_strings[key][0:6] == "TRANS:":
                     writing[key] = "TRANS:" + default_strings[key]
                     trans_count+=1
                 elif last_strings is not None and key in last_strings and default_strings[key] != last_strings[key]:
@@ -56,12 +62,13 @@ else:
                 else:
                     writing[key] = locale_strings[key]
                 del locale_strings[key]
-            else:
+            elif not delete_only:
                 writing[key] = "TRANS:" + default_strings[key]
                 trans_count+=1
         
-        print("{} values are marked with tag 'CHANGE:'".format(change_count))
-        print("{} values are marked with tag 'TRANS:'".format(trans_count))
+        if not delete_only:
+            print("{} values are marked with tag 'CHANGE:'".format(change_count))
+            print("{} values are marked with tag 'TRANS:'".format(trans_count))
         if len(locale_strings) > 0:
             print("{} keys was deleted: ".format(len(locale_strings)))
             for key in locale_strings:
@@ -73,4 +80,5 @@ else:
         loc_file.truncate(0);
         json.dump(writing, loc_file, ensure_ascii=False, indent=2)
 
-        copyfile("strings.json", "last-strings.json");
+        if not delete_only:
+            copyfile("strings.json", "last-strings.json");
