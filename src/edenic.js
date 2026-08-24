@@ -38,7 +38,7 @@ const edenicModules = {
             grant: ['edenic',4],
             queue_complete(){ return global.tech.edenic >= 4 ? 0 : 1; },
             cost: {
-                Oil(offset,wiki){ return 10000000; }
+                Oil(r={}){ return 10000000; }
             },
             effect(){
                 return loc('eden_survery_meadows_effect');
@@ -58,10 +58,10 @@ const edenicModules = {
             type: 'outpost',
             reqs: { edenic: 4 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('encampment', offset, 1590000000, 1.235, 'eden'); },
-                Lumber(offset){ return spaceCostMultiplier('encampment', offset, 860000000, 1.235, 'eden'); },
-                Iron(offset){ return spaceCostMultiplier('encampment', offset, 190000000, 1.235, 'eden'); },
-                Coal(offset){ return spaceCostMultiplier('encampment', offset, 23500000, 1.235, 'eden'); },
+                Money(r={}){ return spaceCostMultiplier('encampment', r.offset, 1590000000, 1.235, 'eden'); },
+                Lumber(r={}){ return spaceCostMultiplier('encampment', r.offset, 860000000, 1.235, 'eden'); },
+                Iron(r={}){ return spaceCostMultiplier('encampment', r.offset, 190000000, 1.235, 'eden'); },
+                Coal(r={}){ return spaceCostMultiplier('encampment', r.offset, 23500000, 1.235, 'eden'); },
             },
             effect(){
                 let desc = `<div>${loc('eden_encampment_effect',[$(this)[0].support()])}</div>`;
@@ -114,10 +114,10 @@ const edenicModules = {
             type: 'power',
             reqs: { asphodel: 4 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('soul_engine', offset, 98312500, 1.235, 'eden'); },
-                Neutronium(offset){ return spaceCostMultiplier('soul_engine', offset, 4500000, 1.235, 'eden'); },
-                Orichalcum(offset){ return spaceCostMultiplier('soul_engine', offset, 37500000, 1.235, 'eden'); },
-                Asphodel_Powder(offset){ return spaceCostMultiplier('soul_engine', offset, 3450, 1.235, 'eden'); }
+                Money(r={}){ return spaceCostMultiplier('soul_engine', r.offset, 98312500, 1.235, 'eden'); },
+                Neutronium(r={}){ return spaceCostMultiplier('soul_engine', r.offset, 4500000, 1.235, 'eden'); },
+                Orichalcum(r={}){ return spaceCostMultiplier('soul_engine', r.offset, 37500000, 1.235, 'eden'); },
+                Asphodel_Powder(r={}){ return spaceCostMultiplier('soul_engine', r.offset, 3450, 1.235, 'eden'); }
             },
             effect(){
                 return `<div class="has-text-caution">${loc('space_used_support',[loc('eden_asphodel_name')])}</div><div>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered().toFixed(1))])}</div>`;
@@ -162,33 +162,33 @@ const edenicModules = {
             queue_size: 1,
             queue_complete(){ return 10 - global.eden.mech_station.count; },
             cost: {
-                Money(offset){
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('mech_station') ? global.eden.mech_station.count : 0) < 10 ? 6750000000 : 0;
+                Money(r={}){
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('mech_station') ? global.eden.mech_station.count : 0) < 10 ? 6750000000 : 0;
                     }
                     return !global.eden.hasOwnProperty('mech_station') || (global.eden.mech_station.count < 10) ? 6750000000 : 0;
                 },
-                Graphene(offset){
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('mech_station') ? global.eden.mech_station.count : 0) < 10 ? 82500000 : 0;
+                Graphene(r={}){
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('mech_station') ? global.eden.mech_station.count : 0) < 10 ? 82500000 : 0;
                     }
                     return !global.eden.hasOwnProperty('mech_station') || (global.eden.mech_station.count < 10) ? 82500000 : 0;
                 },
-                Infernite(offset){
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('mech_station') ? global.eden.mech_station.count : 0) < 10 ? 7500000 : 0;
+                Infernite(r={}){
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('mech_station') ? global.eden.mech_station.count : 0) < 10 ? 7500000 : 0;
                     }
                     return !global.eden.hasOwnProperty('mech_station') || (global.eden.mech_station.count < 10) ? 7500000 : 0;
                 },
-                Vitreloy(offset){
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('mech_station') ? global.eden.mech_station.count : 0) < 10 ? 66600000 : 0;
+                Vitreloy(r={}){
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('mech_station') ? global.eden.mech_station.count : 0) < 10 ? 66600000 : 0;
                     }
                     return !global.eden.hasOwnProperty('mech_station') || (global.eden.mech_station.count < 10) ? 66600000 : 0;
                 },
-                Asphodel_Powder(offset){
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('mech_station') ? global.eden.mech_station.count : 0) < 10 ? 7500 : 0;
+                Asphodel_Powder(r={}){
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('mech_station') ? global.eden.mech_station.count : 0) < 10 ? 7500 : 0;
                     }
                     return !global.eden.hasOwnProperty('mech_station') || (global.eden.mech_station.count < 10) ? 7500 : 0;
                 },
@@ -232,10 +232,10 @@ const edenicModules = {
             type: 'mining',
             reqs: { asphodel: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('asphodel_harvester', offset, 34280000, 1.24, 'eden'); },
-                Aluminium(offset){ return spaceCostMultiplier('asphodel_harvester', offset, 22288800, 1.24, 'eden'); },
-                Infernite(offset){ return spaceCostMultiplier('asphodel_harvester', offset, 666999, 1.24, 'eden'); },
-                Soul_Gem(offset){ return spaceCostMultiplier('asphodel_harvester', offset, 2, 1.18, 'eden'); },
+                Money(r={}){ return spaceCostMultiplier('asphodel_harvester', r.offset, 34280000, 1.24, 'eden'); },
+                Aluminium(r={}){ return spaceCostMultiplier('asphodel_harvester', r.offset, 22288800, 1.24, 'eden'); },
+                Infernite(r={}){ return spaceCostMultiplier('asphodel_harvester', r.offset, 666999, 1.24, 'eden'); },
+                Soul_Gem(r={}){ return spaceCostMultiplier('asphodel_harvester', r.offset, 2, 1.18, 'eden'); },
             },
             effect(){
                 let powder = +(production('asphodel_harvester','powder')).toFixed(3);
@@ -272,10 +272,10 @@ const edenicModules = {
             type: 'industry',
             reqs: { asphodel: 2 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('ectoplasm_processor', offset, 22650000, 1.24, 'eden'); },
-                Titanium(offset){ return spaceCostMultiplier('ectoplasm_processor', offset, 15000000, 1.24, 'eden'); },
-                Stanene(offset){ return spaceCostMultiplier('ectoplasm_processor', offset, 18000000, 1.24, 'eden'); },
-                Asphodel_Powder(offset){ return spaceCostMultiplier('ectoplasm_processor', offset, 1000, 1.24, 'eden'); },
+                Money(r={}){ return spaceCostMultiplier('ectoplasm_processor', r.offset, 22650000, 1.24, 'eden'); },
+                Titanium(r={}){ return spaceCostMultiplier('ectoplasm_processor', r.offset, 15000000, 1.24, 'eden'); },
+                Stanene(r={}){ return spaceCostMultiplier('ectoplasm_processor', r.offset, 18000000, 1.24, 'eden'); },
+                Asphodel_Powder(r={}){ return spaceCostMultiplier('ectoplasm_processor', r.offset, 1000, 1.24, 'eden'); },
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[loc('eden_asphodel_name')])}</div>`;
@@ -309,10 +309,10 @@ const edenicModules = {
             type: 'science',
             reqs: { asphodel: 3 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('research_station', offset, 39185000, 1.24, 'eden'); },
-                Cement(offset){ return spaceCostMultiplier('research_station', offset, 100000000, 1.24, 'eden'); },
-                Asphodel_Powder(offset){ return spaceCostMultiplier('research_station', offset, 1250, 1.24, 'eden'); },
-                Soul_Gem(offset){ return spaceCostMultiplier('research_station', offset, 10, 1.12, 'eden'); },
+                Money(r={}){ return spaceCostMultiplier('research_station', r.offset, 39185000, 1.24, 'eden'); },
+                Cement(r={}){ return spaceCostMultiplier('research_station', r.offset, 100000000, 1.24, 'eden'); },
+                Asphodel_Powder(r={}){ return spaceCostMultiplier('research_station', r.offset, 1250, 1.24, 'eden'); },
+                Soul_Gem(r={}){ return spaceCostMultiplier('research_station', r.offset, 10, 1.12, 'eden'); },
             },
             effect(){
                 let attact = global.blood['attract'] ? global.blood.attract * 5 : 0;
@@ -369,10 +369,10 @@ const edenicModules = {
             type: 'storage',
             reqs: { asphodel: 7 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('warehouse', offset, 300000000, 1.28, 'eden'); },
-                Steel(offset){ return spaceCostMultiplier('warehouse', offset, 15000000, 1.28, 'eden'); },
-                Alloy(offset){ return spaceCostMultiplier('warehouse', offset, 18000000, 1.28, 'eden'); },
-                Cement(offset){ return spaceCostMultiplier('warehouse', offset, 27500000, 1.28, 'eden'); }
+                Money(r={}){ return spaceCostMultiplier('warehouse', r.offset, 300000000, 1.28, 'eden'); },
+                Steel(r={}){ return spaceCostMultiplier('warehouse', r.offset, 15000000, 1.28, 'eden'); },
+                Alloy(r={}){ return spaceCostMultiplier('warehouse', r.offset, 18000000, 1.28, 'eden'); },
+                Cement(r={}){ return spaceCostMultiplier('warehouse', r.offset, 27500000, 1.28, 'eden'); }
             },
             res(){
                 let r_list = [
@@ -490,11 +490,11 @@ const edenicModules = {
             type: 'utility',
             reqs: { asphodel: 8 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('stabilizer', offset, 800000000, 1.25, 'eden'); },
-                Neutronium(offset){ return spaceCostMultiplier('stabilizer', offset, 7500000, 1.25, 'eden'); },
-                Vitreloy(offset){ return spaceCostMultiplier('stabilizer', offset, 29000000, 1.25, 'eden'); },
-                Elerium(offset){ return spaceCostMultiplier('stabilizer', offset, 7500, 1.25, 'eden'); },
-                Asphodel_Powder(offset){ return spaceCostMultiplier('stabilizer', offset, 4250, 1.25, 'eden'); },
+                Money(r={}){ return spaceCostMultiplier('stabilizer', r.offset, 800000000, 1.25, 'eden'); },
+                Neutronium(r={}){ return spaceCostMultiplier('stabilizer', r.offset, 7500000, 1.25, 'eden'); },
+                Vitreloy(r={}){ return spaceCostMultiplier('stabilizer', r.offset, 29000000, 1.25, 'eden'); },
+                Elerium(r={}){ return spaceCostMultiplier('stabilizer', r.offset, 7500, 1.25, 'eden'); },
+                Asphodel_Powder(r={}){ return spaceCostMultiplier('stabilizer', r.offset, 4250, 1.25, 'eden'); },
             },
             queue_complete(){ return global.eden.warehouse.count - global.eden.stabilizer.count; },
             effect(){
@@ -555,39 +555,39 @@ const edenicModules = {
             queue_size: 10,
             queue_complete(){ return 100 - global.eden.rune_gate.count; },
             cost: {
-                Money(offset){
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('rune_gate') ? global.eden.rune_gate.count : 0) < 100 ? 1000000000 : 0;
+                Money(r={}){
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('rune_gate') ? global.eden.rune_gate.count : 0) < 100 ? 1000000000 : 0;
                     }
                     return !global.eden.hasOwnProperty('rune_gate') || (global.eden.rune_gate.count < 100) ? 1000000000 : 0;
                 },
-                Omniscience(offset){
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('rune_gate') ? global.eden.rune_gate.count : 0) < 100 ? 10000 : 0;
+                Omniscience(r={}){
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('rune_gate') ? global.eden.rune_gate.count : 0) < 100 ? 10000 : 0;
                     }
                     return !global.eden.hasOwnProperty('rune_gate') || (global.eden.rune_gate.count < 100) ? 10000 : 0;
                 },
-                Copper(offset){
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('rune_gate') ? global.eden.rune_gate.count : 0) < 100 ? 420000000 : 0;
+                Copper(r={}){
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('rune_gate') ? global.eden.rune_gate.count : 0) < 100 ? 420000000 : 0;
                     }
                     return !global.eden.hasOwnProperty('rune_gate') || (global.eden.rune_gate.count < 100) ? 420000000 : 0;
                 },
-                Nano_Tube(offset){
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('rune_gate') ? global.eden.rune_gate.count : 0) < 100 ? 35000000 : 0;
+                Nano_Tube(r={}){
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('rune_gate') ? global.eden.rune_gate.count : 0) < 100 ? 35000000 : 0;
                     }
                     return !global.eden.hasOwnProperty('rune_gate') || (global.eden.rune_gate.count < 100) ? 35000000 : 0;
                 },
-                Bolognium(offset){
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('rune_gate') ? global.eden.rune_gate.count : 0) < 100 ? 7500000 : 0;
+                Bolognium(r={}){
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('rune_gate') ? global.eden.rune_gate.count : 0) < 100 ? 7500000 : 0;
                     }
                     return !global.eden.hasOwnProperty('rune_gate') || (global.eden.rune_gate.count < 100) ? 7500000 : 0;
                 },
-                Asphodel_Powder(offset){
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('rune_gate') ? global.eden.rune_gate.count : 0) < 100 ? 25000 : 0;
+                Asphodel_Powder(r={}){
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('rune_gate') ? global.eden.rune_gate.count : 0) < 100 ? 25000 : 0;
                     }
                     return !global.eden.hasOwnProperty('rune_gate') || (global.eden.rune_gate.count < 100) ? 25000 : 0;
                 },
@@ -658,10 +658,10 @@ const edenicModules = {
             type: 'military',
             reqs: { asphodel: 9 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('bunker', offset, 777000000, 1.2, 'eden'); },
-                Stone(offset){ return spaceCostMultiplier('bunker', offset, 358000000, 1.2, 'eden'); },
-                Furs(offset){ return spaceCostMultiplier('bunker', offset, 66600000, 1.2, 'eden'); },
-                Asphodel_Powder(offset){ return spaceCostMultiplier('bunker', offset, 9999, 1.2, 'eden'); },
+                Money(r={}){ return spaceCostMultiplier('bunker', r.offset, 777000000, 1.2, 'eden'); },
+                Stone(r={}){ return spaceCostMultiplier('bunker', r.offset, 358000000, 1.2, 'eden'); },
+                Furs(r={}){ return spaceCostMultiplier('bunker', r.offset, 66600000, 1.2, 'eden'); },
+                Asphodel_Powder(r={}){ return spaceCostMultiplier('bunker', r.offset, 9999, 1.2, 'eden'); },
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[loc('eden_asphodel_name')])}</div>`;
@@ -714,11 +714,11 @@ const edenicModules = {
             type: 'entertainment',
             reqs: { asphodel: 10 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('bliss_den', offset, 450000000, 1.22, 'eden'); },
-                Furs(offset){ return spaceCostMultiplier('bliss_den', offset, 29000000, 1.22, 'eden'); },
-                Asphodel_Powder(offset){ return spaceCostMultiplier('bliss_den', offset, 35000, 1.22, 'eden'); },
-                Plywood(offset){ return spaceCostMultiplier('bliss_den', offset, 10000000, 1.22, 'eden'); },
-                Soul_Gem(offset){ return spaceCostMultiplier('bliss_den', offset, 10, 1.22, 'eden'); },
+                Money(r={}){ return spaceCostMultiplier('bliss_den', r.offset, 450000000, 1.22, 'eden'); },
+                Furs(r={}){ return spaceCostMultiplier('bliss_den', r.offset, 29000000, 1.22, 'eden'); },
+                Asphodel_Powder(r={}){ return spaceCostMultiplier('bliss_den', r.offset, 35000, 1.22, 'eden'); },
+                Plywood(r={}){ return spaceCostMultiplier('bliss_den', r.offset, 10000000, 1.22, 'eden'); },
+                Soul_Gem(r={}){ return spaceCostMultiplier('bliss_den', r.offset, 10, 1.22, 'eden'); },
             },
             effect(){
                 let morale = 8;
@@ -761,10 +761,10 @@ const edenicModules = {
             reqs: { asphodel: 11 },
             not_trait: ['warlord'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('rectory', offset, 275000000, 1.24, 'eden'); },
-                Copper(offset){ return spaceCostMultiplier('rectory', offset, 18200000, 1.24, 'eden'); },
-                Brick(offset){ return spaceCostMultiplier('rectory', offset, 7500000, 1.24, 'eden'); },
-                Soul_Gem(offset){ return spaceCostMultiplier('rectory', offset, 18, 1.24, 'eden'); },
+                Money(r={}){ return spaceCostMultiplier('rectory', r.offset, 275000000, 1.24, 'eden'); },
+                Copper(r={}){ return spaceCostMultiplier('rectory', r.offset, 18200000, 1.24, 'eden'); },
+                Brick(r={}){ return spaceCostMultiplier('rectory', r.offset, 7500000, 1.24, 'eden'); },
+                Soul_Gem(r={}){ return spaceCostMultiplier('rectory', r.offset, 18, 1.24, 'eden'); },
             },
             effect(){
                 let desc = `<div>${loc('eden_encampment_effect',[$(this)[0].support()])}</div>`;
@@ -813,10 +813,10 @@ const edenicModules = {
             trait: ['warlord'],
             wiki: global.race['warlord'] ? true : false,
             cost: {
-                Money(offset){ return spaceCostMultiplier('corruptor', offset, 275000000, 1.24, 'eden'); },
-                Furs(offset){ return spaceCostMultiplier('corruptor', offset, 17500000, 1.24, 'eden'); },
-                Copper(offset){ return spaceCostMultiplier('corruptor', offset, 18200000, 1.24, 'eden'); },
-                Soul_Gem(offset){ return spaceCostMultiplier('corruptor', offset, 8, 1.24, 'eden'); },
+                Money(r={}){ return spaceCostMultiplier('corruptor', r.offset, 275000000, 1.24, 'eden'); },
+                Furs(r={}){ return spaceCostMultiplier('corruptor', r.offset, 17500000, 1.24, 'eden'); },
+                Copper(r={}){ return spaceCostMultiplier('corruptor', r.offset, 18200000, 1.24, 'eden'); },
+                Soul_Gem(r={}){ return spaceCostMultiplier('corruptor', r.offset, 8, 1.24, 'eden'); },
             },
             effect(){
                 let elerium = sizeApproximation(spatialReasoning(200));
@@ -1192,33 +1192,33 @@ const edenicModules = {
             queue_size: 10,
             queue_complete(){ return 100 - global.eden.fire_support_base.count; },
             cost: {
-                Money(offset){
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('fire_support_base') ? global.eden.fire_support_base.count : 0) < 100 ? 2500000000 : 0;
+                Money(r={}){
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('fire_support_base') ? global.eden.fire_support_base.count : 0) < 100 ? 2500000000 : 0;
                     }
                     return !global.eden.hasOwnProperty('fire_support_base') || (global.eden.fire_support_base.count < 100) ? 2500000000 : 0;
                 },
-                Stone(offset){
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('fire_support_base') ? global.eden.fire_support_base.count : 0) < 100 ? 235000000 : 0;
+                Stone(r={}){
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('fire_support_base') ? global.eden.fire_support_base.count : 0) < 100 ? 235000000 : 0;
                     }
                     return !global.eden.hasOwnProperty('fire_support_base') || (global.eden.fire_support_base.count < 100) ? 235000000 : 0;
                 },
-                Neutronium(offset){
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('fire_support_base') ? global.eden.fire_support_base.count : 0) < 100 ? 3750000 : 0;
+                Neutronium(r={}){
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('fire_support_base') ? global.eden.fire_support_base.count : 0) < 100 ? 3750000 : 0;
                     }
                     return !global.eden.hasOwnProperty('fire_support_base') || (global.eden.fire_support_base.count < 100) ? 3750000 : 0;
                 },
-                Polymer(offset){
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('fire_support_base') ? global.eden.fire_support_base.count : 0) < 100 ? 65000000 : 0;
+                Polymer(r={}){
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('fire_support_base') ? global.eden.fire_support_base.count : 0) < 100 ? 65000000 : 0;
                     }
                     return !global.eden.hasOwnProperty('fire_support_base') || (global.eden.fire_support_base.count < 100) ? 65000000 : 0;
                 },
-                Elysanite(offset){
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('fire_support_base') ? global.eden.fire_support_base.count : 0) < 100 ? 625000 : 0;
+                Elysanite(r={}){
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('fire_support_base') ? global.eden.fire_support_base.count : 0) < 100 ? 625000 : 0;
                     }
                     return !global.eden.hasOwnProperty('fire_support_base') || (global.eden.fire_support_base.count < 100) ? 625000 : 0;
                 },
@@ -1345,9 +1345,9 @@ const edenicModules = {
             type: 'mining',
             reqs: { elysium: 6 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('elysanite_mine', offset, 566000000, 1.24, 'eden'); },
-                Adamantite(offset){ return spaceCostMultiplier('elysanite_mine', offset, 18000000, 1.24, 'eden'); },
-                Wrought_Iron(offset){ return spaceCostMultiplier('elysanite_mine', offset, 10000000, 1.24, 'eden'); },
+                Money(r={}){ return spaceCostMultiplier('elysanite_mine', r.offset, 566000000, 1.24, 'eden'); },
+                Adamantite(r={}){ return spaceCostMultiplier('elysanite_mine', r.offset, 18000000, 1.24, 'eden'); },
+                Wrought_Iron(r={}){ return spaceCostMultiplier('elysanite_mine', r.offset, 10000000, 1.24, 'eden'); },
             },
             effect(){
                 let desc = `<div>${loc('plus_max_resource',[jobScale(2),loc(`job_elysium_miner`)])}</div>`;
@@ -1378,10 +1378,10 @@ const edenicModules = {
             type: 'industry',
             reqs: { elysium: 7 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('sacred_smelter', offset, 625000000, 1.25, 'eden'); },
-                Iridium(offset){ return spaceCostMultiplier('sacred_smelter', offset, 25000000, 1.25, 'eden'); },
-                Elysanite(offset){ return spaceCostMultiplier('sacred_smelter', offset, 4500000, 1.25, 'eden'); },
-                Scarletite(offset){ return spaceCostMultiplier('sacred_smelter', offset, 1250000, 1.25, 'eden'); },
+                Money(r={}){ return spaceCostMultiplier('sacred_smelter', r.offset, 625000000, 1.25, 'eden'); },
+                Iridium(r={}){ return spaceCostMultiplier('sacred_smelter', r.offset, 25000000, 1.25, 'eden'); },
+                Elysanite(r={}){ return spaceCostMultiplier('sacred_smelter', r.offset, 4500000, 1.25, 'eden'); },
+                Scarletite(r={}){ return spaceCostMultiplier('sacred_smelter', r.offset, 1250000, 1.25, 'eden'); },
             },
             effect(){
                 let desc = `<div>${loc('interstellar_stellar_forge_effect3',[$(this)[0].smelting()])}</div>`;
@@ -1421,10 +1421,10 @@ const edenicModules = {
             type: 'storage',
             reqs: { elysium: 11 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('elerium_containment', offset, 4500000000, 1.28, 'eden'); },
-                Graphene(offset){ return spaceCostMultiplier('elerium_containment', offset, 100000000, 1.28, 'eden'); },
-                Aerogel(offset){ return spaceCostMultiplier('elerium_containment', offset, 88000000, 1.28, 'eden'); },
-                Elysanite(offset){ return spaceCostMultiplier('elerium_containment', offset, 25000000, 1.28, 'eden'); }
+                Money(r={}){ return spaceCostMultiplier('elerium_containment', r.offset, 4500000000, 1.28, 'eden'); },
+                Graphene(r={}){ return spaceCostMultiplier('elerium_containment', r.offset, 100000000, 1.28, 'eden'); },
+                Aerogel(r={}){ return spaceCostMultiplier('elerium_containment', r.offset, 88000000, 1.28, 'eden'); },
+                Elysanite(r={}){ return spaceCostMultiplier('elerium_containment', r.offset, 25000000, 1.28, 'eden'); }
             },
             effect(){
                 let elerium = sizeApproximation(spatialReasoning(1000));
@@ -1455,10 +1455,10 @@ const edenicModules = {
             type: 'military',
             reqs: { elysium: 9 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('pillbox', offset, 1500000000, 1.26, 'eden'); },
-                Cement(offset){ return spaceCostMultiplier('pillbox', offset, 500000000, 1.26, 'eden'); },
-                Steel(offset){ return spaceCostMultiplier('pillbox', offset, 65000000, 1.26, 'eden'); },
-                Nanoweave(offset){ return spaceCostMultiplier('pillbox', offset, 38000000, 1.26, 'eden'); },
+                Money(r={}){ return spaceCostMultiplier('pillbox', r.offset, 1500000000, 1.26, 'eden'); },
+                Cement(r={}){ return spaceCostMultiplier('pillbox', r.offset, 500000000, 1.26, 'eden'); },
+                Steel(r={}){ return spaceCostMultiplier('pillbox', r.offset, 65000000, 1.26, 'eden'); },
+                Nanoweave(r={}){ return spaceCostMultiplier('pillbox', r.offset, 38000000, 1.26, 'eden'); },
             },
             effect(){
                 let rating = +(Math.round(armyRating(global.eden['pillbox'] && global.eden.pillbox.staffed ? global.eden.pillbox.staffed : jobScale(10),'army',0)) / (global.race['warlord'] ? 1250 : 75)).toFixed(1);
@@ -1500,10 +1500,10 @@ const edenicModules = {
             type: 'entertainment',
             reqs: { elysium: 12 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('restaurant', offset, 4250000000, 1.26, 'eden'); },
-                Oil(offset){ return spaceCostMultiplier('restaurant', offset, 1000000, 1.26, 'eden'); },
-                Polymer(offset){ return spaceCostMultiplier('restaurant', offset, 110000000, 1.26, 'eden'); },
-                Sheet_Metal(offset){ return spaceCostMultiplier('restaurant', offset, 25000000, 1.26, 'eden'); },
+                Money(r={}){ return spaceCostMultiplier('restaurant', r.offset, 4250000000, 1.26, 'eden'); },
+                Oil(r={}){ return spaceCostMultiplier('restaurant', r.offset, 1000000, 1.26, 'eden'); },
+                Polymer(r={}){ return spaceCostMultiplier('restaurant', r.offset, 110000000, 1.26, 'eden'); },
+                Sheet_Metal(r={}){ return spaceCostMultiplier('restaurant', r.offset, 25000000, 1.26, 'eden'); },
             },
             effect(){
                 let food = 250000;
@@ -1545,10 +1545,10 @@ const edenicModules = {
             type: 'finance',
             reqs: { elysium: 13 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('eternal_bank', offset, traitCostMod('untrustworthy',2500000000), 1.26, 'eden'); },
-                Bolognium(offset){ return spaceCostMultiplier('eternal_bank', offset, traitCostMod('untrustworthy',10000000), 1.26, 'eden'); },
-                Orichalcum(offset){ return spaceCostMultiplier('eternal_bank', offset, traitCostMod('untrustworthy',12500000), 1.26, 'eden'); },
-                Mythril(offset){ return spaceCostMultiplier('eternal_bank', offset, traitCostMod('untrustworthy',7500000), 1.26, 'eden'); }
+                Money(r={}){ return spaceCostMultiplier('eternal_bank', r.offset, traitCostMod('untrustworthy',2500000000), 1.26, 'eden'); },
+                Bolognium(r={}){ return spaceCostMultiplier('eternal_bank', r.offset, traitCostMod('untrustworthy',10000000), 1.26, 'eden'); },
+                Orichalcum(r={}){ return spaceCostMultiplier('eternal_bank', r.offset, traitCostMod('untrustworthy',12500000), 1.26, 'eden'); },
+                Mythril(r={}){ return spaceCostMultiplier('eternal_bank', r.offset, traitCostMod('untrustworthy',7500000), 1.26, 'eden'); }
             },
             effect(){
                 let vault = spatialReasoning(bank_vault() * (global.race['warlord'] ? 20 : 10));
@@ -1582,11 +1582,11 @@ const edenicModules = {
             type: 'science',
             reqs: { elysium: 14 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('archive', offset, 3750000000, 1.26, 'eden'); },
-                Nano_Tube(offset){ return spaceCostMultiplier('archive', offset, 90000000, 1.26, 'eden'); },
-                Asphodel_Powder(offset){ return spaceCostMultiplier('archive', offset, 50000, 1.26, 'eden'); },
-                Elysanite(offset){ return spaceCostMultiplier('archive', offset, 35000000, 1.26, 'eden'); },
-                Soul_Gem(offset){ return spaceCostMultiplier('archive', offset, 99, 1.26, 'eden'); },
+                Money(r={}){ return spaceCostMultiplier('archive', r.offset, 3750000000, 1.26, 'eden'); },
+                Nano_Tube(r={}){ return spaceCostMultiplier('archive', r.offset, 90000000, 1.26, 'eden'); },
+                Asphodel_Powder(r={}){ return spaceCostMultiplier('archive', r.offset, 50000, 1.26, 'eden'); },
+                Elysanite(r={}){ return spaceCostMultiplier('archive', r.offset, 35000000, 1.26, 'eden'); },
+                Soul_Gem(r={}){ return spaceCostMultiplier('archive', r.offset, 99, 1.26, 'eden'); },
             },
             effect(){
                 let desc = `<div>${loc('plus_max_resource',[1013,global.resource.Omniscience.name])}</div>`;
@@ -1631,29 +1631,29 @@ const edenicModules = {
             reqs: { isle: 2 },
             queue_complete(){ return 10 - global.eden.north_pier.count; },
             cost: {
-                Money(offset){
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('north_pier') ? global.eden.north_pier.count : 0) < 10 ? 7500000000 : 0;
+                Money(r={}){
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('north_pier') ? global.eden.north_pier.count : 0) < 10 ? 7500000000 : 0;
                     }
                     return !global.eden.hasOwnProperty('north_pier') || (global.eden.north_pier.count < 10) ? 7500000000 : 0;
                 },
-                Iron(offset){
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('north_pier') ? global.eden.north_pier.count : 0) < 10 ? 500000000 : 0;
+                Iron(r={}){
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('north_pier') ? global.eden.north_pier.count : 0) < 10 ? 500000000 : 0;
                     }
                     return !global.eden.hasOwnProperty('north_pier') || (global.eden.north_pier.count < 10) ? 500000000 : 0;
                 },
-                Plywood(offset){
+                Plywood(r={}){
                     if (global.race['kindling_kindred'] || global.race['smoldering']){ return 0; }
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('north_pier') ? global.eden.north_pier.count : 0) < 10 ? 250000000 : 0;
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('north_pier') ? global.eden.north_pier.count : 0) < 10 ? 250000000 : 0;
                     }
                     return !global.eden.hasOwnProperty('north_pier') || (global.eden.north_pier.count < 10) ? 250000000 : 0;
                 },
-                Sheet_Metal(offset){
+                Sheet_Metal(r={}){
                     if (!global.race['kindling_kindred'] && !global.race['smoldering']){ return 0; }
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('north_pier') ? global.eden.north_pier.count : 0) < 10 ? 62500000 : 0;
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('north_pier') ? global.eden.north_pier.count : 0) < 10 ? 62500000 : 0;
                     }
                     return !global.eden.hasOwnProperty('north_pier') || (global.eden.north_pier.count < 10) ? 62500000 : 0;
                 },
@@ -1773,10 +1773,10 @@ const edenicModules = {
             type: 'industry',
             reqs: { cement:8 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('eden_cement', offset, 5000000000, 1.24, 'eden'); },
-                Stone(offset){ return spaceCostMultiplier('eden_cement', offset, 1000000000, 1.24, 'eden'); },
-                Iron(offset){ return spaceCostMultiplier('eden_cement', offset, 6800000000, 1.24, 'eden'); },
-                Asphodel_Powder(offset){ return spaceCostMultiplier('eden_cement', offset, 65000, 1.24, 'eden'); },
+                Money(r={}){ return spaceCostMultiplier('eden_cement', r.offset, 5000000000, 1.24, 'eden'); },
+                Stone(r={}){ return spaceCostMultiplier('eden_cement', r.offset, 1000000000, 1.24, 'eden'); },
+                Iron(r={}){ return spaceCostMultiplier('eden_cement', r.offset, 6800000000, 1.24, 'eden'); },
+                Asphodel_Powder(r={}){ return spaceCostMultiplier('eden_cement', r.offset, 65000, 1.24, 'eden'); },
             },
             effect(){
                 let desc = loc('plus_max_resource',[jobScale(5),loc(`job_cement_worker`)]);
@@ -1820,29 +1820,29 @@ const edenicModules = {
             reqs: { isle: 2 },
             queue_complete(){ return 10 - global.eden.south_pier.count; },
             cost: {
-                Money(offset){
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('south_pier') ? global.eden.south_pier.count : 0) < 10 ? 7500000000 : 0;
+                Money(r={}){
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('south_pier') ? global.eden.south_pier.count : 0) < 10 ? 7500000000 : 0;
                     }
                     return !global.eden.hasOwnProperty('south_pier') || (global.eden.south_pier.count < 10) ? 7500000000 : 0;
                 },
-                Iron(offset){
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('south_pier') ? global.eden.south_pier.count : 0) < 10 ? 500000000 : 0;
+                Iron(r={}){
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('south_pier') ? global.eden.south_pier.count : 0) < 10 ? 500000000 : 0;
                     }
                     return !global.eden.hasOwnProperty('south_pier') || (global.eden.south_pier.count < 10) ? 500000000 : 0;
                 },
-                Plywood(offset){
+                Plywood(r={}){
                     if (global.race['kindling_kindred'] || global.race['smoldering']){ return 0; }
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('south_pier') ? global.eden.south_pier.count : 0) < 10 ? 250000000 : 0;
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('south_pier') ? global.eden.south_pier.count : 0) < 10 ? 250000000 : 0;
                     }
                     return !global.eden.hasOwnProperty('south_pier') || (global.eden.south_pier.count < 10) ? 250000000 : 0;
                 },
-                Sheet_Metal(offset){
+                Sheet_Metal(r={}){
                     if (!global.race['kindling_kindred'] && !global.race['smoldering']){ return 0; }
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('south_pier') ? global.eden.south_pier.count : 0) < 10 ? 62500000 : 0;
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('south_pier') ? global.eden.south_pier.count : 0) < 10 ? 62500000 : 0;
                     }
                     return !global.eden.hasOwnProperty('south_pier') || (global.eden.south_pier.count < 10) ? 62500000 : 0;
                 },
@@ -1940,11 +1940,11 @@ const edenicModules = {
             type: 'industry',
             reqs: { isle: 4 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('spirit_vacuum', offset, 30000000000, 1.1, 'eden'); },
-                Neutronium(offset){ return spaceCostMultiplier('spirit_vacuum', offset, 175000000, 1.1, 'eden'); },
-                Stanene(offset){ return spaceCostMultiplier('spirit_vacuum', offset, 1000000000, 1.1, 'eden'); },
-                Elerium(offset){ return spaceCostMultiplier('spirit_vacuum', offset, 240000, 1.1, 'eden'); },
-                Soul_Gem(offset){ return spaceCostMultiplier('spirit_vacuum', offset, 1000, 1.1, 'eden'); },
+                Money(r={}){ return spaceCostMultiplier('spirit_vacuum', r.offset, 30000000000, 1.1, 'eden'); },
+                Neutronium(r={}){ return spaceCostMultiplier('spirit_vacuum', r.offset, 175000000, 1.1, 'eden'); },
+                Stanene(r={}){ return spaceCostMultiplier('spirit_vacuum', r.offset, 1000000000, 1.1, 'eden'); },
+                Elerium(r={}){ return spaceCostMultiplier('spirit_vacuum', r.offset, 240000, 1.1, 'eden'); },
+                Soul_Gem(r={}){ return spaceCostMultiplier('spirit_vacuum', r.offset, 1000, 1.1, 'eden'); },
             },
             effect(){
                 let desc = `<div>${loc('eden_spirit_vacuum_effect')}</div>`;
@@ -1988,10 +1988,10 @@ const edenicModules = {
             type: 'power',
             reqs: { isle: 5 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('spirit_battery', offset, 18000000000, 1.2, 'eden'); },
-                Copper(offset){ return spaceCostMultiplier('spirit_battery', offset, 5000000000, 1.2, 'eden'); },
-                Vitreloy(offset){ return spaceCostMultiplier('spirit_battery', offset, 50000000, 1.2, 'eden'); },
-                Elysanite(offset){ return spaceCostMultiplier('spirit_battery', offset, 100000000, 1.2, 'eden'); },
+                Money(r={}){ return spaceCostMultiplier('spirit_battery', r.offset, 18000000000, 1.2, 'eden'); },
+                Copper(r={}){ return spaceCostMultiplier('spirit_battery', r.offset, 5000000000, 1.2, 'eden'); },
+                Vitreloy(r={}){ return spaceCostMultiplier('spirit_battery', r.offset, 50000000, 1.2, 'eden'); },
+                Elysanite(r={}){ return spaceCostMultiplier('spirit_battery', r.offset, 100000000, 1.2, 'eden'); },
             },
             effect(){
                 let power = 10;
@@ -2131,27 +2131,27 @@ const edenicModules = {
             queue_size: 5,
             queue_complete(){ return 25 - global.eden.infuser.count; },
             cost: {
-                Money(offset){
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('infuser') ? global.eden.infuser.count : 0) < 25 ? 12000000000 : 0;
+                Money(r={}){
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('infuser') ? global.eden.infuser.count : 0) < 25 ? 12000000000 : 0;
                     }
                     return !global.eden.hasOwnProperty('infuser') || (global.eden.infuser.count < 25) ? 12000000000 : 0;
                 },
-                Copper(offset){
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('infuser') ? global.eden.infuser.count : 0) < 25 ? 10000000000 : 0;
+                Copper(r={}){
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('infuser') ? global.eden.infuser.count : 0) < 25 ? 10000000000 : 0;
                     }
                     return !global.eden.hasOwnProperty('infuser') || (global.eden.infuser.count < 25) ? 10000000000 : 0;
                 },
-                Graphene(offset){
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('infuser') ? global.eden.infuser.count : 0) < 25 ? 1000000000 : 0;
+                Graphene(r={}){
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('infuser') ? global.eden.infuser.count : 0) < 25 ? 1000000000 : 0;
                     }
                     return !global.eden.hasOwnProperty('infuser') || (global.eden.infuser.count < 25) ? 1000000000 : 0;
                 },
-                Elysanite(offset){
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('infuser') ? global.eden.infuser.count : 0) < 25 ? 125000000 : 0;
+                Elysanite(r={}){
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('infuser') ? global.eden.infuser.count : 0) < 25 ? 125000000 : 0;
                     }
                     return !global.eden.hasOwnProperty('infuser') || (global.eden.infuser.count < 25) ? 125000000 : 0;
                 },
@@ -2230,21 +2230,21 @@ const edenicModules = {
             queue_size: 5,
             queue_complete(){ return 25 - global.eden.conduit.count; },
             cost: {
-                Money(offset){
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('conduit') ? global.eden.conduit.count : 0) < 25 ? 8000000000 : 0;
+                Money(r={}){
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('conduit') ? global.eden.conduit.count : 0) < 25 ? 8000000000 : 0;
                     }
                     return !global.eden.hasOwnProperty('conduit') || (global.eden.conduit.count < 25) ? 25000000000 : 0;
                 },
-                Stanene(offset){
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('conduit') ? global.eden.conduit.count : 0) < 25 ? 250000000 : 0;
+                Stanene(r={}){
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('conduit') ? global.eden.conduit.count : 0) < 25 ? 250000000 : 0;
                     }
                     return !global.eden.hasOwnProperty('conduit') || (global.eden.conduit.count < 25) ? 250000000 : 0;
                 },
-                Orichalcum(offset){
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('conduit') ? global.eden.conduit.count : 0) < 25 ? 125000000 : 0;
+                Orichalcum(r={}){
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('conduit') ? global.eden.conduit.count : 0) < 25 ? 125000000 : 0;
                     }
                     return !global.eden.hasOwnProperty('conduit') || (global.eden.conduit.count < 25) ? 125000000 : 0;
                 },
@@ -2296,21 +2296,21 @@ const edenicModules = {
             reqs: { palace: 3 },
             queue_complete(){ return 10 - global.eden.tomb.count; },
             cost: {
-                Money(offset){
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('tomb') ? global.eden.tomb.count : 0) < 10 ? 25000000000 : 0;
+                Money(r={}){
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('tomb') ? global.eden.tomb.count : 0) < 10 ? 25000000000 : 0;
                     }
                     return !global.eden.hasOwnProperty('tomb') || (global.eden.tomb.count < 10) ? 25000000000 : 0;
                 },
-                Cement(offset){
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('tomb') ? global.eden.tomb.count : 0) < 10 ? 10000000000 : 0;
+                Cement(r={}){
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('tomb') ? global.eden.tomb.count : 0) < 10 ? 10000000000 : 0;
                     }
                     return !global.eden.hasOwnProperty('tomb') || (global.eden.tomb.count < 10) ? 10000000000 : 0;
                 },
-                Neutronium(offset){
-                    if (offset){
-                        return offset + (global.eden.hasOwnProperty('tomb') ? global.eden.tomb.count : 0) < 10 ? 100000000 : 0;
+                Neutronium(r={}){
+                    if (r.offset){
+                        return r.offset + (global.eden.hasOwnProperty('tomb') ? global.eden.tomb.count : 0) < 10 ? 100000000 : 0;
                     }
                     return !global.eden.hasOwnProperty('tomb') || (global.eden.tomb.count < 10) ? 100000000 : 0;
                 },

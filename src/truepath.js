@@ -77,10 +77,10 @@ const outerTruth = {
             reqs: { titan: 1 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('titan_spaceport', offset, 2500000, 1.32); },
-                Lumber(offset){ return spaceCostMultiplier('titan_spaceport', offset, 750000, 1.32); },
-                Cement(offset){ return spaceCostMultiplier('titan_spaceport', offset, 350000, 1.32); },
-                Mythril(offset){ return spaceCostMultiplier('titan_spaceport', offset, 10000, 1.32); }
+                Money(r={}){ return spaceCostMultiplier('titan_spaceport', r.offset, 2500000, 1.32); },
+                Lumber(r={}){ return spaceCostMultiplier('titan_spaceport', r.offset, 750000, 1.32); },
+                Cement(r={}){ return spaceCostMultiplier('titan_spaceport', r.offset, 350000, 1.32); },
+                Mythril(r={}){ return spaceCostMultiplier('titan_spaceport', r.offset, 10000, 1.32); }
             },
             effect(){
                 let water = global.resource.Water.display ? `<div>${loc('plus_max_resource',[sizeApproximation(spatialReasoning(250)),global.resource.Water.name])}</div>` : ``;
@@ -119,10 +119,10 @@ const outerTruth = {
             reqs: { titan: 3 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('electrolysis', offset, 1000000, 1.25); },
-                Copper(offset){ return spaceCostMultiplier('electrolysis', offset, 185000, 1.25); },
-                Steel(offset){ return spaceCostMultiplier('electrolysis', offset, 220000, 1.25); },
-                Polymer(offset){ return spaceCostMultiplier('electrolysis', offset, 380000, 1.25); }
+                Money(r={}){ return spaceCostMultiplier('electrolysis', r.offset, 1000000, 1.25); },
+                Copper(r={}){ return spaceCostMultiplier('electrolysis', r.offset, 185000, 1.25); },
+                Steel(r={}){ return spaceCostMultiplier('electrolysis', r.offset, 220000, 1.25); },
+                Polymer(r={}){ return spaceCostMultiplier('electrolysis', r.offset, 380000, 1.25); }
             },
             effect(wiki){
                 let support = `<div>+${loc(`galaxy_alien2_support`,[$(this)[0].support(wiki),planetName().titan])}</div>`;
@@ -164,10 +164,10 @@ const outerTruth = {
             reqs: { titan_power: 1 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('hydrogen_plant', offset, 1500000, 1.28); },
-                Iridium(offset){ return spaceCostMultiplier('hydrogen_plant', offset, 292000, 1.28); },
-                Stanene(offset){ return spaceCostMultiplier('hydrogen_plant', offset, 599000, 1.28); },
-                Cement(offset){ return spaceCostMultiplier('hydrogen_plant', offset, 180000, 1.28); }
+                Money(r={}){ return spaceCostMultiplier('hydrogen_plant', r.offset, 1500000, 1.28); },
+                Iridium(r={}){ return spaceCostMultiplier('hydrogen_plant', r.offset, 292000, 1.28); },
+                Stanene(r={}){ return spaceCostMultiplier('hydrogen_plant', r.offset, 599000, 1.28); },
+                Cement(r={}){ return spaceCostMultiplier('hydrogen_plant', r.offset, 180000, 1.28); }
             },
             effect(){
                 return `<span>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered())])}</span>, <span class="has-text-caution">${loc('space_hydrogen_plant_effect',[1,loc('space_electrolysis_title')])}</span>`;
@@ -203,9 +203,9 @@ const outerTruth = {
             reqs: { titan: 4 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('titan_quarters', offset, 1200000, 1.28); },
-                Furs(offset){ return spaceCostMultiplier('titan_quarters', offset, 85000, 1.28); },
-                Plywood(offset){ return spaceCostMultiplier('titan_quarters', offset, 100000, 1.28); },
+                Money(r={}){ return spaceCostMultiplier('titan_quarters', r.offset, 1200000, 1.28); },
+                Furs(r={}){ return spaceCostMultiplier('titan_quarters', r.offset, 85000, 1.28); },
+                Plywood(r={}){ return spaceCostMultiplier('titan_quarters', r.offset, 100000, 1.28); },
                 Horseshoe(){ return global.race['hooved'] ? 1 : 0; }
             },
             effect(){
@@ -262,9 +262,9 @@ const outerTruth = {
             condition(){ return global.space['titan_quarters'] && global.space.titan_quarters.count > 0 ? true : false; },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('titan_mine', offset, 475000, 1.28); },
-                Lumber(offset){ return spaceCostMultiplier('titan_mine', offset, 568000, 1.28); },
-                Wrought_Iron(offset){ return spaceCostMultiplier('titan_mine', offset, 250000, 1.28); }
+                Money(r={}){ return spaceCostMultiplier('titan_mine', r.offset, 475000, 1.28); },
+                Lumber(r={}){ return spaceCostMultiplier('titan_mine', r.offset, 568000, 1.28); },
+                Wrought_Iron(r={}){ return spaceCostMultiplier('titan_mine', r.offset, 250000, 1.28); }
             },
             effect(){
                 let adam_val = production('titan_mine','adamantite');
@@ -313,10 +313,10 @@ const outerTruth = {
             reqs: { titan: 5 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('storehouse', offset, 175000, 1.28); },
-                Lumber(offset){ return spaceCostMultiplier('storehouse', offset, 100000, 1.28); },
-                Aluminium(offset){ return spaceCostMultiplier('storehouse', offset, 120000, 1.28); },
-                Cement(offset){ return spaceCostMultiplier('storehouse', offset, 45000, 1.28); }
+                Money(r={}){ return spaceCostMultiplier('storehouse', r.offset, 175000, 1.28); },
+                Lumber(r={}){ return spaceCostMultiplier('storehouse', r.offset, 100000, 1.28); },
+                Aluminium(r={}){ return spaceCostMultiplier('storehouse', r.offset, 120000, 1.28); },
+                Cement(r={}){ return spaceCostMultiplier('storehouse', r.offset, 45000, 1.28); }
             },
             wide: true,
             res(){
@@ -425,9 +425,9 @@ const outerTruth = {
             reqs: { titan: 6 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('titan_bank', offset, traitCostMod('untrustworthy',2500000), 1.32); },
-                Titanium(offset){ return spaceCostMultiplier('titan_bank', offset, traitCostMod('untrustworthy',380000), 1.32); },
-                Neutronium(offset){ return spaceCostMultiplier('titan_bank', offset, traitCostMod('untrustworthy',5000), 1.32); }
+                Money(r={}){ return spaceCostMultiplier('titan_bank', r.offset, traitCostMod('untrustworthy',2500000), 1.32); },
+                Titanium(r={}){ return spaceCostMultiplier('titan_bank', r.offset, traitCostMod('untrustworthy',380000), 1.32); },
+                Neutronium(r={}){ return spaceCostMultiplier('titan_bank', r.offset, traitCostMod('untrustworthy',5000), 1.32); }
             },
             effect(){
                 let vault = bank_vault() * 2;
@@ -458,10 +458,10 @@ const outerTruth = {
             reqs: { graphene: 1 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('g_factory', offset, 950000, 1.28); },
-                Copper(offset){ return spaceCostMultiplier('g_factory', offset, 165000, 1.28); },
-                Stone(offset){ return spaceCostMultiplier('g_factory', offset, 220000, 1.28); },
-                Adamantite(offset){ return spaceCostMultiplier('g_factory', offset, 12500, 1.28); }
+                Money(r={}){ return spaceCostMultiplier('g_factory', r.offset, 950000, 1.28); },
+                Copper(r={}){ return spaceCostMultiplier('g_factory', r.offset, 165000, 1.28); },
+                Stone(r={}){ return spaceCostMultiplier('g_factory', r.offset, 220000, 1.28); },
+                Adamantite(r={}){ return spaceCostMultiplier('g_factory', r.offset, 12500, 1.28); }
             },
             effect(){
                 let graphene = 0.05;
@@ -507,10 +507,10 @@ const outerTruth = {
             reqs: { titan: 10 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('metalworks', offset, 425000000, 1.28); },
-                Coal(offset){ return spaceCostMultiplier('metalworks', offset, 4200000, 1.28); },
-                Graphene(offset){ return spaceCostMultiplier('metalworks', offset, 2600000, 1.28); },
-                Neutronium(offset){ return spaceCostMultiplier('metalworks', offset, 165000, 1.28); }
+                Money(r={}){ return spaceCostMultiplier('metalworks', r.offset, 425000000, 1.28); },
+                Coal(r={}){ return spaceCostMultiplier('metalworks', r.offset, 4200000, 1.28); },
+                Graphene(r={}){ return spaceCostMultiplier('metalworks', r.offset, 2600000, 1.28); },
+                Neutronium(r={}){ return spaceCostMultiplier('metalworks', r.offset, 165000, 1.28); }
             },
             effect(wiki){
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[planetName().titan])}</div>`;
@@ -565,10 +565,10 @@ const outerTruth = {
             reqs: { titan: 12 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('comedy_club', offset, 250000000, 1.3); },
-                Iron(offset){ return spaceCostMultiplier('comedy_club', offset, 490000000, 1.3); },
-                Polymer(offset){ return spaceCostMultiplier('comedy_club', offset, 75000000, 1.3); },
-                Bolognium(offset){ return spaceCostMultiplier('comedy_club', offset, 25000000, 1.3); }
+                Money(r={}){ return spaceCostMultiplier('comedy_club', r.offset, 250000000, 1.3); },
+                Iron(r={}){ return spaceCostMultiplier('comedy_club', r.offset, 490000000, 1.3); },
+                Polymer(r={}){ return spaceCostMultiplier('comedy_club', r.offset, 75000000, 1.3); },
+                Bolognium(r={}){ return spaceCostMultiplier('comedy_club', r.offset, 25000000, 1.3); }
             },
             effect(){
                 return `<div class="has-text-caution">${loc('space_used_support',[planetName().titan])}</div>`
@@ -606,10 +606,10 @@ const outerTruth = {
             condition(){ return !global.tech['resettle'] ? true : false; },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('sam', offset, 2500000, 1.28); },
-                Steel(offset){ return spaceCostMultiplier('sam', offset, 450000, 1.28); },
-                Elerium(offset){ return spaceCostMultiplier('sam', offset, 120, 1.28); },
-                Brick(offset){ return spaceCostMultiplier('sam', offset, 160000, 1.28); },
+                Money(r={}){ return spaceCostMultiplier('sam', r.offset, 2500000, 1.28); },
+                Steel(r={}){ return spaceCostMultiplier('sam', r.offset, 450000, 1.28); },
+                Elerium(r={}){ return spaceCostMultiplier('sam', r.offset, 120, 1.28); },
+                Brick(r={}){ return spaceCostMultiplier('sam', r.offset, 160000, 1.28); },
             },
             effect(){
                 let desc = `<div>${loc('galaxy_defense_platform_effect',[25])}</div>`;
@@ -645,10 +645,10 @@ const outerTruth = {
             condition(){ return !global.tech['resettle'] ? true : false; },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('decoder', offset, 12500000, 1.275); },
-                Elerium(offset){ return spaceCostMultiplier('decoder', offset, 750, 1.275); },
-                Orichalcum(offset){ return spaceCostMultiplier('decoder', offset, 330000, 1.275); },
-                Quantium(offset){ return spaceCostMultiplier('decoder', offset, 180000, 1.275); },
+                Money(r={}){ return spaceCostMultiplier('decoder', r.offset, 12500000, 1.275); },
+                Elerium(r={}){ return spaceCostMultiplier('decoder', r.offset, 750, 1.275); },
+                Orichalcum(r={}){ return spaceCostMultiplier('decoder', r.offset, 330000, 1.275); },
+                Quantium(r={}){ return spaceCostMultiplier('decoder', r.offset, 180000, 1.275); },
             },
             effect(wiki){
                 let cipher = $(this)[0].support_fuel().a;
@@ -702,14 +702,14 @@ const outerTruth = {
             queue_size: 10,
             queue_complete(){ return 100 - global.space.ai_core.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 2500000 : 0; },
-                Cement(offset){ return ((offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 180000 : 0; },
-                Aluminium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 250000 : 0; },
-                Elerium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 250 : 0; },
-                Nano_Tube(offset){ return ((offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 125000 : 0; },
-                Orichalcum(offset){ return ((offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 50000 : 0; },
-                Quantium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 100000 : 0; },
-                Cipher(offset){ return ((offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 750 : 0; },
+                Money(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 2500000 : 0; },
+                Cement(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 180000 : 0; },
+                Aluminium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 250000 : 0; },
+                Elerium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 250 : 0; },
+                Nano_Tube(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 125000 : 0; },
+                Orichalcum(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 50000 : 0; },
+                Quantium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 100000 : 0; },
+                Cipher(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 750 : 0; },
             },
             effect(wiki){
                 let effectText = `<div>${loc('space_ai_core_effect')}</div>`;
@@ -807,12 +807,12 @@ const outerTruth = {
             condition(){ return !global.tech['resettle'] ? true : false; },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('ai_colonist', offset, 112000000, 1.35); },
-                Alloy(offset){ return spaceCostMultiplier('ai_colonist', offset, 750000, 1.35); },
-                Elerium(offset){ return spaceCostMultiplier('ai_colonist', offset, 500, 1.35); },
-                Nano_Tube(offset){ return spaceCostMultiplier('ai_colonist', offset, 525000, 1.35); },
-                Quantium(offset){ return spaceCostMultiplier('ai_colonist', offset, 150000, 1.35); },
-                Cipher(offset){ return spaceCostMultiplier('ai_colonist', offset, 10000, 1.35); },
+                Money(r={}){ return spaceCostMultiplier('ai_colonist', r.offset, 112000000, 1.35); },
+                Alloy(r={}){ return spaceCostMultiplier('ai_colonist', r.offset, 750000, 1.35); },
+                Elerium(r={}){ return spaceCostMultiplier('ai_colonist', r.offset, 500, 1.35); },
+                Nano_Tube(r={}){ return spaceCostMultiplier('ai_colonist', r.offset, 525000, 1.35); },
+                Quantium(r={}){ return spaceCostMultiplier('ai_colonist', r.offset, 150000, 1.35); },
+                Cipher(r={}){ return spaceCostMultiplier('ai_colonist', r.offset, 10000, 1.35); },
             },
             effect(){
                 return `<div>${loc('plus_max_resource',[jobScale(1),global.race['truepath'] ? loc('job_colonist_tp',[planetName().titan]) : loc('colonist')])}</div><div>${loc('space_ai_colonist_effect',[jobScale(1),planetName().titan])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
@@ -893,7 +893,7 @@ const outerTruth = {
             path: ['truepath'],
             queue_complete(){ return global.tech.enceladus >= 1 ? 0 : 1; },
             cost: {
-                Helium_3(offset,wiki){ return +fuel_adjust(250000,false,wiki).toFixed(0); },
+                Helium_3(r={}){ return +fuel_adjust(250000,false,r.wiki).toFixed(0); },
                 Elerium(){ return 100; }
             },
             effect(){
@@ -918,10 +918,10 @@ const outerTruth = {
             reqs: { enceladus: 2 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('water_freighter', offset, 450000, 1.25); },
-                Iron(offset){ return spaceCostMultiplier('water_freighter', offset, 362000, 1.25); },
-                Nano_Tube(offset){ return spaceCostMultiplier('water_freighter', offset, 125000, 1.25); },
-                Sheet_Metal(offset){ return spaceCostMultiplier('water_freighter', offset, 75000, 1.25); }
+                Money(r={}){ return spaceCostMultiplier('water_freighter', r.offset, 450000, 1.25); },
+                Iron(r={}){ return spaceCostMultiplier('water_freighter', r.offset, 362000, 1.25); },
+                Nano_Tube(r={}){ return spaceCostMultiplier('water_freighter', r.offset, 125000, 1.25); },
+                Sheet_Metal(r={}){ return spaceCostMultiplier('water_freighter', r.offset, 75000, 1.25); }
             },
             effect(wiki){
                 let helium = +fuel_adjust(5,true,wiki).toFixed(2);
@@ -956,10 +956,10 @@ const outerTruth = {
             reqs: { enceladus: 3 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('zero_g_lab', offset, 5000000, 1.25); },
-                Alloy(offset){ return spaceCostMultiplier('zero_g_lab', offset, 125000, 1.25); },
-                Graphene(offset){ return spaceCostMultiplier('zero_g_lab', offset, 225000, 1.25); },
-                Stanene(offset){ return spaceCostMultiplier('zero_g_lab', offset, 600000, 1.25); }
+                Money(r={}){ return spaceCostMultiplier('zero_g_lab', r.offset, 5000000, 1.25); },
+                Alloy(r={}){ return spaceCostMultiplier('zero_g_lab', r.offset, 125000, 1.25); },
+                Graphene(r={}){ return spaceCostMultiplier('zero_g_lab', r.offset, 225000, 1.25); },
+                Stanene(r={}){ return spaceCostMultiplier('zero_g_lab', r.offset, 600000, 1.25); }
             },
             effect(){
                 let synd = syndicate('spc_enceladus');
@@ -1008,11 +1008,11 @@ const outerTruth = {
             reqs: { enceladus: 4 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('operating_base', offset, 7500000, 1.3); },
-                Furs(offset){ return spaceCostMultiplier('operating_base', offset, 500000, 1.3); },
-                Adamantite(offset){ return spaceCostMultiplier('operating_base', offset, 375000, 1.3); },
-                Stanene(offset){ return spaceCostMultiplier('operating_base', offset, 750000, 1.3); },
-                Mythril(offset){ return spaceCostMultiplier('operating_base', offset, 225000, 1.3); },
+                Money(r={}){ return spaceCostMultiplier('operating_base', r.offset, 7500000, 1.3); },
+                Furs(r={}){ return spaceCostMultiplier('operating_base', r.offset, 500000, 1.3); },
+                Adamantite(r={}){ return spaceCostMultiplier('operating_base', r.offset, 375000, 1.3); },
+                Stanene(r={}){ return spaceCostMultiplier('operating_base', r.offset, 750000, 1.3); },
+                Mythril(r={}){ return spaceCostMultiplier('operating_base', r.offset, 225000, 1.3); },
                 Horseshoe(){ return global.race['hooved'] ? 4 : 0; }
             },
             effect(){
@@ -1062,9 +1062,9 @@ const outerTruth = {
             reqs: { enceladus: 5 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('munitions_depot', offset, 5000000, 1.22); },
-                Iron(offset){ return spaceCostMultiplier('munitions_depot', offset, 185000, 1.22); },
-                Sheet_Metal(offset){ return spaceCostMultiplier('munitions_depot', offset, 100000, 1.22); },
+                Money(r={}){ return spaceCostMultiplier('munitions_depot', r.offset, 5000000, 1.22); },
+                Iron(r={}){ return spaceCostMultiplier('munitions_depot', r.offset, 185000, 1.22); },
+                Sheet_Metal(r={}){ return spaceCostMultiplier('munitions_depot', r.offset, 100000, 1.22); },
             },
             effect(){
                 let containers = 25;
@@ -1137,7 +1137,7 @@ const outerTruth = {
             path: ['truepath'],
             queue_complete(){ return global.tech.triton >= 1 ? 0 : 1; },
             cost: {
-                Helium_3(offset,wiki){ return +fuel_adjust(600000,false,wiki).toFixed(0); },
+                Helium_3(r={}){ return +fuel_adjust(600000,false,r.wiki).toFixed(0); },
                 Elerium(){ return 2500; }
             },
             effect(){
@@ -1165,14 +1165,14 @@ const outerTruth = {
             path: ['truepath'],
             queue_complete(){ return 1 - global.space.fob.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1  ? 0 : spaceCostMultiplier('fob', offset, 250000000, 1.1); },
-                Copper(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', offset, 8000000, 1.1); },
-                Uranium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', offset, 50000, 1.1); },
-                Nano_Tube(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', offset, 2500000, 1.1); },
-                Graphene(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', offset, 3000000, 1.1); },
-                Sheet_Metal(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', offset, 7500000, 1.1); },
-                Quantium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', offset, 500000, 1.1); },
-                Horseshoe(offset){ return global.race['hooved'] && ((offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) < 1 ? 10 : 0; }
+                Money(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1  ? 0 : spaceCostMultiplier('fob', r.offset, 250000000, 1.1); },
+                Copper(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', r.offset, 8000000, 1.1); },
+                Uranium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', r.offset, 50000, 1.1); },
+                Nano_Tube(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', r.offset, 2500000, 1.1); },
+                Graphene(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', r.offset, 3000000, 1.1); },
+                Sheet_Metal(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', r.offset, 7500000, 1.1); },
+                Quantium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', r.offset, 500000, 1.1); },
+                Horseshoe(r={}){ return global.race['hooved'] && ((r.offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) < 1 ? 10 : 0; }
             },
             effect(wiki){
                 let troops = garrisonSize();
@@ -1221,10 +1221,10 @@ const outerTruth = {
             reqs: { triton: 3 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('lander', offset, 2400000, 1.15); },
-                Aluminium(offset){ return spaceCostMultiplier('lander', offset, 185000, 1.15); },
-                Neutronium(offset){ return spaceCostMultiplier('lander', offset, 10000, 1.15); },
-                Nano_Tube(offset){ return spaceCostMultiplier('lander', offset, 158000, 1.15); },
+                Money(r={}){ return spaceCostMultiplier('lander', r.offset, 2400000, 1.15); },
+                Aluminium(r={}){ return spaceCostMultiplier('lander', r.offset, 185000, 1.15); },
+                Neutronium(r={}){ return spaceCostMultiplier('lander', r.offset, 10000, 1.15); },
+                Nano_Tube(r={}){ return spaceCostMultiplier('lander', r.offset, 158000, 1.15); },
             },
             powered(){ return 0; },
             effect(wiki){
@@ -1305,7 +1305,7 @@ const outerTruth = {
             path: ['truepath'],
             queue_complete(){ return global.tech.makemake >= 1 ? 0 : 1; },
             cost: {
-                Helium_3(offset,wiki){ return +fuel_adjust(1000000,false,wiki).toFixed(0); },
+                Helium_3(r={}){ return +fuel_adjust(1000000,false,r.wiki).toFixed(0); },
                 Elerium(){ return 1000; }
             },
             effect(){
@@ -1333,11 +1333,11 @@ const outerTruth = {
             reqs: { makemake: 1 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('orichalcum_mine', offset, 25000000, 1.25); },
-                Graphene(offset){ return spaceCostMultiplier('orichalcum_mine', offset, 900000, 1.25); },
-                Elerium(offset){ return spaceCostMultiplier('orichalcum_mine', offset, 200, 1.25); },
-                Mythril(offset){ return spaceCostMultiplier('orichalcum_mine', offset, 450000, 1.25); },
-                Quantium(offset){ return spaceCostMultiplier('orichalcum_mine', offset, 150000, 1.25); },
+                Money(r={}){ return spaceCostMultiplier('orichalcum_mine', r.offset, 25000000, 1.25); },
+                Graphene(r={}){ return spaceCostMultiplier('orichalcum_mine', r.offset, 900000, 1.25); },
+                Elerium(r={}){ return spaceCostMultiplier('orichalcum_mine', r.offset, 200, 1.25); },
+                Mythril(r={}){ return spaceCostMultiplier('orichalcum_mine', r.offset, 450000, 1.25); },
+                Quantium(r={}){ return spaceCostMultiplier('orichalcum_mine', r.offset, 150000, 1.25); },
             },
             effect(wiki){
                 let mineral = +(production('orichalcum_mine')).toFixed(3);
@@ -1373,9 +1373,9 @@ const outerTruth = {
             reqs: { makemake: 1 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('uranium_mine', offset, 5000000, 1.25); },
-                Iridium(offset){ return spaceCostMultiplier('uranium_mine', offset, 250000, 1.25); },
-                Steel(offset){ return spaceCostMultiplier('uranium_mine', offset, 620000, 1.25); }
+                Money(r={}){ return spaceCostMultiplier('uranium_mine', r.offset, 5000000, 1.25); },
+                Iridium(r={}){ return spaceCostMultiplier('uranium_mine', r.offset, 250000, 1.25); },
+                Steel(r={}){ return spaceCostMultiplier('uranium_mine', r.offset, 620000, 1.25); }
             },
             effect(wiki){
                 let mineral = +(production('uranium_mine')).toFixed(3);
@@ -1410,9 +1410,9 @@ const outerTruth = {
             reqs: { makemake: 1 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('neutronium_mine', offset, 8000000, 1.25); },
-                Adamantite(offset){ return spaceCostMultiplier('neutronium_mine', offset, 650000, 1.25); },
-                Stanene(offset){ return spaceCostMultiplier('neutronium_mine', offset, 1250000, 1.25); },
+                Money(r={}){ return spaceCostMultiplier('neutronium_mine', r.offset, 8000000, 1.25); },
+                Adamantite(r={}){ return spaceCostMultiplier('neutronium_mine', r.offset, 650000, 1.25); },
+                Stanene(r={}){ return spaceCostMultiplier('neutronium_mine', r.offset, 1250000, 1.25); },
             },
             effect(wiki){
                 let mineral = +(production('neutronium_mine')).toFixed(3);
@@ -1447,10 +1447,10 @@ const outerTruth = {
             reqs: { makemake: 2 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('elerium_mine', offset, 20000000, 1.25); },
-                Titanium(offset){ return spaceCostMultiplier('elerium_mine', offset, 250000, 1.25); },
-                Neutronium(offset){ return spaceCostMultiplier('elerium_mine', offset, 120000, 1.25); },
-                Orichalcum(offset){ return spaceCostMultiplier('elerium_mine', offset, 175000, 1.25); },
+                Money(r={}){ return spaceCostMultiplier('elerium_mine', r.offset, 20000000, 1.25); },
+                Titanium(r={}){ return spaceCostMultiplier('elerium_mine', r.offset, 250000, 1.25); },
+                Neutronium(r={}){ return spaceCostMultiplier('elerium_mine', r.offset, 120000, 1.25); },
+                Orichalcum(r={}){ return spaceCostMultiplier('elerium_mine', r.offset, 175000, 1.25); },
             },
             effect(wiki){
                 let mineral = +(production('elerium_mine')).toFixed(3);
@@ -1515,7 +1515,7 @@ const outerTruth = {
             path: ['truepath'],
             queue_complete(){ return global.tech.eris >= 1 ? 0 : 1; },
             cost: {
-                Helium_3(offset,wiki){ return +fuel_adjust(1250000,false,wiki).toFixed(0); },
+                Helium_3(r={}){ return +fuel_adjust(1250000,false,r.wiki).toFixed(0); },
                 Elerium(){ return 1250; }
             },
             effect(){
@@ -1540,10 +1540,10 @@ const outerTruth = {
             reqs: { eris: 3 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('drone_control', offset, 75000000, 1.3); },
-                Neutronium(offset){ return spaceCostMultiplier('drone_control', offset, 100000, 1.3); },
-                Stanene(offset){ return spaceCostMultiplier('drone_control', offset, 450000, 1.3); },
-                Quantium(offset){ return spaceCostMultiplier('drone_control', offset, 300000, 1.3); },
+                Money(r={}){ return spaceCostMultiplier('drone_control', r.offset, 75000000, 1.3); },
+                Neutronium(r={}){ return spaceCostMultiplier('drone_control', r.offset, 100000, 1.3); },
+                Stanene(r={}){ return spaceCostMultiplier('drone_control', r.offset, 450000, 1.3); },
+                Quantium(r={}){ return spaceCostMultiplier('drone_control', r.offset, 300000, 1.3); },
             },
             effect(){
                 let fuel = $(this)[0].p_fuel().a;
@@ -1578,11 +1578,11 @@ const outerTruth = {
             reqs: { eris: 3 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('shock_trooper', offset, 4250000, 1.225); },
-                Polymer(offset){ return spaceCostMultiplier('shock_trooper', offset, 375000, 1.225); },
-                Adamantite(offset){ return spaceCostMultiplier('shock_trooper', offset, 500000, 1.225); },
-                Graphene(offset){ return spaceCostMultiplier('shock_trooper', offset, 220000, 1.225); },
-                Elerium(offset){ return spaceCostMultiplier('shock_trooper', offset, 350, 1.225); },
+                Money(r={}){ return spaceCostMultiplier('shock_trooper', r.offset, 4250000, 1.225); },
+                Polymer(r={}){ return spaceCostMultiplier('shock_trooper', r.offset, 375000, 1.225); },
+                Adamantite(r={}){ return spaceCostMultiplier('shock_trooper', r.offset, 500000, 1.225); },
+                Graphene(r={}){ return spaceCostMultiplier('shock_trooper', r.offset, 220000, 1.225); },
+                Elerium(r={}){ return spaceCostMultiplier('shock_trooper', r.offset, 350, 1.225); },
             },
             effect(){
                 let rating = Math.round(armyRating(1,'army',0) * syndicate('spc_eris'));
@@ -1620,11 +1620,11 @@ const outerTruth = {
             reqs: { eris: 4 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('tank', offset, 100000000, 1.25); },
-                Alloy(offset){ return spaceCostMultiplier('tank', offset, 1250000, 1.25); },
-                Orichalcum(offset){ return spaceCostMultiplier('tank', offset, 600000, 1.25); },
-                Mythril(offset){ return spaceCostMultiplier('tank', offset, 500000, 1.25); },
-                Uranium(offset){ return spaceCostMultiplier('tank', offset, 25000, 1.25); },
+                Money(r={}){ return spaceCostMultiplier('tank', r.offset, 100000000, 1.25); },
+                Alloy(r={}){ return spaceCostMultiplier('tank', r.offset, 1250000, 1.25); },
+                Orichalcum(r={}){ return spaceCostMultiplier('tank', r.offset, 600000, 1.25); },
+                Mythril(r={}){ return spaceCostMultiplier('tank', r.offset, 500000, 1.25); },
+                Uranium(r={}){ return spaceCostMultiplier('tank', r.offset, 25000, 1.25); },
             },
             effect(){
                 let rating = Math.round(100 * syndicate('spc_eris'));
@@ -1714,11 +1714,11 @@ const outerTruth = {
             // Nothing goes up while the horde holds the orbit. Every Venus structure should carry this.
             condition(){ return venusBlockade() === 0; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('cloud_city', offset, 20000000, 1.28); },
-                Aluminium(offset){ return spaceCostMultiplier('cloud_city', offset, 5800000, 1.28); },
-                Nano_Tube(offset){ return spaceCostMultiplier('cloud_city', offset, 1200000, 1.28); },
-                Stanene(offset){ return spaceCostMultiplier('cloud_city', offset, 3500000, 1.28); },
-                Aerographene(offset){ return spaceCostMultiplier('cloud_city', offset, 500000, 1.28); }
+                Money(r={}){ return spaceCostMultiplier('cloud_city', r.offset, 20000000, 1.28); },
+                Aluminium(r={}){ return spaceCostMultiplier('cloud_city', r.offset, 5800000, 1.28); },
+                Nano_Tube(r={}){ return spaceCostMultiplier('cloud_city', r.offset, 1200000, 1.28); },
+                Stanene(r={}){ return spaceCostMultiplier('cloud_city', r.offset, 3500000, 1.28); },
+                Aerographene(r={}){ return spaceCostMultiplier('cloud_city', r.offset, 500000, 1.28); }
             },
             effect(){
                 return `<div>+${loc(`galaxy_alien2_support`,[$(this)[0].support(),planetName().venus])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
@@ -1761,11 +1761,11 @@ const outerTruth = {
             queue_size: 5,
             queue_complete(){ return 100 - (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0); },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0)) < 100 ? 50000000 : 0; },
-                Tungsten(offset){ return ((offset || 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0)) < 100 ? 12000000 : 0; },
-                Graphene(offset){ return ((offset || 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0)) < 100 ? 8500000 : 0; },
-                Nano_Tube(offset){ return ((offset || 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0)) < 100 ? 9000000 : 0; },
-                Unobtainium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0)) < 100 ? 100000 : 0; }
+                Money(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0)) < 100 ? 50000000 : 0; },
+                Tungsten(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0)) < 100 ? 12000000 : 0; },
+                Graphene(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0)) < 100 ? 8500000 : 0; },
+                Nano_Tube(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0)) < 100 ? 9000000 : 0; },
+                Unobtainium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0)) < 100 ? 100000 : 0; }
             },
             effect(wiki){
                 let count = (wiki?.count ?? 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0);
@@ -1828,10 +1828,10 @@ const outerTruth = {
             path: ['truepath'],
             condition(){ return venusBlockade() === 0; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('nitrogen_harvester', offset, 42000000, 1.24); },
-                Coal(offset){ return spaceCostMultiplier('nitrogen_harvester', offset, 5000000, 1.24); },
-                Polymer(offset){ return spaceCostMultiplier('nitrogen_harvester', offset, 9500000, 1.24); },
-                Sheet_Metal(offset){ return spaceCostMultiplier('nitrogen_harvester', offset, 1250000, 1.24); }
+                Money(r={}){ return spaceCostMultiplier('nitrogen_harvester', r.offset, 42000000, 1.24); },
+                Coal(r={}){ return spaceCostMultiplier('nitrogen_harvester', r.offset, 5000000, 1.24); },
+                Polymer(r={}){ return spaceCostMultiplier('nitrogen_harvester', r.offset, 9500000, 1.24); },
+                Sheet_Metal(r={}){ return spaceCostMultiplier('nitrogen_harvester', r.offset, 1250000, 1.24); }
             },
             effect(){
                 let desc = `<div>${loc('produce',[+(production('nitrogen_harvester','food')).toFixed(2),global.resource.Food.name])}</div>`;
@@ -1912,10 +1912,10 @@ const outerTruth = {
             path: ['truepath'],
             condition(){ return venusBlockade() === 0; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('cloud_quarters', offset, 222000000, 1.24); },
-                Furs(offset){ return spaceCostMultiplier('cloud_quarters', offset, 12800000, 1.24); },
-                Copper(offset){ return spaceCostMultiplier('cloud_quarters', offset, 30000000, 1.24); },
-                Alloy(offset){ return spaceCostMultiplier('cloud_quarters', offset, 22000000, 1.24); },
+                Money(r={}){ return spaceCostMultiplier('cloud_quarters', r.offset, 222000000, 1.24); },
+                Furs(r={}){ return spaceCostMultiplier('cloud_quarters', r.offset, 12800000, 1.24); },
+                Copper(r={}){ return spaceCostMultiplier('cloud_quarters', r.offset, 30000000, 1.24); },
+                Alloy(r={}){ return spaceCostMultiplier('cloud_quarters', r.offset, 22000000, 1.24); },
                 Horseshoe(){ return global.race['hooved'] ? 2 : 0; }
             },
             effect(){
@@ -1957,11 +1957,11 @@ const outerTruth = {
             path: ['truepath'],
             condition(){ return venusBlockade() === 0; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('industrial_complex', offset, 268000000, 1.26); },
-                Titanium(offset){ return spaceCostMultiplier('industrial_complex', offset, 24500000, 1.26); },
-                Tungsten(offset){ return spaceCostMultiplier('industrial_complex', offset, 39000000, 1.26); },
-                Bolognium(offset){ return spaceCostMultiplier('industrial_complex', offset, 8800000, 1.26); },
-                Elerium(offset){ return spaceCostMultiplier('industrial_complex', offset, 25000, 1.26); }
+                Money(r={}){ return spaceCostMultiplier('industrial_complex', r.offset, 268000000, 1.26); },
+                Titanium(r={}){ return spaceCostMultiplier('industrial_complex', r.offset, 24500000, 1.26); },
+                Tungsten(r={}){ return spaceCostMultiplier('industrial_complex', r.offset, 39000000, 1.26); },
+                Bolognium(r={}){ return spaceCostMultiplier('industrial_complex', r.offset, 8800000, 1.26); },
+                Elerium(r={}){ return spaceCostMultiplier('industrial_complex', r.offset, 25000, 1.26); }
             },
             effect(){
                 let desc = `<div>${loc('space_industrial_complex_effect',[$(this)[0].lines()])}</div>`;
@@ -2006,10 +2006,10 @@ const outerTruth = {
             path: ['truepath'],
             condition(){ return venusBlockade() === 0; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('workshop', offset, 99000000, 1.26); },
-                Lumber(offset){ return spaceCostMultiplier('workshop', offset, 63000000, 1.26); },
-                Aerographene(offset){ return spaceCostMultiplier('workshop', offset, 3400000, 1.26); },
-                Orichalcum(offset){ return spaceCostMultiplier('workshop', offset, 9200000, 1.26); }
+                Money(r={}){ return spaceCostMultiplier('workshop', r.offset, 99000000, 1.26); },
+                Lumber(r={}){ return spaceCostMultiplier('workshop', r.offset, 63000000, 1.26); },
+                Aerographene(r={}){ return spaceCostMultiplier('workshop', r.offset, 3400000, 1.26); },
+                Orichalcum(r={}){ return spaceCostMultiplier('workshop', r.offset, 9200000, 1.26); }
             },
             effect(){
                 let desc = `<div>${loc('plus_max_resource',[jobScale($(this)[0].crafters()),loc('job_craftsman')])}</div>`;
@@ -2049,10 +2049,10 @@ const outerTruth = {
             path: ['truepath'],
             condition(){ return venusBlockade() === 0; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('university', offset, 118000000, 1.26); },
-                Knowledge(offset){ return spaceCostMultiplier('university', offset, 2500000, 1.26); },
-                Iron(offset){ return spaceCostMultiplier('university', offset, 60000000, 1.26); },
-                Plywood(offset){ return spaceCostMultiplier('university', offset, 42000000, 1.26); }
+                Money(r={}){ return spaceCostMultiplier('university', r.offset, 118000000, 1.26); },
+                Knowledge(r={}){ return spaceCostMultiplier('university', r.offset, 2500000, 1.26); },
+                Iron(r={}){ return spaceCostMultiplier('university', r.offset, 60000000, 1.26); },
+                Plywood(r={}){ return spaceCostMultiplier('university', r.offset, 42000000, 1.26); }
             },
             effect(){
                 let desc = `<div>${loc('space_university_effect',[$(this)[0].knowVal().toLocaleString(),global.resource.Knowledge.name,job_data.professor.name()])}</div>`;
@@ -2125,9 +2125,9 @@ const outerTruth = {
             reqs: { survey: 2 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('mineshaft', offset, 15000000, 1.26); },
-                Lumber(offset){ return spaceCostMultiplier('mineshaft', offset, 18000000, 1.26); },
-                Iron(offset){ return spaceCostMultiplier('mineshaft', offset, 21750000, 1.26); },
+                Money(r={}){ return spaceCostMultiplier('mineshaft', r.offset, 15000000, 1.26); },
+                Lumber(r={}){ return spaceCostMultiplier('mineshaft', r.offset, 18000000, 1.26); },
+                Iron(r={}){ return spaceCostMultiplier('mineshaft', r.offset, 21750000, 1.26); },
             },
             effect(){
                 let tungsten = +(production('mineshaft')).toFixed(3);
@@ -2163,11 +2163,11 @@ const outerTruth = {
             reqs: { survey: 3 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('survey_resort', offset, 125000000, 1.28); },
-                Food(offset){ return spaceCostMultiplier('survey_resort', offset, global.race['artifical'] ? 0 : 5500000, 1.28); },
-                Furs(offset){ return spaceCostMultiplier('survey_resort', offset, 180000000, 1.28); },
-                Water(offset){ return spaceCostMultiplier('survey_resort', offset, 125000, 1.28); },
-                Plywood(offset){ return spaceCostMultiplier('survey_resort', offset, 3500000, 1.28); }
+                Money(r={}){ return spaceCostMultiplier('survey_resort', r.offset, 125000000, 1.28); },
+                Food(r={}){ return spaceCostMultiplier('survey_resort', r.offset, global.race['artifical'] ? 0 : 5500000, 1.28); },
+                Furs(r={}){ return spaceCostMultiplier('survey_resort', r.offset, 180000000, 1.28); },
+                Water(r={}){ return spaceCostMultiplier('survey_resort', r.offset, 125000, 1.28); },
+                Plywood(r={}){ return spaceCostMultiplier('survey_resort', r.offset, 3500000, 1.28); }
             },
             morale(){ return 5; },
             effect(){
@@ -2200,9 +2200,9 @@ const outerTruth = {
             reqs: { survey: 4 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('survey_warehouse', offset, 141000000, 1.28); },
-                Cement(offset){ return spaceCostMultiplier('survey_warehouse', offset, 3300000, 1.28); },
-                Adamantite(offset){ return spaceCostMultiplier('survey_warehouse', offset, 2250000, 1.28); }
+                Money(r={}){ return spaceCostMultiplier('survey_warehouse', r.offset, 141000000, 1.28); },
+                Cement(r={}){ return spaceCostMultiplier('survey_warehouse', r.offset, 3300000, 1.28); },
+                Adamantite(r={}){ return spaceCostMultiplier('survey_warehouse', r.offset, 2250000, 1.28); }
             },
             wide: true,
             res(){
@@ -2317,11 +2317,11 @@ const outerTruth = {
             queue_size: 5,
             queue_complete(){ return 100 - (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0); },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0)) < 100 ? 42000000 : 0; },
-                Brick(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0)) < 100 ? 7500000 : 0; },
-                Orichalcum(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0)) < 100 ? 2500000 : 0; },
-                Cement(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0)) < 100 ? 12500000 : 0; },
-                Neutronium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0)) < 100 ? 2600000 : 0; }
+                Money(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0)) < 100 ? 42000000 : 0; },
+                Brick(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0)) < 100 ? 7500000 : 0; },
+                Orichalcum(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0)) < 100 ? 2500000 : 0; },
+                Cement(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0)) < 100 ? 12500000 : 0; },
+                Neutronium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0)) < 100 ? 2600000 : 0; }
             },
             effect(wiki){
                 let count = (wiki?.count ?? 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0);
@@ -2574,14 +2574,14 @@ const tauCetiModules = {
             queue_size: 50,
             queue_complete(){ return 1000 - global.tauceti.ringworld.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 10000000 : 100000000) : 0; },
-                Neutronium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 20000 : 100000) : 0; },
-                Nano_Tube(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 70000 : 350000) : 0; },
-                Adamantite(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 200000 : 1000000) : 0; },
-                Bolognium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 17600 : 88000) : 0; },
-                Orichalcum(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 25000 : 125000) : 0; },
-                Unobtainium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 360 : 1800) : 0; },
-                Quantium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? wom_recycle(global.race['lone_survivor'] ? 10100 : 101000) : 0; },
+                Money(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 10000000 : 100000000) : 0; },
+                Neutronium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 20000 : 100000) : 0; },
+                Nano_Tube(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 70000 : 350000) : 0; },
+                Adamantite(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 200000 : 1000000) : 0; },
+                Bolognium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 17600 : 88000) : 0; },
+                Orichalcum(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 25000 : 125000) : 0; },
+                Unobtainium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 360 : 1800) : 0; },
+                Quantium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? wom_recycle(global.race['lone_survivor'] ? 10100 : 101000) : 0; },
             },
             effect(wiki){
                 let effectText = '';
@@ -2639,12 +2639,12 @@ const tauCetiModules = {
             queue_size: 5,
             queue_complete(){ return 100 - (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0); },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? 150000000 : 0; },
-                Copper(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? 80000000 : 0; },
-                Polymer(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? 6000000 : 0; },
-                Graphene(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? 1250000 : 0; },
-                Orichalcum(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? 750000 : 0; },
-                Quantium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? wom_recycle(750000) : 0; }
+                Money(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? 150000000 : 0; },
+                Copper(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? 80000000 : 0; },
+                Polymer(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? 6000000 : 0; },
+                Graphene(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? 1250000 : 0; },
+                Orichalcum(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? 750000 : 0; },
+                Quantium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? wom_recycle(750000) : 0; }
             },
             effect(wiki){
                 let count = (wiki?.count ?? 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0);
@@ -2924,11 +2924,11 @@ const tauCetiModules = {
             reqs: { tau_home: 2 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('orbital_station', offset, 80000000, 1.3, 'tauceti'); },
-                Materials(offset){ return tauEnabled() ? 0 : spaceCostMultiplier('orbital_station', offset, 500000, 1.3, 'tauceti'); },
-                Helium_3(offset){ return tauEnabled() ? spaceCostMultiplier('orbital_station', offset, int_fuel_adjust(250000), 1.3, 'tauceti') : 0; },
-                Copper(offset){ return tauEnabled() ? spaceCostMultiplier('orbital_station', offset, 1250000, 1.3, 'tauceti') : 0; },
-                Adamantite(offset){ return tauEnabled() ? spaceCostMultiplier('orbital_station', offset, 900000, 1.3, 'tauceti') : 0; },
+                Money(r={}){ return spaceCostMultiplier('orbital_station', r.offset, 80000000, 1.3, 'tauceti'); },
+                Materials(r={}){ return tauEnabled() ? 0 : spaceCostMultiplier('orbital_station', r.offset, 500000, 1.3, 'tauceti'); },
+                Helium_3(r={}){ return tauEnabled() ? spaceCostMultiplier('orbital_station', r.offset, int_fuel_adjust(250000), 1.3, 'tauceti') : 0; },
+                Copper(r={}){ return tauEnabled() ? spaceCostMultiplier('orbital_station', r.offset, 1250000, 1.3, 'tauceti') : 0; },
+                Adamantite(r={}){ return tauEnabled() ? spaceCostMultiplier('orbital_station', r.offset, 900000, 1.3, 'tauceti') : 0; },
             },
             effect(){
                 let helium = spatialReasoning(15000);
@@ -2970,11 +2970,11 @@ const tauCetiModules = {
             reqs: { tau_home: 2 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('colony', offset, 15750000, 1.225, 'tauceti'); },
-                Materials(offset){ return tauEnabled() ? 0 : spaceCostMultiplier('colony', offset, 650000, 1.225, 'tauceti'); },
-                Furs(offset){ return tauEnabled() ? spaceCostMultiplier('colony', offset, 720000, 1.225, 'tauceti') : 0; },
-                Graphene(offset){ return tauEnabled() ? spaceCostMultiplier('colony', offset, 485000, 1.225, 'tauceti') : 0; },
-                Brick(offset){ return tauEnabled() ? spaceCostMultiplier('colony', offset, wom_recycle(880000), 1.225, 'tauceti') : 0; },
+                Money(r={}){ return spaceCostMultiplier('colony', r.offset, 15750000, 1.225, 'tauceti'); },
+                Materials(r={}){ return tauEnabled() ? 0 : spaceCostMultiplier('colony', r.offset, 650000, 1.225, 'tauceti'); },
+                Furs(r={}){ return tauEnabled() ? spaceCostMultiplier('colony', r.offset, 720000, 1.225, 'tauceti') : 0; },
+                Graphene(r={}){ return tauEnabled() ? spaceCostMultiplier('colony', r.offset, 485000, 1.225, 'tauceti') : 0; },
+                Brick(r={}){ return tauEnabled() ? spaceCostMultiplier('colony', r.offset, wom_recycle(880000), 1.225, 'tauceti') : 0; },
             },
             effect(){
                 let pop = $(this)[0].citizens();
@@ -3057,10 +3057,10 @@ const tauCetiModules = {
             reqs: { housing: 1, isolation: 1 },
             condition(){ return global.race['lone_survivor'] ? false : true; },
             cost: {
-                Money(offset){return spaceCostMultiplier('tau_housing', offset, 150000, 1.15, 'tauceti'); },
-                Lumber(offset){ return global.race['kindling_kindred'] || global.race['smoldering'] ? 0 : spaceCostMultiplier('tau_housing', offset, 125000, 1.25, 'tauceti'); },
-                Stone(offset){ return global.race['kindling_kindred'] ? spaceCostMultiplier('tau_housing', offset, 125000, 1.25, 'tauceti') : 0; },
-                Chrysotile(offset){ return global.race['smoldering'] ? spaceCostMultiplier('tau_housing', offset, 50000, 1.25, 'tauceti') : 0; },
+                Money(r={}){return spaceCostMultiplier('tau_housing', r.offset, 150000, 1.15, 'tauceti'); },
+                Lumber(r={}){ return global.race['kindling_kindred'] || global.race['smoldering'] ? 0 : spaceCostMultiplier('tau_housing', r.offset, 125000, 1.25, 'tauceti'); },
+                Stone(r={}){ return global.race['kindling_kindred'] ? spaceCostMultiplier('tau_housing', r.offset, 125000, 1.25, 'tauceti') : 0; },
+                Chrysotile(r={}){ return global.race['smoldering'] ? spaceCostMultiplier('tau_housing', r.offset, 50000, 1.25, 'tauceti') : 0; },
                 Horseshoe(){ return global.race['hooved'] ? 1 : 0; }
             },
             effect(){
@@ -3097,9 +3097,9 @@ const tauCetiModules = {
             reqs: { magic: 2 },
             condition(){ return global.tech['isolation'] && global.tauceti.hasOwnProperty('pylon') ? true : false; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('pylon', offset, 50, 1.48, 'tauceti'); },
-                Stone(offset){ return spaceCostMultiplier('pylon', offset, 100, 1.42, 'tauceti'); },
-                Crystal(offset){ return spaceCostMultiplier('pylon', offset, 8, 1.42, 'tauceti') - 3; }
+                Money(r={}){ return spaceCostMultiplier('pylon', r.offset, 50, 1.48, 'tauceti'); },
+                Stone(r={}){ return spaceCostMultiplier('pylon', r.offset, 100, 1.42, 'tauceti'); },
+                Crystal(r={}){ return spaceCostMultiplier('pylon', r.offset, 8, 1.42, 'tauceti') - 3; }
             },
             effect(){
                 let max = spatialReasoning(2);
@@ -3132,10 +3132,10 @@ const tauCetiModules = {
             path: ['truepath'],
             queue_complete(){ return global.resource[global.race.species].max - global.resource[global.race.species].amount; },
             cost: {
-                Money(offset){ return global['resource'][global.race.species].amount ? spaceCostMultiplier('citizen', offset, Math.round((global.race['high_pop'] ? 100000 : 125000) / jobScale(1)), global.race['high_pop'] ? 1.01 : 1.02, 'tauceti', global.race['high_pop'] ? 1.003 : 1.005) : 0; },
-                Copper(offset){ return !global.race['artifical'] || global.race['deconstructor'] ? 0 : global['resource'][global.race.species].amount >= 5 ? spaceCostMultiplier('citizen', offset, Math.round(50 / jobScale(1)), 1.01, 'tauceti', global.race['high_pop'] ? 1.0032 : 1.005) : 0; },
-                Aluminium(offset){ return !global.race['artifical'] || global.race['deconstructor'] ? 0 : global['resource'][global.race.species].amount >= 5 ? spaceCostMultiplier('citizen', offset, Math.round(50 / jobScale(1)), 1.01, 'tauceti', global.race['high_pop'] ? 1.0032 : 1.005) : 0; },
-                Nanite(offset){ return global.race['deconstructor'] ? (global['resource'][global.race.species].amount >= 3 ? spaceCostMultiplier('citizen', offset, Math.round(500 / jobScale(1)), 1.01, 'tauceti', global.race['high_pop'] ? 1.0032 : 1.005) : 0) : 0; },
+                Money(r={}){ return global['resource'][global.race.species].amount ? spaceCostMultiplier('citizen', r.offset, Math.round((global.race['high_pop'] ? 100000 : 125000) / jobScale(1)), global.race['high_pop'] ? 1.01 : 1.02, 'tauceti', global.race['high_pop'] ? 1.003 : 1.005) : 0; },
+                Copper(r={}){ return !global.race['artifical'] || global.race['deconstructor'] ? 0 : global['resource'][global.race.species].amount >= 5 ? spaceCostMultiplier('citizen', r.offset, Math.round(50 / jobScale(1)), 1.01, 'tauceti', global.race['high_pop'] ? 1.0032 : 1.005) : 0; },
+                Aluminium(r={}){ return !global.race['artifical'] || global.race['deconstructor'] ? 0 : global['resource'][global.race.species].amount >= 5 ? spaceCostMultiplier('citizen', r.offset, Math.round(50 / jobScale(1)), 1.01, 'tauceti', global.race['high_pop'] ? 1.0032 : 1.005) : 0; },
+                Nanite(r={}){ return global.race['deconstructor'] ? (global['resource'][global.race.species].amount >= 3 ? spaceCostMultiplier('citizen', r.offset, Math.round(500 / jobScale(1)), 1.01, 'tauceti', global.race['high_pop'] ? 1.0032 : 1.005) : 0) : 0; },
             },
             effect(){
                 let warn = '';
@@ -3173,10 +3173,10 @@ const tauCetiModules = {
             reqs: { tau_home: 7 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('tau_farm', offset, 135000000, 1.25, 'tauceti'); },
-                Stone(offset){ return  spaceCostMultiplier('tau_farm', offset, 9210000, 1.25, 'tauceti'); },
-                Steel(offset){ return spaceCostMultiplier('tau_farm', offset, 6295000, 1.25, 'tauceti'); },
-                Water(offset){ return spaceCostMultiplier('tau_farm', offset, 10000, 1.25, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('tau_farm', r.offset, 135000000, 1.25, 'tauceti'); },
+                Stone(r={}){ return  spaceCostMultiplier('tau_farm', r.offset, 9210000, 1.25, 'tauceti'); },
+                Steel(r={}){ return spaceCostMultiplier('tau_farm', r.offset, 6295000, 1.25, 'tauceti'); },
+                Water(r={}){ return spaceCostMultiplier('tau_farm', r.offset, 10000, 1.25, 'tauceti'); },
             },
             effect(){
                 let desc = `<div>${loc('space_red_spaceport_effect1',[loc('tau_planet',[races[global.race.species].home]),$(this)[0].support()])}</div>`;
@@ -3222,10 +3222,10 @@ const tauCetiModules = {
             reqs: { tau_home: 2 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('mining_pit', offset, 4250000, 1.225, 'tauceti'); },
-                Materials(offset){ return tauEnabled() ? 0 : spaceCostMultiplier('mining_pit', offset, 350000, 1.225, 'tauceti'); },
-                Lumber(offset){ return tauEnabled() ? spaceCostMultiplier('mining_pit', offset, 2350000, 1.225, 'tauceti') : 0; },
-                Iron(offset){ return tauEnabled() ? spaceCostMultiplier('mining_pit', offset, 835000, 1.225, 'tauceti') : 0; },
+                Money(r={}){ return spaceCostMultiplier('mining_pit', r.offset, 4250000, 1.225, 'tauceti'); },
+                Materials(r={}){ return tauEnabled() ? 0 : spaceCostMultiplier('mining_pit', r.offset, 350000, 1.225, 'tauceti'); },
+                Lumber(r={}){ return tauEnabled() ? spaceCostMultiplier('mining_pit', r.offset, 2350000, 1.225, 'tauceti') : 0; },
+                Iron(r={}){ return tauEnabled() ? spaceCostMultiplier('mining_pit', r.offset, 835000, 1.225, 'tauceti') : 0; },
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].home])}</div>`;
@@ -3370,10 +3370,10 @@ const tauCetiModules = {
             reqs: { tau_home: 9 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('data_decoder', offset, 780000000, 1.25, 'tauceti'); },
-                Water(offset){ return spaceCostMultiplier('data_decoder', offset, 128000, 1.25, 'tauceti'); },
-                Orichalcum(offset){ return spaceCostMultiplier('data_decoder', offset, 24500000, 1.25, 'tauceti'); },
-                Positronium(offset){ return spaceCostMultiplier('data_decoder', offset, 13500, 1.25, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('data_decoder', r.offset, 780000000, 1.25, 'tauceti'); },
+                Water(r={}){ return spaceCostMultiplier('data_decoder', r.offset, 128000, 1.25, 'tauceti'); },
+                Orichalcum(r={}){ return spaceCostMultiplier('data_decoder', r.offset, 24500000, 1.25, 'tauceti'); },
+                Positronium(r={}){ return spaceCostMultiplier('data_decoder', r.offset, 13500, 1.25, 'tauceti'); },
             },
             effect(wiki){
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[loc('tau_planet',[races[global.race.species].home])])}</div>`;
@@ -3418,8 +3418,8 @@ const tauCetiModules = {
             queue_size: 10,
             queue_complete(){ return 100 - global.tauceti.jump_gate.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('jump_gate') ? global.tauceti.jump_gate.count : 0)) < 100 ? 1000000 : 0; },
-                Materials(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('jump_gate') ? global.tauceti.jump_gate.count : 0)) < 100 ? 12500 : 0; },
+                Money(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('jump_gate') ? global.tauceti.jump_gate.count : 0)) < 100 ? 1000000 : 0; },
+                Materials(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('jump_gate') ? global.tauceti.jump_gate.count : 0)) < 100 ? 12500 : 0; },
             },
             effect(wiki){
                 let count = (wiki?.count ?? 0) + (global.tauceti.hasOwnProperty('jump_gate') ? global.tauceti.jump_gate.count : 0);
@@ -3460,10 +3460,10 @@ const tauCetiModules = {
             reqs: { tau_home: 6 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('fusion_generator', offset, 188000000, 1.25, 'tauceti'); },
-                Iridium(offset){ return  spaceCostMultiplier('fusion_generator', offset, 5550000, 1.25, 'tauceti'); },
-                Stanene(offset){ return spaceCostMultiplier('fusion_generator', offset, 7003500, 1.25, 'tauceti'); },
-                Sheet_Metal(offset){ return spaceCostMultiplier('fusion_generator', offset, wom_recycle(95000), 1.25, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('fusion_generator', r.offset, 188000000, 1.25, 'tauceti'); },
+                Iridium(r={}){ return  spaceCostMultiplier('fusion_generator', r.offset, 5550000, 1.25, 'tauceti'); },
+                Stanene(r={}){ return spaceCostMultiplier('fusion_generator', r.offset, 7003500, 1.25, 'tauceti'); },
+                Sheet_Metal(r={}){ return spaceCostMultiplier('fusion_generator', r.offset, wom_recycle(95000), 1.25, 'tauceti'); },
             },
             effect(){
                 let fuel = +int_fuel_adjust($(this)[0].p_fuel().a).toFixed(1);
@@ -3501,10 +3501,10 @@ const tauCetiModules = {
             reqs: { tau_home: 5 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('repository', offset, 10280000, 1.28, 'tauceti'); },
-                Iron(offset){ return spaceCostMultiplier('repository', offset, 1800000, 1.28, 'tauceti'); },
-                Cement(offset){ return spaceCostMultiplier('repository', offset, 1500000, 1.28, 'tauceti'); },
-                Neutronium(offset){ return spaceCostMultiplier('repository', offset, 215000, 1.28, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('repository', r.offset, 10280000, 1.28, 'tauceti'); },
+                Iron(r={}){ return spaceCostMultiplier('repository', r.offset, 1800000, 1.28, 'tauceti'); },
+                Cement(r={}){ return spaceCostMultiplier('repository', r.offset, 1500000, 1.28, 'tauceti'); },
+                Neutronium(r={}){ return spaceCostMultiplier('repository', r.offset, 215000, 1.28, 'tauceti'); },
             },
             wide: true,
             res(){
@@ -3634,11 +3634,11 @@ const tauCetiModules = {
             reqs: { tau_home: 8 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('tau_factory', offset, 269000000, 1.25, 'tauceti'); },
-                Titanium(offset){ return spaceCostMultiplier('tau_factory', offset, 3000000, 1.25, 'tauceti'); },
-                Elerium(offset){ return spaceCostMultiplier('tau_factory', offset, 850, 1.25, 'tauceti'); },
-                Bolognium(offset){ return spaceCostMultiplier('tau_factory', offset, 250000, 1.25, 'tauceti'); },
-                Quantium(offset){ return spaceCostMultiplier('tau_factory', offset, wom_recycle(425000), 1.25, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('tau_factory', r.offset, 269000000, 1.25, 'tauceti'); },
+                Titanium(r={}){ return spaceCostMultiplier('tau_factory', r.offset, 3000000, 1.25, 'tauceti'); },
+                Elerium(r={}){ return spaceCostMultiplier('tau_factory', r.offset, 850, 1.25, 'tauceti'); },
+                Bolognium(r={}){ return spaceCostMultiplier('tau_factory', r.offset, 250000, 1.25, 'tauceti'); },
+                Quantium(r={}){ return spaceCostMultiplier('tau_factory', r.offset, wom_recycle(425000), 1.25, 'tauceti'); },
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].home])}</div>`;
@@ -3691,11 +3691,11 @@ const tauCetiModules = {
             reqs: { disease: 1 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('infectious_disease_lab', offset, 1000000000, 1.25, 'tauceti'); },
-                Alloy(offset){ return spaceCostMultiplier('infectious_disease_lab', offset, 32500000, 1.25, 'tauceti'); },
-                Polymer(offset){ return spaceCostMultiplier('infectious_disease_lab', offset, 50000000, 1.25, 'tauceti'); },
-                Bolognium(offset){ return spaceCostMultiplier('infectious_disease_lab', offset, 2500000, 1.25, 'tauceti'); },
-                Unobtainium(offset){ return spaceCostMultiplier('infectious_disease_lab', offset, 64000, 1.25, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('infectious_disease_lab', r.offset, 1000000000, 1.25, 'tauceti'); },
+                Alloy(r={}){ return spaceCostMultiplier('infectious_disease_lab', r.offset, 32500000, 1.25, 'tauceti'); },
+                Polymer(r={}){ return spaceCostMultiplier('infectious_disease_lab', r.offset, 50000000, 1.25, 'tauceti'); },
+                Bolognium(r={}){ return spaceCostMultiplier('infectious_disease_lab', r.offset, 2500000, 1.25, 'tauceti'); },
+                Unobtainium(r={}){ return spaceCostMultiplier('infectious_disease_lab', r.offset, 64000, 1.25, 'tauceti'); },
             },
             effect(){
                 let sci = 39616;
@@ -3762,10 +3762,10 @@ const tauCetiModules = {
             category: 'commercial',
             reqs: { gambling: 1, isolation: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('tauceti_casino', offset, 1450000, 1.35, 'tauceti'); },
-                Furs(offset){ return spaceCostMultiplier('tauceti_casino', offset, 95000, 1.35, 'tauceti'); },
-                Cement(offset){ return spaceCostMultiplier('tauceti_casino', offset, 120000, 1.35, 'tauceti'); },
-                Plywood(offset){ return spaceCostMultiplier('tauceti_casino', offset, wom_recycle(55000), 1.35, 'tauceti'); }
+                Money(r={}){ return spaceCostMultiplier('tauceti_casino', r.offset, 1450000, 1.35, 'tauceti'); },
+                Furs(r={}){ return spaceCostMultiplier('tauceti_casino', r.offset, 95000, 1.35, 'tauceti'); },
+                Cement(r={}){ return spaceCostMultiplier('tauceti_casino', r.offset, 120000, 1.35, 'tauceti'); },
+                Plywood(r={}){ return spaceCostMultiplier('tauceti_casino', r.offset, wom_recycle(55000), 1.35, 'tauceti'); }
             },
             effect(){
                 let pop = $(this)[0].citizens();
@@ -3813,10 +3813,10 @@ const tauCetiModules = {
             reqs: { tau_culture: 1 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('tau_cultural_center', offset, 91450000, 1.35, 'tauceti'); },
-                Copper(offset){ return spaceCostMultiplier('tau_cultural_center', offset, 5850000, 1.35, 'tauceti'); },
-                Coal(offset){ return spaceCostMultiplier('tau_cultural_center', offset, 465000, 1.35, 'tauceti'); },
-                Polymer(offset){ return spaceCostMultiplier('tau_cultural_center', offset, 3792000, 1.35, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('tau_cultural_center', r.offset, 91450000, 1.35, 'tauceti'); },
+                Copper(r={}){ return spaceCostMultiplier('tau_cultural_center', r.offset, 5850000, 1.35, 'tauceti'); },
+                Coal(r={}){ return spaceCostMultiplier('tau_cultural_center', r.offset, 465000, 1.35, 'tauceti'); },
+                Polymer(r={}){ return spaceCostMultiplier('tau_cultural_center', r.offset, 3792000, 1.35, 'tauceti'); },
             },
             effect(){
                 let womling = 8;
@@ -3867,10 +3867,10 @@ const tauCetiModules = {
             reqs: { resettle: 2 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('marine_barracks', offset, 42000000, 1.25, 'tauceti'); },
-                Stone(offset){ return spaceCostMultiplier('marine_barracks', offset, 2600000, 1.25, 'tauceti'); },
-                Furs(offset){ return spaceCostMultiplier('marine_barracks', offset, 2200000, 1.25, 'tauceti'); },
-                Water(offset){ return spaceCostMultiplier('marine_barracks', offset, 15000, 1.25, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('marine_barracks', r.offset, 42000000, 1.25, 'tauceti'); },
+                Stone(r={}){ return spaceCostMultiplier('marine_barracks', r.offset, 2600000, 1.25, 'tauceti'); },
+                Furs(r={}){ return spaceCostMultiplier('marine_barracks', r.offset, 2200000, 1.25, 'tauceti'); },
+                Water(r={}){ return spaceCostMultiplier('marine_barracks', r.offset, 15000, 1.25, 'tauceti'); },
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[loc('tau_planet',[races[global.race.species].home])])}</div>`;
@@ -3949,10 +3949,10 @@ const tauCetiModules = {
             reqs: { tau_red: 1, tauceti: 4 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('orbital_platform', offset, 50000000, 1.3, 'tauceti'); },
-                Oil(offset){ return tauEnabled() ? spaceCostMultiplier('orbital_platform', offset, int_fuel_adjust(wom_repulse(275000)), 1.3, 'tauceti') : 0; },
-                Aluminium(offset){ return spaceCostMultiplier('orbital_platform', offset, 1780000, 1.3, 'tauceti'); },
-                Bolognium(offset){ return spaceCostMultiplier('orbital_platform', offset, 450000, 1.3, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('orbital_platform', r.offset, 50000000, 1.3, 'tauceti'); },
+                Oil(r={}){ return tauEnabled() ? spaceCostMultiplier('orbital_platform', r.offset, int_fuel_adjust(wom_repulse(275000)), 1.3, 'tauceti') : 0; },
+                Aluminium(r={}){ return spaceCostMultiplier('orbital_platform', r.offset, 1780000, 1.3, 'tauceti'); },
+                Bolognium(r={}){ return spaceCostMultiplier('orbital_platform', r.offset, 450000, 1.3, 'tauceti'); },
             },
             effect(){
                 let oil = spatialReasoning(17500);
@@ -4105,11 +4105,11 @@ const tauCetiModules = {
             reqs: { tau_red: 5 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('overseer', offset, 6000000, 1.28, 'tauceti'); },
-                Cement(offset){ return spaceCostMultiplier('overseer', offset, 2450000, 1.28, 'tauceti'); },
-                Alloy(offset){ return global.race['womling_friend'] ? spaceCostMultiplier('overseer', offset, 1850000, 1.28, 'tauceti') : 0; },
-                Neutronium(offset){ return global.race['womling_lord'] ? spaceCostMultiplier('overseer', offset, 165000, 1.28, 'tauceti') : 0; },
-                Titanium(offset){ return global.race['womling_god'] ? spaceCostMultiplier('overseer', offset, 2250000, 1.28, 'tauceti') : 0; },
+                Money(r={}){ return spaceCostMultiplier('overseer', r.offset, 6000000, 1.28, 'tauceti'); },
+                Cement(r={}){ return spaceCostMultiplier('overseer', r.offset, 2450000, 1.28, 'tauceti'); },
+                Alloy(r={}){ return global.race['womling_friend'] ? spaceCostMultiplier('overseer', r.offset, 1850000, 1.28, 'tauceti') : 0; },
+                Neutronium(r={}){ return global.race['womling_lord'] ? spaceCostMultiplier('overseer', r.offset, 165000, 1.28, 'tauceti') : 0; },
+                Titanium(r={}){ return global.race['womling_god'] ? spaceCostMultiplier('overseer', r.offset, 2250000, 1.28, 'tauceti') : 0; },
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), planetName().red])}</div>`;
@@ -4158,10 +4158,10 @@ const tauCetiModules = {
             reqs: { tau_red: 5 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('womling_village', offset, 10000000, 1.28, 'tauceti'); },
-                Stone(offset){ return spaceCostMultiplier('womling_village', offset, 2250000, 1.28, 'tauceti'); },
-                Plywood(offset){ return spaceCostMultiplier('womling_village', offset, wom_recycle(1250000), 1.28, 'tauceti'); },
-                Wrought_Iron(offset){ return spaceCostMultiplier('womling_village', offset, wom_recycle(400000), 1.28, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('womling_village', r.offset, 10000000, 1.28, 'tauceti'); },
+                Stone(r={}){ return spaceCostMultiplier('womling_village', r.offset, 2250000, 1.28, 'tauceti'); },
+                Plywood(r={}){ return spaceCostMultiplier('womling_village', r.offset, wom_recycle(1250000), 1.28, 'tauceti'); },
+                Wrought_Iron(r={}){ return spaceCostMultiplier('womling_village', r.offset, wom_recycle(400000), 1.28, 'tauceti'); },
             },
             effect(){
                 let pop = womlingVillagePop();
@@ -4198,9 +4198,9 @@ const tauCetiModules = {
             reqs: { tau_red: 5 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('womling_farm', offset, 24000000, 1.28, 'tauceti'); },
-                Iron(offset){ return spaceCostMultiplier('womling_farm', offset, 9500000, 1.28, 'tauceti'); },
-                Water(offset){ return spaceCostMultiplier('womling_farm', offset, 5000, 1.28, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('womling_farm', r.offset, 24000000, 1.28, 'tauceti'); },
+                Iron(r={}){ return spaceCostMultiplier('womling_farm', r.offset, 9500000, 1.28, 'tauceti'); },
+                Water(r={}){ return spaceCostMultiplier('womling_farm', r.offset, 5000, 1.28, 'tauceti'); },
             },
             effect(){
                 let food = womlingFarmFood();
@@ -4240,9 +4240,9 @@ const tauCetiModules = {
             reqs: { tau_red: 5 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('womling_mine', offset, 12500000, 1.28, 'tauceti'); },
-                Lumber(offset){ return spaceCostMultiplier('womling_mine', offset, 12800000, 1.28, 'tauceti'); },
-                Steel(offset){ return spaceCostMultiplier('womling_mine', offset, 4500000, 1.28, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('womling_mine', r.offset, 12500000, 1.28, 'tauceti'); },
+                Lumber(r={}){ return spaceCostMultiplier('womling_mine', r.offset, 12800000, 1.28, 'tauceti'); },
+                Steel(r={}){ return spaceCostMultiplier('womling_mine', r.offset, 4500000, 1.28, 'tauceti'); },
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), planetName().red])}</div>`;
@@ -4302,14 +4302,14 @@ const tauCetiModules = {
             reqs: { tau_red: 6 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('womling_fun', offset, 3800000, 1.28, 'tauceti'); },
-                Food(offset){ return global.race['womling_friend'] ? spaceCostMultiplier('womling_fun', offset, 175000, 1.28, 'tauceti') : 0; },
-                Lumber(offset){ return spaceCostMultiplier('womling_fun', offset, 500000, 1.28, 'tauceti'); },
-                Stone(offset){ return spaceCostMultiplier('womling_fun', offset, 500000, 1.28, 'tauceti'); },
-                Furs(offset){ return global.race['womling_lord'] || global.race['womling_god'] ? spaceCostMultiplier('womling_fun', offset, 835000, 1.28, 'tauceti') : 0; },
-                Copper(offset){ return global.race['womling_lord'] ? spaceCostMultiplier('womling_fun', offset, 1125000, 1.28, 'tauceti') : 0; },
-                Alloy(offset){ return global.race['womling_god'] ? spaceCostMultiplier('womling_fun', offset, 656000, 1.28, 'tauceti') : 0; },
-                Water(offset){ return global.race['womling_friend'] ? spaceCostMultiplier('womling_fun', offset, 3500, 1.28, 'tauceti') : 0; },
+                Money(r={}){ return spaceCostMultiplier('womling_fun', r.offset, 3800000, 1.28, 'tauceti'); },
+                Food(r={}){ return global.race['womling_friend'] ? spaceCostMultiplier('womling_fun', r.offset, 175000, 1.28, 'tauceti') : 0; },
+                Lumber(r={}){ return spaceCostMultiplier('womling_fun', r.offset, 500000, 1.28, 'tauceti'); },
+                Stone(r={}){ return spaceCostMultiplier('womling_fun', r.offset, 500000, 1.28, 'tauceti'); },
+                Furs(r={}){ return global.race['womling_lord'] || global.race['womling_god'] ? spaceCostMultiplier('womling_fun', r.offset, 835000, 1.28, 'tauceti') : 0; },
+                Copper(r={}){ return global.race['womling_lord'] ? spaceCostMultiplier('womling_fun', r.offset, 1125000, 1.28, 'tauceti') : 0; },
+                Alloy(r={}){ return global.race['womling_god'] ? spaceCostMultiplier('womling_fun', r.offset, 656000, 1.28, 'tauceti') : 0; },
+                Water(r={}){ return global.race['womling_friend'] ? spaceCostMultiplier('womling_fun', r.offset, 3500, 1.28, 'tauceti') : 0; },
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), planetName().red])}</div>`;
@@ -4358,11 +4358,11 @@ const tauCetiModules = {
             reqs: { tau_red: 7 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('womling_lab', offset, 65000000, 1.28, 'tauceti'); },
-                Elerium(offset){ return spaceCostMultiplier('womling_lab', offset, 1200, 1.28, 'tauceti'); },
-                Orichalcum(offset){ return spaceCostMultiplier('womling_lab', offset, 2500000, 1.28, 'tauceti'); },
-                Unobtainium(offset){ return spaceCostMultiplier('womling_lab', offset, 10000, 1.28, 'tauceti'); },
-                Quantium(offset){ return spaceCostMultiplier('womling_lab', offset, wom_recycle(95000), 1.28, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('womling_lab', r.offset, 65000000, 1.28, 'tauceti'); },
+                Elerium(r={}){ return spaceCostMultiplier('womling_lab', r.offset, 1200, 1.28, 'tauceti'); },
+                Orichalcum(r={}){ return spaceCostMultiplier('womling_lab', r.offset, 2500000, 1.28, 'tauceti'); },
+                Unobtainium(r={}){ return spaceCostMultiplier('womling_lab', r.offset, 10000, 1.28, 'tauceti'); },
+                Quantium(r={}){ return spaceCostMultiplier('womling_lab', r.offset, wom_recycle(95000), 1.28, 'tauceti'); },
             },
             effect(){
                 let overseer = global.tauceti.hasOwnProperty('overseer') ? global.tauceti.overseer.prod : 100;
@@ -4406,10 +4406,10 @@ const tauCetiModules = {
             reqs: { womling_energy: 1 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('antimatter_reactor', offset, 1000000000, 1.3, 'tauceti'); },
-                Neutronium(offset){ return  spaceCostMultiplier('antimatter_reactor', offset, 3750000, 1.3, 'tauceti'); },
-                Orichalcum(offset){ return spaceCostMultiplier('antimatter_reactor', offset, 75000000, 1.3, 'tauceti'); },
-                Quantium(offset){ return spaceCostMultiplier('antimatter_reactor', offset, wom_recycle(420000), 1.3, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('antimatter_reactor', r.offset, 1000000000, 1.3, 'tauceti'); },
+                Neutronium(r={}){ return  spaceCostMultiplier('antimatter_reactor', r.offset, 3750000, 1.3, 'tauceti'); },
+                Orichalcum(r={}){ return spaceCostMultiplier('antimatter_reactor', r.offset, 75000000, 1.3, 'tauceti'); },
+                Quantium(r={}){ return spaceCostMultiplier('antimatter_reactor', r.offset, wom_recycle(420000), 1.3, 'tauceti'); },
             },
             effect(){
                 let fuel = +int_fuel_adjust($(this)[0].p_fuel().a).toFixed(2);
@@ -4442,10 +4442,10 @@ const tauCetiModules = {
             reqs: { womling_military: 1 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('womling_rangers', offset, 38000000, 1.28, 'tauceti'); },
-                Food(offset){ return spaceCostMultiplier('womling_rangers', offset, global.race['artifical'] ? 20000 : 2000000, 1.28, 'tauceti'); },
-                Cement(offset){ return spaceCostMultiplier('womling_rangers', offset, 1800000, 1.28, 'tauceti'); },
-                Unobtainium(offset){ return spaceCostMultiplier('womling_rangers', offset, 675000, 1.28, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('womling_rangers', r.offset, 38000000, 1.28, 'tauceti'); },
+                Food(r={}){ return spaceCostMultiplier('womling_rangers', r.offset, global.race['artifical'] ? 20000 : 2000000, 1.28, 'tauceti'); },
+                Cement(r={}){ return spaceCostMultiplier('womling_rangers', r.offset, 1800000, 1.28, 'tauceti'); },
+                Unobtainium(r={}){ return spaceCostMultiplier('womling_rangers', r.offset, 675000, 1.28, 'tauceti'); },
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[planetName().red])}</div>`;
@@ -4482,11 +4482,11 @@ const tauCetiModules = {
             reqs: { womling_technicians: 2 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('womling_craftworks', offset, 78000000, 1.28, 'tauceti'); },
-                Stone(offset){ return spaceCostMultiplier('womling_craftworks', offset, 6400000, 1.28, 'tauceti'); },
-                Adamantite(offset){ return spaceCostMultiplier('womling_craftworks', offset, 1850000, 1.28, 'tauceti'); },
-                Orichalcum(offset){ return spaceCostMultiplier('womling_craftworks', offset, 3100000, 1.28, 'tauceti'); },
-                Quantium(offset){ return spaceCostMultiplier('womling_craftworks', offset, wom_recycle(120000), 1.28, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('womling_craftworks', r.offset, 78000000, 1.28, 'tauceti'); },
+                Stone(r={}){ return spaceCostMultiplier('womling_craftworks', r.offset, 6400000, 1.28, 'tauceti'); },
+                Adamantite(r={}){ return spaceCostMultiplier('womling_craftworks', r.offset, 1850000, 1.28, 'tauceti'); },
+                Orichalcum(r={}){ return spaceCostMultiplier('womling_craftworks', r.offset, 3100000, 1.28, 'tauceti'); },
+                Quantium(r={}){ return spaceCostMultiplier('womling_craftworks', r.offset, wom_recycle(120000), 1.28, 'tauceti'); },
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), planetName().red])}</div>`;
@@ -4640,10 +4640,10 @@ const tauCetiModules = {
             reqs: { tau_gas: 2 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('refueling_station', offset, 68000000, 1.28, 'tauceti'); },
-                Graphene(offset){ return spaceCostMultiplier('refueling_station', offset, 2500000, 1.28, 'tauceti'); },
-                Unobtainium(offset){ return spaceCostMultiplier('refueling_station', offset, 5500, 1.28, 'tauceti'); },
-                Mythril(offset){ return spaceCostMultiplier('refueling_station', offset, wom_recycle(60000), 1.28, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('refueling_station', r.offset, 68000000, 1.28, 'tauceti'); },
+                Graphene(r={}){ return spaceCostMultiplier('refueling_station', r.offset, 2500000, 1.28, 'tauceti'); },
+                Unobtainium(r={}){ return spaceCostMultiplier('refueling_station', r.offset, 5500, 1.28, 'tauceti'); },
+                Mythril(r={}){ return spaceCostMultiplier('refueling_station', r.offset, wom_recycle(60000), 1.28, 'tauceti'); },
             },
             powered(){ return powerCostMod(global.tech['isolation'] ? 2 : 5); },
             effect(){
@@ -4706,10 +4706,10 @@ const tauCetiModules = {
             reqs: { tau_gas: 4 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('ore_refinery', offset, 52000000, 1.28, 'tauceti'); },
-                Iridium(offset){ return spaceCostMultiplier('ore_refinery', offset, 1600000, 1.28, 'tauceti'); },
-                Unobtainium(offset){ return spaceCostMultiplier('ore_refinery', offset, 800, 1.28, 'tauceti'); },
-                Sheet_Metal(offset){ return spaceCostMultiplier('ore_refinery', offset, wom_recycle(118000), 1.28, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('ore_refinery', r.offset, 52000000, 1.28, 'tauceti'); },
+                Iridium(r={}){ return spaceCostMultiplier('ore_refinery', r.offset, 1600000, 1.28, 'tauceti'); },
+                Unobtainium(r={}){ return spaceCostMultiplier('ore_refinery', r.offset, 800, 1.28, 'tauceti'); },
+                Sheet_Metal(r={}){ return spaceCostMultiplier('ore_refinery', r.offset, wom_recycle(118000), 1.28, 'tauceti'); },
             },
             powered(){ return powerCostMod(global.tech['isolation'] ? 2 : 8); },
             smelting(){ return global.tech['isolation'] ? 12 : 4; },
@@ -4760,10 +4760,10 @@ const tauCetiModules = {
             reqs: { tau_whale: 1 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('whaling_station', offset, 72000000, 1.28, 'tauceti'); },
-                Steel(offset){ return spaceCostMultiplier('whaling_station', offset, 1800000, 1.28, 'tauceti'); },
-                Polymer(offset){ return spaceCostMultiplier('whaling_station', offset, 955000, 1.28, 'tauceti'); },
-                Orichalcum(offset){ return spaceCostMultiplier('whaling_station', offset, 268000, 1.28, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('whaling_station', r.offset, 72000000, 1.28, 'tauceti'); },
+                Steel(r={}){ return spaceCostMultiplier('whaling_station', r.offset, 1800000, 1.28, 'tauceti'); },
+                Polymer(r={}){ return spaceCostMultiplier('whaling_station', r.offset, 955000, 1.28, 'tauceti'); },
+                Orichalcum(r={}){ return spaceCostMultiplier('whaling_station', r.offset, 268000, 1.28, 'tauceti'); },
             },
             powered(){ return powerCostMod(global.tech['isolation'] ? 2 : 6); },
             effect(){
@@ -4807,10 +4807,10 @@ const tauCetiModules = {
             reqs: { womling_technicians: 1 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('womling_station', offset, 133400000, 1.26, 'tauceti'); },
-                Furs(offset){ return spaceCostMultiplier('womling_station', offset, 3805000, 1.26, 'tauceti'); },
-                Aluminium(offset){ return spaceCostMultiplier('womling_station', offset, 8500000, 1.26, 'tauceti'); },
-                Nano_Tube(offset){ return spaceCostMultiplier('womling_station', offset, 909000, 1.26, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('womling_station', r.offset, 133400000, 1.26, 'tauceti'); },
+                Furs(r={}){ return spaceCostMultiplier('womling_station', r.offset, 3805000, 1.26, 'tauceti'); },
+                Aluminium(r={}){ return spaceCostMultiplier('womling_station', r.offset, 8500000, 1.26, 'tauceti'); },
+                Nano_Tube(r={}){ return spaceCostMultiplier('womling_station', r.offset, 909000, 1.26, 'tauceti'); },
             },
             powered(){ return powerCostMod(global.tech['isolation'] ? 3 : 6); },
             effect(){
@@ -4867,7 +4867,7 @@ const tauCetiModules = {
             path: ['truepath'],
             queue_complete(){ return global.tech.tau_roid >= 1 ? 0 : 1; },
             cost: {
-                Helium_3(offset,wiki){ return +int_fuel_adjust(1250000,false,wiki).toFixed(0); },
+                Helium_3(r={}){ return +int_fuel_adjust(1250000,false,r.wiki).toFixed(0); },
             },
             effect(){
                 return loc('tau_roid_mission_effect',[loc('tau_roid_title')]);
@@ -4888,11 +4888,11 @@ const tauCetiModules = {
             reqs: { tau_roid: 3 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('patrol_ship', offset, 45000000, 1.25, 'tauceti'); },
-                Adamantite(offset){ return spaceCostMultiplier('patrol_ship', offset, 1800000, 1.25, 'tauceti'); },
-                Elerium(offset){ return spaceCostMultiplier('patrol_ship', offset, 520, 1.25, 'tauceti'); },
-                Stanene(offset){ return spaceCostMultiplier('patrol_ship', offset, 2675000, 1.25, 'tauceti'); },
-                Bolognium(offset){ return spaceCostMultiplier('patrol_ship', offset, 1150000, 1.25, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('patrol_ship', r.offset, 45000000, 1.25, 'tauceti'); },
+                Adamantite(r={}){ return spaceCostMultiplier('patrol_ship', r.offset, 1800000, 1.25, 'tauceti'); },
+                Elerium(r={}){ return spaceCostMultiplier('patrol_ship', r.offset, 520, 1.25, 'tauceti'); },
+                Stanene(r={}){ return spaceCostMultiplier('patrol_ship', r.offset, 2675000, 1.25, 'tauceti'); },
+                Bolognium(r={}){ return spaceCostMultiplier('patrol_ship', r.offset, 1150000, 1.25, 'tauceti'); },
             },
             effect(){
                 let fuel = +int_fuel_adjust($(this)[0].support_fuel().a).toFixed(1);
@@ -4928,10 +4928,10 @@ const tauCetiModules = {
             reqs: { tau_roid: 4 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('mining_ship', offset, 28000000, 1.28, 'tauceti'); },
-                Uranium(offset){ return spaceCostMultiplier('mining_ship', offset, 12500, 1.28, 'tauceti'); },
-                Titanium(offset){ return spaceCostMultiplier('mining_ship', offset, 2200000, 1.28, 'tauceti'); },
-                Alloy(offset){ return spaceCostMultiplier('mining_ship', offset, 1750000, 1.28, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('mining_ship', r.offset, 28000000, 1.28, 'tauceti'); },
+                Uranium(r={}){ return spaceCostMultiplier('mining_ship', r.offset, 12500, 1.28, 'tauceti'); },
+                Titanium(r={}){ return spaceCostMultiplier('mining_ship', r.offset, 2200000, 1.28, 'tauceti'); },
+                Alloy(r={}){ return spaceCostMultiplier('mining_ship', r.offset, 1750000, 1.28, 'tauceti'); },
             },
             effect(){
                 let fuel = +int_fuel_adjust($(this)[0].support_fuel().a).toFixed(1);
@@ -4971,10 +4971,10 @@ const tauCetiModules = {
             reqs: { tau_whale: 2 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('whaling_ship', offset, 35000000, 1.28, 'tauceti'); },
-                Aluminium(offset){ return spaceCostMultiplier('whaling_ship', offset, 3400000, 1.28, 'tauceti'); },
-                Neutronium(offset){ return spaceCostMultiplier('whaling_ship', offset, 168000, 1.28, 'tauceti'); },
-                Nano_Tube(offset){ return spaceCostMultiplier('whaling_ship', offset, 800000, 1.28, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('whaling_ship', r.offset, 35000000, 1.28, 'tauceti'); },
+                Aluminium(r={}){ return spaceCostMultiplier('whaling_ship', r.offset, 3400000, 1.28, 'tauceti'); },
+                Neutronium(r={}){ return spaceCostMultiplier('whaling_ship', r.offset, 168000, 1.28, 'tauceti'); },
+                Nano_Tube(r={}){ return spaceCostMultiplier('whaling_ship', r.offset, 800000, 1.28, 'tauceti'); },
             },
             effect(){
                 let fuel = +int_fuel_adjust($(this)[0].support_fuel().a).toFixed(1);
@@ -5012,11 +5012,11 @@ const tauCetiModules = {
             reqs: { tau_roid: 6 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('synthesizer', offset, 90000000, 1.26, 'tauceti'); },
-                Adamantite(offset){ return spaceCostMultiplier('synthesizer', offset, 2500000, 1.26, 'tauceti'); },
-                Graphene(offset){ return spaceCostMultiplier('synthesizer', offset, 2000000, 1.26, 'tauceti'); },
-                Elerium(offset){ return spaceCostMultiplier('synthesizer', offset, 1250, 1.26, 'tauceti'); },
-                Unobtainium(offset){ return spaceCostMultiplier('synthesizer', offset, 72000, 1.26, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('synthesizer', r.offset, 90000000, 1.26, 'tauceti'); },
+                Adamantite(r={}){ return spaceCostMultiplier('synthesizer', r.offset, 2500000, 1.26, 'tauceti'); },
+                Graphene(r={}){ return spaceCostMultiplier('synthesizer', r.offset, 2000000, 1.26, 'tauceti'); },
+                Elerium(r={}){ return spaceCostMultiplier('synthesizer', r.offset, 1250, 1.26, 'tauceti'); },
+                Unobtainium(r={}){ return spaceCostMultiplier('synthesizer', r.offset, 72000, 1.26, 'tauceti'); },
             },
             support(){ return -1; },
             powered(){ return powerCostMod(10); },
@@ -5112,11 +5112,11 @@ const tauCetiModules = {
             queue_size: 5,
             queue_complete(){ return 100 - global.tauceti.alien_station.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? (global.race['lone_survivor'] ? 12000000 : 50000000) : 0; },
-                Aluminium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? (global.race['lone_survivor'] ? 256000 : 2560000) : 0; },
-                Polymer(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? (global.race['lone_survivor'] ? 198900 : 989000) : 0; },
-                Mythril(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? wom_recycle(125000) : 0; },
-                Cipher(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? (global.race['lone_survivor'] ? 256 : 2001) : 0; },
+                Money(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? (global.race['lone_survivor'] ? 12000000 : 50000000) : 0; },
+                Aluminium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? (global.race['lone_survivor'] ? 256000 : 2560000) : 0; },
+                Polymer(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? (global.race['lone_survivor'] ? 198900 : 989000) : 0; },
+                Mythril(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? wom_recycle(125000) : 0; },
+                Cipher(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? (global.race['lone_survivor'] ? 256 : 2001) : 0; },
             },
             effect(wiki){
                 let effectText = '';
@@ -5214,14 +5214,14 @@ const tauCetiModules = {
             queue_size: 50,
             queue_complete(){ return 1000 - global.tauceti.matrioshka_brain.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 20000000 : 0; },
-                Neutronium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 45000 : 0; },
-                Nano_Tube(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 160000 : 0; },
-                Adamantite(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 666000 : 0; },
-                Stanene(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 61600 : 0; },
-                Bolognium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 44000 : 0; },
-                Unobtainium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 1200 : 0; },
-                Mythril(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? wom_recycle(64000) : 0; },
+                Money(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 20000000 : 0; },
+                Neutronium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 45000 : 0; },
+                Nano_Tube(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 160000 : 0; },
+                Adamantite(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 666000 : 0; },
+                Stanene(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 61600 : 0; },
+                Bolognium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 44000 : 0; },
+                Unobtainium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 1200 : 0; },
+                Mythril(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? wom_recycle(64000) : 0; },
             },
             effect(wiki){
                 let effectText = '';
@@ -5277,12 +5277,12 @@ const tauCetiModules = {
             queue_size: 1,
             queue_complete(){ return 10 - global.tauceti.ignition_device.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 250000000 : 0; },
-                Uranium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 50000 : 0; },
-                Elerium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 25000 : 0; },
-                Graphene(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 22500000 : 0; },
-                Orichalcum(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 15000000 : 0; },
-                Quantium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? wom_recycle(8000000) : 0; },
+                Money(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 250000000 : 0; },
+                Uranium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 50000 : 0; },
+                Elerium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 25000 : 0; },
+                Graphene(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 22500000 : 0; },
+                Orichalcum(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 15000000 : 0; },
+                Quantium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? wom_recycle(8000000) : 0; },
             },
             effect(wiki){
                 let effectText = '';
@@ -5349,12 +5349,12 @@ const tauCetiModules = {
             reqs: { resettle: 1 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('adv_shipyard') ? global.tauceti.adv_shipyard.count : 0)) < 1 ? 1000000000 : 0; },
-                Aluminium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('adv_shipyard') ? global.tauceti.adv_shipyard.count : 0)) < 1 ? 135000000 : 0; },
-                Titanium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('adv_shipyard') ? global.tauceti.adv_shipyard.count : 0)) < 1 ? 85000000 : 0; },
-                Iridium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('adv_shipyard') ? global.tauceti.adv_shipyard.count : 0)) < 1 ? 125000000 : 0; },
-                Neutronium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('adv_shipyard') ? global.tauceti.adv_shipyard.count : 0)) < 1 ? 2500000 : 0; },
-                Unobtainium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('adv_shipyard') ? global.tauceti.adv_shipyard.count : 0)) < 1 ? 5000000 : 0; },
+                Money(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('adv_shipyard') ? global.tauceti.adv_shipyard.count : 0)) < 1 ? 1000000000 : 0; },
+                Aluminium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('adv_shipyard') ? global.tauceti.adv_shipyard.count : 0)) < 1 ? 135000000 : 0; },
+                Titanium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('adv_shipyard') ? global.tauceti.adv_shipyard.count : 0)) < 1 ? 85000000 : 0; },
+                Iridium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('adv_shipyard') ? global.tauceti.adv_shipyard.count : 0)) < 1 ? 125000000 : 0; },
+                Neutronium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('adv_shipyard') ? global.tauceti.adv_shipyard.count : 0)) < 1 ? 2500000 : 0; },
+                Unobtainium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('adv_shipyard') ? global.tauceti.adv_shipyard.count : 0)) < 1 ? 5000000 : 0; },
             },
             queue_complete(){ return 1 - global.tauceti.adv_shipyard.count; },
             effect(){
@@ -5407,12 +5407,12 @@ const tauCetiModules = {
             queue_size: 5,
             queue_complete(){ return 100 - global.tauceti.mass_relay.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('mass_relay') ? global.tauceti.mass_relay.count : 0)) < 100 ? 85000000 : 0; },
-                Neutronium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('mass_relay') ? global.tauceti.mass_relay.count : 0)) < 100 ? 75000 : 0; },
-                Adamantite(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('mass_relay') ? global.tauceti.mass_relay.count : 0)) < 100 ? 180000 : 0; },
-                Positronium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('mass_relay') ? global.tauceti.mass_relay.count : 0)) < 100 ? 250 : 0; },
-                Stanene(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('mass_relay') ? global.tauceti.mass_relay.count : 0)) < 100 ? 1000000 : 0; },
-                Quantium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('mass_relay') ? global.tauceti.mass_relay.count : 0)) < 100 ? 250000 : 0; },
+                Money(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('mass_relay') ? global.tauceti.mass_relay.count : 0)) < 100 ? 85000000 : 0; },
+                Neutronium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('mass_relay') ? global.tauceti.mass_relay.count : 0)) < 100 ? 75000 : 0; },
+                Adamantite(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('mass_relay') ? global.tauceti.mass_relay.count : 0)) < 100 ? 180000 : 0; },
+                Positronium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('mass_relay') ? global.tauceti.mass_relay.count : 0)) < 100 ? 250 : 0; },
+                Stanene(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('mass_relay') ? global.tauceti.mass_relay.count : 0)) < 100 ? 1000000 : 0; },
+                Quantium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('mass_relay') ? global.tauceti.mass_relay.count : 0)) < 100 ? 250000 : 0; },
             },
             effect(wiki){
                 let count = ((wiki?.count ?? 0) + (global.tauceti.hasOwnProperty('mass_relay') ? global.tauceti.mass_relay.count : 0));

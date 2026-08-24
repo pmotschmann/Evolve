@@ -10027,7 +10027,7 @@ const techs = {
         era: ['matrioshka','shadow_war'],
         era_a(){ return global.tech['shadow'] ? 'shadow_war' : 'matrioshka'; },
         path: ['truepath'],
-        reqs(era){ return era === 'matrioshka' ? { m_ignite: 4, resettle: 2 } : { shadow: 2, tau_roid: 6 }; },
+        reqs(r){ return r.era === 'matrioshka' ? { m_ignite: 4, resettle: 2 } : { shadow: 2, tau_roid: 6 }; },
         grant: ['aerographene',1],
         cost: {
             Knowledge(){ return 19120000; },

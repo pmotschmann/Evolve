@@ -281,10 +281,25 @@ export function techInEra(c_action,era){
     return Array.isArray(c_action.era) ? c_action.era.includes(era) : c_action.era === era;
 }
 
-// if `reqs` is a function then it gets passed in the era of the tech.
-export function actionReqs(c_action,era){
+// The argument object handed to reqs() and to every cost() function. An object rather than a bare
+// era so more can be carried later without changing signatures again.
+//   era   active era for the game, the page being rendered for the wiki
+//   wiki  true when the wiki is asking, false when the game is
+export function actionArgs(c_action,opts){
+    opts = opts || {};
+    return {
+        era: opts.hasOwnProperty('era') && opts.era !== undefined ? opts.era : techEra(c_action),
+        // false for the game, true for the wiki -- but passed through rather than coerced, because
+        // the ARPA calculators hand down an object of hypothetical inputs here (wiki.creative).
+        wiki: opts.wiki !== undefined ? opts.wiki : false,
+        offset: opts.offset
+    };
+}
+
+// if `reqs` is a function then it gets passed the argument object.
+export function actionReqs(c_action,opts){
     if (c_action && typeof c_action.reqs === 'function'){
-        return c_action.reqs(era !== undefined ? era : techEra(c_action)) || {};
+        return c_action.reqs(actionArgs(c_action,opts)) || {};
     }
     return c_action && c_action.reqs ? c_action.reqs : {};
 }
@@ -1000,7 +1015,7 @@ export function timeCheck(c_action,track,detailed,reqMet){
         let time = 0;
         let bottleneck = false;
         let offset = track && track.id[c_action.id] ? track.id[c_action.id] : false;
-        let costs = c_action['doNotAdjustCost'] ? c_action.cost : adjustCosts(c_action,offset);
+        let costs = c_action['doNotAdjustCost'] ? c_action.cost : adjustCosts(c_action,{ offset: offset });
         let og_track_r = track ? {} : false;
         let og_track_rr = track ? {} : false;
         if (track){
@@ -1022,7 +1037,7 @@ export function timeCheck(c_action,track,detailed,reqMet){
         let shorted = {};
         Object.keys(costs).forEach(function (res){
             if (time >= 0 && !global.prestige.hasOwnProperty(res) && !['Morale','HellArmy','Structs','Bool','Army','Troops'].includes(res)){
-                var testCost = offset ? Number(costs[res](offset)) : Number(costs[res]());
+                var testCost = Number(costs[res]({ offset: offset }));
                 if (testCost > 0){
                     let f_res = res === 'Species' ? global.race.species : res;
                     let res_have = res === 'Supply' ? global.portal.purifier.supply : Number(global.resource[f_res].amount);
@@ -1101,7 +1116,7 @@ export function timeCheck(c_action,track,detailed,reqMet){
 // remaining arpa segments to be completed
 export function arpaTimeCheck(project, remain, track, detailed){
     let offset = track && track.id[project.id] ? track.id[project.id] : false;
-    let costs = arpaAdjustCosts(project.cost,offset);
+    let costs = arpaAdjustCosts(project.cost,{ offset: offset });
     let allRemainingSegmentsTime = 0;
     let og_track_r = track ? {} : false;
     let og_track_rr = track ? {} : false;
@@ -1126,7 +1141,7 @@ export function arpaTimeCheck(project, remain, track, detailed){
     let shorted = {};
     Object.keys(costs).forEach(function (res){
         if (allRemainingSegmentsTime >= 0){
-            let allRemainingSegmentsCost = Number(costs[res](offset)) * remain;
+            let allRemainingSegmentsCost = Number(costs[res]({ offset: offset })) * remain;
             if (allRemainingSegmentsCost > 0){
                 let res_have = Number(global.resource[res].amount);
                 let res_diff = global.resource[res].diff;
@@ -2096,39 +2111,44 @@ export function calcPrestige(type,inputs){
     return gains;
 }
 
-export function adjustCosts(c_action, offset, wiki){
+// opts: { offset, wiki, era } — everything the costs need, in one place.
+export function adjustCosts(c_action, opts){
+    opts = opts || {};
     let costs = c_action.cost || {};
+    // One object flows the whole way down: each adjust wrapper hands it to the next, and it lands on
+    // the cost function itself. actionArgs fills in the era, so a cost can read it like reqs does.
+    let args = actionArgs(c_action, opts);
     if ((costs['RNA'] || costs['DNA']) && global.genes['evolve']){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'RNA' || res === 'DNA'){
-                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 0.8); }
+                newCosts[res] = function(){ return Math.round(costs[res](args) * 0.8); }
             }
         });
         return newCosts;
     }
-    costs = bloatAdjust(costs, offset, wiki);
-    costs = truthAdjust(costs, c_action, offset, wiki);
-    costs = loneAdjust(costs, offset, wiki);
-    costs = inflationAdjust(costs, offset, wiki);
-    costs = technoAdjust(costs, offset, wiki);
-    costs = flierAdjust(costs, offset, wiki);
-    costs = kindlingAdjust(costs, offset, wiki);
-    costs = smolderAdjust(costs, offset, wiki);
-    costs = scienceAdjust(costs, offset, wiki);
-    costs = rebarAdjust(costs, offset, wiki);
-    costs = extraAdjust(costs, offset, wiki);
-    costs = heavyAdjust(costs, offset, wiki);
-    costs = dictatorAdjust(costs, offset, wiki);
-    costs = lMatAdjust(costs, c_action, offset, wiki);
-    costs = nexusAdjust(costs, c_action, offset, wiki);
-    costs = razedAdjust(costs, c_action, offset, wiki);
-    return craftAdjust(costs, offset, wiki);
+    costs = bloatAdjust(costs, args);
+    costs = truthAdjust(costs, c_action, args);
+    costs = loneAdjust(costs, args);
+    costs = inflationAdjust(costs, args);
+    costs = technoAdjust(costs, args);
+    costs = flierAdjust(costs, args);
+    costs = kindlingAdjust(costs, args);
+    costs = smolderAdjust(costs, args);
+    costs = scienceAdjust(costs, args);
+    costs = rebarAdjust(costs, args);
+    costs = extraAdjust(costs, args);
+    costs = heavyAdjust(costs, args);
+    costs = dictatorAdjust(costs, args);
+    costs = lMatAdjust(costs, c_action, args);
+    costs = nexusAdjust(costs, c_action, args);
+    costs = razedAdjust(costs, c_action, args);
+    return craftAdjust(costs, args);
 }
 
 // Razed buildings are cheaper to rebuild
-function razedAdjust(costs, c_action, offset, wiki){
-    if (!wiki && c_action && c_action['id']){
+function razedAdjust(costs, c_action, args){
+    if (!args.wiki && c_action && c_action['id']){
         let parts = c_action.id.split('-');
         let cat = parts.shift();
         let key = parts.join('-');
@@ -2137,7 +2157,7 @@ function razedAdjust(costs, c_action, offset, wiki){
             let adjustRate = global.tech['salvage'] ? (struct.razed > struct.count ? 0.15 : 0.35) : (struct.razed > struct.count ? 0.25 : 0.5);
             var newCosts = {};
             Object.keys(costs).forEach(function (res){
-                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * adjustRate); }
+                newCosts[res] = function(){ return Math.round(costs[res](args) * adjustRate); }
             });
             return newCosts;
         }
@@ -2145,16 +2165,16 @@ function razedAdjust(costs, c_action, offset, wiki){
     return costs;
 }
 
-function bloatAdjust(costs, offset, wiki){
+function bloatAdjust(costs, args){
     if (global.race['bloated']){
         let adjustRate = 1 + (traits.bloated.vars()[0] / 100);
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (['Food','Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal','Steel','Titanium','Alloy','Polymer','Iridium'].includes(res)){
-                newCosts[res] = function(){ return costs[res](offset, wiki) * adjustRate; }
+                newCosts[res] = function(){ return costs[res](args) * adjustRate; }
             }
             else {
-                newCosts[res] = function(){ return costs[res](offset, wiki); }
+                newCosts[res] = function(){ return costs[res](args); }
             }
         });
         return newCosts;
@@ -2162,24 +2182,24 @@ function bloatAdjust(costs, offset, wiki){
     return costs;
 }
 
-function loneAdjust(costs, offset, wiki){
+function loneAdjust(costs, args){
     if (global.race['lone_survivor']){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (['Structs','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Supercoiled','Corrupt_Gem','Codex','Demonic_Essence','Horseshoe'].includes(res)){
-                newCosts[res] = function(){ return costs[res](offset, wiki); }
+                newCosts[res] = function(){ return costs[res](args); }
             }
             else if (['Knowledge'].includes(res)){
-                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 0.5); }
+                newCosts[res] = function(){ return Math.round(costs[res](args) * 0.5); }
             }
             else if (['Money'].includes(res)){
-                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 0.22); }
+                newCosts[res] = function(){ return Math.round(costs[res](args) * 0.22); }
             }
             else if (['Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril','Quantium'].includes(res)){
-                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 0.14); }
+                newCosts[res] = function(){ return Math.round(costs[res](args) * 0.14); }
             }
             else {
-                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 0.28); }
+                newCosts[res] = function(){ return Math.round(costs[res](args) * 0.28); }
             }
         });
         return newCosts;
@@ -2187,18 +2207,18 @@ function loneAdjust(costs, offset, wiki){
     return costs;
 }
 
-function truthAdjust(costs, c_action, offset, wiki){
-    if ((wiki ? wiki.truepath : global.race['truepath']) && (!c_action.hasOwnProperty('path') || !c_action.path.includes('truepath'))){
+function truthAdjust(costs, c_action, args){
+    if ((args.wiki ? args.wiki.truepath : global.race['truepath']) && (!c_action.hasOwnProperty('path') || !c_action.path.includes('truepath'))){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Money'){
-                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 3); }
+                newCosts[res] = function(){ return Math.round(costs[res](args) * 3); }
             }
             else if (['Structs','Knowledge','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Supercoiled','Corrupt_Gem','Codex','Demonic_Essence','Horseshoe'].includes(res)){
-                newCosts[res] = function(){ return costs[res](offset, wiki); }
+                newCosts[res] = function(){ return costs[res](args); }
             }
             else {
-                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 2); }
+                newCosts[res] = function(){ return Math.round(costs[res](args) * 2); }
             }
         });
         return newCosts;
@@ -2206,16 +2226,16 @@ function truthAdjust(costs, c_action, offset, wiki){
     return costs;
 }
 
-function inflationAdjust(costs, offset, wiki){
+function inflationAdjust(costs, args){
     if (global.race['inflation']){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Money'){
                 let rate = 1 + (global.race.inflation / 75);
-                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * rate); }
+                newCosts[res] = function(){ return Math.round(costs[res](args) * rate); }
             }
             else {
-                newCosts[res] = function(){ return costs[res](offset, wiki); }
+                newCosts[res] = function(){ return costs[res](args); }
             }
         });
         return newCosts;
@@ -2223,17 +2243,17 @@ function inflationAdjust(costs, offset, wiki){
     return costs;
 }
 
-function extraAdjust(costs, offset, wiki){
+function extraAdjust(costs, args){
     let extraVal = govActive('extravagant',0);
     if (extraVal){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Money'){
                 let waste = 1 + (extraVal / 100);
-                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * waste); }
+                newCosts[res] = function(){ return Math.round(costs[res](args) * waste); }
             }
             else {
-                newCosts[res] = function(){ return costs[res](offset, wiki); }
+                newCosts[res] = function(){ return costs[res](args); }
             }
         });
         return newCosts;
@@ -2241,20 +2261,20 @@ function extraAdjust(costs, offset, wiki){
     return costs;
 }
 
-function technoAdjust(costs, offset, wiki){
+function technoAdjust(costs, args){
     if (global.civic.govern.type === 'technocracy'){
         let adjust = 1 + (govEffect.technocracy()[1] / 100);
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Knowledge'){
                 let kAdjust = 1 - (govEffect.technocracy()[0] / 100);
-                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * kAdjust); }
+                newCosts[res] = function(){ return Math.round(costs[res](args) * kAdjust); }
             }
             else if (res === 'Money' || res === 'Structs' || res === 'Custom'){
-                newCosts[res] = function(){ return costs[res](offset, wiki); }
+                newCosts[res] = function(){ return costs[res](args); }
             }
             else {
-                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * adjust); }
+                newCosts[res] = function(){ return Math.round(costs[res](args) * adjust); }
             }
         });
         return newCosts;
@@ -2262,7 +2282,7 @@ function technoAdjust(costs, offset, wiki){
     return costs;
 }
 
-function scienceAdjust(costs, offset, wiki){
+function scienceAdjust(costs, args){
     let pragVal = govActive('pragmatist',1);
     let fathom = fathomCheck('gnome');
     if ((global.race['smart'] || global.race['dumb'] || pragVal || fathom > 0) && costs['Knowledge']){
@@ -2270,7 +2290,7 @@ function scienceAdjust(costs, offset, wiki){
         Object.keys(costs).forEach(function (res){
             if (res === 'Knowledge'){
                 newCosts[res] = function(){
-                    let cost = costs[res](offset, wiki);
+                    let cost = costs[res](args);
                     if (global.race['smart']){
                         cost *= 1 - (traits.smart.vars()[0] / 100);
                     }
@@ -2287,7 +2307,7 @@ function scienceAdjust(costs, offset, wiki){
                 }
             }
             else {
-                newCosts[res] = function(){ return costs[res](offset, wiki); }
+                newCosts[res] = function(){ return costs[res](args); }
             }
         });
         return newCosts;
@@ -2295,24 +2315,24 @@ function scienceAdjust(costs, offset, wiki){
     return costs;
 }
 
-function smolderAdjust(costs, offset, wiki){
+function smolderAdjust(costs, args){
     if (global.race['smoldering']){
         let newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Lumber' || res === 'Plywood'){
                 let adjustRate = res === 'Plywood' ? 2 : 1;
-                newCosts['Chrysotile'] = function(){ return Math.round(costs[res](offset, wiki) * adjustRate) || 0; }
+                newCosts['Chrysotile'] = function(){ return Math.round(costs[res](args) * adjustRate) || 0; }
             }
             else if (['HellArmy','Army','Troops','Structs','Chrysotile','Knowledge','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Supercoiled','Corrupt_Gem','Codex','Demonic_Essence','Horseshoe','Mana','Energy'].includes(res)){
-                newCosts[res] = function(){ return costs[res](offset, wiki); }
+                newCosts[res] = function(){ return costs[res](args); }
             }
             else {
-                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 0.9); }
+                newCosts[res] = function(){ return Math.round(costs[res](args) * 0.9); }
             }
         });
         if (!newCosts.hasOwnProperty('Chrysotile') && costs.hasOwnProperty('Money') && global.tech['primitive'] && global.tech.primitive >= 3){
             newCosts['Chrysotile'] = function(){
-                let money = costs['Money'](offset, wiki) || 0;
+                let money = costs['Money'](args) || 0;
                 return money > 0 ? Math.round(money / 50) : 0;
             }
         }
@@ -2321,19 +2341,19 @@ function smolderAdjust(costs, offset, wiki){
     return costs;
 }
 
-function kindlingAdjust(costs, offset, wiki){
+function kindlingAdjust(costs, args){
     if ((global.race['kindling_kindred'] || global.race['iron_wood']) && (costs['Lumber'] || costs['Plywood'])){
         var newCosts = {};
         let adjustRate = 1 + (traits.kindling_kindred.vars()[0] / 100);
         Object.keys(costs).forEach(function (res){
             if (global.race['kindling_kindred'] && res !== 'Lumber' && res !== 'Plywood' && res !== 'Structs'){
-                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * adjustRate) || 0; }
+                newCosts[res] = function(){ return Math.round(costs[res](args) * adjustRate) || 0; }
             }
             else if (global.race['iron_wood'] && res !== 'Plywood'){
-                newCosts[res] = function(){ return costs[res](offset, wiki); }
+                newCosts[res] = function(){ return costs[res](args); }
             }
             else if (res === 'Structs'){
-                newCosts[res] = function(){ return costs[res](offset, wiki); }
+                newCosts[res] = function(){ return costs[res](args); }
             }
         });
         return newCosts;
@@ -2345,10 +2365,10 @@ function kindlingAdjust(costs, offset, wiki){
             let adjustRate = 1 - (0.4 * fathom);
             Object.keys(costs).forEach(function (res){
                 if (res === 'Lumber' && res === 'Plywood'){
-                    newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * adjustRate) || 0; }
+                    newCosts[res] = function(){ return Math.round(costs[res](args) * adjustRate) || 0; }
                 }
                 else {
-                    newCosts[res] = function(){ return costs[res](offset, wiki); }
+                    newCosts[res] = function(){ return costs[res](args); }
                 }
             });
             return newCosts;
@@ -2357,24 +2377,24 @@ function kindlingAdjust(costs, offset, wiki){
     return costs;
 }
 
-function flierAdjust(costs, offset, wiki){
+function flierAdjust(costs, args){
     if (global.race['flier'] && (costs['Stone'] || costs['Cement'])){
         var newCosts = {};
         let adjustRate = 1 - (traits.flier.vars()[0] / 100);
         Object.keys(costs).forEach(function (res){
             if (res === 'Stone' && !costs['Cement']){
-                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * adjustRate) || 0; }
+                newCosts[res] = function(){ return Math.round(costs[res](args) * adjustRate) || 0; }
             }
             else if (res === 'Cement'){
                 if (costs['Stone']){
-                    newCosts['Stone'] = function(){ return Math.round((costs['Stone'](offset, wiki) * adjustRate) + (costs[res](offset, wiki) * 1.8 * adjustRate)) || 0; }
+                    newCosts['Stone'] = function(){ return Math.round((costs['Stone'](args) * adjustRate) + (costs[res](args) * 1.8 * adjustRate)) || 0; }
                 }
                 else {
-                    newCosts['Stone'] = function(){ return Math.round(costs[res](offset, wiki) * 1.75 * adjustRate); }
+                    newCosts['Stone'] = function(){ return Math.round(costs[res](args) * 1.75 * adjustRate); }
                 }
             }
             else {
-                newCosts[res] = function(){ return costs[res](offset, wiki); }
+                newCosts[res] = function(){ return costs[res](args); }
             }
         });
         return newCosts;
@@ -2382,14 +2402,14 @@ function flierAdjust(costs, offset, wiki){
     return costs;
 }
 
-function craftAdjust(costs, offset, wiki){
+function craftAdjust(costs, args){
     let fathom = fathomCheck('pterodacti');
     if ((global.race['hollow_bones'] || fathom > 0) && (costs['Plywood'] || costs['Brick'] || costs['Wrought_Iron'] || costs['Sheet_Metal'] || costs['Mythril'] || costs['Aerogel'] || costs['Nanoweave'] || costs['Aerographene'] || costs['Scarletite'] || costs['Quantium'])){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Plywood' || res === 'Brick' || res === 'Wrought_Iron' || res === 'Sheet_Metal' || res === 'Mythril' || res === 'Aerogel' || res === 'Nanoweave' || res === 'Aerographene' || res === 'Scarletite' || res === 'Quantium'){
                 newCosts[res] = function(){
-                    let cost = costs[res](offset, wiki);
+                    let cost = costs[res](args);
                     if (global.race['hollow_bones']){
                         cost *= 1 - (traits.hollow_bones.vars()[0] / 100);
                     }
@@ -2400,7 +2420,7 @@ function craftAdjust(costs, offset, wiki){
                 }
             }
             else {
-                newCosts[res] = function(){ return costs[res](offset, wiki); }
+                newCosts[res] = function(){ return costs[res](args); }
             }
         });
         return newCosts;
@@ -2408,16 +2428,16 @@ function craftAdjust(costs, offset, wiki){
     return costs;
 }
 
-function dictatorAdjust(costs, offset, wiki){
+function dictatorAdjust(costs, args){
     if (global.civic.govern.type === 'dictator'){
         let adjustRate = 1 - (govEffect.dictator()[2] / 100);
         let newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (['Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal'].includes(res)){
-                newCosts[res] = function(){ return costs[res](offset, wiki) * adjustRate; }
+                newCosts[res] = function(){ return costs[res](args) * adjustRate; }
             }
             else {
-                newCosts[res] = function(){ return costs[res](offset, wiki); }
+                newCosts[res] = function(){ return costs[res](args); }
             }
         });
         return newCosts;
@@ -2425,17 +2445,17 @@ function dictatorAdjust(costs, offset, wiki){
     return costs;
 }
 
-function lMatAdjust(costs, c_action, offset, wiki){
+function lMatAdjust(costs, c_action, args){
     if (global.race['living_materials']){
         let newCosts = {};
         let path = c_action.hasOwnProperty('struct') ? c_action.struct().p : false;
         Object.keys(costs).forEach(function (res){
             if (path && global[path[1]].hasOwnProperty(path[0]) && global[path[1]][path[0]].hasOwnProperty('l_m') 
                 && (['Lumber','Furs','Plywood'].includes(res) || (res === 'Stone' && global.race['sappy']))){
-                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * traits.living_materials.vars()[0] ** (global[path[1]][path[0]].l_m / 25)); }
+                newCosts[res] = function(){ return Math.round(costs[res](args) * traits.living_materials.vars()[0] ** (global[path[1]][path[0]].l_m / 25)); }
             }
             else {
-                newCosts[res] = function(){ return costs[res](offset, wiki); }
+                newCosts[res] = function(){ return costs[res](args); }
             }
         });
         return newCosts;
@@ -2443,16 +2463,16 @@ function lMatAdjust(costs, c_action, offset, wiki){
     return costs;
 }
 
-function nexusAdjust(costs, c_action, offset, wiki){
+function nexusAdjust(costs, c_action, args){
     if(global.tech['nexus'] && global.race['witch_hunter'] && global.tech['roguemagic'] && global.tech.roguemagic >= 7){
         let newCosts = {};
         let adjustRate = 0.96 ** global.tech['nexus'];
         Object.keys(costs).forEach(function (res){
             if (['Mana'].includes(res)){
-                newCosts[res] = function(){ return costs[res](offset, wiki) * adjustRate; }
+                newCosts[res] = function(){ return costs[res](args) * adjustRate; }
             }
             else {
-                newCosts[res] = function(){ return costs[res](offset, wiki); }
+                newCosts[res] = function(){ return costs[res](args); }
             }
         });
         return newCosts;
@@ -2467,15 +2487,15 @@ export function popCost(p){
     return p;
 }
 
-function heavyAdjust(costs, offset, wiki){
+function heavyAdjust(costs, args){
     if (global.race['heavy']){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Stone' || res === 'Cement' || res === 'Wrought_Iron'){
-                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * (1 + (traits.heavy.vars()[1] / 100))); }
+                newCosts[res] = function(){ return Math.round(costs[res](args) * (1 + (traits.heavy.vars()[1] / 100))); }
             }
             else {
-                newCosts[res] = function(){ return costs[res](offset, wiki); }
+                newCosts[res] = function(){ return costs[res](args); }
             }
         });
         return newCosts;
@@ -2483,16 +2503,16 @@ function heavyAdjust(costs, offset, wiki){
     return costs;
 }
 
-function rebarAdjust(costs, offset, wiki){
+function rebarAdjust(costs, args){
     if (costs['Cement'] && global.tech['cement'] && global.tech['cement'] >= 2){
         let discount = global.tech['cement'] >= 3 ? 0.8 : 0.9;
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Cement'){
-                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * discount) || 0; }
+                newCosts[res] = function(){ return Math.round(costs[res](args) * discount) || 0; }
             }
             else {
-                newCosts[res] = function(){ return costs[res](offset, wiki); }
+                newCosts[res] = function(){ return costs[res](args); }
             }
         });
         return newCosts;

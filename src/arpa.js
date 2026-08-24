@@ -70,13 +70,13 @@ export const arpaProjects = {
             }
         },
         cost: {
-            Money(offset,wiki){ return costMultiplier('lhc', offset, 2500000, 1.05, wiki); },
-            Knowledge(offset,wiki){ return costMultiplier('lhc', offset, 500000, 1.05, wiki); },
-            Copper(offset,wiki){ return costMultiplier('lhc', offset, 125000, 1.05, wiki); },
-            Cement(offset,wiki){ return costMultiplier('lhc', offset, 250000, 1.05, wiki); },
-            Aluminium(offset,wiki){ return costMultiplier('lhc', offset, 350000, 1.05, wiki); },
-            Titanium(offset,wiki){ return costMultiplier('lhc', offset, 50000, 1.05, wiki); },
-            Polymer(offset,wiki){ return costMultiplier('lhc', offset, 12000, 1.05, wiki); }
+            Money(r={}){ return costMultiplier('lhc', r.offset, 2500000, 1.05, r.wiki); },
+            Knowledge(r={}){ return costMultiplier('lhc', r.offset, 500000, 1.05, r.wiki); },
+            Copper(r={}){ return costMultiplier('lhc', r.offset, 125000, 1.05, r.wiki); },
+            Cement(r={}){ return costMultiplier('lhc', r.offset, 250000, 1.05, r.wiki); },
+            Aluminium(r={}){ return costMultiplier('lhc', r.offset, 350000, 1.05, r.wiki); },
+            Titanium(r={}){ return costMultiplier('lhc', r.offset, 50000, 1.05, r.wiki); },
+            Polymer(r={}){ return costMultiplier('lhc', r.offset, 12000, 1.05, r.wiki); }
         }
     },
     stock_exchange: {
@@ -105,10 +105,10 @@ export const arpaProjects = {
             }
         },
         cost: {
-            Money(offset,wiki){ return costMultiplier('stock_exchange', offset, 3000000, 1.06, wiki); },
-            Plywood(offset,wiki){ return costMultiplier('stock_exchange', offset, 25000, 1.06, wiki); },
-            Brick(offset,wiki){ return costMultiplier('stock_exchange', offset, 20000, 1.06, wiki); },
-            Wrought_Iron(offset,wiki){ return costMultiplier('stock_exchange', offset, 10000, 1.06, wiki); }
+            Money(r={}){ return costMultiplier('stock_exchange', r.offset, 3000000, 1.06, r.wiki); },
+            Plywood(r={}){ return costMultiplier('stock_exchange', r.offset, 25000, 1.06, r.wiki); },
+            Brick(r={}){ return costMultiplier('stock_exchange', r.offset, 20000, 1.06, r.wiki); },
+            Wrought_Iron(r={}){ return costMultiplier('stock_exchange', r.offset, 10000, 1.06, r.wiki); }
         }
     },
     tp_depot: {
@@ -121,10 +121,10 @@ export const arpaProjects = {
             return loc(global.tech['isolation'] ? 'arpa_projects_depot_effect_iso' : 'arpa_projects_depot_effect',[5,50]);
         },
         cost: {
-            Money(offset,wiki){ return costMultiplier('tp_depot', offset, 1800000, 1.08, wiki); },
-            Stone(offset,wiki){ return costMultiplier('tp_depot', offset, 750000, 1.08, wiki); },
-            Iron(offset,wiki){ return costMultiplier('tp_depot', offset, 250000, 1.08, wiki); },
-            Alloy(offset,wiki){ return costMultiplier('tp_depot', offset, 30000, 1.08, wiki); }
+            Money(r={}){ return costMultiplier('tp_depot', r.offset, 1800000, 1.08, r.wiki); },
+            Stone(r={}){ return costMultiplier('tp_depot', r.offset, 750000, 1.08, r.wiki); },
+            Iron(r={}){ return costMultiplier('tp_depot', r.offset, 250000, 1.08, r.wiki); },
+            Alloy(r={}){ return costMultiplier('tp_depot', r.offset, 30000, 1.08, r.wiki); }
         }
     },
     launch_facility: {
@@ -142,12 +142,12 @@ export const arpaProjects = {
             return loc('arpa_projects_launch_facility_effect1');
         },
         cost: {
-            Money(offset){ return costMultiplier('launch_facility', offset, 2000000, 1.1); },
-            Knowledge(offset){ return costMultiplier('launch_facility', offset, 500000, 1.1); },
-            Cement(offset){ return costMultiplier('launch_facility', offset, 150000, 1.1); },
-            Oil(offset){ return costMultiplier('launch_facility', offset, 20000, 1.1); },
-            Sheet_Metal(offset){ return costMultiplier('launch_facility', offset, 15000, 1.1); },
-            Alloy(offset){ return costMultiplier('launch_facility', offset, 25000, 1.1); }
+            Money(r={}){ return costMultiplier('launch_facility', r.offset, 2000000, 1.1); },
+            Knowledge(r={}){ return costMultiplier('launch_facility', r.offset, 500000, 1.1); },
+            Cement(r={}){ return costMultiplier('launch_facility', r.offset, 150000, 1.1); },
+            Oil(r={}){ return costMultiplier('launch_facility', r.offset, 20000, 1.1); },
+            Sheet_Metal(r={}){ return costMultiplier('launch_facility', r.offset, 15000, 1.1); },
+            Alloy(r={}){ return costMultiplier('launch_facility', r.offset, 25000, 1.1); }
         }
     },
     monument: {
@@ -179,12 +179,12 @@ export const arpaProjects = {
             return loc('arpa_projects_monument_effect1',[mcap]);
         },
         cost: {
-            Stone(offset,wiki){ return monument_costs('Stone', offset, wiki) },
-            Aluminium(offset,wiki){ return monument_costs('Aluminium', offset, wiki) },
-            Cement(offset,wiki){ return monument_costs('Cement', offset, wiki) },
-            Steel(offset,wiki){ return monument_costs('Steel', offset, wiki) },
-            Lumber(offset,wiki){ return monument_costs('Lumber', offset, wiki) },
-            Crystal(offset,wiki){ return monument_costs('Crystal', offset, wiki) }
+            Stone(r={}){ return monument_costs('Stone', r.offset, r.wiki) },
+            Aluminium(r={}){ return monument_costs('Aluminium', r.offset, r.wiki) },
+            Cement(r={}){ return monument_costs('Cement', r.offset, r.wiki) },
+            Steel(r={}){ return monument_costs('Steel', r.offset, r.wiki) },
+            Lumber(r={}){ return monument_costs('Lumber', r.offset, r.wiki) },
+            Crystal(r={}){ return monument_costs('Crystal', r.offset, r.wiki) }
         }
     },
     extra_vault: {
@@ -197,10 +197,10 @@ export const arpaProjects = {
             return loc('arpa_projects_extra_vault_effect',[10,actions.space.spc_survey.fort_knox.title()]);
         },
         cost: {
-            Money(offset,wiki){ return costMultiplier('extra_vault', offset, 55000000, 1.08, wiki); },
-            Iron(offset,wiki){ return costMultiplier('extra_vault', offset, 12750000, 1.08, wiki); },
-            Tungsten(offset,wiki){ return costMultiplier('extra_vault', offset, 7800000, 1.08, wiki); },
-            Graphene(offset,wiki){ return costMultiplier('extra_vault', offset, 3330000, 1.08, wiki); }
+            Money(r={}){ return costMultiplier('extra_vault', r.offset, 55000000, 1.08, r.wiki); },
+            Iron(r={}){ return costMultiplier('extra_vault', r.offset, 12750000, 1.08, r.wiki); },
+            Tungsten(r={}){ return costMultiplier('extra_vault', r.offset, 7800000, 1.08, r.wiki); },
+            Graphene(r={}){ return costMultiplier('extra_vault', r.offset, 3330000, 1.08, r.wiki); }
         }
     },
     guard_station: {
@@ -213,11 +213,11 @@ export const arpaProjects = {
             return loc('arpa_projects_guard_station_effect',[2,actions.space.spc_survey.fort_knox.title()]);
         },
         cost: {
-            Money(offset,wiki){ return costMultiplier('guard_station', offset, 48000000, 1.08, wiki); },
-            Food(offset,wiki){ return costMultiplier('guard_station', offset, global.race['artifical'] ? 125000 : 5000000, 1.08, wiki); },
-            Stone(offset,wiki){ return costMultiplier('guard_station', offset, 60000000, 1.08, wiki); },
-            Furs(offset,wiki){ return costMultiplier('guard_station', offset, 44000000, 1.08, wiki); },
-            Water(offset,wiki){ return costMultiplier('guard_station', offset, 120000, 1.08, wiki); }
+            Money(r={}){ return costMultiplier('guard_station', r.offset, 48000000, 1.08, r.wiki); },
+            Food(r={}){ return costMultiplier('guard_station', r.offset, global.race['artifical'] ? 125000 : 5000000, 1.08, r.wiki); },
+            Stone(r={}){ return costMultiplier('guard_station', r.offset, 60000000, 1.08, r.wiki); },
+            Furs(r={}){ return costMultiplier('guard_station', r.offset, 44000000, 1.08, r.wiki); },
+            Water(r={}){ return costMultiplier('guard_station', r.offset, 120000, 1.08, r.wiki); }
         }
     },
     railway: {
@@ -250,10 +250,10 @@ export const arpaProjects = {
             return desc;
         },
         cost: {
-            Money(offset,wiki){ return costMultiplier('railway', offset, 2500000, 1.08, wiki); },
-            Lumber(offset,wiki){ return costMultiplier('railway', offset, 750000, 1.08, wiki); },
-            Iron(offset,wiki){ return costMultiplier('railway', offset, 300000, 1.08, wiki); },
-            Steel(offset,wiki){ return costMultiplier('railway', offset, 450000, 1.08, wiki); }
+            Money(r={}){ return costMultiplier('railway', r.offset, 2500000, 1.08, r.wiki); },
+            Lumber(r={}){ return costMultiplier('railway', r.offset, 750000, 1.08, r.wiki); },
+            Iron(r={}){ return costMultiplier('railway', r.offset, 300000, 1.08, r.wiki); },
+            Steel(r={}){ return costMultiplier('railway', r.offset, 450000, 1.08, r.wiki); }
         }
     },
     roid_eject: {
@@ -271,9 +271,9 @@ export const arpaProjects = {
             return `<div>${loc('arpa_projects_roid_eject_effect1')}</div><div>${loc('arpa_projects_roid_eject_effect2',[+(mass).toFixed(3),+(next).toFixed(3),roid_eject_type()])}</div>`;
         },
         cost: {
-            Money(offset,wiki){ return costMultiplier('roid_eject', offset, 18750000, 1.075, wiki); },
-            Deuterium(offset,wiki){ return costMultiplier('roid_eject', offset, 375000, 1.075, wiki); },
-            Bolognium(offset,wiki){ return costMultiplier('roid_eject', offset, 15000, 1.075, wiki); }
+            Money(r={}){ return costMultiplier('roid_eject', r.offset, 18750000, 1.075, r.wiki); },
+            Deuterium(r={}){ return costMultiplier('roid_eject', r.offset, 375000, 1.075, r.wiki); },
+            Bolognium(r={}){ return costMultiplier('roid_eject', r.offset, 15000, 1.075, r.wiki); }
         }
     },
     nexus: {
@@ -288,9 +288,9 @@ export const arpaProjects = {
             return loc('arpa_projects_nexus_effect1',[5]);
         },
         cost: {
-            Money(offset,wiki){ return costMultiplier('nexus', offset, 5000000, 1.12, wiki); },
-            Crystal(offset,wiki){ return costMultiplier('nexus', offset, 60000, 1.12, wiki); },
-            Iridium(offset,wiki){ return costMultiplier('nexus', offset, 35000, 1.12, wiki); }
+            Money(r={}){ return costMultiplier('nexus', r.offset, 5000000, 1.12, r.wiki); },
+            Crystal(r={}){ return costMultiplier('nexus', r.offset, 60000, 1.12, r.wiki); },
+            Iridium(r={}){ return costMultiplier('nexus', r.offset, 35000, 1.12, r.wiki); }
         }
     },
     syphon: {
@@ -328,10 +328,10 @@ export const arpaProjects = {
             }
         },
         cost: {
-            Money(offset,wiki){ return costMultiplier('syphon', offset, 7500000, 1.025, wiki); },
-            Mana(offset,wiki){ return costMultiplier('syphon', offset, 5000, 1.025, wiki); },
-            Crystal(offset,wiki){ return costMultiplier('syphon', offset, 100000, 1.025, wiki); },
-            Infernite(offset,wiki){ return costMultiplier('syphon', offset, 10000, 1.025, wiki); },
+            Money(r={}){ return costMultiplier('syphon', r.offset, 7500000, 1.025, r.wiki); },
+            Mana(r={}){ return costMultiplier('syphon', r.offset, 5000, 1.025, r.wiki); },
+            Crystal(r={}){ return costMultiplier('syphon', r.offset, 100000, 1.025, r.wiki); },
+            Infernite(r={}){ return costMultiplier('syphon', r.offset, 10000, 1.025, r.wiki); },
         }
     },
 };
@@ -1329,8 +1329,8 @@ export const bloodPool = {
         reqs: {},
         grant: ['lust','*'],
         cost: {
-            Blood_Stone(wiki){ return ((wiki || 0) + (global.blood['lust'] || 0)) * 15 + 15; },
-            Artifact(wiki){ return ((wiki || 0) + (global.blood['lust'] || 0)) % 5 === 0 ? 1 : 0; }
+            Blood_Stone(r={}){ return ((r.offset || 0) + (global.blood['lust'] || 0)) * 15 + 15; },
+            Artifact(r={}){ return ((r.offset || 0) + (global.blood['lust'] || 0)) % 5 === 0 ? 1 : 0; }
         },
         effect(){ return `<span class="has-text-caution">${loc('arpa_blood_repeat')}</span>`; },
         action(){
@@ -1347,8 +1347,8 @@ export const bloodPool = {
         reqs: {},
         grant: ['illuminate','*'],
         cost: {
-            Blood_Stone(wiki){ return ((wiki || 0) + (global.blood['illuminate'] || 0)) * 12 + 12; },
-            Artifact(wiki){ return ((wiki || 0) + (global.blood['illuminate'] || 0)) % 5 === 0 ? 1 : 0; }
+            Blood_Stone(r={}){ return ((r.offset || 0) + (global.blood['illuminate'] || 0)) * 12 + 12; },
+            Artifact(r={}){ return ((r.offset || 0) + (global.blood['illuminate'] || 0)) % 5 === 0 ? 1 : 0; }
         },
         effect(){ return `<span class="has-text-caution">${loc('arpa_blood_repeat')}</span>`; },
         action(){
@@ -1365,8 +1365,8 @@ export const bloodPool = {
         reqs: {},
         grant: ['greed','*'],
         cost: {
-            Blood_Stone(wiki){ return ((wiki || 0) + (global.blood['greed'] || 0)) * 16 + 16; },
-            Artifact(wiki){ return ((wiki || 0) + (global.blood['greed'] || 0)) % 5 === 0 ? 1 : 0; }
+            Blood_Stone(r={}){ return ((r.offset || 0) + (global.blood['greed'] || 0)) * 16 + 16; },
+            Artifact(r={}){ return ((r.offset || 0) + (global.blood['greed'] || 0)) % 5 === 0 ? 1 : 0; }
         },
         effect(){ return `<span class="has-text-caution">${loc('arpa_blood_repeat')}</span>`; },
         action(){
@@ -1386,8 +1386,8 @@ export const bloodPool = {
             return global.genes['blood'] && global.genes.blood >= 3 ? true : false;
         },
         cost: {
-            Blood_Stone(wiki){ return ((wiki || 0) + (global.blood['hoarder'] || 0)) * 14 + 14; },
-            Artifact(wiki){ return ((wiki || 0) + (global.blood['hoarder'] || 0)) % 5 === 0 ? 1 : 0; }
+            Blood_Stone(r={}){ return ((r.offset || 0) + (global.blood['hoarder'] || 0)) * 14 + 14; },
+            Artifact(r={}){ return ((r.offset || 0) + (global.blood['hoarder'] || 0)) % 5 === 0 ? 1 : 0; }
         },
         effect(){ return `<span class="has-text-caution">${loc('arpa_blood_repeat')}</span>`; },
         action(){
@@ -1404,8 +1404,8 @@ export const bloodPool = {
         reqs: {},
         grant: ['artisan','*'],
         cost: {
-            Blood_Stone(wiki){ return ((wiki || 0) + (global.blood['artisan'] || 0)) * 8 + 8; },
-            Artifact(wiki){ return ((wiki || 0) + (global.blood['artisan'] || 0)) % 5 === 0 ? 1 : 0; }
+            Blood_Stone(r={}){ return ((r.offset || 0) + (global.blood['artisan'] || 0)) * 8 + 8; },
+            Artifact(r={}){ return ((r.offset || 0) + (global.blood['artisan'] || 0)) % 5 === 0 ? 1 : 0; }
         },
         effect(){ return `<span class="has-text-caution">${loc('arpa_blood_repeat')}</span>`; },
         action(){
@@ -1425,8 +1425,8 @@ export const bloodPool = {
             return global.genes['blood'] && global.genes.blood >= 3 ? true : false;
         },
         cost: {
-            Blood_Stone(wiki){ return ((wiki || 0) + (global.blood['attract'] || 0)) * 4 + 4; },
-            Artifact(wiki){ return ((wiki || 0) + (global.blood['attract'] || 0)) % 5 === 0 ? 1 : 0; }
+            Blood_Stone(r={}){ return ((r.offset || 0) + (global.blood['attract'] || 0)) * 4 + 4; },
+            Artifact(r={}){ return ((r.offset || 0) + (global.blood['attract'] || 0)) % 5 === 0 ? 1 : 0; }
         },
         effect(){ return `<span class="has-text-caution">${loc('arpa_blood_repeat')}</span>`; },
         action(){
@@ -1443,7 +1443,7 @@ export const bloodPool = {
         reqs: {},
         grant: ['wrath','*'],
         cost: {
-            Blood_Stone(wiki){ return ((wiki || 0) + (global.blood['wrath'] || 0)) * 2 + 2; },
+            Blood_Stone(r={}){ return ((r.offset || 0) + (global.blood['wrath'] || 0)) * 2 + 2; },
             Artifact(){ return 1; }
         },
         effect(){ return `<span class="has-text-caution">${loc('arpa_blood_repeat')}</span>`; },
@@ -1769,19 +1769,22 @@ function checkArpaCosts(costs){
     return test;
 }
 
-export function arpaAdjustCosts(costs,offset,wiki){
-    costs = creativeAdjust(costs,offset,wiki);
-    costs = engineerAdjust(costs,offset,wiki);
-    return adjustCosts({ 'cost': costs },offset,wiki);
+export function arpaAdjustCosts(costs,opts){
+    opts = opts || {};
+    let args = { offset: opts.offset, wiki: opts.wiki !== undefined ? opts.wiki : false };
+    costs = creativeAdjust(costs,args);
+    costs = engineerAdjust(costs,args);
+    return adjustCosts({ 'cost': costs },args);
 }
 
-function creativeAdjust(costs,offset,wiki){
+function creativeAdjust(costs,args){
+    let wiki = args.wiki;
     let fathom = fathomCheck('human');
     if ((wiki && wiki.creative) || (!wiki && global.race['creative']) || (!wiki && fathom > 0)){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             newCosts[res] = function(){
-                let cost = costs[res](offset, wiki);
+                let cost = costs[res](args);
                 if((wiki && wiki.creative) || (!wiki && global.race['creative'])){
                     cost *= (1 - traits.creative.vars()[1] / 100);
                 }
@@ -1796,12 +1799,13 @@ function creativeAdjust(costs,offset,wiki){
     return costs;
 }
 
-function engineerAdjust(costs,offset,wiki){
+function engineerAdjust(costs,args){
+    let wiki = args.wiki;
     if ((wiki && wiki.engineer) || (!wiki && geneRank('engineer') > 0)){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             newCosts[res] = function(){
-                let cost = costs[res](offset, wiki);
+                let cost = costs[res](args);
                 if((wiki && wiki.engineer) || (!wiki && geneRank('engineer') > 0)){
                     cost *= geneBonus('engineer',0,true);
                 }
