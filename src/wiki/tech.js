@@ -5,7 +5,7 @@ import { actions, housingLabel } from './../actions.js';
 import { techList } from './../tech.js';
 import { checkControlling } from './../civics.js';
 import { races, traits } from './../races.js';
-import { getHalloween, svgIcons, svgViewBox } from './../functions.js';
+import { getHalloween, svgIcons, svgViewBox, techInEra, actionReqs } from './../functions.js';
 import { planetName } from './../space.js';
 import { actionDesc, sideMenu, getSolarName } from './functions.js';
 import { shipCapacitorSaving, surveyTheme } from './../truepath.js';
@@ -2153,6 +2153,10 @@ const extraInformation = {
         loc(`wiki_tech_building_unlock`,[loc('tau_roid_synthesizer_title')]),
         loc(`wiki_tech_resource_unlock`,[loc(`resource_Positronium_name`)])
     ],
+    element_zero_b: [
+        loc(`wiki_tech_building_unlock`,[loc('tau_roid_synthesizer_title')]),
+        loc(`wiki_tech_resource_unlock`,[loc(`resource_Positronium_name`)])
+    ],
     patrol_routes: [
         loc(`wiki_tech_patrol_routes`)
     ],
@@ -2222,6 +2226,53 @@ const extraInformationTP = {
         loc(`wiki_tech_destination_unlock`,[loc(`space_mission_title`,[loc(`space_sun_info_name`)]),loc(`space_sun_info_name`)]),
         loc(`wiki_tech_destination_unlock`,[loc(`space_mission_title`,[getSolarName('gas')]),getSolarName('gas')]),
         loc(`wiki_tech_subtab_unlock`,[loc(`outer_sol_system`,[getSolarName('home')]),loc(`tab_civil`)]),
+    ],
+    lab_assistants: [
+        loc(`tech_lab_assistants_effect`,[5])
+    ],
+    aerographene_crates: [
+        loc(`wiki_tech_containerized_upgrade`,[loc(`resource_Crates_name`),10000,6200])
+    ],
+    botanical: [
+        loc(`wiki_tech_building_unlock`,[loc(`space_red_botanical_title`)])
+    ],
+    laugh_center: [
+        loc(`wiki_tech_building_unlock`,[loc(`space_comedy_club_title`)])
+    ],
+    moon_storage: [
+        loc(`wiki_tech_building_unlock`,[loc(`city_shed_title3`)])
+    ],
+    moon_treasury: [
+        loc(`wiki_tech_building_unlock`,[loc(`space_fort_knox_title`)])
+    ],
+    moon_vault: [
+        loc(`wiki_tech_project_unlock`,[loc(`arpa_projects_extra_vault_title`)])
+    ],
+    moon_security: [
+        loc(`wiki_tech_project_unlock`,[loc(`arpa_projects_guard_station_title`)])
+    ],
+    cloud_housing: [
+        loc(`wiki_tech_building_unlock`,[loc(`space_cloud_quarters_title`)])
+    ],
+    cloud_manufacturing: [
+        loc(`wiki_tech_building_unlock`,[loc(`space_industrial_complex_title`)])
+    ],
+    cloud_crafting: [
+        loc(`wiki_tech_building_unlock`,[loc(`space_workshop_title`)])
+    ],
+    cloud_university: [
+        loc(`wiki_tech_building_unlock`,[loc(`space_university_title`)])
+    ],
+    bombard_homeworld: [
+        loc(`wiki_tech_bombard_unlock`,[getSolarName('home')]),
+        loc(`tech_exclusive_warn`,[loc(`tech_bleed_overmind`)])
+    ],
+    bleed_overmind: [
+        loc(`wiki_tech_overmind_effect`,[4]),
+        loc(`tech_exclusive_warn`,[loc(`tech_bombard_homeworld`)])
+    ],
+    server_farm: [
+        loc(`wiki_tech_building_unlock`,[loc(`tau_star_server_farm`)])
     ]
 };
 
@@ -4388,13 +4439,15 @@ function getTechTrees(path){
             techTrees[action.grant[0]] = {};
         }
         let text = typeof actions.tech[actionName].title === 'string' ? actions.tech[actionName].title : actions.tech[actionName].title();
-        techTrees[action.grant[0]][action.grant[1]] = [
-            {
-                name: actionName,
-                title: text,
-                era: actions.tech[actionName].era
-            }
-        ];
+        // Possible for multiple matching techs to exist because of game route forking.
+        if (!techTrees[action.grant[0]][action.grant[1]]){
+            techTrees[action.grant[0]][action.grant[1]] = [];
+        }
+        techTrees[action.grant[0]][action.grant[1]].push({
+            name: actionName,
+            title: text,
+            era: actions.tech[actionName].era
+        });
     });
     //Anomalies
     techTrees['primitive'][2] = [
@@ -4493,20 +4546,50 @@ function addInformation(parent,key,path){
     }
 }
 
-function addRequirements(parent,key,keyName,path){
+// Check if era matches current page
+function eraCovers(era,pageEra){
+    if (era === undefined || pageEra === undefined){ return false; }
+    let wanted = [pageEra];
+    if (alt_era[pageEra]){ wanted.push(alt_era[pageEra]); }
+    return Array.isArray(era) ? era.some(e => wanted.includes(e)) : wanted.includes(era);
+}
+
+// Match era for a requirement.
+function reqEra(era,pageEra){
+    if (Array.isArray(era)){
+        return eraCovers(era,pageEra) ? (era.includes(pageEra) ? pageEra : era.find(e => eraCovers(e,pageEra))) : era[0];
+    }
+    return era;
+}
+
+// Match best fit era for tech requirements.
+function pickTechReqs(candidates,pageEra){
+    let matched = candidates.filter(c => eraCovers(c.era,pageEra));
+    let list = matched.length > 0 ? matched : candidates;
+    let seen = {};
+    return list.filter(function(c){
+        if (seen[c.title]){ return false; }
+        seen[c.title] = true;
+        return true;
+    });
+}
+
+function addRequirements(parent,key,keyName,path,pageEra){
     let techTrees = getTechTrees(path);
-    if (Object.keys(key.reqs).length > 0){
+    // A tech spanning several eras can vary its requirements per era, so ask for the page's version.
+    let keyReqs = actionReqs(key,pageEra);
+    if (Object.keys(keyReqs).length > 0){
         let techReqs = {};
         let otherReqs = {};
-        Object.keys(key.reqs).forEach(function (req){
-            let color = global.tech[req] && global.tech[req] >= key.reqs[req] ? 'success' : 'danger';
-            let reqID = req + key.reqs[req];
+        Object.keys(keyReqs).forEach(function (req){
+            let color = global.tech[req] && global.tech[req] >= keyReqs[req] ? 'success' : 'danger';
+            let reqID = req + keyReqs[req];
             //Determine Tech Requirements and Non-Tech Requirements
-            if (techTrees[req] && techTrees[req][key.reqs[req]]) {
+            if (techTrees[req] && techTrees[req][keyReqs[req]]) {
                 techReqs[reqID] = [];
-                let currTechReq = techTrees[req][key.reqs[req]];
+                let currTechReq = techTrees[req][keyReqs[req]];
                 //For anomalies where multiple techs can fill one pre-req.
-                currTechReq.forEach(function (subReq){
+                pickTechReqs(currTechReq,pageEra).forEach(function (subReq){
                     techReqs[reqID].push({
                         name: subReq.name,
                         title: subReq.title,
@@ -4533,7 +4616,7 @@ function addRequirements(parent,key,keyName,path){
                 let isOr = false;
                 let color = false;
                 techReqs[req].forEach(function (subReq){
-                    let subText = `<a href="wiki.html#${subReq.era}-${path === 'truepath' ? 'tp_tech' : 'tech'}-${subReq.name}" class="has-text-${subReq.color}" target="_blank">${subReq.title}</a>`;
+                    let subText = `<a href="wiki.html#${reqEra(subReq.era,pageEra)}-${path === 'truepath' ? 'tp_tech' : 'tech'}-${subReq.name}" class="has-text-${subReq.color}" target="_blank">${subReq.title}</a>`;
                     color = subReq.color;
                     if (isOr){
                         reqText = loc('wiki_tech_req_or',[reqText,subText]);
@@ -4598,7 +4681,7 @@ function addRequirements(parent,key,keyName,path){
                         break;
                     case 'tech':
                         subText = typeof actions.tech[subreq.name].title === 'string' ? actions.tech[subreq.name].title : actions.tech[subreq.name].title();
-                        link = `wiki.html#${actions.tech[subreq.name].era}-tech-${subreq.name}`;
+                        link = `wiki.html#${reqEra(actions.tech[subreq.name].era,pageEra)}-tech-${subreq.name}`;
                         color = global.tech[subreq.tree] && global.genes[subreq.tree] >= subreq.val;
                         break;
                     case 'universe':
@@ -4691,12 +4774,12 @@ export function renderTechPage(era,path){
 
     Object.keys(techs).forEach(function (actionName){
         let action = techs[actionName];
-        if (action.hasOwnProperty('era') && (action.era === era || action.era === alt_era[era]) && (!action.hasOwnProperty('wiki') || action.wiki)){
+        if (action.hasOwnProperty('era') && (techInEra(action,era) || techInEra(action,alt_era[era])) && (!action.hasOwnProperty('wiki') || action.wiki)){
             let id = techs[actionName].id.split('-');
             let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
             actionDesc(info, action);
             addInformation(info, actionName, path);
-            addRequirements(info, action, actionName, path);
+            addRequirements(info, action, actionName, path, era);
             if (action.cost['Knowledge']){
                 if (techListing.length === 0){
                     techListing[0] = [action, info];
@@ -4741,9 +4824,12 @@ export function renderTechPage(era,path){
         }
     }
     for (let i=0; i<techListing.length; i++) {
-        let era = path === 'truepath' && alt_era_r[techListing[i][0].era] ? alt_era_r[techListing[i][0].era] : techListing[i][0].era;
+        // alt_era_r maps a tech's own era to the page it is documented on.
+        let menuEra = Array.isArray(techListing[i][0].era)
+            ? era
+            : (path === 'truepath' && alt_era_r[techListing[i][0].era] ? alt_era_r[techListing[i][0].era] : techListing[i][0].era);
         content.append(techListing[i][1]);
         let id = techListing[i][0].id.split('-');
-        sideMenu('add',`${era}-${prefix}`,id[1],typeof techListing[i][0].title === 'function' ? techListing[i][0].title() : techListing[i][0].title);
+        sideMenu('add',`${menuEra}-${prefix}`,id[1],typeof techListing[i][0].title === 'function' ? techListing[i][0].title() : techListing[i][0].title);
     }
 }

@@ -240,8 +240,8 @@ export const genus_def = {
 
 export const traits = {
     adaptable: { // Genetic Mutations occur faster from gene tampering
-        name: loc('trait_adaptable_name'),
-        desc: loc('trait_adaptable'),
+        name(){ return loc('trait_adaptable_name'); },
+        desc(v){ return loc('trait_adaptable',v); },
         type: 'genus',
         origin: 'humanoid',
         taxonomy: 'utility',
@@ -266,8 +266,8 @@ export const traits = {
         },
     },
     wasteful: { // Craftings cost more materials
-        name: loc('trait_wasteful_name'),
-        desc: loc('trait_wasteful'),
+        name(){ return loc('trait_wasteful_name'); },
+        desc(v){ return loc('trait_wasteful',v); },
         type: 'genus',
         origin: 'humanoid',
         taxonomy: 'resource',
@@ -292,16 +292,16 @@ export const traits = {
         },
     },
     xenophobic: { // Trade posts suffer a -1 penalty per post
-        name: loc('trait_xenophobic_name'),
-        desc: loc('trait_xenophobic'),
+        name(){ return loc('trait_xenophobic_name'); },
+        desc(v){ return loc('trait_xenophobic',v); },
         type: 'genus',
         genus: 'humanoid',
         taxonomy: 'resource',
         val: -5,
     },
     carnivore: { // No agriculture tech tree path, however unemployed citizens now act as hunters.
-        name: loc('trait_carnivore_name'),
-        desc: loc('trait_carnivore'),
+        name(){ return loc('trait_carnivore_name'); },
+        desc(v){ return loc('trait_carnivore',v); },
         type: 'genus',
         origin: 'carnivore',
         taxonomy: 'resource',
@@ -327,8 +327,8 @@ export const traits = {
         },
     },
     beast: { // Improved hunting and soldier training
-        name: loc('trait_beast_name'),
-        desc: loc('trait_beast'),
+        name(){ return loc('trait_beast_name'); },
+        desc(v){ return loc('trait_beast',v); },
         type: 'genus',
         origin: 'carnivore',
         taxonomy: 'resource',
@@ -354,8 +354,8 @@ export const traits = {
         },
     },
     cautious: { // Rain reduces combat rating
-        name: loc('trait_cautious_name'),
-        desc: loc('trait_cautious'),
+        name(){ return loc('trait_cautious_name'); },
+        desc(v){ return loc('trait_cautious',v); },
         type: 'genus',
         origin: 'carnivore',
         taxonomy: 'combat',
@@ -380,16 +380,16 @@ export const traits = {
         },
     },
     herbivore: { // No food is gained from hunting
-        name: loc('trait_herbivore_name'),
-        desc: loc('trait_herbivore'),
+        name(){ return loc('trait_herbivore_name'); },
+        desc(v){ return loc('trait_herbivore',v); },
         type: 'genus',
         origin: 'herbivore',
         taxonomy: 'resource',
         val: -7,
     },
     instinct: { // Avoids Danger
-        name: loc('trait_instinct_name'),
-        desc: loc('trait_instinct'),
+        name(){ return loc('trait_instinct_name'); },
+        desc(v){ return loc('trait_instinct',v); },
         type: 'genus',
         genus: 'herbivore',
         taxonomy: 'utility',
@@ -415,8 +415,8 @@ export const traits = {
         },
     },
     forager: { // Will eat just about anything
-        name: loc('trait_forager_name'),
-        desc: loc('trait_forager'),
+        name(){ return loc('trait_forager_name'); },
+        desc(v){ return loc('trait_forager',v); },
         type: 'genus',
         origin: 'hybrid',
         taxonomy: 'resource',
@@ -442,8 +442,8 @@ export const traits = {
         },
     },
     small: { // Reduces cost creep multipliers by 0.01
-        name: loc('trait_small_name'),
-        desc: loc('trait_small'),
+        name(){ return loc('trait_small_name'); },
+        desc(v){ return loc('trait_small',v); },
         type: 'genus',
         origin: 'small',
         taxonomy: 'utility',
@@ -469,8 +469,8 @@ export const traits = {
         },
     },
     weak: { // Lumberjacks, miners, and quarry workers are 10% less effective
-        name: loc('trait_weak_name'),
-        desc: loc('trait_weak'),
+        name(){ return loc('trait_weak_name'); },
+        desc(v){ return loc('trait_weak',v); },
         type: 'genus',
         origin: 'small',
         taxonomy: 'resource',
@@ -495,8 +495,8 @@ export const traits = {
         },
     },
     large: { // Increases plantery cost creep multipliers by 0.005
-        name: loc('trait_large_name'),
-        desc: loc('trait_large'),
+        name(){ return loc('trait_large_name'); },
+        desc(v){ return loc('trait_large',v); },
         type: 'genus',
         origin: 'giant',
         taxonomy: 'utility',
@@ -521,8 +521,8 @@ export const traits = {
         },
     },
     strong: { // Increased manual resource gain
-        name: loc('trait_strong_name'),
-        desc: loc('trait_strong'),
+        name(){ return loc('trait_strong_name'); },
+        desc(v){ return loc('trait_strong',v); },
         type: 'genus',
         origin: 'giant',
         taxonomy: 'resource',
@@ -548,8 +548,8 @@ export const traits = {
         },
     },
     cold_blooded: { // Weather affects productivity
-        name: loc('trait_cold_blooded_name'),
-        desc: loc('trait_cold_blooded'),
+        name(){ return loc('trait_cold_blooded_name'); },
+        desc(v){ return loc('trait_cold_blooded',v); },
         type: 'genus',
         origin: 'reptilian',
         taxonomy: 'production',
@@ -573,8 +573,8 @@ export const traits = {
         },
     },
     scales: { // Minor decrease of soldiers killed in combat
-        name: loc('trait_scales_name'),
-        desc: loc('trait_scales'),
+        name(){ return loc('trait_scales_name'); },
+        desc(v){ return loc('trait_scales',v); },
         type: 'genus',
         origin: 'reptilian',
         taxonomy: 'combat',
@@ -600,8 +600,8 @@ export const traits = {
         },
     },
     flier: { // Use Clay instead of Stone or Cement
-        name: loc('trait_flier_name'),
-        desc: loc('trait_flier'),
+        name(){ return loc('trait_flier_name'); },
+        desc(v){ return loc('trait_flier',v); },
         type: 'genus',
         origin: 'avian',
         taxonomy: 'resource',
@@ -627,8 +627,8 @@ export const traits = {
         },
     },
     hollow_bones: { // Less Crafted Materials Needed
-        name: loc('trait_hollow_bones_name'),
-        desc: loc('trait_hollow_bones'),
+        name(){ return loc('trait_hollow_bones_name'); },
+        desc(v){ return loc('trait_hollow_bones',v); },
         type: 'genus',
         origin: 'avian',
         taxonomy: 'resource',
@@ -653,8 +653,8 @@ export const traits = {
         },
     },
     sky_lover: { // Mining type jobs more stressful
-        name: loc('trait_sky_lover_name'),
-        desc: loc('trait_sky_lover'),
+        name(){ return loc('trait_sky_lover_name'); },
+        desc(v){ return loc('trait_sky_lover',v); },
         type: 'genus',
         origin: 'avian',
         taxonomy: 'utility',
@@ -679,8 +679,8 @@ export const traits = {
         },
     },
     rigid: { // Crafting production lowered slightly
-        name: loc('trait_rigid_name'),
-        desc: loc('trait_rigid'),
+        name(){ return loc('trait_rigid_name'); },
+        desc(v){ return loc('trait_rigid',v); },
         type: 'genus',
         origin: 'avian',
         taxonomy: 'resource',
@@ -705,8 +705,8 @@ export const traits = {
         },
     },
     high_pop: { // Population is higher, but less productive
-        name: loc('trait_high_pop_name'),
-        desc: loc('trait_high_pop'),
+        name(){ return loc('trait_high_pop_name'); },
+        desc(v){ return loc('trait_high_pop',v); },
         type: 'genus',
         origin: 'insectoid',
         taxonomy: 'utility',
@@ -732,8 +732,8 @@ export const traits = {
         },
     },
     fast_growth: { // Greatly increases odds of population growth each cycle
-        name: loc('trait_fast_growth_name'),
-        desc: loc('trait_fast_growth'),
+        name(){ return loc('trait_fast_growth_name'); },
+        desc(v){ return loc('trait_fast_growth',v); },
         type: 'genus',
         origin: 'insectoid',
         taxonomy: 'utility',
@@ -759,8 +759,8 @@ export const traits = {
         },
     },
     high_metabolism: { // Food requirements increased by 5%
-        name: loc('trait_high_metabolism_name'),
-        desc: loc('trait_high_metabolism'),
+        name(){ return loc('trait_high_metabolism_name'); },
+        desc(v){ return loc('trait_high_metabolism',v); },
         type: 'genus',
         origin: 'insectoid',
         taxonomy: 'utility',
@@ -785,8 +785,8 @@ export const traits = {
         },
     },
     photosynth: { // Reduces food requirements dependant on sunshine.
-        name: loc('trait_photosynth_name'),
-        desc: loc('trait_photosynth'),
+        name(){ return loc('trait_photosynth_name'); },
+        desc(v){ return loc('trait_photosynth',v); },
         type: 'genus',
         origin: 'plant',
         taxonomy: 'utility',
@@ -812,8 +812,8 @@ export const traits = {
         },
     },
     sappy: { // Stone is replaced with Amber.
-        name: loc('trait_sappy_name'),
-        desc: loc('trait_sappy',[loc('resource_Amber_name')]),
+        name(){ return loc('trait_sappy_name'); },
+        desc(){ return loc('trait_sappy',[loc('resource_Amber_name')]); },
         type: 'genus',
         origin: 'plant',
         taxonomy: 'resource',
@@ -838,8 +838,8 @@ export const traits = {
         },
     },
     asymmetrical: { // Trade selling prices are slightly worse then normal
-        name: loc('trait_asymmetrical_name'),
-        desc: loc('trait_asymmetrical'),
+        name(){ return loc('trait_asymmetrical_name'); },
+        desc(v){ return loc('trait_asymmetrical',v); },
         type: 'genus',
         origin: 'plant',
         taxonomy: 'utility',
@@ -864,8 +864,8 @@ export const traits = {
         },
     },
     detritivore: { // You eat dead matter
-        name: loc('trait_detritivore_name'),
-        desc: loc('trait_detritivore'),
+        name(){ return loc('trait_detritivore_name'); },
+        desc(v){ return loc('trait_detritivore',v); },
         type: 'genus',
         origin: 'fungi',
         taxonomy: 'utility',
@@ -890,8 +890,8 @@ export const traits = {
         },
     },
     spores: { // Birthrate increased when it's windy
-        name: loc('trait_spores_name'),
-        desc: loc('trait_spores'),
+        name(){ return loc('trait_spores_name'); },
+        desc(v){ return loc('trait_spores',v); },
         type: 'genus',
         origin: 'fungi',
         taxonomy: 'utility',
@@ -917,24 +917,24 @@ export const traits = {
         },
     },
     spongy: { // Birthrate decreased when it's raining
-        name: loc('trait_spongy_name'),
-        desc: loc('trait_spongy'),
+        name(){ return loc('trait_spongy_name'); },
+        desc(v){ return loc('trait_spongy',v); },
         type: 'genus',
         origin: 'fungi',
         taxonomy: 'utility',
         val: -2,
     },
     submerged: { // Immune to weather effects
-        name: loc('trait_submerged_name'),
-        desc: loc('trait_submerged'),
+        name(){ return loc('trait_submerged_name'); },
+        desc(v){ return loc('trait_submerged',v); },
         type: 'genus',
         origin: 'aquatic',
         taxonomy: 'utility',
         val: 3,
     },
     low_light: { // Farming effectiveness decreased
-        name: loc('trait_low_light_name'),
-        desc: loc('trait_low_light'),
+        name(){ return loc('trait_low_light_name'); },
+        desc(v){ return loc('trait_low_light',v); },
         type: 'genus',
         origin: 'aquatic',
         taxonomy: 'resource',
@@ -959,8 +959,8 @@ export const traits = {
         },
     },
     elusive: { // Spies are never caught
-        name: loc('trait_elusive_name'),
-        desc: loc('trait_elusive'),
+        name(){ return loc('trait_elusive_name'); },
+        desc(v){ return loc('trait_elusive',v); },
         type: 'genus',
         origin: 'fey',
         taxonomy: 'utility',
@@ -985,8 +985,8 @@ export const traits = {
         },
     },
     iron_allergy: { // Iron mining reduced
-        name: loc('trait_iron_allergy_name'),
-        desc: loc('trait_iron_allergy'),
+        name(){ return loc('trait_iron_allergy_name'); },
+        desc(v){ return loc('trait_iron_allergy',v); },
         type: 'genus',
         origin: 'fey',
         taxonomy: 'resource',
@@ -1011,8 +1011,8 @@ export const traits = {
         },
     },
     smoldering: { // Hot weather is a bonus
-        name: loc('trait_smoldering_name'),
-        desc: loc('trait_smoldering'),
+        name(){ return loc('trait_smoldering_name'); },
+        desc(v){ return loc('trait_smoldering',v); },
         type: 'genus',
         origin: 'heat',
         taxonomy: 'production',
@@ -1038,8 +1038,8 @@ export const traits = {
         },
     },
     cold_intolerance: { // Cold weather is a detriment
-        name: loc('trait_cold_intolerance_name'),
-        desc: loc('trait_cold_intolerance'),
+        name(){ return loc('trait_cold_intolerance_name'); },
+        desc(v){ return loc('trait_cold_intolerance',v); },
         type: 'genus',
         origin: 'heat',
         taxonomy: 'production',
@@ -1064,8 +1064,8 @@ export const traits = {
         },
     },
     chilled: { // Cold weather is a bonus
-        name: loc('trait_chilled_name'),
-        desc: loc('trait_chilled'),
+        name(){ return loc('trait_chilled_name'); },
+        desc(v){ return loc('trait_chilled',v); },
         type: 'genus',
         origin: 'polar',
         taxonomy: 'production',
@@ -1091,8 +1091,8 @@ export const traits = {
         },
     },
     heat_intolerance: { // Hot weather is a detriment
-        name: loc('trait_heat_intolerance_name'),
-        desc: loc('trait_heat_intolerance'),
+        name(){ return loc('trait_heat_intolerance_name'); },
+        desc(v){ return loc('trait_heat_intolerance',v); },
         type: 'genus',
         origin: 'polar',
         taxonomy: 'production',
@@ -1117,8 +1117,8 @@ export const traits = {
         },
     },
     scavenger: { // scavenger job is always available
-        name: loc('trait_scavenger_name'),
-        desc: loc('trait_scavenger'),
+        name(){ return loc('trait_scavenger_name'); },
+        desc(v){ return loc('trait_scavenger',v); },
         type: 'genus',
         origin: 'sand',
         taxonomy: 'production',
@@ -1144,16 +1144,16 @@ export const traits = {
         },
     },
     nomadic: { // -1 Trade route from trade post
-        name: loc('trait_nomadic_name'),
-        desc: loc('trait_nomadic'),
+        name(){ return loc('trait_nomadic_name'); },
+        desc(v){ return loc('trait_nomadic',v); },
         type: 'genus',
         origin: 'sand',
         taxonomy: 'utility',
         val: -5,
     },
     immoral: { // Warmonger is a bonus instead of a penalty
-        name: loc('trait_immoral_name'),
-        desc: loc('trait_immoral'),
+        name(){ return loc('trait_immoral_name'); },
+        desc(v){ return loc('trait_immoral',v); },
         type: 'genus',
         origin: 'demonic',
         taxonomy: 'utility',
@@ -1178,16 +1178,16 @@ export const traits = {
         },
     },
     evil: { // You are pure evil
-        name: loc('trait_evil_name'),
-        desc: loc('trait_evil'),
+        name(){ return loc('trait_evil_name'); },
+        desc(v){ return loc('trait_evil',v); },
         type: 'genus',
         origin: 'demonic',
         taxonomy: 'utility',
         val: 0,
     },
     blissful: { // Low morale penalty is halved and citizens never riot.
-        name: loc('trait_blissful_name'),
-        desc: loc('trait_blissful'),
+        name(){ return loc('trait_blissful_name'); },
+        desc(v){ return loc('trait_blissful',v); },
         type: 'genus',
         origin: 'angelic',
         taxonomy: 'utility',
@@ -1212,8 +1212,8 @@ export const traits = {
         },
     },
     pompous: { // Professors are less effective
-        name: loc('trait_pompous_name'),
-        desc: loc('trait_pompous'),
+        name(){ return loc('trait_pompous_name'); },
+        desc(v){ return loc('trait_pompous',v); },
         type: 'genus',
         origin: 'angelic',
         taxonomy: 'utility',
@@ -1238,8 +1238,8 @@ export const traits = {
         },
     },
     holy: { // Combat Bonus in Hell
-        name: loc('trait_holy_name'),
-        desc: loc('trait_holy'),
+        name(){ return loc('trait_holy_name'); },
+        desc(v){ return loc('trait_holy',v); },
         type: 'genus',
         origin: 'angelic',
         taxonomy: 'combat',
@@ -1265,8 +1265,8 @@ export const traits = {
         },
     },
     artifical: {
-        name: loc('trait_artifical_name'),
-        desc: loc('trait_artifical'),
+        name(){ return loc('trait_artifical_name'); },
+        desc(v){ return loc('trait_artifical',v); },
         type: 'genus',
         origin: 'synthetic',
         taxonomy: 'utility',
@@ -1292,8 +1292,8 @@ export const traits = {
         },
     },
     powered: {
-        name: loc('trait_powered_name'),
-        desc: loc('trait_powered'),
+        name(){ return loc('trait_powered_name'); },
+        desc(v){ return loc('trait_powered',v); },
         type: 'genus',
         origin: 'synthetic',
         taxonomy: 'utility',
@@ -1319,8 +1319,8 @@ export const traits = {
         },
     },
     psychic: {
-        name: loc('trait_psychic_name'),
-        desc: loc('trait_psychic'),
+        name(){ return loc('trait_psychic_name'); },
+        desc(v){ return loc('trait_psychic',v); },
         type: 'genus',
         origin: 'eldritch',
         taxonomy: 'utility',
@@ -1346,8 +1346,8 @@ export const traits = {
         },
     },
     tormented: {
-        name: loc('trait_tormented_name'),
-        desc: loc('trait_tormented'),
+        name(){ return loc('trait_tormented_name'); },
+        desc(v){ return loc('trait_tormented',v); },
         type: 'genus',
         origin: 'eldritch',
         taxonomy: 'utility',
@@ -1373,8 +1373,8 @@ export const traits = {
         },
     },
     darkness: {
-        name: loc('trait_darkness_name'),
-        desc: loc('trait_darkness'),
+        name(){ return loc('trait_darkness_name'); },
+        desc(v){ return loc('trait_darkness',v); },
         type: 'genus',
         origin: 'eldritch',
         taxonomy: 'utility',
@@ -1400,8 +1400,8 @@ export const traits = {
         },
     },
     unfathomable: {
-        name: loc('trait_unfathomable_name'),
-        desc: loc('trait_unfathomable'),
+        name(){ return loc('trait_unfathomable_name'); },
+        desc(v){ return loc('trait_unfathomable',v); },
         type: 'genus',
         origin: 'eldritch',
         taxonomy: 'utility',
@@ -1427,8 +1427,8 @@ export const traits = {
         },
     },
     creative: { // A.R.P.A. Projects are cheaper
-        name: loc('trait_creative_name'),
-        desc: loc('trait_creative'),
+        name(){ return loc('trait_creative_name'); },
+        desc(v){ return loc('trait_creative',v); },
         type: 'major',
         origin: 'human',
         taxonomy: 'resource',
@@ -1453,8 +1453,8 @@ export const traits = {
         },
     },
     diverse: { // Training soldiers takes longer
-        name: loc('trait_diverse_name'),
-        desc: loc('trait_diverse'),
+        name(){ return loc('trait_diverse_name'); },
+        desc(v){ return loc('trait_diverse',v); },
         type: 'major',
         origin: 'human',
         taxonomy: 'combat',
@@ -1479,8 +1479,8 @@ export const traits = {
         },
     },
     studious: { // Professors generate an extra 0.25 Knowledge per second, Libraries provide 10% more knowledge cap
-        name: loc('trait_studious_name'),
-        desc: loc('trait_studious'),
+        name(){ return loc('trait_studious_name'); },
+        desc(v){ return loc('trait_studious',v); },
         type: 'major',
         origin: 'elven',
         taxonomy: 'utility',
@@ -1506,8 +1506,8 @@ export const traits = {
         },
     },
     arrogant: { // Market prices are higher
-        name: loc('trait_arrogant_name'),
-        desc: loc('trait_arrogant'),
+        name(){ return loc('trait_arrogant_name'); },
+        desc(v){ return loc('trait_arrogant',v); },
         type: 'major',
         origin: 'elven',
         taxonomy: 'resource',
@@ -1532,8 +1532,8 @@ export const traits = {
         },
     },
     brute: { // Recruitment costs are 1/2 price
-        name: loc('trait_brute_name'),
-        desc: loc('trait_brute'),
+        name(){ return loc('trait_brute_name'); },
+        desc(v){ return loc('trait_brute',v); },
         type: 'major',
         origin: 'orc',
         taxonomy: 'combat',
@@ -1559,8 +1559,8 @@ export const traits = {
         },
     },
     angry: { // When hungry you get hangry, low food penalty is more severe
-        name: loc('trait_angry_name'),
-        desc: loc('trait_angry'),
+        name(){ return loc('trait_angry_name'); },
+        desc(v){ return loc('trait_angry',v); },
         type: 'major',
         origin: 'orc',
         taxonomy: 'production',
@@ -1585,8 +1585,8 @@ export const traits = {
         },
     },
     lazy: { // All production is lowered when the temperature is hot
-        name: loc('trait_lazy_name'),
-        desc: loc('trait_lazy'),
+        name(){ return loc('trait_lazy_name'); },
+        desc(v){ return loc('trait_lazy',v); },
         type: 'major',
         origin: 'cath',
         taxonomy: 'production',
@@ -1611,8 +1611,8 @@ export const traits = {
         },
     },
     curious: { // University cap boosted by citizen count, curious random events
-        name: loc('trait_curious_name'),
-        desc: loc('trait_curious'),
+        name(){ return loc('trait_curious_name'); },
+        desc(v){ return loc('trait_curious',v); },
         type: 'major',
         origin: 'cath',
         taxonomy: 'utility',
@@ -1637,8 +1637,8 @@ export const traits = {
         },
     },
     pack_mentality: { // Cabins cost more, but cottages cost less.
-        name: loc('trait_pack_mentality_name'),
-        desc: loc('trait_pack_mentality'),
+        name(){ return loc('trait_pack_mentality_name'); },
+        desc(v){ return loc('trait_pack_mentality',v); },
         type: 'major',
         origin: 'wolven',
         taxonomy: 'utility',
@@ -1664,8 +1664,8 @@ export const traits = {
         },
     },
     tracker: { // 20% increased gains from hunting
-        name: loc('trait_tracker_name'),
-        desc: loc('trait_tracker'),
+        name(){ return loc('trait_tracker_name'); },
+        desc(v){ return loc('trait_tracker',v); },
         type: 'major',
         origin: 'wolven',
         taxonomy: 'resource',
@@ -1690,8 +1690,8 @@ export const traits = {
         },
     },
     playful: { // Hunters are Happy
-        name: loc('trait_playful_name'),
-        desc: loc('trait_playful'),
+        name(){ return loc('trait_playful_name'); },
+        desc(v){ return loc('trait_playful',v); },
         type: 'major',
         origin: 'vulpine',
         taxonomy: 'production',
@@ -1716,8 +1716,8 @@ export const traits = {
         },
     },
     freespirit: { // Job Stress is higher for those who must work mundane jobs
-        name: loc('trait_freespirit_name'),
-        desc: loc('trait_freespirit'),
+        name(){ return loc('trait_freespirit_name'); },
+        desc(v){ return loc('trait_freespirit',v); },
         type: 'major',
         origin: 'vulpine',
         taxonomy: 'production',
@@ -1742,16 +1742,16 @@ export const traits = {
         },
     },
     beast_of_burden: { // Gains more loot during raids
-        name: loc('trait_beast_of_burden_name'),
-        desc: loc('trait_beast_of_burden'),
+        name(){ return loc('trait_beast_of_burden_name'); },
+        desc(v){ return loc('trait_beast_of_burden',v); },
         type: 'major',
         origin: 'centaur',
         taxonomy: 'combat',
         val: 3
     },
     sniper: { // Weapon upgrades are more impactful
-        name: loc('trait_sniper_name'),
-        desc: loc('trait_sniper'),
+        name(){ return loc('trait_sniper_name'); },
+        desc(v){ return loc('trait_sniper',v); },
         type: 'major',
         origin: 'centaur',
         taxonomy: 'combat',
@@ -1776,8 +1776,8 @@ export const traits = {
         },
     },
     hooved: { // You require special footwear
-        name: loc('trait_hooved_name'),
-        desc: loc('trait_hooved'),
+        name(){ return loc('trait_hooved_name'); },
+        desc(v){ return loc('trait_hooved',v); },
         type: 'major',
         origin: 'centaur',
         taxonomy: 'utility',
@@ -1803,8 +1803,8 @@ export const traits = {
         },
     },
     rage: { // Wounded soldiers rage with extra power
-        name: loc('trait_rage_name'),
-        desc: loc('trait_rage'),
+        name(){ return loc('trait_rage_name'); },
+        desc(v){ return loc('trait_rage',v); },
         type: 'major',
         origin: 'rhinotaur',
         taxonomy: 'combat',
@@ -1830,8 +1830,8 @@ export const traits = {
         },
     },
     heavy: { // Some costs increased
-        name: loc('trait_heavy_name'),
-        desc: loc('trait_heavy'),
+        name(){ return loc('trait_heavy_name'); },
+        desc(v){ return loc('trait_heavy',v); },
         type: 'major',
         origin: 'rhinotaur',
         taxonomy: 'utility',
@@ -1857,8 +1857,8 @@ export const traits = {
         },
     },
     gnawer: { // Population destroys lumber by chewing on it
-        name: loc('trait_gnawer_name'),
-        desc: loc('trait_gnawer'),
+        name(){ return loc('trait_gnawer_name'); },
+        desc(v){ return loc('trait_gnawer',v); },
         type: 'major',
         origin: 'capybara',
         taxonomy: 'resource',
@@ -1883,8 +1883,8 @@ export const traits = {
         },
     },
     calm: { // Your are very calm, almost zen like
-        name: loc('trait_calm_name'),
-        desc: loc('trait_calm'),
+        name(){ return loc('trait_calm_name'); },
+        desc(v){ return loc('trait_calm',v); },
         type: 'major',
         origin: 'capybara',
         taxonomy: 'production',
@@ -1909,8 +1909,8 @@ export const traits = {
         },
     },
     pack_rat: { // Storage space is increased
-        name: loc('trait_pack_rat_name'),
-        desc: loc('trait_pack_rat'),
+        name(){ return loc('trait_pack_rat_name'); },
+        desc(v){ return loc('trait_pack_rat',v); },
         type: 'major',
         origin: 'kobold',
         taxonomy: 'resource',
@@ -1936,8 +1936,8 @@ export const traits = {
         },
     },
     paranoid: { // Bank capacity reduced by 10%
-        name: loc('trait_paranoid_name'),
-        desc: loc('trait_paranoid'),
+        name(){ return loc('trait_paranoid_name'); },
+        desc(v){ return loc('trait_paranoid',v); },
         type: 'major',
         origin: 'kobold',
         taxonomy: 'resource',
@@ -1962,8 +1962,8 @@ export const traits = {
         },
     },
     greedy: { // Lowers income from taxes
-        name: loc('trait_greedy_name'),
-        desc: loc('trait_greedy'),
+        name(){ return loc('trait_greedy_name'); },
+        desc(v){ return loc('trait_greedy',v); },
         type: 'major',
         origin: 'goblin',
         taxonomy: 'resource',
@@ -1988,8 +1988,8 @@ export const traits = {
         },
     },
     merchant: { // Better commodity selling prices
-        name: loc('trait_merchant_name'),
-        desc: loc('trait_merchant'),
+        name(){ return loc('trait_merchant_name'); },
+        desc(v){ return loc('trait_merchant',v); },
         type: 'major',
         origin: 'goblin',
         taxonomy: 'resource',
@@ -2015,8 +2015,8 @@ export const traits = {
         },
     },
     smart: { // Knowledge costs reduced by 10%
-        name: loc('trait_smart_name'),
-        desc: loc('trait_smart'),
+        name(){ return loc('trait_smart_name'); },
+        desc(v){ return loc('trait_smart',v); },
         type: 'major',
         origin: 'gnome',
         taxonomy: 'utility',
@@ -2041,8 +2041,8 @@ export const traits = {
         },
     },
     puny: { // Lowers minium bound for army score roll
-        name: loc('trait_puny_name'),
-        desc: loc('trait_puny'),
+        name(){ return loc('trait_puny_name'); },
+        desc(v){ return loc('trait_puny',v); },
         type: 'major',
         origin: 'gnome',
         taxonomy: 'combat',
@@ -2067,8 +2067,8 @@ export const traits = {
         },
     },
     dumb: { // Knowledge costs increased by 5%
-        name: loc('trait_dumb_name'),
-        desc: loc('trait_dumb'),
+        name(){ return loc('trait_dumb_name'); },
+        desc(v){ return loc('trait_dumb',v); },
         type: 'major',
         origin: 'ogre',
         taxonomy: 'utility',
@@ -2093,8 +2093,8 @@ export const traits = {
         },
     },
     tough: { // Mining output increased by 25%
-        name: loc('trait_tough_name'),
-        desc: loc('trait_tough'),
+        name(){ return loc('trait_tough_name'); },
+        desc(v){ return loc('trait_tough',v); },
         type: 'major',
         origin: 'ogre',
         taxonomy: 'resource',
@@ -2119,8 +2119,8 @@ export const traits = {
         },
     },
     nearsighted: { // Libraries are less effective
-        name: loc('trait_nearsighted_name'),
-        desc: loc('trait_nearsighted'),
+        name(){ return loc('trait_nearsighted_name'); },
+        desc(v){ return loc('trait_nearsighted',v); },
         type: 'major',
         origin: 'cyclops',
         taxonomy: 'utility',
@@ -2145,8 +2145,8 @@ export const traits = {
         },
     },
     intelligent: { // Professors and Scientists add a global production bonus
-        name: loc('trait_intelligent_name'),
-        desc: loc('trait_intelligent'),
+        name(){ return loc('trait_intelligent_name'); },
+        desc(v){ return loc('trait_intelligent',v); },
         type: 'major',
         origin: 'cyclops',
         taxonomy: 'production',
@@ -2172,8 +2172,8 @@ export const traits = {
         },
     },
     regenerative: { // Wounded soldiers heal 4x as fast
-        name: loc('trait_regenerative_name'),
-        desc: loc('trait_regenerative'),
+        name(){ return loc('trait_regenerative_name'); },
+        desc(v){ return loc('trait_regenerative',v); },
         type: 'major',
         origin: 'troll',
         taxonomy: 'combat',
@@ -2198,8 +2198,8 @@ export const traits = {
         },
     },
     gluttony: { // Eats 10% more food per rank
-        name: loc('trait_gluttony_name'),
-        desc: loc('trait_gluttony'),
+        name(){ return loc('trait_gluttony_name'); },
+        desc(v){ return loc('trait_gluttony',v); },
         type: 'major',
         origin: 'troll',
         taxonomy: 'resource',
@@ -2224,8 +2224,8 @@ export const traits = {
         },
     },
     slow: { // The game moves at a 10% slower pace
-        name: loc('trait_slow_name'),
-        desc: loc('trait_slow'),
+        name(){ return loc('trait_slow_name'); },
+        desc(v){ return loc('trait_slow',v); },
         type: 'major',
         origin: 'tortoisan',
         taxonomy: 'utility',
@@ -2250,8 +2250,8 @@ export const traits = {
         },
     },
     armored: { // Less soldiers die in combat
-        name: loc('trait_armored_name'),
-        desc: loc('trait_armored'),
+        name(){ return loc('trait_armored_name'); },
+        desc(v){ return loc('trait_armored',v); },
         type: 'major',
         origin: 'tortoisan',
         taxonomy: 'combat',
@@ -2277,8 +2277,8 @@ export const traits = {
         },
     },
     optimistic: { // Minor reduction to stress
-        name: loc('trait_optimistic_name'),
-        desc: loc('trait_optimistic'),
+        name(){ return loc('trait_optimistic_name'); },
+        desc(v){ return loc('trait_optimistic',v); },
         type: 'major',
         origin: 'gecko',
         taxonomy: 'production',
@@ -2303,8 +2303,8 @@ export const traits = {
         },
     },
     chameleon: { // Barracks have less soldiers
-        name: loc('trait_chameleon_name'),
-        desc: loc('trait_chameleon'),
+        name(){ return loc('trait_chameleon_name'); },
+        desc(v){ return loc('trait_chameleon',v); },
         type: 'major',
         origin: 'gecko',
         taxonomy: 'combat',
@@ -2330,8 +2330,8 @@ export const traits = {
         },
     },
     slow_digestion: { // Your race is more resilient to starvation
-        name: loc('trait_slow_digestion_name'),
-        desc: loc('trait_slow_digestion'),
+        name(){ return loc('trait_slow_digestion_name'); },
+        desc(v){ return loc('trait_slow_digestion',v); },
         type: 'major',
         origin: 'slitheryn',
         taxonomy: 'production',
@@ -2356,8 +2356,8 @@ export const traits = {
         },
     },
     astrologer: { // Improved astrological effects
-        name: loc('trait_astrologer_name'),
-        desc: loc('trait_astrologer'),
+        name(){ return loc('trait_astrologer_name'); },
+        desc(v){ return loc('trait_astrologer',v); },
         type: 'major',
         origin: 'slitheryn',
         taxonomy: 'utility',
@@ -2382,8 +2382,8 @@ export const traits = {
         },
     },
     hard_of_hearing: { // University science cap gain reduced by 5%
-        name: loc('trait_hard_of_hearing_name'),
-        desc: loc('trait_hard_of_hearing'),
+        name(){ return loc('trait_hard_of_hearing_name'); },
+        desc(v){ return loc('trait_hard_of_hearing',v); },
         type: 'major',
         origin: 'slitheryn',
         taxonomy: 'utility',
@@ -2408,8 +2408,8 @@ export const traits = {
         },
     },
     resourceful: { // Crafting costs are reduced slightly
-        name: loc('trait_resourceful_name'),
-        desc: loc('trait_resourceful'),
+        name(){ return loc('trait_resourceful_name'); },
+        desc(v){ return loc('trait_resourceful',v); },
         type: 'major',
         origin: 'arraak',
         taxonomy: 'resource',
@@ -2434,8 +2434,8 @@ export const traits = {
         },
     },
     selenophobia: { // Moon phase directly affects productivity, on average this is slightly negative
-        name: loc('trait_selenophobia_name'),
-        desc: loc('trait_selenophobia'),
+        name(){ return loc('trait_selenophobia_name'); },
+        desc(v){ return loc('trait_selenophobia',v); },
         type: 'major',
         origin: 'arraak',
         taxonomy: 'production',
@@ -2461,8 +2461,8 @@ export const traits = {
         },
     },
     leathery: { // Morale penalty from some weather conditions are reduced.
-        name: loc('trait_leathery_name'),
-        desc: loc('trait_leathery'),
+        name(){ return loc('trait_leathery_name'); },
+        desc(v){ return loc('trait_leathery',v); },
         type: 'major',
         origin: 'pterodacti',
         taxonomy: 'production',
@@ -2488,8 +2488,8 @@ export const traits = {
         },
     },
     pessimistic: { // Minor increase to stress
-        name: loc('trait_pessimistic_name'),
-        desc: loc('trait_pessimistic'),
+        name(){ return loc('trait_pessimistic_name'); },
+        desc(v){ return loc('trait_pessimistic',v); },
         type: 'major',
         origin: 'pterodacti',
         taxonomy: 'production',
@@ -2514,8 +2514,8 @@ export const traits = {
         },
     },
     hoarder: { // Banks can store 20% more money
-        name: loc('trait_hoarder_name'),
-        desc: loc('trait_hoarder'),
+        name(){ return loc('trait_hoarder_name'); },
+        desc(v){ return loc('trait_hoarder',v); },
         type: 'major',
         origin: 'dracnid',
         taxonomy: 'resource',
@@ -2540,8 +2540,8 @@ export const traits = {
         },
     },
     solitary: { // Cabins are cheaper however cottages cost more
-        name: loc('trait_solitary_name'),
-        desc: loc('trait_solitary'),
+        name(){ return loc('trait_solitary_name'); },
+        desc(v){ return loc('trait_solitary',v); },
         type: 'major',
         origin: 'dracnid',
         taxonomy: 'utility',
@@ -2567,8 +2567,8 @@ export const traits = {
         },
     },
     kindling_kindred: { // Lumber is no longer a resource, however other costs are increased for anything that would have used lumber to compensate.
-        name: loc('trait_kindling_kindred_name'),
-        desc: loc('trait_kindling_kindred'),
+        name(){ return loc('trait_kindling_kindred_name'); },
+        desc(v){ return loc('trait_kindling_kindred',v); },
         type: 'major',
         origin: 'entish',
         taxonomy: 'resource',
@@ -2593,8 +2593,8 @@ export const traits = {
         },
     },
     iron_wood: { // Removes Plywood as a resource, adds attack bonus
-        name: loc('trait_iron_wood_name'),
-        desc: loc('trait_iron_wood'),
+        name(){ return loc('trait_iron_wood_name'); },
+        desc(v){ return loc('trait_iron_wood',v); },
         type: 'major',
         origin: 'entish',
         taxonomy: 'resource',
@@ -2619,8 +2619,8 @@ export const traits = {
         },
     },
     pyrophobia: { // Smelter productivity is reduced
-        name: loc('trait_pyrophobia_name'),
-        desc: loc('trait_pyrophobia'),
+        name(){ return loc('trait_pyrophobia_name'); },
+        desc(v){ return loc('trait_pyrophobia',v); },
         type: 'major',
         origin: 'entish',
         taxonomy: 'resource',
@@ -2645,8 +2645,8 @@ export const traits = {
         }
     },
     catnip: { // Attract Cats
-        name: loc('trait_catnip_name'),
-        desc: loc('trait_catnip'),
+        name(){ return loc('trait_catnip_name'); },
+        desc(v){ return loc('trait_catnip',v); },
         type: 'major',
         origin: 'entish',
         taxonomy: 'production',
@@ -2671,8 +2671,8 @@ export const traits = {
         }
     },
     hyper: { // The game moves at a 5% faster pace
-        name: loc('trait_hyper_name'),
-        desc: loc('trait_hyper'),
+        name(){ return loc('trait_hyper_name'); },
+        desc(v){ return loc('trait_hyper',v); },
         type: 'major',
         origin: 'cacti',
         taxonomy: 'utility',
@@ -2697,8 +2697,8 @@ export const traits = {
         }
     },
     skittish: { // Thunderstorms lower all production
-        name: loc('trait_skittish_name'),
-        desc: loc('trait_skittish'),
+        name(){ return loc('trait_skittish_name'); },
+        desc(v){ return loc('trait_skittish',v); },
         type: 'major',
         origin: 'cacti',
         taxonomy: 'production',
@@ -2723,8 +2723,8 @@ export const traits = {
         }
     },
     fragrant: { // Reduced Hunting effectiveness
-        name: loc('trait_fragrant_name'),
-        desc: loc('trait_fragrant'),
+        name(){ return loc('trait_fragrant_name'); },
+        desc(v){ return loc('trait_fragrant',v); },
         type: 'major',
         origin: 'pinguicula',
         taxonomy: 'resource',
@@ -2749,8 +2749,8 @@ export const traits = {
         }
     },
     sticky: { // Food req lowered, Increase Combat Rating
-        name: loc('trait_sticky_name'),
-        desc: loc('trait_sticky'),
+        name(){ return loc('trait_sticky_name'); },
+        desc(v){ return loc('trait_sticky',v); },
         type: 'major',
         origin: 'pinguicula',
         taxonomy: 'combat',
@@ -2776,8 +2776,8 @@ export const traits = {
         }
     },
     anise: { // Attract Dogs
-        name: loc('trait_anise_name'),
-        desc: loc('trait_anise'),
+        name(){ return loc('trait_anise_name'); },
+        desc(v){ return loc('trait_anise',v); },
         type: 'major',
         origin: 'pinguicula',
         taxonomy: 'production',
@@ -2802,8 +2802,8 @@ export const traits = {
         }
     },
     infectious: { // Attacking has a chance to infect other creatures and grow your population
-        name: loc('trait_infectious_name'),
-        desc: loc('trait_infectious'),
+        name(){ return loc('trait_infectious_name'); },
+        desc(v){ return loc('trait_infectious',v); },
         type: 'major',
         origin: 'sporgar',
         taxonomy: 'combat',
@@ -2829,8 +2829,8 @@ export const traits = {
         }
     },
     parasite: { // You can only reproduce by infecting victims, spores sometimes find a victim when it's windy
-        name: loc('trait_parasite_name'),
-        desc: loc('trait_parasite'),
+        name(){ return loc('trait_parasite_name'); },
+        desc(v){ return loc('trait_parasite',v); },
         type: 'major',
         origin: 'sporgar',
         taxonomy: 'combat',
@@ -2855,8 +2855,8 @@ export const traits = {
         }
     },
     toxic: { // Factory type jobs are more productive
-        name: loc('trait_toxic_name'),
-        desc: loc('trait_toxic'),
+        name(){ return loc('trait_toxic_name'); },
+        desc(v){ return loc('trait_toxic',v); },
         type: 'major',
         origin: 'shroomi',
         taxonomy: 'resource',
@@ -2882,8 +2882,8 @@ export const traits = {
         }
     },
     nyctophilia: { // Productivity is lost when it is sunny
-        name: loc('trait_nyctophilia_name'),
-        desc: loc('trait_nyctophilia'),
+        name(){ return loc('trait_nyctophilia_name'); },
+        desc(v){ return loc('trait_nyctophilia',v); },
         type: 'major',
         origin: 'shroomi',
         taxonomy: 'production',
@@ -2909,8 +2909,8 @@ export const traits = {
         }
     },
     infiltrator: { // Cheap spies and sometimes steal tech from rivals
-        name: loc('trait_infiltrator_name'),
-        desc: loc('trait_infiltrator'),
+        name(){ return loc('trait_infiltrator_name'); },
+        desc(v){ return loc('trait_infiltrator',v); },
         type: 'major',
         origin: 'moldling',
         taxonomy: 'utility',
@@ -2935,8 +2935,8 @@ export const traits = {
         }
     },
     hibernator: { // Lower activity during winter
-        name: loc('trait_hibernator_name'),
-        desc: loc('trait_hibernator'),
+        name(){ return loc('trait_hibernator_name'); },
+        desc(v){ return loc('trait_hibernator',v); },
         type: 'major',
         origin: 'moldling',
         taxonomy: 'production',
@@ -2962,8 +2962,8 @@ export const traits = {
         }
     },
     cannibalize: { // Eat your own for buffs
-        name: loc('trait_cannibalize_name'),
-        desc: loc('trait_cannibalize'),
+        name(){ return loc('trait_cannibalize_name'); },
+        desc(v){ return loc('trait_cannibalize',v); },
         type: 'major',
         origin: 'mantis',
         taxonomy: 'utility',
@@ -2988,8 +2988,8 @@ export const traits = {
         }
     },
     frail: { // More soldiers die in combat
-        name: loc('trait_frail_name'),
-        desc: loc('trait_frail'),
+        name(){ return loc('trait_frail_name'); },
+        desc(v){ return loc('trait_frail',v); },
         type: 'major',
         origin: 'mantis',
         taxonomy: 'combat',
@@ -3015,8 +3015,8 @@ export const traits = {
         }
     },
     malnutrition: { // The rationing penalty is weaker
-        name: loc('trait_malnutrition_name'),
-        desc: loc('trait_malnutrition'),
+        name(){ return loc('trait_malnutrition_name'); },
+        desc(v){ return loc('trait_malnutrition',v); },
         type: 'major',
         origin: 'mantis',
         taxonomy: 'production',
@@ -3041,8 +3041,8 @@ export const traits = {
         }
     },
     claws: { // Raises maximum bound for army score roll
-        name: loc('trait_claws_name'),
-        desc: loc('trait_claws'),
+        name(){ return loc('trait_claws_name'); },
+        desc(v){ return loc('trait_claws',v); },
         type: 'major',
         origin: 'scorpid',
         taxonomy: 'combat',
@@ -3067,8 +3067,8 @@ export const traits = {
         }
     },
     atrophy: { // More prone to starvation
-        name: loc('trait_atrophy_name'),
-        desc: loc('trait_atrophy'),
+        name(){ return loc('trait_atrophy_name'); },
+        desc(v){ return loc('trait_atrophy',v); },
         type: 'major',
         origin: 'scorpid',
         taxonomy: 'production',
@@ -3093,8 +3093,8 @@ export const traits = {
         }
     },
     hivemind: { // Jobs with low citizen counts assigned to them have reduced output, but those with high numbers have increased output.
-        name: loc('trait_hivemind_name'),
-        desc: loc('trait_hivemind'),
+        name(){ return loc('trait_hivemind_name'); },
+        desc(v){ return loc('trait_hivemind',v); },
         type: 'major',
         origin: 'antid',
         taxonomy: 'production',
@@ -3119,8 +3119,8 @@ export const traits = {
         }
     },
     tunneler: { // Mines and Coal Mines are cheaper.
-        name: loc('trait_tunneler_name'),
-        desc: loc('trait_tunneler'),
+        name(){ return loc('trait_tunneler_name'); },
+        desc(v){ return loc('trait_tunneler',v); },
         type: 'major',
         origin: 'antid',
         taxonomy: 'utility',
@@ -3145,8 +3145,8 @@ export const traits = {
         }
     },
     blood_thirst: { // Combat causes a temporary increase in morale
-        name: loc('trait_blood_thirst_name'),
-        desc: loc('trait_blood_thirst'),
+        name(){ return loc('trait_blood_thirst_name'); },
+        desc(v){ return loc('trait_blood_thirst',v); },
         type: 'major',
         origin: 'sharkin',
         taxonomy: 'combat',
@@ -3172,8 +3172,8 @@ export const traits = {
         }
     },
     apex_predator: { // Hunting and Combat ratings are significantly higher, but you can't use armor
-        name: loc('trait_apex_predator_name'),
-        desc: loc('trait_apex_predator'),
+        name(){ return loc('trait_apex_predator_name'); },
+        desc(v){ return loc('trait_apex_predator',v); },
         type: 'major',
         origin: 'sharkin',
         taxonomy: 'combat',
@@ -3199,8 +3199,8 @@ export const traits = {
         }
     },
     invertebrate: { // You have no bones
-        name: loc('trait_invertebrate_name'),
-        desc: loc('trait_invertebrate'),
+        name(){ return loc('trait_invertebrate_name'); },
+        desc(v){ return loc('trait_invertebrate',v); },
         type: 'major',
         origin: 'octigoran',
         taxonomy: 'combat',
@@ -3225,8 +3225,8 @@ export const traits = {
         }
     },
     suction_grip: { // Global productivity boost
-        name: loc('trait_suction_grip_name'),
-        desc: loc('trait_suction_grip'),
+        name(){ return loc('trait_suction_grip_name'); },
+        desc(v){ return loc('trait_suction_grip',v); },
         type: 'major',
         origin: 'octigoran',
         taxonomy: 'production',
@@ -3251,8 +3251,8 @@ export const traits = {
         }
     },
     befuddle: { // Spy actions complete in 1/2 time
-        name: loc('trait_befuddle_name'),
-        desc: loc('trait_befuddle'),
+        name(){ return loc('trait_befuddle_name'); },
+        desc(v){ return loc('trait_befuddle',v); },
         type: 'major',
         origin: 'dryad',
         taxonomy: 'utility',
@@ -3277,8 +3277,8 @@ export const traits = {
         }
     },
     environmentalist: { // Use renewable energy instead of dirtly coal & oil power.
-        name: loc('trait_environmentalist_name'),
-        desc: loc('trait_environmentalist'),
+        name(){ return loc('trait_environmentalist_name'); },
+        desc(v){ return loc('trait_environmentalist',v); },
         type: 'major',
         origin: 'dryad',
         taxonomy: 'utility',
@@ -3304,8 +3304,8 @@ export const traits = {
         }
     },
     unorganized: { // Increased time between revolutions
-        name: loc('trait_unorganized_name'),
-        desc: loc('trait_unorganized'),
+        name(){ return loc('trait_unorganized_name'); },
+        desc(v){ return loc('trait_unorganized',v); },
         type: 'major',
         origin: 'satyr',
         taxonomy: 'utility',
@@ -3330,8 +3330,8 @@ export const traits = {
         }
     },
     musical: { // Entertainers are more effective
-        name: loc('trait_musical_name'),
-        desc: loc('trait_musical'),
+        name(){ return loc('trait_musical_name'); },
+        desc(v){ return loc('trait_musical',v); },
         type: 'major',
         origin: 'satyr',
         taxonomy: 'production',
@@ -3356,8 +3356,8 @@ export const traits = {
         }
     },
     revive: { // Soldiers sometimes self res
-        name: loc('trait_revive_name'),
-        desc: loc('trait_revive'),
+        name(){ return loc('trait_revive_name'); },
+        desc(v){ return loc('trait_revive',v); },
         type: 'major',
         origin: 'phoenix',
         taxonomy: 'combat',
@@ -3383,8 +3383,8 @@ export const traits = {
         }
     },
     slow_regen: { // Your soldiers wounds heal slower.
-        name: loc('trait_slow_regen_name'),
-        desc: loc('trait_slow_regen'),
+        name(){ return loc('trait_slow_regen_name'); },
+        desc(v){ return loc('trait_slow_regen',v); },
         type: 'major',
         origin: 'phoenix',
         taxonomy: 'combat',
@@ -3409,8 +3409,8 @@ export const traits = {
         }
     },
     forge: { // Smelters do not require fuel, boosts geothermal power
-        name: loc('trait_forge_name'),
-        desc: loc('trait_forge'),
+        name(){ return loc('trait_forge_name'); },
+        desc(v){ return loc('trait_forge',v); },
         type: 'major',
         origin: 'salamander',
         taxonomy: 'utility',
@@ -3435,8 +3435,8 @@ export const traits = {
         }
     },
     autoignition: { // Library knowledge bonus reduced
-        name: loc('trait_autoignition_name'),
-        desc: loc('trait_autoignition'),
+        name(){ return loc('trait_autoignition_name'); },
+        desc(v){ return loc('trait_autoignition',v); },
         type: 'major',
         origin: 'salamander',
         taxonomy: 'utility',
@@ -3461,8 +3461,8 @@ export const traits = {
         }
     },
     blurry: { // Increased success chance of spies // Warlord improves Reapers
-        name: loc('trait_blurry_name'),
-        desc: loc('trait_blurry'),
+        name(){ return loc('trait_blurry_name'); },
+        desc(v){ return loc('trait_blurry',v); },
         type: 'major',
         origin: 'yeti',
         taxonomy: 'utility',
@@ -3487,8 +3487,8 @@ export const traits = {
         }
     },
     snowy: { // You lose morale if it's not snowing
-        name: loc('trait_snowy_name'),
-        desc: loc('trait_snowy'),
+        name(){ return loc('trait_snowy_name'); },
+        desc(v){ return loc('trait_snowy',v); },
         type: 'major',
         origin: 'yeti',
         taxonomy: 'production',
@@ -3514,8 +3514,8 @@ export const traits = {
         }
     },
     ravenous: { // Drastically increases food consumption
-        name: loc('trait_ravenous_name'),
-        desc: loc('trait_ravenous'),
+        name(){ return loc('trait_ravenous_name'); },
+        desc(v){ return loc('trait_ravenous',v); },
         type: 'major',
         origin: 'wendigo',
         taxonomy: 'resource',
@@ -3541,8 +3541,8 @@ export const traits = {
         }
     },
     ghostly: { // More souls from hunting and soul wells, increased soul gem drop chance
-        name: loc('trait_ghostly_name'),
-        desc: loc('trait_ghostly'),
+        name(){ return loc('trait_ghostly_name'); },
+        desc(v){ return loc('trait_ghostly',v); },
         type: 'major',
         origin: 'wendigo',
         taxonomy: 'utility',
@@ -3568,8 +3568,8 @@ export const traits = {
         }
     },
     lawless: { // Government lockout timer is reduced by 90%
-        name: loc('trait_lawless_name'),
-        desc: loc('trait_lawless'),
+        name(){ return loc('trait_lawless_name'); },
+        desc(v){ return loc('trait_lawless',v); },
         type: 'major',
         origin: 'tuskin',
         taxonomy: 'utility',
@@ -3594,8 +3594,8 @@ export const traits = {
         }
     },
     mistrustful: { // Lose standing with rival cities quicker
-        name: loc('trait_mistrustful_name'),
-        desc: loc('trait_mistrustful'),
+        name(){ return loc('trait_mistrustful_name'); },
+        desc(v){ return loc('trait_mistrustful',v); },
         type: 'major',
         origin: 'tuskin',
         taxonomy: 'utility',
@@ -3620,8 +3620,8 @@ export const traits = {
         }
     },
     humpback: { // Starvation resistance and miner/lumberjack boost
-        name: loc('trait_humpback_name'),
-        desc: loc('trait_humpback'),
+        name(){ return loc('trait_humpback_name'); },
+        desc(v){ return loc('trait_humpback',v); },
         type: 'major',
         origin: 'kamel',
         taxonomy: 'resource',
@@ -3647,16 +3647,16 @@ export const traits = {
         }
     },
     thalassophobia: { // Wharves are unavailable
-        name: loc('trait_thalassophobia_name'),
-        desc: loc('trait_thalassophobia'),
+        name(){ return loc('trait_thalassophobia_name'); },
+        desc(v){ return loc('trait_thalassophobia',v); },
         type: 'major',
         origin: 'kamel',
         taxonomy: 'utility',
         val: -4
     },
     unfavored: { // Zodiac Signs give negative Effects
-        name: loc('trait_unfavored_name'),
-        desc: loc('trait_unfavored'),
+        name(){ return loc('trait_unfavored_name'); },
+        desc(v){ return loc('trait_unfavored',v); },
         type: 'major',
         origin: 'kamel',
         taxonomy: 'utility',
@@ -3682,8 +3682,8 @@ export const traits = {
         }
     },
     fiery: { // Major war bonus
-        name: loc('trait_fiery_name'),
-        desc: loc('trait_fiery'),
+        name(){ return loc('trait_fiery_name'); },
+        desc(v){ return loc('trait_fiery',v); },
         type: 'major',
         origin: 'balorg',
         taxonomy: 'combat',
@@ -3709,8 +3709,8 @@ export const traits = {
         }
     },
     terrifying: { // No one will trade with you
-        name: loc('trait_terrifying_name'),
-        desc: loc('trait_terrifying'),
+        name(){ return loc('trait_terrifying_name'); },
+        desc(v){ return loc('trait_terrifying',v); },
         type: 'major',
         origin: 'balorg',
         taxonomy: 'resource',
@@ -3736,8 +3736,8 @@ export const traits = {
         }
     },
     slaver: { // You capture victims and force them to work for you
-        name: loc('trait_slaver_name'),
-        desc: loc('trait_slaver'),
+        name(){ return loc('trait_slaver_name'); },
+        desc(v){ return loc('trait_slaver',v); },
         type: 'major',
         origin: 'balorg',
         taxonomy: 'production',
@@ -3762,8 +3762,8 @@ export const traits = {
         }
     },
     compact: { // You hardly take up any space at all
-        name: loc('trait_compact_name'),
-        desc: loc('trait_compact'),
+        name(){ return loc('trait_compact_name'); },
+        desc(v){ return loc('trait_compact',v); },
         type: 'major',
         origin: 'imp',
         taxonomy: 'utility',
@@ -3789,8 +3789,8 @@ export const traits = {
         }
     },
     conniving: { // Better trade deals
-        name: loc('trait_conniving_name'),
-        desc: loc('trait_conniving'),
+        name(){ return loc('trait_conniving_name'); },
+        desc(v){ return loc('trait_conniving',v); },
         type: 'major',
         origin: 'imp',
         taxonomy: 'resource',
@@ -3816,8 +3816,8 @@ export const traits = {
         }
     },
     pathetic: { // You suck at combat
-        name: loc('trait_pathetic_name'),
-        desc: loc('trait_pathetic'),
+        name(){ return loc('trait_pathetic_name'); },
+        desc(v){ return loc('trait_pathetic',v); },
         type: 'major',
         origin: 'imp',
         taxonomy: 'combat',
@@ -3842,8 +3842,8 @@ export const traits = {
         }
     },
     spiritual: { // Temples are 13% more effective
-        name: loc('trait_spiritual_name'),
-        desc: loc('trait_spiritual'),
+        name(){ return loc('trait_spiritual_name'); },
+        desc(v){ return loc('trait_spiritual',v); },
         type: 'major',
         origin: 'seraph',
         taxonomy: 'production',
@@ -3868,8 +3868,8 @@ export const traits = {
         }
     },
     truthful: { // Bankers are less effective
-        name: loc('trait_truthful_name'),
-        desc: loc('trait_truthful'),
+        name(){ return loc('trait_truthful_name'); },
+        desc(v){ return loc('trait_truthful',v); },
         type: 'major',
         origin: 'seraph',
         taxonomy: 'resource',
@@ -3894,8 +3894,8 @@ export const traits = {
         }
     },
     unified: { // Start with unification
-        name: loc('trait_unified_name'),
-        desc: loc('trait_unified'),
+        name(){ return loc('trait_unified_name'); },
+        desc(v){ return loc('trait_unified',v); },
         type: 'major',
         origin: 'seraph',
         taxonomy: 'production',
@@ -3921,8 +3921,8 @@ export const traits = {
         }
     },
     rainbow: { // Gain a bonus if sunny after raining
-        name: loc('trait_rainbow_name'),
-        desc: loc('trait_rainbow'),
+        name(){ return loc('trait_rainbow_name'); },
+        desc(v){ return loc('trait_rainbow',v); },
         type: 'major',
         origin: 'unicorn',
         taxonomy: 'production',
@@ -3947,8 +3947,8 @@ export const traits = {
         }
     },
     gloomy: { // Gain a bonus if cloudy
-        name: loc('trait_gloomy_name'),
-        desc: loc('trait_gloomy'),
+        name(){ return loc('trait_gloomy_name'); },
+        desc(v){ return loc('trait_gloomy',v); },
         type: 'major',
         origin: 'unicorn',
         taxonomy: 'production',
@@ -3973,8 +3973,8 @@ export const traits = {
         }
     },
     magnificent: { // construct shrines to receive boons
-        name: loc('trait_magnificent_name'),
-        desc: loc('trait_magnificent'),
+        name(){ return loc('trait_magnificent_name'); },
+        desc(v){ return loc('trait_magnificent',v); },
         type: 'major',
         origin: 'unicorn',
         taxonomy: 'utility',
@@ -4000,8 +4000,8 @@ export const traits = {
         }
     },
     noble: { // Unable to raise taxes above base value or set very low taxes
-        name: loc('trait_noble_name'),
-        desc: loc('trait_noble'),
+        name(){ return loc('trait_noble_name'); },
+        desc(v){ return loc('trait_noble',v); },
         type: 'major',
         origin: 'unicorn',
         taxonomy: 'resource',
@@ -4027,8 +4027,8 @@ export const traits = {
         }
     },
     imitation: { // You are an imitation of another species
-        name: loc('trait_imitation_name'),
-        desc: loc('trait_imitation'),
+        name(){ return loc('trait_imitation_name'); },
+        desc(v){ return loc('trait_imitation',v); },
         type: 'major',
         origin: 'synth',
         taxonomy: 'utility',
@@ -4054,8 +4054,8 @@ export const traits = {
         }
     },
     emotionless: { // You have no emotions, cold logic dictates your decisions
-        name: loc('trait_emotionless_name'),
-        desc: loc('trait_emotionless'),
+        name(){ return loc('trait_emotionless_name'); },
+        desc(v){ return loc('trait_emotionless',v); },
         type: 'major',
         origin: 'synth',
         taxonomy: 'production',
@@ -4081,8 +4081,8 @@ export const traits = {
         }
     },
     logical: { // Citizens add Knowledge
-        name: loc('trait_logical_name'),
-        desc: loc('trait_logical'),
+        name(){ return loc('trait_logical_name'); },
+        desc(v){ return loc('trait_logical',v); },
         type: 'major',
         origin: 'synth',
         taxonomy: 'utility',
@@ -4108,8 +4108,8 @@ export const traits = {
         }
     },
     shapeshifter: {
-        name: loc('trait_shapeshifter_name'),
-        desc: loc('trait_shapeshifter'),
+        name(){ return loc('trait_shapeshifter_name'); },
+        desc(v){ return loc('trait_shapeshifter',v); },
         type: 'major',
         origin: 'nano',
         taxonomy: 'utility',
@@ -4135,8 +4135,8 @@ export const traits = {
         }
     },
     deconstructor: {
-        name: loc('trait_deconstructor_name'),
-        desc: loc('trait_deconstructor'),
+        name(){ return loc('trait_deconstructor_name'); },
+        desc(v){ return loc('trait_deconstructor',v); },
         type: 'major',
         origin: 'nano',
         taxonomy: 'utility',
@@ -4161,8 +4161,8 @@ export const traits = {
         }
     },
     linked: {
-        name: loc('trait_linked_name'),
-        desc: loc('trait_linked'),
+        name(){ return loc('trait_linked_name'); },
+        desc(v){ return loc('trait_linked',v); },
         type: 'major',
         origin: 'nano',
         taxonomy: 'utility',
@@ -4188,8 +4188,8 @@ export const traits = {
         }
     },
     dark_dweller: {
-        name: loc('trait_dark_dweller_name'),
-        desc: loc('trait_dark_dweller'),
+        name(){ return loc('trait_dark_dweller_name'); },
+        desc(v){ return loc('trait_dark_dweller',v); },
         type: 'major',
         origin: 'ghast',
         taxonomy: 'resource',
@@ -4214,8 +4214,8 @@ export const traits = {
         }
     },
     swift: {
-        name: loc('trait_swift_name'),
-        desc: loc('trait_swift'),
+        name(){ return loc('trait_swift_name'); },
+        desc(v){ return loc('trait_swift',v); },
         type: 'major',
         origin: 'ghast',
         taxonomy: 'combat',
@@ -4241,8 +4241,8 @@ export const traits = {
         }
     },
     anthropophagite: {
-        name: loc('trait_anthropophagite_name'),
-        desc: loc('trait_anthropophagite'),
+        name(){ return loc('trait_anthropophagite_name'); },
+        desc(v){ return loc('trait_anthropophagite',v); },
         type: 'major',
         origin: 'ghast',
         taxonomy: 'utility',
@@ -4267,8 +4267,8 @@ export const traits = {
         }
     },
     living_tool: {
-        name: loc('trait_living_tool_name'),
-        desc: loc('trait_living_tool'),
+        name(){ return loc('trait_living_tool_name'); },
+        desc(v){ return loc('trait_living_tool',v); },
         type: 'major',
         origin: 'shoggoth',
         taxonomy: 'resource',
@@ -4294,8 +4294,8 @@ export const traits = {
         }
     },
     bloated: {
-        name: loc('trait_bloated_name'),
-        desc: loc('trait_bloated'),
+        name(){ return loc('trait_bloated_name'); },
+        desc(v){ return loc('trait_bloated',v); },
         type: 'major',
         origin: 'shoggoth',
         taxonomy: 'utility',
@@ -4321,8 +4321,8 @@ export const traits = {
         }
     },
     artisan: {
-        name: loc('trait_artisan_name'),
-        desc: loc('trait_artisan'),
+        name(){ return loc('trait_artisan_name'); },
+        desc(v){ return loc('trait_artisan',v); },
         type: 'major',
         origin: 'dwarf',
         taxonomy: 'resource',
@@ -4348,8 +4348,8 @@ export const traits = {
         }
     },
     stubborn: {
-        name: loc('trait_stubborn_name'),
-        desc: loc('trait_stubborn'),
+        name(){ return loc('trait_stubborn_name'); },
+        desc(v){ return loc('trait_stubborn',v); },
         type: 'major',
         origin: 'dwarf',
         taxonomy: 'utility',
@@ -4375,8 +4375,8 @@ export const traits = {
         }
     },
     rogue: {
-        name: loc('trait_rogue_name'),
-        desc: loc('trait_rogue'),
+        name(){ return loc('trait_rogue_name'); },
+        desc(v){ return loc('trait_rogue',v); },
         type: 'major',
         origin: 'raccoon',
         taxonomy: 'resource',
@@ -4402,8 +4402,8 @@ export const traits = {
         }
     },
     untrustworthy: {
-        name: loc('trait_untrustworthy_name'),
-        desc: loc('trait_untrustworthy'),
+        name(){ return loc('trait_untrustworthy_name'); },
+        desc(v){ return loc('trait_untrustworthy',v); },
         type: 'major',
         origin: 'raccoon',
         taxonomy: 'utility',
@@ -4429,8 +4429,8 @@ export const traits = {
         }
     },
     living_materials: {
-        name: loc('trait_living_materials_name'),
-        desc: loc('trait_living_materials'),
+        name(){ return loc('trait_living_materials_name'); },
+        desc(v){ return loc('trait_living_materials',v); },
         type: 'major',
         origin: 'lichen',
         taxonomy: 'resource',
@@ -4457,8 +4457,8 @@ export const traits = {
         }
     },
     unstable: {
-        name: loc('trait_unstable_name'),
-        desc: loc('trait_unstable'),
+        name(){ return loc('trait_unstable_name'); },
+        desc(v){ return loc('trait_unstable',v); },
         type: 'major',
         origin: 'lichen',
         taxonomy: 'utility',
@@ -4484,8 +4484,8 @@ export const traits = {
         }
     },
     elemental: {
-        name: loc('trait_elemental_name'),
-        desc: loc('trait_elemental'),
+        name(){ return loc('trait_elemental_name'); },
+        desc(v){ return loc('trait_elemental',v); },
         type: 'major',
         origin: 'wyvern',
         taxonomy: 'utility',
@@ -4538,8 +4538,8 @@ export const traits = {
         }
     },
     chicken: {
-        name: loc('trait_chicken_name'),
-        desc: loc('trait_chicken'),
+        name(){ return loc('trait_chicken_name'); },
+        desc(v){ return loc('trait_chicken',v); },
         type: 'major',
         origin: 'wyvern',
         taxonomy: 'combat',
@@ -4565,8 +4565,8 @@ export const traits = {
         }
     },
     tusk: {
-        name: loc('trait_tusk_name'),
-        desc: loc('trait_tusk'),
+        name(){ return loc('trait_tusk_name'); },
+        desc(v){ return loc('trait_tusk',v); },
         type: 'major',
         origin: 'narwhal',
         taxonomy: 'resource',
@@ -4620,8 +4620,8 @@ export const traits = {
         }
     },
     blubber: {
-        name: loc('trait_blubber_name'),
-        desc: loc('trait_blubber'),
+        name(){ return loc('trait_blubber_name'); },
+        desc(v){ return loc('trait_blubber',v); },
         type: 'major',
         origin: 'narwhal',
         taxonomy: 'resource',
@@ -4647,8 +4647,8 @@ export const traits = {
         }
     },
     ocular_power: {
-        name: loc('trait_ocular_power_name'),
-        desc: loc('trait_ocular_power'),
+        name(){ return loc('trait_ocular_power_name'); },
+        desc(v){ return loc('trait_ocular_power',v); },
         type: 'major',
         origin: 'beholder',
         taxonomy: 'utility',
@@ -4674,8 +4674,8 @@ export const traits = {
         }
     },
     floating: {
-        name: loc('trait_floating_name'),
-        desc: loc('trait_floating'),
+        name(){ return loc('trait_floating_name'); },
+        desc(v){ return loc('trait_floating',v); },
         type: 'major',
         origin: 'beholder',
         taxonomy: 'production',
@@ -4701,8 +4701,8 @@ export const traits = {
         }
     },
     wish: {
-        name: loc('trait_wish_name'),
-        desc: loc('trait_wish'),
+        name(){ return loc('trait_wish_name'); },
+        desc(v){ return loc('trait_wish',v); },
         type: 'major',
         origin: 'djinn',
         taxonomy: 'utility',
@@ -4728,8 +4728,8 @@ export const traits = {
         }
     },
     devious: {
-        name: loc('trait_devious_name'),
-        desc: loc('trait_devious'),
+        name(){ return loc('trait_devious_name'); },
+        desc(v){ return loc('trait_devious',v); },
         type: 'major',
         origin: 'djinn',
         taxonomy: 'resource',
@@ -4755,8 +4755,8 @@ export const traits = {
         }
     },
     grenadier: {
-        name: loc('trait_grenadier_name'),
-        desc: loc('trait_grenadier'),
+        name(){ return loc('trait_grenadier_name'); },
+        desc(v){ return loc('trait_grenadier',v); },
         type: 'major',
         origin: 'bombardier',
         taxonomy: 'combat',
@@ -4782,8 +4782,8 @@ export const traits = {
         }
     },
     aggressive: {
-        name: loc('trait_aggressive_name'),
-        desc: loc('trait_aggressive'),
+        name(){ return loc('trait_aggressive_name'); },
+        desc(v){ return loc('trait_aggressive',v); },
         type: 'major',
         origin: 'bombardier',
         taxonomy: 'combat',
@@ -4809,8 +4809,8 @@ export const traits = {
         }
     },
     empowered: {
-        name: loc('trait_empowered_name'),
-        desc: loc('trait_empowered'),
+        name(){ return loc('trait_empowered_name'); },
+        desc(v){ return loc('trait_empowered',v); },
         type: 'major',
         origin: 'nephilim',
         taxonomy: 'utility',
@@ -4836,8 +4836,8 @@ export const traits = {
         }
     },
     blasphemous: {
-        name: loc('trait_blasphemous_name'),
-        desc: loc('trait_blasphemous'),
+        name(){ return loc('trait_blasphemous_name'); },
+        desc(v){ return loc('trait_blasphemous',v); },
         type: 'major',
         origin: 'nephilim',
         taxonomy: 'production',
@@ -4863,8 +4863,8 @@ export const traits = {
         }
     },
     ooze: { // you are some kind of ooze, everything is bad
-        name: loc('trait_ooze_name'),
-        desc: loc('trait_ooze'),
+        name(){ return loc('trait_ooze_name'); },
+        desc(v){ return loc('trait_ooze',v); },
         type: 'major',
         origin: 'sludge',
         taxonomy: 'production',
@@ -4890,488 +4890,453 @@ export const traits = {
         }
     },
     soul_eater: { // You eat souls for breakfast, lunch, and dinner
-        name: loc('trait_soul_eater_name'),
-        desc: loc('trait_soul_eater'),
+        name(){ return loc('trait_soul_eater_name'); },
+        desc(v){ return loc('trait_soul_eater',v); },
         type: 'special',
         val: 0,
     },
     untapped: { // Untapped Potential
-        name: loc('trait_untapped_name'),
-        desc: loc('trait_untapped'),
+        name(){ return loc('trait_untapped_name'); },
+        desc(v){ return loc('trait_untapped',v); },
         type: 'special',
         val: 0,
     },
     emfield: { // Your body produces a natural electromagnetic field that disrupts electriciy
-        name: loc('trait_emfield_name'),
-        desc: loc('trait_emfield'),
+        name(){ return loc('trait_emfield_name'); },
+        desc(v){ return loc('trait_emfield',v); },
         type: 'special',
         val: -20,
     },
     // --- Minor traits -----
     // Genus restricts trait to that genus only.
     tactical: { // Army rating
-        name: loc('trait_tactical_name'),
-        desc: loc('trait_tactical'),
+        name(){ return loc('trait_tactical_name'); },
+        desc(v){ return loc('trait_tactical',v); },
         type: 'minor',
         base: 'A',
-        vars(r){ return [4]; },
-        weak(r){ return [2]; },
+        vars(r=1){ return [4*r]; },
     },
     analytical: { // Science output
-        name: loc('trait_analytical_name'),
-        desc: loc('trait_analytical'),
+        name(){ return loc('trait_analytical_name'); },
+        desc(v){ return loc('trait_analytical',v); },
         type: 'minor',
         base: 'T',
-        vars(r){ return [2]; },
-        weak(r){ return [1]; },
+        vars(r=1){ return [2*r]; },
     },
     promiscuous: { // Population growth; synths get cheaper citizens instead
-        name: loc('trait_promiscuous_name'),
-        desc: loc('trait_promiscuous'),
+        name(){ return loc('trait_promiscuous_name'); },
+        desc(v){ return loc('trait_promiscuous',v); },
         type: 'special',
         base: 'C',
-        vars(r){ return [2,4]; },
-        weak(r){ return [1,2]; },
+        vars(r=1){ return [2*r,4*r]; },
     },
     resilient: { // Coal, Oil and Helium-3 production
-        name: loc('trait_resilient_name'),
-        desc: loc('trait_resilient'),
+        name(){ return loc('trait_resilient_name'); },
+        // Warlord has no coal miner; mining runs through the Tunneler, and Resilient lifts the rare
+        // metals it brings up alongside the coal.
+        desc(v){ return loc(global.race['warlord'] ? 'trait_resilient_warlord' : 'trait_resilient',v); },
         type: 'minor',
         base: 'G',
-        vars(r){ return [6]; },
-        weak(r){ return [3]; },
+        vars(r=1){ return [6*r]; },
     },
     cunning: { // Market buy price
-        name: loc('trait_cunning_name'),
-        desc: loc('trait_cunning'),
+        name(){ return loc('trait_cunning_name'); },
+        desc(v){ return loc('trait_cunning',v); },
         type: 'minor',
         base: 'A',
-        vars(r){ return [8]; },
-        weak(r){ return [4]; },
+        vars(r=1){ return [8*r]; },
     },
     hardy: { // Factory output
-        name: loc('trait_hardy_name'),
-        desc: loc('trait_hardy'),
+        name(){ return loc('trait_hardy_name'); },
+        desc(v){ return loc('trait_hardy',v); },
         type: 'minor',
         base: 'A',
-        vars(r){ return [2]; },
-        weak(r){ return [1]; },
+        vars(r=1){ return [2*r]; },
     },
     ambidextrous: { // Crafting speed, and automated crafting
-        name: loc('trait_ambidextrous_name'),
-        desc: loc('trait_ambidextrous'),
+        name(){ return loc('trait_ambidextrous_name'); },
+        desc(v){ return loc('trait_ambidextrous',v); },
         type: 'minor',
         base: 'C',
-        vars(r){ return [6,4]; },
-        weak(r){ return [3,2]; },
+        vars(r=1){ return [6*r,4*r]; },
     },
     industrious: { // Mining output
-        name: loc('trait_industrious_name'),
-        desc: loc('trait_industrious'),
+        name(){ return loc('trait_industrious_name'); },
+        desc(v){ return loc('trait_industrious',v); },
         type: 'minor',
         base: 'G',
-        vars(r){ return [4]; },
-        weak(r){ return [2]; },
+        vars(r=1){ return [4*r]; },
     },
     content: { // Job stress: workers a job carries per stress point
-        name: loc('trait_content_name'),
-        desc: loc('trait_content'),
+        name(){ return loc('trait_content_name'); },
+        desc(v){ return loc('trait_content',v); },
         type: 'special',
         base: 'A',
-        vars(r){ return [0.4]; },
-        weak(r){ return [0.2]; },
+        vars(r=1){ return [0.4*r]; },
     },
     fibroblast: { // Soldier healing
-        name: loc('trait_fibroblast_name'),
-        desc: loc('trait_fibroblast'),
+        name(){ return loc('trait_fibroblast_name'); },
+        desc(v){ return loc('trait_fibroblast',v); },
         type: 'minor',
         base: 'T',
-        vars(r){ return [4]; },
-        weak(r){ return [2]; },
+        vars(r=1){ return [4*r]; },
     },
     metallurgist: { // Alloy production
-        name: loc('trait_metallurgist_name'),
-        desc: loc('trait_metallurgist'),
+        name(){ return loc('trait_metallurgist_name'); },
+        desc(v){ return loc('trait_metallurgist',v); },
         type: 'minor',
         base: 'C',
-        vars(r){ return [6]; },
-        weak(r){ return [3]; },
+        vars(r=1){ return [6*r]; },
     },
     gambler: { // Casino income
-        name: loc('trait_gambler_name'),
-        desc: loc('trait_gambler'),
+        name(){ return loc('trait_gambler_name'); },
+        desc(v){ return loc('trait_gambler',v); },
         type: 'minor',
         base: 'G',
-        vars(r){ return [8]; },
-        weak(r){ return [4]; },
+        vars(r=1){ return [8*r]; },
     },
     persuasive: { // Trade route value
-        name: loc('trait_persuasive_name'),
-        desc: loc('trait_persuasive'),
+        name(){ return loc('trait_persuasive_name'); },
+        desc(v){ return loc('trait_persuasive',v); },
         type: 'minor',
         base: 'A',
-        vars(r){ return [2]; },
-        weak(r){ return [1]; },
+        vars(r=1){ return [2*r]; },
     },
     refiner: { // Smelter output
-        name: loc('trait_refiner_name'),
-        desc: loc('trait_refiner'),
+        name(){ return loc('trait_refiner_name'); },
+        desc(v){ return loc('trait_refiner',v); },
         type: 'minor',
         base: 'T',
-        vars(r){ return [3]; },
-        weak(r){ return [1.5]; },
+        vars(r=1){ return [3*r]; },
     },
     plunderer: { // Loot taken from campaigns against rival governments
-        name: loc('trait_plunderer_name'),
-        desc: loc('trait_plunderer'),
+        name(){ return loc('trait_plunderer_name'); },
+        desc(v){ return loc('trait_plunderer',v); },
         type: 'minor',
         base: 'C',
-        vars(r){ return [6]; },
-        weak(r){ return [3]; },
+        vars(r=1){ return [6*r]; },
     },
     stockpiler: { // Crate and Container capacity
-        name: loc('trait_stockpiler_name'),
-        desc: loc('trait_stockpiler'),
+        name(){ return loc('trait_stockpiler_name'); },
+        desc(v = traits.stockpiler.vars()){
+            return loc('trait_stockpiler',[...v,
+                loc('resource_Crates_plural'),
+                loc('resource_Containers_plural')]);
+        },
         type: 'minor',
         base: 'G',
-        vars(r){ return [4]; },
-        weak(r){ return [2]; },
+        vars(r=1){ return [4*r]; },
     },
     assayer: { // Iridium and Titanium production
-        name: loc('trait_assayer_name'),
-        desc: loc('trait_assayer'),
+        name(){ return loc('trait_assayer_name'); },
+        desc(v = traits.assayer.vars()){
+            return loc('trait_assayer',[...v,
+                global.resource.Iridium.name,
+                global.resource.Titanium.name]);
+        },
         type: 'minor',
         base: 'A',
-        vars(r){ return [5]; },
-        weak(r){ return [2.5]; },
+        vars(r=1){ return [5*r]; },
     },
-    nanoweaver: { // Nano Tube and composite production
-        name: loc('trait_nanoweaver_name'),
-        desc: loc('trait_nanoweaver'),
+    nanoweaver: { // Nano Tube, Graphene, and Stanene production
+        name(){ return loc('trait_nanoweaver_name'); },
+        desc(v = traits.nanoweaver.vars()){
+            return loc('trait_nanoweaver',[...v,
+                global.resource.Nano_Tube.name,
+                global.resource.Graphene.name,
+                global.resource.Stanene.name]);
+        },
         type: 'minor',
         base: 'T',
-        vars(r){ return [5]; },
-        weak(r){ return [2.5]; },
+        vars(r=1){ return [5*r]; },
     },
     sapper: { // Cement production; unsuited to fliers
-        name: loc('trait_sapper_name'),
-        desc: loc('trait_sapper'),
+        name(){ return loc('trait_sapper_name'); },
+        desc(v = traits.sapper.vars()){ return loc('trait_sapper',[...v,global.resource.Cement.name]); },
         type: 'minor',
         base: 'C',
-        vars(r){ return [5]; },
-        weak(r){ return [2.5]; },
+        vars(r=1){ return [5*r]; },
     },
     arborist: { // Lumber production; unsuited to kindling and smoldering
-        name: loc('trait_arborist_name'),
-        desc: loc('trait_arborist'),
+        name(){ return loc('trait_arborist_name'); },
+        desc(v = traits.arborist.vars()){ return loc('trait_arborist',[...v,global.resource.Lumber.name]); },
         type: 'minor',
         base: 'G',
-        vars(r){ return [6]; },
-        weak(r){ return [3]; },
+        vars(r=1){ return [6*r]; },
     },
     stonecutter: { // Stone production; unsuited to sappy
-        name: loc('trait_stonecutter_name'),
-        desc: loc('trait_stonecutter'),
+        name(){ return loc('trait_stonecutter_name'); },
+        desc(v = traits.stonecutter.vars()){ return loc('trait_stonecutter',[...v,global.resource.Stone.name]); },
         type: 'minor',
         base: 'T',
-        vars(r){ return [6]; },
-        weak(r){ return [3]; },
+        vars(r=1){ return [6*r]; },
     },
     archivist: { // Maximum Knowledge
-        name: loc('trait_archivist_name'),
-        desc: loc('trait_archivist'),
+        name(){ return loc('trait_archivist_name'); },
+        desc(v = traits.archivist.vars()){ return loc('trait_archivist',[...v,global.resource.Knowledge.name]); },
         type: 'minor',
         base: 'T',
-        vars(r){ return [0.5]; },
-        weak(r){ return [0.25]; },
+        vars(r=1){ return [0.5*r]; },
     },
     bureaucrat: { // Tax revenue
-        name: loc('trait_bureaucrat_name'),
-        desc: loc('trait_bureaucrat'),
+        name(){ return loc('trait_bureaucrat_name'); },
+        desc(v){ return loc('trait_bureaucrat',v); },
         type: 'minor',
         base: 'C',
-        vars(r){ return [4]; },
-        weak(r){ return [2]; },
+        vars(r=1){ return [4*r]; },
     },
     zealot: { // Temple output
-        name: loc('trait_zealot_name'),
-        desc: loc('trait_zealot'),
+        name(){ return loc('trait_zealot_name'); },
+        desc(v){ return loc('trait_zealot',v); },
         type: 'minor',
         base: 'G',
-        vars(r){ return [0.5]; },
-        weak(r){ return [0.25]; },
+        vars(r=1){ return [0.5*r]; },
     },
     stargazer: { // Observatory knowledge
-        name: loc('trait_stargazer_name'),
-        desc: loc('trait_stargazer'),
+        name(){ return loc('trait_stargazer_name'); },
+        desc(v = traits.stargazer.vars()){ return loc('trait_stargazer',[...v,global.resource.Knowledge.name]); },
         type: 'minor',
         base: 'A',
-        vars(r){ return [5]; },
-        weak(r){ return [2.5]; },
+        vars(r=1){ return [5*r]; },
     },
     engineer: { // A.R.P.A. project progress
-        name: loc('trait_engineer_name'),
-        desc: loc('trait_engineer'),
+        name(){ return loc('trait_engineer_name'); },
+        desc(v){ return loc('trait_engineer',v); },
         type: 'minor',
         base: 'T',
-        vars(r){ return [2]; },
-        weak(r){ return [1]; },
+        vars(r=1){ return [2*r]; },
     },
     logistician: { // Trade route capacity
-        name: loc('trait_logistician_name'),
-        desc: loc('trait_logistician'),
+        name(){ return loc('trait_logistician_name'); },
+        desc(v){ return loc('trait_logistician',v); },
         type: 'minor',
         base: 'C',
-        vars(r){ return [10]; },
-        weak(r){ return [5]; },
+        vars(r=1){ return [10*r]; },
     },
     quartermaster: { // Soldier capacity
-        name: loc('trait_quartermaster_name'),
-        desc: loc('trait_quartermaster'),
+        name(){ return loc('trait_quartermaster_name'); },
+        desc(v){ return loc('trait_quartermaster',v); },
         type: 'minor',
         base: 'G',
-        vars(r){ return [4]; },
-        weak(r){ return [2]; },
+        vars(r=1){ return [4*r]; },
     },
     steward: { // Maximum storage, regular resources only
-        name: loc('trait_steward_name'),
-        desc: loc('trait_steward'),
+        name(){ return loc('trait_steward_name'); },
+        desc(v){ return loc('trait_steward',v); },
         type: 'minor',
         base: 'A',
-        vars(r){ return [2]; },
-        weak(r){ return [1]; },
+        vars(r=1){ return [2*r]; },
     },
     taskmaster: { // Output of every job
-        name: loc('trait_taskmaster_name'),
-        desc: loc('trait_taskmaster'),
+        name(){ return loc('trait_taskmaster_name'); },
+        desc(v){ return loc('trait_taskmaster',v); },
         type: 'minor',
         base: 'T',
-        vars(r){ return [1]; },
-        weak(r){ return [0.5]; },
+        vars(r=1){ return [1*r]; },
     },
     queuemaster: { // Building queue size, flat
-        name: loc('trait_queuemaster_name'),
-        desc: loc('trait_queuemaster'),
+        name(){ return loc('trait_queuemaster_name'); },
+        desc(v){ return loc('trait_queuemaster',v); },
         type: 'minor',
         base: 'C',
-        vars(r){ return [1]; },
-        weak(r){ return [0.5]; },
+        vars(r=1){ return [1*r]; },
     },
     guildmaster: { // Extra craftsman slots, flat
-        name: loc('trait_guildmaster_name'),
-        desc: loc('trait_guildmaster'),
+        name(){ return loc('trait_guildmaster_name'); },
+        desc(v){ return loc('trait_guildmaster',v); },
         type: 'minor',
         base: 'G',
-        vars(r){ return [2]; },
-        weak(r){ return [1]; },
+        vars(r=1){ return [2*r]; },
     },
     thaumaturge: { // Mana production; magic universe only
-        name: loc('trait_thaumaturge_name'),
-        desc: loc('trait_thaumaturge'),
+        name(){ return loc('trait_thaumaturge_name'); },
+        desc(v = traits.thaumaturge.vars()){ return loc('trait_thaumaturge',[...v,global.resource.Mana.name]); },
         type: 'minor',
         base: 'C',
-        vars(r){ return [4]; },
-        weak(r){ return [2]; },
+        vars(r=1){ return [4*r]; },
     },
     despot: { // Authority standing; evil universe only
-        name: loc('trait_despot_name'),
-        desc: loc('trait_despot'),
+        name(){ return loc('trait_despot_name'); },
+        desc(v = traits.despot.vars()){ return loc('trait_despot',[...v,global.resource.Authority.name]); },
         type: 'minor',
         base: 'A',
-        vars(r){ return [2]; },
-        weak(r){ return [1]; },
+        vars(r=1){ return [2*r]; },
     },
     versatile: { // Crafted goods output
-        name: loc('trait_versatile_name'),
-        desc: loc('trait_versatile'),
+        name(){ return loc('trait_versatile_name'); },
+        desc(v){ return loc('trait_versatile',v); },
         type: 'minor',
         base: 'A',
         genus: 'humanoid',
-        vars(r){ return [5]; },
-        weak(r){ return [2.5]; },
+        vars(r=1){ return [5*r]; },
     },
     ambusher: { // Soldier training speed
-        name: loc('trait_ambusher_name'),
-        desc: loc('trait_ambusher'),
+        name(){ return loc('trait_ambusher_name'); },
+        desc(v){ return loc('trait_ambusher',v); },
         type: 'minor',
         base: 'T',
         genus: 'carnivore',
-        vars(r){ return [5]; },
-        weak(r){ return [2.5]; },
+        vars(r=1){ return [5*r]; },
     },
     ruminant: { // Maximum population
-        name: loc('trait_ruminant_name'),
-        desc: loc('trait_ruminant'),
+        name(){ return loc('trait_ruminant_name'); },
+        desc(v){ return loc('trait_ruminant',v); },
         type: 'minor',
         base: 'C',
         genus: 'herbivore',
-        vars(r){ return [5]; },
-        weak(r){ return [2.5]; },
+        vars(r=1){ return [5*r]; },
     },
     opportunist: { // Mining output and crafting speed
-        name: loc('trait_opportunist_name'),
-        desc: loc('trait_opportunist'),
+        name(){ return loc('trait_opportunist_name'); },
+        desc(v){ return loc('trait_opportunist',v); },
         type: 'minor',
         base: 'G',
         genus: 'omnivore',
-        vars(r){ return [3]; },
-        weak(r){ return [1.5]; },
+        vars(r=1){ return [3*r]; },
     },
     frugal: { // Housing cost discount
-        name: loc('trait_frugal_name'),
-        desc: loc('trait_frugal'),
+        name(){ return loc('trait_frugal_name'); },
+        desc(v){ return loc('trait_frugal',v); },
         type: 'minor',
         base: 'A',
         genus: 'small',
-        vars(r){ return [1]; },
-        weak(r){ return [0.5]; },
+        vars(r=1){ return [1*r]; },
     },
     titanic: { // Manual labour output
-        name: loc('trait_titanic_name'),
-        desc: loc('trait_titanic'),
+        name(){ return loc('trait_titanic_name'); },
+        desc(v){ return loc('trait_titanic',v); },
         type: 'minor',
         base: 'T',
         genus: 'giant',
-        vars(r){ return [8]; },
-        weak(r){ return [4]; },
+        vars(r=1){ return [8*r]; },
     },
     moltskin: { // Passive Furs from population
-        name: loc('trait_moltskin_name'),
-        desc: loc('trait_moltskin'),
+        name(){ return loc('trait_moltskin_name'); },
+        desc(v = traits.moltskin.vars()){ return loc('trait_moltskin',[...v,global.resource.Furs.name]); },
         type: 'minor',
         base: 'C',
         genus: 'reptilian',
-        vars(r){ return [1]; },
-        weak(r){ return [0.5]; },
+        vars(r=1){ return [1*r]; },
     },
     featherlight: { // Ship speed; requires True Path
-        name: loc('trait_featherlight_name'),
-        desc: loc('trait_featherlight'),
+        name(){ return loc('trait_featherlight_name'); },
+        desc(v){ return loc('trait_featherlight',v); },
         type: 'minor',
         base: 'G',
         genus: 'avian',
-        vars(r){ return [5]; },
-        weak(r){ return [2.5]; },
+        vars(r=1){ return [5*r]; },
     },
     swarm: { // Population growth
-        name: loc('trait_swarm_name'),
-        desc: loc('trait_swarm'),
+        name(){ return loc('trait_swarm_name'); },
+        desc(v){ return loc('trait_swarm',v); },
         type: 'minor',
         base: 'A',
         genus: 'insectoid',
-        vars(r){ return [6]; },
-        weak(r){ return [3]; },
+        vars(r=1){ return [6*r]; },
     },
     chlorophyll: { // Amber production; requires sappy
-        name: loc('trait_chlorophyll_name'),
-        desc: loc('trait_chlorophyll'),
+        name(){ return loc('trait_chlorophyll_name'); },
+        desc(v = traits.chlorophyll.vars()){ return loc('trait_chlorophyll',[...v,global.resource.Stone.name]); },
         type: 'minor',
         base: 'T',
         genus: 'plant',
-        vars(r){ return [6]; },
-        weak(r){ return [3]; },
+        vars(r=1){ return [6*r]; },
     },
     mycelial: { // Soldier healing
-        name: loc('trait_mycelial_name'),
-        desc: loc('trait_mycelial'),
+        name(){ return loc('trait_mycelial_name'); },
+        desc(v){ return loc('trait_mycelial',v); },
         type: 'minor',
         base: 'C',
         genus: 'fungi',
-        vars(r){ return [6]; },
-        weak(r){ return [3]; },
+        vars(r=1){ return [6*r]; },
     },
     abyssal: { // Uranium, Oil and Helium-3 production
-        name: loc('trait_abyssal_name'),
-        desc: loc('trait_abyssal'),
+        name(){ return loc('trait_abyssal_name'); },
+        desc(v = traits.abyssal.vars()){
+            return loc('trait_abyssal',[...v,
+                global.resource.Uranium.name,
+                global.resource.Oil.name,
+                global.resource.Helium_3.name]);
+        },
         type: 'minor',
         base: 'G',
         genus: 'aquatic',
-        vars(r){ return [8]; },
-        weak(r){ return [4]; },
+        vars(r=1){ return [8*r]; },
     },
     glamour: { // Morale
-        name: loc('trait_glamour_name'),
-        desc: loc('trait_glamour'),
+        name(){ return loc('trait_glamour_name'); },
+        desc(v){ return loc('trait_glamour',v); },
         type: 'minor',
         base: 'A',
         genus: 'fey',
-        vars(r){ return [5]; },
-        weak(r){ return [2.5]; },
+        vars(r=1){ return [5*r]; },
     },
     fireweave: { // Chrysotile production; requires smoldering
-        name: loc('trait_fireweave_name'),
-        desc: loc('trait_fireweave'),
+        name(){ return loc('trait_fireweave_name'); },
+        desc(v = traits.fireweave.vars()){ return loc('trait_fireweave',[...v,global.resource.Chrysotile.name]); },
         type: 'minor',
         base: 'T',
         genus: 'heat',
-        vars(r){ return [8]; },
-        weak(r){ return [4]; },
+        vars(r=1){ return [8*r]; },
     },
     frostbound: { // Building power discount
-        name: loc('trait_frostbound_name'),
-        desc: loc('trait_frostbound'),
+        name(){ return loc('trait_frostbound_name'); },
+        desc(v){ return loc('trait_frostbound',v); },
         type: 'minor',
         base: 'C',
         genus: 'polar',
-        vars(r){ return [1]; },
-        weak(r){ return [0.5]; },
+        vars(r=1){ return [1*r]; },
     },
     duneborn: { // Cement production
-        name: loc('trait_duneborn_name'),
-        desc: loc('trait_duneborn'),
+        name(){ return loc('trait_duneborn_name'); },
+        desc(v = traits.duneborn.vars()){ return loc('trait_duneborn',[...v,global.resource.Cement.name]); },
         type: 'minor',
         base: 'G',
         genus: 'sand',
-        vars(r){ return [8]; },
-        weak(r){ return [4]; },
+        vars(r=1){ return [8*r]; },
     },
     infernal: { // Combat effectiveness in Hell and mech damage; unsuited to True Path
-        name: loc('trait_infernal_name'),
-        desc: loc('trait_infernal'),
+        name(){ return loc('trait_infernal_name'); },
+        desc(v){ return loc('trait_infernal',v); },
         type: 'minor',
         base: 'A',
         genus: 'demonic',
-        vars(r){ return [6]; },
-        weak(r){ return [3]; },
+        vars(r=1){ return [6*r]; },
     },
     radiant: { // Temple output
-        name: loc('trait_radiant_name'),
-        desc: loc('trait_radiant'),
+        name(){ return loc('trait_radiant_name'); },
+        desc(v){ return loc('trait_radiant',v); },
         type: 'minor',
         base: 'T',
         genus: 'angelic',
-        vars(r){ return [3]; },
-        weak(r){ return [1.5]; },
+        vars(r=1){ return [3*r]; },
     },
     overclocked: { // Factory output
-        name: loc('trait_overclocked_name'),
-        desc: loc('trait_overclocked'),
+        name(){ return loc('trait_overclocked_name'); },
+        desc(v){ return loc('trait_overclocked',v); },
         type: 'minor',
         base: 'C',
         genus: 'synthetic',
-        vars(r){ return [5]; },
-        weak(r){ return [2.5]; },
+        vars(r=1){ return [5*r]; },
     },
     cerebral: { // Knowledge gain
-        name: loc('trait_cerebral_name'),
-        desc: loc('trait_cerebral'),
+        name(){ return loc('trait_cerebral_name'); },
+        desc(v = traits.cerebral.vars()){ return loc('trait_cerebral',[...v,global.resource.Knowledge.name]); },
         type: 'minor',
         base: 'G',
         genus: 'eldritch',
-        vars(r){ return [8]; },
-        weak(r){ return [4]; },
+        vars(r=1){ return [8*r]; },
     },
     fortify: { // gene fortification
-        name: loc('trait_fortify_name'),
-        desc: loc('trait_fortify'),
+        name(){ return loc('trait_fortify_name'); },
+        desc(v){ return loc('trait_fortify',v); },
         type: 'special',
     },
     mastery: { // mastery booster
-        name: loc('trait_mastery_name'),
-        desc: loc('trait_mastery'),
+        name(){ return loc('trait_mastery_name'); },
+        desc(v){ return loc('trait_mastery',v); },
         type: 'special',
-        vars(r){ return [1]; },
-        weak(r){ return [0.5]; },
+        vars(r=1){ return [1*r]; },
     }
 };
 
@@ -7276,18 +7241,6 @@ export function geneSuited(gene){
     return geneUnsuited[gene] ? !geneUnsuited[gene]() : true;
 }
 
-// A gene that reaches further in some runs than others needs a description that follows. Returns
-// an alternate locale key, or false to use the plain one.
-const geneDescAlt = {
-    // Warlord has no coal miner; mining runs through the Tunneler, and Resilient lifts the rare
-    // metals it brings up alongside the coal.
-    resilient(){ return global.race['warlord'] ? `trait_resilient_warlord` : false; }
-};
-
-export function geneDescKey(gene){
-    let alt = geneDescAlt[gene] ? geneDescAlt[gene]() : false;
-    return alt ? alt : `trait_${gene}`;
-}
 
 // Gene slots
 export function geneSlotCount(){
@@ -7421,18 +7374,17 @@ export function geneSlotMatched(slot){
 }
 
 // A gene runs at full strength only while its rung is bonded; on its own, or beside the wrong
-// partner, it runs at the weaker figures instead.
+// partner, it runs at half.
 export function geneWeak(gene){
     let slot = geneSlotOf(gene);
     return slot === false || !geneSlotMatched(slot);
 }
 
 // The numbers a gene is actually working at right now. Every hook reads through this rather than
-// traits[gene].vars() directly, which is what makes the weak variant apply everywhere at once.
+// traits[gene].vars() directly, which is what makes the unbonded halving apply everywhere at once.
 export function geneVars(gene){
-    if (!traits[gene]){ return [0]; }
-    if (geneWeak(gene) && traits[gene].weak){ return traits[gene].weak(); }
-    return traits[gene].vars ? traits[gene].vars() : [0];
+    if (!traits[gene] || !traits[gene].vars){ return [0]; }
+    return traits[gene].vars(geneWeak(gene) ? 0.5 : 1);
 }
 
 // Which slot a gene sits in, or false. A gene may only be slotted once.
@@ -8756,31 +8708,32 @@ export function fathomCheck(race){
     return 0;
 }
 
-export function traitSkin(type, trait, species){
+// `vars` is passed straight to the trait's own desc()
+export function traitSkin(type, trait, species, vars){
     let artificial = species ? genus_def[races[species].type].traits.artifical : global.race['artifical'];
     switch (type){
         case 'name':
         {
             let name = {
                 hooved: hoovedReskin(false, species),
-                promiscuous: artificial ? loc('trait_promiscuous_synth_name') : traits.promiscuous.name,
-                weak: species === 'dwarf' ? loc('trait_drunk_name') : traits.weak.name,
-                spiritual: global.race.universe === 'evil' && global.civic.govern.type != 'theocracy' ? loc('trait_manipulator_name') : traits.spiritual.name,
+                promiscuous: artificial ? loc('trait_promiscuous_synth_name') : traits.promiscuous.name(),
+                weak: species === 'dwarf' ? loc('trait_drunk_name') : traits.weak.name(),
+                spiritual: global.race.universe === 'evil' && global.civic.govern.type != 'theocracy' ? loc('trait_manipulator_name') : traits.spiritual.name(),
             };
-            return trait ? (name[trait] ? name[trait] : traits[trait].name) : name;
+            return trait ? (name[trait] ? name[trait] : traits[trait].name()) : name;
         } 
         case 'desc':
         {
             let desc = {
                 hooved: hoovedReskin(true, species),
-                promiscuous: artificial ? loc('trait_promiscuous_synth') : traits['promiscuous'].desc,
-                weak: species === 'dwarf' ? loc('trait_drunk') : traits.weak.desc,
-                spiritual: global.race.universe === 'evil' && global.civic.govern.type != 'theocracy' ? loc('trait_manipulator') : traits.spiritual.desc,
-                blurry: global.race['warlord'] ? loc('trait_blurry_warlord') : traits.blurry.desc,
-                playful: global.race['warlord'] ? loc('trait_playful_warlord') : traits.playful.desc,
-                befuddle: global.race['warlord'] ? loc('trait_befuddle_warlord') : traits.befuddle.desc,
+                promiscuous: artificial ? loc('trait_promiscuous_synth') : traits['promiscuous'].desc(vars),
+                weak: species === 'dwarf' ? loc('trait_drunk') : traits.weak.desc(vars),
+                spiritual: global.race.universe === 'evil' && global.civic.govern.type != 'theocracy' ? loc('trait_manipulator') : traits.spiritual.desc(vars),
+                blurry: global.race['warlord'] ? loc('trait_blurry_warlord') : traits.blurry.desc(vars),
+                playful: global.race['warlord'] ? loc('trait_playful_warlord') : traits.playful.desc(vars),
+                befuddle: global.race['warlord'] ? loc('trait_befuddle_warlord') : traits.befuddle.desc(vars),
             };
-            return trait ? (desc[trait] ? desc[trait] : traits[trait].desc) : desc;
+            return trait ? (desc[trait] ? desc[trait] : traits[trait].desc(vars)) : desc;
         }
     }
 }
@@ -8801,7 +8754,7 @@ export function hoovedReskin(desc, species=global.race.species){
         return desc ? loc(`trait_hooved_${type}`) : loc(`trait_hooved_${type}_name`);
     }
     else {
-        return desc ? traits['hooved'].desc : traits['hooved'].name;
+        return desc ? traits['hooved'].desc() : traits['hooved'].name();
     }
 }
 

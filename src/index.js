@@ -119,6 +119,14 @@ export function mainVue(){
                     window.location.reload();
                 }
             },
+            redrawNames(){
+                global.queue.rename = true;
+                writeSave();
+                if (webWorker.w){
+                    webWorker.w.terminate();
+                }
+                window.location.reload();
+            },
             driveOn(){
                 return driveConfigured();
             },
@@ -246,7 +254,7 @@ export function mainVue(){
         }
     });
 
-    ['1','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18'].forEach(function(k){
+    ['1','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19'].forEach(function(k){
         popover(`settings${k}`, function(){
                 return loc(`settings${k}`);
             },
@@ -1313,6 +1321,7 @@ export function index(){
         <b-switch class="setting" v-model="s.tabLoad" @update:model-value="toggleTabLoad"><span class="settings11" aria-label="${loc('settings11')}">{{ label('tabLoad') }}</span></b-switch>
         <b-switch class="setting" v-model="s.boring"><span class="settings10" aria-label="${loc('settings10')}">{{ label('boring') }}</span></b-switch>
         <b-switch class="setting" v-model="s.touch"><span class="settings16" aria-label="${loc('settings16')}">{{ label('touch') }}</span></b-switch>
+        <b-switch class="setting" v-model="s.solarNames" @update:model-value="redrawNames"><span class="settings19" aria-label="${loc('settings19')}">{{ label('solar_names') }}</span></b-switch>
         <div>
             <div>${loc('key_mappings')}</div>
             <div class="keyMap"><span>${loc('multiplier',[10])}</span> <b-input v-model="s.keyMap.x10" id="x10Key"></b-input></div>

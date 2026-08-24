@@ -265,6 +265,30 @@ window.importGame = function importGame(data,fromStorage){
     }
 }
 
+// A tech's `era` is normally one, but it may be a list when the same tech belongs to more than
+// one because of different game paths/forks.
+export function techEra(c_action){
+    if (c_action && Array.isArray(c_action.era)){
+        return typeof c_action.era_a === 'function' ? c_action.era_a() : c_action.era[0];
+    }
+    return c_action ? c_action.era : undefined;
+}
+
+// The wiki wants membership instead — a listed tech is documented on every era page it belongs to,
+// not just whichever one happens to be active in the loaded save.
+export function techInEra(c_action,era){
+    if (!c_action || era === undefined){ return false; }
+    return Array.isArray(c_action.era) ? c_action.era.includes(era) : c_action.era === era;
+}
+
+// if `reqs` is a function then it gets passed in the era of the tech.
+export function actionReqs(c_action,era){
+    if (c_action && typeof c_action.reqs === 'function'){
+        return c_action.reqs(era !== undefined ? era : techEra(c_action)) || {};
+    }
+    return c_action && c_action.reqs ? c_action.reqs : {};
+}
+
 export function powerGrid(type,reset){
     let grids = gridDefs();
 
@@ -286,7 +310,7 @@ export function powerGrid(type,reset){
                 'prtl_gate:infernite_mine','int_sirius:ascension_trigger','spc_makemake:orichalcum_mine','spc_makemake:elerium_mine','spc_makemake:uranium_mine','spc_makemake:neutronium_mine','spc_survey:mineshaft','spc_dwarf:m_relay','tau_gas2:tcm_relay',
                 'tau_home:tau_factory','tau_home:infectious_disease_lab','tau_home:alien_outpost','tau_home:data_decoder','tau_gas:womling_station','tau_roid:synthesizer','spc_red:atmo_terraformer','tau_star:matrix','tau_home:tau_cultural_center',
                 'eden_elysium:sacred_smelter','prtl_pit:soul_capacitor','prtl_lake:oven_complete','eden_elysium:elysanite_mine','eden_elysium:elerium_containment','eden_elysium:pillbox','eden_elysium:archive',
-                'eden_elysium:restaurant','eden_elysium:eden_cement','eden_isle:spirit_battery','eden_isle:spirit_vacuum','cave:hollow','cave:under_transmitter','cave:storage_space','cave:under_mine','cave:mineshaft_vator','cave:bonfire',
+                'eden_elysium:restaurant','eden_elysium:eden_cement','eden_isle:spirit_battery','eden_isle:spirit_vacuum','tau_star:server_farm','cave:hollow','cave:under_transmitter','cave:storage_space','cave:under_mine','cave:mineshaft_vator','cave:bonfire',
                 'depths:stone_house','depths:under_coal_mine','depths:under_foundry','depths:under_casino','industry:archaeological_dig','industry:under_biolab','industry:water_pump','industry:under_factory','industry:oil_pump',
                 'core:core_mine','core:core_blacksmith','core:core_forge','core:core_refinery','wastes:great_heater','wastes:surface_farm','wastes:surface_zoo','ecosystem:area_heater','ecosystem:water_pipe','crater:crater_station',
                 'city:replicator'
@@ -296,7 +320,7 @@ export function powerGrid(type,reset){
             power_structs = ['spc_moon:helium_mine','spc_moon:iridium_mine','spc_moon:observatory'];
             break;
         case 'red':
-            power_structs = ['spc_red:living_quarters','spc_red:exotic_lab','spc_red:red_mine','spc_red:fabrication','spc_red:biodome','spc_red:vr_center'];
+            power_structs = ['spc_red:living_quarters','spc_red:exotic_lab','spc_red:red_mine','spc_red:fabrication','spc_red:biodome','spc_red:vr_center','spc_red:botanical'];
             break;
         case 'belt':
             power_structs = ['spc_belt:elerium_ship','spc_belt:iridium_ship','spc_belt:iron_ship'];
@@ -320,7 +344,7 @@ export function powerGrid(type,reset){
             power_structs = ['prtl_spire:port','prtl_spire:base_camp','prtl_spire:mechbay'];
             break;
         case 'titan':
-            power_structs = ['spc_titan:titan_quarters','spc_titan:titan_mine','spc_titan:g_factory','spc_titan:decoder','spc_titan:metalworks'];
+            power_structs = ['spc_titan:titan_quarters','spc_titan:titan_mine','spc_titan:g_factory','spc_titan:decoder','spc_titan:metalworks','spc_titan:comedy_club'];
             break;
         case 'enceladus':
             power_structs = ['spc_enceladus:water_freighter','spc_enceladus:operating_base','spc_enceladus:zero_g_lab'];
@@ -2943,7 +2967,7 @@ export function trickOrTreatBind(id,trick){
 }
 
 function single_emblem(achieve,size,icon,iconName,fool,uAffix){
-    return global.stats.achieve[achieve] && (fool ? global.stats.achieve[achieve][uAffix] - 1 : global.stats.achieve[achieve][uAffix]) > 0 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve][uAffix])} ${iconName}"><svg class="star${fool ? global.stats.achieve[achieve][uAffix] - 1 : global.stats.achieve[achieve][uAffix]}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox(icon)}" xml:space="preserve">${svgIcons(icon)}</svg><span class="is-sr-only">${sLevel(global.stats.achieve[achieve][uAffix])} ${iconName}</span></p>` : '';
+    return global.stats.achieve[achieve] && (fool ? global.stats.achieve[achieve][uAffix] - 1 : global.stats.achieve[achieve][uAffix]) > 0 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve][uAffix])} ${iconName}" role="presentation"><svg class="star${fool ? global.stats.achieve[achieve][uAffix] - 1 : global.stats.achieve[achieve][uAffix]}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox(icon)}" xml:space="preserve" aria-label="${sLevel(global.stats.achieve[achieve][uAffix])} ${iconName}" role="img">${svgIcons(icon)}</svg></p>` : '';
 }
 
 export function format_emblem(achieve,size,baseIcon,fool,universe){
@@ -3550,7 +3574,8 @@ const valAdjust = {
 };
 
 function getTraitVals(trait, rank, species){
-    let vals = traits[trait].hasOwnProperty('vars') ? traits[trait].vars(rank) : [];
+    // `rank` arrives as false when the caller has no rank in mind
+    let vals = traits[trait].hasOwnProperty('vars') ? traits[trait].vars(rank || undefined) : [];
     if (valAdjust.hasOwnProperty(trait)){
         if (trait === 'fibroblast'){
             vals = [vals[0] * 5];
@@ -3779,7 +3804,7 @@ export function getTraitDesc(info, trait, opts){
     let traitDesc = traitSkin('desc', trait, species);
 
     if (['minor','special'].includes(traits[trait].type) && traits[trait].vars){
-        traitDesc = loc(`trait_${trait}`, getTraitVals(trait, trank, species));
+        traitDesc = traits[trait].desc(getTraitVals(trait, trank, species));
     }
 
     if (tpage && ['genus','major'].includes(traits[trait].type)){

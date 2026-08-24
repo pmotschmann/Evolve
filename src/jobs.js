@@ -57,6 +57,30 @@ export const job_data = {
         stress(){ return 0; },
         color(){ return false; }
     },
+    gardener: {
+        name(){ return loc('job_gardener'); },
+        desc(servant){
+            let tenders = servant && global.race['servants']
+                ? (global.race.servants.jobs.gardener || 0)
+                : (global.civic['gardener'] ? global.civic.gardener.workers : 0);
+            if (global.race['high_pop']){
+                tenders /= traits.high_pop.vars()[0];
+            }
+            let desc = loc('job_gardener_desc',[
+                job_data.gardener.boost(),
+                actions.space.spc_red.botanical.title(),
+                +(tenders * job_data.gardener.boost()).toFixed(1)
+            ]);
+            if (global.civic.d_job === 'gardener' && !servant){
+                desc = desc + ' ' + loc('job_default',[job_data.gardener.name()]);
+            }
+            return desc;
+        },
+        // Percent added to the Botanical Garden's effect per gardener.
+        boost(){ return 2; },
+        stress(){ return 0; },
+        color(){ return false; }
+    },
     farmer: {
         name(){
             if(global.race['iceage']){
@@ -369,7 +393,7 @@ export const job_data = {
         color(){ return 'advanced'; }
     },
     cement_worker: {
-        name(){ return loc('job_cement_worker'); },
+        name(){ return loc('job_resource_worker',[global.resource.Cement.name]); },
         desc(){
             let unit_price = global.race['high_pop'] ? 3 / traits.high_pop.vars()[0] : 3;
             if (global.city.biome === 'ashland'){
@@ -387,7 +411,8 @@ export const job_data = {
                 gain *= biomes.ashland.vars()[1];
             }
             gain = +(gain).toFixed(2);
-            return global.race['sappy'] ? loc('job_cement_worker_amber_desc',[gain]) : loc('job_cement_worker_desc',[gain,unit_price]);
+            let vars = [gain,unit_price,global.resource.Cement.name,global.resource.Stone.name];
+            return global.race['sappy'] ? loc('job_cement_worker_amber_desc',vars) : loc('job_cement_worker_desc',vars);
         },
         impact(){ return 0.4; },
         stress(){ return 5; },
@@ -673,6 +698,7 @@ export function defineJobs(define){
     loadJob('quarry_worker',define);
     loadJob('crystal_miner',define);
     loadJob('scavenger',define);
+    loadJob('gardener',define);
     loadJob('teamster',define);
     loadJob('meditator',define);
     loadJob('torturer',define);

@@ -1,4 +1,4 @@
-import { global, p_on, support_on, sizeApproximation, keyMap, seededRandom, webWorker } from './vars.js';
+import { global, p_on, support_on, sizeApproximation, keyMap, seededRandom, webWorker, battle_log } from './vars.js';
 import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect, adjustCosts, get_qlevel, timeCheck, timeFormat, buildQueue, getWeaselTechLevelRequirement } from './functions.js';
 import { races, traits, orbitLength, geneBonus } from './races.js';
 import { spatialReasoning, unlockContainers } from './resources.js';
@@ -327,6 +327,9 @@ const outerTruth = {
                 if (global.resource.Tungsten.display){
                     res.push('Tungsten');
                 }
+                if (global.resource.Water.display && global.tech['resettle']){
+                    res.push('Water');
+                }
                 return res;
             },
             heavy(res){
@@ -370,6 +373,8 @@ const outerTruth = {
                         return 64;
                     case 'Adamantite':
                         return 72;
+                    case 'Water':
+                        return 2;
                     default:
                         return 0;
                 }
@@ -519,8 +524,6 @@ const outerTruth = {
                 return desc;
             },
             wide: true,
-            // Metals the works divides its pool between, in the order the UI lists them. The effect text,
-            // the industry panel and the production loop all read this one list.
             res(){
                 return ['Steel','Iridium','Iron','Copper','Aluminium','Titanium'];
             },
@@ -550,6 +553,46 @@ const outerTruth = {
                     d: d,
                     p: ['metalworks','space']
                 };
+            }
+        },
+        comedy_club: {
+            id: 'space-comedy_club',
+            title(){ return loc('space_comedy_club_title'); },
+            desc(){
+                return `<div>${loc('space_comedy_club_title')}</div><div class="has-text-special">${loc('space_support',[planetName().titan])}</div>`;
+            },
+            type: 'entertainment',
+            reqs: { titan: 12 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('comedy_club', offset, 250000000, 1.3); },
+                Iron(offset){ return spaceCostMultiplier('comedy_club', offset, 490000000, 1.3); },
+                Polymer(offset){ return spaceCostMultiplier('comedy_club', offset, 75000000, 1.3); },
+                Bolognium(offset){ return spaceCostMultiplier('comedy_club', offset, 25000000, 1.3); }
+            },
+            effect(){
+                return `<div class="has-text-caution">${loc('space_used_support',[planetName().titan])}</div>`
+                     + `<div>${loc('plus_max_resource',[jobScale(1),job_data.entertainer.name()])}</div>`;
+            },
+            s_type: 'titan',
+            support(){ return -1; },
+            powered(){ return 0; },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct($(this)[0]);
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['comedy_club','space']
+                };
+            },
+            flair(){
+                return loc('space_comedy_club_flair');
             }
         },
         sam: {
@@ -2121,7 +2164,7 @@ const outerTruth = {
             path: ['truepath'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('survey_resort', offset, 125000000, 1.28); },
-                Food(offset){ return spaceCostMultiplier('survey_resort', offset, 5500000, 1.28); },
+                Food(offset){ return spaceCostMultiplier('survey_resort', offset, global.race['artifical'] ? 0 : 5500000, 1.28); },
                 Furs(offset){ return spaceCostMultiplier('survey_resort', offset, 180000000, 1.28); },
                 Water(offset){ return spaceCostMultiplier('survey_resort', offset, 125000, 1.28); },
                 Plywood(offset){ return spaceCostMultiplier('survey_resort', offset, 3500000, 1.28); }
@@ -2402,13 +2445,13 @@ export function beginTungstenSurvey(){
         done: {}
     };
 
-    // Each candidate becomes a destination fixed at wherever that moon is standing today. They orbit
-    // and the point does not, but the survey is a trip you make once and cross off.
+    // Each candidate becomes a destination on the moon itself, carried in `b` so the point orbits
+    // with it. The x/y/z is only where it stood the day the survey opened, kept as a fallback.
     if (!global.race['tempCoordinates']){ global.race['tempCoordinates'] = {}; }
     surveyMoons.forEach(function(moon){
         let c = genXYZcoord(`spc_${moon}`);
         global.race.tempCoordinates[surveyPoint(moon)] = {
-            n: planetName()[moon], a: true, s: 'spc_sun', x: c.x, y: c.y, z: c.z
+            n: planetName()[moon], a: true, s: 'spc_sun', b: `spc_${moon}`, x: c.x, y: c.y, z: c.z
         };
     });
 
@@ -2439,6 +2482,12 @@ function repairSurveyPoints(){
     }
 
     if (!global.race['tempCoordinates']){ return; }
+    // A survey opened before the points learned to track their moon has no `b`, so it is still aimed
+    // at a spot the moon has since left. Give it one.
+    surveyMoons.forEach(function(moon){
+        let point = global.race.tempCoordinates[surveyPoint(moon)];
+        if (point && !point.b){ point.b = `spc_${moon}`; }
+    });
     surveyMoons.forEach(function(moon){
         let stale = `survey_spc_${moon}`;
         if (!global.race.tempCoordinates.hasOwnProperty(stale)){ return; }
@@ -2447,7 +2496,7 @@ function repairSurveyPoints(){
         if (!global.race.tempCoordinates.hasOwnProperty(key)){
             let c = genXYZcoord(`spc_${moon}`);
             global.race.tempCoordinates[key] = {
-                n: planetName()[moon], a: old.a && !s.done[moon], s: 'spc_sun', x: c.x, y: c.y, z: c.z
+                n: planetName()[moon], a: old.a && !s.done[moon], s: 'spc_sun', b: `spc_${moon}`, x: c.x, y: c.y, z: c.z
             };
         }
         // A ship parked on the bad point keeps somewhere to be — named, so it does not read as
@@ -2572,6 +2621,69 @@ const tauCetiModules = {
                 return {
                     d: { count: 0 },
                     p: ['ringworld','tauceti']
+                };
+            }
+        },
+        server_farm: {
+            id: 'tauceti-server_farm',
+            title(){ return loc('tau_star_server_farm'); },
+            desc(wiki){
+                if (!global.tauceti.hasOwnProperty('server_farm') || global.tauceti.server_farm.count < 100 || wiki){
+                    return `<div>${loc('tau_star_server_farm')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
+                }
+                return `<div>${loc('tau_star_server_farm')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            type: 'megaproject',
+            reqs: { shadow: 1 },
+            path: ['truepath'],
+            queue_size: 5,
+            queue_complete(){ return 100 - (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0); },
+            cost: {
+                Money(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? 150000000 : 0; },
+                Copper(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? 80000000 : 0; },
+                Polymer(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? 6000000 : 0; },
+                Graphene(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? 1250000 : 0; },
+                Orichalcum(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? 750000 : 0; },
+                Quantium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? wom_recycle(750000) : 0; }
+            },
+            effect(wiki){
+                let count = (wiki?.count ?? 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0);
+                if (count < 100){
+                    return `<div>${loc('tau_star_server_farm_effect',[50])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[100 - count])}</div>`;
+                }
+                let effectText = `<div>${loc('plus_max_resource',['50%',global.resource.Knowledge.name])}</div>`;
+                if (global.resource.Positronium.display){
+                    let store = Math.floor(global.resource.Knowledge.max / 1000);
+                    effectText += `<div>${loc('plus_max_resource',[store.toLocaleString(),global.resource.Positronium.name])}</div>`;
+                }
+                return effectText + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            powered(){ return powerCostMod(7500); },
+            switchable(){ return global.tauceti.hasOwnProperty('server_farm') && global.tauceti.server_farm.count >= 100; },
+            operating(){
+                if (!global.tauceti.hasOwnProperty('server_farm') || global.tauceti.server_farm.count < 100){ return false; }
+                return getStructNumActive($(this)[0]) > 0;
+            },
+            on_cap(){ return global.tauceti.hasOwnProperty('server_farm') && global.tauceti.server_farm.count >= 100 ? 1 : 0; },
+            action(){
+                if (global.tauceti.hasOwnProperty('server_farm') && global.tauceti.server_farm.count >= 100){ return false; }
+                if (payCosts($(this)[0])){
+                    incrementStruct($(this)[0]);
+                    if (global.tauceti.server_farm.count >= 100){
+                        global.tauceti.server_farm.on = 1;
+                        messageQueue(loc('tau_star_server_farm_complete'),'success',false,['progress']);
+                        drawTech();
+                        renderTauCeti();
+                        clearPopper();
+                    }
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['server_farm','tauceti']
                 };
             }
         },
@@ -3533,7 +3645,7 @@ const tauCetiModules = {
                 desc = desc + `<div>${loc('tau_home_tau_factory_effect',[$(this)[0].manufacturing()])}</div>`;
                 if (global.tech['isolation']){
                     if (!global.race['flier']){
-                        desc = desc + `<div>${loc('plus_max_resource',[jobScale(2),loc(`job_cement_worker`)])}</div>`;
+                        desc = desc + `<div>${loc('plus_max_resource',[jobScale(2),loc('job_resource_worker',[global.resource.Cement.name])])}</div>`;
                     }
                     desc = desc + `<div>${loc('space_red_fabrication_effect1',[jobScale(5)])}</div>`;
                 }
@@ -4099,7 +4211,7 @@ const tauCetiModules = {
                 if (global.tech['isolation']){
                     desc = desc + `<div>${loc('tau_red_womling_generate',[global.resource.Furs.name])}</div>`;
                 }
-                desc = desc + `<div>${loc('tau_red_womling_farm_effect2',[food / 2 * farmers,global.resource.Food.name])}</div>`;
+                desc = desc + `<div>${loc('tau_red_womling_farm_effect2',[food / 2 * farmers,loc('resource_Food_name')])}</div>`;
                 return desc;
             },
             s_type: 'tau_red',
@@ -4331,7 +4443,7 @@ const tauCetiModules = {
             path: ['truepath'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('womling_rangers', offset, 38000000, 1.28, 'tauceti'); },
-                Food(offset){ return spaceCostMultiplier('womling_rangers', offset, 2000000, 1.28, 'tauceti'); },
+                Food(offset){ return spaceCostMultiplier('womling_rangers', offset, global.race['artifical'] ? 20000 : 2000000, 1.28, 'tauceti'); },
                 Cement(offset){ return spaceCostMultiplier('womling_rangers', offset, 1800000, 1.28, 'tauceti'); },
                 Unobtainium(offset){ return spaceCostMultiplier('womling_rangers', offset, 675000, 1.28, 'tauceti'); },
             },
@@ -4708,7 +4820,7 @@ const tauCetiModules = {
                 }
                 let desc = `<div>${loc('production',[prod,tauCetiModules.tau_gas.info.name()])}</div>`;
                 if (!global.race['flier']){
-                    desc = desc + `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_cement_worker`)])}</div>`;
+                    desc = desc + `<div>${loc('plus_max_resource',[jobScale(1),loc('job_resource_worker',[global.resource.Cement.name])])}</div>`;
                 }
                 desc = desc + `<div>${loc('space_red_fabrication_effect1',[jobScale(1)])}</div>`;
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
@@ -4790,7 +4902,7 @@ const tauCetiModules = {
                 return desc;
             },
             support_fuel(){ return { r: 'Helium_3', a: global.tech['isolation'] ? 15 : 250 }; },
-            support(){ return global.tech['m_ignite'] && global.tech.m_ignite >= 4 ? 2 : 1; },
+            support(){ return global.tech['tau_roid'] && global.tech.tau_roid >= 7 ? 2 : 1; },
             powered(){ return 0; },
             refresh: true,
             action(){
@@ -4897,7 +5009,7 @@ const tauCetiModules = {
                 return `<div>${loc('tau_roid_synthesizer_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             type: 'industry',
-            reqs: { tau_roid: 4, m_ignite: 3 },
+            reqs: { tau_roid: 6 },
             path: ['truepath'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('synthesizer', offset, 90000000, 1.26, 'tauceti'); },
@@ -5512,10 +5624,10 @@ export function checkPathRequirements(era,region,action){
 // Structures the horde can raze, per infested region.
 const razeTargets = {
     spc_moon: { c: 'space', s: ['moon_base','iridium_mine','helium_mine','observatory'] },
-    spc_red: { c: 'space', s: ['spaceport','red_tower','living_quarters','pylon','vr_center','garage','red_mine','fabrication','red_factory','biodome','exotic_lab','ziggurat','space_barracks'] },
+    spc_red: { c: 'space', s: ['spaceport','red_tower','living_quarters','pylon','vr_center','garage','red_mine','fabrication','red_factory','biodome','exotic_lab','ziggurat','space_barracks','botanical'] },
     spc_venus: { c: 'space', s: ['cloud_city','nitrogen_harvester','cloud_quarters','industrial_complex','workshop','university'] },
     spc_hell: { c: 'space', s: ['geothermal','hell_smelter','spc_casino','swarm_plant'] },
-    spc_titan: { c: 'space', s: ['titan_spaceport','electrolysis','hydrogen_plant','titan_quarters','titan_mine','storehouse','titan_bank','g_factory','sam','decoder','ai_colonist','metalworks'] },
+    spc_titan: { c: 'space', s: ['titan_spaceport','electrolysis','hydrogen_plant','titan_quarters','titan_mine','storehouse','titan_bank','g_factory','sam','decoder','ai_colonist','metalworks','comedy_club'] },
     //spc_enceladus: { c: 'space', s: ['water_freighter','zero_g_lab','operating_base','munitions_depot'] },
     //spc_dwarf: { c: 'space', s: ['elerium_contain','e_reactor'] },
     tau_home: { c: 'tauceti', s: ['colony','tau_housing','pylon','tau_farm','mining_pit','fusion_generator','repository','tau_factory','infectious_disease_lab','tauceti_casino','tau_cultural_center','marine_barracks','data_decoder'] },
@@ -5577,6 +5689,21 @@ export function zAssaultMethods(){
                 ? loc('zfleet_uplink_banner_signatures')
                 : loc('zfleet_uplink_banner_survive',[zAssaultLeft()]);
         }
+    };
+}
+
+// The warning that hangs under Venus while the horde holds its orbit. Every structure there has its
+// condition() go false for the duration, so without this the region renders as a bare heading with
+// nothing under it and no reason given.
+export function blockadeBanner(region){
+    if (region !== 'spc_venus'){ return ``; }
+    return `<div class="zassault has-text-danger" v-show="blockaded()"><span class="zpulse">{{ blockadeText() }}</span></div>`;
+}
+
+export function blockadeMethods(){
+    return {
+        blockaded(){ return venusBlockade() > 0; },
+        blockadeText(){ return loc('space_venus_blockade_danger'); }
     };
 }
 
@@ -6131,10 +6258,15 @@ function destroyPlayerShip(ship,locationName){
 }
 
 // --- Battle log ----------------------------------------------------------------------------------
-const zBattleLogMax = 60;   // engagements kept; the oldest falls off the end
+const zBattleLogMax = 100;   // engagements kept; the oldest falls off the end
+
+function zBattleDate(days){
+    let orbit = orbitLength();
+    return loc('battle_log_date',[Math.floor(days / orbit),(days % orbit) + 1]);
+}
 
 export function zBattleLog_read(){
-    return global.space['shipyard'] && Array.isArray(global.space.shipyard['battles']) ? global.space.shipyard.battles : [];
+    return battle_log;
 }
 
 // Engagement information
@@ -6154,8 +6286,7 @@ function zBattleHull(damage){
 // Written the moment the volleys are resolved, before the wrecks are cleared away.
 function zBattleLog(locationName,guards,foes,dealt,taken,lost,downed){
     if (!global.space['shipyard']){ return; }
-    if (!Array.isArray(global.space.shipyard['battles'])){ global.space.shipyard['battles'] = []; }
-    global.space.shipyard.battles.unshift({
+    battle_log.unshift({
         d: global.stats.days,           // game day
         l: locationName,                // where it happened
         p: zBattleRoster(guards),       // your hulls
@@ -6165,8 +6296,8 @@ function zBattleLog(locationName,guards,foes,dealt,taken,lost,downed){
         pl: lost,                       // your ships destroyed
         el: downed                      // theirs destroyed
     });
-    if (global.space.shipyard.battles.length > zBattleLogMax){
-        global.space.shipyard.battles.length = zBattleLogMax;
+    if (battle_log.length > zBattleLogMax){
+        battle_log.length = zBattleLogMax;
     }
 }
 
@@ -6422,9 +6553,7 @@ function outerBeacons(){
     for (let i=0; i<hulls.length; i++){
         let n = i + 6;
         let c = randomCoord('spc_sun',outerBeaconMinAU,outerBeaconMaxAU);
-        global.race.tempCoordinates[`beacon${n}`] = {
-            n: loc(`scout_beacon`,[n]), a: true, s: 'spc_sun', x: c.x, y: c.y, z: c.z, d: hulls[i]
-        };
+        global.race.tempCoordinates[`beacon${n}`] = driftingPoint({ n: loc(`scout_beacon`,[n]), d: hulls[i] }, 'spc_sun', c);
     }
 
     global.tech['resettle'] = 12;
@@ -6494,9 +6623,7 @@ export function finalBeacons(){
     for (let i=0; i<hulls.length; i++){
         let n = last + i + 1;
         let c = randomCoord('spc_sun',finalBeaconMinAU,finalBeaconMaxAU);
-        global.race.tempCoordinates[`beacon${n}`] = {
-            n: loc(`scout_beacon`,[n]), a: true, s: 'spc_sun', x: c.x, y: c.y, z: c.z, d: hulls[i]
-        };
+        global.race.tempCoordinates[`beacon${n}`] = driftingPoint({ n: loc(`scout_beacon`,[n]), d: hulls[i] }, 'spc_sun', c);
     }
 
     return hulls.length;
@@ -7783,7 +7910,7 @@ export function shipSpeed(ship){
     let boost = 1;
     switch (ship.location?.name ?? ""){
         case 'spc_dwarf':
-            boost = p_on['m_relay'] && !ship.inTransit && global.space['m_relay'] && global.space.m_relay.charged >= 10000 ? 3 : 1;
+            boost = p_on['m_relay'] && !ship.inTransit && global.space['m_relay'] && !global.tech['resettle'] && global.space.m_relay.charged >= 10000 ? 3 : 1;
             break;
         case 'tau_gas2':
             boost = p_on['tcm_relay'] && !ship.inTransit && global.tauceti['tcm_relay'] && global.tauceti.tcm_relay.charged >= 10000 ? 3 : 1;
@@ -8884,8 +9011,16 @@ function orbitDegrees(id, days){
 // its primary than it ever travels on its own — but its own circuit is quick enough to put it on the
 // far side of its planet during a long approach, so neither can be dropped.
 function bodyPointAt(locationName, days){
-    // Temporary coordinates are fixed points in space, and stars do not orbit anything.
-    if (tempCoord(locationName) || !spacePlanetStats[locationName]){ return genXYZcoord(locationName); }
+    // A temp point riding a body projects as that body does, carrying its own circuit round with it.
+    // One with no parent is a fixed point in space, and stars do not orbit anything.
+    let temp = tempCoord(locationName);
+    if (temp){
+        let parent = tempParent(temp);
+        if (!parent){ return genXYZcoord(locationName); }
+        let base = bodyPointAt(parent, days), off = tempOffset(temp, days);
+        return { x: base.x + off.x, y: base.y + off.y, z: base.z + off.z };
+    }
+    if (!spacePlanetStats[locationName]){ return genXYZcoord(locationName); }
     let body = spacePlanetStats[locationName];
     if (body.startype){ return genXYZcoord(locationName); }
     if (body.parent){
@@ -8909,9 +9044,15 @@ const MOON_INTERCEPT_TOL = 1e-4;
 // it — which the target keeps moving during.
 function calcLandingPoint(startingPosition, planet, speed, elapsed) {
     elapsed = elapsed || 0;
-    // A temp point sits still, so there is no orbit to lead — the landing point is the point itself.
-    if (tempCoord(planet) || !spacePlanetStats[planet]) { return genXYZcoord(planet); }
-    if (spacePlanetStats[planet].startype) { return genXYZcoord(planet); }
+    // A temp point riding a body has to be led like any other orbiting thing, so it goes through the
+    // same intercept below. One with no parent sits still, and the landing point is the point itself.
+    let temp = tempCoord(planet);
+    let leadTemp = temp ? tempParent(temp) !== false : false;
+    if (temp && !leadTemp){ return genXYZcoord(planet); }
+    if (!temp){
+        if (!spacePlanetStats[planet]) { return genXYZcoord(planet); }
+        if (spacePlanetStats[planet].startype) { return genXYZcoord(planet); }
+    }
     // A moon is solved for directly rather than through the crossing arithmetic below, which
     // measures a body's orbital radius against the ship's distance from the system centre — for a
     // moon that would pit a 0.01 AU circle against a crossing several AU wide and never land on
@@ -8920,7 +9061,7 @@ function calcLandingPoint(startingPosition, planet, speed, elapsed) {
     // Where the moon is depends on when the ship arrives, and when the ship arrives depends on where
     // the moon is, so the two are settled together: start from the flight time to where it stands
     // now, then re-aim until the answer stops moving.
-    if (spacePlanetStats[planet].parent) {
+    if (leadTemp || spacePlanetStats[planet].parent) {
         if (!(speed > 0)){ return genXYZcoord(planet); }
         let t = dist3(startingPosition, genXYZcoord(planet)) / speed;
         for (let i = 0; i < MOON_INTERCEPT_STEPS; i++){
@@ -8983,8 +9124,13 @@ function calcLandingPoint(startingPosition, planet, speed, elapsed) {
     return genXYZcoord(planet);
 }
 
+// Whether the syndicate is operating at all
+export function syndicateActive(){
+    return !global.tech['isolation'] && global.tech['syndicate'] && global.race['truepath'] && global.space['syndicate'] ? true : false;
+}
+
 export function syndicate(region,extra){
-    if (!global.tech['isolation'] && global.tech['syndicate'] && global.race['truepath'] && global.space['syndicate'] && global.space.syndicate.hasOwnProperty(region)){
+    if (syndicateActive() && global.space.syndicate.hasOwnProperty(region)){
         let divisor = 1000;
 
         let rival = 0;
@@ -10021,9 +10167,17 @@ export function randomCoord(target, minAU, maxAU, spreadAU){
 }
 
 export function genXYZcoord(planet){
-    // Temporary coordinates are fixed points held outside the table.
+    // Temporary coordinates are points held outside the table. One that names a body in `b` rides
+    // along with it -- a survey point on a moon has to keep up as the moon goes round, or the trip
+    // ends up aimed at empty space the moon left months ago. One with no `b` is a fixed point in
+    // deep space, a picked-up signal, and stays where it was heard.
     let temp = tempCoord(planet);
-    if (temp){ return { x: temp.x, y: temp.y, z: temp.z }; }
+    if (temp){
+        let parent = tempParent(temp);
+        if (!parent){ return { x: temp.x, y: temp.y, z: temp.z }; }
+        let base = genXYZcoord(parent), off = tempOffset(temp, 0);
+        return { x: base.x + off.x, y: base.y + off.y, z: base.z + off.z };
+    }
     // spc_survey is whichever moon the survey turned up, so it orbits as that body does.
     planet = resolveBody(planet);
     // A location that is neither in the table nor a live temp point — a signal that expired while a
@@ -10110,11 +10264,83 @@ function tempCoord(locationName){
     return temps && typeof locationName === 'string' && temps.hasOwnProperty(locationName) ? temps[locationName] : false;
 }
 
+// A temp point comes in three shapes, and `b` is what tells them apart:
+//   no `b`                  a fixed point in deep space — a signal heard once, and it stays put
+//   `b` alone               pinned to that body, exactly where it is, moving as it moves
+//   `b` + `r` + `o` + `p`   adrift around that body: radius `r` AU, period `o` days, angle `p` degrees
+// `zo` is the height above the parent's plane, held apart from `r` so the circle stays a circle.
+// x/y/z remain on every entry as the last-known position, which is what anything that has not learned
+// about orbits falls back to.
+
+// The parent body a point rides, or false. A parent that is itself a temp point is refused, since
+// resolving it would recurse.
+function tempParent(entry){
+    return entry && entry.b && !tempCoord(entry.b) && spacePlanetStats[entry.b] ? entry.b : false;
+}
+
+// Where the point sits relative to its parent, `days` from now. Pinned points sit on it exactly.
+function tempOffset(entry, days){
+    if (!(entry.r > 0)){ return { x: 0, y: 0, z: entry.zo || 0 }; }
+    let deg = (entry.p || 0) + (entry.o > 0 ? days * (360 / entry.o) : 0);
+    let rad = deg * (Math.PI / 180);
+    return { x: Math.cos(rad) * entry.r, y: Math.sin(rad) * entry.r, z: entry.zo || 0 };
+}
+
+// A period that reads right for something drifting at `au` from its primary: the same third-power law
+// the real thing follows, so a far derelict crawls and a near one comes round inside a few years.
+function driftPeriod(au){
+    return Math.max(Math.round(365 * Math.pow(Math.max(au, 0.05), 1.5)), 1);
+}
+
+// Set a temp point adrift around `parent`, reading its radius, height and angle off a position it is
+// already standing at. Used both when a point is first placed and when an older fixed one is adopted.
+function setTempOrbit(entry, parent, pos){
+    let base = genXYZcoord(parent);
+    let dx = pos.x - base.x, dy = pos.y - base.y;
+    entry.b = parent;
+    entry.r = Math.hypot(dx, dy);
+    entry.zo = pos.z - base.z;
+    entry.p = ((Math.atan2(dy, dx) * 180 / Math.PI) + 360) % 360;
+    entry.o = driftPeriod(entry.r);
+    return entry;
+}
+
+// A temp point placed adrift around a body, ready to drop into global.race.tempCoordinates.
+export function driftingPoint(fields, parent, pos){
+    return setTempOrbit(Object.assign({ a: true, s: parent, x: pos.x, y: pos.y, z: pos.z }, fields), parent, pos);
+}
+
+// Once a day: carry every orbiting point round, and adopt any derelict signal still held as a fixed
+// point from before they drifted. Their stored x/y/z is where they were last seen, which is exactly
+// the position to start the orbit from, so nothing jumps.
+export function moveTempCoordinates(){
+    if (!global.race['tempCoordinates']){ return; }
+    Object.keys(global.race.tempCoordinates).forEach(function(key){
+        let t = global.race.tempCoordinates[key];
+        if (!t){ return; }
+        if (!t.b && key.startsWith('beacon')){ setTempOrbit(t, 'spc_sun', { x: t.x, y: t.y, z: t.z }); }
+        if (t.o > 0){
+            t.p = (((t.p || 0) + +(72 / t.o).toFixed(6)) % 360 + 360) % 360;
+        }
+        // Keep the fallback position current, so anything reading x/y/z directly is not left behind.
+        if (tempParent(t)){
+            let now = genXYZcoord(key);
+            t.x = now.x; t.y = now.y; t.z = now.z;
+        }
+    });
+}
+
 // The system a temp point belongs to, normalised to the keys locSystem hands out: 'sun' for the home
 // system, otherwise the star's own id. `s` is a spacePlanetStats key, so this is mostly a pass
 // through — it also tolerates `s` naming a body rather than its star, and falls back to the home
 // system for anything unrecognised, which at worst costs a wormhole shortcut rather than the trip.
 function tempSystem(entry){
+    // A point riding a body belongs to whatever system that body does, whatever `s` was recorded as.
+    let parent = tempParent(entry);
+    if (parent){
+        if (spacePlanetStats[parent].startype){ return parent === 'spc_sun' ? 'sun' : parent; }
+        return spacePlanetStats[parent].star ? spacePlanetStats[parent].star : 'sun';
+    }
     let body = entry.s ? spacePlanetStats[entry.s] : false;
     if (!body || entry.s === 'spc_sun'){ return 'sun'; }
     if (body.star){ return body.star; }
@@ -10145,7 +10371,7 @@ function locSystemName(locationName){
 // fromLoc's system to toLoc's system, or null when cannot find a path.
 // Uses A* to find optimal route when more gates are involved.
 // Does not account for travel within a system, so solution might not be optimal in extreme edge cases
-function findWormholeRoute(fromLoc, toLoc, interstellar){
+function findWormholeRoute(fromLoc, toLoc){
     let fromSys = locSystem(fromLoc);
     let toSys = locSystem(toLoc);
     if (fromSys === toSys){ 
@@ -10223,31 +10449,24 @@ function findWormholeRoute(fromLoc, toLoc, interstellar){
     }
 
     if (total_path.length === 0){
-        // Gate path not found, maybe interstellar?
-        if (interstellar){
-            // Go to best location to start journey, then launch from there
-            let bestVal = Infinity;
-            let bestSys = null;
+        // No gate route to that system, which is not the same as no way there
+        let bestVal = Infinity;
+        let bestSys = null;
 
-            Object.entries(f_score).forEach(([sys, val]) => {
-                if (val < bestVal){
-                    bestVal = val;
-                    bestSys = sys;
-                }
-            });
-
-            if (bestVal === Infinity)
-                return null;
-
-            let curSys = bestPos;
-            while (curSys !== fromSys){
-                total_path.unshift(curSys); 
-                curSys = came_from[curSys];
+        Object.entries(f_score).forEach(([sys, val]) => {
+            if (val < bestVal){
+                bestVal = val;
+                bestSys = sys;
             }
-        }
-        else {
-            // Can't go interstellar
+        });
+
+        if (bestVal === Infinity)
             return null;
+
+        let curSys = bestSys;
+        while (curSys !== fromSys){
+            total_path.unshift(curSys);
+            curSys = came_from[curSys];
         }
     }
      
@@ -10290,9 +10509,6 @@ function planShipTrip(ship, locationName){
     // before being able to change course
     let inGate = (ship.inTransit && ship.path[0].inGate);
 
-    // Onpy allow starworthy ships to cross interstellar space, other ships must use jump gates to travel
-    let interstellar = (ship.class === 'explorer');
-
     let path = [];
     let currentPosition = ship.location.position;
     let currentTime = 0;
@@ -10302,15 +10518,15 @@ function planShipTrip(ship, locationName){
         currentPosition = ship.path[0].destination.position;
         currentTime = ship.timeToNextStep;
 
-        route = findWormholeRoute(ship.path[0].destination.name, locationName, interstellar);
+        route = findWormholeRoute(ship.path[0].destination.name, locationName);
     }
     else if (ship.inTransit){
         // Find path wrt current star. findWormholeRoute only cares about the system the location is in.
         let currentLocation = nearestStar(ship.location.position);
-        route = findWormholeRoute(currentLocation, locationName, interstellar);
+        route = findWormholeRoute(currentLocation, locationName);
     }
     else{
-        route = findWormholeRoute(ship.location.name, locationName, interstellar);
+        route = findWormholeRoute(ship.location.name, locationName);
     }
 
     if (!route)
@@ -12185,6 +12401,25 @@ function drawGlyph(ctx, x, y, r, glyph){
     ctx.restore();
 }
 
+// Danger warning at location
+function dangerAt(id){
+    return id === 'spc_venus' && venusBlockade() > 0;
+}
+
+// The warning mark itself, struck straight across the world it belongs to. Sized off the body so it overhangs at any zoom.
+function drawDanger(ctx, x, y, r){
+    ctx.save();
+    ctx.shadowColor = 'transparent';
+    ctx.scale(1 / mapScale, 1 / mapScale);
+    let size = Math.max(r * mapScale, 0);
+    ctx.font = `bold ${size}px serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#ff2b2b';
+    ctx.fillText('⚠️', x * mapScale, y * mapScale);
+    ctx.restore();
+}
+
 function drawBody(ctx, x, y, r, color, opts){
     opts = opts || {};
     if (opts.glyph){
@@ -12536,6 +12771,7 @@ export function drawMap() {
             // it — which is exactly where drawing it here puts it, since the bodies left to come are
             // the nearer ones.
             if (orbitsBy[b.id]){ strokeOrbitGroup(ctx, orbitsBy[b.id], ORIGIN, planetLocation[b.id], true); }
+            if (dangerAt(b.id)){ drawDanger(ctx, b.bx, b.by, b.size); }
             addPickable(b.id, b.bx, b.by, b.size, b.sep);
         }
     }
@@ -13068,8 +13304,8 @@ function buildSolarMap(parentNode, keep) {
                     // Lock on so zooming pulls in on it rather than following the cursor away.
                     // Draw after to immediately recenter on clicked body
                     starLockOn = hit;
+                    recenterOn(genXYZcoord(hit));
                     drawMap();
-                    // Finding the cow is the whole of it — there is nothing else to do out there.
                     if (cowGlyph(hit)){
                         unlockFeat('secret_cow', global.race.universe === 'micro' ? true : false);
                     }
@@ -13545,7 +13781,7 @@ export function battleLogModal(){
         // A fight you walked away from unscathed reads differently from one that cost you a hull, so the
         // outcome is colored rather than left for the player to work out from the numbers.
         let tone = b.pl > 0 ? `has-text-danger` : (b.el > 0 ? `has-text-success` : `has-text-warning`);
-        row.append(`<div class="battleHead"><span class="${tone}">${loc('battle_log_where',[regionName(b.l)])}</span> <span class="has-text-caution">${loc('battle_log_day',[b.d])}</span></div>`);
+        row.append(`<div class="battleHead"><span class="${tone}">${loc('battle_log_where',[regionName(b.l)])}</span> <span class="has-text-caution">${zBattleDate(b.d)}</span></div>`);
         // Rounded here as well as at write time: engagements recorded before damage was rounded
         // still hold full-precision doubles, and "dealt 154.9204903865691 hull" is unreadable.
         row.append(`<div class="battleSide"><span class="has-text-success">${loc('battle_log_yours')}</span> <span>${roster(b.p)}</span> <span class="has-text-warning">${loc('battle_log_dealt',[zBattleHull(b.pd)])}</span>${b.pl > 0 ? ` <span class="has-text-danger">${loc('battle_log_lost',[b.pl])}</span>` : ``}</div>`);

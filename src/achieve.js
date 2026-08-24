@@ -485,7 +485,7 @@ export function drawAchieve(args){
         Object.keys(feats).forEach(function (feat){
             let baseIcon = getBaseIcon(feat,'feat');
             if (global.stats.feat[feat]){
-                let star = global.stats.feat[feat] > 1 ? `<p class="flair" title="${sLevel(global.stats.feat[feat])} ${loc(baseIcon)}"><svg class="star${global.stats.feat[feat]}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(baseIcon)}" xml:space="preserve">${svgIcons(baseIcon)}</svg></p>` : '';
+                let star = global.stats.feat[feat] > 1 ? `<p class="flair" title="${sLevel(global.stats.feat[feat])} ${loc(baseIcon)}" role="presentation"><svg class="star${global.stats.feat[feat]}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(baseIcon)}" xml:space="preserve" aria-label="${sLevel(global.stats.feat[feat])} ${loc(baseIcon)}" role="img">${svgIcons(baseIcon)}</svg></p>` : '';
                 if (feat === 'easter'){
                     let egg = easterEgg(4,14);
                     if (egg.length > 0){
@@ -2906,6 +2906,12 @@ export function drawStats(){
     }
     if (global.stats.eden > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_eden_resets")}</span> {{ format(s.eden) }}</div>`);
+    }
+    if (global.stats.zappoc > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_zappoc_resets")}</span> {{ format(s.zappoc) }}</div>`);
+    }
+    if (global.stats.enslaved > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_enslaved_resets")}</span> {{ format(s.enslaved) }}</div>`);
     }
     if (global.stats.terraform > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_terraform_resets")}</span> {{ format(s.terraform) }}</div>`);

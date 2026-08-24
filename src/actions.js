@@ -1,6 +1,6 @@
 import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, int_on, gal_on, spire_on, tmp_vars, setupStats, callback_queue, decayPerks, writeSave } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, popover, clearPopper, togglePopover, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel } from './functions.js';
+import { timeCheck, timeFormat, vBind, popover, clearPopper, togglePopover, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel, techEra, actionReqs } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
 import { races, traits, genus_def, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill, traitRank, syncGenes, geneBonus, grantRandomMinorTrait, geneVars, grantEvolveGenes} from './races.js';
 import { defineResources, unlockCrates, unlockContainers, crateValue, containerValue, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus, faithTempleCount } from './resources.js';
@@ -6062,7 +6062,7 @@ export function checkCityRequirements(action){
 
 function checkTechPath(tech){
     let path = global.race['truepath'] ? 'truepath' : 'standard';
-    if ((!techPath[path].includes(actions.tech[tech].era) && !actions.tech[tech].hasOwnProperty('path')) || (actions.tech[tech].hasOwnProperty('path') && !actions.tech[tech].path.includes(path))){
+    if ((!techPath[path].includes(techEra(actions.tech[tech])) && !actions.tech[tech].hasOwnProperty('path')) || (actions.tech[tech].hasOwnProperty('path') && !actions.tech[tech].path.includes(path))){
         return false;
     }
     return true;
@@ -6079,11 +6079,12 @@ export function checkTechRequirements(tech,predList){
     let isMet = true; let precog = false;
 
     let failChecks = {};
-    Object.keys(actions.tech[tech].reqs).forEach(function (req){
+    let reqs = actionReqs(actions.tech[tech]);
+    Object.keys(reqs).forEach(function (req){
         if (skipRequirement(req, global.tech[req] || 0)){ return; }
-        if (!global.tech[req] || global.tech[req] < actions.tech[tech].reqs[req]){
+        if (!global.tech[req] || global.tech[req] < reqs[req]){
             isMet = false;
-            failChecks[req] = actions.tech[tech].reqs[req];
+            failChecks[req] = reqs[req];
         }
     });
     if (predList && typeof predList === 'object' && global.genes.hasOwnProperty('queue') && global.genes.queue >= 3){
@@ -6096,7 +6097,7 @@ export function checkTechRequirements(tech,predList){
         Object.keys(failChecks).forEach(function (req){
             let cTech = global.tech[req] || 0;
             if (skipRequirement(req, global.tech[req] || 0)){ return; }
-            if (!predList[req] || predList[req].v < actions.tech[tech].reqs[req] || predList[req].v > cTech + 1){
+            if (!predList[req] || predList[req].v < reqs[req] || predList[req].v > cTech + 1){
                 precog = false;
             }
         });
@@ -6344,7 +6345,8 @@ export function drawTech(){
                 techs[category] = [];
             }
 
-            let era = global.race['truepath'] && tp_era[c_action.era] ? tp_era[c_action.era] : c_action.era;
+            let active = techEra(c_action);
+            let era = global.race['truepath'] && tp_era[active] ? tp_era[active] : active;
 
             if (!new_techs.hasOwnProperty(era)){
                 new_techs[era] = [];
@@ -6433,7 +6435,7 @@ export function setAction(c_action,action,type,old,prediction){
 
     let reqs = ``;
     if (prediction && c_action && c_action.reqs){
-        Object.keys(c_action.reqs).forEach(function(req){
+        Object.keys(actionReqs(c_action)).forEach(function(req){
             if (prediction[req]){
                 reqs += ` data-req-${req}="${prediction[req].a}"`;
             }
@@ -7799,7 +7801,7 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
 
     if (c_action['reqs']){
         let reqList = [];
-        Object.keys(c_action.reqs).forEach(function(r){
+        Object.keys(actionReqs(c_action)).forEach(function(r){
             let req = $(`#${c_action.id}`).attr(`data-req-${r}`);
             if (req){
                 reqList.push(typeof actions.tech[req].title === 'string' ? actions.tech[req].title : actions.tech[req].title());

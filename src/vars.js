@@ -59,6 +59,7 @@ export function set_ulevel(u_level){
 }
 export var hell_reports = {};
 export var hell_graphs = {};
+export var battle_log = [];
 export var message_logs = {
     view: 'all'
 };
@@ -1644,14 +1645,18 @@ if(convertVersion(global['version']) && true){
     global.surface = global.surface || {};
 }
 
+if (global['space'] && global.space['shipyard'] && global.space.shipyard.hasOwnProperty('battles')){
+    delete global.space.shipyard.battles;
+}
+
 global['version'] = '1.5.0';
 delete global['revision'];
-global['beta'] = 33;
+global['beta'] = 35;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
 }
-['Plasmid','AntiPlasmid','Phage','Dark','Harmony','AICore','Artifact','Blood_Stone','Supercoiled','TALENs'].forEach(function (res){
+['Plasmid','AntiPlasmid','Phage','Dark','Harmony','AICore','Artifact','Blood_Stone','Supercoiled','TALENs','Exons'].forEach(function (res){
     if (!global.prestige.hasOwnProperty(res)){
         global.prestige[res] = { count: 0 };
     }
@@ -1937,6 +1942,10 @@ if (typeof global.settings.boring === 'undefined'){
 if (typeof global.settings.pauseOnLoad === 'undefined'){
     global.settings['pauseOnLoad'] = false;
 }
+// Show every world under the name a human would see it by, whatever species is being played.
+if (typeof global.settings.solarNames === 'undefined'){
+    global.settings['solarNames'] = false;
+}
 if (!global.settings.hasOwnProperty('mtorder')){
     global.settings['mtorder'] = [];
 }
@@ -1962,8 +1971,9 @@ export function setupStats(){
         'reset','plasmid','antiplasmid','universes','phage','starved','tstarved','died','tdied',
         'sac','tsac','know','tknow','portals','dkills','attacks','cfood','tfood','cstone','tstone',
         'clumber','tlumber','mad','bioseed','cataclysm','blackhole','ascend','descend','apotheosis',
-        'terraform','aiappoc','matrix','retire','eden','zappoc','iceAge','geck','dark','harmony','blood','cores','artifact',
-        'supercoiled','talens','cattle','tcattle','murders','tmurders','psykill','tpsykill','pdebt','uDead','zkills'
+        'terraform','aiappoc','matrix','retire','eden','zappoc','enslaved','iceAge','geck','dark','harmony',
+        'blood','cores','artifact','supercoiled','talens','exons','cattle','tcattle','murders',
+        'tmurders','psykill','tpsykill','pdebt','uDead','zkills'
     ].forEach(function(k){
         if (!global.stats.hasOwnProperty(k)){
             global.stats[k] = 0;

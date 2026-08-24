@@ -41,9 +41,9 @@ function initPage(){
             submenu: [
                 { key: 'basics' },
                 { key: 'mechanics' },
-                { key: 'genetics' },
                 { key: 'government' },
                 { key: 'governor' },
+                { key: 'genetics' },
                 { key: 'combat' },
                 { key: 'challenges' },
                 { key: 'resets' },
@@ -128,7 +128,8 @@ function initPage(){
                 { key: 'deep_space' },
                 { key: 'solar' },
                 { key: 'tauceti' },
-                { key: 'matrioshka' }
+                { key: 'matrioshka' },
+                { key: 'shadow_war' },
             ]
         },
         {

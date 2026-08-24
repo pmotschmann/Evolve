@@ -1,7 +1,7 @@
 import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level, callback_queue, active_rituals, suppressReactivity, restoreReactivity, decayPerks, writeSave } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat, checkAdept } from './achieve.js';
-import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, resetResBuffer, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone, exceededATimeThreshold, loopTimers, getWeaselTechLevelRequirement, calcQuantumLevel, drawPet } from './functions.js';
+import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, resetResBuffer, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone, exceededATimeThreshold, loopTimers, getWeaselTechLevelRequirement, calcQuantumLevel, drawPet, actionReqs } from './functions.js';
 import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, cleanRemoveTrait, syncGenes, geneBonus, geneFlat, geneRank, traitSkin, grantRandomMinorTrait, geneVars, grantEvolveGenes, mutationGenes} from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_data, loadFoundry, farmerValue, jobScale, workerScale, limitCraftsmen, loadServants, craftsmanCap , craftsmanMax} from './jobs.js';
@@ -11,7 +11,7 @@ import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMul
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types, spaceSectors } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
-import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYZcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, randomCoord, atShipyard, pinSalvage, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, moveShips, facilityFindings, orbitPeriod } from './truepath.js';
+import { renderTauCeti, syndicate, syndicateActive, shipFuelUse, spacePlanetStats, genXYZcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, randomCoord, atShipyard, pinSalvage, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, moveShips, moveTempCoordinates, driftingPoint, facilityFindings, orbitPeriod } from './truepath.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
 import { defineGovernor, govern, govActive, removeTask } from './governor.js';
@@ -1182,8 +1182,7 @@ function setElHeight(el,value){
 
 function fastLoop(){
     if (!global.race['no_craft']){
-        // keyMultiplier() is the same for every button this tick, so compute it once instead
-        // of per element.
+        // keyMultiplier() is the same for every button this tick, so compute it once instead of per element.
         const km = keyMultiplier();
         const crafts = document.querySelectorAll('.craft');
         for (let i=0; i<crafts.length; i++){
@@ -3303,6 +3302,12 @@ function fastLoop(){
             global.civic.garrison.crew = crew_mil;
         }
 
+        // A garden standing anywhere means the job is available, which also picks it up on a save
+        // that built one before the job existed.
+        if (global.space['botanical'] && global.space.botanical.count > 0 && global.civic['gardener'] && !global.civic.gardener.display){
+            global.civic.gardener.display = true;
+        }
+
         // Detect labor anomalies
         Object.keys(job_data).forEach(function (job) {
             if (global.civic[job]){
@@ -3321,10 +3326,16 @@ function fastLoop(){
                         stress_level += planetTraits.mellow.vars()[1];
                     }
                     if (global.race['content']){
-                        // Read from the trait rather than hardcoded, so the weak variant applies
-                        // here like it does everywhere else. Surveyors get half, as before.
                         let per = geneVars('content')[0] * (job === 'hell_surveyor' ? 0.5 : 1);
                         stress_level += global.race['content'] * per;
+                    }
+                    if (support_on['botanical']){
+                        let tenders = global.civic['gardener'] ? global.civic.gardener.workers : 0;
+                        if (global.race['high_pop']){
+                            tenders /= traits.high_pop.vars()[0];
+                        }
+                        let tended = 1 + (tenders * job_data.gardener.boost() / 100);
+                        stress_level += support_on['botanical'] * actions.space.spc_red.botanical.calm * tended;
                     }
                     if (global.city.ptrait.includes('dense') && job === 'miner'){
                         stress_level -= planetTraits.dense.vars()[1];
@@ -5280,7 +5291,13 @@ function fastLoop(){
                     breakdown.p['Nano_Tube'][`ᄂ${loc('evo_challenge_gravity_well')}+0`] = -((1 - teamster(1)) * 100) + '%';
                 }
 
-                modRes('Nano_Tube', (delta * time_multiplier) * geneBonus('nanoweaver'));
+                let nanoweaver = geneBonus('nanoweaver');
+                if (nanoweaver > 1){
+                    breakdown.p['Nano_Tube'][`ᄂ${loc('trait_nanoweaver_name')}+0`] = ((nanoweaver - 1) * 100) + '%';
+                    delta *= nanoweaver;
+                }
+
+                modRes('Nano_Tube', (delta * time_multiplier));
             }
             else {
                 breakdown.p['Nano_Tube'] = 0;
@@ -5334,16 +5351,19 @@ function fastLoop(){
                         breakdown.p['Stanene'][`ᄂ${loc('quantum')}`] = ((q_bonus - 1) * 100) + '%';
                     }
 
-
                     let techBonus = technicianBonus(job_data.technician.factoryRate());
 
                     if (techBonus > 1){
-
                         delta *= techBonus;
-
                         breakdown.p['Stanene'][`ᄂ${job_data.technician.name()}`] = ((techBonus - 1) * 100) + '%';
-
                     }
+
+                    let nanoweaver = geneBonus('nanoweaver');
+                    if (nanoweaver > 1){
+                        breakdown.p['Stanene'][`ᄂ${loc('trait_nanoweaver_name')}+0`] = ((nanoweaver - 1) * 100) + '%';
+                        delta *= nanoweaver;
+                    }
+
                     breakdown.p['Stanene'][loc('hunger')] = ((hunger - 1) * 100) + '%';
                 }
 
@@ -5382,7 +5402,7 @@ function fastLoop(){
             }
 
             let tauBonus = global.tech['isolation'] ? 1 + ((support_on['colony'] || 0) * 0.5) : 1;
-            breakdown.p.consume.Stone[loc(global.tech['isolation'] ? 'job_cement_worker_bd' : 'city_cement_plant_bd')] = -(stone_cost);
+            breakdown.p.consume.Stone[global.tech['isolation'] ? loc('job_resource_worker',[global.resource.Cement.name]) : loc('city_cement_plant_bd')] = -(stone_cost);
             modRes('Stone', -(stone_cost * time_multiplier));
 
             let cement_base = global.tech['cement'] >= 4 ? (global.tech.cement >= (global.tech['isolation'] ? 6 : 7) ? 1.45 : 1.2) : 1;
@@ -5439,7 +5459,7 @@ function fastLoop(){
             let techBonus = technicianBonus(job_data.technician.cementRate());
 
             let cq_multiplier = global.tech['isolation'] ? 1 : q_multiplier;
-            breakdown.p['Cement'][loc(global.tech['isolation'] ? 'job_cement_worker_bd' : 'city_cement_plant_bd')] = factory_output + 'v';
+            breakdown.p['Cement'][global.tech['isolation'] ? loc('job_resource_worker',[global.resource.Cement.name]) : loc('city_cement_plant_bd')] = factory_output + 'v';
             if (factory_output > 0){
                 if (global.tech['isolation']){
                     breakdown.p['Cement'][`ᄂ${loc('tau_home_colony')}+0`] = ((tauBonus - 1) * 100) + '%';
@@ -5807,10 +5827,7 @@ function fastLoop(){
             }
         }
 
-        // Graphene. Every plant keeps its own fuel allocation, production rate and bonuses, and they all
-        // run at once — once the jump gate reopens, Titan's factory and the Tau Ceti refueling station
-        // both produce. Ziggurats are a Sol bonus and do not reach Tau Ceti; womling technicians are a
-        // Tau Ceti bonus and do not reach Titan.
+        // Graphene. Every plant keeps its own fuel allocation, production rate and bonuses, and they all run at once
         let graph_plants = [];
         if (global.race['warlord']){
             graph_plants.push({ s: 'portal', k: 'twisted_lab', active: p_on['twisted_lab'], rate: 'g_factory', bd: loc('portal_twisted_lab_title'), zig: true, incin: true });
@@ -5937,6 +5954,13 @@ function fastLoop(){
             if (p_on['citadel'] > 0){
                 breakdown.p['Graphene'][loc('interstellar_citadel_effect_bd')] = ((ai - 1) * 100) + '%';
             }
+
+            let nanoweaver = geneBonus('nanoweaver');
+            if (nanoweaver > 1){
+                breakdown.p['Graphene'][`${loc('trait_nanoweaver_name')}+0`] = ((nanoweaver - 1) * 100) + '%';
+                delta *= nanoweaver;
+            }
+
             breakdown.p['Graphene'][loc('hunger')] = ((hunger - 1) * 100) + '%';
             modRes('Graphene', delta * time_multiplier);
         });
@@ -9442,6 +9466,7 @@ function midLoop(){
             quarry_worker: -1,
             crystal_miner: -1,
             scavenger: -1,
+            gardener: -1,
             teamster: -1,
             meditator: -1,
             torturer: 0,
@@ -9969,6 +9994,9 @@ function midLoop(){
         }
         if (global.space['survey_resort']){
             lCaps['entertainer'] += jobScale(p_on['survey_resort'] || 0);
+        }
+        if (global.space['comedy_club']){
+            lCaps['entertainer'] += jobScale(support_on['comedy_club'] || 0);
         }
         if (global.city['cement_plant']){
             lCaps['cement_worker'] += jobScale(global.city.cement_plant.count * 2);
@@ -11697,11 +11725,6 @@ function midLoop(){
             }
         });
 
-        // Ruminant raises the population ceiling, and it has to do so before anything is evicted
-        // against it. Applied after, the check below compares a population that has already grown
-        // into the raised cap against the unraised one and turns the difference out of doors --
-        // every tick, forever, which is a stream of abandonment messages and a homeless count that
-        // never stops climbing. Steward does not touch this cap at all: it is warehouse space.
         if (caps[global.race.species] > 0){
             caps[global.race.species] = Math.round(caps[global.race.species] * geneBonus('ruminant'));
         }
@@ -11741,19 +11764,32 @@ function midLoop(){
             breakdown.c.Knowledge[loc('space_dwarf_collider_title')] = gain+'v';
         }
 
-        // Ignited Matrioshka Brain (True Path) boosts the Knowledge cap by 50%, like the World Collider.
+        // Ignited Matrioshka Brain (True Path).
         if (global.tech['m_ignite'] && global.tech.m_ignite >= 2){
             let gain = Math.round(caps['Knowledge'] * 0.5);
             caps['Knowledge'] += gain;
             breakdown.c.Knowledge[loc('tech_matrioshka_brain')] = gain+'v';
         }
 
-        // Once Positronium is unlocked (element_zero), the Matrioshka Brain provides 1 Positronium of
+        // The Server Farm (True Path) on the ringworld.
+        if (p_on['server_farm']){
+            let gain = Math.round(caps['Knowledge'] * 0.5);
+            caps['Knowledge'] += gain;
+            breakdown.c.Knowledge[loc('tau_star_server_farm')] = gain+'v';
+            if (global.tech['shadow'] && global.tech.shadow === 1){
+                global.tech.shadow = 2;
+                drawTech();
+            }
+        }
+
+        // Once Positronium is unlocked (element_zero), the Matrioshka Brain or Server Farm provides 1 Positronium of
         // storage per 1000 maximum Knowledge (rounded down). The Knowledge cap is finalized just above.
-        if (global.resource.Positronium.display){
-            let store = Math.floor(caps['Knowledge'] / 1000);
-            caps['Positronium'] += store;
-            breakdown.c.Positronium[loc('tech_matrioshka_brain')] = store+'v';
+        if (global.resource.Positronium.display && (global.tech['tau_roid'] && global.tech.tau_roid >= 6)){
+            if ((global.tech['shadow'] && p_on['server_farm']) || (global.tech['m_ignite'] && global.tech.m_ignite >= 2)){
+                let store = Math.floor(caps['Knowledge'] / 1000);
+                caps['Positronium'] += store;
+                breakdown.c.Positronium[global.tech['shadow'] ? loc('tau_star_server_farm') : loc('tech_matrioshka_brain')] = store+'v';
+            }
         }
 
         if (global.eden['fortress'] && global.tech.hasOwnProperty('celestial_warfare')){
@@ -11767,16 +11803,6 @@ function midLoop(){
         }
 
         let tempCrates = caps['Crates'], tempContainers = caps['Containers'];
-        // Steward is warehouse space, so it applies to resources that are actually stored and to
-        // nothing else. The exempt list is every cap whose number means something other than "how
-        // much can be kept": money, the population itself, knowledge, the crate and container pools,
-        // and the special meters, which are all defined non-stackable for the same reason.
-        //
-        // Archivist stacks on top for Knowledge, which is its own gene and its own ceiling.
-        // Run before crates and containers are subtracted, so what they consume is measured against
-        // the raised cap.
-        // Every special meter that shares the caps table with the real resources. Anything not
-        // listed here is something a warehouse could actually hold.
         const stewardExempt = ['Money','Knowledge','Omniscience','Crates','Containers','Slave','Authority',
                                'Zen','Mana','Energy','Sus','Cipher'];
         Object.keys(caps).forEach(function (res){
@@ -11852,8 +11878,9 @@ function midLoop(){
         let unlock_servants = false;
         let total_servants = 0;
         let not_scavanger_jobs_avail = 0;
+        // Only jobs a servant could actually be put on count here
         Object.keys(lCaps).forEach(function (job){
-            if (global.civic[job].max === -1 && global.civic[job].display && job !== 'unemployed' && job !== 'scavenger'){
+            if (global.civic[job].max === -1 && global.civic[job].display && job !== 'unemployed' && job !== 'scavenger' && job !== 'gardener'){
                 not_scavanger_jobs_avail++;
             }
         });
@@ -12232,7 +12259,7 @@ function midLoop(){
                 }
                 else {
                     global.race.mutation++;
-                    let trait = randomMinorTrait(1);
+                    randomMinorTrait();
                     let gene_multi = 1 + (global.genes['synthesis'] ? global.genes['synthesis'] : 0);
                     let gene = mutationGenes(global.race.mutation) * gene_multi;
                     if (global.stats.achieve['creator']){
@@ -12262,7 +12289,7 @@ function midLoop(){
                         global.prestige.Plasmid.count += plasma;
                     }
                     arpa('Crispr');
-                    messageQueue(loc('gene_therapy',[loc('trait_' + trait + '_name'),gene,plasma,plasmid_type,global.resource.Genes.name]),'success',false,['progress']);
+                    messageQueue(loc('gene_therapy_reward',[gene,global.resource.Genes.name,plasma,plasmid_type]),'success',false,['progress']);
                 }
                 arpa('Genetics');
                 drawTech();
@@ -12656,12 +12683,13 @@ function midLoop(){
             let q_techs = {}; let remove = [];
             checkTechRequirements('club',q_techs);
             for (let i=0; i<global.r_queue.queue.length; i++){
-                Object.keys(actions.tech[global.r_queue.queue[i].type].reqs).forEach(function(req){
+                let qReqs = actionReqs(actions.tech[global.r_queue.queue[i].type]);
+                Object.keys(qReqs).forEach(function(req){
                     if (skipRequirement(req, global.tech[req] || 0)){ return; }
                     if (
-                        (!global.tech[req] || global.tech[req] < actions.tech[global.r_queue.queue[i].type].reqs[req])
+                        (!global.tech[req] || global.tech[req] < qReqs[req])
                         &&
-                        (!q_techs[req] || (q_techs[req] && q_techs[req].v < actions.tech[global.r_queue.queue[i].type].reqs[req]))
+                        (!q_techs[req] || (q_techs[req] && q_techs[req].v < qReqs[req]))
                         ){
                         remove.push(i);
                     }
@@ -12965,6 +12993,7 @@ function midLoop(){
                 }
             });
         }
+        moveTempCoordinates();
         moveShips(webWorker.midRatio / webWorker.longRatio);
 
         if (document.getElementById('mapCanvas')) {
@@ -13829,9 +13858,7 @@ function longLoop(){
                 let dayStep = webWorker.offline ? webWorker.offlineScale : 1;
                 let fieldDays = Math.floor(global.stats.days / 2) - Math.floor((global.stats.days - dayStep) / 2);
 
-                // Hulls under way are advanced by moveShips (see truepath.js), which midLoop drives in
-                // fifth-of-a-day steps so they cross the map smoothly instead of a day at a time. By
-                // the time this runs, `transit` is the same whole number of days it always was.
+                // Ships under way are advanced by moveShips (see truepath.js)
                 global.space.shipyard.ships.forEach(function(ship){
                     if (!ship.inTransit){
                         ship.location.position = genXYZcoord(ship.location.name);
@@ -13842,10 +13869,8 @@ function longLoop(){
                         ship.damage -= atShipyard(ship) ? yardRepair * dayStep : fieldRepair * fieldDays;
                         if (ship.damage < 0){ ship.damage = 0; }
                     }
-                    // Wear and tear finds ships everywhere except inside a yard; being under way counts
-                    // as exposed even on the leg home.
-                    if (!atShipyard(ship) && Math.rand(0, 10) === 0){
-                        // A ship under way wears by where it is bound; one parked, by where it sits.
+                    // Wear and tear from fighting syndicate.
+                    if (syndicateActive() && !atShipyard(ship) && !ship.inTransit && Math.rand(0, 10) === 0){
                         let dm = (ship.inTransit ? ship.destination.name : ship.location.name) === 'spc_triton' ? 2 : 1;
                         switch (ship.armor){
                             case 'steel':
@@ -14399,7 +14424,7 @@ function longLoop(){
                 }
                 for (let i=1; i<=5; i++){
                     let c = randomCoord('spc_sun',0.4,5);
-                    global.race.tempCoordinates[`beacon${i}`] = {n: loc(`scout_beacon`,[i]), a: true, s: 'spc_sun', x: c.x, y: c.y, z: c.z, d: hulls[i-1]};
+                    global.race.tempCoordinates[`beacon${i}`] = driftingPoint({ n: loc(`scout_beacon`,[i]), d: hulls[i-1] }, 'spc_sun', c);
                 }
                 messageQueue(loc('scout_signal_found'),'info',false,['progress']);
                 renderSpace();

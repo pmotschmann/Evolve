@@ -1,6 +1,6 @@
 import { global, save, webWorker, p_on, writeSave, writeBackup } from './vars.js';
 import { loc } from './locale.js';
-import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper, popCost } from './functions.js';
+import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper, popCost, techEra } from './functions.js';
 import { unlockAchieve, alevel, universeAffix, unlockFeat } from './achieve.js';
 import { payCosts, housingLabel, wardenLabel, structName, updateQueueNames, drawTech, fanaticism, checkAffordable, actions, initStruct } from './actions.js';
 import { races, checkAltPurgatory, renderPsychicPowers, renderSupernatural, traitCostMod } from './races.js';
@@ -10377,6 +10377,27 @@ const techs = {
             return false;
         }
     },
+    botanical: {
+        id: 'tech-botanical',
+        title(){ return loc('tech_botanical',[planetName().red]); },
+        desc(){ return loc('tech_botanical',[planetName().red]); },
+        category: 'entertainment',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { mars: 6, resettle: 13 },
+        grant: ['mars',7],
+        cost: {
+            Knowledge(){ return 26250000; },
+        },
+        effect(){ return loc('tech_botanical_effect',[planetName().red]); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.space.spc_red.botanical);
+                return true;
+            }
+            return false;
+        }
+    },
     dyson_sphere: {
         id: 'tech-dyson_sphere',
         title(){ return loc('tech_dyson_sphere'); },
@@ -11329,9 +11350,10 @@ const techs = {
         title(){ return loc('tech_aerographene'); },
         desc(){ return loc('tech_aerographene'); },
         category: 'crafting',
-        era: 'matrioshka',
+        era: ['matrioshka','shadow_war'],
+        era_a(){ return global.tech['shadow'] ? 'shadow_war' : 'matrioshka'; },
         path: ['truepath'],
-        reqs: { m_ignite: 4, resettle: 2 },
+        reqs(era){ return era === 'matrioshka' ? { m_ignite: 4, resettle: 2 } : { shadow: 2, tau_roid: 6 }; },
         grant: ['aerographene',1],
         cost: {
             Knowledge(){ return 19120000; },
@@ -13465,6 +13487,28 @@ const techs = {
             }
             return false;
         }
+    },
+    laugh_center: {
+        id: 'tech-laugh_center',
+        title(){ return loc('tech_laugh_center'); },
+        desc(){ return loc('tech_laugh_center'); },
+        category: 'power_generation',
+        era: 'matrioshka',
+        path: ['truepath'],
+        reqs: { titan: 11 },
+        grant: ['titan',12],
+        cost: {
+            Knowledge(){ return 26250000; }
+        },
+        effect(){ return loc('tech_laugh_center_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.space.spc_titan.comedy_club);
+                return true;
+            }
+            return false;
+        },
+        flair(){ return loc('tech_laugh_center_flair'); }
     },
     ai_optimizations: {
         id: 'tech-ai_optimizations',
@@ -16378,7 +16422,7 @@ const techs = {
         category: 'progress',
         era: 'matrioshka',
         path: ['truepath'],
-        reqs: { resettle: 21 },
+        reqs: { resettle: 21, locked: 1 },
         grant: ['resettle',22],
         cost: {
             Knowledge(){ return 31255000; }
@@ -16717,15 +16761,40 @@ const techs = {
         category: 'progress',
         era: 'matrioshka',
         path: ['truepath'],
-        reqs: { tau_gas2: 8, m_ignite: 2 },
-        grant: ['m_ignite',3],
+        reqs: { tau_gas2: 8, m_ignite: 2, tau_roid: 5 },
+        grant: ['tau_roid',6],
         cost: {
             Knowledge(){ return 17500000; }
         },
         effect(){ return loc('tech_element_zero_effect',[global.resource.Positronium.name]); },
         action(){
             if (payCosts($(this)[0])){
+                if (global.tech.m_ignite === 2){
+                    global.tech.m_ignite = 3;
+                }
                 initStruct(actions.tauceti.tau_gas2.mass_relay);
+                initStruct(actions.tauceti.tau_roid.synthesizer);
+                global.resource.Positronium.display = true;
+                return true;
+            }
+            return false;
+        }
+    },
+    element_zero_b: {
+        id: 'tech-element_zero_b',
+        title(){ return loc('tech_element_zero'); },
+        desc(){ return loc('tech_element_zero'); },
+        category: 'progress',
+        era: 'shadow_war',
+        path: ['truepath'],
+        reqs: { matrix: 3, shadow: 2, tau_roid: 5 },
+        grant: ['tau_roid',6],
+        cost: {
+            Knowledge(){ return 17500000; }
+        },
+        effect(){ return loc('tech_element_zero_effect',[global.resource.Positronium.name]); },
+        action(){
+            if (payCosts($(this)[0])){
                 initStruct(actions.tauceti.tau_roid.synthesizer);
                 global.resource.Positronium.display = true;
                 return true;
@@ -16738,10 +16807,11 @@ const techs = {
         title(){ return loc('tech_patrol_routes'); },
         desc(){ return loc('tech_patrol_routes'); },
         category: 'space_mining',
-        era: 'matrioshka',
+        era: ['matrioshka','shadow_war'],
+        era_a(){ return global.tech['shadow'] ? 'shadow_war' : 'matrioshka'; },
         path: ['truepath'],
-        reqs: { m_ignite: 3 },
-        grant: ['m_ignite',4],
+        reqs: { tau_roid: 6 },
+        grant: ['tau_roid',7],
         cost: {
             Knowledge(){ return 18500000; }
         },
@@ -18077,6 +18147,30 @@ const techs = {
             return false;
         }
     },
+    server_farm: {
+        id: 'tech-server_farm',
+        title(){ return loc('tech_server_farm'); },
+        desc(){ return loc('tech_server_farm'); },
+        category: 'progress',
+        era: 'shadow_war',
+        path: ['truepath'],
+        reqs: { matrix: 3 },
+        grant: ['shadow',1],
+        cost: {
+            Money(){ return 3200000000; },
+            Knowledge(){ return 12000000; }
+        },
+        effect(){
+            return `<div>${loc('tech_server_farm_effect')}</div>`;
+        },
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.tauceti.tau_star.server_farm);
+                return true;
+            }
+            return false;
+        }
+    },
 }
 
 function uniteEffect(){
@@ -18131,7 +18225,7 @@ export function techList(path){
     if (path){
         let techList = {};
         Object.keys(techs).forEach(function(t){
-            if (techPath[path].includes(techs[t].era) || techs[t].hasOwnProperty('path')){
+            if (techPath[path].includes(techEra(techs[t])) || techs[t].hasOwnProperty('path')){
                 if (!techs[t].hasOwnProperty('path') || (techs[t].hasOwnProperty('path') && techs[t].path.includes(path))){
                     techList[t] = techs[t];
                 }

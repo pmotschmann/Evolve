@@ -127,12 +127,26 @@ export function achievePage(universe, filter){
             list.append(achieve);
 
             let color = global.stats.achieve[achievement] && global.stats.achieve[achievement][uAffix] && global.stats.achieve[achievement][uAffix] > 0 ? 'warning' : 'fade';
-            achieve.append(`<span id="a-${achievement}" class="achieve has-text-${color}">${achievements[achievement].name}</span>`);
+            achieve.append(`<span id="a-${achievement}" class="achieve has-text-${color}" aria-hidden="true">${achievements[achievement].name}</span>`);
+            achieve.append(`<button id="a-sr-expand-${achievement}" aria-expanded="false" aria-controls="a-sr-desc-${achievement}" class="is-sr-only">${achievements[achievement].name}</button><div id="a-sr-desc-${achievement}" class="is-sr-only" aria-hidden="true"></div>`);
 
             let emblems = format_emblem(achievement,16,false,false,universe);
             achieve.append(`<span class="icons">${emblems}</span>`);
             
             achieveDesc(achievement, color === 'warning' ? true : false, universe);
+
+            $(`#a-sr-expand-${achievement}`).on('click',function(){
+                let expander = $(`#a-sr-expand-${achievement}`);
+                let descDiv = $(`#a-sr-desc-${achievement}`);
+                if (expander.attr('aria-expanded') === 'false'){
+                    expander.attr('aria-expanded', 'true');
+                    descDiv.removeAttr('aria-hidden');
+                }
+                else {
+                    expander.attr('aria-expanded', 'false');
+                    descDiv.attr('aria-hidden', true);
+                }
+            });
         });
     });
 }
@@ -154,15 +168,32 @@ export function featPage(){
 
         let color = global.stats.feat[feat] && global.stats.feat[feat] > 0 ? 'warning' : 'fade';
         let baseIcon = getBaseIcon(feat,'feat');
-        let star = global.stats.feat[feat] > 1 ? `<p class="flair" title="${sLevel(global.stats.feat[feat])} ${loc(baseIcon)}"><svg class="star${global.stats.feat[feat]}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(baseIcon)}" xml:space="preserve">${svgIcons(baseIcon)}</svg></p>` : '';
-        achieve.append(`<span id="f-${feat}" class="achieve has-text-${color}">${feats[feat].name}</span>${star}`);
+        let star = global.stats.feat[feat] > 1 ? `<p class="flair" title="${sLevel(global.stats.feat[feat])} ${loc(baseIcon)}" role="presentation"><svg class="star${global.stats.feat[feat]}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(baseIcon)}" xml:space="preserve" aria-label="${sLevel(global.stats.feat[feat])} ${loc(baseIcon)}" role="img">${svgIcons(baseIcon)}</svg></p>` : '';
+        achieve.append(`<span id="f-${feat}" class="achieve has-text-${color}" aria-hidden="true">${feats[feat].name}</span>`);
+        achieve.append(`<button id="f-sr-expand-${feat}" aria-expanded="false" aria-controls="f-sr-desc-${feat}" class="is-sr-only">${feats[feat].name}</button><div id="f-sr-desc-${feat}" class="is-sr-only" aria-hidden="true"></div>`);
+        achieve.append(`${star}`);
 
         featDesc(feat, color === 'warning' ? true : false);
+
+        $(`#f-sr-expand-${feat}`).on('click',function(){
+            let expander = $(`#f-sr-expand-${feat}`);
+            let descDiv = $(`#f-sr-desc-${feat}`);
+            if (expander.attr('aria-expanded') === 'false'){
+                expander.attr('aria-expanded', 'true');
+                descDiv.removeAttr('aria-hidden');
+            }
+            else {
+                expander.attr('aria-expanded', 'false');
+                descDiv.attr('aria-hidden', true);
+            }
+        });
     });
 }
 
 function achieveDesc(achievement,showFlair,universe){
     let uAffix = universeAffix(universe || 'standard');
+    let content = $();
+    let options = {};
     
     let flair = showFlair ? `<div class="has-text-flair">${achievements[achievement].flair}</div>` : ``;
     if (achievement === 'mass_extinction' || achievement === 'vigilante'){
@@ -186,32 +217,33 @@ function achieveDesc(achievement,showFlair,universe){
                         : global.stats.achieve[`extinct_${key}`].hasOwnProperty('e') && global.stats.achieve[`extinct_${key}`].e >= 0
                         )
                     ){
-                    killed = killed + `<span class="wide iclr${global.stats.achieve[`extinct_${key}`][achievement === 'mass_extinction' ? [uAffix] : 'e']}">${races[key].name}</span>`;
+                    killed = killed + `<span class="wide iclr${global.stats.achieve[`extinct_${key}`][achievement === 'mass_extinction' ? [uAffix] : 'e']}">${races[key].name}${srNoteCompleted(global.stats.achieve[`extinct_${key}`][achievement === 'mass_extinction' ? [uAffix] : 'e'])}</span>`;
                 }
                 else {
-                    killed = killed + `<span class="wide has-text-danger">${races[key].name}</span>`;
+                    killed = killed + `<span class="wide has-text-danger">${races[key].name}${srNoteCompleted(false)}</span>`;
                 }
             }
         });
         killed = killed + `</div>`;
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${killed}${flair}`),{
+        content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${killed}${flair}`);
+        options = {
             wide: true
-        });
+        };
     }
     else if (achievement === 'explorer'){
         let biome_list = `<div class="flexed">`;
         Object.keys(biomes).sort((a,b) => biomes[a].label.localeCompare(biomes[b].label)).forEach(function (key){
             if (!universe || (key !== 'hellscape' && key !== 'eden') || (key === 'hellscape' && universe !== 'evil') || (key === 'eden' && universe === 'evil')){
                 if (global.stats.achieve[`biome_${key}`] && global.stats.achieve[`biome_${key}`][uAffix] >= 0){
-                    biome_list = biome_list + `<span class="wide iclr${global.stats.achieve[`biome_${key}`][uAffix]}">${biomes[key].label}</span>`;
+                    biome_list = biome_list + `<span class="wide iclr${global.stats.achieve[`biome_${key}`][uAffix]}">${biomes[key].label}${srNoteCompleted(global.stats.achieve[`biome_${key}`][uAffix])}</span>`;
                 }
                 else {
-                    biome_list = biome_list + `<span class="wide has-text-danger">${biomes[key].label}</span>`;
+                    biome_list = biome_list + `<span class="wide has-text-danger">${biomes[key].label}${srNoteCompleted(false)}</span>`;
                 }
             }
         });
         biome_list = biome_list + `</div>`;
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${biome_list}${flair}`));
+        content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${biome_list}${flair}`);
     }
     else if (achievement === 'creator' || achievement === 'heavyweight'){
         let genus = `<div class="flexed">`;
@@ -219,15 +251,15 @@ function achieveDesc(achievement,showFlair,universe){
             if (key !== 'hybrid' && key !== 'omnivore'){
                 let label = ['carnivore','herbivore','omnivore'].includes(key) ? loc(`evo_${key}_title`) : loc(`genelab_genus_${key}`);
                 if (achievement === 'creator' ? global.stats.achieve[`genus_${key}`] && global.stats.achieve[`genus_${key}`][uAffix] >= 0 : global.stats.achieve[`genus_${key}`] && global.stats.achieve[`genus_${key}`].h >= 0){
-                    genus = genus + `<span class="wide iclr${achievement === 'creator' ? global.stats.achieve[`genus_${key}`][uAffix] : global.stats.achieve[`genus_${key}`].h}">${label}</span>`;
+                    genus = genus + `<span class="wide iclr${achievement === 'creator' ? global.stats.achieve[`genus_${key}`][uAffix] : global.stats.achieve[`genus_${key}`].h}">${label}${srNoteCompleted(achievement === 'creator' ? global.stats.achieve[`genus_${key}`][uAffix] : global.stats.achieve[`genus_${key}`].h)}</span>`;
                 }
                 else {
-                    genus = genus + `<span class="wide has-text-danger">${label}</span>`;
+                    genus = genus + `<span class="wide has-text-danger">${label}${srNoteCompleted(false)}</span>`;
                 }
             }
         });
         genus = genus + `</div>`;
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${genus}${flair}`));
+        content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${genus}${flair}`);
     }
     else if (achievement === 'enlightenment'){
         let genus = {};
@@ -245,15 +277,15 @@ function achieveDesc(achievement,showFlair,universe){
             if (key !== 'omnivore'){
                 let label = ['carnivore','herbivore','omnivore'].includes(key) ? loc(`evo_${key}_title`) : loc(`genelab_genus_${key}`);
                 if (genus[key] && genus[key] >= 1){
-                    checked = checked + `<span class="wide iclr${genus[key]}">${label}</span>`;
+                    checked = checked + `<span class="wide iclr${genus[key]}">${label}${srNoteCompleted(genus[key])}</span>`;
                 }
                 else if (key !== 'hybrid'){
-                    checked = checked + `<span class="wide has-text-danger">${label}</span>`;
+                    checked = checked + `<span class="wide has-text-danger">${label}${srNoteCompleted(false)}</span>`;
                 }
             }
         });
         checked = checked + `</div>`;
-        popover(`a-${achievement}`,$(`<div class="wide has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checked}${flair}`));
+        content = $(`<div class="wide has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checked}${flair}`);
     }
     else if (achievement === 'gladiator'){
         let defeated = `<div class="flexed wide">`;
@@ -273,60 +305,61 @@ function achieveDesc(achievement,showFlair,universe){
         }
         Object.keys(monsters).forEach(function (boss){
             if (list[boss] && list[boss] > 0){
-                defeated = defeated + `<span class="swide iclr${list[boss]}">${loc(`portal_mech_boss_${boss}`)}</span>`;
+                defeated = defeated + `<span class="swide iclr${list[boss]}">${loc(`portal_mech_boss_${boss}`)}${srNoteCompleted(list[boss])}</span>`;
             }
             else {
-                defeated = defeated + `<span class="swide has-text-danger">${loc(`portal_mech_boss_${boss}`)}</span>`;
+                defeated = defeated + `<span class="swide has-text-danger">${loc(`portal_mech_boss_${boss}`)}${srNoteCompleted(false)}</span>`;
             }
         });
         defeated = defeated + `</div>`;
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`,[42])}</div>${defeated}${flair}`),{
+        content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`,[42])}</div>${defeated}${flair}`);
+        options = {
             wide: true
-        });
+        };
     }
     else if (achievement === 'banana'){
         let checklist = `<div class="list">`;
-        checklist = checklist + `<div class="has-text-${global.stats.banana.b1[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_banana1`)}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.banana.b2[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_banana2`)}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.banana.b3[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_banana3`)}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.banana.b4[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_banana4`,[500])}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.banana.b5[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_banana5`,[50])}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.banana.b1[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_banana1`)}${srNoteCompleted(global.stats.banana.b1[uAffix])}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.banana.b2[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_banana2`)}${srNoteCompleted(global.stats.banana.b2[uAffix])}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.banana.b3[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_banana3`)}${srNoteCompleted(global.stats.banana.b3[uAffix])}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.banana.b4[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_banana4`,[500])}${srNoteCompleted(global.stats.banana.b4[uAffix])}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.banana.b5[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_banana5`,[50])}${srNoteCompleted(global.stats.banana.b5[uAffix])}</div>`;
         checklist = checklist + `</div>`;
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`));
+        content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`);
     }
     else if (achievement === 'endless_hunger'){
         let checklist = `<div class="list">`;
-        checklist = checklist + `<div class="has-text-${global.stats.endless_hunger.b1[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger1`)}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.endless_hunger.b2[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger2`)}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.endless_hunger.b3[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger3`,[80])}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.endless_hunger.b4[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger4`,[1200])}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.endless_hunger.b5[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger5`)}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.endless_hunger.b1[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger1`)}${srNoteCompleted(global.stats.endless_hunger.b1[uAffix])}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.endless_hunger.b2[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger2`)}${srNoteCompleted(global.stats.endless_hunger.b2[uAffix])}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.endless_hunger.b3[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger3`,[80])}${srNoteCompleted(global.stats.endless_hunger.b3[uAffix])}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.endless_hunger.b4[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger4`,[1200])}${srNoteCompleted(global.stats.endless_hunger.b4[uAffix])}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.endless_hunger.b5[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger5`)}${srNoteCompleted(global.stats.endless_hunger.b5[uAffix])}</div>`;
         checklist = checklist + `</div>`;
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`));
+        content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`);
     }
     else if (achievement === 'zombie_genocider'){
         // Task 5 is not written yet, so only the ones that exist are listed.
         let checklist = `<div class="list">`;
-        checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z1[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider1`,[(53594).toLocaleString()])}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z2[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider2`)}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z3[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider3`)}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z4[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider4`)}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z1[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider1`,[(53594).toLocaleString()])}${srNoteCompleted(global.stats.zombie_genocider.z1[uAffix])}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z2[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider2`)}${srNoteCompleted(global.stats.zombie_genocider.z2[uAffix])}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z3[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider3`)}${srNoteCompleted(global.stats.zombie_genocider.z3[uAffix])}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z4[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider4`)}${srNoteCompleted(global.stats.zombie_genocider.z4[uAffix])}</div>`;
         checklist = checklist + `</div>`;
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`));
+        content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`);
     }
     else if (achievement === 'pathfinder'){
         let path = `<div class="flexed">`;
         ['ashanddust','exodus','obsolete','bluepill','retired'].forEach(function (key){
             let label = loc(`achieve_${key}_name`);
             if (global.stats.achieve[key] && global.stats.achieve[key][uAffix] >= 5){
-                path = path + `<span class="wide iclr${global.stats.achieve[key][uAffix]}">${label}</span>`;
+                path = path + `<span class="wide iclr${global.stats.achieve[key][uAffix]}">${label}${srNoteCompleted(true)}</span>`;
             }
             else {
-                path = path + `<span class="wide has-text-danger">${label}</span>`;
+                path = path + `<span class="wide has-text-danger">${label}${srNoteCompleted(false)}</span>`;
             }
         });
         path = path + `</div>`;
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${path}${flair}`));
+        content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${path}${flair}`);
     }
     else if (achievement === 'overlord'){
         let wom_list = `<div class="flexed">`;
@@ -340,44 +373,48 @@ function achieveDesc(achievement,showFlair,universe){
 
         Object.keys(womling).forEach(function (key){
             if (global.stats.womling[womling[key]] && global.stats.womling[womling[key]][uAffix] > 0){
-                wom_list = wom_list + `<span class="wide iclr5">${loc(`wiki_achieve_overlord_${key}`)}</span>`;
+                wom_list = wom_list + `<span class="wide iclr5">${loc(`wiki_achieve_overlord_${key}`)}${srNoteCompleted(true)}</span>`;
             }
             else {
-                wom_list = wom_list + `<span class="wide has-text-danger">${loc(`wiki_achieve_overlord_${key}`)}</span>`;
+                wom_list = wom_list + `<span class="wide has-text-danger">${loc(`wiki_achieve_overlord_${key}`)}${srNoteCompleted(false)}</span>`;
             }
         });
         wom_list = wom_list + `</div>`;
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${wom_list}${flair}`));
+        content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${wom_list}${flair}`);
     }
     else if (achievement === 'what_is_best'){
         let checklist = `<div class="list">`;
-        checklist = checklist + `<div class="has-text-${global.stats.warlord.k ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_k`,[50])}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.warlord.p ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_p`)}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.warlord.a ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_a`,[250])}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.warlord.r ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_r`)}</div>`;
-        checklist = checklist + `<div class="has-text-${global.stats.warlord.g ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_g`)}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.warlord.k ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_k`,[50])}${srNoteCompleted(global.stats.warlord.k)}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.warlord.p ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_p`)}${srNoteCompleted(global.stats.warlord.p)}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.warlord.a ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_a`,[250])}${srNoteCompleted(global.stats.warlord.a)}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.warlord.r ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_r`)}${srNoteCompleted(global.stats.warlord.r)}</div>`;
+        checklist = checklist + `<div class="has-text-${global.stats.warlord.g ? `success` : `danger`}">${loc(`wiki_achieve_what_is_best_g`)}${srNoteCompleted(global.stats.warlord.g)}</div>`;
         checklist = checklist + `</div>`;
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`));
+        content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`);
     }
     else if (achievement.includes('extinct_') && achievement.substring(8) !== 'custom' && achievement.substring(8) !== 'hybrid'){
         let race = achievement.substring(8);
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc('wiki_achieve_extinct_race',[loc(`race_${race}`)])}</div>${flair}`));
+        content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc('wiki_achieve_extinct_race',[loc(`race_${race}`)])}</div>${flair}`);
     }
     else if (achievement.includes('genus_')){
         let genus = achievement.substring(6);
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc('wiki_achieve_genus_type',[loc(`genelab_genus_${genus}`)])}</div>${flair}`));
+        content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc('wiki_achieve_genus_type',[loc(`genelab_genus_${genus}`)])}</div>${flair}`);
     }
     else if (achievement.includes('biome_') || achievement.includes('atmo_')){
         let planet = achievement.substring(achievement.indexOf('_') + 1);
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc('wiki_achieve_planet_type',[achievement.substring(0,1) === 'b' ? loc(`biome_${planet}_name`) : loc(`planet_${planet}`)])}</div>${flair}`));
+        content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc('wiki_achieve_planet_type',[achievement.substring(0,1) === 'b' ? loc(`biome_${planet}_name`) : loc(`planet_${planet}`)])}</div>${flair}`);
     }
     else {
         let desc = achieveDescData[achievement] ? loc(`wiki_achieve_${achievement}`,achieveDescData[achievement]) : loc(`wiki_achieve_${achievement}`);
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${desc}</div>${flair}`));
+        content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${desc}</div>${flair}`);
     }
+    popover(`a-${achievement}`,content,options);
+    $(`#a-sr-desc-${achievement}`).append(content.clone());
 }
 
 function featDesc(feat,showFlair){
+    let content = $();
+    let options = {};
     let flair = showFlair ? `<div class="has-text-flair">${feats[feat].flair}</div>` : ``;
     if (feat === 'egghunt'){
         const date = new Date();
@@ -385,10 +422,10 @@ function featDesc(feat,showFlair){
         let eggs = `<div class="has-text-warning">${loc('wiki_feat_egghunt_found')}</div><div class="flexed">`;
         for (let i=1; i<=18; i++){
             let egg = global.special.egg[year][`egg${i}`] ? 'has-text-success' : 'has-text-danger';
-            eggs = eggs + `<span class="${egg}">${loc('wiki_feat_egghunt_num',[i])}</span>`
+            eggs = eggs + `<span class="${egg}">${loc('wiki_feat_egghunt_num',[i])}${srNoteCompleted(global.special.egg[year][`egg${i}`] ? true : false)}</span>`
         }
         eggs = eggs + `</div>`;
-        popover(`f-${feat}`,$(`<div class="has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${eggs}${flair}`));
+        content = $(`<div class="has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${eggs}${flair}`);
     }
     else if (feat === 'trickortreat'){
         const date = new Date();
@@ -396,14 +433,14 @@ function featDesc(feat,showFlair){
         let tricks = `<div class="has-text-warning">${loc('wiki_feat_trickortreat_found')}</div><div class="flexed">`;
         for (let i=1; i<=8; i++){
             let treat = global.special.trick[year][`treat${i}`] ? 'has-text-success' : 'has-text-danger';   
-            tricks = tricks + `<span class="wide ${treat}">${loc('wiki_feat_treat_num',[i])}</span>`
+            tricks = tricks + `<span class="wide ${treat}">${loc('wiki_feat_treat_num',[i])}${srNoteCompleted(global.special.trick[year][`treat${i}`] ? true : false)}</span>`
         }
         for (let i=1; i<=8; i++){
             let trick = global.special.trick[year][`trick${i}`] ? 'has-text-success' : 'has-text-danger';   
-            tricks = tricks + `<span class="wide ${trick}">${loc('wiki_feat_trick_num',[i])}</span>`
+            tricks = tricks + `<span class="wide ${trick}">${loc('wiki_feat_trick_num',[i])}${srNoteCompleted(global.special.trick[year][`trick${i}`] ? true : false)}</span>`
         }
         tricks = tricks + `</div>`;
-        popover(`f-${feat}`,$(`<div class="has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${tricks}${flair}`));
+        content = $(`<div class="has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${tricks}${flair}`);
     }
     else if (feat === 'equilibrium'){
         let species = {};
@@ -425,17 +462,18 @@ function featDesc(feat,showFlair){
         }).forEach(function (key){
             if (key !== 'protoplasm' && (key !== 'custom' || (key === 'custom' && global.stats.achieve['ascended'])) && (key !== 'hybrid' || (key === 'hybrid' && global.stats.achieve['what_is_best'] && global.stats.achieve.what_is_best.e >= 5))){
                 if (species[key] && species[key] >= 1){
-                    checked = checked + `<span class="wide iclr${species[key]}">${races[key].name}</span>`;
+                    checked = checked + `<span class="wide iclr${species[key]}">${races[key].name}${srNoteCompleted(species[key])}</span>`;
                 }
                 else {
-                    checked = checked + `<span class="wide has-text-danger">${races[key].name}</span>`;
+                    checked = checked + `<span class="wide has-text-danger">${races[key].name}${srNoteCompleted(false)}</span>`;
                 }
             }
         });
         checked = checked + `</div>`;
-        popover(`f-${feat}`,$(`<div class="wide has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${checked}${flair}`),{
+        content = $(`<div class="wide has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${checked}${flair}`);
+        options = {
             wide: true
-        });
+        };
     }
     else if (feat === 'gene_splicer'){
         let checked = `<div class="flexed wide">`;
@@ -443,12 +481,11 @@ function featDesc(feat,showFlair){
             return traitSkin('name',a).localeCompare(traitSkin('name',b));
         }).forEach(function (gene){
             let owned = genePermanent(gene) ? `has-text-success` : `has-text-danger`;
-            checked = checked + `<span class="wide ${owned}">${traitSkin('name',gene)}</span>`;
+            checked = checked + `<span class="wide ${owned}">${traitSkin('name',gene)}${srNoteCompleted(genePermanent(gene))}</span>`;
         });
         checked = checked + `</div>`;
-        popover(`f-${feat}`,$(`<div class="wide has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${checked}${flair}`),{
-            wide: true
-        });
+        content = $(`<div class="wide has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${checked}${flair}`);
+        options = { wide: true };
     }
     else if (feat === 'grand_death_tour'){
         let path = `<div class="flexed">`;
@@ -471,14 +508,15 @@ function featDesc(feat,showFlair){
 
             let label = loc(map[key]);
             if (reset >= 1){
-                path += `<span class="wide10 iclr${reset}">${label}</span>`;
+                path += `<span class="wide10 iclr${reset}">${label}${srNoteCompleted(reset)}</span>`;
             }
             else {
-                path += `<span class="wide10 has-text-danger">${label}</span>`;
+                path += `<span class="wide10 has-text-danger">${label}${srNoteCompleted(false)}</span>`;
             }
         });
         path += `</div>`;
-        popover(`f-${feat}`,$(`<div class="wide has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${path}${flair}`),{ wide: true, classes: 'w25' });
+        content = $(`<div class="wide has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${path}${flair}`);
+        options = { wide: true, classes: 'w25' };
     }
     else if (feat === 'planned_obsolescence') {
         let checked = `<div class="flexed wide">`;    
@@ -492,19 +530,34 @@ function featDesc(feat,showFlair){
         }).forEach(function (key){
             if (key !== 'protoplasm' && (key !== 'custom' || (key === 'custom' && global.stats.achieve['ascended'])) && (key !== 'hybrid' || (key === 'hybrid' && global.stats.achieve['what_is_best']))){
                 if (global.stats['synth'] && global.stats.synth[key]){
-                    checked = checked + `<span class="wide iclr5">${races[key].name}</span>`;
+                    checked = checked + `<span class="wide iclr5">${races[key].name}${srNoteCompleted(true)}</span>`;
                 }
                 else {
-                    checked = checked + `<span class="wide has-text-danger">${races[key].name}</span>`;
+                    checked = checked + `<span class="wide has-text-danger">${races[key].name}${srNoteCompleted(false)}</span>`;
                 }
             }
         });
         checked = checked + `</div>`;
-        popover(`f-${feat}`,$(`<div class="wide has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${checked}${flair}`),{
+        content = $(`<div class="wide has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${checked}${flair}`);
+        options = {
             wide: true
-        });
+        };
     }
     else {
-        popover(`f-${feat}`,$(`<div class="has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${flair}`));
+        content = $(`<div class="has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${flair}`);
+    }
+    popover(`f-${feat}`,content,options);
+    $(`#f-sr-desc-${feat}`).append(content.clone());
+}
+
+function srNoteCompleted(condVal){
+    if ((typeof condVal === 'number') && (condVal >= 1) && (condVal <= 5)){ // assume condVal is challenge level
+        return `<span class="is-sr-only">&nbsp;(${loc('wiki_achievements_completed_at',[condVal-1])})</span>`;
+    }
+    if (condVal){ // if condVal is a truthy value not 1-5, return basic completed note
+        return `<span class="is-sr-only">&nbsp;(${loc('wiki_achievements_completed')})</span>`;
+    }
+    else { // if no condVal was passed or the value is falsy, return incompleted note
+        return `<span class="is-sr-only">&nbsp;(${loc('wiki_achievements_incomplete')})</span>`;
     }
 }
