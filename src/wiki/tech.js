@@ -4577,7 +4577,7 @@ function pickTechReqs(candidates,pageEra){
 function addRequirements(parent,key,keyName,path,pageEra){
     let techTrees = getTechTrees(path);
     // A tech spanning several eras can vary its requirements per era, so ask for the page's version.
-    let keyReqs = actionReqs(key,pageEra);
+    let keyReqs = actionReqs(key,{ era: pageEra, wiki: true });
     if (Object.keys(keyReqs).length > 0){
         let techReqs = {};
         let otherReqs = {};
@@ -4777,7 +4777,7 @@ export function renderTechPage(era,path){
         if (action.hasOwnProperty('era') && (techInEra(action,era) || techInEra(action,alt_era[era])) && (!action.hasOwnProperty('wiki') || action.wiki)){
             let id = techs[actionName].id.split('-');
             let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
-            actionDesc(info, action);
+            actionDesc(info, action, { era: era });
             addInformation(info, actionName, path);
             addRequirements(info, action, actionName, path, era);
             if (action.cost['Knowledge']){

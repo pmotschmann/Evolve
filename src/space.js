@@ -39,7 +39,7 @@ const spaceProjects = {
             queue_complete(){ return global.tech.space >= 2 ? 0 : 1; },
             cost: {
                 Money(){ return 100000; },
-                Oil(offset,wiki){ return fuel_adjust(7500,false,wiki); }
+                Oil(r={}){ return fuel_adjust(7500,false,r.wiki); }
             },
             effect: loc('space_home_test_launch_effect'),
             action(args){
@@ -69,10 +69,10 @@ const spaceProjects = {
             reqs: { space: 2 },
             condition(){ return global.tech['resettle'] ? false : true; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('satellite', offset, 72000, 1.22); },
-                Knowledge(offset){ return spaceCostMultiplier('satellite', offset, 28000, 1.22); },
-                Oil(offset,wiki){ return spaceCostMultiplier('satellite', offset, fuel_adjust(3200,false,wiki), 1.22); },
-                Alloy(offset){ return spaceCostMultiplier('satellite', offset, 8000, 1.22); }
+                Money(r={}){ return spaceCostMultiplier('satellite', r.offset, 72000, 1.22); },
+                Knowledge(r={}){ return spaceCostMultiplier('satellite', r.offset, 28000, 1.22); },
+                Oil(r={}){ return spaceCostMultiplier('satellite', r.offset, fuel_adjust(3200,false,r.wiki), 1.22); },
+                Alloy(r={}){ return spaceCostMultiplier('satellite', r.offset, 8000, 1.22); }
             },
             effect(){
                 let knowledge = global.race['cataclysm'] || decayPerks() ? 2000 : 750;
@@ -116,11 +116,11 @@ const spaceProjects = {
             not_trait: ['terrifying'],
             condition(){ return global.tech['resettle'] ? false : true; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('gps', offset, 75000, 1.18); },
-                Knowledge(offset){ return spaceCostMultiplier('gps', offset, 50000, 1.18); },
-                Copper(offset){ return spaceCostMultiplier('gps', offset, 6500, 1.18); },
-                Oil(offset,wiki){ return spaceCostMultiplier('gps', offset, fuel_adjust(3500,false,wiki), 1.18); },
-                Titanium(offset){ return spaceCostMultiplier('gps', offset, 8000, 1.18); }
+                Money(r={}){ return spaceCostMultiplier('gps', r.offset, 75000, 1.18); },
+                Knowledge(r={}){ return spaceCostMultiplier('gps', r.offset, 50000, 1.18); },
+                Copper(r={}){ return spaceCostMultiplier('gps', r.offset, 6500, 1.18); },
+                Oil(r={}){ return spaceCostMultiplier('gps', r.offset, fuel_adjust(3500,false,r.wiki), 1.18); },
+                Titanium(r={}){ return spaceCostMultiplier('gps', r.offset, 8000, 1.18); }
             },
             effect(wiki){
                 let count = (wiki?.count ?? 0) + (global.space.hasOwnProperty('gps') ? global.space['gps'].count : 0);
@@ -153,9 +153,9 @@ const spaceProjects = {
             reqs: { space_explore: 1 },
             condition(){ return global.tech['resettle'] ? false : true; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('propellant_depot', offset, 55000, 1.35); },
-                Aluminium(offset){ return spaceCostMultiplier('propellant_depot', offset, 22000, 1.35); },
-                Oil(offset,wiki){ return spaceCostMultiplier('propellant_depot', offset, fuel_adjust(5500,false,wiki), 1.35); },
+                Money(r={}){ return spaceCostMultiplier('propellant_depot', r.offset, 55000, 1.35); },
+                Aluminium(r={}){ return spaceCostMultiplier('propellant_depot', r.offset, 22000, 1.35); },
+                Oil(r={}){ return spaceCostMultiplier('propellant_depot', r.offset, fuel_adjust(5500,false,r.wiki), 1.35); },
             },
             effect(){
                 let oil = spatialReasoning(1250) * (global.tech['world_control'] ? 1.5 : 1);
@@ -191,11 +191,11 @@ const spaceProjects = {
             reqs: { luna: 2 },
             condition(){ return global.tech['resettle'] ? false : true; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('nav_beacon', offset, 75000, 1.32); },
-                Copper(offset){ return spaceCostMultiplier('nav_beacon', offset, 38000, 1.32); },
-                Aluminium(offset){ return spaceCostMultiplier('nav_beacon', offset, 44000, 1.32); },
-                Oil(offset,wiki){ return spaceCostMultiplier('nav_beacon', offset, fuel_adjust(12500,false,wiki), 1.32); },
-                Iridium(offset){ return spaceCostMultiplier('nav_beacon', offset, 1200, 1.32); }
+                Money(r={}){ return spaceCostMultiplier('nav_beacon', r.offset, 75000, 1.32); },
+                Copper(r={}){ return spaceCostMultiplier('nav_beacon', r.offset, 38000, 1.32); },
+                Aluminium(r={}){ return spaceCostMultiplier('nav_beacon', r.offset, 44000, 1.32); },
+                Oil(r={}){ return spaceCostMultiplier('nav_beacon', r.offset, fuel_adjust(12500,false,r.wiki), 1.32); },
+                Iridium(r={}){ return spaceCostMultiplier('nav_beacon', r.offset, 1200, 1.32); }
             },
             powered(){ return powerCostMod(2); },
             powerBalancer(){
@@ -249,7 +249,7 @@ const spaceProjects = {
             grant: ['space',3],
             queue_complete(){ return global.tech.space >= 3 ? 0 : 1; },
             cost: {
-                Oil(offset,wiki){ return +fuel_adjust(12000,false,wiki).toFixed(0); }
+                Oil(r={}){ return +fuel_adjust(12000,false,r.wiki).toFixed(0); }
             },
             effect: loc('space_moon_mission_effect'),
             action(args){
@@ -269,10 +269,10 @@ const spaceProjects = {
             type: 'outpost',
             reqs: { space: 3 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('moon_base', offset, 22000, 1.32); },
-                Cement(offset){ return spaceCostMultiplier('moon_base', offset, 18000, 1.32); },
-                Alloy(offset){ return spaceCostMultiplier('moon_base', offset, 7800, 1.32); },
-                Polymer(offset){ return spaceCostMultiplier('moon_base', offset, 12500, 1.32); }
+                Money(r={}){ return spaceCostMultiplier('moon_base', r.offset, 22000, 1.32); },
+                Cement(r={}){ return spaceCostMultiplier('moon_base', r.offset, 18000, 1.32); },
+                Alloy(r={}){ return spaceCostMultiplier('moon_base', r.offset, 7800, 1.32); },
+                Polymer(r={}){ return spaceCostMultiplier('moon_base', r.offset, 12500, 1.32); }
             },
             effect(wiki){
                 let iridium = spatialReasoning(500);
@@ -333,9 +333,9 @@ const spaceProjects = {
             type: 'mining',
             reqs: { space: 3, luna: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('iridium_mine', offset, 42000, 1.35); },
-                Lumber(offset){ return spaceCostMultiplier('iridium_mine', offset, 9000, 1.35); },
-                Titanium(offset){ return spaceCostMultiplier('iridium_mine', offset, 17500, 1.35); }
+                Money(r={}){ return spaceCostMultiplier('iridium_mine', r.offset, 42000, 1.35); },
+                Lumber(r={}){ return spaceCostMultiplier('iridium_mine', r.offset, 9000, 1.35); },
+                Titanium(r={}){ return spaceCostMultiplier('iridium_mine', r.offset, 17500, 1.35); }
             },
             effect(){
                 let values = production('iridium_mine','iridium');
@@ -383,9 +383,9 @@ const spaceProjects = {
             type: 'mining',
             reqs: { space: 3, luna: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('helium_mine', offset, 38000, 1.35); },
-                Aluminium(offset){ return spaceCostMultiplier('helium_mine', offset, 9000, 1.35); },
-                Steel(offset){ return spaceCostMultiplier('helium_mine', offset, 17500, 1.35); }
+                Money(r={}){ return spaceCostMultiplier('helium_mine', r.offset, 38000, 1.35); },
+                Aluminium(r={}){ return spaceCostMultiplier('helium_mine', r.offset, 9000, 1.35); },
+                Steel(r={}){ return spaceCostMultiplier('helium_mine', r.offset, 17500, 1.35); }
             },
             effect(){
                 let storage = spatialReasoning(100);
@@ -428,11 +428,11 @@ const spaceProjects = {
             type: 'science',
             reqs: { science: 9, luna: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('observatory', offset, 200000, 1.28); },
-                Knowledge(offset){ return spaceCostMultiplier('observatory', offset, 69000, 1.28); },
-                Stone(offset){ return spaceCostMultiplier('observatory', offset, 125000, 1.28); },
-                Iron(offset){ return spaceCostMultiplier('observatory', offset, 65000, 1.28); },
-                Iridium(offset){ return spaceCostMultiplier('observatory', offset, 1250, 1.28); }
+                Money(r={}){ return spaceCostMultiplier('observatory', r.offset, 200000, 1.28); },
+                Knowledge(r={}){ return spaceCostMultiplier('observatory', r.offset, 69000, 1.28); },
+                Stone(r={}){ return spaceCostMultiplier('observatory', r.offset, 125000, 1.28); },
+                Iron(r={}){ return spaceCostMultiplier('observatory', r.offset, 65000, 1.28); },
+                Iridium(r={}){ return spaceCostMultiplier('observatory', r.offset, 1250, 1.28); }
             },
             effect(){
                 let prof = '';
@@ -493,7 +493,7 @@ const spaceProjects = {
             grant: ['space',4],
             queue_complete(){ return global.tech.space >= 4 ? 0 : 1; },
             cost: {
-                Helium_3(offset,wiki){ return +fuel_adjust(4500,false,wiki).toFixed(0); }
+                Helium_3(r={}){ return +fuel_adjust(4500,false,r.wiki).toFixed(0); }
             },
             effect(){
                 return loc('space_red_mission_effect',[planetName().red]);
@@ -517,10 +517,10 @@ const spaceProjects = {
             type: 'outpost',
             reqs: { space: 4 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('spaceport', offset, 47500, 1.32); },
-                Iridium(offset){ return spaceCostMultiplier('spaceport', offset, 1750, 1.32); },
-                Mythril(offset){ return spaceCostMultiplier('spaceport', offset, 25, 1.32); },
-                Titanium(offset){ return spaceCostMultiplier('spaceport', offset, 22500, 1.32); }
+                Money(r={}){ return spaceCostMultiplier('spaceport', r.offset, 47500, 1.32); },
+                Iridium(r={}){ return spaceCostMultiplier('spaceport', r.offset, 1750, 1.32); },
+                Mythril(r={}){ return spaceCostMultiplier('spaceport', r.offset, 25, 1.32); },
+                Titanium(r={}){ return spaceCostMultiplier('spaceport', r.offset, 22500, 1.32); }
             },
             effect(wiki){
                 let helium = +(fuel_adjust($(this)[0].support_fuel().a,true,wiki)).toFixed(2);
@@ -578,10 +578,10 @@ const spaceProjects = {
             type: 'utility',
             reqs: { mars: 3 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('red_tower', offset, 225000, 1.28); },
-                Iron(offset){ return spaceCostMultiplier('red_tower', offset, 22000, 1.28); },
-                Cement(offset){ return spaceCostMultiplier('red_tower', offset, 15000, 1.28); },
-                Alloy(offset){ return spaceCostMultiplier('red_tower', offset, 8000, 1.28); },
+                Money(r={}){ return spaceCostMultiplier('red_tower', r.offset, 225000, 1.28); },
+                Iron(r={}){ return spaceCostMultiplier('red_tower', r.offset, 22000, 1.28); },
+                Cement(r={}){ return spaceCostMultiplier('red_tower', r.offset, 15000, 1.28); },
+                Alloy(r={}){ return spaceCostMultiplier('red_tower', r.offset, 8000, 1.28); },
             },
             effect(){
                 return `<div>${loc('space_red_spaceport_effect1',[planetName().red, global.race['cataclysm'] || global.race['fasting'] ? 2 : 1])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
@@ -626,16 +626,16 @@ const spaceProjects = {
             queue_size: 5,
             queue_complete(){ return 100 - global.space.terraformer.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? (global.race['truepath'] ? 7500000 : 75000000) : 0; },
-                Alloy(offset){ return ((offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? (global.race['truepath'] ? 250000 : 750000) : 0; },
-                Neutronium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? 125000 : 0; },
-                Elerium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? 1000 : 0; },
-                Bolognium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? (global.race['truepath'] ? 0 : 100000) : 0; },
-                Orichalcum(offset){ return ((offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? (global.race['truepath'] ? 12000 : 250000) : 0; },
-                Soul_Gem(offset){ return ((offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? (global.race['truepath'] ? 0 : 1) : 0; },
-                Nanoweave(offset){ return ((offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? (global.race['truepath'] ? 0 : 75000) : 0; },
-                Quantium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? (global.race['truepath'] ? 75000 : 0) : 0; },
-                Cipher(offset){ return ((offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? (global.race['truepath'] ? 1000 : 0) : 0; },
+                Money(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? (global.race['truepath'] ? 7500000 : 75000000) : 0; },
+                Alloy(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? (global.race['truepath'] ? 250000 : 750000) : 0; },
+                Neutronium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? 125000 : 0; },
+                Elerium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? 1000 : 0; },
+                Bolognium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? (global.race['truepath'] ? 0 : 100000) : 0; },
+                Orichalcum(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? (global.race['truepath'] ? 12000 : 250000) : 0; },
+                Soul_Gem(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? (global.race['truepath'] ? 0 : 1) : 0; },
+                Nanoweave(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? (global.race['truepath'] ? 0 : 75000) : 0; },
+                Quantium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? (global.race['truepath'] ? 75000 : 0) : 0; },
+                Cipher(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? (global.race['truepath'] ? 1000 : 0) : 0; },
             },
             effect(wiki){
                 let count = (wiki?.count ?? 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0);
@@ -747,9 +747,9 @@ const spaceProjects = {
             type: 'housing',
             reqs: { mars: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('living_quarters', offset, house_adjust(38000), 1.28); },
-                Steel(offset){ return spaceCostMultiplier('living_quarters', offset, house_adjust(15000), 1.28); },
-                Polymer(offset){ return spaceCostMultiplier('living_quarters', offset, house_adjust(9500), 1.28); },
+                Money(r={}){ return spaceCostMultiplier('living_quarters', r.offset, house_adjust(38000), 1.28); },
+                Steel(r={}){ return spaceCostMultiplier('living_quarters', r.offset, house_adjust(15000), 1.28); },
+                Polymer(r={}){ return spaceCostMultiplier('living_quarters', r.offset, house_adjust(9500), 1.28); },
                 Horseshoe(){ return global.race['hooved'] ? 2 : 0; }
             },
             effect(wiki){
@@ -806,9 +806,9 @@ const spaceProjects = {
             reqs: { magic: 2 },
             condition(){ return global.race['cataclysm'] || global.race['orbit_decayed'] ? true : false; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('pylon', offset, 10, 1.48); },
-                Stone(offset){ return spaceCostMultiplier('pylon', offset, 12, 1.42); },
-                Crystal(offset){ return spaceCostMultiplier('pylon', offset, 8, 1.42) - 3; }
+                Money(r={}){ return spaceCostMultiplier('pylon', r.offset, 10, 1.48); },
+                Stone(r={}){ return spaceCostMultiplier('pylon', r.offset, 12, 1.42); },
+                Crystal(r={}){ return spaceCostMultiplier('pylon', r.offset, 8, 1.42) - 3; }
             },
             effect(){
                 let max = spatialReasoning(2);
@@ -840,10 +840,10 @@ const spaceProjects = {
             type: 'entertainment',
             reqs: { mars: 1, broadcast: 3 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('vr_center', offset, 380000, 1.25); },
-                Copper(offset){ return spaceCostMultiplier('vr_center', offset, 55000, 1.25); },
-                Stanene(offset){ return spaceCostMultiplier('vr_center', offset, 100000, 1.25); },
-                Soul_Gem(offset){ return spaceCostMultiplier('vr_center', offset, 1, 1.25); }
+                Money(r={}){ return spaceCostMultiplier('vr_center', r.offset, 380000, 1.25); },
+                Copper(r={}){ return spaceCostMultiplier('vr_center', r.offset, 55000, 1.25); },
+                Stanene(r={}){ return spaceCostMultiplier('vr_center', r.offset, 100000, 1.25); },
+                Soul_Gem(r={}){ return spaceCostMultiplier('vr_center', r.offset, 1, 1.25); }
             },
             effect(){
                 let gasVal = govActive('gaslighter',1) || 0;
@@ -880,10 +880,10 @@ const spaceProjects = {
             type: 'storage',
             reqs: { mars: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('garage', offset, 75000, 1.28); },
-                Iron(offset){ return spaceCostMultiplier('garage', offset, 12000, 1.28); },
-                Brick(offset){ return spaceCostMultiplier('garage', offset, 3000, 1.28); },
-                Sheet_Metal(offset){ return spaceCostMultiplier('garage', offset, 1500, 1.28); }
+                Money(r={}){ return spaceCostMultiplier('garage', r.offset, 75000, 1.28); },
+                Iron(r={}){ return spaceCostMultiplier('garage', r.offset, 12000, 1.28); },
+                Brick(r={}){ return spaceCostMultiplier('garage', r.offset, 3000, 1.28); },
+                Sheet_Metal(r={}){ return spaceCostMultiplier('garage', r.offset, 1500, 1.28); }
             },
             wide: true,
             res(){
@@ -1018,9 +1018,9 @@ const spaceProjects = {
             type: 'mining',
             reqs: { mars: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('red_mine', offset, 50000, 1.32); },
-                Lumber(offset){ return spaceCostMultiplier('red_mine', offset, 65000, 1.32); },
-                Iron(offset){ return spaceCostMultiplier('red_mine', offset, 33000, 1.32); }
+                Money(r={}){ return spaceCostMultiplier('red_mine', r.offset, 50000, 1.32); },
+                Lumber(r={}){ return spaceCostMultiplier('red_mine', r.offset, 65000, 1.32); },
+                Iron(r={}){ return spaceCostMultiplier('red_mine', r.offset, 33000, 1.32); }
             },
             effect(){
                 let cop_val = production('red_mine','copper');
@@ -1070,10 +1070,10 @@ const spaceProjects = {
             type: 'industry',
             reqs: { mars: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('fabrication', offset, 90000, 1.32); },
-                Copper(offset){ return spaceCostMultiplier('fabrication', offset, 25000, 1.32); },
-                Cement(offset){ return spaceCostMultiplier('fabrication', offset, 12000, 1.32); },
-                Wrought_Iron(offset){ return spaceCostMultiplier('fabrication', offset, 1200, 1.32); }
+                Money(r={}){ return spaceCostMultiplier('fabrication', r.offset, 90000, 1.32); },
+                Copper(r={}){ return spaceCostMultiplier('fabrication', r.offset, 25000, 1.32); },
+                Cement(r={}){ return spaceCostMultiplier('fabrication', r.offset, 12000, 1.32); },
+                Wrought_Iron(r={}){ return spaceCostMultiplier('fabrication', r.offset, 1200, 1.32); }
             },
             effect(){
                 let c_worker = global.race['cataclysm'] && !global.race['flier'] ? `<div>${loc('plus_max_resource',[jobScale(1),loc('job_resource_worker',[global.resource.Cement.name])])}</div>` : ``;
@@ -1111,10 +1111,10 @@ const spaceProjects = {
             type: 'industry',
             reqs: { mars: 4 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('red_factory', offset, 75000, 1.32); },
-                Brick(offset){ return spaceCostMultiplier('red_factory', offset, 10000, 1.32); },
-                Coal(offset){ return spaceCostMultiplier('red_factory', offset, 7500, 1.32); },
-                Mythril(offset){ return spaceCostMultiplier('red_factory', offset, 50, 1.32); }
+                Money(r={}){ return spaceCostMultiplier('red_factory', r.offset, 75000, 1.32); },
+                Brick(r={}){ return spaceCostMultiplier('red_factory', r.offset, 10000, 1.32); },
+                Coal(r={}){ return spaceCostMultiplier('red_factory', r.offset, 7500, 1.32); },
+                Mythril(r={}){ return spaceCostMultiplier('red_factory', r.offset, 50, 1.32); }
             },
             effect(wiki){
                 let desc = `<div>${loc('space_red_factory_effect1')}</div>`;
@@ -1181,10 +1181,10 @@ const spaceProjects = {
             type: 'farming',
             reqs: { mars: 2 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('biodome', offset, 45000, 1.28); },
-                Lumber(offset){ return spaceCostMultiplier('biodome', offset, 65000, 1.28); },
-                Brick(offset){ return spaceCostMultiplier('biodome', offset, 1000, 1.28); },
-                Nanite(offset){ return global.race['deconstructor'] ? spaceCostMultiplier('biodome', offset, 75, 1.28) : 0; },
+                Money(r={}){ return spaceCostMultiplier('biodome', r.offset, 45000, 1.28); },
+                Lumber(r={}){ return spaceCostMultiplier('biodome', r.offset, 65000, 1.28); },
+                Brick(r={}){ return spaceCostMultiplier('biodome', r.offset, 1000, 1.28); },
+                Nanite(r={}){ return global.race['deconstructor'] ? spaceCostMultiplier('biodome', r.offset, 75, 1.28) : 0; },
             },
             effect(){
                 let food = +(production('biodome','food')).toFixed(2);
@@ -1247,10 +1247,10 @@ const spaceProjects = {
             reqs: { mars: 1 },
             trait: ['orbit_decayed'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('university', offset, 900, 1.5, 'city') - 500; },
-                Lumber(offset){ return spaceCostMultiplier('university', offset, 500, 1.36, 'city') - 200; },
-                Stone(offset){ return spaceCostMultiplier('university', offset, 750, 1.36, 'city') - 350; },
-                Crystal(offset){ return global.race.universe === 'magic' ? spaceCostMultiplier('university', offset, 5, 1.36, 'city') : 0; },
+                Money(r={}){ return spaceCostMultiplier('university', r.offset, 900, 1.5, 'city') - 500; },
+                Lumber(r={}){ return spaceCostMultiplier('university', r.offset, 500, 1.36, 'city') - 200; },
+                Stone(r={}){ return spaceCostMultiplier('university', r.offset, 750, 1.36, 'city') - 350; },
+                Crystal(r={}){ return global.race.universe === 'magic' ? spaceCostMultiplier('university', r.offset, 5, 1.36, 'city') : 0; },
             },
             wiki: false,
             effect(){
@@ -1282,10 +1282,10 @@ const spaceProjects = {
             type: 'science',
             reqs: { mars: 5 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('exotic_lab', offset, 750000, 1.28); },
-                Steel(offset){ return spaceCostMultiplier('exotic_lab', offset, 100000, 1.28); },
-                Mythril(offset){ return spaceCostMultiplier('exotic_lab', offset, 1000, 1.28); },
-                Elerium(offset){ return spaceCostMultiplier('exotic_lab', offset, 20, 1.28) - 4; }
+                Money(r={}){ return spaceCostMultiplier('exotic_lab', r.offset, 750000, 1.28); },
+                Steel(r={}){ return spaceCostMultiplier('exotic_lab', r.offset, 100000, 1.28); },
+                Mythril(r={}){ return spaceCostMultiplier('exotic_lab', r.offset, 1000, 1.28); },
+                Elerium(r={}){ return spaceCostMultiplier('exotic_lab', r.offset, 20, 1.28) - 4; }
             },
             effect(wiki){
                 let sci = 500;
@@ -1350,10 +1350,10 @@ const spaceProjects = {
             type: 'religion',
             reqs: { theology: 4 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('ziggurat', offset, 600000, 1.28); },
-                Stone(offset){ return spaceCostMultiplier('ziggurat', offset, 250000, 1.28); },
-                Aluminium(offset){ return spaceCostMultiplier('ziggurat', offset, 70000, 1.28); },
-                Mythril(offset){ return spaceCostMultiplier('ziggurat', offset, 250, 1.28); }
+                Money(r={}){ return spaceCostMultiplier('ziggurat', r.offset, 600000, 1.28); },
+                Stone(r={}){ return spaceCostMultiplier('ziggurat', r.offset, 250000, 1.28); },
+                Aluminium(r={}){ return spaceCostMultiplier('ziggurat', r.offset, 70000, 1.28); },
+                Mythril(r={}){ return spaceCostMultiplier('ziggurat', r.offset, 250, 1.28); }
             },
             effect(wiki){
                 let bonus = global.tech['ancient_study'] ? 0.6 : 0.4;
@@ -1418,10 +1418,10 @@ const spaceProjects = {
             type: 'military',
             reqs: { marines: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('space_barracks', offset, 350000, 1.28); },
-                Alloy(offset){ return spaceCostMultiplier('space_barracks', offset, 65000, 1.28); },
-                Iridium(offset){ return spaceCostMultiplier('space_barracks', offset, 22500, 1.28); },
-                Wrought_Iron(offset){ return spaceCostMultiplier('space_barracks', offset, 12500, 1.28); },
+                Money(r={}){ return spaceCostMultiplier('space_barracks', r.offset, 350000, 1.28); },
+                Alloy(r={}){ return spaceCostMultiplier('space_barracks', r.offset, 65000, 1.28); },
+                Iridium(r={}){ return spaceCostMultiplier('space_barracks', r.offset, 22500, 1.28); },
+                Wrought_Iron(r={}){ return spaceCostMultiplier('space_barracks', r.offset, 12500, 1.28); },
                 Horseshoe(){ return global.race['hooved'] ? 2 : 0; }
             },
             effect(wiki){
@@ -1482,10 +1482,10 @@ const spaceProjects = {
             reqs: { mars: 7 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('botanical', offset, 85000000, 1.32); },
-                Lumber(offset){ return spaceCostMultiplier('botanical', offset, 12500000, 1.32); },
-                Nano_Tube(offset){ return spaceCostMultiplier('botanical', offset, 1640000, 1.32); },
-                Water(offset){ return spaceCostMultiplier('botanical', offset, 110000, 1.32); }
+                Money(r={}){ return spaceCostMultiplier('botanical', r.offset, 85000000, 1.32); },
+                Lumber(r={}){ return spaceCostMultiplier('botanical', r.offset, 12500000, 1.32); },
+                Nano_Tube(r={}){ return spaceCostMultiplier('botanical', r.offset, 1640000, 1.32); },
+                Water(r={}){ return spaceCostMultiplier('botanical', r.offset, 110000, 1.32); }
             },
             calm: 0.3,
             effect(){
@@ -1566,7 +1566,7 @@ const spaceProjects = {
             grant: ['hell',1],
             queue_complete(){ return global.tech.hell >= 1 ? 0 : 1; },
             cost: {
-                Helium_3(offset,wiki){ return +fuel_adjust(6500,false,wiki).toFixed(0); }
+                Helium_3(r={}){ return +fuel_adjust(6500,false,r.wiki).toFixed(0); }
             },
             effect(){
                 return loc('space_hell_mission_effect1',[planetName().hell]);
@@ -1589,9 +1589,9 @@ const spaceProjects = {
             type: 'power',
             reqs: { hell: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('geothermal', offset, 38000, 1.35); },
-                Steel(offset){ return spaceCostMultiplier('geothermal', offset, 15000, 1.35); },
-                Polymer(offset){ return spaceCostMultiplier('geothermal', offset, 9500, 1.35); }
+                Money(r={}){ return spaceCostMultiplier('geothermal', r.offset, 38000, 1.35); },
+                Steel(r={}){ return spaceCostMultiplier('geothermal', r.offset, 15000, 1.35); },
+                Polymer(r={}){ return spaceCostMultiplier('geothermal', r.offset, 9500, 1.35); }
             },
             effect(wiki){
                 let helium = +(fuel_adjust($(this)[0].p_fuel().a,true,wiki)).toFixed(2);
@@ -1646,8 +1646,8 @@ const spaceProjects = {
             reqs: { hell: 1, m_smelting: 1 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('hell_smelter', offset, 250000, 1.24); },
-                Adamantite(offset){ return spaceCostMultiplier('hell_smelter', offset, 15000, 1.24); }
+                Money(r={}){ return spaceCostMultiplier('hell_smelter', r.offset, 250000, 1.24); },
+                Adamantite(r={}){ return spaceCostMultiplier('hell_smelter', r.offset, 15000, 1.24); }
             },
             effect(){
                 return `<div>${loc('interstellar_stellar_forge_effect3',[$(this)[0].smelting()])}</div>`;
@@ -1682,10 +1682,10 @@ const spaceProjects = {
                 return global.race['cataclysm'] || (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 5) ? true : false;
             },
             cost: {
-                Money(offset){ return spaceCostMultiplier('spc_casino', offset, traitCostMod('untrustworthy',400000), 1.35); },
-                Furs(offset){ return spaceCostMultiplier('spc_casino', offset, traitCostMod('untrustworthy',75000), 1.35); },
-                Cement(offset){ return spaceCostMultiplier('spc_casino', offset, traitCostMod('untrustworthy',100000), 1.35); },
-                Plywood(offset){ return spaceCostMultiplier('spc_casino', offset, traitCostMod('untrustworthy',20000), 1.35); }
+                Money(r={}){ return spaceCostMultiplier('spc_casino', r.offset, traitCostMod('untrustworthy',400000), 1.35); },
+                Furs(r={}){ return spaceCostMultiplier('spc_casino', r.offset, traitCostMod('untrustworthy',75000), 1.35); },
+                Cement(r={}){ return spaceCostMultiplier('spc_casino', r.offset, traitCostMod('untrustworthy',100000), 1.35); },
+                Plywood(r={}){ return spaceCostMultiplier('spc_casino', r.offset, traitCostMod('untrustworthy',20000), 1.35); }
             },
             effect(){
                 let desc = casinoEffect();
@@ -1722,11 +1722,11 @@ const spaceProjects = {
             type: 'industry',
             reqs: { solar: 4, hell: 1 },
             cost: {
-                Money(offset, wiki){ return spaceCostMultiplier('swarm_plant', offset, iron_adjust(75000, wiki), 1.28); },
-                Iron(offset, wiki){ return spaceCostMultiplier('swarm_plant', offset, iron_adjust(65000, wiki), 1.28); },
-                Neutronium(offset, wiki){ return spaceCostMultiplier('swarm_plant', offset, iron_adjust(75, wiki), 1.28); },
-                Brick(offset, wiki){ return spaceCostMultiplier('swarm_plant', offset, iron_adjust(2500, wiki), 1.28); },
-                Mythril(offset, wiki){ return spaceCostMultiplier('swarm_plant', offset, iron_adjust(100, wiki), 1.28); }
+                Money(r={}){ return spaceCostMultiplier('swarm_plant', r.offset, iron_adjust(75000, r.wiki), 1.28); },
+                Iron(r={}){ return spaceCostMultiplier('swarm_plant', r.offset, iron_adjust(65000, r.wiki), 1.28); },
+                Neutronium(r={}){ return spaceCostMultiplier('swarm_plant', r.offset, iron_adjust(75, r.wiki), 1.28); },
+                Brick(r={}){ return spaceCostMultiplier('swarm_plant', r.offset, iron_adjust(2500, r.wiki), 1.28); },
+                Mythril(r={}){ return spaceCostMultiplier('swarm_plant', r.offset, iron_adjust(100, r.wiki), 1.28); }
             },
             effect(wiki){
                 let reduce = global.tech['swarm'] ? 0.88 : 0.94;
@@ -1771,7 +1771,7 @@ const spaceProjects = {
             },
             queue_complete(){ return global.tech.hell >= 3 ? 0 : 1; },
             cost: {
-                Helium_3(offset,wiki){ return +fuel_adjust(12500000,false,wiki).toFixed(0); }
+                Helium_3(r={}){ return +fuel_adjust(12500000,false,r.wiki).toFixed(0); }
             },
             effect(){
                 return loc('space_hell_salvage_ship_effect');
@@ -1830,7 +1830,7 @@ const spaceProjects = {
             grant: ['solar',1],
             queue_complete(){ return global.tech.solar >= 1 ? 0 : 1; },
             cost: {
-                Helium_3(offset,wiki){ return +fuel_adjust(15000,false,wiki).toFixed(0); }
+                Helium_3(r={}){ return +fuel_adjust(15000,false,r.wiki).toFixed(0); }
             },
             effect(){
                 return loc('space_sun_mission_effect1');
@@ -1851,11 +1851,11 @@ const spaceProjects = {
             type: 'power',
             reqs: { solar: 3 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('swarm_control', offset, 100000, 1.3); },
-                Knowledge(offset){ return spaceCostMultiplier('swarm_control', offset, 60000, 1.3); },
-                Alloy(offset){ return spaceCostMultiplier('swarm_control', offset, 7500, 1.3); },
-                Helium_3(offset,wiki){ return spaceCostMultiplier('swarm_control', offset, fuel_adjust(2000,false,wiki), 1.3); },
-                Mythril(offset){ return spaceCostMultiplier('swarm_control', offset, 250, 1.3); }
+                Money(r={}){ return spaceCostMultiplier('swarm_control', r.offset, 100000, 1.3); },
+                Knowledge(r={}){ return spaceCostMultiplier('swarm_control', r.offset, 60000, 1.3); },
+                Alloy(r={}){ return spaceCostMultiplier('swarm_control', r.offset, 7500, 1.3); },
+                Helium_3(r={}){ return spaceCostMultiplier('swarm_control', r.offset, fuel_adjust(2000,false,r.wiki), 1.3); },
+                Mythril(r={}){ return spaceCostMultiplier('swarm_control', r.offset, 250, 1.3); }
             },
             effect(wiki){
                 return loc('space_sun_swarm_control_effect1',[$(this)[0].support(wiki)]);
@@ -1885,10 +1885,10 @@ const spaceProjects = {
             type: 'power',
             reqs: { solar: 3 },
             cost: {
-                Money(offset,wiki){ return spaceCostMultiplier('swarm_satellite', offset, swarm_adjust(5000,wiki), 1.1); },
-                Copper(offset,wiki){ return spaceCostMultiplier('swarm_satellite', offset, swarm_adjust(2500,wiki), 1.1); },
-                Iridium(offset,wiki){ return spaceCostMultiplier('swarm_satellite', offset, swarm_adjust(150,wiki), 1.1); },
-                Helium_3(offset,wiki){ return spaceCostMultiplier('swarm_satellite', offset, swarm_adjust(fuel_adjust(50,false,wiki),wiki), 1.1); }
+                Money(r={}){ return spaceCostMultiplier('swarm_satellite', r.offset, swarm_adjust(5000,r.wiki), 1.1); },
+                Copper(r={}){ return spaceCostMultiplier('swarm_satellite', r.offset, swarm_adjust(2500,r.wiki), 1.1); },
+                Iridium(r={}){ return spaceCostMultiplier('swarm_satellite', r.offset, swarm_adjust(150,r.wiki), 1.1); },
+                Helium_3(r={}){ return spaceCostMultiplier('swarm_satellite', r.offset, swarm_adjust(fuel_adjust(50,false,r.wiki),r.wiki), 1.1); }
             },
             effect(){
                 let solar = 0.35;
@@ -1935,12 +1935,12 @@ const spaceProjects = {
             queue_size: 10,
             queue_complete(){ return 100 - global.space.jump_gate.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('jump_gate') ? global.space.jump_gate.count : 0)) < 100 ? 1000000 : 0; },
-                Alloy(offset){ return ((offset || 0) + (global.space.hasOwnProperty('jump_gate') ? global.space.jump_gate.count : 0)) < 100 ? 50000 : 0; },
-                Adamantite(offset){ return ((offset || 0) + (global.space.hasOwnProperty('jump_gate') ? global.space.jump_gate.count : 0)) < 100 ? 12500 : 0; },
-                Graphene(offset){ return ((offset || 0) + (global.space.hasOwnProperty('jump_gate') ? global.space.jump_gate.count : 0)) < 100 ? 42000 : 0; },
-                Orichalcum(offset){ return ((offset || 0) + (global.space.hasOwnProperty('jump_gate') ? global.space.jump_gate.count : 0)) < 100 ? 35000 : 0; },
-                Quantium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('jump_gate') ? global.space.jump_gate.count : 0)) < 100 ? 25000 : 0; },
+                Money(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('jump_gate') ? global.space.jump_gate.count : 0)) < 100 ? 1000000 : 0; },
+                Alloy(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('jump_gate') ? global.space.jump_gate.count : 0)) < 100 ? 50000 : 0; },
+                Adamantite(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('jump_gate') ? global.space.jump_gate.count : 0)) < 100 ? 12500 : 0; },
+                Graphene(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('jump_gate') ? global.space.jump_gate.count : 0)) < 100 ? 42000 : 0; },
+                Orichalcum(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('jump_gate') ? global.space.jump_gate.count : 0)) < 100 ? 35000 : 0; },
+                Quantium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('jump_gate') ? global.space.jump_gate.count : 0)) < 100 ? 25000 : 0; },
             },
             effect(wiki){
                 let count = (wiki?.count ?? 0) + (global.space.hasOwnProperty('jump_gate') ? global.space.jump_gate.count : 0);
@@ -1987,7 +1987,7 @@ const spaceProjects = {
             },
             queue_complete(){ return global.tech.resettle >= 4 ? 0 : 1; },
             cost: {
-                Helium_3(offset,wiki){ return +fuel_adjust(5000000,false,wiki).toFixed(0); }
+                Helium_3(r={}){ return +fuel_adjust(5000000,false,r.wiki).toFixed(0); }
             },
             effect(){
                 return loc('space_sun_salvage_ship_effect');
@@ -2029,7 +2029,7 @@ const spaceProjects = {
             grant: ['space',5],
             queue_complete(){ return global.tech.space >= 5 ? 0 : 1; },
             cost: {
-                Helium_3(offset,wiki){ return +fuel_adjust(12500,false,wiki).toFixed(0); }
+                Helium_3(r={}){ return +fuel_adjust(12500,false,r.wiki).toFixed(0); }
             },
             effect(){
                 return loc('space_gas_mission_effect',[planetName().gas]);
@@ -2054,11 +2054,11 @@ const spaceProjects = {
             type: 'mining',
             reqs: { gas_giant: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('gas_mining', offset, 250000, 1.32); },
-                Uranium(offset){ return spaceCostMultiplier('gas_mining', offset, 500, 1.32); },
-                Alloy(offset){ return spaceCostMultiplier('gas_mining', offset, 10000, 1.32); },
-                Helium_3(offset,wiki){ return spaceCostMultiplier('gas_mining', offset, fuel_adjust(2500,false,wiki), 1.32); },
-                Mythril(offset){ return spaceCostMultiplier('gas_mining', offset, 25, 1.32); }
+                Money(r={}){ return spaceCostMultiplier('gas_mining', r.offset, 250000, 1.32); },
+                Uranium(r={}){ return spaceCostMultiplier('gas_mining', r.offset, 500, 1.32); },
+                Alloy(r={}){ return spaceCostMultiplier('gas_mining', r.offset, 10000, 1.32); },
+                Helium_3(r={}){ return spaceCostMultiplier('gas_mining', r.offset, fuel_adjust(2500,false,r.wiki), 1.32); },
+                Mythril(r={}){ return spaceCostMultiplier('gas_mining', r.offset, 25, 1.32); }
             },
             effect(){
                 let helium = +(production('gas_mining')).toFixed(2);
@@ -2089,10 +2089,10 @@ const spaceProjects = {
             type: 'storage',
             reqs: { gas_giant: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('gas_storage', offset, 125000, 1.32); },
-                Iridium(offset){ return spaceCostMultiplier('gas_storage', offset, 3000, 1.32); },
-                Sheet_Metal(offset){ return spaceCostMultiplier('gas_storage', offset, 2000, 1.32); },
-                Helium_3(offset,wiki){ return spaceCostMultiplier('gas_storage', offset, fuel_adjust(1000,false,wiki), 1.32); },
+                Money(r={}){ return spaceCostMultiplier('gas_storage', r.offset, 125000, 1.32); },
+                Iridium(r={}){ return spaceCostMultiplier('gas_storage', r.offset, 3000, 1.32); },
+                Sheet_Metal(r={}){ return spaceCostMultiplier('gas_storage', r.offset, 2000, 1.32); },
+                Helium_3(r={}){ return spaceCostMultiplier('gas_storage', r.offset, fuel_adjust(1000,false,r.wiki), 1.32); },
             },
             effect(){
                 let oil = spatialReasoning(3500) * (global.tech['world_control'] ? 1.5 : 1);
@@ -2124,11 +2124,11 @@ const spaceProjects = {
             reqs: { genesis: 3 },
             queue_complete(){ return 1 - global.space.star_dock.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('star_dock') ? global.space.star_dock.count : 0)) === 0 ? 1500000 : 0; },
-                Steel(offset){ return ((offset || 0) + (global.space.hasOwnProperty('star_dock') ? global.space.star_dock.count : 0)) === 0 ? 500000 : 0; },
-                Helium_3(offset,wiki){ return ((offset || 0) + (global.space.hasOwnProperty('star_dock') ? global.space.star_dock.count : 0)) === 0 ? Math.round(fuel_adjust(global.race['gravity_well'] ? 25000 : 10000,false,wiki)) : 0; },
-                Nano_Tube(offset){ return ((offset || 0) + (global.space.hasOwnProperty('star_dock') ? global.space.star_dock.count : 0)) === 0 ? 250000 : 0; },
-                Mythril(offset){ return ((offset || 0) + (global.space.hasOwnProperty('star_dock') ? global.space.star_dock.count : 0)) === 0 ? 10000 : 0; },
+                Money(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('star_dock') ? global.space.star_dock.count : 0)) === 0 ? 1500000 : 0; },
+                Steel(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('star_dock') ? global.space.star_dock.count : 0)) === 0 ? 500000 : 0; },
+                Helium_3(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('star_dock') ? global.space.star_dock.count : 0)) === 0 ? Math.round(fuel_adjust(global.race['gravity_well'] ? 25000 : 10000,false,r.wiki)) : 0; },
+                Nano_Tube(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('star_dock') ? global.space.star_dock.count : 0)) === 0 ? 250000 : 0; },
+                Mythril(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('star_dock') ? global.space.star_dock.count : 0)) === 0 ? 10000 : 0; },
             },
             effect(){
                 return `<div>${loc('space_gas_star_dock_effect1')}</div>`;
@@ -2178,7 +2178,7 @@ const spaceProjects = {
             grant: ['space',6],
             queue_complete(){ return global.tech.space >= 6 ? 0 : 1; },
             cost: {
-                Helium_3(offset,wiki){ return +fuel_adjust(30000,false,wiki).toFixed(0); }
+                Helium_3(r={}){ return +fuel_adjust(30000,false,r.wiki).toFixed(0); }
             },
             effect(){
                 return loc('space_gas_moon_mission_effect',[planetName().gas_moon]);
@@ -2202,11 +2202,11 @@ const spaceProjects = {
             type: 'outpost',
             reqs: { gas_moon: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('outpost', offset, 666000, 1.3); },
-                Titanium(offset){ return spaceCostMultiplier('outpost', offset, 18000, 1.3); },
-                Iridium(offset){ return spaceCostMultiplier('outpost', offset, 2500, 1.3); },
-                Helium_3(offset,wiki){ return spaceCostMultiplier('outpost', offset, fuel_adjust(6000,false,wiki), 1.3); },
-                Mythril(offset){ return spaceCostMultiplier('outpost', offset, 300, 1.3); }
+                Money(r={}){ return spaceCostMultiplier('outpost', r.offset, 666000, 1.3); },
+                Titanium(r={}){ return spaceCostMultiplier('outpost', r.offset, 18000, 1.3); },
+                Iridium(r={}){ return spaceCostMultiplier('outpost', r.offset, 2500, 1.3); },
+                Helium_3(r={}){ return spaceCostMultiplier('outpost', r.offset, fuel_adjust(6000,false,r.wiki), 1.3); },
+                Mythril(r={}){ return spaceCostMultiplier('outpost', r.offset, 300, 1.3); }
             },
             effect(wiki){
                 let p_values = production('outpost');
@@ -2244,11 +2244,11 @@ const spaceProjects = {
             type: 'mining',
             reqs: { gas_moon: 1, drone: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('drone', offset, 250000, 1.3); },
-                Steel(offset){ return spaceCostMultiplier('drone', offset, 20000, 1.3); },
-                Neutronium(offset){ return spaceCostMultiplier('drone', offset, 500, 1.3); },
-                Elerium(offset){ return spaceCostMultiplier('drone', offset, 25, 1.3); },
-                Nano_Tube(offset){ return spaceCostMultiplier('drone', offset, 45000, 1.3); }
+                Money(r={}){ return spaceCostMultiplier('drone', r.offset, 250000, 1.3); },
+                Steel(r={}){ return spaceCostMultiplier('drone', r.offset, 20000, 1.3); },
+                Neutronium(r={}){ return spaceCostMultiplier('drone', r.offset, 500, 1.3); },
+                Elerium(r={}){ return spaceCostMultiplier('drone', r.offset, 25, 1.3); },
+                Nano_Tube(r={}){ return spaceCostMultiplier('drone', r.offset, 45000, 1.3); }
             },
             effect(){
                 let value = global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 3 ? 12 : 6;
@@ -2277,10 +2277,10 @@ const spaceProjects = {
             type: 'mining',
             reqs: { gas_moon: 2 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('oil_extractor', offset, 666000, 1.3); },
-                Polymer(offset){ return spaceCostMultiplier('oil_extractor', offset, 7500, 1.3); },
-                Helium_3(offset,wiki){ return spaceCostMultiplier('oil_extractor', offset, fuel_adjust(2500,false,wiki), 1.3); },
-                Wrought_Iron(offset){ return spaceCostMultiplier('oil_extractor', offset, 5000, 1.3); },
+                Money(r={}){ return spaceCostMultiplier('oil_extractor', r.offset, 666000, 1.3); },
+                Polymer(r={}){ return spaceCostMultiplier('oil_extractor', r.offset, 7500, 1.3); },
+                Helium_3(r={}){ return spaceCostMultiplier('oil_extractor', r.offset, fuel_adjust(2500,false,r.wiki), 1.3); },
+                Wrought_Iron(r={}){ return spaceCostMultiplier('oil_extractor', r.offset, 5000, 1.3); },
             },
             effect(){
                 let oil = +(production('oil_extractor')).toFixed(2);
@@ -2344,7 +2344,7 @@ const spaceProjects = {
             grant: ['asteroid',1],
             queue_complete(){ return global.tech.asteroid >= 1 ? 0 : 1; },
             cost: {
-                Helium_3(offset,wiki){ return +fuel_adjust(25000,false,wiki).toFixed(0); }
+                Helium_3(r={}){ return +fuel_adjust(25000,false,r.wiki).toFixed(0); }
             },
             effect(){
                 return loc('space_belt_mission_effect1');
@@ -2367,12 +2367,12 @@ const spaceProjects = {
             type: 'outpost',
             reqs: { asteroid: 2 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('space_station', offset, 250000, 1.3); },
-                Iron(offset){ return spaceCostMultiplier('space_station', offset, 85000, 1.3); },
-                Polymer(offset){ return spaceCostMultiplier('space_station', offset, 18000, 1.3); },
-                Iridium(offset){ return spaceCostMultiplier('space_station', offset, 2800, 1.28); },
-                Helium_3(offset,wiki){ return spaceCostMultiplier('space_station', offset, fuel_adjust(2000,false,wiki), 1.3); },
-                Mythril(offset){ return spaceCostMultiplier('space_station', offset, 75, 1.25); }
+                Money(r={}){ return spaceCostMultiplier('space_station', r.offset, 250000, 1.3); },
+                Iron(r={}){ return spaceCostMultiplier('space_station', r.offset, 85000, 1.3); },
+                Polymer(r={}){ return spaceCostMultiplier('space_station', r.offset, 18000, 1.3); },
+                Iridium(r={}){ return spaceCostMultiplier('space_station', r.offset, 2800, 1.28); },
+                Helium_3(r={}){ return spaceCostMultiplier('space_station', r.offset, fuel_adjust(2000,false,r.wiki), 1.3); },
+                Mythril(r={}){ return spaceCostMultiplier('space_station', r.offset, 75, 1.25); }
             },
             effect(wiki){
                 let helium = +(fuel_adjust(2.5,true,wiki)).toFixed(2);
@@ -2426,11 +2426,11 @@ const spaceProjects = {
             type: 'mining',
             reqs: { asteroid: 5 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('elerium_ship', offset, 500000, 1.3); },
-                Uranium(offset){ return spaceCostMultiplier('elerium_ship', offset, 2500, 1.3); },
-                Titanium(offset){ return spaceCostMultiplier('elerium_ship', offset, 10000, 1.3); },
-                Mythril(offset){ return spaceCostMultiplier('elerium_ship', offset, 500, 1.3); },
-                Helium_3(offset,wiki){ return spaceCostMultiplier('elerium_ship', offset, fuel_adjust(5000,false,wiki), 1.3); }
+                Money(r={}){ return spaceCostMultiplier('elerium_ship', r.offset, 500000, 1.3); },
+                Uranium(r={}){ return spaceCostMultiplier('elerium_ship', r.offset, 2500, 1.3); },
+                Titanium(r={}){ return spaceCostMultiplier('elerium_ship', r.offset, 10000, 1.3); },
+                Mythril(r={}){ return spaceCostMultiplier('elerium_ship', r.offset, 500, 1.3); },
+                Helium_3(r={}){ return spaceCostMultiplier('elerium_ship', r.offset, fuel_adjust(5000,false,r.wiki), 1.3); }
             },
             effect(){
                 let elerium = +(production('elerium_ship')).toFixed(4);
@@ -2463,11 +2463,11 @@ const spaceProjects = {
             type: 'mining',
             reqs: { asteroid: 3 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('iridium_ship', offset, 120000, 1.3); },
-                Uranium(offset){ return spaceCostMultiplier('iridium_ship', offset, 1000, 1.3); },
-                Alloy(offset){ return spaceCostMultiplier('iridium_ship', offset, 48000, 1.3); },
-                Iridium(offset){ return spaceCostMultiplier('iridium_ship', offset, 2800, 1.3); },
-                Helium_3(offset,wiki){ return spaceCostMultiplier('iridium_ship', offset, fuel_adjust(1800,false,wiki), 1.3); }
+                Money(r={}){ return spaceCostMultiplier('iridium_ship', r.offset, 120000, 1.3); },
+                Uranium(r={}){ return spaceCostMultiplier('iridium_ship', r.offset, 1000, 1.3); },
+                Alloy(r={}){ return spaceCostMultiplier('iridium_ship', r.offset, 48000, 1.3); },
+                Iridium(r={}){ return spaceCostMultiplier('iridium_ship', r.offset, 2800, 1.3); },
+                Helium_3(r={}){ return spaceCostMultiplier('iridium_ship', r.offset, fuel_adjust(1800,false,r.wiki), 1.3); }
             },
             effect(){
                 let iridium = +(production('iridium_ship')).toFixed(3);
@@ -2500,11 +2500,11 @@ const spaceProjects = {
             type: 'mining',
             reqs: { asteroid: 3 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('iron_ship', offset, 80000, 1.3); },
-                Steel(offset){ return spaceCostMultiplier('iron_ship', offset, 42000, 1.3); },
-                Aluminium(offset){ return spaceCostMultiplier('iron_ship', offset, 38000, 1.3); },
-                Polymer(offset){ return spaceCostMultiplier('iron_ship', offset, 16000, 1.3); },
-                Helium_3(offset,wiki){ return spaceCostMultiplier('iron_ship', offset, fuel_adjust(1200,false,wiki), 1.3); }
+                Money(r={}){ return spaceCostMultiplier('iron_ship', r.offset, 80000, 1.3); },
+                Steel(r={}){ return spaceCostMultiplier('iron_ship', r.offset, 42000, 1.3); },
+                Aluminium(r={}){ return spaceCostMultiplier('iron_ship', r.offset, 38000, 1.3); },
+                Polymer(r={}){ return spaceCostMultiplier('iron_ship', r.offset, 16000, 1.3); },
+                Helium_3(r={}){ return spaceCostMultiplier('iron_ship', r.offset, fuel_adjust(1200,false,r.wiki), 1.3); }
             },
             effect(){
                 let iron = +(production('iron_ship')).toFixed(2);
@@ -2561,7 +2561,7 @@ const spaceProjects = {
             grant: ['dwarf',1],
             queue_complete(){ return global.tech.dwarf >= 1 ? 0 : 1; },
             cost: {
-                Helium_3(offset,wiki){ return +fuel_adjust(45000,false,wiki).toFixed(0); }
+                Helium_3(r={}){ return +fuel_adjust(45000,false,r.wiki).toFixed(0); }
             },
             effect(){
                 return loc('space_dwarf_mission_effect1',[planetName().dwarf]);
@@ -2585,10 +2585,10 @@ const spaceProjects = {
             reqs: { dwarf: 1 },
             condition(){ return global.tech['resettle'] && global.tech.dwarf === 1 ? false : true; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('elerium_contain', offset, 800000, 1.28); },
-                Cement(offset){ return spaceCostMultiplier('elerium_contain', offset, 120000, 1.28); },
-                Iridium(offset){ return spaceCostMultiplier('elerium_contain', offset, 50000, 1.28); },
-                Neutronium(offset){ return spaceCostMultiplier('elerium_contain', offset, 250, 1.28); }
+                Money(r={}){ return spaceCostMultiplier('elerium_contain', r.offset, 800000, 1.28); },
+                Cement(r={}){ return spaceCostMultiplier('elerium_contain', r.offset, 120000, 1.28); },
+                Iridium(r={}){ return spaceCostMultiplier('elerium_contain', r.offset, 50000, 1.28); },
+                Neutronium(r={}){ return spaceCostMultiplier('elerium_contain', r.offset, 250, 1.28); }
             },
             effect(){
                 let elerium = spatialReasoning(100);
@@ -2620,10 +2620,10 @@ const spaceProjects = {
             reqs: { elerium: 2 },
             condition(){ return global.tech['resettle'] && global.tech.dwarf === 1 ? false : true; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('e_reactor', offset, 1250000, 1.28); },
-                Steel(offset){ return spaceCostMultiplier('e_reactor', offset, 350000, 1.28); },
-                Neutronium(offset){ return spaceCostMultiplier('e_reactor', offset, 1250, 1.28); },
-                Mythril(offset){ return spaceCostMultiplier('e_reactor', offset, 2500, 1.28); }
+                Money(r={}){ return spaceCostMultiplier('e_reactor', r.offset, 1250000, 1.28); },
+                Steel(r={}){ return spaceCostMultiplier('e_reactor', r.offset, 350000, 1.28); },
+                Neutronium(r={}){ return spaceCostMultiplier('e_reactor', r.offset, 1250, 1.28); },
+                Mythril(r={}){ return spaceCostMultiplier('e_reactor', r.offset, 2500, 1.28); }
             },
             effect(){
                 let elerium = $(this)[0].p_fuel().a;
@@ -2664,12 +2664,12 @@ const spaceProjects = {
             queue_size: 100,
             queue_complete(){ return 1859 - global.space.world_collider.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('world_collider') ? global.space.world_collider.count : 0)) < 1859 ? 25000 : 0; },
-                Copper(offset){ return ((offset || 0) + (global.space.hasOwnProperty('world_collider') ? global.space.world_collider.count : 0)) < 1859 ? 750 : 0; },
-                Alloy(offset){ return ((offset || 0) + (global.space.hasOwnProperty('world_collider') ? global.space.world_collider.count : 0)) < 1859 ? 125 : 0; },
-                Neutronium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('world_collider') ? global.space.world_collider.count : 0)) < 1859 ? 12 : 0; },
-                Elerium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('world_collider') ? global.space.world_collider.count : 0)) < 1859 ? 1 : 0; },
-                Mythril(offset){ return ((offset || 0) + (global.space.hasOwnProperty('world_collider') ? global.space.world_collider.count : 0)) < 1859 ? 10 : 0; }
+                Money(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('world_collider') ? global.space.world_collider.count : 0)) < 1859 ? 25000 : 0; },
+                Copper(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('world_collider') ? global.space.world_collider.count : 0)) < 1859 ? 750 : 0; },
+                Alloy(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('world_collider') ? global.space.world_collider.count : 0)) < 1859 ? 125 : 0; },
+                Neutronium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('world_collider') ? global.space.world_collider.count : 0)) < 1859 ? 12 : 0; },
+                Elerium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('world_collider') ? global.space.world_collider.count : 0)) < 1859 ? 1 : 0; },
+                Mythril(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('world_collider') ? global.space.world_collider.count : 0)) < 1859 ? 10 : 0; }
             },
             effect(wiki){
                 let count = (wiki?.count ?? 0) + (global.space.hasOwnProperty('world_collider') ? global.space.world_collider.count : 0);
@@ -2766,12 +2766,12 @@ const spaceProjects = {
             condition(){ return global.tech['resettle'] ? false : true; },
             path: ['truepath'],
             cost: {
-                Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('shipyard') ? global.space.shipyard.count : 0)) < 1 ? 10000000 : 0; },
-                Aluminium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('shipyard') ? global.space.shipyard.count : 0)) < 1 ? 1000000 : 0; },
-                Titanium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('shipyard') ? global.space.shipyard.count : 0)) < 1 ? 650000 : 0; },
-                Iridium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('shipyard') ? global.space.shipyard.count : 0)) < 1 ? 250000 : 0; },
-                Neutronium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('shipyard') ? global.space.shipyard.count : 0)) < 1 ? 10000 : 0; },
-                Mythril(offset){ return ((offset || 0) + (global.space.hasOwnProperty('shipyard') ? global.space.shipyard.count : 0)) < 1 ? 500000 : 0; },
+                Money(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('shipyard') ? global.space.shipyard.count : 0)) < 1 ? 10000000 : 0; },
+                Aluminium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('shipyard') ? global.space.shipyard.count : 0)) < 1 ? 1000000 : 0; },
+                Titanium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('shipyard') ? global.space.shipyard.count : 0)) < 1 ? 650000 : 0; },
+                Iridium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('shipyard') ? global.space.shipyard.count : 0)) < 1 ? 250000 : 0; },
+                Neutronium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('shipyard') ? global.space.shipyard.count : 0)) < 1 ? 10000 : 0; },
+                Mythril(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('shipyard') ? global.space.shipyard.count : 0)) < 1 ? 500000 : 0; },
             },
             queue_complete(){ return 1 - global.space.shipyard.count; },
             effect(){
@@ -2823,12 +2823,12 @@ const spaceProjects = {
             reqs: { dwarf: 2 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('repair_yard') ? global.space.repair_yard.count : 0)) < 1 ? 785000000 : 0; },
-                Iron(offset){ return ((offset || 0) + (global.space.hasOwnProperty('repair_yard') ? global.space.repair_yard.count : 0)) < 1 ? 1000000000 : 0; },
-                Stanene(offset){ return ((offset || 0) + (global.space.hasOwnProperty('repair_yard') ? global.space.repair_yard.count : 0)) < 1 ? 132000000 : 0; },
-                Elerium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('repair_yard') ? global.space.repair_yard.count : 0)) < 1 ? 64000 : 0; },
-                Orichalcum(offset){ return ((offset || 0) + (global.space.hasOwnProperty('repair_yard') ? global.space.repair_yard.count : 0)) < 1 ? 62500000 : 0; },
-                Bolognium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('repair_yard') ? global.space.repair_yard.count : 0)) < 1 ? 85000000 : 0; },
+                Money(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('repair_yard') ? global.space.repair_yard.count : 0)) < 1 ? 785000000 : 0; },
+                Iron(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('repair_yard') ? global.space.repair_yard.count : 0)) < 1 ? 1000000000 : 0; },
+                Stanene(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('repair_yard') ? global.space.repair_yard.count : 0)) < 1 ? 132000000 : 0; },
+                Elerium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('repair_yard') ? global.space.repair_yard.count : 0)) < 1 ? 64000 : 0; },
+                Orichalcum(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('repair_yard') ? global.space.repair_yard.count : 0)) < 1 ? 62500000 : 0; },
+                Bolognium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('repair_yard') ? global.space.repair_yard.count : 0)) < 1 ? 85000000 : 0; },
             },
             queue_complete(){ return 1 - global.space.repair_yard.count; },
             effect(){
@@ -2868,12 +2868,12 @@ const spaceProjects = {
             queue_size: 5,
             queue_complete(){ return 100 - global.space.mass_relay.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('mass_relay') ? global.space.mass_relay.count : 0)) < 100 ? 10000000 : 0; },
-                Neutronium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('mass_relay') ? global.space.mass_relay.count : 0)) < 100 ? 7500 : 0; },
-                Adamantite(offset){ return ((offset || 0) + (global.space.hasOwnProperty('mass_relay') ? global.space.mass_relay.count : 0)) < 100 ? 18000 : 0; },
-                Elerium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('mass_relay') ? global.space.mass_relay.count : 0)) < 100 ? 125 : 0; },
-                Stanene(offset){ return ((offset || 0) + (global.space.hasOwnProperty('mass_relay') ? global.space.mass_relay.count : 0)) < 100 ? 100000 : 0; },
-                Quantium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('mass_relay') ? global.space.mass_relay.count : 0)) < 100 ? 25000 : 0; },
+                Money(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('mass_relay') ? global.space.mass_relay.count : 0)) < 100 ? 10000000 : 0; },
+                Neutronium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('mass_relay') ? global.space.mass_relay.count : 0)) < 100 ? 7500 : 0; },
+                Adamantite(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('mass_relay') ? global.space.mass_relay.count : 0)) < 100 ? 18000 : 0; },
+                Elerium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('mass_relay') ? global.space.mass_relay.count : 0)) < 100 ? 125 : 0; },
+                Stanene(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('mass_relay') ? global.space.mass_relay.count : 0)) < 100 ? 100000 : 0; },
+                Quantium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('mass_relay') ? global.space.mass_relay.count : 0)) < 100 ? 25000 : 0; },
             },
             effect(wiki){
                 let count = ((wiki?.count ?? 0) + (global.space.hasOwnProperty('mass_relay') ? global.space.mass_relay.count : 0));
@@ -2958,7 +2958,7 @@ const spaceProjects = {
             },
             queue_complete(){ return global.tech.dwarf >= 3 ? 0 : 1; },
             cost: {
-                Helium_3(offset,wiki){ return +fuel_adjust(18000000,false,wiki).toFixed(0); }
+                Helium_3(r={}){ return +fuel_adjust(18000000,false,r.wiki).toFixed(0); }
             },
             effect(){
                 return loc('space_hell_salvage_ship_effect');
@@ -3018,10 +3018,10 @@ const interstellarProjects = {
             type: 'outpost',
             reqs: { alpha: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('starport', offset, 1000000, 1.3, 'interstellar'); },
-                Aluminium(offset){ return spaceCostMultiplier('starport', offset, 400000, 1.3, 'interstellar'); },
-                Neutronium(offset){ return spaceCostMultiplier('starport', offset, 1000, 1.3, 'interstellar'); },
-                Elerium(offset){ return spaceCostMultiplier('starport', offset, 100, 1.3, 'interstellar'); }
+                Money(r={}){ return spaceCostMultiplier('starport', r.offset, 1000000, 1.3, 'interstellar'); },
+                Aluminium(r={}){ return spaceCostMultiplier('starport', r.offset, 400000, 1.3, 'interstellar'); },
+                Neutronium(r={}){ return spaceCostMultiplier('starport', r.offset, 1000, 1.3, 'interstellar'); },
+                Elerium(r={}){ return spaceCostMultiplier('starport', r.offset, 100, 1.3, 'interstellar'); }
             },
             effect(){
                 let helium = +(int_fuel_adjust(5)).toFixed(2);
@@ -3071,10 +3071,10 @@ const interstellarProjects = {
             type: 'housing',
             reqs: { alpha: 3 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('habitat', offset, 800000, 1.25, 'interstellar'); },
-                Furs(offset){ return spaceCostMultiplier('habitat', offset, 38000, 1.25, 'interstellar'); },
-                Adamantite(offset){ return (global.race['fasting'] && global.interstellar.habitat && global.interstellar.habitat.count < 5) ? 0 : spaceCostMultiplier('habitat', offset, 3200, 1.25, 'interstellar'); },
-                Plywood(offset){ return spaceCostMultiplier('habitat', offset, 10000, 1.25, 'interstellar'); },
+                Money(r={}){ return spaceCostMultiplier('habitat', r.offset, 800000, 1.25, 'interstellar'); },
+                Furs(r={}){ return spaceCostMultiplier('habitat', r.offset, 38000, 1.25, 'interstellar'); },
+                Adamantite(r={}){ return (global.race['fasting'] && global.interstellar.habitat && global.interstellar.habitat.count < 5) ? 0 : spaceCostMultiplier('habitat', r.offset, 3200, 1.25, 'interstellar'); },
+                Plywood(r={}){ return spaceCostMultiplier('habitat', r.offset, 10000, 1.25, 'interstellar'); },
                 Horseshoe(){ return global.race['hooved'] ? 1 : 0; }
             },
             effect(){
@@ -3117,10 +3117,10 @@ const interstellarProjects = {
             type: 'mining',
             reqs: { alpha: 2 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('mining_droid', offset, 650000, 1.28, 'interstellar'); },
-                Steel(offset){ return spaceCostMultiplier('mining_droid', offset, 120000, 1.28, 'interstellar'); },
-                Nano_Tube(offset){ return spaceCostMultiplier('mining_droid', offset, 75000, 1.28, 'interstellar'); },
-                Elerium(offset){ return spaceCostMultiplier('mining_droid', offset, 50, 1.28, 'interstellar'); }
+                Money(r={}){ return spaceCostMultiplier('mining_droid', r.offset, 650000, 1.28, 'interstellar'); },
+                Steel(r={}){ return spaceCostMultiplier('mining_droid', r.offset, 120000, 1.28, 'interstellar'); },
+                Nano_Tube(r={}){ return spaceCostMultiplier('mining_droid', r.offset, 75000, 1.28, 'interstellar'); },
+                Elerium(r={}){ return spaceCostMultiplier('mining_droid', r.offset, 50, 1.28, 'interstellar'); }
             },
             effect(){
                 return `<div class="has-text-caution">${loc('space_used_support',[loc('interstellar_alpha_name')])}</div><div>${loc('interstellar_mining_droid_effect')}</div>`;
@@ -3161,10 +3161,10 @@ const interstellarProjects = {
             type: 'industry',
             reqs: { droids: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('processing', offset, 350000, 1.28, 'interstellar'); },
-                Iron(offset){ return spaceCostMultiplier('processing', offset, 180000, 1.28, 'interstellar'); },
-                Aluminium(offset){ return spaceCostMultiplier('processing', offset, 60000, 1.28, 'interstellar'); },
-                Iridium(offset){ return spaceCostMultiplier('processing', offset, 5000, 1.28, 'interstellar'); }
+                Money(r={}){ return spaceCostMultiplier('processing', r.offset, 350000, 1.28, 'interstellar'); },
+                Iron(r={}){ return spaceCostMultiplier('processing', r.offset, 180000, 1.28, 'interstellar'); },
+                Aluminium(r={}){ return spaceCostMultiplier('processing', r.offset, 60000, 1.28, 'interstellar'); },
+                Iridium(r={}){ return spaceCostMultiplier('processing', r.offset, 5000, 1.28, 'interstellar'); }
             },
             effect(wiki){
                 let bonus = 12;
@@ -3199,10 +3199,10 @@ const interstellarProjects = {
             type: 'power',
             reqs: { fusion: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('fusion', offset, 990000, 1.28, 'interstellar'); },
-                Iridium(offset){ return spaceCostMultiplier('fusion', offset, 44000, 1.28, 'interstellar'); },
-                Infernite(offset){ return spaceCostMultiplier('fusion', offset, 350, 1.28, 'interstellar'); },
-                Brick(offset){ return spaceCostMultiplier('fusion', offset, 18000, 1.28, 'interstellar'); }
+                Money(r={}){ return spaceCostMultiplier('fusion', r.offset, 990000, 1.28, 'interstellar'); },
+                Iridium(r={}){ return spaceCostMultiplier('fusion', r.offset, 44000, 1.28, 'interstellar'); },
+                Infernite(r={}){ return spaceCostMultiplier('fusion', r.offset, 350, 1.28, 'interstellar'); },
+                Brick(r={}){ return spaceCostMultiplier('fusion', r.offset, 18000, 1.28, 'interstellar'); }
             },
             effect(){
                 let det = 1.25;
@@ -3234,11 +3234,11 @@ const interstellarProjects = {
             type: 'science',
             reqs: { science: 12 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('laboratory', offset, 750000, 1.28, 'interstellar'); },
-                Crystal(offset){ return global.race.universe === 'magic' ? spaceCostMultiplier('laboratory', offset, 1200, 1.28, 'interstellar') : 0; },
-                Titanium(offset){ return spaceCostMultiplier('laboratory', offset, 120000, 1.28, 'interstellar'); },
-                Alloy(offset){ return spaceCostMultiplier('laboratory', offset, 95000, 1.28, 'interstellar'); },
-                Mythril(offset){ return spaceCostMultiplier('laboratory', offset, 8500, 1.28, 'interstellar'); }
+                Money(r={}){ return spaceCostMultiplier('laboratory', r.offset, 750000, 1.28, 'interstellar'); },
+                Crystal(r={}){ return global.race.universe === 'magic' ? spaceCostMultiplier('laboratory', r.offset, 1200, 1.28, 'interstellar') : 0; },
+                Titanium(r={}){ return spaceCostMultiplier('laboratory', r.offset, 120000, 1.28, 'interstellar'); },
+                Alloy(r={}){ return spaceCostMultiplier('laboratory', r.offset, 95000, 1.28, 'interstellar'); },
+                Mythril(r={}){ return spaceCostMultiplier('laboratory', r.offset, 8500, 1.28, 'interstellar'); }
             },
             effect(wiki){
                 let know = 10000;
@@ -3300,10 +3300,10 @@ const interstellarProjects = {
             type: 'finance',
             reqs: { banking: 12 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('exchange', offset, traitCostMod('untrustworthy',680000), 1.28, 'interstellar'); },
-                Stone(offset){ return spaceCostMultiplier('exchange', offset, traitCostMod('untrustworthy',115000), 1.28, 'interstellar'); },
-                Adamantite(offset){ return spaceCostMultiplier('exchange', offset, traitCostMod('untrustworthy',55000), 1.28, 'interstellar'); },
-                Graphene(offset){ return spaceCostMultiplier('exchange', offset, traitCostMod('untrustworthy',78000), 1.28, 'interstellar'); }
+                Money(r={}){ return spaceCostMultiplier('exchange', r.offset, traitCostMod('untrustworthy',680000), 1.28, 'interstellar'); },
+                Stone(r={}){ return spaceCostMultiplier('exchange', r.offset, traitCostMod('untrustworthy',115000), 1.28, 'interstellar'); },
+                Adamantite(r={}){ return spaceCostMultiplier('exchange', r.offset, traitCostMod('untrustworthy',55000), 1.28, 'interstellar'); },
+                Graphene(r={}){ return spaceCostMultiplier('exchange', r.offset, traitCostMod('untrustworthy',78000), 1.28, 'interstellar'); }
             },
             effect(wiki){
                 let banks = global.race['cataclysm'] || global.race['orbit_decayed'] ? (wiki ? global.space.spaceport.on : p_on['spaceport']) : (global.city['bank'] ? global.city.bank.count : 0);
@@ -3353,10 +3353,10 @@ const interstellarProjects = {
             type: 'industry',
             reqs: { graphene: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('g_factory', offset, 950000, 1.28, 'interstellar'); },
-                Copper(offset){ return spaceCostMultiplier('g_factory', offset, 165000, 1.28, 'interstellar'); },
-                Cement(offset){ return spaceCostMultiplier('g_factory', offset, 220000, 1.28, 'interstellar'); },
-                Infernite(offset){ return spaceCostMultiplier('g_factory', offset, 750, 1.28, 'interstellar'); }
+                Money(r={}){ return spaceCostMultiplier('g_factory', r.offset, 950000, 1.28, 'interstellar'); },
+                Copper(r={}){ return spaceCostMultiplier('g_factory', r.offset, 165000, 1.28, 'interstellar'); },
+                Cement(r={}){ return spaceCostMultiplier('g_factory', r.offset, 220000, 1.28, 'interstellar'); },
+                Infernite(r={}){ return spaceCostMultiplier('g_factory', r.offset, 750, 1.28, 'interstellar'); }
             },
             effect(){
                 return `<div class="has-text-caution">${loc('space_used_support',[loc('interstellar_alpha_name')])}</div><div>${loc('interstellar_g_factory_effect')}</div>`;
@@ -3397,10 +3397,10 @@ const interstellarProjects = {
             type: 'industry',
             reqs: { alpha: 4 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('int_factory', offset, 25000000, 1.26, 'interstellar'); },
-                Coal(offset){ return spaceCostMultiplier('int_factory', offset, 10000000, 1.26, 'interstellar'); },
-                Brick(offset){ return spaceCostMultiplier('int_factory', offset, 750000, 1.26, 'interstellar'); },
-                Bolognium(offset){ return spaceCostMultiplier('int_factory', offset, 50000, 1.26, 'interstellar'); }
+                Money(r={}){ return spaceCostMultiplier('int_factory', r.offset, 25000000, 1.26, 'interstellar'); },
+                Coal(r={}){ return spaceCostMultiplier('int_factory', r.offset, 10000000, 1.26, 'interstellar'); },
+                Brick(r={}){ return spaceCostMultiplier('int_factory', r.offset, 750000, 1.26, 'interstellar'); },
+                Bolognium(r={}){ return spaceCostMultiplier('int_factory', r.offset, 50000, 1.26, 'interstellar'); }
             },
             effect(){
                 let deuterium = +int_fuel_adjust(5).toFixed(2);
@@ -3439,11 +3439,11 @@ const interstellarProjects = {
             type: 'housing',
             reqs: { alpha: 5 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('luxury_condo', offset, traitCostMod('untrustworthy',25000000), 1.25, 'interstellar'); },
-                Neutronium(offset){ return spaceCostMultiplier('luxury_condo', offset, traitCostMod('untrustworthy',75000), 1.25, 'interstellar'); },
-                Stanene(offset){ return spaceCostMultiplier('luxury_condo', offset, traitCostMod('untrustworthy',230000), 1.25, 'interstellar'); },
-                Orichalcum(offset){ return spaceCostMultiplier('luxury_condo', offset, traitCostMod('untrustworthy',65000), 1.25, 'interstellar'); },
-                Nanoweave(offset){ return spaceCostMultiplier('luxury_condo', offset, traitCostMod('untrustworthy',12500), 1.25, 'interstellar'); },
+                Money(r={}){ return spaceCostMultiplier('luxury_condo', r.offset, traitCostMod('untrustworthy',25000000), 1.25, 'interstellar'); },
+                Neutronium(r={}){ return spaceCostMultiplier('luxury_condo', r.offset, traitCostMod('untrustworthy',75000), 1.25, 'interstellar'); },
+                Stanene(r={}){ return spaceCostMultiplier('luxury_condo', r.offset, traitCostMod('untrustworthy',230000), 1.25, 'interstellar'); },
+                Orichalcum(r={}){ return spaceCostMultiplier('luxury_condo', r.offset, traitCostMod('untrustworthy',65000), 1.25, 'interstellar'); },
+                Nanoweave(r={}){ return spaceCostMultiplier('luxury_condo', r.offset, traitCostMod('untrustworthy',12500), 1.25, 'interstellar'); },
                 Horseshoe(){ return global.race['hooved'] ? 2 : 0; }
             },
             effect(){
@@ -3483,10 +3483,10 @@ const interstellarProjects = {
             type: 'entertainment',
             reqs: { zoo: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('zoo', offset, 50000000, 1.24, 'interstellar'); },
-                Polymer(offset){ return spaceCostMultiplier('zoo', offset, 6000000, 1.24, 'interstellar'); },
-                Infernite(offset){ return spaceCostMultiplier('zoo', offset, 75000, 1.24, 'interstellar'); },
-                Brick(offset){ return spaceCostMultiplier('zoo', offset, 2000000, 1.24, 'interstellar'); },
+                Money(r={}){ return spaceCostMultiplier('zoo', r.offset, 50000000, 1.24, 'interstellar'); },
+                Polymer(r={}){ return spaceCostMultiplier('zoo', r.offset, 6000000, 1.24, 'interstellar'); },
+                Infernite(r={}){ return spaceCostMultiplier('zoo', r.offset, 75000, 1.24, 'interstellar'); },
+                Brick(r={}){ return spaceCostMultiplier('zoo', r.offset, 2000000, 1.24, 'interstellar'); },
             },
             effect(){
                 let morale = 5;
@@ -3524,10 +3524,10 @@ const interstellarProjects = {
             type: 'storage',
             reqs: { alpha: 2 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('warehouse', offset, 175000, 1.28, 'interstellar'); },
-                Lumber(offset){ return spaceCostMultiplier('warehouse', offset, 100000, 1.28, 'interstellar'); },
-                Aluminium(offset){ return spaceCostMultiplier('warehouse', offset, 120000, 1.28, 'interstellar'); },
-                Cement(offset){ return spaceCostMultiplier('warehouse', offset, 45000, 1.28, 'interstellar'); }
+                Money(r={}){ return spaceCostMultiplier('warehouse', r.offset, 175000, 1.28, 'interstellar'); },
+                Lumber(r={}){ return spaceCostMultiplier('warehouse', r.offset, 100000, 1.28, 'interstellar'); },
+                Aluminium(r={}){ return spaceCostMultiplier('warehouse', r.offset, 120000, 1.28, 'interstellar'); },
+                Cement(r={}){ return spaceCostMultiplier('warehouse', r.offset, 45000, 1.28, 'interstellar'); }
             },
             res(){
                 let r_list = ['Lumber','Stone','Chrysotile','Furs','Copper','Iron','Aluminium','Cement','Coal','Nano_Tube','Neutronium','Adamantite','Infernite'];
@@ -3663,11 +3663,11 @@ const interstellarProjects = {
             type: 'storage',
             reqs: { proxima: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('xfer_station', offset, 1200000, 1.28, 'interstellar'); },
-                Neutronium(offset){ return spaceCostMultiplier('xfer_station', offset, 1500, 1.28, 'interstellar'); },
-                Adamantite(offset){ return spaceCostMultiplier('xfer_station', offset, 6000, 1.28, 'interstellar'); },
-                Polymer(offset){ return spaceCostMultiplier('xfer_station', offset, 12000, 1.28, 'interstellar'); },
-                Wrought_Iron(offset){ return spaceCostMultiplier('xfer_station', offset, 3500, 1.28, 'interstellar'); },
+                Money(r={}){ return spaceCostMultiplier('xfer_station', r.offset, 1200000, 1.28, 'interstellar'); },
+                Neutronium(r={}){ return spaceCostMultiplier('xfer_station', r.offset, 1500, 1.28, 'interstellar'); },
+                Adamantite(r={}){ return spaceCostMultiplier('xfer_station', r.offset, 6000, 1.28, 'interstellar'); },
+                Polymer(r={}){ return spaceCostMultiplier('xfer_station', r.offset, 12000, 1.28, 'interstellar'); },
+                Wrought_Iron(r={}){ return spaceCostMultiplier('xfer_station', r.offset, 3500, 1.28, 'interstellar'); },
             },
             effect(){
                 let fuel = 0.28;
@@ -3717,9 +3717,9 @@ const interstellarProjects = {
             type: 'storage',
             reqs: { proxima: 2 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('cargo_yard', offset, 275000, 1.28, 'interstellar'); },
-                Graphene(offset){ return spaceCostMultiplier('cargo_yard', offset, 7500, 1.28, 'interstellar'); },
-                Mythril(offset){ return spaceCostMultiplier('cargo_yard', offset, 6000, 1.28, 'interstellar'); },
+                Money(r={}){ return spaceCostMultiplier('cargo_yard', r.offset, 275000, 1.28, 'interstellar'); },
+                Graphene(r={}){ return spaceCostMultiplier('cargo_yard', r.offset, 7500, 1.28, 'interstellar'); },
+                Mythril(r={}){ return spaceCostMultiplier('cargo_yard', r.offset, 6000, 1.28, 'interstellar'); },
             },
             effect(wiki){
                 let containers = 50;
@@ -3761,11 +3761,11 @@ const interstellarProjects = {
             type: 'ship',
             reqs: { cruiser: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('cruiser', offset, 875000, 1.28, 'interstellar'); },
-                Aluminium(offset){ return spaceCostMultiplier('cruiser', offset, 195000, 1.28, 'interstellar'); },
-                Deuterium(offset){ return spaceCostMultiplier('cruiser', offset, +int_fuel_adjust(1500).toFixed(0), 1.28, 'interstellar'); },
-                Neutronium(offset){ return spaceCostMultiplier('cruiser', offset, 2000, 1.28, 'interstellar'); },
-                Aerogel(offset){ return spaceCostMultiplier('cruiser', offset, 250, 1.28, 'interstellar'); },
+                Money(r={}){ return spaceCostMultiplier('cruiser', r.offset, 875000, 1.28, 'interstellar'); },
+                Aluminium(r={}){ return spaceCostMultiplier('cruiser', r.offset, 195000, 1.28, 'interstellar'); },
+                Deuterium(r={}){ return spaceCostMultiplier('cruiser', r.offset, +int_fuel_adjust(1500).toFixed(0), 1.28, 'interstellar'); },
+                Neutronium(r={}){ return spaceCostMultiplier('cruiser', r.offset, 2000, 1.28, 'interstellar'); },
+                Aerogel(r={}){ return spaceCostMultiplier('cruiser', r.offset, 250, 1.28, 'interstellar'); },
                 Horseshoe(){ return global.race['hooved'] ? 3 : 0; }
             },
             powered(){ return 0; },
@@ -3820,10 +3820,10 @@ const interstellarProjects = {
                 return global.interstellar.dyson.count >= 100 && global.tech['dyson'] ? false : true;
             },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('dyson') ? global.interstellar.dyson.count : 0)) < 100 ? 250000 : 0; },
-                Adamantite(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('dyson') ? global.interstellar.dyson.count : 0)) < 100 ? 10000 : 0; },
-                Infernite(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('dyson') ? global.interstellar.dyson.count : 0)) < 100 ? 25 : 0; },
-                Stanene(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('dyson') ? global.interstellar.dyson.count : 0)) < 100 ? 100000 : 0; }
+                Money(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('dyson') ? global.interstellar.dyson.count : 0)) < 100 ? 250000 : 0; },
+                Adamantite(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('dyson') ? global.interstellar.dyson.count : 0)) < 100 ? 10000 : 0; },
+                Infernite(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('dyson') ? global.interstellar.dyson.count : 0)) < 100 ? 25 : 0; },
+                Stanene(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('dyson') ? global.interstellar.dyson.count : 0)) < 100 ? 100000 : 0; }
             },
             effect(wiki){
                 let count = (wiki?.count ?? 0) + (global.interstellar.hasOwnProperty('dyson') ? global.interstellar.dyson.count : 0);
@@ -3874,10 +3874,10 @@ const interstellarProjects = {
                 return global.interstellar.dyson.count >= 100 && global.tech['dyson'] && global.tech.dyson === 1 ? true : false;
             },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('dyson_sphere') ? global.interstellar.dyson_sphere.count : 0)) < 100 ? 5000000 : 0; },
-                Bolognium(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('dyson_sphere') ? global.interstellar.dyson_sphere.count : 0)) < 100 ? 25000 : 0; },
-                Vitreloy(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('dyson_sphere') ? global.interstellar.dyson_sphere.count : 0)) < 100 ? 1250 : 0; },
-                Aerogel(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('dyson_sphere') ? global.interstellar.dyson_sphere.count : 0)) < 100 ? 75000 : 0; }
+                Money(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('dyson_sphere') ? global.interstellar.dyson_sphere.count : 0)) < 100 ? 5000000 : 0; },
+                Bolognium(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('dyson_sphere') ? global.interstellar.dyson_sphere.count : 0)) < 100 ? 25000 : 0; },
+                Vitreloy(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('dyson_sphere') ? global.interstellar.dyson_sphere.count : 0)) < 100 ? 1250 : 0; },
+                Aerogel(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('dyson_sphere') ? global.interstellar.dyson_sphere.count : 0)) < 100 ? 75000 : 0; }
             },
             effect(wiki){
                 let count = (wiki?.count ?? 0) + (global.interstellar.hasOwnProperty('dyson_sphere') ? global.interstellar.dyson_sphere.count : 0);
@@ -3931,8 +3931,8 @@ const interstellarProjects = {
                 return global.interstellar.dyson_sphere.count >= 100 && (global.tech.dyson === 2 || global.interstellar.orichalcum_sphere.count < 100);
             },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('orichalcum_sphere') ? global.interstellar.orichalcum_sphere.count : 0)) < 100 ? 25000000 : 0; },
-                Orichalcum(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('orichalcum_sphere') ? global.interstellar.orichalcum_sphere.count : 0)) < 100 ? 75000 : 0; }
+                Money(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('orichalcum_sphere') ? global.interstellar.orichalcum_sphere.count : 0)) < 100 ? 25000000 : 0; },
+                Orichalcum(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('orichalcum_sphere') ? global.interstellar.orichalcum_sphere.count : 0)) < 100 ? 75000 : 0; }
             },
             effect(wiki){
                 let count = (wiki?.count ?? 0) + (global.interstellar.hasOwnProperty('orichalcum_sphere') ? global.interstellar.orichalcum_sphere.count : 0);
@@ -3983,9 +3983,9 @@ const interstellarProjects = {
                 return global.interstellar.orichalcum_sphere.count >= 100 && global.tech['dyson'] && global.tech.dyson === 3 ? true : false;
             },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('elysanite_sphere') ? global.interstellar.elysanite_sphere.count : 0)) < 1000 ? 1000000000 : 0; },
-                Asphodel_Powder(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('elysanite_sphere') ? global.interstellar.elysanite_sphere.count : 0)) < 1000 ? 25000 : 0; },
-                Elysanite(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('elysanite_sphere') ? global.interstellar.elysanite_sphere.count : 0)) < 1000 ? 100000 : 0; },
+                Money(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('elysanite_sphere') ? global.interstellar.elysanite_sphere.count : 0)) < 1000 ? 1000000000 : 0; },
+                Asphodel_Powder(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('elysanite_sphere') ? global.interstellar.elysanite_sphere.count : 0)) < 1000 ? 25000 : 0; },
+                Elysanite(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('elysanite_sphere') ? global.interstellar.elysanite_sphere.count : 0)) < 1000 ? 100000 : 0; },
             },
             effect(wiki){
                 let count = (wiki?.count ?? 0) + (global.interstellar.hasOwnProperty('elysanite_sphere') ? global.interstellar.elysanite_sphere.count : 0);
@@ -4047,11 +4047,11 @@ const interstellarProjects = {
             type: 'outpost',
             reqs: { nebula: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('nexus', offset, 900000, 1.24, 'interstellar'); },
-                Adamantite(offset){ return spaceCostMultiplier('nexus', offset, 7500, 1.24, 'interstellar'); },
-                Infernite(offset){ return spaceCostMultiplier('nexus', offset, 250, 1.24, 'interstellar'); },
-                Sheet_Metal(offset){ return spaceCostMultiplier('nexus', offset, 14000, 1.24, 'interstellar'); },
-                Nano_Tube(offset){ return spaceCostMultiplier('nexus', offset, 17500, 1.24, 'interstellar'); },
+                Money(r={}){ return spaceCostMultiplier('nexus', r.offset, 900000, 1.24, 'interstellar'); },
+                Adamantite(r={}){ return spaceCostMultiplier('nexus', r.offset, 7500, 1.24, 'interstellar'); },
+                Infernite(r={}){ return spaceCostMultiplier('nexus', r.offset, 250, 1.24, 'interstellar'); },
+                Sheet_Metal(r={}){ return spaceCostMultiplier('nexus', r.offset, 14000, 1.24, 'interstellar'); },
+                Nano_Tube(r={}){ return spaceCostMultiplier('nexus', r.offset, 17500, 1.24, 'interstellar'); },
             },
             effect(){
                 let oil = spatialReasoning(3500);
@@ -4098,10 +4098,10 @@ const interstellarProjects = {
             type: 'mining',
             reqs: { nebula: 2 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('harvester', offset, 650000, 1.28, 'interstellar'); },
-                Copper(offset){ return spaceCostMultiplier('harvester', offset, 80000, 1.28, 'interstellar'); },
-                Alloy(offset){ return spaceCostMultiplier('harvester', offset, 45000, 1.28, 'interstellar'); },
-                Iridium(offset){ return spaceCostMultiplier('harvester', offset, 8000, 1.28, 'interstellar'); }
+                Money(r={}){ return spaceCostMultiplier('harvester', r.offset, 650000, 1.28, 'interstellar'); },
+                Copper(r={}){ return spaceCostMultiplier('harvester', r.offset, 80000, 1.28, 'interstellar'); },
+                Alloy(r={}){ return spaceCostMultiplier('harvester', r.offset, 45000, 1.28, 'interstellar'); },
+                Iridium(r={}){ return spaceCostMultiplier('harvester', r.offset, 8000, 1.28, 'interstellar'); }
             },
             effect(){
                 let helium = +(production('harvester','helium')).toFixed(3);
@@ -4134,11 +4134,11 @@ const interstellarProjects = {
             type: 'mining',
             reqs: { nebula: 3 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('elerium_prospector', offset, 825000, 1.28, 'interstellar'); },
-                Steel(offset){ return spaceCostMultiplier('elerium_prospector', offset, 18000, 1.28, 'interstellar'); },
-                Polymer(offset){ return spaceCostMultiplier('elerium_prospector', offset, 22000, 1.28, 'interstellar'); },
-                Graphene(offset){ return spaceCostMultiplier('elerium_prospector', offset, 82000, 1.28, 'interstellar'); },
-                Stanene(offset){ return spaceCostMultiplier('elerium_prospector', offset, 57000, 1.28, 'interstellar'); }
+                Money(r={}){ return spaceCostMultiplier('elerium_prospector', r.offset, 825000, 1.28, 'interstellar'); },
+                Steel(r={}){ return spaceCostMultiplier('elerium_prospector', r.offset, 18000, 1.28, 'interstellar'); },
+                Polymer(r={}){ return spaceCostMultiplier('elerium_prospector', r.offset, 22000, 1.28, 'interstellar'); },
+                Graphene(r={}){ return spaceCostMultiplier('elerium_prospector', r.offset, 82000, 1.28, 'interstellar'); },
+                Stanene(r={}){ return spaceCostMultiplier('elerium_prospector', r.offset, 57000, 1.28, 'interstellar'); }
             },
             effect(){
                 let elerium = +(production('elerium_prospector')).toFixed(3);
@@ -4196,11 +4196,11 @@ const interstellarProjects = {
             type: 'mining',
             reqs: { neutron: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('neutron_miner', offset, 1000000, 1.32, 'interstellar'); },
-                Titanium(offset){ return spaceCostMultiplier('neutron_miner', offset, 45000, 1.32, 'interstellar'); },
-                Stanene(offset){ return spaceCostMultiplier('neutron_miner', offset, 88000, 1.32, 'interstellar'); },
-                Elerium(offset){ return spaceCostMultiplier('neutron_miner', offset, 20, 1.32, 'interstellar'); },
-                Aerogel(offset){ return spaceCostMultiplier('neutron_miner', offset, 50, 1.32, 'interstellar'); },
+                Money(r={}){ return spaceCostMultiplier('neutron_miner', r.offset, 1000000, 1.32, 'interstellar'); },
+                Titanium(r={}){ return spaceCostMultiplier('neutron_miner', r.offset, 45000, 1.32, 'interstellar'); },
+                Stanene(r={}){ return spaceCostMultiplier('neutron_miner', r.offset, 88000, 1.32, 'interstellar'); },
+                Elerium(r={}){ return spaceCostMultiplier('neutron_miner', r.offset, 20, 1.32, 'interstellar'); },
+                Aerogel(r={}){ return spaceCostMultiplier('neutron_miner', r.offset, 50, 1.32, 'interstellar'); },
             },
             effect(){
                 let neutronium = +(production('neutron_miner')).toFixed(3);
@@ -4234,12 +4234,12 @@ const interstellarProjects = {
             type: 'power',
             reqs: { neutron: 1, high_tech: 15 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('citadel', offset, 5000000, 1.25, 'interstellar'); },
-                Knowledge(offset){ return spaceCostMultiplier('citadel', offset, 1500000, 1.15, 'interstellar'); },
-                Graphene(offset){ return spaceCostMultiplier('citadel', offset, 50000, 1.25, 'interstellar'); },
-                Stanene(offset){ return spaceCostMultiplier('citadel', offset, 100000, 1.25, 'interstellar'); },
-                Elerium(offset){ return spaceCostMultiplier('citadel', offset, 250, 1.25, 'interstellar'); },
-                Soul_Gem(offset){ return spaceCostMultiplier('citadel', offset, 1, 1.25, 'interstellar'); },
+                Money(r={}){ return spaceCostMultiplier('citadel', r.offset, 5000000, 1.25, 'interstellar'); },
+                Knowledge(r={}){ return spaceCostMultiplier('citadel', r.offset, 1500000, 1.15, 'interstellar'); },
+                Graphene(r={}){ return spaceCostMultiplier('citadel', r.offset, 50000, 1.25, 'interstellar'); },
+                Stanene(r={}){ return spaceCostMultiplier('citadel', r.offset, 100000, 1.25, 'interstellar'); },
+                Elerium(r={}){ return spaceCostMultiplier('citadel', r.offset, 250, 1.25, 'interstellar'); },
+                Soul_Gem(r={}){ return spaceCostMultiplier('citadel', r.offset, 1, 1.25, 'interstellar'); },
             },
             wide: true,
             effect(wiki){
@@ -4295,10 +4295,10 @@ const interstellarProjects = {
             type: 'industry',
             reqs: { star_forge: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('stellar_forge', offset, 1200000, 1.25, 'interstellar'); },
-                Iridium(offset){ return spaceCostMultiplier('stellar_forge', offset, 250000, 1.25, 'interstellar'); },
-                Bolognium(offset){ return spaceCostMultiplier('stellar_forge', offset, 35000, 1.25, 'interstellar'); },
-                Aerogel(offset){ return spaceCostMultiplier('stellar_forge', offset, 75000, 1.25, 'interstellar'); },
+                Money(r={}){ return spaceCostMultiplier('stellar_forge', r.offset, 1200000, 1.25, 'interstellar'); },
+                Iridium(r={}){ return spaceCostMultiplier('stellar_forge', r.offset, 250000, 1.25, 'interstellar'); },
+                Bolognium(r={}){ return spaceCostMultiplier('stellar_forge', r.offset, 35000, 1.25, 'interstellar'); },
+                Aerogel(r={}){ return spaceCostMultiplier('stellar_forge', r.offset, 75000, 1.25, 'interstellar'); },
             },
             effect(){
                 let desc = `<div>${loc('city_foundry_effect1',[jobScale(2)])}</div><div>${loc('interstellar_stellar_forge_effect',[10])}</div><div>${loc('interstellar_stellar_forge_effect2',[5])}</div>`;
@@ -4391,11 +4391,11 @@ const interstellarProjects = {
             type: 'science',
             reqs: { blackhole: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('far_reach', offset, 1000000, 1.32, 'interstellar'); },
-                Knowledge(offset){ return spaceCostMultiplier('far_reach', offset, 100000, 1.32, 'interstellar'); },
-                Neutronium(offset){ return spaceCostMultiplier('far_reach', offset, 2500, 1.32, 'interstellar'); },
-                Elerium(offset){ return spaceCostMultiplier('far_reach', offset, 100, 1.32, 'interstellar'); },
-                Aerogel(offset){ return spaceCostMultiplier('far_reach', offset, 1000, 1.32, 'interstellar'); },
+                Money(r={}){ return spaceCostMultiplier('far_reach', r.offset, 1000000, 1.32, 'interstellar'); },
+                Knowledge(r={}){ return spaceCostMultiplier('far_reach', r.offset, 100000, 1.32, 'interstellar'); },
+                Neutronium(r={}){ return spaceCostMultiplier('far_reach', r.offset, 2500, 1.32, 'interstellar'); },
+                Elerium(r={}){ return spaceCostMultiplier('far_reach', r.offset, 100, 1.32, 'interstellar'); },
+                Aerogel(r={}){ return spaceCostMultiplier('far_reach', r.offset, 1000, 1.32, 'interstellar'); },
             },
             effect(){
                 return `<div>${loc('interstellar_far_reach_effect',[1])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
@@ -4437,13 +4437,13 @@ const interstellarProjects = {
             queue_size: 10,
             queue_complete(){ return 100 - global.interstellar.stellar_engine.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('stellar_engine') ? global.interstellar.stellar_engine.count : 0)) < 100 ? 500000 : 0; },
-                Neutronium(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('stellar_engine') ? global.interstellar.stellar_engine.count : 0)) < 100 ? 450 : 0; },
-                Adamantite(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('stellar_engine') ? global.interstellar.stellar_engine.count : 0)) < 100 ? 17500 : 0; },
-                Infernite(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('stellar_engine') ? global.interstellar.stellar_engine.count : 0)) < 100 ? 225 : 0; },
-                Graphene(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('stellar_engine') ? global.interstellar.stellar_engine.count : 0)) < 100 ? 45000 : 0; },
-                Mythril(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('stellar_engine') ? global.interstellar.stellar_engine.count : 0)) < 100 ? 250 : 0; },
-                Aerogel(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('stellar_engine') ? global.interstellar.stellar_engine.count : 0)) < 100 ? 75 : 0; },
+                Money(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('stellar_engine') ? global.interstellar.stellar_engine.count : 0)) < 100 ? 500000 : 0; },
+                Neutronium(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('stellar_engine') ? global.interstellar.stellar_engine.count : 0)) < 100 ? 450 : 0; },
+                Adamantite(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('stellar_engine') ? global.interstellar.stellar_engine.count : 0)) < 100 ? 17500 : 0; },
+                Infernite(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('stellar_engine') ? global.interstellar.stellar_engine.count : 0)) < 100 ? 225 : 0; },
+                Graphene(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('stellar_engine') ? global.interstellar.stellar_engine.count : 0)) < 100 ? 45000 : 0; },
+                Mythril(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('stellar_engine') ? global.interstellar.stellar_engine.count : 0)) < 100 ? 250 : 0; },
+                Aerogel(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('stellar_engine') ? global.interstellar.stellar_engine.count : 0)) < 100 ? 75 : 0; },
             },
             effect(wiki){
                 let count = (wiki?.count ?? 0) + (global.interstellar.hasOwnProperty('stellar_engine') ? global.interstellar.stellar_engine.count : 0);
@@ -4512,11 +4512,11 @@ const interstellarProjects = {
             type: 'utility',
             reqs: { blackhole: 5 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('mass_ejector', offset, 750000, 1.25, 'interstellar'); },
-                Adamantite(offset){ return spaceCostMultiplier('mass_ejector', offset, 125000, 1.25, 'interstellar'); },
-                Infernite(offset){ return spaceCostMultiplier('mass_ejector', offset, 275, 1.25, 'interstellar'); },
-                Elerium(offset){ return spaceCostMultiplier('mass_ejector', offset, 100, 1.25, 'interstellar'); },
-                Mythril(offset){ return spaceCostMultiplier('mass_ejector', offset, 10000, 1.25, 'interstellar'); },
+                Money(r={}){ return spaceCostMultiplier('mass_ejector', r.offset, 750000, 1.25, 'interstellar'); },
+                Adamantite(r={}){ return spaceCostMultiplier('mass_ejector', r.offset, 125000, 1.25, 'interstellar'); },
+                Infernite(r={}){ return spaceCostMultiplier('mass_ejector', r.offset, 275, 1.25, 'interstellar'); },
+                Elerium(r={}){ return spaceCostMultiplier('mass_ejector', r.offset, 100, 1.25, 'interstellar'); },
+                Mythril(r={}){ return spaceCostMultiplier('mass_ejector', r.offset, 10000, 1.25, 'interstellar'); },
             },
             effect(wiki){
                 let desc = `<div>${loc('interstellar_mass_ejector_effect')}</div>`;
@@ -4661,13 +4661,13 @@ const interstellarProjects = {
             queue_size: 10,
             queue_complete(){ return 200 - global.interstellar.stargate.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('stargate') ? global.interstellar.stargate.count : 0)) < 200 ? 1000000 : 0; },
-                Neutronium(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('stargate') ? global.interstellar.stargate.count : 0)) < 200 ? 4800 : 0; },
-                Infernite(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('stargate') ? global.interstellar.stargate.count : 0)) < 200 ? 666 : 0; },
-                Elerium(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('stargate') ? global.interstellar.stargate.count : 0)) < 200 ? 75 : 0; },
-                Nano_Tube(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('stargate') ? global.interstellar.stargate.count : 0)) < 200 ? 12000 : 0; },
-                Stanene(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('stargate') ? global.interstellar.stargate.count : 0)) < 200 ? 60000 : 0; },
-                Mythril(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('stargate') ? global.interstellar.stargate.count : 0)) < 200 ? 3200 : 0; }
+                Money(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('stargate') ? global.interstellar.stargate.count : 0)) < 200 ? 1000000 : 0; },
+                Neutronium(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('stargate') ? global.interstellar.stargate.count : 0)) < 200 ? 4800 : 0; },
+                Infernite(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('stargate') ? global.interstellar.stargate.count : 0)) < 200 ? 666 : 0; },
+                Elerium(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('stargate') ? global.interstellar.stargate.count : 0)) < 200 ? 75 : 0; },
+                Nano_Tube(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('stargate') ? global.interstellar.stargate.count : 0)) < 200 ? 12000 : 0; },
+                Stanene(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('stargate') ? global.interstellar.stargate.count : 0)) < 200 ? 60000 : 0; },
+                Mythril(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('stargate') ? global.interstellar.stargate.count : 0)) < 200 ? 3200 : 0; }
             },
             effect(wiki){
                 let count = (wiki?.count ?? 0) + (global.interstellar.hasOwnProperty('stargate') ? global.interstellar.stargate.count : 0);
@@ -4799,10 +4799,10 @@ const interstellarProjects = {
             queue_size: 5,
             queue_complete(){ return 100 - global.interstellar.space_elevator.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('space_elevator') ? global.interstellar.space_elevator.count : 0)) < 100 ? 20000000 : 0; },
-                Nano_Tube(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('space_elevator') ? global.interstellar.space_elevator.count : 0)) < 100 ? 500000 : 0; },
-                Bolognium(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('space_elevator') ? global.interstellar.space_elevator.count : 0)) < 100 ? 100000 : 0; },
-                Mythril(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('space_elevator') ? global.interstellar.space_elevator.count : 0)) < 100 ? 125000 : 0; },
+                Money(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('space_elevator') ? global.interstellar.space_elevator.count : 0)) < 100 ? 20000000 : 0; },
+                Nano_Tube(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('space_elevator') ? global.interstellar.space_elevator.count : 0)) < 100 ? 500000 : 0; },
+                Bolognium(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('space_elevator') ? global.interstellar.space_elevator.count : 0)) < 100 ? 100000 : 0; },
+                Mythril(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('space_elevator') ? global.interstellar.space_elevator.count : 0)) < 100 ? 125000 : 0; },
             },
             effect(wiki){
                 let effectText = `<div>${loc('interstellar_space_elevator_effect')}</div>`;
@@ -4854,10 +4854,10 @@ const interstellarProjects = {
             queue_size: 5,
             queue_complete(){ return 100 - global.interstellar.gravity_dome.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('gravity_dome') ? global.interstellar.gravity_dome.count : 0)) < 100 ? 35000000 : 0; },
-                Cement(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('gravity_dome') ? global.interstellar.gravity_dome.count : 0)) < 100 ? 1250000 : 0; },
-                Adamantite(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('gravity_dome') ? global.interstellar.gravity_dome.count : 0)) < 100 ? 650000 : 0; },
-                Aerogel(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('gravity_dome') ? global.interstellar.gravity_dome.count : 0)) < 100 ? 180000 : 0; },
+                Money(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('gravity_dome') ? global.interstellar.gravity_dome.count : 0)) < 100 ? 35000000 : 0; },
+                Cement(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('gravity_dome') ? global.interstellar.gravity_dome.count : 0)) < 100 ? 1250000 : 0; },
+                Adamantite(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('gravity_dome') ? global.interstellar.gravity_dome.count : 0)) < 100 ? 650000 : 0; },
+                Aerogel(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('gravity_dome') ? global.interstellar.gravity_dome.count : 0)) < 100 ? 180000 : 0; },
             },
             effect(wiki){
                 let effectText = `<div>${loc('interstellar_gravity_dome_effect',[races[global.race.species].home])}</div>`;
@@ -4910,12 +4910,12 @@ const interstellarProjects = {
             queue_size: 5,
             queue_complete(){ return 100 - global.interstellar.ascension_machine.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('ascension_machine') ? global.interstellar.ascension_machine.count : 0)) < 100 ? 75000000 : 0; },
-                Alloy(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('ascension_machine') ? global.interstellar.ascension_machine.count : 0)) < 100 ? 750000 : 0; },
-                Neutronium(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('ascension_machine') ? global.interstellar.ascension_machine.count : 0)) < 100 ? 125000 : 0; },
-                Elerium(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('ascension_machine') ? global.interstellar.ascension_machine.count : 0)) < 100 ? 1000 : 0; },
-                Orichalcum(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('ascension_machine') ? global.interstellar.ascension_machine.count : 0)) < 100 ? 250000 : 0; },
-                Nanoweave(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('ascension_machine') ? global.interstellar.ascension_machine.count : 0)) < 100 ? 75000 : 0; },
+                Money(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('ascension_machine') ? global.interstellar.ascension_machine.count : 0)) < 100 ? 75000000 : 0; },
+                Alloy(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('ascension_machine') ? global.interstellar.ascension_machine.count : 0)) < 100 ? 750000 : 0; },
+                Neutronium(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('ascension_machine') ? global.interstellar.ascension_machine.count : 0)) < 100 ? 125000 : 0; },
+                Elerium(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('ascension_machine') ? global.interstellar.ascension_machine.count : 0)) < 100 ? 1000 : 0; },
+                Orichalcum(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('ascension_machine') ? global.interstellar.ascension_machine.count : 0)) < 100 ? 250000 : 0; },
+                Nanoweave(r={}){ return ((r.offset || 0) + (global.interstellar.hasOwnProperty('ascension_machine') ? global.interstellar.ascension_machine.count : 0)) < 100 ? 75000 : 0; },
             },
             effect(wiki){
                 let count = (wiki?.count ?? 0) + (global.interstellar.hasOwnProperty('ascension_machine') ? global.interstellar.ascension_machine.count : 0);
@@ -5072,10 +5072,10 @@ const interstellarProjects = {
             type: 'power',
             reqs: { ascension: 6 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('thermal_collector', offset, 5000000, 1.08, 'interstellar'); },
-                Infernite(offset){ return spaceCostMultiplier('thermal_collector', offset, 25000, 1.08, 'interstellar'); },
-                Stanene(offset){ return spaceCostMultiplier('thermal_collector', offset, 1000000, 1.08, 'interstellar'); },
-                Vitreloy(offset){ return spaceCostMultiplier('thermal_collector', offset, 100000, 1.08, 'interstellar'); },
+                Money(r={}){ return spaceCostMultiplier('thermal_collector', r.offset, 5000000, 1.08, 'interstellar'); },
+                Infernite(r={}){ return spaceCostMultiplier('thermal_collector', r.offset, 25000, 1.08, 'interstellar'); },
+                Stanene(r={}){ return spaceCostMultiplier('thermal_collector', r.offset, 1000000, 1.08, 'interstellar'); },
+                Vitreloy(r={}){ return spaceCostMultiplier('thermal_collector', r.offset, 100000, 1.08, 'interstellar'); },
             },
             effect(){
                 let heatsink = 100;
@@ -5202,10 +5202,10 @@ const galaxyProjects = {
             type: 'outpost',
             reqs: { gateway: 2 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('starbase', offset, 4200000, 1.25, 'galaxy'); },
-                Elerium(offset){ return spaceCostMultiplier('starbase', offset, 1000, 1.25, 'galaxy'); },
-                Mythril(offset){ return spaceCostMultiplier('starbase', offset, 90000, 1.25, 'galaxy'); },
-                Graphene(offset){ return spaceCostMultiplier('starbase', offset, 320000, 1.25, 'galaxy'); },
+                Money(r={}){ return spaceCostMultiplier('starbase', r.offset, 4200000, 1.25, 'galaxy'); },
+                Elerium(r={}){ return spaceCostMultiplier('starbase', r.offset, 1000, 1.25, 'galaxy'); },
+                Mythril(r={}){ return spaceCostMultiplier('starbase', r.offset, 90000, 1.25, 'galaxy'); },
+                Graphene(r={}){ return spaceCostMultiplier('starbase', r.offset, 320000, 1.25, 'galaxy'); },
                 Horseshoe(){ return global.race['hooved'] ? 5 : 0; }
             },
             effect(wiki){
@@ -5250,10 +5250,10 @@ const galaxyProjects = {
             type: 'outpost',
             reqs: { gateway: 4 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('ship_dock', offset, 3600000, 1.25, 'galaxy'); },
-                Steel(offset){ return spaceCostMultiplier('ship_dock', offset, 880000, 1.25, 'galaxy'); },
-                Aluminium(offset){ return spaceCostMultiplier('ship_dock', offset, 1200000, 1.25, 'galaxy'); },
-                Bolognium(offset){ return spaceCostMultiplier('ship_dock', offset, 75000, 1.25, 'galaxy'); },
+                Money(r={}){ return spaceCostMultiplier('ship_dock', r.offset, 3600000, 1.25, 'galaxy'); },
+                Steel(r={}){ return spaceCostMultiplier('ship_dock', r.offset, 880000, 1.25, 'galaxy'); },
+                Aluminium(r={}){ return spaceCostMultiplier('ship_dock', r.offset, 1200000, 1.25, 'galaxy'); },
+                Bolognium(r={}){ return spaceCostMultiplier('ship_dock', r.offset, 75000, 1.25, 'galaxy'); },
             },
             effect(wiki){
                 if(global.race['fasting']){
@@ -5302,10 +5302,10 @@ const galaxyProjects = {
             type: 'ship',
             reqs: { gateway: 3 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('bolognium_ship', offset, 1400000, 1.22, 'galaxy'); },
-                Iron(offset){ return spaceCostMultiplier('bolognium_ship', offset, 560000, 1.22, 'galaxy'); },
-                Infernite(offset){ return spaceCostMultiplier('bolognium_ship', offset, 1800, 1.22, 'galaxy'); },
-                Nano_Tube(offset){ return spaceCostMultiplier('bolognium_ship', offset, 475000, 1.22, 'galaxy'); },
+                Money(r={}){ return spaceCostMultiplier('bolognium_ship', r.offset, 1400000, 1.22, 'galaxy'); },
+                Iron(r={}){ return spaceCostMultiplier('bolognium_ship', r.offset, 560000, 1.22, 'galaxy'); },
+                Infernite(r={}){ return spaceCostMultiplier('bolognium_ship', r.offset, 1800, 1.22, 'galaxy'); },
+                Nano_Tube(r={}){ return spaceCostMultiplier('bolognium_ship', r.offset, 475000, 1.22, 'galaxy'); },
             },
             effect(){
                 let bolognium = +(production('bolognium_ship')).toFixed(3);
@@ -5346,10 +5346,10 @@ const galaxyProjects = {
             type: 'ship',
             reqs: { andromeda: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('scout_ship', offset, 1600000, 1.25, 'galaxy'); },
-                Titanium(offset){ return spaceCostMultiplier('scout_ship', offset, 325000, 1.25, 'galaxy'); },
-                Graphene(offset){ return spaceCostMultiplier('scout_ship', offset, 118000, 1.25, 'galaxy'); },
-                Soul_Gem(offset){ return spaceCostMultiplier('scout_ship', offset, 1, 1.02, 'galaxy'); },
+                Money(r={}){ return spaceCostMultiplier('scout_ship', r.offset, 1600000, 1.25, 'galaxy'); },
+                Titanium(r={}){ return spaceCostMultiplier('scout_ship', r.offset, 325000, 1.25, 'galaxy'); },
+                Graphene(r={}){ return spaceCostMultiplier('scout_ship', r.offset, 118000, 1.25, 'galaxy'); },
+                Soul_Gem(r={}){ return spaceCostMultiplier('scout_ship', r.offset, 1, 1.02, 'galaxy'); },
             },
             effect(){
                 let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
@@ -5399,11 +5399,11 @@ const galaxyProjects = {
             type: 'ship',
             reqs: { andromeda: 2 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('corvette_ship', offset, 4500000, 1.25, 'galaxy'); },
-                Steel(offset){ return spaceCostMultiplier('corvette_ship', offset, 1750000, 1.25, 'galaxy'); },
-                Infernite(offset){ return spaceCostMultiplier('corvette_ship', offset, 16000, 1.25, 'galaxy'); },
-                Bolognium(offset){ return spaceCostMultiplier('corvette_ship', offset, 35000, 1.25, 'galaxy'); },
-                Soul_Gem(offset){ return spaceCostMultiplier('corvette_ship', offset, 1, 1.25, 'galaxy'); },
+                Money(r={}){ return spaceCostMultiplier('corvette_ship', r.offset, 4500000, 1.25, 'galaxy'); },
+                Steel(r={}){ return spaceCostMultiplier('corvette_ship', r.offset, 1750000, 1.25, 'galaxy'); },
+                Infernite(r={}){ return spaceCostMultiplier('corvette_ship', r.offset, 16000, 1.25, 'galaxy'); },
+                Bolognium(r={}){ return spaceCostMultiplier('corvette_ship', r.offset, 35000, 1.25, 'galaxy'); },
+                Soul_Gem(r={}){ return spaceCostMultiplier('corvette_ship', r.offset, 1, 1.25, 'galaxy'); },
             },
             effect(){
                 let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
@@ -5452,11 +5452,11 @@ const galaxyProjects = {
             type: 'ship',
             reqs: { andromeda: 3 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('frigate_ship', offset, 18000000, 1.25, 'galaxy'); },
-                Elerium(offset){ return spaceCostMultiplier('frigate_ship', offset, 1250, 1.25, 'galaxy'); },
-                Mythril(offset){ return spaceCostMultiplier('frigate_ship', offset, 350000, 1.25, 'galaxy'); },
-                Sheet_Metal(offset){ return spaceCostMultiplier('frigate_ship', offset, 800000, 1.25, 'galaxy'); },
-                Soul_Gem(offset){ return spaceCostMultiplier('frigate_ship', offset, 2, 1.25, 'galaxy'); },
+                Money(r={}){ return spaceCostMultiplier('frigate_ship', r.offset, 18000000, 1.25, 'galaxy'); },
+                Elerium(r={}){ return spaceCostMultiplier('frigate_ship', r.offset, 1250, 1.25, 'galaxy'); },
+                Mythril(r={}){ return spaceCostMultiplier('frigate_ship', r.offset, 350000, 1.25, 'galaxy'); },
+                Sheet_Metal(r={}){ return spaceCostMultiplier('frigate_ship', r.offset, 800000, 1.25, 'galaxy'); },
+                Soul_Gem(r={}){ return spaceCostMultiplier('frigate_ship', r.offset, 2, 1.25, 'galaxy'); },
             },
             effect(){
                 let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
@@ -5506,12 +5506,12 @@ const galaxyProjects = {
             type: 'ship',
             reqs: { andromeda: 4 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('cruiser_ship', offset, 75000000, 1.25, 'galaxy'); },
-                Copper(offset){ return spaceCostMultiplier('cruiser_ship', offset, 6000000, 1.25, 'galaxy'); },
-                Adamantite(offset){ return spaceCostMultiplier('cruiser_ship', offset, 1000000, 1.25, 'galaxy'); },
-                Vitreloy(offset){ return spaceCostMultiplier('cruiser_ship', offset, 750000, 1.25, 'galaxy'); },
-                Elerium(offset){ return spaceCostMultiplier('cruiser_ship', offset, 1800, 1.25, 'galaxy'); },
-                Soul_Gem(offset){ return spaceCostMultiplier('cruiser_ship', offset, 5, 1.25, 'galaxy'); },
+                Money(r={}){ return spaceCostMultiplier('cruiser_ship', r.offset, 75000000, 1.25, 'galaxy'); },
+                Copper(r={}){ return spaceCostMultiplier('cruiser_ship', r.offset, 6000000, 1.25, 'galaxy'); },
+                Adamantite(r={}){ return spaceCostMultiplier('cruiser_ship', r.offset, 1000000, 1.25, 'galaxy'); },
+                Vitreloy(r={}){ return spaceCostMultiplier('cruiser_ship', r.offset, 750000, 1.25, 'galaxy'); },
+                Elerium(r={}){ return spaceCostMultiplier('cruiser_ship', r.offset, 1800, 1.25, 'galaxy'); },
+                Soul_Gem(r={}){ return spaceCostMultiplier('cruiser_ship', r.offset, 5, 1.25, 'galaxy'); },
             },
             effect(){
                 let deuterium = +int_fuel_adjust($(this)[0].ship.deuterium).toFixed(2);
@@ -5560,13 +5560,13 @@ const galaxyProjects = {
             type: 'ship',
             reqs: { andromeda: 5 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('dreadnought', offset, 225000000, 1.25, 'galaxy'); },
-                Neutronium(offset){ return spaceCostMultiplier('dreadnought', offset, 250000, 1.25, 'galaxy'); },
-                Bolognium(offset){ return spaceCostMultiplier('dreadnought', offset, 1500000, 1.25, 'galaxy'); },
-                Vitreloy(offset){ return spaceCostMultiplier('dreadnought', offset, 1000000, 1.25, 'galaxy'); },
-                Infernite(offset){ return spaceCostMultiplier('dreadnought', offset, 400000, 1.25, 'galaxy'); },
-                Aerogel(offset){ return spaceCostMultiplier('dreadnought', offset, 800000, 1.25, 'galaxy'); },
-                Soul_Gem(offset){ return spaceCostMultiplier('dreadnought', offset, 25, 1.25, 'galaxy'); },
+                Money(r={}){ return spaceCostMultiplier('dreadnought', r.offset, 225000000, 1.25, 'galaxy'); },
+                Neutronium(r={}){ return spaceCostMultiplier('dreadnought', r.offset, 250000, 1.25, 'galaxy'); },
+                Bolognium(r={}){ return spaceCostMultiplier('dreadnought', r.offset, 1500000, 1.25, 'galaxy'); },
+                Vitreloy(r={}){ return spaceCostMultiplier('dreadnought', r.offset, 1000000, 1.25, 'galaxy'); },
+                Infernite(r={}){ return spaceCostMultiplier('dreadnought', r.offset, 400000, 1.25, 'galaxy'); },
+                Aerogel(r={}){ return spaceCostMultiplier('dreadnought', r.offset, 800000, 1.25, 'galaxy'); },
+                Soul_Gem(r={}){ return spaceCostMultiplier('dreadnought', r.offset, 25, 1.25, 'galaxy'); },
             },
             effect(){
                 let deuterium = +int_fuel_adjust($(this)[0].ship.deuterium).toFixed(2);
@@ -5625,10 +5625,10 @@ const galaxyProjects = {
             type: 'outpost',
             reqs: { stargate: 4 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('gateway_station', offset, 5000000, 1.25, 'galaxy'); },
-                Aluminium(offset){ return spaceCostMultiplier('gateway_station', offset, 520000, 1.25, 'galaxy'); },
-                Polymer(offset){ return spaceCostMultiplier('gateway_station', offset, 350000, 1.25, 'galaxy'); },
-                Neutronium(offset){ return spaceCostMultiplier('gateway_station', offset, 17500, 1.25, 'galaxy'); },
+                Money(r={}){ return spaceCostMultiplier('gateway_station', r.offset, 5000000, 1.25, 'galaxy'); },
+                Aluminium(r={}){ return spaceCostMultiplier('gateway_station', r.offset, 520000, 1.25, 'galaxy'); },
+                Polymer(r={}){ return spaceCostMultiplier('gateway_station', r.offset, 350000, 1.25, 'galaxy'); },
+                Neutronium(r={}){ return spaceCostMultiplier('gateway_station', r.offset, 17500, 1.25, 'galaxy'); },
             },
             effect(wiki){
                 let helium = spatialReasoning(2000);
@@ -5674,10 +5674,10 @@ const galaxyProjects = {
             type: 'science',
             reqs: { stargate: 5 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('telemetry_beacon', offset, 2250000, 1.25, 'galaxy'); },
-                Copper(offset){ return spaceCostMultiplier('telemetry_beacon', offset, 685000, 1.25, 'galaxy'); },
-                Alloy(offset){ return spaceCostMultiplier('telemetry_beacon', offset, 425000, 1.25, 'galaxy'); },
-                Iridium(offset){ return spaceCostMultiplier('telemetry_beacon', offset, 177000, 1.25, 'galaxy'); },
+                Money(r={}){ return spaceCostMultiplier('telemetry_beacon', r.offset, 2250000, 1.25, 'galaxy'); },
+                Copper(r={}){ return spaceCostMultiplier('telemetry_beacon', r.offset, 685000, 1.25, 'galaxy'); },
+                Alloy(r={}){ return spaceCostMultiplier('telemetry_beacon', r.offset, 425000, 1.25, 'galaxy'); },
+                Iridium(r={}){ return spaceCostMultiplier('telemetry_beacon', r.offset, 177000, 1.25, 'galaxy'); },
             },
             effect(wiki){
                 let base = global.tech['telemetry'] ? 1200 : 800;
@@ -5731,10 +5731,10 @@ const galaxyProjects = {
             type: 'storage',
             reqs: { gateway: 5 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('gateway_depot', offset, 4000000, 1.25, 'galaxy'); },
-                Neutronium(offset){ return spaceCostMultiplier('gateway_depot', offset, 80000, 1.25, 'galaxy'); },
-                Stanene(offset){ return spaceCostMultiplier('gateway_depot', offset, 500000, 1.25, 'galaxy'); },
-                Vitreloy(offset){ return spaceCostMultiplier('gateway_depot', offset, 2500, 1.25, 'galaxy'); },
+                Money(r={}){ return spaceCostMultiplier('gateway_depot', r.offset, 4000000, 1.25, 'galaxy'); },
+                Neutronium(r={}){ return spaceCostMultiplier('gateway_depot', r.offset, 80000, 1.25, 'galaxy'); },
+                Stanene(r={}){ return spaceCostMultiplier('gateway_depot', r.offset, 500000, 1.25, 'galaxy'); },
+                Vitreloy(r={}){ return spaceCostMultiplier('gateway_depot', r.offset, 2500, 1.25, 'galaxy'); },
             },
             wide: true,
             effect(wiki){
@@ -5790,11 +5790,11 @@ const galaxyProjects = {
             type: 'military',
             reqs: { stargate: 6 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('defense_platform', offset, 750000, 1.25, 'galaxy'); },
-                Adamantite(offset){ return spaceCostMultiplier('defense_platform', offset, 425000, 1.25, 'galaxy'); },
-                Elerium(offset){ return spaceCostMultiplier('defense_platform', offset, 800, 1.25, 'galaxy'); },
-                Vitreloy(offset){ return spaceCostMultiplier('defense_platform', offset, 1250, 1.25, 'galaxy'); },
-                Wrought_Iron(offset){ return spaceCostMultiplier('defense_platform', offset, 75000, 1.25, 'galaxy'); },
+                Money(r={}){ return spaceCostMultiplier('defense_platform', r.offset, 750000, 1.25, 'galaxy'); },
+                Adamantite(r={}){ return spaceCostMultiplier('defense_platform', r.offset, 425000, 1.25, 'galaxy'); },
+                Elerium(r={}){ return spaceCostMultiplier('defense_platform', r.offset, 800, 1.25, 'galaxy'); },
+                Vitreloy(r={}){ return spaceCostMultiplier('defense_platform', r.offset, 1250, 1.25, 'galaxy'); },
+                Wrought_Iron(r={}){ return spaceCostMultiplier('defense_platform', r.offset, 75000, 1.25, 'galaxy'); },
             },
             effect(wiki){
                 return `<div class="has-text-advanced">${loc('galaxy_defense_platform_effect',[20])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered(wiki)])}</div>`;
@@ -5875,11 +5875,11 @@ const galaxyProjects = {
             reqs: { xeno: 4 },
             queue_complete(){ return 1 - global.galaxy.embassy.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.galaxy.hasOwnProperty('embassy') ? global.galaxy.embassy.count : 0)) < 1 ? 30000000 : 0; },
-                Lumber(offset){ return ((offset || 0) + (global.galaxy.hasOwnProperty('embassy') ? global.galaxy.embassy.count : 0)) < 1 ? 38000000 : 0; },
-                Stone(offset){ return ((offset || 0) + (global.galaxy.hasOwnProperty('embassy') ? global.galaxy.embassy.count : 0)) < 1 ? 32000000 : 0; },
-                Furs(offset){ return ((offset || 0) + (global.galaxy.hasOwnProperty('embassy') ? global.galaxy.embassy.count : 0)) < 1 ? 18000000 : 0; },
-                Wrought_Iron(offset){ return ((offset || 0) + (global.galaxy.hasOwnProperty('embassy') ? global.galaxy.embassy.count : 0)) < 1 ? 6000000 : 0; }
+                Money(r={}){ return ((r.offset || 0) + (global.galaxy.hasOwnProperty('embassy') ? global.galaxy.embassy.count : 0)) < 1 ? 30000000 : 0; },
+                Lumber(r={}){ return ((r.offset || 0) + (global.galaxy.hasOwnProperty('embassy') ? global.galaxy.embassy.count : 0)) < 1 ? 38000000 : 0; },
+                Stone(r={}){ return ((r.offset || 0) + (global.galaxy.hasOwnProperty('embassy') ? global.galaxy.embassy.count : 0)) < 1 ? 32000000 : 0; },
+                Furs(r={}){ return ((r.offset || 0) + (global.galaxy.hasOwnProperty('embassy') ? global.galaxy.embassy.count : 0)) < 1 ? 18000000 : 0; },
+                Wrought_Iron(r={}){ return ((r.offset || 0) + (global.galaxy.hasOwnProperty('embassy') ? global.galaxy.embassy.count : 0)) < 1 ? 6000000 : 0; }
             },
             effect(wiki){
                 let food = 7500;
@@ -5940,10 +5940,10 @@ const galaxyProjects = {
             type: 'housing',
             reqs: { xeno: 6 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('dormitory', offset, 10000000, 1.25, 'galaxy'); },
-                Furs(offset){ return spaceCostMultiplier('dormitory', offset, 700000, 1.25, 'galaxy'); },
-                Cement(offset){ return spaceCostMultiplier('dormitory', offset, 1200000, 1.25, 'galaxy'); },
-                Plywood(offset){ return spaceCostMultiplier('dormitory', offset, 85000, 1.25, 'galaxy'); },
+                Money(r={}){ return spaceCostMultiplier('dormitory', r.offset, 10000000, 1.25, 'galaxy'); },
+                Furs(r={}){ return spaceCostMultiplier('dormitory', r.offset, 700000, 1.25, 'galaxy'); },
+                Cement(r={}){ return spaceCostMultiplier('dormitory', r.offset, 1200000, 1.25, 'galaxy'); },
+                Plywood(r={}){ return spaceCostMultiplier('dormitory', r.offset, 85000, 1.25, 'galaxy'); },
                 Horseshoe(){ return global.race['hooved'] ? 3 : 0; }
             },
             effect(){
@@ -5981,10 +5981,10 @@ const galaxyProjects = {
             type: 'science',
             reqs: { xeno: 6 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('symposium', offset, 8000000, 1.25, 'galaxy'); },
-                Food(offset){ return global.race['ravenous'] ? 0 : spaceCostMultiplier('symposium', offset, global.race['artifical'] ? 45000 : 125000, 1.25, 'galaxy'); },
-                Lumber(offset){ return spaceCostMultiplier('symposium', offset, 460000, 1.25, 'galaxy'); },
-                Brick(offset){ return spaceCostMultiplier('symposium', offset, 261600, 1.25, 'galaxy'); },
+                Money(r={}){ return spaceCostMultiplier('symposium', r.offset, 8000000, 1.25, 'galaxy'); },
+                Food(r={}){ return global.race['ravenous'] ? 0 : spaceCostMultiplier('symposium', r.offset, global.race['artifical'] ? 45000 : 125000, 1.25, 'galaxy'); },
+                Lumber(r={}){ return spaceCostMultiplier('symposium', r.offset, 460000, 1.25, 'galaxy'); },
+                Brick(r={}){ return spaceCostMultiplier('symposium', r.offset, 261600, 1.25, 'galaxy'); },
             },
             effect(wiki){
                 let pirate = piracy('gxy_gorddon',false,false,wiki);
@@ -6026,11 +6026,11 @@ const galaxyProjects = {
             type: 'ship',
             reqs: { xeno: 5 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('freighter', offset, 6000000, 1.2, 'galaxy'); },
-                Uranium(offset){ return spaceCostMultiplier('freighter', offset, 10000, 1.2, 'galaxy'); },
-                Adamantite(offset){ return spaceCostMultiplier('freighter', offset, 460000, 1.2, 'galaxy'); },
-                Stanene(offset){ return spaceCostMultiplier('freighter', offset, 261600, 1.2, 'galaxy'); },
-                Bolognium(offset){ return spaceCostMultiplier('freighter', offset, 66000, 1.2, 'galaxy'); },
+                Money(r={}){ return spaceCostMultiplier('freighter', r.offset, 6000000, 1.2, 'galaxy'); },
+                Uranium(r={}){ return spaceCostMultiplier('freighter', r.offset, 10000, 1.2, 'galaxy'); },
+                Adamantite(r={}){ return spaceCostMultiplier('freighter', r.offset, 460000, 1.2, 'galaxy'); },
+                Stanene(r={}){ return spaceCostMultiplier('freighter', r.offset, 261600, 1.2, 'galaxy'); },
+                Bolognium(r={}){ return spaceCostMultiplier('freighter', r.offset, 66000, 1.2, 'galaxy'); },
             },
             effect(){
                 let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
@@ -6088,11 +6088,11 @@ const galaxyProjects = {
             reqs: { xeno: 8 },
             queue_complete(){ return 1 - global.galaxy.consulate.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.galaxy.hasOwnProperty('consulate') ? global.galaxy.consulate.count : 0)) < 1 ? 90000000 : 0; },
-                Stone(offset){ return ((offset || 0) + (global.galaxy.hasOwnProperty('consulate') ? global.galaxy.consulate.count : 0)) < 1 ? 75000000 : 0; },
-                Furs(offset){ return ((offset || 0) + (global.galaxy.hasOwnProperty('consulate') ? global.galaxy.consulate.count : 0)) < 1 ? 30000000 : 0; },
-                Iron(offset){ return ((offset || 0) + (global.galaxy.hasOwnProperty('consulate') ? global.galaxy.consulate.count : 0)) < 1 ? 45000000 : 0; },
-                Horseshoe(offset){ return global.race['hooved'] && (((offset || 0) + (global.galaxy.hasOwnProperty('consulate') ? global.galaxy.consulate.count : 0)) < 1) ? 10 : 0; }
+                Money(r={}){ return ((r.offset || 0) + (global.galaxy.hasOwnProperty('consulate') ? global.galaxy.consulate.count : 0)) < 1 ? 90000000 : 0; },
+                Stone(r={}){ return ((r.offset || 0) + (global.galaxy.hasOwnProperty('consulate') ? global.galaxy.consulate.count : 0)) < 1 ? 75000000 : 0; },
+                Furs(r={}){ return ((r.offset || 0) + (global.galaxy.hasOwnProperty('consulate') ? global.galaxy.consulate.count : 0)) < 1 ? 30000000 : 0; },
+                Iron(r={}){ return ((r.offset || 0) + (global.galaxy.hasOwnProperty('consulate') ? global.galaxy.consulate.count : 0)) < 1 ? 45000000 : 0; },
+                Horseshoe(r={}){ return global.race['hooved'] && (((r.offset || 0) + (global.galaxy.hasOwnProperty('consulate') ? global.galaxy.consulate.count : 0)) < 1) ? 10 : 0; }
             },
             effect(){
                 return loc('plus_max_citizens',[$(this)[0].citizens()]);
@@ -6133,10 +6133,10 @@ const galaxyProjects = {
             type: 'entertainment',
             reqs: { xeno: 9 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('resort', offset, traitCostMod('untrustworthy',33000000), 1.25, 'galaxy'); },
-                Stone(offset){ return spaceCostMultiplier('resort', offset, traitCostMod('untrustworthy',25000000), 1.25, 'galaxy'); },
-                Furs(offset){ return spaceCostMultiplier('resort', offset, traitCostMod('untrustworthy',10000000), 1.25, 'galaxy'); },
-                Oil(offset){ return spaceCostMultiplier('resort', offset, traitCostMod('untrustworthy',int_fuel_adjust(125000)), 1.25, 'galaxy'); },
+                Money(r={}){ return spaceCostMultiplier('resort', r.offset, traitCostMod('untrustworthy',33000000), 1.25, 'galaxy'); },
+                Stone(r={}){ return spaceCostMultiplier('resort', r.offset, traitCostMod('untrustworthy',25000000), 1.25, 'galaxy'); },
+                Furs(r={}){ return spaceCostMultiplier('resort', r.offset, traitCostMod('untrustworthy',10000000), 1.25, 'galaxy'); },
+                Oil(r={}){ return spaceCostMultiplier('resort', r.offset, traitCostMod('untrustworthy',int_fuel_adjust(125000)), 1.25, 'galaxy'); },
             },
             effect(){
                 let money = spatialReasoning(global.tech['world_control'] ? 1875000 : 1500000);
@@ -6174,11 +6174,11 @@ const galaxyProjects = {
             type: 'industry',
             reqs: { xeno: 10 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('vitreloy_plant', offset, 35000000, 1.25, 'galaxy'); },
-                Cement(offset){ return spaceCostMultiplier('vitreloy_plant', offset, 1800000, 1.25, 'galaxy'); },
-                Neutronium(offset){ return spaceCostMultiplier('vitreloy_plant', offset, 250000, 1.25, 'galaxy'); },
-                Iridium(offset){ return spaceCostMultiplier('vitreloy_plant', offset, 850000, 1.25, 'galaxy'); },
-                Aerogel(offset){ return spaceCostMultiplier('vitreloy_plant', offset, 400000, 1.25, 'galaxy'); },
+                Money(r={}){ return spaceCostMultiplier('vitreloy_plant', r.offset, 35000000, 1.25, 'galaxy'); },
+                Cement(r={}){ return spaceCostMultiplier('vitreloy_plant', r.offset, 1800000, 1.25, 'galaxy'); },
+                Neutronium(r={}){ return spaceCostMultiplier('vitreloy_plant', r.offset, 250000, 1.25, 'galaxy'); },
+                Iridium(r={}){ return spaceCostMultiplier('vitreloy_plant', r.offset, 850000, 1.25, 'galaxy'); },
+                Aerogel(r={}){ return spaceCostMultiplier('vitreloy_plant', r.offset, 400000, 1.25, 'galaxy'); },
             },
             effect(){
                 let vitreloy = +(production('vitreloy_plant')).toFixed(2);
@@ -6212,10 +6212,10 @@ const galaxyProjects = {
             type: 'ship',
             reqs: { xeno: 9 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('super_freighter', offset, 28000000, 1.2, 'galaxy'); },
-                Aluminium(offset){ return spaceCostMultiplier('super_freighter', offset, 3500000, 1.2, 'galaxy'); },
-                Alloy(offset){ return spaceCostMultiplier('super_freighter', offset, 1000000, 1.2, 'galaxy'); },
-                Graphene(offset){ return spaceCostMultiplier('super_freighter', offset, 750000, 1.2, 'galaxy'); },
+                Money(r={}){ return spaceCostMultiplier('super_freighter', r.offset, 28000000, 1.2, 'galaxy'); },
+                Aluminium(r={}){ return spaceCostMultiplier('super_freighter', r.offset, 3500000, 1.2, 'galaxy'); },
+                Alloy(r={}){ return spaceCostMultiplier('super_freighter', r.offset, 1000000, 1.2, 'galaxy'); },
+                Graphene(r={}){ return spaceCostMultiplier('super_freighter', r.offset, 750000, 1.2, 'galaxy'); },
             },
             effect(){
                 let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
@@ -6347,11 +6347,11 @@ const galaxyProjects = {
             type: 'outpost',
             reqs: { conflict: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('foothold', offset, 25000000, 1.25, 'galaxy'); },
-                Titanium(offset){ return spaceCostMultiplier('foothold', offset, 3000000, 1.25, 'galaxy'); },
-                Polymer(offset){ return spaceCostMultiplier('foothold', offset, 1750000, 1.25, 'galaxy'); },
-                Iridium(offset){ return spaceCostMultiplier('foothold', offset, 900000, 1.25, 'galaxy'); },
-                Bolognium(offset){ return spaceCostMultiplier('foothold', offset, 50000, 1.25, 'galaxy'); },
+                Money(r={}){ return spaceCostMultiplier('foothold', r.offset, 25000000, 1.25, 'galaxy'); },
+                Titanium(r={}){ return spaceCostMultiplier('foothold', r.offset, 3000000, 1.25, 'galaxy'); },
+                Polymer(r={}){ return spaceCostMultiplier('foothold', r.offset, 1750000, 1.25, 'galaxy'); },
+                Iridium(r={}){ return spaceCostMultiplier('foothold', r.offset, 900000, 1.25, 'galaxy'); },
+                Bolognium(r={}){ return spaceCostMultiplier('foothold', r.offset, 50000, 1.25, 'galaxy'); },
             },
             effect(wiki){
                 let elerium = 2.5;
@@ -6392,11 +6392,11 @@ const galaxyProjects = {
             type: 'mining',
             reqs: { conflict: 2 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('armed_miner', offset, 5000000, 1.25, 'galaxy'); },
-                Steel(offset){ return spaceCostMultiplier('armed_miner', offset, 1800000, 1.25, 'galaxy'); },
-                Stanene(offset){ return spaceCostMultiplier('armed_miner', offset, 1975000, 1.25, 'galaxy'); },
-                Vitreloy(offset){ return spaceCostMultiplier('armed_miner', offset, 20000, 1.25, 'galaxy'); },
-                Soul_Gem(offset){ return spaceCostMultiplier('armed_miner', offset, 1, 1.25, 'galaxy'); },
+                Money(r={}){ return spaceCostMultiplier('armed_miner', r.offset, 5000000, 1.25, 'galaxy'); },
+                Steel(r={}){ return spaceCostMultiplier('armed_miner', r.offset, 1800000, 1.25, 'galaxy'); },
+                Stanene(r={}){ return spaceCostMultiplier('armed_miner', r.offset, 1975000, 1.25, 'galaxy'); },
+                Vitreloy(r={}){ return spaceCostMultiplier('armed_miner', r.offset, 20000, 1.25, 'galaxy'); },
+                Soul_Gem(r={}){ return spaceCostMultiplier('armed_miner', r.offset, 1, 1.25, 'galaxy'); },
             },
             effect(){
                 let bolognium = 0.032;
@@ -6444,10 +6444,10 @@ const galaxyProjects = {
             type: 'industry',
             reqs: { conflict: 3 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('ore_processor', offset, 3000000, 1.25, 'galaxy'); },
-                Iron(offset){ return spaceCostMultiplier('ore_processor', offset, 5000000, 1.25, 'galaxy'); },
-                Coal(offset){ return spaceCostMultiplier('ore_processor', offset, 3750000, 1.25, 'galaxy'); },
-                Graphene(offset){ return spaceCostMultiplier('ore_processor', offset, 2250000, 1.25, 'galaxy'); }
+                Money(r={}){ return spaceCostMultiplier('ore_processor', r.offset, 3000000, 1.25, 'galaxy'); },
+                Iron(r={}){ return spaceCostMultiplier('ore_processor', r.offset, 5000000, 1.25, 'galaxy'); },
+                Coal(r={}){ return spaceCostMultiplier('ore_processor', r.offset, 3750000, 1.25, 'galaxy'); },
+                Graphene(r={}){ return spaceCostMultiplier('ore_processor', r.offset, 2250000, 1.25, 'galaxy'); }
             },
             effect(){
                 return `<div>${loc('galaxy_ore_processor_effect',[10])}</div><div class="has-text-caution">${loc('galaxy_alien2_support',[$(this)[0].support(),races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].solar.red])}</div>`;
@@ -6477,11 +6477,11 @@ const galaxyProjects = {
             type: 'ship',
             reqs: { conflict: 4 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('scavenger', offset, 7500000, 1.25, 'galaxy'); },
-                Alloy(offset){ return spaceCostMultiplier('scavenger', offset, 1250000, 1.25, 'galaxy'); },
-                Aluminium(offset){ return spaceCostMultiplier('scavenger', offset, 6800000, 1.25, 'galaxy'); },
-                Neutronium(offset){ return spaceCostMultiplier('scavenger', offset, 75000, 1.25, 'galaxy'); },
-                Elerium(offset){ return spaceCostMultiplier('scavenger', offset, 750, 1.25, 'galaxy'); }
+                Money(r={}){ return spaceCostMultiplier('scavenger', r.offset, 7500000, 1.25, 'galaxy'); },
+                Alloy(r={}){ return spaceCostMultiplier('scavenger', r.offset, 1250000, 1.25, 'galaxy'); },
+                Aluminium(r={}){ return spaceCostMultiplier('scavenger', r.offset, 6800000, 1.25, 'galaxy'); },
+                Neutronium(r={}){ return spaceCostMultiplier('scavenger', r.offset, 75000, 1.25, 'galaxy'); },
+                Elerium(r={}){ return spaceCostMultiplier('scavenger', r.offset, 750, 1.25, 'galaxy'); }
             },
             effect(wiki){
                 let pirate = piracy('gxy_alien2',false,false,wiki);
@@ -6617,10 +6617,10 @@ const galaxyProjects = {
             type: 'military',
             reqs: { chthonian: 2 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('minelayer', offset, 9000000, 1.25, 'galaxy'); },
-                Iron(offset){ return spaceCostMultiplier('minelayer', offset, 4800000, 1.25, 'galaxy'); },
-                Nano_Tube(offset){ return spaceCostMultiplier('minelayer', offset, 1250000, 1.25, 'galaxy'); },
-                Nanoweave(offset){ return spaceCostMultiplier('minelayer', offset, 100000, 1.25, 'galaxy'); },
+                Money(r={}){ return spaceCostMultiplier('minelayer', r.offset, 9000000, 1.25, 'galaxy'); },
+                Iron(r={}){ return spaceCostMultiplier('minelayer', r.offset, 4800000, 1.25, 'galaxy'); },
+                Nano_Tube(r={}){ return spaceCostMultiplier('minelayer', r.offset, 1250000, 1.25, 'galaxy'); },
+                Nanoweave(r={}){ return spaceCostMultiplier('minelayer', r.offset, 100000, 1.25, 'galaxy'); },
             },
             effect(){
                 let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
@@ -6669,10 +6669,10 @@ const galaxyProjects = {
             type: 'mining',
             reqs: { chthonian: 3 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('excavator', offset, 12000000, 1.25, 'galaxy'); },
-                Polymer(offset){ return spaceCostMultiplier('excavator', offset, 4400000, 1.25, 'galaxy'); },
-                Iridium(offset){ return spaceCostMultiplier('excavator', offset, 3600000, 1.25, 'galaxy'); },
-                Mythril(offset){ return spaceCostMultiplier('excavator', offset, 180000, 1.25, 'galaxy'); },
+                Money(r={}){ return spaceCostMultiplier('excavator', r.offset, 12000000, 1.25, 'galaxy'); },
+                Polymer(r={}){ return spaceCostMultiplier('excavator', r.offset, 4400000, 1.25, 'galaxy'); },
+                Iridium(r={}){ return spaceCostMultiplier('excavator', r.offset, 3600000, 1.25, 'galaxy'); },
+                Mythril(r={}){ return spaceCostMultiplier('excavator', r.offset, 180000, 1.25, 'galaxy'); },
             },
             effect(){
                 let orichalcum = +(production('excavator')).toFixed(3);
@@ -6706,11 +6706,11 @@ const galaxyProjects = {
             type: 'ship',
             reqs: { chthonian: 3 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('raider', offset, 12000000, 1.25, 'galaxy'); },
-                Titanium(offset){ return spaceCostMultiplier('raider', offset, 1250000, 1.25, 'galaxy'); },
-                Bolognium(offset){ return spaceCostMultiplier('raider', offset, 600000, 1.25, 'galaxy'); },
-                Vitreloy(offset){ return spaceCostMultiplier('raider', offset, 125000, 1.25, 'galaxy'); },
-                Stanene(offset){ return spaceCostMultiplier('raider', offset, 825000, 1.25, 'galaxy'); },
+                Money(r={}){ return spaceCostMultiplier('raider', r.offset, 12000000, 1.25, 'galaxy'); },
+                Titanium(r={}){ return spaceCostMultiplier('raider', r.offset, 1250000, 1.25, 'galaxy'); },
+                Bolognium(r={}){ return spaceCostMultiplier('raider', r.offset, 600000, 1.25, 'galaxy'); },
+                Vitreloy(r={}){ return spaceCostMultiplier('raider', r.offset, 125000, 1.25, 'galaxy'); },
+                Stanene(r={}){ return spaceCostMultiplier('raider', r.offset, 825000, 1.25, 'galaxy'); },
             },
             effect(){
                 let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);

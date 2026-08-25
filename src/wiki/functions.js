@@ -102,7 +102,12 @@ export function infoBoxBuilder(parent,args,box){
     return info;
 }
 
-export function actionDesc(info, c_action, extended, isStruct){
+// opts: { extended, isStruct, era }. wiki is always true here — this is the wiki asking — and era is
+// the page being rendered, carried through to reqs() and cost().
+export function actionDesc(info, c_action, opts){
+    opts = opts || {};
+    let extended = opts.extended;
+    let isStruct = opts.isStruct;
     let title = typeof c_action.title === 'string' ? c_action.title : c_action.title();
     if (extended){
         info.append(`<div class="type"><h2 class="has-text-warning">${title}</h2><span class="has-text-caution">${extended}</span></div>`);
@@ -145,7 +150,7 @@ export function actionDesc(info, c_action, extended, isStruct){
     }
 
     if (c_action.hasOwnProperty('cost')){
-        let costs = adjustCosts(c_action, true);
+        let costs = adjustCosts(c_action, { offset: true, wiki: true, era: opts.era });
         let cost = hasEffect ? $(`<div class="cost right"${isStruct ? ' v-show="i.costVis"' : ''}></div>`) : $(`<div class="cost"${isStruct ? ' v-show="i.costVis"' : ''}></div>`);
         let costCreep = ``;
         if (isStruct){

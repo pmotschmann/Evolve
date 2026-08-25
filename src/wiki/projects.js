@@ -65,7 +65,9 @@ function addCosts(parent,key){
             creative: false
         }
     });
-    let resources = {};
+    // Reactive: updateCosts mutates this in place, and a plain object would leave the rendered
+    // figures stale (see the Vue 3 notes in CLAUDE.md).
+    let resources = Vue.reactive({});
     
     switch (key){
         case 'monument':
@@ -96,9 +98,9 @@ function addCosts(parent,key){
     
     //Functions to update costs and cost creeps
     let updateCosts = function(){
-        let new_costs = arpaAdjustCosts(cost,inputs.owned - inputs.real_owned,inputs.extra);
+        let new_costs = arpaAdjustCosts(cost,{ offset: inputs.owned - inputs.real_owned, wiki: inputs.extra });
         Object.keys(resources).forEach(function (res){
-            let new_cost = new_costs[res] ? new_costs[res](inputs.owned - inputs.real_owned,inputs.extra) : 0;
+            let new_cost = new_costs[res] ? new_costs[res]({ offset: inputs.owned - inputs.real_owned, wiki: inputs.extra }) : 0;
             resources[res].vis = new_cost > 0 ? true : false;
             resources[res].cost = sizeApproximation(new_cost,1);
         });
@@ -107,11 +109,11 @@ function addCosts(parent,key){
     
     let updateCostCreep = function(){
         if (key !== 'launch_facility'){
-            let upper = arpaAdjustCosts(cost,100,inputs.extra);
-            let lower = arpaAdjustCosts(cost,99,inputs.extra);
+            let upper = arpaAdjustCosts(cost,{ offset: 100, wiki: inputs.extra });
+            let lower = arpaAdjustCosts(cost,{ offset: 99, wiki: inputs.extra });
             Object.keys(resources).forEach(function (res){
                 if (upper[res]){
-                    resources[res].creep = +(upper[res](100,inputs.extra) / lower[res](99,inputs.extra)).toFixed(4);
+                    resources[res].creep = +(upper[res]({ offset: 100, wiki: inputs.extra }) / lower[res]({ offset: 99, wiki: inputs.extra })).toFixed(4);
                 }
             });
         }

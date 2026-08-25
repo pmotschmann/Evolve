@@ -77,10 +77,10 @@ const outerTruth = {
             reqs: { titan: 1 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('titan_spaceport', offset, 2500000, 1.32); },
-                Lumber(offset){ return spaceCostMultiplier('titan_spaceport', offset, 750000, 1.32); },
-                Cement(offset){ return spaceCostMultiplier('titan_spaceport', offset, 350000, 1.32); },
-                Mythril(offset){ return spaceCostMultiplier('titan_spaceport', offset, 10000, 1.32); }
+                Money(r={}){ return spaceCostMultiplier('titan_spaceport', r.offset, 2500000, 1.32); },
+                Lumber(r={}){ return spaceCostMultiplier('titan_spaceport', r.offset, 750000, 1.32); },
+                Cement(r={}){ return spaceCostMultiplier('titan_spaceport', r.offset, 350000, 1.32); },
+                Mythril(r={}){ return spaceCostMultiplier('titan_spaceport', r.offset, 10000, 1.32); }
             },
             effect(){
                 let water = global.resource.Water.display ? `<div>${loc('plus_max_resource',[sizeApproximation(spatialReasoning(250)),global.resource.Water.name])}</div>` : ``;
@@ -119,10 +119,10 @@ const outerTruth = {
             reqs: { titan: 3 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('electrolysis', offset, 1000000, 1.25); },
-                Copper(offset){ return spaceCostMultiplier('electrolysis', offset, 185000, 1.25); },
-                Steel(offset){ return spaceCostMultiplier('electrolysis', offset, 220000, 1.25); },
-                Polymer(offset){ return spaceCostMultiplier('electrolysis', offset, 380000, 1.25); }
+                Money(r={}){ return spaceCostMultiplier('electrolysis', r.offset, 1000000, 1.25); },
+                Copper(r={}){ return spaceCostMultiplier('electrolysis', r.offset, 185000, 1.25); },
+                Steel(r={}){ return spaceCostMultiplier('electrolysis', r.offset, 220000, 1.25); },
+                Polymer(r={}){ return spaceCostMultiplier('electrolysis', r.offset, 380000, 1.25); }
             },
             effect(wiki){
                 let support = `<div>+${loc(`galaxy_alien2_support`,[$(this)[0].support(wiki),planetName().titan])}</div>`;
@@ -164,10 +164,10 @@ const outerTruth = {
             reqs: { titan_power: 1 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('hydrogen_plant', offset, 1500000, 1.28); },
-                Iridium(offset){ return spaceCostMultiplier('hydrogen_plant', offset, 292000, 1.28); },
-                Stanene(offset){ return spaceCostMultiplier('hydrogen_plant', offset, 599000, 1.28); },
-                Cement(offset){ return spaceCostMultiplier('hydrogen_plant', offset, 180000, 1.28); }
+                Money(r={}){ return spaceCostMultiplier('hydrogen_plant', r.offset, 1500000, 1.28); },
+                Iridium(r={}){ return spaceCostMultiplier('hydrogen_plant', r.offset, 292000, 1.28); },
+                Stanene(r={}){ return spaceCostMultiplier('hydrogen_plant', r.offset, 599000, 1.28); },
+                Cement(r={}){ return spaceCostMultiplier('hydrogen_plant', r.offset, 180000, 1.28); }
             },
             effect(){
                 return `<span>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered())])}</span>, <span class="has-text-caution">${loc('space_hydrogen_plant_effect',[1,loc('space_electrolysis_title')])}</span>`;
@@ -203,9 +203,9 @@ const outerTruth = {
             reqs: { titan: 4 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('titan_quarters', offset, 1200000, 1.28); },
-                Furs(offset){ return spaceCostMultiplier('titan_quarters', offset, 85000, 1.28); },
-                Plywood(offset){ return spaceCostMultiplier('titan_quarters', offset, 100000, 1.28); },
+                Money(r={}){ return spaceCostMultiplier('titan_quarters', r.offset, 1200000, 1.28); },
+                Furs(r={}){ return spaceCostMultiplier('titan_quarters', r.offset, 85000, 1.28); },
+                Plywood(r={}){ return spaceCostMultiplier('titan_quarters', r.offset, 100000, 1.28); },
                 Horseshoe(){ return global.race['hooved'] ? 1 : 0; }
             },
             effect(){
@@ -262,9 +262,9 @@ const outerTruth = {
             condition(){ return global.space['titan_quarters'] && global.space.titan_quarters.count > 0 ? true : false; },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('titan_mine', offset, 475000, 1.28); },
-                Lumber(offset){ return spaceCostMultiplier('titan_mine', offset, 568000, 1.28); },
-                Wrought_Iron(offset){ return spaceCostMultiplier('titan_mine', offset, 250000, 1.28); }
+                Money(r={}){ return spaceCostMultiplier('titan_mine', r.offset, 475000, 1.28); },
+                Lumber(r={}){ return spaceCostMultiplier('titan_mine', r.offset, 568000, 1.28); },
+                Wrought_Iron(r={}){ return spaceCostMultiplier('titan_mine', r.offset, 250000, 1.28); }
             },
             effect(){
                 let adam_val = production('titan_mine','adamantite');
@@ -313,10 +313,10 @@ const outerTruth = {
             reqs: { titan: 5 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('storehouse', offset, 175000, 1.28); },
-                Lumber(offset){ return spaceCostMultiplier('storehouse', offset, 100000, 1.28); },
-                Aluminium(offset){ return spaceCostMultiplier('storehouse', offset, 120000, 1.28); },
-                Cement(offset){ return spaceCostMultiplier('storehouse', offset, 45000, 1.28); }
+                Money(r={}){ return spaceCostMultiplier('storehouse', r.offset, 175000, 1.28); },
+                Lumber(r={}){ return spaceCostMultiplier('storehouse', r.offset, 100000, 1.28); },
+                Aluminium(r={}){ return spaceCostMultiplier('storehouse', r.offset, 120000, 1.28); },
+                Cement(r={}){ return spaceCostMultiplier('storehouse', r.offset, 45000, 1.28); }
             },
             wide: true,
             res(){
@@ -425,9 +425,9 @@ const outerTruth = {
             reqs: { titan: 6 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('titan_bank', offset, traitCostMod('untrustworthy',2500000), 1.32); },
-                Titanium(offset){ return spaceCostMultiplier('titan_bank', offset, traitCostMod('untrustworthy',380000), 1.32); },
-                Neutronium(offset){ return spaceCostMultiplier('titan_bank', offset, traitCostMod('untrustworthy',5000), 1.32); }
+                Money(r={}){ return spaceCostMultiplier('titan_bank', r.offset, traitCostMod('untrustworthy',2500000), 1.32); },
+                Titanium(r={}){ return spaceCostMultiplier('titan_bank', r.offset, traitCostMod('untrustworthy',380000), 1.32); },
+                Neutronium(r={}){ return spaceCostMultiplier('titan_bank', r.offset, traitCostMod('untrustworthy',5000), 1.32); }
             },
             effect(){
                 let vault = bank_vault() * 2;
@@ -458,10 +458,10 @@ const outerTruth = {
             reqs: { graphene: 1 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('g_factory', offset, 950000, 1.28); },
-                Copper(offset){ return spaceCostMultiplier('g_factory', offset, 165000, 1.28); },
-                Stone(offset){ return spaceCostMultiplier('g_factory', offset, 220000, 1.28); },
-                Adamantite(offset){ return spaceCostMultiplier('g_factory', offset, 12500, 1.28); }
+                Money(r={}){ return spaceCostMultiplier('g_factory', r.offset, 950000, 1.28); },
+                Copper(r={}){ return spaceCostMultiplier('g_factory', r.offset, 165000, 1.28); },
+                Stone(r={}){ return spaceCostMultiplier('g_factory', r.offset, 220000, 1.28); },
+                Adamantite(r={}){ return spaceCostMultiplier('g_factory', r.offset, 12500, 1.28); }
             },
             effect(){
                 let graphene = 0.05;
@@ -507,10 +507,10 @@ const outerTruth = {
             reqs: { titan: 10 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('metalworks', offset, 425000000, 1.28); },
-                Coal(offset){ return spaceCostMultiplier('metalworks', offset, 4200000, 1.28); },
-                Graphene(offset){ return spaceCostMultiplier('metalworks', offset, 2600000, 1.28); },
-                Neutronium(offset){ return spaceCostMultiplier('metalworks', offset, 165000, 1.28); }
+                Money(r={}){ return spaceCostMultiplier('metalworks', r.offset, 425000000, 1.28); },
+                Coal(r={}){ return spaceCostMultiplier('metalworks', r.offset, 4200000, 1.28); },
+                Graphene(r={}){ return spaceCostMultiplier('metalworks', r.offset, 2600000, 1.28); },
+                Neutronium(r={}){ return spaceCostMultiplier('metalworks', r.offset, 165000, 1.28); }
             },
             effect(wiki){
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[planetName().titan])}</div>`;
@@ -565,10 +565,10 @@ const outerTruth = {
             reqs: { titan: 12 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('comedy_club', offset, 250000000, 1.3); },
-                Iron(offset){ return spaceCostMultiplier('comedy_club', offset, 490000000, 1.3); },
-                Polymer(offset){ return spaceCostMultiplier('comedy_club', offset, 75000000, 1.3); },
-                Bolognium(offset){ return spaceCostMultiplier('comedy_club', offset, 25000000, 1.3); }
+                Money(r={}){ return spaceCostMultiplier('comedy_club', r.offset, 250000000, 1.3); },
+                Iron(r={}){ return spaceCostMultiplier('comedy_club', r.offset, 490000000, 1.3); },
+                Polymer(r={}){ return spaceCostMultiplier('comedy_club', r.offset, 75000000, 1.3); },
+                Bolognium(r={}){ return spaceCostMultiplier('comedy_club', r.offset, 25000000, 1.3); }
             },
             effect(){
                 return `<div class="has-text-caution">${loc('space_used_support',[planetName().titan])}</div>`
@@ -606,10 +606,10 @@ const outerTruth = {
             condition(){ return !global.tech['resettle'] ? true : false; },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('sam', offset, 2500000, 1.28); },
-                Steel(offset){ return spaceCostMultiplier('sam', offset, 450000, 1.28); },
-                Elerium(offset){ return spaceCostMultiplier('sam', offset, 120, 1.28); },
-                Brick(offset){ return spaceCostMultiplier('sam', offset, 160000, 1.28); },
+                Money(r={}){ return spaceCostMultiplier('sam', r.offset, 2500000, 1.28); },
+                Steel(r={}){ return spaceCostMultiplier('sam', r.offset, 450000, 1.28); },
+                Elerium(r={}){ return spaceCostMultiplier('sam', r.offset, 120, 1.28); },
+                Brick(r={}){ return spaceCostMultiplier('sam', r.offset, 160000, 1.28); },
             },
             effect(){
                 let desc = `<div>${loc('galaxy_defense_platform_effect',[25])}</div>`;
@@ -645,10 +645,10 @@ const outerTruth = {
             condition(){ return !global.tech['resettle'] ? true : false; },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('decoder', offset, 12500000, 1.275); },
-                Elerium(offset){ return spaceCostMultiplier('decoder', offset, 750, 1.275); },
-                Orichalcum(offset){ return spaceCostMultiplier('decoder', offset, 330000, 1.275); },
-                Quantium(offset){ return spaceCostMultiplier('decoder', offset, 180000, 1.275); },
+                Money(r={}){ return spaceCostMultiplier('decoder', r.offset, 12500000, 1.275); },
+                Elerium(r={}){ return spaceCostMultiplier('decoder', r.offset, 750, 1.275); },
+                Orichalcum(r={}){ return spaceCostMultiplier('decoder', r.offset, 330000, 1.275); },
+                Quantium(r={}){ return spaceCostMultiplier('decoder', r.offset, 180000, 1.275); },
             },
             effect(wiki){
                 let cipher = $(this)[0].support_fuel().a;
@@ -702,14 +702,14 @@ const outerTruth = {
             queue_size: 10,
             queue_complete(){ return 100 - global.space.ai_core.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 2500000 : 0; },
-                Cement(offset){ return ((offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 180000 : 0; },
-                Aluminium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 250000 : 0; },
-                Elerium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 250 : 0; },
-                Nano_Tube(offset){ return ((offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 125000 : 0; },
-                Orichalcum(offset){ return ((offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 50000 : 0; },
-                Quantium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 100000 : 0; },
-                Cipher(offset){ return ((offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 750 : 0; },
+                Money(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 2500000 : 0; },
+                Cement(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 180000 : 0; },
+                Aluminium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 250000 : 0; },
+                Elerium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 250 : 0; },
+                Nano_Tube(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 125000 : 0; },
+                Orichalcum(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 50000 : 0; },
+                Quantium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 100000 : 0; },
+                Cipher(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 750 : 0; },
             },
             effect(wiki){
                 let effectText = `<div>${loc('space_ai_core_effect')}</div>`;
@@ -807,12 +807,12 @@ const outerTruth = {
             condition(){ return !global.tech['resettle'] ? true : false; },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('ai_colonist', offset, 112000000, 1.35); },
-                Alloy(offset){ return spaceCostMultiplier('ai_colonist', offset, 750000, 1.35); },
-                Elerium(offset){ return spaceCostMultiplier('ai_colonist', offset, 500, 1.35); },
-                Nano_Tube(offset){ return spaceCostMultiplier('ai_colonist', offset, 525000, 1.35); },
-                Quantium(offset){ return spaceCostMultiplier('ai_colonist', offset, 150000, 1.35); },
-                Cipher(offset){ return spaceCostMultiplier('ai_colonist', offset, 10000, 1.35); },
+                Money(r={}){ return spaceCostMultiplier('ai_colonist', r.offset, 112000000, 1.35); },
+                Alloy(r={}){ return spaceCostMultiplier('ai_colonist', r.offset, 750000, 1.35); },
+                Elerium(r={}){ return spaceCostMultiplier('ai_colonist', r.offset, 500, 1.35); },
+                Nano_Tube(r={}){ return spaceCostMultiplier('ai_colonist', r.offset, 525000, 1.35); },
+                Quantium(r={}){ return spaceCostMultiplier('ai_colonist', r.offset, 150000, 1.35); },
+                Cipher(r={}){ return spaceCostMultiplier('ai_colonist', r.offset, 10000, 1.35); },
             },
             effect(){
                 return `<div>${loc('plus_max_resource',[jobScale(1),global.race['truepath'] ? loc('job_colonist_tp',[planetName().titan]) : loc('colonist')])}</div><div>${loc('space_ai_colonist_effect',[jobScale(1),planetName().titan])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
@@ -893,7 +893,7 @@ const outerTruth = {
             path: ['truepath'],
             queue_complete(){ return global.tech.enceladus >= 1 ? 0 : 1; },
             cost: {
-                Helium_3(offset,wiki){ return +fuel_adjust(250000,false,wiki).toFixed(0); },
+                Helium_3(r={}){ return +fuel_adjust(250000,false,r.wiki).toFixed(0); },
                 Elerium(){ return 100; }
             },
             effect(){
@@ -918,10 +918,10 @@ const outerTruth = {
             reqs: { enceladus: 2 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('water_freighter', offset, 450000, 1.25); },
-                Iron(offset){ return spaceCostMultiplier('water_freighter', offset, 362000, 1.25); },
-                Nano_Tube(offset){ return spaceCostMultiplier('water_freighter', offset, 125000, 1.25); },
-                Sheet_Metal(offset){ return spaceCostMultiplier('water_freighter', offset, 75000, 1.25); }
+                Money(r={}){ return spaceCostMultiplier('water_freighter', r.offset, 450000, 1.25); },
+                Iron(r={}){ return spaceCostMultiplier('water_freighter', r.offset, 362000, 1.25); },
+                Nano_Tube(r={}){ return spaceCostMultiplier('water_freighter', r.offset, 125000, 1.25); },
+                Sheet_Metal(r={}){ return spaceCostMultiplier('water_freighter', r.offset, 75000, 1.25); }
             },
             effect(wiki){
                 let helium = +fuel_adjust(5,true,wiki).toFixed(2);
@@ -956,10 +956,10 @@ const outerTruth = {
             reqs: { enceladus: 3 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('zero_g_lab', offset, 5000000, 1.25); },
-                Alloy(offset){ return spaceCostMultiplier('zero_g_lab', offset, 125000, 1.25); },
-                Graphene(offset){ return spaceCostMultiplier('zero_g_lab', offset, 225000, 1.25); },
-                Stanene(offset){ return spaceCostMultiplier('zero_g_lab', offset, 600000, 1.25); }
+                Money(r={}){ return spaceCostMultiplier('zero_g_lab', r.offset, 5000000, 1.25); },
+                Alloy(r={}){ return spaceCostMultiplier('zero_g_lab', r.offset, 125000, 1.25); },
+                Graphene(r={}){ return spaceCostMultiplier('zero_g_lab', r.offset, 225000, 1.25); },
+                Stanene(r={}){ return spaceCostMultiplier('zero_g_lab', r.offset, 600000, 1.25); }
             },
             effect(){
                 let synd = syndicate('spc_enceladus');
@@ -1008,11 +1008,11 @@ const outerTruth = {
             reqs: { enceladus: 4 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('operating_base', offset, 7500000, 1.3); },
-                Furs(offset){ return spaceCostMultiplier('operating_base', offset, 500000, 1.3); },
-                Adamantite(offset){ return spaceCostMultiplier('operating_base', offset, 375000, 1.3); },
-                Stanene(offset){ return spaceCostMultiplier('operating_base', offset, 750000, 1.3); },
-                Mythril(offset){ return spaceCostMultiplier('operating_base', offset, 225000, 1.3); },
+                Money(r={}){ return spaceCostMultiplier('operating_base', r.offset, 7500000, 1.3); },
+                Furs(r={}){ return spaceCostMultiplier('operating_base', r.offset, 500000, 1.3); },
+                Adamantite(r={}){ return spaceCostMultiplier('operating_base', r.offset, 375000, 1.3); },
+                Stanene(r={}){ return spaceCostMultiplier('operating_base', r.offset, 750000, 1.3); },
+                Mythril(r={}){ return spaceCostMultiplier('operating_base', r.offset, 225000, 1.3); },
                 Horseshoe(){ return global.race['hooved'] ? 4 : 0; }
             },
             effect(){
@@ -1062,9 +1062,9 @@ const outerTruth = {
             reqs: { enceladus: 5 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('munitions_depot', offset, 5000000, 1.22); },
-                Iron(offset){ return spaceCostMultiplier('munitions_depot', offset, 185000, 1.22); },
-                Sheet_Metal(offset){ return spaceCostMultiplier('munitions_depot', offset, 100000, 1.22); },
+                Money(r={}){ return spaceCostMultiplier('munitions_depot', r.offset, 5000000, 1.22); },
+                Iron(r={}){ return spaceCostMultiplier('munitions_depot', r.offset, 185000, 1.22); },
+                Sheet_Metal(r={}){ return spaceCostMultiplier('munitions_depot', r.offset, 100000, 1.22); },
             },
             effect(){
                 let containers = 25;
@@ -1137,7 +1137,7 @@ const outerTruth = {
             path: ['truepath'],
             queue_complete(){ return global.tech.triton >= 1 ? 0 : 1; },
             cost: {
-                Helium_3(offset,wiki){ return +fuel_adjust(600000,false,wiki).toFixed(0); },
+                Helium_3(r={}){ return +fuel_adjust(600000,false,r.wiki).toFixed(0); },
                 Elerium(){ return 2500; }
             },
             effect(){
@@ -1165,14 +1165,14 @@ const outerTruth = {
             path: ['truepath'],
             queue_complete(){ return 1 - global.space.fob.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1  ? 0 : spaceCostMultiplier('fob', offset, 250000000, 1.1); },
-                Copper(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', offset, 8000000, 1.1); },
-                Uranium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', offset, 50000, 1.1); },
-                Nano_Tube(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', offset, 2500000, 1.1); },
-                Graphene(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', offset, 3000000, 1.1); },
-                Sheet_Metal(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', offset, 7500000, 1.1); },
-                Quantium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', offset, 500000, 1.1); },
-                Horseshoe(offset){ return global.race['hooved'] && ((offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) < 1 ? 10 : 0; }
+                Money(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1  ? 0 : spaceCostMultiplier('fob', r.offset, 250000000, 1.1); },
+                Copper(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', r.offset, 8000000, 1.1); },
+                Uranium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', r.offset, 50000, 1.1); },
+                Nano_Tube(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', r.offset, 2500000, 1.1); },
+                Graphene(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', r.offset, 3000000, 1.1); },
+                Sheet_Metal(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', r.offset, 7500000, 1.1); },
+                Quantium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', r.offset, 500000, 1.1); },
+                Horseshoe(r={}){ return global.race['hooved'] && ((r.offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) < 1 ? 10 : 0; }
             },
             effect(wiki){
                 let troops = garrisonSize();
@@ -1221,10 +1221,10 @@ const outerTruth = {
             reqs: { triton: 3 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('lander', offset, 2400000, 1.15); },
-                Aluminium(offset){ return spaceCostMultiplier('lander', offset, 185000, 1.15); },
-                Neutronium(offset){ return spaceCostMultiplier('lander', offset, 10000, 1.15); },
-                Nano_Tube(offset){ return spaceCostMultiplier('lander', offset, 158000, 1.15); },
+                Money(r={}){ return spaceCostMultiplier('lander', r.offset, 2400000, 1.15); },
+                Aluminium(r={}){ return spaceCostMultiplier('lander', r.offset, 185000, 1.15); },
+                Neutronium(r={}){ return spaceCostMultiplier('lander', r.offset, 10000, 1.15); },
+                Nano_Tube(r={}){ return spaceCostMultiplier('lander', r.offset, 158000, 1.15); },
             },
             powered(){ return 0; },
             effect(wiki){
@@ -1305,7 +1305,7 @@ const outerTruth = {
             path: ['truepath'],
             queue_complete(){ return global.tech.makemake >= 1 ? 0 : 1; },
             cost: {
-                Helium_3(offset,wiki){ return +fuel_adjust(1000000,false,wiki).toFixed(0); },
+                Helium_3(r={}){ return +fuel_adjust(1000000,false,r.wiki).toFixed(0); },
                 Elerium(){ return 1000; }
             },
             effect(){
@@ -1333,11 +1333,11 @@ const outerTruth = {
             reqs: { makemake: 1 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('orichalcum_mine', offset, 25000000, 1.25); },
-                Graphene(offset){ return spaceCostMultiplier('orichalcum_mine', offset, 900000, 1.25); },
-                Elerium(offset){ return spaceCostMultiplier('orichalcum_mine', offset, 200, 1.25); },
-                Mythril(offset){ return spaceCostMultiplier('orichalcum_mine', offset, 450000, 1.25); },
-                Quantium(offset){ return spaceCostMultiplier('orichalcum_mine', offset, 150000, 1.25); },
+                Money(r={}){ return spaceCostMultiplier('orichalcum_mine', r.offset, 25000000, 1.25); },
+                Graphene(r={}){ return spaceCostMultiplier('orichalcum_mine', r.offset, 900000, 1.25); },
+                Elerium(r={}){ return spaceCostMultiplier('orichalcum_mine', r.offset, 200, 1.25); },
+                Mythril(r={}){ return spaceCostMultiplier('orichalcum_mine', r.offset, 450000, 1.25); },
+                Quantium(r={}){ return spaceCostMultiplier('orichalcum_mine', r.offset, 150000, 1.25); },
             },
             effect(wiki){
                 let mineral = +(production('orichalcum_mine')).toFixed(3);
@@ -1373,9 +1373,9 @@ const outerTruth = {
             reqs: { makemake: 1 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('uranium_mine', offset, 5000000, 1.25); },
-                Iridium(offset){ return spaceCostMultiplier('uranium_mine', offset, 250000, 1.25); },
-                Steel(offset){ return spaceCostMultiplier('uranium_mine', offset, 620000, 1.25); }
+                Money(r={}){ return spaceCostMultiplier('uranium_mine', r.offset, 5000000, 1.25); },
+                Iridium(r={}){ return spaceCostMultiplier('uranium_mine', r.offset, 250000, 1.25); },
+                Steel(r={}){ return spaceCostMultiplier('uranium_mine', r.offset, 620000, 1.25); }
             },
             effect(wiki){
                 let mineral = +(production('uranium_mine')).toFixed(3);
@@ -1410,9 +1410,9 @@ const outerTruth = {
             reqs: { makemake: 1 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('neutronium_mine', offset, 8000000, 1.25); },
-                Adamantite(offset){ return spaceCostMultiplier('neutronium_mine', offset, 650000, 1.25); },
-                Stanene(offset){ return spaceCostMultiplier('neutronium_mine', offset, 1250000, 1.25); },
+                Money(r={}){ return spaceCostMultiplier('neutronium_mine', r.offset, 8000000, 1.25); },
+                Adamantite(r={}){ return spaceCostMultiplier('neutronium_mine', r.offset, 650000, 1.25); },
+                Stanene(r={}){ return spaceCostMultiplier('neutronium_mine', r.offset, 1250000, 1.25); },
             },
             effect(wiki){
                 let mineral = +(production('neutronium_mine')).toFixed(3);
@@ -1447,10 +1447,10 @@ const outerTruth = {
             reqs: { makemake: 2 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('elerium_mine', offset, 20000000, 1.25); },
-                Titanium(offset){ return spaceCostMultiplier('elerium_mine', offset, 250000, 1.25); },
-                Neutronium(offset){ return spaceCostMultiplier('elerium_mine', offset, 120000, 1.25); },
-                Orichalcum(offset){ return spaceCostMultiplier('elerium_mine', offset, 175000, 1.25); },
+                Money(r={}){ return spaceCostMultiplier('elerium_mine', r.offset, 20000000, 1.25); },
+                Titanium(r={}){ return spaceCostMultiplier('elerium_mine', r.offset, 250000, 1.25); },
+                Neutronium(r={}){ return spaceCostMultiplier('elerium_mine', r.offset, 120000, 1.25); },
+                Orichalcum(r={}){ return spaceCostMultiplier('elerium_mine', r.offset, 175000, 1.25); },
             },
             effect(wiki){
                 let mineral = +(production('elerium_mine')).toFixed(3);
@@ -1515,7 +1515,7 @@ const outerTruth = {
             path: ['truepath'],
             queue_complete(){ return global.tech.eris >= 1 ? 0 : 1; },
             cost: {
-                Helium_3(offset,wiki){ return +fuel_adjust(1250000,false,wiki).toFixed(0); },
+                Helium_3(r={}){ return +fuel_adjust(1250000,false,r.wiki).toFixed(0); },
                 Elerium(){ return 1250; }
             },
             effect(){
@@ -1540,10 +1540,10 @@ const outerTruth = {
             reqs: { eris: 3 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('drone_control', offset, 75000000, 1.3); },
-                Neutronium(offset){ return spaceCostMultiplier('drone_control', offset, 100000, 1.3); },
-                Stanene(offset){ return spaceCostMultiplier('drone_control', offset, 450000, 1.3); },
-                Quantium(offset){ return spaceCostMultiplier('drone_control', offset, 300000, 1.3); },
+                Money(r={}){ return spaceCostMultiplier('drone_control', r.offset, 75000000, 1.3); },
+                Neutronium(r={}){ return spaceCostMultiplier('drone_control', r.offset, 100000, 1.3); },
+                Stanene(r={}){ return spaceCostMultiplier('drone_control', r.offset, 450000, 1.3); },
+                Quantium(r={}){ return spaceCostMultiplier('drone_control', r.offset, 300000, 1.3); },
             },
             effect(){
                 let fuel = $(this)[0].p_fuel().a;
@@ -1578,11 +1578,11 @@ const outerTruth = {
             reqs: { eris: 3 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('shock_trooper', offset, 4250000, 1.225); },
-                Polymer(offset){ return spaceCostMultiplier('shock_trooper', offset, 375000, 1.225); },
-                Adamantite(offset){ return spaceCostMultiplier('shock_trooper', offset, 500000, 1.225); },
-                Graphene(offset){ return spaceCostMultiplier('shock_trooper', offset, 220000, 1.225); },
-                Elerium(offset){ return spaceCostMultiplier('shock_trooper', offset, 350, 1.225); },
+                Money(r={}){ return spaceCostMultiplier('shock_trooper', r.offset, 4250000, 1.225); },
+                Polymer(r={}){ return spaceCostMultiplier('shock_trooper', r.offset, 375000, 1.225); },
+                Adamantite(r={}){ return spaceCostMultiplier('shock_trooper', r.offset, 500000, 1.225); },
+                Graphene(r={}){ return spaceCostMultiplier('shock_trooper', r.offset, 220000, 1.225); },
+                Elerium(r={}){ return spaceCostMultiplier('shock_trooper', r.offset, 350, 1.225); },
             },
             effect(){
                 let rating = Math.round(armyRating(1,'army',0) * syndicate('spc_eris'));
@@ -1620,11 +1620,11 @@ const outerTruth = {
             reqs: { eris: 4 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('tank', offset, 100000000, 1.25); },
-                Alloy(offset){ return spaceCostMultiplier('tank', offset, 1250000, 1.25); },
-                Orichalcum(offset){ return spaceCostMultiplier('tank', offset, 600000, 1.25); },
-                Mythril(offset){ return spaceCostMultiplier('tank', offset, 500000, 1.25); },
-                Uranium(offset){ return spaceCostMultiplier('tank', offset, 25000, 1.25); },
+                Money(r={}){ return spaceCostMultiplier('tank', r.offset, 100000000, 1.25); },
+                Alloy(r={}){ return spaceCostMultiplier('tank', r.offset, 1250000, 1.25); },
+                Orichalcum(r={}){ return spaceCostMultiplier('tank', r.offset, 600000, 1.25); },
+                Mythril(r={}){ return spaceCostMultiplier('tank', r.offset, 500000, 1.25); },
+                Uranium(r={}){ return spaceCostMultiplier('tank', r.offset, 25000, 1.25); },
             },
             effect(){
                 let rating = Math.round(100 * syndicate('spc_eris'));
@@ -1714,11 +1714,11 @@ const outerTruth = {
             // Nothing goes up while the horde holds the orbit. Every Venus structure should carry this.
             condition(){ return venusBlockade() === 0; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('cloud_city', offset, 20000000, 1.28); },
-                Aluminium(offset){ return spaceCostMultiplier('cloud_city', offset, 5800000, 1.28); },
-                Nano_Tube(offset){ return spaceCostMultiplier('cloud_city', offset, 1200000, 1.28); },
-                Stanene(offset){ return spaceCostMultiplier('cloud_city', offset, 3500000, 1.28); },
-                Aerographene(offset){ return spaceCostMultiplier('cloud_city', offset, 500000, 1.28); }
+                Money(r={}){ return spaceCostMultiplier('cloud_city', r.offset, 20000000, 1.28); },
+                Aluminium(r={}){ return spaceCostMultiplier('cloud_city', r.offset, 5800000, 1.28); },
+                Nano_Tube(r={}){ return spaceCostMultiplier('cloud_city', r.offset, 1200000, 1.28); },
+                Stanene(r={}){ return spaceCostMultiplier('cloud_city', r.offset, 3500000, 1.28); },
+                Aerographene(r={}){ return spaceCostMultiplier('cloud_city', r.offset, 500000, 1.28); }
             },
             effect(){
                 return `<div>+${loc(`galaxy_alien2_support`,[$(this)[0].support(),planetName().venus])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
@@ -1761,11 +1761,11 @@ const outerTruth = {
             queue_size: 5,
             queue_complete(){ return 100 - (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0); },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0)) < 100 ? 50000000 : 0; },
-                Tungsten(offset){ return ((offset || 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0)) < 100 ? 12000000 : 0; },
-                Graphene(offset){ return ((offset || 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0)) < 100 ? 8500000 : 0; },
-                Nano_Tube(offset){ return ((offset || 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0)) < 100 ? 9000000 : 0; },
-                Unobtainium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0)) < 100 ? 100000 : 0; }
+                Money(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0)) < 100 ? 50000000 : 0; },
+                Tungsten(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0)) < 100 ? 12000000 : 0; },
+                Graphene(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0)) < 100 ? 8500000 : 0; },
+                Nano_Tube(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0)) < 100 ? 9000000 : 0; },
+                Unobtainium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0)) < 100 ? 100000 : 0; }
             },
             effect(wiki){
                 let count = (wiki?.count ?? 0) + (global.space.hasOwnProperty('descender') ? global.space.descender.count : 0);
@@ -1828,10 +1828,10 @@ const outerTruth = {
             path: ['truepath'],
             condition(){ return venusBlockade() === 0; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('nitrogen_harvester', offset, 42000000, 1.24); },
-                Coal(offset){ return spaceCostMultiplier('nitrogen_harvester', offset, 5000000, 1.24); },
-                Polymer(offset){ return spaceCostMultiplier('nitrogen_harvester', offset, 9500000, 1.24); },
-                Sheet_Metal(offset){ return spaceCostMultiplier('nitrogen_harvester', offset, 1250000, 1.24); }
+                Money(r={}){ return spaceCostMultiplier('nitrogen_harvester', r.offset, 42000000, 1.24); },
+                Coal(r={}){ return spaceCostMultiplier('nitrogen_harvester', r.offset, 5000000, 1.24); },
+                Polymer(r={}){ return spaceCostMultiplier('nitrogen_harvester', r.offset, 9500000, 1.24); },
+                Sheet_Metal(r={}){ return spaceCostMultiplier('nitrogen_harvester', r.offset, 1250000, 1.24); }
             },
             effect(){
                 let desc = `<div>${loc('produce',[+(production('nitrogen_harvester','food')).toFixed(2),global.resource.Food.name])}</div>`;
@@ -1912,10 +1912,10 @@ const outerTruth = {
             path: ['truepath'],
             condition(){ return venusBlockade() === 0; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('cloud_quarters', offset, 222000000, 1.24); },
-                Furs(offset){ return spaceCostMultiplier('cloud_quarters', offset, 12800000, 1.24); },
-                Copper(offset){ return spaceCostMultiplier('cloud_quarters', offset, 30000000, 1.24); },
-                Alloy(offset){ return spaceCostMultiplier('cloud_quarters', offset, 22000000, 1.24); },
+                Money(r={}){ return spaceCostMultiplier('cloud_quarters', r.offset, 222000000, 1.24); },
+                Furs(r={}){ return spaceCostMultiplier('cloud_quarters', r.offset, 12800000, 1.24); },
+                Copper(r={}){ return spaceCostMultiplier('cloud_quarters', r.offset, 30000000, 1.24); },
+                Alloy(r={}){ return spaceCostMultiplier('cloud_quarters', r.offset, 22000000, 1.24); },
                 Horseshoe(){ return global.race['hooved'] ? 2 : 0; }
             },
             effect(){
@@ -1957,11 +1957,11 @@ const outerTruth = {
             path: ['truepath'],
             condition(){ return venusBlockade() === 0; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('industrial_complex', offset, 268000000, 1.26); },
-                Titanium(offset){ return spaceCostMultiplier('industrial_complex', offset, 24500000, 1.26); },
-                Tungsten(offset){ return spaceCostMultiplier('industrial_complex', offset, 39000000, 1.26); },
-                Bolognium(offset){ return spaceCostMultiplier('industrial_complex', offset, 8800000, 1.26); },
-                Elerium(offset){ return spaceCostMultiplier('industrial_complex', offset, 25000, 1.26); }
+                Money(r={}){ return spaceCostMultiplier('industrial_complex', r.offset, 268000000, 1.26); },
+                Titanium(r={}){ return spaceCostMultiplier('industrial_complex', r.offset, 24500000, 1.26); },
+                Tungsten(r={}){ return spaceCostMultiplier('industrial_complex', r.offset, 39000000, 1.26); },
+                Bolognium(r={}){ return spaceCostMultiplier('industrial_complex', r.offset, 8800000, 1.26); },
+                Elerium(r={}){ return spaceCostMultiplier('industrial_complex', r.offset, 25000, 1.26); }
             },
             effect(){
                 let desc = `<div>${loc('space_industrial_complex_effect',[$(this)[0].lines()])}</div>`;
@@ -2006,10 +2006,10 @@ const outerTruth = {
             path: ['truepath'],
             condition(){ return venusBlockade() === 0; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('workshop', offset, 99000000, 1.26); },
-                Lumber(offset){ return spaceCostMultiplier('workshop', offset, 63000000, 1.26); },
-                Aerographene(offset){ return spaceCostMultiplier('workshop', offset, 3400000, 1.26); },
-                Orichalcum(offset){ return spaceCostMultiplier('workshop', offset, 9200000, 1.26); }
+                Money(r={}){ return spaceCostMultiplier('workshop', r.offset, 99000000, 1.26); },
+                Lumber(r={}){ return spaceCostMultiplier('workshop', r.offset, 63000000, 1.26); },
+                Aerographene(r={}){ return spaceCostMultiplier('workshop', r.offset, 3400000, 1.26); },
+                Orichalcum(r={}){ return spaceCostMultiplier('workshop', r.offset, 9200000, 1.26); }
             },
             effect(){
                 let desc = `<div>${loc('plus_max_resource',[jobScale($(this)[0].crafters()),loc('job_craftsman')])}</div>`;
@@ -2049,10 +2049,10 @@ const outerTruth = {
             path: ['truepath'],
             condition(){ return venusBlockade() === 0; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('university', offset, 118000000, 1.26); },
-                Knowledge(offset){ return spaceCostMultiplier('university', offset, 2500000, 1.26); },
-                Iron(offset){ return spaceCostMultiplier('university', offset, 60000000, 1.26); },
-                Plywood(offset){ return spaceCostMultiplier('university', offset, 42000000, 1.26); }
+                Money(r={}){ return spaceCostMultiplier('university', r.offset, 118000000, 1.26); },
+                Knowledge(r={}){ return spaceCostMultiplier('university', r.offset, 2500000, 1.26); },
+                Iron(r={}){ return spaceCostMultiplier('university', r.offset, 60000000, 1.26); },
+                Plywood(r={}){ return spaceCostMultiplier('university', r.offset, 42000000, 1.26); }
             },
             effect(){
                 let desc = `<div>${loc('space_university_effect',[$(this)[0].knowVal().toLocaleString(),global.resource.Knowledge.name,job_data.professor.name()])}</div>`;
@@ -2125,9 +2125,9 @@ const outerTruth = {
             reqs: { survey: 2 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('mineshaft', offset, 15000000, 1.26); },
-                Lumber(offset){ return spaceCostMultiplier('mineshaft', offset, 18000000, 1.26); },
-                Iron(offset){ return spaceCostMultiplier('mineshaft', offset, 21750000, 1.26); },
+                Money(r={}){ return spaceCostMultiplier('mineshaft', r.offset, 15000000, 1.26); },
+                Lumber(r={}){ return spaceCostMultiplier('mineshaft', r.offset, 18000000, 1.26); },
+                Iron(r={}){ return spaceCostMultiplier('mineshaft', r.offset, 21750000, 1.26); },
             },
             effect(){
                 let tungsten = +(production('mineshaft')).toFixed(3);
@@ -2163,11 +2163,11 @@ const outerTruth = {
             reqs: { survey: 3 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('survey_resort', offset, 125000000, 1.28); },
-                Food(offset){ return spaceCostMultiplier('survey_resort', offset, global.race['artifical'] ? 0 : 5500000, 1.28); },
-                Furs(offset){ return spaceCostMultiplier('survey_resort', offset, 180000000, 1.28); },
-                Water(offset){ return spaceCostMultiplier('survey_resort', offset, 125000, 1.28); },
-                Plywood(offset){ return spaceCostMultiplier('survey_resort', offset, 3500000, 1.28); }
+                Money(r={}){ return spaceCostMultiplier('survey_resort', r.offset, 125000000, 1.28); },
+                Food(r={}){ return spaceCostMultiplier('survey_resort', r.offset, global.race['artifical'] ? 0 : 5500000, 1.28); },
+                Furs(r={}){ return spaceCostMultiplier('survey_resort', r.offset, 180000000, 1.28); },
+                Water(r={}){ return spaceCostMultiplier('survey_resort', r.offset, 125000, 1.28); },
+                Plywood(r={}){ return spaceCostMultiplier('survey_resort', r.offset, 3500000, 1.28); }
             },
             morale(){ return 5; },
             effect(){
@@ -2200,9 +2200,9 @@ const outerTruth = {
             reqs: { survey: 4 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('survey_warehouse', offset, 141000000, 1.28); },
-                Cement(offset){ return spaceCostMultiplier('survey_warehouse', offset, 3300000, 1.28); },
-                Adamantite(offset){ return spaceCostMultiplier('survey_warehouse', offset, 2250000, 1.28); }
+                Money(r={}){ return spaceCostMultiplier('survey_warehouse', r.offset, 141000000, 1.28); },
+                Cement(r={}){ return spaceCostMultiplier('survey_warehouse', r.offset, 3300000, 1.28); },
+                Adamantite(r={}){ return spaceCostMultiplier('survey_warehouse', r.offset, 2250000, 1.28); }
             },
             wide: true,
             res(){
@@ -2317,11 +2317,11 @@ const outerTruth = {
             queue_size: 5,
             queue_complete(){ return 100 - (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0); },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0)) < 100 ? 42000000 : 0; },
-                Brick(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0)) < 100 ? 7500000 : 0; },
-                Orichalcum(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0)) < 100 ? 2500000 : 0; },
-                Cement(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0)) < 100 ? 12500000 : 0; },
-                Neutronium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0)) < 100 ? 2600000 : 0; }
+                Money(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0)) < 100 ? 42000000 : 0; },
+                Brick(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0)) < 100 ? 7500000 : 0; },
+                Orichalcum(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0)) < 100 ? 2500000 : 0; },
+                Cement(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0)) < 100 ? 12500000 : 0; },
+                Neutronium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0)) < 100 ? 2600000 : 0; }
             },
             effect(wiki){
                 let count = (wiki?.count ?? 0) + (global.space.hasOwnProperty('fort_knox') ? global.space.fort_knox.count : 0);
@@ -2574,14 +2574,14 @@ const tauCetiModules = {
             queue_size: 50,
             queue_complete(){ return 1000 - global.tauceti.ringworld.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 10000000 : 100000000) : 0; },
-                Neutronium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 20000 : 100000) : 0; },
-                Nano_Tube(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 70000 : 350000) : 0; },
-                Adamantite(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 200000 : 1000000) : 0; },
-                Bolognium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 17600 : 88000) : 0; },
-                Orichalcum(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 25000 : 125000) : 0; },
-                Unobtainium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 360 : 1800) : 0; },
-                Quantium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? wom_recycle(global.race['lone_survivor'] ? 10100 : 101000) : 0; },
+                Money(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 10000000 : 100000000) : 0; },
+                Neutronium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 20000 : 100000) : 0; },
+                Nano_Tube(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 70000 : 350000) : 0; },
+                Adamantite(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 200000 : 1000000) : 0; },
+                Bolognium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 17600 : 88000) : 0; },
+                Orichalcum(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 25000 : 125000) : 0; },
+                Unobtainium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 360 : 1800) : 0; },
+                Quantium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? wom_recycle(global.race['lone_survivor'] ? 10100 : 101000) : 0; },
             },
             effect(wiki){
                 let effectText = '';
@@ -2639,12 +2639,12 @@ const tauCetiModules = {
             queue_size: 5,
             queue_complete(){ return 100 - (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0); },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? 150000000 : 0; },
-                Copper(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? 80000000 : 0; },
-                Polymer(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? 6000000 : 0; },
-                Graphene(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? 1250000 : 0; },
-                Orichalcum(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? 750000 : 0; },
-                Quantium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? wom_recycle(750000) : 0; }
+                Money(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? 150000000 : 0; },
+                Copper(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? 80000000 : 0; },
+                Polymer(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? 6000000 : 0; },
+                Graphene(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? 1250000 : 0; },
+                Orichalcum(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? 750000 : 0; },
+                Quantium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0)) < 100 ? wom_recycle(750000) : 0; }
             },
             effect(wiki){
                 let count = (wiki?.count ?? 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0);
@@ -2924,11 +2924,11 @@ const tauCetiModules = {
             reqs: { tau_home: 2 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('orbital_station', offset, 80000000, 1.3, 'tauceti'); },
-                Materials(offset){ return tauEnabled() ? 0 : spaceCostMultiplier('orbital_station', offset, 500000, 1.3, 'tauceti'); },
-                Helium_3(offset){ return tauEnabled() ? spaceCostMultiplier('orbital_station', offset, int_fuel_adjust(250000), 1.3, 'tauceti') : 0; },
-                Copper(offset){ return tauEnabled() ? spaceCostMultiplier('orbital_station', offset, 1250000, 1.3, 'tauceti') : 0; },
-                Adamantite(offset){ return tauEnabled() ? spaceCostMultiplier('orbital_station', offset, 900000, 1.3, 'tauceti') : 0; },
+                Money(r={}){ return spaceCostMultiplier('orbital_station', r.offset, 80000000, 1.3, 'tauceti'); },
+                Materials(r={}){ return tauEnabled() ? 0 : spaceCostMultiplier('orbital_station', r.offset, 500000, 1.3, 'tauceti'); },
+                Helium_3(r={}){ return tauEnabled() ? spaceCostMultiplier('orbital_station', r.offset, int_fuel_adjust(250000), 1.3, 'tauceti') : 0; },
+                Copper(r={}){ return tauEnabled() ? spaceCostMultiplier('orbital_station', r.offset, 1250000, 1.3, 'tauceti') : 0; },
+                Adamantite(r={}){ return tauEnabled() ? spaceCostMultiplier('orbital_station', r.offset, 900000, 1.3, 'tauceti') : 0; },
             },
             effect(){
                 let helium = spatialReasoning(15000);
@@ -2970,11 +2970,11 @@ const tauCetiModules = {
             reqs: { tau_home: 2 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('colony', offset, 15750000, 1.225, 'tauceti'); },
-                Materials(offset){ return tauEnabled() ? 0 : spaceCostMultiplier('colony', offset, 650000, 1.225, 'tauceti'); },
-                Furs(offset){ return tauEnabled() ? spaceCostMultiplier('colony', offset, 720000, 1.225, 'tauceti') : 0; },
-                Graphene(offset){ return tauEnabled() ? spaceCostMultiplier('colony', offset, 485000, 1.225, 'tauceti') : 0; },
-                Brick(offset){ return tauEnabled() ? spaceCostMultiplier('colony', offset, wom_recycle(880000), 1.225, 'tauceti') : 0; },
+                Money(r={}){ return spaceCostMultiplier('colony', r.offset, 15750000, 1.225, 'tauceti'); },
+                Materials(r={}){ return tauEnabled() ? 0 : spaceCostMultiplier('colony', r.offset, 650000, 1.225, 'tauceti'); },
+                Furs(r={}){ return tauEnabled() ? spaceCostMultiplier('colony', r.offset, 720000, 1.225, 'tauceti') : 0; },
+                Graphene(r={}){ return tauEnabled() ? spaceCostMultiplier('colony', r.offset, 485000, 1.225, 'tauceti') : 0; },
+                Brick(r={}){ return tauEnabled() ? spaceCostMultiplier('colony', r.offset, wom_recycle(880000), 1.225, 'tauceti') : 0; },
             },
             effect(){
                 let pop = $(this)[0].citizens();
@@ -3057,10 +3057,10 @@ const tauCetiModules = {
             reqs: { housing: 1, isolation: 1 },
             condition(){ return global.race['lone_survivor'] ? false : true; },
             cost: {
-                Money(offset){return spaceCostMultiplier('tau_housing', offset, 150000, 1.15, 'tauceti'); },
-                Lumber(offset){ return global.race['kindling_kindred'] || global.race['smoldering'] ? 0 : spaceCostMultiplier('tau_housing', offset, 125000, 1.25, 'tauceti'); },
-                Stone(offset){ return global.race['kindling_kindred'] ? spaceCostMultiplier('tau_housing', offset, 125000, 1.25, 'tauceti') : 0; },
-                Chrysotile(offset){ return global.race['smoldering'] ? spaceCostMultiplier('tau_housing', offset, 50000, 1.25, 'tauceti') : 0; },
+                Money(r={}){return spaceCostMultiplier('tau_housing', r.offset, 150000, 1.15, 'tauceti'); },
+                Lumber(r={}){ return global.race['kindling_kindred'] || global.race['smoldering'] ? 0 : spaceCostMultiplier('tau_housing', r.offset, 125000, 1.25, 'tauceti'); },
+                Stone(r={}){ return global.race['kindling_kindred'] ? spaceCostMultiplier('tau_housing', r.offset, 125000, 1.25, 'tauceti') : 0; },
+                Chrysotile(r={}){ return global.race['smoldering'] ? spaceCostMultiplier('tau_housing', r.offset, 50000, 1.25, 'tauceti') : 0; },
                 Horseshoe(){ return global.race['hooved'] ? 1 : 0; }
             },
             effect(){
@@ -3097,9 +3097,9 @@ const tauCetiModules = {
             reqs: { magic: 2 },
             condition(){ return global.tech['isolation'] && global.tauceti.hasOwnProperty('pylon') ? true : false; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('pylon', offset, 50, 1.48, 'tauceti'); },
-                Stone(offset){ return spaceCostMultiplier('pylon', offset, 100, 1.42, 'tauceti'); },
-                Crystal(offset){ return spaceCostMultiplier('pylon', offset, 8, 1.42, 'tauceti') - 3; }
+                Money(r={}){ return spaceCostMultiplier('pylon', r.offset, 50, 1.48, 'tauceti'); },
+                Stone(r={}){ return spaceCostMultiplier('pylon', r.offset, 100, 1.42, 'tauceti'); },
+                Crystal(r={}){ return spaceCostMultiplier('pylon', r.offset, 8, 1.42, 'tauceti') - 3; }
             },
             effect(){
                 let max = spatialReasoning(2);
@@ -3132,10 +3132,10 @@ const tauCetiModules = {
             path: ['truepath'],
             queue_complete(){ return global.resource[global.race.species].max - global.resource[global.race.species].amount; },
             cost: {
-                Money(offset){ return global['resource'][global.race.species].amount ? spaceCostMultiplier('citizen', offset, Math.round((global.race['high_pop'] ? 100000 : 125000) / jobScale(1)), global.race['high_pop'] ? 1.01 : 1.02, 'tauceti', global.race['high_pop'] ? 1.003 : 1.005) : 0; },
-                Copper(offset){ return !global.race['artifical'] || global.race['deconstructor'] ? 0 : global['resource'][global.race.species].amount >= 5 ? spaceCostMultiplier('citizen', offset, Math.round(50 / jobScale(1)), 1.01, 'tauceti', global.race['high_pop'] ? 1.0032 : 1.005) : 0; },
-                Aluminium(offset){ return !global.race['artifical'] || global.race['deconstructor'] ? 0 : global['resource'][global.race.species].amount >= 5 ? spaceCostMultiplier('citizen', offset, Math.round(50 / jobScale(1)), 1.01, 'tauceti', global.race['high_pop'] ? 1.0032 : 1.005) : 0; },
-                Nanite(offset){ return global.race['deconstructor'] ? (global['resource'][global.race.species].amount >= 3 ? spaceCostMultiplier('citizen', offset, Math.round(500 / jobScale(1)), 1.01, 'tauceti', global.race['high_pop'] ? 1.0032 : 1.005) : 0) : 0; },
+                Money(r={}){ return global['resource'][global.race.species].amount ? spaceCostMultiplier('citizen', r.offset, Math.round((global.race['high_pop'] ? 100000 : 125000) / jobScale(1)), global.race['high_pop'] ? 1.01 : 1.02, 'tauceti', global.race['high_pop'] ? 1.003 : 1.005) : 0; },
+                Copper(r={}){ return !global.race['artifical'] || global.race['deconstructor'] ? 0 : global['resource'][global.race.species].amount >= 5 ? spaceCostMultiplier('citizen', r.offset, Math.round(50 / jobScale(1)), 1.01, 'tauceti', global.race['high_pop'] ? 1.0032 : 1.005) : 0; },
+                Aluminium(r={}){ return !global.race['artifical'] || global.race['deconstructor'] ? 0 : global['resource'][global.race.species].amount >= 5 ? spaceCostMultiplier('citizen', r.offset, Math.round(50 / jobScale(1)), 1.01, 'tauceti', global.race['high_pop'] ? 1.0032 : 1.005) : 0; },
+                Nanite(r={}){ return global.race['deconstructor'] ? (global['resource'][global.race.species].amount >= 3 ? spaceCostMultiplier('citizen', r.offset, Math.round(500 / jobScale(1)), 1.01, 'tauceti', global.race['high_pop'] ? 1.0032 : 1.005) : 0) : 0; },
             },
             effect(){
                 let warn = '';
@@ -3173,10 +3173,10 @@ const tauCetiModules = {
             reqs: { tau_home: 7 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('tau_farm', offset, 135000000, 1.25, 'tauceti'); },
-                Stone(offset){ return  spaceCostMultiplier('tau_farm', offset, 9210000, 1.25, 'tauceti'); },
-                Steel(offset){ return spaceCostMultiplier('tau_farm', offset, 6295000, 1.25, 'tauceti'); },
-                Water(offset){ return spaceCostMultiplier('tau_farm', offset, 10000, 1.25, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('tau_farm', r.offset, 135000000, 1.25, 'tauceti'); },
+                Stone(r={}){ return  spaceCostMultiplier('tau_farm', r.offset, 9210000, 1.25, 'tauceti'); },
+                Steel(r={}){ return spaceCostMultiplier('tau_farm', r.offset, 6295000, 1.25, 'tauceti'); },
+                Water(r={}){ return spaceCostMultiplier('tau_farm', r.offset, 10000, 1.25, 'tauceti'); },
             },
             effect(){
                 let desc = `<div>${loc('space_red_spaceport_effect1',[loc('tau_planet',[races[global.race.species].home]),$(this)[0].support()])}</div>`;
@@ -3222,10 +3222,10 @@ const tauCetiModules = {
             reqs: { tau_home: 2 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('mining_pit', offset, 4250000, 1.225, 'tauceti'); },
-                Materials(offset){ return tauEnabled() ? 0 : spaceCostMultiplier('mining_pit', offset, 350000, 1.225, 'tauceti'); },
-                Lumber(offset){ return tauEnabled() ? spaceCostMultiplier('mining_pit', offset, 2350000, 1.225, 'tauceti') : 0; },
-                Iron(offset){ return tauEnabled() ? spaceCostMultiplier('mining_pit', offset, 835000, 1.225, 'tauceti') : 0; },
+                Money(r={}){ return spaceCostMultiplier('mining_pit', r.offset, 4250000, 1.225, 'tauceti'); },
+                Materials(r={}){ return tauEnabled() ? 0 : spaceCostMultiplier('mining_pit', r.offset, 350000, 1.225, 'tauceti'); },
+                Lumber(r={}){ return tauEnabled() ? spaceCostMultiplier('mining_pit', r.offset, 2350000, 1.225, 'tauceti') : 0; },
+                Iron(r={}){ return tauEnabled() ? spaceCostMultiplier('mining_pit', r.offset, 835000, 1.225, 'tauceti') : 0; },
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].home])}</div>`;
@@ -3370,10 +3370,10 @@ const tauCetiModules = {
             reqs: { tau_home: 9 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('data_decoder', offset, 780000000, 1.25, 'tauceti'); },
-                Water(offset){ return spaceCostMultiplier('data_decoder', offset, 128000, 1.25, 'tauceti'); },
-                Orichalcum(offset){ return spaceCostMultiplier('data_decoder', offset, 24500000, 1.25, 'tauceti'); },
-                Positronium(offset){ return spaceCostMultiplier('data_decoder', offset, 13500, 1.25, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('data_decoder', r.offset, 780000000, 1.25, 'tauceti'); },
+                Water(r={}){ return spaceCostMultiplier('data_decoder', r.offset, 128000, 1.25, 'tauceti'); },
+                Orichalcum(r={}){ return spaceCostMultiplier('data_decoder', r.offset, 24500000, 1.25, 'tauceti'); },
+                Positronium(r={}){ return spaceCostMultiplier('data_decoder', r.offset, 13500, 1.25, 'tauceti'); },
             },
             effect(wiki){
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[loc('tau_planet',[races[global.race.species].home])])}</div>`;
@@ -3418,8 +3418,8 @@ const tauCetiModules = {
             queue_size: 10,
             queue_complete(){ return 100 - global.tauceti.jump_gate.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('jump_gate') ? global.tauceti.jump_gate.count : 0)) < 100 ? 1000000 : 0; },
-                Materials(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('jump_gate') ? global.tauceti.jump_gate.count : 0)) < 100 ? 12500 : 0; },
+                Money(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('jump_gate') ? global.tauceti.jump_gate.count : 0)) < 100 ? 1000000 : 0; },
+                Materials(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('jump_gate') ? global.tauceti.jump_gate.count : 0)) < 100 ? 12500 : 0; },
             },
             effect(wiki){
                 let count = (wiki?.count ?? 0) + (global.tauceti.hasOwnProperty('jump_gate') ? global.tauceti.jump_gate.count : 0);
@@ -3460,10 +3460,10 @@ const tauCetiModules = {
             reqs: { tau_home: 6 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('fusion_generator', offset, 188000000, 1.25, 'tauceti'); },
-                Iridium(offset){ return  spaceCostMultiplier('fusion_generator', offset, 5550000, 1.25, 'tauceti'); },
-                Stanene(offset){ return spaceCostMultiplier('fusion_generator', offset, 7003500, 1.25, 'tauceti'); },
-                Sheet_Metal(offset){ return spaceCostMultiplier('fusion_generator', offset, wom_recycle(95000), 1.25, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('fusion_generator', r.offset, 188000000, 1.25, 'tauceti'); },
+                Iridium(r={}){ return  spaceCostMultiplier('fusion_generator', r.offset, 5550000, 1.25, 'tauceti'); },
+                Stanene(r={}){ return spaceCostMultiplier('fusion_generator', r.offset, 7003500, 1.25, 'tauceti'); },
+                Sheet_Metal(r={}){ return spaceCostMultiplier('fusion_generator', r.offset, wom_recycle(95000), 1.25, 'tauceti'); },
             },
             effect(){
                 let fuel = +int_fuel_adjust($(this)[0].p_fuel().a).toFixed(1);
@@ -3501,10 +3501,10 @@ const tauCetiModules = {
             reqs: { tau_home: 5 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('repository', offset, 10280000, 1.28, 'tauceti'); },
-                Iron(offset){ return spaceCostMultiplier('repository', offset, 1800000, 1.28, 'tauceti'); },
-                Cement(offset){ return spaceCostMultiplier('repository', offset, 1500000, 1.28, 'tauceti'); },
-                Neutronium(offset){ return spaceCostMultiplier('repository', offset, 215000, 1.28, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('repository', r.offset, 10280000, 1.28, 'tauceti'); },
+                Iron(r={}){ return spaceCostMultiplier('repository', r.offset, 1800000, 1.28, 'tauceti'); },
+                Cement(r={}){ return spaceCostMultiplier('repository', r.offset, 1500000, 1.28, 'tauceti'); },
+                Neutronium(r={}){ return spaceCostMultiplier('repository', r.offset, 215000, 1.28, 'tauceti'); },
             },
             wide: true,
             res(){
@@ -3634,11 +3634,11 @@ const tauCetiModules = {
             reqs: { tau_home: 8 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('tau_factory', offset, 269000000, 1.25, 'tauceti'); },
-                Titanium(offset){ return spaceCostMultiplier('tau_factory', offset, 3000000, 1.25, 'tauceti'); },
-                Elerium(offset){ return spaceCostMultiplier('tau_factory', offset, 850, 1.25, 'tauceti'); },
-                Bolognium(offset){ return spaceCostMultiplier('tau_factory', offset, 250000, 1.25, 'tauceti'); },
-                Quantium(offset){ return spaceCostMultiplier('tau_factory', offset, wom_recycle(425000), 1.25, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('tau_factory', r.offset, 269000000, 1.25, 'tauceti'); },
+                Titanium(r={}){ return spaceCostMultiplier('tau_factory', r.offset, 3000000, 1.25, 'tauceti'); },
+                Elerium(r={}){ return spaceCostMultiplier('tau_factory', r.offset, 850, 1.25, 'tauceti'); },
+                Bolognium(r={}){ return spaceCostMultiplier('tau_factory', r.offset, 250000, 1.25, 'tauceti'); },
+                Quantium(r={}){ return spaceCostMultiplier('tau_factory', r.offset, wom_recycle(425000), 1.25, 'tauceti'); },
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].home])}</div>`;
@@ -3691,11 +3691,11 @@ const tauCetiModules = {
             reqs: { disease: 1 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('infectious_disease_lab', offset, 1000000000, 1.25, 'tauceti'); },
-                Alloy(offset){ return spaceCostMultiplier('infectious_disease_lab', offset, 32500000, 1.25, 'tauceti'); },
-                Polymer(offset){ return spaceCostMultiplier('infectious_disease_lab', offset, 50000000, 1.25, 'tauceti'); },
-                Bolognium(offset){ return spaceCostMultiplier('infectious_disease_lab', offset, 2500000, 1.25, 'tauceti'); },
-                Unobtainium(offset){ return spaceCostMultiplier('infectious_disease_lab', offset, 64000, 1.25, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('infectious_disease_lab', r.offset, 1000000000, 1.25, 'tauceti'); },
+                Alloy(r={}){ return spaceCostMultiplier('infectious_disease_lab', r.offset, 32500000, 1.25, 'tauceti'); },
+                Polymer(r={}){ return spaceCostMultiplier('infectious_disease_lab', r.offset, 50000000, 1.25, 'tauceti'); },
+                Bolognium(r={}){ return spaceCostMultiplier('infectious_disease_lab', r.offset, 2500000, 1.25, 'tauceti'); },
+                Unobtainium(r={}){ return spaceCostMultiplier('infectious_disease_lab', r.offset, 64000, 1.25, 'tauceti'); },
             },
             effect(){
                 let sci = 39616;
@@ -3762,10 +3762,10 @@ const tauCetiModules = {
             category: 'commercial',
             reqs: { gambling: 1, isolation: 1 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('tauceti_casino', offset, 1450000, 1.35, 'tauceti'); },
-                Furs(offset){ return spaceCostMultiplier('tauceti_casino', offset, 95000, 1.35, 'tauceti'); },
-                Cement(offset){ return spaceCostMultiplier('tauceti_casino', offset, 120000, 1.35, 'tauceti'); },
-                Plywood(offset){ return spaceCostMultiplier('tauceti_casino', offset, wom_recycle(55000), 1.35, 'tauceti'); }
+                Money(r={}){ return spaceCostMultiplier('tauceti_casino', r.offset, 1450000, 1.35, 'tauceti'); },
+                Furs(r={}){ return spaceCostMultiplier('tauceti_casino', r.offset, 95000, 1.35, 'tauceti'); },
+                Cement(r={}){ return spaceCostMultiplier('tauceti_casino', r.offset, 120000, 1.35, 'tauceti'); },
+                Plywood(r={}){ return spaceCostMultiplier('tauceti_casino', r.offset, wom_recycle(55000), 1.35, 'tauceti'); }
             },
             effect(){
                 let pop = $(this)[0].citizens();
@@ -3813,10 +3813,10 @@ const tauCetiModules = {
             reqs: { tau_culture: 1 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('tau_cultural_center', offset, 91450000, 1.35, 'tauceti'); },
-                Copper(offset){ return spaceCostMultiplier('tau_cultural_center', offset, 5850000, 1.35, 'tauceti'); },
-                Coal(offset){ return spaceCostMultiplier('tau_cultural_center', offset, 465000, 1.35, 'tauceti'); },
-                Polymer(offset){ return spaceCostMultiplier('tau_cultural_center', offset, 3792000, 1.35, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('tau_cultural_center', r.offset, 91450000, 1.35, 'tauceti'); },
+                Copper(r={}){ return spaceCostMultiplier('tau_cultural_center', r.offset, 5850000, 1.35, 'tauceti'); },
+                Coal(r={}){ return spaceCostMultiplier('tau_cultural_center', r.offset, 465000, 1.35, 'tauceti'); },
+                Polymer(r={}){ return spaceCostMultiplier('tau_cultural_center', r.offset, 3792000, 1.35, 'tauceti'); },
             },
             effect(){
                 let womling = 8;
@@ -3867,10 +3867,10 @@ const tauCetiModules = {
             reqs: { resettle: 2 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('marine_barracks', offset, 42000000, 1.25, 'tauceti'); },
-                Stone(offset){ return spaceCostMultiplier('marine_barracks', offset, 2600000, 1.25, 'tauceti'); },
-                Furs(offset){ return spaceCostMultiplier('marine_barracks', offset, 2200000, 1.25, 'tauceti'); },
-                Water(offset){ return spaceCostMultiplier('marine_barracks', offset, 15000, 1.25, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('marine_barracks', r.offset, 42000000, 1.25, 'tauceti'); },
+                Stone(r={}){ return spaceCostMultiplier('marine_barracks', r.offset, 2600000, 1.25, 'tauceti'); },
+                Furs(r={}){ return spaceCostMultiplier('marine_barracks', r.offset, 2200000, 1.25, 'tauceti'); },
+                Water(r={}){ return spaceCostMultiplier('marine_barracks', r.offset, 15000, 1.25, 'tauceti'); },
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[loc('tau_planet',[races[global.race.species].home])])}</div>`;
@@ -3949,10 +3949,10 @@ const tauCetiModules = {
             reqs: { tau_red: 1, tauceti: 4 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('orbital_platform', offset, 50000000, 1.3, 'tauceti'); },
-                Oil(offset){ return tauEnabled() ? spaceCostMultiplier('orbital_platform', offset, int_fuel_adjust(wom_repulse(275000)), 1.3, 'tauceti') : 0; },
-                Aluminium(offset){ return spaceCostMultiplier('orbital_platform', offset, 1780000, 1.3, 'tauceti'); },
-                Bolognium(offset){ return spaceCostMultiplier('orbital_platform', offset, 450000, 1.3, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('orbital_platform', r.offset, 50000000, 1.3, 'tauceti'); },
+                Oil(r={}){ return tauEnabled() ? spaceCostMultiplier('orbital_platform', r.offset, int_fuel_adjust(wom_repulse(275000)), 1.3, 'tauceti') : 0; },
+                Aluminium(r={}){ return spaceCostMultiplier('orbital_platform', r.offset, 1780000, 1.3, 'tauceti'); },
+                Bolognium(r={}){ return spaceCostMultiplier('orbital_platform', r.offset, 450000, 1.3, 'tauceti'); },
             },
             effect(){
                 let oil = spatialReasoning(17500);
@@ -4105,11 +4105,11 @@ const tauCetiModules = {
             reqs: { tau_red: 5 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('overseer', offset, 6000000, 1.28, 'tauceti'); },
-                Cement(offset){ return spaceCostMultiplier('overseer', offset, 2450000, 1.28, 'tauceti'); },
-                Alloy(offset){ return global.race['womling_friend'] ? spaceCostMultiplier('overseer', offset, 1850000, 1.28, 'tauceti') : 0; },
-                Neutronium(offset){ return global.race['womling_lord'] ? spaceCostMultiplier('overseer', offset, 165000, 1.28, 'tauceti') : 0; },
-                Titanium(offset){ return global.race['womling_god'] ? spaceCostMultiplier('overseer', offset, 2250000, 1.28, 'tauceti') : 0; },
+                Money(r={}){ return spaceCostMultiplier('overseer', r.offset, 6000000, 1.28, 'tauceti'); },
+                Cement(r={}){ return spaceCostMultiplier('overseer', r.offset, 2450000, 1.28, 'tauceti'); },
+                Alloy(r={}){ return global.race['womling_friend'] ? spaceCostMultiplier('overseer', r.offset, 1850000, 1.28, 'tauceti') : 0; },
+                Neutronium(r={}){ return global.race['womling_lord'] ? spaceCostMultiplier('overseer', r.offset, 165000, 1.28, 'tauceti') : 0; },
+                Titanium(r={}){ return global.race['womling_god'] ? spaceCostMultiplier('overseer', r.offset, 2250000, 1.28, 'tauceti') : 0; },
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), planetName().red])}</div>`;
@@ -4158,10 +4158,10 @@ const tauCetiModules = {
             reqs: { tau_red: 5 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('womling_village', offset, 10000000, 1.28, 'tauceti'); },
-                Stone(offset){ return spaceCostMultiplier('womling_village', offset, 2250000, 1.28, 'tauceti'); },
-                Plywood(offset){ return spaceCostMultiplier('womling_village', offset, wom_recycle(1250000), 1.28, 'tauceti'); },
-                Wrought_Iron(offset){ return spaceCostMultiplier('womling_village', offset, wom_recycle(400000), 1.28, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('womling_village', r.offset, 10000000, 1.28, 'tauceti'); },
+                Stone(r={}){ return spaceCostMultiplier('womling_village', r.offset, 2250000, 1.28, 'tauceti'); },
+                Plywood(r={}){ return spaceCostMultiplier('womling_village', r.offset, wom_recycle(1250000), 1.28, 'tauceti'); },
+                Wrought_Iron(r={}){ return spaceCostMultiplier('womling_village', r.offset, wom_recycle(400000), 1.28, 'tauceti'); },
             },
             effect(){
                 let pop = womlingVillagePop();
@@ -4198,9 +4198,9 @@ const tauCetiModules = {
             reqs: { tau_red: 5 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('womling_farm', offset, 24000000, 1.28, 'tauceti'); },
-                Iron(offset){ return spaceCostMultiplier('womling_farm', offset, 9500000, 1.28, 'tauceti'); },
-                Water(offset){ return spaceCostMultiplier('womling_farm', offset, 5000, 1.28, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('womling_farm', r.offset, 24000000, 1.28, 'tauceti'); },
+                Iron(r={}){ return spaceCostMultiplier('womling_farm', r.offset, 9500000, 1.28, 'tauceti'); },
+                Water(r={}){ return spaceCostMultiplier('womling_farm', r.offset, 5000, 1.28, 'tauceti'); },
             },
             effect(){
                 let food = womlingFarmFood();
@@ -4240,9 +4240,9 @@ const tauCetiModules = {
             reqs: { tau_red: 5 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('womling_mine', offset, 12500000, 1.28, 'tauceti'); },
-                Lumber(offset){ return spaceCostMultiplier('womling_mine', offset, 12800000, 1.28, 'tauceti'); },
-                Steel(offset){ return spaceCostMultiplier('womling_mine', offset, 4500000, 1.28, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('womling_mine', r.offset, 12500000, 1.28, 'tauceti'); },
+                Lumber(r={}){ return spaceCostMultiplier('womling_mine', r.offset, 12800000, 1.28, 'tauceti'); },
+                Steel(r={}){ return spaceCostMultiplier('womling_mine', r.offset, 4500000, 1.28, 'tauceti'); },
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), planetName().red])}</div>`;
@@ -4302,14 +4302,14 @@ const tauCetiModules = {
             reqs: { tau_red: 6 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('womling_fun', offset, 3800000, 1.28, 'tauceti'); },
-                Food(offset){ return global.race['womling_friend'] ? spaceCostMultiplier('womling_fun', offset, 175000, 1.28, 'tauceti') : 0; },
-                Lumber(offset){ return spaceCostMultiplier('womling_fun', offset, 500000, 1.28, 'tauceti'); },
-                Stone(offset){ return spaceCostMultiplier('womling_fun', offset, 500000, 1.28, 'tauceti'); },
-                Furs(offset){ return global.race['womling_lord'] || global.race['womling_god'] ? spaceCostMultiplier('womling_fun', offset, 835000, 1.28, 'tauceti') : 0; },
-                Copper(offset){ return global.race['womling_lord'] ? spaceCostMultiplier('womling_fun', offset, 1125000, 1.28, 'tauceti') : 0; },
-                Alloy(offset){ return global.race['womling_god'] ? spaceCostMultiplier('womling_fun', offset, 656000, 1.28, 'tauceti') : 0; },
-                Water(offset){ return global.race['womling_friend'] ? spaceCostMultiplier('womling_fun', offset, 3500, 1.28, 'tauceti') : 0; },
+                Money(r={}){ return spaceCostMultiplier('womling_fun', r.offset, 3800000, 1.28, 'tauceti'); },
+                Food(r={}){ return global.race['womling_friend'] ? spaceCostMultiplier('womling_fun', r.offset, 175000, 1.28, 'tauceti') : 0; },
+                Lumber(r={}){ return spaceCostMultiplier('womling_fun', r.offset, 500000, 1.28, 'tauceti'); },
+                Stone(r={}){ return spaceCostMultiplier('womling_fun', r.offset, 500000, 1.28, 'tauceti'); },
+                Furs(r={}){ return global.race['womling_lord'] || global.race['womling_god'] ? spaceCostMultiplier('womling_fun', r.offset, 835000, 1.28, 'tauceti') : 0; },
+                Copper(r={}){ return global.race['womling_lord'] ? spaceCostMultiplier('womling_fun', r.offset, 1125000, 1.28, 'tauceti') : 0; },
+                Alloy(r={}){ return global.race['womling_god'] ? spaceCostMultiplier('womling_fun', r.offset, 656000, 1.28, 'tauceti') : 0; },
+                Water(r={}){ return global.race['womling_friend'] ? spaceCostMultiplier('womling_fun', r.offset, 3500, 1.28, 'tauceti') : 0; },
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), planetName().red])}</div>`;
@@ -4358,11 +4358,11 @@ const tauCetiModules = {
             reqs: { tau_red: 7 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('womling_lab', offset, 65000000, 1.28, 'tauceti'); },
-                Elerium(offset){ return spaceCostMultiplier('womling_lab', offset, 1200, 1.28, 'tauceti'); },
-                Orichalcum(offset){ return spaceCostMultiplier('womling_lab', offset, 2500000, 1.28, 'tauceti'); },
-                Unobtainium(offset){ return spaceCostMultiplier('womling_lab', offset, 10000, 1.28, 'tauceti'); },
-                Quantium(offset){ return spaceCostMultiplier('womling_lab', offset, wom_recycle(95000), 1.28, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('womling_lab', r.offset, 65000000, 1.28, 'tauceti'); },
+                Elerium(r={}){ return spaceCostMultiplier('womling_lab', r.offset, 1200, 1.28, 'tauceti'); },
+                Orichalcum(r={}){ return spaceCostMultiplier('womling_lab', r.offset, 2500000, 1.28, 'tauceti'); },
+                Unobtainium(r={}){ return spaceCostMultiplier('womling_lab', r.offset, 10000, 1.28, 'tauceti'); },
+                Quantium(r={}){ return spaceCostMultiplier('womling_lab', r.offset, wom_recycle(95000), 1.28, 'tauceti'); },
             },
             effect(){
                 let overseer = global.tauceti.hasOwnProperty('overseer') ? global.tauceti.overseer.prod : 100;
@@ -4406,10 +4406,10 @@ const tauCetiModules = {
             reqs: { womling_energy: 1 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('antimatter_reactor', offset, 1000000000, 1.3, 'tauceti'); },
-                Neutronium(offset){ return  spaceCostMultiplier('antimatter_reactor', offset, 3750000, 1.3, 'tauceti'); },
-                Orichalcum(offset){ return spaceCostMultiplier('antimatter_reactor', offset, 75000000, 1.3, 'tauceti'); },
-                Quantium(offset){ return spaceCostMultiplier('antimatter_reactor', offset, wom_recycle(420000), 1.3, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('antimatter_reactor', r.offset, 1000000000, 1.3, 'tauceti'); },
+                Neutronium(r={}){ return  spaceCostMultiplier('antimatter_reactor', r.offset, 3750000, 1.3, 'tauceti'); },
+                Orichalcum(r={}){ return spaceCostMultiplier('antimatter_reactor', r.offset, 75000000, 1.3, 'tauceti'); },
+                Quantium(r={}){ return spaceCostMultiplier('antimatter_reactor', r.offset, wom_recycle(420000), 1.3, 'tauceti'); },
             },
             effect(){
                 let fuel = +int_fuel_adjust($(this)[0].p_fuel().a).toFixed(2);
@@ -4442,10 +4442,10 @@ const tauCetiModules = {
             reqs: { womling_military: 1 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('womling_rangers', offset, 38000000, 1.28, 'tauceti'); },
-                Food(offset){ return spaceCostMultiplier('womling_rangers', offset, global.race['artifical'] ? 20000 : 2000000, 1.28, 'tauceti'); },
-                Cement(offset){ return spaceCostMultiplier('womling_rangers', offset, 1800000, 1.28, 'tauceti'); },
-                Unobtainium(offset){ return spaceCostMultiplier('womling_rangers', offset, 675000, 1.28, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('womling_rangers', r.offset, 38000000, 1.28, 'tauceti'); },
+                Food(r={}){ return spaceCostMultiplier('womling_rangers', r.offset, global.race['artifical'] ? 20000 : 2000000, 1.28, 'tauceti'); },
+                Cement(r={}){ return spaceCostMultiplier('womling_rangers', r.offset, 1800000, 1.28, 'tauceti'); },
+                Unobtainium(r={}){ return spaceCostMultiplier('womling_rangers', r.offset, 675000, 1.28, 'tauceti'); },
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[planetName().red])}</div>`;
@@ -4482,11 +4482,11 @@ const tauCetiModules = {
             reqs: { womling_technicians: 2 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('womling_craftworks', offset, 78000000, 1.28, 'tauceti'); },
-                Stone(offset){ return spaceCostMultiplier('womling_craftworks', offset, 6400000, 1.28, 'tauceti'); },
-                Adamantite(offset){ return spaceCostMultiplier('womling_craftworks', offset, 1850000, 1.28, 'tauceti'); },
-                Orichalcum(offset){ return spaceCostMultiplier('womling_craftworks', offset, 3100000, 1.28, 'tauceti'); },
-                Quantium(offset){ return spaceCostMultiplier('womling_craftworks', offset, wom_recycle(120000), 1.28, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('womling_craftworks', r.offset, 78000000, 1.28, 'tauceti'); },
+                Stone(r={}){ return spaceCostMultiplier('womling_craftworks', r.offset, 6400000, 1.28, 'tauceti'); },
+                Adamantite(r={}){ return spaceCostMultiplier('womling_craftworks', r.offset, 1850000, 1.28, 'tauceti'); },
+                Orichalcum(r={}){ return spaceCostMultiplier('womling_craftworks', r.offset, 3100000, 1.28, 'tauceti'); },
+                Quantium(r={}){ return spaceCostMultiplier('womling_craftworks', r.offset, wom_recycle(120000), 1.28, 'tauceti'); },
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), planetName().red])}</div>`;
@@ -4640,10 +4640,10 @@ const tauCetiModules = {
             reqs: { tau_gas: 2 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('refueling_station', offset, 68000000, 1.28, 'tauceti'); },
-                Graphene(offset){ return spaceCostMultiplier('refueling_station', offset, 2500000, 1.28, 'tauceti'); },
-                Unobtainium(offset){ return spaceCostMultiplier('refueling_station', offset, 5500, 1.28, 'tauceti'); },
-                Mythril(offset){ return spaceCostMultiplier('refueling_station', offset, wom_recycle(60000), 1.28, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('refueling_station', r.offset, 68000000, 1.28, 'tauceti'); },
+                Graphene(r={}){ return spaceCostMultiplier('refueling_station', r.offset, 2500000, 1.28, 'tauceti'); },
+                Unobtainium(r={}){ return spaceCostMultiplier('refueling_station', r.offset, 5500, 1.28, 'tauceti'); },
+                Mythril(r={}){ return spaceCostMultiplier('refueling_station', r.offset, wom_recycle(60000), 1.28, 'tauceti'); },
             },
             powered(){ return powerCostMod(global.tech['isolation'] ? 2 : 5); },
             effect(){
@@ -4706,10 +4706,10 @@ const tauCetiModules = {
             reqs: { tau_gas: 4 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('ore_refinery', offset, 52000000, 1.28, 'tauceti'); },
-                Iridium(offset){ return spaceCostMultiplier('ore_refinery', offset, 1600000, 1.28, 'tauceti'); },
-                Unobtainium(offset){ return spaceCostMultiplier('ore_refinery', offset, 800, 1.28, 'tauceti'); },
-                Sheet_Metal(offset){ return spaceCostMultiplier('ore_refinery', offset, wom_recycle(118000), 1.28, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('ore_refinery', r.offset, 52000000, 1.28, 'tauceti'); },
+                Iridium(r={}){ return spaceCostMultiplier('ore_refinery', r.offset, 1600000, 1.28, 'tauceti'); },
+                Unobtainium(r={}){ return spaceCostMultiplier('ore_refinery', r.offset, 800, 1.28, 'tauceti'); },
+                Sheet_Metal(r={}){ return spaceCostMultiplier('ore_refinery', r.offset, wom_recycle(118000), 1.28, 'tauceti'); },
             },
             powered(){ return powerCostMod(global.tech['isolation'] ? 2 : 8); },
             smelting(){ return global.tech['isolation'] ? 12 : 4; },
@@ -4760,10 +4760,10 @@ const tauCetiModules = {
             reqs: { tau_whale: 1 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('whaling_station', offset, 72000000, 1.28, 'tauceti'); },
-                Steel(offset){ return spaceCostMultiplier('whaling_station', offset, 1800000, 1.28, 'tauceti'); },
-                Polymer(offset){ return spaceCostMultiplier('whaling_station', offset, 955000, 1.28, 'tauceti'); },
-                Orichalcum(offset){ return spaceCostMultiplier('whaling_station', offset, 268000, 1.28, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('whaling_station', r.offset, 72000000, 1.28, 'tauceti'); },
+                Steel(r={}){ return spaceCostMultiplier('whaling_station', r.offset, 1800000, 1.28, 'tauceti'); },
+                Polymer(r={}){ return spaceCostMultiplier('whaling_station', r.offset, 955000, 1.28, 'tauceti'); },
+                Orichalcum(r={}){ return spaceCostMultiplier('whaling_station', r.offset, 268000, 1.28, 'tauceti'); },
             },
             powered(){ return powerCostMod(global.tech['isolation'] ? 2 : 6); },
             effect(){
@@ -4807,10 +4807,10 @@ const tauCetiModules = {
             reqs: { womling_technicians: 1 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('womling_station', offset, 133400000, 1.26, 'tauceti'); },
-                Furs(offset){ return spaceCostMultiplier('womling_station', offset, 3805000, 1.26, 'tauceti'); },
-                Aluminium(offset){ return spaceCostMultiplier('womling_station', offset, 8500000, 1.26, 'tauceti'); },
-                Nano_Tube(offset){ return spaceCostMultiplier('womling_station', offset, 909000, 1.26, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('womling_station', r.offset, 133400000, 1.26, 'tauceti'); },
+                Furs(r={}){ return spaceCostMultiplier('womling_station', r.offset, 3805000, 1.26, 'tauceti'); },
+                Aluminium(r={}){ return spaceCostMultiplier('womling_station', r.offset, 8500000, 1.26, 'tauceti'); },
+                Nano_Tube(r={}){ return spaceCostMultiplier('womling_station', r.offset, 909000, 1.26, 'tauceti'); },
             },
             powered(){ return powerCostMod(global.tech['isolation'] ? 3 : 6); },
             effect(){
@@ -4867,7 +4867,7 @@ const tauCetiModules = {
             path: ['truepath'],
             queue_complete(){ return global.tech.tau_roid >= 1 ? 0 : 1; },
             cost: {
-                Helium_3(offset,wiki){ return +int_fuel_adjust(1250000,false,wiki).toFixed(0); },
+                Helium_3(r={}){ return +int_fuel_adjust(1250000,false,r.wiki).toFixed(0); },
             },
             effect(){
                 return loc('tau_roid_mission_effect',[loc('tau_roid_title')]);
@@ -4888,11 +4888,11 @@ const tauCetiModules = {
             reqs: { tau_roid: 3 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('patrol_ship', offset, 45000000, 1.25, 'tauceti'); },
-                Adamantite(offset){ return spaceCostMultiplier('patrol_ship', offset, 1800000, 1.25, 'tauceti'); },
-                Elerium(offset){ return spaceCostMultiplier('patrol_ship', offset, 520, 1.25, 'tauceti'); },
-                Stanene(offset){ return spaceCostMultiplier('patrol_ship', offset, 2675000, 1.25, 'tauceti'); },
-                Bolognium(offset){ return spaceCostMultiplier('patrol_ship', offset, 1150000, 1.25, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('patrol_ship', r.offset, 45000000, 1.25, 'tauceti'); },
+                Adamantite(r={}){ return spaceCostMultiplier('patrol_ship', r.offset, 1800000, 1.25, 'tauceti'); },
+                Elerium(r={}){ return spaceCostMultiplier('patrol_ship', r.offset, 520, 1.25, 'tauceti'); },
+                Stanene(r={}){ return spaceCostMultiplier('patrol_ship', r.offset, 2675000, 1.25, 'tauceti'); },
+                Bolognium(r={}){ return spaceCostMultiplier('patrol_ship', r.offset, 1150000, 1.25, 'tauceti'); },
             },
             effect(){
                 let fuel = +int_fuel_adjust($(this)[0].support_fuel().a).toFixed(1);
@@ -4928,10 +4928,10 @@ const tauCetiModules = {
             reqs: { tau_roid: 4 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('mining_ship', offset, 28000000, 1.28, 'tauceti'); },
-                Uranium(offset){ return spaceCostMultiplier('mining_ship', offset, 12500, 1.28, 'tauceti'); },
-                Titanium(offset){ return spaceCostMultiplier('mining_ship', offset, 2200000, 1.28, 'tauceti'); },
-                Alloy(offset){ return spaceCostMultiplier('mining_ship', offset, 1750000, 1.28, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('mining_ship', r.offset, 28000000, 1.28, 'tauceti'); },
+                Uranium(r={}){ return spaceCostMultiplier('mining_ship', r.offset, 12500, 1.28, 'tauceti'); },
+                Titanium(r={}){ return spaceCostMultiplier('mining_ship', r.offset, 2200000, 1.28, 'tauceti'); },
+                Alloy(r={}){ return spaceCostMultiplier('mining_ship', r.offset, 1750000, 1.28, 'tauceti'); },
             },
             effect(){
                 let fuel = +int_fuel_adjust($(this)[0].support_fuel().a).toFixed(1);
@@ -4971,10 +4971,10 @@ const tauCetiModules = {
             reqs: { tau_whale: 2 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('whaling_ship', offset, 35000000, 1.28, 'tauceti'); },
-                Aluminium(offset){ return spaceCostMultiplier('whaling_ship', offset, 3400000, 1.28, 'tauceti'); },
-                Neutronium(offset){ return spaceCostMultiplier('whaling_ship', offset, 168000, 1.28, 'tauceti'); },
-                Nano_Tube(offset){ return spaceCostMultiplier('whaling_ship', offset, 800000, 1.28, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('whaling_ship', r.offset, 35000000, 1.28, 'tauceti'); },
+                Aluminium(r={}){ return spaceCostMultiplier('whaling_ship', r.offset, 3400000, 1.28, 'tauceti'); },
+                Neutronium(r={}){ return spaceCostMultiplier('whaling_ship', r.offset, 168000, 1.28, 'tauceti'); },
+                Nano_Tube(r={}){ return spaceCostMultiplier('whaling_ship', r.offset, 800000, 1.28, 'tauceti'); },
             },
             effect(){
                 let fuel = +int_fuel_adjust($(this)[0].support_fuel().a).toFixed(1);
@@ -5012,11 +5012,11 @@ const tauCetiModules = {
             reqs: { tau_roid: 6 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('synthesizer', offset, 90000000, 1.26, 'tauceti'); },
-                Adamantite(offset){ return spaceCostMultiplier('synthesizer', offset, 2500000, 1.26, 'tauceti'); },
-                Graphene(offset){ return spaceCostMultiplier('synthesizer', offset, 2000000, 1.26, 'tauceti'); },
-                Elerium(offset){ return spaceCostMultiplier('synthesizer', offset, 1250, 1.26, 'tauceti'); },
-                Unobtainium(offset){ return spaceCostMultiplier('synthesizer', offset, 72000, 1.26, 'tauceti'); },
+                Money(r={}){ return spaceCostMultiplier('synthesizer', r.offset, 90000000, 1.26, 'tauceti'); },
+                Adamantite(r={}){ return spaceCostMultiplier('synthesizer', r.offset, 2500000, 1.26, 'tauceti'); },
+                Graphene(r={}){ return spaceCostMultiplier('synthesizer', r.offset, 2000000, 1.26, 'tauceti'); },
+                Elerium(r={}){ return spaceCostMultiplier('synthesizer', r.offset, 1250, 1.26, 'tauceti'); },
+                Unobtainium(r={}){ return spaceCostMultiplier('synthesizer', r.offset, 72000, 1.26, 'tauceti'); },
             },
             support(){ return -1; },
             powered(){ return powerCostMod(10); },
@@ -5112,11 +5112,11 @@ const tauCetiModules = {
             queue_size: 5,
             queue_complete(){ return 100 - global.tauceti.alien_station.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? (global.race['lone_survivor'] ? 12000000 : 50000000) : 0; },
-                Aluminium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? (global.race['lone_survivor'] ? 256000 : 2560000) : 0; },
-                Polymer(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? (global.race['lone_survivor'] ? 198900 : 989000) : 0; },
-                Mythril(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? wom_recycle(125000) : 0; },
-                Cipher(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? (global.race['lone_survivor'] ? 256 : 2001) : 0; },
+                Money(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? (global.race['lone_survivor'] ? 12000000 : 50000000) : 0; },
+                Aluminium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? (global.race['lone_survivor'] ? 256000 : 2560000) : 0; },
+                Polymer(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? (global.race['lone_survivor'] ? 198900 : 989000) : 0; },
+                Mythril(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? wom_recycle(125000) : 0; },
+                Cipher(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? (global.race['lone_survivor'] ? 256 : 2001) : 0; },
             },
             effect(wiki){
                 let effectText = '';
@@ -5214,14 +5214,14 @@ const tauCetiModules = {
             queue_size: 50,
             queue_complete(){ return 1000 - global.tauceti.matrioshka_brain.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 20000000 : 0; },
-                Neutronium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 45000 : 0; },
-                Nano_Tube(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 160000 : 0; },
-                Adamantite(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 666000 : 0; },
-                Stanene(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 61600 : 0; },
-                Bolognium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 44000 : 0; },
-                Unobtainium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 1200 : 0; },
-                Mythril(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? wom_recycle(64000) : 0; },
+                Money(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 20000000 : 0; },
+                Neutronium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 45000 : 0; },
+                Nano_Tube(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 160000 : 0; },
+                Adamantite(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 666000 : 0; },
+                Stanene(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 61600 : 0; },
+                Bolognium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 44000 : 0; },
+                Unobtainium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 1200 : 0; },
+                Mythril(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? wom_recycle(64000) : 0; },
             },
             effect(wiki){
                 let effectText = '';
@@ -5277,12 +5277,12 @@ const tauCetiModules = {
             queue_size: 1,
             queue_complete(){ return 10 - global.tauceti.ignition_device.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 250000000 : 0; },
-                Uranium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 50000 : 0; },
-                Elerium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 25000 : 0; },
-                Graphene(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 22500000 : 0; },
-                Orichalcum(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 15000000 : 0; },
-                Quantium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? wom_recycle(8000000) : 0; },
+                Money(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 250000000 : 0; },
+                Uranium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 50000 : 0; },
+                Elerium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 25000 : 0; },
+                Graphene(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 22500000 : 0; },
+                Orichalcum(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 15000000 : 0; },
+                Quantium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? wom_recycle(8000000) : 0; },
             },
             effect(wiki){
                 let effectText = '';
@@ -5349,12 +5349,12 @@ const tauCetiModules = {
             reqs: { resettle: 1 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('adv_shipyard') ? global.tauceti.adv_shipyard.count : 0)) < 1 ? 1000000000 : 0; },
-                Aluminium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('adv_shipyard') ? global.tauceti.adv_shipyard.count : 0)) < 1 ? 135000000 : 0; },
-                Titanium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('adv_shipyard') ? global.tauceti.adv_shipyard.count : 0)) < 1 ? 85000000 : 0; },
-                Iridium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('adv_shipyard') ? global.tauceti.adv_shipyard.count : 0)) < 1 ? 125000000 : 0; },
-                Neutronium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('adv_shipyard') ? global.tauceti.adv_shipyard.count : 0)) < 1 ? 2500000 : 0; },
-                Unobtainium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('adv_shipyard') ? global.tauceti.adv_shipyard.count : 0)) < 1 ? 5000000 : 0; },
+                Money(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('adv_shipyard') ? global.tauceti.adv_shipyard.count : 0)) < 1 ? 1000000000 : 0; },
+                Aluminium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('adv_shipyard') ? global.tauceti.adv_shipyard.count : 0)) < 1 ? 135000000 : 0; },
+                Titanium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('adv_shipyard') ? global.tauceti.adv_shipyard.count : 0)) < 1 ? 85000000 : 0; },
+                Iridium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('adv_shipyard') ? global.tauceti.adv_shipyard.count : 0)) < 1 ? 125000000 : 0; },
+                Neutronium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('adv_shipyard') ? global.tauceti.adv_shipyard.count : 0)) < 1 ? 2500000 : 0; },
+                Unobtainium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('adv_shipyard') ? global.tauceti.adv_shipyard.count : 0)) < 1 ? 5000000 : 0; },
             },
             queue_complete(){ return 1 - global.tauceti.adv_shipyard.count; },
             effect(){
@@ -5407,12 +5407,12 @@ const tauCetiModules = {
             queue_size: 5,
             queue_complete(){ return 100 - global.tauceti.mass_relay.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('mass_relay') ? global.tauceti.mass_relay.count : 0)) < 100 ? 85000000 : 0; },
-                Neutronium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('mass_relay') ? global.tauceti.mass_relay.count : 0)) < 100 ? 75000 : 0; },
-                Adamantite(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('mass_relay') ? global.tauceti.mass_relay.count : 0)) < 100 ? 180000 : 0; },
-                Positronium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('mass_relay') ? global.tauceti.mass_relay.count : 0)) < 100 ? 250 : 0; },
-                Stanene(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('mass_relay') ? global.tauceti.mass_relay.count : 0)) < 100 ? 1000000 : 0; },
-                Quantium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('mass_relay') ? global.tauceti.mass_relay.count : 0)) < 100 ? 250000 : 0; },
+                Money(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('mass_relay') ? global.tauceti.mass_relay.count : 0)) < 100 ? 85000000 : 0; },
+                Neutronium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('mass_relay') ? global.tauceti.mass_relay.count : 0)) < 100 ? 75000 : 0; },
+                Adamantite(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('mass_relay') ? global.tauceti.mass_relay.count : 0)) < 100 ? 180000 : 0; },
+                Positronium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('mass_relay') ? global.tauceti.mass_relay.count : 0)) < 100 ? 250 : 0; },
+                Stanene(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('mass_relay') ? global.tauceti.mass_relay.count : 0)) < 100 ? 1000000 : 0; },
+                Quantium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('mass_relay') ? global.tauceti.mass_relay.count : 0)) < 100 ? 250000 : 0; },
             },
             effect(wiki){
                 let count = ((wiki?.count ?? 0) + (global.tauceti.hasOwnProperty('mass_relay') ? global.tauceti.mass_relay.count : 0));
@@ -9389,6 +9389,11 @@ export function erisWar(){
 // so it adds height without disturbing orbital radii. Bodies without one get a small deterministic
 // tilt (see orbitIncline) so the decorative systems have depth too. Values here follow the real
 // solar system, with the reference plane on the home world.
+//
+// All stars upto 50 light years are included, except red dwarfs beyond 30 light years.
+// Adding all red dwarves from 30-50 ly would add another 500-600 stars to the existing 461.
+// The game could likely render it smoothly after recent improvements in performance but the added value to game play is questionable.
+// I rather add additional larger stars beyond 50 light years then include all the red dwarves.
 export const spacePlanetStats = {
     spc_sun: { x: 0, y: 0, z: 0, dist: 0, orbit: 0, size: 2, startype: 'G', label: loc('star_sun'), zlabel: loc('star_sun') },
     // `gate` draws it on the solar map as an open ring rather than a world (see drawGate).
@@ -9939,7 +9944,2289 @@ export const spacePlanetStats = {
     // Gliese 65 B (M-type): M6 dwarf companion, 11 AU from Gliese 65 A.
     gliese65b: { x: -138135.223, y: 10899.179, z: -543557.776, dist: 560941.3, orbit: -2, size: 0.775, startype: 'M', zlabel: loc('star_gliese65') + ' B' },
     // gliese65b planets (M-type, 1, habitable-zone planet at ~0.07 AU)
-    gliese65b_p1: { dist: 0.32, orbit: 121, size: 0.191, star: 'gliese65' }
+    gliese65b_p1: { dist: 0.32, orbit: 121, size: 0.191, star: 'gliese65' },
+    // Vega (A-type): 1,583,850.2 AU from the Sun (25.04 ly).
+    vega: { x: 573518.038, y: 1381062.323, z: 521847.911, dist: 1583850.2, orbit: -2, size: 3.219, startype: 'A', label: loc('star_vega'), zlabel: loc('star_vega') },
+    // Arcturus (K-type red giant): 2,322,017.4 AU from the Sun (36.72 ly).
+    arcturus: { x: 799525.78, y: 214981.098, z: 2169402.332, dist: 2322017.4, orbit: -2, size: 10.08, startype: 'KIII', label: loc('star_arcturus'), zlabel: loc('star_arcturus') },
+    // Pollux (K-type red giant): 2,136,573.5 AU from the Sun (33.78 ly). 8.8 solar radii.
+    pollux: { x: -1916263.438, y: -415335.98, z: 848750.137, dist: 2136573.5, orbit: -2, size: 5.933, startype: 'KIII', label: loc('star_pollux'), zlabel: loc('star_pollux') },
+    // pollux planets (K-type giant, 1, none habitable). Pollux b, a ~2.3 Jupiter-mass superjovian at
+    // 1.64 AU on a 590-day orbit
+    pollux_p1: { dist: 1.64, orbit: 590, size: 0.635, star: 'pollux' },
+    // Fomalhaut (A-type): 1,588,974.7 AU from the Sun (25.13 ly). 1.842 solar radii.
+    fomalhaut: { x: 631179.495, y: 235839.405, z: -1439038.854, dist: 1588974.7, orbit: -2, size: 2.714, startype: 'A', label: loc('star_fomalhaut'), zlabel: loc('star_fomalhaut') },
+    // Fomalhaut's companions.
+    // K4Ve, 0.713 solar radii, 24.79 ly.
+    fomalhautb: { x: 646278.719, y: 184548.866, z: -1416567.238, dist: 1567927.7, orbit: -2, size: 1.689, startype: 'K', zlabel: loc('star_fomalhaut') + ' B' },
+    // fomalhautb planets (K4Ve, 3, one in the habitable zone); HZ 0.43-0.62 AU.
+    fomalhautb_p1: { dist: 0.24, orbit: 50, size: 0.234, star: 'fomalhautb' },
+    fomalhautb_p2: { dist: 0.55, orbit: 174, size: 0.191, star: 'fomalhautb', hz: true },
+    fomalhautb_p3: { dist: 1.2, orbit: 562, size: 0.427, star: 'fomalhautb' },
+    // M4.0Ve, 0.274 solar radii, 25.04 ly.
+    fomalhautc: { x: 629704.516, y: 387892.142, z: -1400009.279, dist: 1583355.3, orbit: -2, size: 1.047, startype: 'M', zlabel: loc('star_fomalhaut') + ' C' },
+    // fomalhautc planets (M4.0Ve, 1, one in the habitable zone); HZ 0.08-0.12 AU.
+    fomalhautc_p1: { dist: 0.11, orbit: 28, size: 0.191, star: 'fomalhautc', hz: true },
+    // Zeta Tucanae -- single.
+    // F9.5V, 1.142 solar radii, 28.07 ly.
+    zetatucanae: { x: 678907.894, y: -858968.23, z: -1397542.88, dist: 1775350.2, orbit: -2, size: 2.137, startype: 'F', label: loc('star_zeta_tucanae'), zlabel: loc('star_zeta_tucanae') },
+    // zetatucanae planets (F9.5V, 4, habitable-zone world at ~1.35 AU); HZ 1.17-1.69 AU.
+    zetatucanae_p1: { dist: 0.42, orbit: 96, size: 0.234, star: 'zetatucanae' },
+    zetatucanae_p2: { dist: 0.79, orbit: 247, size: 0.296, star: 'zetatucanae' },
+    zetatucanae_p3: { dist: 1.35, orbit: 551, size: 0.191, star: 'zetatucanae', hz: true },
+    zetatucanae_p4: { dist: 2.6, orbit: 1473, size: 0.573, star: 'zetatucanae' },
+    // Beta Hydri -- single.
+    // G0V, 1.814 solar radii, 24.33 ly.
+    betahydri: { x: 674280.642, y: -971175.411, z: -984430.207, dist: 1538485.9, orbit: -2, size: 2.694, startype: 'G', label: loc('star_beta_hydri'), zlabel: loc('star_beta_hydri') },
+    // betahydri planets (G0V, 4, habitable-zone world at ~1.9 AU); HZ 1.78-2.56 AU.
+    betahydri_p1: { dist: 0.9, orbit: 300, size: 0.296, star: 'betahydri' },
+    betahydri_p2: { dist: 1.9, orbit: 920, size: 0.191, star: 'betahydri', hz: true },
+    betahydri_p3: { dist: 3.4, orbit: 2203, size: 0.633, star: 'betahydri' },
+    betahydri_p4: { dist: 6.1, orbit: 5295, size: 0.573, star: 'betahydri' },
+    // Gliese 33 -- single.
+    // K2.5V, 0.783 solar radii, 24.25 ly.
+    gliese33: { x: -429732.758, y: 700898.19, z: -1294635.896, dist: 1533626.6, orbit: -2, size: 1.77, startype: 'K', label: loc('star_gliese33'), zlabel: loc('star_gliese33') },
+    // gliese33 planets (K2.5V, 4, habitable-zone world at ~0.62 AU); HZ 0.58-0.84 AU.
+    gliese33_p1: { dist: 0.19, orbit: 33, size: 0.234, star: 'gliese33' },
+    gliese33_p2: { dist: 0.35, orbit: 84, size: 0.191, star: 'gliese33' },
+    gliese33_p3: { dist: 0.62, orbit: 197, size: 0.296, star: 'gliese33', hz: true },
+    gliese33_p4: { dist: 1.4, orbit: 668, size: 0.427, star: 'gliese33' },
+    // Mu Cassiopeiae -- single.
+    // G5Vb, 0.79 solar radii, 25.03 ly.
+    mucassiopeiae: { x: -907822.006, y: 1278746.047, z: -216823.076, dist: 1583143.9, orbit: -2, size: 1.778, startype: 'G', label: loc('star_mu_cassiopeiae'), zlabel: loc('star_mu_cassiopeiae') },
+    // mucassiopeiae planets (G5Vb, 3, habitable-zone world at ~0.75 AU); HZ 0.63-0.91 AU.
+    mucassiopeiae_p1: { dist: 0.28, orbit: 63, size: 0.142, star: 'mucassiopeiae' },
+    mucassiopeiae_p2: { dist: 0.75, orbit: 276, size: 0.191, star: 'mucassiopeiae', hz: true },
+    mucassiopeiae_p3: { dist: 1.4, orbit: 703, size: 0.296, star: 'mucassiopeiae' },
+    // p Eridani -- 2 components.
+    // K2V, 0.783 solar radii, 26.71 ly.
+    peridani: { x: 286070.634, y: -803745.351, z: -1457914.775, dist: 1689188.7, orbit: -2, size: 1.77, startype: 'K', label: loc('star_p_eridani'), zlabel: loc('star_p_eridani') + ' A' },
+    // peridani planets (K2V, 3, habitable-zone world at ~0.83 AU); HZ 0.58-0.84 AU.
+    peridani_p1: { dist: 0.22, orbit: 42, size: 0.234, star: 'peridani' },
+    peridani_p2: { dist: 0.45, orbit: 122, size: 0.191, star: 'peridani' },
+    peridani_p3: { dist: 0.83, orbit: 305, size: 0.296, star: 'peridani', hz: true },
+    // K2V, 0.783 solar radii, 26.71 ly.
+    peridanib: { x: 286140.573, y: -803793.303, z: -1457874.613, dist: 1689188.7, orbit: -2, size: 1.77, startype: 'K', zlabel: loc('star_p_eridani') + ' B' },
+    // peridanib planets (K2V, 2, habitable-zone world at ~0.68 AU); HZ 0.58-0.84 AU.
+    peridanib_p1: { dist: 0.31, orbit: 70, size: 0.191, star: 'peridanib' },
+    peridanib_p2: { dist: 0.68, orbit: 226, size: 0.427, star: 'peridanib', hz: true },
+    // 107 Piscium -- single.
+    // K1V, 0.797 solar radii, 24.93 ly.
+    piscium107: { x: -896122.772, y: 782399.763, z: -1034741.632, dist: 1576666, orbit: -2, size: 1.785, startype: 'K', label: loc('star_107_piscium'), zlabel: loc('star_107_piscium') },
+    // piscium107 planets (K1V, 3, habitable-zone world at ~0.72 AU); HZ 0.61-0.87 AU.
+    piscium107_p1: { dist: 0.24, orbit: 46, size: 0.296, star: 'piscium107' },
+    piscium107_p2: { dist: 0.72, orbit: 241, size: 0.191, star: 'piscium107', hz: true },
+    piscium107_p3: { dist: 1.6, orbit: 797, size: 0.573, star: 'piscium107' },
+    // Gliese 105 -- 3 components.
+    // K3V, 0.755 solar radii, 23.58 ly.
+    gliese105: { x: -963614.796, y: 287226.887, z: -1100920.23, dist: 1490999, orbit: -2, size: 1.738, startype: 'K', label: loc('star_gliese105'), zlabel: loc('star_gliese105') + ' A' },
+    // gliese105 planets (K3V, 3, habitable-zone world at ~0.6 AU); HZ 0.50-0.73 AU.
+    gliese105_p1: { dist: 0.21, orbit: 40, size: 0.234, star: 'gliese105' },
+    gliese105_p2: { dist: 0.6, orbit: 192, size: 0.191, star: 'gliese105', hz: true },
+    gliese105_p3: { dist: 1.25, orbit: 578, size: 0.427, star: 'gliese105' },
+    // M3.5V, 0.3 solar radii, 23.58 ly.
+    gliese105b: { x: -964172.016, y: 286206.988, z: -1100697.958, dist: 1490999, orbit: -2, size: 1.095, startype: 'M', zlabel: loc('star_gliese105') + ' B' },
+    // gliese105b planets (M3.5V, 2, none habitable); HZ 0.09-0.13 AU.
+    gliese105b_p1: { dist: 0.05, orbit: 8, size: 0.191, star: 'gliese105b' },
+    gliese105b_p2: { dist: 0.21, orbit: 68, size: 0.296, star: 'gliese105b' },
+    // M6V, 0.137 solar radii, 23.58 ly.
+    gliese105c: { x: -963608.578, y: 287254.909, z: -1100918.361, dist: 1490999, orbit: -2, size: 0.74, startype: 'M', zlabel: loc('star_gliese105') + ' C' },
+    // Delta Eridani -- single.
+    // K0+IV, 2.33 solar radii, 29.64 ly.
+    deltaeridani: { x: -1238018.752, y: -404341.67, z: -1348452.409, dist: 1874701.7, orbit: -2, size: 3.053, startype: 'K', label: loc('star_delta_eridani'), zlabel: loc('star_delta_eridani') },
+    // deltaeridani planets (K0+IV, 4, habitable-zone world at ~1.8 AU); HZ 1.70-2.45 AU.
+    deltaeridani_p1: { dist: 1.1, orbit: 365, size: 0.296, star: 'deltaeridani' },
+    deltaeridani_p2: { dist: 1.8, orbit: 765, size: 0.191, star: 'deltaeridani', hz: true },
+    deltaeridani_p3: { dist: 3.3, orbit: 1899, size: 0.633, star: 'deltaeridani' },
+    deltaeridani_p4: { dist: 6.8, orbit: 5616, size: 0.573, star: 'deltaeridani' },
+    // Pi3 Orionis -- single.
+    // F6V, 1.359 solar radii, 26.17 ly.
+    pi3orionis: { x: -1492525.898, y: -302356.552, z: -648442.458, dist: 1655152.8, orbit: -2, size: 2.332, startype: 'F', label: loc('star_pi3_orionis'), zlabel: loc('star_pi3_orionis') },
+    // pi3orionis planets (F6V, 4, habitable-zone world at ~1.7 AU); HZ 1.56-2.25 AU.
+    pi3orionis_p1: { dist: 0.6, orbit: 152, size: 0.296, star: 'pi3orionis' },
+    pi3orionis_p2: { dist: 1.7, orbit: 724, size: 0.191, star: 'pi3orionis', hz: true },
+    pi3orionis_p3: { dist: 3.1, orbit: 1783, size: 0.633, star: 'pi3orionis' },
+    pi3orionis_p4: { dist: 5.9, orbit: 4682, size: 0.573, star: 'pi3orionis' },
+    // Gliese 183 -- single.
+    // K3+V, 0.755 solar radii, 28.85 ly.
+    gliese183: { x: -1469681.817, y: -688182.093, z: -833150.147, dist: 1824198, orbit: -2, size: 1.738, startype: 'K', label: loc('star_gliese183'), zlabel: loc('star_gliese183') },
+    // gliese183 planets (K3+V, 3, habitable-zone world at ~0.71 AU); HZ 0.50-0.73 AU.
+    gliese183_p1: { dist: 0.16, orbit: 26, size: 0.234, star: 'gliese183' },
+    gliese183_p2: { dist: 0.33, orbit: 78, size: 0.191, star: 'gliese183' },
+    gliese183_p3: { dist: 0.71, orbit: 247, size: 0.296, star: 'gliese183', hz: true },
+    // Gliese 185 -- 2 components.
+    // K7, 0.63 solar radii, 27.28 ly.
+    gliese185: { x: -1079497.261, y: -962578.557, z: -940084.14, dist: 1725001.5, orbit: -2, size: 1.587, startype: 'K', label: loc('star_gliese185'), zlabel: loc('star_gliese185') + ' A' },
+    // gliese185 planets (K7, 3, habitable-zone world at ~0.32 AU); HZ 0.30-0.43 AU.
+    gliese185_p1: { dist: 0.14, orbit: 24, size: 0.191, star: 'gliese185' },
+    gliese185_p2: { dist: 0.32, orbit: 83, size: 0.296, star: 'gliese185', hz: true },
+    gliese185_p3: { dist: 0.75, orbit: 297, size: 0.427, star: 'gliese185' },
+    // M2V, 0.446 solar radii, 27.28 ly.
+    gliese185b: { x: -1079497.839, y: -962571.529, z: -940090.673, dist: 1725001.5, orbit: -2, size: 1.336, startype: 'M', zlabel: loc('star_gliese185') + ' B' },
+    // gliese185b planets (M2V, 1, none habitable); HZ 0.16-0.23 AU.
+    gliese185b_p1: { dist: 0.08, orbit: 12, size: 0.191, star: 'gliese185b' },
+    // Gamma Leporis -- 2 components.
+    // F6V, 1.359 solar radii, 29.04 ly.
+    gammaleporis: { x: -1146307.221, y: -1220512.055, z: -755081.714, dist: 1836795.7, orbit: -2, size: 2.332, startype: 'F', label: loc('star_gamma_leporis'), zlabel: loc('star_gamma_leporis') + ' A' },
+    // gammaleporis planets (F6V, 3, habitable-zone world at ~1.6 AU); HZ 1.56-2.25 AU.
+    gammaleporis_p1: { dist: 0.71, orbit: 195, size: 0.296, star: 'gammaleporis' },
+    gammaleporis_p2: { dist: 1.6, orbit: 661, size: 0.191, star: 'gammaleporis', hz: true },
+    gammaleporis_p3: { dist: 2.9, orbit: 1613, size: 0.633, star: 'gammaleporis' },
+    // K2.5V(k), 0.783 solar radii, 29.04 ly.
+    gammaleporisb: { x: -1146971.4, y: -1219976.714, z: -754938.237, dist: 1836795.7, orbit: -2, size: 1.77, startype: 'K', zlabel: loc('star_gamma_leporis') + ' B' },
+    // gammaleporisb planets (K2.5V(k), 2, habitable-zone world at ~0.7 AU); HZ 0.58-0.84 AU.
+    gammaleporisb_p1: { dist: 0.17, orbit: 28, size: 0.234, star: 'gammaleporisb' },
+    gammaleporisb_p2: { dist: 0.7, orbit: 236, size: 0.191, star: 'gammaleporisb', hz: true },
+    // Chi1 Orionis -- single.
+    // G0V, 1.1 solar radii, 28.26 ly.
+    chi1orionis: { x: -1765480.957, y: -262531.251, z: -85187.654, dist: 1786925.5, orbit: -2, size: 2.098, startype: 'G', label: loc('star_chi1_orionis'), zlabel: loc('star_chi1_orionis') },
+    // chi1orionis planets (G0V, 3, habitable-zone world at ~1.3 AU); HZ 1.10-1.59 AU.
+    chi1orionis_p1: { dist: 0.5, orbit: 125, size: 0.234, star: 'chi1orionis' },
+    chi1orionis_p2: { dist: 1.3, orbit: 526, size: 0.191, star: 'chi1orionis', hz: true },
+    chi1orionis_p3: { dist: 2.6, orbit: 1487, size: 0.573, star: 'chi1orionis' },
+    // Gliese 250 -- 2 components.
+    // K3.5V, 0.755 solar radii, 28.52 ly.
+    gliese250: { x: -1427347.938, y: -1100667.761, z: -68147.21, dist: 1803728.3, orbit: -2, size: 1.738, startype: 'K', label: loc('star_gliese250'), zlabel: loc('star_gliese250') + ' A' },
+    // gliese250 planets (K3.5V, 3, habitable-zone world at ~0.6 AU); HZ 0.50-0.73 AU.
+    gliese250_p1: { dist: 0.17, orbit: 29, size: 0.296, star: 'gliese250' },
+    gliese250_p2: { dist: 0.6, orbit: 192, size: 0.191, star: 'gliese250', hz: true },
+    gliese250_p3: { dist: 1.2, orbit: 544, size: 0.427, star: 'gliese250' },
+    // M2.5V, 0.421 solar radii, 28.52 ly.
+    gliese250b: { x: -1427062.134, y: -1101023.77, z: -68381.43, dist: 1803728.3, orbit: -2, size: 1.298, startype: 'M', zlabel: loc('star_gliese250') + ' B' },
+    // gliese250b planets (M2.5V, 2, none habitable); HZ 0.14-0.21 AU.
+    gliese250b_p1: { dist: 0.06, orbit: 8, size: 0.191, star: 'gliese250b' },
+    gliese250b_p2: { dist: 0.24, orbit: 68, size: 0.234, star: 'gliese250b' },
+    // Gliese 338 -- 2 components.
+    // K7V, 0.63 solar radii, 20.66 ly.
+    gliese338: { x: -927583.264, y: 249664.623, z: 885403.133, dist: 1306400.3, orbit: -2, size: 1.587, startype: 'K', label: loc('star_gliese338'), zlabel: loc('star_gliese338') + ' A' },
+    // gliese338 planets (K7V, 3, habitable-zone world at ~0.34 AU); HZ 0.30-0.43 AU.
+    gliese338_p1: { dist: 0.15, orbit: 27, size: 0.191, star: 'gliese338' },
+    gliese338_p2: { dist: 0.34, orbit: 91, size: 0.296, star: 'gliese338', hz: true },
+    gliese338_p3: { dist: 0.76, orbit: 302, size: 0.427, star: 'gliese338' },
+    // M0V, 0.588 solar radii, 20.66 ly.
+    gliese338b: { x: -927508.039, y: 249659.854, z: 885483.28, dist: 1306400.3, orbit: -2, size: 1.534, startype: 'M', zlabel: loc('star_gliese338') + ' B' },
+    // gliese338b planets (M0V, 1, none habitable); HZ 0.25-0.36 AU.
+    gliese338b_p1: { dist: 0.142, orbit: 24.422, size: 0.344, star: 'gliese338b' },
+    // Xi Ursae Majoris -- 3 components.
+    // F8.5:V, 1.221 solar radii, 28.49 ly.
+    xiursaemajoris: { x: -616358.645, y: -166389.761, z: 1684741.597, dist: 1801648.6, orbit: -2, size: 2.21, startype: 'F', label: loc('star_xi_ursae_majoris'), zlabel: loc('star_xi_ursae_majoris') + ' A' },
+    // xiursaemajoris planets (F8.5:V, 2, habitable-zone world at ~1.55 AU); HZ 1.33-1.91 AU.
+    xiursaemajoris_p1: { dist: 0.4, orbit: 85, size: 0.234, star: 'xiursaemajoris' },
+    xiursaemajoris_p2: { dist: 1.55, orbit: 649, size: 0.191, star: 'xiursaemajoris', hz: true },
+    // G2V, 1.012 solar radii, 28.49 ly.
+    xiursaemajorisb: { x: -616364.475, y: -166393.574, z: 1684739.087, dist: 1801648.6, orbit: -2, size: 2.012, startype: 'G', zlabel: loc('star_xi_ursae_majoris') + ' B' },
+    // xiursaemajorisb planets (G2V, 2, none habitable); HZ 0.96-1.39 AU.
+    xiursaemajorisb_p1: { dist: 0.35, orbit: 76, size: 0.296, star: 'xiursaemajorisb' },
+    xiursaemajorisb_p2: { dist: 0.7, orbit: 214, size: 0.191, star: 'xiursaemajorisb' },
+    // T8.5, 0.097 solar radii, 28.49 ly.
+    xiursaemajorisc: { x: -612509.829, y: -168298.161, z: 1685955.284, dist: 1801648.6, orbit: -2, size: 0.623, startype: 'T', zlabel: loc('star_xi_ursae_majoris') + ' C' },
+    // Groombridge 1830 -- single.
+    // K1V_Fe-1.5, 0.68 solar radii, 29.91 ly.
+    groombridge1830: { x: -517937.384, y: 105083.795, z: 1816506.546, dist: 1891823.9, orbit: -2, size: 1.649, startype: 'K', label: loc('star_groombridge1830'), zlabel: loc('star_groombridge1830') },
+    // groombridge1830 planets (K1V_Fe-1.5, 3, habitable-zone world at ~0.44 AU); HZ 0.44-0.63 AU.
+    groombridge1830_p1: { dist: 0.19, orbit: 37, size: 0.142, star: 'groombridge1830' },
+    groombridge1830_p2: { dist: 0.44, orbit: 131, size: 0.191, star: 'groombridge1830', hz: true },
+    groombridge1830_p3: { dist: 0.95, orbit: 416, size: 0.296, star: 'groombridge1830' },
+    // Beta Canum Venaticorum -- single.
+    // G0V, 1.1 solar radii, 27.63 ly.
+    betacanumvenaticorum: { x: -319423.155, y: 307031.411, z: 1690518.065, dist: 1747612.9, orbit: -2, size: 2.098, startype: 'G', label: loc('star_beta_canum_venaticorum'), zlabel: loc('star_beta_canum_venaticorum') },
+    // betacanumvenaticorum planets (G0V, 4, habitable-zone world at ~1.15 AU); HZ 1.10-1.59 AU.
+    betacanumvenaticorum_p1: { dist: 0.42, orbit: 97, size: 0.234, star: 'betacanumvenaticorum' },
+    betacanumvenaticorum_p2: { dist: 1.15, orbit: 438, size: 0.191, star: 'betacanumvenaticorum', hz: true },
+    betacanumvenaticorum_p3: { dist: 2.4, orbit: 1319, size: 0.633, star: 'betacanumvenaticorum' },
+    betacanumvenaticorum_p4: { dist: 4.8, orbit: 3731, size: 0.573, star: 'betacanumvenaticorum' },
+    // Beta Comae Berenices -- single.
+    // F9.5V, 1.142 solar radii, 30.00 ly.
+    betacomaeberenices: { x: 110183.857, y: 104571.578, z: 1891032.454, dist: 1897124, orbit: -2, size: 2.137, startype: 'F', label: loc('star_beta_comae_berenices'), zlabel: loc('star_beta_comae_berenices') },
+    // betacomaeberenices planets (F9.5V, 3, habitable-zone world at ~1.35 AU); HZ 1.17-1.69 AU.
+    betacomaeberenices_p1: { dist: 0.48, orbit: 117, size: 0.296, star: 'betacomaeberenices' },
+    betacomaeberenices_p2: { dist: 1.35, orbit: 551, size: 0.191, star: 'betacomaeberenices', hz: true },
+    betacomaeberenices_p3: { dist: 2.6, orbit: 1473, size: 0.573, star: 'betacomaeberenices' },
+    // 61 Virginis -- single.
+    // G6.5V, 0.949 solar radii, 27.84 ly.
+    virginis61: { x: 843675.501, y: -941645.097, z: 1224887.289, dist: 1760350.2, orbit: -2, size: 1.948, startype: 'G', label: loc('star_61_virginis'), zlabel: loc('star_61_virginis') },
+    // virginis61 planets (G6.5V, 3, none habitable); HZ 0.85-1.22 AU.
+    virginis61_p1: { dist: 0.050201, orbit: 4.215, size: 0.277, star: 'virginis61' },
+    virginis61_p2: { dist: 0.2175, orbit: 38.021, size: 0.403, star: 'virginis61' },
+    virginis61_p3: { dist: 0.476, orbit: 123.01, size: 0.432, star: 'virginis61' },
+    // Xi Bootis -- 2 components.
+    // G7Ve, 0.927 solar radii, 22.03 ly.
+    xibootis: { x: 614288.588, y: 261836.966, z: 1222544.5, dist: 1393027, orbit: -2, size: 1.926, startype: 'G', label: loc('star_xi_bootis'), zlabel: loc('star_xi_bootis') + ' A' },
+    // xibootis planets (G7Ve, 3, habitable-zone world at ~0.95 AU); HZ 0.82-1.18 AU.
+    xibootis_p1: { dist: 0.3, orbit: 62, size: 0.234, star: 'xibootis' },
+    xibootis_p2: { dist: 0.95, orbit: 347, size: 0.191, star: 'xibootis', hz: true },
+    xibootis_p3: { dist: 1.9, orbit: 981, size: 0.427, star: 'xibootis' },
+    // K5Ve, 0.701 solar radii, 22.03 ly.
+    xibootisb: { x: 614245.035, y: 261840.92, z: 1222565.537, dist: 1393027, orbit: -2, size: 1.675, startype: 'K', zlabel: loc('star_xi_bootis') + ' B' },
+    // xibootisb planets (K5Ve, 2, habitable-zone world at ~0.46 AU); HZ 0.40-0.57 AU.
+    xibootisb_p1: { dist: 0.2, orbit: 39, size: 0.191, star: 'xibootisb' },
+    xibootisb_p2: { dist: 0.46, orbit: 136, size: 0.296, star: 'xibootisb', hz: true },
+    // 41 Arae -- 2 components.
+    // G9V, 0.853 solar radii, 28.67 ly.
+    arae41: { x: 1720150.209, y: -549006.908, z: -166487.158, dist: 1813296.3, orbit: -2, size: 1.847, startype: 'G', label: loc('star_41_arae'), zlabel: loc('star_41_arae') + ' A' },
+    // arae41 planets (G9V, 3, habitable-zone world at ~0.83 AU); HZ 0.70-1.02 AU.
+    arae41_p1: { dist: 0.35, orbit: 80, size: 0.296, star: 'arae41' },
+    arae41_p2: { dist: 0.83, orbit: 291, size: 0.191, star: 'arae41', hz: true },
+    arae41_p3: { dist: 1.8, orbit: 930, size: 0.573, star: 'arae41' },
+    // M0VpCa-3Cr-1, 0.588 solar radii, 28.67 ly.
+    arae41b: { x: 1720135.217, y: -549069.369, z: -166436.058, dist: 1813296.3, orbit: -2, size: 1.534, startype: 'M', zlabel: loc('star_41_arae') + ' B' },
+    // arae41b planets (M0VpCa-3Cr-1, 2, habitable-zone world at ~0.28 AU); HZ 0.25-0.36 AU.
+    arae41b_p1: { dist: 0.12, orbit: 20, size: 0.191, star: 'arae41b' },
+    arae41b_p2: { dist: 0.28, orbit: 72, size: 0.234, star: 'arae41b', hz: true },
+    // Gliese 667 -- 3 components.
+    // K3, 0.755 solar radii, 23.62 ly.
+    gliese667: { x: 1478374.797, y: -211961.346, z: 37164.083, dist: 1493954.8, orbit: -2, size: 1.738, startype: 'K', label: loc('star_gliese667'), zlabel: loc('star_gliese667') + ' A' },
+    // gliese667 planets (K3, 2, none habitable); HZ 0.50-0.73 AU.
+    gliese667_p1: { dist: 0.2, orbit: 37, size: 0.296, star: 'gliese667' },
+    gliese667_p2: { dist: 0.9, orbit: 353, size: 0.191, star: 'gliese667' },
+    // K4, 0.713 solar radii, 23.62 ly.
+    gliese667b: { x: 1478373.455, y: -211968.378, z: 37177.364, dist: 1493954.8, orbit: -2, size: 1.689, startype: 'K', zlabel: loc('star_gliese667') + ' B' },
+    // gliese667b planets (K4, 1, habitable-zone world at ~0.52 AU); HZ 0.43-0.62 AU.
+    gliese667b_p1: { dist: 0.52, orbit: 160, size: 0.191, star: 'gliese667b', hz: true },
+    // M1.5V, 0.482 solar radii, 23.62 ly.
+    gliese667c: { x: 1478377.275, y: -211993.73, z: 36879.733, dist: 1493954.8, orbit: -2, size: 1.389, startype: 'M', zlabel: loc('star_gliese667') + ' C' },
+    // gliese667c planets (M1.5V, 5, habitable-zone world at ~0.125 AU); HZ 0.11-0.16 AU.
+    gliese667c_p1: { dist: 0.050431, orbit: 7.203, size: 0.286, star: 'gliese667c' },
+    gliese667c_p2: { dist: 0.125, orbit: 28.14, size: 0.254, star: 'gliese667c', hz: true },
+    gliese667c_p3: { dist: 0.156, orbit: 39.026, size: 0.23, star: 'gliese667c', hz: true },
+    gliese667c_p4: { dist: 0.213, orbit: 62.24, size: 0.23, star: 'gliese667c' },
+    gliese667c_p5: { dist: 0.549, orbit: 256.2, size: 0.269, star: 'gliese667c' },
+    // Gliese 673 -- single.
+    // K7V, 0.63 solar radii, 25.16 ly.
+    gliese673: { x: 1357835.789, y: 626190.165, z: 543510.953, dist: 1590986, orbit: -2, size: 1.587, startype: 'K', label: loc('star_gliese673'), zlabel: loc('star_gliese673') },
+    // gliese673 planets (K7V, 3, habitable-zone world at ~0.36 AU); HZ 0.30-0.43 AU.
+    gliese673_p1: { dist: 0.13, orbit: 21, size: 0.234, star: 'gliese673' },
+    gliese673_p2: { dist: 0.36, orbit: 99, size: 0.191, star: 'gliese673', hz: true },
+    gliese673_p3: { dist: 0.79, orbit: 321, size: 0.296, star: 'gliese673' },
+    // Mu Herculis -- 3 components.
+    // G5IV, 1.73 solar radii, 27.20 ly.
+    muherculis: { x: 945365.011, y: 1229296.237, z: 743873.615, dist: 1719951.2, orbit: -2, size: 2.631, startype: 'G', label: loc('star_mu_herculis'), zlabel: loc('star_mu_herculis') + ' A' },
+    // muherculis planets (G5IV, 4, habitable-zone world at ~1.6 AU); HZ 1.52-2.19 AU.
+    muherculis_p1: { dist: 0.8, orbit: 248, size: 0.296, star: 'muherculis' },
+    muherculis_p2: { dist: 1.6, orbit: 702, size: 0.191, star: 'muherculis', hz: true },
+    muherculis_p3: { dist: 3, orbit: 1801, size: 0.633, star: 'muherculis' },
+    muherculis_p4: { dist: 5.8, orbit: 4843, size: 0.573, star: 'muherculis' },
+    // M3.5V, 0.3 solar radii, 27.20 ly.
+    muherculisb: { x: 945451.719, y: 1229112.224, z: 744067.459, dist: 1719951.2, orbit: -2, size: 1.095, startype: 'M', zlabel: loc('star_mu_herculis') + ' B' },
+    // M4V, 0.274 solar radii, 27.20 ly.
+    muherculisc: { x: 945463.919, y: 1229092.394, z: 744084.715, dist: 1719951.2, orbit: -2, size: 1.047, startype: 'M', zlabel: loc('star_mu_herculis') + ' C' },
+    // Chi Draconis -- single.
+    // F7V, 1.324 solar radii, 26.28 ly.
+    chidraconis: { x: -341293.189, y: 1426375.556, z: 781699.855, dist: 1661951.5, orbit: -2, size: 2.301, startype: 'F', label: loc('star_chi_draconis'), zlabel: loc('star_chi_draconis') },
+    // chidraconis planets (F7V, 3, habitable-zone world at ~1.75 AU); HZ 1.49-2.15 AU.
+    chidraconis_p1: { dist: 0.55, orbit: 135, size: 0.234, star: 'chidraconis' },
+    chidraconis_p2: { dist: 1.75, orbit: 769, size: 0.191, star: 'chidraconis', hz: true },
+    chidraconis_p3: { dist: 3.2, orbit: 1901, size: 0.573, star: 'chidraconis' },
+    // Gliese 785 -- single.
+    // K2+V, 0.783 solar radii, 28.74 ly.
+    gliese785: { x: 1524970.779, y: 426483.448, z: -892154.996, dist: 1817516, orbit: -2, size: 1.77, startype: 'K', label: loc('star_gliese785'), zlabel: loc('star_gliese785') },
+    // gliese785 planets (K2+V, 2, none habitable); HZ 0.58-0.84 AU.
+    gliese785_p1: { dist: 0.32, orbit: 74.72, size: 0.395, star: 'gliese785' },
+    gliese785_p2: { dist: 1.18, orbit: 525.8, size: 0.438, star: 'gliese785' },
+    // Gliese 884 -- single.
+    // K7+Vk, 0.63 solar radii, 26.85 ly.
+    gliese884: { x: 584586.289, y: 442737.806, z: -1531527.567, dist: 1698038.5, orbit: -2, size: 1.587, startype: 'K', label: loc('star_gliese884'), zlabel: loc('star_gliese884') },
+    // gliese884 planets (K7+Vk, 3, habitable-zone world at ~0.33 AU); HZ 0.30-0.43 AU.
+    gliese884_p1: { dist: 0.14, orbit: 24, size: 0.191, star: 'gliese884' },
+    gliese884_p2: { dist: 0.33, orbit: 87, size: 0.296, star: 'gliese884', hz: true },
+    gliese884_p3: { dist: 0.72, orbit: 279, size: 0.427, star: 'gliese884' },
+    // Gliese 892 -- single.
+    // K3V, 0.755 solar radii, 21.34 ly.
+    gliese892: { x: -458536.447, y: 1266799.865, z: -75289.049, dist: 1349335.4, orbit: -2, size: 1.738, startype: 'K', label: loc('star_gliese892'), zlabel: loc('star_gliese892') },
+    // gliese892 planets (K3V, 6, none habitable); HZ 0.50-0.73 AU.
+    gliese892_p1: { dist: 0.03876, orbit: 3.093, size: 0.242, star: 'gliese892' },
+    gliese892_p2: { dist: 0.0653, orbit: 6.765, size: 0.235, star: 'gliese892' },
+    gliese892_p3: { dist: 0.1463, orbit: 22.717, size: 0.219, star: 'gliese892' },
+    gliese892_p4: { dist: 0.237, orbit: 46.859, size: 0.242, star: 'gliese892' },
+    gliese892_p5: { dist: 0.3753, orbit: 94.2, size: 0.346, star: 'gliese892' },
+    gliese892_p6: { dist: 3.11, orbit: 2247, size: 0.681, star: 'gliese892' },
+    // Gamma Pavonis -- single.
+    // F9VFe-1.4CH-0.7, 1.167 solar radii, 30.20 ly.
+    gammapavonis: { x: 1237388.708, y: -768512.287, z: -1234962.253, dist: 1909679, orbit: -2, size: 2.161, startype: 'F', label: loc('star_gammapavonis'), zlabel: loc('star_gammapavonis') },
+    // gammapavonis planets (F9VFe-1.4CH-0.7, 4, generated; habitable-zone world at ~1.49 AU); HZ 1.22-1.76 AU.
+    gammapavonis_p1: { dist: 0.537, orbit: 135, size: 0.296, star: 'gammapavonis' },
+    gammapavonis_p2: { dist: 0.949, orbit: 318, size: 0.427, star: 'gammapavonis' },
+    gammapavonis_p3: { dist: 1.49, orbit: 625, size: 0.296, star: 'gammapavonis', hz: true },
+    gammapavonis_p4: { dist: 2.8, orbit: 1610, size: 0.296, star: 'gammapavonis' },
+    // Kappa1 Ceti -- single.
+    // G5V, 0.977 solar radii, 30.26 ly.
+    kappa1ceti: { x: -1397027.855, y: 43335.435, z: -1306670.848, dist: 1913361.8, orbit: -2, size: 1.977, startype: 'G', label: loc('star_kappa1ceti'), zlabel: loc('star_kappa1ceti') },
+    // kappa1ceti planets (G5V, 5, generated; habitable-zone world at ~1.17 AU); HZ 0.90-1.29 AU.
+    kappa1ceti_p1: { dist: 0.378, orbit: 86, size: 0.296, star: 'kappa1ceti' },
+    kappa1ceti_p2: { dist: 1.17, orbit: 467, size: 0.142, star: 'kappa1ceti', hz: true },
+    kappa1ceti_p3: { dist: 1.84, orbit: 921, size: 0.234, star: 'kappa1ceti' },
+    kappa1ceti_p4: { dist: 4.04, orbit: 2996, size: 0.573, star: 'kappa1ceti' },
+    kappa1ceti_p5: { dist: 8.69, orbit: 9452, size: 0.427, star: 'kappa1ceti' },
+    // HD 102365 -- 2 components.
+    // G2V, 1.012 solar radii, 30.40 ly.
+    hd102365: { x: 609044.617, y: -1691772.253, z: 679790.792, dist: 1922275.8, orbit: -2, size: 2.012, startype: 'G', label: loc('star_hd102365'), zlabel: loc('star_hd102365') + ' A' },
+    // M4V, 0.274 solar radii, 30.40 ly.
+    hd102365b: { x: 609148.456, y: -1691671.48, z: 679948.516, dist: 1922275.8, orbit: -2, size: 1.047, startype: 'M', zlabel: loc('star_hd102365') + ' B' },
+    // hd102365 planets (G2V, 4, generated; habitable-zone world at ~0.967 AU); HZ 0.96-1.39 AU.
+    hd102365_p1: { dist: 0.362, orbit: 80, size: 0.142, star: 'hd102365' },
+    hd102365_p2: { dist: 0.532, orbit: 142, size: 0.234, star: 'hd102365' },
+    hd102365_p3: { dist: 0.967, orbit: 347, size: 0.296, star: 'hd102365', hz: true },
+    hd102365_p4: { dist: 1.54, orbit: 698, size: 0.191, star: 'hd102365' },
+    // hd102365b planets (M4V, 3, generated; habitable-zone world at ~0.0982 AU); HZ 0.08-0.12 AU.
+    hd102365b_p1: { dist: 0.012, orbit: 1, size: 0.191, star: 'hd102365b' },
+    hd102365b_p2: { dist: 0.0231, orbit: 2.67, size: 0.142, star: 'hd102365b' },
+    hd102365b_p3: { dist: 0.0982, orbit: 23, size: 0.142, star: 'hd102365b', hz: true },
+    // 20 Crateris -- 2 components.
+    // K0V, 0.813 solar radii, 31.18 ly.
+    crateris20: { x: 446836.147, y: -1693921.67, z: 904721.543, dist: 1971688.2, orbit: -2, size: 1.803, startype: 'K', label: loc('star_crateris20'), zlabel: loc('star_crateris20') + ' A' },
+    // DC, 0.013 solar radii, 31.18 ly.
+    crateris20b: { x: 446979.893, y: -1693906.074, z: 904679.736, dist: 1971688.2, orbit: -2, size: 0.224, startype: 'D', zlabel: loc('star_crateris20') + ' B' },
+    // crateris20 planets (K0V, 3, generated; none habitable); HZ 0.64-0.93 AU.
+    crateris20_p1: { dist: 0.268, orbit: 54, size: 0.296, star: 'crateris20' },
+    crateris20_p2: { dist: 0.534, orbit: 152, size: 0.296, star: 'crateris20' },
+    crateris20_p3: { dist: 1.2, orbit: 512, size: 0.427, star: 'crateris20' },
+    // crateris20b planets (DC, 2, generated; habitable-zone world at ~0.023 AU); HZ 0.02-0.03 AU.
+    crateris20b_p1: { dist: 0.012, orbit: 0.62, size: 0.142, star: 'crateris20b' },
+    crateris20b_p2: { dist: 0.023, orbit: 1.64, size: 0.234, star: 'crateris20b', hz: true },
+    // 61 Ursae Majoris -- single.
+    // G8V, 0.914 solar radii, 31.23 ly.
+    ursaemajoris61: { x: -565705.241, y: -35090.707, z: 1892172.903, dist: 1975239.8, orbit: -2, size: 1.912, startype: 'G', label: loc('star_ursaemajoris61'), zlabel: loc('star_ursaemajoris61') },
+    // ursaemajoris61 planets (G8V, 3, generated; habitable-zone world at ~1.12 AU); HZ 0.78-1.13 AU.
+    ursaemajoris61_p1: { dist: 0.333, orbit: 72, size: 0.234, star: 'ursaemajoris61' },
+    ursaemajoris61_p2: { dist: 0.715, orbit: 228, size: 0.234, star: 'ursaemajoris61' },
+    ursaemajoris61_p3: { dist: 1.12, orbit: 447, size: 0.142, star: 'ursaemajoris61', hz: true },
+    // HD 151288 -- single.
+    // K7.5Ve, 0.630 solar radii, 32.11 ly.
+    hd151288: { x: 888136.262, y: 1282348.343, z: 1300574.381, dist: 2030935, orbit: -2, size: 1.587, startype: 'K', label: loc('star_hd151288'), zlabel: loc('star_hd151288') },
+    // hd151288 planets (K7.5Ve, 5, generated; habitable-zone world at ~0.393 AU); HZ 0.30-0.43 AU.
+    hd151288_p1: { dist: 0.0466, orbit: 4.59, size: 0.142, star: 'hd151288' },
+    hd151288_p2: { dist: 0.09, orbit: 12, size: 0.296, star: 'hd151288' },
+    hd151288_p3: { dist: 0.183, orbit: 36, size: 0.234, star: 'hd151288' },
+    hd151288_p4: { dist: 0.393, orbit: 112, size: 0.427, star: 'hd151288', hz: true },
+    hd151288_p5: { dist: 0.554, orbit: 188, size: 0.142, star: 'hd151288' },
+    // 12 Ophiuchi -- single.
+    // K1V, 0.797 solar radii, 32.27 ly.
+    ophiuchi12: { x: 1743705.476, y: 425877.347, z: 971017.091, dist: 2040773, orbit: -2, size: 1.785, startype: 'K', label: loc('star_ophiuchi12'), zlabel: loc('star_ophiuchi12') },
+    // ophiuchi12 planets (K1V, 2, generated; habitable-zone world at ~0.727 AU); HZ 0.61-0.87 AU.
+    ophiuchi12_p1: { dist: 0.145, orbit: 22, size: 0.234, star: 'ophiuchi12' },
+    ophiuchi12_p2: { dist: 0.727, orbit: 244, size: 0.234, star: 'ophiuchi12', hz: true },
+    // HD 10780 -- single.
+    // K0V, 0.813 solar radii, 32.75 ly.
+    hd10780: { x: -1305325.908, y: 1606905.519, z: 59845.559, dist: 2071135.6, orbit: -2, size: 1.803, startype: 'K', label: loc('star_hd10780'), zlabel: loc('star_hd10780') },
+    // hd10780 planets (K0V, 4, generated; habitable-zone world at ~0.89 AU); HZ 0.64-0.93 AU.
+    hd10780_p1: { dist: 0.28, orbit: 58, size: 0.191, star: 'hd10780' },
+    hd10780_p2: { dist: 0.591, orbit: 177, size: 0.296, star: 'hd10780' },
+    hd10780_p3: { dist: 0.89, orbit: 327, size: 0.296, star: 'hd10780', hz: true },
+    hd10780_p4: { dist: 1.55, orbit: 751, size: 0.142, star: 'hd10780' },
+    // HD 122064 -- single.
+    // K3V, 0.755 solar radii, 32.83 ly.
+    hd122064: { x: -410768.197, y: 1152666.905, z: 1677652.261, dist: 2076508.8, orbit: -2, size: 1.738, startype: 'K', label: loc('star_hd122064'), zlabel: loc('star_hd122064') },
+    // hd122064 planets (K3V, 3, generated; none habitable); HZ 0.50-0.73 AU.
+    hd122064_p1: { dist: 0.206, orbit: 39, size: 0.296, star: 'hd122064' },
+    hd122064_p2: { dist: 0.473, orbit: 135, size: 0.191, star: 'hd122064' },
+    hd122064_p3: { dist: 0.895, orbit: 350, size: 0.234, star: 'hd122064' },
+    // HD 103932 -- single.
+    // K4+V, 0.713 solar radii, 33.18 ly.
+    hd103932: { x: 559380.284, y: -1654119.631, z: 1163660.518, dist: 2098362.2, orbit: -2, size: 1.689, startype: 'K', label: loc('star_hd103932'), zlabel: loc('star_hd103932') },
+    // hd103932 planets (K4+V, 1, generated; habitable-zone world at ~0.486 AU); HZ 0.43-0.62 AU.
+    hd103932_p1: { dist: 0.486, orbit: 145, size: 0.234, star: 'hd103932', hz: true },
+    // Alpha Mensae -- 2 components.
+    // G7V, 0.927 solar radii, 33.31 ly.
+    alphamensae: { x: 501321.965, y: -1776579.254, z: -1014892.745, dist: 2106552.8, orbit: -2, size: 1.926, startype: 'G', label: loc('star_alphamensae'), zlabel: loc('star_alphamensae') + ' A' },
+    // M3.5, 0.300 solar radii, 33.31 ly.
+    alphamensaeb: { x: 501329.6, y: -1776563.027, z: -1014917.379, dist: 2106552.8, orbit: -2, size: 1.095, startype: 'M', zlabel: loc('star_alphamensae') + ' B' },
+    // alphamensae planets (G7V, 3, generated; habitable-zone world at ~0.971 AU); HZ 0.82-1.18 AU.
+    alphamensae_p1: { dist: 0.35, orbit: 78, size: 0.234, star: 'alphamensae' },
+    alphamensae_p2: { dist: 0.971, orbit: 359, size: 0.191, star: 'alphamensae', hz: true },
+    alphamensae_p3: { dist: 1.27, orbit: 536, size: 0.427, star: 'alphamensae' },
+    // alphamensaeb planets (M3.5, 3, generated; none habitable); HZ 0.09-0.13 AU.
+    alphamensaeb_p1: { dist: 0.0154, orbit: 1.34, size: 0.234, star: 'alphamensaeb' },
+    alphamensaeb_p2: { dist: 0.0312, orbit: 3.87, size: 0.234, star: 'alphamensaeb' },
+    alphamensaeb_p3: { dist: 0.0623, orbit: 11, size: 0.142, star: 'alphamensaeb' },
+    // HD 17925 -- single.
+    // K1V, 0.797 solar radii, 33.79 ly.
+    hd17925: { x: -1099527.199, y: -235191.052, z: -1817295.642, dist: 2137016.2, orbit: -2, size: 1.785, startype: 'K', label: loc('star_hd17925'), zlabel: loc('star_hd17925') },
+    // hd17925 planets (K1V, 3, generated; none habitable); HZ 0.61-0.87 AU.
+    hd17925_p1: { dist: 0.128, orbit: 18, size: 0.296, star: 'hd17925' },
+    hd17925_p2: { dist: 0.264, orbit: 53, size: 0.191, star: 'hd17925' },
+    hd17925_p3: { dist: 0.512, orbit: 144, size: 0.234, star: 'hd17925' },
+    // HD 154363 -- 2 components.
+    // K4/5V, 0.713 solar radii, 34.13 ly.
+    hd154363: { x: 1944328.438, y: 534371.434, z: 769680.557, dist: 2158326.7, orbit: -2, size: 1.689, startype: 'K', label: loc('star_hd154363'), zlabel: loc('star_hd154363') + ' A' },
+    // M1.5V, 0.482 solar radii, 34.13 ly.
+    hd154363b: { x: 1945001.734, y: 534515.841, z: 767877.032, dist: 2158326.7, orbit: -2, size: 1.389, startype: 'M', zlabel: loc('star_hd154363') + ' B' },
+    // hd154363 planets (K4/5V, 3, generated; habitable-zone world at ~0.494 AU); HZ 0.43-0.62 AU.
+    hd154363_p1: { dist: 0.0775, orbit: 9.22, size: 0.191, star: 'hd154363' },
+    hd154363_p2: { dist: 0.163, orbit: 28, size: 0.296, star: 'hd154363' },
+    hd154363_p3: { dist: 0.494, orbit: 148, size: 0.296, star: 'hd154363', hz: true },
+    // hd154363b planets (M1.5V, 3, generated; none habitable); HZ 0.18-0.26 AU.
+    hd154363b_p1: { dist: 0.0385, orbit: 4.02, size: 0.191, star: 'hd154363b' },
+    hd154363b_p2: { dist: 0.0844, orbit: 13, size: 0.191, star: 'hd154363b' },
+    hd154363b_p3: { dist: 0.143, orbit: 29, size: 0.142, star: 'hd154363b' },
+    // Iota Persei -- single.
+    // G0V, 1.100 solar radii, 34.50 ly.
+    iotapersei: { x: -1763619.537, y: 1253442.283, z: -280250.842, dist: 2181745.2, orbit: -2, size: 2.098, startype: 'G', label: loc('star_iotapersei'), zlabel: loc('star_iotapersei') },
+    // iotapersei planets (G0V, 2, generated; habitable-zone world at ~1.28 AU); HZ 1.10-1.59 AU.
+    iotapersei_p1: { dist: 0.242, orbit: 42, size: 0.296, star: 'iotapersei' },
+    iotapersei_p2: { dist: 1.28, orbit: 514, size: 0.142, star: 'iotapersei', hz: true },
+    // Gliese 635 -- 2 components.
+    // G0IV, 2.640 solar radii, 34.95 ly.
+    gliese635: { x: 1022531.181, y: 1340449.049, z: 1429347.385, dist: 2210295.8, orbit: -2, size: 3.25, startype: 'G', label: loc('star_gliese635'), zlabel: loc('star_gliese635') + ' A' },
+    // K0V, 0.813 solar radii, 34.95 ly.
+    gliese635b: { x: 1022532.99, y: 1340446.985, z: 1429348.027, dist: 2210295.8, orbit: -2, size: 1.803, startype: 'K', zlabel: loc('star_gliese635') + ' B' },
+    // gliese635 planets (G0IV, 1, generated; none habitable); HZ 2.65-3.82 AU.
+    gliese635_p1: { dist: 0.842, orbit: 232, size: 0.234, star: 'gliese635' },
+    // gliese635b planets (K0V, 2, generated; none habitable); HZ 0.64-0.93 AU.
+    gliese635b_p1: { dist: 0.222, orbit: 41, size: 0.191, star: 'gliese635b' },
+    gliese635b_p2: { dist: 0.452, orbit: 118, size: 0.427, star: 'gliese635b' },
+    // HD 13445 -- 2 components.
+    // K1.5V, 0.797 solar radii, 35.10 ly.
+    hd13445: { x: 107732.803, y: -1037839.059, z: -1959158.546, dist: 2219688.8, orbit: -2, size: 1.785, startype: 'K', label: loc('star_hd13445'), zlabel: loc('star_hd13445') + ' A' },
+    // DQ6, 0.013 solar radii, 35.10 ly.
+    hd13445b: { x: 107725.273, y: -1037857.573, z: -1959149.152, dist: 2219688.8, orbit: -2, size: 0.224, startype: 'D', zlabel: loc('star_hd13445') + ' B' },
+    // hd13445 planets (K1.5V, 1, measured; none habitable); HZ 0.61-0.87 AU.
+    hd13445_p1: { dist: 0.11, orbit: 15.765, size: 0.686, star: 'hd13445' },
+    // hd13445b planets (DQ6, 2, generated; habitable-zone world at ~0.022 AU); HZ 0.02-0.03 AU.
+    hd13445b_p1: { dist: 0.012, orbit: 0.62, size: 0.296, star: 'hd13445b' },
+    hd13445b_p2: { dist: 0.022, orbit: 1.54, size: 0.234, star: 'hd13445b', hz: true },
+    // HD 223778 -- 2 components.
+    // K3V, 0.755 solar radii, 35.54 ly.
+    hd223778: { x: -1067602.349, y: 1911067.862, z: 509542.45, dist: 2247573.9, orbit: -2, size: 1.738, startype: 'K', label: loc('star_hd223778'), zlabel: loc('star_hd223778') + ' A' },
+    // M2:, 0.446 solar radii, 35.54 ly.
+    hd223778b: { x: -1067583.958, y: 1911077.8, z: 509543.709, dist: 2247573.9, orbit: -2, size: 1.336, startype: 'M', zlabel: loc('star_hd223778') + ' B' },
+    // hd223778 planets (K3V, 2, generated; none habitable); HZ 0.50-0.73 AU.
+    hd223778_p1: { dist: 0.124, orbit: 18, size: 0.234, star: 'hd223778' },
+    hd223778_p2: { dist: 0.276, orbit: 60, size: 0.191, star: 'hd223778' },
+    // hd223778b planets (M2:, 3, generated; habitable-zone world at ~0.186 AU); HZ 0.16-0.23 AU.
+    hd223778b_p1: { dist: 0.0229, orbit: 1.91, size: 0.191, star: 'hd223778b' },
+    hd223778b_p2: { dist: 0.0525, orbit: 6.62, size: 0.234, star: 'hd223778b' },
+    hd223778b_p3: { dist: 0.186, orbit: 44, size: 0.191, star: 'hd223778b', hz: true },
+    // 8 Trianguli -- single.
+    // G0.5VFe-0.5, 1.100 solar radii, 35.59 ly.
+    trianguli8: { x: -1611895.127, y: 1239392.962, z: -964740.129, dist: 2250560.9, orbit: -2, size: 2.098, startype: 'G', label: loc('star_trianguli8'), zlabel: loc('star_trianguli8') },
+    // trianguli8 planets (G0.5VFe-0.5, 1, generated; habitable-zone world at ~1.34 AU); HZ 1.10-1.59 AU.
+    trianguli8_p1: { dist: 1.34, orbit: 550, size: 0.234, star: 'trianguli8', hz: true },
+    // Gliese 519 -- single.
+    // K7.5V, 0.630 solar radii, 35.69 ly.
+    gliese519: { x: 114512.978, y: 495827.617, z: 2198917.593, dist: 2257032.7, orbit: -2, size: 1.587, startype: 'K', label: loc('star_gliese519'), zlabel: loc('star_gliese519') },
+    // gliese519 planets (K7.5V, 2, generated; none habitable); HZ 0.30-0.43 AU.
+    gliese519_p1: { dist: 0.0814, orbit: 11, size: 0.191, star: 'gliese519' },
+    gliese519_p2: { dist: 0.12, orbit: 19, size: 0.234, star: 'gliese519' },
+    // HD 115404 -- 2 components.
+    // K2V, 0.783 solar radii, 35.83 ly.
+    hd115404: { x: 414251.343, y: -198465.751, z: 2219167.751, dist: 2266207.9, orbit: -2, size: 1.77, startype: 'K', label: loc('star_hd115404'), zlabel: loc('star_hd115404') + ' A' },
+    // M0.5V, 0.544 solar radii, 35.83 ly.
+    hd115404b: { x: 414327.268, y: -198436.904, z: 2219156.157, dist: 2266207.9, orbit: -2, size: 1.475, startype: 'M', zlabel: loc('star_hd115404') + ' B' },
+    // hd115404 planets (K2V, 2, measured; none habitable); HZ 0.58-0.84 AU.
+    hd115404_p1: { dist: 0.088, orbit: 10.495, size: 0.471, star: 'hd115404' },
+    hd115404_p2: { dist: 11.364, orbit: 15319.2, size: 0.675, star: 'hd115404' },
+    // hd115404b planets (M0.5V, 4, generated; habitable-zone world at ~0.286 AU); HZ 0.22-0.32 AU.
+    hd115404b_p1: { dist: 0.0281, orbit: 2.34, size: 0.234, star: 'hd115404b' },
+    hd115404b_p2: { dist: 0.0555, orbit: 6.5, size: 0.191, star: 'hd115404b' },
+    hd115404b_p3: { dist: 0.0995, orbit: 16, size: 0.296, star: 'hd115404b' },
+    hd115404b_p4: { dist: 0.286, orbit: 76, size: 0.296, star: 'hd115404b', hz: true },
+    // Denebola -- single.
+    // A3Va, 1.861 solar radii, 35.88 ly.
+    denebola: { x: -247354.251, y: -703979.927, z: 2142683.078, dist: 2268890.2, orbit: -2, size: 2.728, startype: 'A', label: loc('star_denebola'), zlabel: loc('star_denebola') },
+    // denebola planets (A3Va, 4, generated; none habitable); HZ 3.91-5.65 AU.
+    denebola_p1: { dist: 1.64, orbit: 562, size: 0.142, star: 'denebola' },
+    denebola_p2: { dist: 2.63, orbit: 1142, size: 0.427, star: 'denebola' },
+    denebola_p3: { dist: 5.72, orbit: 3664, size: 0.142, star: 'denebola' },
+    denebola_p4: { dist: 10.8, orbit: 9505, size: 0.191, star: 'denebola' },
+    // HD 160346 -- single.
+    // K3-V, 0.755 solar radii, 35.88 ly.
+    hd160346: { x: 1912987.366, y: 1007298.94, z: 688252.002, dist: 2268890.2, orbit: -2, size: 1.738, startype: 'K', label: loc('star_hd160346'), zlabel: loc('star_hd160346') },
+    // hd160346 planets (K3-V, 3, generated; habitable-zone world at ~0.657 AU); HZ 0.50-0.73 AU.
+    hd160346_p1: { dist: 0.165, orbit: 28, size: 0.191, star: 'hd160346' },
+    hd160346_p2: { dist: 0.301, orbit: 68, size: 0.234, star: 'hd160346' },
+    hd160346_p3: { dist: 0.657, orbit: 220, size: 0.234, star: 'hd160346', hz: true },
+    // Zavijava -- single.
+    // F9V, 1.167 solar radii, 35.88 ly.
+    zavijava: { x: 10143.716, y: -1108566.373, z: 1980049.542, dist: 2269277.1, orbit: -2, size: 2.161, startype: 'F', label: loc('star_zavijava'), zlabel: loc('star_zavijava') },
+    // zavijava planets (F9V, 5, generated; none habitable); HZ 1.22-1.76 AU.
+    zavijava_p1: { dist: 0.3, orbit: 56, size: 0.142, star: 'zavijava' },
+    zavijava_p2: { dist: 0.584, orbit: 153, size: 0.427, star: 'zavijava' },
+    zavijava_p3: { dist: 1.07, orbit: 380, size: 0.142, star: 'zavijava' },
+    zavijava_p4: { dist: 2.32, orbit: 1214, size: 0.427, star: 'zavijava' },
+    zavijava_p5: { dist: 4.03, orbit: 2780, size: 0.633, star: 'zavijava' },
+    // HD 166620 -- single.
+    // K2V, 0.783 solar radii, 36.19 ly.
+    hd166620: { x: 871162.345, y: 1896967.36, z: 938460.029, dist: 2288693.1, orbit: -2, size: 1.77, startype: 'K', label: loc('star_hd166620'), zlabel: loc('star_hd166620') },
+    // hd166620 planets (K2V, 2, generated; none habitable); HZ 0.58-0.84 AU.
+    hd166620_p1: { dist: 0.182, orbit: 31, size: 0.142, star: 'hd166620' },
+    hd166620_p2: { dist: 0.299, orbit: 66, size: 0.142, star: 'hd166620' },
+    // 54 Piscium -- 2 components.
+    // K0.5V, 0.813 solar radii, 36.23 ly.
+    piscium54: { x: -836027.489, y: 1497573.511, z: -1519186.709, dist: 2291199.8, orbit: -2, size: 1.803, startype: 'K', label: loc('star_piscium54'), zlabel: loc('star_piscium54') + ' A' },
+    // T7.5, 0.095 solar radii, 36.23 ly.
+    piscium54b: { x: -835706.901, y: 1497896.652, z: -1519044.514, dist: 2291199.8, orbit: -2, size: 0.616, startype: 'T', zlabel: loc('star_piscium54') + ' B' },
+    // piscium54 planets (K0.5V, 1, measured; none habitable); HZ 0.64-0.93 AU.
+    piscium54_p1: { dist: 0.295, orbit: 62.25, size: 0.607, star: 'piscium54' },
+    // piscium54b planets (T7.5, 4, generated; none habitable); HZ 0.00-0.00 AU.
+    piscium54b_p1: { dist: 0.012, orbit: 0.68, size: 0.427, star: 'piscium54b' },
+    piscium54b_p2: { dist: 0.0236, orbit: 1.87, size: 0.296, star: 'piscium54b' },
+    piscium54b_p3: { dist: 0.046, orbit: 5.1, size: 0.633, star: 'piscium54b' },
+    piscium54b_p4: { dist: 0.0748, orbit: 11, size: 0.427, star: 'piscium54b' },
+    // Theta Persei -- 2 components.
+    // F8V, 1.221 solar radii, 36.37 ly.
+    thetapersei: { x: -1766377.234, y: 1421956.096, z: -383932.076, dist: 2299880.8, orbit: -2, size: 2.21, startype: 'F', label: loc('star_thetapersei'), zlabel: loc('star_thetapersei') + ' A' },
+    // M1.5V, 0.482 solar radii, 36.37 ly.
+    thetaperseib: { x: -1766240.962, y: 1422135.137, z: -383895.856, dist: 2299880.8, orbit: -2, size: 1.389, startype: 'M', zlabel: loc('star_thetapersei') + ' B' },
+    // thetapersei planets (F8V, 2, generated; habitable-zone world at ~1.68 AU); HZ 1.33-1.91 AU.
+    thetapersei_p1: { dist: 0.305, orbit: 57, size: 0.191, star: 'thetapersei' },
+    thetapersei_p2: { dist: 1.68, orbit: 732, size: 0.427, star: 'thetapersei', hz: true },
+    // thetaperseib planets (M1.5V, 2, generated; none habitable); HZ 0.18-0.26 AU.
+    thetaperseib_p1: { dist: 0.0589, orbit: 7.62, size: 0.191, star: 'thetaperseib' },
+    thetaperseib_p2: { dist: 0.123, orbit: 23, size: 0.142, star: 'thetaperseib' },
+    // 41 Serpentis -- single.
+    // F6V, 1.359 solar radii, 36.42 ly.
+    serpentis41: { x: 1423811.867, y: 748451.618, z: 1648105.03, dist: 2302969.9, orbit: -2, size: 2.332, startype: 'F', label: loc('star_serpentis41'), zlabel: loc('star_serpentis41') },
+    // serpentis41 planets (F6V, 3, generated; habitable-zone world at ~1.97 AU); HZ 1.56-2.25 AU.
+    serpentis41_p1: { dist: 0.521, orbit: 123, size: 0.296, star: 'serpentis41' },
+    serpentis41_p2: { dist: 0.773, orbit: 222, size: 0.142, star: 'serpentis41' },
+    serpentis41_p3: { dist: 1.97, orbit: 903, size: 0.296, star: 'serpentis41', hz: true },
+    // HD 74576 -- single.
+    // K3V, 0.755 solar radii, 36.50 ly.
+    hd74576: { x: -422114.112, y: -2267771.113, z: 89223.224, dist: 2308446.9, orbit: -2, size: 1.738, startype: 'K', label: loc('star_hd74576'), zlabel: loc('star_hd74576') },
+    // hd74576 planets (K3V, 5, generated; habitable-zone world at ~0.608 AU); HZ 0.50-0.73 AU.
+    hd74576_p1: { dist: 0.209, orbit: 40, size: 0.142, star: 'hd74576' },
+    hd74576_p2: { dist: 0.32, orbit: 75, size: 0.296, star: 'hd74576' },
+    hd74576_p3: { dist: 0.608, orbit: 196, size: 0.142, star: 'hd74576', hz: true },
+    hd74576_p4: { dist: 1.27, orbit: 592, size: 0.234, star: 'hd74576' },
+    hd74576_p5: { dist: 2.66, orbit: 1794, size: 0.296, star: 'hd74576' },
+    // 11 Leonis Minoris -- single.
+    // G8Va, 0.914 solar radii, 36.64 ly.
+    leonisminoris11: { x: -1539466.513, y: -229963.956, z: 1716751.555, dist: 2317342.5, orbit: -2, size: 1.912, startype: 'G', label: loc('star_leonisminoris11'), zlabel: loc('star_leonisminoris11') },
+    // leonisminoris11 planets (G8Va, 1, generated; habitable-zone world at ~0.933 AU); HZ 0.78-1.13 AU.
+    leonisminoris11_p1: { dist: 0.933, orbit: 340, size: 0.296, star: 'leonisminoris11', hz: true },
+    // HD 85512 -- single.
+    // K6Vk:, 0.669 solar radii, 36.78 ly.
+    hd85512: { x: 67340.343, y: -2301575.471, z: 330158.613, dist: 2326110.3, orbit: -2, size: 1.636, startype: 'K', label: loc('star_hd85512'), zlabel: loc('star_hd85512') },
+    // hd85512 planets (K6Vk:, 3, generated; habitable-zone world at ~0.422 AU); HZ 0.35-0.51 AU.
+    hd85512_p1: { dist: 0.0868, orbit: 11, size: 0.234, star: 'hd85512' },
+    hd85512_p2: { dist: 0.131, orbit: 21, size: 0.296, star: 'hd85512' },
+    hd85512_p3: { dist: 0.422, orbit: 121, size: 0.142, star: 'hd85512', hz: true },
+    // HD 38 -- 2 components.
+    // K6V, 0.669 solar radii, 37.58 ly.
+    hd38: { x: -951170.83, y: 2072707.305, z: -667853.864, dist: 2376314.4, orbit: -2, size: 1.636, startype: 'K', label: loc('star_hd38'), zlabel: loc('star_hd38') + ' A' },
+    // M0.5V, 0.544 solar radii, 37.58 ly.
+    hd38b: { x: -951148.645, y: 2072695.937, z: -667920.736, dist: 2376314.4, orbit: -2, size: 1.475, startype: 'M', zlabel: loc('star_hd38') + ' B' },
+    // hd38 planets (K6V, 3, generated; habitable-zone world at ~0.438 AU); HZ 0.35-0.51 AU.
+    hd38_p1: { dist: 0.157, orbit: 27, size: 0.234, star: 'hd38' },
+    hd38_p2: { dist: 0.266, orbit: 60, size: 0.142, star: 'hd38' },
+    hd38_p3: { dist: 0.438, orbit: 127, size: 0.142, star: 'hd38', hz: true },
+    // hd38b planets (M0.5V, 5, generated; habitable-zone world at ~0.279 AU); HZ 0.22-0.32 AU.
+    hd38b_p1: { dist: 0.0371, orbit: 3.55, size: 0.142, star: 'hd38b' },
+    hd38b_p2: { dist: 0.0777, orbit: 11, size: 0.234, star: 'hd38b' },
+    hd38b_p3: { dist: 0.122, orbit: 21, size: 0.142, star: 'hd38b' },
+    hd38b_p4: { dist: 0.279, orbit: 73, size: 0.234, star: 'hd38b', hz: true },
+    hd38b_p5: { dist: 0.487, orbit: 169, size: 0.234, star: 'hd38b' },
+    // Muphrid -- single.
+    // G0IV, 2.640 solar radii, 37.17 ly.
+    muphrid: { x: 683137.552, y: 63234.665, z: 2248249.629, dist: 2350596.1, orbit: -2, size: 3.25, startype: 'G', label: loc('star_muphrid'), zlabel: loc('star_muphrid') },
+    // muphrid planets (G0IV, 4, generated; none habitable); HZ 2.65-3.82 AU.
+    muphrid_p1: { dist: 0.533, orbit: 117, size: 0.296, star: 'muphrid' },
+    muphrid_p2: { dist: 1.16, orbit: 375, size: 0.296, star: 'muphrid' },
+    muphrid_p3: { dist: 2.54, orbit: 1214, size: 0.427, star: 'muphrid' },
+    muphrid_p4: { dist: 5.56, orbit: 3931, size: 0.234, star: 'muphrid' },
+    // HD 245409 -- 2 components.
+    // K6V, 0.669 solar radii, 37.26 ly.
+    hd245409: { x: -2244507.079, y: -559896.5, z: -449281.241, dist: 2356512.2, orbit: -2, size: 1.636, startype: 'K', label: loc('star_hd245409'), zlabel: loc('star_hd245409') + ' A' },
+    // M4.0Ve, 0.274 solar radii, 37.26 ly.
+    hd245409b: { x: -2244164.404, y: -561602.045, z: -448864.149, dist: 2356512.2, orbit: -2, size: 1.047, startype: 'M', zlabel: loc('star_hd245409') + ' B' },
+    // hd245409 planets (K6V, 2, generated; none habitable); HZ 0.35-0.51 AU.
+    hd245409_p1: { dist: 0.133, orbit: 21, size: 0.191, star: 'hd245409' },
+    hd245409_p2: { dist: 0.216, orbit: 44, size: 0.296, star: 'hd245409' },
+    // hd245409b planets (M4.0Ve, 2, generated; none habitable); HZ 0.08-0.12 AU.
+    hd245409b_p1: { dist: 0.012, orbit: 1, size: 0.142, star: 'hd245409b' },
+    hd245409b_p2: { dist: 0.0275, orbit: 3.47, size: 0.191, star: 'hd245409b' },
+    // HD 222237b -- single.
+    // K3+V, 0.755 solar radii, 37.33 ly.
+    hd222237b: { x: 1106728.528, y: -1311093.304, z: -1621526.805, dist: 2360754.7, orbit: -2, size: 1.738, startype: 'K', label: loc('star_hd222237b'), zlabel: loc('star_hd222237b') },
+    // hd222237b planets (K3+V, 1, measured; none habitable); HZ 0.50-0.73 AU.
+    hd222237b_p1: { dist: 10.8, orbit: 14892, size: 0.683, star: 'hd222237b' },
+    // HD 16157 -- single.
+    // K7V, 0.630 solar radii, 37.66 ly.
+    hd16157: { x: -212834.772, y: -1044323.71, z: -2129668.347, dist: 2381469.7, orbit: -2, size: 1.587, startype: 'K', label: loc('star_hd16157'), zlabel: loc('star_hd16157') },
+    // hd16157 planets (K7V, 4, generated; habitable-zone world at ~0.394 AU); HZ 0.30-0.43 AU.
+    hd16157_p1: { dist: 0.0787, orbit: 10, size: 0.142, star: 'hd16157' },
+    hd16157_p2: { dist: 0.117, orbit: 18, size: 0.427, star: 'hd16157' },
+    hd16157_p3: { dist: 0.216, orbit: 46, size: 0.427, star: 'hd16157' },
+    hd16157_p4: { dist: 0.394, orbit: 113, size: 0.296, star: 'hd16157', hz: true },
+    // HD 131511 -- single.
+    // K0.5V, 0.813 solar radii, 37.93 ly.
+    hd131511: { x: 1068177.327, y: 465579.009, z: 2096568.611, dist: 2398617.6, orbit: -2, size: 1.803, startype: 'K', label: loc('star_hd131511'), zlabel: loc('star_hd131511') },
+    // hd131511 planets (K0.5V, 5, generated; habitable-zone world at ~0.911 AU); HZ 0.64-0.93 AU.
+    hd131511_p1: { dist: 0.2, orbit: 35, size: 0.191, star: 'hd131511' },
+    hd131511_p2: { dist: 0.302, orbit: 65, size: 0.296, star: 'hd131511' },
+    hd131511_p3: { dist: 0.627, orbit: 193, size: 0.427, star: 'hd131511' },
+    hd131511_p4: { dist: 0.911, orbit: 339, size: 0.191, star: 'hd131511', hz: true },
+    hd131511_p5: { dist: 1.48, orbit: 701, size: 0.427, star: 'hd131511' },
+    // HD 99279 -- 2 components.
+    // K5-V, 0.701 solar radii, 39.52 ly.
+    hd99279: { x: 969429.685, y: -2303652.134, z: -21405.079, dist: 2499413, orbit: -2, size: 1.675, startype: 'K', label: loc('star_hd99279'), zlabel: loc('star_hd99279') + ' A' },
+    // K7-V(k), 0.630 solar radii, 39.52 ly.
+    hd99279b: { x: 969371.406, y: -2303676.101, z: -21464.986, dist: 2499413, orbit: -2, size: 1.587, startype: 'K', zlabel: loc('star_hd99279') + ' B' },
+    // hd99279 planets (K5-V, 5, generated; habitable-zone world at ~0.539 AU); HZ 0.40-0.57 AU.
+    hd99279_p1: { dist: 0.169, orbit: 30, size: 0.296, star: 'hd99279' },
+    hd99279_p2: { dist: 0.291, orbit: 69, size: 0.234, star: 'hd99279' },
+    hd99279_p3: { dist: 0.539, orbit: 173, size: 0.234, star: 'hd99279', hz: true },
+    hd99279_p4: { dist: 1.23, orbit: 596, size: 0.296, star: 'hd99279' },
+    hd99279_p5: { dist: 2.36, orbit: 1583, size: 0.427, star: 'hd99279' },
+    // hd99279b planets (K7-V(k), 3, generated; habitable-zone world at ~0.385 AU); HZ 0.30-0.43 AU.
+    hd99279b_p1: { dist: 0.0538, orbit: 5.7, size: 0.296, star: 'hd99279b' },
+    hd99279b_p2: { dist: 0.117, orbit: 18, size: 0.234, star: 'hd99279b' },
+    hd99279b_p3: { dist: 0.385, orbit: 109, size: 0.296, star: 'hd99279b', hz: true },
+    // Gliese 1075 -- single.
+    // K7Vk, 0.630 solar radii, 38.13 ly.
+    gliese1075: { x: -130587.522, y: -1929917.404, z: -1440209.631, dist: 2411604.9, orbit: -2, size: 1.587, startype: 'K', label: loc('star_gliese1075'), zlabel: loc('star_gliese1075') },
+    // gliese1075 planets (K7Vk, 4, generated; habitable-zone world at ~0.345 AU); HZ 0.30-0.43 AU.
+    gliese1075_p1: { dist: 0.0787, orbit: 10, size: 0.142, star: 'gliese1075' },
+    gliese1075_p2: { dist: 0.156, orbit: 28, size: 0.427, star: 'gliese1075' },
+    gliese1075_p3: { dist: 0.345, orbit: 93, size: 0.296, star: 'gliese1075', hz: true },
+    gliese1075_p4: { dist: 0.712, orbit: 274, size: 0.234, star: 'gliese1075' },
+    // Zeta Doradus -- single.
+    // F9VFe-0.5, 1.167 solar radii, 38.14 ly.
+    zetadoradus: { x: -133728.932, y: -1928690.988, z: -1441884.388, dist: 2411796.6, orbit: -2, size: 2.161, startype: 'F', label: loc('star_zetadoradus'), zlabel: loc('star_zetadoradus') },
+    // zetadoradus planets (F9VFe-0.5, 3, generated; habitable-zone world at ~1.53 AU); HZ 1.22-1.76 AU.
+    zetadoradus_p1: { dist: 0.498, orbit: 121, size: 0.191, star: 'zetadoradus' },
+    zetadoradus_p2: { dist: 1.02, orbit: 354, size: 0.427, star: 'zetadoradus' },
+    zetadoradus_p3: { dist: 1.53, orbit: 650, size: 0.427, star: 'zetadoradus', hz: true },
+    // HD 125072 -- single.
+    // K3IV, 1.812 solar radii, 38.55 ly.
+    hd125072: { x: 1689660.838, y: -1756229.007, z: 68695.919, dist: 2438034.7, orbit: -2, size: 2.692, startype: 'K', label: loc('star_hd125072'), zlabel: loc('star_hd125072') },
+    // hd125072 planets (K3IV, 2, generated; habitable-zone world at ~1.38 AU); HZ 1.21-1.75 AU.
+    hd125072_p1: { dist: 0.251, orbit: 44, size: 0.234, star: 'hd125072' },
+    hd125072_p2: { dist: 1.38, orbit: 567, size: 0.296, star: 'hd125072', hz: true },
+    // HD 97101 -- 2 components.
+    // K7V, 0.630 solar radii, 38.75 ly.
+    hd97101: { x: -878287.737, y: -291648.839, z: 2268903.352, dist: 2450381.8, orbit: -2, size: 1.587, startype: 'K', label: loc('star_hd97101'), zlabel: loc('star_hd97101') + ' A' },
+    // M2V, 0.446 solar radii, 38.75 ly.
+    hd97101b: { x: -878619.792, y: -291830.822, z: 2268751.385, dist: 2450381.8, orbit: -2, size: 1.336, startype: 'M', zlabel: loc('star_hd97101') + ' B' },
+    // hd97101 planets (K7V, 2, measured; none habitable); HZ 0.30-0.43 AU.
+    hd97101_p1: { dist: 0.2324, orbit: 50.8, size: 0.31, star: 'hd97101' },
+    hd97101_p2: { dist: 1.4, orbit: 749.83, size: 0.554, star: 'hd97101' },
+    // hd97101b planets (M2V, 2, generated; none habitable); HZ 0.16-0.23 AU.
+    hd97101b_p1: { dist: 0.0657, orbit: 9.27, size: 0.234, star: 'hd97101b' },
+    hd97101b_p2: { dist: 0.128, orbit: 25, size: 0.142, star: 'hd97101b' },
+    // Iota Pegasi -- single.
+    // F5V, 1.473 solar radii, 38.83 ly.
+    iotapegasi: { x: 301485.3, y: 2218174.326, z: -1008800.481, dist: 2455375.6, orbit: -2, size: 2.427, startype: 'F', label: loc('star_iotapegasi'), zlabel: loc('star_iotapegasi') },
+    // iotapegasi planets (F5V, 1, generated; habitable-zone world at ~2.08 AU); HZ 1.81-2.61 AU.
+    iotapegasi_p1: { dist: 2.08, orbit: 950, size: 0.296, star: 'iotapegasi', hz: true },
+    // Lambda Serpentis -- single.
+    // G0-V, 1.100 solar radii, 38.86 ly.
+    lambdaserpentis: { x: 1699122.795, y: 477496.42, z: 1710532.989, dist: 2457833.2, orbit: -2, size: 2.098, startype: 'G', label: loc('star_lambdaserpentis'), zlabel: loc('star_lambdaserpentis') },
+    // lambdaserpentis planets (G0-V, 1, measured; none habitable); HZ 1.10-1.59 AU.
+    lambdaserpentis_p1: { dist: 0.1238, orbit: 15.508, size: 0.371, star: 'lambdaserpentis' },
+    // HD 110380 -- 2 components.
+    // F0mF2V, 1.728 solar radii, 41.54 ly.
+    hd110380: { x: 588495.414, y: -1114603.968, z: 2304646.634, dist: 2626797.5, orbit: -2, size: 2.629, startype: 'F', label: loc('star_hd110380'), zlabel: loc('star_hd110380') + ' A' },
+    // F1-F2V, 1.679 solar radii, 41.54 ly.
+    hd110380b: { x: 588509.342, y: -1114595.413, z: 2304647.214, dist: 2626797.5, orbit: -2, size: 2.592, startype: 'F', zlabel: loc('star_hd110380') + ' B' },
+    // hd110380 planets (F0mF2V, 2, generated; none habitable); HZ 2.56-3.69 AU.
+    hd110380_p1: { dist: 0.886, orbit: 240, size: 0.142, star: 'hd110380' },
+    hd110380_p2: { dist: 1.8, orbit: 695, size: 0.191, star: 'hd110380' },
+    // hd110380b planets (F1-F2V, 3, generated; habitable-zone world at ~3.04 AU); HZ 2.36-3.40 AU.
+    hd110380b_p1: { dist: 0.648, orbit: 156, size: 0.296, star: 'hd110380b' },
+    hd110380b_p2: { dist: 1.39, orbit: 489, size: 0.427, star: 'hd110380b' },
+    hd110380b_p3: { dist: 3.04, orbit: 1581, size: 0.234, star: 'hd110380b', hz: true },
+    // Zeta2 Reticuli -- single.
+    // G1V, 1.060 solar radii, 39.27 ly.
+    zeta2reticuli: { x: 262982.872, y: -1666090.411, z: -1822576.922, dist: 2483305, orbit: -2, size: 2.059, startype: 'G', label: loc('star_zeta2reticuli'), zlabel: loc('star_zeta2reticuli') },
+    // zeta2reticuli planets (G1V, 4, generated; habitable-zone world at ~1.47 AU); HZ 1.04-1.50 AU.
+    zeta2reticuli_p1: { dist: 0.213, orbit: 35, size: 0.142, star: 'zeta2reticuli' },
+    zeta2reticuli_p2: { dist: 0.432, orbit: 102, size: 0.234, star: 'zeta2reticuli' },
+    zeta2reticuli_p3: { dist: 0.796, orbit: 256, size: 0.142, star: 'zeta2reticuli' },
+    zeta2reticuli_p4: { dist: 1.47, orbit: 641, size: 0.296, star: 'zeta2reticuli', hz: true },
+    // Zeta1 Reticuli -- single.
+    // G2.5VHdel1, 1.012 solar radii, 39.28 ly.
+    zeta1reticuli: { x: 266789.652, y: -1666332.93, z: -1823293.732, dist: 2484399.8, orbit: -2, size: 2.012, startype: 'G', label: loc('star_zeta1reticuli'), zlabel: loc('star_zeta1reticuli') },
+    // zeta1reticuli planets (G2.5VHdel1, 3, generated; habitable-zone world at ~1.35 AU); HZ 0.96-1.39 AU.
+    zeta1reticuli_p1: { dist: 0.418, orbit: 99, size: 0.191, star: 'zeta1reticuli' },
+    zeta1reticuli_p2: { dist: 0.91, orbit: 317, size: 0.142, star: 'zeta1reticuli' },
+    zeta1reticuli_p3: { dist: 1.35, orbit: 573, size: 0.142, star: 'zeta1reticuli', hz: true },
+    // Zeta Trianguli Australis -- single.
+    // F9V, 1.167 solar radii, 39.36 ly.
+    zetatrianguliaustralis: { x: 1832608.941, y: -1563493.342, z: -626299.967, dist: 2489019.6, orbit: -2, size: 2.161, startype: 'F', label: loc('star_zetatrianguliaustralis'), zlabel: loc('star_zetatrianguliaustralis') },
+    // zetatrianguliaustralis planets (F9V, 4, generated; none habitable); HZ 1.22-1.76 AU.
+    zetatrianguliaustralis_p1: { dist: 0.448, orbit: 103, size: 0.234, star: 'zetatrianguliaustralis' },
+    zetatrianguliaustralis_p2: { dist: 0.725, orbit: 212, size: 0.427, star: 'zetatrianguliaustralis' },
+    zetatrianguliaustralis_p3: { dist: 1.13, orbit: 413, size: 0.142, star: 'zetatrianguliaustralis' },
+    zetatrianguliaustralis_p4: { dist: 2.1, orbit: 1046, size: 0.296, star: 'zetatrianguliaustralis' },
+    // HD 72673 -- single.
+    // K1V, 0.797 solar radii, 39.67 ly.
+    hd72673: { x: -761182.971, y: -2380895.933, z: 217525.208, dist: 2509060, orbit: -2, size: 1.785, startype: 'K', label: loc('star_hd72673'), zlabel: loc('star_hd72673') },
+    // hd72673 planets (K1V, 4, generated; none habitable); HZ 0.61-0.87 AU.
+    hd72673_p1: { dist: 0.117, orbit: 16, size: 0.296, star: 'hd72673' },
+    hd72673_p2: { dist: 0.251, orbit: 50, size: 0.191, star: 'hd72673' },
+    hd72673_p3: { dist: 0.456, orbit: 121, size: 0.142, star: 'hd72673' },
+    hd72673_p4: { dist: 0.972, orbit: 377, size: 0.142, star: 'hd72673' },
+    // HD 37394 -- 2 components.
+    // K0V, 0.813 solar radii, 40.02 ly.
+    hd37394: { x: -2301965.301, y: 912133.615, z: 523838.779, dist: 2530896.9, orbit: -2, size: 1.803, startype: 'K', label: loc('star_hd37394'), zlabel: loc('star_hd37394') + ' A' },
+    // M1.0V, 0.501 solar radii, 40.02 ly.
+    hd37394b: { x: -2301823.087, y: 911828.885, z: 524992.957, dist: 2530896.9, orbit: -2, size: 1.416, startype: 'M', zlabel: loc('star_hd37394') + ' B' },
+    // hd37394 planets (K0V, 5, generated; habitable-zone world at ~0.786 AU); HZ 0.64-0.93 AU.
+    hd37394_p1: { dist: 0.163, orbit: 26, size: 0.296, star: 'hd37394' },
+    hd37394_p2: { dist: 0.306, orbit: 66, size: 0.234, star: 'hd37394' },
+    hd37394_p3: { dist: 0.522, orbit: 147, size: 0.191, star: 'hd37394' },
+    hd37394_p4: { dist: 0.786, orbit: 271, size: 0.296, star: 'hd37394', hz: true },
+    hd37394_p5: { dist: 1.4, orbit: 645, size: 0.296, star: 'hd37394' },
+    // hd37394b planets (M1.0V, 3, generated; habitable-zone world at ~0.252 AU); HZ 0.19-0.28 AU.
+    hd37394b_p1: { dist: 0.0316, orbit: 2.9, size: 0.142, star: 'hd37394b' },
+    hd37394b_p2: { dist: 0.0465, orbit: 5.18, size: 0.191, star: 'hd37394b' },
+    hd37394b_p3: { dist: 0.252, orbit: 65, size: 0.427, star: 'hd37394b', hz: true },
+    // HD 175224 -- 2 components.
+    // K5Ve, 0.701 solar radii, 40.26 ly.
+    hd175224: { x: 2206674.76, y: -788251.91, z: -995988.089, dist: 2546123.9, orbit: -2, size: 1.675, startype: 'K', label: loc('star_hd175224'), zlabel: loc('star_hd175224') + ' A' },
+    // K7Ve, 0.630 solar radii, 40.26 ly.
+    hd175224b: { x: 2206692.151, y: -788225.207, z: -995970.693, dist: 2546123.9, orbit: -2, size: 1.587, startype: 'K', zlabel: loc('star_hd175224') + ' B' },
+    // hd175224 planets (K5Ve, 4, generated; habitable-zone world at ~0.477 AU); HZ 0.40-0.57 AU.
+    hd175224_p1: { dist: 0.128, orbit: 20, size: 0.234, star: 'hd175224' },
+    hd175224_p2: { dist: 0.203, orbit: 40, size: 0.427, star: 'hd175224' },
+    hd175224_p3: { dist: 0.301, orbit: 72, size: 0.234, star: 'hd175224' },
+    hd175224_p4: { dist: 0.477, orbit: 144, size: 0.296, star: 'hd175224', hz: true },
+    // hd175224b planets (K7Ve, 4, generated; none habitable); HZ 0.30-0.43 AU.
+    hd175224b_p1: { dist: 0.135, orbit: 23, size: 0.191, star: 'hd175224b' },
+    hd175224b_p2: { dist: 0.273, orbit: 65, size: 0.296, star: 'hd175224b' },
+    hd175224b_p3: { dist: 0.568, orbit: 195, size: 0.427, star: 'hd175224b' },
+    hd175224b_p4: { dist: 1.2, orbit: 600, size: 0.633, star: 'hd175224b' },
+    // 85 Pegasi -- single.
+    // G5VbFe-2, 0.977 solar radii, 40.18 ly.
+    pegasi85: { x: -702549.587, y: 1972302.447, z: -1439596.285, dist: 2540864.1, orbit: -2, size: 1.977, startype: 'G', label: loc('star_pegasi85'), zlabel: loc('star_pegasi85') },
+    // pegasi85 planets (G5VbFe-2, 4, generated; none habitable); HZ 0.90-1.29 AU.
+    pegasi85_p1: { dist: 0.11, orbit: 13, size: 0.142, star: 'pegasi85' },
+    pegasi85_p2: { dist: 0.176, orbit: 27, size: 0.142, star: 'pegasi85' },
+    pegasi85_p3: { dist: 0.371, orbit: 83, size: 0.427, star: 'pegasi85' },
+    pegasi85_p4: { dist: 0.765, orbit: 247, size: 0.234, star: 'pegasi85' },
+    // HD 196877 -- single.
+    // K7V, 0.630 solar radii, 40.25 ly.
+    hd196877: { x: 1948039.403, y: -495586.933, z: -1561930.53, dist: 2545602.3, orbit: -2, size: 1.587, startype: 'K', label: loc('star_hd196877'), zlabel: loc('star_hd196877') },
+    // hd196877 planets (K7V, 5, generated; habitable-zone world at ~0.39 AU); HZ 0.30-0.43 AU.
+    hd196877_p1: { dist: 0.111, orbit: 17, size: 0.296, star: 'hd196877' },
+    hd196877_p2: { dist: 0.218, orbit: 46, size: 0.427, star: 'hd196877' },
+    hd196877_p3: { dist: 0.39, orbit: 111, size: 0.142, star: 'hd196877', hz: true },
+    hd196877_p4: { dist: 0.875, orbit: 374, size: 0.296, star: 'hd196877' },
+    hd196877_p5: { dist: 1.6, orbit: 924, size: 0.296, star: 'hd196877' },
+    // Beta Trianguli Australis -- single.
+    // F1V, 1.679 solar radii, 40.52 ly.
+    betatrianguliaustralis: { x: 1997862.257, y: -1569614.51, z: -335556.558, dist: 2562760.5, orbit: -2, size: 2.592, startype: 'F', label: loc('star_betatrianguliaustralis'), zlabel: loc('star_betatrianguliaustralis') },
+    // betatrianguliaustralis planets (F1V, 1, generated; none habitable); HZ 2.36-3.40 AU.
+    betatrianguliaustralis_p1: { dist: 0.816, orbit: 220, size: 0.234, star: 'betatrianguliaustralis' },
+    // HD 21531 -- single.
+    // K5V, 0.701 solar radii, 40.75 ly.
+    hd21531: { x: -1327603.512, y: -763643.601, z: -2072524.429, dist: 2577021.6, orbit: -2, size: 1.675, startype: 'K', label: loc('star_hd21531'), zlabel: loc('star_hd21531') },
+    // hd21531 planets (K5V, 2, generated; habitable-zone world at ~0.498 AU); HZ 0.40-0.57 AU.
+    hd21531_p1: { dist: 0.103, orbit: 14, size: 0.142, star: 'hd21531' },
+    hd21531_p2: { dist: 0.498, orbit: 153, size: 0.296, star: 'hd21531', hz: true },
+    // HD 133640 -- 2 components.
+    // F5V, 1.473 solar radii, 42.22 ly.
+    hd133640: { x: 242859.045, y: 1431265.864, z: 2241124.926, dist: 2670232.8, orbit: -2, size: 2.427, startype: 'F', label: loc('star_hd133640'), zlabel: loc('star_hd133640') + ' A' },
+    // G9:, 0.853 solar radii, 42.22 ly.
+    hd133640b: { x: 242861.031, y: 1431302.835, z: 2241101.099, dist: 2670232.8, orbit: -2, size: 1.847, startype: 'G', zlabel: loc('star_hd133640') + ' B' },
+    // hd133640 planets (F5V, 4, generated; habitable-zone world at ~2.23 AU); HZ 1.81-2.61 AU.
+    hd133640_p1: { dist: 0.494, orbit: 110, size: 0.234, star: 'hd133640' },
+    hd133640_p2: { dist: 1.12, orbit: 375, size: 0.142, star: 'hd133640' },
+    hd133640_p3: { dist: 2.23, orbit: 1055, size: 0.142, star: 'hd133640', hz: true },
+    hd133640_p4: { dist: 3.29, orbit: 1890, size: 0.427, star: 'hd133640' },
+    // hd133640b planets (G9:, 3, generated; habitable-zone world at ~0.996 AU); HZ 0.70-1.02 AU.
+    hd133640b_p1: { dist: 0.236, orbit: 44, size: 0.234, star: 'hd133640b' },
+    hd133640b_p2: { dist: 0.44, orbit: 112, size: 0.427, star: 'hd133640b' },
+    hd133640b_p3: { dist: 0.996, orbit: 383, size: 0.234, star: 'hd133640b', hz: true },
+    // Lambda Aurigae -- single.
+    // G1.5IV-VFe-1, 1.060 solar radii, 40.97 ly.
+    lambdaaurigae: { x: -2530610.16, y: 552688.168, z: 69680.158, dist: 2591198, orbit: -2, size: 2.059, startype: 'G', label: loc('star_lambdaaurigae'), zlabel: loc('star_lambdaaurigae') },
+    // lambdaaurigae planets (G1.5IV-VFe-1, 3, generated; habitable-zone world at ~1.19 AU); HZ 1.04-1.50 AU.
+    lambdaaurigae_p1: { dist: 0.136, orbit: 18, size: 0.142, star: 'lambdaaurigae' },
+    lambdaaurigae_p2: { dist: 0.261, orbit: 48, size: 0.427, star: 'lambdaaurigae' },
+    lambdaaurigae_p3: { dist: 1.19, orbit: 467, size: 0.234, star: 'lambdaaurigae', hz: true },
+    // HD 69830 -- single.
+    // G8:V, 0.914 solar radii, 41.03 ly.
+    hd69830: { x: -1466875.823, y: -2061305.361, z: 575895.806, dist: 2594679.3, orbit: -2, size: 1.912, startype: 'G', label: loc('star_hd69830'), zlabel: loc('star_hd69830') },
+    // hd69830 planets (G8:V, 3, measured; none habitable); HZ 0.78-1.13 AU.
+    hd69830_p1: { dist: 0.0785, orbit: 8.667, size: 0.34, star: 'hd69830' },
+    hd69830_p2: { dist: 0.186, orbit: 31.56, size: 0.355, star: 'hd69830' },
+    hd69830_p3: { dist: 0.63, orbit: 197, size: 0.403, star: 'hd69830' },
+    // Copernicus -- 2 components.
+    // K0IV-V, 0.813 solar radii, 41.05 ly.
+    copernicus: { x: -1966599.37, y: -593550.823, z: 1587617.576, dist: 2596217.5, orbit: -2, size: 1.803, startype: 'K', label: loc('star_copernicus'), zlabel: loc('star_copernicus') + ' A' },
+    // M4.5V, 0.217 solar radii, 41.05 ly.
+    copernicusb: { x: -1965971.338, y: -594235.698, z: 1588139.119, dist: 2596217.5, orbit: -2, size: 0.932, startype: 'M', zlabel: loc('star_copernicus') + ' B' },
+    // copernicus planets (K0IV-V, 5, measured; habitable-zone world at ~0.802 AU); HZ 0.64-0.93 AU.
+    copernicus_p1: { dist: 0.01544, orbit: 0.737, size: 0.262, star: 'copernicus' },
+    copernicus_p2: { dist: 0.118, orbit: 14.652, size: 0.712, star: 'copernicus' },
+    copernicus_p3: { dist: 0.247, orbit: 44.394, size: 0.557, star: 'copernicus' },
+    copernicus_p4: { dist: 0.802, orbit: 260.58, size: 0.526, star: 'copernicus', hz: true },
+    copernicus_p5: { dist: 5.6, orbit: 4799, size: 0.689, star: 'copernicus' },
+    // copernicusb planets (M4.5V, 2, measured; none habitable); HZ 0.06-0.09 AU.
+    copernicusb_p1: { dist: 0.044, orbit: 6.799, size: 0.248, star: 'copernicusb' },
+    copernicusb_p2: { dist: 0.13, orbit: 33.747, size: 0.281, star: 'copernicusb' },
+    // HD 190007 -- single.
+    // K5V, 0.701 solar radii, 41.47 ly.
+    hd190007: { x: 1819497.789, y: 1775579.587, z: -644367.035, dist: 2622682.6, orbit: -2, size: 1.675, startype: 'K', label: loc('star_hd190007'), zlabel: loc('star_hd190007') },
+    // hd190007 planets (K5V, 1, measured; none habitable); HZ 0.40-0.57 AU.
+    hd190007_p1: { dist: 0.092, orbit: 11.724, size: 0.385, star: 'hd190007' },
+    // HD 104304B -- single.
+    // G8IV, 2.194 solar radii, 41.64 ly.
+    hd104304b: { x: 380447.925, y: -1632391.231, z: 2030683.684, dist: 2633081.5, orbit: -2, size: 2.962, startype: 'G', label: loc('star_hd104304b'), zlabel: loc('star_hd104304b') },
+    // hd104304b planets (G8IV, 3, generated; habitable-zone world at ~2.25 AU); HZ 1.87-2.70 AU.
+    hd104304b_p1: { dist: 0.624, orbit: 157, size: 0.191, star: 'hd104304b' },
+    hd104304b_p2: { dist: 1.12, orbit: 377, size: 0.427, star: 'hd104304b' },
+    hd104304b_p3: { dist: 2.25, orbit: 1075, size: 0.427, star: 'hd104304b', hz: true },
+    // HD 101581 -- single.
+    // K4.5Vk:, 0.713 solar radii, 41.69 ly.
+    hd101581: { x: 859746.494, y: -2375009.736, z: 756726.441, dist: 2636753.7, orbit: -2, size: 1.689, startype: 'K', label: loc('star_hd101581'), zlabel: loc('star_hd101581') },
+    // hd101581 planets (K4.5Vk:, 2, measured; none habitable); HZ 0.43-0.62 AU.
+    hd101581_p1: { dist: 0.046, orbit: 4.466, size: 0.187, star: 'hd101581' },
+    hd101581_p2: { dist: 0.0573, orbit: 6.204, size: 0.19, star: 'hd101581' },
+    // HD 82106 -- single.
+    // K3V, 0.755 solar radii, 41.71 ly.
+    hd82106: { x: -1407955.163, y: -1545734.12, z: 1608285.861, dist: 2637842.9, orbit: -2, size: 1.738, startype: 'K', label: loc('star_hd82106'), zlabel: loc('star_hd82106') },
+    // hd82106 planets (K3V, 4, generated; habitable-zone world at ~0.632 AU); HZ 0.50-0.73 AU.
+    hd82106_p1: { dist: 0.0774, orbit: 8.91, size: 0.234, star: 'hd82106' },
+    hd82106_p2: { dist: 0.146, orbit: 23, size: 0.191, star: 'hd82106' },
+    hd82106_p3: { dist: 0.244, orbit: 50, size: 0.296, star: 'hd82106' },
+    hd82106_p4: { dist: 0.632, orbit: 208, size: 0.142, star: 'hd82106', hz: true },
+    // HD 158633 -- single.
+    // K0, 0.813 solar radii, 41.72 ly.
+    hd158633: { x: -290523.281, y: 2189365.625, z: 1443611.683, dist: 2638511, orbit: -2, size: 1.803, startype: 'K', label: loc('star_hd158633'), zlabel: loc('star_hd158633') },
+    // hd158633 planets (K0, 3, generated; habitable-zone world at ~0.746 AU); HZ 0.64-0.93 AU.
+    hd158633_p1: { dist: 0.184, orbit: 31, size: 0.191, star: 'hd158633' },
+    hd158633_p2: { dist: 0.345, orbit: 79, size: 0.191, star: 'hd158633' },
+    hd158633_p3: { dist: 0.746, orbit: 251, size: 0.191, star: 'hd158633', hz: true },
+    // HD 14412 -- single.
+    // G8V, 0.914 solar radii, 41.86 ly.
+    hd14412: { x: -731901.249, y: -502166.709, z: -2494104.113, dist: 2647339.5, orbit: -2, size: 1.912, startype: 'G', label: loc('star_hd14412'), zlabel: loc('star_hd14412') },
+    // hd14412 planets (G8V, 2, generated; habitable-zone world at ~0.918 AU); HZ 0.78-1.13 AU.
+    hd14412_p1: { dist: 0.223, orbit: 40, size: 0.234, star: 'hd14412' },
+    hd14412_p2: { dist: 0.918, orbit: 331, size: 0.234, star: 'hd14412', hz: true },
+    // HD 147513 -- single.
+    // G5V, 0.977 solar radii, 42.05 ly.
+    hd147513: { x: 2503619.632, y: -831830.909, z: 333872.638, dist: 2659233.9, orbit: -2, size: 1.977, startype: 'G', label: loc('star_hd147513'), zlabel: loc('star_hd147513') },
+    // hd147513 planets (G5V, 1, measured; none habitable); HZ 0.90-1.29 AU.
+    hd147513_p1: { dist: 1.32, orbit: 528.4, size: 0.707, star: 'hd147513' },
+    // 36 Ursae Majoris -- 2 components.
+    // F8V, 1.221 solar radii, 42.22 ly.
+    ursaemajoris36: { x: -1491006.605, y: 717835.504, z: 2095541.318, dist: 2670146.4, orbit: -2, size: 2.21, startype: 'F', label: loc('star_ursaemajoris36'), zlabel: loc('star_ursaemajoris36') + ' A' },
+    // K7Ve, 0.630 solar radii, 42.22 ly.
+    ursaemajoris36b: { x: -1492143.065, y: 718349.482, z: 2094556.043, dist: 2670146.4, orbit: -2, size: 1.587, startype: 'K', zlabel: loc('star_ursaemajoris36') + ' B' },
+    // ursaemajoris36 planets (F8V, 3, generated; habitable-zone world at ~1.69 AU); HZ 1.33-1.91 AU.
+    ursaemajoris36_p1: { dist: 0.172, orbit: 24, size: 0.234, star: 'ursaemajoris36' },
+    ursaemajoris36_p2: { dist: 0.366, orbit: 74, size: 0.296, star: 'ursaemajoris36' },
+    ursaemajoris36_p3: { dist: 1.69, orbit: 739, size: 0.296, star: 'ursaemajoris36', hz: true },
+    // ursaemajoris36b planets (K7Ve, 5, generated; habitable-zone world at ~0.344 AU); HZ 0.30-0.43 AU.
+    ursaemajoris36b_p1: { dist: 0.0807, orbit: 10, size: 0.142, star: 'ursaemajoris36b' },
+    ursaemajoris36b_p2: { dist: 0.136, orbit: 23, size: 0.427, star: 'ursaemajoris36b' },
+    ursaemajoris36b_p3: { dist: 0.344, orbit: 92, size: 0.427, star: 'ursaemajoris36b', hz: true },
+    ursaemajoris36b_p4: { dist: 0.593, orbit: 208, size: 0.191, star: 'ursaemajoris36b' },
+    ursaemajoris36b_p5: { dist: 1.17, orbit: 578, size: 0.296, star: 'ursaemajoris36b' },
+    // HD 36003 -- single.
+    // K5V, 0.701 solar radii, 42.17 ly.
+    hd36003: { x: -2244086.74, y: -1113805.964, z: -913516.384, dist: 2666646.1, orbit: -2, size: 1.675, startype: 'K', label: loc('star_hd36003'), zlabel: loc('star_hd36003') },
+    // hd36003 planets (K5V, 2, generated; none habitable); HZ 0.40-0.57 AU.
+    hd36003_p1: { dist: 0.139, orbit: 23, size: 0.191, star: 'hd36003' },
+    hd36003_p2: { dist: 0.296, orbit: 70, size: 0.296, star: 'hd36003' },
+    // HD 40307 -- single.
+    // K2.5V, 0.783 solar radii, 42.18 ly.
+    hd40307: { x: -47639.378, y: -2301636.31, z: -1347434.607, dist: 2667466.8, orbit: -2, size: 1.77, startype: 'K', label: loc('star_hd40307'), zlabel: loc('star_hd40307') },
+    // hd40307 planets (K2.5V, 5, measured; habitable-zone world at ~0.6 AU); HZ 0.58-0.84 AU.
+    hd40307_p1: { dist: 0.0468, orbit: 4.312, size: 0.27, star: 'hd40307' },
+    hd40307_p2: { dist: 0.0799, orbit: 9.618, size: 0.27, star: 'hd40307' },
+    hd40307_p3: { dist: 0.1321, orbit: 20.432, size: 0.27, star: 'hd40307' },
+    hd40307_p4: { dist: 0.247, orbit: 51.76, size: 0.279, star: 'hd40307' },
+    hd40307_p5: { dist: 0.6, orbit: 197.8, size: 0.306, star: 'hd40307', hz: true },
+    // HD 172051 -- single.
+    // G6V, 0.949 solar radii, 42.50 ly.
+    hd172051: { x: 2603380.205, y: 587895.189, z: -318084.875, dist: 2687822, orbit: -2, size: 1.948, startype: 'G', label: loc('star_hd172051'), zlabel: loc('star_hd172051') },
+    // hd172051 planets (G6V, 3, generated; habitable-zone world at ~1.1 AU); HZ 0.85-1.22 AU.
+    hd172051_p1: { dist: 0.29, orbit: 58, size: 0.234, star: 'hd172051' },
+    hd172051_p2: { dist: 0.5, orbit: 131, size: 0.191, star: 'hd172051' },
+    hd172051_p3: { dist: 1.1, orbit: 428, size: 0.427, star: 'hd172051', hz: true },
+    // HD 27274 -- single.
+    // K4.5Vk:, 0.713 solar radii, 42.54 ly.
+    hd27274: { x: -256684.119, y: -1905867.779, z: -1881656.539, dist: 2690511.1, orbit: -2, size: 1.689, startype: 'K', label: loc('star_hd27274'), zlabel: loc('star_hd27274') },
+    // hd27274 planets (K4.5Vk:, 4, generated; habitable-zone world at ~0.498 AU); HZ 0.43-0.62 AU.
+    hd27274_p1: { dist: 0.105, orbit: 15, size: 0.142, star: 'hd27274' },
+    hd27274_p2: { dist: 0.194, orbit: 37, size: 0.234, star: 'hd27274' },
+    hd27274_p3: { dist: 0.318, orbit: 77, size: 0.142, star: 'hd27274' },
+    hd27274_p4: { dist: 0.498, orbit: 150, size: 0.296, star: 'hd27274', hz: true },
+    // Capella -- single.
+    // G3III:, 10.020 solar radii, 42.80 ly.
+    capella: { x: -2574659.232, y: 807418.34, z: 215508.411, dist: 2706887.2, orbit: -2, size: 6.331, startype: 'G', label: loc('star_capella'), zlabel: loc('star_capella') },
+    // capella planets (G3III:, 3, generated; habitable-zone world at ~10.5 AU); HZ 9.39-13.54 AU.
+    capella_p1: { dist: 2.62, orbit: 1316, size: 0.234, star: 'capella' },
+    capella_p2: { dist: 5.71, orbit: 4233, size: 0.142, star: 'capella' },
+    capella_p3: { dist: 10.5, orbit: 10556, size: 0.296, star: 'capella', hz: true },
+    // HD 98712 -- 2 components.
+    // K7V, 0.630 solar radii, 44.76 ly.
+    hd98712: { x: 234227.173, y: -2228548.603, z: 1729823.622, dist: 2830826.9, orbit: -2, size: 1.587, startype: 'K', label: loc('star_hd98712'), zlabel: loc('star_hd98712') + ' A' },
+    // M2.5Ve, 0.421 solar radii, 44.76 ly.
+    hd98712b: { x: 234183.303, y: -2228522.306, z: 1729863.44, dist: 2830826.9, orbit: -2, size: 1.298, startype: 'M', zlabel: loc('star_hd98712') + ' B' },
+    // hd98712 planets (K7V, 2, generated; habitable-zone world at ~0.377 AU); HZ 0.30-0.43 AU.
+    hd98712_p1: { dist: 0.0407, orbit: 3.75, size: 0.234, star: 'hd98712' },
+    hd98712_p2: { dist: 0.377, orbit: 106, size: 0.427, star: 'hd98712', hz: true },
+    // hd98712b planets (M2.5Ve, 3, generated; habitable-zone world at ~0.148 AU); HZ 0.14-0.21 AU.
+    hd98712b_p1: { dist: 0.0346, orbit: 3.72, size: 0.296, star: 'hd98712b' },
+    hd98712b_p2: { dist: 0.0661, orbit: 9.81, size: 0.142, star: 'hd98712b' },
+    hd98712b_p3: { dist: 0.148, orbit: 33, size: 0.234, star: 'hd98712b', hz: true },
+    // HD 211970 -- single.
+    // K7Vk:, 0.630 solar radii, 42.83 ly.
+    hd211970: { x: 1556489.092, y: -652854.58, z: -2118054.774, dist: 2708326.7, orbit: -2, size: 1.587, startype: 'K', label: loc('star_hd211970'), zlabel: loc('star_hd211970') },
+    // hd211970 planets (K7Vk:, 1, measured; none habitable); HZ 0.30-0.43 AU.
+    hd211970_p1: { dist: 0.143, orbit: 25.201, size: 0.365, star: 'hd211970' },
+    // HD 170657 -- single.
+    // K2V, 0.783 solar radii, 43.00 ly.
+    hd170657: { x: 2633316.542, y: 648610.797, z: -201076.184, dist: 2719463.8, orbit: -2, size: 1.77, startype: 'K', label: loc('star_hd170657'), zlabel: loc('star_hd170657') },
+    // hd170657 planets (K2V, 4, generated; habitable-zone world at ~0.6 AU); HZ 0.58-0.84 AU.
+    hd170657_p1: { dist: 0.203, orbit: 37, size: 0.191, star: 'hd170657' },
+    hd170657_p2: { dist: 0.407, orbit: 105, size: 0.191, star: 'hd170657' },
+    hd170657_p3: { dist: 0.6, orbit: 187, size: 0.142, star: 'hd170657', hz: true },
+    hd170657_p4: { dist: 1.25, orbit: 564, size: 0.191, star: 'hd170657' },
+    // HD 29697 -- single.
+    // K4V, 0.713 solar radii, 43.09 ly.
+    hd29697: { x: -2611349.799, y: 83324.021, z: -775120.085, dist: 2725234.3, orbit: -2, size: 1.689, startype: 'K', label: loc('star_hd29697'), zlabel: loc('star_hd29697') },
+    // hd29697 planets (K4V, 4, generated; habitable-zone world at ~0.564 AU); HZ 0.43-0.62 AU.
+    hd29697_p1: { dist: 0.127, orbit: 19, size: 0.142, star: 'hd29697' },
+    hd29697_p2: { dist: 0.29, orbit: 67, size: 0.142, star: 'hd29697' },
+    hd29697_p3: { dist: 0.564, orbit: 181, size: 0.191, star: 'hd29697', hz: true },
+    hd29697_p4: { dist: 1.15, orbit: 527, size: 0.191, star: 'hd29697' },
+    // HD 128165 -- single.
+    // K3, 0.755 solar radii, 43.16 ly.
+    hd128165: { x: -90119.92, y: 1443213.077, z: 2314983.385, dist: 2729493.3, orbit: -2, size: 1.738, startype: 'K', label: loc('star_hd128165'), zlabel: loc('star_hd128165') },
+    // hd128165 planets (K3, 3, generated; habitable-zone world at ~0.645 AU); HZ 0.50-0.73 AU.
+    hd128165_p1: { dist: 0.133, orbit: 20, size: 0.142, star: 'hd128165' },
+    hd128165_p2: { dist: 0.304, orbit: 69, size: 0.427, star: 'hd128165' },
+    hd128165_p3: { dist: 0.645, orbit: 214, size: 0.234, star: 'hd128165', hz: true },
+    // 58 Eridani -- single.
+    // G2.5IV-V, 1.012 solar radii, 43.18 ly.
+    eridani58: { x: -1828636.221, y: -1297805.644, z: -1558787.025, dist: 2730938.8, orbit: -2, size: 2.012, startype: 'G', label: loc('star_eridani58'), zlabel: loc('star_eridani58') },
+    // eridani58 planets (G2.5IV-V, 4, generated; habitable-zone world at ~1.38 AU); HZ 0.96-1.39 AU.
+    eridani58_p1: { dist: 0.191, orbit: 30, size: 0.142, star: 'eridani58' },
+    eridani58_p2: { dist: 0.4, orbit: 92, size: 0.191, star: 'eridani58' },
+    eridani58_p3: { dist: 0.698, orbit: 213, size: 0.191, star: 'eridani58' },
+    eridani58_p4: { dist: 1.38, orbit: 592, size: 0.427, star: 'eridani58', hz: true },
+    // HD 214749 -- single.
+    // K4.5Vk, 0.713 solar radii, 43.30 ly.
+    hd214749: { x: 1237680.117, y: 452127.968, z: -2400463.792, dist: 2738338.6, orbit: -2, size: 1.689, startype: 'K', label: loc('star_hd214749'), zlabel: loc('star_hd214749') },
+    // hd214749 planets (K4.5Vk, 1, generated; none habitable); HZ 0.43-0.62 AU.
+    hd214749_p1: { dist: 0.133, orbit: 21, size: 0.234, star: 'hd214749' },
+    // HD 120476a -- 2 components.
+    // K4V, 0.713 solar radii, 44.02 ly.
+    hd120476a: { x: 502659.91, y: 359382.419, z: 2714392.643, dist: 2783837.3, orbit: -2, size: 1.689, startype: 'K', label: loc('star_hd120476a'), zlabel: loc('star_hd120476a') + ' A' },
+    // K6V, 0.669 solar radii, 44.02 ly.
+    hd120476ab: { x: 502694.539, y: 359348.886, z: 2714390.67, dist: 2783837.3, orbit: -2, size: 1.636, startype: 'K', zlabel: loc('star_hd120476a') + ' B' },
+    // hd120476a planets (K4V, 3, generated; habitable-zone world at ~0.529 AU); HZ 0.43-0.62 AU.
+    hd120476a_p1: { dist: 0.0776, orbit: 9.24, size: 0.191, star: 'hd120476a' },
+    hd120476a_p2: { dist: 0.166, orbit: 29, size: 0.191, star: 'hd120476a' },
+    hd120476a_p3: { dist: 0.529, orbit: 164, size: 0.427, star: 'hd120476a', hz: true },
+    // hd120476ab planets (K6V, 4, generated; habitable-zone world at ~0.422 AU); HZ 0.35-0.51 AU.
+    hd120476ab_p1: { dist: 0.106, orbit: 15, size: 0.234, star: 'hd120476ab' },
+    hd120476ab_p2: { dist: 0.207, orbit: 41, size: 0.296, star: 'hd120476ab' },
+    hd120476ab_p3: { dist: 0.422, orbit: 121, size: 0.427, star: 'hd120476ab', hz: true },
+    hd120476ab_p4: { dist: 0.879, orbit: 362, size: 0.296, star: 'hd120476ab' },
+    // Titawin -- 2 components.
+    // F9V, 1.167 solar radii, 43.96 ly.
+    titawin: { x: -1740561.615, y: 1933029.015, z: -981149.942, dist: 2780073.9, orbit: -2, size: 2.161, startype: 'F', label: loc('star_titawin'), zlabel: loc('star_titawin') + ' A' },
+    // M4.5V, 0.217 solar radii, 43.96 ly.
+    titawinb: { x: -1740802.957, y: 1932547.261, z: -981670.652, dist: 2780073.9, orbit: -2, size: 0.932, startype: 'M', zlabel: loc('star_titawin') + ' B' },
+    // titawin planets (F9V, 3, measured; none habitable); HZ 1.22-1.76 AU.
+    titawin_p1: { dist: 0.0592217, orbit: 4.617, size: 0.715, star: 'titawin' },
+    titawin_p2: { dist: 0.827774, orbit: 241.258, size: 0.67, star: 'titawin' },
+    titawin_p3: { dist: 2.51329, orbit: 1276.46, size: 0.675, star: 'titawin' },
+    // titawinb planets (M4.5V, 5, generated; habitable-zone world at ~0.0635 AU); HZ 0.06-0.09 AU.
+    titawinb_p1: { dist: 0.012, orbit: 1.12, size: 0.191, star: 'titawinb' },
+    titawinb_p2: { dist: 0.0181, orbit: 2.07, size: 0.296, star: 'titawinb' },
+    titawinb_p3: { dist: 0.0305, orbit: 4.54, size: 0.296, star: 'titawinb' },
+    titawinb_p4: { dist: 0.0635, orbit: 14, size: 0.191, star: 'titawinb', hz: true },
+    titawinb_p5: { dist: 0.103, orbit: 28, size: 0.234, star: 'titawinb' },
+    // Gliese 215 -- single.
+    // K7V, 0.630 solar radii, 44.00 ly.
+    gliese215: { x: -2325950.542, y: 1303576.968, z: 796971.923, dist: 2782898.3, orbit: -2, size: 1.587, startype: 'K', label: loc('star_gliese215'), zlabel: loc('star_gliese215') },
+    // gliese215 planets (K7V, 5, generated; habitable-zone world at ~0.321 AU); HZ 0.30-0.43 AU.
+    gliese215_p1: { dist: 0.0365, orbit: 3.18, size: 0.142, star: 'gliese215' },
+    gliese215_p2: { dist: 0.0597, orbit: 6.66, size: 0.296, star: 'gliese215' },
+    gliese215_p3: { dist: 0.109, orbit: 16, size: 0.234, star: 'gliese215' },
+    gliese215_p4: { dist: 0.182, orbit: 35, size: 0.234, star: 'gliese215' },
+    gliese215_p5: { dist: 0.321, orbit: 83, size: 0.191, star: 'gliese215', hz: true },
+    // HD 10436 -- single.
+    // K5Vbe, 0.701 solar radii, 44.09 ly.
+    hd10436: { x: -1740991.809, y: 2176607.413, z: 74624.78, dist: 2788232.6, orbit: -2, size: 1.675, startype: 'K', label: loc('star_hd10436'), zlabel: loc('star_hd10436') },
+    // hd10436 planets (K5Vbe, 4, generated; habitable-zone world at ~0.532 AU); HZ 0.40-0.57 AU.
+    hd10436_p1: { dist: 0.124, orbit: 19, size: 0.296, star: 'hd10436' },
+    hd10436_p2: { dist: 0.237, orbit: 50, size: 0.142, star: 'hd10436' },
+    hd10436_p3: { dist: 0.532, orbit: 169, size: 0.191, star: 'hd10436', hz: true },
+    hd10436_p4: { dist: 0.878, orbit: 359, size: 0.296, star: 'hd10436' },
+    // Theta Ursae Majoris -- single.
+    // F7V, 1.324 solar radii, 44.18 ly.
+    thetaursaemajoris: { x: -1890480.137, y: 490237.884, z: 1997823.523, dist: 2793840.9, orbit: -2, size: 2.301, startype: 'F', label: loc('star_thetaursaemajoris'), zlabel: loc('star_thetaursaemajoris') },
+    // thetaursaemajoris planets (F7V, 4, generated; habitable-zone world at ~1.77 AU); HZ 1.49-2.15 AU.
+    thetaursaemajoris_p1: { dist: 0.621, orbit: 162, size: 0.296, star: 'thetaursaemajoris' },
+    thetaursaemajoris_p2: { dist: 1.77, orbit: 782, size: 0.427, star: 'thetaursaemajoris', hz: true },
+    thetaursaemajoris_p3: { dist: 3.06, orbit: 1777, size: 0.427, star: 'thetaursaemajoris' },
+    thetaursaemajoris_p4: { dist: 5.17, orbit: 3903, size: 0.296, star: 'thetaursaemajoris' },
+    // HD 145417 -- single.
+    // K3VFe-1.7, 0.755 solar radii, 44.35 ly.
+    hd145417: { x: 2357279.067, y: -1501873.298, z: -229666.629, dist: 2804484.8, orbit: -2, size: 1.738, startype: 'K', label: loc('star_hd145417'), zlabel: loc('star_hd145417') },
+    // hd145417 planets (K3VFe-1.7, 1, generated; habitable-zone world at ~0.635 AU); HZ 0.50-0.73 AU.
+    hd145417_p1: { dist: 0.635, orbit: 209, size: 0.191, star: 'hd145417', hz: true },
+    // Alshain -- 2 components.
+    // G8IV, 2.194 solar radii, 44.36 ly.
+    alshain: { x: 1908012.1, y: 1984480.213, z: -539859.778, dist: 2805373.5, orbit: -2, size: 2.962, startype: 'G', label: loc('star_alshain'), zlabel: loc('star_alshain') + ' A' },
+    // M3, 0.361 solar radii, 44.36 ly.
+    alshainb: { x: 1907908.259, y: 1984601.802, z: -539779.801, dist: 2805373.5, orbit: -2, size: 1.202, startype: 'M', zlabel: loc('star_alshain') + ' B' },
+    // alshain planets (G8IV, 3, generated; habitable-zone world at ~2.49 AU); HZ 1.87-2.70 AU.
+    alshain_p1: { dist: 0.562, orbit: 134, size: 0.234, star: 'alshain' },
+    alshain_p2: { dist: 1.25, orbit: 445, size: 0.427, star: 'alshain' },
+    alshain_p3: { dist: 2.49, orbit: 1251, size: 0.427, star: 'alshain', hz: true },
+    // alshainb planets (M3, 2, generated; none habitable); HZ 0.12-0.17 AU.
+    alshainb_p1: { dist: 0.0273, orbit: 2.71, size: 0.296, star: 'alshainb' },
+    alshainb_p2: { dist: 0.0406, orbit: 4.91, size: 0.191, star: 'alshainb' },
+    // HD 22496 -- single.
+    // K5V, 0.701 solar radii, 44.36 ly.
+    hd22496: { x: -356637.525, y: -1691645.976, z: -2209600.541, dist: 2805564.3, orbit: -2, size: 1.675, startype: 'K', label: loc('star_hd22496'), zlabel: loc('star_hd22496') },
+    // hd22496 planets (K5V, 1, measured; none habitable); HZ 0.40-0.57 AU.
+    hd22496_p1: { dist: 0.051, orbit: 5.091, size: 0.285, star: 'hd22496' },
+    // 17 Piscium -- single.
+    // F7V, 1.324 solar radii, 44.53 ly.
+    piscium17: { x: -72924.147, y: 1694798.072, z: -2248212.555, dist: 2816401.6, orbit: -2, size: 2.301, startype: 'F', label: loc('star_piscium17'), zlabel: loc('star_piscium17') },
+    // piscium17 planets (F7V, 4, generated; habitable-zone world at ~1.65 AU); HZ 1.49-2.15 AU.
+    piscium17_p1: { dist: 0.344, orbit: 67, size: 0.296, star: 'piscium17' },
+    piscium17_p2: { dist: 0.623, orbit: 163, size: 0.427, star: 'piscium17' },
+    piscium17_p3: { dist: 0.981, orbit: 323, size: 0.234, star: 'piscium17' },
+    piscium17_p4: { dist: 1.65, orbit: 704, size: 0.296, star: 'piscium17', hz: true },
+    // Gliese 400 -- 2 components.
+    // K7/M0V, 0.630 solar radii, 45.22 ly.
+    gliese400: { x: -1370705.088, y: -35884.94, z: 2509888.276, dist: 2860010.4, orbit: -2, size: 1.587, startype: 'K', label: loc('star_gliese400'), zlabel: loc('star_gliese400') + ' A' },
+    // K7/M0V, 0.630 solar radii, 45.22 ly.
+    gliese400b: { x: -1370725.174, y: -35862.511, z: 2509877.627, dist: 2860010.4, orbit: -2, size: 1.587, startype: 'K', zlabel: loc('star_gliese400') + ' B' },
+    // gliese400 planets (K7/M0V, 3, generated; habitable-zone world at ~0.355 AU); HZ 0.30-0.43 AU.
+    gliese400_p1: { dist: 0.112, orbit: 17, size: 0.191, star: 'gliese400' },
+    gliese400_p2: { dist: 0.171, orbit: 32, size: 0.234, star: 'gliese400' },
+    gliese400_p3: { dist: 0.355, orbit: 97, size: 0.234, star: 'gliese400', hz: true },
+    // gliese400b planets (K7/M0V, 3, generated; habitable-zone world at ~0.37 AU); HZ 0.30-0.43 AU.
+    gliese400b_p1: { dist: 0.112, orbit: 17, size: 0.142, star: 'gliese400b' },
+    gliese400b_p2: { dist: 0.249, orbit: 57, size: 0.142, star: 'gliese400b' },
+    gliese400b_p3: { dist: 0.37, orbit: 103, size: 0.427, star: 'gliese400b', hz: true },
+    // HD 154577 -- single.
+    // K2.5Vk:, 0.783 solar radii, 44.77 ly.
+    hd154577: { x: 2391960.047, y: -1391087.924, z: -599318.439, dist: 2831215.5, orbit: -2, size: 1.77, startype: 'K', label: loc('star_hd154577'), zlabel: loc('star_hd154577') },
+    // hd154577 planets (K2.5Vk:, 3, generated; habitable-zone world at ~0.691 AU); HZ 0.58-0.84 AU.
+    hd154577_p1: { dist: 0.148, orbit: 23, size: 0.142, star: 'hd154577' },
+    hd154577_p2: { dist: 0.317, orbit: 72, size: 0.191, star: 'hd154577' },
+    hd154577_p3: { dist: 0.691, orbit: 232, size: 0.191, star: 'hd154577', hz: true },
+    // HD 166 -- single.
+    // G8V, 0.914 solar radii, 44.90 ly.
+    hd166: { x: -865265.427, y: 2223464.755, z: -1539524.068, dist: 2839474.3, orbit: -2, size: 1.912, startype: 'G', label: loc('star_hd166'), zlabel: loc('star_hd166') },
+    // hd166 planets (G8V, 3, generated; habitable-zone world at ~0.893 AU); HZ 0.78-1.13 AU.
+    hd166_p1: { dist: 0.156, orbit: 23, size: 0.234, star: 'hd166' },
+    hd166_p2: { dist: 0.327, orbit: 70, size: 0.234, star: 'hd166' },
+    hd166_p3: { dist: 0.893, orbit: 318, size: 0.142, star: 'hd166', hz: true },
+    // Errai -- single.
+    // K1III-IVCN1, 7.970 solar radii, 44.98 ly.
+    errai: { x: -1329683.988, y: 2399577.763, z: 751295.818, dist: 2844376.6, orbit: -2, size: 5.646, startype: 'KIII', label: loc('star_errai'), zlabel: loc('star_errai') },
+    // errai planets (K1III-IVCN1, 1, measured; none habitable); HZ 6.06-8.74 AU.
+    errai_p1: { dist: 2.13, orbit: 913, size: 0.681, star: 'errai' },
+    // Chalawan -- single.
+    // G1-VFe-0.5, 1.060 solar radii, 45.30 ly.
+    chalawan: { x: -1280516.535, y: 94429.932, z: 2560621.149, dist: 2864510.5, orbit: -2, size: 2.059, startype: 'G', label: loc('star_chalawan'), zlabel: loc('star_chalawan') },
+    // chalawan planets (G1-VFe-0.5, 3, measured; none habitable); HZ 1.04-1.50 AU.
+    chalawan_p1: { dist: 2.1, orbit: 1078, size: 0.694, star: 'chalawan' },
+    chalawan_p2: { dist: 3.6, orbit: 2391, size: 0.72, star: 'chalawan' },
+    chalawan_p3: { dist: 11.6, orbit: 14002, size: 0.702, star: 'chalawan' },
+    // 10 Tauri -- single.
+    // F9IV-V, 1.167 solar radii, 45.40 ly.
+    tauri10: { x: -2136340.813, y: -191585.271, z: -1908833.41, dist: 2871289.3, orbit: -2, size: 2.161, startype: 'F', label: loc('star_tauri10'), zlabel: loc('star_tauri10') },
+    // tauri10 planets (F9IV-V, 2, generated; none habitable); HZ 1.22-1.76 AU.
+    tauri10_p1: { dist: 0.331, orbit: 65, size: 0.142, star: 'tauri10' },
+    tauri10_p2: { dist: 0.632, orbit: 173, size: 0.234, star: 'tauri10' },
+    // HD 281621 -- single.
+    // K7V, 0.630 solar radii, 45.41 ly.
+    hd281621: { x: -2677596.412, y: 799667.375, z: -662368.889, dist: 2871884.9, orbit: -2, size: 1.587, startype: 'K', label: loc('star_hd281621'), zlabel: loc('star_hd281621') },
+    // hd281621 planets (K7V, 3, generated; none habitable); HZ 0.30-0.43 AU.
+    hd281621_p1: { dist: 0.0585, orbit: 6.46, size: 0.191, star: 'hd281621' },
+    hd281621_p2: { dist: 0.101, orbit: 15, size: 0.296, star: 'hd281621' },
+    hd281621_p3: { dist: 0.187, orbit: 37, size: 0.427, star: 'hd281621' },
+    // HD 23356 -- single.
+    // K2V, 0.783 solar radii, 45.46 ly.
+    hd23356: { x: -1594482.004, y: -953643.207, z: -2193714.619, dist: 2874750.8, orbit: -2, size: 1.77, startype: 'K', label: loc('star_hd23356'), zlabel: loc('star_hd23356') },
+    // hd23356 planets (K2V, 5, generated; habitable-zone world at ~0.659 AU); HZ 0.58-0.84 AU.
+    hd23356_p1: { dist: 0.0912, orbit: 11, size: 0.142, star: 'hd23356' },
+    hd23356_p2: { dist: 0.154, orbit: 24, size: 0.234, star: 'hd23356' },
+    hd23356_p3: { dist: 0.295, orbit: 65, size: 0.234, star: 'hd23356' },
+    hd23356_p4: { dist: 0.659, orbit: 216, size: 0.191, star: 'hd23356', hz: true },
+    hd23356_p5: { dist: 1.11, orbit: 472, size: 0.142, star: 'hd23356' },
+    // HD 5133 -- single.
+    // K2.5Vk:, 0.783 solar radii, 45.47 ly.
+    hd5133: { x: 73697.937, y: -145268.089, z: -2871119.574, dist: 2875736.7, orbit: -2, size: 1.77, startype: 'K', label: loc('star_hd5133'), zlabel: loc('star_hd5133') },
+    // hd5133 planets (K2.5Vk:, 1, generated; none habitable); HZ 0.58-0.84 AU.
+    hd5133_p1: { dist: 0.206, orbit: 38, size: 0.296, star: 'hd5133' },
+    // HD 20010 -- 2 components.
+    // G7V, 0.927 solar radii, 45.93 ly.
+    hd20010: { x: -1061903.095, y: -1051901.144, z: -2490698.246, dist: 2904774, orbit: -2, size: 1.926, startype: 'G', label: loc('star_hd20010'), zlabel: loc('star_hd20010') + ' A' },
+    // F6V, 1.359 solar radii, 45.93 ly.
+    hd20010b: { x: -1061910.461, y: -1051964.119, z: -2490668.508, dist: 2904774, orbit: -2, size: 2.332, startype: 'F', zlabel: loc('star_hd20010') + ' B' },
+    // hd20010 planets (G7V, 2, generated; habitable-zone world at ~0.991 AU); HZ 0.82-1.18 AU.
+    hd20010_p1: { dist: 0.365, orbit: 83, size: 0.142, star: 'hd20010' },
+    hd20010_p2: { dist: 0.991, orbit: 370, size: 0.234, star: 'hd20010', hz: true },
+    // hd20010b planets (F6V, 4, generated; none habitable); HZ 1.56-2.25 AU.
+    hd20010b_p1: { dist: 0.226, orbit: 35, size: 0.234, star: 'hd20010b' },
+    hd20010b_p2: { dist: 0.402, orbit: 83, size: 0.296, star: 'hd20010b' },
+    hd20010b_p3: { dist: 0.766, orbit: 219, size: 0.296, star: 'hd20010b' },
+    hd20010b_p4: { dist: 1.29, orbit: 479, size: 0.234, star: 'hd20010b' },
+    // HD 211415 -- single.
+    // G0V, 1.100 solar radii, 45.88 ly.
+    hd211415: { x: 1690440.643, y: -648522.82, z: -2267024.479, dist: 2901305.1, orbit: -2, size: 2.098, startype: 'G', label: loc('star_hd211415'), zlabel: loc('star_hd211415') },
+    // hd211415 planets (G0V, 4, generated; habitable-zone world at ~1.34 AU); HZ 1.10-1.59 AU.
+    hd211415_p1: { dist: 0.376, orbit: 82, size: 0.142, star: 'hd211415' },
+    hd211415_p2: { dist: 0.647, orbit: 185, size: 0.296, star: 'hd211415' },
+    hd211415_p3: { dist: 1.34, orbit: 550, size: 0.234, star: 'hd211415', hz: true },
+    hd211415_p4: { dist: 1.95, orbit: 966, size: 0.191, star: 'hd211415' },
+    // HD 120467 -- single.
+    // K6Va, 0.669 solar radii, 45.89 ly.
+    hd120467: { x: 1741438.947, y: -1443888.606, z: 1817660.642, dist: 2901950.1, orbit: -2, size: 1.636, startype: 'K', label: loc('star_hd120467'), zlabel: loc('star_hd120467') },
+    // hd120467 planets (K6Va, 2, generated; none habitable); HZ 0.35-0.51 AU.
+    hd120467_p1: { dist: 0.0476, orbit: 4.57, size: 0.191, star: 'hd120467' },
+    hd120467_p2: { dist: 0.091, orbit: 12, size: 0.296, star: 'hd120467' },
+    // HD 61606B -- single.
+    // K7V, 0.630 solar radii, 45.94 ly.
+    hd61606b: { x: -2139551.22, y: -1911111.726, z: 460007.747, dist: 2905449.1, orbit: -2, size: 1.587, startype: 'K', label: loc('star_hd61606b'), zlabel: loc('star_hd61606b') },
+    // hd61606b planets (K7V, 3, generated; habitable-zone world at ~0.384 AU); HZ 0.30-0.43 AU.
+    hd61606b_p1: { dist: 0.0801, orbit: 10, size: 0.142, star: 'hd61606b' },
+    hd61606b_p2: { dist: 0.134, orbit: 22, size: 0.142, star: 'hd61606b' },
+    hd61606b_p3: { dist: 0.384, orbit: 109, size: 0.142, star: 'hd61606b', hz: true },
+    // HD 110315 -- single.
+    // K4.5V, 0.713 solar radii, 46.02 ly.
+    hd110315: { x: 215394.883, y: -565098.066, z: 2846553.254, dist: 2910085.3, orbit: -2, size: 1.689, startype: 'K', label: loc('star_hd110315'), zlabel: loc('star_hd110315') },
+    // hd110315 planets (K4.5V, 5, generated; habitable-zone world at ~0.553 AU); HZ 0.43-0.62 AU.
+    hd110315_p1: { dist: 0.0753, orbit: 8.83, size: 0.142, star: 'hd110315' },
+    hd110315_p2: { dist: 0.151, orbit: 25, size: 0.191, star: 'hd110315' },
+    hd110315_p3: { dist: 0.313, orbit: 75, size: 0.234, star: 'hd110315' },
+    hd110315_p4: { dist: 0.553, orbit: 176, size: 0.427, star: 'hd110315', hz: true },
+    hd110315_p5: { dist: 1.24, orbit: 590, size: 0.573, star: 'hd110315' },
+    // 18 Scorpii -- single.
+    // G2Va, 1.012 solar radii, 46.11 ly.
+    scorpii18: { x: 2537905.615, y: 208440.12, z: 1420657.032, dist: 2915935.3, orbit: -2, size: 2.012, startype: 'G', label: loc('star_scorpii18'), zlabel: loc('star_scorpii18') },
+    // scorpii18 planets (G2Va, 2, generated; habitable-zone world at ~1.15 AU); HZ 0.96-1.39 AU.
+    scorpii18_p1: { dist: 0.257, orbit: 48, size: 0.191, star: 'scorpii18' },
+    scorpii18_p2: { dist: 1.15, orbit: 450, size: 0.427, star: 'scorpii18', hz: true },
+    // HD 188088 -- 2 components.
+    // K3VaCN1, 0.755 solar radii, 46.13 ly.
+    hd188088: { x: 2548103.433, y: 787448.533, z: -1182563.94, dist: 2917424.2, orbit: -2, size: 1.738, startype: 'K', label: loc('star_hd188088'), zlabel: loc('star_hd188088') + ' A' },
+    // M5, 0.196 solar radii, 46.13 ly.
+    hd188088b: { x: 2547867.148, y: 787404.456, z: -1183102.272, dist: 2917424.2, orbit: -2, size: 0.885, startype: 'M', zlabel: loc('star_hd188088') + ' B' },
+    // hd188088 planets (K3VaCN1, 2, generated; habitable-zone world at ~0.609 AU); HZ 0.50-0.73 AU.
+    hd188088_p1: { dist: 0.175, orbit: 30, size: 0.142, star: 'hd188088' },
+    hd188088_p2: { dist: 0.609, orbit: 197, size: 0.234, star: 'hd188088', hz: true },
+    // hd188088b planets (M5, 3, generated; none habitable); HZ 0.05-0.08 AU.
+    hd188088b_p1: { dist: 0.012, orbit: 1.19, size: 0.191, star: 'hd188088b' },
+    hd188088b_p2: { dist: 0.0228, orbit: 3.12, size: 0.427, star: 'hd188088b' },
+    hd188088b_p3: { dist: 0.0367, orbit: 6.38, size: 0.296, star: 'hd188088b' },
+    // HD 150689 -- single.
+    // K3V, 0.755 solar radii, 46.38 ly.
+    hd150689: { x: 2817368.397, y: -783128.786, z: 229127.695, dist: 2933147.6, orbit: -2, size: 1.738, startype: 'K', label: loc('star_hd150689'), zlabel: loc('star_hd150689') },
+    // hd150689 planets (K3V, 5, generated; habitable-zone world at ~0.584 AU); HZ 0.50-0.73 AU.
+    hd150689_p1: { dist: 0.0878, orbit: 11, size: 0.296, star: 'hd150689' },
+    hd150689_p2: { dist: 0.154, orbit: 25, size: 0.234, star: 'hd150689' },
+    hd150689_p3: { dist: 0.241, orbit: 49, size: 0.191, star: 'hd150689' },
+    hd150689_p4: { dist: 0.389, orbit: 100, size: 0.427, star: 'hd150689' },
+    hd150689_p5: { dist: 0.584, orbit: 185, size: 0.296, star: 'hd150689', hz: true },
+    // HD 234078 -- single.
+    // K7V, 0.630 solar radii, 46.49 ly.
+    hd234078: { x: -221555.501, y: 1251030.702, z: 2651721.72, dist: 2940372.9, orbit: -2, size: 1.587, startype: 'K', label: loc('star_hd234078'), zlabel: loc('star_hd234078') },
+    // hd234078 planets (K7V, 2, generated; habitable-zone world at ~0.364 AU); HZ 0.30-0.43 AU.
+    hd234078_p1: { dist: 0.0388, orbit: 3.49, size: 0.191, star: 'hd234078' },
+    hd234078_p2: { dist: 0.364, orbit: 100, size: 0.191, star: 'hd234078', hz: true },
+    // HD 173818 -- single.
+    // K5V, 0.701 solar radii, 46.51 ly.
+    hd173818: { x: 2566089.479, y: 1436408.77, z: -39732.54, dist: 2941031.1, orbit: -2, size: 1.675, startype: 'K', label: loc('star_hd173818'), zlabel: loc('star_hd173818') },
+    // hd173818 planets (K5V, 5, generated; habitable-zone world at ~0.55 AU); HZ 0.40-0.57 AU.
+    hd173818_p1: { dist: 0.0582, orbit: 6.13, size: 0.142, star: 'hd173818' },
+    hd173818_p2: { dist: 0.111, orbit: 16, size: 0.191, star: 'hd173818' },
+    hd173818_p3: { dist: 0.164, orbit: 29, size: 0.296, star: 'hd173818' },
+    hd173818_p4: { dist: 0.293, orbit: 69, size: 0.191, star: 'hd173818' },
+    hd173818_p5: { dist: 0.55, orbit: 178, size: 0.427, star: 'hd173818', hz: true },
+    // 1 Eridani -- single.
+    // F7V, 1.324 solar radii, 46.56 ly.
+    eridani1: { x: -1269682.856, y: -483163.469, z: -2612617.608, dist: 2944709.2, orbit: -2, size: 2.301, startype: 'F', label: loc('star_eridani1'), zlabel: loc('star_eridani1') },
+    // eridani1 planets (F7V, 4, generated; habitable-zone world at ~1.91 AU); HZ 1.49-2.15 AU.
+    eridani1_p1: { dist: 0.261, orbit: 44, size: 0.191, star: 'eridani1' },
+    eridani1_p2: { dist: 0.45, orbit: 100, size: 0.191, star: 'eridani1' },
+    eridani1_p3: { dist: 0.816, orbit: 245, size: 0.296, star: 'eridani1' },
+    eridani1_p4: { dist: 1.91, orbit: 876, size: 0.296, star: 'eridani1', hz: true },
+    // HD 144579 -- 2 components.
+    // G8V, 0.914 solar radii, 46.83 ly.
+    hd144579: { x: 914262.892, y: 1746546.711, z: 2210488.887, dist: 2961851.3, orbit: -2, size: 1.912, startype: 'G', label: loc('star_hd144579'), zlabel: loc('star_hd144579') + ' A' },
+    // M4.0V, 0.274 solar radii, 46.83 ly.
+    hd144579b: { x: 913736.869, y: 1745991.753, z: 2211144.704, dist: 2961851.3, orbit: -2, size: 1.047, startype: 'M', zlabel: loc('star_hd144579') + ' B' },
+    // hd144579 planets (G8V, 2, generated; none habitable); HZ 0.78-1.13 AU.
+    hd144579_p1: { dist: 0.302, orbit: 63, size: 0.234, star: 'hd144579' },
+    hd144579_p2: { dist: 0.506, orbit: 136, size: 0.142, star: 'hd144579' },
+    // hd144579b planets (M4.0V, 5, generated; habitable-zone world at ~0.0964 AU); HZ 0.08-0.12 AU.
+    hd144579b_p1: { dist: 0.0223, orbit: 2.54, size: 0.234, star: 'hd144579b' },
+    hd144579b_p2: { dist: 0.0371, orbit: 5.44, size: 0.191, star: 'hd144579b' },
+    hd144579b_p3: { dist: 0.0644, orbit: 12, size: 0.296, star: 'hd144579b' },
+    hd144579b_p4: { dist: 0.0964, orbit: 23, size: 0.234, star: 'hd144579b', hz: true },
+    hd144579b_p5: { dist: 0.305, orbit: 128, size: 0.633, star: 'hd144579b' },
+    // Eta Cephei -- single.
+    // K0IV, 1.951 solar radii, 46.86 ly.
+    etacephei: { x: -397368.439, y: 2875363.206, z: 598135.51, dist: 2963677, orbit: -2, size: 2.794, startype: 'K', label: loc('star_etacephei'), zlabel: loc('star_etacephei') },
+    // etacephei planets (K0IV, 5, generated; habitable-zone world at ~1.86 AU); HZ 1.54-2.22 AU.
+    etacephei_p1: { dist: 0.431, orbit: 93, size: 0.296, star: 'etacephei' },
+    etacephei_p2: { dist: 0.911, orbit: 286, size: 0.191, star: 'etacephei' },
+    etacephei_p3: { dist: 1.86, orbit: 835, size: 0.142, star: 'etacephei', hz: true },
+    etacephei_p4: { dist: 4.21, orbit: 2843, size: 0.142, star: 'etacephei' },
+    etacephei_p5: { dist: 8.41, orbit: 8026, size: 0.573, star: 'etacephei' },
+    // 26 Draconis -- single.
+    // G0V, 1.100 solar radii, 47.08 ly.
+    draconis26: { x: -43442.311, y: 2506323.055, z: 1606155.617, dist: 2977125.9, orbit: -2, size: 2.098, startype: 'G', label: loc('star_draconis26'), zlabel: loc('star_draconis26') },
+    // draconis26 planets (G0V, 3, generated; habitable-zone world at ~1.19 AU); HZ 1.10-1.59 AU.
+    draconis26_p1: { dist: 0.481, orbit: 118, size: 0.142, star: 'draconis26' },
+    draconis26_p2: { dist: 0.698, orbit: 207, size: 0.191, star: 'draconis26' },
+    draconis26_p3: { dist: 1.19, orbit: 461, size: 0.296, star: 'draconis26', hz: true },
+    // 3 Ursae Majoris -- single.
+    // G0.5V, 1.100 solar radii, 47.09 ly.
+    ursaemajoris3: { x: -2105978.176, y: 1188997.13, z: 1738094.836, dist: 2978226.3, orbit: -2, size: 2.098, startype: 'G', label: loc('star_ursaemajoris3'), zlabel: loc('star_ursaemajoris3') },
+    // ursaemajoris3 planets (G0.5V, 1, generated; habitable-zone world at ~1.34 AU); HZ 1.10-1.59 AU.
+    ursaemajoris3_p1: { dist: 1.34, orbit: 550, size: 0.234, star: 'ursaemajoris3', hz: true },
+    // HD 97584 -- 2 components.
+    // K4V, 0.713 solar radii, 47.18 ly.
+    hd97584: { x: -1482164.058, y: 1651906.521, z: 1993828.566, dist: 2983447.3, orbit: -2, size: 1.689, startype: 'K', label: loc('star_hd97584'), zlabel: loc('star_hd97584') + ' A' },
+    // M2.5V, 0.421 solar radii, 47.18 ly.
+    hd97584b: { x: -1482215.653, y: 1651944.862, z: 1993758.444, dist: 2983447.3, orbit: -2, size: 1.298, startype: 'M', zlabel: loc('star_hd97584') + ' B' },
+    // hd97584 planets (K4V, 4, generated; habitable-zone world at ~0.58 AU); HZ 0.43-0.62 AU.
+    hd97584_p1: { dist: 0.17, orbit: 30, size: 0.191, star: 'hd97584' },
+    hd97584_p2: { dist: 0.273, orbit: 61, size: 0.191, star: 'hd97584' },
+    hd97584_p3: { dist: 0.58, orbit: 189, size: 0.427, star: 'hd97584', hz: true },
+    hd97584_p4: { dist: 1.28, orbit: 619, size: 0.633, star: 'hd97584' },
+    // hd97584b planets (M2.5V, 5, generated; habitable-zone world at ~0.152 AU); HZ 0.14-0.21 AU.
+    hd97584b_p1: { dist: 0.0412, orbit: 4.83, size: 0.142, star: 'hd97584b' },
+    hd97584b_p2: { dist: 0.0846, orbit: 14, size: 0.234, star: 'hd97584b' },
+    hd97584b_p3: { dist: 0.152, orbit: 34, size: 0.296, star: 'hd97584b', hz: true },
+    hd97584b_p4: { dist: 0.332, orbit: 110, size: 0.234, star: 'hd97584b' },
+    hd97584b_p5: { dist: 0.71, orbit: 345, size: 0.296, star: 'hd97584b' },
+    // Theta Bootis -- 2 components.
+    // F7V, 1.324 solar radii, 47.22 ly.
+    thetabootis: { x: -100840.293, y: 1505468.449, z: 2577176.227, dist: 2986376, orbit: -2, size: 2.301, startype: 'F', label: loc('star_thetabootis'), zlabel: loc('star_thetabootis') + ' A' },
+    // M2.5V, 0.421 solar radii, 47.22 ly.
+    thetabootisb: { x: -100114.098, y: 1504877.788, z: 2577549.482, dist: 2986376, orbit: -2, size: 1.298, startype: 'M', zlabel: loc('star_thetabootis') + ' B' },
+    // thetabootis planets (F7V, 3, generated; habitable-zone world at ~1.75 AU); HZ 1.49-2.15 AU.
+    thetabootis_p1: { dist: 0.473, orbit: 108, size: 0.234, star: 'thetabootis' },
+    thetabootis_p2: { dist: 0.81, orbit: 242, size: 0.234, star: 'thetabootis' },
+    thetabootis_p3: { dist: 1.75, orbit: 769, size: 0.296, star: 'thetabootis', hz: true },
+    // thetabootisb planets (M2.5V, 5, generated; habitable-zone world at ~0.182 AU); HZ 0.14-0.21 AU.
+    thetabootisb_p1: { dist: 0.0421, orbit: 4.99, size: 0.296, star: 'thetabootisb' },
+    thetabootisb_p2: { dist: 0.0965, orbit: 17, size: 0.142, star: 'thetabootisb' },
+    thetabootisb_p3: { dist: 0.182, orbit: 45, size: 0.427, star: 'thetabootisb', hz: true },
+    thetabootisb_p4: { dist: 0.307, orbit: 98, size: 0.427, star: 'thetabootisb' },
+    thetabootisb_p5: { dist: 0.653, orbit: 305, size: 0.633, star: 'thetabootisb' },
+    // HD 120036 -- 2 components.
+    // K7V, 0.630 solar radii, 47.56 ly.
+    hd120036: { x: 1908708.2, y: -1811714.592, z: 1456011.331, dist: 3007564.8, orbit: -2, size: 1.587, startype: 'K', label: loc('star_hd120036'), zlabel: loc('star_hd120036') + ' A' },
+    // K6V, 0.669 solar radii, 47.56 ly.
+    hd120036b: { x: 1908605.728, y: -1811771.429, z: 1456074.935, dist: 3007564.8, orbit: -2, size: 1.636, startype: 'K', zlabel: loc('star_hd120036') + ' B' },
+    // hd120036 planets (K7V, 3, generated; habitable-zone world at ~0.383 AU); HZ 0.30-0.43 AU.
+    hd120036_p1: { dist: 0.117, orbit: 18, size: 0.142, star: 'hd120036' },
+    hd120036_p2: { dist: 0.262, orbit: 61, size: 0.234, star: 'hd120036' },
+    hd120036_p3: { dist: 0.383, orbit: 108, size: 0.427, star: 'hd120036', hz: true },
+    // hd120036b planets (K6V, 4, generated; habitable-zone world at ~0.435 AU); HZ 0.35-0.51 AU.
+    hd120036b_p1: { dist: 0.112, orbit: 16, size: 0.191, star: 'hd120036b' },
+    hd120036b_p2: { dist: 0.198, orbit: 39, size: 0.142, star: 'hd120036b' },
+    hd120036b_p3: { dist: 0.435, orbit: 126, size: 0.142, star: 'hd120036b', hz: true },
+    hd120036b_p4: { dist: 0.687, orbit: 250, size: 0.296, star: 'hd120036b' },
+    // Gliese 334 -- 2 components.
+    // K7V, 0.630 solar radii, 47.29 ly.
+    gliese334: { x: -1431020.747, y: -2306172.967, z: 1255427.158, dist: 2990376.5, orbit: -2, size: 1.587, startype: 'K', label: loc('star_gliese334'), zlabel: loc('star_gliese334') + ' A' },
+    // M6Ve, 0.137 solar radii, 47.29 ly.
+    gliese334b: { x: -1431094.15, y: -2306179.737, z: 1255331.044, dist: 2990376.5, orbit: -2, size: 0.74, startype: 'M', zlabel: loc('star_gliese334') + ' B' },
+    // gliese334 planets (K7V, 4, generated; habitable-zone world at ~0.327 AU); HZ 0.30-0.43 AU.
+    gliese334_p1: { dist: 0.0777, orbit: 9.89, size: 0.191, star: 'gliese334' },
+    gliese334_p2: { dist: 0.119, orbit: 19, size: 0.234, star: 'gliese334' },
+    gliese334_p3: { dist: 0.191, orbit: 38, size: 0.234, star: 'gliese334' },
+    gliese334_p4: { dist: 0.327, orbit: 85, size: 0.296, star: 'gliese334', hz: true },
+    // gliese334b planets (M6Ve, 2, generated; habitable-zone world at ~0.0363 AU); HZ 0.03-0.04 AU.
+    gliese334b_p1: { dist: 0.012, orbit: 1.5, size: 0.142, star: 'gliese334b' },
+    gliese334b_p2: { dist: 0.0363, orbit: 7.91, size: 0.191, star: 'gliese334b', hz: true },
+    // HD 110833 -- single.
+    // K3, 0.755 solar radii, 47.30 ly.
+    hd110833: { x: -726798.034, y: 1015171.885, z: 2718441.472, dist: 2991443.4, orbit: -2, size: 1.738, startype: 'K', label: loc('star_hd110833'), zlabel: loc('star_hd110833') },
+    // hd110833 planets (K3, 4, generated; habitable-zone world at ~0.717 AU); HZ 0.50-0.73 AU.
+    hd110833_p1: { dist: 0.18, orbit: 32, size: 0.296, star: 'hd110833' },
+    hd110833_p2: { dist: 0.347, orbit: 85, size: 0.234, star: 'hd110833' },
+    hd110833_p3: { dist: 0.717, orbit: 251, size: 0.234, star: 'hd110833', hz: true },
+    hd110833_p4: { dist: 1.33, orbit: 634, size: 0.296, star: 'hd110833' },
+    // Gliese 331.0 -- 2 components.
+    // A7V(n), 1.750 solar radii, 47.96 ly.
+    gliese3310: { x: -2269779.05, y: 338718.748, z: 1983443.262, dist: 3033261.4, orbit: -2, size: 2.646, startype: 'A', label: loc('star_gliese3310'), zlabel: loc('star_gliese3310') + ' A' },
+    // M1V, 0.501 solar radii, 47.96 ly.
+    gliese3310b: { x: -2269769.038, y: 338768.693, z: 1983446.19, dist: 3033261.4, orbit: -2, size: 1.416, startype: 'M', zlabel: loc('star_gliese3310') + ' B' },
+    // gliese3310 planets (A7V(n), 4, generated; habitable-zone world at ~3.48 AU); HZ 3.00-4.33 AU.
+    gliese3310_p1: { dist: 0.849, orbit: 215, size: 0.191, star: 'gliese3310' },
+    gliese3310_p2: { dist: 1.66, orbit: 587, size: 0.191, star: 'gliese3310' },
+    gliese3310_p3: { dist: 3.48, orbit: 1782, size: 0.234, star: 'gliese3310', hz: true },
+    gliese3310_p4: { dist: 5.36, orbit: 3407, size: 0.427, star: 'gliese3310' },
+    // gliese3310b planets (M1V, 2, generated; habitable-zone world at ~0.228 AU); HZ 0.19-0.28 AU.
+    gliese3310b_p1: { dist: 0.0374, orbit: 3.74, size: 0.234, star: 'gliese3310b' },
+    gliese3310b_p2: { dist: 0.228, orbit: 56, size: 0.427, star: 'gliese3310b', hz: true },
+    // Gliese 546 -- single.
+    // K6V, 0.669 solar radii, 47.37 ly.
+    gliese546: { x: 720182.311, y: 731167.881, z: 2814558.259, dist: 2995831.6, orbit: -2, size: 1.636, startype: 'K', label: loc('star_gliese546'), zlabel: loc('star_gliese546') },
+    // gliese546 planets (K6V, 2, generated; none habitable); HZ 0.35-0.51 AU.
+    gliese546_p1: { dist: 0.144, orbit: 24, size: 0.142, star: 'gliese546' },
+    gliese546_p2: { dist: 0.264, orbit: 60, size: 0.234, star: 'gliese546' },
+    // 111 Tauri -- 2 components.
+    // F8V, 1.221 solar radii, 47.55 ly.
+    tauri111: { x: -2935523.633, y: -370882.151, z: -536909.976, dist: 3007178.9, orbit: -2, size: 2.21, startype: 'F', label: loc('star_tauri111'), zlabel: loc('star_tauri111') + ' A' },
+    // K4V, 0.713 solar radii, 47.55 ly.
+    tauri111b: { x: -2934084.909, y: -367962.782, z: -546693.727, dist: 3007178.9, orbit: -2, size: 1.689, startype: 'K', zlabel: loc('star_tauri111') + ' B' },
+    // tauri111 planets (F8V, 4, generated; habitable-zone world at ~1.42 AU); HZ 1.33-1.91 AU.
+    tauri111_p1: { dist: 0.436, orbit: 97, size: 0.142, star: 'tauri111' },
+    tauri111_p2: { dist: 0.913, orbit: 293, size: 0.296, star: 'tauri111' },
+    tauri111_p3: { dist: 1.42, orbit: 569, size: 0.142, star: 'tauri111', hz: true },
+    tauri111_p4: { dist: 3.15, orbit: 1880, size: 0.234, star: 'tauri111' },
+    // tauri111b planets (K4V, 5, generated; habitable-zone world at ~0.448 AU); HZ 0.43-0.62 AU.
+    tauri111b_p1: { dist: 0.166, orbit: 29, size: 0.142, star: 'tauri111b' },
+    tauri111b_p2: { dist: 0.304, orbit: 72, size: 0.191, star: 'tauri111b' },
+    tauri111b_p3: { dist: 0.448, orbit: 128, size: 0.234, star: 'tauri111b', hz: true },
+    tauri111b_p4: { dist: 0.851, orbit: 336, size: 0.296, star: 'tauri111b' },
+    tauri111b_p5: { dist: 1.37, orbit: 686, size: 0.427, star: 'tauri111b' },
+    // HD 221503 -- single.
+    // K6V, 0.669 solar radii, 47.45 ly.
+    hd221503: { x: 561028.495, y: 910698.993, z: -2803736.522, dist: 3000843.9, orbit: -2, size: 1.636, startype: 'K', label: loc('star_hd221503'), zlabel: loc('star_hd221503') },
+    // hd221503 planets (K6V, 2, generated; none habitable); HZ 0.35-0.51 AU.
+    hd221503_p1: { dist: 0.0967, orbit: 13, size: 0.296, star: 'hd221503' },
+    hd221503_p2: { dist: 0.17, orbit: 31, size: 0.234, star: 'hd221503' },
+    // 72 Herculis -- single.
+    // G0V, 1.100 solar radii, 47.57 ly.
+    herculis72: { x: 1426868.538, y: 2104767.623, z: 1608076.919, dist: 3008639.6, orbit: -2, size: 2.098, startype: 'G', label: loc('star_herculis72'), zlabel: loc('star_herculis72') },
+    // herculis72 planets (G0V, 3, generated; habitable-zone world at ~1.34 AU); HZ 1.10-1.59 AU.
+    herculis72_p1: { dist: 0.472, orbit: 115, size: 0.234, star: 'herculis72' },
+    herculis72_p2: { dist: 0.885, orbit: 295, size: 0.234, star: 'herculis72' },
+    herculis72_p3: { dist: 1.34, orbit: 550, size: 0.296, star: 'herculis72', hz: true },
+    // HD 57095 -- 2 components.
+    // K1V, 0.797 solar radii, 47.60 ly.
+    hd57095: { x: -590068.972, y: -2842484.482, z: -796192.938, dist: 3010286.1, orbit: -2, size: 1.785, startype: 'K', label: loc('star_hd57095'), zlabel: loc('star_hd57095') + ' A' },
+    // K4V, 0.713 solar radii, 47.60 ly.
+    hd57095b: { x: -590061.756, y: -2842483.156, z: -796203.018, dist: 3010286.1, orbit: -2, size: 1.689, startype: 'K', zlabel: loc('star_hd57095') + ' B' },
+    // hd57095 planets (K1V, 3, generated; none habitable); HZ 0.61-0.87 AU.
+    hd57095_p1: { dist: 0.105, orbit: 13, size: 0.234, star: 'hd57095' },
+    hd57095_p2: { dist: 0.188, orbit: 32, size: 0.191, star: 'hd57095' },
+    hd57095_p3: { dist: 0.417, orbit: 106, size: 0.234, star: 'hd57095' },
+    // hd57095b planets (K4V, 1, generated; habitable-zone world at ~0.49 AU); HZ 0.43-0.62 AU.
+    hd57095b_p1: { dist: 0.49, orbit: 147, size: 0.296, star: 'hd57095b', hz: true },
+    // AG+10 687 -- single.
+    // F0, 1.728 solar radii, 47.64 ly.
+    ag10687: { x: -2851707.588, y: -937601.762, z: -257643.841, dist: 3012924.4, orbit: -2, size: 2.629, startype: 'F', label: loc('star_ag10687'), zlabel: loc('star_ag10687') },
+    // ag10687 planets (F0, 4, generated; habitable-zone world at ~3.15 AU); HZ 2.56-3.69 AU.
+    ag10687_p1: { dist: 1.14, orbit: 350, size: 0.142, star: 'ag10687' },
+    ag10687_p2: { dist: 1.7, orbit: 638, size: 0.142, star: 'ag10687' },
+    ag10687_p3: { dist: 3.15, orbit: 1609, size: 0.234, star: 'ag10687', hz: true },
+    ag10687_p4: { dist: 5.15, orbit: 3364, size: 0.234, star: 'ag10687' },
+    // HD 45088 -- single.
+    // K2Ve, 0.783 solar radii, 47.67 ly.
+    hd45088: { x: -2928478.14, y: -698195.609, z: 162513.089, dist: 3014941.4, orbit: -2, size: 1.77, startype: 'K', label: loc('star_hd45088'), zlabel: loc('star_hd45088') },
+    // hd45088 planets (K2Ve, 5, generated; habitable-zone world at ~0.774 AU); HZ 0.58-0.84 AU.
+    hd45088_p1: { dist: 0.181, orbit: 31, size: 0.191, star: 'hd45088' },
+    hd45088_p2: { dist: 0.289, orbit: 63, size: 0.296, star: 'hd45088' },
+    hd45088_p3: { dist: 0.508, orbit: 146, size: 0.427, star: 'hd45088' },
+    hd45088_p4: { dist: 0.774, orbit: 275, size: 0.427, star: 'hd45088', hz: true },
+    hd45088_p5: { dist: 1.47, orbit: 719, size: 0.427, star: 'hd45088' },
+    // Psi Capricorni -- single.
+    // F5V, 1.473 solar radii, 47.73 ly.
+    psicapricorni: { x: 2309019.606, y: 840582.036, z: -1752789.577, dist: 3018347.4, orbit: -2, size: 2.427, startype: 'F', label: loc('star_psicapricorni'), zlabel: loc('star_psicapricorni') },
+    // psicapricorni planets (F5V, 2, generated; habitable-zone world at ~2.27 AU); HZ 1.81-2.61 AU.
+    psicapricorni_p1: { dist: 0.762, orbit: 211, size: 0.142, star: 'psicapricorni' },
+    psicapricorni_p2: { dist: 2.27, orbit: 1083, size: 0.191, star: 'psicapricorni', hz: true },
+    // HD 196761 -- single.
+    // G7.5IV-V, 0.927 solar radii, 47.85 ly.
+    hd196761: { x: 2344261.08, y: 912279.656, z: -1682599.266, dist: 3026376.5, orbit: -2, size: 1.926, startype: 'G', label: loc('star_hd196761'), zlabel: loc('star_hd196761') },
+    // hd196761 planets (G7.5IV-V, 2, generated; none habitable); HZ 0.82-1.18 AU.
+    hd196761_p1: { dist: 0.151, orbit: 22, size: 0.142, star: 'hd196761' },
+    hd196761_p2: { dist: 0.327, orbit: 70, size: 0.296, star: 'hd196761' },
+    // Gliese 14 -- single.
+    // K7V, 0.630 solar radii, 47.90 ly.
+    gliese14: { x: -1234905.278, y: 2534703.252, z: -1108323.972, dist: 3029536.9, orbit: -2, size: 1.587, startype: 'K', label: loc('star_gliese14'), zlabel: loc('star_gliese14') },
+    // gliese14 planets (K7V, 4, generated; habitable-zone world at ~0.354 AU); HZ 0.30-0.43 AU.
+    gliese14_p1: { dist: 0.0653, orbit: 7.62, size: 0.142, star: 'gliese14' },
+    gliese14_p2: { dist: 0.137, orbit: 23, size: 0.296, star: 'gliese14' },
+    gliese14_p3: { dist: 0.354, orbit: 96, size: 0.142, star: 'gliese14', hz: true },
+    gliese14_p4: { dist: 0.528, orbit: 175, size: 0.427, star: 'gliese14' },
+    // HD 10307 -- single.
+    // G1V, 1.060 solar radii, 47.95 ly.
+    hd10307: { x: -1941330.32, y: 2102666.16, z: -1002186.231, dist: 3032217.9, orbit: -2, size: 2.059, startype: 'G', label: loc('star_hd10307'), zlabel: loc('star_hd10307') },
+    // hd10307 planets (G1V, 2, generated; none habitable); HZ 1.04-1.50 AU.
+    hd10307_p1: { dist: 0.15, orbit: 21, size: 0.191, star: 'hd10307' },
+    hd10307_p2: { dist: 0.334, orbit: 69, size: 0.234, star: 'hd10307' },
+    // Nu2 Lupi -- single.
+    // G2-V, 1.012 solar radii, 48.07 ly.
+    nu2lupi: { x: 2530792.638, y: -1638669.628, z: 390412.265, dist: 3040159.7, orbit: -2, size: 2.012, startype: 'G', label: loc('star_nu2lupi'), zlabel: loc('star_nu2lupi') },
+    // nu2lupi planets (G2-V, 3, measured; none habitable); HZ 0.96-1.39 AU.
+    nu2lupi_p1: { dist: 0.0964, orbit: 11.578, size: 0.246, star: 'nu2lupi' },
+    nu2lupi_p2: { dist: 0.1721, orbit: 27.592, size: 0.326, star: 'nu2lupi' },
+    nu2lupi_p3: { dist: 0.425, orbit: 107.245, size: 0.306, star: 'nu2lupi' },
+    // HD 142709 -- single.
+    // K4V, 0.713 solar radii, 48.07 ly.
+    hd142709: { x: 2740802.714, y: -1243561.515, z: 430177.773, dist: 3040312.1, orbit: -2, size: 1.689, startype: 'K', label: loc('star_hd142709'), zlabel: loc('star_hd142709') },
+    // hd142709 planets (K4V, 3, generated; habitable-zone world at ~0.522 AU); HZ 0.43-0.62 AU.
+    hd142709_p1: { dist: 0.178, orbit: 32, size: 0.191, star: 'hd142709' },
+    hd142709_p2: { dist: 0.522, orbit: 161, size: 0.191, star: 'hd142709', hz: true },
+    hd142709_p3: { dist: 0.906, orbit: 369, size: 0.427, star: 'hd142709' },
+    // HD 52698 -- single.
+    // K1V, 0.797 solar radii, 48.11 ly.
+    hd52698: { x: -1620846.111, y: -2524865.792, z: -503018.431, dist: 3042222.4, orbit: -2, size: 1.785, startype: 'K', label: loc('star_hd52698'), zlabel: loc('star_hd52698') },
+    // hd52698 planets (K1V, 5, generated; habitable-zone world at ~0.856 AU); HZ 0.61-0.87 AU.
+    hd52698_p1: { dist: 0.102, orbit: 13, size: 0.191, star: 'hd52698' },
+    hd52698_p2: { dist: 0.15, orbit: 23, size: 0.427, star: 'hd52698' },
+    hd52698_p3: { dist: 0.245, orbit: 48, size: 0.234, star: 'hd52698' },
+    hd52698_p4: { dist: 0.474, orbit: 129, size: 0.191, star: 'hd52698' },
+    hd52698_p5: { dist: 0.856, orbit: 312, size: 0.234, star: 'hd52698', hz: true },
+    // HD 176051 -- 2 components.
+    // F9V, 1.167 solar radii, 48.58 ly.
+    hd176051: { x: 1341267.616, y: 2672430.717, z: 704942.154, dist: 3072104.8, orbit: -2, size: 2.161, startype: 'F', label: loc('star_hd176051'), zlabel: loc('star_hd176051') + ' A' },
+    // K1V, 0.797 solar radii, 48.58 ly.
+    hd176051b: { x: 1341269.251, y: 2672425.046, z: 704960.543, dist: 3072104.8, orbit: -2, size: 1.785, startype: 'K', zlabel: loc('star_hd176051') + ' B' },
+    // hd176051 planets (F9V, 3, generated; habitable-zone world at ~1.42 AU); HZ 1.22-1.76 AU.
+    hd176051_p1: { dist: 0.465, orbit: 109, size: 0.142, star: 'hd176051' },
+    hd176051_p2: { dist: 0.873, orbit: 280, size: 0.234, star: 'hd176051' },
+    hd176051_p3: { dist: 1.42, orbit: 581, size: 0.296, star: 'hd176051', hz: true },
+    // hd176051b planets (K1V, 2, generated; none habitable); HZ 0.61-0.87 AU.
+    hd176051b_p1: { dist: 0.0838, orbit: 9.55, size: 0.296, star: 'hd176051b' },
+    hd176051b_p2: { dist: 0.174, orbit: 29, size: 0.142, star: 'hd176051b' },
+    // Gliese 116 -- single.
+    // K5V, 0.701 solar radii, 48.20 ly.
+    gliese116: { x: -2432902.412, y: 1430933.861, z: -1150276.577, dist: 3047904.5, orbit: -2, size: 1.675, startype: 'K', label: loc('star_gliese116'), zlabel: loc('star_gliese116') },
+    // gliese116 planets (K5V, 3, generated; habitable-zone world at ~0.448 AU); HZ 0.40-0.57 AU.
+    gliese116_p1: { dist: 0.125, orbit: 19, size: 0.296, star: 'gliese116' },
+    gliese116_p2: { dist: 0.257, orbit: 57, size: 0.142, star: 'gliese116' },
+    gliese116_p3: { dist: 0.448, orbit: 131, size: 0.296, star: 'gliese116', hz: true },
+    // Psi Serpentis -- single.
+    // G2.5V, 1.012 solar radii, 48.25 ly.
+    psiserpentis: { x: 2236232.193, y: 382185.019, z: 2040382.701, dist: 3051222.9, orbit: -2, size: 2.012, startype: 'G', label: loc('star_psiserpentis'), zlabel: loc('star_psiserpentis') },
+    // psiserpentis planets (G2.5V, 3, generated; none habitable); HZ 0.96-1.39 AU.
+    psiserpentis_p1: { dist: 0.142, orbit: 20, size: 0.234, star: 'psiserpentis' },
+    psiserpentis_p2: { dist: 0.267, orbit: 50, size: 0.234, star: 'psiserpentis' },
+    psiserpentis_p3: { dist: 0.582, orbit: 162, size: 0.234, star: 'psiserpentis' },
+    // HD 205390 -- single.
+    // K1V, 0.797 solar radii, 48.32 ly.
+    hd205390: { x: 2047116.712, y: -494669.326, z: -2214118.414, dist: 3055765.8, orbit: -2, size: 1.785, startype: 'K', label: loc('star_hd205390'), zlabel: loc('star_hd205390') },
+    // hd205390 planets (K1V, 2, generated; none habitable); HZ 0.61-0.87 AU.
+    hd205390_p1: { dist: 0.246, orbit: 48, size: 0.191, star: 'hd205390' },
+    hd205390_p2: { dist: 0.374, orbit: 90, size: 0.142, star: 'hd205390' },
+    // HD 144628 -- single.
+    // K2V, 0.783 solar radii, 48.36 ly.
+    hd144628: { x: 2584767.434, y: -1623787.289, z: -186443.496, dist: 3058180.7, orbit: -2, size: 1.77, startype: 'K', label: loc('star_hd144628'), zlabel: loc('star_hd144628') },
+    // hd144628 planets (K2V, 3, generated; habitable-zone world at ~0.701 AU); HZ 0.58-0.84 AU.
+    hd144628_p1: { dist: 0.186, orbit: 32, size: 0.296, star: 'hd144628' },
+    hd144628_p2: { dist: 0.302, orbit: 67, size: 0.142, star: 'hd144628' },
+    hd144628_p3: { dist: 0.701, orbit: 237, size: 0.427, star: 'hd144628', hz: true },
+    // HD 218511 -- single.
+    // K6V, 0.669 solar radii, 48.39 ly.
+    hd218511: { x: 1528848.704, y: -1444039.114, z: -2223523.577, dist: 3060503.9, orbit: -2, size: 1.636, startype: 'K', label: loc('star_hd218511'), zlabel: loc('star_hd218511') },
+    // hd218511 planets (K6V, 3, generated; habitable-zone world at ~0.45 AU); HZ 0.35-0.51 AU.
+    hd218511_p1: { dist: 0.0683, orbit: 7.85, size: 0.234, star: 'hd218511' },
+    hd218511_p2: { dist: 0.106, orbit: 15, size: 0.191, star: 'hd218511' },
+    hd218511_p3: { dist: 0.45, orbit: 133, size: 0.234, star: 'hd218511', hz: true },
+    // HD 36705 -- 2 components.
+    // K0V, 0.813 solar radii, 48.44 ly.
+    hd36705: { x: 237226.298, y: -2556831.109, z: -1670463.232, dist: 3063349.3, orbit: -2, size: 1.803, startype: 'K', label: loc('star_hd36705'), zlabel: loc('star_hd36705') + ' A' },
+    // M5+M5-6, 0.196 solar radii, 48.44 ly.
+    hd36705b: { x: 237093.208, y: -2556815.387, z: -1670506.19, dist: 3063349.3, orbit: -2, size: 0.885, startype: 'M', zlabel: loc('star_hd36705') + ' B' },
+    // hd36705 planets (K0V, 4, generated; habitable-zone world at ~0.75 AU); HZ 0.64-0.93 AU.
+    hd36705_p1: { dist: 0.181, orbit: 30, size: 0.191, star: 'hd36705' },
+    hd36705_p2: { dist: 0.363, orbit: 85, size: 0.296, star: 'hd36705' },
+    hd36705_p3: { dist: 0.75, orbit: 253, size: 0.296, star: 'hd36705', hz: true },
+    hd36705_p4: { dist: 1.09, orbit: 443, size: 0.427, star: 'hd36705' },
+    // hd36705b planets (M5+M5-6, 5, generated; habitable-zone world at ~0.0653 AU); HZ 0.05-0.08 AU.
+    hd36705b_p1: { dist: 0.012, orbit: 1.19, size: 0.191, star: 'hd36705b' },
+    hd36705b_p2: { dist: 0.0218, orbit: 2.92, size: 0.296, star: 'hd36705b' },
+    hd36705b_p3: { dist: 0.0653, orbit: 15, size: 0.427, star: 'hd36705b', hz: true },
+    hd36705b_p4: { dist: 0.109, orbit: 33, size: 0.142, star: 'hd36705b' },
+    hd36705b_p5: { dist: 0.202, orbit: 82, size: 0.296, star: 'hd36705b' },
+    // Rasalhague -- single.
+    // A5IVnn, 4.284 solar radii, 48.59 ly.
+    rasalhague: { x: 2298536.731, y: 1663480.832, z: 1179210.795, dist: 3072617.4, orbit: -2, size: 4.14, startype: 'A', label: loc('star_rasalhague'), zlabel: loc('star_rasalhague') },
+    // rasalhague planets (A5IVnn, 3, generated; none habitable); HZ 8.00-11.53 AU.
+    rasalhague_p1: { dist: 1.16, orbit: 281, size: 0.191, star: 'rasalhague' },
+    rasalhague_p2: { dist: 2.07, orbit: 671, size: 0.296, star: 'rasalhague' },
+    rasalhague_p3: { dist: 4.75, orbit: 2331, size: 0.191, star: 'rasalhague' },
+    // 31 Aquilae -- single.
+    // G7IVHdel1, 2.225 solar radii, 48.67 ly.
+    aquilae31: { x: 2083346.983, y: 2263390.934, z: -100247.541, dist: 3077876.3, orbit: -2, size: 2.983, startype: 'G', label: loc('star_aquilae31'), zlabel: loc('star_aquilae31') },
+    // aquilae31 planets (G7IVHdel1, 3, generated; habitable-zone world at ~2.19 AU); HZ 1.96-2.83 AU.
+    aquilae31_p1: { dist: 0.633, orbit: 160, size: 0.234, star: 'aquilae31' },
+    aquilae31_p2: { dist: 1, orbit: 317, size: 0.296, star: 'aquilae31' },
+    aquilae31_p3: { dist: 2.19, orbit: 1026, size: 0.142, star: 'aquilae31', hz: true },
+    // 20 Leonis Minoris -- 2 components.
+    // G3VaHdel1, 1.002 solar radii, 48.68 ly.
+    leonisminoris20: { x: -1795660.652, y: -481666.961, z: 2454065.6, dist: 3078772.2, orbit: -2, size: 2.002, startype: 'G', label: loc('star_leonisminoris20'), zlabel: loc('star_leonisminoris20') + ' A' },
+    // M6.0V, 0.137 solar radii, 48.68 ly.
+    leonisminoris20b: { x: -1797279.183, y: -481654.428, z: 2452882.948, dist: 3078772.2, orbit: -2, size: 0.74, startype: 'M', zlabel: loc('star_leonisminoris20') + ' B' },
+    // leonisminoris20 planets (G3VaHdel1, 1, measured; none habitable); HZ 0.94-1.35 AU.
+    leonisminoris20_p1: { dist: 0.1916, orbit: 31.151, size: 0.332, star: 'leonisminoris20' },
+    // leonisminoris20b planets (M6.0V, 3, generated; habitable-zone world at ~0.0312 AU); HZ 0.03-0.04 AU.
+    leonisminoris20b_p1: { dist: 0.0137, orbit: 1.83, size: 0.234, star: 'leonisminoris20b' },
+    leonisminoris20b_p2: { dist: 0.0312, orbit: 6.3, size: 0.427, star: 'leonisminoris20b', hz: true },
+    leonisminoris20b_p3: { dist: 0.0634, orbit: 18, size: 0.142, star: 'leonisminoris20b' },
+    // HD 84117 -- single.
+    // F9V, 1.167 solar radii, 48.77 ly.
+    hd84117: { x: -660101.268, y: -2791941.97, z: 1131481.1, dist: 3083978.5, orbit: -2, size: 2.161, startype: 'F', label: loc('star_hd84117'), zlabel: loc('star_hd84117') },
+    // hd84117 planets (F9V, 4, generated; habitable-zone world at ~1.41 AU); HZ 1.22-1.76 AU.
+    hd84117_p1: { dist: 0.222, orbit: 36, size: 0.296, star: 'hd84117' },
+    hd84117_p2: { dist: 0.394, orbit: 85, size: 0.296, star: 'hd84117' },
+    hd84117_p3: { dist: 0.582, orbit: 153, size: 0.191, star: 'hd84117' },
+    hd84117_p4: { dist: 1.41, orbit: 575, size: 0.234, star: 'hd84117', hz: true },
+    // Eta Leporis -- single.
+    // F2V, 1.622 solar radii, 48.78 ly.
+    etaleporis: { x: -2249619.652, y: -1871339.586, z: -977471.603, dist: 3085150.1, orbit: -2, size: 2.547, startype: 'F', label: loc('star_etaleporis'), zlabel: loc('star_etaleporis') },
+    // etaleporis planets (F2V, 1, generated; none habitable); HZ 2.15-3.10 AU.
+    etaleporis_p1: { dist: 0.328, orbit: 57, size: 0.296, star: 'etaleporis' },
+    // Alchiba -- single.
+    // F1V, 1.679 solar radii, 48.85 ly.
+    alchiba: { x: 869079.25, y: -2305001.47, z: 1864092.463, dist: 3089202.4, orbit: -2, size: 2.592, startype: 'F', label: loc('star_alchiba'), zlabel: loc('star_alchiba') },
+    // alchiba planets (F1V, 1, generated; habitable-zone world at ~3.08 AU); HZ 2.36-3.40 AU.
+    alchiba_p1: { dist: 3.08, orbit: 1612, size: 0.191, star: 'alchiba', hz: true },
+    // Alderamin -- single.
+    // A8Vn, 1.747 solar radii, 49.05 ly.
+    alderamin: { x: -584216.381, y: 3005820.883, z: 494407.46, dist: 3101726.4, orbit: -2, size: 2.643, startype: 'A', label: loc('star_alderamin'), zlabel: loc('star_alderamin') },
+    // alderamin planets (A8Vn, 2, generated; habitable-zone world at ~3.62 AU); HZ 2.87-4.14 AU.
+    alderamin_p1: { dist: 1.09, orbit: 309, size: 0.142, star: 'alderamin' },
+    alderamin_p2: { dist: 3.62, orbit: 1870, size: 0.191, star: 'alderamin', hz: true },
+    // HD 200779 -- single.
+    // K6V, 0.669 solar radii, 49.07 ly.
+    hd200779: { x: 1550381.586, y: 2332072.254, z: -1337644.669, dist: 3103471.8, orbit: -2, size: 1.636, startype: 'K', label: loc('star_hd200779'), zlabel: loc('star_hd200779') },
+    // hd200779 planets (K6V, 4, generated; habitable-zone world at ~0.484 AU); HZ 0.35-0.51 AU.
+    hd200779_p1: { dist: 0.137, orbit: 22, size: 0.296, star: 'hd200779' },
+    hd200779_p2: { dist: 0.303, orbit: 73, size: 0.296, star: 'hd200779' },
+    hd200779_p3: { dist: 0.484, orbit: 148, size: 0.427, star: 'hd200779', hz: true },
+    hd200779_p4: { dist: 0.749, orbit: 285, size: 0.427, star: 'hd200779' },
+    // HD 4391 -- single.
+    // G3V, 1.002 solar radii, 49.08 ly.
+    hd4391: { x: 632579.802, y: -881162.994, z: -2908319.762, dist: 3104018.2, orbit: -2, size: 2.002, startype: 'G', label: loc('star_hd4391'), zlabel: loc('star_hd4391') },
+    // hd4391 planets (G3V, 4, generated; habitable-zone world at ~1.13 AU); HZ 0.94-1.35 AU.
+    hd4391_p1: { dist: 0.324, orbit: 68, size: 0.142, star: 'hd4391' },
+    hd4391_p2: { dist: 0.549, orbit: 149, size: 0.427, star: 'hd4391' },
+    hd4391_p3: { dist: 1.13, orbit: 441, size: 0.234, star: 'hd4391', hz: true },
+    hd4391_p4: { dist: 1.77, orbit: 864, size: 0.142, star: 'hd4391' },
+    // Gliese 52 -- single.
+    // K7V, 0.630 solar radii, 49.14 ly.
+    gliese52: { x: -1766962.954, y: 2556082.775, z: 60864.487, dist: 3107961, orbit: -2, size: 1.587, startype: 'K', label: loc('star_gliese52'), zlabel: loc('star_gliese52') },
+    // gliese52 planets (K7V, 3, generated; habitable-zone world at ~0.432 AU); HZ 0.30-0.43 AU.
+    gliese52_p1: { dist: 0.131, orbit: 22, size: 0.234, star: 'gliese52' },
+    gliese52_p2: { dist: 0.244, orbit: 55, size: 0.427, star: 'gliese52' },
+    gliese52_p3: { dist: 0.432, orbit: 130, size: 0.427, star: 'gliese52', hz: true },
+    // HD 118926 -- single.
+    // K5V, 0.701 solar radii, 49.27 ly.
+    hd118926: { x: 1412869.979, y: -976282.553, z: 2599707.391, dist: 3115735.5, orbit: -2, size: 1.675, startype: 'K', label: loc('star_hd118926'), zlabel: loc('star_hd118926') },
+    // hd118926 planets (K5V, 2, generated; habitable-zone world at ~0.491 AU); HZ 0.40-0.57 AU.
+    hd118926_p1: { dist: 0.166, orbit: 30, size: 0.191, star: 'hd118926' },
+    hd118926_p2: { dist: 0.491, orbit: 150, size: 0.427, star: 'hd118926', hz: true },
+    // HD 122742 -- single.
+    // G6V, 0.949 solar radii, 49.31 ly.
+    hd122742: { x: 1235260.761, y: -163552.828, z: 2858509.247, dist: 3118283.8, orbit: -2, size: 1.948, startype: 'G', label: loc('star_hd122742'), zlabel: loc('star_hd122742') },
+    // hd122742 planets (G6V, 3, generated; habitable-zone world at ~0.987 AU); HZ 0.85-1.22 AU.
+    hd122742_p1: { dist: 0.171, orbit: 26, size: 0.142, star: 'hd122742' },
+    hd122742_p2: { dist: 0.292, orbit: 59, size: 0.191, star: 'hd122742' },
+    hd122742_p3: { dist: 0.987, orbit: 364, size: 0.427, star: 'hd122742', hz: true },
+    // HD 224953 -- 2 components.
+    // K5V, 0.701 solar radii, 49.56 ly.
+    hd224953: { x: 1335708.762, y: -1606820.479, z: -2336241.188, dist: 3134328.1, orbit: -2, size: 1.675, startype: 'K', label: loc('star_hd224953'), zlabel: loc('star_hd224953') + ' A' },
+    // K5/M0V, 0.701 solar radii, 49.56 ly.
+    hd224953b: { x: 1335672.07, y: -1606872.593, z: -2336226.322, dist: 3134328.1, orbit: -2, size: 1.675, startype: 'K', zlabel: loc('star_hd224953') + ' B' },
+    // hd224953 planets (K5V, 3, generated; habitable-zone world at ~0.508 AU); HZ 0.40-0.57 AU.
+    hd224953_p1: { dist: 0.101, orbit: 14, size: 0.296, star: 'hd224953' },
+    hd224953_p2: { dist: 0.195, orbit: 38, size: 0.296, star: 'hd224953' },
+    hd224953_p3: { dist: 0.508, orbit: 158, size: 0.142, star: 'hd224953', hz: true },
+    // hd224953b planets (K5/M0V, 3, generated; none habitable); HZ 0.40-0.57 AU.
+    hd224953b_p1: { dist: 0.157, orbit: 27, size: 0.296, star: 'hd224953b' },
+    hd224953b_p2: { dist: 0.322, orbit: 80, size: 0.427, star: 'hd224953b' },
+    hd224953b_p3: { dist: 0.642, orbit: 225, size: 0.142, star: 'hd224953b' },
+    // HD 38858 -- single.
+    // G2V, 1.012 solar radii, 49.61 ly.
+    hd38858: { x: -2630067.403, y: -1480642.855, z: -856446.871, dist: 3137365, orbit: -2, size: 2.012, startype: 'G', label: loc('star_hd38858'), zlabel: loc('star_hd38858') },
+    // hd38858 planets (G2V, 4, generated; habitable-zone world at ~1.3 AU); HZ 0.96-1.39 AU.
+    hd38858_p1: { dist: 0.24, orbit: 43, size: 0.191, star: 'hd38858' },
+    hd38858_p2: { dist: 0.49, orbit: 125, size: 0.427, star: 'hd38858' },
+    hd38858_p3: { dist: 0.754, orbit: 239, size: 0.142, star: 'hd38858' },
+    hd38858_p4: { dist: 1.3, orbit: 541, size: 0.234, star: 'hd38858', hz: true },
+    // HD 140901 -- 2 components.
+    // G7IV, 2.225 solar radii, 49.73 ly.
+    hd140901: { x: 2824145.681, y: -1189310.812, z: 706815.333, dist: 3144812.7, orbit: -2, size: 2.983, startype: 'G', label: loc('star_hd140901'), zlabel: loc('star_hd140901') + ' A' },
+    // DA4.8, 0.013 solar radii, 49.73 ly.
+    hd140901b: { x: 2824204.476, y: -1189298.615, z: 706600.896, dist: 3144812.7, orbit: -2, size: 0.224, startype: 'D', zlabel: loc('star_hd140901') + ' B' },
+    // hd140901 planets (G7IV, 2, measured; none habitable); HZ 1.96-2.83 AU.
+    hd140901_p1: { dist: 0.085, orbit: 9.024, size: 0.385, star: 'hd140901' },
+    hd140901_p2: { dist: 11.8, orbit: 14386, size: 0.699, star: 'hd140901' },
+    // hd140901b planets (DA4.8, 3, generated; habitable-zone world at ~0.0238 AU); HZ 0.02-0.03 AU.
+    hd140901b_p1: { dist: 0.012, orbit: 0.62, size: 0.296, star: 'hd140901b' },
+    hd140901b_p2: { dist: 0.0175, orbit: 1.09, size: 0.234, star: 'hd140901b' },
+    hd140901b_p3: { dist: 0.0238, orbit: 1.73, size: 0.427, star: 'hd140901b', hz: true },
+    // HD 238090 -- 2 components.
+    // K5V, 0.701 solar radii, 49.73 ly.
+    hd238090: { x: -1052641.02, y: 1054683.732, z: 2769902.876, dist: 3145277.9, orbit: -2, size: 1.675, startype: 'K', label: loc('star_hd238090'), zlabel: loc('star_hd238090') + ' A' },
+    // dM4.0, 0.274 solar radii, 49.73 ly.
+    hd238090b: { x: -1052688.541, y: 1054881.486, z: 2769809.509, dist: 3145277.9, orbit: -2, size: 1.047, startype: 'M', zlabel: loc('star_hd238090') + ' B' },
+    // hd238090 planets (K5V, 1, measured; none habitable); HZ 0.40-0.57 AU.
+    hd238090_p1: { dist: 0.0932, orbit: 13.671, size: 0.303, star: 'hd238090' },
+    // hd238090b planets (dM4.0, 4, generated; habitable-zone world at ~0.113 AU); HZ 0.08-0.12 AU.
+    hd238090b_p1: { dist: 0.0273, orbit: 3.44, size: 0.191, star: 'hd238090b' },
+    hd238090b_p2: { dist: 0.0502, orbit: 8.57, size: 0.191, star: 'hd238090b' },
+    hd238090b_p3: { dist: 0.113, orbit: 29, size: 0.427, star: 'hd238090b', hz: true },
+    hd238090b_p4: { dist: 0.176, orbit: 56, size: 0.142, star: 'hd238090b' },
+    // Nu Phoenicis -- single.
+    // F9VFe+0.4, 1.167 solar radii, 49.77 ly.
+    nuphoenicis: { x: 351760.744, y: -962608.434, z: -2976271.16, dist: 3147783.4, orbit: -2, size: 2.161, startype: 'F', label: loc('star_nuphoenicis'), zlabel: loc('star_nuphoenicis') },
+    // nuphoenicis planets (F9VFe+0.4, 5, generated; none habitable); HZ 1.22-1.76 AU.
+    nuphoenicis_p1: { dist: 0.305, orbit: 58, size: 0.191, star: 'nuphoenicis' },
+    nuphoenicis_p2: { dist: 0.532, orbit: 133, size: 0.427, star: 'nuphoenicis' },
+    nuphoenicis_p3: { dist: 1.06, orbit: 375, size: 0.234, star: 'nuphoenicis' },
+    nuphoenicis_p4: { dist: 1.88, orbit: 886, size: 0.234, star: 'nuphoenicis' },
+    nuphoenicis_p5: { dist: 3.23, orbit: 1995, size: 0.296, star: 'nuphoenicis' },
+    // 171 Puppis -- single.
+    // F9V, 1.167 solar radii, 49.83 ly.
+    puppis171: { x: -1119814.437, y: -2933743.483, z: -264004.017, dist: 3151274.9, orbit: -2, size: 2.161, startype: 'F', label: loc('star_puppis171'), zlabel: loc('star_puppis171') },
+    // puppis171 planets (F9V, 5, generated; habitable-zone world at ~1.57 AU); HZ 1.22-1.76 AU.
+    puppis171_p1: { dist: 0.243, orbit: 41, size: 0.142, star: 'puppis171' },
+    puppis171_p2: { dist: 0.5, orbit: 121, size: 0.427, star: 'puppis171' },
+    puppis171_p3: { dist: 0.946, orbit: 316, size: 0.296, star: 'puppis171' },
+    puppis171_p4: { dist: 1.57, orbit: 676, size: 0.234, star: 'puppis171', hz: true },
+    puppis171_p5: { dist: 4.15, orbit: 2905, size: 0.296, star: 'puppis171' },
+    // HD 24916 -- 2 components.
+    // K4V, 0.713 solar radii, 49.85 ly.
+    hd24916: { x: -2426193.311, y: -460611.567, z: -1959724.135, dist: 3152633.1, orbit: -2, size: 1.689, startype: 'K', label: loc('star_hd24916'), zlabel: loc('star_hd24916') + ' A' },
+    // M2.5V, 0.421 solar radii, 49.85 ly.
+    hd24916b: { x: -2426292.706, y: -460521.619, z: -1959622.215, dist: 3152633.1, orbit: -2, size: 1.298, startype: 'M', zlabel: loc('star_hd24916') + ' B' },
+    // hd24916 planets (K4V, 3, generated; habitable-zone world at ~0.457 AU); HZ 0.43-0.62 AU.
+    hd24916_p1: { dist: 0.134, orbit: 21, size: 0.296, star: 'hd24916' },
+    hd24916_p2: { dist: 0.201, orbit: 39, size: 0.142, star: 'hd24916' },
+    hd24916_p3: { dist: 0.457, orbit: 132, size: 0.142, star: 'hd24916', hz: true },
+    // hd24916b planets (M2.5V, 3, generated; habitable-zone world at ~0.182 AU); HZ 0.14-0.21 AU.
+    hd24916b_p1: { dist: 0.0406, orbit: 4.72, size: 0.234, star: 'hd24916b' },
+    hd24916b_p2: { dist: 0.0902, orbit: 16, size: 0.427, star: 'hd24916b' },
+    hd24916b_p3: { dist: 0.182, orbit: 45, size: 0.427, star: 'hd24916b', hz: true },
+    // 19 Draconis -- single.
+    // F8V, 1.221 solar radii, 49.95 ly.
+    draconis19: { x: -251388.715, y: 2528293.698, z: 1877503.337, dist: 3159190.4, orbit: -2, size: 2.21, startype: 'F', label: loc('star_draconis19'), zlabel: loc('star_draconis19') },
+    // draconis19 planets (F8V, 3, generated; none habitable); HZ 1.33-1.91 AU.
+    draconis19_p1: { dist: 0.318, orbit: 60, size: 0.296, star: 'draconis19' },
+    draconis19_p2: { dist: 0.549, orbit: 137, size: 0.234, star: 'draconis19' },
+    draconis19_p3: { dist: 0.968, orbit: 320, size: 0.191, star: 'draconis19' },
+    // HD 21197 -- single.
+    // K4V, 0.713 solar radii, 49.98 ly.
+    hd21197: { x: -2108634.715, y: -339103.979, z: -2329858.039, dist: 3160628.2, orbit: -2, size: 1.689, startype: 'K', label: loc('star_hd21197'), zlabel: loc('star_hd21197') },
+    // hd21197 planets (K4V, 2, generated; habitable-zone world at ~0.503 AU); HZ 0.43-0.62 AU.
+    hd21197_p1: { dist: 0.105, orbit: 15, size: 0.296, star: 'hd21197' },
+    hd21197_p2: { dist: 0.503, orbit: 153, size: 0.191, star: 'hd21197', hz: true },
+    // --- M dwarfs, 20 to 30 light years ------------------------------------------------------
+    // The red dwarfs of the same shell as the O/B/A/F/G/K stars above, which the earlier passes
+    // deliberately left out. Positions and sizes are derived exactly as they were there.
+    // Almost none of these carry a name: every M dwarf famous enough to have earned one --
+    // Barnard's Star, Wolf 359, Lalande 21185, Kapteyn's Star, Ross 128 -- is inside 20 ly and
+    // already on the map, which is precisely why it was found early enough to be named. Out here
+    // they are catalogue designations, and that is what they are labelled with.
+    // Planets: seventeen of these systems have real ones and keep every one, measured orbits and
+    // all -- GJ 581's three, LTT 1445 A's two, GJ 433's three among them. The rest are generated
+    // from each star's own id on a deliberate split: a fifth get three worlds, two fifths two, and
+    // two fifths a single one. Giants are rare here, unlike around the F and G stars, because an M
+    // dwarf's disc rarely has the mass to build one.
+    // HD 191849.
+    // M0V, 0.588 solar radii, 20.11 ly.
+    hd191849: { x: 1062325.788, y: -96553.943, z: -692057.697, dist: 1271535.5, orbit: -2, size: 1.534, startype: 'M', label: loc('star_hd191849'), zlabel: loc('star_hd191849') },
+    // hd191849 planets (M0V, 1, generated; habitable-zone world at ~0.313 AU); HZ 0.250-0.360 AU.
+    hd191849_p1: { dist: 0.313, orbit: 85, size: 0.191, star: 'hd191849', hz: true },
+    // BD+19 5116 -- 3 components.
+    // M3.5V, 0.3 solar radii, 20.16 ly.
+    bd195116: { x: -147472.31, y: 977913.391, z: -804916.344, dist: 1275128.6, orbit: -2, size: 1.095, startype: 'M', label: loc('star_bd195116'), zlabel: loc('star_bd195116') + ' A' },
+    // M4.0Ve, 0.274 solar radii, 20.16 ly.
+    bd195116b: { x: -147502.069, y: 977899.763, z: -804927.449, dist: 1275128.6, orbit: -2, size: 1.047, startype: 'M', zlabel: loc('star_bd195116') + ' B' },
+    // M3.5Ve, 0.3 solar radii, 20.16 ly.
+    bd195116c: { x: -147471.861, y: 977913.497, z: -804916.298, dist: 1275128.6, orbit: -2, size: 1.095, startype: 'M', zlabel: loc('star_bd195116') + ' C' },
+    // bd195116 planets (M3.5V, 1, measured; none habitable); HZ 0.092-0.132 AU.
+    bd195116_p1: { dist: 0.63965, orbit: 284.39, size: 0.697, star: 'bd195116' },
+    // bd195116b planets (M4.0Ve, 2, generated; habitable-zone world at ~0.104 AU); HZ 0.081-0.117 AU.
+    bd195116b_p1: { dist: 0.027, orbit: 3.38, size: 0.234, star: 'bd195116b' },
+    bd195116b_p2: { dist: 0.104, orbit: 26, size: 0.142, star: 'bd195116b', hz: true },
+    // bd195116c planets (M3.5Ve, 2, generated; habitable-zone world at ~0.0963 AU); HZ 0.092-0.132 AU.
+    bd195116c_p1: { dist: 0.0596, orbit: 10, size: 0.142, star: 'bd195116c' },
+    bd195116c_p2: { dist: 0.0963, orbit: 21, size: 0.142, star: 'bd195116c', hz: true },
+    // HD 152751 -- 3 components.
+    // M3.5Ve, 0.3 solar radii, 20.21 ly.
+    hd152751: { x: 1169808.984, y: 228333.307, z: 460893.584, dist: 1277893.6, orbit: -2, size: 1.095, startype: 'M', label: loc('star_hd152751'), zlabel: loc('star_hd152751') + ' A' },
+    // M7Ve, 0.12 solar radii, 20.21 ly.
+    hd152751b: { x: 1170383.345, y: 227674.421, z: 459759.978, dist: 1277893.6, orbit: -2, size: 0.693, startype: 'M', zlabel: loc('star_hd152751') + ' B' },
+    // M3.5V, 0.3 solar radii, 20.21 ly.
+    hd152751c: { x: 1169638.36, y: 228378.322, z: 461304.131, dist: 1277893.6, orbit: -2, size: 1.095, startype: 'M', zlabel: loc('star_hd152751') + ' C' },
+    // hd152751 planets (M3.5Ve, 1, generated; habitable-zone world at ~0.113 AU); HZ 0.092-0.132 AU.
+    hd152751_p1: { dist: 0.113, orbit: 27, size: 0.191, star: 'hd152751', hz: true },
+    // hd152751b planets (M7Ve, 2, generated; habitable-zone world at ~0.0281 AU); HZ 0.024-0.035 AU.
+    hd152751b_p1: { dist: 0.012, orbit: 1.6, size: 0.191, star: 'hd152751b' },
+    hd152751b_p2: { dist: 0.0281, orbit: 5.73, size: 0.191, star: 'hd152751b', hz: true },
+    // hd152751c planets (M3.5V, 2, generated; none habitable); HZ 0.092-0.132 AU.
+    hd152751c_p1: { dist: 0.0661, orbit: 12, size: 0.234, star: 'hd152751c' },
+    hd152751c_p2: { dist: 0.177, orbit: 52, size: 0.296, star: 'hd152751c' },
+    // BD-11 3759.
+    // M3.5V, 0.3 solar radii, 20.39 ly.
+    bd113759: { x: 874961.445, y: -346065.402, z: 882163.859, dist: 1289779.8, orbit: -2, size: 1.095, startype: 'M', label: loc('star_bd113759'), zlabel: loc('star_bd113759') },
+    // bd113759 planets (M3.5V, 1, measured; none habitable); HZ 0.092-0.132 AU.
+    bd113759_p1: { dist: 0.1417, orbit: 36.116, size: 0.283, star: 'bd113759' },
+    // BD-07 4003.
+    // M3V, 0.361 solar radii, 20.55 ly.
+    bd074003: { x: 989940.071, y: -102691.173, z: 835669.388, dist: 1299565.4, orbit: -2, size: 1.202, startype: 'M', label: loc('star_bd074003'), zlabel: loc('star_bd074003') },
+    // bd074003 planets (M3V, 3, measured; none habitable); HZ 0.121-0.174 AU.
+    bd074003_p1: { dist: 0.02799, orbit: 3.148, size: 0.224, star: 'bd074003' },
+    bd074003_p2: { dist: 0.0399, orbit: 5.369, size: 0.418, star: 'bd074003' },
+    bd074003_p3: { dist: 0.0718, orbit: 12.921, size: 0.302, star: 'bd074003' },
+    // LP 368-128.
+    // M6.5Ve, 0.126 solar radii, 20.74 ly.
+    lp368128: { x: -939322.59, y: -443996.873, z: 800430.803, dist: 1311544.7, orbit: -2, size: 0.71, startype: 'M', label: loc('star_lp368128'), zlabel: loc('star_lp368128') },
+    // lp368128 planets (M6.5Ve, 1, generated; habitable-zone world at ~0.032 AU); HZ 0.027-0.039 AU.
+    lp368128_p1: { dist: 0.032, orbit: 6.86, size: 0.234, star: 'lp368128', hz: true },
+    // LP 944-20.
+    // M9.5Ve, 0.101 solar radii, 20.96 ly.
+    lp94420: { x: -434142.543, y: -660202.241, z: -1064393.681, dist: 1325624.6, orbit: -2, size: 0.636, startype: 'M', label: loc('star_lp94420'), zlabel: loc('star_lp94420') },
+    // lp94420 planets (M9.5Ve, 2, generated; habitable-zone world at ~0.0188 AU); HZ 0.016-0.022 AU.
+    lp94420_p1: { dist: 0.0188, orbit: 3.37, size: 0.142, star: 'lp94420', hz: true },
+    lp94420_p2: { dist: 0.0302, orbit: 6.86, size: 0.191, star: 'lp94420' },
+    // GL Virginis.
+    // M4.5Ve, 0.217 solar radii, 21.08 ly.
+    glvirginis: { x: 41634.071, y: -403851.732, z: 1270007.238, dist: 1333322.2, orbit: -2, size: 0.932, startype: 'M', label: loc('star_glvirginis'), zlabel: loc('star_glvirginis') },
+    // glvirginis planets (M4.5Ve, 2, generated; habitable-zone world at ~0.0705 AU); HZ 0.060-0.086 AU.
+    glvirginis_p1: { dist: 0.0422, orbit: 7.38, size: 0.191, star: 'glvirginis' },
+    glvirginis_p2: { dist: 0.0705, orbit: 16, size: 0.296, star: 'glvirginis', hz: true },
+    // G 202-48.
+    // M1.5V, 0.482 solar radii, 21.13 ly.
+    g20248: { x: 115928.513, y: 973870.836, z: 907714.943, dist: 1336342.1, orbit: -2, size: 1.389, startype: 'M', label: loc('star_g20248'), zlabel: loc('star_g20248') },
+    // g20248 planets (M1.5V, 1, measured; none habitable); HZ 0.181-0.261 AU.
+    g20248_p1: { dist: 0.078361, orbit: 14.628, size: 0.233, star: 'g20248' },
+    // L 100-115.
+    // M4.0V, 0.274 solar radii, 21.21 ly.
+    l100115: { x: 389479.145, y: -1253182.633, z: -278215.816, dist: 1341478.6, orbit: -2, size: 1.047, startype: 'M', label: loc('star_l100115'), zlabel: loc('star_l100115') },
+    // l100115 planets (M4.0V, 1, generated; habitable-zone world at ~0.0939 AU); HZ 0.081-0.117 AU.
+    l100115_p1: { dist: 0.0939, orbit: 22, size: 0.191, star: 'l100115', hz: true },
+    // L 471-42.
+    // M4.5V, 0.217 solar radii, 21.73 ly.
+    l47142: { x: 629780.21, y: -1081371.362, z: 568279.685, dist: 1374383.1, orbit: -2, size: 0.932, startype: 'M', label: loc('star_l47142'), zlabel: loc('star_l47142') },
+    // l47142 planets (M4.5V, 2, generated; none habitable); HZ 0.060-0.086 AU.
+    l47142_p1: { dist: 0.0157, orbit: 1.68, size: 0.234, star: 'l47142' },
+    l47142_p2: { dist: 0.0253, orbit: 3.43, size: 0.142, star: 'l47142' },
+    // Scholz's Star.
+    // M9.5+T5, 0.101 solar radii, 21.92 ly.
+    scholzsstar: { x: -996191.611, y: -962318.025, z: 55353.88, dist: 1386188.2, orbit: -2, size: 0.636, startype: 'M', label: loc('star_scholzsstar'), zlabel: loc('star_scholzsstar') },
+    // scholzsstar planets (M9.5+T5, 2, generated; none habitable); HZ 0.016-0.022 AU.
+    scholzsstar_p1: { dist: 0.012, orbit: 1.72, size: 0.191, star: 'scholzsstar' },
+    scholzsstar_p2: { dist: 0.0269, orbit: 5.77, size: 0.296, star: 'scholzsstar' },
+    // Ross 104.
+    // M4V, 0.274 solar radii, 22.01 ly.
+    ross104: { x: -482960.813, y: -356350.618, z: 1255749.893, dist: 1391813.5, orbit: -2, size: 1.047, startype: 'M', label: loc('star_ross104'), zlabel: loc('star_ross104') },
+    // ross104 planets (M4V, 1, generated; none habitable); HZ 0.081-0.117 AU.
+    ross104_p1: { dist: 0.0445, orbit: 7.15, size: 0.142, star: 'ross104' },
+    // Ross 619.
+    // M4.5V, 0.217 solar radii, 22.08 ly.
+    ross619: { x: -1072787.31, y: -727060.671, z: 519788.47, dist: 1396305.8, orbit: -2, size: 0.932, startype: 'M', label: loc('star_ross619'), zlabel: loc('star_ross619') },
+    // ross619 planets (M4.5V, 2, generated; habitable-zone world at ~0.0687 AU); HZ 0.060-0.086 AU.
+    ross619_p1: { dist: 0.0326, orbit: 5.01, size: 0.191, star: 'ross619' },
+    ross619_p2: { dist: 0.0687, orbit: 15, size: 0.191, star: 'ross619', hz: true },
+    // Ross 775.
+    // M3.0V, 0.361 solar radii, 22.11 ly.
+    ross775: { x: 447134.763, y: 1200016.345, z: -561854.509, dist: 1398445.3, orbit: -2, size: 1.202, startype: 'M', label: loc('star_ross775'), zlabel: loc('star_ross775') },
+    // ross775 planets (M3.0V, 2, generated; none habitable); HZ 0.121-0.174 AU.
+    ross775_p1: { dist: 0.0456, orbit: 5.85, size: 0.142, star: 'ross775' },
+    ross775_p2: { dist: 0.118, orbit: 24, size: 0.191, star: 'ross775' },
+    // G 41-14.
+    // M3.5V, 0.3 solar radii, 22.19 ly.
+    g4114: { x: -907735.629, y: -766901.575, z: 746689.568, dist: 1403448.4, orbit: -2, size: 1.095, startype: 'M', label: loc('star_g4114'), zlabel: loc('star_g4114') },
+    // g4114 planets (M3.5V, 2, generated; none habitable); HZ 0.092-0.132 AU.
+    g4114_p1: { dist: 0.0345, orbit: 4.5, size: 0.191, star: 'g4114' },
+    g4114_p2: { dist: 0.0813, orbit: 16, size: 0.296, star: 'g4114' },
+    // BD-17 588 -- 2 components.
+    // M3V, 0.361 solar radii, 22.39 ly.
+    bd17588: { x: -701339.202, y: -262030.388, z: -1201595.744, dist: 1415757.4, orbit: -2, size: 1.202, startype: 'M', label: loc('star_bd17588'), zlabel: loc('star_bd17588') + ' A' },
+    // M2.5V, 0.421 solar radii, 22.39 ly.
+    bd17588b: { x: -701343.511, y: -261984.943, z: -1201603.138, dist: 1415757.4, orbit: -2, size: 1.298, startype: 'M', zlabel: loc('star_bd17588') + ' B' },
+    // bd17588 planets (M3V, 2, measured; none habitable); HZ 0.121-0.174 AU.
+    bd17588_p1: { dist: 0.02661, orbit: 3.124, size: 0.205, star: 'bd17588' },
+    bd17588_p2: { dist: 0.0381, orbit: 5.359, size: 0.221, star: 'bd17588' },
+    // bd17588b planets (M2.5V, 1, generated; none habitable); HZ 0.144-0.207 AU.
+    bd17588b_p1: { dist: 0.0614, orbit: 8.79, size: 0.234, star: 'bd17588b' },
+    // HD 216899.
+    // M1.5V, 0.482 solar radii, 22.40 ly.
+    hd216899: { x: 57063.345, y: 1111790.528, z: -875744.775, dist: 1416426.2, orbit: -2, size: 1.389, startype: 'M', label: loc('star_hd216899'), zlabel: loc('star_hd216899') },
+    // hd216899 planets (M1.5V, 2, generated; habitable-zone world at ~0.212 AU); HZ 0.181-0.261 AU.
+    hd216899_p1: { dist: 0.0656, orbit: 8.95, size: 0.234, star: 'hd216899' },
+    hd216899_p2: { dist: 0.212, orbit: 52, size: 0.296, star: 'hd216899', hz: true },
+    // Wolf 358.
+    // M4V, 0.274 solar radii, 22.72 ly.
+    wolf358: { x: -377917.584, y: -734514.324, z: 1175847.938, dist: 1436993.9, orbit: -2, size: 1.047, startype: 'M', label: loc('star_wolf358'), zlabel: loc('star_wolf358') },
+    // wolf358 planets (M4V, 2, generated; habitable-zone world at ~0.113 AU); HZ 0.081-0.117 AU.
+    wolf358_p1: { dist: 0.05, orbit: 8.51, size: 0.191, star: 'wolf358' },
+    wolf358_p2: { dist: 0.113, orbit: 29, size: 0.296, star: 'wolf358', hz: true },
+    // BD+01 2447.
+    // dM2, 0.446 solar radii, 22.95 ly.
+    bd012447: { x: -427494.5, y: -895240.389, z: 1059682.332, dist: 1451596.9, orbit: -2, size: 1.336, startype: 'M', label: loc('star_bd012447'), zlabel: loc('star_bd012447') },
+    // bd012447 planets (dM2, 1, measured; none habitable); HZ 0.161-0.233 AU.
+    bd012447_p1: { dist: 0.05402, orbit: 7.027, size: 0.207, star: 'bd012447' },
+    // HD 199305.
+    // M1.0V, 0.501 solar radii, 22.96 ly.
+    hd199305: { x: -215837.269, y: 1408452.44, z: 279320.811, dist: 1452013.8, orbit: -2, size: 1.416, startype: 'M', label: loc('star_hd199305'), zlabel: loc('star_hd199305') },
+    // hd199305 planets (M1.0V, 1, generated; habitable-zone world at ~0.22 AU); HZ 0.192-0.277 AU.
+    hd199305_p1: { dist: 0.22, orbit: 53, size: 0.191, star: 'hd199305', hz: true },
+    // LSPM J2146+3813.
+    // M5V, 0.196 solar radii, 22.99 ly.
+    lspmj21463813: { x: 61805.182, y: 1422556.784, z: -292583.176, dist: 1453648, orbit: -2, size: 0.885, startype: 'M', label: loc('star_lspmj21463813'), zlabel: loc('star_lspmj21463813') },
+    // lspmj21463813 planets (M5V, 3, generated; none habitable); HZ 0.052-0.075 AU.
+    lspmj21463813_p1: { dist: 0.0385, orbit: 6.86, size: 0.234, star: 'lspmj21463813' },
+    lspmj21463813_p2: { dist: 0.0779, orbit: 20, size: 0.296, star: 'lspmj21463813' },
+    lspmj21463813_p3: { dist: 0.165, orbit: 61, size: 0.191, star: 'lspmj21463813' },
+    // LP 914-54.
+    // M7.0Ve, 0.12 solar radii, 23.00 ly.
+    lp91454: { x: 1163079.711, y: -570067.209, z: 662198.823, dist: 1454729.6, orbit: -2, size: 0.693, startype: 'M', label: loc('star_lp91454'), zlabel: loc('star_lp91454') },
+    // lp91454 planets (M7.0Ve, 3, generated; habitable-zone world at ~0.0328 AU); HZ 0.024-0.035 AU.
+    lp91454_p1: { dist: 0.0168, orbit: 2.65, size: 0.191, star: 'lp91454' },
+    lp91454_p2: { dist: 0.0328, orbit: 7.23, size: 0.191, star: 'lp91454', hz: true },
+    lp91454_p3: { dist: 0.053, orbit: 15, size: 0.234, star: 'lp91454' },
+    // L 230-188.
+    // M4.5V, 0.217 solar radii, 23.18 ly.
+    l230188: { x: -125702.616, y: -1027376.682, z: -1038239.906, dist: 1466030.7, orbit: -2, size: 0.932, startype: 'M', label: loc('star_l230188'), zlabel: loc('star_l230188') },
+    // l230188 planets (M4.5V, 1, generated; habitable-zone world at ~0.0743 AU); HZ 0.060-0.086 AU.
+    l230188_p1: { dist: 0.0743, orbit: 17, size: 0.234, star: 'l230188', hz: true },
+    // G 157-77.
+    // M5.0Ve, 0.196 solar radii, 23.41 ly.
+    g15777: { x: 88830.087, y: 751549.886, z: -1272242.315, dist: 1480310.3, orbit: -2, size: 0.885, startype: 'M', label: loc('star_g15777'), zlabel: loc('star_g15777') },
+    // g15777 planets (M5.0Ve, 2, generated; none habitable); HZ 0.052-0.075 AU.
+    g15777_p1: { dist: 0.0191, orbit: 2.4, size: 0.191, star: 'g15777' },
+    g15777_p2: { dist: 0.0466, orbit: 9.13, size: 0.142, star: 'g15777' },
+    // BX Ceti.
+    // M3.5V, 0.3 solar radii, 23.56 ly.
+    bxceti: { x: -963495.744, y: 286006.242, z: -1099925.927, dist: 1489953.2, orbit: -2, size: 1.095, startype: 'M', label: loc('star_bxceti'), zlabel: loc('star_bxceti') },
+    // bxceti planets (M3.5V, 3, generated; habitable-zone world at ~0.116 AU); HZ 0.092-0.132 AU.
+    bxceti_p1: { dist: 0.0471, orbit: 7.19, size: 0.191, star: 'bxceti' },
+    bxceti_p2: { dist: 0.116, orbit: 28, size: 0.191, star: 'bxceti', hz: true },
+    bxceti_p3: { dist: 0.271, orbit: 99, size: 0.296, star: 'bxceti' },
+    // L 788-34.
+    // M4.5Ve, 0.217 solar radii, 23.60 ly.
+    l78834: { x: 656870.052, y: 563295.284, z: -1215690.031, dist: 1492207.1, orbit: -2, size: 0.932, startype: 'M', label: loc('star_l78834'), zlabel: loc('star_l78834') },
+    // l78834 planets (M4.5Ve, 2, measured; none habitable); HZ 0.060-0.086 AU.
+    l78834_p1: { dist: 0.0153, orbit: 1.634, size: 0.236, star: 'l78834' },
+    l78834_p2: { dist: 0.186, orbit: 69.57, size: 0.321, star: 'l78834' },
+    // Wolf 922.
+    // M4.5V, 0.217 solar radii, 24.32 ly.
+    wolf922: { x: 860310.098, y: 808883.394, z: -985926.268, dist: 1538335.6, orbit: -2, size: 0.932, startype: 'M', label: loc('star_wolf922'), zlabel: loc('star_wolf922') },
+    // wolf922 planets (M4.5V, 2, generated; habitable-zone world at ~0.0764 AU); HZ 0.060-0.086 AU.
+    wolf922_p1: { dist: 0.0393, orbit: 6.63, size: 0.191, star: 'wolf922' },
+    wolf922_p2: { dist: 0.0764, orbit: 18, size: 0.234, star: 'wolf922', hz: true },
+    // G 24-16.
+    // M4.5V, 0.217 solar radii, 24.37 ly.
+    g2416: { x: 877371.112, y: 1186914.184, z: -444471.026, dist: 1541460.3, orbit: -2, size: 0.932, startype: 'M', label: loc('star_g2416'), zlabel: loc('star_g2416') },
+    // g2416 planets (M4.5V, 2, generated; habitable-zone world at ~0.0657 AU); HZ 0.060-0.086 AU.
+    g2416_p1: { dist: 0.0266, orbit: 3.69, size: 0.142, star: 'g2416' },
+    g2416_p2: { dist: 0.0657, orbit: 14, size: 0.234, star: 'g2416', hz: true },
+    // G 203-47.
+    // M3.5V, 0.3 solar radii, 24.78 ly.
+    g20347: { x: 455972.628, y: 1178290.443, z: 927555.054, dist: 1567366.5, orbit: -2, size: 1.095, startype: 'M', label: loc('star_g20347'), zlabel: loc('star_g20347') },
+    // g20347 planets (M3.5V, 2, generated; habitable-zone world at ~0.118 AU); HZ 0.092-0.132 AU.
+    g20347_p1: { dist: 0.0475, orbit: 7.28, size: 0.234, star: 'g20347' },
+    g20347_p2: { dist: 0.118, orbit: 28, size: 0.296, star: 'g20347', hz: true },
+    // G 141-36.
+    // M5.0V, 0.196 solar radii, 24.84 ly.
+    g14136: { x: 1210332.871, y: 995262.997, z: 114879.004, dist: 1571194.2, orbit: -2, size: 0.885, startype: 'M', label: loc('star_g14136'), zlabel: loc('star_g14136') },
+    // g14136 planets (M5.0V, 1, generated; habitable-zone world at ~0.0608 AU); HZ 0.052-0.075 AU.
+    g14136_p1: { dist: 0.0608, orbit: 14, size: 0.234, star: 'g14136', hz: true },
+    // BD+11 2576.
+    // M1.0V, 0.501 solar radii, 24.88 ly.
+    bd112576: { x: 458605.055, y: -231347.387, z: 1487113.923, dist: 1573323.9, orbit: -2, size: 1.416, startype: 'M', label: loc('star_bd112576'), zlabel: loc('star_bd112576') },
+    // bd112576 planets (M1.0V, 1, measured; none habitable); HZ 0.192-0.277 AU.
+    bd112576_p1: { dist: 0.422, orbit: 140.43, size: 0.279, star: 'bd112576' },
+    // G 258-33.
+    // M4.5Ve, 0.217 solar radii, 24.93 ly.
+    g25833: { x: -146792.604, y: 1385328.789, z: 737606.545, dist: 1576308.1, orbit: -2, size: 0.932, startype: 'M', label: loc('star_g25833'), zlabel: loc('star_g25833') },
+    // g25833 planets (M4.5Ve, 2, generated; habitable-zone world at ~0.0755 AU); HZ 0.060-0.086 AU.
+    g25833_p1: { dist: 0.0419, orbit: 7.3, size: 0.234, star: 'g25833' },
+    g25833_p2: { dist: 0.0755, orbit: 18, size: 0.234, star: 'g25833', hz: true },
+    // L 499-56.
+    // M3.5V, 0.3 solar radii, 25.01 ly.
+    l49956: { x: 941671.267, y: 106288.601, z: -1266210.545, dist: 1581559.7, orbit: -2, size: 1.095, startype: 'M', label: loc('star_l49956'), zlabel: loc('star_l49956') },
+    // l49956 planets (M3.5V, 1, generated; habitable-zone world at ~0.116 AU); HZ 0.092-0.132 AU.
+    l49956_p1: { dist: 0.116, orbit: 28, size: 0.234, star: 'l49956', hz: true },
+    // VX Arietis.
+    // dM3, 0.361 solar radii, 25.05 ly.
+    vxarietis: { x: -1209725.682, y: 624756.169, z: -810031.249, dist: 1584268.6, orbit: -2, size: 1.202, startype: 'M', label: loc('star_vxarietis'), zlabel: loc('star_vxarietis') },
+    // vxarietis planets (dM3, 1, generated; habitable-zone world at ~0.148 AU); HZ 0.121-0.174 AU.
+    vxarietis_p1: { dist: 0.148, orbit: 34, size: 0.191, star: 'vxarietis', hz: true },
+    // BD-03 2870.
+    // M2V, 0.446 solar radii, 25.14 ly.
+    bd032870: { x: -499560.777, y: -1095922.556, z: 1037495.853, dist: 1589655.6, orbit: -2, size: 1.336, startype: 'M', label: loc('star_bd032870'), zlabel: loc('star_bd032870') },
+    // bd032870 planets (M2V, 3, generated; habitable-zone world at ~0.186 AU); HZ 0.161-0.233 AU.
+    bd032870_p1: { dist: 0.0497, orbit: 6.1, size: 0.191, star: 'bd032870' },
+    bd032870_p2: { dist: 0.125, orbit: 24, size: 0.142, star: 'bd032870' },
+    bd032870_p3: { dist: 0.186, orbit: 44, size: 0.142, star: 'bd032870', hz: true },
+    // SIPS J1259-4336.
+    // M8:, 0.114 solar radii, 25.20 ly.
+    sipsj12594336: { x: 849991.537, y: -1241522.277, z: 525235.083, dist: 1593654.6, orbit: -2, size: 0.675, startype: 'M', label: loc('star_sipsj12594336'), zlabel: loc('star_sipsj12594336') },
+    // sipsj12594336 planets (M8:, 2, generated; habitable-zone world at ~0.0248 AU); HZ 0.022-0.031 AU.
+    sipsj12594336_p1: { dist: 0.012, orbit: 1.65, size: 0.142, star: 'sipsj12594336' },
+    sipsj12594336_p2: { dist: 0.0248, orbit: 4.89, size: 0.296, star: 'sipsj12594336', hz: true },
+    // LP 881-64.
+    // M5.5/6Ve+M8.5Ve+M9/9.5V, 0.156 solar radii, 25.22 ly.
+    lp88164: { x: 141054.551, y: 85734.616, z: -1586471.991, dist: 1595036.1, orbit: -2, size: 0.79, startype: 'M', label: loc('star_lp88164'), zlabel: loc('star_lp88164') },
+    // lp88164 planets (M5.5/6Ve+M8.5Ve+M9/9.5V, 2, generated; habitable-zone world at ~0.0432 AU); HZ 0.038-0.055 AU.
+    lp88164_p1: { dist: 0.0132, orbit: 1.58, size: 0.191, star: 'lp88164' },
+    lp88164_p2: { dist: 0.0432, orbit: 9.35, size: 0.234, star: 'lp88164', hz: true },
+    // G 192-13.
+    // M4.0V, 0.274 solar radii, 25.22 ly.
+    g19213: { x: -1370582.939, y: 666576.349, z: 471084.587, dist: 1595224.8, orbit: -2, size: 1.047, startype: 'M', label: loc('star_g19213'), zlabel: loc('star_g19213') },
+    // g19213 planets (M4.0V, 1, measured; habitable-zone world at ~0.09673 AU); HZ 0.081-0.117 AU.
+    g19213_p1: { dist: 0.09673, orbit: 21.45, size: 0.219, star: 'g19213', hz: true },
+    // HD 165222.
+    // M0V, 0.588 solar radii, 25.24 ly.
+    hd165222: { x: 1430809.775, y: 663449.258, z: 246233.478, dist: 1596249.5, orbit: -2, size: 1.534, startype: 'M', label: loc('star_hd165222'), zlabel: loc('star_hd165222') },
+    // hd165222 planets (M0V, 1, generated; habitable-zone world at ~0.298 AU); HZ 0.250-0.360 AU.
+    hd165222_p1: { dist: 0.298, orbit: 79, size: 0.142, star: 'hd165222', hz: true },
+    // G 109-35.
+    // M5.0Ve, 0.196 solar radii, 25.29 ly.
+    g10935: { x: -1508802.795, y: -444235.462, z: 288699.947, dist: 1599118.1, orbit: -2, size: 0.885, startype: 'M', label: loc('star_g10935'), zlabel: loc('star_g10935') },
+    // g10935 planets (M5.0Ve, 1, generated; habitable-zone world at ~0.0623 AU); HZ 0.052-0.075 AU.
+    g10935_p1: { dist: 0.0623, orbit: 14, size: 0.142, star: 'g10935', hz: true },
+    // G 227-22.
+    // M5Ve, 0.196 solar radii, 25.42 ly.
+    g22722: { x: -91308.728, y: 1395666.412, z: 792571.665, dist: 1607604.4, orbit: -2, size: 0.885, startype: 'M', label: loc('star_g22722'), zlabel: loc('star_g22722') },
+    // g22722 planets (M5Ve, 1, generated; habitable-zone world at ~0.0602 AU); HZ 0.052-0.075 AU.
+    g22722_p1: { dist: 0.0602, orbit: 13, size: 0.191, star: 'g22722', hz: true },
+    // G 202-45.
+    // M3.0V, 0.361 solar radii, 25.59 ly.
+    g20245: { x: 297189.969, y: 1124480.276, z: 1124839.022, dist: 1618036, orbit: -2, size: 1.202, startype: 'M', label: loc('star_g20245'), zlabel: loc('star_g20245') },
+    // g20245 planets (M3.0V, 1, generated; none habitable); HZ 0.121-0.174 AU.
+    g20245_p1: { dist: 0.0847, orbit: 15, size: 0.234, star: 'g20245' },
+    // G 154-44.
+    // M4.0Ve, 0.274 solar radii, 26.00 ly.
+    g15444: { x: 1595893.491, y: 390745.622, z: 61599.301, dist: 1644187.5, orbit: -2, size: 1.047, startype: 'M', label: loc('star_g15444'), zlabel: loc('star_g15444') },
+    // g15444 planets (M4.0Ve, 1, generated; none habitable); HZ 0.081-0.117 AU.
+    g15444_p1: { dist: 0.048, orbit: 8.01, size: 0.142, star: 'g15444' },
+    // SCR J0740-4257.
+    // M4.5, 0.217 solar radii, 26.03 ly.
+    scrj07404257: { x: -382457.137, y: -1575486.101, z: -285161.172, dist: 1646130.9, orbit: -2, size: 0.932, startype: 'M', label: loc('star_scrj07404257'), zlabel: loc('star_scrj07404257') },
+    // scrj07404257 planets (M4.5, 1, generated; habitable-zone world at ~0.069 AU); HZ 0.060-0.086 AU.
+    scrj07404257_p1: { dist: 0.069, orbit: 15, size: 0.234, star: 'scrj07404257', hz: true },
+    // CD-44 3045 -- 3 components.
+    // M3.5V, 0.3 solar radii, 26.12 ly.
+    cd443045: { x: -425881.559, y: -1516938.983, z: -496949.326, dist: 1652101, orbit: -2, size: 1.095, startype: 'M', label: loc('star_cd443045'), zlabel: loc('star_cd443045') + ' A' },
+    // M3V, 0.361 solar radii, 26.12 ly.
+    cd443045b: { x: -425881.55, y: -1516939.614, z: -496947.406, dist: 1652101, orbit: -2, size: 1.202, startype: 'M', zlabel: loc('star_cd443045') + ' B' },
+    // M3, 0.361 solar radii, 26.12 ly.
+    cd443045c: { x: -425886.726, y: -1516935.297, z: -496956.148, dist: 1652101, orbit: -2, size: 1.202, startype: 'M', zlabel: loc('star_cd443045') + ' C' },
+    // cd443045 planets (M3.5V, 3, generated; habitable-zone world at ~0.117 AU); HZ 0.092-0.132 AU.
+    cd443045_p1: { dist: 0.0265, orbit: 3.03, size: 0.234, star: 'cd443045' },
+    cd443045_p2: { dist: 0.0664, orbit: 12, size: 0.191, star: 'cd443045' },
+    cd443045_p3: { dist: 0.117, orbit: 28, size: 0.191, star: 'cd443045', hz: true },
+    // cd443045b planets (M3V, 1, generated; habitable-zone world at ~0.151 AU); HZ 0.121-0.174 AU.
+    cd443045b_p1: { dist: 0.151, orbit: 35, size: 0.191, star: 'cd443045b', hz: true },
+    // cd443045c planets (M3, 1, generated; habitable-zone world at ~0.143 AU); HZ 0.121-0.174 AU.
+    cd443045c_p1: { dist: 0.143, orbit: 32, size: 0.234, star: 'cd443045c', hz: true },
+    // G 122-49.
+    // M4.5V, 0.217 solar radii, 26.23 ly.
+    g12249: { x: -577524.732, y: 362975.901, z: 1512178.9, dist: 1658906.7, orbit: -2, size: 0.932, startype: 'M', label: loc('star_g12249'), zlabel: loc('star_g12249') },
+    // g12249 planets (M4.5V, 1, measured; none habitable); HZ 0.060-0.086 AU.
+    g12249_p1: { dist: 0.5714, orbit: 389.7, size: 0.344, star: 'g12249' },
+    // L 399-68.
+    // M3V, 0.361 solar radii, 26.26 ly.
+    l39968: { x: 804869.635, y: -1345613.212, z: 547953.646, dist: 1660946.5, orbit: -2, size: 1.202, startype: 'M', label: loc('star_l39968'), zlabel: loc('star_l39968') },
+    // l39968 planets (M3V, 3, generated; habitable-zone world at ~0.131 AU); HZ 0.121-0.174 AU.
+    l39968_p1: { dist: 0.0513, orbit: 6.98, size: 0.142, star: 'l39968' },
+    l39968_p2: { dist: 0.131, orbit: 28, size: 0.234, star: 'l39968', hz: true },
+    l39968_p3: { dist: 0.231, orbit: 67, size: 0.142, star: 'l39968' },
+    // Wolf 437.
+    // M3.5V, 0.3 solar radii, 26.35 ly.
+    wolf437: { x: 249503.177, y: -431260.141, z: 1590217.087, dist: 1666441.6, orbit: -2, size: 1.095, startype: 'M', label: loc('star_wolf437'), zlabel: loc('star_wolf437') },
+    // wolf437 planets (M3.5V, 1, measured; none habitable); HZ 0.092-0.132 AU.
+    wolf437_p1: { dist: 0.01714, orbit: 1.467, size: 0.217, star: 'wolf437' },
+    // G 262-15.
+    // M3V, 0.361 solar radii, 26.38 ly.
+    g26215: { x: -277930.321, y: 1586632.124, z: 433374.834, dist: 1668070.9, orbit: -2, size: 1.202, startype: 'M', label: loc('star_g26215'), zlabel: loc('star_g26215') },
+    // g26215 planets (M3V, 1, generated; none habitable); HZ 0.121-0.174 AU.
+    g26215_p1: { dist: 0.0518, orbit: 7.08, size: 0.191, star: 'g26215' },
+    // G 13-22.
+    // M4.5Ve, 0.217 solar radii, 26.38 ly.
+    g1322: { x: 173270.072, y: -762877.752, z: 1473425.31, dist: 1668228.7, orbit: -2, size: 0.932, startype: 'M', label: loc('star_g1322'), zlabel: loc('star_g1322') },
+    // g1322 planets (M4.5Ve, 1, generated; habitable-zone world at ~0.0705 AU); HZ 0.060-0.086 AU.
+    g1322_p1: { dist: 0.0705, orbit: 16, size: 0.191, star: 'g1322', hz: true },
+    // L 674-15.
+    // M3.5V, 0.3 solar radii, 26.47 ly.
+    l67415: { x: -794121.084, y: -1460141.922, z: 200609.664, dist: 1674182.5, orbit: -2, size: 1.095, startype: 'M', label: loc('star_l67415'), zlabel: loc('star_l67415') },
+    // l67415 planets (M3.5V, 3, generated; habitable-zone world at ~0.117 AU); HZ 0.092-0.132 AU.
+    l67415_p1: { dist: 0.027, orbit: 3.12, size: 0.142, star: 'l67415' },
+    l67415_p2: { dist: 0.117, orbit: 28, size: 0.142, star: 'l67415', hz: true },
+    l67415_p3: { dist: 0.191, orbit: 59, size: 0.191, star: 'l67415' },
+    // IRAS 21500+5903.
+    // dM4.0, 0.274 solar radii, 26.50 ly.
+    iras215005903: { x: -339931.639, y: 1637093.503, z: 118050.821, dist: 1676175.6, orbit: -2, size: 1.047, startype: 'M', label: loc('star_iras215005903'), zlabel: loc('star_iras215005903') },
+    // iras215005903 planets (dM4.0, 2, generated; none habitable); HZ 0.081-0.117 AU.
+    iras215005903_p1: { dist: 0.0327, orbit: 4.5, size: 0.234, star: 'iras215005903' },
+    iras215005903_p2: { dist: 0.0785, orbit: 17, size: 0.234, star: 'iras215005903' },
+    // BD+18 3421.
+    // M1.5V, 0.482 solar radii, 26.61 ly.
+    bd183421: { x: 1135649.899, y: 1031196.906, z: 692509.894, dist: 1683044.2, orbit: -2, size: 1.389, startype: 'M', label: loc('star_bd183421'), zlabel: loc('star_bd183421') },
+    // bd183421 planets (M1.5V, 1, measured; none habitable); HZ 0.181-0.261 AU.
+    bd183421_p1: { dist: 0.091, orbit: 15.53, size: 0.3, star: 'bd183421' },
+    // L 173-19.
+    // M2.0Ve, 0.446 solar radii, 26.80 ly.
+    l17319: { x: 218320.177, y: -855882.055, z: -1446362.925, dist: 1694745.9, orbit: -2, size: 1.336, startype: 'M', label: loc('star_l17319'), zlabel: loc('star_l17319') },
+    // l17319 planets (M2.0Ve, 1, generated; none habitable); HZ 0.161-0.233 AU.
+    l17319_p1: { dist: 0.108, orbit: 20, size: 0.234, star: 'l17319' },
+    // Ross 318.
+    // M3.0V, 0.361 solar radii, 26.85 ly.
+    ross318: { x: -933867.415, y: 1394243.231, z: 260596.047, dist: 1698214.6, orbit: -2, size: 1.202, startype: 'M', label: loc('star_ross318'), zlabel: loc('star_ross318') },
+    // ross318 planets (M3.0V, 1, measured; none habitable); HZ 0.121-0.174 AU.
+    ross318_p1: { dist: 0.1752, orbit: 39.63, size: 0.318, star: 'ross318' },
+    // CD-68 47.
+    // M2.5V, 0.421 solar radii, 26.86 ly.
+    cd6847: { x: 552799.069, y: -952388.316, z: -1292992.541, dist: 1698369.8, orbit: -2, size: 1.298, startype: 'M', label: loc('star_cd6847'), zlabel: loc('star_cd6847') },
+    // cd6847 planets (M2.5V, 3, generated; none habitable); HZ 0.144-0.207 AU.
+    cd6847_p1: { dist: 0.0873, orbit: 15, size: 0.234, star: 'cd6847' },
+    cd6847_p2: { dist: 0.21, orbit: 56, size: 0.296, star: 'cd6847' },
+    cd6847_p3: { dist: 0.419, orbit: 157, size: 0.296, star: 'cd6847' },
+    // G 207-16.
+    // M3V, 0.361 solar radii, 27.13 ly.
+    g20716: { x: 738951.275, y: 1513285.698, z: 329574.368, dist: 1716013.4, orbit: -2, size: 1.202, startype: 'M', label: loc('star_g20716'), zlabel: loc('star_g20716') },
+    // g20716 planets (M3V, 3, generated; habitable-zone world at ~0.157 AU); HZ 0.121-0.174 AU.
+    g20716_p1: { dist: 0.0342, orbit: 3.8, size: 0.234, star: 'g20716' },
+    g20716_p2: { dist: 0.0885, orbit: 16, size: 0.296, star: 'g20716' },
+    g20716_p3: { dist: 0.157, orbit: 37, size: 0.142, star: 'g20716', hz: true },
+    // mu.02 Herculis.
+    // M3.5V, 0.3 solar radii, 27.23 ly.
+    mu02herculis: { x: 946509.975, y: 1230486.379, z: 744900.19, dist: 1721875.2, orbit: -2, size: 1.095, startype: 'M', label: loc('star_mu02herculis'), zlabel: loc('star_mu02herculis') },
+    // mu02herculis planets (M3.5V, 3, generated; habitable-zone world at ~0.101 AU); HZ 0.092-0.132 AU.
+    mu02herculis_p1: { dist: 0.041, orbit: 5.84, size: 0.191, star: 'mu02herculis' },
+    mu02herculis_p2: { dist: 0.101, orbit: 23, size: 0.234, star: 'mu02herculis', hz: true },
+    mu02herculis_p3: { dist: 0.204, orbit: 65, size: 0.234, star: 'mu02herculis' },
+    // G 227-29.
+    // M4.0V, 0.274 solar radii, 27.24 ly.
+    g22729: { x: -38763.578, y: 1532957.583, z: 784422.78, dist: 1722434.5, orbit: -2, size: 1.047, startype: 'M', label: loc('star_g22729'), zlabel: loc('star_g22729') },
+    // g22729 planets (M4.0V, 2, generated; habitable-zone world at ~0.0953 AU); HZ 0.081-0.117 AU.
+    g22729_p1: { dist: 0.0423, orbit: 6.63, size: 0.142, star: 'g22729' },
+    g22729_p2: { dist: 0.0953, orbit: 22, size: 0.191, star: 'g22729', hz: true },
+    // G 130-4.
+    // M4.5Ve, 0.217 solar radii, 27.28 ly.
+    g1304: { x: -483549.23, y: 1495432.845, z: -710779.208, dist: 1724919.2, orbit: -2, size: 0.932, startype: 'M', label: loc('star_g1304'), zlabel: loc('star_g1304') },
+    // g1304 planets (M4.5Ve, 1, measured; none habitable); HZ 0.060-0.086 AU.
+    g1304_p1: { dist: 0.27, orbit: 111.74, size: 0.295, star: 'g1304' },
+    // SCR J1138-7721.
+    // M5.0V, 0.196 solar radii, 27.33 ly.
+    scrj11387721: { x: 805385.065, y: -1461677.889, z: -449503.196, dist: 1728352, orbit: -2, size: 0.885, startype: 'M', label: loc('star_scrj11387721'), zlabel: loc('star_scrj11387721') },
+    // scrj11387721 planets (M5.0V, 3, generated; habitable-zone world at ~0.0651 AU); HZ 0.052-0.075 AU.
+    scrj11387721_p1: { dist: 0.034, orbit: 5.69, size: 0.191, star: 'scrj11387721' },
+    scrj11387721_p2: { dist: 0.0651, orbit: 15, size: 0.234, star: 'scrj11387721', hz: true },
+    scrj11387721_p3: { dist: 0.154, orbit: 55, size: 0.633, star: 'scrj11387721' },
+    // SCR J1546-5534.
+    // M7.5, 0.116 solar radii, 27.39 ly.
+    scrj15465534: { x: 1435226.362, y: -969095.578, z: -22752.039, dist: 1731917.6, orbit: -2, size: 0.681, startype: 'M', label: loc('star_scrj15465534'), zlabel: loc('star_scrj15465534') },
+    // scrj15465534 planets (M7.5, 1, generated; none habitable); HZ 0.023-0.033 AU.
+    scrj15465534_p1: { dist: 0.012, orbit: 1.62, size: 0.142, star: 'scrj15465534' },
+    // Ross 64.
+    // M4V, 0.274 solar radii, 27.70 ly.
+    ross64: { x: -1723603.623, y: -275883.42, z: 151098.58, dist: 1752070.7, orbit: -2, size: 1.047, startype: 'M', label: loc('star_ross64'), zlabel: loc('star_ross64') },
+    // ross64 planets (M4V, 2, generated; none habitable); HZ 0.081-0.117 AU.
+    ross64_p1: { dist: 0.0216, orbit: 2.42, size: 0.234, star: 'ross64' },
+    ross64_p2: { dist: 0.0435, orbit: 6.91, size: 0.142, star: 'ross64' },
+    // CD-37 10765 -- 2 components.
+    // M5.5V, 0.156 solar radii, 27.72 ly.
+    cd3710765: { x: 1649288.037, y: -527263.327, z: 272134.592, dist: 1752773.5, orbit: -2, size: 0.79, startype: 'M', label: loc('star_cd3710765'), zlabel: loc('star_cd3710765') + ' A' },
+    // M3V, 0.361 solar radii, 27.72 ly.
+    cd3710765b: { x: 1649302.93, y: -527217.684, z: 272132.767, dist: 1752773.5, orbit: -2, size: 1.202, startype: 'M', zlabel: loc('star_cd3710765') + ' B' },
+    // cd3710765 planets (M5.5V, 2, generated; habitable-zone world at ~0.044 AU); HZ 0.038-0.055 AU.
+    cd3710765_p1: { dist: 0.0254, orbit: 4.22, size: 0.142, star: 'cd3710765' },
+    cd3710765_p2: { dist: 0.044, orbit: 9.61, size: 0.296, star: 'cd3710765', hz: true },
+    // cd3710765b planets (M3V, 2, generated; habitable-zone world at ~0.151 AU); HZ 0.121-0.174 AU.
+    cd3710765b_p1: { dist: 0.0464, orbit: 6, size: 0.234, star: 'cd3710765b' },
+    cd3710765b_p2: { dist: 0.151, orbit: 35, size: 0.142, star: 'cd3710765b', hz: true },
+    // G 89-32.
+    // M4.5V, 0.217 solar radii, 27.74 ly.
+    g8932: { x: -1453414.433, y: -896613.685, z: 400677.894, dist: 1754101.6, orbit: -2, size: 0.932, startype: 'M', label: loc('star_g8932'), zlabel: loc('star_g8932') },
+    // g8932 planets (M4.5V, 1, generated; none habitable); HZ 0.060-0.086 AU.
+    g8932_p1: { dist: 0.0263, orbit: 3.63, size: 0.191, star: 'g8932' },
+    // Wolf 461.
+    // M4.5Ve, 0.217 solar radii, 27.87 ly.
+    wolf461: { x: 408489.973, y: -502308.088, z: 1639227.961, dist: 1762454.5, orbit: -2, size: 0.932, startype: 'M', label: loc('star_wolf461'), zlabel: loc('star_wolf461') },
+    // wolf461 planets (M4.5Ve, 2, generated; none habitable); HZ 0.060-0.086 AU.
+    wolf461_p1: { dist: 0.0222, orbit: 2.82, size: 0.234, star: 'wolf461' },
+    wolf461_p2: { dist: 0.0488, orbit: 9.18, size: 0.191, star: 'wolf461' },
+    // L 49-19.
+    // M3V, 0.361 solar radii, 28.04 ly.
+    l4919: { x: 914634.77, y: -1016020.979, z: -1129569.913, dist: 1773353.8, orbit: -2, size: 1.202, startype: 'M', label: loc('star_l4919'), zlabel: loc('star_l4919') },
+    // l4919 planets (M3V, 1, generated; habitable-zone world at ~0.142 AU); HZ 0.121-0.174 AU.
+    l4919_p1: { dist: 0.142, orbit: 32, size: 0.191, star: 'l4919', hz: true },
+    // CD Ceti.
+    // M4.5V, 0.217 solar radii, 28.05 ly.
+    cdceti: { x: -1289659.085, y: 103310.647, z: -1213819.252, dist: 1774049.3, orbit: -2, size: 0.932, startype: 'M', label: loc('star_cdceti'), zlabel: loc('star_cdceti') },
+    // cdceti planets (M4.5V, 1, measured; none habitable); HZ 0.060-0.086 AU.
+    cdceti_p1: { dist: 0.0185, orbit: 2.291, size: 0.258, star: 'cdceti' },
+    // LP 502-56.
+    // M5.5V, 0.156 solar radii, 28.11 ly.
+    lp50256: { x: 1134545.036, y: 311567.812, z: 1332372.587, dist: 1777493.6, orbit: -2, size: 0.79, startype: 'M', label: loc('star_lp50256'), zlabel: loc('star_lp50256') },
+    // lp50256 planets (M5.5V, 1, generated; habitable-zone world at ~0.0498 AU); HZ 0.038-0.055 AU.
+    lp50256_p1: { dist: 0.0498, orbit: 12, size: 0.142, star: 'lp50256', hz: true },
+    // LP 666-9.
+    // M9Ve, 0.102 solar radii, 28.24 ly.
+    lp6669: { x: -1011475.325, y: -1262672.683, z: 756633.075, dist: 1786034.2, orbit: -2, size: 0.639, startype: 'M', label: loc('star_lp6669'), zlabel: loc('star_lp6669') },
+    // lp6669 planets (M9Ve, 1, generated; habitable-zone world at ~0.0193 AU); HZ 0.017-0.024 AU.
+    lp6669_p1: { dist: 0.0193, orbit: 3.48, size: 0.191, star: 'lp6669', hz: true },
+    // AP Columbae.
+    // M5, 0.196 solar radii, 28.26 ly.
+    apcolumbae: { x: -793109.347, y: -1427490.899, z: -726711.755, dist: 1787417.9, orbit: -2, size: 0.885, startype: 'M', label: loc('star_apcolumbae'), zlabel: loc('star_apcolumbae') },
+    // apcolumbae planets (M5, 2, generated; habitable-zone world at ~0.0601 AU); HZ 0.052-0.075 AU.
+    apcolumbae_p1: { dist: 0.0333, orbit: 5.51, size: 0.234, star: 'apcolumbae' },
+    apcolumbae_p2: { dist: 0.0601, orbit: 13, size: 0.191, star: 'apcolumbae', hz: true },
+    // SIPS J1141-3624.
+    // M5, 0.196 solar radii, 28.34 ly.
+    sipsj11413624: { x: 491247.807, y: -1557159.675, z: 739113.551, dist: 1792305.6, orbit: -2, size: 0.885, startype: 'M', label: loc('star_sipsj11413624'), zlabel: loc('star_sipsj11413624') },
+    // sipsj11413624 planets (M5, 3, generated; habitable-zone world at ~0.0673 AU); HZ 0.052-0.075 AU.
+    sipsj11413624_p1: { dist: 0.0137, orbit: 1.46, size: 0.142, star: 'sipsj11413624' },
+    sipsj11413624_p2: { dist: 0.0257, orbit: 3.74, size: 0.234, star: 'sipsj11413624' },
+    sipsj11413624_p3: { dist: 0.0673, orbit: 16, size: 0.296, star: 'sipsj11413624', hz: true },
+    // G 19-7.
+    // dM4, 0.274 solar radii, 28.38 ly.
+    g197: { x: 1597197.154, y: 424973.252, z: 700072.219, dist: 1794921.2, orbit: -2, size: 1.047, startype: 'M', label: loc('star_g197'), zlabel: loc('star_g197') },
+    // g197 planets (dM4, 2, generated; habitable-zone world at ~0.105 AU); HZ 0.081-0.117 AU.
+    g197_p1: { dist: 0.0207, orbit: 2.27, size: 0.142, star: 'g197' },
+    g197_p2: { dist: 0.105, orbit: 26, size: 0.296, star: 'g197', hz: true },
+    // LP 991-84.
+    // M4.5V, 0.217 solar radii, 28.46 ly.
+    lp99184: { x: -22778.079, y: -494350.083, z: -1730432.241, dist: 1799804.6, orbit: -2, size: 0.932, startype: 'M', label: loc('star_lp99184'), zlabel: loc('star_lp99184') },
+    // lp99184 planets (M4.5V, 3, generated; habitable-zone world at ~0.0755 AU); HZ 0.060-0.086 AU.
+    lp99184_p1: { dist: 0.0413, orbit: 7.15, size: 0.234, star: 'lp99184' },
+    lp99184_p2: { dist: 0.0755, orbit: 18, size: 0.191, star: 'lp99184', hz: true },
+    lp99184_p3: { dist: 0.223, orbit: 90, size: 0.296, star: 'lp99184' },
+    // HD 50281B.
+    // M2.5V, 0.421 solar radii, 28.54 ly.
+    hd50281b: { x: -1427856.257, y: -1101636.461, z: -68419.482, dist: 1804732, orbit: -2, size: 1.298, startype: 'M', label: loc('star_hd50281b'), zlabel: loc('star_hd50281b') },
+    // hd50281b planets (M2.5V, 2, generated; habitable-zone world at ~0.194 AU); HZ 0.144-0.207 AU.
+    hd50281b_p1: { dist: 0.0833, orbit: 14, size: 0.142, star: 'hd50281b' },
+    hd50281b_p2: { dist: 0.194, orbit: 49, size: 0.234, star: 'hd50281b', hz: true },
+    // SCR J0630-7643.
+    // M6Ve, 0.137 solar radii, 28.58 ly.
+    scrj06307643: { x: 494811.106, y: -1524653.773, z: -835462.135, dist: 1807596.2, orbit: -2, size: 0.74, startype: 'M', label: loc('star_scrj06307643'), zlabel: loc('star_scrj06307643') },
+    // scrj06307643 planets (M6Ve, 3, generated; habitable-zone world at ~0.0348 AU); HZ 0.031-0.044 AU.
+    scrj06307643_p1: { dist: 0.015, orbit: 2.1, size: 0.234, star: 'scrj06307643' },
+    scrj06307643_p2: { dist: 0.0348, orbit: 7.42, size: 0.296, star: 'scrj06307643', hz: true },
+    scrj06307643_p3: { dist: 0.07, orbit: 21, size: 0.142, star: 'scrj06307643' },
+    // BD+36 2219.
+    // M1.5V, 0.482 solar radii, 28.59 ly.
+    bd362219: { x: -474130.991, y: 25653.847, z: 1744521.441, dist: 1807986, orbit: -2, size: 1.389, startype: 'M', label: loc('star_bd362219'), zlabel: loc('star_bd362219') },
+    // bd362219 planets (M1.5V, 3, generated; habitable-zone world at ~0.23 AU); HZ 0.181-0.261 AU.
+    bd362219_p1: { dist: 0.0504, orbit: 6.03, size: 0.234, star: 'bd362219' },
+    bd362219_p2: { dist: 0.132, orbit: 26, size: 0.296, star: 'bd362219' },
+    bd362219_p3: { dist: 0.23, orbit: 59, size: 0.234, star: 'bd362219', hz: true },
+    // BD-05 5715.
+    // M3.5V, 0.3 solar radii, 28.75 ly.
+    bd055715: { x: 715925.925, y: 1057044.323, z: -1294583.898, dist: 1818196.9, orbit: -2, size: 1.095, startype: 'M', label: loc('star_bd055715'), zlabel: loc('star_bd055715') },
+    // bd055715 planets (M3.5V, 2, measured; none habitable); HZ 0.092-0.132 AU.
+    bd055715_p1: { dist: 2.32, orbit: 1925.31, size: 0.712, star: 'bd055715' },
+    bd055715_p2: { dist: 4.95, orbit: 5990, size: 0.71, star: 'bd055715' },
+    // 41 Ara B.
+    // M0VpCa-3Cr-1, 0.588 solar radii, 28.79 ly.
+    arab41: { x: 1727203.384, y: -551325.537, z: -167119.956, dist: 1820747.2, orbit: -2, size: 1.534, startype: 'M', label: loc('star_arab41'), zlabel: loc('star_arab41') },
+    // arab41 planets (M0VpCa-3Cr-1, 2, generated; habitable-zone world at ~0.282 AU); HZ 0.250-0.360 AU.
+    arab41_p1: { dist: 0.173, orbit: 35, size: 0.191, star: 'arab41' },
+    arab41_p2: { dist: 0.282, orbit: 72, size: 0.191, star: 'arab41', hz: true },
+    // Ross 730 -- 2 components.
+    // M2.0V, 0.446 solar radii, 28.80 ly.
+    ross730: { x: 1081867.589, y: 1452414.683, z: 192737.634, dist: 1821289, orbit: -2, size: 1.336, startype: 'M', label: loc('star_ross730'), zlabel: loc('star_ross730') + ' A' },
+    // M2V, 0.446 solar radii, 28.80 ly.
+    ross730b: { x: 1081840.274, y: 1452566.886, z: 191741.367, dist: 1821289, orbit: -2, size: 1.336, startype: 'M', zlabel: loc('star_ross730') + ' B' },
+    // ross730 planets (M2.0V, 2, generated; habitable-zone world at ~0.206 AU); HZ 0.161-0.233 AU.
+    ross730_p1: { dist: 0.102, orbit: 18, size: 0.191, star: 'ross730' },
+    ross730_p2: { dist: 0.206, orbit: 51, size: 0.191, star: 'ross730', hz: true },
+    // ross730b planets (M2V, 1, generated; none habitable); HZ 0.161-0.233 AU.
+    ross730b_p1: { dist: 0.094, orbit: 16, size: 0.142, star: 'ross730b' },
+    // L 32-8 -- 2 components.
+    // M3V, 0.361 solar radii, 28.83 ly.
+    l328: { x: 467096.787, y: -1551291.533, z: -836341.527, dist: 1823225.7, orbit: -2, size: 1.202, startype: 'M', label: loc('star_l328'), zlabel: loc('star_l328') + ' A' },
+    // M2V, 0.446 solar radii, 28.83 ly.
+    l328b: { x: 467227.317, y: -1551193.285, z: -836450.838, dist: 1823225.7, orbit: -2, size: 1.336, startype: 'M', zlabel: loc('star_l328') + ' B' },
+    // l328 planets (M3V, 1, generated; habitable-zone world at ~0.137 AU); HZ 0.121-0.174 AU.
+    l328_p1: { dist: 0.137, orbit: 30, size: 0.142, star: 'l328', hz: true },
+    // l328b planets (M2V, 3, generated; habitable-zone world at ~0.183 AU); HZ 0.161-0.233 AU.
+    l328b_p1: { dist: 0.0985, orbit: 17, size: 0.142, star: 'l328b' },
+    l328b_p2: { dist: 0.183, orbit: 43, size: 0.191, star: 'l328b', hz: true },
+    l328b_p3: { dist: 0.347, orbit: 113, size: 0.234, star: 'l328b' },
+    // G 111-47.
+    // M3.5V, 0.3 solar radii, 28.87 ly.
+    g11147: { x: -1587800.076, y: 35187.856, z: 899996.758, dist: 1825470.2, orbit: -2, size: 1.095, startype: 'M', label: loc('star_g11147'), zlabel: loc('star_g11147') },
+    // g11147 planets (M3.5V, 2, generated; habitable-zone world at ~0.121 AU); HZ 0.092-0.132 AU.
+    g11147_p1: { dist: 0.0462, orbit: 6.98, size: 0.142, star: 'g11147' },
+    g11147_p2: { dist: 0.121, orbit: 30, size: 0.234, star: 'g11147', hz: true },
+    // FL Aquarii -- 2 components.
+    // M3.5V, 0.3 solar radii, 28.87 ly.
+    flaquarii: { x: 741097.016, y: 575498.648, z: -1565973.141, dist: 1825567.1, orbit: -2, size: 1.095, startype: 'M', label: loc('star_flaquarii'), zlabel: loc('star_flaquarii') + ' A' },
+    // M0Vep, 0.588 solar radii, 28.87 ly.
+    flaquariib: { x: 741144.721, y: 575292.728, z: -1566026.225, dist: 1825567.1, orbit: -2, size: 1.534, startype: 'M', zlabel: loc('star_flaquarii') + ' B' },
+    // flaquarii planets (M3.5V, 2, generated; habitable-zone world at ~0.114 AU); HZ 0.092-0.132 AU.
+    flaquarii_p1: { dist: 0.0328, orbit: 4.18, size: 0.191, star: 'flaquarii' },
+    flaquarii_p2: { dist: 0.114, orbit: 27, size: 0.142, star: 'flaquarii', hz: true },
+    // flaquariib planets (M0Vep, 1, generated; habitable-zone world at ~0.289 AU); HZ 0.250-0.360 AU.
+    flaquariib_p1: { dist: 0.289, orbit: 75, size: 0.234, star: 'flaquariib', hz: true },
+    // Ross 695.
+    // dM2.0, 0.446 solar radii, 28.95 ly.
+    ross695: { x: 536610.807, y: -1198301.058, z: 1275673.413, dist: 1830633.6, orbit: -2, size: 1.336, startype: 'M', label: loc('star_ross695'), zlabel: loc('star_ross695') },
+    // ross695 planets (dM2.0, 2, generated; habitable-zone world at ~0.198 AU); HZ 0.161-0.233 AU.
+    ross695_p1: { dist: 0.0512, orbit: 6.38, size: 0.191, star: 'ross695' },
+    ross695_p2: { dist: 0.198, orbit: 49, size: 0.296, star: 'ross695', hz: true },
+    // LEHPM 3396.
+    // M9, 0.102 solar radii, 28.96 ly.
+    lehpm3396: { x: -189707.803, y: -1122294.811, z: -1435094.02, dist: 1831674, orbit: -2, size: 0.639, startype: 'M', label: loc('star_lehpm3396'), zlabel: loc('star_lehpm3396') },
+    // lehpm3396 planets (M9, 2, generated; habitable-zone world at ~0.0199 AU); HZ 0.017-0.024 AU.
+    lehpm3396_p1: { dist: 0.012, orbit: 1.71, size: 0.234, star: 'lehpm3396' },
+    lehpm3396_p2: { dist: 0.0199, orbit: 3.65, size: 0.234, star: 'lehpm3396', hz: true },
+    // G 113-20.
+    // M2.0V, 0.446 solar radii, 29.15 ly.
+    g11320: { x: -1297912, y: -1157955.647, z: 611667.799, dist: 1843793.5, orbit: -2, size: 1.336, startype: 'M', label: loc('star_g11320'), zlabel: loc('star_g11320') },
+    // g11320 planets (M2.0V, 1, generated; habitable-zone world at ~0.202 AU); HZ 0.161-0.233 AU.
+    g11320_p1: { dist: 0.202, orbit: 50, size: 0.191, star: 'g11320', hz: true },
+    // G 193-27.
+    // M5.0V, 0.196 solar radii, 29.43 ly.
+    g19327: { x: -1646273.294, y: 470216.356, z: 729777.257, dist: 1861153.9, orbit: -2, size: 0.885, startype: 'M', label: loc('star_g19327'), zlabel: loc('star_g19327') },
+    // g19327 planets (M5.0V, 1, generated; habitable-zone world at ~0.0589 AU); HZ 0.052-0.075 AU.
+    g19327_p1: { dist: 0.0589, orbit: 13, size: 0.142, star: 'g19327', hz: true },
+    // SZ Ursae Majoris.
+    // M2V, 0.446 solar radii, 29.59 ly.
+    szursaemajoris: { x: -900614.298, y: 843767.543, z: 1406552.664, dist: 1871213.6, orbit: -2, size: 1.336, startype: 'M', label: loc('star_szursaemajoris'), zlabel: loc('star_szursaemajoris') },
+    // szursaemajoris planets (M2V, 3, generated; habitable-zone world at ~0.163 AU); HZ 0.161-0.233 AU.
+    szursaemajoris_p1: { dist: 0.0773, orbit: 12, size: 0.191, star: 'szursaemajoris' },
+    szursaemajoris_p2: { dist: 0.163, orbit: 36, size: 0.191, star: 'szursaemajoris', hz: true },
+    szursaemajoris_p3: { dist: 0.266, orbit: 76, size: 0.234, star: 'szursaemajoris' },
+    // CD-31 9113.
+    // M2V, 0.446 solar radii, 29.60 ly.
+    cd319113: { x: 425964.797, y: -1602700.36, z: 868977.805, dist: 1872222.4, orbit: -2, size: 1.336, startype: 'M', label: loc('star_cd319113'), zlabel: loc('star_cd319113') },
+    // cd319113 planets (M2V, 3, measured; habitable-zone world at ~0.178 AU); HZ 0.161-0.233 AU.
+    cd319113_p1: { dist: 0.062, orbit: 7.37, size: 0.292, star: 'cd319113' },
+    cd319113_p2: { dist: 0.178, orbit: 36.059, size: 0.279, star: 'cd319113', hz: true },
+    cd319113_p3: { dist: 4.819, orbit: 5094.1, size: 0.478, star: 'cd319113' },
+    // HD 115953.
+    // M2V, 0.446 solar radii, 29.65 ly.
+    hd115953: { x: -231550.552, y: 643230.95, z: 1746370.619, dist: 1875412.5, orbit: -2, size: 1.336, startype: 'M', label: loc('star_hd115953'), zlabel: loc('star_hd115953') },
+    // hd115953 planets (M2V, 2, generated; habitable-zone world at ~0.188 AU); HZ 0.161-0.233 AU.
+    hd115953_p1: { dist: 0.0784, orbit: 12, size: 0.191, star: 'hd115953' },
+    hd115953_p2: { dist: 0.188, orbit: 45, size: 0.142, star: 'hd115953', hz: true },
+    // LP 469-206.
+    // M5.0Ve, 0.196 solar radii, 29.66 ly.
+    lp469206: { x: -1189556.722, y: 620025.817, z: -1311430.982, dist: 1875987.3, orbit: -2, size: 0.885, startype: 'M', label: loc('star_lp469206'), zlabel: loc('star_lp469206') },
+    // lp469206 planets (M5.0Ve, 1, generated; none habitable); HZ 0.052-0.075 AU.
+    lp469206_p1: { dist: 0.0136, orbit: 1.44, size: 0.142, star: 'lp469206' },
+    // V374 Pegasi.
+    // M3.5Ve, 0.3 solar radii, 29.69 ly.
+    v374pegasi: { x: 205689.48, y: 1738895.117, z: -677765.722, dist: 1877613, orbit: -2, size: 1.095, startype: 'M', label: loc('star_v374pegasi'), zlabel: loc('star_v374pegasi') },
+    // v374pegasi planets (M3.5Ve, 3, generated; habitable-zone world at ~0.107 AU); HZ 0.092-0.132 AU.
+    v374pegasi_p1: { dist: 0.0458, orbit: 6.89, size: 0.234, star: 'v374pegasi' },
+    v374pegasi_p2: { dist: 0.107, orbit: 25, size: 0.142, star: 'v374pegasi', hz: true },
+    v374pegasi_p3: { dist: 0.28, orbit: 104, size: 0.296, star: 'v374pegasi' },
+    // WT 460.
+    // M5.5e, 0.156 solar radii, 29.72 ly.
+    wt460: { x: 1337148.442, y: -1173292.032, z: 607228.341, dist: 1879709.1, orbit: -2, size: 0.79, startype: 'M', label: loc('star_wt460'), zlabel: loc('star_wt460') },
+    // wt460 planets (M5.5e, 2, generated; none habitable); HZ 0.038-0.055 AU.
+    wt460_p1: { dist: 0.0136, orbit: 1.65, size: 0.191, star: 'wt460' },
+    wt460_p2: { dist: 0.0357, orbit: 7.02, size: 0.296, star: 'wt460' },
+    // LP 783-2.
+    // M6.5Ve, 0.126 solar radii, 29.85 ly.
+    lp7832: { x: -1109810.104, y: -1525094.692, z: 81767.613, dist: 1887929.6, orbit: -2, size: 0.71, startype: 'M', label: loc('star_lp7832'), zlabel: loc('star_lp7832') },
+    // lp7832 planets (M6.5Ve, 1, generated; none habitable); HZ 0.027-0.039 AU.
+    lp7832_p1: { dist: 0.012, orbit: 1.57, size: 0.142, star: 'lp7832' },
+    // Ross 1015.
+    // M4V, 0.274 solar radii, 29.98 ly.
+    ross1015: { x: 174743.328, y: 377121.588, z: 1849865.998, dist: 1895985.3, orbit: -2, size: 1.047, startype: 'M', label: loc('star_ross1015'), zlabel: loc('star_ross1015') },
+    // ross1015 planets (M4V, 1, generated; habitable-zone world at ~0.091 AU); HZ 0.081-0.117 AU.
+    ross1015_p1: { dist: 0.091, orbit: 21, size: 0.142, star: 'ross1015', hz: true }
 };
 
 // --- The cow -------------------------------------------------------------------------------------
@@ -10192,12 +12479,15 @@ export function genXYZcoord(planet){
 }
 
 // The star nearest a point (absolute Sun-frame coords), scanning every star in spacePlanetStats.
+// Off the star index, and comparing squared distances so the loop carries no square roots: this runs
+// once for the range anchor and again for every ship under way, on every frame.
 function nearestStar(pt){
     let best = 'spc_sun';
     let bestDist = Infinity;
-    for (let [id, body] of Object.entries(spacePlanetStats)){
-        if (!body.startype){ continue; }
-        let d = dist3(pt, { x: body.x, y: body.y, z: body.z });
+    for (const id of starIndex()){
+        const body = spacePlanetStats[id];
+        const dx = pt.x - body.x, dy = pt.y - body.y, dz = pt.z - body.z;
+        const d = dx*dx + dy*dy + dz*dz;
         if (d < bestDist){ bestDist = d; best = id; }
     }
     return best;
@@ -11444,11 +13734,75 @@ const systemLabelAbsMinScale = 0.0006;
 // at that zoom. Culling them costs nothing visually and saves drawing a hundred systems' worth of
 // orbits and bodies that could never be seen.
 const STAR_CULL_AU = 63000;
+// The player's own limit on how much of the star field is drawn, in light years out from the star
+// being looked at. Unlike the cull above this applies at every zoom — zoomed all the way out is
+// exactly where the far half of the catalogue is most in the way — so it is what decides whether a
+// distant system is on the map at all.
+const STAR_RANGE_MIN = 10, STAR_RANGE_MAX = 50, STAR_RANGE_STEP = 5;
+// One step past the maximum is no limit at all — every star in the table, which is how the map
+// behaved before this setting existed. A sentinel number rather than Infinity because the save is
+// JSON and JSON.stringify turns Infinity into null, which would read back as "unset".
+const STAR_RANGE_INF = -1;
+// Read defensively and snapped to the step: the settings block in vars.js has not necessarily run on
+// a save from before this setting existed, and a hand-edited save could hold anything.
+function starRange(){
+    const raw = mapView().starRange;
+    // The sentinel, or nothing usable at all — a save from before this setting existed, or a zero
+    // that would otherwise mean "hide everything". Both fall back to the default, which is no limit.
+    if (raw === STAR_RANGE_INF || !raw){ return STAR_RANGE_INF; }
+    let ly = Math.round(raw / STAR_RANGE_STEP) * STAR_RANGE_STEP;
+    return Math.min(STAR_RANGE_MAX, Math.max(STAR_RANGE_MIN, ly));
+}
+// What the button reads, which is a distance for every setting but the last one.
+function starRangeLabel(){
+    return starRange() === STAR_RANGE_INF ? loc('solar_map_star_range_all')
+                                          : loc('solar_map_star_range', [starRange()]);
+}
+// The star the range is measured from. mapFocus is the point at the centre of the viewport, and
+// clicking any body recenters on it, so this resolves to the clicked star, or to the parent star of
+// a clicked planet, or to whatever is nearest after a free pan. Resolved once per frame in drawMap
+// rather than inside starCulled: nearestStar scans every star and starCulled runs for every star,
+// so working it out in the test would square the cost on a hundred-system field.
+var mapAnchor = { x: 0, y: 0, z: 0 };
+// The table, indexed the two ways the draw actually walks it: every star, and the bodies orbiting
+// each one. Rebuilt at the top of drawMap, which is cheap (one pass) and cannot go stale — the star
+// field otherwise made the draw quadratic, rescanning all ~1300 entries once per drawn star to find
+// the handful orbiting it, four separate times. At the zoomed-out field that was several million
+// iterations and as many throwaway pair-arrays every frame.
+// `mapDrawnAsStar` additionally holds the bodies that draw as stars without being one in the table —
+// a binary orbiting an invisible barycenter — which is what the pointer test wants and the camera
+// does not.
+var mapStarIds = [], mapDrawnAsStar = [], mapBodiesOf = {};
+function indexBodies(){
+    mapStarIds = [];
+    mapDrawnAsStar = [];
+    mapBodiesOf = {};
+    // for-in over the plain object, rather than Object.entries, so nothing is allocated to walk it.
+    for (const id in spacePlanetStats){
+        const b = spacePlanetStats[id];
+        if (b.startype){ mapStarIds.push(id); }
+        if (b.startype || b.bodystar){ mapDrawnAsStar.push(id); }
+        if (b.star){ (mapBodiesOf[b.star] || (mapBodiesOf[b.star] = [])).push(id); }
+    }
+}
+// The index is built by drawMap, which always runs before any pointer or camera event can fire.
+// Built on demand anyway rather than trusting that ordering, since an empty index would silently
+// mean "no stars" instead of failing.
+function starIndex(){
+    if (!mapStarIds.length){ indexBodies(); }
+    return mapStarIds;
+}
+function drawnAsStarIndex(){
+    if (!mapDrawnAsStar.length){ indexBodies(); }
+    return mapDrawnAsStar;
+}
 // A true distance through space, which needs mapFocus to be at the right depth — see refocus(). A
 // screen-plane distance would instead keep any star that merely lines up with the view: Lalande
 // 21185 sits only 45,000 AU to the side of Tau Ceti while being 1.2 million AU beyond it, and would
 // have had its whole system drawn over Tau Ceti's.
 function starCulled(pos){
+    const range = starRange();
+    if (range !== STAR_RANGE_INF && dist3(pos, mapAnchor) > range * AU_PER_LY){ return true; }
     return mapScale >= planetLabelMinScale && dist3(pos, mapFocus) > STAR_CULL_AU;
 }
 // Zoomed out this far the star names would be too small to read, which is the point at which naming whatever
@@ -11531,6 +13885,12 @@ const ORBIT_STEPS = 96;
 // than its projected extent, so tilting the camera edge-on — which squashes a ring to a line but
 // leaves it perfectly visible — doesn't make orbits disappear.
 const ORBIT_MIN_PX = 3;
+// A body closer to its star than this on screen is inside the star's own dot — the star never draws
+// smaller than a one-pixel radius — so it lands on the same pixel and is not drawn at all. One pixel
+// rather than a few: the saving that matters is out at the star field, where these separations are
+// thousandths of a pixel, so there is nothing to buy by cutting into the range where a world is
+// marginally visible. Deliberately below ORBIT_MIN_PX as well, so a world outlives its orbit ring.
+const SYSTEM_MIN_PX = 1;
 // Had to limit ship trails or trips between stars would crash the browser, also in general they caused lag
 const TRAIL_MAX_DASHES = 400;
 // Ship markers are drawn at a constant size on screen, in pixels.
@@ -11680,7 +14040,7 @@ function strokeOrbitGroup(ctx, ids, origin, primary, near){
 // in the alpha channel, so one texture serves every body of a kind whatever color the game picked
 // for it, and the cache can't grow with the continuously-varying syndicate colors. Stars are the
 // exception, since for a star the color *is* the texture (core, disc, corona) — those are cached per
-// spectral color, of which there are seven.
+// spectral color, of which there are eight.
 // Everything is generated once into an offscreen canvas and reused; nothing here runs at import
 // time, so the wiki bundle (which also imports this module) never touches the DOM for it.
 const bodyTexCache = {};
@@ -12540,14 +14900,23 @@ export function drawMap() {
     mapPickable = [];
     mapLabelled = {};
     const ORIGIN = { x: 0, y: 0, z: 0 };
+    // Where the range limit measures from, settled before anything asks to be culled — including the
+    // home system on the very next line.
+    indexBodies();
+    mapAnchor = genXYZcoord(nearestStar(mapFocus));
     // The home system hangs off the Sun at the origin, so one test covers its orbits, bodies and
     // labels alike.
     const homeCulled = starCulled(ORIGIN);
 
-    // Calculate positions
+    // Positions of the home system's bodies. Only these are read from here — everything orbiting
+    // another star is positioned inside that star's own block below, and only for stars that survive
+    // culling.
     let planetLocation = {};
-    for (let [id, planet] of Object.entries(spacePlanetStats)) {
-        planetLocation[id] = genXYZcoord(id);
+    if (!homeCulled){
+        for (const id in spacePlanetStats){
+            if (spacePlanetStats[id].star){ continue; }
+            planetLocation[id] = genXYZcoord(id);
+        }
     }
 
     // Orbits, gathered by the body each one circles rather than drawn here. Half of every ring
@@ -12678,6 +15047,9 @@ export function drawMap() {
                     break;
                 case 'K': // Orange dwarf
                     color = 'ff802b';
+                    break;
+                case 'KIII': // Red giant — cooler than a K dwarf, so redder, but nowhere near an M
+                    color = 'ff5a28';
                     break;
                 case 'M': // Red dwarf
                     color = 'ff1414';
@@ -12919,13 +15291,21 @@ export function drawMap() {
     // and is drawn with the home system above.
     // Systems are drawn back to front, so with the map tilted a near system covers a far one rather
     // than whichever happened to come last in the table.
-    let starOrder = Object.entries(spacePlanetStats)
-        .filter(([starId, star]) => star.startype && starId !== 'spc_sun' && !starCulled(genXYZcoord(starId)))
-        .map(entry => ({ entry, d: pD(genXYZcoord(entry[0])) }))
-        .sort((a,b) => b.d - a.d)
-        .map(s => s.entry);
-    for (let [starId, star] of starOrder) {
-        let sc = genXYZcoord(starId);
+    // One pass off the star index, keeping each star's position rather than recomputing it: the old
+    // chain called genXYZcoord three times per star and built four intermediate arrays.
+    let starOrder = [];
+    for (const starId of mapStarIds){
+        if (starId === 'spc_sun'){ continue; }
+        const pos = genXYZcoord(starId);
+        if (starCulled(pos)){ continue; }
+        starOrder.push({ id: starId, star: spacePlanetStats[starId], pos, d: pD(pos) });
+    }
+    starOrder.sort((a,b) => b.d - a.d);
+    // Read once for the whole pass. `global` is a Vue reactive proxy, so each of these is a trap
+    // call, and inside the per-star loops they were being paid tens of thousands of times a frame.
+    const showPlanetOrbits = mapView().planetOrbits, showPlanetNames = mapView().planetNames;
+    const namesHidden = starNamesHidden();
+    for (let { id: starId, star, pos: sc } of starOrder) {
         ctx.save();
         ctx.translate(pX(sc), pY(sc));
         ctx.shadowColor = 'transparent';
@@ -12935,12 +15315,17 @@ export function drawMap() {
         // positions the bodies themselves. Collected rather than drawn here so each can be split
         // around the star below; a barycenter (hidden) has no disc to split against, so its
         // companions' orbits are simply drawn whole.
+        // Everything this star holds, off the index. `bodies` is the handful orbiting it rather than
+        // the whole table.
+        const bodies = mapBodiesOf[starId] || [];
         let starOrbits = [];
-        for (let [id, planet] of Object.entries(spacePlanetStats)) {
-            if (!mapView().planetOrbits){ break; }   // everything out here circles its star, none are moons
-            if (planet.star !== starId || (planet.unlock && !global.tech[planet.unlock])){ continue; }
-            if (planet.dist * mapScale < ORBIT_MIN_PX){ continue; }
-            starOrbits.push(id);
+        if (showPlanetOrbits){
+            for (const id of bodies){
+                const planet = spacePlanetStats[id];
+                if (planet.unlock && !global.tech[planet.unlock]){ continue; }
+                if (planet.dist * mapScale < ORBIT_MIN_PX){ continue; }
+                starOrbits.push(id);
+            }
         }
         if (star.hidden){
             ctx.lineWidth = 1 / mapScale;
@@ -12952,15 +15337,12 @@ export function drawMap() {
             ctx.setLineDash([]);
         }
 
-        // The star and everything orbiting it, drawn back to front. The star goes in the same sorted
-        // list rather than being painted first: it sits at the centre of these orbits, so half of
-        // every orbit passes in front of it and half behind, and drawing it up front would let a
-        // planet on the far side show through it. An invisible barycenter (hidden) is left out —
-        // only its orbiting bodies are drawn. A body with `bodystar` renders as a star (color by its
-        // spectral type, keeps the zoom-out minimum radius) rather than a plain planet dot.
+        // The star and everything orbiting it, drawn back to front.
         let orbiting = [];
-        for (let [id, planet] of Object.entries(spacePlanetStats)) {
-            if (planet.star !== starId || (planet.unlock && !global.tech[planet.unlock])){ continue; }
+        for (const id of bodies){
+            const planet = spacePlanetStats[id];
+            if (planet.unlock && !global.tech[planet.unlock]){ continue; }
+            if (!planet.bodystar && planet.dist * mapScale < SYSTEM_MIN_PX){ continue; }
             orbiting.push(id);
         }
         let scale = star.hidden ? 1 : systemScale(star.size, orbiting, sc);
@@ -12998,7 +15380,7 @@ export function drawMap() {
 
         // Names
         // If we're zoomed out too much then there's no point in drawing names - none will be legible anyway
-        if (!starNamesHidden()) {
+        if (!namesHidden) {
             ctx.shadowOffsetX = 2; ctx.shadowOffsetY = 2; ctx.shadowBlur = 2; ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
             ctx.fillStyle = "#ffa500";
             ctx.font = `25px serif`;
@@ -13016,39 +15398,33 @@ export function drawMap() {
             }
             // Labels for bodies that are themselves stars (e.g. a binary orbiting an invisible barycenter):
             // label when zoomed out, zlabel when zoomed in — drawn just above the body at its orbit position.
-            for (let [id, planet] of Object.entries(spacePlanetStats)) {
-                if (planet.star !== starId || !planet.bodystar){ continue; }
+            for (const id of bodies) {
+                const planet = spacePlanetStats[id];
+                if (!planet.bodystar){ continue; }
                 let bt = mapScale < planetLabelMinScale ? planet.label : planet.zlabel;
                 if (!bt){ continue; }
                 let q = rel(genXYZcoord(id), sc);
                 ctx.fillText(bt, pX(q) * mapScale, pY(q) * mapScale - (Math.max(planet.size / 10 * mapScale, 1) + 2));
             }
-            for (let [id, planet] of Object.entries(spacePlanetStats)) {
-                if (!mapView().planetNames){ break; }
-                if (planet.star !== starId || (planet.unlock && !global.tech[planet.unlock])){ continue; }
-                if (mapScale < planetLabelMinScale){ continue; }
-                if (!actions.tauceti[id] || !actions.tauceti[id].info){ continue; }
-                let q = rel(genXYZcoord(id), sc);
-                ctx.fillText(actions.tauceti[id].info.name(), pX(q) * mapScale, (pY(q) - (0.2 * planet.size)) * mapScale);
+            if (showPlanetNames && mapScale >= planetLabelMinScale){
+                for (const id of bodies) {
+                    const planet = spacePlanetStats[id];
+                    if (planet.unlock && !global.tech[planet.unlock]){ continue; }
+                    if (!actions.tauceti[id] || !actions.tauceti[id].info){ continue; }
+                    let q = rel(genXYZcoord(id), sc);
+                    ctx.fillText(actions.tauceti[id].info.name(), pX(q) * mapScale, (pY(q) - (0.2 * planet.size)) * mapScale);
+                }
             }
         }
 
         ctx.restore();
     }
 
-    // Whatever the pointer is resting on, named beside the cursor — but only where the map is not
-    // naming it already (see hoverName). Out at the star field the star names have shrunk away to
-    // nothing and there is no zoom past it that brings them back, so pointing is the only way to
-    // tell one dot from another; closer in, it is the worlds the map draws as scenery and never
-    // labels — Saturn, the Galilean moons, the outer dwarf planets — that pointing identifies.
+    // Whatever the pointer is resting on, named beside the cursor.
     if (mapHover && spacePlanetStats[mapHover]){
         let name = hoverName(mapHover);
         let p = genXYZcoord(mapHover);
         if (name && !starCulled(p)){
-            // Drawn in screen space at a fixed pixel size, deliberately outside the map transform. Sized
-            // in world units it would need a font past the canvas clamp at these zooms and would come
-            // out a couple of pixels tall — the very thing that makes the ordinary labels unreadable
-            // here. Sits directly above the cursor, which is within a grab radius of the star anyway.
             ctx.save();
             ctx.setTransform(1,0,0,1,0,0);
             ctx.font = `${HOVER_LABEL_PX}px serif`;
@@ -13154,8 +15530,10 @@ function buildSolarMap(parentNode, keep) {
         let px = (canvasOffset.x - mapShift.x) / mapScale;
         let py = (canvasOffset.y - mapShift.y) / mapScale;
         let depth = pD(mapFocus), best = Infinity;
-        for (let [id, body] of Object.entries(spacePlanetStats)){
-            if (!body.startype || body.hidden){ continue; }
+        // Off the star index rather than the whole table: this runs on every pan and zoom, and the
+        // table is now mostly planets, none of which it wants.
+        for (const id of starIndex()){
+            if (spacePlanetStats[id].hidden){ continue; }
             let p = genXYZcoord(id);
             let off = Math.hypot(pX(p) - px, pY(p) - py);
             if (off < best){ best = off; depth = pD(p); }
@@ -13177,8 +15555,9 @@ function buildSolarMap(parentNode, keep) {
         let rect = document.getElementById("mapCanvas").getBoundingClientRect();
         let cx = e.clientX - rect.left, cy = e.clientY - rect.top;
         let best = false, bestD = Infinity;
-        for (let [id, body] of Object.entries(spacePlanetStats)){
-            if ((!body.startype && !body.bodystar) || body.hidden){ continue; }
+        for (const id of drawnAsStarIndex()){
+            const body = spacePlanetStats[id];
+            if (body.hidden){ continue; }
             let p = genXYZcoord(id);
             if (starCulled(p)){ continue; }
             let d = Math.hypot(mapShift.x + pX(p) * mapScale - cx, mapShift.y + pY(p) * mapScale - cy);
@@ -13554,6 +15933,18 @@ function buildSolarMap(parentNode, keep) {
             })
             .appendTo(mapToggles);
     });
+    // How much of the star field to draw, alongside the other view settings.
+    $(`<input type="button" value="${starRangeLabel()}" style="height: 30px;">`)
+        .on("click", function(){
+            // 10 through 50, then no limit, then back to 10.
+            let cur = starRange();
+            mapView().starRange = cur === STAR_RANGE_INF ? STAR_RANGE_MIN
+                                : cur + STAR_RANGE_STEP > STAR_RANGE_MAX ? STAR_RANGE_INF
+                                : cur + STAR_RANGE_STEP;
+            $(this).val(starRangeLabel());
+            drawMap();
+        })
+        .appendTo(mapToggles);
     mapToggles.appendTo(currentNode);
 
     // Which backend paints the map, opposite the view toggles. Both draw the same scene from the

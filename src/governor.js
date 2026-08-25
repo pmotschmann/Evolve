@@ -1046,7 +1046,7 @@ const thresholdCosts = ['Custom','Structs','Bool','Morale','Army','HellArmy','Tr
 // one ruin claims is money (and ore, and fuel) the next can no longer count on. `force` charges even
 // when it does not fit, for copies that get queued regardless of whether they can start this instant.
 function chargeCopy(c_action,offset,budget,force){
-    let costs = adjustCosts(c_action,offset);
+    let costs = adjustCosts(c_action,{ offset: offset });
     let stock = Object.keys(costs).filter(function(res){
         return !thresholdCosts.includes(res) && !global.prestige.hasOwnProperty(res);
     });

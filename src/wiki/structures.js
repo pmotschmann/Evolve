@@ -215,7 +215,9 @@ function addCalcInputs(parent,key,section,region,path){
             truepath: path === 'truepath'
         }
     });
-    let resources = {};
+    // Reactive: updateCosts mutates this in place, and a plain object would leave the rendered
+    // figures stale (see the Vue 3 notes in CLAUDE.md).
+    let resources = Vue.reactive({});
     
     let action = false;
     switch (section){
@@ -283,7 +285,7 @@ function addCalcInputs(parent,key,section,region,path){
     let cost = action.cost;
 
     if (cost){
-        Object.keys(adjustCosts(action)).forEach(function (res){
+        Object.keys(adjustCosts(action,{ wiki: true })).forEach(function (res){
             resources[res] = {};
         });
     }
@@ -292,13 +294,13 @@ function addCalcInputs(parent,key,section,region,path){
     let updateCosts = function(){
         let vis = false;
         if (cost){
-            let new_costs = adjustCosts(action,inputs.owned - inputs.real_owned,inputs.extra);
+            let new_costs = adjustCosts(action,{ offset: inputs.owned - inputs.real_owned, wiki: inputs.extra });
             Object.keys(resources).forEach(function (res){
                 if (res === 'Custom'){
                     resources[res].vis = true;
                 }
                 else {
-                    let new_cost = new_costs[res] ? new_costs[res](inputs.owned - inputs.real_owned,inputs.extra) : 0;
+                    let new_cost = new_costs[res] ? new_costs[res]({ offset: inputs.owned - inputs.real_owned, wiki: inputs.extra }) : 0;
                     resources[res].vis = new_cost > 0 ? true : false;
                     resources[res].cost = sizeApproximation(new_cost,1);
                 }
@@ -316,11 +318,11 @@ function addCalcInputs(parent,key,section,region,path){
             section !== 'prehistoric'){
             let high = calcInfo.creepCalc[section] && calcInfo.creepCalc[section][key] ? calcInfo.creepCalc[section][key] : 100;
             let low = high - 1;
-            let upper = adjustCosts(action,high,inputs.extra);
-            let lower = adjustCosts(action,low,inputs.extra);
+            let upper = adjustCosts(action,{ offset: high, wiki: inputs.extra });
+            let lower = adjustCosts(action,{ offset: low, wiki: inputs.extra });
             Object.keys(resources).forEach(function (res){
                 if (upper[res]){
-                    resources[res].creep = +(upper[res](high,inputs.extra) / lower[res](low,inputs.extra)).toFixed(5);
+                    resources[res].creep = +(upper[res]({ offset: high, wiki: inputs.extra }) / lower[res]({ offset: low, wiki: inputs.extra })).toFixed(5);
                     if (resources[res].creep === 1){
                         resources[res].creep = loc('wiki_calc_none');
                     }
@@ -406,7 +408,7 @@ function prehistoricPage(content,path){
             let id = actions.evolution[action].id.split('-');
             let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
             content.append(info);
-            actionDesc(info, actions.evolution[action], false, true);
+            actionDesc(info, actions.evolution[action], { isStruct: true });
             addInfomration(info,'prehistoric',action);
             addCalcInputs(info,action,'prehistoric',false,path);
             sideMenu('add',`prehistoric-${affix}`,id[1],typeof actions.evolution[action].title === 'function' ? actions.evolution[action].title() : actions.evolution[action].title);
@@ -422,7 +424,7 @@ function planetaryPage(content,path){
             let id = actions.city[action].id.split('-');
             let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
             content.append(info);
-            actionDesc(info, actions.city[action], false, true);
+            actionDesc(info, actions.city[action], { isStruct: true });
             addInfomration(info,'planetary',action);
             addCalcInputs(info,action,'planetary',false,path);
             sideMenu('add',`planetary-${affix}`,id[1],typeof actions.city[action].title === 'function' ? actions.city[action].title() : actions.city[action].title);
@@ -444,7 +446,7 @@ function spacePage(content,path){
                 let id = actions.space[region][struct].id.split('-');
                 let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
                 content.append(info);
-                actionDesc(info, actions.space[region][struct],`<span id="pop${actions.space[region][struct].id}">${name}</span>`, true);
+                actionDesc(info, actions.space[region][struct], { extended: `<span id="pop${actions.space[region][struct].id}">${name}</span>`, isStruct: true });
                 addInfomration(info,'space',struct);
                 addCalcInputs(info,struct,'space',region,path);
                 sideMenu('add',`space-${affix}`,id[1],typeof actions.space[region][struct].title === 'function' ? actions.space[region][struct].title() : actions.space[region][struct].title);
@@ -460,7 +462,7 @@ function spacePage(content,path){
             let id = actions.starDock[struct].id.split('-');
             let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
             content.append(info);
-            actionDesc(info, actions.starDock[struct],`<span id="pop${actions.starDock[struct].id}">${loc('space_gas_star_dock_title')}</span>`, true);
+            actionDesc(info, actions.starDock[struct], { extended: `<span id="pop${actions.starDock[struct].id}">${loc('space_gas_star_dock_title')}</span>`, isStruct: true });
             addInfomration(info,'starDock',struct);
             addCalcInputs(info,struct,'starDock',false,path);
             sideMenu('add',`space-${affix}`,id[1],typeof actions.starDock[struct].title === 'function' ? actions.starDock[struct].title() : actions.starDock[struct].title);
@@ -479,7 +481,7 @@ function interstellarPage(content){
                 let id = actions.interstellar[region][struct].id.split('-');
                 let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
                 content.append(info);
-                actionDesc(info, actions.interstellar[region][struct],`<span id="pop${actions.interstellar[region][struct].id}">${name}</span>`, true);
+                actionDesc(info, actions.interstellar[region][struct], { extended: `<span id="pop${actions.interstellar[region][struct].id}">${name}</span>`, isStruct: true });
                 addInfomration(info,'interstellar',struct);
                 addCalcInputs(info,struct,'interstellar',region);
                 sideMenu('add',`interstellar-structures`,id[1],typeof actions.interstellar[region][struct].title === 'function' ? actions.interstellar[region][struct].title() : actions.interstellar[region][struct].title);
@@ -499,7 +501,7 @@ function intergalacticPage(content){
                 let id = actions.galaxy[region][struct].id.split('-');
                 let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
                 content.append(info);
-                actionDesc(info, actions.galaxy[region][struct],`<span id="pop${actions.galaxy[region][struct].id}">${name}</span>`, true);
+                actionDesc(info, actions.galaxy[region][struct], { extended: `<span id="pop${actions.galaxy[region][struct].id}">${name}</span>`, isStruct: true });
                 addInfomration(info,'intergalactic',struct);
                 addCalcInputs(info,struct,'intergalactic',region);
                 sideMenu('add',`intergalactic-structures`,id[1],typeof actions.galaxy[region][struct].title === 'function' ? actions.galaxy[region][struct].title() : actions.galaxy[region][struct].title);
@@ -519,7 +521,7 @@ function hellPage(content){
                 let id = actions.portal[region][struct].id.split('-');
                 let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
                 content.append(info);
-                actionDesc(info, actions.portal[region][struct],`<span id="pop${actions.portal[region][struct].id}">${name}</span>`, true);
+                actionDesc(info, actions.portal[region][struct], { extended: `<span id="pop${actions.portal[region][struct].id}">${name}</span>`, isStruct: true });
                 addInfomration(info,'hell',struct);
                 addCalcInputs(info,struct,'hell',region);
                 sideMenu('add',`hell-structures`,id[1],typeof actions.portal[region][struct].title === 'function' ? actions.portal[region][struct].title() : actions.portal[region][struct].title);
@@ -539,7 +541,7 @@ function edenPage(content){
                 let id = actions.eden[region][struct].id.split('-');
                 let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
                 content.append(info);
-                actionDesc(info, actions.eden[region][struct],`<span id="pop${actions.eden[region][struct].id}">${name}</span>`, true);
+                actionDesc(info, actions.eden[region][struct], { extended: `<span id="pop${actions.eden[region][struct].id}">${name}</span>`, isStruct: true });
                 addInfomration(info,'eden',struct);
                 addCalcInputs(info,struct,'eden',region);
                 sideMenu('add',`eden-structures`,id[1],typeof actions.eden[region][struct].title === 'function' ? actions.eden[region][struct].title() : actions.eden[region][struct].title);
@@ -559,7 +561,7 @@ function taucetiPage(content){
                 let id = actions.tauceti[region][struct].id.split('-');
                 let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
                 content.append(info);
-                actionDesc(info, actions.tauceti[region][struct],`<span id="pop${actions.tauceti[region][struct].id}">${name}</span>`, true);
+                actionDesc(info, actions.tauceti[region][struct], { extended: `<span id="pop${actions.tauceti[region][struct].id}">${name}</span>`, isStruct: true });
                 addInfomration(info,'tauceti',struct);
                 addCalcInputs(info,struct,'tauceti',region);
                 sideMenu('add',`tauceti-structures`,id[1],typeof actions.tauceti[region][struct].title === 'function' ? actions.tauceti[region][struct].title() : actions.tauceti[region][struct].title);

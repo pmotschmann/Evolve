@@ -88,7 +88,9 @@ function addCalcInputs(parent,key){
     let inputs = Vue.reactive({
         owned: 0,
     });
-    let resources = {};
+    // Reactive: updateCosts mutates this in place, and a plain object would leave the rendered
+    // figures stale (see the Vue 3 notes in CLAUDE.md).
+    let resources = Vue.reactive({});
     
     let action = bloodPool[key];
     inputs.real_owned = global.blood[key] ? global.blood[key] : 0;
@@ -101,7 +103,7 @@ function addCalcInputs(parent,key){
     //Functions to update costs and cost creeps
     let updateCosts = function(){
         Object.keys(resources).forEach(function (res){
-            let new_cost = cost[res] ? cost[res](inputs.owned - inputs.real_owned) : 0;
+            let new_cost = cost[res] ? cost[res]({ offset: inputs.owned - inputs.real_owned }) : 0;
             resources[res].vis = new_cost > 0 ? true : false;
             resources[res].cost = new_cost;
         });
