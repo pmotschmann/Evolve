@@ -411,8 +411,14 @@ export const job_data = {
                 gain *= biomes.ashland.vars()[1];
             }
             gain = +(gain).toFixed(2);
-            let vars = [gain,unit_price,global.resource.Cement.name,global.resource.Stone.name];
-            return global.race['sappy'] ? loc('job_cement_worker_amber_desc',vars) : loc('job_cement_worker_desc',vars);
+            if(!global.race['iceage']){
+                let vars = [gain,unit_price,global.resource.Cement.name,global.resource.Stone.name];
+                return global.race['sappy'] ? loc('job_cement_worker_amber_desc',vars) : loc('job_cement_worker_desc',vars);
+            }
+            else{
+                let vars = [gain,unit_price,global.resource.Cement.name,global.resource.Stone.name,unit_price*1.5];
+                return loc('job_cement_worker_iceage_desc',vars);
+            }
         },
         impact(){ return 0.4; },
         stress(){ return 5; },

@@ -5922,6 +5922,23 @@ const techs = {
             arpa('Ecosystem');
         }
     },
+    plant_odd_seed: {
+        id: 'tech-plant_odd_seed',
+        title(){ return loc('tech_plant_odd_seed'); },
+        desc(){ return loc('tech_plant_odd_seed'); },
+        category: 'progress',
+        era: 'globalized',
+        reqs: { crater: 5, ecosystem_genetics: 1 },
+        grant: ['ecosystem_genetics',2],
+        cost: { },
+        effect: loc('tech_plant_odd_seed_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.surface.trees.mayorTraits['empowered'] = 1;
+            }
+            return false;
+        }
+    },
     watch_tower: {
         id: 'tech-watch_tower',
         title(){ return loc('tech_watch_tower'); },

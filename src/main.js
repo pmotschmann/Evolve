@@ -3393,9 +3393,9 @@ function fastLoop(){
         morale += entertainment;
 
         if(global.underground['color_garden']){
-            let workers = workerScale(global.civic.gardener.workers,'entertainer') * global.tech.theatre;
+            let workers = workerScale(global.civic.iceage_gardener.workers,'entertainer') * global.tech.theatre;
             if (global.race['musical']){
-                workers += workerScale(global.civic.gardener.workers,'entertainer') * traits.musical.vars()[0];
+                workers += workerScale(global.civic.iceage_gardener.workers,'entertainer') * traits.musical.vars()[0];
             }
             if (astroSign === 'sagittarius'){
                 workers *= 1 + (astroVal('sagittarius')[0] / 100);
@@ -3415,7 +3415,7 @@ function fastLoop(){
                 workers = global.resource.Water.amount / 2;
             }
 
-            breakdown.p.consume.Water[job_data.gardener.name()] = -(water_consumption);
+            breakdown.p.consume.Water[job_data.iceage_gardener.name()] = -(water_consumption);
             modRes('Water', -(water_consumption * time_multiplier));
             global.underground['color_garden'].mushrooms += workers * time_multiplier / 100;
             global.underground['color_garden'].mushrooms *= 0.9902 + (0.01 * (1 - time_multiplier));
@@ -3433,6 +3433,7 @@ function fastLoop(){
         }
         if(p_on['under_casino']){
             global.city.morale.casino = p_on['under_casino'] * 2;
+            morale += p_on['under_casino'] * 2;
         }
         else{
             global.city.morale.casino = 0;
@@ -5458,6 +5459,11 @@ function fastLoop(){
             // the plant eat proportionally more stone as well — and so it gets its own breakdown line.
             let techBonus = technicianBonus(job_data.technician.cementRate());
 
+            let fabrication = 1;
+            if(support_on['crater_fabrication']){
+                fabrication += 0.02 * highPopAdjust(global.civic.crater_worker.workers) * support_on['crater_fabrication'];
+            }
+
             let cq_multiplier = global.tech['isolation'] ? 1 : q_multiplier;
             breakdown.p['Cement'][global.tech['isolation'] ? loc('job_resource_worker',[global.resource.Cement.name]) : loc('city_cement_plant_bd')] = factory_output + 'v';
             if (factory_output > 0){
@@ -5466,6 +5472,7 @@ function fastLoop(){
                     breakdown.p['Cement'][`ᄂ${loc('tau_home_mining_pit')}+0`] = ((mining_pit - 1) * 100) + '%';
                 }
                 breakdown.p['Cement'][`ᄂ${loc('power')}+0`] = ((powered_mult - 1) * 100) + '%';
+                breakdown.p['Cement'][`ᄂ${loc('surface_crater_fabrication')}+0`] = ((fabrication - 1) * 100) + '%';
                 breakdown.p['Cement'][`ᄂ${loc('quarantine')}+0`] = ((cq_multiplier - 1) * 100) + '%';
             }
 
@@ -9479,7 +9486,7 @@ function midLoop(){
             technician: 0,
             banker: 0,
             entertainer: 0,
-            gardener: 0,
+            iceage_gardener: 0,
             priest: 0,
             professor: 0,
             scientist: 0,
@@ -9954,7 +9961,7 @@ function midLoop(){
             lCaps['entertainer'] += jobScale(athVal ? (global.city.amphitheatre.count * athVal) : global.city.amphitheatre.count);
         }
         if(global.underground['color_garden']){
-            lCaps['gardener'] += jobScale(global.underground.color_garden.count);
+            lCaps['iceage_gardener'] += jobScale(global.underground.color_garden.count);
         }
         if (global.city['casino']){
             if (global.tech['theatre'] && !global.race['joyless']){
@@ -14556,8 +14563,8 @@ function longLoop(){
 
         if(global.city.ptrait.includes('kamikaze') && !global.race['cataclysm'] && !global.race['orbit_decayed'] && !global.tech['thrusters'] && (global.tech['corrupt'] >= 2 || global.tech['tau_red'] >= 3) && Math.rand(0, 100) === 0){
             let oddity = 0;
-            if((global.race.species === 'hybrid' ? global.custom.race1?.hybrid || [] :
-                races[global.race.species].hybrid || [races[global.race.species].type]).contains('primordial')){
+            if(!(global.race.species === 'hybrid' ? global.custom.race1?.hybrid || [] :
+                races[global.race.species].hybrid || [races[global.race.species].type]).includes('primordial')){
                     //overcomplicated check that just checks whether your current race has the primordial genus, including hybrid main or secondary genus
                     oddity++;
             }

@@ -1051,11 +1051,6 @@ const iceAgeModules = {
                 switchable(){ return true; },
                 action(args){
                     if (payCosts($(this)[0])){
-                        //TODO: Rework rival combat. I want to keep it in order to make combat rating somewhat relevant for something but I want it to be different than having the three rivals and clicking fight.
-                        //Think fighting large cave-dwelling animals instead of rivals. Perhaps something else?
-                        //idea: an opponent that gets stronger with each defeat. Each defeat grants a permanent bonus to something. (bonus should probably be linear or even diminishing)
-                        //enemies may randomly ambush you on an attack attempt. Makes ambush reduction traits relevant
-                        //also think of a solution to pop growth for parasite because soldiers and attacking are not available immediately.
                         global.settings['showMil'] = true;
                         if (!global.settings.msgFilters.combat.unlocked){
                             global.settings.msgFilters.combat.unlocked = true;
@@ -1158,7 +1153,7 @@ const iceAgeModules = {
                 action(args){
                     if (payCosts($(this)[0])){
                         incrementStruct($(this)[0]);
-                        global.civic.gardener.display = true;
+                        global.civic.iceage_gardener.display = true;
                         return true;
                     }
                     return false;
@@ -2244,8 +2239,8 @@ const iceAgeModules = {
     surface: {
         wastes: {
             info: {
-                name: loc('surface_wastes'),
-                desc: loc('surface_wastes_desc'),
+                name: global.tech['crater'] >= 5 ? loc('surface_wastes2') : loc('surface_wastes'),
+                desc: global.tech['crater'] >= 5 ? loc('surface_wastes2_desc') : loc('surface_wastes_desc'),
                 support: 'great_heater'
             },
             great_heater: {
@@ -2400,11 +2395,11 @@ const iceAgeModules = {
                 type: 'housing',
                 reqs: { housing: 4 },
                 cost: {
-                    Money(offset){ return undergroundCostMultiplier('surface_apartment', offset, 150000, 1.45); },
-                    Furs(offset){ return undergroundCostMultiplier('surface_apartment', offset, 68000, 1.55); },
-                    Lumber(offset){ return undergroundCostMultiplier('surface_apartment', offset, 1200, 1.55); },
-                    Cement(offset){ return undergroundCostMultiplier('surface_apartment', offset, 75000, 1.55); },
-                    Steel(offset){ return undergroundCostMultiplier('surface_apartment', offset, 44000, 1.55); },
+                    Money(offset){ return undergroundCostMultiplier('surface_apartment', offset, 150000, 1.45, 'wastes', 'surface'); },
+                    Furs(offset){ return undergroundCostMultiplier('surface_apartment', offset, 68000, 1.55, 'wastes', 'surface'); },
+                    Lumber(offset){ return undergroundCostMultiplier('surface_apartment', offset, 1200, 1.55, 'wastes', 'surface'); },
+                    Cement(offset){ return undergroundCostMultiplier('surface_apartment', offset, 75000, 1.55, 'wastes', 'surface'); },
+                    Steel(offset){ return undergroundCostMultiplier('surface_apartment', offset, 44000, 1.55, 'wastes', 'surface'); },
                     Horseshoe(){ return global.race['hooved'] ? 5 : 0; }
                 },
                 effect(){
@@ -2668,6 +2663,20 @@ const iceAgeModules = {
                         if (global.surface.grand_dome.count < 100){
                             incrementStruct($(this)[0]);
                             if (global.surface.grand_dome.count >= 100){
+                                let oddity = 0;
+                                console.log((global.race.species === 'hybrid' ? (global.custom.race1?.hybrid || []) :
+                                    races[global.race.species].hybrid || [races[global.race.species].type]));
+                                if(!(global.race.species === 'hybrid' ? (global.custom.race1?.hybrid || []) :
+                                    races[global.race.species].hybrid || [races[global.race.species].type]).includes('primordial')){
+                                        oddity++;
+                                }
+                                if(global.civic.archaeologist.workers === 0){
+                                    oddity++;
+                                }
+                                if(global.race['truepath']){
+                                    oddity++;
+                                }
+                                messageQueue(loc(`event_odd_archaeologist_${oddity}`),'info',false,['progress']);
                                 global.tech['crater'] = 5;
                                 drawTech();
                             }
@@ -2871,6 +2880,9 @@ const iceAgeModules = {
                         serve *= servantTrait(global.race.servants.jobs.lumberjack,'lumberjack');
                         lumberjacks += serve;
                     }
+                    if(global.surface.trees.empowered){
+                        desc += `<div class="empowered">${loc('surface_ecosystem_empowered', [global.surface.trees.empowered.toFixed(0)])}</div>`;
+                    }
                     if(lumberjacks){
                         desc += `<div>${loc('surface_ecosystem_lumberjack_loss', [+(lumberjacks * 5 / $(this)[0].hardiness()).toFixed(2)])}</div>`;
                     }
@@ -2903,6 +2915,7 @@ const iceAgeModules = {
                     return {
                         d: {
                             count: 0,
+                            empowered: 0,
                             traits: ecosystemInfo.minorTraits,
                             mayorTraits: {}
                         },
@@ -2952,6 +2965,7 @@ const iceAgeModules = {
                     return {
                         d: {
                             count: 0,
+                            empowered: 0,
                             minorTraits: ecosystemInfo.minorTraits,
                             mayorTraits: {}
                         },
@@ -3001,6 +3015,7 @@ const iceAgeModules = {
                     return {
                         d: {
                             count: 0,
+                            empowered: 0,
                             minorTraits: ecosystemInfo.minorTraits,
                             mayorTraits: {}
                         },
@@ -3050,6 +3065,7 @@ const iceAgeModules = {
                     return {
                         d: {
                             count: 0,
+                            empowered: 0,
                             minorTraits: ecosystemInfo.minorTraits,
                             mayorTraits: {}
                         },
@@ -3268,11 +3284,10 @@ const iceAgeModules = {
                     Wrought_Iron(offset){ return undergroundCostMultiplier('crater_fabrication', offset, 90000, 1.45, 'crater', 'surface'); }
                 },
                 effect(){
-                    let prod = +highPopAdjust(5).toFixed(2);
                     let cement_1 = !global.race['flier'] ? `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_cement_worker`)])}</div>` : ``;
-                    let cement_2 = !global.race['flier'] ? `<div>${loc('surface_crater_fabrication_effect2',[prod, global.resource.Cement.name])}</div>` : ``;
+                    let cement_2 = !global.race['flier'] ? `<div>${loc('surface_crater_fabrication_effect2',[+highPopAdjust(2).toFixed(2), global.resource.Cement.name])}</div>` : ``;
                     return `<div class="has-text-caution">${loc('space_used_support',[loc('surface_crater')])}</div>${cement_1}<div>${loc('plus_max_resource',[jobScale(1),loc('job_craftsman')])}</div>
-                        <div>${loc('surface_crater_fabrication_effect1',[prod])}</div>${cement_2}`;
+                        <div>${loc('surface_crater_fabrication_effect1',[+highPopAdjust(5).toFixed(2)])}</div>${cement_2}`;
                 },
                 s_type: 'crater',
                 support(){ return -1; },
@@ -3511,19 +3526,23 @@ export function surfaceEcosystem(){ //run every longLoop (5 seconds)
     if(global.surface.trees){
         let tree_cycle = growth_cycle('trees');
         global.surface.trees.count = Math.max(0, global.surface.trees.count + tree_cycle.total_change);
+        global.surface.trees.empowered += tree_cycle.empowered;
     }
     if(global.surface.herbivores){
         let herbivore_cycle = growth_cycle('herbivores');
         global.surface.herbivores.count = Math.max(0, global.surface.herbivores.count + herbivore_cycle.total_change);
+        global.surface.herbivores.empowered += herbivore_cycle.empowered;
     }
     if(global.surface.carnivores){
         let carnivore_cycle = growth_cycle('carnivores');
         global.surface.carnivores.count = Math.max(0, global.surface.carnivores.count + carnivore_cycle.total_change);
+        global.surface.carnivores.empowered += carnivore_cycle.empowered;
         corpses += carnivore_cycle.corpse_create;
     }
     if(global.surface.scavengers){
         let scavenger_cycle = growth_cycle('scavengers');
         global.surface.scavengers.count = Math.max(0, global.surface.scavengers.count + scavenger_cycle.total_change);
+        global.surface.scavengers.empowered += scavenger_cycle.empowered;
         corpses -= scavenger_cycle.corpse_consume;
     }
     let corpse_change = corpse_cycle(corpses);
@@ -3556,6 +3575,7 @@ function growth_cycle(lifeform){
         corpse_consume: 0,
         grow_gain: 0,
         overcrowd_gain_reduce: 1,
+        empowered: 0,
         total_gain: 0,
         total_change: 0
     };
@@ -3601,7 +3621,6 @@ function growth_cycle(lifeform){
             let eat = eco_info.corpse_use * self.count / slow_digestion;
             if(eat > info.corpses){ //up to 5% loss depending on lack of food
                 results.starve_loss += self.count * 0.05 * (1 - (info.corpses / eat)) / decay;
-                //todo: decide whether scavengers will try their hand at hunting when starving
                 fed = false;
             }
             results.corpse_consume += Math.min(eat, info.corpses); 
@@ -3638,11 +3657,14 @@ function growth_cycle(lifeform){
             results.overcrowd_gain_reduce = (2 - Math.max(1, size_ratio * 2));
             //results.grow_gain = Math.max(0, max_allowed - self.count - results.grow_gain);
         }
+        if(self.mayorTraits.empowered && !self.empowered){
+            results.empowered = 1;
+        }
         results.total_loss = results.flood_loss + results.drought_loss + results.size_loss + results.starve_loss + results.carnivore_loss + results.herbivore_loss;
         results.total_gain = results.grow_gain;
         results.total_change = results.total_gain - results.total_loss;
     }
-    if(results.total_change < -10 || results.total_change === NaN){
+    if(results.total_change === NaN){
         debugger;
     }
     return results;
