@@ -1968,6 +1968,12 @@ if (!global.settings.mapView.hasOwnProperty('starRange')){
 if (!global.settings.mapView.hasOwnProperty('refresh')){
     global.settings.mapView['refresh'] = 'normal';
 }
+// Surface detail: 'low' is the flat stamped textures the map has always used, 'high' draws the
+// bodies that offer one as a lit sphere that answers to the camera. Low by default, so nothing
+// changes for an existing save until it is asked for.
+if (!global.settings.mapView.hasOwnProperty('texture')){
+    global.settings.mapView['texture'] = 'low';
+}
 
 export function setupStats(){
     // Stat Counters

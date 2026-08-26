@@ -9034,6 +9034,8 @@
   "solar_map_hide_planet_names": "Hide Planet Names",
   "solar_map_show_planet_names": "Show Planet Names",
   "solar_map_settings": "Map Settings",
+  "solar_map_texture_low": "Texture: Low",
+  "solar_map_texture_high": "Texture: High",
   "solar_map_refresh_fast": "Refresh: Fast",
   "solar_map_refresh_normal": "Refresh: Normal",
   "solar_map_refresh_slow": "Refresh: Slow",

@@ -13700,6 +13700,15 @@ var mapFocus = { x: 0, y: 0, z: 0 };
 var starLockOn = false;
 // Whether the map's settings panel is showing.
 var mapSettingsOpen = false;
+// Redraw only once per displayed frame 
+var mapDrawPending = false;
+function requestDraw(){
+    if (mapDrawPending){ return; }
+    mapDrawPending = true;
+    requestAnimationFrame(function(){ mapDrawPending = false; drawMap(); });
+}
+// True while the camera is being turned.
+var mapCameraMoving = false;
 // Every body drawn big enough to make out, recorded in screen pixels as drawMap lays it down:
 // { id, x, y, r }. Hit-testing against what was actually painted is exact — the alternative is
 // re-deriving each body's projected size and its distance-based minimum outside the draw, and any
@@ -13756,6 +13765,14 @@ function mapRefreshRate(){
 }
 function mapRefreshLabel(){
     return loc(`solar_map_refresh_${mapRefreshRate()}`);
+}
+// Surface detail, read the same defensive way: anything unrecognised is the flat textures the map
+// has always drawn.
+function mapTextureDetail(){
+    return mapView().texture === 'high' ? 'high' : 'low';
+}
+function mapTextureLabel(){
+    return loc(`solar_map_texture_${mapTextureDetail()}`);
 }
 // What the button reads, which is a distance for every setting but the last one.
 function starRangeLabel(){
@@ -14076,17 +14093,9 @@ function hexRGBA(hex, a){
     return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
 }
 
-// As hexShade, but keeps an alpha channel — for things drawn over the body they belong to.
-function hexShadeRGBA(hex, f, a){
-    let n = parseInt(hex, 16);
-    let r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
-    let t = Math.max(0, f - 1);
-    r += (255 - r) * t; g += (255 - g) * t; b += (255 - b) * t;
-    return `rgba(${Math.round(r)},${Math.round(g)},${Math.round(b)},${a})`;
-}
-
-// f > 1 lightens toward white, f < 1 darkens. Lightening a near-white star just leaves it white.
-function hexShade(hex, f){
+// The arithmetic behind both of the shade helpers, unrounded, for callers that want to go on and
+// blend between two shades rather than take one straight to a string.
+function shadeRGB(hex, f){
     let n = parseInt(hex, 16);
     let r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
     if (f >= 1){
@@ -14096,15 +14105,24 @@ function hexShade(hex, f){
     else {
         r *= f; g *= f; b *= f;
     }
-    return `rgb(${Math.round(r)},${Math.round(g)},${Math.round(b)})`;
+    return [r, g, b];
+}
+function rgba(c, a){ return `rgba(${Math.round(c[0])},${Math.round(c[1])},${Math.round(c[2])},${a})`; }
+
+// As hexShade, but keeps an alpha channel — for things drawn over the body they belong to.
+function hexShadeRGBA(hex, f, a){
+    return rgba(shadeRGB(hex, f), a);
+}
+
+// f > 1 lightens toward white, f < 1 darkens. Lightening a near-white star just leaves it white.
+function hexShade(hex, f){
+    let c = shadeRGB(hex, f);
+    return `rgb(${Math.round(c[0])},${Math.round(c[1])},${Math.round(c[2])})`;
 }
 
 const PLANET_TEX = 128;
 
-// The Sol bodies are the ones players stare at for a whole run, so they get their own colour and
-// surface rather than the generic pool. Colour is only a fallback inside setColor — syndicate
-// strength, spectral type and the gate/dwarf highlights are all resolved first and still win, so
-// nothing the map already encodes is lost.
+// The Sol bodies get their own colour and surface rather than the generic pool.
 const SOL_BODY_COLOR = {
     spc_home:      '2f6fb5',   // Earth, ocean blue
     spc_moon:      '9d9a93',   // Luna, grey regolith
@@ -14211,6 +14229,463 @@ function bodyKind(planet, id){
 const NAMED_STYLES = ['earth','mars','venus','jupiter','saturn','icegiant','neptune','haze','ice','cratered']
     .concat(Object.values(BIOME_LOOK).map(b => b.style));
 
+// --- Camera-aware surfaces ------------------------------------------------------------------------
+//
+// The textures above are flat images stamped onto a disc, which is all a body a few pixels across
+// needs — but it means the surface cannot answer to the camera. Rotate the view and Jupiter's belts
+// stay pinned to the screen, which reads as a sticker rather than a planet.
+//
+// This draws the sphere instead, one pixel at a time: for each point on the disc the surface normal
+// is worked out, rotated out of camera space into the body's own frame, and turned into a latitude
+// and longitude to look the surface up by. Banding therefore falls on real latitude circles — they
+// close into rings when the camera looks down a pole and open into stripes as it comes level — and
+// a feature like the Great Red Spot sits at a fixed place on the planet, swinging round the limb and
+// out of sight as the camera orbits, because that is what actually happens.
+//
+// Everything here is gated on mapView().texture === 'high'. On Low the map draws exactly the flat
+// textures it always has, and none of this code runs.
+
+// Noise is evaluated on the 3D normal rather than on (latitude, longitude), so there is no seam down
+// the date line and no crowding at the poles — the two things that give a wrapped 2D texture away.
+function sphHash(cx, cy, cz, s){
+    let n = (cx|0)*374761393 + (cy|0)*668265263 + (cz|0)*1442695040 + (s|0)*1013904223;
+    n = Math.imul(n ^ (n >>> 13), 1274126177);
+    return (n ^ (n >>> 16)) >>> 0;
+}
+function sphNoise(x, y, z, s){
+    const xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z);
+    const xf = x-xi, yf = y-yi, zf = z-zi;
+    const u = xf*xf*(3-2*xf), v = yf*yf*(3-2*yf), w = zf*zf*(3-2*zf);
+    const H = (i,j,k) => sphHash(i,j,k,s) / 4294967296;
+    const c = (a,b,t) => a + (b-a)*t;
+    return c(c(c(H(xi,yi,zi),   H(xi+1,yi,zi),   u), c(H(xi,yi+1,zi),   H(xi+1,yi+1,zi),   u), v),
+             c(c(H(xi,yi,zi+1), H(xi+1,yi,zi+1), u), c(H(xi,yi+1,zi+1), H(xi+1,yi+1,zi+1), u), v), w);
+}
+function sphFbm(x, y, z, oct, s){
+    let a = 0, amp = 1, tot = 0, f = 1;
+    for (let i = 0; i < oct; i++){ a += sphNoise(x*f, y*f, z*f, s+i) * amp; tot += amp; amp *= 0.5; f *= 2.03; }
+    return a / tot;
+}
+// Distance to the nearest of a scattered field of points: craters come off f1, fracture lines off the
+// gap between the nearest two. One hash per cell sliced three ways for the offset, and distances kept
+// squared until the end — three hashes and a square root per cell was most of the cost of a cratered
+// world, and there are twenty-seven cells to check per pixel.
+function sphWorley(x, y, z, s){
+    const xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z);
+    let f1 = 99, f2 = 99;
+    for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) for (let k = -1; k <= 1; k++){
+        const cx = xi+i, cy = yi+j, cz = zi+k;
+        const n = sphHash(cx, cy, cz, s);
+        const dx = x - (cx + (n & 1023)/1024);
+        const dy = y - (cy + ((n >>> 10) & 1023)/1024);
+        const dz = z - (cz + ((n >>> 20) & 1023)/1024);
+        const d = dx*dx + dy*dy + dz*dz;
+        if (d < f1){ f2 = f1; f1 = d; } else if (d < f2){ f2 = d; }
+    }
+    return { f1: Math.sqrt(f1), f2: Math.sqrt(f2) };
+}
+const sphMix = (a, b, t) => a + (b - a) * t;
+function sphereBandColour(bands, lat){
+    for (let i = 1; i < bands.length; i++){
+        if (lat <= bands[i][0]){
+            const a = bands[i-1], b = bands[i];
+            const t = (lat - a[0]) / (b[0] - a[0]), s = t*t*(3-2*t);
+            return [sphMix(a[1],b[1],s), sphMix(a[2],b[2],s), sphMix(a[3],b[3],s)];
+        }
+    }
+    const l = bands[bands.length-1];
+    return [l[1], l[2], l[3]];
+}
+
+// What each surface is made of. One rasteriser reads them all:
+//   base    the colour to start from
+//   bands   latitude bands, replacing base — [degrees, r, g, b] with the colour interpolated between
+//   banded  stretches the noise along latitude, so it flows with the bands instead of mottling across
+//   mottle  [amount, frequency, octaves, r,g,b]   drift toward a colour, driven by noise
+//   land    [threshold, freq, octaves, r,g,b, sharpness]   continents where the noise runs high
+//   craters [amount, frequency]
+//   cracks  [amount, frequency, r,g,b]
+//   poles   [from latitude, strength, r,g,b]
+//   clouds  [amount, frequency, octaves]
+//   glow    [amount, frequency, r,g,b]   added after the shading, so it survives the night side
+//   spot    an oval fixed at a latitude and longitude on the surface
+const SPHERE_STYLES = {
+    jupiter: { bands: [
+        [-90,0x8a,0x77,0x66],[-75,0x9d,0x86,0x70],[-62,0xc4,0xa8,0x85],[-50,0xe6,0xd7,0xba],
+        [-42,0xa9,0x6f,0x45],[-33,0xf1,0xe6,0xcf],
+        // South Tropical Zone: pale, and the setting the Great Red Spot sits in. That contrast is
+        // most of what makes the spot visible at all.
+        [-26,0xf3,0xe8,0xd2],[-18,0xee,0xdf,0xc4],
+        [-12,0x8c,0x4b,0x2e],[-7,0x7f,0x41,0x28],      // South Equatorial Belt
+        [0,0xdc,0xb2,0x7c],[6,0xef,0xdb,0xb4],
+        [13,0x87,0x49,0x2c],[19,0x8d,0x4e,0x31],       // North Equatorial Belt
+        [26,0xd8,0xb4,0x86],[33,0xf2,0xe6,0xcc],[42,0xac,0x82,0x59],[54,0xdb,0xc7,0xa8],
+        [68,0xb0,0x9b,0x82],[80,0x8b,0x79,0x66],[90,0x7c,0x6b,0x5a]],
+        spot: { lat:-22, lon:270, halfLon:32, halfLat:10, r:0xc0, g:0x50, b:0x30 },
+        mottle: [0.16, 9, 3, 0xff, 0xf0, 0xd8], banded: true },
+    saturn: { bands: [
+        [-90,0x9a,0x8a,0x70],[-70,0xbe,0xac,0x86],[-45,0xe4,0xd2,0xa8],[-25,0xd2,0xba,0x8c],
+        [-8,0xf0,0xe2,0xbe],[8,0xe8,0xd6,0xac],[25,0xd6,0xc0,0x92],[45,0xe6,0xd6,0xae],
+        [70,0xc2,0xae,0x8a],[90,0x9e,0x8e,0x74]],
+        mottle: [0.10, 8, 3, 0xff, 0xf4, 0xdc], banded: true },
+    icegiant: { bands: [
+        [-90,0x9e,0xc9,0xd6],[-50,0xa9,0xd8,0xe4],[0,0xbd,0xe6,0xef],[50,0xa9,0xd8,0xe4],[90,0x9e,0xc9,0xd6]],
+        mottle: [0.07, 6, 3, 0xff, 0xff, 0xff], banded: true },
+    neptune: { bands: [
+        [-90,0x2a,0x46,0x9c],[-45,0x36,0x58,0xba],[0,0x46,0x6e,0xd6],[45,0x36,0x58,0xba],[90,0x2a,0x46,0x9c]],
+        spot: { lat:-28, lon:200, halfLon:26, halfLat:9, r:0x18, g:0x2c, b:0x74 },
+        mottle: [0.12, 7, 3, 0xda, 0xe8, 0xff], banded: true },
+    gas: { bands: [
+        [-90,0xa8,0x92,0x74],[-45,0xc6,0xae,0x8a],[0,0xdc,0xc6,0x9e],[45,0xc6,0xae,0x8a],[90,0xa8,0x92,0x74]],
+        mottle: [0.14, 8, 3, 0xff, 0xf0, 0xd4], banded: true },
+    venus:  { base: [0xd9,0xb8,0x78], mottle: [0.16, 4, 4, 0xf4, 0xdc, 0xa8], banded: true },
+    haze:   { base: [0xc8,0x79,0x1f], mottle: [0.13, 3, 3, 0xe8, 0xa0, 0x48], banded: true },
+    mars:   { base: [0xb1,0x51,0x2c], mottle: [0.34, 3.2, 4, 0x6a, 0x33, 0x22],
+              craters: [0.16, 9], poles: [62, 0.85, 0xf2, 0xf2, 0xf6] },
+    earth:  { base: [0x1c,0x4f,0x8f], land: [0.52, 2.6, 5, 0x3f, 0x7a, 0x3c, 7],
+              mottle: [0.10, 5, 3, 0x2f, 0x6f, 0xb5], poles: [66, 0.9, 0xf4, 0xf8, 0xfc],
+              clouds: [0.42, 3.4, 4] },
+    cratered:{ base: [0x9d,0x9a,0x93], mottle: [0.26, 3.5, 4, 0x5e, 0x5a, 0x54], craters: [0.55, 7] },
+    ice:    { base: [0xd8,0xcb,0xb4], mottle: [0.16, 4, 3, 0xa8, 0x9c, 0x8c],
+              cracks: [0.5, 6, 0x8a, 0x6a, 0x52], poles: [70, 0.5, 0xff, 0xff, 0xff] },
+    rock:   { base: [0x8a,0x7e,0x70], mottle: [0.30, 4, 4, 0x54, 0x4a, 0x40], craters: [0.28, 8] },
+    belt:   { base: [0x76,0x6d,0x64], mottle: [0.40, 7, 4, 0x42, 0x3c, 0x36], craters: [0.45, 12] },
+    bio_oceanic:  { base: [0x1b,0x4d,0x8c], land: [0.66, 2.4, 5, 0x3f,0x7a,0x3c, 7],
+                    poles: [70, 0.85, 0xf4,0xf8,0xfc], clouds: [0.4, 3.4, 4] },
+    bio_grassland:{ base: [0x7f,0xa6,0x50], mottle: [0.28, 3, 4, 0x4e,0x6e,0x33],
+                    poles: [72, 0.6, 0xf0,0xf4,0xf8], clouds: [0.3, 3.4, 4] },
+    bio_forest:   { base: [0x3d,0x7a,0x3f], mottle: [0.30, 3.4, 4, 0x1f,0x46,0x24],
+                    poles: [74, 0.5, 0xf0,0xf4,0xf8], clouds: [0.32, 3.2, 4] },
+    bio_desert:   { base: [0xd4,0xae,0x66], mottle: [0.30, 3.2, 4, 0x9a,0x74,0x3c],
+                    clouds: [0.12, 3.4, 3] },
+    bio_volcanic: { base: [0x8c,0x46,0x32], mottle: [0.34, 3.6, 4, 0x3a,0x24,0x20],
+                    glow: [0.55, 5.5, 0xff,0x8a,0x30] },
+    bio_tundra:   { base: [0xb3,0xc4,0xcc], mottle: [0.24, 3.4, 4, 0x76,0x86,0x92],
+                    poles: [50, 0.85, 0xff,0xff,0xff], clouds: [0.3, 3.4, 4] },
+    bio_savanna:  { base: [0xc6,0xa6,0x51], mottle: [0.28, 3, 4, 0x8a,0x6e,0x30],
+                    poles: [76, 0.4, 0xf0,0xf4,0xf8], clouds: [0.22, 3.4, 3] },
+    bio_swamp:    { base: [0x5e,0x6b,0x3c], mottle: [0.34, 3.2, 4, 0x33,0x40,0x26],
+                    clouds: [0.36, 3.0, 4] },
+    bio_ashland:  { base: [0x8b,0x87,0x81], mottle: [0.30, 3.6, 4, 0x4e,0x4a,0x46],
+                    clouds: [0.26, 3.2, 3] },
+    bio_taiga:    { base: [0x5d,0x7a,0x63], mottle: [0.28, 3.4, 4, 0x2e,0x44,0x36],
+                    poles: [58, 0.8, 0xff,0xff,0xff], clouds: [0.3, 3.2, 4] },
+    bio_hellscape:{ base: [0x7d,0x2b,0x1c], mottle: [0.36, 4, 4, 0x2a,0x14,0x10],
+                    glow: [0.85, 6, 0xff,0x6a,0x1a] },
+    bio_eden:     { base: [0x4f,0xae,0x72], land: [0.45, 2.6, 5, 0x2f,0x86,0x54, 6],
+                    poles: [76, 0.5, 0xf6,0xfa,0xff], clouds: [0.34, 3.4, 4] },
+};
+
+// Axial tilt in degrees and rotation period in hours; a negative period turns the other way. Real
+// values — Venus really is upside down and retrograde, and Uranus really does lie on its side. The
+// tilt is taken about the x axis; where the axis points around the sky is not modelled, since at
+// these sizes only how far it leans reads at all.
+//
+// Saturn's 26.7 agrees with the note on its moons above, which put them 27 degrees off the reference
+// plane for riding its equator.
+const SPIN_DATA = {
+    spc_hell:   { tilt: 0.03,   hours: 1407.6 },
+    spc_venus:  { tilt: 177.36, hours: -5832.5 },
+    spc_home:   { tilt: 23.44,  hours: 23.934 },
+    spc_moon:   { tilt: 6.68,   hours: 655.7 },      // tidally locked, so its day is its month
+    spc_red:    { tilt: 25.19,  hours: 24.623 },
+    spc_gas:    { tilt: 3.13,   hours: 9.925 },
+    spc_io:     { tilt: 0,      hours: 42.5 },
+    spc_europa: { tilt: 0.1,    hours: 85.2 },
+    spc_gas_moon:{tilt: 0.33,   hours: 171.7 },
+    spc_callisto:{tilt: 0,      hours: 400.5 },
+    spc_saturn: { tilt: 26.73,  hours: 10.56 },
+    spc_titan:  { tilt: 0,      hours: 382.7 },
+    spc_enceladus:{tilt: 0,     hours: 32.9 },
+    spc_uranus: { tilt: 97.77,  hours: -17.24 },
+    spc_titania:{ tilt: 0,      hours: 208.9 },
+    spc_oberon: { tilt: 0,      hours: 323.1 },
+    spc_neptune:{ tilt: 28.32,  hours: 16.11 },
+    spc_triton: { tilt: 0,      hours: -141.0 },
+    spc_pluto:  { tilt: 122.53, hours: -153.3 },
+    spc_haumea: { tilt: 0,      hours: 3.92 },       // the fastest large body in the solar system
+    spc_makemake:{tilt: 0,      hours: 22.83 },
+    spc_eris:   { tilt: 0,      hours: 379.1 },
+    spc_dwarf:  { tilt: 4,      hours: 9.07 },       // Ceres
+};
+// Rotation runs at a tenth of true rate. At the redraw rates on offer a real Jupiter day would turn
+// the planet most of the way round between frames and read as a flicker rather than as spin; a tenth
+// keeps every body under twenty degrees a frame while leaving the rates correct RELATIVE to each
+// other — Jupiter still turns some two and a half times for each of Earth's.
+const SPIN_SCALE = 0.1;
+// Game days the map has been running, for axial rotation only. Deliberately not saved: it drives
+// nothing but which face of a planet is toward you, and a body starting at a different phase after a
+// reload is not something anyone can notice.
+var mapDays = 0;
+// Advanced from the map's own simulation step in main.js, so rotation keeps pace with everything
+// else on the map however often that step runs.
+export function advanceMapDays(days){ mapDays += days; }
+
+// A body with no entry gets a tilt and a period off its own id, so a system full of anonymous rocks
+// does not turn in lockstep.
+function spinOf(id){
+    const known = SPIN_DATA[id];
+    if (known){ return known; }
+    const h = texSeed(id || 'x');
+    return { tilt: (h % 2600) / 100, hours: 8 + ((h >>> 8) % 4000) / 100 };
+}
+
+// Rendered at the size it will be drawn at, rounded up to one of these, so a small body costs a
+// fraction of a large one. Nothing above 128: past that the disc is being scaled up anyway.
+const SPHERE_SIZES = [32, 64, 128];
+// Camera and rotation angles are quantised before they key the cache, so nudging the view — or a
+// slow rotation — does not throw the render away.
+const SPHERE_ANGLE_STEP = 2 * Math.PI / 180;
+const SPHERE_SPIN_STEP = 3;
+const SPHERE_CACHE_MAX = 64;
+const sphereCache = new Map();
+
+// Whether a camera-aware surface should be used for this body right now, and at what size.
+function sphereSize(kind, r){
+    if (!SPHERE_STYLES[kind]){ return 0; }
+    if (mapView().texture !== 'high'){ return 0; }
+    const px = r * mapScale;
+    if (px < 8){ return 0; }        // too small to tell a sphere from a stamp
+    for (let i = 0; i < SPHERE_SIZES.length; i++){
+        if (px * 2 <= SPHERE_SIZES[i]){
+            // One size down while the camera is turning. A moving disc does not hold still long
+            // enough to read the difference, and this is a quarter of the pixels.
+            return mapCameraMoving && i > 0 ? SPHERE_SIZES[i-1] : SPHERE_SIZES[i];
+        }
+    }
+    const last = SPHERE_SIZES.length - 1;
+    return mapCameraMoving && last > 0 ? SPHERE_SIZES[last-1] : SPHERE_SIZES[last];
+}
+// How finely the camera angle is quantised before it keys the cache. Coarser while turning, so a
+// drag walks through a third as many distinct renders; letting go returns to the fine step, which
+// misses once and settles at full quality.
+function sphereAngleStep(){
+    return mapCameraMoving ? SPHERE_ANGLE_STEP * 3 : SPHERE_ANGLE_STEP;
+}
+
+function sphereTexture(kind, S, id, sun){
+    const spin = spinOf(id);
+    const turn = spin.hours ? (mapDays * 24 / spin.hours) * 360 * SPIN_SCALE : 0;
+    const step = sphereAngleStep();
+    const qy = Math.round(mapYaw / step), qp = Math.round(mapPitch / step);
+    const qs = Math.round((((turn % 360) + 360) % 360) / SPHERE_SPIN_STEP);
+    const seed = texSeed(id || kind);
+    // The light, in camera space. Quantised into the key like everything else: a body creeping along
+    // its orbit changes it slowly, and a fraction of a degree is not worth a re-render.
+    let Lx = -0.5/1.0106, Ly = -0.5/1.0106, Lz = -0.72/1.0106, lk = 'flat';
+    if (sun){
+        Lx = pX(sun); Ly = pY(sun); Lz = pD(sun);
+        lk = `${Math.round(Lx*24)},${Math.round(Ly*24)},${Math.round(Lz*24)}`;
+        // Snapped back to the quantised direction, so the render matches the key exactly.
+        const m = Math.hypot(Math.round(Lx*24), Math.round(Ly*24), Math.round(Lz*24)) || 1;
+        Lx = Math.round(Lx*24)/m; Ly = Math.round(Ly*24)/m; Lz = Math.round(Lz*24)/m;
+    }
+    const key = `${kind}:${S}:${qy}:${qp}:${qs}:${seed}:${step.toFixed(4)}:${lk}`;
+    if (sphereCache.has(key)){ return sphereCache.get(key); }
+
+    const st = SPHERE_STYLES[kind];
+    const yaw = qy * step, pitch = qp * step;
+    const spinDeg = qs * SPHERE_SPIN_STEP;
+    // The camera's own basis, straight off pX/pY/pD: screen right, screen down, and into the screen.
+    const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+    const Xx = cy,    Xy = -sy,   Xz = 0;
+    const Yx = sy*cp, Yy = cy*cp, Yz = -sp;
+    const Dx = sy*sp, Dy = cy*sp, Dz = cp;
+    // The spin axis, leaned out of the reference plane by the obliquity, and two vectors across it to
+    // measure longitude from.
+    const T = spin.tilt * Math.PI / 180, cT = Math.cos(T), sT = Math.sin(T);
+    const Ax = 0, Ay = -sT, Az = cT;
+    const E1x = 1, E1y = 0, E1z = 0;
+    const E2x = 0, E2y = cT, E2z = sT;
+    const rad = spinDeg * Math.PI / 180, cs = Math.cos(-rad), ss = Math.sin(-rad);
+
+    const c = document.createElement('canvas');
+    c.width = c.height = S;
+    const x = c.getContext('2d');
+    const img = x.createImageData(S, S);
+    const px = img.data;
+    const R = S / 2;
+
+    for (let iy = 0; iy < S; iy++){
+        for (let ix = 0; ix < S; ix++){
+            const u = (ix + 0.5 - R) / R, v = (iy + 0.5 - R) / R;
+            const q = u*u + v*v;
+            const o = (iy*S + ix) * 4;
+            if (q > 1){ continue; }                      // off the disc
+            const w = Math.sqrt(1 - q);                  // toward the viewer
+            const nx = u*Xx + v*Yx - w*Dx;
+            const ny = u*Xy + v*Yy - w*Dy;
+            const nz = u*Xz + v*Yz - w*Dz;
+            const dotA = nx*Ax + ny*Ay + nz*Az;
+            const lat = Math.asin(dotA < -1 ? -1 : dotA > 1 ? 1 : dotA) * 180 / Math.PI;
+            const e1 = nx*E1x + ny*E1y + nz*E1z, e2 = nx*E2x + ny*E2y + nz*E2z;
+            // Turned back by the rotation, so surface features stay put on the body while it spins
+            // under the camera rather than sliding across it.
+            const p1 = e1*cs - e2*ss, p2 = e1*ss + e2*cs;
+            const sx = p1*E1x + p2*E2x + dotA*Ax;
+            const sy2 = p1*E1y + p2*E2y + dotA*Ay;
+            const sz = p1*E1z + p2*E2z + dotA*Az;
+
+            let r, g, b;
+            if (st.bands){ const col = sphereBandColour(st.bands, lat); r = col[0]; g = col[1]; b = col[2]; }
+            else { r = st.base[0]; g = st.base[1]; b = st.base[2]; }
+
+            if (st.mottle){
+                const amp = st.mottle[0], f = st.mottle[1], oct = st.mottle[2];
+                // A banded world gets its noise stretched along latitude, so it runs with the flow.
+                const n = st.banded ? sphFbm(sx*f, sy2*f*3.2, sz*f, oct, seed)
+                                    : sphFbm(sx*f, sy2*f, sz*f, oct, seed);
+                const k = (n - 0.5) * 2 * amp;
+                if (k > 0){ r = sphMix(r, st.mottle[3], k); g = sphMix(g, st.mottle[4], k); b = sphMix(b, st.mottle[5], k); }
+                else { r *= 1+k*0.7; g *= 1+k*0.7; b *= 1+k*0.7; }
+            }
+            if (st.land){
+                const th = st.land[0], f = st.land[1], oct = st.land[2], sharp = st.land[6];
+                const n = sphFbm(sx*f, sy2*f, sz*f, oct, seed+31);
+                const k = 1/(1+Math.exp(-(n-th)*sharp*6));
+                r = sphMix(r, st.land[3], k); g = sphMix(g, st.land[4], k); b = sphMix(b, st.land[5], k);
+            }
+            if (st.craters){
+                const amp = st.craters[0], f = st.craters[1];
+                const cw = sphWorley(sx*f, sy2*f, sz*f, seed+53);
+                // A dark floor with a bright rim just outside it — what makes a body read as airless.
+                const floor = Math.max(0, 1 - cw.f1*3.2), rim = Math.max(0, 1 - Math.abs(cw.f1-0.34)*7);
+                const k = (rim*0.5 - floor*0.6) * amp;
+                r = Math.max(0, r*(1+k)); g = Math.max(0, g*(1+k)); b = Math.max(0, b*(1+k));
+            }
+            if (st.cracks){
+                const amp = st.cracks[0], f = st.cracks[1];
+                const cw = sphWorley(sx*f, sy2*f, sz*f, seed+71);
+                const edge = Math.max(0, 1 - (cw.f2-cw.f1)*9);
+                r = sphMix(r, st.cracks[2], edge*amp); g = sphMix(g, st.cracks[3], edge*amp); b = sphMix(b, st.cracks[4], edge*amp);
+            }
+            if (st.poles){
+                const k = Math.max(0, (Math.abs(lat)-st.poles[0])/(90-st.poles[0])) * st.poles[1];
+                r = sphMix(r, st.poles[2], k); g = sphMix(g, st.poles[3], k); b = sphMix(b, st.poles[4], k);
+            }
+            if (st.clouds){
+                const n = sphFbm(sx*st.clouds[1]+11, sy2*st.clouds[1]+11, sz*st.clouds[1]+11, st.clouds[2], seed+97);
+                const k = Math.max(0, (n-0.55)*2.6) * st.clouds[0];
+                r = sphMix(r,255,k); g = sphMix(g,255,k); b = sphMix(b,255,k);
+            }
+
+            const diff = u*Lx + v*Ly + (-w)*Lz;
+            // Ambient enough that the unlit limb still reads as the body rather than as a hole.
+            const shade = 0.30 + 0.85*(diff > 0 ? diff : 0);
+            const limb = 0.55 + 0.45*Math.pow(w, 0.45);
+            const k = shade * limb;
+            r *= k; g *= k; b *= k;
+
+            if (st.glow){
+                // Added after the shading, so vents and lava still show on the night side.
+                const n = sphFbm(sx*st.glow[1], sy2*st.glow[1], sz*st.glow[1], 4, seed+131);
+                const e = Math.max(0, (n-0.62)*3.4) * st.glow[0];
+                r = sphMix(r, st.glow[2], e); g = sphMix(g, st.glow[3], e); b = sphMix(b, st.glow[4], e);
+            }
+            if (st.spot){
+                let dLon = ((Math.atan2(e2, e1) * 180/Math.PI) - spinDeg - st.spot.lon) % 360;
+                if (dLon > 180){ dLon -= 360; } else if (dLon < -180){ dLon += 360; }
+                const dLat = lat - st.spot.lat;
+                const e = (dLon/st.spot.halfLon)*(dLon/st.spot.halfLon) + (dLat/st.spot.halfLat)*(dLat/st.spot.halfLat);
+                if (e < 2.1){
+                    // A darker collar first: the zone is dragged down around the oval.
+                    const cc = Math.max(0, 1 - Math.abs(e - 1.35) / 0.75) * 0.45;
+                    r = sphMix(r, 0x9a*k, cc); g = sphMix(g, 0x6a*k, cc); b = sphMix(b, 0x4c*k, cc);
+                }
+                if (e < 1){
+                    const kk = Math.pow(1 - e, 0.4) * 0.9;
+                    const core = 1 - 0.28*Math.pow(Math.max(0, 1 - e*2.4), 2);
+                    r = sphMix(r, st.spot.r*core*k, kk); g = sphMix(g, st.spot.g*core*k, kk); b = sphMix(b, st.spot.b*core*k, kk);
+                }
+            }
+
+            px[o]   = r < 0 ? 0 : r > 255 ? 255 : r;
+            px[o+1] = g < 0 ? 0 : g > 255 ? 255 : g;
+            px[o+2] = b < 0 ? 0 : b > 255 ? 255 : b;
+            // Feathered edge, so the disc is not left aliased against the black.
+            const a = 255 * Math.min(1, (1 - Math.sqrt(q)) * R * 0.9);
+            px[o+3] = a < 0 ? 0 : a > 255 ? 255 : a;
+        }
+    }
+    x.putImageData(img, 0, 0);
+
+    // Oldest out first. A drag walks the camera through a run of angles and would otherwise keep
+    // every one of them.
+    if (sphereCache.size >= SPHERE_CACHE_MAX){ sphereCache.delete(sphereCache.keys().next().value); }
+    sphereCache.set(key, c);
+    return c;
+}
+
+// A star at high detail.
+const SPHERE_STAR_SIZES = [384, 512];
+function sphereStarSize(r){
+    if (mapView().texture !== 'high'){ return 0; }
+    // The image is drawn at 4r across, of which the disc is the middle 2r. Below the flat texture's
+    // own 256 there is nothing to gain -- it is not being scaled up yet.
+    const want = r * mapScale * 4;
+    if (want <= STAR_TEX){ return 0; }
+    for (const s of SPHERE_STAR_SIZES){ if (want <= s){ return s; } }
+    return SPHERE_STAR_SIZES[SPHERE_STAR_SIZES.length - 1];
+}
+// The flat texture's radial gradient as a curve: 1.55 at the centre, 1.12 at half way, 1.0 at 0.88,
+// 0.7 at the limb. Read through hexShade's rule, where above 1 lightens toward white rather than multiplying 
+const STAR_STOPS = [[0, 1.55], [0.5, 1.12], [0.88, 1.0], [1, 0.7]];
+function starCurve(t){
+    for (let i = 1; i < STAR_STOPS.length; i++){
+        if (t <= STAR_STOPS[i][0]){
+            const a = STAR_STOPS[i-1], b = STAR_STOPS[i];
+            return a[1] + (b[1]-a[1]) * (t-a[0])/(b[0]-a[0]);
+        }
+    }
+    return STAR_STOPS[STAR_STOPS.length-1][1];
+}
+function sphereStarTexture(color, S){
+    const key = `star:${color}:${S}`;
+    if (sphereCache.has(key)){ return sphereCache.get(key); }
+
+    const n = parseInt(color, 16);
+    const cr = (n >> 16) & 255, cg = (n >> 8) & 255, cb = n & 255;
+    const c = document.createElement('canvas');
+    c.width = c.height = S;
+    const x = c.getContext('2d');
+    const img = x.createImageData(S, S);
+    const px = img.data;
+    const R = S / 2, disc = R * STAR_CORE;
+
+    for (let iy = 0; iy < S; iy++){
+        for (let ix = 0; ix < S; ix++){
+            const dx = ix + 0.5 - R, dy = iy + 0.5 - R;
+            const d = Math.sqrt(dx*dx + dy*dy);
+            const o = (iy*S + ix) * 4;
+            if (d <= disc){
+                const f = starCurve(d / disc);
+                if (f >= 1){
+                    const t = f - 1;
+                    px[o]   = cr + (255-cr)*t;
+                    px[o+1] = cg + (255-cg)*t;
+                    px[o+2] = cb + (255-cb)*t;
+                }
+                else { px[o] = cr*f; px[o+1] = cg*f; px[o+2] = cb*f; }
+                // Feathered, so a large star's limb is not left stepped.
+                px[o+3] = 255 * Math.min(1, (disc - d) * 1.5 + 1);
+            }
+            else if (d < R){
+                // The corona, on the flat texture's own falloff: 0.34 at the limb, a tenth of that
+                // by a fifth of the way out, and gone by the edge.
+                const t = (d - disc) / (R - disc);
+                const a = t < 0.22 ? 0.34 + (0.1-0.34)*(t/0.22)
+                                   : 0.1 * Math.pow(1 - (t-0.22)/0.78, 1.6);
+                px[o] = cr; px[o+1] = cg; px[o+2] = cb;
+                px[o+3] = 255 * a;
+            }
+        }
+    }
+    x.putImageData(img, 0, 0);
+    if (sphereCache.size >= SPHERE_CACHE_MAX){ sphereCache.delete(sphereCache.keys().next().value); }
+    sphereCache.set(key, c);
+    return c;
+}
+
 // Surfaces are drawn from a small pool rather than one per body: a texture is a megabyte-scale
 // canvas, and there are well over a hundred bodies on the map. Each body picks its variant from its
 // own seed, so it always gets the same face and its neighbours rarely match.
@@ -14219,7 +14694,6 @@ const PLANET_VARIANTS = 8;
 // Color-free overlay for a planet, moon or belt body: surface detail, then the light and shade that
 // turn a flat disc into a lit ball. Lit from the upper left throughout, so the whole map reads as
 // one scene rather than each body having its own sun.
-// Soft mottled patches, the shared base for every rocky surface.
 function texBlobs(x, rnd, S, count, minR, maxR, darkBias, strength){
     for (let i = 0; i < count; i++){
         let bx = rnd() * S, by = rnd() * S;
@@ -14660,23 +15134,16 @@ function drawGate(ctx, x, y, r, color, seed){
     ctx.restore();
 }
 
-// Paint one map body at (x,y) with radius r in map units. Stars get their textured disc plus corona;
-// everything else keeps its flat fill with the lighting overlay on top. The overlay is skipped once
-// a body is down to a couple of pixels, where it would cost a scale-down of a 128px texture to show
-// nothing.
-// A ring system, as seen from a little above its plane. Bands are stroked ellipses at fractions of
-// the body's own radius, with a gap between the middle and outer band standing in for the Cassini
-// division. Half the ring at a time: `near` picks the lower sweep, which passes in front of the body.
-// Saturn's real structure, inner to outer: the faint D and C rings, the bright B ring, the Cassini
-// division, the A ring with the Encke gap near its outer edge, and the wispy F ring beyond.
-// How far the ring plane leans out of the plane the body orbits in. This is a fixed property of the
-// world, not of the camera — it is what keeps the rings pinned to the planet while the view turns.
-//
 // The value is chosen for Saturn's real 26.7 degrees.
 const RING_TILT = 26.7 * Math.PI / 180;
-// Points per half ring. The ring is a real circle in space rather than a screen-space ellipse, so it
-// has to be sampled and projected the way orbits are; two halves of this give ORBIT_STEPS' smoothness.
+// Points per half ring.
 const RING_HALF_STEPS = 48;
+// How dark the ring goes where the planet's shadow falls on it.
+const SHADOW_SHADE = 0.3;
+// The shadow's edge is not a hard line, and it should not be drawn as one.
+const PEN_STEPS = 5;
+const PEN_CORE = 0.86;
+const PEN_EDGE = 1.10;
 const RING_BANDS = [
     [1.11, 1.24, 0.10],   // D + inner C
     [1.24, 1.52, 0.22],   // C
@@ -14688,21 +15155,79 @@ const RING_BANDS = [
     [2.24, 2.27, 0.30],   // outer A
     [2.32, 2.34, 0.12],   // F, a thin thread
 ];
-// A ring is a circle lying in the body's equatorial plane — the plane it orbits in, tipped by the
-// body's axial tilt. Each band is sampled and pushed through the same projection as everything else
-// on the map, so yawing or pitching the camera turns the rings with the rest of the scene instead of
-// leaving them pinned flat to the screen. Edge-on they close to a sliver; from above they open out.
-//
-// Offsets are taken relative to the body rather than in absolute coordinates, which is exact because
-// the projection is linear: pX(body + offset) === pX(body) + pX(offset).
-//
-// `near` selects which side of the body to draw, and the two halves have to meet exactly or the ring
-// shows a seam. Depth around the ring works out to rad * (A cos t + B sin t) — a plain sinusoid — so
-// the two angles where it crosses zero, which is precisely where the ring passes behind or in front
-// of the body, can be solved for rather than found by testing samples. Cutting at whichever samples
-// happened to straddle the crossing left a gap of up to one step at each end; each half now runs from
-// one crossing to the other, so they share their endpoints.
-function drawRings(ctx, x, y, r, color, near, tilt){
+// Radii are in planet radii and are the real ones. Built once, on first use, so the wiki bundle
+// never pays for it and Low never touches it.
+const RING_HI_BANDS = 96;
+let ringHiTable = false;
+// Opacity of the ring at a given radius. Not a step function: the real rings shade into one another
+// almost everywhere, and only the two gaps in the A ring have hard edges.
+function ringDensityAt(x){
+    if (x < 1.110 || x > 2.330){ return 0; }
+    if (x < 1.236){ return 0.05 + 0.03 * (x - 1.110) / 0.126; }        // D, barely there
+    if (x < 1.525){                                                    // C, with its plateaus
+        const t = (x - 1.236) / 0.289;
+        return 0.16 + 0.10 * t + 0.05 * Math.sin(t * 17);
+    }
+    if (x < 1.950){                                                    // B, the bright one
+        const t = (x - 1.525) / 0.425;
+        // Brightest around the middle and falling toward the Cassini edge, as it really does.
+        return 0.74 - 0.20 * t * t + 0.06 * Math.sin(t * 23);
+    }
+    if (x < 2.025){                                                    // Cassini division
+        // Not empty — it holds several faint ringlets, which is why it reads as grey rather than black.
+        const t = (x - 1.950) / 0.075;
+        return 0.05 + 0.05 * Math.max(0, Math.sin(t * 9));
+    }
+    if (x < 2.214){                                                    // A, inner
+        const t = (x - 2.025) / 0.189;
+        return 0.44 - 0.06 * t + 0.04 * Math.sin(t * 19);
+    }
+    if (x < 2.224){ return 0.02; }                                     // Encke gap
+    if (x < 2.263){ return 0.36; }                                     // A, outer
+    if (x < 2.268){ return 0.03; }                                     // Keeler gap
+    if (x < 2.270){ return 0.30; }                                     // the last of A
+    if (x < 2.320){ return 0.0; }                                      // the Roche division
+    return 0.10;                                                       // F, a thin thread
+}
+// How warm the ring is at a given radius, 0 grey to 1 fully tinted. The B ring is the ruddiest, the
+// C ring nearly colourless — the same contrast that shows in a photograph.
+function ringWarmthAt(x){
+    if (x < 1.525){ return 0.15; }
+    if (x < 1.950){ return 1.0; }
+    if (x < 2.025){ return 0.3; }
+    return 0.65;
+}
+function ringHiBands(){
+    if (ringHiTable){ return ringHiTable; }
+    const inner = 1.110, outer = 2.330, step = (outer - inner) / RING_HI_BANDS;
+    ringHiTable = [];
+    for (let i = 0; i < RING_HI_BANDS; i++){
+        const a = inner + i * step, b = a + step, mid = (a + b) / 2;
+        let alpha = ringDensityAt(mid);
+        if (alpha <= 0.005){ continue; }                                // a gap draws as nothing
+        // Ringlet banding: fine structure on top of the broad shape, deterministic so a given band
+        // is the same every frame.
+        alpha *= 0.82 + 0.36 * (sphHash(i, 0, 0, 1) / 4294967296);
+        ringHiTable.push([a, b, Math.min(0.95, alpha), ringWarmthAt(mid)]);
+    }
+    return ringHiTable;
+}
+// How far open the rings are to the camera: 1 face-on, 0 edge-on. The ring's normal against the view
+// direction, taken through the same projection as everything else.
+function ringOpening(ct, st){
+    return Math.abs(-st * camCY * camSP + ct * camCP);
+}
+
+// The unit vector from a body toward the star it orbits, in world coordinates. Used to
+// light the object from the direction of its star.
+function sunDirection(offset){
+    const d = Math.hypot(offset.x, offset.y, offset.z);
+    if (!(d > 0)){ return false; }
+    // Toward the star, which is at the origin of the frame these offsets are measured in.
+    return { x: -offset.x / d, y: -offset.y / d, z: -offset.z / d };
+}
+
+function drawRings(ctx, x, y, r, color, near, tilt, sun){
     let lean = tilt || RING_TILT;
     let ct = Math.cos(lean), st = Math.sin(lean);
 
@@ -14714,23 +15239,129 @@ function drawRings(ctx, x, y, r, color, near, tilt){
     let nearFirst = (A * Math.cos(mid) + B * Math.sin(mid)) < 0;
     let start = (nearFirst === near) ? cross : cross + Math.PI;
 
-    for (let [inner, outer, alpha] of RING_BANDS){
+    // The fine table where the player has asked for detail and the rings are wide enough on screen
+    // to show it, otherwise the seven broad bands. 
+    const hi = mapView().texture === 'high' && !mapCameraMoving && r * mapScale >= 15;
+    const bands = hi ? ringHiBands() : RING_BANDS;
+    // How much of the ring's thickness the line of sight passes through. Edge-on it cuts the long way
+    // and the ring reads as solid; face-on it passes straight through and the ring is at its most
+    // transparent.
+    const open = hi ? Math.max(0.12, ringOpening(ct, st)) : 1;
+
+    // The planet's shadow, as a cylinder cast away from its star: a point on the ring is in it when
+    // it lies on the far side of the planet from the sun AND within a planet's radius of the axis
+    // joining the two.
+    const shade = hi && sun ? sun : false;
+    // The sun resolved in the ring's own plane: sunP along the ring's x axis, sunQ along the in-plane
+    // axis the lean tips. The shadow is centred half a turn round from where the sun lies.
+    let sunP = 0, sunQ = 0, sunR = 0, shadowMid = 0;
+    if (shade){
+        sunP = shade.x;
+        sunQ = ct * shade.y + st * shade.z;
+        sunR = Math.hypot(sunP, sunQ);
+        shadowMid = Math.atan2(sunQ, sunP) + Math.PI;
+    }
+    // The far end of the ramp. The near end is the band's own lit colour, which varies with warmth.
+    const darkRGB = shadeRGB(color, SHADOW_SHADE);
+
+    for (let band of bands){
+        let inner = band[0], outer = band[1], alpha = band[2];
+        if (hi){
+            // Beer-Lambert through a longer path: an already-dense band saturates, a faint one gains
+            // the most, which is what actually happens.
+            alpha = 1 - Math.pow(1 - alpha, 1 / open);
+        }
         let rad = r * (inner + outer) / 2;
-        ctx.strokeStyle = hexShadeRGBA(color, 1.5, alpha);
+        // Warmth: the B ring is the ruddiest of them, the C ring nearly colourless.
+        const litShade = hi ? 1.15 + 0.5 * band[3] : 1.5;
+        const litRGB = shadeRGB(color, litShade);
+        const lit = rgba(litRGB, alpha);
         ctx.lineWidth = Math.max(r * (outer - inner), 0.4 / mapScale);
-        ctx.beginPath();
+
+        // The shadow's edge on this band, as half-widths in ring longitude either side of shadowMid,
+        // darkest core first. A point sits inside the cylinder of radius rho when
+        //     |t - shadowMid| < acos( sqrt(rad^2 - rho^2) / (rad * sunR) )
+        let edge = false;
+        if (shade && sunR > 1e-6){
+            edge = [];
+            for (let j = 0; j <= PEN_STEPS; j++){
+                const rho = r * (PEN_CORE + (PEN_EDGE - PEN_CORE) * j / PEN_STEPS);
+                const k = Math.sqrt(Math.max(0, rad * rad - rho * rho)) / (rad * sunR);
+                edge.push(k >= 1 ? 0 : Math.acos(k));
+            }
+            // A band the shadow never reaches — the sun too far out of the ring plane, or the band
+            // too wide for the cylinder to cover any of it.
+            if (edge[PEN_STEPS] <= 0){ edge = false; }
+        }
+        // How deep in shadow a longitude is, as a step from 0 (lit) to PEN_STEPS + 1 (fully dark).
+        const shadowAt = (t) => {
+            if (!edge){ return 0; }
+            const dt = Math.abs(wrapAngle(t - shadowMid));
+            if (dt >= edge[PEN_STEPS]){ return 0; }
+            if (dt <= edge[0]){ return PEN_STEPS + 1; }
+            for (let j = 1; j <= PEN_STEPS; j++){
+                if (dt < edge[j]){ return PEN_STEPS + 1 - j; }
+            }
+            return 0;
+        };
+        // In shadow the ring keeps its own colour, heavily darkened rather than blacked out.
+        const tones = new Array(PEN_STEPS + 2);
+        const toneFor = (lv) => {
+            if (!tones[lv]){
+                const f = lv / (PEN_STEPS + 1);
+                tones[lv] = lv === 0 ? lit : rgba([0, 1, 2].map(i => litRGB[i] + (darkRGB[i] - litRGB[i]) * f), alpha);
+            }
+            return tones[lv];
+        };
+
+        // The sample angles, with the exact shadow edges spliced in, so the boundary lands where the
+        // geometry puts it rather than on whichever sample happened to be nearest.
+        let angles = [];
         for (let i = 0; i <= RING_HALF_STEPS; i++){
-            let t = start + (i / RING_HALF_STEPS) * Math.PI;
-            // The circle, tipped out of the orbital plane by the body's lean.
+            angles.push(start + (i / RING_HALF_STEPS) * Math.PI);
+        }
+        if (edge){
+            for (let j = 0; j <= PEN_STEPS; j++){
+                for (const cut of [shadowMid - edge[j], shadowMid + edge[j]]){
+                    // Only the crossings that fall inside the half being drawn.
+                    let u = ((cut - start) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
+                    if (u > 0 && u < Math.PI){ angles.push(start + u); }
+                }
+            }
+            angles.sort((a, b) => a - b);
+        }
+        // The circle, tipped out of the orbital plane by the body's lean.
+        const pts = angles.map(t => {
             let ox = rad * Math.cos(t);
             let oy = rad * Math.sin(t) * ct;
             let oz = rad * Math.sin(t) * st;
-            let px = x + (ox * camCY - oy * camSY);
-            let py = y + (ox * camSY + oy * camCY) * camCP - oz * camSP;
-            if (i === 0){ ctx.moveTo(px, py); }
-            else { ctx.lineTo(px, py); }
+            return [x + (ox * camCY - oy * camSY), y + (ox * camSY + oy * camCY) * camCP - oz * camSP];
+        });
+
+        // Walked in runs of one shade rather than as one path, since a stroke cannot change colour
+        // along its length. Consecutive runs share their end point, so there is no seam.
+        let run = [], runLevel = -1;
+        const flush = () => {
+            if (run.length < 2){ run = []; return; }
+            ctx.strokeStyle = toneFor(runLevel);
+            ctx.beginPath();
+            ctx.moveTo(run[0][0], run[0][1]);
+            for (let k = 1; k < run.length; k++){ ctx.lineTo(run[k][0], run[k][1]); }
+            ctx.stroke();
+            run = [];
+        };
+        for (let i = 1; i < angles.length; i++){
+            // The shade of the span, read at its middle — which is unambiguous, because every angle
+            // the shade changes at is one of the endpoints.
+            let lv = shadowAt((angles[i - 1] + angles[i]) / 2);
+            if (lv !== runLevel){
+                flush();
+                run.push(pts[i - 1]);
+                runLevel = lv;
+            }
+            run.push(pts[i]);
         }
-        ctx.stroke();
+        flush();
     }
 }
 
@@ -14797,28 +15428,35 @@ function drawBody(ctx, x, y, r, color, opts){
     ctx.fillStyle = "#" + color;
     if (opts.star){
         // The flat disc goes down first even though the texture's own disc is opaque. Zoomed out a
-        // star is a pixel or two across, and scaling a 256px texture down that far averages its disc
-        // against the transparent corona surrounding it — on its own the star all but disappears.
-        // The solid dot underneath keeps it visible and on-color at every zoom.
+        // star is a pixel or two across.
         ctx.beginPath();
         ctx.arc(x, y, r, 0, Math.PI * 2, true);
         ctx.fill();
         let half = r / STAR_CORE;
-        ctx.drawImage(starTexture(color), x - half, y - half, half * 2, half * 2);
+        // The same star, rasterised at the drawn size where it has outgrown the flat texture and the
+        // player has asked for detail.
+        const sst = sphereStarSize(r);
+        ctx.drawImage(sst ? sphereStarTexture(color, sst) : starTexture(color),
+                      x - half, y - half, half * 2, half * 2);
         return;
     }
     // Rings straddle the body, so the far half goes down first and the near half last — that ordering
     // is what reads as the planet sitting inside them rather than on top. Skipped at the same size the
     // surface texture is, since a few pixels of ring is just a smudge.
     let rings = opts.rings && r * mapScale >= 2.5;
-    if (rings){ drawRings(ctx, x, y, r, color, false, opts.ringTilt); }
+    if (rings){ drawRings(ctx, x, y, r, color, false, opts.ringTilt, opts.sun); }
     ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI * 2, true);
     ctx.fill();
     if (r * mapScale >= 2.5){
-        ctx.drawImage(planetTexture(opts.kind, opts.seed), x - r, y - r, r * 2, r * 2);
+        // A camera-aware sphere where one is offered and the player has asked for it, otherwise the
+        // flat texture this has always used. Both are drawn the same way — only how the image was
+        // arrived at differs — so neither renderer needs to know which it got.
+        const sph = sphereSize(opts.kind, r);
+        ctx.drawImage(sph ? sphereTexture(opts.kind, sph, opts.id, opts.sun) : planetTexture(opts.kind, opts.seed),
+                      x - r, y - r, r * 2, r * 2);
     }
-    if (rings){ drawRings(ctx, x, y, r, color, true, opts.ringTilt); }
+    if (rings){ drawRings(ctx, x, y, r, color, true, opts.ringTilt, opts.sun); }
 }
 
 // Record a body the pointer can address, converting from the projected space drawBody works in to
@@ -15142,7 +15780,7 @@ export function drawMap() {
             strokeOrbitGroup(ctx, orbitsBy[primary], ORIGIN, planetLocation[primary], false);
         }
         for (let b of bodies){
-            drawBody(ctx, b.bx, b.by, b.size, setColor(b.id), { star: !!b.planet.startype, gate: !!b.planet.gate, kind: bodyKind(b.planet, b.id), seed: texSeed(b.id), rings: hasRings(b.planet, b.id), ringTilt: ringTilt(b.planet, b.id), glyph: cowGlyph(b.id) });
+            drawBody(ctx, b.bx, b.by, b.size, setColor(b.id), { id: b.id, sun: sunDirection(planetLocation[b.id]), star: !!b.planet.startype, gate: !!b.planet.gate, kind: bodyKind(b.planet, b.id), seed: texSeed(b.id), rings: hasRings(b.planet, b.id), ringTilt: ringTilt(b.planet, b.id), glyph: cowGlyph(b.id) });
             // The near half belongs in front of the primary, and still behind anything nearer than
             // it — which is exactly where drawing it here puts it, since the bodies left to come are
             // the nearer ones.
@@ -15372,7 +16010,7 @@ export function drawMap() {
         if (starOrbits.length){ strokeOrbitGroup(ctx, starOrbits, sc, sc, false); }
         for (let m of members){
             let px = pX(m.q), py = pY(m.q);
-            drawBody(ctx, px, py, m.pr, setColor(m.id), { star: m.isStar || !!m.planet.bodystar, kind: bodyKind(m.planet, m.id), seed: texSeed(m.id), rings: hasRings(m.planet, m.id), ringTilt: ringTilt(m.planet, m.id), glyph: cowGlyph(m.id) });
+            drawBody(ctx, px, py, m.pr, setColor(m.id), { id: m.id, sun: sunDirection(m.q), star: m.isStar || !!m.planet.bodystar, kind: bodyKind(m.planet, m.id), seed: texSeed(m.id), rings: hasRings(m.planet, m.id), ringTilt: ringTilt(m.planet, m.id), glyph: cowGlyph(m.id) });
             if (m.isStar && starOrbits.length){ strokeOrbitGroup(ctx, starOrbits, sc, sc, true); }
             // Drawn in the star's own translated frame, so shift back to map coordinates to record it.
             addPickable(m.id, pX(sc) + px, pY(sc) + py, m.pr, m.sep);
@@ -15696,8 +16334,11 @@ function buildSolarMap(parentNode, keep) {
             }
             drag = false;
             press = false;
+            // Letting the camera go settles it back to full detail, in a single draw.
+            if (mapCameraMoving){ mapCameraMoving = false; drawMap(); }
         })
-        .on("mouseover mouseout", () => { drag = false; press = false; clearHover(); })
+        .on("mouseover mouseout", () => { drag = false; press = false; clearHover();
+            if (mapCameraMoving){ mapCameraMoving = false; drawMap(); } })
         // Right-drag (or shift-drag, for anyone on a trackpad without a right button) orbits the
         // camera; plain left-drag still pans, exactly as it did before the map had a third axis.
         .on("contextmenu", () => false)
@@ -15722,14 +16363,15 @@ function buildSolarMap(parentNode, keep) {
                 mapShift.x = e.clientX - dragOffset.x;
                 mapShift.y = e.clientY - dragOffset.y;
                 refocus();
-                drawMap();
+                requestDraw();
             }
             else if (drag === 'rotate') {
                 mapYaw = wrapAngle(spin.yaw + (e.clientX - spin.x) * ROTATE_RATE);
                 mapPitch = wrapAngle(spin.pitch + (e.clientY - spin.y) * ROTATE_RATE);
+                mapCameraMoving = true;
                 camUpdate();
                 recenterOn(mapFocus);
-                drawMap();
+                requestDraw();
             }
             else {
                 trackHover(e);
@@ -15837,6 +16479,7 @@ function buildSolarMap(parentNode, keep) {
                 }
                 mapYaw = wrapAngle(gesture.yaw + (mid.x - gesture.x) * ROTATE_RATE);
                 mapPitch = wrapAngle(gesture.pitch + (mid.y - gesture.y) * ROTATE_RATE);
+                mapCameraMoving = true;
                 camUpdate();
                 recenterOn(mapFocus);
                 drawMap();
@@ -15870,6 +16513,8 @@ function buildSolarMap(parentNode, keep) {
             else if (!left || left.length === 0){
                 touching = false;
                 tap = false;
+                // Letting the camera go settles it back to full detail, in a single draw.
+                if (mapCameraMoving){ mapCameraMoving = false; drawMap(); }
             }
             return false;
         }),
@@ -15946,6 +16591,17 @@ function buildSolarMap(parentNode, keep) {
                                 : cur + STAR_RANGE_STEP > STAR_RANGE_MAX ? STAR_RANGE_INF
                                 : cur + STAR_RANGE_STEP;
             $(this).val(starRangeLabel());
+            drawMap();
+        })
+        .appendTo(mapSettings);
+
+    // Surface detail. High draws the bodies that offer one as a lit sphere whose banding and
+    // features follow the camera, instead of stamping a flat image on the disc. It costs a per-pixel
+    // render whenever the view moves, which is why it is not the default.
+    $(`<input type="button" value="${mapTextureLabel()}" style="height: 30px;">`)
+        .on("click", function(){
+            mapView().texture = mapTextureDetail() === 'high' ? 'low' : 'high';
+            $(this).val(mapTextureLabel());
             drawMap();
         })
         .appendTo(mapSettings);
