@@ -927,13 +927,52 @@ set_qlevel(calcQuantumLevel(true));
 
 $('#lbl_city').html('Village');
 
+// Which loop drives the solar map. Offline catch-up overrides it for efficiency.
+function mapRefresh(){
+    if (webWorker.offline){ return 'slow'; }
+    const view = global.settings && global.settings.mapView;
+    const r = view && view.refresh;
+    return r === 'fast' || r === 'slow' ? r : 'normal';
+}
+
+// One step of the solar map's simulation: orbital positions, temp coordinates, ships under way, and
+// the redraw. `ticks` is how many fast loops the step covers. A game day is webWorker.longRatio fast
+// loops, so everything scales off that and the map advances at the same rate whichever loop drives it.
+function updateSolarMap(ticks){
+    if (!global.race['truepath']){ return; }
+    // Offline steps are whole game days each, the same scaling longLoop applies to its own day count.
+    let days = ticks / webWorker.longRatio;
+    if (webWorker.offline){ days *= webWorker.offlineScale; }
+
+    if (global.space.hasOwnProperty('position')){
+        Object.keys(spacePlanetStats).forEach(function(planet){
+            if (spacePlanetStats[planet].startype){ return; }   // stars use fixed coordinates
+            if (global.space.position.hasOwnProperty(planet)){
+                let orbit = orbitPeriod(planet);
+                if (orbit === 0){
+                    global.space.position[planet] = 0;
+                }
+                else {
+                    let pos = (((global.space.position[planet] + 360 * days / orbit) % 360) + 360) % 360;
+                    pos = Math.round(pos * 1e6) / 1e6;
+                    // Rounding up from just under a full turn lands on 360, which is 0 by another name.
+                    global.space.position[planet] = pos >= 360 ? 0 : pos;
+                }
+            }
+        });
+    }
+    moveTempCoordinates(days);
+    moveShips(days);
+
+    if (document.getElementById('mapCanvas')) {
+        drawMap();
+    }
+}
+
 var loopTick = 0; // Used to synchronize the fast, mid, and long loops to each other
 export function execGameLoops(periods = 1, offline = false){
     if (offline){
-        // Offline catch-up: each period is one time-compressed step. A single fast/mid/long
-        // pass advances the game by webWorker.offlineScale whole game days (see fastLoop's
-        // time_multiplier boost and longLoop's day advance), keeping the total number of
-        // iterations bounded no matter how long the player was away.
+        // Offline catch-up: each period is one time-compressed step.
         while (periods--){
             fastLoop();
             midLoop();
@@ -967,9 +1006,7 @@ export function execGameLoops(periods = 1, offline = false){
 
 // Offline time: when the game is reopened after being closed (or unpaused after a long pause),
 // credit the player with the game loops that would have run while away (rounded down to whole
-// long loops / game days), capped at one week of real time, and simulate them behind a progress
-// popup. Called at load and on unpause; the pause guard means a game loaded in a paused state
-// waits until it is unpaused before running the catch-up.
+// long loops / game days), capped at one week of real time.
 function processOfflineTime(){
     if (global.settings.pause){ return; }
     if (!global.stats.hasOwnProperty('current')){ return; }
@@ -8733,6 +8770,9 @@ function fastLoop(){
         }
     }
 
+    // The solar map, when the player has asked for the smoothest motion it can give.
+    if (mapRefresh() === 'fast'){ updateSolarMap(1); }
+
     firstRun = false;
 }
 
@@ -12144,31 +12184,7 @@ function midLoop(){
         buildGene(blockGeneBuffer);
     }
 
-    if (global.race['truepath']){
-        if (global.space.hasOwnProperty('position')){
-            Object.keys(spacePlanetStats).forEach(function(planet){
-                if (spacePlanetStats[planet].startype){ return; }   // stars use fixed coordinates
-                if (global.space.position.hasOwnProperty(planet)){
-                    let orbit = orbitPeriod(planet);
-                    if (orbit === 0){
-                        global.space.position[planet] = 0;
-                    }
-                    else {
-                        global.space.position[planet] += +(72 / orbit).toFixed(6);
-                        if (global.space.position[planet] >= 360){
-                            global.space.position[planet] -= 360;
-                        }
-                    }
-                }
-            });
-        }
-        moveTempCoordinates();
-        moveShips(webWorker.midRatio / webWorker.longRatio);
-
-        if (document.getElementById('mapCanvas')) {
-            drawMap();
-        }
-    }
+    if (mapRefresh() === 'normal'){ updateSolarMap(webWorker.midRatio); }
     
     resourceAlt();
 
@@ -13727,6 +13743,9 @@ function longLoop(){
             tagEvent('page_view',{ page_title: `Game Loop` });
         }
     }
+
+    // The solar map on its coarsest setting, and the one offline catch-up always uses.
+    if (mapRefresh() === 'slow'){ updateSolarMap(webWorker.longRatio); }
 
     if (global.settings.pause && webWorker.s){
         gameLoop('stop');

@@ -7228,9 +7228,9 @@ export function drawShipYard(){
             global.space.shipyard.blueprint.special = 'none';
         }
 
-        // Disable Explorer hull and emdrive engine when restarting ship yard
-        // scrub them from any saved blueprint so a stale configuration can't be constructed.
-        if (global.tech['resettle']){
+        // Once the Explorer is retired, scrub it and the emdrive from any saved blueprint so a stale
+        // configuration can't be constructed.
+        if (explorerRetired()){
             if (global.space.shipyard.blueprint.class === 'explorer'){
                 global.space.shipyard.blueprint.class = 'corvette';
             }
@@ -7354,8 +7354,7 @@ export function drawShipYard(){
                     return k === 'special' ? (global.tech['syard_special'] ? true : false) : true;
                 },
                 avail(k,i,v){
-                    // Disable the Explorer hull and emdrive engine after new shipyard is unlocked
-                    if (global.tech['resettle'] && (v === 'emdrive' || v === 'explorer')){
+                    if (explorerRetired() && (v === 'emdrive' || v === 'explorer')){
                         return false;
                     }
                     if (k === 'special'){
@@ -7795,6 +7794,12 @@ export function shipPower(ship, wiki){
 // --- Ship weapons -------------------------------------------------------------------------------
 // In unlock order: the index is what syard_weapon is measured against, so this order is load bearing.
 const shipWeapons = ['railgun','laser','p_laser','plasma','phaser','disruptor','gauss'];
+
+// Whether the Explorer hull and the emdrive engine are still on offer in the yard.
+function explorerRetired(){
+    if (global.tech['resettle']){ return true; }
+    return global.tech['tau_home'] && global.tech.tau_home >= 2 ? true : false;
+}
 
 // --- The special slot ---------------------------------------------------------------------------
 const shipSpecials = ['none','massdriver'];
@@ -12603,14 +12608,16 @@ export function driftingPoint(fields, parent, pos){
 // Once a day: carry every orbiting point round, and adopt any derelict signal still held as a fixed
 // point from before they drifted. Their stored x/y/z is where they were last seen, which is exactly
 // the position to start the orbit from, so nothing jumps.
-export function moveTempCoordinates(){
+export function moveTempCoordinates(days = 0.2){
     if (!global.race['tempCoordinates']){ return; }
     Object.keys(global.race.tempCoordinates).forEach(function(key){
         let t = global.race.tempCoordinates[key];
         if (!t){ return; }
         if (!t.b && key.startsWith('beacon')){ setTempOrbit(t, 'spc_sun', { x: t.x, y: t.y, z: t.z }); }
         if (t.o > 0){
-            t.p = (((t.p || 0) + +(72 / t.o).toFixed(6)) % 360 + 360) % 360;
+            let p = ((((t.p || 0) + 360 * days / t.o) % 360) + 360) % 360;
+            p = Math.round(p * 1e6) / 1e6;
+            t.p = p >= 360 ? 0 : p;
         }
         // Keep the fallback position current, so anything reading x/y/z directly is not left behind.
         if (tempParent(t)){
@@ -13677,26 +13684,11 @@ var mapHoverAt = { x: 0, y: 0 };
 // through the canvas transform and losing precision.
 var mapYaw = 0, mapPitch = 0;
 // Which way the camera faces by default, as a yaw, for the star the view is settling on.
-//
-// Sol opens turned half a turn. Its orbits are real ellipses with the Sun at a focus, so each one
-// runs long toward -x and short toward +x; a half turn puts that long side on the right of the
-// screen, which is the side it sat on while the orbits were still drawn as a stretch about an
-// offset centre, and the side the Tau Ceti system's orbits still favour. Every other star keeps
-// the plain top-down view, so nothing else moves.
 const SOL_DEFAULT_YAW = Math.PI;
 function mapDefaultYaw(target){
     return target === 'spc_sun' ? SOL_DEFAULT_YAW : 0;
 }
-// What the map draws, as opposed to where it is looking. These live in global.settings (see mapView
-// in vars.js) so they are saved with everything else the player has set, rather than lasting only as
-// long as the page is open — unlike the pan, zoom and rotation, which are deliberately reset each
-// time the map opens.
-//
-// Orbit rings are split into the two kinds because a moon's ring is a tight circle sitting right on
-// top of its planet, and is the one most worth clearing away on its own once you are zoomed into a
-// system. Ships covers yours and the horde's alike, since either can bury the thing you are trying
-// to look at. Names covers planets and moons only — star names are deliberately excluded, because
-// zoomed out they are the only thing telling one dot from another.
+// What the map draws, as opposed to where it is looking.
 function mapView(){
     return global.settings.mapView;
 }
@@ -13706,6 +13698,8 @@ var mapFocus = { x: 0, y: 0, z: 0 };
 // Whether the map should be locked onto a star when zooming. Set when clicking a star, reset when panning away.
 // Zooming with scroll follows cursor when unlocked, and center of screen (where the locked star is) when locked.
 var starLockOn = false;
+// Whether the map's settings panel is showing.
+var mapSettingsOpen = false;
 // Every body drawn big enough to make out, recorded in screen pixels as drawMap lays it down:
 // { id, x, y, r }. Hit-testing against what was actually painted is exact — the alternative is
 // re-deriving each body's projected size and its distance-based minimum outside the draw, and any
@@ -13752,6 +13746,16 @@ function starRange(){
     if (raw === STAR_RANGE_INF || !raw){ return STAR_RANGE_INF; }
     let ly = Math.round(raw / STAR_RANGE_STEP) * STAR_RANGE_STEP;
     return Math.min(STAR_RANGE_MAX, Math.max(STAR_RANGE_MIN, ly));
+}
+// Which loop drives the map. Read defensively, as starRange is: the vars.js block has not
+// necessarily run on an older save, and anything unrecognised means the setting it has always had.
+// main.js reads the same key and is what actually acts on it — this pair only names it for the UI.
+function mapRefreshRate(){
+    const r = mapView().refresh;
+    return r === 'fast' || r === 'slow' ? r : 'normal';
+}
+function mapRefreshLabel(){
+    return loc(`solar_map_refresh_${mapRefreshRate()}`);
 }
 // What the button reads, which is a distance for every setting but the last one.
 function starRangeLabel(){
@@ -15910,13 +15914,13 @@ function buildSolarMap(parentNode, keep) {
             .appendTo(currentNode);
     }
 
-    // What-is-drawn toggles, in a row along the bottom edge rather than stacked with the navigation
-    // buttons at the top: they are settings for the view rather than ways of moving around it, and a
-    // flex row sizes itself to whatever the labels translate to instead of needing fixed offsets.
+    // Everything that decides what the map draws, behind one gear in the bottom-left corner. As a
+    // row of labelled buttons along the bottom edge these crowded the map itself, and the row grew
+    // every time another was added; a panel costs one click to reach and takes no space until then.
+    // Each button reads and writes its own key in global.settings.mapView, so the panel is rebuilt
+    // from the saved setting every time the map opens and the click is what persists the change.
     // Each label states what the click will do, so it flips with the setting.
-    let mapToggles = $(`<div class="mapToggles" style="position: absolute; bottom: 2px; left: 2px; display: flex; flex-wrap: wrap; gap: 4px;"></div>`);
-    // Each button reads and writes its own key in global.settings.mapView, so the row is rebuilt from
-    // the saved setting every time the map opens and the click is what persists the change.
+    let mapSettings = $(`<div class="mapSettings" style="position: absolute; bottom: 36px; left: 2px; display: ${mapSettingsOpen ? 'flex' : 'none'}; flex-direction: column; align-items: stretch; gap: 4px; padding: 6px; background: rgba(0,0,0,0.75); border: 1px solid #999; max-width: 15em;"></div>`);
     [
         ['planetOrbits', 'solar_map_hide_planet_orbits', 'solar_map_show_planet_orbits'],
         ['moonOrbits', 'solar_map_hide_moon_orbits', 'solar_map_show_moon_orbits'],
@@ -15931,7 +15935,7 @@ function buildSolarMap(parentNode, keep) {
                 $(this).val(loc(mapView()[key] ? onKey : offKey));
                 drawMap();
             })
-            .appendTo(mapToggles);
+            .appendTo(mapSettings);
     });
     // How much of the star field to draw, alongside the other view settings.
     $(`<input type="button" value="${starRangeLabel()}" style="height: 30px;">`)
@@ -15944,30 +15948,41 @@ function buildSolarMap(parentNode, keep) {
             $(this).val(starRangeLabel());
             drawMap();
         })
-        .appendTo(mapToggles);
-    mapToggles.appendTo(currentNode);
+        .appendTo(mapSettings);
 
-    // Which backend paints the map, opposite the view toggles. Both draw the same scene from the
-    // same code, so this is a performance choice rather than a visual one: WebGL batches the frame
-    // onto the GPU, which tells on a busy star field, while the 2D renderer needs nothing of the
-    // hardware. Offered only where WebGL actually works — with no second option there is nothing to
-    // switch to, and a button that reported a mode the player could not leave would just mislead.
+    // Which loop the map's simulation and redraw run on.
+    $(`<input type="button" value="${mapRefreshLabel()}" style="height: 30px;">`)
+        .on("click", function(){
+            const order = ['normal','fast','slow'];
+            const at = order.indexOf(mapRefreshRate());
+            mapView().refresh = order[(at + 1) % order.length];
+            $(this).val(mapRefreshLabel());
+            drawMap();
+        })
+        .appendTo(mapSettings);
+
+    // Which backend paints the map. WebGL (GPU) or Canvad (CPU)
     if (webglSupported()){
-        $(`<input type="button" value="${loc(mapRenderer() === 'webgl' ? 'solar_map_renderer_webgl' : 'solar_map_renderer_canvas')}" style="position: absolute; bottom: 2px; right: 2px; height: 30px;">`)
+        $(`<input type="button" value="${loc(mapRenderer() === 'webgl' ? 'solar_map_renderer_webgl' : 'solar_map_renderer_canvas')}" style="height: 30px;">`)
             .on("click", function(){
                 mapView().webgl = !mapView().webgl;
                 // The canvas has to be replaced to change context type, so the whole map is rebuilt
                 // around the player's current view rather than merely repainted.
                 rebuildSolarMap();
             })
-            .appendTo(currentNode);
+            .appendTo(mapSettings);
     }
+    mapSettings.appendTo(currentNode);
 
-    // Put the camera back to its default angle without disturbing where the player has panned and
-    // zoomed to. Which default that is depends on what is being looked at, so it is taken from the
-    // star nearest the focus — resetting while out at Sol should give Sol's opening view, not a
-    // bearing the map never opens on.
-    $(`<input type="button" value="${loc('solar_map_reset_view')}" style="position: absolute; height: 30px; top: 66px; left: 2px;">`)
+    $(`<input type="button" value="⚙︎" title="${loc('solar_map_settings')}" aria-label="${loc('solar_map_settings')}" style="position: absolute; bottom: 2px; left: 2px; width: 30px; height: 30px; padding: 0; font-size: 20px; line-height: 1;">`)
+        .on("click", function(){
+            mapSettingsOpen = !mapSettingsOpen;
+            mapSettings.css('display', mapSettingsOpen ? 'flex' : 'none');
+        })
+        .appendTo(currentNode);
+
+    // Put the camera back to its default angle without disturbing where the player has panned and zoomed to.
+    $(`<input type="button" value="${loc('solar_map_reset_view')}" style="position: absolute; height: 30px; bottom: 2px; left: 36px;">`)
         .on("click", () => {
             mapYaw = mapDefaultYaw(nearestStar(mapFocus));
             mapPitch = 0;
@@ -15980,8 +15995,7 @@ function buildSolarMap(parentNode, keep) {
     let bounds = document.getElementById("mapCanvas").getBoundingClientRect();
     canvasOffset.x = bounds.width / 2;
     canvasOffset.y = bounds.height / 2;
-    // The map opens on wherever the campaign is being fought. The resettlement arc starts out of
-    // Tau Ceti, but from resettle 9 the work is back in the home system, so it swings back to the Sun.
+    // The map open location depends on game state.
     // Locked on as well as centred, so the first zoom pulls in on that star instead of drifting off
     // toward wherever the pointer happened to be resting.
     if (keep){
@@ -16017,8 +16031,7 @@ function solarModal(){
 }
 
 // Populate the ship dispatch modal with a button for each valid destination.
-// Active temporary coordinates, as destinations. Offered to every ship regardless of class — an
-// explorer is barred from the ordinary regions by its drive, not from a set of coordinates.
+// Active temporary coordinates, as destinations.
 function tempDestinations(ship){
     let temps = global.race['tempCoordinates'];
     if (!temps){ return []; }

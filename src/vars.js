@@ -1644,7 +1644,7 @@ if (global['space'] && global.space['shipyard'] && global.space.shipyard.hasOwnP
 
 global['version'] = '1.5.0';
 delete global['revision'];
-global['beta'] = 35;
+global['beta'] = 36;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
@@ -1962,6 +1962,11 @@ if (!global.settings.hasOwnProperty('mapView')){
 // to see one neighbourhood rather than all of them. The map module clamps and steps the rest.
 if (!global.settings.mapView.hasOwnProperty('starRange')){
     global.settings.mapView['starRange'] = -1;
+}
+// Which game loop drives the solar map: 'fast', 'normal' or 'slow'. 'normal' is the mid loop, which
+// is where the map's simulation has always run, so an existing save keeps behaving as it did.
+if (!global.settings.mapView.hasOwnProperty('refresh')){
+    global.settings.mapView['refresh'] = 'normal';
 }
 
 export function setupStats(){
